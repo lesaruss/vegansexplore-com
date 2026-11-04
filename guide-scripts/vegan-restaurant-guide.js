@@ -57,7 +57,7 @@
   // The tabs, in tour order, and what Liz says on each. A tab's `say` must match its recording (Sean approved every line,
   // 2026-10-10). `say` is for visitors (why get it), `sayMember` walks an owner of the Guide through what they have.
   var TABS = [
-    { k: 'overview', label: 'Overview', say: 'Hi, I\'m Liz. Thank you for what you do. Here\'s what to do. Step one: tap Run my free check, and see how your place looks online. Step two: take the short survey. That makes you a member, and the rest of this Guide opens: your fixes, your page, and what\'s coming. It\'s free, no card, and you can stop any time.',
+    { k: 'overview', label: 'Overview', say: 'Hi, I\'m Liz, and welcome to the Vegans Explore Restaurant Guide. Thank you for what you do. This Guide does three things. It gives you a crash course in how Vegans Explore works. It shows you something new about your business. And it puts you one step closer to growing with us as we launch on January 1st. Here\'s how to start. Step one: tap Run my free check, and see how your place looks online. Step two: take the short survey. That makes you a member, and the rest of this Guide opens: your fixes, your page, and what\'s coming. It\'s free, no card, and you can stop any time.',
       sayMember: 'Welcome in. Start with your business. The fixes, the interviews and the promotions all line up around what it finds.' },
     { k: 'audit', label: 'Your audit', say: 'Your Google listing, website, search and social are checked here, and the first things to work on are listed. Free.',
       sayMember: 'Your free check is right here. Run it anytime. When you want us to go deeper, the full audit is an add-on.' },
@@ -291,16 +291,22 @@
       b.querySelector('span').textContent = on ? 'Saved' : 'Save';
     });
   }
-  var GV = { counts: { episode: {} }, mine: { episode: {} } }, gvLoaded = false;
+  var GV = { counts: { episode: {}, fix: {} }, mine: { episode: {}, fix: {} } }, gvLoaded = false;
   function loadGVotes(then) {
     cookApi({ action: 'gvotes' }).then(function (d) {
-      if (d && d.counts) { GV.counts = d.counts; GV.mine = { episode: {} }; (d.mine.episode || []).forEach(function (x) { GV.mine.episode[x] = 1; }); }
+      if (d && d.counts) { GV.counts = d.counts; GV.counts.fix = GV.counts.fix || {}; GV.mine = { episode: {}, fix: {} }; (d.mine.episode || []).forEach(function (x) { GV.mine.episode[x] = 1; }); (d.mine.fix || []).forEach(function (x) { GV.mine.fix[x] = 1; }); }
       // Tried once, even when it failed: the view redraws after this, and must not ask again (a redraw drops a playing episode).
       gvLoaded = true;
       if (then) then();
     }).catch(function () { gvLoaded = true; if (then) then(); });
   }
   function gvCount(key) { return (GV.counts.episode || {})[key] || 0; }
+  // A fix's poll (Sean, 2026-11-04): tick the ones you relate to; tick or untick only, no daily votes. The ranking is everyone's.
+  function pollBtn(id) {
+    var on = !!GV.mine.fix[id], n = (GV.counts.fix || {})[id] || 0;
+    if (!member()) return '<span class="dg-vote dg-vote-s" title="Members who relate to this"><b>' + n + '</b></span>';
+    return '<button type="button" class="dg-vote dg-vote-s' + (on ? ' on' : '') + '" data-gvote="fix:' + esc(id) + '" aria-pressed="' + on + '" title="Tick if you relate to this">' + (on ? 'This applies to me' : 'This applies to me') + ' &middot; <b>' + n + '</b></button>';
+  }
   function gvoteBtn(key) {
     var on = !!GV.mine.episode[key];
     return '<button type="button" class="dg-vote dg-vote-s' + (on ? ' on' : '') + '" data-gvote="episode:' + esc(key) + '" aria-pressed="' + on + '" title="' + (on ? 'You voted for this' : 'Vote for this') + '">' + HEART + '<b>' + gvCount(key) + '</b></button>';
@@ -317,8 +323,26 @@
       if (!d || !d.slug) { store('rg_b', ''); return; }
       PERSONAL = d; store('rg_b', code);
       for (var i = 0; i < TABS.length; i++) if (TABS[i].k === 'audit') TABS[i].label = 'Your business';
+      if (!d.id) startMine();
       route();
     }).catch(function () {});
+  }
+  // The check starts the moment the page opens on their link (Sean, 2026-11-04), so Your business already has it, or says it is running.
+  function startMine() {
+    PERSONAL.starting = true;
+    auditApi({ action: 'free', listing_slug: PERSONAL.slug }).then(function (r) {
+      PERSONAL.starting = false;
+      if (r && r.id) { PERSONAL.id = r.id; store('rg_last_audit', r.id); LAST = null; }
+      if (curTab === 'audit') route();
+    }).catch(function () { PERSONAL.starting = false; if (curTab === 'audit') route(); });
+  }
+  function isAdmin() { var m = me(); return !!(m && m.is_superadmin); }
+  // The Guide is by invitation (Sean, 2026-11-04): a business sees only its own, so no one picks another restaurant. The team keeps the search.
+  function viewInvite() {
+    var mail = 'mailto:contact@lesaruss.com?subject=' + encodeURIComponent('Invitation to the Vegans Explore Restaurant Guide');
+    main.innerHTML = head('Your business', 'This Guide is by invitation',
+      'We build it around one restaurant at a time, so your check is yours alone. If we sent you an email, open the link in it and your restaurant is already here.') +
+      '<div class="dg-start"><a class="dg-btn" href="' + mail + '">Ask for an invitation</a><p>Free. We write back.</p></div>';
   }
   function notYou() {
     if (!PERSONAL) return '';
@@ -327,6 +351,7 @@
   }
   function viewPersonal() {
     var P = PERSONAL, mail = 'mailto:contact@lesaruss.com?subject=' + encodeURIComponent('This is not my business: ' + P.name);
+    if (P.starting) { main.innerHTML = head('Your business', esc(P.name), esc([P.street, P.city].filter(Boolean).join(', '))) + '<div class="rg-waiting"><span class="rg-spin"></span>Running your check. This takes about a minute.</div>'; return; }
     main.innerHTML = head('Your business', esc(P.name), esc([P.street, P.city].filter(Boolean).join(', '))) +
       '<p class="dg-sub">We looked at your page, your Google listing and your website. Here is what we found, and what you can do about it first.</p>' +
       '<div class="rg-find"><button type="button" class="dg-btn" id="rgRunMine">Run my free check</button></div>' +
@@ -365,6 +390,7 @@
     if (parts[0] === 'r' && parts[1]) return viewAuditResult(parts[1]);
     if (parts[0] === 'shopper' && parts[1]) return viewShopper(parts[1]);
     if (PERSONAL) { if (PERSONAL.id) return viewAuditResult(PERSONAL.id); return viewPersonal(); }
+    if (!isAdmin()) return viewInvite();
     var v = ++auditView;
     main.innerHTML = head('Your audit', 'A free check of your restaurant',
       'We look at your Google listing, your website, how you show up in search, and your Instagram, then list what you can fix right away. It takes about a minute.') +
@@ -494,6 +520,7 @@
       (n ? '<div class="rg-todo">' + d.todo.map(function (it) { return itemRow({ key: it.key, label: it.label, area: it.area, found: it.found, state: 'fix' }, false); }).join('') + '</div>' : '') +
       (d.more_fix && member() ? '<p class="dg-lede"><strong>' + d.more_fix + ' more</strong> to fix in the full audit, each with why it matters and how to fix it.</p>' : '') +
       (!member() ? '<div class="rg-next" style="margin-top:18px"><h3 class="dg-k" style="margin:0 0 6px">Next</h3><p class="dg-lede" style="margin:0 0 10px">Take the short survey and the rest of this Guide opens: your fixes, your page, and what is coming. Free, no card.</p><button type="button" class="dg-btn" data-survey>Take the short survey</button></div>' : '') +
+      (PERSONAL && (d.created_at || d.finished_at) ? '<p class="dg-empty" style="margin-top:14px">Checked on ' + esc(new Date(d.finished_at || d.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })) + '.</p>' : '') +
       '<div id="rgOffer"></div>' + notYou();
     drawOffer(d);
   }
@@ -550,28 +577,27 @@
     return PUB.titles.map(function (t) { return byId[t[0]] || { id: t[0], title: t[1], locked: 1 }; });
   }
   function orderedFixes() {
-    var list = allFixes(), w = flagged();
-    if (!member()) return list;
-    return list.map(function (f, i) { return [f, i]; }).sort(function (a, b) { return (w[b[0].id] || 0) - (w[a[0].id] || 0) || a[1] - b[1]; }).map(function (x) { return x[0]; });
+    var list = allFixes(), c = GV.counts.fix || {};
+    return list.map(function (f, i) { return [f, i]; }).sort(function (a, b) { return (c[b[0].id] || 0) - (c[a[0].id] || 0) || a[1] - b[1]; }).map(function (x) { return x[0]; });
   }
   function doneSet() { try { return JSON.parse(recall('rg_fixes_done') || '{}'); } catch (e) { return {}; } }
   function viewFixes(id) {
     var go = function () { if (curTab === 'fixes') draw(); };
-    if (member() && (!CRIT || (!LAST && recall('rg_last_audit')))) { loadCriteria(function () { loadLast(go); }); }
+    if (!gvLoaded) loadGVotes(go);
     function draw() {
       if (id) return viewFix(id);
-      var list = orderedFixes(), w = flagged(), done = doneSet(), fromAudit = member() && Object.keys(w).length;
+      var list = orderedFixes();
       var tiles = list.map(function (f) {
         var open = !f.locked;
         return row({ icon: fixIcon(f.id), title: f.title, href: open ? '#/fixes/' + f.id : '',
-          pre: (w[f.id] ? '<span class="rg-flag">From your audit</span>' : '') + (done[f.id] ? '<span class="rg-done">Done</span>' : '') + (!member() && f.id === PUB.fix_example.id ? '<span class="dg-free">Free to try</span>' : ''),
+          pre: (!member() && f.id === PUB.fix_example.id ? '<span class="dg-free">Free to try</span>' : ''),
           body: open ? '<p class="dg-srow-p">' + esc(f.problem) + '</p>' : '<p class="dg-srow-p">' + LOCK_SVG + ' In the full Guide</p>',
-          acts: member() ? saveBtn('fix', f.id) : '' });
+          acts: pollBtn(f.id) + (member() ? saveBtn('fix', f.id) : '') });
       }).join('');
-      main.innerHTML = head('The fixes', 'What closes Vegan restaurants, and what to do instead',
-        fromAudit ? 'In the order your audit puts them: what it flagged comes first.' : member() ? 'Run your free check in Your audit and these line up in your order.' : 'Each one with what goes wrong and what to do this week. One is open for you to try.') +
+      main.innerHTML = head('The fixes', 'The top 10 things Vegan businesses run into',
+        'This is not a review of your business. It is the checklist most Vegan businesses end up needing. ' + (member() ? 'Tick the ones you relate to. The ranking comes from everyone who uses this Guide, so you can see what comes up most.' : 'One is open for you to try.')) +
         (member() ? '<div class="dg-srows">' + tiles + '</div>'
-          : '<div class="dg-srows">' + tiles + '</div><div style="margin-top:16px">' + gated(skel('Every fix, in your order', 4), 'Every fix, in your order', 'All ten, lined up by your audit, each with what to do this week.') + '</div>');
+          : '<div class="dg-srows">' + tiles + '</div><div style="margin-top:16px">' + gated(skel('Every fix', 4), 'Every fix', 'All ten, each with what to do this week, ranked by the owners who relate to them.') + '</div>');
     }
     draw();
   }
@@ -583,16 +609,15 @@
       main.innerHTML = crumb([['The fixes', '#/fixes'], [f ? f.title : 'Fix']]) + gated(skel(f ? f.title : '', 6), f ? f.title : 'This fix', 'It opens with the full Guide, with every other fix.');
       return;
     }
-    var done = doneSet(), w = flagged();
     var nextOpen = null; for (var n = i + 1; n < list.length; n++) if (!list[n].locked) { nextOpen = list[n]; break; }
     main.innerHTML = crumb([['The fixes', '#/fixes'], [f.title]]) +
-      '<div class="rg-fix">' + (w[f.id] ? '<span class="rg-flag">From your audit</span>' : '') +
-      '<div class="dg-head"><div><div class="dg-k">Fix ' + (i + 1) + ' of ' + list.length + '</div><h2 class="dg-h1">' + esc(f.title) + '</h2></div>' + (member() ? '<div class="dg-acts" style="flex-direction:row">' + saveBtn('fix', f.id) + '</div>' : '') + '</div>' +
+      '<div class="rg-fix">' +
+      '<div class="dg-head"><div><div class="dg-k">No. ' + (i + 1) + ' of ' + list.length + '</div><h2 class="dg-h1">' + esc(f.title) + '</h2></div>' + (member() ? '<div class="dg-acts" style="flex-direction:row">' + saveBtn('fix', f.id) + '</div>' : '') + '</div>' +
       '<p class="rg-problem">' + esc(f.problem) + '</p><h3>What you can do</h3><ul>' + f.list.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' +
       '<h3>This week</h3><div class="rg-week"><b>Your action</b>' + esc(f.action) + '</div>' +
       '<div class="rg-week" style="margin-top:12px"><b>Rather we did it?</b>Our team can take this off your plate, along with your website, Google, photos and brand. ' +
       '<a href="#" data-managed="fix" data-fix="' + esc(f.id) + '" data-business="' + esc(LAST && LAST.business || '') + '">Have us do it &rsaquo;</a></div>' +
-      '<div class="rg-fixnav"><button type="button" class="dg-btn' + (done[f.id] ? ' dg-ghost' : '') + '" data-done="' + esc(f.id) + '">' + (done[f.id] ? 'Done. Mark not done' : 'Mark it done') + '</button>' +
+      '<div class="rg-fixnav">' + pollBtn(f.id) +
       (nextOpen ? '<a class="dg-tnav next" href="#/fixes/' + nextOpen.id + '">Next fix &rsaquo;</a>' : member() ? '<a class="dg-tnav next" href="#/featured">Claim your page &rsaquo;</a>' : '<a class="dg-tnav next" href="#/join">Get every fix &rsaquo;</a>') + '</div></div>' +
       (!member() ? '<div style="margin-top:22px">' + gated(skel('The other nine fixes', 3), 'The other nine fixes', 'Location, branding, search, social, photos, reviews, the menu, community and burnout, in your order.') + '</div>' : '');
   }
@@ -651,6 +676,7 @@
   // ---------- Get featured: the Directory ----------
   function viewFeatured(sub) {
     if (sub && sub.indexOf('listing/') === 0) return viewListing(decodeURIComponent(sub.slice(8)));
+    if (PERSONAL) return viewListing(PERSONAL.slug, true);
     var ph = PERSONAL ? '/directory/' + encodeURIComponent(PERSONAL.slug) : '/directory', ch = PERSONAL ? '/claim?listing=' + encodeURIComponent(PERSONAL.slug) : '/claim';
     var steps = [
       ['Find your page', 'Your page is already in the Directory. Members find you by city, search and category.', ph, PERSONAL ? 'See your page' : 'See the Directory'],
@@ -679,16 +705,40 @@
     if (top && window.VERegionDirectory) VERegionDirectory.wire(top, function (slug) { location.hash = '#/featured/listing/' + encodeURIComponent(slug); });
   }
   // The demo (door Guides, Sean 2026-11-04): a view-only sample restaurant, its page and its owner's dashboard. Nothing can be saved there.
-  function viewDemo(sub) {
-    var owner = sub === 'owner';
-    main.innerHTML = head('Try the demo', 'See what your page and dashboard look like',
-      'This is Green Leaf Kitchen, a sample restaurant, so you can see how a page and its dashboard work. Nothing here can be saved. Yours starts with your own page.') +
-      toggles([['As a visitor', '#/demo'], ['As the owner', '#/demo/owner']], owner ? 'As the owner' : 'As a visitor') +
-      '<div class="dg-lframe"><iframe title="Sample restaurant" src="/business/sample' + (owner ? '?tab=brand' : '') + '" style="width:100%;height:720px;border:0"></iframe></div>';
+  function viewDemo() {
+    var steps = [
+      ['Your page, as visitors see it', 'This is what a member sees when they find a restaurant: the story, hours, menu, photos and the vote.', ''],
+      ['Your dashboard', 'Your home base. What is new, how many people looked at your page, and what to do next.', '?tab=brand'],
+      ['Insights', 'Who looked, where they came from, and what they did next, by day.', '?tab=brand&pd=insights'],
+      ['Your page', 'Where you change your story, hours, contact details and photos. Changes go live at once.', '?tab=brand&pd=page'],
+      ['Menu', 'Your menu by section, one item at a time.', '?tab=brand&pd=menu'],
+      ['Ads and opportunities', 'The ad spots, and the campaigns and events you can join.', '?tab=brand&pd=opps'],
+      ['Your audit', 'Your listing check, and what to fix first.', '?tab=brand&pd=audit']
+    ];
+    main.innerHTML = head('Try the demo', 'How to use your page and dashboard',
+      'Green Leaf Kitchen is a sample restaurant, so you can look around without touching anything real. Pick a step and it opens full screen. Close it when you are done. Yours starts with your own page.') +
+      '<div class="dg-srows">' + steps.map(function (st, i) {
+        return '<div class="dg-srow"><span class="dg-th rg-th" aria-hidden="true" style="font-weight:900;font-size:20px;color:#1f5f22">' + (i + 1) + '</span><div class="dg-srow-b"><h3>' + esc(st[0]) + '</h3><p>' + esc(st[1]) + '</p></div>' +
+          '<div class="dg-acts"><button type="button" class="dg-btn dg-ghost" data-demo="' + esc(st[2]) + '" data-demo-name="' + esc(st[0]) + '">Show me</button></div></div>';
+      }).join('') + '</div>';
+    [].forEach.call(main.querySelectorAll('[data-demo]'), function (b) { b.addEventListener('click', function () { openDemo(b.getAttribute('data-demo'), b.getAttribute('data-demo-name')); }); });
+  }
+  // The demo opens full screen over the Guide, with Close (Sean, 2026-11-04: not in a small frame).
+  function openDemo(qs, name) {
+    var old = document.getElementById('rgDemo'); if (old) old.remove();
+    var st = document.getElementById('rgDemoCss');
+    if (!st) { st = document.createElement('style'); st.id = 'rgDemoCss'; st.textContent = '#rgDemo{position:fixed;inset:0;z-index:100002;background:#fff;display:flex;flex-direction:column}#rgDemo .rgd-bar{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid rgba(0,0,0,.12);font:800 14px Montserrat,system-ui,sans-serif}#rgDemo .rgd-bar b{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#rgDemo iframe{flex:1;border:0;width:100%}'; document.head.appendChild(st); }
+    var w = document.createElement('div'); w.id = 'rgDemo'; w.setAttribute('role', 'dialog'); w.setAttribute('aria-label', 'Demo: ' + name);
+    w.innerHTML = '<div class="rgd-bar"><b>Demo: ' + esc(name) + ' (Green Leaf Kitchen, a sample)</b><button type="button" class="dg-btn" id="rgdClose">Close</button></div><iframe title="Sample restaurant" src="/business/sample' + (qs || '') + '"></iframe>';
+    document.body.appendChild(w);
+    function close() { w.remove(); document.removeEventListener('keydown', esc2); }
+    function esc2(e) { if (e.key === 'Escape') close(); }
+    document.addEventListener('keydown', esc2);
+    document.getElementById('rgdClose').addEventListener('click', close);
   }
   // A Directory page inside the Guide, framed and sized to fit; its own links go through the Guide's address bar.
-  function viewListing(slug) {
-    main.innerHTML = crumb([['Claim your page', '#/featured'], ['Directory page']]) +
+  function viewListing(slug, mine) {
+    main.innerHTML = (mine ? head('Claim your page', 'This is your page', 'It already exists in the Directory, and this is how members see it. Click around. Claiming makes it yours: your hours, photos and menu link, changed whenever you like.') : crumb([['Claim your page', '#/featured'], ['Directory page']])) +
       '<div class="dg-btns" style="margin-bottom:12px"><a class="dg-btn" href="/directory/' + encodeURIComponent(slug) + '?tab=brand">Partner Dashboard</a><a class="dg-btn dg-ghost" href="/claim?listing=' + encodeURIComponent(slug) + '">Claim this page</a></div>' +
       '<div class="dg-lframe"><iframe id="dgListingFrame" title="Directory page" src="/directory/' + encodeURIComponent(slug) + '"></iframe></div>';
     var f = document.getElementById('dgListingFrame');
@@ -900,8 +950,14 @@
   // ---------- Overview ----------
   function viewOverview() {
     if (!member()) {
-      main.innerHTML = head('Vegans Explore Guides for business', 'Thank you for what you do',
-        'See how your Vegan restaurant looks online. Free. Takes about a minute.') +
+      main.innerHTML = head('Vegans Explore Guides for business', 'Welcome to the Vegans Explore Restaurant Guide',
+        'Thank you for what you do. This Guide is built for you, and it does three things.') +
+        '<div class="dg-srows">' + [
+          ['1', 'A crash course in Vegans Explore', 'How the platform works, so you know what is here for your restaurant.'],
+          ['2', 'Learn something new about your business', 'See how your place looks online today, including things you may not have known.'],
+          ['3', 'One step closer to growing with us', 'We launch on January 1, 2027, and the people who join early help shape it.']
+        ].map(function (x) { return '<div class="dg-srow"><span class="dg-th rg-th" aria-hidden="true" style="font-weight:900;font-size:20px;color:#1f5f22">' + x[0] + '</span><div class="dg-srow-b"><h3>' + esc(x[1]) + '</h3><p>' + esc(x[2]) + '</p></div></div>'; }).join('') + '</div>' +
+        '<h3 class="dg-k" style="margin:22px 0 8px">Here is how to start</h3>' +
         '<div class="dg-start" style="margin:0 0 6px"><button type="button" class="dg-btn" data-run-check>Run my free check</button><p>For 100% Vegan restaurants.</p></div>' +
         '<h3 class="dg-k" style="margin:22px 0 8px">Three steps</h3>' +
         '<div class="dg-srows">' + [
@@ -918,7 +974,7 @@
       ['audit', PERSONAL ? 'Your business' : 'Your audit', 'A free check of your Google listing, website, search and social, and a list of what to work on first.'],
       ['featured', 'Claim your page', 'Your page already exists. Claiming makes it yours.'],
       ['demo', 'Try the demo', 'See what a page and its dashboard look like, on a sample restaurant.'],
-      ['fixes', 'The fixes', 'What closes Vegan restaurants, and what to do instead, in the order your check puts them.'],
+      ['fixes', 'The fixes', 'The top 10 things Vegan businesses run into, ranked by the owners who relate to them.'],
       ['pulse', 'Pulse', 'Our interviews with business owners, and the research behind them.'],
       ['promos', 'Promotions', 'The campaigns, events, features and ads that bring members through your door.']
     ];
@@ -932,7 +988,7 @@
   // What to expect: what opens after the survey, each marked Live or Coming (never a planned thing as live).
   function viewExpect() {
     var rows = [
-      ['Your fixes', 'What closes Vegan restaurants, and what to do instead, in the order your check puts them.', 'Live'],
+      ['Your fixes', 'The top 10 things Vegan businesses run into, ranked by the owners who relate to them.', 'Live'],
       ['Your Directory page', 'Your page already exists. Claim it, and keep your hours, photos and menu link current.', 'Live'],
       ['Our interviews', 'Business owners on what worked and what did not, and the research behind it.', 'Live'],
       ['Campaigns, events and features', 'The ways we bring members through your door. Each one says if it is live or coming.', 'Live and Coming'],
@@ -1141,11 +1197,11 @@
     }
     if ((el = e.target.closest('[data-gvote]'))) {
       e.preventDefault(); e.stopPropagation();
-      var key2 = el.getAttribute('data-gvote').split(':')[1], on2 = !GV.mine.episode[key2];
-      cookApi({ action: 'gvote', kind: 'episode', key: key2, on: on2 }).then(function (r) {
+      var gk = el.getAttribute('data-gvote').split(':'), kind2 = gk[0], key2 = gk[1], on2 = !GV.mine[kind2][key2];
+      cookApi({ action: 'gvote', kind: kind2, key: key2, on: on2 }).then(function (r) {
         if (!r || !r.ok) return;
-        if (on2) GV.mine.episode[key2] = 1; else delete GV.mine.episode[key2];
-        GV.counts.episode[key2] = r.count;
+        if (on2) GV.mine[kind2][key2] = 1; else delete GV.mine[kind2][key2];
+        GV.counts[kind2][key2] = r.count;
         el.classList.toggle('on', on2); el.setAttribute('aria-pressed', String(on2)); el.querySelector('b').textContent = r.count;
       });
       return;

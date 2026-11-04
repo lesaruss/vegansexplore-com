@@ -5,8 +5,8 @@ Rule: one idea a sentence, plain words, about 20 seconds or less.
 
 ## The Vegan Restaurant Guide: tabs with no audio today
 
-### Overview, visitor (already in the Guide, Sean approved the words; needs recording)
-"Hi, I'm Liz. Thank you for what you do. Here's what to do. Step one: tap Run my free check, and see how your place looks online. Step two: take the short survey. That makes you a member, and the rest of this Guide opens: your fixes, your page, and what's coming. It's free, no card, and you can stop any time."
+### Overview, visitor (REVISED 2026-11-04: Sean wanted the why first; this is the line now in the Guide, needs approval and recording)
+"Hi, I'm Liz, and welcome to the Vegans Explore Restaurant Guide. Thank you for what you do. This Guide does three things. It gives you a crash course in how Vegans Explore works. It shows you something new about your business. And it puts you one step closer to growing with us as we launch on January 1st. Here's how to start. Step one: tap Run my free check, and see how your place looks online. Step two: take the short survey. That makes you a member, and the rest of this Guide opens: your fixes, your page, and what's coming. It's free, no card, and you can stop any time."
 
 ### What to expect, visitor (new; the Guide's line today is shorter)
 "Here's what opens when you're in. Your fixes: the mistakes that close Vegan restaurants, and what to do instead. Your page: it already exists, and you can claim it. Our interviews with other owners. And the campaigns and events that bring people to your door. Some of this is live now and some is coming, and each one tells you which. When you're ready, take the short survey."
