@@ -3037,19 +3037,23 @@ claim unlocking top posts". Migration `20261103_listing_posts.sql`; edge functio
   post's picture to `vegan-media/media/social-posts/<shortcode>.<ext>`, one failure waits 30 days. **Found 2026-11-03: every picture link
   in the May scan had expired by 2026-05-13** (Instagram's `oe=` stamp), so the 1,661 featured tiles show the Instagram mark and caption
   until their pictures are read again. Reading them again is a paid Apify run of the matched posts' URLs (721 distinct posts, not 580).
-- **The picture refresh for the featured posts** (deployed and **running, not finished**, 2026-11-03; Sean: "go ahead" after the quote):
+- **The picture refresh for the featured posts, finished 2026-11-03** (Sean: "go ahead" after the quote):
   `ve-listing-posts` `admin_refresh_quote` (free: counts the posts with no picture, estimates `apify_usd_per_1000_results` (default 2.30,
-  list price, unverified) and reads Apify's plan and usage) and `admin_refresh_run` (batches of `refresh_batch` 25, Apify `instagram-scraper`
-  on the post links, copies each picture to storage; needs `listing_social.refresh_ours_on` true AND `confirm` at least the quote's post
-  count). Quote 2026-11-03: **721 posts, about $1.66, Apify plan Starter ($29 a month, $12.98 used, $16.02 room, cycle ends 2026-11-06)**.
-  A batch takes about 40 to 60 seconds and returned 25 of 25 pictures. The Depot actions take `LESARUSS_ADMIN_TOKEN` (ops, `admin_*` only,
-  never the owner's) as well as a super admin session. The run is driven by a **temporary pg_cron job 111 `ve-listing-refresh-tmp`**
-  (every minute; the setting `ve_site_settings` `tmp_refresh_req` holds the last pg_net request id): it fires the next batch only when the
-  previous response is back and `{"ok":true`, stops (does nothing) on any error, and unschedules itself when `remaining` is 0. A batch hit
-  `504 IDLE_TIMEOUT` once after a redeploy during it (never redeploy `ve-listing-posts` while it runs); the job halted, 546 posts were
-  left, and one batch was fired again by hand. **When it is done**: delete job 111 if still there, delete the `tmp_refresh_req` setting, set
-  `listing_social.refresh_ours_on` back to false (`scrape_on` stays false), count `thumb_url` rows and `thumb_error` rows ("Not returned by
-  the reader" means the post is gone), and look at a Social tab. Never run a second refresh at once: two overlapping calls pick the same posts.
+  list price, unverified) and reads Apify's plan and usage) and `admin_refresh_run` (batches of `refresh_batch`, Apify `instagram-scraper`
+  on the post links, copies each picture to storage; needs `listing_social.refresh_ours_on` true AND `confirm` at least the remaining
+  count). Quote: 721 posts, about $1.66, Apify Starter plan. **Result**: all 721 posts (1,661 rows) have a `thumb_url`, none gone ("Not
+  returned by the reader"), none failed to copy; Apify spend about $1.90 for 65 runs (59 succeeded $1.66, 6 timed out $0.25).
+  **Batch size is 10, not 25**: the call to Apify waits at most 140 seconds, and a 25-post batch that runs longer comes back as a 400, is
+  still billed, and its results are dropped. `504 IDLE_TIMEOUT` is the gateway only; it came once from redeploying `ve-listing-posts`
+  mid-run (never do that). It was driven by a temporary pg_cron job 111 that fired the next batch only when the last response was
+  `{"ok":true`, halted on any error or gone post, and removed itself at `remaining` 0. Cleanup was done 2026-11-04 through
+  `ve-once-refresh-cleanup` (the connector held the delete; now the 410 stub): job and `tmp_refresh_req` gone, `refresh_batch` removed,
+  `refresh_ours_on` false, `scrape_on` still false (migration `20261104_listing_posts_refresh_cleanup.sql`). A second refresh needs
+  `refresh_ours_on` and a batch size set again, and never runs twice at once: overlapping calls pick the same posts. **The open playbook
+  for all social work is `ve-social-studio`** (Depot > Social and this tab share one queue). **Scheduled triggers belong to the account
+  and fire into whichever chat is open**, so at wrap-up delete the triggers of a chat that is closing (`list_triggers`, `delete_trigger`)
+  or its reminder lands in the next chat. Still unproven: `fetchTheirs`' paused guard (needs `scrape_on`), the owner's Social step as a
+  signed-in owner in a browser, and a look at a Social tab at 1440 and 390 px (the build session refuses `*.vercel.app`).
 - **Paused is its own status** (2026-11-03, migration `20261103_listing_posts_paused.sql`; Sean: "do the paused status too"). `ve_listing_posts.status`
   is shown, hidden, **paused** or removed. **Stop showing my Instagram posts** moves shown posts to `paused` (pins kept) and Show again moves
   only `paused` ones back; `hidden` is only ever the owner's own choice, so Resume never re-shows what they hid. While paused the owner
