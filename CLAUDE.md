@@ -5849,6 +5849,21 @@ saying anything is due, late or has passed. On 2026-11-01 Logan called the 7 AM 
 **The podcast's pre-roll is the network tag** (Sean, 2026-11-01): the default pre-roll on the Captivate show (the Vegans Explore
 Podcast) stays on for every episode.
 
+## Podcast analytics in BrandDesk Insights (Sean, 2026-11-04, playbook `podcast-network-transcript-upload`, titled VE Podcast Network)
+
+"We don't have podcast analytics in the BrandDesk, in that Insights section... let's make that the first thing that we do." **BrandDesk >
+Vegans Explore > Insights > Podcast** (HQ `components/branddesk/InsightsRoom.tsx`, `Podcast`; shown for brands in `PODCAST_BRANDS`) reads
+`branddesk-insights` action `podcast` (`podcast()`, cached 3 hours in `ve_analytics_cache`, key `ins:podcast:<brand>:<from>:<to>`), from
+Captivate (`analytics_connections` `captivate`, `VE_CAPTIVATE_API_KEY`; show in `PODCAST_SHOWS`). **What Captivate's API gives**, probed
+2026-11-04 from the server (this build session cannot reach it): `GET /insights/<show>/overview?start&end` (`{hits}` = downloads; start
+included, end excluded, so a day is start=d end=d+1; no dates is all time), `GET /insights/<show>/overview/<episode>?start&end` (one episode),
+`GET /insights/<show>/monthly` (the last 12 months, this month, the total). **No listeners, apps, devices or places endpoint exists** (every
+guess was a 404); those stay in Captivate's own dashboard. The view: downloads for the period against the one before, per day (every N days past
+30 days), this month, last 12 months, all time, a line by month, and every episode's downloads in the period (up to 100 s of reading, then
+`partial`). Proven 2026-11-04 on real numbers (30 days to Nov 3: 258 downloads, 389 the 30 days before; the daily and per-episode numbers each
+sum to 258; 144 episodes read). A new brand's show is a `PODCAST_SHOWS` row and a `PODCAST_BRANDS` entry. Not yet: the podcast in the Analysis
+write-up, first 7 and 30 day downloads per episode, anything beyond downloads.
+
 ## Depot > Social (Sean, 2026-11-01)
 
 "A social media page in the VE Depot where I can see a grid of scheduled content and click in it to see the caption, tags, links,
