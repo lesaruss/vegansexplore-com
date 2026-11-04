@@ -29,20 +29,19 @@ we have systems, so we don't waste time and usage." Canon `canon-template-gate` 
 First case: `/guides/taste` had been written from a blank file twice; on 2026-11-02 it was rebuilt on the Welcome Guide (see Earn your
 Passport, part 3).
 
-## Audio on every page (LOCKED standard, Sean, 2026-11-04, playbook `ve-audio-accessibility`)
+## Liz speaks on every page (LOCKED standard, Sean, 2026-11-04, playbook `ve-audio-accessibility`)
 
-"I want audio on every single page, and that is a standard moving forward. We need to be able to explain to them what's on the page without
-them having to read it." King Mustafa (water and hydration) has a reading disability and was glad to hear the pages can be listened to; Sean
-knows people in the community who cannot read well, and others with ADHD who will not read a page. This is accessibility, not a bonus feature.
+"I just want Liz to speak on each page. So the same voice that we have for Liz... create a script for the first page and any page that doesn't
+have audio. I just kind of read what you put." Sean's reason: King Mustafa (water and hydration) has a reading disability, Sean knows people in
+the community who cannot read well, and others will not read a page. It is not an accessibility widget or a "Listen" button.
 
-- **Every page a person can land on has a way to hear what it says**, and a new page does not ship without it. Pages that are not for people
-  (redirect stubs, ad creatives, render frames) are the only exceptions.
-- **Two layers (Logan's recommendation, Sean to approve the build):** (1) a floor on every page: one shared script (loaded by `nav.js` like
-  `ve-dictate.js`) with a **Listen** button that reads the page's own words aloud with the browser's speech, pause, stop and speed, so it can
-  never be missing or out of date; (2) where a Guide narrates, her recorded voice (roster-profile voice, never picked without Sean) per tab, as the Guides do.
-- **No tab or screen is silent by default in a Guide:** if a tab has no recording yet, the floor reads it. A line's text must still match its recording.
-- Nothing plays on its own (browsers block it and it startles people); the person presses Listen or Play.
-- **Not built yet.** Until it is, say so on any page that lacks it, never imply it has audio.
+- **Every page a person can land on has a script for Liz** and, once Sean approves it, her recording in her roster-profile voice (Guide voices
+  section; never a voice picked without Sean). A new page does not ship without its script. Redirect stubs, ad creatives and render frames are the exceptions.
+- **Logan writes the script, Sean reads and approves it, then it is recorded** (el-media tts, checked word for word with `stt`, `-v1.mp3`; a
+  line's text must match its recording, and a change is a new `-v2`). Scripts live in `docs/proposals/liz-audio-scripts.md` until recorded.
+- **No browser voice and no Listen button** (Sean rejected that route). A page with no recording yet says nothing rather than speak in another voice.
+- Nothing plays on its own; the visitor presses Liz's Play, as on the Guides.
+- Not built beyond the Guides' existing tabs. Order: the Restaurant Guide's silent tabs first (script drafted 2026-11-04), then the Guides, then the main pages.
 
 ## Nav and Footer — MANDATORY (LOCKED 2026-05-18)
 
