@@ -79,7 +79,7 @@ Same shell and look as today, Liz on the right (her lines are text drafts).
 | Your audit (changed) | The free check as built. Others see only the top three things to work on for a business that is not theirs (default taken, no sign-in required). Closing line: **This is a list to work on, not a score. The rest of the fixes are in the Guide.** |
 | The fixes (keep) | One fix per view, the free example stays open. Each fix ends: **Rather we did it? Have us do it.** |
 | Pulse (keep) | Interviews with owners and the research, played in place. Lead: **Hear how other owners did it.** |
-| Claim your page (new) | **Your page already exists. Claiming makes it yours.** Steps: find your page, claim it, add your hours, photos and menu link, tell people. Button: **Claim your listing.** Under it: **Claiming is free for a member. Join with $11 or the survey, either way you can claim.** |
+| Claim your page (new) | **Your page already exists. Claiming makes it yours.** Steps: find your page, claim it, add your hours, photos and menu link, tell people. Button: **Claim your listing.** Under it (changed 2026-11-04 for accuracy; the locked line said claiming is free for a member, but a claim costs the $11, 1,100 points or the Partner plan): **Claiming is a short form. The $11, 1,100 points or the Partner plan covers it, and we show you which when you start.** |
 | Try the demo (new, every door Guide) | **See what your page and dashboard look like.** A live, view-only preview of Green Leaf Kitchen, our sample restaurant: the page as a visitor sees it, then the owner's dashboard, signed in behind the scenes. Nothing can be saved. **This is a sample business. Yours starts with your own page.** |
 | Promotions (keep) | Be a Passport Challenge stop, each marked Live or Coming. |
 | Get in (changed) | Section 4 and 9. |
@@ -108,7 +108,7 @@ Below it on the page: our four shows (played in place), a few owner interviews, 
 
 | $11, one time | The short survey |
 | --- | --- |
-| Supports the movement and lets us grow faster. Comes with 1,100 welcome points. | Takes a few minutes, and tells us how to serve you. Free. A person reads it before your membership opens. |
+| Supports the movement and lets us grow faster. Comes with 1,100 welcome points. | Takes a few minutes, and tells us how to serve you. Free. Up to 100 points, and your membership opens when you finish (changed 2026-11-04: the locked line said a person reads it first; a Guide survey admits on finishing, only the profile survey has the review gate). |
 
 Either one before midnight Eastern on January 1, 2027 makes you a Founding Member, and that stays on your profile for good. After you are in, the Welcome Guide shows you the rest, and you can claim your page, update it and promote your business.
 
