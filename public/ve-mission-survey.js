@@ -378,13 +378,6 @@
       drawCards();
     }
     function backHash() { return S.door && S.ready ? '#review' : '#'; }
-    // How long is left, roughly: a line of your own words takes longest, a tap the least.
-    function eta(skip) {
-      var sec = 0;
-      QUESTIONS.forEach(function (x) { if (x.q.id !== skip && empty(S.answers[x.q.id])) sec += x.q.type === 'prompt' ? 45 : (x.q.type === 'longtext' || x.q.type === 'text' || x.q.type === 'places') ? 25 : 10; });
-      var mins = Math.ceil(sec / 60);
-      return sec === 0 ? 'last one' : mins <= 1 ? 'about a minute left' : 'about ' + mins + ' minutes left';
-    }
     function sentBack() { return S.door && S.review === 'sent_back' ? '<div class="vmr-sendback"><b>Our team asked for a change.</b><br>' + esc(S.reviewNote) + '</div>' : ''; }
     function drawPending() {
       host.innerHTML = '<div class="vms"><div class="vmr-box"><h3>Our team is reviewing your answers</h3>' +
@@ -468,7 +461,7 @@
       var q = x.q, value = S.answers[q.id], open = nextOpen(q.id), hint = hintFor(q);
       var pos = QUESTIONS.indexOf(x) + 1, done = QUESTIONS.filter(function (y) { return !empty(S.answers[y.q.id]); }).length;
       host.innerHTML = '<div class="vms">' +
-        '<div class="vmp-prog"><div class="vmp-prog-t"><b>Question ' + pos + ' of ' + QUESTIONS.length + '</b><span>' + done + ' answered &middot; ' + eta(q.id) + '</span></div>' +
+        '<div class="vmp-prog"><div class="vmp-prog-t"><b>Question ' + pos + ' of ' + QUESTIONS.length + '</b><span>' + done + ' answered</span></div>' +
         '<div class="vmp-bar" aria-hidden="true"><i style="width:' + Math.round(done / QUESTIONS.length * 100) + '%"></i></div></div>' +
         sentBack() +
         '<p class="vmp-crumb"><a href="#">Your profile</a> / ' + esc(x.step.title) + '</p>' +
