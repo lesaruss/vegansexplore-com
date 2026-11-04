@@ -413,6 +413,7 @@ Deno.serve(async (req) => {
       return json({ ok: true, ...r });
     }
     let me = await adminId(req);
+    let viaHq = false;
     // HQ (hq.lesaruss.ai > Distributions) works the people lists: it checks the owner's own sign-in, then calls with the
     // admin token and as_member (that owner's member id, a super admin). Only for lists of kind 'people'; a city still needs
     // a super admin signed in here, as before (Sean, 2026-10-10).
@@ -423,7 +424,9 @@ Deno.serve(async (req) => {
         const { data: m } = await db.from('members').select('is_superadmin').eq('id', body.as_member).maybeSingle();
         const slug = await targetList(action, body);
         const list = slug ? await listOf(slug) : null;
-        if (m?.is_superadmin && list?.kind === 'people') me = body.as_member;
+        // A test email to the owner's own address is the one city action HQ may run for them (Sean, 2026-11-04: the test is sent from
+        // People > Outreach in HQ); any other city action still needs a super admin signed in here.
+        if (m?.is_superadmin && (list?.kind === 'people' || (action === 'test' && list?.kind === 'city'))) { me = body.as_member; viaHq = true; }
       }
     }
     if (!me) {
@@ -540,6 +543,8 @@ Deno.serve(async (req) => {
       if ((!me && !dry) || !isId(body.contact_id)) return json({ error: 'admins_only' }, 403);
       const step = [1, 2, 3].includes(Number(body.step)) ? Number(body.step) : 1;
       let to = clean(body.to, 200).toLowerCase();
+      // Called by HQ for the owner: a real test goes only to their own address or one of ours.
+      if (viaHq && to && !/@(mail\.)?lesaruss\.(com|ai)$/.test(to)) return json({ error: 'test_to_own_address' }, 400);
       if (!to && me) { const { data: m } = await db.from('members').select('email').eq('id', me).single(); to = String(m?.email || '').toLowerCase(); }
       if (!to && dry) to = 'dry-run@vegansexplore.com';
       if (!isEmail(to)) return json({ error: 'bad_email' }, 400);
