@@ -14,3 +14,10 @@ Playbook `ve-vegan-sourcing-guide`. Canon `canon-ve-vegan-sourcing` v2.
 **Not done:** bios and checks for the 134 PETA rows; retry the 11 failed sites; more queries (Google has $33.82 left); buy-or-make recipes; Pre-Vegan Business Guide; `ve-sourcing` with a real signed-in member (unproven). The Sourcing tab is on `claude/ecstatic-galileo-lth5gz`, not on main. Rows are `active` and show only to Guide owners through `ve-sourcing`.
 
 The crawl function `ve-once-sourcing-crawl` is the 410 stub. Migration `supabase/migrations/20261104_ve_suppliers_crawl.sql` is applied.
+
+## Update: PETA bios (Logan, 2026-11-04)
+
+Sean: go with the defaults (packaging stays hidden; Cheeze and Thank You and The Vegan Copacker stay "Offers vegan options") and write the PETA bios.
+Bios for the 134 PETA rows, from each company's own site, no Google calls, labels unchanged: **97 have a bio** (33 of 38 PETA-Approved Vegan, 64 of 96 Offers vegan options). **37 have none**, with the reason in `bio_source` ("no bio: ..."): 17 site did not open, 5 site errors (400, 403, 404, 503), 3 bio length, 3 bio copied the site, 9 site not usable (under construction, script only, not the company). A spot check of 14, including Toray, Lenzing and DuPont (Sorona), shows no mixed-line company called Vegan.
+Script: `scripts/supabase-once/sourcing-bios.ts`; function `ve-once-sourcing-bios` is the 410 stub.
+**Not done:** the 37 without bios, more crawl queries ($33.82 of Google left), buy-or-make recipes, Pre-Vegan Business Guide, `ve-sourcing` with a signed-in member, merge of `claude/ecstatic-galileo-lth5gz`.
