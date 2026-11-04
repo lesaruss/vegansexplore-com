@@ -31,13 +31,26 @@ const SYSTEM = `You write the short bio for a company in a business-to-business 
 Use only what the company's own site text shows. Two plain sentences, 120 to 260 characters, in your own words (never copy a phrase of eight or more words from the site): what it makes and who it serves. Third person, present tense, no hype words, no prices, no promises. If the site shows it also makes animal-derived products, say plainly that it has non-animal lines too; never call a mixed company Vegan or fully Vegan. Do not say PETA. Spell Vegan with a capital V. No dashes of any kind; use commas or periods.`;
 const norm = (s: string) => s.toLowerCase().replace(/[’‘]/g, "'").replace(/\s+/g, ' ').trim();
 function copiedRun(bio: string, text: string) { const w = norm(bio).replace(/[^a-z0-9' ]/g, '').split(' ').filter(Boolean); const t = ' ' + norm(text).replace(/[^a-z0-9' ]/g, '').replace(/\s+/g, ' ') + ' '; for (let i = 0; i + 8 <= w.length; i++) if (t.includes(' ' + w.slice(i, i + 8).join(' ') + ' ')) return true; return false; }
+// A site that will not open is tried again as the other www form and as http, before giving up.
+async function readAny(url: string) {
+  let u: URL; try { u = new URL(url); } catch { return { url, error: 'bad address' }; }
+  const hosts = [u.host, u.host.startsWith('www.') ? u.host.slice(4) : 'www.' + u.host];
+  let last: any = null;
+  for (const proto of ['https:', 'http:']) for (const h of hosts) {
+    const r: any = await readPage(`${proto}//${h}${u.pathname}${u.search}`);
+    if (!r.error && r.text && r.text.length > 80) return r;
+    last = last && !last.error ? last : r;
+  }
+  return last;
+}
 async function one(s: any) {
-  const home: any = await readPage(s.website);
+  const home: any = await readAny(s.website);
   if (home.error) return { ok: false, why: `site ${home.error}` };
   let aboutText = ''; if (home.about) { const a: any = await readPage(home.about); if (!a.error) aboutText = a.text.slice(0, 3500); }
   const siteText = `${home.title}\n${home.description}\n${home.text}\n${aboutText}`;
   const key = await secret('ANTHROPIC_API_KEY'); const client = new Anthropic(key ? { apiKey: key } : {});
-  let out: any;
+  let out: any; let attemptsLeft = 3; let why = '';
+  while (attemptsLeft-- > 0) {
   try {
     const msg: any = await client.beta.messages.create({ model: 'claude-opus-5-5', max_tokens: 800, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
       output_config: { effort: 'low', format: { type: 'json_schema', schema: SCHEMA } }, system: SYSTEM,
@@ -47,11 +60,13 @@ async function one(s: any) {
   } catch (e) { return { ok: false, why: String((e as Error).message || e).slice(0, 120) }; }
   if (!out.usable) return { ok: false, why: String(out.reason || 'not usable').slice(0, 160) };
   const bio = String(out.bio || '').replace(/\s*[–—]\s*/g, ', ').replace(/\s+-\s+/g, ', ').replace(/\bvegan\b/g, 'Vegan').replace(/\s+/g, ' ').trim();
-  if (bio.length < 100 || bio.length > 280) return { ok: false, why: 'bio length off' };
-  if (copiedRun(bio, siteText)) return { ok: false, why: 'bio copies the site' };
-  if (s.label !== 'peta_approved' && /fully vegan|100% vegan|entirely vegan/i.test(bio)) return { ok: false, why: 'bio calls a non-star company fully Vegan' };
+  if (bio.length < 100 || bio.length > 280) { why = 'bio length off'; continue; }
+  if (copiedRun(bio, siteText)) { why = 'bio copies the site'; continue; }
+  if (s.label !== 'peta_approved' && /fully vegan|100% vegan|entirely vegan/i.test(bio)) { why = 'bio calls a non-star company fully Vegan'; continue; }
   await db.from('ve_suppliers').update({ bio, bio_source: home.url, checked_at: new Date().toISOString(), updated_at: new Date().toISOString() }).eq('id', s.id);
   return { ok: true, bio };
+  }
+  return { ok: false, why: why || 'no bio' };
 }
 Deno.serve(async (req) => {
   if (req.headers.get('x-run-key') !== KEY) return new Response('not found', { status: 404 });
