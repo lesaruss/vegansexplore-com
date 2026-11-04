@@ -108,6 +108,9 @@
     { slug: 'airport-guide', shelf: 'everyday', label: 'Travel', tag: 'New', title: 'The Airport Guide', banner: '/public/guides/airport-guide.jpg?v=3', interests: ['travel', 'eating-out'], href: '/guides/airport-guide',
       desc: 'Vegan food at the airport, gate by gate: every spot before or after security, a map of the terminal that takes you from your gate to the food without screening again, and travelers keeping it right, with Nori walking you through it. Fort Lauderdale is free.',
       chips: [{ text: 'Walked through by Nori' }, { text: 'Fort Lauderdale free' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
+    { slug: 'theme-park-guide', shelf: 'everyday', label: 'Theme Parks', tag: 'New', title: 'The Vegan Theme Park Guide', icon: 'compass', interests: ['travel', 'eating-out'], href: '/guides/theme-park-guide',
+      desc: 'Vegan food in the park, restaurant by restaurant: our own map with how far each is from you, and what is Vegan at each, with River walking you through it. Magic Kingdom is free.',
+      chips: [{ text: 'Walked through by River' }, { text: 'Magic Kingdom free' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
     { slug: 'nonprofit-guide', shelf: 'work', label: 'Nonprofits', tag: 'New', title: 'The Nonprofit Guide', banner: '/public/guides/nonprofit-guide.jpg?v=3', interests: ['causes', 'business'], href: '/guides/nonprofit-guide',
       desc: 'For the people who keep Vegan nonprofits, rescues and sanctuaries going: ten ways to fundraise and stay relevant, our nonprofit series and interviews, the Directory, businesses near you that fit a tie-in, and how to get found, with Dani walking you through it.',
       chips: [{ text: 'Walked through by Dani' }, { text: 'Tip 1 free' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
@@ -202,6 +205,7 @@
     // A Guide being made shows its banner too once it has one (not a link yet); without one, its flat icon.
     var top = g.soon && g.banner ? '<div class="gc-banner" aria-hidden="true"><img src="' + esc(g.banner) + '" alt="" width="800" height="500" loading="lazy"></div>'
       : g.soon ? '<div class="gc-banner gc-banner-icon" aria-hidden="true">' + icon(g.icon) + '</div>'
+      : !g.banner && g.icon ? '<a class="gc-banner gc-banner-icon" href="' + esc(g.href) + '" data-frame-label="' + esc(g.title) + '" data-gc-open tabindex="-1" aria-hidden="true">' + icon(g.icon) + '</a>'
       : g.badge && g.banner ? '<a class="gc-banner" href="' + esc(g.href) + '" data-frame-label="' + esc(g.title) + '" data-gc-open tabindex="-1" aria-hidden="true"><img src="' + esc(g.banner) + '" alt="" width="800" height="500" loading="lazy"></a>'
       : g.badge ? '<a class="gc-banner gc-banner-icon gc-banner-amb" href="' + esc(g.href) + '" data-frame-label="' + esc(g.title) + '" data-gc-open tabindex="-1" aria-hidden="true">' + icon(g.icon) + '<span>' + esc(g.badge) + '</span></a>'
       : '<a class="gc-banner" href="' + esc(g.href) + '" data-frame-label="' + esc(g.title) + '" data-gc-open tabindex="-1" aria-hidden="true"' + (g.newTab ? ' target="_blank" rel="noopener"' : '') + '><img src="' + esc(g.banner) + '" alt="" width="800" height="500" loading="lazy"' + (g.bannerPos ? ' style="object-position:' + esc(g.bannerPos) + '"' : '') + '></a>';
