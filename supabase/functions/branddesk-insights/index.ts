@@ -465,7 +465,17 @@ async function webHealth(brand: string) {
 // -> the same for one episode, GET /insights/<show>/monthly -> the last 12 months. No listeners, apps, devices or places endpoint
 // exists (every guess was a 404), so those stay in Captivate's own dashboard. A brand's show is added to PODCAST_SHOWS.
 const CAPTIVATE = 'https://api.captivate.fm';
-const PODCAST_SHOWS: Record<string, string> = { 'vegans-explore': '5f0184ac-771d-41be-9db2-49f08fc0b880' };
+// A brand's shows, in the order the picker lists them (ids from Captivate's GET /users/<user>/shows, 2026-11-04). Sean: "we have multiple
+// podcasts from this brand". The first is the default. Captivate also holds "Vegans Explore Network Exclusives", not tracked here.
+const PODCAST_SHOWS: Record<string, { key: string; id: string; name: string }[]> = {
+  'vegans-explore': [
+    { key: 'vegans-explore', id: '5f0184ac-771d-41be-9db2-49f08fc0b880', name: 'Vegans Explore Podcast' },
+    { key: 'soflo-vegans', id: '7769096f-5501-4afc-999a-32dbc14acd64', name: 'SoFlo Vegans Podcast' },
+    { key: 'vegans-who-lift', id: 'aa00615c-803d-49f0-96f3-abefd0aae76d', name: 'Vegans Who Lift Podcast' },
+    { key: 'pre-vegans', id: 'a491b80c-1d83-411d-b2b8-e63325194915', name: 'Pre-Vegans Podcast' },
+  ],
+};
+const showOf = (brand: string, key?: unknown) => { const l = PODCAST_SHOWS[brand]; return l ? (l.find((x) => x.key === String(key || '')) || (key ? null : l[0])) : null; };
 const plusDays = (d: string, n: number) => day(Date.parse(d) + n * 864e5);
 async function capToken(): Promise<string> {
   const { data: conn } = await db.from('analytics_connections').select('config').eq('provider', 'captivate').maybeSingle();
@@ -483,9 +493,12 @@ async function pool<T, R>(items: T[], n: number, fn: (x: T) => Promise<R>): Prom
   await Promise.all(Array.from({ length: Math.min(n, items.length) }, async () => { while (i < items.length) { const k = i++; out[k] = await fn(items[k]); } }));
   return out;
 }
-async function podcast(brand: string, from: string, to: string) {
-  const show = PODCAST_SHOWS[brand];
-  if (!show) return { connected: false };
+// part: 'overview' (the tiles and the two charts; no per-episode reads), 'episodes' (every episode's downloads for the period) or 'all' (both, as before).
+async function podcast(brand: string, from: string, to: string, showKey: unknown, part: string) {
+  const sh = showOf(brand, showKey);
+  if (!sh) return { connected: false };
+  const show = sh.id;
+  const wantEps = part !== 'overview', wantOverview = part !== 'episodes'; // no part (an older page) reads both
   const t0 = Date.now();
   const token = await capToken();
   const get = async (path: string) => {
@@ -502,16 +515,16 @@ async function podcast(brand: string, from: string, to: string) {
   const safe = async <T,>(label: string, f: () => Promise<T>): Promise<T | null> => { try { return await f(); } catch (e) { errors.push(`${label}: ${(e as Error).message}`); return null; } };
   const [cur, prev, all, monthly, eps, series] = await Promise.all([
     safe('downloads', () => hits(from, to)), safe('downloads before', () => hits(pf, pt)),
-    safe('all time', async () => Number((await get(`/insights/${show}/overview`)).hits) || 0),
-    safe('months', () => get(`/insights/${show}/monthly`)),
+    wantOverview ? safe('all time', async () => Number((await get(`/insights/${show}/overview`)).hits) || 0) : Promise.resolve(null),
+    wantOverview ? safe('months', () => get(`/insights/${show}/monthly`)) : Promise.resolve(null),
     safe('episodes', () => get(`/shows/${show}/episodes`)),
-    pool(buckets, 8, (b) => safe(`day ${b.s}`, () => hits(b.s, b.e)).then((v) => ({ t: b.s, v: v ?? 0, ok: v != null }))),
+    wantOverview ? pool(buckets, 8, (b) => safe(`day ${b.s}`, () => hits(b.s, b.e)).then((v) => ({ t: b.s, v: v ?? 0, ok: v != null }))) : Promise.resolve([] as { t: string; v: number; ok: boolean }[]),
   ]);
   const todayIso = new Date().toISOString();
   const published = ((eps as any)?.episodes || []).filter((e: any) => String(e.status || '').toLowerCase() === 'published' && String(e.published_date || '') <= todayIso)
     .sort((a: any, b: any) => String(b.published_date).localeCompare(String(a.published_date)));
   let read = 0, partial = false;
-  const episodes = await pool(published, 10, async (e: any) => {
+  const episodes = !wantEps ? [] : await pool(published, 10, async (e: any) => {
     const pub = String(e.published_date).slice(0, 10);
     let dl: number | null = null;
     if (Date.now() - t0 > 100000) partial = true;
@@ -522,7 +535,7 @@ async function podcast(brand: string, from: string, to: string) {
   if (cur == null && !errors.length) errors.push('Captivate gave no numbers');
   if (cur == null) return { error: errors.join('; ') };
   return {
-    connected: true, show_id: show, from, to, prev_from: pf, prev_to: pt, days, step,
+    connected: true, show: sh.key, show_name: sh.name, shows: PODCAST_SHOWS[brand].map((x) => ({ key: x.key, name: x.name })), part, show_id: show, from, to, prev_from: pf, prev_to: pt, days, step,
     totals: { downloads: cur, prev: prev ?? null, all_time: all, this_month: (monthly as any)?.this_month ?? null, past_12_months: (monthly as any)?.total_downloads_in_past_12_months ?? null,
       per_day: Math.round((cur / days) * 10) / 10, episodes_out: published.filter((e: any) => String(e.published_date).slice(0, 10) >= from && String(e.published_date).slice(0, 10) <= to).length, episodes_total: published.length },
     series: series.map((p) => ({ t: p.t, v: p.v })), months, episodes, episodes_read: read, partial,
@@ -541,8 +554,10 @@ const UP_TYPES = /^(image\/(jpeg|png|webp)|application\/pdf)$/;
 const UP_MAX = 25 * 1024 * 1024;
 async function podcastFiles(act: string, brand: string, body: any, member: string | null) {
   if (!PODCAST_SHOWS[brand]) return { error: 'no_podcast' };
+  const sh = showOf(brand, body.show);
+  if (!sh) return { error: 'bad_show' };
   if (act === 'podcast_files') {
-    const { data: rows, error } = await db.from('ve_podcast_uploads').select('*').eq('brand_slug', brand).is('removed_at', null)
+    const { data: rows, error } = await db.from('ve_podcast_uploads').select('*').eq('brand_slug', brand).eq('show_key', sh.key).is('removed_at', null)
       .order('period_to', { ascending: false }).order('created_at', { ascending: false }).limit(300);
     if (error) return { error: error.message };
     const paths = (rows || []).map((r: any) => r.storage_path);
@@ -558,7 +573,7 @@ async function podcastFiles(act: string, brand: string, body: any, member: strin
     if (!UP_TYPES.test(type)) return { error: 'bad_type' };
     if (!(Number(body.size) > 0) || Number(body.size) > UP_MAX) return { error: 'too_big' };
     const safe = String(body.name || 'file').toLowerCase().replace(/[^a-z0-9.]+/g, '-').replace(/^-+|-+$/g, '').slice(-60) || 'file';
-    const path = `${brand}/${Date.now()}-${crypto.randomUUID().slice(0, 8)}-${safe}`;
+    const path = `${brand}/${sh.key}/${Date.now()}-${crypto.randomUUID().slice(0, 8)}-${safe}`;
     const { data, error } = await db.storage.from(UP_BUCKET).createSignedUploadUrl(path);
     if (error) return { error: error.message };
     return { upload_url: data.signedUrl, path };
@@ -567,21 +582,21 @@ async function podcastFiles(act: string, brand: string, body: any, member: strin
     const path = String(body.path || '');
     const kind = String(body.kind || '');
     const type = String(body.type || '');
-    if (!path.startsWith(brand + '/') || path.includes('..')) return { error: 'bad_path' };
+    if (!path.startsWith(`${brand}/${sh.key}/`) || path.includes('..')) return { error: 'bad_path' };
     if (!UP_KINDS.includes(kind)) return { error: 'bad_kind' };
     if (!UP_TYPES.test(type)) return { error: 'bad_type' };
     if (!isDay(body.from) || !isDay(body.to) || body.from > body.to) return { error: 'bad_dates' };
     const { error: ex } = await db.storage.from(UP_BUCKET).createSignedUrl(path, 60);
     if (ex) return { error: 'not_uploaded' };
     const { data, error } = await db.from('ve_podcast_uploads').insert({
-      brand_slug: brand, kind, period_from: body.from, period_to: body.to, note: String(body.note || '').trim().slice(0, 500) || null,
+      brand_slug: brand, show_key: sh.key, kind, period_from: body.from, period_to: body.to, note: String(body.note || '').trim().slice(0, 500) || null,
       file_name: String(body.name || 'file').slice(0, 200), content_type: type, size_bytes: Number(body.size) || null, storage_path: path, uploaded_by: member,
     }).select('id').single();
     if (error) return { error: error.message };
     return { id: data.id };
   }
   if (act === 'podcast_file_remove') {
-    const { data, error } = await db.from('ve_podcast_uploads').update({ removed_at: new Date().toISOString(), removed_by: member }).eq('id', String(body.id || '')).eq('brand_slug', brand).is('removed_at', null).select('id');
+    const { data, error } = await db.from('ve_podcast_uploads').update({ removed_at: new Date().toISOString(), removed_by: member }).eq('id', String(body.id || '')).eq('brand_slug', brand).eq('show_key', sh.key).is('removed_at', null).select('id');
     if (error) return { error: error.message };
     return data?.length ? { ok: true } : { error: 'not_found' };
   }
@@ -683,7 +698,12 @@ Deno.serve(async (req) => {
     switch (act) {
       case 'web_analytics': return json(await cached(`ins:web:${brand}:${from}:${to}`, 3 * H, refresh, () => webAnalytics(brand, from, to)));
       case 'seo': return json(await cached(`ins:seo:${brand}:${from}:${to}`, 3 * H, refresh, () => seo(brand, from, to)));
-      case 'podcast': return json(await cached(`ins:podcast:${brand}:${from}:${to}`, 3 * H, refresh, () => podcast(brand, from, to)));
+      case 'podcast': {
+        const sh = showOf(brand, body.show);
+        if (!sh && PODCAST_SHOWS[brand]) return json({ error: 'bad_show' }, 400);
+        const part = body.part === 'episodes' ? 'episodes' : body.part === 'overview' ? 'overview' : 'all';
+        return json(await cached(`ins:podcast2:${brand}:${sh?.key}:${part}:${from}:${to}`, 3 * H, refresh, () => podcast(brand, from, to, sh?.key, part)));
+      }
       case 'ads': return json(await ads(brand, from, to));
       case 'campaigns': return json(await campaigns(brand, from, to));
       case 'campaign': return json(await campaign(brand, String(body.kind || ''), String(body.id || ''), from, to));
