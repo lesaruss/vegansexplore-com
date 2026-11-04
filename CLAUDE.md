@@ -5093,7 +5093,7 @@ page says it: slides The preview and With a sponsor (`business/supermarkets.html
 ## The Vegan Theme Park Guide (LOCKED by Sean 2026-11-04, playbook `ve-theme-park-guide`)
 
 Concept session with V, locked by Sean: "lock it" (canon `canon-ve-theme-park-guide`; migration `20261104_theme_park_guide_spend_budget_canon.sql`; handoff
-`docs/handoff/2026-11-04-ve-theme-park-guide.md`). **Not built yet.** Sean: "Theme park guide. A growing number of different theme parks, starting with the
+`docs/handoff/2026-11-04-ve-theme-park-guide.md`). **Magic Kingdom is built and prelaunch, on a branch (below); nothing else is.** Sean: "Theme park guide. A growing number of different theme parks, starting with the
 most popular... put pins where the restaurants are... whatever restaurant they're in, they can do the location thing, put where they are on the map and see
 the distance. It will be a paid guide, but they get one theme park on it."
 
@@ -5116,6 +5116,21 @@ the distance. It will be a paid guide, but they get one theme park on it."
   ODbL attribution) is untested. **No sponsors now** (the Supermarket rule).
 - **Build order**: the `theme_park` migration, the Magic Kingdom pilot import with pins checked by eye, the page and GPS park map (`VEParkMap`), menu
   sourcing, reports and bounties and votes, waves 2 and 3, launch per `docs/guides/BUILD-A-GUIDE.md`.
+- **Built 2026-11-04** (Sean saw the pilot's pins and said "Pins are good, go ahead with the page"; branch `claude/peaceful-gauss-yf6idf`, not on `main`):
+  migrations `20261104_theme_park_guide_kind.sql` (the `theme_park` kind, `ve_venues.resort`, the unpublished `ve_guides` row `theme-park-guide`, Magic Kingdom as the
+  `free_example` venue) and `20261104_theme_park_guide_magic_kingdom_pins.sql` (`ve_venue_spots.latitude`, `longitude`, `google_place_id`, `pin_source`, `land`,
+  `ve_venues.menu_url`; 24 restaurants, 23 pinned from Google, radius 410 m = farthest pin 309 m plus 100 m). The pilot (`once:theme-park-magic-kingdom`, 25 searches,
+  0 details, $2.75 approved; script `scripts/supabase-once/theme-park-pilot.ts`, function now the 410 stub) saved nothing; the pins came from its output. **Aloha Isle**
+  matched a place 5.9 km away, so it is a spot with no pin ("Not pinned yet"); the stadium's Where is it flow is not reused here, so it waits for a hand pin.
+  `ve-venues` (v13 from 48a939f4, source sha256 matched) has `GUIDES['theme-park-guide']`, `guideOfKind`, and returns each spot's `lat`, `lng`, `land` and the venue's
+  `resort`, `menu_url`; every call from the page sends `guide: 'theme-park-guide'`. **The page** `guides/theme-park-guide.html` and `guide-scripts/theme-park-guide.js`
+  (copied from the stadium Guide, `noindex`, River on the right, lines are text drafts, no recordings; tabs Overview, Parks, Help keep it right, My list, Get access)
+  with `/public/ve-park-map.js` (`VEParkMap`: our own to-scale drawing of the pins, a you-are-here dot with an accuracy ring, a land chip filter, distance in feet
+  under a tenth of a mile else miles, straight line times 1.3 as "about N on foot"; the location stays in the page). Left out of the copy because they are stadium
+  sections: Bounties, Scan, Where is it. Reports (Still here, Update, Comment, Something missing) reuse the venue engine and its location check against the park's
+  radius. **Not built / not proven**: no Vegan items yet (menu sourcing is next, one published menu at a time, never copied descriptions), the park's menu link is
+  empty, no report sent from inside the park, no signed-in owner run, not in the catalog or sitemap, `ve_guide_votes` kinds for parks, the other five Wave 1 parks.
+  Checked in a browser at 1440 and 390 px against the live function with a simulated phone location on Main Street.
 
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 
