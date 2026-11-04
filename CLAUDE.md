@@ -4639,7 +4639,7 @@ with us?... it's per event." Separate from Group Partners.
   before approval refused). On 2026-11-02, 15 hosts, 3 with an email; the Meetup-only groups publish none.
 - **Build order:**
   1. The event claim (built 2026-11-02).
-  2. The heads-up (built 2026-11-02, waiting for approval).
+  2. The heads-up (built 2026-11-02; approved and on 2026-11-03; first send 10:07 AM Eastern 2026-11-03: 3 hosts, none claimed yet; a host with no account is pointed at the free event survey from the claim email and thank-you).
   3. Per-event ticketing.
   4. The sponsorship and extras checkout.
   5. The ad console's credit, booking and creative support.
