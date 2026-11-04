@@ -298,6 +298,11 @@
       route();
     }).catch(function () {});
   }
+  function notYou() {
+    if (!PERSONAL) return '';
+    var mail = 'mailto:contact@lesaruss.com?subject=' + encodeURIComponent('This is not my business: ' + PERSONAL.name);
+    return '<p class="dg-empty" style="margin-top:14px">This is ' + esc(PERSONAL.name) + (PERSONAL.street ? ', ' + esc(PERSONAL.street) : '') + '. <a href="' + mail + '">Not your business? Tell us.</a></p>';
+  }
   function viewPersonal() {
     var P = PERSONAL, mail = 'mailto:contact@lesaruss.com?subject=' + encodeURIComponent('This is not my business: ' + P.name);
     main.innerHTML = head('Your business', esc(P.name), esc([P.street, P.city].filter(Boolean).join(', '))) +
@@ -465,7 +470,7 @@
         n ? 'Most important first, each with what we found. Fix these and you are already ahead of most restaurants.' : 'The free checks came back clean. The full audit looks at much more.') +
       (n ? '<div class="rg-todo">' + d.todo.map(function (it) { return itemRow({ key: it.key, label: it.label, area: it.area, found: it.found, state: 'fix' }, false); }).join('') + '</div>' : '') +
       (d.more_fix ? '<p class="dg-lede"><strong>' + d.more_fix + ' more</strong> to fix in the full audit, each with why it matters and how to fix it.</p>' : '') +
-      '<div id="rgOffer"></div>';
+      '<div id="rgOffer"></div>' + notYou();
     drawOffer(d);
   }
   function drawFull(d) {
