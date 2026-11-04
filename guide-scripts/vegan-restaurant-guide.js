@@ -285,6 +285,28 @@
   }
 
   // ---------- the audit (ve-restaurant-audit) ----------
+  // The personal link (door Guides, Sean 2026-11-04): /guides/vegan-restaurant-guide?b=<code> opens already on that business. The server
+  // maps the code to the listing (ve-restaurant-audit `personal`); this page never chooses one and shows no search box for it.
+  var PERSONAL = null; // {slug, name, street, city, id} once the server has said who it is
+  function AL() { return PERSONAL ? 'Your business' : 'Your audit'; }
+  function loadPersonal(code) {
+    if (!/^bo-[a-z0-9]{7}$/.test(code || '')) return;
+    auditApi({ action: 'personal', code: code }).then(function (d) {
+      if (!d || !d.slug) { store('rg_b', ''); return; }
+      PERSONAL = d; store('rg_b', code);
+      for (var i = 0; i < TABS.length; i++) if (TABS[i].k === 'audit') TABS[i].label = 'Your business';
+      route();
+    }).catch(function () {});
+  }
+  function viewPersonal() {
+    var P = PERSONAL, mail = 'mailto:contact@lesaruss.com?subject=' + encodeURIComponent('This is not my business: ' + P.name);
+    main.innerHTML = head('Your business', esc(P.name), esc([P.street, P.city].filter(Boolean).join(', '))) +
+      '<p class="dg-sub">We looked at your page, your Google listing and your website. Here is what we found, and what you can do about it first.</p>' +
+      '<div class="rg-find"><button type="button" class="dg-btn" id="rgRunMine">Run my free check</button></div>' +
+      '<span class="dg-status" role="status" style="display:block;margin-top:8px;color:#8a1c12"></span>' +
+      '<p class="dg-empty" style="margin-top:14px">This is ' + esc(P.name) + (P.street ? ', ' + esc(P.street) : '') + '. <a href="' + mail + '">Not your business? Tell us.</a></p>';
+    document.getElementById('rgRunMine').addEventListener('click', function () { runFree({ listing_slug: P.slug }); });
+  }
   function auditApi(body) {
     var tok = token(), h = { 'Content-Type': 'application/json' };
     if (tok) h.Authorization = 'Bearer ' + tok;
@@ -314,6 +336,7 @@
     var parts = String(sub || '').split('/');
     if (parts[0] === 'r' && parts[1]) return viewAuditResult(parts[1]);
     if (parts[0] === 'shopper' && parts[1]) return viewShopper(parts[1]);
+    if (PERSONAL) { if (PERSONAL.id) return viewAuditResult(PERSONAL.id); return viewPersonal(); }
     var v = ++auditView;
     main.innerHTML = head('Your audit', 'A free check of your restaurant',
       'We look at your Google listing, your website, how you show up in search, and your Instagram, then list what you can fix right away. It takes about a minute.') +
@@ -380,11 +403,11 @@
   // The Secret Shopper report, for the owner who bought it (ve-restaurant-audit shopper_get answers them once it is sent).
   function viewShopper(id) {
     var v = ++auditView;
-    main.innerHTML = crumb([['Your audit', '#/audit'], ['Secret Shopper report']]) + '<div class="dg-loading">Loading your report...</div>';
-    if (!token()) { main.innerHTML = crumb([['Your audit', '#/audit'], ['Secret Shopper report']]) + '<p class="dg-empty">Sign in to read your Secret Shopper report.</p><button type="button" class="dg-btn" data-signin>Sign in</button>'; return; }
+    main.innerHTML = crumb([[AL(), '#/audit'], ['Secret Shopper report']]) + '<div class="dg-loading">Loading your report...</div>';
+    if (!token()) { main.innerHTML = crumb([[AL(), '#/audit'], ['Secret Shopper report']]) + '<p class="dg-empty">Sign in to read your Secret Shopper report.</p><button type="button" class="dg-btn" data-signin>Sign in</button>'; return; }
     auditApi({ action: 'shopper_get', order_id: id }).then(function (d) {
       if (v !== auditView) return;
-      if (!d.id) { main.innerHTML = crumb([['Your audit', '#/audit'], ['Secret Shopper report']]) + '<p class="dg-empty">' + (d._status === 403 ? 'Your report shows here once our shopper sends it.' : 'We could not find that report.') + '</p>'; return; }
+      if (!d.id) { main.innerHTML = crumb([[AL(), '#/audit'], ['Secret Shopper report']]) + '<p class="dg-empty">' + (d._status === 403 ? 'Your report shows here once our shopper sends it.' : 'We could not find that report.') + '</p>'; return; }
       var r = d.report || {}, rate = function (x) { return x ? '<span class="rg-st rg-st-' + (x >= 4 ? 'good' : x === 3 ? 'review' : 'fix') + '">' + x + ' of 5</span>' : ''; };
       var part = function (title, rating, lines) {
         var body = lines.filter(function (l) { return l[1] != null && l[1] !== ''; }).map(function (l) { return '<p><strong>' + esc(l[0]) + ':</strong> ' + esc(l[1]) + '</p>'; }).join('');
@@ -392,7 +415,7 @@
       };
       var g = function (sec, k) { return (r[sec] || {})[k]; };
       var KN = { food: 'The food', room: 'The dining room', menu: 'The menu', restroom: 'The restroom', outside: 'Outside', receipt: 'Receipt', other: 'Photo' };
-      main.innerHTML = crumb([['Your audit', '#/audit'], ['Secret Shopper report']]) +
+      main.innerHTML = crumb([[AL(), '#/audit'], ['Secret Shopper report']]) +
         head('Secret Shopper report', esc(d.place.name), 'Our shopper visited as a normal guest' + (g('visit', 'date') ? ' on ' + esc(new Date(g('visit', 'date') + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })) : '') + '. Here is what they found.') +
         '<div class="rg-score rg-score7"><div class="rg-main"><b>' + (g('summary', 'overall') || '&ndash;') + '<small style="font-size:16px"> of 5</small></b><span>Overall</span></div>' +
         [['welcome', 'Welcome'], ['wait', 'Wait'], ['menu', 'Menu'], ['food', 'Food'], ['clean', 'Clean'], ['staff', 'Staff']].map(function (x) { return '<div><b>' + (g(x[0], 'rating') || '&ndash;') + '</b><span>' + x[1] + '</span></div>'; }).join('') + '</div>' +
@@ -411,16 +434,16 @@
           return '<figure class="dg-gp"><a href="' + esc(p.url || '') + '" target="_blank" rel="noopener"><span style="background-image:url(\'' + esc(p.url || '') + '\')"></span></a><figcaption>' + esc(KN[p.kind] || 'Photo') + (p.caption ? ': ' + esc(p.caption) : '') + '</figcaption></figure>';
         }).join('') + '</div>' : '') +
         '<p class="rg-fine">Want help with what it found? <a href="mailto:contact@lesaruss.com?subject=' + encodeURIComponent('Secret Shopper report: ' + d.place.name) + '">Write to our team</a>. What you paid counts toward our managed services within 30 days of your order.</p>';
-    }).catch(function () { if (v === auditView) main.innerHTML = crumb([['Your audit', '#/audit']]) + '<p class="dg-empty">We could not load your report just now. Refresh to try again.</p>'; });
+    }).catch(function () { if (v === auditView) main.innerHTML = crumb([[AL(), '#/audit']]) + '<p class="dg-empty">We could not load your report just now. Refresh to try again.</p>'; });
   }
   function viewAuditResult(id) {
     var v = ++auditView, tries = 0;
-    main.innerHTML = crumb([['Your audit', '#/audit'], ['Your results']]) + '<div class="rg-waiting"><span class="rg-spin"></span>Checking your Google listing, website, search and Instagram. This takes about a minute.</div>';
+    main.innerHTML = crumb([[AL(), '#/audit'], ['Your results']]) + '<div class="rg-waiting"><span class="rg-spin"></span>Checking your Google listing, website, search and Instagram. This takes about a minute.</div>';
     (function poll() {
       auditApi({ action: 'get', id: id }).then(function (d) {
         if (v !== auditView) return;
         if (d.status === 'running' || d.status === 'queued') { if (++tries < 40) setTimeout(poll, 3000); else main.querySelector('.rg-waiting').textContent = 'This is taking longer than usual. Refresh in a minute.'; return; }
-        if (d.error || d.status !== 'done') { main.innerHTML = crumb([['Your audit', '#/audit'], ['Your results']]) + '<p class="dg-empty">' + esc(d.error || 'We could not find that audit.') + ' <a href="#/audit">Run a new check</a></p>'; return; }
+        if (d.error || d.status !== 'done') { main.innerHTML = crumb([[AL(), '#/audit'], ['Your results']]) + '<p class="dg-empty">' + esc(d.error || 'We could not find that audit.') + ' <a href="#/audit">Run a new check</a></p>'; return; }
         LAST = d; store('rg_last_audit', d.id);
         loadCriteria(function () { if (v === auditView) (d.full ? drawFull(d) : drawFree(d)); });
       }).catch(function () { if (v === auditView && ++tries < 40) setTimeout(poll, 4000); });
@@ -437,7 +460,7 @@
   }
   function drawFree(d) {
     var n = (d.todo || []).length;
-    main.innerHTML = crumb([['Your audit', '#/audit'], [d.business || 'Your results']]) +
+    main.innerHTML = crumb([[AL(), '#/audit'], [d.business || 'Your results']]) +
       head('Your free check', esc(d.business || 'Your restaurant') + ': ' + (n ? n + ' thing' + (n === 1 ? '' : 's') + ' to fix right away' : 'nothing urgent on the free list'),
         n ? 'Most important first, each with what we found. Fix these and you are already ahead of most restaurants.' : 'The free checks came back clean. The full audit looks at much more.') +
       (n ? '<div class="rg-todo">' + d.todo.map(function (it) { return itemRow({ key: it.key, label: it.label, area: it.area, found: it.found, state: 'fix' }, false); }).join('') + '</div>' : '') +
@@ -449,7 +472,7 @@
     var items = d.items || [], fix = items.filter(function (i) { return i.state === 'fix'; }), rest = items.filter(function (i) { return i.state !== 'fix'; });
     var areas = d.areas || {};
     var pctOf = function (a) { return a && a.max ? Math.round(100 * a.score / a.max) + '%' : '&ndash;'; };
-    main.innerHTML = crumb([['Your audit', '#/audit'], [d.business || 'Your results']]) +
+    main.innerHTML = crumb([[AL(), '#/audit'], [d.business || 'Your results']]) +
       head('Your full audit', esc(d.business || 'Your restaurant'), 'Every check, with why it matters and how to fix it. Fix first, then the rest.') +
       '<div class="rg-score"><div class="rg-main"><b>' + (d.max_score ? Math.round(100 * d.score / d.max_score) + '%' : '&ndash;') + '</b><span>Overall</span></div>' +
       ['google', 'seo', 'web', 'social'].map(function (k) { return '<div><b>' + pctOf(areas[k]) + '</b><span>' + esc(AREA[k]) + '</span></div>'; }).join('') + '</div>' +
@@ -1049,6 +1072,10 @@
     document.documentElement.classList.add('dg-fit');
     if (window.VEGuideArt) { var art = VEGuideArt('liz', 'square'); if (art) lizBox.style.backgroundImage = "url('" + art + "')"; }
     var params = new URLSearchParams(location.search), auditBack = params.get('audit');
+    // ?b=<code> is a business's own link from our email; it is kept for this browser so a reload or a later visit opens on it too.
+    var bCode = (params.get('b') || '').toLowerCase();
+    if (bCode) { params.delete('b'); history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params : '') + location.hash); }
+    loadPersonal(bCode || recall('rg_b'));
     // /check/<slug> (business outreach's first email): open that business's own free check.
     var checkSlug = params.get('check');
     if (checkSlug) {

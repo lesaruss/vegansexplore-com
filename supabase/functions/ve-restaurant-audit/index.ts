@@ -794,6 +794,20 @@ Deno.serve(async (req) => {
       .order('created_at', { ascending: false }).limit(1).maybeSingle();
     return a ? json({ id: a.id, name: l.name }) : json({ error: 'no_check', name: l.name }, 404);
   }
+  // The Guide's personal link (door Guides, Sean 2026-11-04: "a unique code for that guide where we have that business already loaded"):
+  // the code is the contact's own tracked link code from business outreach (bo-xxxxxxx). The server maps it to the listing, so the
+  // page never chooses a business and no search box is needed. Returns the business and its check from the last 7 days, never an email.
+  if (action === 'personal') {
+    const code = clean(body.code, 20).toLowerCase();
+    if (!/^bo-[a-z0-9]{7}$/.test(code)) return json({ error: 'not_found' }, 404);
+    const { data: c } = await db.from('ve_outreach_contacts').select('listing_id').eq('link_code', code).maybeSingle();
+    if (!c?.listing_id) return json({ error: 'not_found' }, 404);
+    const { data: l } = await db.from('listings').select('slug, name, address_street, address_city, location').eq('id', c.listing_id).eq('status', 'approved').maybeSingle();
+    if (!l) return json({ error: 'not_found' }, 404);
+    const { data: a } = await db.from('ve_audits').select('id').eq('listing_id', c.listing_id).eq('status', 'done').gte('created_at', new Date(Date.now() - 7 * DAY_MS).toISOString())
+      .order('created_at', { ascending: false }).limit(1).maybeSingle();
+    return json({ slug: l.slug, name: l.name, street: l.address_street || '', city: l.address_city || String(l.location || '').split(',')[0].trim(), id: a?.id || null });
+  }
   if (action === 'find') {
     const q = clean(body.q, 80).replace(/[%_,()]/g, ' ').trim();
     if (q.length < 2) return json({ listings: [] });

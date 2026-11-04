@@ -208,6 +208,8 @@ function toText(body: string, business: string, reason?: string | null): string 
   const why = reason ? `You are getting this because ${reason}` : `You are getting this because ${business} is listed in the Vegans Explore Directory`;
   return `${body}\n\n--\n${why}.\nDon't email me again: {{unsubscribe_url}}\n{{postal_address}}`;
 }
+const GUIDE_PATH = '/guides/vegan-restaurant-guide';
+const FOOD_CATS = new Set(['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Catering', 'Meal Prep']);
 function linkCode() {
   const abc = 'abcdefghjkmnpqrstuvwxyz23456789';
   return 'bo-' + Array.from(crypto.getRandomValues(new Uint8Array(7)), (b) => abc[b % abc.length]).join('');
@@ -220,12 +222,12 @@ async function listOf(slug: string): Promise<List | null> {
 }
 // The personal tracked link, made once and used in all three emails: a business's goes to its page, a person's to their
 // list's link (ve_outreach_cities.link_url), under the list's program as the campaign.
-async function ensureLink(c: Contact, name: string, destination: string, campaign = 'business-outreach'): Promise<string> {
+async function ensureLink(c: Contact, name: string, destination: string | ((code: string) => string), campaign = 'business-outreach'): Promise<string> {
   if (c.link_code) return c.link_code;
   for (let i = 0; i < 4; i++) {
     const code = linkCode();
     const { error } = await db.from('ve_links').insert({
-      code, label: ('Outreach: ' + name).slice(0, 120), destination, initiative_slug: campaign,
+      code, label: ('Outreach: ' + name).slice(0, 120), destination: typeof destination === 'function' ? destination(code) : destination, initiative_slug: campaign,
       tags: [campaign, c.community_slug, c.segment], channel: 'email', recipient_email: c.email.slice(0, 200),
       recipient_name: (c.contact_name || name).slice(0, 120), active: true,
     });
@@ -252,10 +254,16 @@ async function build(c: Contact, step: number, test = false) {
     const body = code ? String(m.body).split(m.page_url).join(`${SITE}/go/${code}`) : String(m.body);
     return { subject: String(m.subject), html: toHtml(body, name, list.footer_reason), text: toText(body, name, list.footer_reason), name, code };
   }
-  const { data: l } = await db.from('listings').select('name,slug').eq('id', c.listing_id).single();
+  const { data: l } = await db.from('listings').select('name,slug,category').eq('id', c.listing_id).single();
   if (!l || !m) throw new Error('could not render');
-  const code = test ? null : await ensureLink(c, l.name, '/directory/' + l.slug);
-  const body = code ? String(m.body).split(m.page_url).join(`${SITE}/go/${code}`) : String(m.body);
+  // A food place's link goes to the Vegan Restaurant Guide with its own code (?b=<code>), which opens already on its business
+  // (ve-restaurant-audit `personal`; door Guides, Sean 2026-11-04). Anything else keeps its Directory page. A test makes the same
+  // code but links straight to the Guide, so a test click never counts through /go/.
+  const toGuide = FOOD_CATS.has(String(l.category || '')) && c.segment !== 'brand';
+  const dest = (code: string) => (toGuide ? `${GUIDE_PATH}?b=${code}` : '/directory/' + l.slug);
+  const code = test && !toGuide ? null : await ensureLink(c, l.name, dest);
+  const link = code ? (test ? `${SITE}${dest(code)}` : `${SITE}/go/${code}`) : null;
+  const body = link ? String(m.body).split(m.page_url).join(link) : String(m.body);
   return { subject: String(m.subject), html: toHtml(body, l.name), text: toText(body, l.name), name: l.name, code };
 }
 async function tick() {
