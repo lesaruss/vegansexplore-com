@@ -493,55 +493,114 @@ async function pool<T, R>(items: T[], n: number, fn: (x: T) => Promise<R>): Prom
   await Promise.all(Array.from({ length: Math.min(n, items.length) }, async () => { while (i < items.length) { const k = i++; out[k] = await fn(items[k]); } }));
   return out;
 }
-// part: 'overview' (the tiles and the two charts; no per-episode reads), 'episodes' (every episode's downloads for the period) or 'all' (both, as before).
-async function podcast(brand: string, from: string, to: string, showKey: unknown, part: string) {
-  const sh = showOf(brand, showKey);
-  if (!sh) return { connected: false };
-  const show = sh.id;
-  const wantEps = part !== 'overview', wantOverview = part !== 'episodes'; // no part (an older page) reads both
-  const t0 = Date.now();
-  const token = await capToken();
-  const get = async (path: string) => {
-    const r = await fetch(CAPTIVATE + path, { headers: { Authorization: `Bearer ${token}` }, signal: AbortSignal.timeout(20000) });
-    if (!r.ok) throw new Error(`Captivate ${r.status} on ${path.split('?')[0].replace(show, '<show>')}`);
-    return r.json();
-  };
-  const hits = async (s: string, e: string, ep?: string) => Number((await get(`/insights/${show}/overview${ep ? '/' + ep : ''}?start=${s}&end=${plusDays(e, 1)}`)).hits) || 0;
-  const { pf, pt, days } = prevOf(from, to);
-  const step = Math.max(1, Math.ceil(days / 30));
-  const buckets: { s: string; e: string }[] = [];
-  for (let s = from; s <= to; s = plusDays(s, step)) { const e = plusDays(s, step - 1); buckets.push({ s, e: e > to ? to : e }); }
-  const errors: string[] = [];
-  const safe = async <T,>(label: string, f: () => Promise<T>): Promise<T | null> => { try { return await f(); } catch (e) { errors.push(`${label}: ${(e as Error).message}`); return null; } };
-  const [cur, prev, all, monthly, eps, series] = await Promise.all([
-    safe('downloads', () => hits(from, to)), safe('downloads before', () => hits(pf, pt)),
-    wantOverview ? safe('all time', async () => Number((await get(`/insights/${show}/overview`)).hits) || 0) : Promise.resolve(null),
-    wantOverview ? safe('months', () => get(`/insights/${show}/monthly`)) : Promise.resolve(null),
-    safe('episodes', () => get(`/shows/${show}/episodes`)),
-    wantOverview ? pool(buckets, 8, (b) => safe(`day ${b.s}`, () => hits(b.s, b.e)).then((v) => ({ t: b.s, v: v ?? 0, ok: v != null }))) : Promise.resolve([] as { t: string; v: number; ok: boolean }[]),
-  ]);
-  const todayIso = new Date().toISOString();
-  const published = ((eps as any)?.episodes || []).filter((e: any) => String(e.status || '').toLowerCase() === 'published' && String(e.published_date || '') <= todayIso)
-    .sort((a: any, b: any) => String(b.published_date).localeCompare(String(a.published_date)));
-  let read = 0, partial = false;
-  const episodes = !wantEps ? [] : await pool(published, 10, async (e: any) => {
-    const pub = String(e.published_date).slice(0, 10);
-    let dl: number | null = null;
-    if (Date.now() - t0 > 100000) partial = true;
-    else if (pub <= to) { dl = await safe(`episode ${String(e.title).slice(0, 30)}`, () => hits(from, to, e.id)); if (dl != null) read++; }
-    return { id: e.id, title: e.title, published: pub, art: e.episode_art || null, downloads: dl ?? 0, counted: dl != null, days_out: Math.max(0, Math.round((Date.parse(todayIso.slice(0, 10)) - Date.parse(pub)) / 864e5)), number: e.itunes_episode ?? e.episode_number ?? null };
+// ---- The podcast, any period (Logan, 2026-11-04: "if we do all time, every time you pull information, we could do a custom... use our sorters... and do it for all of
+// the podcasts"). One all-time daily series per show is read from Captivate (POST /insights/<show>/over-time, interval 1d, days at Eastern midnight) and kept 3 hours;
+// every period, comparison and custom range is then cut from it with no new calls. What cannot be cut from daily totals is asked for the period: the audience
+// (POST /insights/<show>/range, types byLocation, byUserAgentBrowser, byUserAgentOs, byUserAgentDevice, countryCode null) and each episode's downloads
+// (POST /insights/<show>/overview/range, unix seconds, one call for every episode). A show's first 7 and 30 days of each episode are counted once, when they are over,
+// and kept in ve_podcast_episode_firsts.
+const etDay = (ms: number) => new Date(ms).toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+function etStart(d: string): number { // the instant an Eastern day begins
+  for (const off of [4, 5]) { const t = Date.parse(d + 'T00:00:00Z') + off * 3600e3; if (etDay(t) === d && etDay(t - 1) !== d) return t; }
+  return Date.parse(d + 'T05:00:00Z');
+}
+const sec = (ms: number) => Math.floor(ms / 1000);
+let capTok: { t: string; at: number } | null = null;
+async function capReq(path: string, body?: unknown): Promise<any> {
+  if (!capTok || Date.now() - capTok.at > 20 * 60e3) capTok = { t: await capToken(), at: Date.now() };
+  const r = await fetch(CAPTIVATE + path, { method: body === undefined ? 'GET' : 'POST', headers: { Authorization: `Bearer ${capTok.t}`, ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) }, body: body === undefined ? undefined : JSON.stringify(body), signal: AbortSignal.timeout(25000) });
+  if (!r.ok) throw new Error(`Captivate ${r.status} on ${path.split('?')[0].replace(/[0-9a-f-]{36}/g, '<id>')}`);
+  return r.json();
+}
+async function podEpisodeList(brand: string, sh: { key: string; id: string }, refresh: boolean) {
+  return cached(`ins:podeps:${brand}:${sh.key}`, 1 * H, refresh, async () => {
+    const j = await capReq(`/shows/${sh.id}/episodes`);
+    const now = Date.now();
+    const list = (j?.episodes || []).filter((e: any) => String(e.status || '').toLowerCase() === 'published' && Date.parse(e.published_date) <= now)
+      .map((e: any) => ({ id: e.id, title: e.title, published: etDay(Date.parse(e.published_date)), art: e.episode_art || null, number: e.itunes_episode ?? e.episode_number ?? null }))
+      .sort((a: any, b: any) => b.published.localeCompare(a.published));
+    return { connected: true, list };
   });
-  const months = ((monthly as any)?.past_12_months || []).map((m: any) => { const d = new Date(`${m.x} 1 12:00:00 UTC`); return { t: isNaN(+d) ? m.x : `${d.getUTCFullYear()}${String(d.getUTCMonth() + 1).padStart(2, '0')}`, v: Number(m.y) || 0, label: m.x }; });
-  if (cur == null && !errors.length) errors.push('Captivate gave no numbers');
-  if (cur == null) return { error: errors.join('; ') };
+}
+async function podSeries(brand: string, sh: { key: string; id: string }, refresh: boolean) {
+  return cached(`ins:podseries:${brand}:${sh.key}`, 3 * H, refresh, async () => {
+    const eps: any = await podEpisodeList(brand, sh, false);
+    const first = eps.list.length ? eps.list[eps.list.length - 1].published : '2020-01-01';
+    const j = await capReq(`/insights/${sh.id}/over-time`, { gteUnix: sec(etStart(plusDays(first, -1))), lteUnix: sec(Date.now()), interval: '1d' });
+    const days = (j?.overTime || []).map((p: any) => ({ d: etDay(Number(p.timestamp)), v: Number(p.total) || 0 }));
+    return { connected: true, days, total: Number(j?.total) || 0 };
+  });
+}
+const sliceSum = (days: { d: string; v: number }[], a: string, b: string) => { let n = 0; for (const x of days) if (x.d >= a && x.d <= b) n += x.v; return n; };
+
+async function podOverview(brand: string, sh: any, from: string, to: string, refresh: boolean) {
+  const [ser, eps]: any[] = await Promise.all([podSeries(brand, sh, refresh), podEpisodeList(brand, sh, refresh)]);
+  const days: { d: string; v: number }[] = ser.days;
+  const firstDay = (days.find((x) => x.v > 0) || days[0] || { d: from }).d;
+  const f = from < firstDay ? firstDay : from;
+  if (f > to) return { error: 'no_data_in_period' };
+  const { pf, pt, days: n } = prevOf(f, to);
+  const hasPrev = pt >= firstDay;
+  const step = Math.max(1, Math.ceil(n / 30));
+  const series: { t: string; v: number }[] = [];
+  for (let s = f; s <= to; s = plusDays(s, step)) { const e = plusDays(s, step - 1); series.push({ t: s, v: sliceSum(days, s, e > to ? to : e) }); }
+  const mon = new Map<string, number>(); const lab = new Map<string, string>();
+  for (const x of days) { const k = x.d.slice(0, 4) + x.d.slice(5, 7); mon.set(k, (mon.get(k) || 0) + x.v); lab.set(k, new Date(x.d.slice(0, 7) + '-15T12:00:00Z').toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' })); }
+  const months = [...mon.entries()].sort().slice(-24).map(([t, v]) => ({ t, v, label: lab.get(t) }));
+  const today = etDay(Date.now()), yest = plusDays(today, -1);
+  const cur = sliceSum(days, f, to);
   return {
-    connected: true, show: sh.key, show_name: sh.name, shows: PODCAST_SHOWS[brand].map((x) => ({ key: x.key, name: x.name })), part, show_id: show, from, to, prev_from: pf, prev_to: pt, days, step,
-    totals: { downloads: cur, prev: prev ?? null, all_time: all, this_month: (monthly as any)?.this_month ?? null, past_12_months: (monthly as any)?.total_downloads_in_past_12_months ?? null,
-      per_day: Math.round((cur / days) * 10) / 10, episodes_out: published.filter((e: any) => String(e.published_date).slice(0, 10) >= from && String(e.published_date).slice(0, 10) <= to).length, episodes_total: published.length },
-    series: series.map((p) => ({ t: p.t, v: p.v })), months, episodes, episodes_read: read, partial,
-    errors,
-    note: 'Downloads are what Captivate counts: an episode file fetched by an app or a browser, with its own bot filtering. Captivate does not share listeners, apps or places through its API; those are in Captivate\'s own dashboard.',
+    connected: true, show: sh.key, show_name: sh.name, shows: PODCAST_SHOWS[brand].map((x) => ({ key: x.key, name: x.name })), part: 'overview',
+    from: f, to, prev_from: hasPrev ? pf : null, prev_to: hasPrev ? pt : null, days: n, step, first_day: firstDay,
+    totals: { downloads: cur, prev: hasPrev ? sliceSum(days, pf, pt) : null, per_day: Math.round((cur / n) * 10) / 10,
+      this_month: sliceSum(days, today.slice(0, 8) + '01', yest), past_12_months: sliceSum(days, plusDays(yest, -364), yest), all_time: ser.total || sliceSum(days, '2000-01-01', yest),
+      episodes_out: eps.list.filter((e: any) => e.published >= f && e.published <= to).length, episodes_total: eps.list.length },
+    series, months, errors: [],
+    note: 'Downloads are what Captivate counts: an episode file fetched by an app or a browser, with its own bot filtering. Every period is cut from one daily record of the show.',
   };
+}
+
+async function podAudience(brand: string, sh: any, from: string, to: string, refresh: boolean) {
+  return cached(`ins:podaud:${brand}:${sh.key}:${from}:${to}`, 3 * H, refresh, async () => {
+    const j = await capReq(`/insights/${sh.id}/range/`, { start: new Date(etStart(from)).toISOString(), end: new Date(etStart(plusDays(to, 1))).toISOString(), timezone: 'America/New_York', interval: null, countryCode: null, types: ['byLocation', 'byUserAgentBrowser', 'byUserAgentOs', 'byUserAgentDevice'] });
+    const top = (a: any[], k: string) => (a || []).map((x) => ({ name: String(x[k] ?? 'Unknown'), total: Number(x.total) || 0 })).sort((p, q) => q.total - p.total).slice(0, 15);
+    return { connected: true, show: sh.key, show_name: sh.name, part: 'audience', from, to, total: Number(j?.total) || 0,
+      countries: top(j?.byLocation?.byCountry, 'country'), apps: top(j?.byUserAgentBrowser, 'browser'), systems: top(j?.byUserAgentOs, 'os'), devices: top(j?.byUserAgentDevice, 'device'),
+      note: 'Captivate\'s own range report for the period, so its total can differ a little from the daily downloads on Overview, which are cut from its day by day record.' };
+  });
+}
+
+// First 7 and first 30 days of each episode: counted when those days are over, kept for good. 40 are counted a visit; the rest on the next.
+async function podFirsts(brand: string, sh: any, list: any[], today: string) {
+  const { data: rows } = await db.from('ve_podcast_episode_firsts').select('episode_id, d7, d30').eq('brand_slug', brand).eq('show_key', sh.key);
+  const have = new Map<string, { d7: number | null; d30: number | null }>((rows || []).map((r: any) => [r.episode_id, { d7: r.d7, d30: r.d30 }]));
+  const yest = plusDays(today, -1);
+  const need = list.filter((e) => { const h = have.get(e.id); return (plusDays(e.published, 6) <= yest && h?.d7 == null) || (plusDays(e.published, 29) <= yest && h?.d30 == null); });
+  const batch = need.slice(0, 40);
+  await pool(batch, 6, async (e: any) => {
+    try {
+      const j = await capReq(`/insights/${sh.id}/over-time/${e.id}`, { gteUnix: sec(etStart(e.published)), lteUnix: sec(etStart(plusDays(e.published, 30))), interval: '1d' });
+      const ds = (j?.overTime || []).map((p: any) => ({ d: etDay(Number(p.timestamp)), v: Number(p.total) || 0 }));
+      const d7 = plusDays(e.published, 6) <= yest ? sliceSum(ds, e.published, plusDays(e.published, 6)) : null;
+      const d30 = plusDays(e.published, 29) <= yest ? sliceSum(ds, e.published, plusDays(e.published, 29)) : null;
+      await db.from('ve_podcast_episode_firsts').upsert({ brand_slug: brand, show_key: sh.key, episode_id: e.id, published: e.published, d7, d30, updated_at: new Date().toISOString() }, { onConflict: 'brand_slug,show_key,episode_id' });
+      have.set(e.id, { d7, d30 });
+    } catch (_) { /* tried again on the next visit */ }
+  });
+  return { have, pending: Math.max(0, need.length - batch.length) + batch.filter((e) => { const h = have.get(e.id); return (plusDays(e.published, 6) <= yest && h?.d7 == null) || (plusDays(e.published, 29) <= yest && h?.d30 == null); }).length };
+}
+async function podEpisodes(brand: string, sh: any, from: string, to: string, refresh: boolean) {
+  const eps: any = await podEpisodeList(brand, sh, refresh);
+  const today = etDay(Date.now());
+  const range: any = await cached(`ins:podrange:${brand}:${sh.key}:${from}:${to}`, 3 * H, refresh, async () => {
+    const j = await capReq(`/insights/${sh.id}/overview/range`, { startTimestamp: sec(etStart(from)), endTimestamp: sec(etStart(plusDays(to, 1))) });
+    return { connected: true, by: Object.fromEntries((j?.byEpisode || []).map((x: any) => [x.episodeId, Number(x.total) || 0])) };
+  });
+  const { have, pending } = await podFirsts(brand, sh, eps.list, today);
+  const episodes = eps.list.map((e: any) => ({ id: e.id, title: e.title, published: e.published, art: e.art, number: e.number, downloads: range.by[e.id] || 0, counted: e.published <= to,
+    first7: have.get(e.id)?.d7 ?? null, first30: have.get(e.id)?.d30 ?? null, days_out: Math.max(0, Math.round((Date.parse(today) - Date.parse(e.published)) / 864e5)) }));
+  return { connected: true, show: sh.key, show_name: sh.name, part: 'episodes', from, to, episodes, pending_firsts: pending, partial: false, errors: [],
+    note: 'First 7 and first 30 days are counted from the day an episode came out, once those days are over. Downloads are Captivate\'s, with its own bot filtering.' };
 }
 
 // ---- Podcast pages uploaded by hand (Sean, 2026-11-04: "whatever can't be pulled by API, we can upload manually with a screenshot... the ability
@@ -705,9 +764,11 @@ Deno.serve(async (req) => {
       case 'seo': return json(await cached(`ins:seo:${brand}:${from}:${to}`, 3 * H, refresh, () => seo(brand, from, to)));
       case 'podcast': {
         const sh = showOf(brand, body.show);
-        if (!sh && PODCAST_SHOWS[brand]) return json({ error: 'bad_show' }, 400);
-        const part = body.part === 'episodes' ? 'episodes' : body.part === 'overview' ? 'overview' : 'all';
-        return json(await cached(`ins:podcast2:${brand}:${sh?.key}:${part}:${from}:${to}`, 3 * H, refresh, () => podcast(brand, from, to, sh?.key, part)));
+        if (!PODCAST_SHOWS[brand]) return json({ connected: false });
+        if (!sh) return json({ error: 'bad_show' }, 400);
+        const part = body.part === 'episodes' ? 'episodes' : body.part === 'audience' ? 'audience' : 'overview';
+        const r = part === 'episodes' ? await podEpisodes(brand, sh, from, to, refresh) : part === 'audience' ? await podAudience(brand, sh, from, to, refresh) : await podOverview(brand, sh, from, to, refresh);
+        return json(r);
       }
       case 'ads': return json(await ads(brand, from, to));
       case 'campaigns': return json(await campaigns(brand, from, to));
