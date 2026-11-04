@@ -183,3 +183,28 @@ Lead: **We are the eyes and ears of the Vegan community, and our only job is to 
 | Founding Member | Stays on your profile for good if you join before midnight Eastern on January 1, 2027. | Live until then |
 
 Careful lines: the survey earns 250 points and the $11 earns 1,100, so the Guide says "your points can open your first Guide" and does not say every Guide is free.
+
+---
+
+## Version 1 LOCKED (Sean, 2026-11-04, playbook `ve-door-guides`)
+
+Sean: "Lock in version one with what's next tiles." Evaluate on the numbers at the end of the week, then regroup.
+
+**What's next page** (appears when the survey is finished; one door, the survey; the $11 is an optional contribution here, thanks only, no points):
+- Make a contribution (from $11, the existing Contribute window)
+- Share your story (Coming, with Tell me when it opens)
+- Opportunities (Coming, with Tell me when it opens)
+- Claim your page
+- Open your dashboard
+- Share your link
+- Read the Welcome Guide
+- Post a job
+- **Follow us** (new, Sean): a socials view to follow and subscribe to us everywhere (YouTube `@VegansExplore`, Instagram and TikTok `@vegansexplore`, Facebook `facebook.com/vegansexplore`, our podcast on each platform), plus **Tell us you joined**: a ready-to-paste message ("Hi, I just joined Vegans Explore as <name>") with a link to send it on each platform, so we can follow them back. Only socials already checked are linked.
+
+**A contribution** tags the person Contributor (Depot > People tags); Sean writes a personal message in Depot > Outreach (nothing sends without his approval) that carries the Opportunities link; bonus points are given by hand.
+
+**Not promised on any page until built**: points toward services, ads or tickets (see the points-as-coupons note in `business-opportunities-points-nonprofit-incubator.md`).
+
+**Fundraiser link split** (Sean): the buyer's discount is always funded by us; on a nonprofit's link the points a buyer may apply go down, so the discount is shared with the nonprofit. The split is settled in the Opportunities concept session and does not block Version 1.
+
+**Later, not Version 1**: following back members we find in our community (their Instagram handle is in the profile survey, team-only, never shown).
