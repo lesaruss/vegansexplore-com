@@ -98,7 +98,7 @@
   CLIPS.join_credit = null;
   // Her voice over her picture (door copy, 2026-11-04): el-media tts in her roster-profile voice, one mp3 a tab for visitors.
   var AUDIO = {};
-  ['overview', 'audit', 'featured', 'demo'].forEach(function (k) { AUDIO[k] = CLIP_BASE + 'door-' + k + '-v1.mp3'; });
+  ['overview', 'audit', 'featured', 'demo', 'join', 'next'].forEach(function (k) { AUDIO[k] = CLIP_BASE + 'door-' + k + '-v1.mp3'; });
 
   // What we run for restaurants (Sean, 2026-10-10). Never show a planned thing as live: each says Live or Coming.
   var PROMOS = [
@@ -987,7 +987,7 @@
   var vid = document.createElement('video');
   vid.preload = 'metadata'; vid.playsInline = true; vid.setAttribute('playsinline', '');
   vid.setAttribute('aria-label', 'Liz, your Guide');
-  function lizAudio(k) { return !member() && AUDIO[k] ? AUDIO[k] : null; }
+  function lizAudio(k) { return AUDIO[k] && (k === 'next' ? member() : !member()) ? AUDIO[k] : null; }
   var aud = new Audio(); aud.preload = 'none';
   aud.addEventListener('ended', function () { TOUR.playing = false; drawLiz(); });
   function clip(k) { if (member() && CLIPS_M[k]) return CLIPS_M[k]; if (k === 'join' && onPoints()) return null; return k === 'join' && mode() === 'unlock' ? CLIPS.join_credit : CLIPS[k] || null; }
