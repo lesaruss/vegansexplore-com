@@ -51,8 +51,8 @@ async function gRoom(kind: 'search' | 'details', background: boolean): Promise<n
 }
 const GOOGLE_LIMIT = { error: 'google_limit', message: 'Our daily Google allowance is used up. It resets at midnight Pacific.' };
 
-const GUIDES: Record<string, string[]> = { 'stadium-arena-guide': ['stadium', 'arena'], 'airport-guide': ['airport'], 'supermarket-guide': ['supermarket'] };
-const guideOfKind = (k: string) => (k === 'airport' ? 'airport-guide' : k === 'supermarket' ? 'supermarket-guide' : 'stadium-arena-guide');
+const GUIDES: Record<string, string[]> = { 'stadium-arena-guide': ['stadium', 'arena'], 'airport-guide': ['airport'], 'supermarket-guide': ['supermarket'], 'theme-park-guide': ['theme_park'] };
+const guideOfKind = (k: string) => (k === 'airport' ? 'airport-guide' : k === 'supermarket' ? 'supermarket-guide' : k === 'theme_park' ? 'theme-park-guide' : 'stadium-arena-guide');
 // Every row of a query, a thousand at a time (a chain has hundreds of stores, each with its sections).
 async function allRows(q: () => any): Promise<any[]> {
   const out: any[] = [];
@@ -468,7 +468,7 @@ Deno.serve(async (req) => {
     const v = body.venue || {};
     const row: Record<string, unknown> = {};
     for (const k of ['name', 'city', 'state', 'hub', 'note', 'note_source_url', 'address', 'image_url']) if (k in v) row[k] = str(v[k], 400) || null;
-    if ('kind' in v) { if (!['stadium', 'arena', 'airport', 'supermarket'].includes(v.kind)) return json({ error: 'bad_kind' }, 400); row.kind = v.kind; }
+    if ('kind' in v) { if (!['stadium', 'arena', 'airport', 'supermarket', 'theme_park'].includes(v.kind)) return json({ error: 'bad_kind' }, 400); row.kind = v.kind; }
     if ('teams' in v) row.teams = (Array.isArray(v.teams) ? v.teams : String(v.teams || '').split(',')).map((t: any) => str(t, 80)).filter(Boolean).slice(0, 12);
     if ('radius_m' in v) { const r = num(v.radius_m); if (r == null || r < 50 || r > 5000) return json({ error: 'bad_radius' }, 400); row.radius_m = Math.round(r); }
     if ('status' in v) row.status = v.status === 'hidden' ? 'hidden' : 'live';
