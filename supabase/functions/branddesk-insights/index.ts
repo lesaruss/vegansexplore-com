@@ -813,14 +813,14 @@ async function analysis(brand: string, name: string, from: string, to: string) {
   const system = `You write the Insights analysis for ${name}'s team in BrandDesk. Read only the numbers given. Never invent a number, a cause or a trend the numbers do not show; when something is not connected, say so in one line. Plain words, short sentences, no jargon (say "visitors" not "active users", "shown in Google" not "impressions" the first time, then either). Compare with the period before wherever both are given, with the change as a number and a percent. Capitalize Vegan. Never use dashes as punctuation (no em or en dashes, no hyphens between clauses). The headline is one sentence. The summary is two to four sentences. Each section has two to five points. next_steps are three to six concrete things to do this week, each tied to a number above. Posts with no numbers yet are not zero views: say their numbers have not come in. The podcast section, when the numbers include one, reads downloads (never call them listeners), names the show, compares each show with the period before, points to the top episodes and to how the latest episodes did in their first 7 and 30 days where those numbers exist, and says where it is heard and on what in a sentence or two; a country called AA is not a real country, so call it not placed and do not guess what it means; do not say any country looks like bots or data centers. When the podcast number is null the brand has no podcast, so leave the Podcast section out entirely. Referral visits from hq.lesaruss.ai are the team's own dashboard framing the site, not outside traffic; say so if they show up.`;
   const r = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST', headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
-    body: JSON.stringify({ model: MODEL, max_tokens: 3000, system, messages: [{ role: 'user', content: 'The numbers, as JSON:\n' + JSON.stringify(facts) }],
+    body: JSON.stringify({ model: MODEL, max_tokens: 8000, system, messages: [{ role: 'user', content: 'The numbers, as JSON:\n' + JSON.stringify(facts) }],
       output_config: { format: { type: 'json_schema', schema } } }),
     signal: AbortSignal.timeout(120000),
   });
   const j = await r.json();
   if (j.error) return { error: 'model: ' + (j.error.message || j.error.type), facts };
   const text = (j.content ?? []).find((c: any) => c.type === 'text')?.text ?? '';
-  let out: any; try { out = JSON.parse(text); } catch { return { error: 'model_output', facts }; }
+  let out: any; try { out = JSON.parse(text); } catch { return { error: 'model_output' + (j.stop_reason ? ` (${j.stop_reason})` : ''), facts }; }
   const fix = (v: any): any => typeof v === 'string' ? v.replace(/\s*[\u2014\u2013]\s*/g, ', ').replace(/\bvegan\b/g, 'Vegan') : Array.isArray(v) ? v.map(fix) : v && typeof v === 'object' ? Object.fromEntries(Object.entries(v).map(([k, x]) => [k, fix(x)])) : v;
   return { ...fix(out), facts, errors: errs, model: MODEL };
 }
