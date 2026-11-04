@@ -377,7 +377,10 @@ async function onboardingTick() {
   return out;
 }
 
-// Which list an action works on, so HQ's as_member is honored only for people lists.
+// The city-list actions HQ may run for a signed-in super admin (as_member): plan send days, approve or cancel one, take a business out or fix
+// its email, switch a city, and send a test (to the owner's own address only). Never add a way to send to a business from here.
+const HQ_CITY_ACTIONS = new Set(['plan', 'approve', 'cancel', 'remove', 'contact', 'city', 'test']);
+// Which list an action works on, so HQ's as_member is honored only for the lists above.
 async function targetList(action: string, body: Record<string, unknown>): Promise<string | null> {
   if (['approve', 'cancel'].includes(action) && isId(body.batch_id)) {
     const { data } = await db.from('ve_outreach_batches').select('community_slug').eq('id', body.batch_id).maybeSingle();
@@ -424,9 +427,10 @@ Deno.serve(async (req) => {
         const { data: m } = await db.from('members').select('is_superadmin').eq('id', body.as_member).maybeSingle();
         const slug = await targetList(action, body);
         const list = slug ? await listOf(slug) : null;
-        // A test email to the owner's own address is the one city action HQ may run for them (Sean, 2026-11-04: the test is sent from
-        // People > Outreach in HQ); any other city action still needs a super admin signed in here.
-        if (m?.is_superadmin && (list?.kind === 'people' || (action === 'test' && list?.kind === 'city'))) { me = body.as_member; viaHq = true; }
+        // BrandDesk > Vegans Explore > People in HQ works the city lists too (Sean, 2026-11-04: "it's not going to be in the depot... it's in
+        // the people section in the brand desk... I'm going to slowly retire the depot"): the same actions the Depot runs, for a super admin
+        // only. Nothing changes about when an email goes out: a day still has to be approved and its city switched on.
+        if (m?.is_superadmin && (list?.kind === 'people' || (list?.kind === 'city' && HQ_CITY_ACTIONS.has(action)))) { me = body.as_member; viaHq = true; }
       }
     }
     if (!me) {
