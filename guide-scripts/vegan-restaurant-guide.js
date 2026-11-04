@@ -94,6 +94,9 @@
   // The door copy (2026-11-04) changed these lines, so their old recordings no longer match: text only until new ones are recorded.
   ['overview', 'audit', 'featured', 'join'].forEach(function (k) { CLIPS[k] = null; CLIPS_M[k] = null; });
   CLIPS.join_credit = null;
+  // Her voice over her picture (door copy, 2026-11-04): el-media tts in her roster-profile voice, one mp3 a tab for visitors.
+  var AUDIO = {};
+  ['overview', 'audit', 'featured', 'demo'].forEach(function (k) { AUDIO[k] = CLIP_BASE + 'door-' + k + '-v1.mp3'; });
 
   // What we run for restaurants (Sean, 2026-10-10). Never show a planned thing as live: each says Live or Coming.
   var PROMOS = [
@@ -893,11 +896,15 @@
   var vid = document.createElement('video');
   vid.preload = 'metadata'; vid.playsInline = true; vid.setAttribute('playsinline', '');
   vid.setAttribute('aria-label', 'Liz, your Guide');
+  function lizAudio(k) { return !member() && AUDIO[k] ? AUDIO[k] : null; }
+  var aud = new Audio(); aud.preload = 'none';
+  aud.addEventListener('ended', function () { TOUR.playing = false; drawLiz(); });
   function clip(k) { if (member() && CLIPS_M[k]) return CLIPS_M[k]; if (k === 'join' && onPoints()) return null; return k === 'join' && mode() === 'unlock' ? CLIPS.join_credit : CLIPS[k] || null; }
   function cueLiz(k) {
     var c = clip(k), key = k + (member() ? ':m' : '') + (k === 'join' && mode() === 'unlock' ? ':c' : '');
     if (TOUR.shown === key) return;
     TOUR.shown = key; stopLiz();
+    var au = lizAudio(k); if (au) aud.src = au; else aud.removeAttribute('src');
     if (c) {
       vid.poster = c.poster; vid.src = c.video;
       if (!vid.parentNode) lizBox.appendChild(vid);
@@ -906,11 +913,12 @@
     lizBox.classList.remove('dg-shift'); void lizBox.offsetWidth; lizBox.classList.add('dg-shift');
   }
   function playLiz() {
+    if (lizAudio(curTab)) { aud.play().then(function () { TOUR.playing = true; drawLiz(); }).catch(function () { TOUR.playing = false; drawLiz(); }); return; }
     if (!clip(curTab)) { drawLiz(); return; }
     // The first page's poster is the open smile; once she talks, the clip starts from her own first frame.
     vid.play().then(function () { TOUR.playing = true; drawLiz(); }).catch(function () { TOUR.playing = false; drawLiz(); });
   }
-  function stopLiz() { vid.pause(); TOUR.playing = false; }
+  function stopLiz() { vid.pause(); try { aud.pause(); } catch (e) {} TOUR.playing = false; }
   function startTour() {
     TOUR.started = true; TOUR.paused = false;
     [].forEach.call(document.querySelectorAll('[data-tour-start]'), function (b) { b.remove(); });
@@ -923,7 +931,7 @@
     var t = tab(curTab), list = tabs(), i = 0;
     list.forEach(function (x, n) { if (x.k === curTab) i = n; });
     bubble.textContent = member() && t.sayMember ? t.sayMember : onPoints() && t.sayPoints ? t.sayPoints : t.k === 'join' && mode() === 'unlock' ? t.sayCredit : t.say;
-    var has = !!clip(curTab);
+    var has = !!clip(curTab) || !!lizAudio(curTab);
     playBtn.hidden = TOUR.started && !has;
     playBtn.classList.toggle('go', !TOUR.started);
     playBtn.innerHTML = !TOUR.started ? '&#9654; Start the tour' : TOUR.playing ? 'Pause Liz' : '&#9654; Watch Liz';
