@@ -5861,8 +5861,19 @@ included, end excluded, so a day is start=d end=d+1; no dates is all time), `GET
 guess was a 404); those stay in Captivate's own dashboard. The view: downloads for the period against the one before, per day (every N days past
 30 days), this month, last 12 months, all time, a line by month, and every episode's downloads in the period (up to 100 s of reading, then
 `partial`). Proven 2026-11-04 on real numbers (30 days to Nov 3: 258 downloads, 389 the 30 days before; the daily and per-episode numbers each
-sum to 258; 144 episodes read). A new brand's show is a `PODCAST_SHOWS` row and a `PODCAST_BRANDS` entry. Not yet: the podcast in the Analysis
-write-up, first 7 and 30 day downloads per episode, anything beyond downloads.
+sum to 258; 144 episodes read). A new brand's show is a `PODCAST_SHOWS` row and a `PODCAST_BRANDS` entry.
+**Pages from Captivate's own dashboard, uploaded by hand** (Sean, 2026-11-04: "whatever can't be pulled by API, we can upload manually with a screenshot... the
+ability to upload multiple... where people are listening from, what devices... the quarterly and monthly reports"): the Podcast view ends with **From Captivate's
+own dashboard** (`PodcastUploads` in `InsightsRoom.tsx`): a kind (Where people listen, Devices, Apps and players, Report or overview, Something else), the dates
+it covers (the page's period by default), an optional note, and a drop box for as many PNG, JPEG, WebP or PDF files as you like (25 MB each; a screenshot can be
+pasted). Each file goes straight from the browser to the private bucket `podcast-reports` on a signed link, then a row in `ve_podcast_uploads` (migration
+`20261104_podcast_report_uploads.sql`, RLS on, no policies) says what it is and when. They show below, by period, with Everything / kind chips, a lightbox for
+pictures, Open and Remove (Remove only hides it; nothing is deleted). `branddesk-insights` actions `podcast_files`, `podcast_upload_start`, `podcast_upload_done`,
+`podcast_file_remove` (super admins only; `podcast_upload_done` checks the file really is in the bucket). Proven live 2026-11-04 as Sean: a real upload to a signed link
+registered, listed with a signed URL and removed; a wrong type, over 25 MB, another brand's path, a file never uploaded, bad dates and a call with no token were all
+refused; the section checked at 1440 and 390 px against mocked answers (four files chosen, the wrong type flagged, three uploaded together). A 70-byte test image is
+left in the bucket (Storage will not let SQL delete objects), with no row. Not yet: reading the numbers out of a screenshot into a chart, the podcast in the Analysis
+write-up, first 7 and 30 day downloads per episode.
 
 ## Depot > Social (Sean, 2026-11-01)
 
