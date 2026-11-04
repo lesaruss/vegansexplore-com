@@ -29,3 +29,9 @@ Branch `claude/dazzling-archimedes-3rxgti`. Not merged to main (Sean's step). Au
 1. Sean merges the branch to main, then sends the test from the Depot.
 2. Rebuild What's next as the four-step Welcome Guide (recommendation in the chat).
 3. Plan outreach under BrandDesk > People (HQ).
+
+## Update: ve-outreach-buckets step 1 built and live (2026-11-04, Logan)
+Sean's direction: build People > Outreach in HQ (the BCPS Marcom cert follow-up pattern: campaigns, people grouped, Preview, a Test button per group, Send checked, Sent / Opened / Clicked badges) and do the test from there. HQ (`lesaruss-hq`) and `bcpsmarcomm` are attached; HQ already has `/people` and `/distributions` (calls `ve-outreach` with the admin token and `as_member`, see `lib/outreach.ts`).
+- **Doors** (migration `20261104_outreach_doors.sql`, applied through the one-time `ve-once-outreach-doors`, now the 410 stub, since the connector held the write): `ve_outreach_doors` (restaurant ready; business, brand, nonprofit, group, entrepreneur, supermarket not ready), `ve_outreach_door_of(category, segment)`, `ve_outreach_contacts.door` set by trigger on insert and backfilled (218 of 219; the one left has no listing). A contact's door follows its listing's category; entrepreneur and supermarket are set by hand.
+- **HQ may send a test as the owner** (`ve-outreach` from 994b77b, source sha256 matched e8ff4191...): the admin token with `as_member` (a super admin) is now honored for `test` on city lists, and the recipient must be a lesaruss.com address (`test_to_own_address`). Proven live: an outside address 400, a non-test city action 403, a non-admin member's real send 403, a dry run and one real test to contact@lesaruss.com (Garden Butcher's Day 0, sent). Nothing else changed; no city is on.
+- **Next**: HQ People > Outreach page (campaigns, doors, Preview, Test per door, Send checked, badges), then the intake pick list, then the person link. HQ branch not started.
