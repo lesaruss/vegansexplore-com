@@ -560,14 +560,65 @@ async function podOverview(brand: string, sh: any, from: string, to: string, ref
   };
 }
 
+// Country names from Captivate to the ISO codes its range call needs to give provinces and cities (probed 2026-11-04: countryCode "US" works, "us" and "United States" return nothing).
+let _cc: Map<string, string> | null = null;
+function ccMap() {
+  if (_cc) return _cc;
+  _cc = new Map();
+  const dn = new Intl.DisplayNames(['en'], { type: 'region' });
+  const A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  for (const a of A) for (const b of A) { const c = a + b; let n: string | undefined; try { n = dn.of(c); } catch { continue; } if (n && n !== c && !/^unknown/i.test(n)) _cc.set(n.toLowerCase(), c); }
+  for (const [n, c] of Object.entries({ turkey: 'TR', 'czech republic': 'CZ', russia: 'RU', 'south korea': 'KR', vietnam: 'VN', 'hong kong': 'HK', taiwan: 'TW', macau: 'MO', palestine: 'PS', myanmar: 'MM', 'ivory coast': 'CI', 'united states': 'US', 'united kingdom': 'GB', 'north macedonia': 'MK', 'republic of korea': 'KR' })) _cc.set(n, c);
+  return _cc;
+}
+const topN = (a: any[], k: string, n: number) => (a || []).map((x) => ({ name: String(x[k] ?? 'Unknown'), total: Number(x.total) || 0 })).sort((p, q) => q.total - p.total).slice(0, n);
+
+// Every country, with every province and city inside it, for one show over a period (one range call for the whole picture, then one for each country). Sean, 2026-11-04:
+// "the places are really important... both the country and the cities and provinces", to set beside Google's places to decide the next community.
 async function podAudience(brand: string, sh: any, from: string, to: string, refresh: boolean) {
-  return cached(`ins:podaud:${brand}:${sh.key}:${from}:${to}`, 3 * H, refresh, async () => {
-    const j = await capReq(`/insights/${sh.id}/range/`, { start: new Date(etStart(from)).toISOString(), end: new Date(etStart(plusDays(to, 1))).toISOString(), timezone: 'America/New_York', interval: null, countryCode: null, types: ['byLocation', 'byUserAgentBrowser', 'byUserAgentOs', 'byUserAgentDevice'] });
-    const top = (a: any[], k: string) => (a || []).map((x) => ({ name: String(x[k] ?? 'Unknown'), total: Number(x.total) || 0 })).sort((p, q) => q.total - p.total).slice(0, 15);
-    return { connected: true, show: sh.key, show_name: sh.name, part: 'audience', from, to, total: Number(j?.total) || 0,
-      countries: top(j?.byLocation?.byCountry, 'country'), apps: top(j?.byUserAgentBrowser, 'browser'), systems: top(j?.byUserAgentOs, 'os'), devices: top(j?.byUserAgentDevice, 'device'),
-      note: 'Captivate\'s own range report for the period, so its total can differ a little from the daily downloads on Overview, which are cut from its day by day record.' };
+  return cached(`ins:podaud2:${brand}:${sh.key}:${from}:${to}`, 3 * H, refresh, async () => {
+    const win = { start: new Date(etStart(from)).toISOString(), end: new Date(etStart(plusDays(to, 1))).toISOString(), timezone: 'America/New_York', interval: null };
+    const j = await capReq(`/insights/${sh.id}/range/`, { ...win, countryCode: null, types: ['byLocation', 'byUserAgentBrowser', 'byUserAgentOs', 'byUserAgentDevice'] });
+    const base = (j?.byLocation?.byCountry || []).map((x: any) => ({ name: String(x.country), total: Number(x.total) || 0 })).filter((x: any) => x.total > 0).sort((a: any, b: any) => b.total - a.total);
+    const map = ccMap();
+    const errors: string[] = [];
+    const countries = await pool(base, 8, async (c: any) => {
+      const code = map.get(c.name.toLowerCase()) || null;
+      const row: any = { name: c.name, code, total: c.total, provinces: [], cities: [] };
+      if (!code) return row;
+      try {
+        const d = await capReq(`/insights/${sh.id}/range/`, { ...win, countryCode: code, types: ['byLocation'] });
+        row.provinces = (d?.byLocation?.byProvince || []).map((p: any) => ({ name: String(p.province ?? 'Unknown'), total: Number(p.total) || 0 })).sort((a: any, b: any) => b.total - a.total);
+        row.cities = (d?.byLocation?.byCity || []).map((p: any) => ({ name: String(p.city ?? 'Unknown'), province: p.province ?? null, total: Number(p.total) || 0 })).sort((a: any, b: any) => b.total - a.total);
+      } catch (e) { errors.push(`${c.name}: ${(e as Error).message}`); }
+      return row;
+    });
+    return { connected: true, show: sh.key, show_name: sh.name, part: 'audience', from, to, total: Number(j?.total) || 0, countries,
+      apps: topN(j?.byUserAgentBrowser, 'browser', 40), systems: topN(j?.byUserAgentOs, 'os', 20), devices: topN(j?.byUserAgentDevice, 'device', 20), errors: errors.slice(0, 5),
+      note: 'Captivate\'s own range report for the period, so its total can differ a little from the daily downloads on Overview, which are cut from its day by day record. A province or city is only known where the listener\'s network gives one; many downloads have a country and nothing more.' };
   });
+}
+// All of our podcasts together: the four shows' places, apps and devices added up by name.
+async function podAudienceAll(brand: string, from: string, to: string, refresh: boolean) {
+  const parts: any[] = await Promise.all(PODCAST_SHOWS[brand].map((s) => podAudience(brand, s, from, to, refresh)));
+  const add = (m: Map<string, any>, k: string, v: any, n: number) => { const o = m.get(k); if (o) o.total += n; else m.set(k, { ...v, total: n }); };
+  const cm = new Map<string, any>(), ap = new Map<string, any>(), sy = new Map<string, any>(), dv = new Map<string, any>();
+  for (const p of parts) {
+    for (const c of p.countries) {
+      if (!cm.has(c.name)) cm.set(c.name, { name: c.name, code: c.code, total: 0, provinces: new Map(), cities: new Map() });
+      const o = cm.get(c.name); o.total += c.total;
+      for (const x of c.provinces) add(o.provinces, x.name, { name: x.name }, x.total);
+      for (const x of c.cities) add(o.cities, x.name + '|' + (x.province || ''), { name: x.name, province: x.province }, x.total);
+    }
+    for (const x of p.apps) add(ap, x.name, { name: x.name }, x.total);
+    for (const x of p.systems) add(sy, x.name, { name: x.name }, x.total);
+    for (const x of p.devices) add(dv, x.name, { name: x.name }, x.total);
+  }
+  const arr = (m: Map<string, any>) => [...m.values()].sort((a, b) => b.total - a.total);
+  return { connected: true, show: 'all', show_name: 'All podcasts', part: 'audience', from, to, total: parts.reduce((n, p) => n + p.total, 0),
+    countries: arr(cm).map((c) => ({ name: c.name, code: c.code, total: c.total, provinces: arr(c.provinces), cities: arr(c.cities) })),
+    apps: arr(ap).slice(0, 40), systems: arr(sy).slice(0, 20), devices: arr(dv).slice(0, 20), errors: parts.flatMap((p) => p.errors || []).slice(0, 5),
+    note: 'The four shows added up by name. A listener who hears more than one show is counted once for each.' };
 }
 
 // First 7 and first 30 days of each episode: counted when those days are over, kept for good. 40 are counted a visit; the rest on the next.
@@ -763,8 +814,9 @@ Deno.serve(async (req) => {
       case 'web_analytics': return json(await cached(`ins:web:${brand}:${from}:${to}`, 3 * H, refresh, () => webAnalytics(brand, from, to)));
       case 'seo': return json(await cached(`ins:seo:${brand}:${from}:${to}`, 3 * H, refresh, () => seo(brand, from, to)));
       case 'podcast': {
-        const sh = showOf(brand, body.show);
         if (!PODCAST_SHOWS[brand]) return json({ connected: false });
+        if (body.show === 'all' && body.part === 'audience') return json(await podAudienceAll(brand, from, to, refresh));
+        const sh = showOf(brand, body.show);
         if (!sh) return json({ error: 'bad_show' }, 400);
         const part = body.part === 'episodes' ? 'episodes' : body.part === 'audience' ? 'audience' : 'overview';
         const r = part === 'episodes' ? await podEpisodes(brand, sh, from, to, refresh) : part === 'audience' ? await podAudience(brand, sh, from, to, refresh) : await podOverview(brand, sh, from, to, refresh);
