@@ -1292,7 +1292,7 @@ edit the row and read the playbook's records, newest first. Status words: Buildi
   item that belongs to an existing build goes to that playbook's queue, named by its slug; anything bigger than a tweak is a new idea, so say
   so and bring Sean a recommendation (a new playbook, or park it), never build it quietly. One pinned task per playbook (a second task on the
   same playbook is wrapped and its open items go back to the queue). Work the queue top to bottom, confirm each item live, mark it Done, pull
-  the next one without being asked. Each item is one decision record `ve-feedback: <task>`. First two items, both Done: the dashboard Insights
+  the next one without being asked. Each item is one decision record `ve-feedback: <task>`. **A visual copy of the queue** (Sean, 2026-11-04: "I want both experiences", a list he browses and a guide that walks him): `briefings` slug `ve-feedback`, brand `vegans-explore`, filled from the active playbook template, at `hq.lesaruss.ai/branddesk/brands/vegans-explore/playbook/ve-feedback` (a signed-in page). Pending is grouped You decide / Logan works / Recurring / Parked, each item numbered, with Completed beside it; Sean says "pick for me" or an item's number. It is a written page: when an item moves, update its pending and done lists in `briefings.content` (through the playbook skill, never hand HTML) and the `ve_playbook_index` row. Not yet seen in a browser (first build session could not reach HQ). First two items, both Done: the dashboard Insights
   block and the Depot moved to the bottom (above). Item 3, Done 2026-11-03 (main e7008ae): the footer overlapped the dashboard's content on phones
   because `html,body{height:100%}` with the flex-column body let `.console-frame` shrink; the body now grows (`height:auto`) and the frame is
   `flex:1 0 auto`. Any page that puts the footer last in a flex-column body must not give the body a fixed height.
@@ -4639,7 +4639,7 @@ with us?... it's per event." Separate from Group Partners.
   before approval refused). On 2026-11-02, 15 hosts, 3 with an email; the Meetup-only groups publish none.
 - **Build order:**
   1. The event claim (built 2026-11-02).
-  2. The heads-up (built 2026-11-02, waiting for approval).
+  2. The heads-up (built 2026-11-02; approved and on 2026-11-03; first send 10:07 AM Eastern 2026-11-03: 3 hosts, none claimed yet; a host with no account is pointed at the free event survey from the claim email and thank-you).
   3. Per-event ticketing.
   4. The sponsorship and extras checkout.
   5. The ad console's credit, booking and creative support.
