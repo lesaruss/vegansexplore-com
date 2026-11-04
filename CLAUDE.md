@@ -3025,8 +3025,7 @@ claim unlocking top posts". Migration `20261103_listing_posts.sql`; edge functio
   Instagram on the owner's Contact step; `weekly` (cron `ve-listing-posts-weekly`, 07:17 UTC) signs every claimed listing with a valid
   handle up in `ve_listing_social` and reads its recent posts (Apify `instagram-scraper`, `listing_social.max_posts` 40, a post by the handle
   only), 3 listings a run, again after `refresh_days` (7), at most `daily_listing_cap` (20) listings a day, three failures stop it. **Nothing
-  is fetched from Apify until `ve_site_settings` `listing_social.scrape_on` is true** (false on 2026-11-03: Sean's go, after the per-listing
-  cost quote). "Top" is the top of the recent posts the scraper returns, not all time, and the page says so. No view counts except where a
+  is fetched from Apify until `ve_site_settings` `listing_social.scrape_on` is true** (false on 2026-11-03; **turned on 2026-11-04 at Sean's go**: with 4 claimed listings, 1 with an Instagram handle, it is a handful of reads, about $0.0023 a post and 40 posts a read, 3 listings a run, 20 a day). "Top" is the top of the recent posts the scraper returns, not all time, and the page says so. No view counts except where a
   source gives them (`view_count`); Instagram's -1 for hidden likes shows no likes figure.
 - **The owner's Social step** (Edit your page is five steps now: About, Hours, Contact and links, **Social**, Logo and photos;
   `?edit=social`, `oeSocial` in `directory/listing.html`): their posts with **Hide**, **Show**, **Pin**, **Read my page now** (once a day,
@@ -3048,11 +3047,11 @@ claim unlocking top posts". Migration `20261103_listing_posts.sql`; edge functio
   mid-run (never do that). It was driven by a temporary pg_cron job 111 that fired the next batch only when the last response was
   `{"ok":true`, halted on any error or gone post, and removed itself at `remaining` 0. Cleanup was done 2026-11-04 through
   `ve-once-refresh-cleanup` (the connector held the delete; now the 410 stub): job and `tmp_refresh_req` gone, `refresh_batch` removed,
-  `refresh_ours_on` false, `scrape_on` still false (migration `20261104_listing_posts_refresh_cleanup.sql`). A second refresh needs
+  `refresh_ours_on` false, `scrape_on` false then, turned on later the same day (migration `20261104_listing_posts_refresh_cleanup.sql`). A second refresh needs
   `refresh_ours_on` and a batch size set again, and never runs twice at once: overlapping calls pick the same posts. **The open playbook
   for all social work is `ve-social-studio`** (Depot > Social and this tab share one queue). **Scheduled triggers belong to the account
   and fire into whichever chat is open**, so at wrap-up delete the triggers of a chat that is closing (`list_triggers`, `delete_trigger`)
-  or its reminder lands in the next chat. Still unproven: `fetchTheirs`' paused guard (needs `scrape_on`), the owner's Social step as a
+  or its reminder lands in the next chat. Still unproven: `fetchTheirs`' paused guard (`scrape_on` is on, so the first real run proves it; check `ve_listing_social` and the posts after 07:17 UTC), the owner's Social step as a
   signed-in owner in a browser, and a look at a Social tab at 1440 and 390 px (the build session refuses `*.vercel.app`).
 - **Paused is its own status** (2026-11-03, migration `20261103_listing_posts_paused.sql`; Sean: "do the paused status too"). `ve_listing_posts.status`
   is shown, hidden, **paused** or removed. **Stop showing my Instagram posts** moves shown posts to `paused` (pins kept) and Show again moves
@@ -3060,9 +3059,9 @@ claim unlocking top posts". Migration `20261103_listing_posts.sql`; edge functio
   cannot Hide, Show or Pin (`owner_post` answers 409 `paused`) and `fetchTheirs` pulls no new posts (`paused`); the owner's screen says so and
   dims the posts. Public read is still `status = 'shown'`. Proven live as Sean on the Vegans Explore Podcast listing with three test posts
   (pinned, hidden by hand, plain): Pause gave paused+pin, hidden, paused; an edit was refused 409; Resume gave shown+pin, hidden, shown; the
-  public saw only the two shown. Not proven: `fetchTheirs`' paused guard (needs `scrape_on`, which is off).
+  public saw only the two shown. Not proven: `fetchTheirs`' paused guard (`scrape_on` has been on since 2026-11-04; the first real run proves it).
 - **Owner Social step proven live 2026-11-03** (a one-time session as Sean, then the 410 stub `ve-once-listing-posts-proof`): owner_get, hide, show,
-  pin, a bad op, pause and resume, the refresh refused 409 while `scrape_on` is false, a non-owner (Logan test account) refused 403 on get and
+  pin, a bad op, pause and resume, the refresh refused 409 while `scrape_on` was false, a non-owner (Logan test account) refused 403 on get and
   post, no token 401, a non-admin refused on `admin_list`. Not yet seen in a browser: no preview deploy of the branch was checked.
 - Not built yet: Instagram only (no TikTok, YouTube or Facebook rows, the table allows `network` instagram), a Meta "Connect Instagram"
   button (real metrics, views and embeds, once the tokens are in), SEO data for the tab, and the other brands' listings.
