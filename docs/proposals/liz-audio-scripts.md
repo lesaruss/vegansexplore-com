@@ -42,14 +42,14 @@ Recorded with Vegan spelled "Veegan". Each line is about 20 seconds or less. Bef
 "These are the promotions open to you, from events to features to campaigns. Pick what fits, or ask our team to plan it with you."
 
 **11. My list** (unchanged)
-"Everything you saved is right here: fixes, interviews and promotions, so you can pick up where you left off."
+"Everything you saved is right here: top challenges, interviews and promotions, so you can pick up where you left off."
 
 **12. What's next** (unchanged)
 "You are in. Thank you. Here is what you can do next. Claim your page, open your dashboard, and follow us so we can follow you back."
 
 ## What the screens say beside Liz (so you see all of it)
 - **No personal link:** "This Guide is by invitation. We build it around one restaurant at a time, so your check is yours alone. If we sent you an email, open the link in it and your restaurant is already here." Button: Ask for an invitation.
-- **The fixes screen:** "The top 10 things Vegan businesses run into. This is not a review of your business. It is the checklist most Vegan businesses end up needing. Tick the ones you relate to. The ranking comes from everyone who uses this Guide."
+- **The Top challenges screen:** "The top 10 things Vegan businesses run into. This is not a review of your business. It is a checklist of the most common challenges. Tick the ones you relate to. The ranking comes from everyone who uses this Guide."
 - **Demo steps:** your page as visitors see it; your dashboard; Insights; your page; menu; ads and opportunities; your audit.
 
 ## To record (after you approve)
