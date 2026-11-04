@@ -57,22 +57,24 @@
   // The tabs, in tour order, and what Liz says on each. A tab's `say` must match its recording (Sean approved every line,
   // 2026-10-10). `say` is for visitors (why get it), `sayMember` walks an owner of the Guide through what they have.
   var TABS = [
-    { k: 'overview', label: 'Overview', say: 'Hi, I\'m Liz, and welcome to the Vegans Explore Restaurant Guide. Thank you for what you do. This Guide does three things. It gives you a crash course in how Vegans Explore works. It shows you something new about your business. And it puts you one step closer to growing with us as we launch on January 1st. Here\'s how to start. Step one: tap Run my free check, and see how your place looks online. Step two: take the short survey. That makes you a member, and the rest of this Guide opens: your fixes, your page, and what\'s coming. It\'s free, no card, and you can stop any time.',
-      sayMember: 'Welcome in. Start with your business. The fixes, the interviews and the promotions all line up around what it finds.' },
+    { k: 'overview', label: 'Overview', say: 'Hi, I\'m Liz, and welcome to the Vegans Explore Restaurant Guide. Thank you for what you do. This Guide does three things. It gives you a crash course in how Vegans Explore works. It shows you something new about your business. And it puts you one step closer to growing with us as we launch on January 1st. Here\'s how to start. Step one: tap Run my free check, and see how your place looks online. Step two: take the short survey. That makes you a member, and the rest of this Guide opens: the top challenges owners face, your page, your dashboard, and what\'s coming. It\'s free, no card, and you can stop any time.',
+      sayMember: 'Welcome in. Thank you for joining. Your business is the place to start. Then the top challenges, your page, your dashboard, and what\'s coming. Everything you save goes in My list, so you can pick up where you left off.' },
     { k: 'audit', label: 'Your audit', say: 'Your Google listing, website, search and social are checked here, and the first things to work on are listed. Free.',
       sayMember: 'Your free check is right here. Run it anytime. When you want us to go deeper, the full audit is an add-on.' },
     { k: 'expect', label: 'What to expect', pre: 1, say: 'Here is what opens when you are in. Some of it is live and some is coming, and each one says which.' },
-    { k: 'fixes', label: 'The fixes', after: 1, say: 'These are the mistakes that close Vegan restaurants, from location to burnout, each with what to do instead. One is open for you to try.',
-      sayMember: 'Here are your fixes, in the order your audit puts them. Each shows what to do this week. Save the ones you\'re working on.' },
+    { k: 'fixes', label: 'Top challenges', after: 1, say: 'These are the top ten things Vegan businesses run into. This isn\'t a review of your restaurant. It\'s a checklist of the most common ones. Tick the ones you relate to, and you\'ll see which come up most for owners. Open any one to see what to do this week.',
+      sayMember: 'These are the top ten things Vegan businesses run into. This isn\'t a review of your restaurant. It\'s a checklist of the most common ones. Tick the ones you relate to, and you\'ll see which come up most for owners. Open any one to see what to do this week.' },
     { k: 'pulse', label: 'Pulse', after: 1, say: 'Here are our interviews with Vegan business owners: what worked, what didn\'t, and the research behind it. New ones keep coming.',
       sayMember: 'Every business interview we\'ve recorded is here, with the research. Play any of them right here. We keep adding more.' },
     { k: 'featured', label: 'Claim your page', after: 1, say: 'Your page already exists. Claiming makes it yours: your hours, photos and menu link, changed whenever you like.',
       sayMember: 'Here\'s your Directory page. Claim it, keep your hours and photos fresh, and see who\'s finding you on your Partner Dashboard.' },
+    { k: 'dashboard', label: 'Your dashboard', after: 1, say: 'This is your dashboard. It shows how many people look at your page, where they come from, and what they do next. It opens fully once you claim your page.',
+      sayMember: 'This is your dashboard. It shows how many people look at your page, where they come from, and what they do next. It opens fully once you claim your page.' },
     { k: 'demo', label: 'Try the demo', after: 1, say: 'This is a sample restaurant, so you can see what a page and its dashboard look like. Nothing here can be saved. Yours starts with your own page.',
       sayMember: 'This is a sample restaurant, so you can see what a page and its dashboard look like. Nothing here can be saved.' },
     { k: 'promos', label: 'Promotions', after: 1, say: 'We run campaigns, events, features and ads that bring members through your door. Here\'s what each one does for a restaurant.',
       sayMember: 'These are the promotions open to you, from events to features to campaigns. Pick what fits, or ask our team to plan it with you.' },
-    { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you saved is right here: fixes, interviews and promotions, so you can pick up where you left off.' },
+    { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you saved is right here: top challenges, interviews and promotions, so you can pick up where you left off.' },
     { k: 'next', label: 'What\'s next', mine: 1, say: 'You are in. Thank you. Here is what you can do next. Claim your page, open your dashboard, and follow us so we can follow you back.',
       sayMember: 'You are in. Thank you. Here is what you can do next. Claim your page, open your dashboard, and follow us so we can follow you back.' },
     { k: 'join', label: 'Get in', guest: 1, say: 'There is one way in, and it is free. Take the short survey. When you finish, you are a member.',
@@ -519,7 +521,7 @@
         n ? 'Most important first, each with what we found. Fix these and you are already ahead of most restaurants.' : 'The free checks came back clean. The full audit looks at much more.') +
       (n ? '<div class="rg-todo">' + d.todo.map(function (it) { return itemRow({ key: it.key, label: it.label, area: it.area, found: it.found, state: 'fix' }, false); }).join('') + '</div>' : '') +
       (d.more_fix && member() ? '<p class="dg-lede"><strong>' + d.more_fix + ' more</strong> to fix in the full audit, each with why it matters and how to fix it.</p>' : '') +
-      (!member() ? '<div class="rg-next" style="margin-top:18px"><h3 class="dg-k" style="margin:0 0 6px">Next</h3><p class="dg-lede" style="margin:0 0 10px">Take the short survey and the rest of this Guide opens: your fixes, your page, and what is coming. Free, no card.</p><button type="button" class="dg-btn" data-survey>Take the short survey</button></div>' : '') +
+      (!member() ? '<div class="rg-next" style="margin-top:18px"><h3 class="dg-k" style="margin:0 0 6px">Next</h3><p class="dg-lede" style="margin:0 0 10px">Take the short survey and the rest of this Guide opens: the top challenges, your page, your dashboard, and what is coming. Free, no card.</p><button type="button" class="dg-btn" data-survey>Take the short survey</button></div>' : '') +
       (PERSONAL && (d.created_at || d.finished_at) ? '<p class="dg-empty" style="margin-top:14px">Checked on ' + esc(new Date(d.finished_at || d.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })) + '.</p>' : '') +
       '<div id="rgOffer"></div>' + notYou();
     drawOffer(d);
@@ -594,10 +596,10 @@
           body: open ? '<p class="dg-srow-p">' + esc(f.problem) + '</p>' : '<p class="dg-srow-p">' + LOCK_SVG + ' In the full Guide</p>',
           acts: pollBtn(f.id) + (member() ? saveBtn('fix', f.id) : '') });
       }).join('');
-      main.innerHTML = head('The fixes', 'The top 10 things Vegan businesses run into',
-        'This is not a review of your business. It is the checklist most Vegan businesses end up needing. ' + (member() ? 'Tick the ones you relate to. The ranking comes from everyone who uses this Guide, so you can see what comes up most.' : 'One is open for you to try.')) +
+      main.innerHTML = head('Top challenges', 'The top 10 things Vegan businesses run into',
+        'This is not a review of your business. It is a checklist of the most common challenges. ' + (member() ? 'Tick the ones you relate to. The ranking comes from everyone who uses this Guide, so you can see what comes up most.' : 'One is open for you to try.')) +
         (member() ? '<div class="dg-srows">' + tiles + '</div>'
-          : '<div class="dg-srows">' + tiles + '</div><div style="margin-top:16px">' + gated(skel('Every fix', 4), 'Every fix', 'All ten, each with what to do this week, ranked by the owners who relate to them.') + '</div>');
+          : '<div class="dg-srows">' + tiles + '</div><div style="margin-top:16px">' + gated(skel('Every challenge', 4), 'All ten challenges', 'Each with what to do this week, ranked by the owners who relate to them.') + '</div>');
     }
     draw();
   }
@@ -606,11 +608,11 @@
     list.forEach(function (f, n) { if (f.id === id) i = n; });
     var f = list[i];
     if (!f || f.locked) {
-      main.innerHTML = crumb([['The fixes', '#/fixes'], [f ? f.title : 'Fix']]) + gated(skel(f ? f.title : '', 6), f ? f.title : 'This fix', 'It opens with the full Guide, with every other fix.');
+      main.innerHTML = crumb([['Top challenges', '#/fixes'], [f ? f.title : 'Challenge']]) + gated(skel(f ? f.title : '', 6), f ? f.title : 'This fix', 'It opens with the full Guide, with every other fix.');
       return;
     }
     var nextOpen = null; for (var n = i + 1; n < list.length; n++) if (!list[n].locked) { nextOpen = list[n]; break; }
-    main.innerHTML = crumb([['The fixes', '#/fixes'], [f.title]]) +
+    main.innerHTML = crumb([['Top challenges', '#/fixes'], [f.title]]) +
       '<div class="rg-fix">' +
       '<div class="dg-head"><div><div class="dg-k">No. ' + (i + 1) + ' of ' + list.length + '</div><h2 class="dg-h1">' + esc(f.title) + '</h2></div>' + (member() ? '<div class="dg-acts" style="flex-direction:row">' + saveBtn('fix', f.id) + '</div>' : '') + '</div>' +
       '<p class="rg-problem">' + esc(f.problem) + '</p><h3>What you can do</h3><ul>' + f.list.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' +
@@ -618,8 +620,8 @@
       '<div class="rg-week" style="margin-top:12px"><b>Rather we did it?</b>Our team can take this off your plate, along with your website, Google, photos and brand. ' +
       '<a href="#" data-managed="fix" data-fix="' + esc(f.id) + '" data-business="' + esc(LAST && LAST.business || '') + '">Have us do it &rsaquo;</a></div>' +
       '<div class="rg-fixnav">' + pollBtn(f.id) +
-      (nextOpen ? '<a class="dg-tnav next" href="#/fixes/' + nextOpen.id + '">Next fix &rsaquo;</a>' : member() ? '<a class="dg-tnav next" href="#/featured">Claim your page &rsaquo;</a>' : '<a class="dg-tnav next" href="#/join">Get every fix &rsaquo;</a>') + '</div></div>' +
-      (!member() ? '<div style="margin-top:22px">' + gated(skel('The other nine fixes', 3), 'The other nine fixes', 'Location, branding, search, social, photos, reviews, the menu, community and burnout, in your order.') + '</div>' : '');
+      (nextOpen ? '<a class="dg-tnav next" href="#/fixes/' + nextOpen.id + '">Next challenge &rsaquo;</a>' : member() ? '<a class="dg-tnav next" href="#/featured">Claim your page &rsaquo;</a>' : '<a class="dg-tnav next" href="#/join">See all ten &rsaquo;</a>') + '</div></div>' +
+      (!member() ? '<div style="margin-top:22px">' + gated(skel('The other nine', 3), 'The other nine challenges', 'Location, branding, search, social, photos, reviews, the menu, community and burnout, ranked by owners.') + '</div>' : '');
   }
 
   // ---------- the Pulse: research and our interviews ----------
@@ -705,6 +707,25 @@
     if (top && window.VERegionDirectory) VERegionDirectory.wire(top, function (slug) { location.hash = '#/featured/listing/' + encodeURIComponent(slug); });
   }
   // The demo (door Guides, Sean 2026-11-04): a view-only sample restaurant, its page and its owner's dashboard. Nothing can be saved there.
+  ICON.dashboard = ICON.demo || ICON.audit;
+  // Their own dashboard, its own tab (Sean, 2026-11-04): the back of their page. Until they claim the page it shows the preview and the way to claim it.
+  function viewDashboard() {
+    var P = PERSONAL;
+    if (!P) { main.innerHTML = head('Your dashboard', 'Your dashboard', 'It opens on your own page. Use the link from your email.'); return; }
+    main.innerHTML = head('Your dashboard', esc(P.name),
+      'How many people look at your page, where they come from and what they do next, and where you update your page and menu. It opens fully when you claim your page.') +
+      '<div class="dg-btns" style="margin-bottom:12px"><a class="dg-btn" href="/claim?listing=' + encodeURIComponent(P.slug) + '">Claim this page</a><a class="dg-btn dg-ghost" href="#/demo">See a sample dashboard</a></div>' +
+      '<div class="dg-lframe"><iframe id="dgListingFrame" title="Your dashboard" src="/directory/' + encodeURIComponent(P.slug) + '?tab=brand"></iframe></div>';
+    var f = document.getElementById('dgListingFrame');
+    f.addEventListener('load', function () {
+      var d; try { d = f.contentDocument; } catch (e) { return; }
+      if (!d || !d.body) return;
+      var last = 0;
+      function fit() { var h = d.body.scrollHeight; if (Math.abs(h - last) < 2) return; last = h; f.style.height = Math.max(600, Math.min(20000, h)) + 'px'; f.setAttribute('scrolling', 'no'); }
+      fit();
+      if (window.ResizeObserver) new ResizeObserver(fit).observe(d.body);
+    });
+  }
   function viewDemo() {
     var steps = [
       ['Your page, as visitors see it', 'This is what a member sees when they find a restaurant: the story, hours, menu, photos and the vote.', ''],
@@ -812,7 +833,7 @@
   var LIST_SECS = [['Fixes', 'fixes', 'fix', '#/fixes'], ['Interviews', 'interviews', 'episode', '#/pulse'], ['Promotions', 'promotions', 'promo', '#/promos']];
   function viewMyList(sub) {
     var sec = LIST_SECS.filter(function (x) { return x[1] === String(sub || '').split('/')[0]; })[0] || LIST_SECS[0];
-    main.innerHTML = head('My list', 'My list', 'Everything you save in the Guide, in one place. Tap Save on any fix, interview or promotion.', toggles(LIST_SECS.map(function (x) { return [x[0], '#/mylist/' + x[1]]; }), sec[0])) +
+    main.innerHTML = head('My list', 'My list', 'Everything you save in the Guide, in one place. Tap Save on any challenge, interview or promotion.', toggles(LIST_SECS.map(function (x) { return [x[0], '#/mylist/' + x[1]]; }), sec[0])) +
       '<div id="dgML"><div class="dg-loading">Loading your list...</div></div>';
     var draw = function () {
       var el = document.getElementById('dgML'); if (!el) return;
@@ -963,7 +984,7 @@
         '<div class="dg-srows">' + [
           ['1', 'Run your free check', 'See how your place looks to people searching today, and what to fix first.'],
           ['2', 'Take the short survey', 'It tells us how to serve you, and it makes you a member.'],
-          ['3', 'The rest of the Guide opens', 'Your fixes, your page, and what is coming.']
+          ['3', 'The rest of the Guide opens', 'The top challenges owners face, your page, your dashboard, and what is coming.']
         ].map(function (x) { return '<div class="dg-srow"><span class="dg-th rg-th" aria-hidden="true" style="font-weight:900;font-size:20px;color:#1f5f22">' + x[0] + '</span><div class="dg-srow-b"><h3>' + esc(x[1]) + '</h3><p>' + esc(x[2]) + '</p></div></div>'; }).join('') + '</div>' +
         '<p class="dg-lede" style="margin:14px 0 0"><b>Free. No card. Stop any time.</b></p>' +
         '<h3 class="dg-k" style="margin:26px 0 8px">Who we are</h3>' +
@@ -974,7 +995,8 @@
       ['audit', PERSONAL ? 'Your business' : 'Your audit', 'A free check of your Google listing, website, search and social, and a list of what to work on first.'],
       ['featured', 'Claim your page', 'Your page already exists. Claiming makes it yours.'],
       ['demo', 'Try the demo', 'See what a page and its dashboard look like, on a sample restaurant.'],
-      ['fixes', 'The fixes', 'The top 10 things Vegan businesses run into, ranked by the owners who relate to them.'],
+      ['fixes', 'Top challenges', 'The top 10 things Vegan businesses run into. Tick the ones you relate to, ranked by owners.'],
+      ['dashboard', 'Your dashboard', 'How many people look at your page, where they come from and what they do next.'],
       ['pulse', 'Pulse', 'Our interviews with business owners, and the research behind them.'],
       ['promos', 'Promotions', 'The campaigns, events, features and ads that bring members through your door.']
     ];
@@ -988,7 +1010,8 @@
   // What to expect: what opens after the survey, each marked Live or Coming (never a planned thing as live).
   function viewExpect() {
     var rows = [
-      ['Your fixes', 'The top 10 things Vegan businesses run into, ranked by the owners who relate to them.', 'Live'],
+      ['Top challenges', 'The top 10 things Vegan businesses run into. Tick the ones you relate to and see how owners rank them.', 'Live'],
+      ['Your dashboard', 'How many people look at your page and what they do next. It opens fully when you claim your page.', 'Live'],
       ['Your Directory page', 'Your page already exists. Claim it, and keep your hours, photos and menu link current.', 'Live'],
       ['Our interviews', 'Business owners on what worked and what did not, and the research behind it.', 'Live'],
       ['Campaigns, events and features', 'The ways we bring members through your door. Each one says if it is live or coming.', 'Live and Coming'],
@@ -1006,7 +1029,7 @@
     var out = [];
     PUB.why.concat(MEM ? MEM.why : []).forEach(function (w) { out.push({ t: 'Pulse', title: w.title, text: w.text, href: '#/pulse/research' }); });
     if (!MEM) return out;
-    allFixes().forEach(function (f) { out.push({ t: 'The fixes', title: f.title, text: [f.problem].concat(f.list || []).concat([f.action]).join(' '), href: '#/fixes/' + f.id }); });
+    allFixes().forEach(function (f) { out.push({ t: 'Top challenges', title: f.title, text: [f.problem].concat(f.list || []).concat([f.action]).join(' '), href: '#/fixes/' + f.id }); });
     (PODS || []).forEach(function (p) { out.push({ t: 'Pulse', title: p.title, text: (p.podcast_show || '') + '. ' + (p.summary || ''), href: '#/pulse/listen/' + encodeURIComponent(p.slug) }); });
     PROMOS.forEach(function (p) { out.push({ t: 'Promotions', title: p.t, text: p.what + ' ' + p.why, href: '#/promos/' + p.k }); });
     return out;
@@ -1017,7 +1040,7 @@
     var hits = index().filter(function (h) { var hay = (h.title + ' ' + h.text).toLowerCase(); return words.every(function (w) { return hay.indexOf(w) >= 0; }); });
     var groups = {}; hits.forEach(function (h) { (groups[h.t] = groups[h.t] || []).push(h); });
     var html = crumb([['Search']]) + '<h2 class="dg-h1">' + hits.length + (hits.length === 1 ? ' result' : ' results') + ' for &ldquo;' + esc(q) + '&rdquo;</h2><div class="dg-res">';
-    ['The fixes', 'Pulse', 'Promotions'].forEach(function (g) {
+    ['Top challenges', 'Pulse', 'Promotions'].forEach(function (g) {
       if (!groups[g]) return;
       html += '<h2>' + esc(g) + ' (' + groups[g].length + ')</h2><div class="dg-grid">' + groups[g].slice(0, 24).map(function (h) {
         return '<a class="dg-card dg-hit" href="' + h.href + '"><h3>' + esc(h.title) + '</h3><p>' + esc(h.text.length > 160 ? h.text.slice(0, 157) + '...' : h.text) + '</p></a>';
@@ -1102,7 +1125,7 @@
     var parts = (location.hash || '').replace(/^#\/?/, '').split('/');
     var view = parts[0] || 'overview', sub = parts.slice(1).join('/');
     if (view === 'search' && (!sub || !member())) view = 'overview';
-    var known = { next: 1, overview: 1, audit: 1, expect: 1, fixes: 1, pulse: 1, featured: 1, demo: 1, promos: 1, mylist: 1, join: 1, search: 1 };
+    var known = { next: 1, overview: 1, audit: 1, expect: 1, fixes: 1, pulse: 1, featured: 1, dashboard: 1, demo: 1, promos: 1, mylist: 1, join: 1, search: 1 };
     if (!known[view]) view = 'overview';
     // Before the survey only Overview, Your audit, What to expect and Get in open (Sean, 2026-11-04); the rest open once the access check says member.
     if (access !== 'checking' && !member() && TABS.some(function (t) { return t.k === view && t.after; })) { view = 'join'; sub = ''; location.replace('#/join'); }
@@ -1120,7 +1143,7 @@
     if (view !== 'audit') auditView++;
     var bar = document.getElementById('vep-player');
     ({ next: function () { viewNext(sub); }, overview: viewOverview, expect: viewExpect, audit: function () { viewAudit(sub); }, fixes: function () { viewFixes(sub); }, pulse: function () { viewPulse(sub); },
-       featured: function () { viewFeatured(sub); }, demo: function () { viewDemo(sub); }, promos: function () { viewPromos(sub); },
+       featured: function () { viewFeatured(sub); }, dashboard: function () { viewDashboard(); }, demo: function () { viewDemo(sub); }, promos: function () { viewPromos(sub); },
        mylist: function () { viewMyList(sub); }, join: viewJoin, search: function () { viewSearch(decodeURIComponent(sub)); } })[view]();
     keepPlayer(bar);
     var moved = key !== curTab;
