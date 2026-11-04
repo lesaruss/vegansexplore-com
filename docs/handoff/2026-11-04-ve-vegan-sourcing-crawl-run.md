@@ -21,3 +21,10 @@ Sean: go with the defaults (packaging stays hidden; Cheeze and Thank You and The
 Bios for the 134 PETA rows, from each company's own site, no Google calls, labels unchanged: **97 have a bio** (33 of 38 PETA-Approved Vegan, 64 of 96 Offers vegan options). **37 have none**, with the reason in `bio_source` ("no bio: ..."): 17 site did not open, 5 site errors (400, 403, 404, 503), 3 bio length, 3 bio copied the site, 9 site not usable (under construction, script only, not the company). A spot check of 14, including Toray, Lenzing and DuPont (Sorona), shows no mixed-line company called Vegan.
 Script: `scripts/supabase-once/sourcing-bios.ts`; function `ve-once-sourcing-bios` is the 410 stub.
 **Not done:** the 37 without bios, more crawl queries ($33.82 of Google left), buy-or-make recipes, Pre-Vegan Business Guide, `ve-sourcing` with a signed-in member, merge of `claude/ecstatic-galileo-lth5gz`.
+
+## Update: retry of the 37 (Logan, 2026-11-04)
+
+The reader now tries the www, non-www and http forms of a site and gives the model three attempts on a bad length or a copied bio. **13 more bios: 110 of 134 PETA rows have one, 24 do not.** No Google calls; `ve-once-sourcing-bios` is the 410 stub again.
+Still without a bio (reason in `bio_source`): 6 sites did not open (BeWave, Everest Textile, Hung's Fortune, Mycel, Singtex, VEGEA); 5 site errors (Marikina Rubber 400, 3M Thinsulate and NatureWorks 403, THE LAB 808 404, NuDown 503); 3 bios that still copied the site (Climashield, Hemp Traders, Villani Leonello); 10 sites with nothing usable (Avinya, Autron, Aspen Aerogels, Rossi Lorenzo, Indorama, Vinni's Colours, Donglim, ReNewTex, TopLine, Wild Fibres).
+**Found:** TopLine's own site names only animal fibres, so its "Offers vegan options" label has no support; Wild Fibres' site says its store and fibre sales are closing. Both set `hidden` pending Sean.
+**Open for Sean:** whether TopLine stays off the PETA seed; whether the 24 without bios stay listed with name and website only (default: yes). Packaging wording, the two fully-vegan upgrades and the merge of `claude/ecstatic-galileo-lth5gz` are unchanged.
