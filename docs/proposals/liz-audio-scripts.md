@@ -52,5 +52,10 @@ Recorded with Vegan spelled "Veegan". Each line is about 20 seconds or less. Bef
 - **The Top challenges screen:** "The top 10 things Vegan businesses run into. This is not a review of your business. It is a checklist of the most common challenges. Tick the ones you relate to. The ranking comes from everyone who uses this Guide."
 - **Demo steps:** your page as visitors see it; your dashboard; Insights; your page; menu; ads and opportunities; your audit.
 
-## To record (after you approve)
-New or changed, needs a recording in Liz's roster-profile voice: 1, 2, 3, 5, 6, 7b, 8, 9. Already recorded and unchanged: 4, 7, 10, 11, 12.
+## Recorded 2026-11-04 (Sean approved the script; playbook `ve-restaurant-guide`)
+Liz's roster-profile voice `IUMUPi350HfIhyzUBJB3`, `eleven_multilingual_v2`, Vegan spelled "Veegan", el-media `tts` called from the database (pg_net),
+each checked word for word with el-media `stt` (differences: punctuation, "guide" lowercase, "stop anytime", "Greenleaf"). In `vegan-media/media/liz/restaurant-guide/`:
+`door-overview-v2` (1), `door-audit-v2` (2), `door-expect-v1` (3), `door-overview-member-v1` (5), `door-fixes-v1` (6), `door-dashboard-v1` (7b),
+`door-featured-v2` (8), `door-demo-v2` (9). A changed line is a new version, so the four that replace older clips are `-v2`; the old `-v1` files stay.
+Wired in `AUDIO_V` (visitor: overview, audit, expect, join) and `AUDIO_M` (member: overview, fixes, dashboard, featured, demo, next) in the Guide script,
+with each tab's `say` set to the script text. Pulse, Promotions and My list still use their old clips and have no new recording.
