@@ -6343,3 +6343,14 @@ stops landing.
 Push to `main` on `lesaruss/vegansexplore-com`. Vercel auto-deploys.
 Commit author must be `Sean A. Russell <contact@lesaruss.com>`.
 Vercel project: `vegansexplore-com`, team: `team_G2qO2cUYl8ZmeOMaamFvY8C6`.
+
+## Vegan sourcing: one directory, two Guides (LOCKED by Sean 2026-11-04, playbook `ve-vegan-sourcing-guide`)
+
+Concept session with V, locked by Sean: "lock it" (canon `canon-ve-vegan-sourcing`; migration `20261104_vegan_sourcing_canon.sql`; handoff
+`docs/handoff/2026-11-04-ve-vegan-sourcing-locked.md`). **Not built yet.** PETA's Guide to Vegan Suppliers and Manufacturers (Oct 2026) is business-side,
+not a shopping shelf. One shared sourcing directory, hidden from the shoppers' Directory (the `lesaruss-ai-directory-candidate` kind of hiding), feeds
+a **Sourcing tab in the Vegan Restaurant Guide** (buy or make each item; Cookbook recipes labeled home scale) and a new **Pre-Vegan Business Guide**
+(coffee shops, gyms, juice bars, any business adding vegan; Pascal; not the consumer Pre-Vegan Guide). Seed: 134 PETA-guide suppliers, 38 starred
+(`docs/suppliers/peta-guide-2026-10-names.csv`, names and websites only; bios from each company's own site, never PETA's words, contacts or photos).
+Labels: PETA-Approved Vegan, Fully vegan company, Offers vegan options; never call a mixed-line company fully vegan. Never promise sales or no backlash;
+tasting nights are "coming" until one has run; featuring never buys rank. Open: the Pre-Vegan Business Guide's price and door wording.
