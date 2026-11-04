@@ -64,7 +64,7 @@
     { k: 'expect', label: 'What to expect', pre: 1, say: 'Here\'s what opens when you\'re in. The top challenges: the things Vegan business owners run into, so you can tick the ones that sound like you. Your page: it already exists, and you can claim it. Your dashboard: how many people look at your page. Our interviews with other owners. And the campaigns and events that bring people to your door. Some of this is live now and some is coming, and each one tells you which. When you\'re ready, take the short survey.' },
     { k: 'fixes', label: 'Top challenges', after: 1, say: 'These are the top ten things Vegan businesses run into. This isn\'t a review of your restaurant. It\'s a checklist of the most common ones. Tick the ones you relate to, and you\'ll see which come up most for owners. Open any one to see what to do this week.',
       sayMember: 'These are the top ten things Vegan businesses run into. This isn\'t a review of your restaurant. It\'s a checklist of the most common ones. Tick the ones you relate to, and you\'ll see which come up most for owners. Open any one to see what to do this week.' },
-    { k: 'pulse', label: 'Pulse', after: 1, say: 'Here are our interviews with Vegan business owners: what worked, what didn\'t, and the research behind it. New ones keep coming.',
+    { k: 'pulse', label: 'Pulse', after: 1, say: 'Every business interview we\'ve recorded is here, with the research. Play any of them right here. We keep adding more.',
       sayMember: 'Every business interview we\'ve recorded is here, with the research. Play any of them right here. We keep adding more.' },
     { k: 'featured', label: 'Claim your page', after: 1, say: 'This is your page, just as members see it. It\'s already in the Directory. Click around. When you claim it, it\'s yours: your hours, your photos and your menu link, changed whenever you like.',
       sayMember: 'This is your page, just as members see it. It\'s already in the Directory. Click around. When you claim it, it\'s yours: your hours, your photos and your menu link, changed whenever you like.' },
@@ -72,7 +72,7 @@
       sayMember: 'This is your dashboard. It shows how many people look at your page, where they come from, and what they do next. It opens fully once you claim your page.' },
     { k: 'demo', label: 'Try the demo', after: 1, say: 'This is Green Leaf Kitchen, a sample restaurant, so you can look around without touching anything real. Pick a step and it opens full screen: the page as visitors see it, your dashboard, your Insights, your page, your menu, your ads and opportunities, and your audit. Close it whenever you\'re done. Yours starts with your own page.',
       sayMember: 'This is Green Leaf Kitchen, a sample restaurant, so you can look around without touching anything real. Pick a step and it opens full screen: the page as visitors see it, your dashboard, your Insights, your page, your menu, your ads and opportunities, and your audit. Close it whenever you\'re done. Yours starts with your own page.' },
-    { k: 'promos', label: 'Promotions', after: 1, say: 'We run campaigns, events, features and ads that bring members through your door. Here\'s what each one does for a restaurant.',
+    { k: 'promos', label: 'Promotions', after: 1, say: 'These are the promotions open to you, from events to features to campaigns. Pick what fits, or ask our team to plan it with you.',
       sayMember: 'These are the promotions open to you, from events to features to campaigns. Pick what fits, or ask our team to plan it with you.' },
     { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you saved is right here: top challenges, interviews and promotions, so you can pick up where you left off.' },
     { k: 'next', label: 'What\'s next', mine: 1, say: 'You are in. Thank you. Here is what you can do next. Claim your page, open your dashboard, and follow us so we can follow you back.',
@@ -100,7 +100,7 @@
   // Her voice over her picture (door copy, 2026-11-04): el-media tts in her roster-profile voice, one mp3 a tab for visitors.
   // A line's text must match its recording; a changed line is a new version (-v2). Checked word for word with stt, 2026-11-04.
   var AUDIO_V = { overview: 'overview-v2', audit: 'audit-v2', expect: 'expect-v1', join: 'join-v1' };
-  var AUDIO_M = { overview: 'overview-member-v1', fixes: 'fixes-v1', dashboard: 'dashboard-v1', featured: 'featured-v2', demo: 'demo-v2', next: 'next-v1' };
+  var AUDIO_M = { overview: 'overview-member-v1', fixes: 'fixes-v1', dashboard: 'dashboard-v1', featured: 'featured-v2', demo: 'demo-v2', pulse: 'pulse-v1', promos: 'promos-v1', mylist: 'mylist-v1', next: 'next-v1' };
 
   // What we run for restaurants (Sean, 2026-10-10). Never show a planned thing as live: each says Live or Coming.
   var PROMOS = [

@@ -58,4 +58,4 @@ each checked word for word with el-media `stt` (differences: punctuation, "guide
 `door-overview-v2` (1), `door-audit-v2` (2), `door-expect-v1` (3), `door-overview-member-v1` (5), `door-fixes-v1` (6), `door-dashboard-v1` (7b),
 `door-featured-v2` (8), `door-demo-v2` (9). A changed line is a new version, so the four that replace older clips are `-v2`; the old `-v1` files stay.
 Wired in `AUDIO_V` (visitor: overview, audit, expect, join) and `AUDIO_M` (member: overview, fixes, dashboard, featured, demo, next) in the Guide script,
-with each tab's `say` set to the script text. Pulse, Promotions and My list still use their old clips and have no new recording.
+with each tab's `say` set to the script text. Later the same day: `door-pulse-v1` (7), `door-promos-v1` (10) and `door-mylist-v1` (11), checked the same way (My list: "Everything you saved is right here. Top challenges, interviews, and promotions..." is punctuation only). Every tab now has a recording.
