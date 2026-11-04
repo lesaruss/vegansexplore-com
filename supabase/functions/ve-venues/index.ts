@@ -182,7 +182,7 @@ Deno.serve(async (req) => {
   // ---------- anyone ----------
   if (action === 'list') {
     let vs: any[] = [];
-    try { vs = await allRows(() => db.from('ve_venues').select('id, slug, name, kind, city, state, hub, teams, free_example, latitude, longitude, address, chain_listing_id, sort_order, image_url, season_reset_at, created_at')
+    try { vs = await allRows(() => db.from('ve_venues').select('id, slug, name, kind, city, state, hub, teams, free_example, latitude, longitude, address, chain_listing_id, sort_order, image_url, season_reset_at, created_at, resort')
       .eq('status', 'live').in('kind', GUIDES[GUIDE]).order('sort_order').order('id')); }
     catch (e) { return json({ error: 'list_failed', message: (e as Error).message }, 500); }
     const ids = vs.map((v) => v.id);
@@ -211,6 +211,7 @@ Deno.serve(async (req) => {
     }
     return json({ me, venues: (vs || []).map((v) => ({ slug: v.slug, name: v.name, kind: v.kind, city: v.city, state: v.state, hub: v.hub,
       teams: v.teams, free: v.free_example, can_report: v.latitude != null, image: v.image_url, added: v.created_at, sort_order: v.sort_order, sponsored: fullPay(v, sponsored),
+      ...(v.kind === 'theme_park' ? { lat: v.latitude, lng: v.longitude, resort: v.resort || null } : {}),
       ...(v.kind === 'supermarket' ? { lat: v.latitude, lng: v.longitude, address: v.address, chain: chains[v.chain_listing_id] ? { slug: chains[v.chain_listing_id].slug, name: chains[v.chain_listing_id].name, logo_url: chains[v.chain_listing_id].logo_url } : null } : {}),
       ...(counts[v.id] || { items: 0, confirmed: 0, last: null, bounties: 0 }) })),
       points: await reportPoints(), limits: await bountyLimits() });
@@ -270,7 +271,7 @@ Deno.serve(async (req) => {
     const open = owns || v.free_example;
     const full = fullPay(v, await sponsoredChains());
     const [{ data: spots }, { data: items }] = await Promise.all([
-      db.from('ve_venue_spots').select('id, name, kind, where_text, zone, listing_id, note, sort_order, map_sections, map_level').eq('venue_id', v.id).eq('status', 'live').order('sort_order'),
+      db.from('ve_venue_spots').select('id, name, kind, where_text, zone, listing_id, note, sort_order, map_sections, map_level, latitude, longitude, land').eq('venue_id', v.id).eq('status', 'live').order('sort_order'),
       db.from('ve_venue_items').select('id, spot_id, name, description, vegan, sources, last_confirmed_at, confirmed_count, photo_url, photo_illustrative, sort_order, gtin')
         .eq('venue_id', v.id).eq('status', 'live').order('sort_order'),
     ]);
@@ -297,6 +298,7 @@ Deno.serve(async (req) => {
       maps: v.google_place_id ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(v.name)}&query_place_id=${v.google_place_id}` : null,
       note: v.note, note_source_url: v.note_source_url, free: v.free_example, can_report: v.latitude != null, radius_m: v.radius_m,
       season_reset_at: v.season_reset_at, layout: open ? v.layout : null, image: v.image_url, lat: v.latitude, lng: v.longitude, sponsored: full,
+      resort: v.resort || null, menu_url: v.menu_url || null,
       chain: v.chain_listing_id ? (await db.from('listings').select('slug, name, logo_url').eq('id', v.chain_listing_id).maybeSingle()).data : null };
     const outSpots = (spots || []).map((s) => {
       const its = (items || []).filter((i) => i.spot_id === s.id);
@@ -304,6 +306,8 @@ Deno.serve(async (req) => {
         id: s.id, name: s.name, kind: s.kind || 'food', where: s.where_text, zone: s.zone, note: s.note,
         // The map's pins and level only for an open venue, like its items.
         map_sections: open ? (s.map_sections || []) : [], map_level: open ? s.map_level : null,
+        // A theme park's restaurants are pinned by their own coordinates (Google's placement, checked by Sean), and sit in a land.
+        land: s.land || null, lat: open ? s.latitude : null, lng: open ? s.longitude : null,
         listing: s.listing_id && listings[s.listing_id] ? { slug: listings[s.listing_id].slug, name: listings[s.listing_id].name, logo_url: listings[s.listing_id].logo_url } : null,
         item_count: its.length,
         items: open ? its.map((i) => ({ id: i.id, name: i.name, description: i.description, vegan: i.vegan, sources: i.sources,
