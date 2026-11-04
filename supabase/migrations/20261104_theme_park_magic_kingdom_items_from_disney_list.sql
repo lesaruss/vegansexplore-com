@@ -1,0 +1,10 @@
+-- ve-theme-park-guide: Magic Kingdom items follow Disney's own plant-based list for the park (as shown to Sean 2026-11-04).
+-- Item names only. An item on that list is Vegan with that source and date; draft items it does not carry are marked gone
+-- (kept, not deleted). Applied through the connector; 41 live items on 15 restaurants afterwards.
+-- The list: Aloha Isle 1; Be Our Guest 3; Casey's Corner 2; Cinderella's Royal Table 4; Columbia Harbour House 1; Cosmic Ray's 1;
+-- The Crystal Palace 14; Skipper Canteen 3; Liberty Tree Tavern 3; Pecos Bill 1; Pinocchio Village Haus 1; The Plaza Restaurant 3;
+-- Sunshine Tree Terrace 1; Tony's Town Square 3. The Diamond Horseshoe and Liberty Square Market are on Disney's list but are not
+-- among our 24 spots. Steps: (1) mark unlisted draft items gone, (2) set listed items Vegan and add Disney's page as first source,
+-- (3) insert listed items we did not hold, (4) sort order follows the list, (5) menu_url = Disney's Magic Kingdom dining page.
+-- The statements as run are in the playbook record for ve-theme-park-guide (2026-11-04) and in the migration history
+-- as theme_park_magic_kingdom_items_from_disney_list.
