@@ -17,3 +17,11 @@ Table `ve_suppliers` (own table, not `listings`), 134 PETA suppliers loaded (38 
 **Finding:** the PETA list is fashion and beauty materials, so a restaurant sees only the Materials domain live. The tab is honest about it (every other domain says Coming), but it is not useful to a restaurant until food, ingredient, packaging and co-packer suppliers are crawled.
 
 **Next:** crawl those suppliers (Google under the $50 cap, quote first, bios from each company's own site), then buy or make recipes, then the Pre-Vegan Business Guide on its own playbook. Unproven: `ve-sourcing` with a real signed-in member.
+
+## Wrap-up (Logan, 2026-11-04)
+
+Everything above is on branch `claude/ecstatic-galileo-lth5gz`, **not on main**. Sean merges it. Files: `supabase/migrations/20261104_ve_suppliers.sql`, `20261104_vegan_sourcing_canon.sql`, `20261104_vegan_sourcing_wrapup.sql`; `supabase/functions/ve-sourcing/index.ts` (deployed v1 through the connector, no sha check); `guide-scripts/vegan-restaurant-guide.js` and `guides/vegan-restaurant-guide.html` (the Sourcing tab); `docs/suppliers/peta-guide-2026-10-names.csv`.
+
+**Not proven:** `ve-sourcing` with a real signed-in member (the build session has no live token; with no token it answers 401). The tab was checked in a browser against mocked answers only.
+
+**Paste prompt for a new chat:** ve-vegan-sourcing-guide: crawl food, drink, ingredient, packaging and co-packer suppliers into `ve_suppliers` (domains food_drink, ingredients, packaging, co_packing), labels PETA-Approved Vegan / Fully vegan company / Offers vegan options, never fully vegan for a mixed line; bios in our words from each company's own site; Google under the $50 cap with a quote first (`ve_google_approve`). Read the playbook `ve-vegan-sourcing-guide`, canon `canon-ve-vegan-sourcing` and `docs/handoff/2026-11-04-ve-vegan-sourcing-locked.md` first.
