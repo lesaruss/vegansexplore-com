@@ -495,6 +495,10 @@ for businesses that is a squeeze page for them."
   made in Higgsfield 2026-10-28, illustrative like the restaurant) are on the page and its Photos tab, so its dashboard's Get your
   page ready shows them done. A listing's photos (`gallery_urls`) may be full https links or paths on this site.
 
+## BrandDesk is HQ with a friendlier layout: Blueprint, Signal, People (LOCKED by Sean 2026-11-04, playbook `branddesk-production-wing`)
+
+Locked: "lock it" (canon `canon-branddesk-blueprint-signal`; migration `20261104_branddesk_blueprint_signal_canon.sql`; full write-up `docs/proposals/branddesk-blueprint-signal.md`). **Not built yet.** A brand's tabs become Overview, Brand kit, **Blueprint** (was Plan: About, Playbooks and guides, Calendar, Done, Ideas), Social, **People**, **Signal** (was Web, plus Search Console and the technical fixes) and Insights. A playbook opens in place, a guide in a new window, and every guide has the playbook behind it. Sean's own system replaces EOS (Blueprint Score as the health score, the 4 Levels as the sorter, the 90 Day Action Plan, weekly huddles; source: the shared drive `02 Frameworks & Systems`). The 100 promise is **only on the managed subscription** (site on our platform); DIY gets scores and no promise. Build order: rename and the list, Signal read-only (connect Search Console first), auto-fix on sites we host, Scorecard, People, a client's own login on LESARUSS.ai. The ve-feedback queue becomes the Blueprint's Ideas view once it exists.
+
 ## BrandDesk, the production wing (LOCKED by Sean 2026-11-01, playbook `branddesk-production-wing`)
 
 Concept session with V, locked by Sean: "lock it" (canon `canon-branddesk-production-wing`; migration
