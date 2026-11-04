@@ -5090,6 +5090,33 @@ page says it: slides The preview and With a sponsor (`business/supermarkets.html
   bounties exist only at sponsored chains, so today Open bounties shows the stadiums and airports. Proven 2026-11-01 as the Logan test
   account (two scans logged, an add approved for 25 points and shown on the Tracker).
 
+## The Vegan Theme Park Guide (LOCKED by Sean 2026-11-04, playbook `ve-theme-park-guide`)
+
+Concept session with V, locked by Sean: "lock it" (canon `canon-ve-theme-park-guide`; migration `20261104_theme_park_guide_spend_budget_canon.sql`; handoff
+`docs/handoff/2026-11-04-ve-theme-park-guide.md`). **Not built yet.** Sean: "Theme park guide. A growing number of different theme parks, starting with the
+most popular... put pins where the restaurants are... whatever restaurant they're in, they can do the location thing, put where they are on the map and see
+the distance. It will be a paid guide, but they get one theme park on it."
+
+- **One Guide for every park, on the venue Guides' engine** (`ve-venues`, see Venue Guides): a park is a venue (new kind `theme_park`; the `ve_venues` kind
+  check allows only stadium, arena, airport and supermarket today), each restaurant a spot with a pin, each dish an item labelled Vegan, Vegan on request or
+  Ask before you order, with a source and a last-confirmed date. Reports, first-to-confirm bounties and the 35-day stale rule are reused. Copy
+  `guides/stadium-arena-guide.html` and `guide-scripts/stadium-arena-guide.js` (template gate), never a blank file.
+- **$11 or 1,100 points, Magic Kingdom free.** Wave 1 (Central Florida, Tampa Bay is inside the chapter): Magic Kingdom, EPCOT, Animal Kingdom, Hollywood
+  Studios, Universal Studios Florida, Islands of Adventure; later SeaWorld, Busch Gardens Tampa, LEGOLAND Florida, then other chapters. Pilot first.
+  River narrates (lines are text drafts; Dani is the alternative). Name: The Vegan Theme Park Guide; park names are plain text with a not-affiliated line.
+- **The map**: our own schematic, never the park's map art. Parks are outdoors, so GPS works: a you-are-here dot with an accuracy ring and a distance to each
+  restaurant in feet and miles, straight line times about 1.3 and labelled "about N on foot", never turn-by-turn. The location-check radius is set per park
+  from the farthest pin plus 100 m (`radius_m` accepts 50 to 5000; guesses: Magic Kingdom about 700 m, EPCOT about 1,000 m).
+- **Votes** are on spots and dishes inside the Guide (`ve_guide_votes`, new kinds), not Directory listings. **Menus**: Vegan and Vegan-on-request items only,
+  with a link to the park's own menu. **Sources**: no crawler on park sites until their terms are read; read published menus one by one, keep item names and
+  the park's own plant-based marker with a source link and date, never copy descriptions or photos, never infer. **Pictures**: from approved member reports;
+  no generated pictures of named park dishes; no park logos or characters; our Guides only, in the Vegans Explore Tee or store clothing.
+- **Google** runs under the $50 cap (Google costs): the pilot is about 25 searches plus 70 details (about $2.75 at list), wave 1 about 570 calls (about $16),
+  both estimates. Approve each scan with `ve_google_approve('once:<task>', ...)`. Risk: Google may snap in-park pins to the park centre; OpenStreetMap (free,
+  ODbL attribution) is untested. **No sponsors now** (the Supermarket rule).
+- **Build order**: the `theme_park` migration, the Magic Kingdom pilot import with pins checked by eye, the page and GPS park map (`VEParkMap`), menu
+  sourcing, reports and bounties and votes, waves 2 and 3, launch per `docs/guides/BUILD-A-GUIDE.md`.
+
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 
 "As we're bringing different products into these guides, it should automatically map to a supermarket
