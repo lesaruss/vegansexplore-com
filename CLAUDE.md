@@ -2999,6 +2999,70 @@ continue to put those guides in front of people's faces. And if they already pur
   first.
 - Tracked like the house banners: views and clicks per Guide per listing.
 
+## The Social tab, and the Guide tab is now Resources (Sean, 2026-11-03)
+
+"A Social tab on every Directory listing... Featured by us, pinned first and locked in... Their top posts"; then "instead of us trying to scan
+everybody's page... unlocked once somebody claims their profile... a way for them to input the information, and then it does it", and "any
+claim unlocking top posts". Migration `20261103_listing_posts.sql`; edge function `ve-listing-posts`; Depot > Content > **Social posts**
+(`/admin/depot/listing-posts`, copied from the mentions page).
+
+- **Resources** (was the Guide tab): `public/ve-guide-tab.js` labels the tab **Resources** ("so we can put whatever we want on it later").
+  Its key, address (`?tab=guide`), Guide content and tracking (promo `gt-<guide slug>`, cta `tab`) are unchanged.
+- **The Social tab** (`loadSocialTab` in `directory/listing.html`): right after Menu, shown only when we hold posts for the listing (never
+  an empty tab), not on LESARUSS.ai or in a demo. **Featured by us** first (newest, 8 and Show all, `?sfeat=all`), then **Their top posts**
+  (pinned first, then likes plus comments, 10 a page, `?tab=social&spage=2`), each tile the Directory's card family with a two-row caption
+  clamp that opens the post on Instagram in a new tab (no embedding: that needs Meta embed access, tokens still pending). An unclaimed
+  listing with no posts of its own shows **Is this your page?** to `/business?listing=`. Rows come from `ve_listing_posts` (RLS: anyone reads
+  `status = 'shown'`); the page never asks Instagram.
+- **Featured by us is matched in the database** (`ve_listing_posts_build`, cron `ve-listing-posts-build` daily 08:37 UTC), the way
+  `ve_content_mentions_build` matches the Pulse: a tagged handle, a post by the listing's own handle (a collab), the listing's website in the
+  caption, then its full name as whole words (two words or more, a stop list and no generic "vegan <word>" names). Our own shows and hosts
+  are left out (`c_skip_slug`, `c_skip_handle`). One row a post and listing; `ve_ig_handle()` reads `@handle` or an Instagram URL. A shown row
+  the scan no longer supports goes; **hidden and removed rows never come back**. Built from the May 2026 scan (`ve_instagram_posts`, 1,965
+  posts from @soflovegans and @vegansexplore): 1,661 rows across 251 listings on 2026-11-03 (tag, owner, link and name matches). Wrong
+  matches come off in Depot > Social posts.
+- **Their top posts are for claimed listings only** (`owner_member_id` set, any claim, member or Partner, Logan's default). The handle is the
+  Instagram on the owner's Contact step; `weekly` (cron `ve-listing-posts-weekly`, 07:17 UTC) signs every claimed listing with a valid
+  handle up in `ve_listing_social` and reads its recent posts (Apify `instagram-scraper`, `listing_social.max_posts` 40, a post by the handle
+  only), 3 listings a run, again after `refresh_days` (7), at most `daily_listing_cap` (20) listings a day, three failures stop it. **Nothing
+  is fetched from Apify until `ve_site_settings` `listing_social.scrape_on` is true** (false on 2026-11-03: Sean's go, after the per-listing
+  cost quote). "Top" is the top of the recent posts the scraper returns, not all time, and the page says so. No view counts except where a
+  source gives them (`view_count`); Instagram's -1 for hidden likes shows no likes figure.
+- **The owner's Social step** (Edit your page is five steps now: About, Hours, Contact and links, **Social**, Logo and photos;
+  `?edit=social`, `oeSocial` in `directory/listing.html`): their posts with **Hide**, **Show**, **Pin**, **Read my page now** (once a day,
+  `manual_refresh_hours`) and **Stop showing my Instagram posts** (`ve_listing_social.paused`, which hides them). Featured by us is theirs to
+  see but never theirs to hide ("locked in"). `ve-listing-posts` `owner_get`, `owner_post`, `owner_pause`, `owner_refresh` (member token, the
+  listing's `owner_member_id` or a super admin). `admin_list`, `admin_set`, `admin_fetch`, `admin_thumbs` for the Depot.
+- **Pictures are copied into our storage** (the logo rule): `thumbs` (cron `ve-listing-posts-thumbs`, every 10 minutes, 20 a run) copies each
+  post's picture to `vegan-media/media/social-posts/<shortcode>.<ext>`, one failure waits 30 days. **Found 2026-11-03: every picture link
+  in the May scan had expired by 2026-05-13** (Instagram's `oe=` stamp), so the 1,661 featured tiles show the Instagram mark and caption
+  until their pictures are read again. Reading them again is a paid Apify run of the matched posts' URLs (721 distinct posts, not 580).
+- **The picture refresh for the featured posts** (deployed and **running, not finished**, 2026-11-03; Sean: "go ahead" after the quote):
+  `ve-listing-posts` `admin_refresh_quote` (free: counts the posts with no picture, estimates `apify_usd_per_1000_results` (default 2.30,
+  list price, unverified) and reads Apify's plan and usage) and `admin_refresh_run` (batches of `refresh_batch` 25, Apify `instagram-scraper`
+  on the post links, copies each picture to storage; needs `listing_social.refresh_ours_on` true AND `confirm` at least the quote's post
+  count). Quote 2026-11-03: **721 posts, about $1.66, Apify plan Starter ($29 a month, $12.98 used, $16.02 room, cycle ends 2026-11-06)**.
+  A batch takes about 40 to 60 seconds and returned 25 of 25 pictures. The Depot actions take `LESARUSS_ADMIN_TOKEN` (ops, `admin_*` only,
+  never the owner's) as well as a super admin session. The run is driven by a **temporary pg_cron job 111 `ve-listing-refresh-tmp`**
+  (every minute; the setting `ve_site_settings` `tmp_refresh_req` holds the last pg_net request id): it fires the next batch only when the
+  previous response is back and `{"ok":true`, stops (does nothing) on any error, and unschedules itself when `remaining` is 0. A batch hit
+  `504 IDLE_TIMEOUT` once after a redeploy during it (never redeploy `ve-listing-posts` while it runs); the job halted, 546 posts were
+  left, and one batch was fired again by hand. **When it is done**: delete job 111 if still there, delete the `tmp_refresh_req` setting, set
+  `listing_social.refresh_ours_on` back to false (`scrape_on` stays false), count `thumb_url` rows and `thumb_error` rows ("Not returned by
+  the reader" means the post is gone), and look at a Social tab. Never run a second refresh at once: two overlapping calls pick the same posts.
+- **Paused is its own status** (2026-11-03, migration `20261103_listing_posts_paused.sql`; Sean: "do the paused status too"). `ve_listing_posts.status`
+  is shown, hidden, **paused** or removed. **Stop showing my Instagram posts** moves shown posts to `paused` (pins kept) and Show again moves
+  only `paused` ones back; `hidden` is only ever the owner's own choice, so Resume never re-shows what they hid. While paused the owner
+  cannot Hide, Show or Pin (`owner_post` answers 409 `paused`) and `fetchTheirs` pulls no new posts (`paused`); the owner's screen says so and
+  dims the posts. Public read is still `status = 'shown'`. Proven live as Sean on the Vegans Explore Podcast listing with three test posts
+  (pinned, hidden by hand, plain): Pause gave paused+pin, hidden, paused; an edit was refused 409; Resume gave shown+pin, hidden, shown; the
+  public saw only the two shown. Not proven: `fetchTheirs`' paused guard (needs `scrape_on`, which is off).
+- **Owner Social step proven live 2026-11-03** (a one-time session as Sean, then the 410 stub `ve-once-listing-posts-proof`): owner_get, hide, show,
+  pin, a bad op, pause and resume, the refresh refused 409 while `scrape_on` is false, a non-owner (Logan test account) refused 403 on get and
+  post, no token 401, a non-admin refused on `admin_list`. Not yet seen in a browser: no preview deploy of the branch was checked.
+- Not built yet: Instagram only (no TikTok, YouTube or Facebook rows, the table allows `network` instagram), a Meta "Connect Instagram"
+  button (real metrics, views and embeds, once the tokens are in), SEO data for the tab, and the other brands' listings.
+
 ## The Nutrition Guide (Sean, 2026-10-31: "build the Nutrition Guide")
 
 **Launched 2026-10-31** (Sean: "lines are good, launch the Nutrition Guide"; migration `20261031_nutrition_guide_launch.sql`). The

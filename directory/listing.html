@@ -364,6 +364,32 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .tab-btn:hover{color:var(--ve-text)}
 .tab-btn.active{color:var(--ve-green-dark);border-bottom-color:var(--ve-green)}
 .tab-btn:focus-visible{outline:2px solid var(--ve-green);outline-offset:-2px}
+/* The Social tab (Sean, 2026-11-03): Featured by us, then Their top posts. Full width; posts are a grid of the Directory's card family. */
+.sc-pad{padding:32px 40px 44px}
+.sc-sec+.sc-sec{margin-top:40px}
+.sc-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 14px;margin:0 0 14px}
+.sc-h h3{font-size:18px;font-weight:900;margin:0}
+.sc-h span{font-size:13px;color:var(--ve-text-75)}
+.sc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:16px}
+.sc-t{display:flex;flex-direction:column;background:#fff;border:1px solid var(--ve-border);border-radius:10px;overflow:hidden;color:inherit;text-decoration:none}
+.sc-t:hover{border-color:rgba(0,0,0,.28)}
+.sc-img{position:relative;aspect-ratio:1/1;background:#EAF7EA}
+.sc-img img{display:block;width:100%;height:100%;object-fit:cover}
+.sc-img.ph{aspect-ratio:16/9}
+.sc-ph{position:absolute;inset:0;display:flex;flex-direction:column;gap:6px;align-items:center;justify-content:center;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#1f5f22}
+.sc-kind{position:absolute;top:8px;left:8px;background:rgba(0,0,0,.74);color:#fff;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:6px}
+.sc-pin{position:absolute;top:8px;right:8px;background:#fff;color:#1f5f22;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:6px}
+.sc-b{padding:12px 14px 14px;display:flex;flex-direction:column;gap:8px}
+.sc-cap{margin:0;font-size:13.5px;line-height:1.45;min-height:calc(2 * 1.45em);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sc-m{display:flex;flex-wrap:wrap;gap:2px 12px;font-size:12px;font-weight:700;color:var(--ve-text-75)}
+.sc-more{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;margin-top:18px}
+.sc-more button,.sc-more a{font:inherit;font-size:13px;font-weight:800;min-width:44px;min-height:44px;padding:0 14px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff;color:inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.sc-more button[aria-current="page"]{background:var(--vb-go-hover,#1f5f22);border-color:var(--vb-go-hover,#1f5f22);color:#fff}
+.sc-more button:disabled{opacity:.4;cursor:default}
+.sc-note{font-size:13px;color:var(--ve-text-75);margin:14px 0 0}
+.sc-claim{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;background:#f4f8f4;border:1px solid rgba(31,95,34,.18);border-radius:10px;padding:14px 16px}
+.sc-claim b{display:block;font-size:15px}.sc-claim span{font-size:13px;color:var(--ve-text-75)}
+@media (max-width:600px){.sc-pad{padding:24px 16px 36px}}
 .tab-panel{display:none}
 .tab-panel.active{display:block}
 
@@ -3627,10 +3653,10 @@ function loadPartnerHome(l){
   VEPartnerDash.mount(el, l, { editPage: function(step){ ownerEditGo(el, l, step); } });
 }
 
-// ---- The owner edits their page (Sean, 2026-10-10). Four steps, one per view (?edit=about|hours|contact|photos), Back /
+// ---- The owner edits their page (Sean, 2026-10-10). Five steps since 2026-11-03, one per view (?edit=about|hours|contact|social|photos), Back /
 // Step N of M / Next at the bottom; Next saves the step (ve-claims owner_update), photos save as they upload. Changes go
 // live at once and each one is logged (ve_listing_edits) so Vegans Explore can undo it.
-var OE_STEPS = [['about', 'About'], ['hours', 'Hours'], ['contact', 'Contact and links'], ['photos', 'Logo and photos']];
+var OE_STEPS = [['about', 'About'], ['hours', 'Hours'], ['contact', 'Contact and links'], ['social', 'Social'], ['photos', 'Logo and photos']];
 var OE_DATA = null;
 function ownerEditGo(el, l, step){
   var u = new URL(location.href);
@@ -3666,6 +3692,50 @@ function oeCall(body){
   return fetch(SUPABASE_URL + '/functions/v1/ve-claims', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) })
     .then(function(r){ return r.json(); }).catch(function(){ return { error: 'network' }; });
 }
+// The owner's Social step (Sean, 2026-11-03: "get unlocked once somebody claims their profile... a way for them to input the information, and
+// then it does it"). Any claim unlocks it: the handle is the Instagram on the Contact step; we pull their recent posts (when the team has
+// switched that on, weekly) and show the top ones on their Social tab. They can hide, pin or pause. ve-listing-posts owner_* actions.
+function oeSocialCall(body){
+  return fetch(SUPABASE_URL + '/functions/v1/ve-listing-posts', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) })
+    .then(function(r){ return r.json(); }).catch(function(){ return { error: 'network' }; });
+}
+function oeSocial(el, l, D, msg){
+  var box = document.getElementById('oe-social'); if(!box) return;
+  function draw(){
+    oeSocialCall({ action: 'owner_get', listing_id: l.id }).then(function(d){
+      if(!d || !d.ok){ box.innerHTML = '<p class="bd-small">We could not open this just now. Try again in a moment.</p>'; return; }
+      if(!d.handle){ box.innerHTML = '<p class="bd-small" style="margin:0 0 10px"><b>Add your Instagram first.</b> Your Social tab shows your top Instagram posts. Go Back to Contact and links, enter your handle, and come back here.</p>'; return; }
+      var when = d.last_fetch_at ? new Date(d.last_fetch_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
+      var h = '<p class="bd-small" style="margin:0 0 12px">Your Social tab shows your top posts from <b>@' + esc(d.handle) + '</b>, ranked by likes and comments, with the posts we feature pinned first. ' +
+        'We read your recent public posts about once a week' + (when ? ' (last read ' + esc(when) + ')' : '') + '. Hide any you do not want shown, or pin your favorites.</p>';
+      if(!d.switched_on) h += '<p class="bd-small" style="margin:0 0 12px"><b>Coming soon:</b> your posts appear here the first time we read your page. Nothing else for you to do.</p>';
+      else if(d.note) h += '<p class="bd-small" style="margin:0 0 12px">' + esc(d.note) + '</p>';
+      if(d.paused) h += '<p class="bd-small" style="margin:0 0 12px"><b>Paused.</b> Your Instagram posts are not showing on your Social tab. Show them again below to pick up where you left off; what you hid and pinned is kept.</p>';
+      if(d.posts.length){
+        h += '<div class="oe-photos">' + d.posts.map(function(p){
+          var off = p.status === 'hidden' || p.status === 'paused';
+          return '<div style="' + (p.thumb_url ? 'background-image:url(\'' + esc(p.thumb_url) + '\')' : 'background:#EAF7EA') + (off ? ';opacity:.4' : '') + '">' +
+            (d.paused ? '' : '<button type="button" data-oe-sp="' + (p.status === 'hidden' ? 'show' : 'hide') + '" data-id="' + esc(p.id) + '">' + (p.status === 'hidden' ? 'Show' : 'Hide') + '</button>' +
+            '<button type="button" style="top:auto;bottom:6px" data-oe-sp="' + (p.pinned ? 'unpin' : 'pin') + '" data-id="' + esc(p.id) + '">' + (p.pinned ? 'Unpin' : 'Pin') + '</button>') + '</div>'; }).join('') + '</div>';
+      }
+      h += '<div class="bd-btns" style="margin-top:6px"><button type="button" class="bd-btn o" data-oe-refresh>Read my page now</button>' +
+        '<button type="button" class="bd-btn o" data-oe-pause>' + (d.paused ? 'Show my Instagram posts again' : 'Stop showing my Instagram posts') + '</button></div>';
+      box.innerHTML = h;
+      var q = function(s){ return box.querySelector(s); };
+      Array.prototype.forEach.call(box.querySelectorAll('[data-oe-sp]'), function(b){ b.addEventListener('click', function(){
+        oeSocialCall({ action: 'owner_post', listing_id: l.id, post_id: b.dataset.id, op: b.dataset.oeSp }).then(function(r){ if(r && r.ok) draw(); else msg('Could not save that. Try again.', true); }); }); });
+      q('[data-oe-refresh]').addEventListener('click', function(){
+        msg('Reading your page...');
+        oeSocialCall({ action: 'owner_refresh', listing_id: l.id }).then(function(r){
+          if(r && r.ok){ msg('Done. ' + (r.added || 0) + ' new posts.'); draw(); }
+          else msg(r && r.message ? r.message : r && r.error === 'paused' ? 'Your Instagram posts are paused. Show them again first.' : r && r.error === 'too_soon' ? 'You can read your page once a day. Try again tomorrow.' : r && r.error === 'daily_cap' ? 'We are busy reading pages today. It will happen on its own this week.' : 'Could not read your page just now.', true);
+        }); });
+      q('[data-oe-pause]').addEventListener('click', function(){
+        oeSocialCall({ action: 'owner_pause', listing_id: l.id, paused: !d.paused }).then(function(r){ if(r && r.ok) draw(); else msg('Could not save that. Try again.', true); }); });
+    });
+  }
+  draw();
+}
 function mountOwnerEditor(el, l, step){
   oeCss(); window.__veListing = l;
   var i = OE_STEPS.map(function(x){ return x[0]; }).indexOf(step); if(i < 0) i = 0; step = OE_STEPS[i][0];
@@ -3694,6 +3764,8 @@ function mountOwnerEditor(el, l, step){
       f('instagram', 'Instagram', 'Your handle, without the @', D.instagram, 'yourbusiness') + f('booking_url', 'Reservations or booking link', '', D.booking_url, 'https://') +
       f('uber_eats_url', 'Uber Eats link', '', D.uber_eats_url, 'https://') + f('doordash_url', 'DoorDash link', '', D.doordash_url, 'https://') +
       f('address_street', 'Street address', esc([D.address_city, D.address_state].filter(Boolean).join(', ')), D.address_street, '') + f('address_zip', 'ZIP code', '', D.address_zip, '') + '</div>';
+  } else if(step === 'social'){
+    body = '<div id="oe-social"><div class="aisle-empty">Loading your Instagram posts...</div></div>';
   } else {
     body = '<div class="oe-logo"><div class="pic" id="oe-logo-pic"' + (D.logo_url ? ' style="background-image:url(\'' + esc(D.logo_url) + '\')"' : '') + '>' + (D.logo_url ? '' : esc(l.initials || (D.name || '?').charAt(0))) + '</div>' +
       '<div><b>Your logo</b><p class="bd-small" style="margin:4px 0 8px">A clear, official logo, at least ' + LIM.logo_min + ' pixels on its shorter side. Until you add one, your page shows the first letter of your name.</p>' +
@@ -3762,6 +3834,7 @@ function mountOwnerEditor(el, l, step){
       });
     });
   });
+  if(step === 'social') oeSocial(el, l, D, msg);
   Array.prototype.forEach.call(el.querySelectorAll('[data-oe-rm]'), function(b){
     b.addEventListener('click', function(){
       if(!confirm('Remove this photo from your page?')) return;
@@ -4144,6 +4217,7 @@ function showListingTab(target){
   if(target !== 'products' && document.getElementById('tab-products')){ u.searchParams.delete('v'); u.searchParams.delete('product'); }
   if(target !== 'brand') u.searchParams.delete('door');
   if(target !== 'overview') u.searchParams.delete('ep');
+  if(target !== 'social'){ u.searchParams.delete('spage'); u.searchParams.delete('sfeat'); }
   if(target !== 'books') u.searchParams.delete('book');
   if(u.href !== location.href) history.replaceState(history.state, '', u.pathname + u.search + u.hash);
 }
@@ -4453,6 +4527,8 @@ function renderListing(l){
           // A food place's menu is theirs to keep current (Sean, 2026-10-27: "if she changes just one of them, we're presenting
           // wrong information"): until it is claimed, Menu links out to wherever they post it (menu_crawl_url).
           '<a class="tab-btn tab-ext" id="tab-btn-menu-link" data-menu-link href="#" target="_blank" rel="noopener" style="display:none;text-decoration:none">Menu <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg><span class="sr-only"> (opens their menu in a new tab)</span></a>'+
+          // Social (Sean, 2026-11-03): right after Menu, shown only once we hold posts for this listing (loadSocialTab).
+          (VB ? '' : '<button class="tab-btn" data-tab="social" role="tab" aria-selected="false" id="tab-btn-social" style="display:none">Social</button>')+
           (l._brandSite || !photoHtml ? '' : '<button class="tab-btn" data-tab="photos" role="tab" aria-selected="false">Photos</button>')+
           // Video and Pulse show once they have something (renderVideoCarousel, renderPulse).
           (l.claimed_by_member_id ? '<button class="tab-btn" data-tab="video" role="tab" aria-selected="false" id="tab-btn-video" style="display:none">Video</button>' : '')+
@@ -4473,6 +4549,7 @@ function renderListing(l){
           ['insights', 'myproducts', 'opps', 'media', 'ask', 'ads'].map(function(t){ return '<div class="tab-panel" id="tab-' + t + '" role="tabpanel"><div class="bsite-pad" id="bp-' + t + '"></div></div>'; }).join('')
           : '<div class="tab-panel" id="tab-brand" role="tabpanel"><div class="bsite-pad" id="pd-home"><div class="aisle-empty">Loading...</div></div></div>')+
         '<div class="tab-panel" id="tab-menu" role="tabpanel"></div>'+
+        (VB ? '' : '<div class="tab-panel" id="tab-social" role="tabpanel"></div>')+
         '<div class="tab-panel" id="tab-photos" role="tabpanel">'+photosTabContent+'</div>'+
         (l.claimed_by_member_id ? '<div class="tab-panel" id="tab-video" role="tabpanel"></div>' : '')+
         (l._campaign && l._campaign.events ? '<div class="tab-panel" id="tab-events" role="tabpanel">'+eventsTab(l._campaign)+'</div>' : '')+
@@ -4983,6 +5060,78 @@ function guideBanner(l, tabGuide){
   var s = document.createElement('script'); s.src = '/public/ve-promo.js?v=3'; s.onload = go; document.head.appendChild(s);
 }
 
+// The Social tab (Sean, 2026-11-03): Featured by us (posts on @vegansexplore and @soflovegans that feature the listing, matched
+// in the database by ve_listing_posts_build) pinned first, then Their top posts (their own Instagram, from a claimed owner's handle),
+// ranked by likes plus comments, 10 a page, the page in the address (?tab=social&spage=2). Rows are read from our table, never from
+// Instagram. The tab shows only when we hold something for this listing, and it opens the post on Instagram.
+function scAttr(s){ return esc(s).replace(/"/g, '&quot;'); }
+function scNum(n){ n = Number(n) || 0; return n >= 1e6 ? (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M' : n >= 1e4 ? Math.round(n / 1e3) + 'K' : n >= 1e3 ? (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'K' : String(n); }
+function scTile(p){
+  var kind = p.post_type === 'Video' ? 'Reel' : p.post_type === 'Sidecar' ? 'Carousel' : '';
+  var cap = String(p.caption || '').replace(/\s+/g, ' ').trim();
+  var dt = p.posted_at ? new Date(p.posted_at).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : '';
+  var views = p.view_count != null && p.view_count > 0 ? '<span>' + scNum(p.view_count) + ' views</span>' : '';
+  return '<a class="sc-t" href="' + scAttr(p.post_url) + '" target="_blank" rel="noopener">' +
+    '<div class="sc-img' + (p.thumb_url ? '' : ' ph') + '">' + (p.thumb_url ? '<img src="' + scAttr(p.thumb_url) + '" alt="" loading="lazy" decoding="async" width="400" height="400" onerror="this.remove()">' : '') +
+      (p.thumb_url ? '' : '<div class="sc-ph"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor"/></svg>Instagram</div>') +
+      (kind ? '<span class="sc-kind">' + kind + '</span>' : '') + (p.pinned ? '<span class="sc-pin">Pinned</span>' : '') + '</div>' +
+    '<div class="sc-b"><p class="sc-cap">' + (cap ? esc(cap) : '<span style="opacity:.6">View this post on Instagram</span>') + '</p>' +
+    '<div class="sc-m">' + (p.like_count >= 0 ? '<span>' + scNum(p.like_count) + ' likes</span>' : '') + '<span>' + scNum(p.comment_count) + ' comments</span>' + views + (dt ? '<span>' + dt + '</span>' : '') + '</div></div>' +
+    '<span class="sr-only"> (opens on Instagram in a new tab)</span></a>';
+}
+function loadSocialTab(l){
+  if(VB || DEMO || !l || !l.id) return;
+  var btn = document.getElementById('tab-btn-social'), panel = document.getElementById('tab-social');
+  if(!btn || !panel) return;
+  var sel = 'id,shortcode,post_url,post_type,caption,thumb_url,like_count,comment_count,view_count,posted_at,source,pinned';
+  fetch(SUPABASE_URL + '/rest/v1/ve_listing_posts?select=' + sel + '&listing_id=eq.' + encodeURIComponent(l.id) + '&status=eq.shown&limit=200',
+    { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
+    .then(function(r){ return r.ok ? r.json() : []; }).then(function(rows){
+      if(!Array.isArray(rows) || !rows.length) return;
+      var ours = rows.filter(function(p){ return p.source === 'ours'; }).sort(function(a, b){ return (Date.parse(b.posted_at) || 0) - (Date.parse(a.posted_at) || 0); });
+      var ourSh = {}; ours.forEach(function(p){ ourSh[p.shortcode] = 1; });
+      var theirs = rows.filter(function(p){ return p.source === 'theirs' && !ourSh[p.shortcode]; }).sort(function(a, b){
+        return (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || (Math.max(0, b.like_count) + b.comment_count) - (Math.max(0, a.like_count) + a.comment_count); });
+      var PER = 10, owned = !!l.owner_member_id;
+      var qs = function(){ return new URLSearchParams(location.search); };
+      function go(k, v){ var u = new URL(location.href); if(v) u.searchParams.set(k, v); else u.searchParams.delete(k); history.pushState(null, '', u.pathname + u.search + u.hash); draw(); }
+      function draw(){
+        var q = qs(), all = q.get('sfeat') === 'all', pg = Math.max(1, parseInt(q.get('spage'), 10) || 1), pages = Math.max(1, Math.ceil(theirs.length / PER));
+        if(pg > pages) pg = pages;
+        var h = '<div class="sc-pad">';
+        if(ours.length){
+          var shown = all ? ours : ours.slice(0, 8);
+          h += '<section class="sc-sec" aria-labelledby="sc-h1"><div class="sc-h"><h3 id="sc-h1">Featured by us</h3><span>' + esc(l.name) + ' on Vegans Explore and SoFlo Vegans</span></div>' +
+            '<div class="sc-grid">' + shown.map(scTile).join('') + '</div>' +
+            (ours.length > 8 ? '<div class="sc-more"><button type="button" data-sc-feat>' + (all ? 'Show fewer' : 'Show all ' + ours.length + ' featured posts') + '</button></div>' : '') + '</section>';
+        }
+        if(theirs.length){
+          h += '<section class="sc-sec" aria-labelledby="sc-h2"><div class="sc-h"><h3 id="sc-h2">Their top posts</h3><span>From their own Instagram</span></div>' +
+            '<div class="sc-grid">' + theirs.slice((pg - 1) * PER, pg * PER).map(scTile).join('') + '</div>';
+          if(pages > 1){
+            var nums = []; for(var i = 1; i <= pages; i++) if(i === 1 || i === pages || Math.abs(i - pg) <= 2) nums.push(i);
+            h += '<nav class="sc-more" aria-label="Their top posts, pages"><button type="button" data-sc-pg="' + (pg - 1) + '"' + (pg === 1 ? ' disabled' : '') + '>Previous</button>' +
+              nums.map(function(n, k){ return (k && n - nums[k - 1] > 1 ? '<span aria-hidden="true">&hellip;</span>' : '') + '<button type="button" data-sc-pg="' + n + '"' + (n === pg ? ' aria-current="page"' : '') + '>' + n + '</button>'; }).join('') +
+              '<button type="button" data-sc-pg="' + (pg + 1) + '"' + (pg === pages ? ' disabled' : '') + '>Next</button></nav>';
+          }
+          h += '<p class="sc-note">The top of their recent posts, ranked by likes and comments.</p></section>';
+        } else if(!owned){
+          h += '<section class="sc-sec"><div class="sc-claim"><div><b>Is this your page?</b><span>Claim it and your own top Instagram posts show here, with Vegans Explore\'s features pinned first.</span></div>' +
+            '<a class="bd-btn" href="' + scAttr(claimHref(l)) + '">Claim this page</a></div></section>';
+        }
+        panel.innerHTML = h + '</div>';
+      }
+      draw();
+      panel.addEventListener('click', function(e){
+        var f = e.target.closest('[data-sc-feat]'); if(f){ go('sfeat', qs().get('sfeat') === 'all' ? '' : 'all'); return; }
+        var b = e.target.closest('[data-sc-pg]'); if(b && !b.disabled){ go('spage', +b.dataset.scPg > 1 ? b.dataset.scPg : ''); var t = panel.getBoundingClientRect().top + window.scrollY - 120; if(window.scrollY > t) window.scrollTo(0, Math.max(0, t)); }
+      });
+      window.addEventListener('popstate', function(){ if(qs().get('tab') === 'social') draw(); });
+      btn.style.display = '';
+      if(qs().get('tab') === 'social') showListingTab('social');
+    }).catch(function(){});
+}
+
 // The Guide tab on every listing (LOCKED by Sean 2026-10-31, canon-ve-listing-guide-tab): a short squeeze page for the Guide that
 // fits this listing (/public/ve-guide-tab.js), for everyone, before Partner Dashboard; a food place's owner and super admins also
 // get the Vegan Restaurant Guide there. Loaded after the page shows, then the right column's banner, which never repeats it.
@@ -5354,6 +5503,7 @@ if(!slug || slug === 'listing'){
         }
       }
       loadGuideTab(l);
+      loadSocialTab(l);
       veTrack(l, 'view');
       trackActions(l);
       ownerVerifiedCard(l);

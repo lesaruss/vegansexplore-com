@@ -1,4 +1,4 @@
-/* The Guide tab on every listing (LOCKED by Sean 2026-10-31, canon canon-ve-listing-guide-tab, playbook ve-listing-guide-tab):
+/* The Resources tab (the Guide tab until 2026-11-03) on every listing (LOCKED by Sean 2026-10-31, canon canon-ve-listing-guide-tab, playbook ve-listing-guide-tab):
  * "this is how we can continue to put those guides in front of people's faces. And if they already purchased it, it's right there
  * in front of them."
  *
@@ -196,7 +196,9 @@
     var g = GUIDES[p.primary];
     var btn = document.createElement('button');
     btn.className = 'tab-btn'; btn.type = 'button'; btn.setAttribute('data-tab', 'guide'); btn.setAttribute('role', 'tab'); btn.setAttribute('aria-selected', 'false');
-    btn.textContent = g.tab;
+    // Renamed Resources (Sean, 2026-11-03: "so we can put whatever we want on it later"). The Guide is still what it holds; its tab key,
+    // address (?tab=guide) and tracking (promo gt-<guide slug>, cta tab) are unchanged.
+    btn.textContent = 'Resources';
     var pd = nav.querySelector('.tab-btn[data-tab="brand"]');
     if (pd) nav.insertBefore(btn, pd); else nav.appendChild(btn);
     var panel = document.createElement('div');
