@@ -5133,8 +5133,7 @@ the distance. It will be a paid guide, but they get one theme park on it."
   with `/public/ve-park-map.js` (`VEParkMap`: our own to-scale drawing of the pins, a you-are-here dot with an accuracy ring, a land chip filter, distance in feet
   under a tenth of a mile else miles, straight line times 1.3 as "about N on foot"; the location stays in the page). Left out of the copy because they are stadium
   sections: Bounties, Scan, Where is it. Reports (Still here, Update, Comment, Something missing) reuse the venue engine and its location check against the park's
-  radius. **Not built / not proven**: no Vegan items yet (menu sourcing is next, one published menu at a time, never copied descriptions), the park's menu link is
-  empty, no report sent from inside the park, no signed-in owner run, not in the catalog or sitemap, `ve_guide_votes` kinds for parks, the other five Wave 1 parks.
+  radius. **Items, 2026-11-04**: the park's terms were read (Disney's Terms of Use bar robots, scripts and scraping and copying its products, so nothing is ever crawled; items are hand-made, names only, each with its source link and date; the same rules are now in `/policies#terms`). Sean pasted Disney's own plant-based list for Magic Kingdom (disneyworld.disney.go.com/dining/plant-based); its items are Vegan with that page as first source, draft items it does not carry are `gone`, and The Diamond Horseshoe was added as a spot (one Google search, $0.04). 25 restaurants (24 pinned), 44 live items, menu link set; the source list and draft are `docs/theme-park/`. **Not built / not proven**: Liberty Square Market is on Disney's list but has no spot, the Disney list changes (check it again before launch), no report sent from inside the park, no signed-in owner run, not in the catalog or sitemap, `ve_guide_votes` kinds for parks, the other five Wave 1 parks.
   Checked in a browser at 1440 and 390 px against the live function with a simulated phone location on Main Street.
 
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
@@ -5862,8 +5861,9 @@ Vegans Explore > Insights > Podcast** (HQ `components/branddesk/InsightsRoom.tsx
 Captivate (`analytics_connections` `captivate`, `VE_CAPTIVATE_API_KEY`; show in `PODCAST_SHOWS`). **What Captivate's API gives**, probed
 2026-11-04 from the server (this build session cannot reach it): `GET /insights/<show>/overview?start&end` (`{hits}` = downloads; start
 included, end excluded, so a day is start=d end=d+1; no dates is all time), `GET /insights/<show>/overview/<episode>?start&end` (one episode),
-`GET /insights/<show>/monthly` (the last 12 months, this month, the total). **No listeners, apps, devices or places endpoint exists** (every
-guess was a 404); those stay in Captivate's own dashboard. The view: downloads for the period against the one before, per day (every N days past
+`GET /insights/<show>/monthly` (the last 12 months, this month, the total). **The first probe said no listeners, apps, devices or places endpoint exists; that was wrong** (guessed paths
+were 404). The dashboard's own paths are in its public scripts (`my.captivate.fm`, an Angular app; read them, never guess) and the same API key reads them: see **Any period, the
+audience and the first days** below. The view: downloads for the period against the one before, per day (every N days past
 30 days), this month, last 12 months, all time, a line by month, and every episode's downloads in the period (up to 100 s of reading, then
 `partial`). Proven 2026-11-04 on real numbers (30 days to Nov 3: 258 downloads, 389 the 30 days before; the daily and per-episode numbers each
 sum to 258; 144 episodes read). A new brand's show is a `PODCAST_SHOWS` row and a `PODCAST_BRANDS` entry.
@@ -5879,6 +5879,32 @@ registered, listed with a signed URL and removed; a wrong type, over 25 MB, anot
 refused; the section checked at 1440 and 390 px against mocked answers (four files chosen, the wrong type flagged, three uploaded together). A 70-byte test image is
 left in the bucket (Storage will not let SQL delete objects), with no row. Not yet: reading the numbers out of a screenshot into a chart, the podcast in the Analysis
 write-up, first 7 and 30 day downloads per episode.
+
+**Any period, the audience and the first days** (Sean, 2026-11-04: "if we do all time, every time you pull information... we could do a custom... use our sorters... for all of
+the podcasts"; "the places are really important... both the country and the cities and provinces", to set beside Google's places and choose the next community;
+`branddesk-insights` from vegansexplore-com d2fa4cb, HQ `bed59b7`, production READY, seen signed in as `vegan@lesaruss.com`; migration
+`20261104_podcast_episode_firsts.sql`). **Four shows** in `PODCAST_SHOWS` (Vegans Explore, SoFlo Vegans, Vegans Who Lift, Pre-Vegans; Captivate ids from
+`GET /users/<user>/shows`; its "Vegans Explore Network Exclusives" show is left out); HQ's Podcast view has a **Show** dropdown, its own **Period** (Last 7, 30, 90 days, This year,
+All time, Custom dates; the Insights period box is hidden on this tab) and **Overview / Episodes / Audience / Uploads**, all in the address (`?show=&sub=&prange=&pfrom=&pto=`). **What
+Captivate gives** (all probed 2026-11-04): `POST /insights/<show>/over-time` {gteUnix, lteUnix, interval} (interval must be one of 1h, 1d, 7d, 14d, 28d, 1M, 1y, null; `1d` gives
+days at Eastern midnight, ms timestamps); `POST /insights/<show>/overview/range` {startTimestamp, endTimestamp} in unix seconds (a number; ms is refused) gives `byEpisode`
+[{episodeId, total}] for every episode in one call; `POST /insights/<show>/range/` {start, end ISO, timezone, interval null, countryCode, types} with types `byLocation`,
+`byUserAgentBrowser` (the app or player), `byUserAgentOs`, `byUserAgentDevice`; **countryCode must be sent: null gives every country (no provinces or cities), an uppercase ISO
+code ("US") gives that country's provinces and cities with their parents; "us", "United States", "all" return nothing**; `POST /insights/<show>/basic` {gteUnix, lteUnix, isUnique};
+`GET /insights/<show>/from-episode-publish` (each episode's first 28 days). **How it is built**: one all-time daily series per show (`over-time` 1d from the day before its
+first episode, cached 3 hours, `ins:podseries:`) and every period, comparison, this month, last 12 months and the by-month line are cut from it with no new calls, so a custom range costs
+nothing and "All time" starts on the first day Captivate has a download (Vegans Explore 2025-11-01, SoFlo 2020-03-03). **Audience** (`podAudience`): one range call for every
+country, apps, systems and devices, then one call per country (ISO code from `Intl.DisplayNames`, `ccMap`) for its provinces and cities; places cannot be cut from daily totals, so each
+period is its own cached call (3 hours). Proven: Vegans Explore all time 93 countries, 5,756 downloads, US 40 provinces and 230 cities, four countries without a code map keep only
+their total; **All podcasts together** (Audience tab only) adds the four shows by name; **Download every place (CSV)** gives every country, province and city for the period.
+Captivate's range total can differ a little from the daily downloads (230 against 258 on one 30-day window), and a province or city is only known where the listener's network
+gives one. **First 7 and first 30 days** per episode: `ve_podcast_episode_firsts` (brand, show, episode, d7, d30, RLS on), counted once those days are over (calendar days from the
+release day, Eastern), 40 episodes an Episodes visit while the page re-asks until none are left; the Episodes table sorts by any column. **View only for agent accounts**: `branddesk-insights`
+refuses `podcast_upload_start`, `podcast_upload_done` and `podcast_file_remove` for `member_class` `agent` (403 `view_only`), so the standing QA login `vegan@lesaruss.com`
+(already a super admin row) can read Insights and never change it; uploads are per show (`ve_podcast_uploads.show_key`, older ones stay on Vegans Explore). Captivate holds more
+episodes than our table for SoFlo (111 against 59) and Vegans Who Lift (90 against 57), which may move the "all 278 transcribed" finish line. Not yet: the podcast in the Analysis
+write-up, reading numbers out of uploaded screenshots (Sean's answer was not given; the API now covers places, apps and devices, so the uploads are for reports and anything else), a
+saved snapshot of the places for the community decision (the CSV is the first step), and the one bad Vegans Who Lift failed-transcript row, which stays until Sean says delete.
 
 ## Depot > Social (Sean, 2026-11-01)
 
