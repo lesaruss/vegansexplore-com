@@ -670,6 +670,9 @@ async function analysis(brand: string, name: string, from: string, to: string) {
   return { ...fix(out), facts, errors: errs, model: MODEL };
 }
 
+// Every Insights action that only reads (writes are the podcast upload, upload done and file remove).
+const READ_ONLY_OK = new Set(['web_analytics', 'podcast', 'podcast_files', 'seo', 'ads', 'campaigns', 'campaign', 'web_health', 'analysis']);
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ error: 'method' }, 405);
@@ -682,8 +685,10 @@ Deno.serve(async (req) => {
     else member = token ? await verifyToken(token) : null;
     if (!ops && !member) return json({ error: 'not_authenticated' }, 401);
     if (member) {
-      const { data: me } = await db.from('members').select('is_superadmin').eq('id', member).maybeSingle();
+      const { data: me } = await db.from('members').select('is_superadmin, member_class').eq('id', member).maybeSingle();
       if (!me?.is_superadmin) return json({ error: 'forbidden' }, 403);
+      // View only for our Guide and agent accounts (Logan, 2026-11-04: vegan@lesaruss.com is the standing QA login; it reads Insights, it never changes it).
+      if (me.member_class === 'agent' && !READ_ONLY_OK.has(String(body.action || ''))) return json({ error: 'view_only' }, 403);
     }
     const brand = String(body.brand || '');
     if (!/^[a-z0-9-]{2,60}$/.test(brand)) return json({ error: 'bad_brand' }, 400);
