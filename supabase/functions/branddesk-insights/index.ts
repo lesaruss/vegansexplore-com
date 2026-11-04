@@ -531,6 +531,63 @@ async function podcast(brand: string, from: string, to: string) {
   };
 }
 
+// ---- Podcast pages uploaded by hand (Sean, 2026-11-04: "whatever can't be pulled by API, we can upload manually with a screenshot... the ability
+// to upload multiple... where people are listening from, what devices"). Private bucket podcast-reports, rows in ve_podcast_uploads. A file goes up
+// straight from the browser on a signed link (`podcast_upload_start`), then `podcast_upload_done` saves its row; nothing is deleted, `podcast_file_remove`
+// only hides it. Super admins only (the handler's own check), like every Insights action.
+const UP_BUCKET = 'podcast-reports';
+const UP_KINDS = ['places', 'devices', 'apps', 'overview', 'other'];
+const UP_TYPES = /^(image\/(jpeg|png|webp)|application\/pdf)$/;
+const UP_MAX = 25 * 1024 * 1024;
+async function podcastFiles(act: string, brand: string, body: any, member: string | null) {
+  if (!PODCAST_SHOWS[brand]) return { error: 'no_podcast' };
+  if (act === 'podcast_files') {
+    const { data: rows, error } = await db.from('ve_podcast_uploads').select('*').eq('brand_slug', brand).is('removed_at', null)
+      .order('period_to', { ascending: false }).order('created_at', { ascending: false }).limit(300);
+    if (error) return { error: error.message };
+    const paths = (rows || []).map((r: any) => r.storage_path);
+    const urls = new Map<string, string>();
+    if (paths.length) {
+      const { data: signed } = await db.storage.from(UP_BUCKET).createSignedUrls(paths, 3600);
+      for (const s of signed || []) if (s.path && s.signedUrl) urls.set(s.path, s.signedUrl);
+    }
+    return { files: (rows || []).map((r: any) => ({ id: r.id, kind: r.kind, from: r.period_from, to: r.period_to, note: r.note, name: r.file_name, type: r.content_type, size: r.size_bytes, at: r.created_at, url: urls.get(r.storage_path) || null })) };
+  }
+  if (act === 'podcast_upload_start') {
+    const type = String(body.type || '');
+    if (!UP_TYPES.test(type)) return { error: 'bad_type' };
+    if (!(Number(body.size) > 0) || Number(body.size) > UP_MAX) return { error: 'too_big' };
+    const safe = String(body.name || 'file').toLowerCase().replace(/[^a-z0-9.]+/g, '-').replace(/^-+|-+$/g, '').slice(-60) || 'file';
+    const path = `${brand}/${Date.now()}-${crypto.randomUUID().slice(0, 8)}-${safe}`;
+    const { data, error } = await db.storage.from(UP_BUCKET).createSignedUploadUrl(path);
+    if (error) return { error: error.message };
+    return { upload_url: data.signedUrl, path };
+  }
+  if (act === 'podcast_upload_done') {
+    const path = String(body.path || '');
+    const kind = String(body.kind || '');
+    const type = String(body.type || '');
+    if (!path.startsWith(brand + '/') || path.includes('..')) return { error: 'bad_path' };
+    if (!UP_KINDS.includes(kind)) return { error: 'bad_kind' };
+    if (!UP_TYPES.test(type)) return { error: 'bad_type' };
+    if (!isDay(body.from) || !isDay(body.to) || body.from > body.to) return { error: 'bad_dates' };
+    const { error: ex } = await db.storage.from(UP_BUCKET).createSignedUrl(path, 60);
+    if (ex) return { error: 'not_uploaded' };
+    const { data, error } = await db.from('ve_podcast_uploads').insert({
+      brand_slug: brand, kind, period_from: body.from, period_to: body.to, note: String(body.note || '').trim().slice(0, 500) || null,
+      file_name: String(body.name || 'file').slice(0, 200), content_type: type, size_bytes: Number(body.size) || null, storage_path: path, uploaded_by: member,
+    }).select('id').single();
+    if (error) return { error: error.message };
+    return { id: data.id };
+  }
+  if (act === 'podcast_file_remove') {
+    const { data, error } = await db.from('ve_podcast_uploads').update({ removed_at: new Date().toISOString(), removed_by: member }).eq('id', String(body.id || '')).eq('brand_slug', brand).is('removed_at', null).select('id');
+    if (error) return { error: error.message };
+    return data?.length ? { ok: true } : { error: 'not_found' };
+  }
+  return { error: 'unknown_action' };
+}
+
 async function socialReport(brand: string, from: string, to: string) {
   const key = await secret('LESARUSS_ADMIN_TOKEN');
   try {
@@ -620,6 +677,7 @@ Deno.serve(async (req) => {
     const refresh = !!body.refresh;
     const act = String(body.action || '');
     if (act === 'web_health') return json(await cached(`ins:health:${brand}`, 12 * H, refresh, () => webHealth(brand)));
+    if (act.startsWith('podcast_file') || act.startsWith('podcast_upload')) return json(await podcastFiles(act, brand, body, member));
     const { from, to } = body;
     if (!isDay(from) || !isDay(to) || from > to) return json({ error: 'bad_dates' }, 400);
     switch (act) {
