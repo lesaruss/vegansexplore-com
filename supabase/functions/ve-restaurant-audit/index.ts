@@ -821,6 +821,22 @@ Deno.serve(async (req) => {
 
   if (action === 'free') {
     G_JOB = 'free';
+    // The Guide is by invitation (Sean, 2026-11-04): a free check runs only for the team (ops or a super admin) or for the business its own
+    // invitation code names (the contact's tracked link code from business outreach, `bo-xxxxxxx`). A name with no listing, another
+    // business's slug, or a forced fresh run is the team's alone. The page was the only lock until now.
+    const team = who.ops || !!who.member?.admin;
+    if (!team) {
+      const code = clean(body.code, 20).toLowerCase();
+      let invited = false;
+      if (/^bo-[a-z0-9]{7}$/.test(code) && clean(body.listing_slug, 120) && !body.fresh) {
+        const { data: c } = await db.from('ve_outreach_contacts').select('listing_id').eq('link_code', code).maybeSingle();
+        if (c?.listing_id) {
+          const { data: l } = await db.from('listings').select('slug').eq('id', c.listing_id).eq('status', 'approved').maybeSingle();
+          invited = !!l && l.slug === clean(body.listing_slug, 120);
+        }
+      }
+      if (!invited) return json({ error: 'invitation_only', message: 'The Guide is by invitation. Open the link in our email and your restaurant is already here.' }, 403);
+    }
     const r = await inputsFrom(body);
     if (r.error) return json({ error: r.error }, 400);
     const ip = await ipHash(req);

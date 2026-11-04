@@ -324,7 +324,7 @@
     if (!/^bo-[a-z0-9]{7}$/.test(code || '')) return;
     auditApi({ action: 'personal', code: code }).then(function (d) {
       if (!d || !d.slug) { store('rg_b', ''); return; }
-      PERSONAL = d; store('rg_b', code);
+      PERSONAL = d; PERSONAL.code = code; store('rg_b', code);
       for (var i = 0; i < TABS.length; i++) if (TABS[i].k === 'audit') TABS[i].label = 'Your business';
       if (!d.id) startMine();
       route();
@@ -333,7 +333,7 @@
   // The check starts the moment the page opens on their link (Sean, 2026-11-04), so Your business already has it, or says it is running.
   function startMine() {
     PERSONAL.starting = true;
-    auditApi({ action: 'free', listing_slug: PERSONAL.slug }).then(function (r) {
+    auditApi({ action: 'free', listing_slug: PERSONAL.slug, code: PERSONAL.code }).then(function (r) {
       PERSONAL.starting = false;
       if (r && r.id) { PERSONAL.id = r.id; store('rg_last_audit', r.id); LAST = null; }
       if (curTab === 'audit') route();
