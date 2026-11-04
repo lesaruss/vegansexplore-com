@@ -57,25 +57,29 @@
   // The tabs, in tour order, and what Liz says on each. A tab's `say` must match its recording (Sean approved every line,
   // 2026-10-10). `say` is for visitors (why get it), `sayMember` walks an owner of the Guide through what they have.
   var TABS = [
-    { k: 'overview', label: 'Overview', say: 'Hi, I\'m Liz. This Guide shows what may be quietly hurting your restaurant, and how to fix it. Start with a free check of your business.',
-      sayMember: 'Welcome in. Start with your free check. The fixes, the interviews and the promotions all line up around what it finds.' },
-    { k: 'audit', label: 'Your audit', say: 'Pick your business and I\'ll check your Google listing, website, search and social, then list what you can fix right away. Free.',
+    { k: 'overview', label: 'Overview', say: 'Hi, I\'m Liz. Thank you for what you do for the Vegan movement. This Guide is free, and it starts with your business.',
+      sayMember: 'Welcome in. Start with your business. The fixes, the interviews and the promotions all line up around what it finds.' },
+    { k: 'audit', label: 'Your audit', say: 'Your Google listing, website, search and social are checked here, and the first things to work on are listed. Free.',
       sayMember: 'Your free check is right here. Run it anytime. When you want us to go deeper, the full audit is an add-on.' },
     { k: 'fixes', label: 'The fixes', lock: 1, say: 'These are the mistakes that close Vegan restaurants, from location to burnout, each with what to do instead. One is open for you to try.',
       sayMember: 'Here are your fixes, in the order your audit puts them. Each shows what to do this week. Save the ones you\'re working on.' },
     { k: 'pulse', label: 'Pulse', lock: 1, say: 'Here are our interviews with Vegan business owners: what worked, what didn\'t, and the research behind it. New ones keep coming.',
       sayMember: 'Every business interview we\'ve recorded is here, with the research. Play any of them right here. We keep adding more.' },
-    { k: 'featured', label: 'Get featured', say: 'Being great isn\'t enough if no one can find you. Here\'s how the Directory works, and how restaurants get featured.',
+    { k: 'featured', label: 'Claim your page', say: 'Your page already exists. Claiming makes it yours: your hours, photos and menu link, changed whenever you like.',
       sayMember: 'Here\'s your Directory page. Claim it, keep your hours and photos fresh, and see who\'s finding you on your Partner Dashboard.' },
+    { k: 'demo', label: 'Try the demo', say: 'This is a sample restaurant, so you can see what a page and its dashboard look like. Nothing here can be saved. Yours starts with your own page.',
+      sayMember: 'This is a sample restaurant, so you can see what a page and its dashboard look like. Nothing here can be saved.' },
     { k: 'promos', label: 'Promotions', say: 'We run campaigns, events, features and ads that bring members through your door. Here\'s what each one does for a restaurant.',
       sayMember: 'These are the promotions open to you, from events to features to campaigns. Pick what fits, or ask our team to plan it with you.' },
     { k: 'quiz', label: 'Test yourself', lock: 1, say: 'When you\'ve worked through the fixes, take the quiz. Pass it and you earn the Entrepreneur Track badge.',
       sayMember: 'Ready? Take the quiz. Score eighty percent or better and the Entrepreneur Track badge is yours.' },
     { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you saved is right here: fixes, interviews and promotions, so you can pick up where you left off.' },
-    { k: 'join', label: 'Get access', guest: 1, say: 'Get the whole Guide for eleven dollars, or one Guide credit. It\'s yours to keep, and it keeps growing.',
+    { k: 'next', label: 'What\'s next', mine: 1, say: 'You are in. Thank you. Here is what you can do next. Claim your page, open your dashboard, and follow us so we can follow you back.',
+      sayMember: 'You are in. Thank you. Here is what you can do next. Claim your page, open your dashboard, and follow us so we can follow you back.' },
+    { k: 'join', label: 'Get in', guest: 1, say: 'There is one way in, and it is free. Take the short survey. When you finish, you are a member.',
       sayCredit: 'You have a Guide credit. Use it here and the whole Guide is yours to keep.',
       // On points (Sean locked 2026-10-25). Not recorded yet, so this tab shows her picture and the bubble carries the words.
-      sayPoints: 'The Restaurant Guide is eleven dollars, or 1,100 points, and it\'s yours to keep. Buying it makes you a member of Vegans Explore.' }
+      sayPoints: 'There is one way in, and it is free. Take the short survey. When you finish, you are a member.' }
   ];
   // Liz's voice over her still picture, one pose per tab (Sean, 2026-10-31: "I don't like the animations. It's inconsistent...
   // I don't want to see her animated at the beginning either"). Each file is an MP4 of the sharp still with the line she recorded
@@ -89,6 +93,12 @@
   CLIPS.join_credit = lizClip('join-c');
   // The first page shows her arms folded with an open smile (the playbook), before the tour starts.
   CLIPS.overview.poster = CLIP_BASE + 'rg-poster-first.jpg?v=' + CLIP_V;
+  // The door copy (2026-11-04) changed these lines, so their old recordings no longer match: text only until new ones are recorded.
+  ['overview', 'audit', 'featured', 'join'].forEach(function (k) { CLIPS[k] = null; CLIPS_M[k] = null; });
+  CLIPS.join_credit = null;
+  // Her voice over her picture (door copy, 2026-11-04): el-media tts in her roster-profile voice, one mp3 a tab for visitors.
+  var AUDIO = {};
+  ['overview', 'audit', 'featured', 'demo', 'join', 'next'].forEach(function (k) { AUDIO[k] = CLIP_BASE + 'door-' + k + '-v1.mp3'; });
 
   // What we run for restaurants (Sean, 2026-10-10). Never show a planned thing as live: each says Live or Coming.
   var PROMOS = [
@@ -123,6 +133,7 @@
     pulse: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" ' + S + '><path d="M3 12h4l2-6 4 12 2-6h6"/></svg>',
     featured: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" ' + S + '><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg>',
     promos: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" ' + S + '><path d="M3 10v4h3l7 5V5L6 10z"/><path d="M17 9a4 4 0 010 6"/></svg>',
+    demo: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" ' + S + '><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4"/><path d="M10 8.5l5 2.5-5 2.5z"/></svg>',
     quiz: '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" ' + S + '><circle cx="12" cy="9" r="6"/><path d="M9 14l-2 7 5-3 5 3-2-7"/></svg>'
   };
   var LOCK_SVG = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>';
@@ -190,6 +201,9 @@
   // ---------- the offer (the Guide: $11 or 1,100 points) ----------
   function priced() { return ST.rule === 'credit' || ST.rule === 'points'; }
   function onPoints() { return ST.rule === 'points'; }
+  // The Restaurant Guide is a door Guide (canon-ve-door-guides): free with its survey, the only door (Sean, 2026-11-04). The $11 is an optional contribution on What's next, never a way in.
+  var SURVEY_SLUG = 'vegan-restaurant-guide';
+  function surveyGo() { try { sessionStorage.setItem('ve_survey_for', SURVEY_SLUG); } catch (e) {} location.href = '/survey?s=' + SURVEY_SLUG; }
   function pts(n) { return Number(n || 0).toLocaleString('en-US'); }
   function credits(n) { return n + ' Guide credit' + (n === 1 ? '' : 's'); }
   function mode() {
@@ -206,6 +220,7 @@
   }
   function offerLine() {
     var m = mode();
+    if (m === 'join' || m === 'activate' || m === 'buy') return 'Take the free restaurant survey. When you finish, you are a member and the whole Guide opens.';
     if (onPoints()) {
       if (m === 'points') return 'Unlock it with ' + pts(ST.cost) + ' points: you have ' + pts(ST.balance) + '. Or get it for $11.';
       return 'It is $11, or ' + pts(ST.cost) + ' points, and yours to keep. Buying it makes you a member of Vegans Explore.';
@@ -216,6 +231,8 @@
   }
   function ctaBtns() {
     var m = mode();
+    if (m === 'join' || m === 'activate' || m === 'buy') return '<div class="dg-btns"><button type="button" class="dg-btn" data-survey>Take the survey, free</button>' +
+      (m === 'join' ? '<a href="#" data-signin>Already a member? Sign in</a>' : '') + '</div>';
     return '<div class="dg-btns"><button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' +
       (m === 'join' ? '<a href="#" data-signin>Already a member? Sign in</a>' : '') +
       (m === 'points' ? '<a href="#" data-buy>Or get it for $11</a>' : '') +
@@ -232,10 +249,16 @@
   }
   function drawJoinbox() {
     var box = document.querySelector('.dg-joinbox'); if (!box || member()) return;
-    var m = mode(), price = box.querySelector('.dg-jb-price'), btn = box.querySelector('[data-join]'), signin = box.querySelector('.dg-jb-in');
-    price.innerHTML = !onPoints() && (m === 'unlock' || m === 'buy') ? '<b>' + ST.credits + '</b><small>Guide credit' + (ST.credits === 1 ? '' : 's') + '<br>this Guide: 1</small>'
-      : '<b>$11</b><small>one time<br>purchase</small>';
-    btn.textContent = ctaLabel();
+    var m = mode(), price = box.querySelector('.dg-jb-price'), btn = box.querySelector('[data-survey]') || box.querySelector('[data-join]'), signin = box.querySelector('.dg-jb-in');
+    if (m === 'join' || m === 'activate' || m === 'buy') {
+      price.innerHTML = '<b>Free</b><small>with the<br>survey</small>';
+      btn.textContent = 'Take the survey'; btn.setAttribute('data-survey', '1'); btn.removeAttribute('data-join');
+    } else {
+      btn.setAttribute('data-join', '1'); btn.removeAttribute('data-survey');
+      price.innerHTML = !onPoints() && (m === 'unlock' || m === 'buy') ? '<b>' + ST.credits + '</b><small>Guide credit' + (ST.credits === 1 ? '' : 's') + '<br>this Guide: 1</small>'
+        : '<b>$11</b><small>one time<br>purchase</small>';
+      btn.textContent = ctaLabel();
+    }
     signin.style.display = m === 'join' ? '' : 'none';
   }
 
@@ -285,6 +308,33 @@
   }
 
   // ---------- the audit (ve-restaurant-audit) ----------
+  // The personal link (door Guides, Sean 2026-11-04): /guides/vegan-restaurant-guide?b=<code> opens already on that business. The server
+  // maps the code to the listing (ve-restaurant-audit `personal`); this page never chooses one and shows no search box for it.
+  var PERSONAL = null; // {slug, name, street, city, id} once the server has said who it is
+  function AL() { return PERSONAL ? 'Your business' : 'Your audit'; }
+  function loadPersonal(code) {
+    if (!/^bo-[a-z0-9]{7}$/.test(code || '')) return;
+    auditApi({ action: 'personal', code: code }).then(function (d) {
+      if (!d || !d.slug) { store('rg_b', ''); return; }
+      PERSONAL = d; store('rg_b', code);
+      for (var i = 0; i < TABS.length; i++) if (TABS[i].k === 'audit') TABS[i].label = 'Your business';
+      route();
+    }).catch(function () {});
+  }
+  function notYou() {
+    if (!PERSONAL) return '';
+    var mail = 'mailto:contact@lesaruss.com?subject=' + encodeURIComponent('This is not my business: ' + PERSONAL.name);
+    return '<p class="dg-empty" style="margin-top:14px">This is ' + esc(PERSONAL.name) + (PERSONAL.street ? ', ' + esc(PERSONAL.street) : '') + '. <a href="' + mail + '">Not your business? Tell us.</a></p>';
+  }
+  function viewPersonal() {
+    var P = PERSONAL, mail = 'mailto:contact@lesaruss.com?subject=' + encodeURIComponent('This is not my business: ' + P.name);
+    main.innerHTML = head('Your business', esc(P.name), esc([P.street, P.city].filter(Boolean).join(', '))) +
+      '<p class="dg-sub">We looked at your page, your Google listing and your website. Here is what we found, and what you can do about it first.</p>' +
+      '<div class="rg-find"><button type="button" class="dg-btn" id="rgRunMine">Run my free check</button></div>' +
+      '<span class="dg-status" role="status" style="display:block;margin-top:8px;color:#8a1c12"></span>' +
+      '<p class="dg-empty" style="margin-top:14px">This is ' + esc(P.name) + (P.street ? ', ' + esc(P.street) : '') + '. <a href="' + mail + '">Not your business? Tell us.</a></p>';
+    document.getElementById('rgRunMine').addEventListener('click', function () { runFree({ listing_slug: P.slug }); });
+  }
   function auditApi(body) {
     var tok = token(), h = { 'Content-Type': 'application/json' };
     if (tok) h.Authorization = 'Bearer ' + tok;
@@ -314,6 +364,7 @@
     var parts = String(sub || '').split('/');
     if (parts[0] === 'r' && parts[1]) return viewAuditResult(parts[1]);
     if (parts[0] === 'shopper' && parts[1]) return viewShopper(parts[1]);
+    if (PERSONAL) { if (PERSONAL.id) return viewAuditResult(PERSONAL.id); return viewPersonal(); }
     var v = ++auditView;
     main.innerHTML = head('Your audit', 'A free check of your restaurant',
       'We look at your Google listing, your website, how you show up in search, and your Instagram, then list what you can fix right away. It takes about a minute.') +
@@ -380,11 +431,11 @@
   // The Secret Shopper report, for the owner who bought it (ve-restaurant-audit shopper_get answers them once it is sent).
   function viewShopper(id) {
     var v = ++auditView;
-    main.innerHTML = crumb([['Your audit', '#/audit'], ['Secret Shopper report']]) + '<div class="dg-loading">Loading your report...</div>';
-    if (!token()) { main.innerHTML = crumb([['Your audit', '#/audit'], ['Secret Shopper report']]) + '<p class="dg-empty">Sign in to read your Secret Shopper report.</p><button type="button" class="dg-btn" data-signin>Sign in</button>'; return; }
+    main.innerHTML = crumb([[AL(), '#/audit'], ['Secret Shopper report']]) + '<div class="dg-loading">Loading your report...</div>';
+    if (!token()) { main.innerHTML = crumb([[AL(), '#/audit'], ['Secret Shopper report']]) + '<p class="dg-empty">Sign in to read your Secret Shopper report.</p><button type="button" class="dg-btn" data-signin>Sign in</button>'; return; }
     auditApi({ action: 'shopper_get', order_id: id }).then(function (d) {
       if (v !== auditView) return;
-      if (!d.id) { main.innerHTML = crumb([['Your audit', '#/audit'], ['Secret Shopper report']]) + '<p class="dg-empty">' + (d._status === 403 ? 'Your report shows here once our shopper sends it.' : 'We could not find that report.') + '</p>'; return; }
+      if (!d.id) { main.innerHTML = crumb([[AL(), '#/audit'], ['Secret Shopper report']]) + '<p class="dg-empty">' + (d._status === 403 ? 'Your report shows here once our shopper sends it.' : 'We could not find that report.') + '</p>'; return; }
       var r = d.report || {}, rate = function (x) { return x ? '<span class="rg-st rg-st-' + (x >= 4 ? 'good' : x === 3 ? 'review' : 'fix') + '">' + x + ' of 5</span>' : ''; };
       var part = function (title, rating, lines) {
         var body = lines.filter(function (l) { return l[1] != null && l[1] !== ''; }).map(function (l) { return '<p><strong>' + esc(l[0]) + ':</strong> ' + esc(l[1]) + '</p>'; }).join('');
@@ -392,7 +443,7 @@
       };
       var g = function (sec, k) { return (r[sec] || {})[k]; };
       var KN = { food: 'The food', room: 'The dining room', menu: 'The menu', restroom: 'The restroom', outside: 'Outside', receipt: 'Receipt', other: 'Photo' };
-      main.innerHTML = crumb([['Your audit', '#/audit'], ['Secret Shopper report']]) +
+      main.innerHTML = crumb([[AL(), '#/audit'], ['Secret Shopper report']]) +
         head('Secret Shopper report', esc(d.place.name), 'Our shopper visited as a normal guest' + (g('visit', 'date') ? ' on ' + esc(new Date(g('visit', 'date') + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })) : '') + '. Here is what they found.') +
         '<div class="rg-score rg-score7"><div class="rg-main"><b>' + (g('summary', 'overall') || '&ndash;') + '<small style="font-size:16px"> of 5</small></b><span>Overall</span></div>' +
         [['welcome', 'Welcome'], ['wait', 'Wait'], ['menu', 'Menu'], ['food', 'Food'], ['clean', 'Clean'], ['staff', 'Staff']].map(function (x) { return '<div><b>' + (g(x[0], 'rating') || '&ndash;') + '</b><span>' + x[1] + '</span></div>'; }).join('') + '</div>' +
@@ -411,16 +462,16 @@
           return '<figure class="dg-gp"><a href="' + esc(p.url || '') + '" target="_blank" rel="noopener"><span style="background-image:url(\'' + esc(p.url || '') + '\')"></span></a><figcaption>' + esc(KN[p.kind] || 'Photo') + (p.caption ? ': ' + esc(p.caption) : '') + '</figcaption></figure>';
         }).join('') + '</div>' : '') +
         '<p class="rg-fine">Want help with what it found? <a href="mailto:contact@lesaruss.com?subject=' + encodeURIComponent('Secret Shopper report: ' + d.place.name) + '">Write to our team</a>. What you paid counts toward our managed services within 30 days of your order.</p>';
-    }).catch(function () { if (v === auditView) main.innerHTML = crumb([['Your audit', '#/audit']]) + '<p class="dg-empty">We could not load your report just now. Refresh to try again.</p>'; });
+    }).catch(function () { if (v === auditView) main.innerHTML = crumb([[AL(), '#/audit']]) + '<p class="dg-empty">We could not load your report just now. Refresh to try again.</p>'; });
   }
   function viewAuditResult(id) {
     var v = ++auditView, tries = 0;
-    main.innerHTML = crumb([['Your audit', '#/audit'], ['Your results']]) + '<div class="rg-waiting"><span class="rg-spin"></span>Checking your Google listing, website, search and Instagram. This takes about a minute.</div>';
+    main.innerHTML = crumb([[AL(), '#/audit'], ['Your results']]) + '<div class="rg-waiting"><span class="rg-spin"></span>Checking your Google listing, website, search and Instagram. This takes about a minute.</div>';
     (function poll() {
       auditApi({ action: 'get', id: id }).then(function (d) {
         if (v !== auditView) return;
         if (d.status === 'running' || d.status === 'queued') { if (++tries < 40) setTimeout(poll, 3000); else main.querySelector('.rg-waiting').textContent = 'This is taking longer than usual. Refresh in a minute.'; return; }
-        if (d.error || d.status !== 'done') { main.innerHTML = crumb([['Your audit', '#/audit'], ['Your results']]) + '<p class="dg-empty">' + esc(d.error || 'We could not find that audit.') + ' <a href="#/audit">Run a new check</a></p>'; return; }
+        if (d.error || d.status !== 'done') { main.innerHTML = crumb([[AL(), '#/audit'], ['Your results']]) + '<p class="dg-empty">' + esc(d.error || 'We could not find that audit.') + ' <a href="#/audit">Run a new check</a></p>'; return; }
         LAST = d; store('rg_last_audit', d.id);
         loadCriteria(function () { if (v === auditView) (d.full ? drawFull(d) : drawFree(d)); });
       }).catch(function () { if (v === auditView && ++tries < 40) setTimeout(poll, 4000); });
@@ -437,19 +488,19 @@
   }
   function drawFree(d) {
     var n = (d.todo || []).length;
-    main.innerHTML = crumb([['Your audit', '#/audit'], [d.business || 'Your results']]) +
+    main.innerHTML = crumb([[AL(), '#/audit'], [d.business || 'Your results']]) +
       head('Your free check', esc(d.business || 'Your restaurant') + ': ' + (n ? n + ' thing' + (n === 1 ? '' : 's') + ' to fix right away' : 'nothing urgent on the free list'),
         n ? 'Most important first, each with what we found. Fix these and you are already ahead of most restaurants.' : 'The free checks came back clean. The full audit looks at much more.') +
       (n ? '<div class="rg-todo">' + d.todo.map(function (it) { return itemRow({ key: it.key, label: it.label, area: it.area, found: it.found, state: 'fix' }, false); }).join('') + '</div>' : '') +
       (d.more_fix ? '<p class="dg-lede"><strong>' + d.more_fix + ' more</strong> to fix in the full audit, each with why it matters and how to fix it.</p>' : '') +
-      '<div id="rgOffer"></div>';
+      '<div id="rgOffer"></div>' + notYou();
     drawOffer(d);
   }
   function drawFull(d) {
     var items = d.items || [], fix = items.filter(function (i) { return i.state === 'fix'; }), rest = items.filter(function (i) { return i.state !== 'fix'; });
     var areas = d.areas || {};
     var pctOf = function (a) { return a && a.max ? Math.round(100 * a.score / a.max) + '%' : '&ndash;'; };
-    main.innerHTML = crumb([['Your audit', '#/audit'], [d.business || 'Your results']]) +
+    main.innerHTML = crumb([[AL(), '#/audit'], [d.business || 'Your results']]) +
       head('Your full audit', esc(d.business || 'Your restaurant'), 'Every check, with why it matters and how to fix it. Fix first, then the rest.') +
       '<div class="rg-score"><div class="rg-main"><b>' + (d.max_score ? Math.round(100 * d.score / d.max_score) + '%' : '&ndash;') + '</b><span>Overall</span></div>' +
       ['google', 'seo', 'web', 'social'].map(function (k) { return '<div><b>' + pctOf(areas[k]) + '</b><span>' + esc(AREA[k]) + '</span></div>'; }).join('') + '</div>' +
@@ -459,7 +510,7 @@
   }
   // The full audit (Sean, 2026-10-10: "Go with $49 and $149"): its own add-on, never part of the Guide.
   function drawOffer(d) {
-    var el = document.getElementById('rgOffer'); if (!el) return;
+    var el = document.getElementById('rgOffer'); if (!el || !member()) return;
     var t = d.target || {}, body = { action: 'offer' };
     if (t.listing_slug) body.listing_slug = t.listing_slug; else { body.name = t.name; body.city = t.city; }
     auditApi(body).then(function (o) {
@@ -599,19 +650,20 @@
   // ---------- Get featured: the Directory ----------
   function viewFeatured(sub) {
     if (sub && sub.indexOf('listing/') === 0) return viewListing(decodeURIComponent(sub.slice(8)));
+    var ph = PERSONAL ? '/directory/' + encodeURIComponent(PERSONAL.slug) : '/directory', ch = PERSONAL ? '/claim?listing=' + encodeURIComponent(PERSONAL.slug) : '/claim';
     var steps = [
-      ['Get listed', 'Every Vegan restaurant can be in the Directory, free. Members find you by city, search and category.', '/claim?add=1', 'Add your restaurant'],
-      ['Claim your page', 'Make the page yours: your hours, menu, photos and links, changed whenever you like.', '/claim', 'Claim your page'],
-      ['Get votes', 'Members vote for the places they love. The most voted rise to the top of your city.', '/directory', 'See the Directory'],
-      ['Become a Partner', 'The Partner Dashboard shows who finds you, and Partners get a front-row seat on our campaigns. Join now and every day until January 1, 2027 is on us.', '/claim', 'See the Partner plan']
+      ['Find your page', 'Your page is already in the Directory. Members find you by city, search and category.', ph, PERSONAL ? 'See your page' : 'See the Directory'],
+      ['Claim it', 'Claiming makes the page yours. Our team reviews every claim to make sure it is accurate.', ch, 'Claim your listing'],
+      ['Make it yours', 'Add your hours, photos and menu link, and change them whenever you like.', '/business', 'See what you can do'],
+      ['Tell people', 'Members vote for the places they love, and the most voted rise to the top of your city.', '/directory', 'See the Directory']
     ];
-    main.innerHTML = head('Get featured', member() ? 'Your Directory page' : 'How restaurants get found on Vegans Explore',
-      member() ? 'Find your restaurant, claim it, and keep it fresh. Your Partner Dashboard shows who is finding you.' : 'The Directory is where members look for somewhere to eat. Here is how a restaurant gets on it, and to the top of it.') +
-      '<div class="rg-steps">' + steps.map(function (s, i) { return '<div class="rg-step"><em>' + (i + 1) + '</em><b>' + esc(s[0]) + '</b><p>' + esc(s[1]) + '</p><a href="' + s[2] + '">' + esc(s[3]) + ' &rsaquo;</a></div>'; }).join('') + '</div>' +
-      '<h3 class="dg-k" style="margin:0 0 8px">Find your restaurant</h3><div class="rg-find"><input type="search" id="rgPage" placeholder="Your restaurant\'s name" aria-label="Find your restaurant\'s page" autocomplete="off"></div><div class="rg-hits" id="rgPageHits"></div>' +
+    main.innerHTML = head('Claim your page', 'Your page already exists. Claiming makes it yours.',
+      'Claiming is a short form. The $11, 1,100 points or the Partner plan covers it, and we show you which when you start.') +
+      '<div class="rg-steps">' + steps.map(function (st, i) { return '<div class="rg-step"><em>' + (i + 1) + '</em><b>' + esc(st[0]) + '</b><p>' + esc(st[1]) + '</p><a href="' + st[2] + '">' + esc(st[3]) + ' &rsaquo;</a></div>'; }).join('') + '</div>' +
+      (PERSONAL ? '' : '<h3 class="dg-k" style="margin:0 0 8px">Find your restaurant</h3><div class="rg-find"><input type="search" id="rgPage" placeholder="Your restaurant\'s name" aria-label="Find your restaurant\'s page" autocomplete="off"></div><div class="rg-hits" id="rgPageHits"></div>') +
       '<h3 class="dg-k" style="margin:18px 0 8px">Restaurants members vote for</h3>' + (TOP ? '<div class="vrd-root"><div class="rank-grid" id="rgTop">' + TOP.map(function (l, i) { return window.VERegionDirectory ? VERegionDirectory.card(l, i) : ''; }).join('') + '</div></div>' : '<div class="dg-loading">Loading...</div>');
     var input = document.getElementById('rgPage'), hits = document.getElementById('rgPageHits'), t;
-    input.addEventListener('input', function () {
+    if (input) input.addEventListener('input', function () {
       clearTimeout(t); var q = input.value.trim();
       if (q.length < 2) { hits.innerHTML = ''; return; }
       t = setTimeout(function () {
@@ -625,9 +677,17 @@
     var top = document.getElementById('rgTop');
     if (top && window.VERegionDirectory) VERegionDirectory.wire(top, function (slug) { location.hash = '#/featured/listing/' + encodeURIComponent(slug); });
   }
+  // The demo (door Guides, Sean 2026-11-04): a view-only sample restaurant, its page and its owner's dashboard. Nothing can be saved there.
+  function viewDemo(sub) {
+    var owner = sub === 'owner';
+    main.innerHTML = head('Try the demo', 'See what your page and dashboard look like',
+      'This is Green Leaf Kitchen, a sample restaurant, so you can see how a page and its dashboard work. Nothing here can be saved. Yours starts with your own page.') +
+      toggles([['As a visitor', '#/demo'], ['As the owner', '#/demo/owner']], owner ? 'As the owner' : 'As a visitor') +
+      '<div class="dg-lframe"><iframe title="Sample restaurant" src="/business/sample' + (owner ? '?tab=brand' : '') + '" style="width:100%;height:720px;border:0"></iframe></div>';
+  }
   // A Directory page inside the Guide, framed and sized to fit; its own links go through the Guide's address bar.
   function viewListing(slug) {
-    main.innerHTML = crumb([['Get featured', '#/featured'], ['Directory page']]) +
+    main.innerHTML = crumb([['Claim your page', '#/featured'], ['Directory page']]) +
       '<div class="dg-btns" style="margin-bottom:12px"><a class="dg-btn" href="/directory/' + encodeURIComponent(slug) + '?tab=brand">Partner Dashboard</a><a class="dg-btn dg-ghost" href="/claim?listing=' + encodeURIComponent(slug) + '">Claim this page</a></div>' +
       '<div class="dg-lframe"><iframe id="dgListingFrame" title="Directory page" src="/directory/' + encodeURIComponent(slug) + '"></iframe></div>';
     var f = document.getElementById('dgListingFrame');
@@ -724,52 +784,154 @@
     if (member()) {
       main.innerHTML = head('Your Guide', 'The whole Guide is yours', (ST.via === 'purchase' ? 'You unlocked it, and it is yours to keep.' : 'It is yours to keep.') + ' Thank you for being here.') + '<a class="dg-btn" href="#/">Back to the overview</a>'; return;
     }
-    var m = mode(), status = '<span class="dg-status" role="status" style="display:block;margin-top:10px;color:#8a5a00"></span>', box;
-    var list = '<div class="dg-access"><ul>' +
-      '<li><b>The fixes</b>, every one with what to do this week, in the order your audit puts them.</li>' +
-      '<li><b>The Restaurant Pulse:</b> our interviews with business owners, and the research, every fact sourced.</li>' +
-      '<li><b>Get featured and Promotions:</b> how to get to the top of the Directory, and what we run that brings members in.</li>' +
-      '<li><b>The quiz</b> and the Entrepreneur Track badge, and My list to keep your place.</li></ul></div>';
-    if (onPoints()) {
-      var box2 = m === 'points'
-        ? '<div class="dg-big">' + pts(ST.cost) + '<small>points</small></div><p>You have ' + pts(ST.balance) + ' points. Unlock the Guide with ' + pts(ST.cost) + ' of them and it is yours to keep.</p>' +
-          '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button><button type="button" class="dg-btn dg-ghost" data-buy style="margin-top:8px">Or get it for $11</button>' + status
-        : '<div class="dg-big">$11<small>yours to keep</small></div><p>' + (m === 'join' ? 'Create your account and get the Guide for $11, one time. Buying it makes you a member of Vegans Explore. Already a member? <a href="#" data-signin>Sign in</a>.'
-            : 'Get the Guide for $11, one time, and it is yours to keep' + (ST.active ? '.' : '. Buying it also makes you a member of Vegans Explore.')) + '</p>' +
-          '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status +
-          '<p class="dg-pp">Or get your <a href="/passport">Passport</a>: $11, one time, with 1,100 welcome points, enough for this Guide.</p>';
-      main.innerHTML = head('Get access', 'Open the whole Restaurant Guide', 'Every Vegans Explore Guide is $11, or 1,100 points, and yours to keep. Buying one makes you a member. The free check in Your audit stays free for everyone.') + list;
-      main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox">' + box2 + '</div>');
-      return;
-    }
-    var passport = '<p class="dg-pp">Or get <a href="/passport">Passport</a>: a new Guide credit every month.</p>';
-    if (m === 'unlock') box = '<div class="dg-big">1<small>credit</small></div><p>You have ' + credits(ST.credits) + '. Unlock the Guide and it is yours to keep.</p><button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status;
-    else if (m === 'buy') box = '<div class="dg-big">$11<small>yours to keep</small></div><p>You have no Guide credits right now. Get it now for $11, one time.</p><button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' +
-      (canExchange() ? '<button type="button" class="dg-btn dg-ghost" data-exchange style="margin-top:8px">Use ' + pts(ST.rate) + ' points for a credit</button><p class="dg-pp">You have ' + pts(ST.balance) + ' points.</p>' : '') + status + passport;
-    else box = '<div class="dg-big">$11<small>one time</small></div><p>' + (m === 'activate' ? 'Your account is not a Founding Member yet. Become one: $11, one time, and your first Guide credit comes with it.'
-      : 'Join for $11, one time, and your first Guide credit comes with it: unlock this Guide or any other. Already a member? <a href="#" data-signin>Sign in</a>.') + '</p><button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status + passport;
-    main.innerHTML = head('Get access', 'Open the whole Restaurant Guide', 'Every Vegans Explore Guide is $11 or 1 Guide credit, and yours to keep. The free check in Your audit stays free for everyone.') + list;
-    main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox">' + box + '</div>');
+    var m = mode();
+    var doors = '<div class="dg-access"><div class="dg-pricebox"><div class="dg-big">Free<small>the short survey</small></div><p>Takes a few minutes, and tells us how to serve you. Up to 100 points, and your membership opens when you finish.</p><button type="button" class="dg-btn" data-survey>Take the survey</button><p class="dg-pp">No card needed.</p>' +
+      (m === 'join' ? '<p class="dg-pp">Already a member? <a href="#" data-signin>Sign in</a>.</p>' : '') + '</div>' +
+      '<div><ul><li><b>Your page, yours to run.</b> Claim it and keep your hours, photos and menu link current.</li><li><b>The Directory, the Daily Pulse and the events calendar</b>, open to you as a member.</li><li><b>Founding Member</b> stays on your profile for good if you finish before midnight Eastern on January 1, 2027.</li></ul></div></div>';
+    var benefits = [
+      ['Post jobs', 'Hire from the community on the Jobs board.', 'Live for a business with a listing'],
+      ['Join the community', 'Comment on the Daily Pulse, vote, check in and earn points.', 'Live'],
+      ['Your page, yours to run', 'Claim it, edit it, add your hours, photos and menu link.', 'Live'],
+      ['Promote your business and events', 'Promote your event and get found; marketing help from our team on request.', 'Live by request'],
+      ['See what campaigns are happening', 'The dashboard lists open campaigns and opportunities, and you can say you are in.', 'Live as a list, campaigns coming'],
+      ['Never miss a Guide', 'New Guides appear in your dashboard. Your points can open your first one.', 'Live'],
+      ['Featured in our Guides', 'When a Guide has room to feature a business, members are the first we call.', 'Coming'],
+      ['Founding Member', 'Stays on your profile for good if you join before midnight Eastern on January 1, 2027.', 'Live until then']
+    ];
+    main.innerHTML = head('Get in', 'One way in, and it is free',
+      'Finish the short survey before midnight Eastern on January 1, 2027 and you are a Founding Member, which stays on your profile for good. After you are in, a What\'s next page shows you everything you can do, and the Welcome Guide shows you the rest.') + doors +
+      '<h3 class="dg-k" style="margin:22px 0 8px">What membership gets you</h3>' +
+      '<p class="dg-lede" style="margin:0 0 10px"><b>We are the eyes and ears of the Vegan community, and our only job is to know what is happening and deliver it to the people it matters to. We have done this with SoFlo Vegans since 2016, and we still do.</b> This time we have the tools to do it.</p>' +
+      '<div class="dg-srows">' + benefits.map(function (x) {
+        return '<div class="dg-srow"><div class="dg-srow-b"><h3>' + esc(x[0]) + '</h3><p>' + esc(x[1]) + '</p></div><div class="dg-acts"><span class="dg-tag ' + (x[2].indexOf('Live') === 0 ? 'dg-tag-live' : 'dg-tag-off') + '">' + esc(x[2]) + '</span></div></div>';
+      }).join('') + '</div>';
   }
+
+  // ---------- What's next (Version 1, Sean 2026-11-04) ----------
+  // The survey is the only door. The $11 is an optional contribution, thanks only: no points, no promise of anything bought with them.
+  var SOCIALS = [
+    ['Instagram', 'https://www.instagram.com/vegansexplore/', '@vegansexplore'],
+    ['TikTok', 'https://www.tiktok.com/@vegansexplore', '@vegansexplore'],
+    ['YouTube', 'https://www.youtube.com/@VegansExplore', '@VegansExplore'],
+    ['Facebook', 'https://www.facebook.com/vegansexplore', 'facebook.com/vegansexplore']
+  ];
+  var NI = function (d) { return '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" ' + S + '>' + d + '</svg>'; };
+  ICON.give = NI('<path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.1 4.3 2.4.7-1.3 2.2-2.4 4.3-2.4 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/>');
+  ICON.story = NI('<path d="M12 3a3 3 0 013 3v5a3 3 0 01-6 0V6a3 3 0 013-3z"/><path d="M5 11a7 7 0 0014 0M12 18v3"/>');
+  ICON.opps = NI('<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a1 1 0 011-1h4a1 1 0 011 1v2M3 13h18"/>');
+  ICON.dash = NI('<rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="3" width="8" height="5" rx="1.5"/><rect x="13" y="10" width="8" height="11" rx="1.5"/><rect x="3" y="13" width="8" height="8" rx="1.5"/>');
+  ICON.share = NI('<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="M8.2 10.8l7.6-3.6M8.2 13.2l7.6 3.6"/>');
+  ICON.book = NI('<path d="M4 5a2 2 0 012-2h13v16H6a2 2 0 00-2 2z"/><path d="M4 19V5"/>');
+  ICON.job = NI('<rect x="3" y="8" width="18" height="12" rx="2"/><path d="M9 8V6a1 1 0 011-1h4a1 1 0 011 1v2"/>');
+  ICON.follow = NI('<path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/>');
+  function me() { var a = auth(); try { return a && a.getMember ? a.getMember() : null; } catch (e) { return null; } }
+  function shareLink() { var m = me(); return location.origin + (m && m.referral_code ? '/r/' + m.referral_code : '/passport'); }
+  function copyText(t) {
+    return (navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(t) : Promise.reject()).catch(function () {
+      var ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select();
+      try { document.execCommand('copy'); } catch (e) {} ta.remove();
+    });
+  }
+  function joinedMessage() {
+    var m = me(), nm = (m && m.name) || '', biz = PERSONAL && PERSONAL.name ? PERSONAL.name : '';
+    return 'Hi Vegans Explore, I just joined as ' + (nm || 'a new member') + (biz ? ' from ' + biz : '') + '. Please follow me back!';
+  }
+  function viewNext(sub) {
+    if (sub === 'follow') return viewFollow();
+    var claimHref = PERSONAL && PERSONAL.slug ? '/claim?listing=' + encodeURIComponent(PERSONAL.slug) : '#/featured';
+    var soon = function (key) { return '<button type="button" class="dg-btn dg-ghost" data-notify="' + key + '">Tell me when it opens</button>'; };
+    var tag = '<span class="rg-promo-tag rg-soon">Coming</span>';
+    var go = function (label, h, ext) { return '<a class="dg-btn dg-ghost" href="' + h + '"' + (ext ? ' target="_blank" rel="noopener"' : '') + '>' + esc(label) + '</a>'; };
+    var tiles = [
+      { icon: ICON.give, title: 'Make a contribution', body: 'From $11. Our thanks, and it helps us grow faster. A contribution to the community, never a donation.', acts: go('Contribute', '/dashboard?contribute=1') },
+      { icon: ICON.story, pre: tag, title: 'Share your story', body: 'Tell us in your own words why you do this. Opening soon.', acts: soon('share-your-story') },
+      { icon: ICON.opps, pre: tag, title: 'Opportunities', body: 'A place to find what is open to your business. Opening soon.', acts: soon('opportunities') },
+      { icon: ICON.featured, title: 'Claim your page', body: PERSONAL && PERSONAL.name ? esc(PERSONAL.name) + ' already has a page. Claiming makes it yours to run.' : 'Your page already exists. Claiming makes it yours to run.', acts: go('Claim it', claimHref) },
+      { icon: ICON.dash, title: 'Open your dashboard', body: 'Your points, your level, the Directory, the Daily Pulse and everything you can do as a member.', acts: go('Open it', '/dashboard') },
+      { icon: ICON.share, title: 'Share your link', body: 'Your own link. When someone joins with it, you get the credit.', acts: '<button type="button" class="dg-btn dg-ghost" data-copylink>Copy my link</button>' },
+      { icon: ICON.book, title: 'Read the Welcome Guide', body: 'How to use Vegans Explore, from search to the Daily Pulse, in a few minutes.', acts: go('Read it', '/passport?guide=welcome') },
+      { icon: ICON.job, title: 'Post a job', body: 'Hire from the community on the Jobs board. It needs a claimed page.', acts: go('Open the Jobs board', '/pulse/jobs') },
+      { icon: ICON.follow, title: 'Follow us', body: 'Follow us everywhere, then tell us you joined so we can follow you back.', acts: go('Follow us', '#/next/follow') }
+    ];
+    main.innerHTML = head('What\'s next', 'You are in. Thank you.',
+      'Welcome to Vegans Explore. Here is what you can do next. Pick any of it, in any order. Nothing here is required.') +
+      '<div class="dg-srows">' + tiles.map(function (t) { if (t.body.indexOf('<p') !== 0) t.body = '<p style="margin:4px 0 0;font-size:14px;line-height:1.5;color:var(--ink75)">' + t.body + '</p>'; return row(t); }).join('') + '</div><p class="dg-status" role="status" aria-live="polite"></p>';
+  }
+  function viewFollow() {
+    var msg = joinedMessage(), enc = encodeURIComponent(msg);
+    main.innerHTML = crumb([['What\'s next', '#/next'], ['Follow us']]) +
+      head('Follow us', 'Follow us everywhere', 'These are our own accounts. Follow and subscribe, and then tell us you joined, so we can follow you back.') +
+      '<div class="dg-srows">' + SOCIALS.map(function (x) {
+        return row({ icon: ICON.follow, title: x[0], body: '<p class="dg-srow-p">' + esc(x[2]) + '</p>', acts: '<a class="dg-btn dg-ghost" href="' + x[1] + '" target="_blank" rel="noopener">Follow</a>' });
+      }).join('') + '</div>' +
+      '<h3 class="dg-k" style="margin:22px 0 8px">Tell us you joined</h3>' +
+      '<p class="dg-lede" style="margin:0 0 10px">Copy this message, change it if you like, and send it on any of these. We follow back.</p>' +
+      '<textarea id="rgJoinedMsg" rows="3" style="width:100%;border:1px solid var(--line);border-radius:6px;padding:12px;font:inherit;font-size:15px" data-dictate="off">' + esc(msg) + '</textarea>' +
+      '<div class="dg-btns" style="margin-top:10px"><button type="button" class="dg-btn" data-copymsg>Copy message</button>' +
+      '<a class="dg-btn dg-ghost" data-send="https://m.me/vegansexplore?text=" href="https://m.me/vegansexplore?text=' + enc + '" target="_blank" rel="noopener">Send on Facebook</a>' +
+      '<a class="dg-btn dg-ghost" data-send="mailto:contact@lesaruss.com?subject=' + encodeURIComponent('I just joined Vegans Explore') + '&body=" href="mailto:contact@lesaruss.com?subject=' + encodeURIComponent('I just joined Vegans Explore') + '&body=' + enc + '">Send by email</a>' +
+      '<a class="dg-btn dg-ghost" href="https://ig.me/m/vegansexplore" target="_blank" rel="noopener" data-copyfirst>Send on Instagram</a>' +
+      '<a class="dg-btn dg-ghost" href="https://www.tiktok.com/@vegansexplore" target="_blank" rel="noopener" data-copyfirst>Open TikTok</a></div>' +
+      '<p class="dg-pp" style="margin-top:8px">Instagram and TikTok cannot fill in a message for you, so we copy it first. Paste it when the app opens.</p>' +
+      '<p class="dg-status" role="status" aria-live="polite"></p>';
+    var ta = document.getElementById('rgJoinedMsg');
+    ta.addEventListener('input', function () {
+      var e = encodeURIComponent(ta.value);
+      [].forEach.call(main.querySelectorAll('[data-send]'), function (a) { a.href = a.getAttribute('data-send') + e; });
+    });
+  }
+  function notifyMe(key, btn) {
+    var m = me(); if (!m || !m.email) { setStatus('Sign in to be told when it opens.'); return; }
+    btn.disabled = true; btn.textContent = 'Sending...';
+    fetch(SB + '/rest/v1/member_interest', { method: 'POST', headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+      body: JSON.stringify({ email: m.email, role_slug: 'restaurant-guide-' + key, source: 'restaurant-guide-whats-next' }) })
+      .then(function (r) { if (!r.ok) throw 0; btn.textContent = 'We will tell you'; setStatus('Done. We will email you the day it opens.'); })
+      .catch(function () { btn.disabled = false; btn.textContent = 'Try again'; });
+  }
+  document.addEventListener('click', function (e) {
+    var el;
+    if ((el = e.target.closest('[data-notify]'))) { e.preventDefault(); notifyMe(el.getAttribute('data-notify'), el); return; }
+    if ((el = e.target.closest('[data-copylink]'))) { e.preventDefault(); copyText(shareLink()).then(function () { setStatus('Copied. Anyone who joins with it is credited to you: ' + shareLink()); }); return; }
+    if ((el = e.target.closest('[data-copymsg]'))) { e.preventDefault(); copyText(document.getElementById('rgJoinedMsg').value).then(function () { setStatus('Message copied.'); }); return; }
+    if ((el = e.target.closest('[data-copyfirst]'))) { var t = document.getElementById('rgJoinedMsg'); if (t) copyText(t.value); }
+  });
 
   // ---------- Overview ----------
   function viewOverview() {
     var tiles = [
-      ['audit', 'Your audit', 'A free check of your Google listing, website, search and social, and a list of what to fix right away.', 1],
-      ['fixes', 'The fixes', 'What closes Vegan restaurants, and what to do instead, in the order your audit puts them.'],
+      ['audit', PERSONAL ? 'Your business' : 'Your audit', 'A free check of your Google listing, website, search and social, and a list of what to work on first.', 1],
+      ['featured', 'Claim your page', 'Your page already exists. Claiming makes it yours.', 1],
+      ['demo', 'Try the demo', 'See what a page and its dashboard look like, on a sample restaurant.', 1],
+      ['fixes', 'The fixes', 'What closes Vegan restaurants, and what to do instead, in the order your check puts them.'],
       ['pulse', 'Pulse', 'Our interviews with business owners, and the research behind them.'],
-      ['featured', 'Get featured', 'How the Directory works, and how a restaurant gets to the top of it.', 1],
-      ['promos', 'Promotions', 'The campaigns, events, features and ads that bring members through your door.', 1],
-      ['quiz', 'Test yourself', 'The quiz, and the Entrepreneur Track badge.']
+      ['promos', 'Promotions', 'The campaigns, events, features and ads that bring members through your door.', 1]
     ];
-    main.innerHTML = head('Vegans Explore Guides for business', 'Keep your Vegan restaurant open, and full',
-      'What may be quietly hurting your restaurant, and how to fix it. Start with the free check: everything else lines up around what it finds.') +
+    var coming = [
+      ['Your page and dashboard', 'Live'], ['The Directory and search', 'Live'], ['The Daily Pulse and the events calendar', 'Live'],
+      ['More Guides and tools for owners', 'Coming'], ['Your own website on our platform', 'Coming'], ['Our shows and campaigns that reach your customers', 'Live and Coming']
+    ];
+    main.innerHTML = head('Vegans Explore Guides for business', 'Thank you for what you do for the Vegan movement',
+      'We made this Guide for Vegan restaurants. In a few minutes you can see how your place looks to people searching today, claim your page, and see what is coming. Nothing here is a pitch to buy a service.') +
       '<div class="dg-tiles">' + tiles.map(function (t) {
         return '<a class="dg-tile' + (t[0] === 'audit' ? ' dg-warm' : '') + '" href="' + href(t[0]) + '"><div class="dg-ic">' + ICON[t[0]] + '</div><div><b>' + esc(t[1]) + '</b><span>' + esc(t[2]) + '</span>' +
           (!member() && !t[3] ? '<span class="dg-mlock">' + LOCK_SVG + ' In the full Guide</span>' : !member() && t[0] === 'audit' ? '<span class="dg-mlock" style="color:#1f5f22 !important">Free</span>' : '') + '</div></a>';
       }).join('') + '</div>' +
-      '<div class="dg-start">' + (TOUR.started ? '' : '<button type="button" class="dg-btn" data-tour-start>&#9654; Start the tour</button>') + '<a class="dg-btn dg-ghost" href="#/audit">Run my free check</a>' +
-      (member() ? '<p>The whole Guide is yours. Pick a tab, or let Liz walk you through it.</p>' : '<p>' + (onPoints() ? 'The full Guide is $11 or 1,100 points.' : 'The full Guide is $11 or 1 Guide credit.') + ' <a href="#/join" style="color:var(--g);font-weight:800">How to get access</a></p>') + '</div>';
+      '<div class="dg-start">' + (TOUR.started ? '' : '<button type="button" class="dg-btn" data-tour-start>&#9654; Start the tour</button>') + '<a class="dg-btn dg-ghost" href="#/audit">' + (PERSONAL ? 'See my business' : 'Run my free check') + '</a>' +
+      (member() ? '<p>The whole Guide is yours. Pick a tab, or let Liz walk you through it. <a href="#/next" style="color:var(--g);font-weight:800">What\'s next</a></p>' : '<p>The whole Guide is free with a short survey. <a href="#/join" style="color:var(--g);font-weight:800">How to get in</a></p>') + '</div>' +
+      '<h3 class="dg-k" style="margin:26px 0 8px">Our story</h3>' +
+      '<p class="dg-lede" style="margin:0 0 10px"><b>We are not new to this movement.</b></p>' +
+      '<p class="dg-lede" style="margin:0 0 10px">I spent more than ten years on the ground in the Vegan movement. I ate at more Vegan places than I can count and met the people behind them.</p>' +
+      '<p class="dg-lede" style="margin:0 0 10px">That is why Vegans Explore looks the way it does. You can hear it in our shows, read it in our interviews, and see it in a Directory built from places and people we have actually been with.</p>' +
+      '<p class="dg-lede" style="margin:0 0 10px">My job now is to take all of that, the experience, the interviews and the videos, and put it back to work for you. I keep my pulse on everything happening in the movement, from activism to the food industry to tech and business, and I share what works. That is how I treat the movement, the same way I look after a community I care about.</p>' +
+      '<p class="dg-lede" style="margin:0 0 10px">It is what we have done with SoFlo Vegans since 2016. That community is still ours, and Vegans Explore is the same work with better tools.</p>' +
+      '<p class="dg-lede" style="margin:0 0 10px">Your page on Vegans Explore is built to be better than a website you have to maintain alone, because it sits next to everything we have made. We are building it with the people who join early. If you are one of them, you help decide what comes next.</p>' +
+      '<p class="dg-lede" style="margin:0 0 6px"><b>What we will not say:</b> that we are big. We are not claiming reach we cannot show. We are asking for your help to get there, so we can support the community properly.</p>' +
+      '<h3 class="dg-k" style="margin:26px 0 8px">What is coming</h3>' +
+      '<p class="dg-lede" style="margin:0 0 10px"><b>We launch on January 1, 2027.</b></p>' +
+      '<div class="dg-srows">' + coming.map(function (c) {
+        return '<div class="dg-srow"><div class="dg-srow-b"><h3>' + esc(c[0]) + '</h3></div><div class="dg-acts"><span class="dg-tag ' + (c[1] === 'Live' ? 'dg-tag-live' : 'dg-tag-off') + '">' + esc(c[1]) + '</span></div></div>';
+      }).join('') + '</div>' +
+      '<p class="dg-lede" style="margin:12px 0 0"><b>We build this city by city, with the people who join early.</b></p>';
   }
 
   // ---------- search (members) ----------
@@ -825,11 +987,15 @@
   var vid = document.createElement('video');
   vid.preload = 'metadata'; vid.playsInline = true; vid.setAttribute('playsinline', '');
   vid.setAttribute('aria-label', 'Liz, your Guide');
+  function lizAudio(k) { return AUDIO[k] && (k === 'next' ? member() : !member()) ? AUDIO[k] : null; }
+  var aud = new Audio(); aud.preload = 'none';
+  aud.addEventListener('ended', function () { TOUR.playing = false; drawLiz(); });
   function clip(k) { if (member() && CLIPS_M[k]) return CLIPS_M[k]; if (k === 'join' && onPoints()) return null; return k === 'join' && mode() === 'unlock' ? CLIPS.join_credit : CLIPS[k] || null; }
   function cueLiz(k) {
     var c = clip(k), key = k + (member() ? ':m' : '') + (k === 'join' && mode() === 'unlock' ? ':c' : '');
     if (TOUR.shown === key) return;
     TOUR.shown = key; stopLiz();
+    var au = lizAudio(k); if (au) aud.src = au; else aud.removeAttribute('src');
     if (c) {
       vid.poster = c.poster; vid.src = c.video;
       if (!vid.parentNode) lizBox.appendChild(vid);
@@ -838,11 +1004,12 @@
     lizBox.classList.remove('dg-shift'); void lizBox.offsetWidth; lizBox.classList.add('dg-shift');
   }
   function playLiz() {
+    if (lizAudio(curTab)) { aud.play().then(function () { TOUR.playing = true; drawLiz(); }).catch(function () { TOUR.playing = false; drawLiz(); }); return; }
     if (!clip(curTab)) { drawLiz(); return; }
     // The first page's poster is the open smile; once she talks, the clip starts from her own first frame.
     vid.play().then(function () { TOUR.playing = true; drawLiz(); }).catch(function () { TOUR.playing = false; drawLiz(); });
   }
-  function stopLiz() { vid.pause(); TOUR.playing = false; }
+  function stopLiz() { vid.pause(); try { aud.pause(); } catch (e) {} TOUR.playing = false; }
   function startTour() {
     TOUR.started = true; TOUR.paused = false;
     [].forEach.call(document.querySelectorAll('[data-tour-start]'), function (b) { b.remove(); });
@@ -855,7 +1022,7 @@
     var t = tab(curTab), list = tabs(), i = 0;
     list.forEach(function (x, n) { if (x.k === curTab) i = n; });
     bubble.textContent = member() && t.sayMember ? t.sayMember : onPoints() && t.sayPoints ? t.sayPoints : t.k === 'join' && mode() === 'unlock' ? t.sayCredit : t.say;
-    var has = !!clip(curTab);
+    var has = !!clip(curTab) || !!lizAudio(curTab);
     playBtn.hidden = TOUR.started && !has;
     playBtn.classList.toggle('go', !TOUR.started);
     playBtn.innerHTML = !TOUR.started ? '&#9654; Start the tour' : TOUR.playing ? 'Pause Liz' : '&#9654; Watch Liz';
@@ -868,21 +1035,22 @@
     var parts = (location.hash || '').replace(/^#\/?/, '').split('/');
     var view = parts[0] || 'overview', sub = parts.slice(1).join('/');
     if (view === 'search' && (!sub || !member())) view = 'overview';
-    var known = { overview: 1, audit: 1, fixes: 1, pulse: 1, featured: 1, promos: 1, quiz: 1, mylist: 1, join: 1, search: 1 };
+    var known = { next: 1, overview: 1, audit: 1, fixes: 1, pulse: 1, featured: 1, demo: 1, promos: 1, quiz: 1, mylist: 1, join: 1, search: 1 };
     if (!known[view]) view = 'overview';
     document.body.classList.toggle('dg-member', member());
     drawJoinbox();
     var key = view;
     if (view === 'search') key = curTab;
-    if (view === 'join' && member()) key = 'overview';
+    if (view === 'join' && member()) { view = 'next'; sub = ''; key = 'next'; location.replace('#/next'); }
+    if (view === 'next' && !member()) { view = 'join'; key = 'join'; }
     if (view === 'mylist' && !member()) { view = 'overview'; key = 'overview'; }
     if (member() && !svState) loadSaves();
     drawMenu(view === 'search' ? 'search' : key);
     if (view !== 'search' && qEl.value && document.activeElement !== qEl) qEl.value = '';
     if (view !== 'audit') auditView++;
     var bar = document.getElementById('vep-player');
-    ({ overview: viewOverview, audit: function () { viewAudit(sub); }, fixes: function () { viewFixes(sub); }, pulse: function () { viewPulse(sub); },
-       featured: function () { viewFeatured(sub); }, promos: function () { viewPromos(sub); }, quiz: function () { viewQuiz(sub); },
+    ({ next: function () { viewNext(sub); }, overview: viewOverview, audit: function () { viewAudit(sub); }, fixes: function () { viewFixes(sub); }, pulse: function () { viewPulse(sub); },
+       featured: function () { viewFeatured(sub); }, demo: function () { viewDemo(sub); }, promos: function () { viewPromos(sub); }, quiz: function () { viewQuiz(sub); },
        mylist: function () { viewMyList(sub); }, join: viewJoin, search: function () { viewSearch(decodeURIComponent(sub)); } })[view]();
     keepPlayer(bar);
     var moved = key !== curTab;
@@ -973,6 +1141,7 @@
       if (a) a.showAuthModal('Sign in and the Restaurant Guide opens if it is yours.', function () { location.reload(); }, 'login');
       return;
     }
+    if ((el = e.target.closest('[data-survey]'))) { e.preventDefault(); surveyGo(); return; }
     if ((el = e.target.closest('[data-exchange]'))) { e.preventDefault(); exchange(el); return; }
     if ((el = e.target.closest('[data-buy]'))) { e.preventDefault(); if (token()) buyNow(el); return; }
     var jb = e.target.closest('[data-join]');
@@ -1049,6 +1218,10 @@
     document.documentElement.classList.add('dg-fit');
     if (window.VEGuideArt) { var art = VEGuideArt('liz', 'square'); if (art) lizBox.style.backgroundImage = "url('" + art + "')"; }
     var params = new URLSearchParams(location.search), auditBack = params.get('audit');
+    // ?b=<code> is a business's own link from our email; it is kept for this browser so a reload or a later visit opens on it too.
+    var bCode = (params.get('b') || '').toLowerCase();
+    if (bCode) { params.delete('b'); history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params : '') + location.hash); }
+    loadPersonal(bCode || recall('rg_b'));
     // /check/<slug> (business outreach's first email): open that business's own free check.
     var checkSlug = params.get('check');
     if (checkSlug) {
@@ -1062,6 +1235,7 @@
       params.delete('audit'); history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params : '') + location.hash);
       setTimeout(function () { setStatus(auditBack === 'paid' ? 'Thank you. Your full audit is running, and we emailed you a copy of the link.' : auditBack === 'cancelled' ? 'Checkout was cancelled. Nothing was charged.' : ''); }, 1200);
     }
+    if (params.get('welcome') === 'survey') { params.delete('welcome'); history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params : '') + '#/next'); }
     route();
     loadPublic();
     var a = auth(), viewAs = a && a.getViewAs ? a.getViewAs() : null;

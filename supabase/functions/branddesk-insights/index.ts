@@ -459,6 +459,260 @@ async function webHealth(brand: string) {
 }
 
 // ---- The analysis ----
+// ---- Podcast (Captivate; Sean, 2026-11-04: "we don't have podcast analytics in the BrandDesk, in that Insights section") ----
+// Captivate's API (probed 2026-11-04 through a one-time function): GET /insights/<show>/overview?start&end -> {hits} (downloads;
+// start included, end excluded, so a day is start=d end=d+1; no dates = all time), GET /insights/<show>/overview/<episode>?start&end
+// -> the same for one episode, GET /insights/<show>/monthly -> the last 12 months. No listeners, apps, devices or places endpoint
+// exists (every guess was a 404), so those stay in Captivate's own dashboard. A brand's show is added to PODCAST_SHOWS.
+const CAPTIVATE = 'https://api.captivate.fm';
+// A brand's shows, in the order the picker lists them (ids from Captivate's GET /users/<user>/shows, 2026-11-04). Sean: "we have multiple
+// podcasts from this brand". The first is the default. Captivate also holds "Vegans Explore Network Exclusives", not tracked here.
+const PODCAST_SHOWS: Record<string, { key: string; id: string; name: string }[]> = {
+  'vegans-explore': [
+    { key: 'vegans-explore', id: '5f0184ac-771d-41be-9db2-49f08fc0b880', name: 'Vegans Explore Podcast' },
+    { key: 'soflo-vegans', id: '7769096f-5501-4afc-999a-32dbc14acd64', name: 'SoFlo Vegans Podcast' },
+    { key: 'vegans-who-lift', id: 'aa00615c-803d-49f0-96f3-abefd0aae76d', name: 'Vegans Who Lift Podcast' },
+    { key: 'pre-vegans', id: 'a491b80c-1d83-411d-b2b8-e63325194915', name: 'Pre-Vegans Podcast' },
+  ],
+};
+const showOf = (brand: string, key?: unknown) => { const l = PODCAST_SHOWS[brand]; return l ? (l.find((x) => x.key === String(key || '')) || (key ? null : l[0])) : null; };
+const plusDays = (d: string, n: number) => day(Date.parse(d) + n * 864e5);
+async function capToken(): Promise<string> {
+  const { data: conn } = await db.from('analytics_connections').select('config').eq('provider', 'captivate').maybeSingle();
+  const userId = conn?.config?.user_id;
+  const key = await secret(conn?.config?.api_key_secret || 'VE_CAPTIVATE_API_KEY');
+  if (!userId || !key) throw new Error('Captivate is not configured');
+  const af = new FormData(); af.append('username', String(userId)); af.append('token', key);
+  const ar = await fetch(`${CAPTIVATE}/authenticate/token`, { method: 'POST', body: af });
+  const token = (await ar.json().catch(() => ({})))?.user?.token;
+  if (!token) throw new Error(`Captivate refused the key (${ar.status})`);
+  return token;
+}
+async function pool<T, R>(items: T[], n: number, fn: (x: T) => Promise<R>): Promise<R[]> {
+  const out: R[] = new Array(items.length); let i = 0;
+  await Promise.all(Array.from({ length: Math.min(n, items.length) }, async () => { while (i < items.length) { const k = i++; out[k] = await fn(items[k]); } }));
+  return out;
+}
+// ---- The podcast, any period (Logan, 2026-11-04: "if we do all time, every time you pull information, we could do a custom... use our sorters... and do it for all of
+// the podcasts"). One all-time daily series per show is read from Captivate (POST /insights/<show>/over-time, interval 1d, days at Eastern midnight) and kept 3 hours;
+// every period, comparison and custom range is then cut from it with no new calls. What cannot be cut from daily totals is asked for the period: the audience
+// (POST /insights/<show>/range, types byLocation, byUserAgentBrowser, byUserAgentOs, byUserAgentDevice, countryCode null) and each episode's downloads
+// (POST /insights/<show>/overview/range, unix seconds, one call for every episode). A show's first 7 and 30 days of each episode are counted once, when they are over,
+// and kept in ve_podcast_episode_firsts.
+const etDay = (ms: number) => new Date(ms).toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+function etStart(d: string): number { // the instant an Eastern day begins
+  for (const off of [4, 5]) { const t = Date.parse(d + 'T00:00:00Z') + off * 3600e3; if (etDay(t) === d && etDay(t - 1) !== d) return t; }
+  return Date.parse(d + 'T05:00:00Z');
+}
+const sec = (ms: number) => Math.floor(ms / 1000);
+let capTok: { t: string; at: number } | null = null;
+async function capReq(path: string, body?: unknown): Promise<any> {
+  if (!capTok || Date.now() - capTok.at > 20 * 60e3) capTok = { t: await capToken(), at: Date.now() };
+  const r = await fetch(CAPTIVATE + path, { method: body === undefined ? 'GET' : 'POST', headers: { Authorization: `Bearer ${capTok.t}`, ...(body === undefined ? {} : { 'Content-Type': 'application/json' }) }, body: body === undefined ? undefined : JSON.stringify(body), signal: AbortSignal.timeout(25000) });
+  if (!r.ok) throw new Error(`Captivate ${r.status} on ${path.split('?')[0].replace(/[0-9a-f-]{36}/g, '<id>')}`);
+  return r.json();
+}
+async function podEpisodeList(brand: string, sh: { key: string; id: string }, refresh: boolean) {
+  return cached(`ins:podeps:${brand}:${sh.key}`, 1 * H, refresh, async () => {
+    const j = await capReq(`/shows/${sh.id}/episodes`);
+    const now = Date.now();
+    const list = (j?.episodes || []).filter((e: any) => String(e.status || '').toLowerCase() === 'published' && Date.parse(e.published_date) <= now)
+      .map((e: any) => ({ id: e.id, title: e.title, published: etDay(Date.parse(e.published_date)), art: e.episode_art || null, number: e.itunes_episode ?? e.episode_number ?? null }))
+      .sort((a: any, b: any) => b.published.localeCompare(a.published));
+    return { connected: true, list };
+  });
+}
+async function podSeries(brand: string, sh: { key: string; id: string }, refresh: boolean) {
+  return cached(`ins:podseries:${brand}:${sh.key}`, 3 * H, refresh, async () => {
+    const eps: any = await podEpisodeList(brand, sh, false);
+    const first = eps.list.length ? eps.list[eps.list.length - 1].published : '2020-01-01';
+    const j = await capReq(`/insights/${sh.id}/over-time`, { gteUnix: sec(etStart(plusDays(first, -1))), lteUnix: sec(Date.now()), interval: '1d' });
+    const days = (j?.overTime || []).map((p: any) => ({ d: etDay(Number(p.timestamp)), v: Number(p.total) || 0 }));
+    return { connected: true, days, total: Number(j?.total) || 0 };
+  });
+}
+const sliceSum = (days: { d: string; v: number }[], a: string, b: string) => { let n = 0; for (const x of days) if (x.d >= a && x.d <= b) n += x.v; return n; };
+
+async function podOverview(brand: string, sh: any, from: string, to: string, refresh: boolean) {
+  const [ser, eps]: any[] = await Promise.all([podSeries(brand, sh, refresh), podEpisodeList(brand, sh, refresh)]);
+  const days: { d: string; v: number }[] = ser.days;
+  const firstDay = (days.find((x) => x.v > 0) || days[0] || { d: from }).d;
+  const f = from < firstDay ? firstDay : from;
+  if (f > to) return { error: 'no_data_in_period' };
+  const { pf, pt, days: n } = prevOf(f, to);
+  const hasPrev = pt >= firstDay;
+  const step = Math.max(1, Math.ceil(n / 30));
+  const series: { t: string; v: number }[] = [];
+  for (let s = f; s <= to; s = plusDays(s, step)) { const e = plusDays(s, step - 1); series.push({ t: s, v: sliceSum(days, s, e > to ? to : e) }); }
+  const mon = new Map<string, number>(); const lab = new Map<string, string>();
+  for (const x of days) { const k = x.d.slice(0, 4) + x.d.slice(5, 7); mon.set(k, (mon.get(k) || 0) + x.v); lab.set(k, new Date(x.d.slice(0, 7) + '-15T12:00:00Z').toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' })); }
+  const months = [...mon.entries()].sort().slice(-24).map(([t, v]) => ({ t, v, label: lab.get(t) }));
+  const today = etDay(Date.now()), yest = plusDays(today, -1);
+  const cur = sliceSum(days, f, to);
+  return {
+    connected: true, show: sh.key, show_name: sh.name, shows: PODCAST_SHOWS[brand].map((x) => ({ key: x.key, name: x.name })), part: 'overview',
+    from: f, to, prev_from: hasPrev ? pf : null, prev_to: hasPrev ? pt : null, days: n, step, first_day: firstDay,
+    totals: { downloads: cur, prev: hasPrev ? sliceSum(days, pf, pt) : null, per_day: Math.round((cur / n) * 10) / 10,
+      this_month: sliceSum(days, today.slice(0, 8) + '01', yest), past_12_months: sliceSum(days, plusDays(yest, -364), yest), all_time: ser.total || sliceSum(days, '2000-01-01', yest),
+      episodes_out: eps.list.filter((e: any) => e.published >= f && e.published <= to).length, episodes_total: eps.list.length },
+    series, months, errors: [],
+    note: 'Downloads are what Captivate counts: an episode file fetched by an app or a browser, with its own bot filtering. Every period is cut from one daily record of the show.',
+  };
+}
+
+// Country names from Captivate to the ISO codes its range call needs to give provinces and cities (probed 2026-11-04: countryCode "US" works, "us" and "United States" return nothing).
+let _cc: Map<string, string> | null = null;
+function ccMap() {
+  if (_cc) return _cc;
+  _cc = new Map();
+  const dn = new Intl.DisplayNames(['en'], { type: 'region' });
+  const A = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  for (const a of A) for (const b of A) { const c = a + b; let n: string | undefined; try { n = dn.of(c); } catch { continue; } if (n && n !== c && !/^unknown/i.test(n)) _cc.set(n.toLowerCase(), c); }
+  for (const [n, c] of Object.entries({ turkey: 'TR', 'czech republic': 'CZ', russia: 'RU', 'south korea': 'KR', vietnam: 'VN', 'hong kong': 'HK', taiwan: 'TW', macau: 'MO', palestine: 'PS', myanmar: 'MM', 'ivory coast': 'CI', 'united states': 'US', 'united kingdom': 'GB', 'north macedonia': 'MK', 'republic of korea': 'KR' })) _cc.set(n, c);
+  return _cc;
+}
+const topN = (a: any[], k: string, n: number) => (a || []).map((x) => ({ name: String(x[k] ?? 'Unknown'), total: Number(x.total) || 0 })).sort((p, q) => q.total - p.total).slice(0, n);
+
+// Every country, with every province and city inside it, for one show over a period (one range call for the whole picture, then one for each country). Sean, 2026-11-04:
+// "the places are really important... both the country and the cities and provinces", to set beside Google's places to decide the next community.
+async function podAudience(brand: string, sh: any, from: string, to: string, refresh: boolean) {
+  return cached(`ins:podaud2:${brand}:${sh.key}:${from}:${to}`, 3 * H, refresh, async () => {
+    const win = { start: new Date(etStart(from)).toISOString(), end: new Date(etStart(plusDays(to, 1))).toISOString(), timezone: 'America/New_York', interval: null };
+    const j = await capReq(`/insights/${sh.id}/range/`, { ...win, countryCode: null, types: ['byLocation', 'byUserAgentBrowser', 'byUserAgentOs', 'byUserAgentDevice'] });
+    const base = (j?.byLocation?.byCountry || []).map((x: any) => ({ name: String(x.country), total: Number(x.total) || 0 })).filter((x: any) => x.total > 0).sort((a: any, b: any) => b.total - a.total);
+    const map = ccMap();
+    const errors: string[] = [];
+    const countries = await pool(base, 8, async (c: any) => {
+      const code = map.get(c.name.toLowerCase()) || null;
+      const row: any = { name: c.name, code, total: c.total, provinces: [], cities: [] };
+      if (!code) return row;
+      try {
+        const d = await capReq(`/insights/${sh.id}/range/`, { ...win, countryCode: code, types: ['byLocation'] });
+        row.provinces = (d?.byLocation?.byProvince || []).map((p: any) => ({ name: String(p.province ?? 'Unknown'), total: Number(p.total) || 0 })).sort((a: any, b: any) => b.total - a.total);
+        row.cities = (d?.byLocation?.byCity || []).map((p: any) => ({ name: String(p.city ?? 'Unknown'), province: p.province ?? null, total: Number(p.total) || 0 })).sort((a: any, b: any) => b.total - a.total);
+      } catch (e) { errors.push(`${c.name}: ${(e as Error).message}`); }
+      return row;
+    });
+    return { connected: true, show: sh.key, show_name: sh.name, part: 'audience', from, to, total: Number(j?.total) || 0, countries,
+      apps: topN(j?.byUserAgentBrowser, 'browser', 40), systems: topN(j?.byUserAgentOs, 'os', 20), devices: topN(j?.byUserAgentDevice, 'device', 20), errors: errors.slice(0, 5),
+      note: 'Captivate\'s own range report for the period, so its total can differ a little from the daily downloads on Overview, which are cut from its day by day record. A province or city is only known where the listener\'s network gives one; many downloads have a country and nothing more.' };
+  });
+}
+// All of our podcasts together: the four shows' places, apps and devices added up by name.
+async function podAudienceAll(brand: string, from: string, to: string, refresh: boolean) {
+  const parts: any[] = await Promise.all(PODCAST_SHOWS[brand].map((s) => podAudience(brand, s, from, to, refresh)));
+  const add = (m: Map<string, any>, k: string, v: any, n: number) => { const o = m.get(k); if (o) o.total += n; else m.set(k, { ...v, total: n }); };
+  const cm = new Map<string, any>(), ap = new Map<string, any>(), sy = new Map<string, any>(), dv = new Map<string, any>();
+  for (const p of parts) {
+    for (const c of p.countries) {
+      if (!cm.has(c.name)) cm.set(c.name, { name: c.name, code: c.code, total: 0, provinces: new Map(), cities: new Map() });
+      const o = cm.get(c.name); o.total += c.total;
+      for (const x of c.provinces) add(o.provinces, x.name, { name: x.name }, x.total);
+      for (const x of c.cities) add(o.cities, x.name + '|' + (x.province || ''), { name: x.name, province: x.province }, x.total);
+    }
+    for (const x of p.apps) add(ap, x.name, { name: x.name }, x.total);
+    for (const x of p.systems) add(sy, x.name, { name: x.name }, x.total);
+    for (const x of p.devices) add(dv, x.name, { name: x.name }, x.total);
+  }
+  const arr = (m: Map<string, any>) => [...m.values()].sort((a, b) => b.total - a.total);
+  return { connected: true, show: 'all', show_name: 'All podcasts', part: 'audience', from, to, total: parts.reduce((n, p) => n + p.total, 0),
+    countries: arr(cm).map((c) => ({ name: c.name, code: c.code, total: c.total, provinces: arr(c.provinces), cities: arr(c.cities) })),
+    apps: arr(ap).slice(0, 40), systems: arr(sy).slice(0, 20), devices: arr(dv).slice(0, 20), errors: parts.flatMap((p) => p.errors || []).slice(0, 5),
+    note: 'The four shows added up by name. A listener who hears more than one show is counted once for each.' };
+}
+
+// First 7 and first 30 days of each episode: counted when those days are over, kept for good. 40 are counted a visit; the rest on the next.
+async function podFirsts(brand: string, sh: any, list: any[], today: string) {
+  const { data: rows } = await db.from('ve_podcast_episode_firsts').select('episode_id, d7, d30').eq('brand_slug', brand).eq('show_key', sh.key);
+  const have = new Map<string, { d7: number | null; d30: number | null }>((rows || []).map((r: any) => [r.episode_id, { d7: r.d7, d30: r.d30 }]));
+  const yest = plusDays(today, -1);
+  const need = list.filter((e) => { const h = have.get(e.id); return (plusDays(e.published, 6) <= yest && h?.d7 == null) || (plusDays(e.published, 29) <= yest && h?.d30 == null); });
+  const batch = need.slice(0, 40);
+  await pool(batch, 6, async (e: any) => {
+    try {
+      const j = await capReq(`/insights/${sh.id}/over-time/${e.id}`, { gteUnix: sec(etStart(e.published)), lteUnix: sec(etStart(plusDays(e.published, 30))), interval: '1d' });
+      const ds = (j?.overTime || []).map((p: any) => ({ d: etDay(Number(p.timestamp)), v: Number(p.total) || 0 }));
+      const d7 = plusDays(e.published, 6) <= yest ? sliceSum(ds, e.published, plusDays(e.published, 6)) : null;
+      const d30 = plusDays(e.published, 29) <= yest ? sliceSum(ds, e.published, plusDays(e.published, 29)) : null;
+      await db.from('ve_podcast_episode_firsts').upsert({ brand_slug: brand, show_key: sh.key, episode_id: e.id, published: e.published, d7, d30, updated_at: new Date().toISOString() }, { onConflict: 'brand_slug,show_key,episode_id' });
+      have.set(e.id, { d7, d30 });
+    } catch (_) { /* tried again on the next visit */ }
+  });
+  return { have, pending: Math.max(0, need.length - batch.length) + batch.filter((e) => { const h = have.get(e.id); return (plusDays(e.published, 6) <= yest && h?.d7 == null) || (plusDays(e.published, 29) <= yest && h?.d30 == null); }).length };
+}
+async function podEpisodes(brand: string, sh: any, from: string, to: string, refresh: boolean) {
+  const eps: any = await podEpisodeList(brand, sh, refresh);
+  const today = etDay(Date.now());
+  const range: any = await cached(`ins:podrange:${brand}:${sh.key}:${from}:${to}`, 3 * H, refresh, async () => {
+    const j = await capReq(`/insights/${sh.id}/overview/range`, { startTimestamp: sec(etStart(from)), endTimestamp: sec(etStart(plusDays(to, 1))) });
+    return { connected: true, by: Object.fromEntries((j?.byEpisode || []).map((x: any) => [x.episodeId, Number(x.total) || 0])) };
+  });
+  const { have, pending } = await podFirsts(brand, sh, eps.list, today);
+  const episodes = eps.list.map((e: any) => ({ id: e.id, title: e.title, published: e.published, art: e.art, number: e.number, downloads: range.by[e.id] || 0, counted: e.published <= to,
+    first7: have.get(e.id)?.d7 ?? null, first30: have.get(e.id)?.d30 ?? null, days_out: Math.max(0, Math.round((Date.parse(today) - Date.parse(e.published)) / 864e5)) }));
+  return { connected: true, show: sh.key, show_name: sh.name, part: 'episodes', from, to, episodes, pending_firsts: pending, partial: false, errors: [],
+    note: 'First 7 and first 30 days are counted from the day an episode came out, once those days are over. Downloads are Captivate\'s, with its own bot filtering.' };
+}
+
+// ---- Podcast pages uploaded by hand (Sean, 2026-11-04: "whatever can't be pulled by API, we can upload manually with a screenshot... the ability
+// to upload multiple... where people are listening from, what devices"). Private bucket podcast-reports, rows in ve_podcast_uploads. A file goes up
+// straight from the browser on a signed link (`podcast_upload_start`), then `podcast_upload_done` saves its row; nothing is deleted, `podcast_file_remove`
+// only hides it. Super admins only (the handler's own check), like every Insights action.
+const UP_BUCKET = 'podcast-reports';
+const UP_KINDS = ['places', 'devices', 'apps', 'overview', 'other'];
+const UP_TYPES = /^(image\/(jpeg|png|webp)|application\/pdf)$/;
+const UP_MAX = 25 * 1024 * 1024;
+async function podcastFiles(act: string, brand: string, body: any, member: string | null) {
+  if (!PODCAST_SHOWS[brand]) return { error: 'no_podcast' };
+  const sh = showOf(brand, body.show);
+  if (!sh) return { error: 'bad_show' };
+  if (act === 'podcast_files') {
+    const { data: rows, error } = await db.from('ve_podcast_uploads').select('*').eq('brand_slug', brand).eq('show_key', sh.key).is('removed_at', null)
+      .order('period_to', { ascending: false }).order('created_at', { ascending: false }).limit(300);
+    if (error) return { error: error.message };
+    const paths = (rows || []).map((r: any) => r.storage_path);
+    const urls = new Map<string, string>();
+    if (paths.length) {
+      const { data: signed } = await db.storage.from(UP_BUCKET).createSignedUrls(paths, 3600);
+      for (const s of signed || []) if (s.path && s.signedUrl) urls.set(s.path, s.signedUrl);
+    }
+    return { files: (rows || []).map((r: any) => ({ id: r.id, kind: r.kind, from: r.period_from, to: r.period_to, note: r.note, name: r.file_name, type: r.content_type, size: r.size_bytes, at: r.created_at, url: urls.get(r.storage_path) || null })) };
+  }
+  if (act === 'podcast_upload_start') {
+    const type = String(body.type || '');
+    if (!UP_TYPES.test(type)) return { error: 'bad_type' };
+    if (!(Number(body.size) > 0) || Number(body.size) > UP_MAX) return { error: 'too_big' };
+    const safe = String(body.name || 'file').toLowerCase().replace(/[^a-z0-9.]+/g, '-').replace(/^-+|-+$/g, '').slice(-60) || 'file';
+    const path = `${brand}/${sh.key}/${Date.now()}-${crypto.randomUUID().slice(0, 8)}-${safe}`;
+    const { data, error } = await db.storage.from(UP_BUCKET).createSignedUploadUrl(path);
+    if (error) return { error: error.message };
+    return { upload_url: data.signedUrl, path };
+  }
+  if (act === 'podcast_upload_done') {
+    const path = String(body.path || '');
+    const kind = String(body.kind || '');
+    const type = String(body.type || '');
+    if (!path.startsWith(`${brand}/${sh.key}/`) || path.includes('..')) return { error: 'bad_path' };
+    if (!UP_KINDS.includes(kind)) return { error: 'bad_kind' };
+    if (!UP_TYPES.test(type)) return { error: 'bad_type' };
+    if (!isDay(body.from) || !isDay(body.to) || body.from > body.to) return { error: 'bad_dates' };
+    const { error: ex } = await db.storage.from(UP_BUCKET).createSignedUrl(path, 60);
+    if (ex) return { error: 'not_uploaded' };
+    const { data, error } = await db.from('ve_podcast_uploads').insert({
+      brand_slug: brand, show_key: sh.key, kind, period_from: body.from, period_to: body.to, note: String(body.note || '').trim().slice(0, 500) || null,
+      file_name: String(body.name || 'file').slice(0, 200), content_type: type, size_bytes: Number(body.size) || null, storage_path: path, uploaded_by: member,
+    }).select('id').single();
+    if (error) return { error: error.message };
+    return { id: data.id };
+  }
+  if (act === 'podcast_file_remove') {
+    const { data, error } = await db.from('ve_podcast_uploads').update({ removed_at: new Date().toISOString(), removed_by: member }).eq('id', String(body.id || '')).eq('brand_slug', brand).eq('show_key', sh.key).is('removed_at', null).select('id');
+    if (error) return { error: error.message };
+    return data?.length ? { ok: true } : { error: 'not_found' };
+  }
+  return { error: 'unknown_action' };
+}
+
 async function socialReport(brand: string, from: string, to: string) {
   const key = await secret('LESARUSS_ADMIN_TOKEN');
   try {
@@ -526,6 +780,9 @@ async function analysis(brand: string, name: string, from: string, to: string) {
   return { ...fix(out), facts, errors: errs, model: MODEL };
 }
 
+// Every Insights action that only reads (writes are the podcast upload, upload done and file remove).
+const READ_ONLY_OK = new Set(['web_analytics', 'podcast', 'podcast_files', 'seo', 'ads', 'campaigns', 'campaign', 'web_health', 'analysis']);
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ error: 'method' }, 405);
@@ -538,8 +795,10 @@ Deno.serve(async (req) => {
     else member = token ? await verifyToken(token) : null;
     if (!ops && !member) return json({ error: 'not_authenticated' }, 401);
     if (member) {
-      const { data: me } = await db.from('members').select('is_superadmin').eq('id', member).maybeSingle();
+      const { data: me } = await db.from('members').select('is_superadmin, member_class').eq('id', member).maybeSingle();
       if (!me?.is_superadmin) return json({ error: 'forbidden' }, 403);
+      // View only for our Guide and agent accounts (Logan, 2026-11-04: vegan@lesaruss.com is the standing QA login; it reads Insights, it never changes it).
+      if (me.member_class === 'agent' && !READ_ONLY_OK.has(String(body.action || ''))) return json({ error: 'view_only' }, 403);
     }
     const brand = String(body.brand || '');
     if (!/^[a-z0-9-]{2,60}$/.test(brand)) return json({ error: 'bad_brand' }, 400);
@@ -548,11 +807,21 @@ Deno.serve(async (req) => {
     const refresh = !!body.refresh;
     const act = String(body.action || '');
     if (act === 'web_health') return json(await cached(`ins:health:${brand}`, 12 * H, refresh, () => webHealth(brand)));
+    if (act.startsWith('podcast_file') || act.startsWith('podcast_upload')) return json(await podcastFiles(act, brand, body, member));
     const { from, to } = body;
     if (!isDay(from) || !isDay(to) || from > to) return json({ error: 'bad_dates' }, 400);
     switch (act) {
       case 'web_analytics': return json(await cached(`ins:web:${brand}:${from}:${to}`, 3 * H, refresh, () => webAnalytics(brand, from, to)));
       case 'seo': return json(await cached(`ins:seo:${brand}:${from}:${to}`, 3 * H, refresh, () => seo(brand, from, to)));
+      case 'podcast': {
+        if (!PODCAST_SHOWS[brand]) return json({ connected: false });
+        if (body.show === 'all' && body.part === 'audience') return json(await podAudienceAll(brand, from, to, refresh));
+        const sh = showOf(brand, body.show);
+        if (!sh) return json({ error: 'bad_show' }, 400);
+        const part = body.part === 'episodes' ? 'episodes' : body.part === 'audience' ? 'audience' : 'overview';
+        const r = part === 'episodes' ? await podEpisodes(brand, sh, from, to, refresh) : part === 'audience' ? await podAudience(brand, sh, from, to, refresh) : await podOverview(brand, sh, from, to, refresh);
+        return json(r);
+      }
       case 'ads': return json(await ads(brand, from, to));
       case 'campaigns': return json(await campaigns(brand, from, to));
       case 'campaign': return json(await campaign(brand, String(body.kind || ''), String(body.id || ''), from, to));
