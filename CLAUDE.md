@@ -1292,7 +1292,7 @@ edit the row and read the playbook's records, newest first. Status words: Buildi
   item that belongs to an existing build goes to that playbook's queue, named by its slug; anything bigger than a tweak is a new idea, so say
   so and bring Sean a recommendation (a new playbook, or park it), never build it quietly. One pinned task per playbook (a second task on the
   same playbook is wrapped and its open items go back to the queue). Work the queue top to bottom, confirm each item live, mark it Done, pull
-  the next one without being asked. Each item is one decision record `ve-feedback: <task>`. First two items, both Done: the dashboard Insights
+  the next one without being asked. Each item is one decision record `ve-feedback: <task>`. **A visual copy of the queue** (Sean, 2026-11-04: "I want both experiences", a list he browses and a guide that walks him): `briefings` slug `ve-feedback`, brand `vegans-explore`, filled from the active playbook template, at `hq.lesaruss.ai/branddesk/brands/vegans-explore/playbook/ve-feedback` (a signed-in page). Pending is grouped You decide / Logan works / Recurring / Parked, each item numbered, with Completed beside it; Sean says "pick for me" or an item's number. It is a written page: when an item moves, update its pending and done lists in `briefings.content` (through the playbook skill, never hand HTML) and the `ve_playbook_index` row. Not yet seen in a browser (first build session could not reach HQ). First two items, both Done: the dashboard Insights
   block and the Depot moved to the bottom (above). Item 3, Done 2026-11-03 (main e7008ae): the footer overlapped the dashboard's content on phones
   because `html,body{height:100%}` with the flex-column body let `.console-frame` shrink; the body now grows (`height:auto`) and the frame is
   `flex:1 0 auto`. Any page that puts the footer last in a flex-column body must not give the body a fixed height.
@@ -4639,7 +4639,7 @@ with us?... it's per event." Separate from Group Partners.
   before approval refused). On 2026-11-02, 15 hosts, 3 with an email; the Meetup-only groups publish none.
 - **Build order:**
   1. The event claim (built 2026-11-02).
-  2. The heads-up (built 2026-11-02, waiting for approval).
+  2. The heads-up (built 2026-11-02; approved and on 2026-11-03; first send 10:07 AM Eastern 2026-11-03: 3 hosts, none claimed yet; a host with no account is pointed at the free event survey from the claim email and thank-you).
   3. Per-event ticketing.
   4. The sponsorship and extras checkout.
   5. The ad console's credit, booking and creative support.
@@ -5090,6 +5090,48 @@ page says it: slides The preview and With a sponsor (`business/supermarkets.html
   `barcode:<gtin>`, `ve_product_barcodes.points` and `paid_at`; Logan's default, Sean's to change). `ve-products` `tracker`. Supermarket
   bounties exist only at sponsored chains, so today Open bounties shows the stadiums and airports. Proven 2026-11-01 as the Logan test
   account (two scans logged, an add approved for 25 points and shown on the Tracker).
+
+## The Vegan Theme Park Guide (LOCKED by Sean 2026-11-04, playbook `ve-theme-park-guide`)
+
+Concept session with V, locked by Sean: "lock it" (canon `canon-ve-theme-park-guide`; migration `20261104_theme_park_guide_spend_budget_canon.sql`; handoff
+`docs/handoff/2026-11-04-ve-theme-park-guide.md`). **Magic Kingdom is built and prelaunch, on a branch (below); nothing else is.** Sean: "Theme park guide. A growing number of different theme parks, starting with the
+most popular... put pins where the restaurants are... whatever restaurant they're in, they can do the location thing, put where they are on the map and see
+the distance. It will be a paid guide, but they get one theme park on it."
+
+- **One Guide for every park, on the venue Guides' engine** (`ve-venues`, see Venue Guides): a park is a venue (new kind `theme_park`; the `ve_venues` kind
+  check allows only stadium, arena, airport and supermarket today), each restaurant a spot with a pin, each dish an item labelled Vegan, Vegan on request or
+  Ask before you order, with a source and a last-confirmed date. Reports, first-to-confirm bounties and the 35-day stale rule are reused. Copy
+  `guides/stadium-arena-guide.html` and `guide-scripts/stadium-arena-guide.js` (template gate), never a blank file.
+- **$11 or 1,100 points, Magic Kingdom free.** Wave 1 (Central Florida, Tampa Bay is inside the chapter): Magic Kingdom, EPCOT, Animal Kingdom, Hollywood
+  Studios, Universal Studios Florida, Islands of Adventure; later SeaWorld, Busch Gardens Tampa, LEGOLAND Florida, then other chapters. Pilot first.
+  River narrates (lines are text drafts; Dani is the alternative). Name: The Vegan Theme Park Guide; park names are plain text with a not-affiliated line.
+- **The map**: our own schematic, never the park's map art. Parks are outdoors, so GPS works: a you-are-here dot with an accuracy ring and a distance to each
+  restaurant in feet and miles, straight line times about 1.3 and labelled "about N on foot", never turn-by-turn. The location-check radius is set per park
+  from the farthest pin plus 100 m (`radius_m` accepts 50 to 5000; guesses: Magic Kingdom about 700 m, EPCOT about 1,000 m).
+- **Votes** are on spots and dishes inside the Guide (`ve_guide_votes`, new kinds), not Directory listings. **Menus**: Vegan and Vegan-on-request items only,
+  with a link to the park's own menu. **Sources**: no crawler on park sites until their terms are read; read published menus one by one, keep item names and
+  the park's own plant-based marker with a source link and date, never copy descriptions or photos, never infer. **Pictures**: from approved member reports;
+  no generated pictures of named park dishes; no park logos or characters; our Guides only, in the Vegans Explore Tee or store clothing.
+- **Google** runs under the $50 cap (Google costs): the pilot is about 25 searches plus 70 details (about $2.75 at list), wave 1 about 570 calls (about $16),
+  both estimates. Approve each scan with `ve_google_approve('once:<task>', ...)`. Risk: Google may snap in-park pins to the park centre; OpenStreetMap (free,
+  ODbL attribution) is untested. **No sponsors now** (the Supermarket rule).
+- **Build order**: the `theme_park` migration, the Magic Kingdom pilot import with pins checked by eye, the page and GPS park map (`VEParkMap`), menu
+  sourcing, reports and bounties and votes, waves 2 and 3, launch per `docs/guides/BUILD-A-GUIDE.md`.
+- **Built 2026-11-04** (Sean saw the pilot's pins and said "Pins are good, go ahead with the page"; branch `claude/peaceful-gauss-yf6idf`, not on `main`):
+  migrations `20261104_theme_park_guide_kind.sql` (the `theme_park` kind, `ve_venues.resort`, the unpublished `ve_guides` row `theme-park-guide`, Magic Kingdom as the
+  `free_example` venue) and `20261104_theme_park_guide_magic_kingdom_pins.sql` (`ve_venue_spots.latitude`, `longitude`, `google_place_id`, `pin_source`, `land`,
+  `ve_venues.menu_url`; 24 restaurants, 23 pinned from Google, radius 410 m = farthest pin 309 m plus 100 m). The pilot (`once:theme-park-magic-kingdom`, 25 searches,
+  0 details, $2.75 approved; script `scripts/supabase-once/theme-park-pilot.ts`, function now the 410 stub) saved nothing; the pins came from its output. **Aloha Isle**
+  matched a place 5.9 km away, so it is a spot with no pin ("Not pinned yet"); the stadium's Where is it flow is not reused here, so it waits for a hand pin.
+  `ve-venues` (v13 from 48a939f4, source sha256 matched) has `GUIDES['theme-park-guide']`, `guideOfKind`, and returns each spot's `lat`, `lng`, `land` and the venue's
+  `resort`, `menu_url`; every call from the page sends `guide: 'theme-park-guide'`. **The page** `guides/theme-park-guide.html` and `guide-scripts/theme-park-guide.js`
+  (copied from the stadium Guide, `noindex`, River on the right, lines are text drafts, no recordings; tabs Overview, Parks, Help keep it right, My list, Get access)
+  with `/public/ve-park-map.js` (`VEParkMap`: our own to-scale drawing of the pins, a you-are-here dot with an accuracy ring, a land chip filter, distance in feet
+  under a tenth of a mile else miles, straight line times 1.3 as "about N on foot"; the location stays in the page). Left out of the copy because they are stadium
+  sections: Bounties, Scan, Where is it. Reports (Still here, Update, Comment, Something missing) reuse the venue engine and its location check against the park's
+  radius. **Not built / not proven**: no Vegan items yet (menu sourcing is next, one published menu at a time, never copied descriptions), the park's menu link is
+  empty, no report sent from inside the park, no signed-in owner run, not in the catalog or sitemap, `ve_guide_votes` kinds for parks, the other five Wave 1 parks.
+  Checked in a browser at 1440 and 390 px against the live function with a simulated phone location on Main Street.
 
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 
@@ -6197,9 +6239,26 @@ off, run each step with `curl -X POST .../functions/v1/ve-once-<task>?step=<name
 with a plain SELECT (reads and deploys never prompt), then redeploy it as the 410 stub. The SQL still goes in a migration
 file in the repo. A step runs in one transaction, so a failed step changes nothing.
 
-## Google costs: ask before a big scan (Sean, 2026-11-01)
+## Google costs: a $50 monthly hard stop and standing approval (Sean, 2026-11-04, playbook `ve-spend-budget`)
 
-"I wasn't fully aware of all of this." Google Places bills the Google Cloud account's card monthly past its free monthly amount (Text
+"I wasn't fully aware of all of this." **The rule now** (Sean, 2026-11-04: "I'm willing to put a $50 budget for Google on that... that's the cap... All I ask for is a report of the
+activity, what's been spent, at the end of each week"; canon `canon-ve-spend-budget`). **Google is a hard $50 a month**, counted at list price with no
+free tier (the free amounts are unverified; Google's own bill, Cloud Billing > Reports, filter Places API, is the truth). Sean raises the cap when things
+move faster (`ve_site_settings` `google_budget` `monthly_cap_usd`). **Standing approval**: Logan runs any Google scan whose quote fits what is left under
+the cap, without asking, and reports it weekly; a scan that would cross the cap stops and asks. This replaces the 2026-11-01 rule to ask before any scan of
+about 200 calls. **A quote is a ceiling**: a one-time scan is approved with `ve_google_approve('once:<task>', searches, details, note)`, which refuses
+(`over_cap`, with what is left) when its list cost is more than the ledger's left, and the scan checks `ve_google_once_room('once:<task>', 'search'|'details')`
+before every batch and stops at 0; close it with `ve_google_close`. A batch is counted after it is sent, so a scan can pass its ceiling by at most the one
+batch in flight. **The ledger** is `ve_google_ledger()` (cap, spent, regular, approved-not-yet-run, left, every approval; also `ledger` in
+`ve_google_report`). **Enforced in the room check** every caller already makes: `ve_google_room` is the smaller of the day's cap and the month's, background
+jobs stop at 60% of the month's cap (`background_month_share`) so a person's action and an approved scan keep room, and at the cap everything reads 0.
+**Daily caps raised to 120 searches and 100 details** (background 60% of it); an approved one-time scan runs outside the daily cap, as before. Google's own
+limit is 500 text searches a day across the project. Migration `20261104_google_hard_cap_ledger.sql`. Proven 2026-11-04 in a rolled-back transaction (no
+approval no room; over-cap, bad-name and duplicate approvals refused; room and committed fell with usage; past the cap every room read 0). Month to date
+2026-11-04: $14.00 at list, $36.01 left. Not yet: the weekly snapshot and Sunday email, the BrandDesk Costs module, Apify and Higgsfield usage in the ledger
+(`ve-spend-budget` steps 2 to 4). The earlier rule's text follows for history.
+
+Google Places bills the Google Cloud account's card monthly past its free monthly amount (Text
 Search about $32 per 1,000 past about 5,000 a month; Place Details and PageSpeed have their own). The project's cap is 500 text searches a
 day, shared by every job (the backlog check every 2 minutes, the nightly essentials pass, the audits, Add a listing, imports). **Before any
 scan of more than about 200 Google calls, give Sean the call count and the estimated cost, and wait for his go.** Schedule big imports right

@@ -1,0 +1,5 @@
+-- Wrap-up 2026-11-04 (Logan): applied through the connector as ve_door_guides_wrapup_2026_11_04. Three decision records and one index row.
+-- ve-door-guides: canon v2/v3 applied, member wording live, and the open question of what the playbook is for (Logan recommends the shared door rules only).
+-- ve-event-host-path: the first three heads-up emails went out 2026-11-03 10:07 AM Eastern; the claim email now points hosts with no account at the free event survey.
+-- ve-guides: canon-ve-guides-playbook (one playbook for every Guide) conflicts with Sean's 2026-11-04 line (each Guide its own playbook); nothing changed.
+-- The full text of each record is in playbook_records (slug, body starting with the slug and task). ve_playbook_index 've-event-host-path' stage and next_action were updated.
