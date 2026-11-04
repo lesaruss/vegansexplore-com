@@ -1,0 +1,5 @@
+-- ve-theme-park-guide: The Diamond Horseshoe (Frontierland), pinned from Google (one text search, job once:theme-park-diamond-horseshoe,
+-- $0.04 at list, approved and closed in the ledger; the one-time function is the 410 stub) at 28.418964, -81.582837, place id
+-- ChIJzRmVhyJ-3YgRs-6RThiY_I8, with the three items on Disney's plant-based list (Cowpoke salad, Impossible meatloaf, Warm apple cake),
+-- each Vegan with Disney's page as its source dated 2026-11-04. The park now has 25 restaurants, 24 pinned (Aloha Isle is not), 44 live items.
+-- The statements as run are in the migration history as theme_park_magic_kingdom_diamond_horseshoe.
