@@ -112,17 +112,26 @@
       }
       // ---------- Taster emails (Earn your Passport part 5, ve-nurture) ----------
       var NFN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-nurture';
-      var KINDS = [['day-3', 'Day 3: this week in their city'], ['day-7', 'Day 7: a story for them'], ['day-14', 'Day 14: their Guide'], ['pulse', 'Thursdays: the Daily Pulse, only if they said yes on Day 14'], ['door-events-3', 'Events Guide, Day 3: the rain plan'], ['door-events-7', 'Events Guide, Day 7: work with us'], ['dec-1', 'December 1: Founding closes January 1'], ['dec-2', 'December 18: two weeks left'], ['dec-3', 'December 30: tomorrow is the last day']];
+      var KINDS = [['day-3', 'Day 3: this week in their city'], ['day-7', 'Day 7: a story for them'], ['day-14', 'Day 14: their Guide'], ['pulse', 'Thursdays: the Daily Pulse, only if they said yes on Day 14'], ['door-events-3', 'Events Guide, Day 3: the rain plan'], ['door-events-7', 'Events Guide, Day 7: work with us'], ['door-restaurant-in', 'Restaurant Guide: You\'re in'], ['door-restaurant-7', 'Restaurant Guide, Day 7: how is it looking'], ['dec-1', 'December 1: Founding closes January 1'], ['dec-2', 'December 18: two weeks left'], ['dec-3', 'December 30: tomorrow is the last day']];
       function napi(b) { return fetch(NFN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(b) }).then(function (r) { return r.json(); }); }
       function kindName(k) { if (/^pulse-/.test(k)) return 'Daily Pulse ' + k.slice(6); var f = KINDS.filter(function (x) { return x[0] === k; })[0]; return f ? f[1].split(':')[0] : k; }
       // The Vegan Events Guide's two notes: draft until approved; any change to the words puts them back to draft.
       function doorCard(g) {
         if (!g) return '';
         var st = g.on && g.approved ? 'Sending' : g.approved ? 'Approved, switched off' : 'Draft: waiting for your approval';
-        return '<div class="card" style="grid-column:1/-1"><div class="body"><h3>Vegan Events Guide notes: ' + st + '</h3><span class="meta">Two notes to members who finished the Guide's event survey, counted from the day they finished: Day 3 the rain plan, Day 7 claim and apply. Reworded 2026-11-03 for members, so it is a draft again. Weekdays from 10 AM Eastern. Read both first (links below), then approve.</span>' +
+        return '<div class="card" style="grid-column:1/-1"><div class="body"><h3>Vegan Events Guide notes: ' + st + '</h3><span class="meta">Two notes to members who finished the Guide\'s event survey, counted from the day they finished: Day 3 the rain plan, Day 7 claim and apply. Reworded 2026-11-03 for members, so it is a draft again. Weekdays from 10 AM Eastern. Read both first (links below), then approve.</span>' +
           '<div class="acts"><button type="button" class="btn' + (g.approved ? ' btn-ghost' : '') + '" id="dap">' + (g.approved ? 'Approved' : 'Approve this wording') + '</button>' +
           '<button type="button" class="btn' + (g.on ? ' btn-ghost' : '') + '" id="dsw"' + (g.approved ? '' : ' disabled') + '>' + (g.on ? 'Switch off' : 'Switch on') + '</button></div>' +
           '<span class="meta"><a href="#emails/preview:door-events-3">Read Day 3</a> &middot; <a href="#emails/preview:door-events-7">Read Day 7</a></span></div></div>';
+      }
+      // The Vegan Restaurant Guide's two notes after joining: their own approval and switch, draft until approved.
+      function restCard(g) {
+        if (!g) return '';
+        var st = g.on && g.approved ? 'Sending' : g.approved ? 'Approved, switched off' : 'Draft: waiting for your approval';
+        return '<div class="card" style="grid-column:1/-1"><div class="body"><h3>Vegan Restaurant Guide notes: ' + st + '</h3><span class="meta">Two notes to members who finished the Restaurant Guide survey: You\'re in (the next weekday morning) and Day 7. From the Vegans Explore team, weekdays from 10 AM Eastern. The Founding line drops on its own after January 1. Read both first, then approve.</span>' +
+          '<div class="acts"><button type="button" class="btn' + (g.approved ? ' btn-ghost' : '') + '" id="rap">' + (g.approved ? 'Approved' : 'Approve this wording') + '</button>' +
+          '<button type="button" class="btn' + (g.on ? ' btn-ghost' : '') + '" id="rsw"' + (g.approved ? '' : ' disabled') + '>' + (g.on ? 'Switch off' : 'Switch on') + '</button></div>' +
+          '<span class="meta"><a href="#emails/preview:door-restaurant-in">Read You\'re in</a> &middot; <a href="#emails/preview:door-restaurant-7">Read Day 7</a></span></div></div>';
       }
       function drawEmails(sub) {
         if (sub && sub.indexOf('preview') === 0) {
@@ -139,13 +148,15 @@
           $('grid').innerHTML = '<div class="card" style="grid-column:1/-1"><div class="body"><h3>Not-ready-yet emails are ' + (on ? 'on' : 'off') + '</h3><span class="meta">From VEGANS EXPLORE, signed Vegans Explore team, from 10 AM Eastern. Paying, earning a membership or stopping our emails ends them.</span>' +
             '<div class="acts"><button type="button" class="btn' + (on ? ' btn-ghost' : '') + '" id="tsw">' + (on ? 'Turn them off' : 'Turn them on') + '</button></div>' +
             '<span class="meta">See each email: ' + KINDS.map(function (k) { return '<a href="#emails/preview:' + k[0] + '">' + esc(k[1].split(':')[0]) + '</a>'; }).join(' &middot; ') + '</span></div></div>' +
-            doorCard(d.door) +
+            doorCard(d.door) + restCard(d.rest) +
             (d.rows.length ? d.rows.map(function (t) {
               return '<div class="card"><div class="body"><span class="kind">' + esc(t.state) + '</span><h3>' + esc(t.name) + '</h3><span class="meta">' + esc(t.email) + ' &middot; ' + esc(t.chapter || '') + ' &middot; joined ' + esc(new Date(t.joined).toLocaleDateString()) + '</span>' +
                 '<span class="meta">' + (t.sent.length ? 'Sent: ' + t.sent.map(function (x) { return esc(kindName(x.kind)) + (x.error ? ' (did not send)' : ''); }).join(', ') : 'Only the welcome so far') + '</span></div></div>';
             }).join('') : '<p class="sub">No Tasters yet.</p>');
           if ($('dap')) $('dap').onclick = function () { if (this.textContent === 'Approved') return; this.disabled = true; napi({ action: 'settings', door_approve: true }).then(function () { drawEmails(''); }); };
           if ($('dsw')) $('dsw').onclick = function () { this.disabled = true; napi({ action: 'settings', door_on: !d.door.on }).then(function () { drawEmails(''); }); };
+          if ($('rap')) $('rap').onclick = function () { if (this.textContent === 'Approved') return; this.disabled = true; napi({ action: 'settings', rest_approve: true }).then(function () { drawEmails(''); }); };
+          if ($('rsw')) $('rsw').onclick = function () { this.disabled = true; napi({ action: 'settings', rest_on: !d.rest.on }).then(function () { drawEmails(''); }); };
           $('tsw').onclick = function () { this.disabled = true; napi({ action: 'settings', tasters_on: !on }).then(function () { drawEmails(''); }); };
         });
       }

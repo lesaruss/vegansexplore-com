@@ -303,6 +303,79 @@ async function doorTick(cfg: any, e: any, inHours: boolean, out: Record<string, 
   }
 }
 
+// ---------- The Vegan Restaurant Guide's two notes after joining (ve-restaurant-guide; drafted 2026-11-05) ----------
+// To a member who finished the Restaurant Guide's survey (the one door). Their own approval and switch (nurture.rest_on,
+// nurture.rest_approved_hash), so approving them never touches the Events Guide notes. Draft until Sean approves the wording; any
+// change to the words puts them back to draft. Day 0 is the day after they finish (it goes on the next tick in sending hours).
+const REST_GUIDE = 'vegan-restaurant-guide';
+const REST_KINDS = ['door-restaurant-in', 'door-restaurant-7'];
+const FOUNDING_UNTIL = Date.parse('2027-01-01T05:00:00Z');
+async function restBusiness(email: string): Promise<{ name: string; slug: string | null }> {
+  const { data: c } = await db.from('ve_outreach_contacts').select('listing_id').ilike('email', email).not('listing_id', 'is', null).limit(1).maybeSingle();
+  const lid = c?.listing_id || (await db.from('listings').select('id').ilike('email', email).eq('status', 'approved').limit(1).maybeSingle()).data?.id;
+  if (!lid) return { name: '', slug: null };
+  const { data: l } = await db.from('listings').select('name,slug').eq('id', lid).maybeSingle();
+  return { name: String(l?.name || ''), slug: l?.slug || null };
+}
+async function restEmail(kind: string, m: any, opts: { founding?: boolean; biz?: { name: string; slug: string | null } } = {}) {
+  const first = esc(String(m?.name || '').trim().split(/\s+/)[0] || 'there');
+  const biz = opts.biz ?? (m?.email ? await restBusiness(String(m.email)) : { name: 'Sample Sprout Kitchen', slug: 'sample' });
+  const bname = esc(biz.name || 'your business');
+  const foot = `You are getting this because you took the survey in the Vegan Restaurant Guide.`;
+  const claim = utm(biz.slug ? `${SITE}/claim?listing=${encodeURIComponent(biz.slug)}` : `${SITE}/claim`, kind);
+  const next = utm(`${SITE}/guides/${REST_GUIDE}#/next`, kind);
+  const dash = utm(biz.slug ? `${SITE}/directory/${encodeURIComponent(biz.slug)}?tab=brand` : `${SITE}/claim`, kind);
+  const fixes = utm(`${SITE}/guides/${REST_GUIDE}#/fixes`, kind);
+  const founding = opts.founding ?? Date.now() < FOUNDING_UNTIL;
+  if (kind === 'door-restaurant-in') return { subject: `You're in, ${first}`, unsub: '', html: shell(P(`Hi ${first},`) +
+    P(`You finished the survey, so you are a member of Vegans Explore. Thank you for taking the time. It helps us serve ${bname} better.`) +
+    (founding ? P('That also makes you a Founding Member, which stays on your profile for good.') : '') +
+    P('Everything is open now, and nothing is required. A good place to start: claim your page, so your hours, photos and menu link are yours to change.') +
+    btn(claim, 'Claim your page') + P(`Everything else: <a href="${next}">what's next in your Guide</a>.`) +
+    P('If we can help with any of it, just reply.') + sign, foot) };
+  return { subject: `How is ${biz.name || 'your business'} looking?`, unsub: '', html: shell(P(`Hi ${first},`) +
+    P('A week in. Two things worth a few minutes:') +
+    P('Your dashboard shows how many people looked at your page, where they came from and what they did next. It opens fully once you claim your page.') + btn(dash, 'Open your dashboard') +
+    P('The top challenges in the Guide are the ten things Vegan businesses run into most. Tick the ones that sound like you and open any one for what to do this week.') + btn(fixes, 'See the top challenges') +
+    P("Share your story and Opportunities are coming soon. If you want to know when they open, tap Tell me when it opens on What's next.") +
+    P('Reply with anything you want help with.') + sign, foot) };
+}
+async function restHash() {
+  const parts: string[] = [];
+  for (const k of REST_KINDS) { const m = await restEmail(k, SAMPLE_MEMBER, { founding: true, biz: { name: 'Sample Sprout Kitchen', slug: 'sample' } }); parts.push(m.subject + '\n' + m.html); }
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(parts.join('\n---\n')));
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+async function restState(cfg: any) { const hash = await restHash(); return { on: !!cfg.rest_on, approved: !!cfg.rest_approved_hash && cfg.rest_approved_hash === hash, hash }; }
+async function restTick(cfg: any, e: any, inHours: boolean, out: Record<string, number>) {
+  const rs = await restState(cfg);
+  if (!(rs.on && rs.approved && inHours && weekday(e))) return;
+  const { data: cs } = await db.from('ve_survey_completions').select('member_id, completed_at').eq('survey_slug', REST_GUIDE).order('completed_at', { ascending: true }).limit(1000);
+  const ids = (cs || []).map((c: any) => c.member_id);
+  if (!ids.length) return;
+  const { data: ms } = await db.from('members').select('id, email, name, membership_status, member_class, standing').in('id', ids);
+  const byId = new Map((ms || []).map((m: any) => [m.id, m]));
+  const { data: sent } = await db.from('ve_door_emails').select('member_id, kind').in('member_id', ids);
+  const done = new Set((sent || []).map((x: any) => x.member_id + '|' + x.kind));
+  for (const c of cs || []) {
+    if (out.tasters >= cfg.per_tick) break;
+    const m: any = byId.get(c.member_id);
+    if (!m || !m.email || m.membership_status !== 'active' || (m.member_class || 'member') !== 'member' || (m.standing || 'good') !== 'good' || /\[TEST\]/i.test(m.name || '')) continue;
+    if (await suppressed(m.email)) continue;
+    const age = Date.now() - Date.parse(c.completed_at);
+    const hasIn = done.has(m.id + '|door-restaurant-in'), has7 = done.has(m.id + '|door-restaurant-7');
+    const kind = !hasIn ? 'door-restaurant-in' : !has7 && age >= 7 * 864e5 ? 'door-restaurant-7' : null;
+    if (!kind) continue;
+    const { error: ce } = await db.from('ve_door_emails').insert({ member_id: m.id, kind });
+    if (ce) continue;
+    const mail = await restEmail(kind, m);
+    const r = await send(kind, m.email, m.name, mail.subject, mail.html);
+    if (r.result === 'failed') { await db.from('ve_door_emails').delete().eq('member_id', m.id).eq('kind', kind); continue; }
+    await db.from('ve_door_emails').update({ resend_id: r.id || null, error: r.result === 'sent' || r.result === 'already_sent' ? null : r.result }).eq('member_id', m.id).eq('kind', kind);
+    out.tasters++;
+  }
+}
+
 async function tick() {
   const cfg = await settings(), e = eastern(), out: Record<string, number> = { offers: 0, routed: 0, tasters: 0 };
   const inHours = e.hour >= cfg.send_hour && e.hour < 17;
@@ -323,7 +396,7 @@ async function tick() {
     }
   }
   if (!inHours) return out;
-  if (!cfg.tasters_on) { await doorTick(cfg, e, inHours, out); return out; }
+  if (!cfg.tasters_on) { await doorTick(cfg, e, inHours, out); await restTick(cfg, e, inHours, out); return out; }
   const { data: ts } = await db.from('ve_tasters').select('id, email, name, chapter, why, suggested_guide, created_at, account_id, consent_basis, pulse_opt_in_at, ve_taster_emails(kind, sent_at)')
     .is('unsubscribed_at', null).is('member_id', null).not('why', 'is', null).not('name', 'ilike', '%[TEST]%').or('source.is.null,source.neq.pulse-subscribe').limit(1000);  // Pulse subscribers get only the Pulse (Sean, 2026-11-03)
   for (const t of ts || []) {
@@ -351,6 +424,7 @@ async function tick() {
     out.tasters++;
   }
   await doorTick(cfg, e, inHours, out);
+  await restTick(cfg, e, inHours, out);
   return out;
 }
 
@@ -404,13 +478,15 @@ Deno.serve(async (req) => {
   if (action === 'settings') {
     const cur = await settings();
     if (body.door_approve === true) { const next = { ...cur, door_approved_hash: await doorHash() }; await db.from('ve_site_settings').upsert({ key: 'nurture', value: next }); return json({ ok: true, settings: next, door: await doorState(next) }); }
+    if (body.rest_approve === true) { const next = { ...cur, rest_approved_hash: await restHash() }; await db.from('ve_site_settings').upsert({ key: 'nurture', value: next }); return json({ ok: true, settings: next, rest: await restState(next) }); }
+    if (typeof body.rest_on === 'boolean') { const next = { ...cur, rest_on: body.rest_on }; await db.from('ve_site_settings').upsert({ key: 'nurture', value: next }); return json({ ok: true, settings: next, rest: await restState(next) }); }
     if (typeof body.door_on === 'boolean') { const next = { ...cur, door_on: body.door_on }; await db.from('ve_site_settings').upsert({ key: 'nurture', value: next }); return json({ ok: true, settings: next, door: await doorState(next) }); }
     if (typeof body.offers_on === 'boolean' || typeof body.tasters_on === 'boolean') {
       const next = { ...cur, ...(typeof body.offers_on === 'boolean' ? { offers_on: body.offers_on } : {}), ...(typeof body.tasters_on === 'boolean' ? { tasters_on: body.tasters_on } : {}) };
       await db.from('ve_site_settings').upsert({ key: 'nurture', value: next });
       return json({ ok: true, settings: next });
     }
-    return json({ ok: true, settings: cur, door: await doorState(cur) });
+    return json({ ok: true, settings: cur, door: await doorState(cur), rest: await restState(cur) });
   }
 
   if (action === 'offers') {
@@ -471,6 +547,8 @@ Deno.serve(async (req) => {
       m = await businessEmail(kind, o);
     } else if (DOOR_KINDS.includes(kind)) {
       m = await doorEmail(kind, SAMPLE_MEMBER);
+    } else if (REST_KINDS.includes(kind)) {
+      m = await restEmail(kind, SAMPLE_MEMBER, { biz: { name: 'Sample Sprout Kitchen', slug: 'sample' } });
     } else if (['day-3', 'day-7', 'day-14', 'pulse', 'dec-1', 'dec-2', 'dec-3'].includes(kind)) {
       let t: any = SAMPLE_TASTER;
       if (isId(body.taster_id)) { const { data } = await db.from('ve_tasters').select('*').eq('id', body.taster_id).maybeSingle(); if (data) t = data; }
@@ -489,7 +567,8 @@ Deno.serve(async (req) => {
     const rows = (data || []).map((t: any) => ({ id: t.id, name: t.name, email: t.email, chapter: t.chapter, joined: t.created_at,
       state: t.member_id ? 'Member' : t.unsubscribed_at ? 'Stopped our emails' : 'On the list',
       sent: (t.ve_taster_emails || []).sort((a: any, b: any) => Date.parse(a.sent_at) - Date.parse(b.sent_at)) }));
-    return json({ ok: true, rows, settings: await settings() });
+    const st = await settings();
+    return json({ ok: true, rows, settings: st, door: await doorState(st), rest: await restState(st) });
   }
 
   return json({ error: 'unknown_action' }, 400);
