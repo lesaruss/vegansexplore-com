@@ -47,6 +47,9 @@ the community who cannot read well, and others will not read a page. It is not a
   equal its recording (`TABS` in `guide-scripts/vegan-events-guide.js`; change a line, record `-v2`). Play is right under his name; nothing plays until pressed, then each
   tab plays until Pause. **Every Guide is also an intake** (Sean: "Every time somebody suggests something, that builds our directory"): Venue and Vendors ask for one we're
   missing (Join the Directory's Add it), and Gear has **Missing something?**, a suggestion sent to `ve-feedback` as kind missing (Depot > Feedback and the Inbox).
+  The Events Guide's tabs are **one dropdown at every width** (numbered, locks kept; `drawMenu`, `setDD`), its join button reads **Take survey**, and on phones the
+  bubble beside River is as tall as his picture and scrolls (`.ev-bub-in`). **On branch `claude/funny-cori-thdm61`, not yet on `main`** (2026-11-05). A proposal to
+  group the 15 tabs into 6 tile pages waits on Sean (`docs/handoff/2026-11-05-ve-audio-accessibility-river-events-guide.md`).
 - **Every page a person can land on has a script for its Guide** and, once Sean approves it, the recording in that Guide's roster-profile voice (Guide voices
   section; never a voice picked without Sean). A new page does not ship without its script. Redirect stubs, ad creatives and render frames are the exceptions.
 - **Logan writes the script, Sean reads and approves it, then it is recorded** (el-media tts, checked word for word with `stt`, `-v1.mp3`; a
