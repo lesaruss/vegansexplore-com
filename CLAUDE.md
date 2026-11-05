@@ -3107,10 +3107,24 @@ claim unlocking top posts". Migration `20261103_listing_posts.sql`; edge functio
   and handles, filters for source, business, why it matched, status (Shown, Hidden by owner, Paused, Taken off) and sort, a post popup, and Take it off /
   Put it back for featured posts (`ve-listing-posts` `admin_set`); a listing's own posts are the owner's to hide or pause. HQ `components/branddesk/SocialIndex.tsx`,
   `app/api/branddesk/social-index/route.ts` (super admin only, reads the database, fetches nothing from Instagram or Apify), `?s=index` in the address, on a white
-  panel. Live on HQ `main` (b660a94, a5d53e2) and checked as `vegan@` at 1440 and 390 px; **Sean did not see it on his screen on 2026-11-05** (likely the cached frame file
-  or the Depot page; ask for his address and a screenshot). Take it off / Put it back were never clicked on real data. 1,657 posts on 2026-11-05. **The matcher
-  looks loose**: one Dina's Vegan Deli post is attached to La Chia Vegana, Be An Animal Hero, Florida Animal Rescue and Vegan Social Club (one row per post and listing
-  by tag); not changed. **The paused guard, 2026-11-05**: with `paused` true on `vegansexplore` the 2:17 AM ET run fetched nothing (`last_fetch_at` null, 0 posts), but the
+  panel. Live on HQ `main` (b660a94, a5d53e2). Sean saw it on 2026-11-05 (he had been on a preview link before). **Round 1, the same day** (HQ main de6b36c,
+  2edf33d, 36bc2e0, f9764f3; checked as `vegan@` live, no script errors): **one card per post** (rows grouped by `shortcode`; the card names the post's own account,
+  else whoever the caption names first, `+N`, and "N tagged"); the lightbox is smaller text with the button row level with the bottom of the picture (the body is
+  `height:0;min-height:100%` and scrolls above the buttons; on phones it stacks); **thumbnails start where the photo starts** (Sean: "It should just be pushed towards
+  the top"): many posts are a photo inside a tall Instagram frame with plain bands, so `Pic` samples each stored picture once in the browser (`vegan-media` allows
+  cross-origin reads) and sets `object-position` to the first row that is not one flat color, cards and lightbox alike; **tags with an X** (Sean: collaborations tag
+  several businesses, and some, Animal Hero Kids, tag people only for reach): the lightbox lists the post's businesses as tags, the X sets that row `removed`
+  (`admin_set`), so the post leaves that business's Social tab and the rebuild never brings it back; a removed tag stays struck through with Undo; a listing's own
+  post shows Their post and has no X. Proven on real data (La Chia Vegana on Dina's post: off the public read, still off after a rebuild, put back). The Index never
+  falls back to Instagram's picture link (Picture not saved yet). Also fixed: React error 418 on `?s=index` (BrandHome read the address while rendering; it reads it
+  after load and draws the frame then). **The matcher, v2** (Sean: "go ahead and fix the matcher"; migration `20261105_listing_posts_matcher_v2.sql`): one listing per
+  handle and per website (the main listing over its locations, a person over their channel or book, any other listing over media, then votes, then oldest; it had put
+  PLANTA's posts on four listings and every person's on their YouTube listing too); a name only when written as a name (first real word capitalized, words joined by
+  spaces, apostrophes, quotes, hyphens, & or a period, never a comma or line break; `ve_lp_titled`) or as a handle (`@angie.sadeghi`); an @handle written in an older
+  caption counts as a tag when Instagram's own tag list missed it; `philly vegan` stopped. `ve_listing_posts_hits()` is the match without writing anything: preview a
+  rule change against it before rebuilding. New rows reuse a post's saved picture. Result: 1,657 rows (721 posts) became 1,338 rows (773 posts); the 56 posts with no
+  saved picture were read again through Apify (6 batches of 10, about $0.13; `refresh_ours_on` back to false, `refresh_batch` removed); every shown row's picture is in
+  `vegan-media`. **The paused guard, 2026-11-05**: with `paused` true on `vegansexplore` the 2:17 AM ET run fetched nothing (`last_fetch_at` null, 0 posts), but the
   function's reply and Apify's run list were not read, so it is not proven; `paused` was set back to false at 4:09 AM ET and the 2:17 AM ET Nov 6 run is the first real
   fetch. A headless login worked again (canon `agent-headless-page-verification`, replacement 2026-10-27: a one-time function mints the `vegan@` session into a file,
   Playwright reads it, sign it out and stub the function after); this sandbox refuses `*.vercel.app`, so a branch preview cannot be looked at, but `hq.lesaruss.ai` can.
