@@ -829,15 +829,29 @@
     var bits = ['kind', 'label', 'q'].filter(function (k) { return q[k]; }).map(function (k) { return k + '=' + encodeURIComponent(q[k]); });
     return '#/sourcing/' + domain + (bits.length ? '?' + bits.join('&') : '');
   }
+  // A material named for the animal product reads as that product, so it shows as "<x> alternatives". Display only: the stored kind
+  // keeps the source list's own word, so the filter value, search and later imports never change (Logan, 2026-11-05).
+  var SRC_ALT = { leather: 1, suede: 1, down: 1, wool: 1, fur: 1, cashmere: 1, silk: 1, feathers: 1 };
+  function kindName(k) {
+    var t = String(k || ''); t = t.charAt(0).toUpperCase() + t.slice(1);
+    return SRC_ALT[String(k).toLowerCase()] ? t + ' alternatives' : t;
+  }
+  var SRC_MEAN = {
+    peta_approved: 'PETA has approved this company\'s products as Vegan under its own mark.',
+    fully_vegan: 'Everything this company sells is Vegan, by what the company says of itself.',
+    offers_options: 'A real supplier with Vegan lines. Not everything it sells is Vegan, so check each product with them.',
+    plant_material: 'Made from plant fiber. That is a material, not a claim that it is Vegan, so check with the supplier.'
+  };
   function srcRow(s) {
     var L = SRC_LABEL[s.label] || SRC_LABEL.offers_options;
-    var kinds = (s.kinds || []).join(', ');
-    return row({ icon: SRC_ICON, title: s.name, pre: '<span class="rg-lab ' + L[1] + '">' + esc(L[0]) + '</span>',
+    var kinds = (s.kinds || []).map(kindName).join(', ');
+    return row({ icon: SRC_ICON, title: s.name, href: '#/sourcing/s/' + encodeURIComponent(s.slug), pre: '<span class="rg-lab ' + L[1] + '">' + esc(L[0]) + '</span>',
       body: '<p class="dg-srow-p">' + esc(s.bio || (kinds ? 'Makes: ' + kinds + '.' : '')) + '</p>',
       acts: s.website ? '<a class="dg-btn dg-ghost" href="' + esc(s.website) + '" target="_blank" rel="noopener nofollow">Visit website</a>' : '' });
   }
   function viewSourcing(sub) {
     if (/^make(\/|$)/.test(String(sub || ''))) return viewMake(String(sub).split('?')[0].split('/')[1] || '');
+    if (/^s\//.test(String(sub || ''))) return viewSupplier(decodeURIComponent(String(sub).split('?')[0].split('/')[1] || ''));
     var P = srcParams(sub), cur = SRC_DOMAINS.filter(function (d) { return d.k === P.domain; })[0];
     var note = '<p class="dg-lede rg-srcnote">Every supplier wears one label. <b>PETA-Approved Vegan</b> is PETA\'s own mark. <b>Plant-based material</b> means the product is made from plant fiber; that is a material, not a claim that it is Vegan, so check it with them. <b>Offers vegan options</b> is a real supplier with vegan lines: check each product with them. The PETA-Approved Vegan mark and the materials list come from PETA\'s <i>Guide to Vegan Suppliers and Manufacturers</i>, October 2026.</p>';
     var matNote = '<p class="rg-srcmat" id="rgSrcMat" hidden><b>Plant-based material</b> means made from plant fiber. It is a material, not a claim that it is Vegan, so check with the supplier.</p>';
@@ -876,15 +890,41 @@
         if (my !== seq || curTab !== 'sourcing') return;
         if (!r || !r.ok) { listEl.innerHTML = '<p class="dg-lede">' + (r && r.error === 'guide_required' ? 'The Sourcing tab is for members.' : 'We could not load the suppliers. Try again in a moment.') + '</p>'; return; }
         got = got.concat(r.suppliers || []);
-        if (kindEl.options.length <= 1) kindEl.innerHTML = '<option value="">All kinds</option>' + (r.kinds || []).map(function (k) { return '<option value="' + esc(k) + '"' + (q.kind === k ? ' selected' : '') + '>' + esc(k.charAt(0).toUpperCase() + k.slice(1)) + '</option>'; }).join('');
+        if (kindEl.options.length <= 1) kindEl.innerHTML = '<option value="">All kinds</option>' + (r.kinds || []).map(function (k) { return '<option value="' + esc(k) + '"' + (q.kind === k ? ' selected' : '') + '>' + esc(kindName(k)) + '</option>'; }).join('');
         paint(r.total);
       }).catch(function () { listEl.innerHTML = '<p class="dg-lede">We could not load the suppliers. Try again in a moment.</p>'; });
     }
-    function changed() { history.replaceState(null, '', srcHash(cur.k, q)); load(false); }
+    SRC.back = { hash: srcHash(cur.k, q), t: cur.t };
+    function changed() { SRC.back = { hash: srcHash(cur.k, q), t: cur.t }; history.replaceState(null, '', SRC.back.hash); load(false); }
     document.getElementById('rgSrcQ').addEventListener('input', function (e) { q.q = e.target.value; clearTimeout(timer); timer = setTimeout(changed, 250); });
     document.getElementById('rgSrcLabel').addEventListener('change', function (e) { q.label = e.target.value; changed(); });
     kindEl.addEventListener('change', function (e) { q.kind = e.target.value; changed(); });
     load(false);
+  }
+
+  // One supplier on its own (#/sourcing/s/<slug>): the whole bio, the label and what it means, what they make, their website. The list
+  // clamps each bio to two rows, so this is where a supplier is read in full. The crumb goes back to the list it was opened from.
+  function viewSupplier(slug) {
+    var back = SRC.back, trail = [['Sourcing', '#/sourcing']];
+    if (back && back.make) trail.push(['Buy or make', '#/sourcing/make']);
+    if (back) trail.push([back.t, back.hash]);
+    main.innerHTML = crumb(trail.concat([['...']])) + '<div id="rgSup">' + skel('', 3) + '</div>';
+    srcFetch({ action: 'get', slug: slug }).then(function (r) {
+      if (curTab !== 'sourcing') return;
+      var box = document.getElementById('rgSup'); if (!box) return;
+      if (!r || !r.ok) { box.innerHTML = '<p class="dg-lede">' + (r && r.error === 'not_found' ? 'We could not find that supplier.' : 'We could not load this. Try again in a moment.') + ' <a href="' + (back ? back.hash : '#/sourcing') + '">Back</a></p>'; return; }
+      var s = r.supplier, L = SRC_LABEL[s.label] || SRC_LABEL.offers_options;
+      var dom = SRC_DOMAINS.filter(function (d) { return d.k === s.domain; })[0];
+      if (!back && dom) trail.push([dom.t, '#/sourcing/' + dom.k]);
+      var c = main.querySelector('.dg-crumb'); if (c) c.outerHTML = crumb(trail.concat([[s.name]]));
+      box.innerHTML = head(dom ? dom.t : 'Sourcing', esc(s.name), '') +
+        '<div class="rg-sup"><span class="rg-lab ' + L[1] + '">' + esc(L[0]) + '</span><p class="rg-sup-mean">' + esc(SRC_MEAN[s.label] || '') + '</p>' +
+        (s.bio ? '<p class="rg-sup-bio">' + esc(s.bio) + '</p>' : '<p class="rg-sup-bio">We have not written about this supplier yet. Their website says what they make.</p>') +
+        ((s.kinds || []).length ? '<h4>What they make</h4><div class="rg-sup-kinds">' + s.kinds.map(function (k) { return '<span>' + esc(kindName(k)) + '</span>'; }).join('') + '</div>' : '') +
+        '<div class="dg-btns" style="margin-top:18px">' + (s.website ? '<a class="dg-btn" href="' + esc(s.website) + '" target="_blank" rel="noopener nofollow">Visit their website</a>' : '') +
+        '<a class="dg-btn dg-ghost" href="' + (back ? back.hash : (dom ? '#/sourcing/' + dom.k : '#/sourcing')) + '">Back to the list</a></div>' +
+        '<p class="rg-sup-note">Ask the supplier about each product before it goes on your menu. Featuring a supplier here never buys its place in the list.</p></div>';
+    }).catch(function () { var box = document.getElementById('rgSup'); if (box) box.innerHTML = '<p class="dg-lede">We could not load this. Try again in a moment.</p>'; });
   }
 
   // Buy or make (Sean, 2026-11-05: pair the recipes we already have). Each item: who sells it ready-made, and the Cookbook recipe
@@ -912,6 +952,7 @@
       var box = document.getElementById('rgMake'); if (!box) return;
       if (!r || !r.ok) { box.innerHTML = '<p class="dg-lede">' + (r && r.error === 'not_found' ? 'We could not find that item.' : 'We could not load this. Try again in a moment.') + ' <a href="#/sourcing/make">Back to Buy or make</a></p>'; return; }
       var c = main.querySelector('.dg-crumb'); if (c) c.outerHTML = crumb([['Sourcing', '#/sourcing'], ['Buy or make', '#/sourcing/make'], [r.item.t]]);
+      SRC.back = { hash: '#/sourcing/make/' + encodeURIComponent(r.item.key), t: r.item.t, make: 1 };
       var R = r.recipe, sup = r.suppliers || [];
       var buy = '<h3 class="rg-bom-h">Buy it</h3>' + (sup.length ? '<div class="dg-srows">' + sup.map(srcRow).join('') + '</div>' :
         '<p class="dg-lede">No supplier in our directory sells this ready-made yet. We add suppliers every week.</p>');
