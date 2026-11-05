@@ -195,14 +195,32 @@
   // ---------- tabs ----------
   function drawMenu(cur) {
     var locked = !member();
-    menuEl.innerHTML = tabs().map(function (t) {
-      return '<a href="' + href(t.k) + '"' + (t.k === cur ? ' aria-current="page"' : '') + (t.guest ? ' class="dg-join-tab"' : '') + '>' + esc(t.label) +
-        (locked && t.lock ? ' <span class="dg-lk" aria-label="locked">' + LOCK_SVG + '</span>' : '') + '</a>';
-    }).join('');
+    // One dropdown at every width (Sean, 2026-11-05), the locks kept on each closed tab.
+    var lst = tabs(), ci = 0, open = !!(menuEl.querySelector('.dg-dd-list') && !menuEl.querySelector('.dg-dd-list').hidden);
+    lst.forEach(function (t, n) { if (t.k === cur) ci = n; });
+    var curT = lst[ci] || { label: 'Search results' };
+    menuEl.innerHTML = '<button type="button" class="dg-dd-btn" aria-haspopup="true" aria-expanded="false">' + esc(cur === 'search' ? 'Search results' : curT.label) +
+      (locked && curT.lock && cur !== 'search' ? ' <span class="dg-lk" aria-label="locked">' + LOCK_SVG + '</span>' : '') +
+      '<small>' + (cur === 'search' ? '' : (ci + 1) + ' of ' + lst.length) + '</small></button>' +
+      '<div class="dg-dd-list" hidden>' + lst.map(function (t, n) {
+        return '<a href="' + href(t.k) + '"' + (t.k === cur ? ' aria-current="page"' : '') + '><span class="dg-dd-n">' + (n + 1) + '</span>' + esc(t.label) +
+          (locked && t.lock ? '<span class="dg-lk" aria-label="locked">' + LOCK_SVG + '</span>' : '') + '</a>';
+      }).join('') + '</div>';
+    if (open) setDD(true);
     menuSel.innerHTML = tabs().map(function (t) { return '<option value="' + t.k + '"' + (t.k === cur ? ' selected' : '') + '>' + esc(t.label) + (locked && t.lock ? ' (locked)' : '') + '</option>'; }).join('') +
       (cur === 'search' ? '<option value="search" selected>Search results</option>' : '');
   }
   menuSel.addEventListener('change', function () { location.hash = href(menuSel.value); });
+  function setDD(on) {
+    var l = menuEl.querySelector('.dg-dd-list'), btn = menuEl.querySelector('.dg-dd-btn'); if (!l || !btn) return;
+    l.hidden = !on; btn.setAttribute('aria-expanded', on ? 'true' : 'false');
+  }
+  menuEl.addEventListener('click', function (e) {
+    if (e.target.closest('.dg-dd-btn')) { var l = menuEl.querySelector('.dg-dd-list'); setDD(l && l.hidden); return; }
+    if (e.target.closest('.dg-dd-list a')) setDD(false);
+  });
+  document.addEventListener('click', function (e) { if (!menuEl.contains(e.target)) setDD(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setDD(false); });
 
   // ---------- pieces ----------
   function crumb(parts) {
@@ -257,7 +275,7 @@
   function drawJoinbox() {
     var b = document.querySelector('.dg-joinbox'); if (!b || signedIn()) return;
     var jb = b.querySelector('[data-survey]') || b.querySelector('[data-join]');
-    jb.textContent = 'Take the survey, free'; jb.setAttribute('data-survey', '1'); jb.removeAttribute('data-join');
+    jb.textContent = 'Take survey'; jb.setAttribute('data-survey', '1'); jb.removeAttribute('data-join');
     b.querySelector('.dg-jb-in').style.display = mode() === 'join' ? '' : 'none';
   }
 
@@ -1001,7 +1019,7 @@
     var t = tab(curTab), lst = tabs(), i = 0;
     lst.forEach(function (x, n) { if (x.k === curTab) i = n; });
     cueRiver();
-    bubble.textContent = member() && t.sayMember ? t.sayMember : t.say;
+    bubble.innerHTML = '<span class="ev-bub-in">' + esc(member() && t.sayMember ? t.sayMember : t.say) + '</span>';
     playBtn.classList.toggle('go', !RV.started);
     playBtn.innerHTML = !RV.started ? '&#9654; Start the tour' : RV.playing ? 'Pause River' : '&#9654; Play River';
     tourEl.innerHTML = tourM.innerHTML = '<a class="dg-tnav" href="' + href(lst[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Back</a><span>' + (i + 1) + ' of ' + lst.length + '</span>' +
