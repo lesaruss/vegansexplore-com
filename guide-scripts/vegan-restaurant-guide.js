@@ -838,7 +838,8 @@
   }
   function viewSourcing(sub) {
     var P = srcParams(sub), cur = SRC_DOMAINS.filter(function (d) { return d.k === P.domain; })[0];
-    var note = '<p class="dg-lede rg-srcnote">Every supplier wears one label. <b>PETA-Approved Vegan</b> is PETA\'s own mark. <b>Plant-based material</b> means the product is made from plant fiber; that is a material, not a claim that it is Vegan, so check it with them. <b>Offers vegan options</b> is a real supplier with vegan lines: check each product with them. Starred suppliers come from PETA\'s <i>Guide to Vegan Suppliers and Manufacturers</i>, October 2026.</p>';
+    var note = '<p class="dg-lede rg-srcnote">Every supplier wears one label. <b>PETA-Approved Vegan</b> is PETA\'s own mark. <b>Plant-based material</b> means the product is made from plant fiber; that is a material, not a claim that it is Vegan, so check it with them. <b>Offers vegan options</b> is a real supplier with vegan lines: check each product with them. The PETA-Approved Vegan mark and the materials list come from PETA\'s <i>Guide to Vegan Suppliers and Manufacturers</i>, October 2026.</p>';
+    var matNote = '<p class="rg-srcmat" id="rgSrcMat" hidden><b>Plant-based material</b> means made from plant fiber. It is a material, not a claim that it is Vegan, so check with the supplier.</p>';
     if (!cur) {
       main.innerHTML = head('Sourcing', 'Buy it from someone who already makes it', 'Not everything has to come out of your kitchen. Pick what you are looking for.') +
         '<div class="dg-srows" id="rgSrcDomains">' + SRC_DOMAINS.map(function (d) { return row({ icon: SRC_ICON, title: d.t, pre: '<span class="rg-promo-tag rg-soon" data-src-tag="' + d.k + '">Checking</span>', body: '<p class="dg-srow-p">' + esc(d.d) + '</p>' }); }).join('') + '</div>' +
@@ -860,10 +861,11 @@
       '<div class="rg-srcbar"><input type="search" id="rgSrcQ" placeholder="Search suppliers" value="' + esc(q.q) + '" aria-label="Search suppliers">' +
       '<select id="rgSrcLabel" aria-label="Label"><option value="">All labels</option>' + Object.keys(SRC_LABEL).map(function (k) { return '<option value="' + k + '"' + (q.label === k ? ' selected' : '') + '>' + SRC_LABEL[k][0] + '</option>'; }).join('') + '</select>' +
       '<select id="rgSrcKind" aria-label="Kind"><option value="">All kinds</option></select></div>' +
-      '<div class="dg-srows" id="rgSrcList">' + skel('', 3) + '</div><div class="dg-btns" id="rgSrcMore"></div>' + note;
+      matNote + '<div class="dg-srows" id="rgSrcList">' + skel('', 3) + '</div><div class="dg-btns" id="rgSrcMore"></div>' + note;
     var listEl = document.getElementById('rgSrcList'), moreEl = document.getElementById('rgSrcMore'), kindEl = document.getElementById('rgSrcKind'), timer = null, seq = 0, got = [];
     function paint(total) {
       listEl.innerHTML = got.length ? got.map(srcRow).join('') : '<p class="dg-lede">Nothing matches. Try fewer filters.</p>';
+      var mn = document.getElementById('rgSrcMat'); if (mn) mn.hidden = !got.some(function (x) { return x.label === 'plant_material'; });
       moreEl.innerHTML = got.length < total ? '<button class="dg-btn dg-ghost" id="rgSrcMoreBtn">Show more (' + (total - got.length) + ' left)</button>' : '';
       var b = document.getElementById('rgSrcMoreBtn'); if (b) b.onclick = function () { load(true); };
     }

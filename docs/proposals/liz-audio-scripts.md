@@ -62,6 +62,19 @@ with each tab's `say` set to the script text. Later the same day: `door-pulse-v1
 
 ---
 
+## Sourcing tab (members only): DRAFT for Sean, nothing recorded (Logan, 2026-11-05, playbook `ve-vegan-sourcing-guide`)
+
+Today the tab shows one line as text: "Not everything has to come out of your kitchen. Here is who to buy it from, and every supplier wears an honest label."
+Proposed recording, about 20 seconds, Vegan spelled "Veegan", file `liz/restaurant-guide/door-sourcing-member-v1.mp3`. Every claim checked against the live
+directory on 2026-11-05: ready-made food and drink, ingredients, packaging and co-packers have suppliers; machinery, distributors and certification say Coming;
+recipes for buy or make are not written.
+
+> "Not everything has to come out of your kitchen. This is who to buy it from: ready-made food, ingredients, packaging, and people who can make your recipe for you. Every supplier wears one label. A fully Vegan company is Vegan all the way through. Offers Vegan options means check each product with them. And plant-based material is about what the packaging is made of, not a Vegan promise. More kinds of suppliers are coming."
+
+Short line for the screen (the recording does the work, the `show` pattern): "Who to buy it from, so it doesn't all come out of your kitchen."
+
+Once approved: record with el-media tts in Liz's roster-profile voice, check word for word with `stt`, add `sourcing` to `AUDIO_M` and set the tab's `sayMember` to the recording's words (or `show` to the short line).
+
 # River's script, Guide 2: The Vegan Events Guide (playbook `ve-audio-accessibility`, Guide `ve-events-guide`)
 
 **Voice corrected 2026-11-05 (Sean): River reads it.** The standard is a Guide on every page, voiced by that page's own Guide, not Liz everywhere. River leads the
