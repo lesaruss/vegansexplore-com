@@ -1165,7 +1165,7 @@ Deno.serve(async (req: Request) => {
       // thank-you, not "your Passport is active". Read before the update flips the status.
       // Another brand's account (one members row per email) reads 'active' before it has paid us, so it counts as a
       // repeat only when Vegans Explore already holds it (ve_member_entitled, migration 20261029_brand_memberships.sql).
-      const { data: before } = await supabase.from('members').select('membership_status').eq('id', memberId).maybeSingle()
+      const { data: before } = await supabase.from('members').select('membership_status, entry_paid_at').eq('id', memberId).maybeSingle()
       const { data: entitledBefore } = await supabase.rpc('ve_member_entitled', { p_member: memberId })
       const repeat = before?.membership_status === 'active' && entitledBefore === true
 
@@ -1189,7 +1189,11 @@ Deno.serve(async (req: Request) => {
       // Sean locked 2026-10-25 (playbook ve-pricing-points-passport): joining, $11 one time, is the Passport and comes with
       // 1,100 welcome points, once per member (ref 'welcome'). Every payment also earns the flat 25-point thank-you. Points
       // are never bought: neither amount follows the dollars paid.
-      if (!repeat) {
+      // A member who came in through a survey door (or on an invitation) is already active but has never paid: their first $11
+      // still brings the 1,100 welcome points (Sean, 2026-11-05, the Pre-Vegan Guide's optional contribution). ref 'welcome'
+      // keeps it once per member.
+      const firstPayment = !before?.entry_paid_at
+      if (!repeat || firstPayment) {
         const { error: wErr } = await supabase.rpc('ve_points_grant', { p_member: memberId, p_amount: 1100, p_reason: 'welcome', p_ref: 'welcome' })
         if (wErr) console.error('welcome points error:', wErr)
       }
