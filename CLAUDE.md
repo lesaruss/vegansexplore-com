@@ -1296,6 +1296,21 @@ and browser, a note, and the status buttons). `ve-feedback` `admin_list`, `admin
 or set aside); the queue feeds what we write next (articles, new sections, new Directory listings). Spam: a question sent through the box needs
 an email; abusers are quarantined. **Spam control built 2026-11-03** (migration `20261103_search_queue_spam_control.sql`; `ve-search` v5): `ve_search_ask` takes `p_explicit` (an explicit ask without an email is refused, `email_needed`), files a question as `quarantined` when it is junk (`ve_search_q_junk`: a link or address, mostly non-letters, one character repeated, no vowel) or comes with neither a visitor id nor an email (a script), and refuses with `rate_limited` (429 from `ve-search`) a visitor or email past 15 new questions an hour or 40 a day (Logan's defaults, Sean's to change). A quarantined question never shows in the queue's open list. The Liz card's email stays optional (the dead end is logged anonymously; the email only says where to write back). Proven live: a junk ask came back quarantined, a normal one open, both removed.
 
+## Talk to Liz: the page's Guide for super admins (Sean, 2026-11-05, playbook `ve-page-guide`)
+
+"When I do that as a super admin, that is the equivalent of me speaking to you here." For a super admin signed in as themselves (not View As), the Feedback
+button opens **Talk to Liz** (`public/ve-page-guide.js`, `VEPageGuide.open`; `ve-feedback.js` loads it, `{form: true}` forces the plain form, and the chat has
+**Send as feedback instead**). Say what is wrong on a Directory listing; Liz (Claude Opus 5.5, edge function `ve-page-guide`, verify_jwt off, super admin token)
+reads the listing, its outreach contacts, recent team notes and the page's text, answers, asks when unsure, and lists exact changes (what it is, what it becomes).
+Tick and **Apply** (`apply` re-checks each against the allowed list): listing name, website, Instagram, Facebook, TikTok, phone, email, street, ZIP, about, menu link,
+hours (through `ve-outreach` `listing_fix` with Sean's own token, each a `ve_listing_edits` row; name and email written directly, logged `where: page_guide`), a team note
+(`details.admin_notes`), and the outreach contact: name (sets `ve_outreach_contacts.name_confirmed`, so the greeting uses it), email, or do not email (`held`). Every turn
+and apply is a `ve_page_guide_log` row (RLS on, no policies). Migration `20261105_page_guide.sql`. Everyone else's Feedback form now starts with **A change to this page**
+(kind `suggestion`), emailed at once and in the Inbox; **Depot > Feedback** has a daily digest switch (`ve_site_settings` `feedback.digest`, off; cron
+`ve-feedback-digest` 13:23 UTC). Outreach greetings use the first name only when the email address contains it or the name is confirmed, else "Hi there,"; Day 0 no longer
+carries the check-up line; business outreach sends as email brand `ve-business-outreach` (unsubscribe on vegansexplore.com; people lists stay `lesaruss`). Proven live
+2026-11-05 as Sean (proposals only, nothing applied). Next: **Talk to me** on the Guides' panels, then members (saved answers, then the AI Guide) and visitors (suggestions).
+
 ## Wrap up (Sean, 2026-11-03, canon `canon-wrap-up-standard`)
 
 "When we leave this room, I don't want anything on the floor." On Sean's cue ("wrap up", about 70% context) Logan sweeps the session into the

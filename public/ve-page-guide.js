@@ -14,7 +14,7 @@
   function key() { return 've_pg_' + location.pathname; }
   function load() { try { return JSON.parse(sessionStorage.getItem(key()) || '[]'); } catch (e) { return []; } }
   function save(t) { try { sessionStorage.setItem(key(), JSON.stringify(t.slice(-30))); } catch (e) {} }
-  function pic() { try { if (window.VEGuideArt) return VEGuideArt('liz', 'square'); } catch (e) {} return '/public/guides/art/liz-square.webp'; }
+  function pic() { try { if (window.VEGuideArt) return VEGuideArt('liz', 'square'); } catch (e) {} return 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261005_021226_51fc0dd1-aad1-45ee-ada3-f6cab13ed3a2_min.webp'; }
   function css() {
     if (document.getElementById('vepgStyle')) return;
     var st = document.createElement('style'); st.id = 'vepgStyle';
@@ -43,7 +43,7 @@
     wrap.innerHTML = '<div class="vepg"><div class="vepg-h"><img alt="" src="' + esc(pic()) + '"><div><b>Talk to Liz</b><span>About this page. Tell me what is wrong or out of date; I show you the changes before anything saves.</span></div><button type="button" class="x" aria-label="Close">&times;</button></div>' +
       '<div class="vepg-log" aria-live="polite"></div>' +
       '<form class="vepg-f" novalidate><textarea name="t" placeholder="For example: Samuel goes by Chef Sam. Use chefsam@therabbithole.life; the Gmail is old."></textarea>' +
-      '<div class="row"><span><button type="button" class="lnk" data-fb>Send as feedback instead</button> · <button type="button" class="lnk" data-new>Start over</button></span><button type="submit" class="go">Send</button></div></form></div>';
+      '<div class="row"><span><button type="button" class="lnk" data-fb>Send as feedback instead</button> &middot; <button type="button" class="lnk" data-new>Start over</button></span><button type="submit" class="go">Send</button></div></form></div>';
     document.body.appendChild(wrap);
     var log = wrap.querySelector('.vepg-log'), f = wrap.querySelector('form'), ta = f.t, go = f.querySelector('.go');
     function close() { wrap.remove(); document.removeEventListener('keydown', onKey); }
