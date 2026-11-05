@@ -1,14 +1,14 @@
 /* ve-feedback.js: the Feedback button on every page (Sean, 2026-11-03: "a feedback button... the same way we have the share button... whatever page
  * they're pressing feedback on loads as the default, they can still choose what they want to give feedback on... select different options").
  *
- *   VEFeedback.open({ page })  ·  any element with data-ve-feedback opens it  ·  VEFeedback.button(cls) returns the button's markup
+ *   VEFeedback.open({ page, form })  (a super admin gets the page's Guide chat, ve-page-guide.js; form: true forces this form)  ·  any element with data-ve-feedback opens it  ·  VEFeedback.button(cls) returns the button's markup
  *
  * A short form: what is it about (a page list, defaulting to this page), what kind (broken, wrong, confusing, missing, idea, praise, other), what happened,
  * an optional email for a reply. Sent to ve-feedback (a ve_feedback row and an email to the team). */
 (function () {
   if (window.VEFeedback) return;
   var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-feedback';
-  var KINDS = [['broken', 'Something is broken'], ['wrong', 'Wrong or out of date'], ['confusing', 'Confusing'], ['missing', 'Something is missing'], ['idea', 'An idea'], ['praise', 'Working well'], ['other', 'Something else']];
+  var KINDS = [['suggestion', 'A change to this page'], ['broken', 'Something is broken'], ['wrong', 'Wrong or out of date'], ['confusing', 'Confusing'], ['missing', 'Something is missing'], ['idea', 'An idea'], ['praise', 'Working well'], ['other', 'Something else']];
   var PAGES = [['Home', '/'], ['Directory', '/directory'], ['Events', '/events'], ['Daily Pulse', '/pulse'], ['Media', '/media'], ['Guides', '/guides'], ['Communities', '/communities'],
     ['Passport / joining', '/passport'], ['Search', '/search'], ['My dashboard', '/dashboard'], ['My Saves', '/dashboard/saves']];
   var ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/></svg>';
@@ -45,8 +45,16 @@
   function here() { try { if (window.VEShare && VEShare.url) return VEShare.url(); } catch (e) {} return location.origin + location.pathname + location.search; }
   function labelOf(u) { var p; try { p = new URL(u).pathname; } catch (e) { return u; } for (var i = 0; i < PAGES.length; i++) if (PAGES[i][1] === p) return PAGES[i][0]; return (document.title || p).replace(/\s*[—|-]\s*Vegans Explore\s*$/i, '').slice(0, 80); }
   function button(cls) { btnCss(); return '<button type="button" class="ve-feedback-btn' + (cls ? ' ' + cls : '') + '" data-ve-feedback aria-label="Send feedback" title="Send feedback">' + ICON + 'Feedback</button>'; }
+  // A super admin (signed in as themselves, not viewing as someone else) talks to the page's Guide instead (ve-page-guide.js,
+  // Sean 2026-11-05); its "Send as feedback instead" reopens this form with { form: true }.
+  function isAdmin() { try { var m = signedIn() && VEAuth.getMember && VEAuth.getMember(); return !!(m && m.is_superadmin); } catch (e) { return false; } }
   function open(o) {
-    o = o || {}; css();
+    o = o || {};
+    if (!o.form && isAdmin()) {
+      if (window.VEPageGuide) { VEPageGuide.open(); return; }
+      var sc = document.createElement('script'); sc.src = '/public/ve-page-guide.js?v=1'; sc.onload = function () { VEPageGuide.open(); }; document.head.appendChild(sc); return;
+    }
+    css();
     var m = signedIn() ? me() : null, kind = '';
     var cur = o.page || here(), curLabel = labelOf(cur);
     var opts = '<option value="__here">This page: ' + esc(curLabel) + '</option>' + PAGES.filter(function (p) { return location.origin + p[1] !== cur; })

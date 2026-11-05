@@ -133,6 +133,8 @@ function refOf(kind: string) {
   if (kind === 'offer') return { ref: `ve-pc-offer-${m}`, name: `Passport Challenge offer (${m})` };
   if (kind === 'not_opened') return { ref: `ve-pc-still-open-${m}`, name: `Passport Challenge follow-up: still open (${m})` };
   if (kind.startsWith('pulse-')) return { ref: `ve-taster-pulse-${kind.slice(6)}`, name: `Taster: the Daily Pulse (${kind.slice(6)})` };
+  if (kind === 'door-rg-in') return { ref: 've-rg-door-in', name: "Restaurant Guide: You're in" };
+  if (kind === 'door-rg-7') return { ref: 've-rg-door-7', name: 'Restaurant Guide: Day 7' };
   const dec = DECEMBER.find(([k]) => k === kind);
   if (dec) return { ref: `ve-taster-founding-${dec[1]}`, name: `Taster: Founding deadline note (${dec[1]})` };
   return { ref: `ve-taster-${kind}`, name: `Taster: ${kind.replace('day-', 'Day ')}` };
@@ -303,6 +305,84 @@ async function doorTick(cfg: any, e: any, inHours: boolean, out: Record<string, 
   }
 }
 
+// ---------- The Vegan Restaurant Guide's two notes after membership (playbook ve-restaurant-guide, drafts 2026-11-05) ----------
+// To a member who finished the restaurant survey (the Guide's one door): "You're in" the day they finish, then Day 7. Same rules as the
+// Events Guide's notes, with their OWN switch and approval (nurture.rg_door_on, rg_door_approved_hash), so approving one never sends the
+// other: draft until Sean approves the words, any change to the words puts them back to draft. From VEGANS EXPLORE, signed Vegans Explore
+// team (Logan's default; Sean may ask for his name). Weekdays from 10 AM Eastern. No prices, no points to spend, Coming said as Coming.
+// The business: the listing they own, else the outreach contact we emailed at their address (that gives their personal Guide link ?b=).
+// The Founding line shows only to a Founding Member and only before midnight Eastern on January 1, 2027 (it drops on its own after).
+const RG_GUIDE = 'vegan-restaurant-guide';
+const RG_KINDS = ['door-rg-in', 'door-rg-7'];
+const RG_SAMPLE = { first: 'Alex', founding: true, biz: { name: 'Green Leaf Kitchen', slug: 'green-leaf-kitchen', code: 'bo-sample0' } };
+async function rgBusiness(m: any): Promise<{ name: string; slug: string | null; code: string | null } | null> {
+  const { data: own } = await db.from('listings').select('name, slug').eq('owner_member_id', m.id).eq('status', 'approved').limit(1).maybeSingle();
+  const email = String(m.email || '').trim();
+  const { data: c } = email ? await db.from('ve_outreach_contacts').select('listing_id, link_code').ilike('email', likeEsc(email)).not('listing_id', 'is', null).limit(1).maybeSingle() : { data: null };
+  if (own) return { name: own.name, slug: own.slug, code: (c as any)?.link_code || null };
+  if (!c) return null;
+  const { data: l } = await db.from('listings').select('name, slug').eq('id', (c as any).listing_id).eq('status', 'approved').maybeSingle();
+  return l ? { name: l.name, slug: l.slug, code: (c as any).link_code || null } : null;
+}
+function rgEmail(kind: string, x: { first: string; founding: boolean; biz: { name: string; slug: string | null; code: string | null } | null }) {
+  const first = esc(x.first || 'there'), biz = x.biz, bn = biz ? esc(biz.name) : 'your business';
+  const guide = (hash: string) => utm(`${SITE}/guides/${RG_GUIDE}${biz?.code ? '?b=' + encodeURIComponent(biz.code) : ''}`, kind) + hash;
+  const claim = biz?.slug ? utm(`${SITE}/claim?listing=${encodeURIComponent(biz.slug)}`, kind) : guide('#/featured');
+  const dash = biz?.slug ? utm(`${SITE}/directory/${encodeURIComponent(biz.slug)}?tab=brand`, kind) : guide('#/dashboard');
+  const a = (href: string, t: string) => `<a href="${href}" style="color:#1f5f22">${t}</a>`;
+  const foot = `You are getting this because you took the restaurant survey in the Vegan Restaurant Guide.`;
+  if (kind === 'door-rg-in') return { subject: `You're in, ${x.first || 'welcome'}`, unsub: '', html: shell(P(`Hi ${first},`) +
+    P(`You finished the survey, so you are a member of Vegans Explore. Thank you for taking the time. It helps us serve ${bn} better.`) +
+    (x.founding ? P('That also makes you a Founding Member, which stays on your profile for good.') : '') +
+    P('Everything is open now, and nothing is required. A good place to start: claim your page, so your hours, photos and menu link are yours to change.') +
+    btn(claim, 'Claim your page') + P(`Everything else is on ${a(guide('#/next'), "What's next")} in your Guide.`) +
+    P('If we can help with any of it, just reply.') + sign, foot) };
+  return { subject: `How is ${biz ? biz.name : 'your business'} looking?`, unsub: '', html: shell(P(`Hi ${first},`) +
+    P('A week in. Two things worth a few minutes:') +
+    P(`<b>Your dashboard</b> shows how many people looked at your page, where they came from and what they did next. It opens fully once you claim your page.`) + btn(dash, 'Open your dashboard') +
+    P(`<b>The top challenges</b> in the Guide are the ten things Vegan businesses run into most. Tick the ones that sound like you and open any one for what to do this week. ${a(guide('#/fixes'), 'See the top challenges')}`) +
+    P(`Share your story and Opportunities are coming soon. If you want to know when they open, tap Tell me when it opens on ${a(guide('#/next'), "What's next")}.`) +
+    P('Reply with anything you want help with.') + sign, foot) };
+}
+async function rgHash() {
+  const parts = RG_KINDS.map((k) => { const m = rgEmail(k, RG_SAMPLE); return m.subject + '\n' + m.html; });
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(parts.join('\n---\n')));
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+async function rgState(cfg: any) { const hash = await rgHash(); return { on: !!cfg.rg_door_on, approved: !!cfg.rg_door_approved_hash && cfg.rg_door_approved_hash === hash, hash }; }
+async function rgCtx(m: any) {
+  return { first: String(m?.name || '').trim().split(/\s+/)[0] || '', founding: !!m?.founding_member && Date.now() < DEADLINE, biz: await rgBusiness(m) };
+}
+async function rgTick(cfg: any, e: any, inHours: boolean, out: Record<string, number>) {
+  const rs = await rgState(cfg);
+  if (!(rs.on && rs.approved && inHours && weekday(e))) return;
+  const { data: cs } = await db.from('ve_survey_completions').select('member_id, completed_at').eq('survey_slug', RG_GUIDE).order('completed_at', { ascending: true }).limit(1000);
+  const ids = (cs || []).map((c: any) => c.member_id);
+  if (!ids.length) return;
+  const { data: ms } = await db.from('members').select('id, email, name, membership_status, member_class, standing, founding_member').in('id', ids);
+  const byId = new Map((ms || []).map((m: any) => [m.id, m]));
+  const { data: sent } = await db.from('ve_door_emails').select('member_id, kind').in('member_id', ids);
+  const done = new Set((sent || []).map((x: any) => x.member_id + '|' + x.kind));
+  for (const c of cs || []) {
+    if (out.tasters >= cfg.per_tick) break;
+    const m: any = byId.get(c.member_id);
+    if (!m || !m.email || m.membership_status !== 'active' || (m.member_class || 'member') !== 'member' || (m.standing || 'good') !== 'good' || /\[TEST\]/i.test(m.name || '')) continue;
+    if (await suppressed(m.email)) continue;
+    const age = Date.now() - Date.parse(c.completed_at);
+    const hasIn = done.has(m.id + '|door-rg-in'), has7 = done.has(m.id + '|door-rg-7');
+    // Never late: You're in only within 3 days of finishing, Day 7 only within 14 (someone who finished before the switch went on gets nothing old).
+    const kind = !hasIn && age < 3 * 864e5 ? 'door-rg-in' : hasIn && !has7 && age >= 7 * 864e5 && age < 14 * 864e5 ? 'door-rg-7' : null;
+    if (!kind) continue;
+    const { error: ce } = await db.from('ve_door_emails').insert({ member_id: m.id, kind });
+    if (ce) continue;
+    const mail = rgEmail(kind, await rgCtx(m));
+    const r = await send(kind, m.email, m.name, mail.subject, mail.html);
+    if (r.result === 'failed') { await db.from('ve_door_emails').delete().eq('member_id', m.id).eq('kind', kind); continue; }
+    await db.from('ve_door_emails').update({ resend_id: r.id || null, error: r.result === 'sent' || r.result === 'already_sent' ? null : r.result }).eq('member_id', m.id).eq('kind', kind);
+    out.tasters++;
+  }
+}
+
 async function tick() {
   const cfg = await settings(), e = eastern(), out: Record<string, number> = { offers: 0, routed: 0, tasters: 0 };
   const inHours = e.hour >= cfg.send_hour && e.hour < 17;
@@ -323,7 +403,7 @@ async function tick() {
     }
   }
   if (!inHours) return out;
-  if (!cfg.tasters_on) { await doorTick(cfg, e, inHours, out); return out; }
+  if (!cfg.tasters_on) { await doorTick(cfg, e, inHours, out); await rgTick(cfg, e, inHours, out); return out; }
   const { data: ts } = await db.from('ve_tasters').select('id, email, name, chapter, why, suggested_guide, created_at, account_id, consent_basis, pulse_opt_in_at, ve_taster_emails(kind, sent_at)')
     .is('unsubscribed_at', null).is('member_id', null).not('why', 'is', null).not('name', 'ilike', '%[TEST]%').or('source.is.null,source.neq.pulse-subscribe').limit(1000);  // Pulse subscribers get only the Pulse (Sean, 2026-11-03)
   for (const t of ts || []) {
@@ -351,6 +431,7 @@ async function tick() {
     out.tasters++;
   }
   await doorTick(cfg, e, inHours, out);
+  await rgTick(cfg, e, inHours, out);
   return out;
 }
 
@@ -404,13 +485,15 @@ Deno.serve(async (req) => {
   if (action === 'settings') {
     const cur = await settings();
     if (body.door_approve === true) { const next = { ...cur, door_approved_hash: await doorHash() }; await db.from('ve_site_settings').upsert({ key: 'nurture', value: next }); return json({ ok: true, settings: next, door: await doorState(next) }); }
+    if (body.rg_door_approve === true) { const next = { ...cur, rg_door_approved_hash: await rgHash() }; await db.from('ve_site_settings').upsert({ key: 'nurture', value: next }); return json({ ok: true, settings: next, rg_door: await rgState(next) }); }
+    if (typeof body.rg_door_on === 'boolean') { const next = { ...cur, rg_door_on: body.rg_door_on }; await db.from('ve_site_settings').upsert({ key: 'nurture', value: next }); return json({ ok: true, settings: next, rg_door: await rgState(next) }); }
     if (typeof body.door_on === 'boolean') { const next = { ...cur, door_on: body.door_on }; await db.from('ve_site_settings').upsert({ key: 'nurture', value: next }); return json({ ok: true, settings: next, door: await doorState(next) }); }
     if (typeof body.offers_on === 'boolean' || typeof body.tasters_on === 'boolean') {
       const next = { ...cur, ...(typeof body.offers_on === 'boolean' ? { offers_on: body.offers_on } : {}), ...(typeof body.tasters_on === 'boolean' ? { tasters_on: body.tasters_on } : {}) };
       await db.from('ve_site_settings').upsert({ key: 'nurture', value: next });
       return json({ ok: true, settings: next });
     }
-    return json({ ok: true, settings: cur, door: await doorState(cur) });
+    return json({ ok: true, settings: cur, door: await doorState(cur), rg_door: await rgState(cur) });
   }
 
   if (action === 'offers') {
@@ -469,6 +552,12 @@ Deno.serve(async (req) => {
       if (isId(body.offer_id)) { const { data } = await db.from('ve_pc_offers').select('*, ve_links(code)').eq('id', body.offer_id).maybeSingle(); if (data) o = { ...data, link_code: data.ve_links?.code }; }
       if (!o) { const { data: l } = await db.from('listings').select('id').eq('slug', 'aishas-plant-based-eatery').eq('status', 'approved').maybeSingle(); o = { listing_id: l?.id, code: 'sample', link_code: null }; }
       m = await businessEmail(kind, o);
+    } else if (RG_KINDS.includes(kind)) {
+      // A real business when a slug is given (its name and links), else the sample.
+      let x: any = RG_SAMPLE;
+      if (body.listing_slug) { const { data: l } = await db.from('listings').select('id, name, slug').eq('slug', String(body.listing_slug)).eq('status', 'approved').maybeSingle();
+        if (l) { const { data: c } = await db.from('ve_outreach_contacts').select('link_code').eq('listing_id', l.id).limit(1).maybeSingle(); x = { first: String(body.first || 'there'), founding: Date.now() < DEADLINE, biz: { name: l.name, slug: l.slug, code: (c as any)?.link_code || null } }; } }
+      m = rgEmail(kind, x);
     } else if (DOOR_KINDS.includes(kind)) {
       m = await doorEmail(kind, SAMPLE_MEMBER);
     } else if (['day-3', 'day-7', 'day-14', 'pulse', 'dec-1', 'dec-2', 'dec-3'].includes(kind)) {
@@ -489,7 +578,7 @@ Deno.serve(async (req) => {
     const rows = (data || []).map((t: any) => ({ id: t.id, name: t.name, email: t.email, chapter: t.chapter, joined: t.created_at,
       state: t.member_id ? 'Member' : t.unsubscribed_at ? 'Stopped our emails' : 'On the list',
       sent: (t.ve_taster_emails || []).sort((a: any, b: any) => Date.parse(a.sent_at) - Date.parse(b.sent_at)) }));
-    return json({ ok: true, rows, settings: await settings() });
+    { const cfgNow = await settings(); return json({ ok: true, rows, settings: cfgNow, door: await doorState(cfgNow), rg_door: await rgState(cfgNow) }); }
   }
 
   return json({ error: 'unknown_action' }, 400);
