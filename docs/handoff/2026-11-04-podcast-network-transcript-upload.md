@@ -124,3 +124,30 @@ Playbook `podcast-network-transcript-upload`: reconcile with `ve-podcast-studio`
 Part 5 is on `main` (b2e2b2a). The paste prompt is the one below.
 
 Paste prompt for the next chat: Logan here. Open `podcast-network-transcript-upload` (VE Podcast Network, project `fwbhwfxpncrsfhttimna`, brand `vegans-explore`, repos `lesaruss/vegansexplore-com` and `lesaruss/lesaruss-hq`). Read its briefing, records newest first, this handoff (all five parts) and CLAUDE.md "Podcast analytics in BrandDesk Insights". Then read `ve_playbook_index` and any records or briefing for `ve-podcast-studio` (VE Podcast Studio, owner Sean, due Nov 6; Episode 145 airs Nov 8) and settle the five overlaps in part 5 with evidence: is Studio's Podcast tab the "later" tab and does it link into Insights > Podcast rather than copy numbers; two tabs named Podcast; who owns the weekly episode, relaunch and network tag; does Studio read Captivate through `branddesk-insights` `PODCAST_SHOWS`; the one-playbook rule. Recommend one owner per topic, show Sean, and record the answer in both playbooks only after he agrees. Still open for Sean: next community from the places, a saved snapshot, what the 278 finish line counts, an optional bots caution. Run the three after-batch transcript checks when Sean says a batch landed (131 of 278); the failed Vegans Who Lift row stays until he says delete. Headless login for `vegan@lesaruss.com` per `agent-headless-page-verification`; never print the session; stub the one-time function after. Eastern time only. Wrap up only on "wrap up".
+
+
+## Part 6, Nov 5 (1:45 PM Eastern): ownership settled with ve-podcast-studio
+Playbook `podcast-network-transcript-upload`: reconcile with `ve-podcast-studio` (Sean: "agreed"). Read all six parts.
+
+### Settled, with evidence (HQ main 74ef142)
+1. Studio's Podcast tab (`BrandHome.tsx` VIEWS `podcast`, `PodcastRoom.tsx`, `/api/branddesk/podcast`, migration 079) is the making tab this playbook called "later". It shows no numbers.
+2. Two "Podcast" names, different levels: a top-level BrandDesk tab and a toggle inside Insights. No collision in code or address.
+3. Owners: **ve-podcast-studio** owns the weekly episode (Ep 145 airs Nov 8), Kai's tag, the network tag pre-roll and sending to Captivate by hand. **podcast-network-transcript-upload** owns transcripts, Insights > Podcast, the Analysis write-up, the parked production service, and the relaunch reels until each is approved or skipped (then the relaunch closes; future reels go to ve-social-studio). Its old queue item "Depot > Podcast engine for episode 145" is replaced by Studio.
+4. Studio has no Captivate connection (reads `ve_pod_episodes` and vegan-media only). No second connection.
+5. One-playbook rule: Studio is Sean's playbook this week; VE Podcast Network is now **Watching** (owner Logan), waking on a transcript batch.
+
+### Done
+- Decision record in both playbooks (ids d1094ff4, 6ebff3b8); both index rows updated (Network to watching, goals reworded).
+- Records: Network had 17, Studio 0 and no briefing. The Nov 5 8:22 AM record ("moved from ve-feedback", author "Logan") came from the ve-feedback chat; kept.
+- **The link**: Studio's "Listening numbers are in Insights" links to `?view=insights&in=podcast&show=<show>` (`INSIGHTS_SHOW` in `PodcastRoom.tsx`). HQ branch `claude/adoring-babbage-72vilp` 319baca, **not on main**; its preview build was still QUEUED at wrap-up (dpl_7uUdBUBVRSn4TaCZGbAtWR5fCvex), so not seen in a browser and no typecheck run (no dependencies in the session).
+- CLAUDE.md "Podcast analytics in BrandDesk Insights": a "Two playbooks, one owner each" paragraph.
+
+### Not done
+- The Network playbook's briefing page was not rebuilt (still Nov 4); Studio has no briefing.
+- The link: check the preview signed in as vegan@, then merge to HQ main on Sean's word.
+
+### Still open for Sean
+Next community from the Audience places; a saved snapshot yes or no; what the 278 finish line counts; optional bots caution on Portugal and Chrome (unchecked). After-batch transcript checks when a batch lands (131 of 278). The failed Vegans Who Lift row stays until he says delete.
+
+### Paste prompt for the next chat
+Logan here. Open `podcast-network-transcript-upload` (VE Podcast Network, Watching, project `fwbhwfxpncrsfhttimna`, brand `vegans-explore`, repos `lesaruss/vegansexplore-com` and `lesaruss/lesaruss-hq`). Read its records newest first, `docs/handoff/2026-11-04-podcast-network-transcript-upload.md` (all six parts) and CLAUDE.md "Podcast analytics in BrandDesk Insights". Ownership with `ve-podcast-studio` is settled (Studio makes the weekly episode, the network tag and the Captivate upload; this playbook owns transcripts, Insights > Podcast, the Analysis write-up and the relaunch reels until they close). Do first: check the HQ preview of branch `claude/adoring-babbage-72vilp` (319baca: Studio's "Listening numbers are in Insights" now links to Insights > Podcast for the open show) signed in as `vegan@lesaruss.com` per `agent-headless-page-verification` (a Vercel preview needs its share link first; never print the session; stub the one-time function after), then merge to HQ main only on Sean's word. Rebuild this playbook's briefing from the active template. Then Sean's notes. Still open for Sean: next community from the places, saved snapshot, what the 278 finish line counts, optional bots caution. Run the three after-batch transcript checks when Sean says a batch landed (131 of 278); the failed Vegans Who Lift row stays until he says delete. Eastern time only. Wrap up only on "wrap up".
