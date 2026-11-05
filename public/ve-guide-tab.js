@@ -12,7 +12,7 @@
  * Diplomat, Ambassador, super admin) sees Open your Guide and no price.
  * The map is MAP below: a new Guide is one GUIDES entry and its categories in MAP. A Guide not in GUIDES yet falls back to the one
  * named in its row. Views and clicks go to ve_promo_track as promo 'gt-<guide slug>' with the listing, so they read
- * per Guide per listing (ve_promo_funnel). Sections with no real match yet (Products, Services, Studios) open the
+ * per Guide per listing (ve_promo_funnel). Event Venues and Community > Events open the Vegan Events Guide (2026-11-05). Sections with no real match yet (Products, Services, Studios) open the
  * Welcome Guide until their own Guide exists. The Nutrition Guide launched 2026-10-31. */
 (function () {
   if (window.VEGuideTab) return;
@@ -47,6 +47,11 @@
       banner: '/public/guides/supermarket-guide.jpg?v=2', kicker: 'Find it in the store',
       line: 'Every Vegan product in your supermarket, by what it is, and the aisle members found it in at your store, with Pascal walking you through it.',
       items: ['Dairy-free, plant-based meat, meals, pantry and snacks, every product together', 'Narrow it by type, what it is made from, the brand and where it sits', 'The aisle at your store, mapped and kept current by members', 'Publix at Brickell Village free to everyone'] },
+    // A door Guide (canon-ve-door-guides): free with its survey, or the $11; ve-guide-unlock status opens it for any active member.
+    'vegan-events-guide': { tab: 'Events Guide', title: 'The Vegan Events Guide', guide: 'River', paid: false, door: true, href: '/guides/vegan-events-guide',
+      banner: '/public/guides/vegan-events-guide.jpg', kicker: 'For your events',
+      line: 'Host a Vegan event people come back to, with River walking you through it.',
+      items: ['The plan, week by week, and the money', 'Venues and vendors from our Directory, and the gear', 'The day itself, and what to do when it rains', 'Claim your event and apply for a sponsorship'], free: 'Rain plan free' },
     'group-partner': { tab: 'Group Guide', title: 'The Group Partner Guide', guide: 'Dani', paid: false, href: '/groups/welcome',
       banner: '/groups/sample/img/brunch-1.jpg', bannerFallback: '/public/guides/welcome-guide.jpg?v=3',
       line: 'Host your group\'s community and events on Vegans Explore, and earn as it grows.',
@@ -62,7 +67,8 @@
     [['Nutrition & Supplements', 'Physicians', 'Health Experts'], 'nutrition-guide', 'vegan-dairy-guide'],
     [['Content Creators', 'YouTube', 'Podcasts'], 'creator-guide'],
     [['Activists', 'Nonprofits', 'Rescues', 'Sanctuaries'], 'nonprofit-guide'],
-    [['Groups'], 'group-partner']
+    [['Groups'], 'group-partner'],
+    [['Event Venues', 'Events'], 'vegan-events-guide']
   ];
   // The Supermarket Guide is the second card on a product brand's Guide tab (opening the category its products are in, filtered to
   // the brand) and on a supermarket chain's (opening its stores) (Sean, 2026-11-01: "the supermarket guide should be referenced in
@@ -122,7 +128,7 @@
   // ---------- who owns the Guide ----------
   function owns(slug) {
     var g = GUIDES[slug];
-    if (!g || !g.paid) return Promise.resolve(false);
+    if (!g || !(g.paid || g.door)) return Promise.resolve(false);
     var A = window.VEAuth, t = null;
     try { t = A && A.isLoggedIn && A.isLoggedIn() && A.getToken ? A.getToken() : null; } catch (e) {}
     if (!t) return Promise.resolve(false);
@@ -158,8 +164,8 @@
     var g = GUIDES[slug];
     if (href) g = Object.assign({}, g, { href: href });
     var chips = own ? '<span class="gt-chip own">In your Guides</span>'
-      : (g.paid ? '<span class="gt-chip">' + esc(PRICE) + '</span>' : '<span class="gt-chip">Free</span>') + (g.free && !own ? '<span class="gt-chip">' + esc(g.free) + '</span>' : '');
-    var cta = own ? 'Open your Guide' : g.paid ? 'Open the Guide' : 'Start the ' + g.tab;
+      : (g.door ? '<span class="gt-chip">Free with a short survey</span>' : g.paid ? '<span class="gt-chip">' + esc(PRICE) + '</span>' : '<span class="gt-chip">Free</span>') + (g.free && !own ? '<span class="gt-chip">' + esc(g.free) + '</span>' : '');
+    var cta = own ? 'Open your Guide' : (g.paid || g.door) ? 'Open the Guide' : 'Start the ' + g.tab;
     var img = '<img src="' + esc(g.banner) + '" alt="" width="800" height="500" loading="lazy"' +
       (g.bannerFallback ? ' onerror="this.onerror=null;this.src=\'' + esc(g.bannerFallback) + '\'"' : '') + '>';
     var H = primary ? 'h2' : 'h3';
@@ -170,7 +176,8 @@
       '<ul class="gt-list">' + g.items.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' +
       '<div class="gt-chips">' + chips + '</div>' +
       '<a class="gt-go" href="' + esc(g.href) + '" data-gt-go>' + esc(cta) + '</a>' +
-      (g.paid && !own ? '<p class="gt-note">Buying any Guide makes you a member. Already have it? Sign in and it opens.</p>' : '') +
+      (g.door && !own ? '<p class="gt-note">Take the short survey inside and it all opens, free. Already a member? Sign in and it opens.</p>'
+        : g.paid && !own ? '<p class="gt-note">Buying any Guide makes you a member. Already have it? Sign in and it opens.</p>' : '') +
       '</div></section>';
   }
 
