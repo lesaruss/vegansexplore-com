@@ -66,6 +66,9 @@
       sayMember: 'These are the top ten things Vegan businesses run into. This isn\'t a review of your restaurant. It\'s a checklist of the most common ones. Tick the ones you relate to, and you\'ll see which come up most for owners. Open any one to see what to do this week.' },
     { k: 'pulse', label: 'Pulse', after: 1, say: 'Every business interview we\'ve recorded is here, with the research. Play any of them right here. We keep adding more.',
       sayMember: 'Every business interview we\'ve recorded is here, with the research. Play any of them right here. We keep adding more.' },
+    // Sourcing (Sean, 2026-11-04): members only, so a visitor never sees an empty tab. Text drafts for Sean until approved.
+    { k: 'sourcing', label: 'Sourcing', mine: 1, say: 'Not everything has to come out of your kitchen. Here is who to buy it from, and every supplier wears an honest label.',
+      sayMember: 'Not everything has to come out of your kitchen. Here is who to buy it from, and every supplier wears an honest label.' },
     { k: 'featured', label: 'Claim your page', after: 1, say: 'This is your page, just as members see it. It\'s already in the Directory. Click around. When you claim it, it\'s yours: your hours, your photos and your menu link, changed whenever you like.',
       sayMember: 'This is your page, just as members see it. It\'s already in the Directory. Click around. When you claim it, it\'s yours: your hours, your photos and your menu link, changed whenever you like.' },
     { k: 'dashboard', label: 'Your dashboard', after: 1, say: 'This is your dashboard. It shows how many people look at your page, where they come from, and what they do next. It opens fully once you claim your page.',
@@ -795,6 +798,92 @@
       }).join('') + '</div>';
   }
 
+  // ---------- Sourcing (Sean, 2026-11-04, playbook ve-vegan-sourcing-guide, canon canon-ve-vegan-sourcing) ----------
+  // Members only. Who to buy from instead of making it yourself, from the shared sourcing directory (ve_suppliers, through
+  // ve-sourcing). Each supplier wears one honest label. A kind of supplier we have none of yet says Coming, never an empty list.
+  // The address carries the view: #/sourcing/<domain>?kind=&label=&q=.
+  var SRC_FN = SB + '/functions/v1/ve-sourcing';
+  var SRC_DOMAINS = [
+    { k: 'food_drink', t: 'Ready-made food and drink', d: 'Vegan cheese, plant milks, desserts and proteins, made by someone else and ready to serve or sell.' },
+    { k: 'ingredients', t: 'Ingredients', d: 'The base ingredients to make it yourself, at the size a kitchen needs.' },
+    { k: 'packaging', t: 'Packaging and bottling', d: 'Cups, containers, labels and bottlers, so your food can leave the building.' },
+    { k: 'co_packing', t: 'Co-packers and contract makers', d: 'Someone else makes your recipe at scale.' },
+    { k: 'machinery', t: 'Machinery for scale', d: 'The equipment that takes a kitchen batch to a production run.' },
+    { k: 'materials', t: 'Materials for fashion and beauty makers', d: 'Plant-based leathers, fibers and trims for the people who make clothing and accessories.' },
+    { k: 'distribution', t: 'Distributors', d: 'Who gets your product onto shelves.' },
+    { k: 'certification', t: 'Certification and testing', d: 'Who checks and certifies that it is vegan.' }
+  ];
+  var SRC_LABEL = { peta_approved: ['PETA-Approved Vegan', 'peta'], fully_vegan: ['Fully vegan company', 'full'], offers_options: ['Offers vegan options', 'opts'], plant_material: ['Plant-based material', 'mat'] };
+  var SRC_ICON = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" ' + S + ' aria-hidden="true"><path d="M3 7l9-4 9 4-9 4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>';
+  var SRC = { counts: null, shown: 0 };
+  function srcFetch(body) {
+    return fetch(SRC_FN, { method: 'POST', headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + token(), 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ guide: SLUG }, body)) })
+      .then(function (r) { return r.json(); });
+  }
+  function srcParams(sub) {
+    var bits = String(sub || '').split('?'), q = {};
+    (bits[1] || '').split('&').forEach(function (kv) { var p = kv.split('='); if (p[0]) q[p[0]] = decodeURIComponent((p[1] || '').replace(/\+/g, ' ')); });
+    return { domain: bits[0] || '', q: q };
+  }
+  function srcHash(domain, q) {
+    var bits = ['kind', 'label', 'q'].filter(function (k) { return q[k]; }).map(function (k) { return k + '=' + encodeURIComponent(q[k]); });
+    return '#/sourcing/' + domain + (bits.length ? '?' + bits.join('&') : '');
+  }
+  function srcRow(s) {
+    var L = SRC_LABEL[s.label] || SRC_LABEL.offers_options;
+    var kinds = (s.kinds || []).join(', ');
+    return row({ icon: SRC_ICON, title: s.name, pre: '<span class="rg-lab ' + L[1] + '">' + esc(L[0]) + '</span>',
+      body: '<p class="dg-srow-p">' + esc(s.bio || (kinds ? 'Makes: ' + kinds + '.' : '')) + '</p>',
+      acts: s.website ? '<a class="dg-btn dg-ghost" href="' + esc(s.website) + '" target="_blank" rel="noopener nofollow">Visit website</a>' : '' });
+  }
+  function viewSourcing(sub) {
+    var P = srcParams(sub), cur = SRC_DOMAINS.filter(function (d) { return d.k === P.domain; })[0];
+    var note = '<p class="dg-lede rg-srcnote">Every supplier wears one label. <b>PETA-Approved Vegan</b> is PETA\'s own mark. <b>Plant-based material</b> means the product is made from plant fiber; that is a material, not a claim that it is Vegan, so check it with them. <b>Offers vegan options</b> is a real supplier with vegan lines: check each product with them. Starred suppliers come from PETA\'s <i>Guide to Vegan Suppliers and Manufacturers</i>, October 2026.</p>';
+    if (!cur) {
+      main.innerHTML = head('Sourcing', 'Buy it from someone who already makes it', 'Not everything has to come out of your kitchen. Pick what you are looking for.') +
+        '<div class="dg-srows" id="rgSrcDomains">' + SRC_DOMAINS.map(function (d) { return row({ icon: SRC_ICON, title: d.t, pre: '<span class="rg-promo-tag rg-soon" data-src-tag="' + d.k + '">Checking</span>', body: '<p class="dg-srow-p">' + esc(d.d) + '</p>' }); }).join('') + '</div>' +
+        '<div class="rg-week" style="margin-top:16px"><b>Buy or make</b>For each item, buy it from a supplier here or make it yourself with a recipe. Coming: recipes are written for a home kitchen today, and a restaurant needs batch sizes and costs.</div>' + note;
+      srcFetch({ action: 'list', limit: 1 }).then(function (r) {
+        if (curTab !== 'sourcing') return;
+        var c = (r && r.counts && r.counts.domain) || {}; SRC.counts = c;
+        SRC_DOMAINS.forEach(function (d, i) {
+          var el = main.querySelectorAll('.dg-srow')[i]; if (!el) return;
+          var tag = el.querySelector('[data-src-tag]'), n = c[d.k] || 0;
+          if (tag) { tag.className = 'rg-promo-tag ' + (n ? 'rg-live' : 'rg-soon'); tag.textContent = n ? n + ' suppliers' : 'Coming'; }
+          if (n) el.setAttribute('data-href', '#/sourcing/' + d.k);
+        });
+      }).catch(function () { var t = main.querySelectorAll('[data-src-tag]'); for (var i = 0; i < t.length; i++) t[i].textContent = 'Coming'; });
+      return;
+    }
+    var q = { kind: P.q.kind || '', label: P.q.label || '', q: P.q.q || '' };
+    main.innerHTML = crumb([['Sourcing', '#/sourcing'], [cur.t]]) + head('Sourcing', esc(cur.t), esc(cur.d)) +
+      '<div class="rg-srcbar"><input type="search" id="rgSrcQ" placeholder="Search suppliers" value="' + esc(q.q) + '" aria-label="Search suppliers">' +
+      '<select id="rgSrcLabel" aria-label="Label"><option value="">All labels</option>' + Object.keys(SRC_LABEL).map(function (k) { return '<option value="' + k + '"' + (q.label === k ? ' selected' : '') + '>' + SRC_LABEL[k][0] + '</option>'; }).join('') + '</select>' +
+      '<select id="rgSrcKind" aria-label="Kind"><option value="">All kinds</option></select></div>' +
+      '<div class="dg-srows" id="rgSrcList">' + skel('', 3) + '</div><div class="dg-btns" id="rgSrcMore"></div>' + note;
+    var listEl = document.getElementById('rgSrcList'), moreEl = document.getElementById('rgSrcMore'), kindEl = document.getElementById('rgSrcKind'), timer = null, seq = 0, got = [];
+    function paint(total) {
+      listEl.innerHTML = got.length ? got.map(srcRow).join('') : '<p class="dg-lede">Nothing matches. Try fewer filters.</p>';
+      moreEl.innerHTML = got.length < total ? '<button class="dg-btn dg-ghost" id="rgSrcMoreBtn">Show more (' + (total - got.length) + ' left)</button>' : '';
+      var b = document.getElementById('rgSrcMoreBtn'); if (b) b.onclick = function () { load(true); };
+    }
+    function load(more) {
+      var my = ++seq; if (!more) got = [];
+      srcFetch({ action: 'list', domain: cur.k, kind: q.kind, label: q.label, q: q.q, limit: 48, offset: got.length }).then(function (r) {
+        if (my !== seq || curTab !== 'sourcing') return;
+        if (!r || !r.ok) { listEl.innerHTML = '<p class="dg-lede">' + (r && r.error === 'guide_required' ? 'The Sourcing tab is for members.' : 'We could not load the suppliers. Try again in a moment.') + '</p>'; return; }
+        got = got.concat(r.suppliers || []);
+        if (kindEl.options.length <= 1) kindEl.innerHTML = '<option value="">All kinds</option>' + (r.kinds || []).map(function (k) { return '<option value="' + esc(k) + '"' + (q.kind === k ? ' selected' : '') + '>' + esc(k.charAt(0).toUpperCase() + k.slice(1)) + '</option>'; }).join('');
+        paint(r.total);
+      }).catch(function () { listEl.innerHTML = '<p class="dg-lede">We could not load the suppliers. Try again in a moment.</p>'; });
+    }
+    function changed() { history.replaceState(null, '', srcHash(cur.k, q)); load(false); }
+    document.getElementById('rgSrcQ').addEventListener('input', function (e) { q.q = e.target.value; clearTimeout(timer); timer = setTimeout(changed, 250); });
+    document.getElementById('rgSrcLabel').addEventListener('change', function (e) { q.label = e.target.value; changed(); });
+    kindEl.addEventListener('change', function (e) { q.kind = e.target.value; changed(); });
+    load(false);
+  }
+
   // ---------- Test yourself: the quiz, one question at a time ----------
   var ANS = {};
   try { ANS = JSON.parse(sessionStorage.getItem('rg_quiz') || '{}'); } catch (e) { ANS = {}; }
@@ -1126,7 +1215,7 @@
     var parts = (location.hash || '').replace(/^#\/?/, '').split('/');
     var view = parts[0] || 'overview', sub = parts.slice(1).join('/');
     if (view === 'search' && (!sub || !member())) view = 'overview';
-    var known = { next: 1, overview: 1, audit: 1, expect: 1, fixes: 1, pulse: 1, featured: 1, dashboard: 1, demo: 1, promos: 1, mylist: 1, join: 1, search: 1 };
+    var known = { next: 1, overview: 1, audit: 1, expect: 1, fixes: 1, pulse: 1, sourcing: 1, featured: 1, dashboard: 1, demo: 1, promos: 1, mylist: 1, join: 1, search: 1 };
     if (!known[view]) view = 'overview';
     // Before the survey only Overview, Your audit, What to expect and Get in open (Sean, 2026-11-04); the rest open once the access check says member.
     if (access !== 'checking' && !member() && TABS.some(function (t) { return t.k === view && t.after; })) { view = 'join'; sub = ''; location.replace('#/join'); }
@@ -1138,12 +1227,13 @@
     if (view === 'join' && member()) { view = 'next'; sub = ''; key = 'next'; location.replace('#/next'); }
     if (view === 'next' && !member()) { view = 'join'; key = 'join'; }
     if (view === 'mylist' && !member()) { view = 'overview'; key = 'overview'; }
+    if (view === 'sourcing' && !member()) { view = 'overview'; key = 'overview'; }
     if (member() && !svState) loadSaves();
     drawMenu(view === 'search' ? 'search' : key);
     if (view !== 'search' && qEl.value && document.activeElement !== qEl) qEl.value = '';
     if (view !== 'audit') auditView++;
     var bar = document.getElementById('vep-player');
-    ({ next: function () { viewNext(sub); }, overview: viewOverview, expect: viewExpect, audit: function () { viewAudit(sub); }, fixes: function () { viewFixes(sub); }, pulse: function () { viewPulse(sub); },
+    ({ next: function () { viewNext(sub); }, overview: viewOverview, expect: viewExpect, audit: function () { viewAudit(sub); }, fixes: function () { viewFixes(sub); }, pulse: function () { viewPulse(sub); }, sourcing: function () { viewSourcing(sub); },
        featured: function () { viewFeatured(sub); }, dashboard: function () { viewDashboard(); }, demo: function () { viewDemo(sub); }, promos: function () { viewPromos(sub); },
        mylist: function () { viewMyList(sub); }, join: viewJoin, search: function () { viewSearch(decodeURIComponent(sub)); } })[view]();
     keepPlayer(bar);

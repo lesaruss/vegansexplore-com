@@ -6447,3 +6447,25 @@ stops landing.
 Push to `main` on `lesaruss/vegansexplore-com`. Vercel auto-deploys.
 Commit author must be `Sean A. Russell <contact@lesaruss.com>`.
 Vercel project: `vegansexplore-com`, team: `team_G2qO2cUYl8ZmeOMaamFvY8C6`.
+
+## Vegan sourcing: one directory, two Guides (LOCKED by Sean 2026-11-04, playbook `ve-vegan-sourcing-guide`)
+
+Concept session with V, locked by Sean: "lock it" (canon `canon-ve-vegan-sourcing`; migration `20261104_vegan_sourcing_canon.sql`; handoff
+`docs/handoff/2026-11-04-ve-vegan-sourcing-locked.md`). **Not built yet.** PETA's Guide to Vegan Suppliers and Manufacturers (Oct 2026) is business-side,
+not a shopping shelf. One shared sourcing directory, hidden from the shoppers' Directory (the `lesaruss-ai-directory-candidate` kind of hiding), feeds
+a **Sourcing tab in the Vegan Restaurant Guide** (buy or make each item; Cookbook recipes labeled home scale) and a new **Pre-Vegan Business Guide**
+(coffee shops, gyms, juice bars, any business adding vegan; Pascal; not the consumer Pre-Vegan Guide). Seed: 134 PETA-guide suppliers, 38 starred
+(`docs/suppliers/peta-guide-2026-10-names.csv`, names and websites only; bios from each company's own site, never PETA's words, contacts or photos).
+Labels: PETA-Approved Vegan, Fully vegan company, Offers vegan options; never call a mixed-line company fully vegan. Never promise sales or no backlash;
+tasting nights are "coming" until one has run; featuring never buys rank. Open: the Pre-Vegan Business Guide's price and door wording.
+**Step 1 built 2026-11-04 (Logan; branch `claude/ecstatic-galileo-lth5gz`, not on `main`).** The directory is its own table, `ve_suppliers` (migration
+`20261104_ve_suppliers.sql`; RLS on, no policies), not `listings`, so the nightly outreach, logo, audit and essentials jobs cannot touch it; a supplier
+becomes a Directory listing only when it claims its page (`listing_id`). Columns: `domain` (food_drink, ingredients, packaging, co_packing, machinery,
+materials, distribution, certification), `kinds`, `label` (peta_approved, fully_vegan, offers_options), `bio`, `status`. 134 PETA-guide suppliers are in it
+(38 peta_approved, 96 offers_options, all `materials`). Edge function `ve-sourcing` (`list`, `get`; the member token, then `ve_owns_guide` for the Guide
+or a super admin; `GUIDES` there is the list of Guides that carry the tab, a new Guide is one entry). The **Sourcing tab** is in the Vegan Restaurant Guide
+(`viewSourcing` in `guide-scripts/vegan-restaurant-guide.js`, members only, `#/sourcing/<domain>?kind=&label=&q=`): eight domains, each tagged Coming until
+it has suppliers, search and filters, an honest-label note crediting PETA's October 2026 guide. Checked in a browser at 1440 and 390 px against mocked
+answers. **Not done**: bios (written from each company's own site), food, ingredient, packaging and co-packer suppliers (the PETA list is fashion and
+beauty materials, so a restaurant sees only that domain until they are crawled), buy or make recipes, the Pre-Vegan Business Guide, Liz's recordings, a
+signed-in run of `ve-sourcing` on the deployed site.
