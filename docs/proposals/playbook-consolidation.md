@@ -1,4 +1,17 @@
-# ve-feedback: playbook consolidation plan (proposed 2026-11-05, Logan; not yet approved)
+# ve-feedback: playbook consolidation plan (proposed 2026-11-05, Logan; run the same day with Sean's changes)
+
+**Done 2026-11-05.** Sean's answers changed three things:
+- **#8, #9:** the founding tables, the Launch Community Night (Nov 13 and 14) and the Palm Beach dinner are off. New idea, not confirmed: a New Year's Eve
+  community night in several cities, only with a sponsor. It is in Launch to January 1.
+- **#10:** not merged. Group Partners, Nonprofit Partners, and Ambassadors and creators stay separate. The bounty rules and the talent shop go to the
+  Blueprint as ideas (today `ve-feedback`, which the Blueprint's Ideas tab points at). Vegan House went there too.
+- **#11:** not split. `ve-pathways` and `ve-outreach-buckets` merged into a new `ve-outreach` (leads, bringing in new people, the doors included).
+
+Open playbooks: 45 before, 28 after. Every merge was checked live in BrandDesk. The old-to-new slug table is in CLAUDE.md, Playbooks section.
+Next: the Blueprint absorbs feedback and becomes the sorter of ideas (Sean; not built).
+
+---
+
 
 Sean, 2026-11-05: "some of them seem to overlap... check to see which ones are the same and then scan them in the groups, see what's the
 same, what is the most updated information, and then suggest a consolidation plan." Pulled into `ve-feedback` to work as its own item.

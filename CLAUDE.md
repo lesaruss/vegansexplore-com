@@ -1356,6 +1356,31 @@ edit the row and read the playbook's records, newest first. Status words: Buildi
   `guide_playbooks` (guide slug to playbook slug), which Blueprint shows as "The plan behind it"; a Guide with no row reads "No playbook yet".
   On 2026-11-05 the 16 open playbooks with no page got one and all 9 live Guides were linked (Creator and Nutrition to `ve-guides`). A playbook with records and no row is added from Not in the
   index or left as history. Not built: rows for other brands, a Needs Sean count on the dashboard.
+- **Consolidated 2026-11-05, 45 open playbooks to 28** (Sean, playbook `ve-feedback`, plan `docs/proposals/playbook-consolidation.md`). A merge
+  never deletes: `ve_pb_merge(keep, merged[], title, stage, status, lead_html, note, stale)` (migration `20261105_playbook_merge_helpers.sql`) rebuilds
+  the kept page from the active template with each merged playbook's open and done items under its own label (and a note when they are out of
+  date), its links, and Decision History from every slug; each merged playbook gets a "Merged into" record, its `briefings` row `archived`, its index
+  row `done`; the highest rating and any Guide link move to the kept one. **Name the work by the kept slug from now on**:
+  | Old slug | Now |
+  |---|---|
+  | `vegans-explore-podcast` | `ve-podcast-studio` |
+  | `ve-content-index` | `podcast-network-transcript-upload` |
+  | `ve-events-platform` | `ve-event-host-path` |
+  | `vegans-explore-guides`, `vegan-dairy-guide-content`, `ve-nonprofit-guide`, `ve-venue-guides`, `ve-guide-accounts` | `ve-guides` |
+  | `ve-store-scan-search` | `ve-supermarket-guide` |
+  | `vegans-explore-brand-partner`, `ve-campaign-engine`, `ve-verified-tours-hunt` | `ve-business-hub-ad-console` (Business offer) |
+  | `ve-directory-banners-chapters` | `ve-community-directory` (The Directory) |
+  | `vegans-explore-how-to-launch-a-chapter`, `vegans-explore-onboarding-playbook` | `vegans-explore-chapter-community-manager-plan` (Chapters and Community Managers) |
+  | `explore-season-partners-guide`, `ve-relaunch-promotion` | `vegans-explore-launch-playbook` (Launch to January 1); post rules to `ve-social-studio` |
+  | `ve-bounties-lifecycle`, `vegan-house-series` | `ve-feedback` (Feedback and ideas), as ideas |
+  | `ve-pathways`, `ve-outreach-buckets` | **`ve-outreach`** (Outreach: leads, bringing in new people, the doors included) |
+  Older notes in this file still name the old slugs; read them through this table. **Partner programs stay separate** (Sean: "if I run them
+  separately, I can get them done quicker and learn a lot in real time"): `ve-group-partners`, `ve-nonprofit-partners`, `ve-ambassadors-talent-shop`
+  (now titled Ambassadors and creators; the talent shop left it as an idea). **Off** (Sean, 2026-11-05): the founding tables, the Launch Community
+  Night (Nov 13 and 14) and the Palm Beach dinner. **Idea, not confirmed**: a New Year's Eve community night in several cities, built on the groups
+  that already host, only with a sponsor ("If not, then we won't do it"); it sits in Launch to January 1. **Next (Sean, not built)**: the Blueprint
+  absorbs feedback and becomes the sorter of ideas ("any ideas should go through the blueprint... the blueprint pushes it to where it needs to go or
+  decides if it needs to be its own playbook"). BrandDesk > Blueprint > Ideas is a pointer to `ve-feedback` today (`BlueprintRoom.tsx` in HQ).
 
 ## The new header (Sean, 2026-11-03)
 
