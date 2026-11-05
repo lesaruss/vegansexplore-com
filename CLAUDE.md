@@ -41,6 +41,12 @@ the community who cannot read well, and others will not read a page. It is not a
   the Events Guide), in the Guide's own words, guiding, never a reader of the screen. This version: a **still picture** of the Guide beside the line (no animation; B-roll
   and animation come later), and the picture may change from tab to tab, **outfits mixed up to fit what is going on** (Sean: "They don't have to be wearing the same
   outfit every single time").
+- **The Events Guide is the first (2026-11-05, Sean approved V1):** River speaks every tab in his roster-profile voice (`btaSeNTVh1pGx4pjFzub`), 29 recordings in
+  `vegan-media/media/voices/events-guide/river-<tab>-v1.mp3` and `river-<tab>-member-v1.mp3` (Gear is one line for everyone), each checked word for word with `stt`, over a
+  still of him for each tab in an outfit that fits it (`public/guides/events-guide/still-<tab>.jpg`, Higgsfield, My list reuses Overview). Each tab's `say` and `sayMember`
+  equal its recording (`TABS` in `guide-scripts/vegan-events-guide.js`; change a line, record `-v2`). Play is right under his name; nothing plays until pressed, then each
+  tab plays until Pause. **Every Guide is also an intake** (Sean: "Every time somebody suggests something, that builds our directory"): Venue and Vendors ask for one we're
+  missing (Join the Directory's Add it), and Gear has **Missing something?**, a suggestion sent to `ve-feedback` as kind missing (Depot > Feedback and the Inbox).
 - **Every page a person can land on has a script for its Guide** and, once Sean approves it, the recording in that Guide's roster-profile voice (Guide voices
   section; never a voice picked without Sean). A new page does not ship without its script. Redirect stubs, ad creatives and render frames are the exceptions.
 - **Logan writes the script, Sean reads and approves it, then it is recorded** (el-media tts, checked word for word with `stt`, `-v1.mp3`; a
