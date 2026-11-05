@@ -1,4 +1,4 @@
-# ve-restaurant-guide: Liz speaks on every tab, and the free check is locked to the invitation (2026-11-04)
+# ve-restaurant-guide: Liz speaks on every tab, and the free check is locked to the invitation (2026-11-04, updated 2026-11-05)
 
 Playbooks: `ve-restaurant-guide` (the Guide, the lock) and `ve-audio-accessibility` (Liz speaks on every page). Logan, with Sean's word on each merge.
 
@@ -31,16 +31,37 @@ Playbooks: `ve-restaurant-guide` (the Guide, the lock) and `ve-audio-accessibili
   last statement's rows: run reads one at a time.
 - The free path for a non-team caller writes a `ve_free_check_events` row (a sign) even when the check is reused. Test with a team token or clean up.
 
+## Added 2026-11-05 (main at `78935f0`, live)
+
+1. **The first-page Play button was off screen (a regression from the recordings).** The full welcome made the bubble about 370 px tall, so in the desktop
+   fit layout "Start the tour" landed behind the footer at 1440x900 and off screen at 1366x768 (Sean's screenshot showed the bubble cut mid-sentence). Fixed in
+   `guides/vegan-restaurant-guide.html` (the `html.dg-fit` rules: Play comes right under Liz's name, a long line scrolls in its own box) and in the Guide script:
+   a tab can carry `show`, a short on-screen line used while its recording exists (Overview, What to expect, Try the demo). **Sean's rule, 2026-11-05: short text in the
+   box, the audio does the work.** This supersedes "a line's text must match its recording" for those three tabs only; the recordings are unchanged and every other tab still shows its full line.
+2. **Signed-in click-through, passed on the live Guide** (Logan Russell test member, `contact+logan@lesaruss.com`, active, not an admin, with Garden Butcher's code opened
+   at its destination, no click logged): Play on Overview started `door-overview-member-v1.mp3` (14.7 s); all ten tabs load with Play on screen; Top challenges tick
+   registered (it is a real vote in `ve_guide_votes`; unticked, 0 left); Claim your page frames the real listing; Your dashboard names the business; the demo's first of seven steps opens
+   full screen on `/business/sample` and closes. No script errors. Not checked: audio on every member tab, the other six demo steps, phone width.
+3. **`/go/bo-` tested with a [TEST] contact** (a `bo-test001` contact and link on Love Life Cafe, then deleted): 302 to `/guides/vegan-restaurant-guide?b=<code>`, the Guide opens on the business,
+   Liz plays, the free check reuses the existing check. A headless browser is logged as a bot and does not count; a desktop browser counts (1 real, 1 bot). A click turns a contact Interested only
+   when it was emailed first (`in_sequence`, a `sent` event before the click): `ve_outreach_sync` ignores a `not_sent` contact, by design. With a faked sent event it turned Interested, stopped
+   follow-ups and routed to Sean (South Florida has no Community Manager). Every test row removed, Garden Butcher's real link still 0 clicks.
+4. **How the session was made.** A one-time function `ve-once-rg-session` minted a one-hour token for the test member with the same signing as `ve-switch-account` (the HMAC from the service key),
+   then was redeployed as the 410 stub (the old key answers 401). The token file was deleted. For a browser run of the live site, set `ve_token` and `ve_member` in `localStorage`.
+5. **Drafted, not recorded:** Liz's scripts for the Vegan Events Guide (`docs/proposals/liz-audio-scripts.md`, Guide 2): 15 visitor and 15 member lines, four decisions for Sean (whose voice, money on the
+   first visit, a gear affiliate line, the order of the Guides). Nothing is recorded or wired.
+
 ## Not done, still open
 
-- A **real signed-in member** run on the deployed Guide (Top challenges tick, Your dashboard, Claim your page, the demo pop-out) and a real `/go/bo-`
-  click end to end. The browser checks used mocked answers only.
-- `ve-restaurant-audit` `latest` (the public `/check/<slug>` link) stays open to anyone, by design (it shows the free view of an existing check).
-- Liz has no recording for a page outside the Restaurant Guide yet (the rest of `ve-audio-accessibility`: the other Guides' silent tabs, then the main
-  pages). Scripts first, Sean reads them, then record.
-- Nothing has been sent to a business and no city is on. Sean has not said go on the engine change for HQ's People room.
+- Nothing on the Restaurant Guide blocks the emails. What is left is Sean's: approve the emails, turn a city on, read the pulled email addresses by eye. Nothing has been sent and no city is on.
+- Not exercised: a real send followed by a click (the sender path), audio on each member tab, the other six demo steps, a phone-width pass.
+- `ve-restaurant-audit` `latest` (the public `/check/<slug>` link) stays open to anyone, by design.
+- The other Guides' silent tabs and the main pages (`ve-audio-accessibility`): the Events Guide scripts wait for Sean to read them.
+- Sean has not said go on the engine change for HQ's People room.
 
 ## Next (Logan)
+
+(2026-11-05) The Events Guide scripts are with Sean. When he approves, record two lines at a time with el-media from the database, check each with `stt`, wire as `AUDIO_V` and `AUDIO_M`. Older text:
 
 `ve-audio-accessibility`: draft Liz's scripts for the next Guide's silent tabs in `docs/proposals/liz-audio-scripts.md` for Sean to read (his order: the
 Guides, then the main pages). `ve-restaurant-guide`: when Sean has a member session or an ops token with `as_member`, click through the member tabs.
