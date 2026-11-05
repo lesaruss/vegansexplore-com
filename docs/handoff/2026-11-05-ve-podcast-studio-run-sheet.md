@@ -1,4 +1,4 @@
-# ve-podcast-studio: Episode 145 run sheet does not match Episode 144 (Nov 5, 2026, 2:45 PM Eastern)
+# ve-podcast-studio: Episode 145 run sheet does not match Episode 144 (Nov 5, 2026, evening Eastern)
 
 Playbooks: `ve-podcast-studio` (main), `podcast-network-transcript-upload` (ownership check only).
 
