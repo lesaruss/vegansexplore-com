@@ -384,7 +384,7 @@ function buildAdaLevel2ReceiptEmail(opts: {
 // know what was purchased and by whom"). One email to the team for every live payment this webhook receives, from every account,
 // before any product's own branch runs, so a new product is covered without a change here: a paid Checkout session, and a
 // subscription renewal invoice (the first invoice of a subscription is its Checkout session, so it is not counted twice).
-// ve_money_alerts keeps one row per payment (stripe_id unique), so a Stripe retry never sends twice. Test mode sends nothing.
+// Vegans Explore's account only, client services left out (moneyAlert). ve_money_alerts keeps one row per payment (stripe_id unique), so a Stripe retry never sends twice. Test mode sends nothing.
 // A preview of any real session: POST ?money_preview=<cs_...> with Authorization: Bearer <LESARUSS_ADMIN_TOKEN>, sent with
 // [Preview] and no row.
 const MONEY_TO = 'contact@lesaruss.com'
@@ -538,9 +538,23 @@ async function moneyFromSession(session: Stripe.Checkout.Session, acct: { name: 
   const stripeUrl = `https://dashboard.stripe.com/${session.livemode ? '' : 'test/'}${pi ? 'payments/' + pi : 'checkout/sessions/' + session.id}`
   return { amount: session.amount_total || 0, currency: session.currency || 'usd', brand: brand0, product, lines, name, email, member, stripeUrl, ref: session.id, at: new Date((session.created || Date.now() / 1000) * 1000), account: acct.name, renewal: false, preview }
 }
+// Only Vegans Explore's own money (Sean, 2026-11-05): payments on the Meatless Muscle and LESARUSS accounts send no alert, and
+// neither do client services billed on our account (a customer tagged revenue_class client_services, Brooke's billing).
+async function moneyClientServices(customer: unknown, key: string | undefined): Promise<boolean> {
+  const id = typeof customer === 'string' ? customer : (customer as any)?.id
+  if (!id || !key) return false
+  try {
+    const r = await fetch(`https://api.stripe.com/v1/customers/${id}`, { headers: { Authorization: `Bearer ${key}` } })
+    if (!r.ok) return false
+    const c = await r.json()
+    return c?.metadata?.revenue_class === 'client_services'
+  } catch { return false }
+}
 async function moneyAlert(event: Stripe.Event, verifiedWith: string | null) {
   if (!event.livemode) return
   const acct = moneyAccount(verifiedWith)
+  if (acct.slug !== 'vegans-explore') return
+  if (await moneyClientServices((event.data.object as any)?.customer, acct.key)) return
   let o: any = null, stripeId = '', kind = 'checkout'
   if (event.type === 'checkout.session.completed' || event.type === 'checkout.session.async_payment_succeeded') {
     const s = event.data.object as Stripe.Checkout.Session

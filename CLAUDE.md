@@ -6157,9 +6157,10 @@ shared, so it moves to HQ's People app unchanged.
 ## Money in: an email for every payment (Sean, 2026-11-01)
 
 "John registered as a creator and made a payment, and I didn't get any notification that he made a payment... Is there something that
-can be sent to me whenever we receive money?... branded and let me know what was purchased and by whom." Every live payment the Stripe
-webhook (`ve-stripe-webhook`, every connected account: Vegans Explore, LESARUSS, Meatless Muscle) receives sends one email to
-contact@lesaruss.com from VEGANS EXPLORE <hello@vegansexplore.com>, before any product's own branch runs, so a new product is covered with
+can be sent to me whenever we receive money?... branded and let me know what was purchased and by whom." Every live payment on the **Vegans
+Explore** Stripe account that the webhook (`ve-stripe-webhook`) receives sends one email to
+contact@lesaruss.com (since 2026-11-05, Sean: "I just want to see transactions from Vegans Explore": payments on the Meatless Muscle
+and LESARUSS accounts send none, nor does a customer tagged `revenue_class: client_services`, Brooke's billing; `moneyAlert`) from VEGANS EXPLORE <hello@vegansexplore.com>, before any product's own branch runs, so a new product is covered with
 no change: a paid Checkout session (`checkout.session.completed` or `async_payment_succeeded`, amount over $0) and a subscription renewal
 (`invoice.payment_succeeded` other than `subscription_create`, which is its Checkout session). Subject "$11.00 in: <product> from <name>";
 the email (`moneyEmail`): the brand's header (Vegans Explore's mark, else the brand's name), Money in or Renewal paid, the amount, the
