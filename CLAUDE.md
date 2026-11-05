@@ -4765,9 +4765,11 @@ never shared fryer oil, cooking water or an uncleaned grill with animal products
 wait on intent; every critical staff question right; public registry with a live QR status page, never a failure log; records for the term plus 5
 years; the fee never buys the outcome; the pilot cohort (5 to 10, South Florida) is free and the price is set after the first two audits are
 timed; verifier, desk reviewer and approver are different people and the approver is a person. Stamp: "Plant-Based Dish, Pre-Vegan Certified",
-with N of M menu items certified and what else the restaurant serves. **Entity**: Sean is dissolving Vegans Explore Inc. (the nonprofit) from
-2026-11-05; LESARUSS Inc. is the default owner of the program and mark until counsel confirms, and the Vegans Explore Stripe account and anything
-billed through Vegans Explore Inc. must move first. **Work it from the playbook's A-to-Z WORK QUEUE record** (A Foundation, B Build, C Pilot,
+with N of M menu items certified and what else the restaurant serves. **Entity**: Sean is dissolving Vegans Explore Inc. (the nonprofit, never
+501(c)(3)) from 2026-11-05; Vegans Explore continues as a DBA of LESARUSS Inc. (a separate LLC is open, decided before paid applications), and the
+Vegans Explore Stripe account, bank account and recurring billing must move to LESARUSS Inc. first. **Verifiers** are recruited by a job posting
+to our network (experienced people), not hired until the pilot. **Done is a recipe**: each finished step gets a dated record of what, how, who and
+where, so the playbook shows how to run the program again. **Work it from the playbook's A-to-Z WORK QUEUE record** (A Foundation, B Build, C Pilot,
 D Launch, Parked; GATE steps block what follows); anything not in the queue is a new idea for Sean, never built quietly. The Pre-Vegan
 Restaurant Guide copies `guides/vegan-restaurant-guide.html` (template gate).
 
