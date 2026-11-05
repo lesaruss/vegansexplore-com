@@ -160,8 +160,8 @@
   var ST = { rule: 'points', cost: 1100, balance: 0, active: false, via: null };
   var PODS = null, VENUES = null, VENDORS = null, STORIES = null;
   // The 15 sections in 6 groups (Sean, 2026-11-05: "15 is way too many... I approve"). The dropdown and the tour go by group; a group
-  // opens as a page of tiles, one tile a section. Old #/<section> links still open the section, under its group. River's lines for the
-  // group pages are text drafts until Sean approves them and they are recorded (a page with no recording says nothing).
+  // opens as a page of tiles, one tile a section. Old #/<section> links still open the section, under its group. River's line on each
+  // group page is `say`, recorded as river-g-<k>-v1.mp3 (approved by Sean 2026-11-05); change a line, record -v2.
   var GROUPS = [
     { k: 'start', label: 'Start here', kids: [] },
     { k: 'planit', label: 'Plan it', kids: ['kinds', 'plan', 'money'], line: 'Pick the kind of event, set the plan and know the money.',
@@ -1026,7 +1026,7 @@
   var VOICE_BASE = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/events-guide/river-';
   var STILL_BASE = '/public/guides/events-guide/still-';
   function riverAudio(k) {
-    if (/^g:/.test(k)) return '';
+    if (/^g:/.test(k)) return VOICE_BASE + 'g-' + k.slice(2) + '-v1.mp3';
     if (k === 'search') k = 'overview';
     if (k === 'join') return VOICE_BASE + 'join-v1.mp3';
     if (k === 'mylist') return VOICE_BASE + 'mylist-member-v1.mp3';
@@ -1056,8 +1056,8 @@
     var st = tourSteps(), key = curTab === 'search' ? 'overview' : curTab, i = Math.max(0, st.indexOf(key));
     cueRiver();
     bubble.innerHTML = '<span class="ev-bub-in">' + esc(isG ? G.say : (member() && t.sayMember ? t.sayMember : t.say)) + '</span>';
-    // A group page has no recording yet, so River says nothing there and Play steps aside (Sean approves the lines first).
-    playBtn.hidden = isG;
+    // Group pages have River's recorded line too (river-g-<group>-v1.mp3, approved by Sean 2026-11-05).
+    playBtn.hidden = false;
     playBtn.classList.toggle('go', !RV.started);
     playBtn.innerHTML = !RV.started ? '&#9654; Start the tour' : RV.playing ? 'Pause River' : '&#9654; Play River';
     var gi = 0; GROUPS.forEach(function (g, n) { if (g.k === groupOf(key === 'overview' ? 'start' : key)) gi = n; });
