@@ -13,6 +13,11 @@
 // about text, menu link and hours (through ve-outreach listing_fix, each change a ve_listing_edits row), a team note, and the
 // business outreach contact tied to it: the contact's name (set by hand, so confirmed for the greeting), email, or do not email.
 // verify_jwt off; the member token is checked here and must be a super admin's.
+//
+// Step 2 (2026-11-05): the same chat with the page's own Guide. The page sends `guide` (liz, maya, river, nori, dani, theo, kai,
+// pascal): the Guide rail on a Guide page, the Resources tab's Guide, or Liz on the Partner Dashboard tour. On a page it cannot
+// edit (a Guide page, any page that is not a Directory listing) the Guide files a Note for Logan instead (target "logan"): a
+// ve_feedback row, kind suggestion, named "Sean (via <Guide>)", which Logan works from Depot > Feedback.
 import Anthropic from 'npm:@anthropic-ai/sdk';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
@@ -49,10 +54,21 @@ const LISTING_FIELDS: Record<string, string> = {
   address_street: 'Street', address_zip: 'ZIP', description: 'About', menu_url: 'Menu link', hours: 'Hours',
 };
 const CONTACT_FIELDS: Record<string, string> = { contact_name: 'Outreach contact name', contact_email: 'Outreach email', do_not_email: 'Do not email' };
+// The Guides who can be talked to, and what each one leads (CLAUDE.md, Guide banners: who leads which Guide).
+const GUIDES: Record<string, { name: string; leads: string }> = {
+  liz: { name: 'Liz', leads: 'the Vegan Restaurant Guide and the business side of Vegans Explore' },
+  maya: { name: 'Maya', leads: 'the Vegan Dairy Guide' },
+  river: { name: 'River', leads: 'the Vegan Events Guide, the Stadium & Arena Guide and the Theme Park Guide' },
+  nori: { name: 'Nori', leads: 'the Airport Guide' },
+  dani: { name: 'Dani', leads: 'the Nonprofit Guide, the Group Partner Guide and the Welcome Guide' },
+  theo: { name: 'Theo', leads: 'the Nutrition Guide' },
+  kai: { name: 'Kai', leads: 'the Creator Guide' },
+  pascal: { name: 'Pascal', leads: 'the Supermarket Guide' },
+};
 const DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 type Ctx = { listing: any | null; contacts: any[] };
-type Change = { key: string; target: 'listing' | 'contact' | 'note'; contact_id: string; field: string; label: string; from: string; to: string; why: string; hours?: Record<string, string> };
+type Change = { key: string; target: 'listing' | 'contact' | 'note' | 'logan'; contact_id: string; field: string; label: string; from: string; to: string; why: string; hours?: Record<string, string> };
 
 function slugOf(pageUrl: string): string | null {
   try { const m = new URL(pageUrl).pathname.match(/^\/(?:dashboard\/)?directory\/([a-z0-9-]+)\/?$/i); return m ? m[1].toLowerCase() : null; } catch { return null; }
@@ -100,6 +116,7 @@ function currentOf(ctx: Ctx, target: string, field: string, contactId: string): 
 function normalize(ctx: Ctx, raw: any, i: number): Change | null {
   const target = String(raw?.target || ''), field = String(raw?.field || ''), to = clean(raw?.to, 2000), why = clean(raw?.why, 300);
   const contactId = String(raw?.contact_id || '');
+  if (target === 'logan') { if (to.length < 4) return null; return { key: 'c' + i, target, contact_id: '', field: 'logan', label: 'Note for Logan', from: '', to, why }; }
   if (!ctx.listing) return null;
   if (target === 'note') { if (to.length < 2) return null; return { key: 'c' + i, target, contact_id: '', field: 'note', label: 'Team note on the listing', from: '', to, why }; }
   if (target === 'listing') {
@@ -130,9 +147,9 @@ const SCHEMA = {
       items: {
         type: 'object', additionalProperties: false, required: ['target', 'contact_id', 'field', 'to', 'why'],
         properties: {
-          target: { type: 'string', enum: ['listing', 'contact', 'note'] },
+          target: { type: 'string', enum: ['listing', 'contact', 'note', 'logan'] },
           contact_id: { type: 'string' },
-          field: { type: 'string', enum: [...Object.keys(LISTING_FIELDS), ...Object.keys(CONTACT_FIELDS), 'note'] },
+          field: { type: 'string', enum: [...Object.keys(LISTING_FIELDS), ...Object.keys(CONTACT_FIELDS), 'note', 'logan'] },
           to: { type: 'string' },
           why: { type: 'string' },
         },
@@ -140,7 +157,7 @@ const SCHEMA = {
     },
   },
 };
-const SYSTEM = `You are Liz, a Guide on Vegans Explore (vegansexplore.com), talking with Sean A. Russell, its founder and a super admin, about the page he is looking at.
+const systemFor = (g: { name: string; leads: string }) => `You are ${g.name}, a Guide on Vegans Explore (vegansexplore.com) who leads ${g.leads}. You are talking with Sean A. Russell, its founder and a super admin, about the page he is looking at.
 Sean tells you what is wrong or out of date. Your job is to turn what he says into exact changes, and to ask when you are not sure.
 
 Rules:
@@ -148,10 +165,11 @@ Rules:
 - If something is unclear (which field, which contact, whether a name is the owner or the chef, whether an old email should be replaced or only set aside), ask one short question in reply and propose nothing for that part.
 - Changes you can propose, on the listing (target "listing"): ${Object.entries(LISTING_FIELDS).map(([k, v]) => `${k} (${v})`).join(', ')}. For hours, write one line per day as "Monday: 9 AM to 5 PM"; a closed day is "Closed".
 - On a business outreach contact (target "contact", with its contact_id): contact_name (the name we greet them by; a name Sean gives is confirmed), contact_email (where outreach emails go), do_not_email (to "true": never email this contact).
-- Anything worth remembering that is not a field (who someone is, a relationship, how they like to be reached): target "note", the note's text in "to".
+- Anything worth remembering about a listing that is not a field (who someone is, a relationship, how they like to be reached): target "note", the note's text in "to".
+- Anything you cannot change yourself (the words or layout of a page, a Guide's tab, a button, a picture, a bug, anything on a page that is not a Directory listing): target "logan", field "logan", with a clear note for Logan in "to": the page, what is wrong or wanted, and Sean's words where they matter. Logan builds it; nothing changes until he does.
 - Leave contact_id empty unless the target is "contact".
-- In reply, speak to Sean in plain, short sentences, first person, as Liz. Say what you will change, or what you need to know. No dashes, no markdown headings. Capitalize Vegan.
-- If the page is not a Directory listing, you cannot change it yet: say so, and offer to note it for Logan (propose nothing).`;
+- In reply, speak to Sean in plain, short sentences, first person, as ${g.name}. Say what you will change, or what you need to know. No dashes, no markdown headings. Capitalize Vegan.
+- If the page is not a Directory listing, you can only answer and pass notes to Logan: propose a "logan" note for each thing Sean wants changed, and say that Logan will make it.`;
 
 function ctxText(ctx: Ctx, pageUrl: string, label: string, pageText: string) {
   const parts = [`Page: ${label || ''} ${pageUrl}`];
@@ -170,10 +188,18 @@ function ctxText(ctx: Ctx, pageUrl: string, label: string, pageText: string) {
   return parts.join('\n');
 }
 
-async function applyChanges(ctx: Ctx, changes: Change[], me: string, token: string) {
+async function applyChanges(ctx: Ctx, changes: Change[], me: string, token: string, pageUrl: string, pageLabel: string, guideName: string) {
   const l = ctx.listing, at = new Date().toISOString(), saved: string[] = [], failed: string[] = [];
-  const { data: who } = await db.from('members').select('name').eq('id', me).single();
+  const { data: who } = await db.from('members').select('name,email').eq('id', me).single();
   const by = String(who?.name || 'Admin').split(/\s+/)[0];
+  // Notes for Logan go to Depot > Feedback, whatever the page.
+  const forLogan = changes.filter((x) => x.target === 'logan');
+  for (const n of forLogan) {
+    const { error } = await db.from('ve_feedback').insert({ kind: 'suggestion', page_url: pageUrl, page_label: pageLabel || null, message: n.to.slice(0, 2000),
+      name: `${by} (via ${guideName})`, email: who?.email || null, member_signed_in: true, status: 'new', note: n.why ? 'Why: ' + n.why : null });
+    if (error) failed.push(`Note for Logan (${error.message.slice(0, 60)})`); else saved.push('Note for Logan');
+  }
+  if (!l) return { saved, failed };
   // Fields ve-outreach listing_fix already knows how to clean, check and log.
   const fixFields: Record<string, unknown> = {};
   for (const c of changes.filter((x) => x.target === 'listing' && !['name', 'email'].includes(x.field))) fixFields[c.field] = c.field === 'hours' ? c.hours : c.to;
@@ -227,6 +253,7 @@ Deno.serve(async (req) => {
   const pageUrl = clean(b.page_url, 500);
   if (!/^https?:\/\//.test(pageUrl)) return json({ error: 'page_url' }, 400);
   const ctx = await loadCtx(pageUrl);
+  const gKey = GUIDES[String(b.guide || '').toLowerCase()] ? String(b.guide).toLowerCase() : 'liz', guide = GUIDES[gKey];
 
   if (b.action === 'chat') {
     const msgs = (Array.isArray(b.messages) ? b.messages : []).slice(-20)
@@ -245,7 +272,7 @@ Deno.serve(async (req) => {
       const res: any = await client.beta.messages.create({
         model: MODEL, max_tokens: 3000, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
         output_config: { effort: 'low', format: { type: 'json_schema', schema: SCHEMA } },
-        system: SYSTEM, messages: turns,
+        system: systemFor(guide), messages: turns,
       } as any);
       if (res.stop_reason === 'refusal') return json({ error: 'refused' }, 422);
       out = JSON.parse((res.content || []).filter((x: any) => x.type === 'text').map((x: any) => x.text).join(''));
@@ -255,17 +282,16 @@ Deno.serve(async (req) => {
     }
     const changes = (out.changes || []).map((c: any, i: number) => normalize(ctx, c, i)).filter(Boolean) as Change[];
     const reply = clean(out.reply, 3000);
-    await db.from('ve_page_guide_log').insert({ member_id: me, page_url: pageUrl, listing_id: ctx.listing?.id || null, kind: 'chat', message: msgs[msgs.length - 1].content, reply, changes });
+    await db.from('ve_page_guide_log').insert({ member_id: me, page_url: pageUrl, listing_id: ctx.listing?.id || null, kind: 'chat', message: msgs[msgs.length - 1].content, reply, changes, result: { guide: gKey } });
     return json({ ok: true, reply, changes: changes.map(({ hours, ...c }) => c), listing: ctx.listing ? { name: ctx.listing.name, slug: ctx.listing.slug } : null });
   }
 
   if (b.action === 'apply') {
-    if (!ctx.listing) return json({ error: 'not_a_listing' }, 400);
     const list = (Array.isArray(b.changes) ? b.changes : []).slice(0, 30);
     const changes = list.map((c: any, i: number) => normalize(ctx, c, i)).filter(Boolean) as Change[];
-    if (!changes.length) return json({ error: 'nothing_to_apply' }, 400);
-    const result = await applyChanges(ctx, changes, me, token);
-    await db.from('ve_page_guide_log').insert({ member_id: me, page_url: pageUrl, listing_id: ctx.listing.id, kind: 'apply', changes, result });
+    if (!changes.length) return json({ error: ctx.listing ? 'nothing_to_apply' : 'not_a_listing' }, 400);
+    const result = await applyChanges(ctx, changes, me, token, pageUrl, clean(b.page_label, 120), guide.name);
+    await db.from('ve_page_guide_log').insert({ member_id: me, page_url: pageUrl, listing_id: ctx.listing?.id || null, kind: 'apply', changes, result: { ...result, guide: gKey } });
     return json({ ok: !result.failed.length, ...result });
   }
   return json({ error: 'unknown_action' }, 400);

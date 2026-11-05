@@ -5,16 +5,34 @@
  *
  * Tell the Guide what is wrong on the page; it answers, asks when it is unsure, and lists the exact changes (what it is now, what it
  * becomes). Tick the ones you want and press Apply. Server: ve-page-guide (chat proposes, apply re-checks and saves, each change logged).
- * The conversation is kept for the visit per page (sessionStorage ve_pg_<path>). "Send as feedback instead" opens the plain form. */
+ * The conversation is kept for the visit per page and Guide (sessionStorage ve_pg_<guide>_<path>). "Send as feedback instead" opens the plain form.
+ *
+ * Step 2 (2026-11-05): the page's own Guide. VEPageGuide.open({guide}) talks as that Guide (liz, maya, river, nori, dani, theo, kai,
+ * pascal); with no guide it reads the page: the Guide rail (#dgRail data-guide), the Resources tab's Guide, else Liz. For a super
+ * admin this file also puts a "Talk to <Guide>" button on every Guide panel it finds, now and as tabs draw: the Guide rail on a
+ * Guide page, the Partner Dashboard tour's narrator (.vgt-narr), and each Resources card (.gt-card). ve-feedback.js loads this file
+ * for super admins. On a page that is not a listing the Guide answers and files Notes for Logan (Depot > Feedback). */
 (function () {
   if (window.VEPageGuide) return;
   var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-page-guide';
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function pageUrl() { try { if (window.VEFeedback && VEFeedback.url) return VEFeedback.url(); } catch (e) {} return location.href; }
-  function key() { return 've_pg_' + location.pathname; }
+  var NAMES = { liz: 'Liz', maya: 'Maya', river: 'River', nori: 'Nori', dani: 'Dani', theo: 'Theo', kai: 'Kai', pascal: 'Pascal' };
+  // The Resources tab's Guide per card (ve-guide-tab.js GUIDES).
+  var GT = { 'vegan-dairy-guide': 'maya', 'vegan-restaurant-guide': 'liz', 'creator-guide': 'kai', 'nonprofit-guide': 'dani', 'nutrition-guide': 'theo',
+    'supermarket-guide': 'pascal', 'vegan-events-guide': 'river', 'group-partner': 'dani', 'welcome': 'dani' };
+  var G = 'liz';
+  function slugOf(name) { var k = String(name || '').trim().toLowerCase(); return NAMES[k] ? k : null; }
+  function detect() {
+    var r = document.getElementById('dgRail'); if (r && slugOf(r.getAttribute('data-guide'))) return slugOf(r.getAttribute('data-guide'));
+    var cards = document.querySelectorAll('.gt-card[data-gt]');
+    for (var i = 0; i < cards.length; i++) if (cards[i].offsetParent && GT[cards[i].getAttribute('data-gt')]) return GT[cards[i].getAttribute('data-gt')];
+    return 'liz';
+  }
+  function key() { return 've_pg_' + G + '_' + location.pathname; }
   function load() { try { return JSON.parse(sessionStorage.getItem(key()) || '[]'); } catch (e) { return []; } }
   function save(t) { try { sessionStorage.setItem(key(), JSON.stringify(t.slice(-30))); } catch (e) {} }
-  function pic() { try { if (window.VEGuideArt) return VEGuideArt('liz', 'square'); } catch (e) {} return 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261005_021226_51fc0dd1-aad1-45ee-ada3-f6cab13ed3a2_min.webp'; }
+  function pic() { try { if (window.VEGuideArt) { var u = VEGuideArt(G, 'square'); if (u) return u; } } catch (e) {} return 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261005_021226_51fc0dd1-aad1-45ee-ada3-f6cab13ed3a2_min.webp'; }
   function css() {
     if (document.getElementById('vepgStyle')) return;
     var st = document.createElement('style'); st.id = 'vepgStyle';
@@ -33,16 +51,19 @@
       '.vepg-f textarea{display:block;width:100%;box-sizing:border-box;min-height:70px;max-height:180px;resize:vertical;border:1px solid rgba(0,0,0,.22);border-radius:6px;padding:9px 12px;font:500 14px/1.45 inherit;font-family:inherit;color:#14261a;}' +
       '.vepg-f .row{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:8px;flex-wrap:wrap;}.vepg-f .go{background:var(--vb-accent,#1E7A3E);color:#fff;border:0;border-radius:6px;padding:11px 18px;font:800 14px/1 inherit;font-family:inherit;cursor:pointer;}' +
       '.vepg-f .go:disabled{opacity:.5;}.vepg-f .lnk{background:none;border:0;font:700 12.5px inherit;font-family:inherit;cursor:pointer;color:rgba(0,0,0,.6);text-decoration:underline;padding:0;}' +
+      '.vepg-talk{display:inline-flex;align-items:center;gap:6px;background:#fff;color:var(--vb-accent,#1E7A3E);border:1.5px solid var(--vb-accent,#1E7A3E);border-radius:6px;padding:8px 12px;font:800 13px/1.1 Montserrat,system-ui,sans-serif;cursor:pointer;margin:8px 0 0;}' +
+      '.vepg-talk:hover,.vepg-talk:focus-visible{background:var(--vb-accent,#1E7A3E);color:#fff;}#dgRail>.vepg-talk{align-self:flex-start;}' +
       '@media(max-width:560px){.vepg{width:100%;}}';
     document.head.appendChild(st);
   }
-  function open() {
-    css();
+  function open(o) {
+    o = o || {}; G = slugOf(o.guide) || detect(); css();
+    var N = NAMES[G], isListing = /^\/(dashboard\/)?directory\/[a-z0-9-]+\/?$/i.test(location.pathname);
     var turns = load(), busy = false;
-    var wrap = document.createElement('div'); wrap.className = 'vepg-wrap'; wrap.setAttribute('role', 'dialog'); wrap.setAttribute('aria-modal', 'true'); wrap.setAttribute('aria-label', 'Talk to Liz about this page');
-    wrap.innerHTML = '<div class="vepg"><div class="vepg-h"><img alt="" src="' + esc(pic()) + '"><div><b>Talk to Liz</b><span>About this page. Tell me what is wrong or out of date; I show you the changes before anything saves.</span></div><button type="button" class="x" aria-label="Close">&times;</button></div>' +
+    var wrap = document.createElement('div'); wrap.className = 'vepg-wrap'; wrap.setAttribute('role', 'dialog'); wrap.setAttribute('aria-modal', 'true'); wrap.setAttribute('aria-label', 'Talk to ' + N + ' about this page');
+    wrap.innerHTML = '<div class="vepg"><div class="vepg-h"><img alt="" src="' + esc(pic()) + '"><div><b>Talk to ' + esc(N) + '</b><span>' + (isListing ? 'About this page. Tell me what is wrong or out of date; I show you the changes before anything saves.' : 'About this page. Tell me what to change; I write it up for Logan and show you before it goes.') + '</span></div><button type="button" class="x" aria-label="Close">&times;</button></div>' +
       '<div class="vepg-log" aria-live="polite"></div>' +
-      '<form class="vepg-f" novalidate><textarea name="t" placeholder="For example: Samuel goes by Chef Sam. Use chefsam@therabbithole.life; the Gmail is old."></textarea>' +
+      '<form class="vepg-f" novalidate><textarea name="t" placeholder="' + (isListing ? 'For example: Samuel goes by Chef Sam. Use chefsam@therabbithole.life; the Gmail is old.' : 'For example: the Money tab should say what a booth usually costs.') + '"></textarea>' +
       '<div class="row"><span><button type="button" class="lnk" data-fb>Send as feedback instead</button> &middot; <button type="button" class="lnk" data-new>Start over</button></span><button type="submit" class="go">Send</button></div></form></div>';
     document.body.appendChild(wrap);
     var log = wrap.querySelector('.vepg-log'), f = wrap.querySelector('form'), ta = f.t, go = f.querySelector('.go');
@@ -66,7 +87,7 @@
       log.innerHTML = (turns.length ? '' : '<div class="vepg-m s">Tell me what needs to change on this page. You can type or use the mic.</div>') + turns.map(function (t, i) {
         if (t.role === 'user') return '<div class="vepg-m u">' + esc(t.text) + '</div>';
         return '<div class="vepg-m a">' + esc(t.text) + '</div>' + (t.changes && t.changes.length ? changeCard(t, i) : '');
-      }).join('') + (busy ? '<div class="vepg-m s">Liz is reading the page...</div>' : '');
+      }).join('') + (busy ? '<div class="vepg-m s">' + esc(N) + ' is reading the page...</div>' : '');
       log.scrollTop = log.scrollHeight;
     }
     log.addEventListener('click', function (e) {
@@ -75,9 +96,10 @@
       var picked = [].filter.call(box.querySelectorAll('input[data-j]'), function (x) { return x.checked; }).map(function (x) { return t.changes[+x.dataset.j]; });
       if (!picked.length) return;
       b.disabled = true; b.textContent = 'Applying...';
-      call({ action: 'apply', page_url: pageUrl(), changes: picked }).then(function (d) {
+      call({ action: 'apply', page_url: pageUrl(), page_label: document.title, guide: G, changes: picked }).then(function (d) {
         if (d && (d.saved || []).length) {
-          t.applied = 'Saved: ' + d.saved.join(', ') + '.' + ((d.failed || []).length ? ' Did not save: ' + d.failed.join(', ') + '.' : '') + ' Refresh the page to see it.';
+          var onlyNotes = d.saved.every(function (x) { return x === 'Note for Logan'; });
+          t.applied = 'Saved: ' + d.saved.join(', ') + '.' + ((d.failed || []).length ? ' Did not save: ' + d.failed.join(', ') + '.' : '') + (onlyNotes ? ' Logan has it in Depot > Feedback.' : ' Refresh the page to see it.');
         } else { b.disabled = false; b.textContent = 'Apply the ticked changes'; t.applied = ''; alert('That did not save' + (d && d.error ? ': ' + d.error : '') + '.'); return; }
         save(turns); draw();
       });
@@ -91,9 +113,9 @@
       e.preventDefault();
       var text = (ta.value || '').trim(); if (!text || busy) return;
       turns.push({ role: 'user', text: text }); ta.value = ''; busy = true; go.disabled = true; save(turns); draw();
-      var main = document.querySelector('main') || document.body, pageText = '';
+      var main = document.querySelector('#dgApp') || document.querySelector('main') || document.body, pageText = '';
       try { pageText = (main.innerText || '').replace(/\n{3,}/g, '\n\n').slice(0, 6000); } catch (er) {}
-      call({ action: 'chat', page_url: pageUrl(), page_label: document.title, page_text: pageText,
+      call({ action: 'chat', page_url: pageUrl(), page_label: document.title, page_text: pageText, guide: G,
         messages: turns.map(function (t) { return { role: t.role, text: t.text }; }) }).then(function (d) {
         busy = false; go.disabled = false;
         if (!d || !d.ok) turns.push({ role: 'assistant', text: d && d.error === 'admins_only' ? 'This chat is for super admins. Use Send as feedback instead.' : 'I could not answer that just now (' + (d && d.error || 'error') + '). Try again in a moment.' });
@@ -104,5 +126,33 @@
     ta.addEventListener('keydown', function (e) { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) f.requestSubmit(); });
     draw(); setTimeout(function () { ta.focus(); }, 30);
   }
-  window.VEPageGuide = { open: open };
+  // "Talk to <Guide>" on every Guide panel, for a super admin signed in as themselves.
+  function isAdmin() { try { var m = window.VEAuth && VEAuth.isLoggedIn && VEAuth.isLoggedIn() && VEAuth.getMember && VEAuth.getMember(); return !!(m && m.is_superadmin); } catch (e) { return false; } }
+  function talkBtn(g) { return '<button type="button" class="vepg-talk" data-vepg-talk="' + g + '">Talk to ' + esc(NAMES[g]) + '</button>'; }
+  function attach() {
+    if (!isAdmin()) return;
+    css();
+    var rail = document.getElementById('dgRail');
+    if (rail && !rail.querySelector('[data-vepg-talk]')) {
+      var g = slugOf(rail.getAttribute('data-guide')) || 'liz', after = document.getElementById('dgPlay') || document.getElementById('dgBubble');
+      if (after && after.parentNode === rail) after.insertAdjacentHTML('afterend', talkBtn(g)); else rail.insertAdjacentHTML('beforeend', talkBtn(g));
+    }
+    [].forEach.call(document.querySelectorAll('.vgt-narr'), function (n) {
+      if (n.querySelector('[data-vepg-talk]') || !n.querySelector('.vgt-name b')) return;
+      var g = slugOf(n.querySelector('.vgt-name b').textContent) || 'liz';
+      n.insertAdjacentHTML('beforeend', talkBtn(g));
+    });
+    [].forEach.call(document.querySelectorAll('.gt-card[data-gt]'), function (c) {
+      var g = GT[c.getAttribute('data-gt')]; if (!g || c.querySelector('[data-vepg-talk]')) return;
+      var go = c.querySelector('.gt-go'); if (go) go.insertAdjacentHTML('afterend', ' ' + talkBtn(g));
+    });
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('[data-vepg-talk]'); if (!b) return;
+    e.preventDefault(); e.stopPropagation(); open({ guide: b.getAttribute('data-vepg-talk') });
+  }, true);
+  var pend = null;
+  try { new MutationObserver(function () { if (pend) return; pend = setTimeout(function () { pend = null; attach(); }, 300); }).observe(document.body, { childList: true, subtree: true }); } catch (e) {}
+  attach();
+  window.VEPageGuide = { open: open, attach: attach };
 })();

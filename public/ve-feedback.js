@@ -52,7 +52,7 @@
     o = o || {};
     if (!o.form && isAdmin()) {
       if (window.VEPageGuide) { VEPageGuide.open(); return; }
-      var sc = document.createElement('script'); sc.src = '/public/ve-page-guide.js?v=1'; sc.onload = function () { VEPageGuide.open(); }; document.head.appendChild(sc); return;
+      loadGuide(function () { VEPageGuide.open(); }); return;
     }
     css();
     var m = signedIn() ? me() : null, kind = '';
@@ -96,6 +96,15 @@
         .catch(function () { go.disabled = false; go.textContent = 'Send feedback'; err.textContent = 'That did not go through. Try again in a moment.'; });
     });
   }
+  // The page-guide script, loaded once. For a super admin it also puts "Talk to <Guide>" on the page's Guide panels (step 2).
+  var pgLoading = null;
+  function loadGuide(cb) {
+    if (window.VEPageGuide) { if (cb) cb(); return; }
+    if (!pgLoading) { pgLoading = []; var sc = document.createElement('script'); sc.src = '/public/ve-page-guide.js?v=2'; sc.onload = function () { pgLoading.forEach(function (f) { f(); }); }; document.head.appendChild(sc); }
+    if (cb) pgLoading.push(cb);
+  }
+  function adminPanels() { if (isAdmin()) loadGuide(); }
+  if (document.readyState === 'complete') setTimeout(adminPanels, 1200); else window.addEventListener('load', function () { setTimeout(adminPanels, 1200); });
   btnCss();
   window.VEFeedback = { open: open, button: button, url: here };
   document.addEventListener('click', function (e) { var a = e.target.closest && e.target.closest('[data-ve-feedback]'); if (!a) return; e.preventDefault(); open(); });
