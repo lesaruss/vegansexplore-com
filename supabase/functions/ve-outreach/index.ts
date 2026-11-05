@@ -175,7 +175,10 @@ async function lookup(website: string): Promise<{ email: string | null; source: 
 // ---- Sending ----
 const SITE = 'https://vegansexplore.com';
 const FN_BASE = `${SUPABASE_URL}/functions/v1`;
-const BRAND = 'lesaruss';            // Sean A. Russell <sean@mail.lesaruss.ai>, replies to contact@lesaruss.com
+const BRAND = 'lesaruss';            // people lists; business lists send as their own sender_brand (ve-business-outreach, unsubscribe on vegansexplore.com)
+const BIZ_BRAND = 've-business-outreach';
+async function listBrand(slug: string) { const { data } = await db.from('ve_outreach_cities').select('sender_brand').eq('community_slug', slug).maybeSingle(); return String(data?.sender_brand || BRAND); }
+// Both send as Sean A. Russell <sean@mail.lesaruss.ai>, replies to contact@lesaruss.com
 const PER_TICK = 6;                  // 6 every 10 minutes: a day of 30 goes out over about an hour, not in one burst
 async function secretValue(key: string): Promise<string | null> {
   const { data } = await db.from('lesaruss_secrets').select('value').eq('key', key).maybeSingle();
@@ -278,7 +281,8 @@ async function tick() {
   if (room <= 0) return { synced, sent: 0, note: 'warm-up allowance used for today' };
   const { data: due } = await db.rpc('ve_outreach_due', { p_limit: 50 });
   const { data: today } = await db.rpc('ve_outreach_sent_today');
-  const { data: cities } = await db.from('ve_outreach_cities').select('community_slug,daily_cap,program');
+  const { data: cities } = await db.from('ve_outreach_cities').select('community_slug,daily_cap,program,sender_brand');
+  const brandOf = new Map((cities || []).map((c) => [c.community_slug, c.sender_brand || BRAND]));
   const { data: tpl } = await db.from('ve_outreach_templates').select('program,step,day_offset').order('step');
   const programOf = new Map((cities || []).map((c) => [c.community_slug, c.program || 'business-outreach']));
   const capLeft = new Map((cities || []).map((c) => [c.community_slug, c.daily_cap - Number((today || []).find((t: { community_slug: string }) => t.community_slug === c.community_slug)?.n || 0)]));
@@ -292,7 +296,7 @@ async function tick() {
     try {
       const m = await build(c as Contact, step);
       const first = (c.contact_name || '').trim().split(/\s+/)[0] || undefined;
-      const res = await emailSend({ brand: BRAND, campaign_ref: `ve-outreach-${c.id}-${step}`, list_ref: `ve-outreach:${c.community_slug}`,
+      const res = await emailSend({ brand: brandOf.get(c.community_slug) || BRAND, campaign_ref: `ve-outreach-${c.id}-${step}`, list_ref: `ve-outreach:${c.community_slug}`,
         subject: m.subject, html: m.html, text: m.text, recipients: [{ email: c.email, first_name: first, name: c.contact_name || undefined }] });
       const result = res?.results?.[0]?.result || (res?.ok ? 'unknown' : 'failed');
       if (result === 'sent' || result === 'already_sent') {
@@ -362,7 +366,7 @@ async function onboardingTick() {
     const m = r?.[0];
     if (!m) { await db.from('ve_partner_onboarding').update({ step: 3, next_send_at: null }).eq('listing_id', o.listing_id); continue; }
     const { data: l } = await db.from('listings').select('name').eq('id', o.listing_id).single();
-    const res = await emailSend({ brand: BRAND, campaign_ref: `ve-onboard-${o.listing_id}-${step}`, list_ref: 've-onboarding',
+    const res = await emailSend({ brand: BIZ_BRAND, campaign_ref: `ve-onboard-${o.listing_id}-${step}`, list_ref: 've-onboarding',
       subject: m.subject, html: toHtml(m.body, l?.name || 'your business').replace('is listed in the Vegans Explore Directory', 'is a Vegans Explore partner'),
       text: toText(m.body, l?.name || 'your business').replace('is listed in the Vegans Explore Directory', 'is a Vegans Explore partner'),
       recipients: [{ email: m.to_email, name: o.contact_name || undefined }] });
@@ -555,7 +559,7 @@ Deno.serve(async (req) => {
       const { data: c } = await db.from('ve_outreach_contacts').select('id,listing_id,community_slug,email,contact_name,segment,step,link_code').eq('id', body.contact_id).single();
       if (!c) return json({ error: 'contact' }, 400);
       const m = await build(c as Contact, step, true);
-      const res = await emailSend({ brand: BRAND, campaign_ref: `ve-outreach-test-${c.id}-${step}`, subject: '[Test] ' + m.subject, html: m.html, text: m.text,
+      const res = await emailSend({ brand: await listBrand(c.community_slug), campaign_ref: `ve-outreach-test-${c.id}-${step}`, subject: '[Test] ' + m.subject, html: m.html, text: m.text,
         test_to: [to], dry_run: dry, recipients: [{ email: to, first_name: (c.contact_name || '').split(/\s+/)[0] || undefined }] });
       return json({ ok: !!res?.ok, to, result: res?.results?.[0]?.result || res?.error || res?.errors, preview: dry ? res?.preview : undefined });
     }
