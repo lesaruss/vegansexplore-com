@@ -29,13 +29,36 @@ we have systems, so we don't waste time and usage." Canon `canon-template-gate` 
 First case: `/guides/taste` had been written from a blank file twice; on 2026-11-02 it was rebuilt on the Welcome Guide (see Earn your
 Passport, part 3).
 
-## Liz speaks on every page (LOCKED standard, Sean, 2026-11-04, playbook `ve-audio-accessibility`)
+## A Guide speaks on every page (LOCKED standard, Sean, 2026-11-04, corrected 2026-11-05, playbook `ve-audio-accessibility`)
 
 "I just want Liz to speak on each page. So the same voice that we have for Liz... create a script for the first page and any page that doesn't
 have audio. I just kind of read what you put." Sean's reason: King Mustafa (water and hydration) has a reading disability, Sean knows people in
 the community who cannot read well, and others will not read a page. It is not an accessibility widget or a "Listen" button.
 
-- **Every page a person can land on has a script for Liz** and, once Sean approves it, her recording in her roster-profile voice (Guide voices
+- **Corrected 2026-11-05 (Sean): not Liz everywhere. A Guide on every page.** "Liz doesn't need to be on every page. A guide needs to be on every page. So if
+  River is the guide for the events, then it should be him that's reading it... the experience on each page with the guide should be one of our guide guiding them
+  through it." Each page is voiced by **its own Guide** (who leads which Guide: the Guide banners note under Guides are mini apps; Liz on the Restaurant Guide, River on
+  the Events Guide), in the Guide's own words, guiding, never a reader of the screen. This version: a **still picture** of the Guide beside the line (no animation; B-roll
+  and animation come later), and the picture may change from tab to tab, **outfits mixed up to fit what is going on** (Sean: "They don't have to be wearing the same
+  outfit every single time").
+- **The Events Guide is the first (2026-11-05, Sean approved V1):** River speaks every tab in his roster-profile voice (`btaSeNTVh1pGx4pjFzub`), 29 recordings in
+  `vegan-media/media/voices/events-guide/river-<tab>-v1.mp3` and `river-<tab>-member-v1.mp3` (Gear is one line for everyone), each checked word for word with `stt`, over a
+  still of him for each tab in an outfit that fits it (`public/guides/events-guide/still-<tab>.jpg`, Higgsfield, My list reuses Overview). Each tab's `say` and `sayMember`
+  equal its recording (`TABS` in `guide-scripts/vegan-events-guide.js`; change a line, record `-v2`). Play is right under his name; nothing plays until pressed, then each
+  tab plays until Pause. **Every Guide is also an intake** (Sean: "Every time somebody suggests something, that builds our directory"): Venue and Vendors ask for one we're
+  missing (Join the Directory's Add it), and Gear has **Missing something?**, a suggestion sent to `ve-feedback` as kind missing (Depot > Feedback and the Inbox).
+  The Events Guide's tabs are **one dropdown at every width** (numbered, locks kept; `drawMenu`, `setDD`), its join button reads **Take survey**, and on phones the
+  bubble beside River is as tall as his picture and scrolls (`.ev-bub-in`). **On branch `claude/funny-cori-thdm61`, not yet on `main`** (2026-11-05). **Merged to `main` 2026-11-05** (cefdadf). **The 15 tabs are 6 groups** (Sean, 2026-11-05:
+  "15 is way too many... I approve"; `GROUPS` in the Guide script): Start here (the Overview); Plan it (Kinds, The plan, Money); Line it up (Venue,
+  Vendors, Gear); Run it (The word, Day of, After); Learn from hosts (Elephants, Hosts); Work with us (Claim, Sponsorship, Get access or My list).
+  The dropdown lists the 6 (each with its sections in small type), a group opens as a page of tiles (`#/g/<group>`), a section's crumb and the
+  dropdown name its group (Plan it > Money), old `#/<section>` links still work, and Back / Next walks Start here, each group page, then its
+  sections. River's lines for the 5 group pages (`GROUPS[].say`, approved by Sean 2026-11-05) are recorded as `river-g-<group>-v1.mp3`
+  (planit, lineup, runit, learn, together; each checked with `stt`), so Play shows on group pages (Start here keeps the Overview recording).
+  The tab once called Work with us is Sponsorship. **Live on `main`** (merge 37695b5, recordings wired 279ac81, checked at 1440 and 390 px).
+  **The Resources tab on Event Venues and Community > Events listings opens the Events Guide** (2026-11-05, main 29eb511; `vegan-events-guide` in `GUIDES`
+  and `MAP` of `public/ve-guide-tab.js`, a `door` Guide: "Free with a short survey", ownership from `ve-guide-unlock` status), checked live at 1440 and 390 px.
+- **Every page a person can land on has a script for its Guide** and, once Sean approves it, the recording in that Guide's roster-profile voice (Guide voices
   section; never a voice picked without Sean). A new page does not ship without its script. Redirect stubs, ad creatives and render frames are the exceptions.
 - **Logan writes the script, Sean reads and approves it, then it is recorded** (el-media tts, checked word for word with `stt`, `-v1.mp3`; a
   line's text must match its recording, and a change is a new `-v2`). Scripts live in `docs/proposals/liz-audio-scripts.md` until recorded.
@@ -3079,6 +3102,34 @@ claim unlocking top posts". Migration `20261103_listing_posts.sql`; edge functio
   post, no token 401, a non-admin refused on `admin_list`. Not yet seen in a browser: no preview deploy of the branch was checked.
 - Not built yet: Instagram only (no TikTok, YouTube or Facebook rows, the table allows `network` instagram), a Meta "Connect Instagram"
   button (real metrics, views and embeds, once the tokens are in), SEO data for the tab, and the other brands' listings.
+- **Index, in BrandDesk Social (Sean, 2026-11-05, playbook `ve-social-studio`)**: "a button next to content... an index of all the social content
+  that's been pulled, and a filtering system"; "stop using the gray background". BrandDesk > Vegans Explore > Social has an **Index** tab in the frame's
+  own Plan | Notes for Logan | Content row (HQ `public/branddesk/social.html`, added by `scripts/sync-branddesk-social.py` in lesaruss-hq so a re-sync keeps it;
+  the Depot's own Social page has none). It lists every post in `ve_listing_posts` (Featured by us and Their top posts) with search over captions, business names
+  and handles, filters for source, business, why it matched, status (Shown, Hidden by owner, Paused, Taken off) and sort, a post popup, and Take it off /
+  Put it back for featured posts (`ve-listing-posts` `admin_set`); a listing's own posts are the owner's to hide or pause. HQ `components/branddesk/SocialIndex.tsx`,
+  `app/api/branddesk/social-index/route.ts` (super admin only, reads the database, fetches nothing from Instagram or Apify), `?s=index` in the address, on a white
+  panel. Live on HQ `main` (b660a94, a5d53e2). Sean saw it on 2026-11-05 (he had been on a preview link before). **Round 1, the same day** (HQ main de6b36c,
+  2edf33d, 36bc2e0, f9764f3; checked as `vegan@` live, no script errors): **one card per post** (rows grouped by `shortcode`; the card names the post's own account,
+  else whoever the caption names first, `+N`, and "N tagged"); the lightbox is smaller text with the button row level with the bottom of the picture (the body is
+  `height:0;min-height:100%` and scrolls above the buttons; on phones it stacks); **thumbnails start where the photo starts** (Sean: "It should just be pushed towards
+  the top"): many posts are a photo inside a tall Instagram frame with plain bands, so `Pic` samples each stored picture once in the browser (`vegan-media` allows
+  cross-origin reads) and sets `object-position` to the first row that is not one flat color, cards and lightbox alike; **tags with an X** (Sean: collaborations tag
+  several businesses, and some, Animal Hero Kids, tag people only for reach): the lightbox lists the post's businesses as tags, the X sets that row `removed`
+  (`admin_set`), so the post leaves that business's Social tab and the rebuild never brings it back; a removed tag stays struck through with Undo; a listing's own
+  post shows Their post and has no X. Proven on real data (La Chia Vegana on Dina's post: off the public read, still off after a rebuild, put back). The Index never
+  falls back to Instagram's picture link (Picture not saved yet). Also fixed: React error 418 on `?s=index` (BrandHome read the address while rendering; it reads it
+  after load and draws the frame then). **The matcher, v2** (Sean: "go ahead and fix the matcher"; migration `20261105_listing_posts_matcher_v2.sql`): one listing per
+  handle and per website (the main listing over its locations, a person over their channel or book, any other listing over media, then votes, then oldest; it had put
+  PLANTA's posts on four listings and every person's on their YouTube listing too); a name only when written as a name (first real word capitalized, words joined by
+  spaces, apostrophes, quotes, hyphens, & or a period, never a comma or line break; `ve_lp_titled`) or as a handle (`@angie.sadeghi`); an @handle written in an older
+  caption counts as a tag when Instagram's own tag list missed it; `philly vegan` stopped. `ve_listing_posts_hits()` is the match without writing anything: preview a
+  rule change against it before rebuilding. New rows reuse a post's saved picture. Result: 1,657 rows (721 posts) became 1,338 rows (773 posts); the 56 posts with no
+  saved picture were read again through Apify (6 batches of 10, about $0.13; `refresh_ours_on` back to false, `refresh_batch` removed); every shown row's picture is in
+  `vegan-media`. **The paused guard, 2026-11-05**: with `paused` true on `vegansexplore` the 2:17 AM ET run fetched nothing (`last_fetch_at` null, 0 posts), but the
+  function's reply and Apify's run list were not read, so it is not proven; `paused` was set back to false at 4:09 AM ET and the 2:17 AM ET Nov 6 run is the first real
+  fetch. A headless login worked again (canon `agent-headless-page-verification`, replacement 2026-10-27: a one-time function mints the `vegan@` session into a file,
+  Playwright reads it, sign it out and stub the function after); this sandbox refuses `*.vercel.app`, so a branch preview cannot be looked at, but `hq.lesaruss.ai` can.
 
 ## The Nutrition Guide (Sean, 2026-10-31: "build the Nutrition Guide")
 
@@ -5154,6 +5205,8 @@ the distance. It will be a paid guide, but they get one theme park on it."
   Checked in a browser at 1440 and 390 px against the live function with a simulated phone location on Main Street.
   **Launched 2026-11-04** (Sean: "go, launch Magic Kingdom with River"; migration `20261104_theme_park_magic_kingdom_launch.sql`, applied through the connector; branch `claude/busy-heisenberg-8u7ia0`, playbook `ve-theme-park-guide`). Disney's plant-based list was re-checked against Sean's paste the same day: all 44 live items matched. Changes: Liberty Square Market added as a spot (no pin) with "Various snack options"; two items took Disney's wording (Curried Vegetable Crew Stew, Panna-Connie's Congo Lime Delight); spots with no live item (not on Disney's list) set to `gone`, kept not deleted (16 live spots, 45 live items); the `ve_guides` row `theme-park-guide` is published ($11 or 1,100 points, Magic Kingdom the free example); `noindex` off, in the sitemap (`GUIDES`), and a catalog card on Everyday (Theme Parks, River, Magic Kingdom free) that wears a flat icon, since no banner picture exists yet (a banner is Higgsfield credits, Sean's call; a live card with no `banner` falls back to its `icon` in `ve-guide-catalog.js`). Aloha Isle and Liberty Square Market have no pin ("Not pinned yet"). **On `main` at 357d43c9 and confirmed live 2026-11-04** (sitemap lists it, `noindex` gone, catalog card served). Open: a banner picture (Higgsfield credits, Sean's call), the two pins, the other five Wave 1 parks (Sean pastes Universal's terms and each park's own list), `ve_guide_votes` kinds for parks, and unproven: a report from inside the park, real phone GPS, a signed-in owner run, the $11 buy path.
   **Hand pins and the map polish, 2026-11-05** (Sean: "Save both as proposed", "Do the map polish", "Merge it to main"; playbook `ve-theme-park-guide`; migration `20261104_theme_park_magic_kingdom_hand_pins.sql`, applied through the connector; main 52e0e8b). Aloha Isle (28.41838, -81.58246) and Liberty Square Market (28.41955, -81.58250) are pinned by hand, `pin_source` `hand`: **estimates** from the park's layout and the neighbouring Google pins (within about 30 m of a verified pin), not checked against the park; Sean to confirm or send long-press coordinates. All 16 live spots are pinned. `public/ve-park-map.js`: pins that would overlap are spread apart (at most 70 px from their true spot; a displaced pin keeps a small dot and a thin line at its true place, `.vpm-lead`, `.vpm-true`), each land's name takes the first free spot (above, below, left, right) with no pin or other name on it, and the frame has more room (`PAD` 90). Checked live at 1440 and 390 px: no script errors, 16 pins, none outside the frame, 5 spread. The "Show me" corner button covering the phone's land chips is the Guide corner, not a bug. **Not done**: the template-gate screenshot of this Guide beside its parent (the Stadium & Arena Guide) at 1440 and 390 px, so Sean has not yet locked the look; the banner; the commit author on these commits is Claude, not Sean A. Russell (Sean has not said which to keep). Link: https://vegansexplore.com/guides/theme-park-guide#/venue/magic-kingdom.
+  **The illustrated park map, 2026-11-05** (Sean: "it's just dots on a grid... I want a visual... uniquely ours but true to the map", then "Go with 1, build the OpenStreetMap map"; playbook `ve-theme-park-guide`). Disney's map art is never copied or traced (their terms, our rule); the map is **our own drawing of OpenStreetMap** (ODbL): each land as its own colored area with an outline (OSM `place=locality` areas), gardens and woods, rockwork, water (Rivers of America, the castle moat, the lagoon), plazas, every walkway, the railroad, every building and the castle, with the pins and the you-are-here dot on top, at true scale. It is `ve_venues.layout.base` (`ve-venues` already returns `layout` for an open venue): decimetres east and north of `base.o` as flat lists, made by `scripts/theme-park/osm_layout.py` from the main OSM API (`/api/0.6/map.json` in four tiles; Overpass refused the database server with 406 and timed out, and the build session cannot reach OpenStreetMap), read and saved through the one-time `ve-once-osm-park` (now the 410 stub); the data is `docs/theme-park/magic-kingdom-osm-base.json` (149 KB, 58 KB compressed), migration note `20261105_theme_park_magic_kingdom_osm_base.sql`. `VEParkMap.svg(pins, {base})` frames the lands plus 35 m, swaps the grid for a 100 m scale bar, credits "Map data © OpenStreetMap contributors" on the map (and `/policies#terms`), keeps each land's name inside its land, and gives a land with no room (Liberty Square) a tag in its color with a line into it. The line under the map says it is our own drawing from OpenStreetMap, not an official park map. A park with no base keeps the grid. A new park: four tiles over it, the script with `--park "<OSM tourism=theme_park name>"`, save the same way. Checked at 1440 and 390 px against the live API with the local scripts (no errors, no sideways scroll). **Merged to `main` 2026-11-05 (2dbf1e3, Sean: "merge it to main and confirm live") and confirmed live**: the live script carries the base, the map draws the park (1,158 shapes) with the OSM credit on it, the caption reads "Our own drawing of the park from OpenStreetMap... Not an official park map", `/policies#terms` has the credit, no sideways scroll and no page errors at 1440 and 390 px. The template-gate screenshots beside the Stadium & Arena Guide were taken the same pass and sent to Sean (same family: header, tabs, $11 box, two-column venue view, map on the right).
+  **The restaurant list folds, with votes, 2026-11-05** (Sean: "everything is collapsed. With the voting, so you see them clearly. And it's not the super long scroll... when you click it... it brings it to the top... as you click the other one, it just replaces the one that's at the top... a clear button... that puts it back to one, two, three, four, five"; migration `20261105_park_spot_votes.sql`). Every restaurant beside the map is a card collapsed to its number, name, land, distance, its votes (a heart and the count) and a **+**; opening one (the **+**, its header, or its pin on the map) draws it first and open, the one opened before goes back to its place closed, and **&minus;** closes it. Over the list: **Sort** (Map order, Most votes, Nearest to you once the location is on; turning the location on switches Map order to Nearest) and **Clear** (everything closed, Map order, every land). State is `OPEN`, `SORT` in `guide-scripts/theme-park-guide.js`, kept per park; styles `.sa-fold`, `.sa-tog`, `.sa-listbar` in `guides/theme-park-guide.html`. **Votes** are `ve_guide_votes` kind `park_spot` (the spot's id) through `ve-cookbook` `gvotes` (counts for everyone) and `gvote` (the Guide's owners and super admins, as canon-ve-theme-park-guide says); signed out a vote opens the sign-in window, a signed-in non-owner is told voting comes with the Guide. Checked at 1440 and 390 px against the live data: 16 cards closed on load, the fifth moved to the top open, a second replaced it, a pin opened its card, Clear reset, no sideways scroll. The same pass fixed a source date that read "Invalid Date" (`monthOf`). Not proven yet: a real owner's vote end to end.
 
 ## Grocery stores and Vegan aisles (Sean, 2026-10-08)
 
@@ -6131,6 +6184,18 @@ client services $6,500 from 40 payments; Vegans Explore $6,416.02 all time from 
 how to tell Brooke), and the CPA's answers. Proven live
 2026-11-02 as Sean through a one-time function (`ve-once-rev-proof`, now the 410 stub): $12,916.02 all time from 97 payments, $2,358
 this year, $11 today; cached 0.3 s; a member who is not a super admin refused (403).
+
+## Client billing links (Sean, 2026-11-05, playbook `brooke-sellers`)
+
+A monthly subscription for one client on the **LESARUSS** Stripe account, with the card taken now and the first charge on a date we set. Built in HQ
+(lesaruss/lesaruss-hq main `ed0d443`): table `client_billing_plans` (migration `068_client_billing.sql`, RLS on, no policies), `lib/clientBilling.ts`, public page
+`hq.lesaruss.ai/pay/<token>`. A row is one client, one amount, one `first_charge_at`, `mode` test | live. The page shows what they pay and "Nothing is charged
+today. Your first charge is <date>"; the button opens Stripe Checkout with `trial_end` at that date (Stripe words it "Free for N days", which cannot be changed, so
+a plain sentence is under the button via `custom_text`). Confirmed on the return from Stripe (the page waits on `session_id`, never shows Add my card to someone who
+just paid) and by the LESARUSS.ai webhook (checkout kind `client_billing`). A new client is a new row; there is no staff form yet, so Logan makes the row. Test mode
+first, then set the row's `mode` to live. Never write "hosting" where a client reads it. **Not proven live**: a real (live) charge. Proven in test mode with a Stripe
+test card (the row went `paid`, subscription and customer saved). The claude.ai Stripe connector shows `connect_incomplete`, so a session cannot see or cancel anything in
+Stripe: cancelling a client's old subscription is Sean's. First use: Brooke Sellers, $200 a month from Nov 30, 2026 (her old subscription is on the Vegans Explore account).
 
 ## Three doors, one Welcome, campaigns on people (LOCKED by Sean 2026-11-03, playbooks `ve-pathways`, `ve-pricing-points-passport`)
 
