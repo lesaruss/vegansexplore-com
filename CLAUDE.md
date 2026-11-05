@@ -6182,6 +6182,18 @@ how to tell Brooke), and the CPA's answers. Proven live
 2026-11-02 as Sean through a one-time function (`ve-once-rev-proof`, now the 410 stub): $12,916.02 all time from 97 payments, $2,358
 this year, $11 today; cached 0.3 s; a member who is not a super admin refused (403).
 
+## Client billing links (Sean, 2026-11-05, playbook `brooke-sellers`)
+
+A monthly subscription for one client on the **LESARUSS** Stripe account, with the card taken now and the first charge on a date we set. Built in HQ
+(lesaruss/lesaruss-hq main `ed0d443`): table `client_billing_plans` (migration `068_client_billing.sql`, RLS on, no policies), `lib/clientBilling.ts`, public page
+`hq.lesaruss.ai/pay/<token>`. A row is one client, one amount, one `first_charge_at`, `mode` test | live. The page shows what they pay and "Nothing is charged
+today. Your first charge is <date>"; the button opens Stripe Checkout with `trial_end` at that date (Stripe words it "Free for N days", which cannot be changed, so
+a plain sentence is under the button via `custom_text`). Confirmed on the return from Stripe (the page waits on `session_id`, never shows Add my card to someone who
+just paid) and by the LESARUSS.ai webhook (checkout kind `client_billing`). A new client is a new row; there is no staff form yet, so Logan makes the row. Test mode
+first, then set the row's `mode` to live. Never write "hosting" where a client reads it. **Not proven live**: a real (live) charge. Proven in test mode with a Stripe
+test card (the row went `paid`, subscription and customer saved). The claude.ai Stripe connector shows `connect_incomplete`, so a session cannot see or cancel anything in
+Stripe: cancelling a client's old subscription is Sean's. First use: Brooke Sellers, $200 a month from Nov 30, 2026 (her old subscription is on the Vegans Explore account).
+
 ## Three doors, one Welcome, campaigns on people (LOCKED by Sean 2026-11-03, playbooks `ve-pathways`, `ve-pricing-points-passport`)
 
 Concept session with V, locked by Sean: "we can lock it" (canon `canon-ve-people-campaigns-doors`; migration
