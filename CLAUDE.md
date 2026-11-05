@@ -4754,6 +4754,23 @@ v1 history: the email-only reader level is retired (step 2 replaced it), and the
 - **The Restaurant Guide is ready to send, and the on-screen line is short (Sean, 2026-11-05, playbooks `ve-restaurant-guide`, `ve-audio-accessibility`; main `78935f0`; handoff `docs/handoff/2026-11-04-ve-restaurant-guide-liz-audio-invitation-lock.md`)**: the full recorded welcome had pushed Liz's Start the tour button off screen on laptops (the bubble grew to about 370 px under the footer). Fixed: in the desktop fit layout Play sits right under her name and a long line scrolls in its box, and a tab can carry `show`, a short line shown while its recording exists (Overview, What to expect, Try the demo). **Sean: short text in the box, the audio does the work**, so for those tabs the text need not equal the recording; the recordings are unchanged. Proven live: a signed-in member click-through (all ten tabs, Play on screen, audio plays, a challenge tick, Claim your page, Your dashboard, the demo pop-out; the tick is a real vote in `ve_guide_votes`, remove a test one) and a real `/go/bo-` click with a [TEST] contact (302 to the Guide with `?b=`, the Guide opens on the business; a bot browser is logged and not counted; a click makes a contact Interested only if it was emailed first, then routes it, Sean when the chapter has no Community Manager; test rows removed). To drive the live site as a member, a one-time function signs a one-hour token as `ve-switch-account` does, then goes back to the 410 stub, and the browser holds `ve_token` and `ve_member`. Liz's Events Guide scripts are drafted in `docs/proposals/liz-audio-scripts.md` for Sean to read, nothing recorded. Nothing has been sent and no city is on; what is left before sending is Sean's (approve the emails, turn a city on, read the pulled addresses by eye).
 - Rule change: every Guide is $11 or 1,100 points except the door Guides. The producer's dissent (one free clip for everyone) was declined.
 
+## Pre-Vegan Certification (LOCKED by Sean 2026-11-05, playbook `vegans-explore-initiative-business-certification`)
+
+Canon `canon-ve-pre-vegan-certification` (v2). **Nothing built, sent or charged.** Vegan-food verification, pass or fail, for named dishes and
+the kitchen practice behind them at one location, never "this restaurant is Vegan"; the lane for restaurants with Vegan options (100% Vegan
+restaurants stay in the Restaurant Guide lane). The standard to work from is the playbook record **STANDARD V1.2** (2026-11-05, locked by Sean
+from the Legal Research Report V1 he uploaded, AI-assisted research, not an attorney opinion): gates G1 to G8 all must pass; one public standard,
+no public levels and no Shared Equipment mark; every certified dish has a protected cooking path (a clean separate pan, pot or barrier counts;
+never shared fryer oil, cooking water or an uncleaned grill with animal products); a change to a dish stops its mark at once; suspension does not
+wait on intent; every critical staff question right; public registry with a live QR status page, never a failure log; records for the term plus 5
+years; the fee never buys the outcome; the pilot cohort (5 to 10, South Florida) is free and the price is set after the first two audits are
+timed; verifier, desk reviewer and approver are different people and the approver is a person. Stamp: "Plant-Based Dish, Pre-Vegan Certified",
+with N of M menu items certified and what else the restaurant serves. **Entity**: Sean is dissolving Vegans Explore Inc. (the nonprofit) from
+2026-11-05; LESARUSS Inc. is the default owner of the program and mark until counsel confirms, and the Vegans Explore Stripe account and anything
+billed through Vegans Explore Inc. must move first. **Work it from the playbook's A-to-Z WORK QUEUE record** (A Foundation, B Build, C Pilot,
+D Launch, Parked; GATE steps block what follows); anything not in the queue is a new idea for Sean, never built quietly. The Pre-Vegan
+Restaurant Guide copies `guides/vegan-restaurant-guide.html` (template gate).
+
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
 
 Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-venue-guides`). The Stadium & Arena
