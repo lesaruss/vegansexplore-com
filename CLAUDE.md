@@ -3142,8 +3142,12 @@ claim unlocking top posts". Migration `20261103_listing_posts.sql`; edge functio
   rule change against it before rebuilding. New rows reuse a post's saved picture. Result: 1,657 rows (721 posts) became 1,338 rows (773 posts); the 56 posts with no
   saved picture were read again through Apify (6 batches of 10, about $0.13; `refresh_ours_on` back to false, `refresh_batch` removed); every shown row's picture is in
   `vegan-media`. **The paused guard, 2026-11-05**: with `paused` true on `vegansexplore` the 2:17 AM ET run fetched nothing (`last_fetch_at` null, 0 posts), but the
-  function's reply and Apify's run list were not read, so it is not proven; `paused` was set back to false at 4:09 AM ET and the 2:17 AM ET Nov 6 run is the first real
-  fetch. A headless login worked again (canon `agent-headless-page-verification`, replacement 2026-10-27: a one-time function mints the `vegan@` session into a file,
+  function's reply and Apify's run list were not read then. **Proven later the same day (7 AM ET)**: the run's reply, still in `net._http_response`, was
+  `{"enrolled":0,"fetched":0,"results":[]}` with `scrape_on` true (`weeklyRun` selects only `paused = false`), Apify shows no run then, and `admin_fetch` on the row paused
+  for a minute answered `{"ok":false,"error":"paused"}` with no Apify run (the guard inside `fetchTheirs`), then unpaused. Both levels are proven. The cron
+  `ve-listing-posts-weekly` runs **every night** at 2:17 AM ET (`17 7 * * *`); a row is due once its last fetch is `refresh_days` (7) old, so the 2:17 AM ET Nov 6 run is
+  the first real fetch. **The X and Undo were clicked signed in as `vegan@` on hq.lesaruss.ai** the same morning (La Chia Vegana on Dina's post: removed at 6:52:49 AM ET,
+  shown at 6:53:16, no script errors). A headless login worked again (canon `agent-headless-page-verification`, replacement 2026-10-27: a one-time function mints the `vegan@` session into a file,
   Playwright reads it, sign it out and stub the function after); this sandbox refuses `*.vercel.app`, so a branch preview cannot be looked at, but `hq.lesaruss.ai` can.
 
 ## The Nutrition Guide (Sean, 2026-10-31: "build the Nutrition Guide")
@@ -6467,7 +6471,7 @@ stops landing.
 ## Deploy
 
 Push to `main` on `lesaruss/vegansexplore-com`. Vercel auto-deploys.
-Commit author must be `Sean A. Russell <contact@lesaruss.com>`.
+Commit author must be `Sean A. Russell <contact@lesaruss.com>`. Sean confirmed it on 2026-11-05 (sessions had been committing as Claude): author Sean A. Russell, Claude in the `Co-Authored-By` line; if a push is refused for the author, use Claude for that push only and say so.
 Vercel project: `vegansexplore-com`, team: `team_G2qO2cUYl8ZmeOMaamFvY8C6`.
 
 ## Vegan sourcing: one directory, two Guides (LOCKED by Sean 2026-11-04, playbook `ve-vegan-sourcing-guide`)
