@@ -56,6 +56,8 @@ the community who cannot read well, and others will not read a page. It is not a
   sections. River's lines for the 5 group pages (`GROUPS[].say`, approved by Sean 2026-11-05) are recorded as `river-g-<group>-v1.mp3`
   (planit, lineup, runit, learn, together; each checked with `stt`), so Play shows on group pages (Start here keeps the Overview recording).
   The tab once called Work with us is Sponsorship. **Live on `main`** (merge 37695b5, recordings wired 279ac81, checked at 1440 and 390 px).
+  **The Resources tab on Event Venues and Community > Events listings opens the Events Guide** (2026-11-05, main 29eb511; `vegan-events-guide` in `GUIDES`
+  and `MAP` of `public/ve-guide-tab.js`, a `door` Guide: "Free with a short survey", ownership from `ve-guide-unlock` status), checked live at 1440 and 390 px.
 - **Every page a person can land on has a script for its Guide** and, once Sean approves it, the recording in that Guide's roster-profile voice (Guide voices
   section; never a voice picked without Sean). A new page does not ship without its script. Redirect stubs, ad creatives and render frames are the exceptions.
 - **Logan writes the script, Sean reads and approves it, then it is recorded** (el-media tts, checked word for word with `stt`, `-v1.mp3`; a
