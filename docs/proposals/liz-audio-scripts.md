@@ -52,5 +52,137 @@ Recorded with Vegan spelled "Veegan". Each line is about 20 seconds or less. Bef
 - **The Top challenges screen:** "The top 10 things Vegan businesses run into. This is not a review of your business. It is a checklist of the most common challenges. Tick the ones you relate to. The ranking comes from everyone who uses this Guide."
 - **Demo steps:** your page as visitors see it; your dashboard; Insights; your page; menu; ads and opportunities; your audit.
 
-## To record (after you approve)
-New or changed, needs a recording in Liz's roster-profile voice: 1, 2, 3, 5, 6, 7b, 8, 9. Already recorded and unchanged: 4, 7, 10, 11, 12.
+## Recorded 2026-11-04 (Sean approved the script; playbook `ve-restaurant-guide`)
+Liz's roster-profile voice `IUMUPi350HfIhyzUBJB3`, `eleven_multilingual_v2`, Vegan spelled "Veegan", el-media `tts` called from the database (pg_net),
+each checked word for word with el-media `stt` (differences: punctuation, "guide" lowercase, "stop anytime", "Greenleaf"). In `vegan-media/media/liz/restaurant-guide/`:
+`door-overview-v2` (1), `door-audit-v2` (2), `door-expect-v1` (3), `door-overview-member-v1` (5), `door-fixes-v1` (6), `door-dashboard-v1` (7b),
+`door-featured-v2` (8), `door-demo-v2` (9). A changed line is a new version, so the four that replace older clips are `-v2`; the old `-v1` files stay.
+Wired in `AUDIO_V` (visitor: overview, audit, expect, join) and `AUDIO_M` (member: overview, fixes, dashboard, featured, demo, next) in the Guide script,
+with each tab's `say` set to the script text. Later the same day: `door-pulse-v1` (7), `door-promos-v1` (10) and `door-mylist-v1` (11), checked the same way (My list: "Everything you saved is right here. Top challenges, interviews, and promotions..." is punctuation only). Every tab now has a recording.
+
+---
+
+# River's script, Guide 2: The Vegan Events Guide (playbook `ve-audio-accessibility`, Guide `ve-events-guide`)
+
+**Voice corrected 2026-11-05 (Sean): River reads it.** The standard is a Guide on every page, voiced by that page's own Guide, not Liz everywhere. River leads the
+Events Guide, so these are his lines, guiding the host through it. This version is his voice over a still picture of him, changing from tab to tab, his outfit
+mixed up to fit the tab (a rain poncho on Day of, an apron on Vendors). Animation and B-roll come later.
+
+Drafted by Logan 2026-11-04 for Sean to read and approve. **Nothing here is recorded or wired.** Why this Guide next: it is the other door Guide (free with
+its event survey, launched 2026-11-03), so it carries the same funnel as the Restaurant Guide and has the most silent tabs of any live Guide.
+Each line is written from what the screen shows today (checked against `guide-scripts/vegan-events-guide.js`). Vegan is spelled "Veegan" only at recording time.
+No counts of chapters, no promised survey length (the Restaurant Guide rule), no points amounts. Under 20 seconds each. A changed line is a new `-v2`.
+
+## Visitor (not yet a member): what is open, what opens with the survey
+
+**1. Overview** (CHANGED: was River's one line)
+"Hey, I'm River. This is the Vegan Events Guide, for anyone hosting a Vegan event: a potluck, a market, a festival, a dinner. Some of it is open to everyone right now: the break-even worksheet, venues and vendors near you, the gear list, and what to do when it rains. The rest opens when you take the short event survey. It's free, it earns you points, and it makes you a member."
+
+**2. Kinds** (CHANGED)
+"A potluck, a market, a festival, a dinner. Each kind costs differently, grows differently, and goes wrong in its own way. You can see every kind here. What each one costs and what usually goes wrong opens with the survey."
+
+**3. The plan** (CHANGED)
+"The plan counts down from twelve weeks before your event to the day after, so nothing important gets left to the last minute. The full checklist, to tick off, copy and print, opens with the survey."
+
+**4. Money** (CHANGED)
+"Before you set a ticket price, work out where your event breaks even. The worksheet is open for you now, and your numbers stay on this device. If you sell tickets through a Group Partner, we take five percent on paid tickets and nothing on free events. The full budget and pricing guide opens with the survey."
+
+**5. Venue** (CHANGED)
+"Here are event venues from our Directory, and the places where Vegan events were held this year. Pick your chapter to see yours. Know a venue we're missing? Add it, and it helps every host after you. What to ask before you sign opens with the survey."
+
+**6. Vendors** (CHANGED)
+"Vegan vendors, food trucks and caterers in your chapter. Pick your chapter to see them. How to choose them and what to put in writing opens with the survey."
+
+**7. Gear** (CHANGED, same for members)
+"Everything you'd pack for an event, from canopy weights to a card reader. Tap any item to shop for it."
+
+**8. The word** (CHANGED)
+"Start by putting your event on our calendar. Drop in your flyer and we'll read it for you. You can also suggest it to your chapter's Daily Pulse. The timeline of when to post and what to say opens with the survey."
+
+**9. Day of** (CHANGED)
+"What to do when it rains is open to everyone, along with the other things that can turn your day. The hour-by-hour run of show, your helpers' jobs and the door open with the survey."
+
+**10. After** (CHANGED)
+"The day after is when your next event gets made: the thank yous, the recap, the numbers to write down, and a few questions for your guests. It opens with the survey."
+
+**11. Elephants** (CHANGED)
+"The things hosts worry about and rarely say out loud: no-shows, vendors losing money, a venue that isn't Vegan. Each one comes with what to do. They open when you take the survey."
+
+**12. Hosts** (CHANGED)
+"Hosts who've done it, on our shows. Play any episode right here. And if you've hosted an event, you can tell us your story by voice, and the best become Host Notes on the Vegans Explore Podcast. Recording opens once you're a member."
+
+**13. Claim** (CHANGED)
+"Claim what's yours: your event on our calendar, your group or venue in the Directory, and your own profile. The steps open when you take the survey."
+
+**14. Work with us** (CHANGED)
+"We can sponsor your event, in marketing, never cash. You give us a little space at your event, and we put our community and our channels behind it. Every application starts with the free event survey, and we review them against each other, so it's never automatic."
+
+**15. Get access** (CHANGED: matches the screen, which offers both ways)
+"There are two ways through, and both make you a Vegans Explore member. Take the free event survey, with points for every answer, or get the eleven dollar Passport. What to do when it rains stays open to everyone either way."
+
+## Member (after the survey or the $11): walking through what they have
+
+Mostly River's existing member lines, kept word for word where they are true; only the contractions are spoken.
+
+**1. Overview** (CHANGED)
+"Welcome in. The whole Guide is yours. Start with the plan, work through each tab as your date gets closer, and come back before every event. Everything you save goes in My list."
+
+**2. Kinds** (existing)
+"Pick the kind of event you're planning. Each one tells you what it costs, how big it gets, and what usually goes wrong."
+
+**3. The plan** (existing)
+"Tick things off as you go. It saves on this device, and you can copy it or print it for your team."
+
+**4. Money** (existing)
+"Your costs, your income, and how to set a price. Run the worksheet before you set a ticket price."
+
+**5. Venue** (existing)
+"Find a venue near you, then take the questions with you when you visit. Watch for the red flags."
+
+**6. Vendors** (existing)
+"Find vendors here, use the application questions, and put the agreement in writing."
+
+**7. Gear:** same line as the visitor's.
+
+**8. The word** (existing)
+"Follow the timeline, use every channel on the list, and put your event on our calendar first."
+
+**9. Day of** (existing)
+"The run of show, who does what, the door and safety. And what to do when it rains."
+
+**10. After** (existing)
+"Thank everyone, post the recap, write down the numbers, and set the next date."
+
+**11. Elephants** (existing)
+"Every one of these has happened to someone. Read them before your next event, not after."
+
+**12. Hosts** (existing)
+"Hear from hosts who've done it, and tell us your own story. Approved stories earn you points."
+
+**13. Claim** (existing)
+"Claim what's yours: the event on our calendar, your group or venue in the Directory, and your own profile. Then apply for a sponsorship."
+
+**14. Work with us** (CHANGED)
+"Here's what a sponsorship from us looks like. If your event qualifies, apply right here. Every application is reviewed against the others, so apply early."
+
+**15. My list** (existing)
+"Everything you saved is here: sections, venues, vendors and episodes."
+
+## Four things for Sean to decide (my defaults, used unless you say otherwise)
+
+1. **Whose voice. DECIDED 2026-11-05 (Sean): River**, the Events Guide's own Guide, over a still picture of him that changes by tab, outfits mixed up.
+2. **Money on the first visit.** Get access (visitor 15) says "eleven dollar Passport" because that screen does. The Restaurant Guide keeps money talk out of the first
+   visit. Default: keep it on Get access only, since the screen says it and a line that left it out would not match.
+3. **Gear.** Every item is a tracked Amazon link with our tag. Default: no disclosure line in the recording; a short on-screen "we may earn a small commission" is the
+   place for it, which I would add to the page separately.
+4. **Order.** After the Events Guide: Creator, Nonprofit, Nutrition, Stadium and Arena, Airport, Theme Park, Dairy (already has Maya's clips), Supermarket, then the main pages.
+
+## Recording plan once approved
+River's roster-profile voice `btaSeNTVh1pGx4pjFzub` (read it from his HQ roster profile before recording), `eleven_multilingual_v2`, Vegan spelled "Veegan", el-media `tts`
+from the database (pg_net, token read inside SQL), two at a time, each checked word for word with `stt`; files `vegan-media/media/river/events-guide/door-<tab>-v1.mp3`
+(visitor) and `door-<tab>-member-v1.mp3` where a member line differs;
+wire as `AUDIO_V` and `AUDIO_M` like the Restaurant Guide, each tab's on-screen text set equal to its line (or a short `show` line). Nothing autoplays.
+
+**Still pictures (this version):** one still of River per tab, in our illustration style from his current art (short twists with a fade), his outfit fitting the tab,
+no other brand's logos, every finger in frame, his face never covered. Made in Higgsfield (`nano_banana_pro`, about 2 credits each, about 30 credits for 15 tabs),
+shown to Sean before they go in, stored at 960 px in `vegan-media/media/river/events-guide/still-<tab>.jpg`.

@@ -350,7 +350,10 @@
       html.dg-fit .dg-app{flex:1 1 auto;min-height:0;}
       html.dg-fit .dg-main{overflow-y:auto;scrollbar-width:thin;padding-right:6px;}
       html.dg-fit .dg-rail{overflow:hidden;}
-      html.dg-fit .dg-maya{aspect-ratio:auto;flex:1 1 auto;min-height:150px;max-height:320px;}
+      html.dg-fit .dg-maya{aspect-ratio:auto;flex:1 1 auto;min-height:96px;max-height:320px;}
+      /* Liz's lines are full scripts now: the Play button comes right under her name so it is always on screen, and a long line scrolls inside its own box (Sean, 2026-11-04: no Play showing on the first page). */
+      html.dg-fit .dg-maya{order:0;} html.dg-fit .dg-namebar{order:1;flex:none;} html.dg-fit .dg-play{order:2;flex:none;}
+      html.dg-fit .dg-bubble{order:3;flex:0 1 auto;min-height:84px;overflow-y:auto;scrollbar-width:thin;} html.dg-fit .dg-tour{order:4;flex:none;}
       html.dg-fit .ve-footer-inner{padding-top:14px !important;padding-bottom:14px !important;}
     }
     @media (max-width:1180px){.dg-app{grid-template-columns:minmax(0,1fr) 280px;}.dg-swappv,.dg-cookpv,.dg-access{grid-template-columns:minmax(0,1fr);}}

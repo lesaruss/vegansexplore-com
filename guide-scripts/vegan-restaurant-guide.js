@@ -57,22 +57,22 @@
   // The tabs, in tour order, and what Liz says on each. A tab's `say` must match its recording (Sean approved every line,
   // 2026-10-10). `say` is for visitors (why get it), `sayMember` walks an owner of the Guide through what they have.
   var TABS = [
-    { k: 'overview', label: 'Overview', say: 'Hi, I\'m Liz, and welcome to the Vegans Explore Restaurant Guide. Thank you for what you do. This Guide does three things. It gives you a crash course in how Vegans Explore works. It shows you something new about your business. And it puts you one step closer to growing with us as we launch on January 1st. Here\'s how to start. Step one: tap Run my free check, and see how your place looks online. Step two: take the short survey. That makes you a member, and the rest of this Guide opens: the top challenges owners face, your page, your dashboard, and what\'s coming. It\'s free, no card, and you can stop any time.',
+    { k: 'overview', label: 'Overview', show: 'Hi, I\'m Liz. Press play and I\'ll walk you through it. Start with Run my free check.', say: 'Hi, I\'m Liz, and welcome to the Vegans Explore Restaurant Guide. Thank you for what you do. This Guide does three things. It gives you a crash course in how Vegans Explore works. It shows you something new about your business. And it puts you one step closer to growing with us as we launch on January 1st. Here\'s how to start. Step one: tap Run my free check, and see how your place looks online. Step two: take the short survey. That makes you a member, and the rest of this Guide opens: the top challenges owners face, your page, your dashboard, and what\'s coming. It\'s free, no card, and you can stop any time.',
       sayMember: 'Welcome in. Thank you for joining. Your business is the place to start. Then the top challenges, your page, your dashboard, and what\'s coming. Everything you save goes in My list, so you can pick up where you left off.' },
-    { k: 'audit', label: 'Your audit', say: 'Your Google listing, website, search and social are checked here, and the first things to work on are listed. Free.',
+    { k: 'audit', label: 'Your audit', say: 'This is your restaurant, and we\'ve already checked it. We looked at your Google listing, your website, how you show up in search, and your social. Here\'s what we found, and the first things to work on. It\'s free, and this check is just for you.',
       sayMember: 'Your free check is right here. Run it anytime. When you want us to go deeper, the full audit is an add-on.' },
-    { k: 'expect', label: 'What to expect', pre: 1, say: 'Here is what opens when you are in. Some of it is live and some is coming, and each one says which.' },
+    { k: 'expect', label: 'What to expect', pre: 1, show: 'Here\'s what opens when you\'re in. Press play and I\'ll explain.', say: 'Here\'s what opens when you\'re in. The top challenges: the things Vegan business owners run into, so you can tick the ones that sound like you. Your page: it already exists, and you can claim it. Your dashboard: how many people look at your page. Our interviews with other owners. And the campaigns and events that bring people to your door. Some of this is live now and some is coming, and each one tells you which. When you\'re ready, take the short survey.' },
     { k: 'fixes', label: 'Top challenges', after: 1, say: 'These are the top ten things Vegan businesses run into. This isn\'t a review of your restaurant. It\'s a checklist of the most common ones. Tick the ones you relate to, and you\'ll see which come up most for owners. Open any one to see what to do this week.',
       sayMember: 'These are the top ten things Vegan businesses run into. This isn\'t a review of your restaurant. It\'s a checklist of the most common ones. Tick the ones you relate to, and you\'ll see which come up most for owners. Open any one to see what to do this week.' },
-    { k: 'pulse', label: 'Pulse', after: 1, say: 'Here are our interviews with Vegan business owners: what worked, what didn\'t, and the research behind it. New ones keep coming.',
+    { k: 'pulse', label: 'Pulse', after: 1, say: 'Every business interview we\'ve recorded is here, with the research. Play any of them right here. We keep adding more.',
       sayMember: 'Every business interview we\'ve recorded is here, with the research. Play any of them right here. We keep adding more.' },
-    { k: 'featured', label: 'Claim your page', after: 1, say: 'Your page already exists. Claiming makes it yours: your hours, photos and menu link, changed whenever you like.',
-      sayMember: 'Here\'s your Directory page. Claim it, keep your hours and photos fresh, and see who\'s finding you on your Partner Dashboard.' },
+    { k: 'featured', label: 'Claim your page', after: 1, say: 'This is your page, just as members see it. It\'s already in the Directory. Click around. When you claim it, it\'s yours: your hours, your photos and your menu link, changed whenever you like.',
+      sayMember: 'This is your page, just as members see it. It\'s already in the Directory. Click around. When you claim it, it\'s yours: your hours, your photos and your menu link, changed whenever you like.' },
     { k: 'dashboard', label: 'Your dashboard', after: 1, say: 'This is your dashboard. It shows how many people look at your page, where they come from, and what they do next. It opens fully once you claim your page.',
       sayMember: 'This is your dashboard. It shows how many people look at your page, where they come from, and what they do next. It opens fully once you claim your page.' },
-    { k: 'demo', label: 'Try the demo', after: 1, say: 'This is a sample restaurant, so you can see what a page and its dashboard look like. Nothing here can be saved. Yours starts with your own page.',
-      sayMember: 'This is a sample restaurant, so you can see what a page and its dashboard look like. Nothing here can be saved.' },
-    { k: 'promos', label: 'Promotions', after: 1, say: 'We run campaigns, events, features and ads that bring members through your door. Here\'s what each one does for a restaurant.',
+    { k: 'demo', label: 'Try the demo', after: 1, show: 'A sample restaurant to look around. Pick a step. Press play for the tour.', say: 'This is Green Leaf Kitchen, a sample restaurant, so you can look around without touching anything real. Pick a step and it opens full screen: the page as visitors see it, your dashboard, your Insights, your page, your menu, your ads and opportunities, and your audit. Close it whenever you\'re done. Yours starts with your own page.',
+      sayMember: 'This is Green Leaf Kitchen, a sample restaurant, so you can look around without touching anything real. Pick a step and it opens full screen: the page as visitors see it, your dashboard, your Insights, your page, your menu, your ads and opportunities, and your audit. Close it whenever you\'re done. Yours starts with your own page.' },
+    { k: 'promos', label: 'Promotions', after: 1, say: 'These are the promotions open to you, from events to features to campaigns. Pick what fits, or ask our team to plan it with you.',
       sayMember: 'These are the promotions open to you, from events to features to campaigns. Pick what fits, or ask our team to plan it with you.' },
     { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you saved is right here: top challenges, interviews and promotions, so you can pick up where you left off.' },
     { k: 'next', label: 'What\'s next', mine: 1, say: 'You are in. Thank you. Here is what you can do next. Claim your page, open your dashboard, and follow us so we can follow you back.',
@@ -98,8 +98,9 @@
   ['overview', 'audit', 'featured', 'join'].forEach(function (k) { CLIPS[k] = null; CLIPS_M[k] = null; });
   CLIPS.join_credit = null;
   // Her voice over her picture (door copy, 2026-11-04): el-media tts in her roster-profile voice, one mp3 a tab for visitors.
-  var AUDIO = {};
-  ['audit', 'featured', 'demo', 'join', 'next'].forEach(function (k) { AUDIO[k] = CLIP_BASE + 'door-' + k + '-v1.mp3'; });
+  // A line's text must match its recording; a changed line is a new version (-v2). Checked word for word with stt, 2026-11-04.
+  var AUDIO_V = { overview: 'overview-v2', audit: 'audit-v2', expect: 'expect-v1', join: 'join-v1' };
+  var AUDIO_M = { overview: 'overview-member-v1', fixes: 'fixes-v1', dashboard: 'dashboard-v1', featured: 'featured-v2', demo: 'demo-v2', pulse: 'pulse-v1', promos: 'promos-v1', mylist: 'mylist-v1', next: 'next-v1' };
 
   // What we run for restaurants (Sean, 2026-10-10). Never show a planned thing as live: each says Live or Coming.
   var PROMOS = [
@@ -323,7 +324,7 @@
     if (!/^bo-[a-z0-9]{7}$/.test(code || '')) return;
     auditApi({ action: 'personal', code: code }).then(function (d) {
       if (!d || !d.slug) { store('rg_b', ''); return; }
-      PERSONAL = d; store('rg_b', code);
+      PERSONAL = d; PERSONAL.code = code; store('rg_b', code);
       for (var i = 0; i < TABS.length; i++) if (TABS[i].k === 'audit') TABS[i].label = 'Your business';
       if (!d.id) startMine();
       route();
@@ -332,7 +333,7 @@
   // The check starts the moment the page opens on their link (Sean, 2026-11-04), so Your business already has it, or says it is running.
   function startMine() {
     PERSONAL.starting = true;
-    auditApi({ action: 'free', listing_slug: PERSONAL.slug }).then(function (r) {
+    auditApi({ action: 'free', listing_slug: PERSONAL.slug, code: PERSONAL.code }).then(function (r) {
       PERSONAL.starting = false;
       if (r && r.id) { PERSONAL.id = r.id; store('rg_last_audit', r.id); LAST = null; }
       if (curTab === 'audit') route();
@@ -1077,7 +1078,7 @@
   var vid = document.createElement('video');
   vid.preload = 'metadata'; vid.playsInline = true; vid.setAttribute('playsinline', '');
   vid.setAttribute('aria-label', 'Liz, your Guide');
-  function lizAudio(k) { return AUDIO[k] && (k === 'next' ? member() : !member()) ? AUDIO[k] : null; }
+  function lizAudio(k) { var f = (member() ? AUDIO_M : AUDIO_V)[k]; return f ? CLIP_BASE + 'door-' + f + '.mp3' : null; }
   var aud = new Audio(); aud.preload = 'none';
   aud.addEventListener('ended', function () { TOUR.playing = false; drawLiz(); });
   function clip(k) { if (member() && CLIPS_M[k]) return CLIPS_M[k]; if (k === 'join' && onPoints()) return null; return k === 'join' && mode() === 'unlock' ? CLIPS.join_credit : CLIPS[k] || null; }
@@ -1111,7 +1112,7 @@
   function drawLiz() {
     var t = tab(curTab), list = tabs(), i = 0;
     list.forEach(function (x, n) { if (x.k === curTab) i = n; });
-    bubble.textContent = member() && t.sayMember ? t.sayMember : onPoints() && t.sayPoints ? t.sayPoints : t.k === 'join' && mode() === 'unlock' ? t.sayCredit : t.say;
+    bubble.textContent = !member() && t.show && lizAudio(t.k) ? t.show : member() && t.sayMember ? t.sayMember : onPoints() && t.sayPoints ? t.sayPoints : t.k === 'join' && mode() === 'unlock' ? t.sayCredit : t.say;
     var has = !!clip(curTab) || !!lizAudio(curTab);
     playBtn.hidden = TOUR.started && !has;
     playBtn.classList.toggle('go', !TOUR.started);
