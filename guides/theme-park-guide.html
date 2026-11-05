@@ -419,6 +419,22 @@
     .sa-stand{border:1px solid var(--line);border-radius:14px;background:#fff;padding:14px 16px;margin-bottom:12px;}
     .sa-stand-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap;margin-bottom:8px;}
     .sa-stand-h h3{font-size:16px;font-weight:900;margin:0;}
+    /* The restaurant list folds (Sean, 2026-11-05): every card collapsed to its header with its votes, + opens it at the top, Clear resets. */
+    .sa-listbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 12px;}
+    .sa-sort{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink55);}
+    .sa-sort select{font:inherit;font-size:13px;font-weight:700;letter-spacing:0;text-transform:none;padding:8px 44px 8px 12px;border:1.5px solid var(--line);border-radius:6px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 16px center;appearance:none;-webkit-appearance:none;color:var(--ink);cursor:pointer;}
+    .sa-listbar .sa-mini[disabled]{opacity:.45;cursor:default;}
+    .sa-listnote{font-size:12.5px;color:var(--ink55);font-weight:600;}
+    .sa-stand.sa-fold{padding:10px 12px 10px 14px;margin-bottom:8px;scroll-margin-top:calc(var(--ve-nav-h, 64px) + 12px);}
+    .sa-fold .sa-stand-h{align-items:center;flex-wrap:nowrap;margin:0;cursor:pointer;}
+    .sa-fold.open .sa-stand-h{margin-bottom:10px;}
+    .sa-stand-t{min-width:0;flex:1 1 auto;display:flex;flex-direction:column;gap:3px;align-items:flex-start;}
+    .sa-stand-t .dg-tag{margin-top:2px;}
+    .sa-stand-a{display:flex;align-items:center;gap:8px;flex:0 0 auto;}
+    .sa-stand-a .dg-vote-s{align-self:center;}
+    .sa-tog{width:34px;height:34px;border-radius:6px;border:1.5px solid var(--line);background:#fff;color:var(--ink);font:inherit;font-size:20px;font-weight:700;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;}
+    .sa-tog:hover,.sa-fold.open .sa-tog{border-color:var(--g2);color:var(--g);}
+    .sa-fold.open{border-color:var(--g2);}
     .sa-where{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;color:var(--g);margin-top:3px;}
     .sa-item{display:flex;gap:14px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line);}
     .sa-item:first-of-type{border-top:0;}
