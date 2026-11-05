@@ -35,7 +35,7 @@ const db = createClient(SUPABASE_URL, SERVICE_KEY);
 const SITE = 'https://vegansexplore.com';
 const SEAN_EMAIL = 'contact@lesaruss.com';
 const GUIDES: Record<string, string> = { 'vegan-dairy-guide': 'The Vegan Dairy Guide', 'vegan-restaurant-guide': 'The Vegan Restaurant Guide',
-  'nonprofit-guide': 'The Nonprofit Guide', 'creator-guide': 'The Creator Guide', 'nutrition-guide': 'The Nutrition Guide' };
+  'nonprofit-guide': 'The Nonprofit Guide', 'creator-guide': 'The Creator Guide', 'nutrition-guide': 'The Nutrition Guide', 'theme-park-guide': 'The Vegan Theme Park Guide' };
 const GUIDE_NAMES: Record<string, string> = { maya: 'Maya' };
 const LIMITS = { submit: 5, report: 20, photo: 5 };
 const MEDIA = `${SUPABASE_URL}/storage/v1/object/public/vegan-media/`;
