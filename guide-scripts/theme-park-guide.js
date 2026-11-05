@@ -24,6 +24,7 @@
   var SLUG = 'theme-park-guide', FREE = 'magic-kingdom';
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var API = SB + '/functions/v1/ve-venues';
+  var COOK_URL = SB + '/functions/v1/ve-cookbook';
   var UNLOCK_URL = SB + '/functions/v1/ve-guide-unlock';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
 
@@ -94,7 +95,7 @@
       .then(function (r) { return r.json(); });
   }
   function fmtDate(iso) { try { return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); } catch (e) { return ''; } }
-  function monthOf(d) { if (!d) return ''; var p = String(d).split('-'); if (p.length < 2) return p[0]; return new Date(+p[0], +p[1] - 1, 1).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }); }
+  function monthOf(d) { if (!d) return ''; var p = String(d).split('-'); if (p.length < 2) return p[0]; var dt = new Date(+p[0], +p[1] - 1, 1); return isNaN(dt) ? '' : dt.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }); }
   function tagHtml(text, cls) { return '<span class="dg-tag ' + cls + '">' + esc(text) + '</span>'; }
 
   // ---------- tabs ----------
@@ -232,7 +233,7 @@
   function srcLine(it) {
     var s = it.sources || [];
     if (!s.length) return '';
-    return '<div class="sa-srcs">From ' + s.map(function (x) { return x.url ? '<a href="' + esc(x.url) + '" target="_blank" rel="noopener">' + esc(x.label) + (x.date ? ', ' + esc(monthOf(x.date)) : '') + '</a>' : esc(x.label); }).join(' ') + '</div>';
+    return '<div class="sa-srcs">From ' + s.map(function (x) { return x.url ? '<a href="' + esc(x.url) + '" target="_blank" rel="noopener">' + esc(x.label) + (x.date && monthOf(x.date) ? ', ' + esc(monthOf(x.date)) : '') + '</a>' : esc(x.label); }).join(' ') + '</div>';
   }
   function saveBtn(kind, key, on) {
     if (!owner()) return '';
@@ -271,6 +272,26 @@
   // could not place sits in the list as Not pinned yet. The phone's location stays in this page (never sent) and drives only the dot and
   // the distances, "about N on foot" (the straight line times about 1.3, not turn by turn).
   var YOU = null, STOP = null, LAND = '', ON = '', CUR = null;
+  // The restaurant list (Sean, 2026-11-05: "everything is collapsed. With the voting, so you see them clearly. And it's not the super long
+  // scroll... when you click it... it brings it to the top... as you click the other one, it just replaces the one that's at the top...
+  // a clear button... that puts it back to one, two, three, four, five"). OPEN is the one restaurant opened, drawn first; SORT is Map order,
+  // Most votes or Nearest; Clear puts everything back. Votes are ve-cookbook gvote kind park_spot: counts for everyone, a vote for the
+  // Guide's owners (canon-ve-theme-park-guide).
+  var CUR_SLUG = '', OPEN = '', SORT = 'num', GV = { counts: {}, mine: {} }, GV_FOR = '', REPAINT = null;
+  var HEART = '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.1 4.3 2.4.7-1.3 2.2-2.4 4.3-2.4 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg>';
+  function cookApi(body) {
+    var t = token(), h = { 'Content-Type': 'application/json' };
+    if (t) h.Authorization = 'Bearer ' + t;
+    return fetch(COOK_URL, { method: 'POST', headers: h, body: JSON.stringify(Object.assign({ guide: SLUG }, body)) }).then(function (r) { return r.json(); });
+  }
+  function votesOf(id) { return (GV.counts.park_spot || {})[id] || 0; }
+  function votedFor(id) { return (GV.mine.park_spot || []).indexOf(id) >= 0; }
+  function loadVotes(slug) {
+    if (GV_FOR === slug) return;
+    GV_FOR = slug;
+    cookApi({ action: 'gvotes' }).then(function (d) { if (d && d.counts) { GV = { counts: d.counts, mine: d.mine || {} }; if (REPAINT) REPAINT(); } }).catch(function () {});
+  }
+  function repaint() { if (REPAINT) REPAINT(); else route(); }
   function hasPin(s) { return s.lat != null && s.lng != null; }
   function distOf(s) { return YOU && hasPin(s) ? VEParkMap.metres(YOU, s) : null; }
   function standCard(v, s, open) {
@@ -280,13 +301,25 @@
     var body = open ? (s.items.length ? s.items.map(function (it) { return itemRow(v, it); }).join('') :
         '<p class="dg-empty">No Vegan item confirmed here yet. <a href="#/venue/' + esc(v.slug) + '/report/missing" style="color:var(--g);font-weight:800">Tell us what you find</a>, with a photo, and earn points when the team accepts it. Until then, ask before you order.</p>')
       : '<div class="sa-item"><div class="sa-item-b"><div class="dg-skel" style="border:0;padding:0"><i></i><i style="width:70%"></i></div></div></div>';
-    return '<div class="sa-stand' + (ON === s.id ? ' on' : '') + '" id="sa-st-' + esc(s.id) + '"><div class="sa-stand-h"><div><h3>' + num + esc(s.name) + '</h3><span class="sa-where">' + ICON.pin + esc(s.land || s.where || '') + '</span>' +
-      (s.note ? '<p class="sa-snote">' + esc(s.note) + '</p>' : '') + '</div><span class="sa-vtags" style="margin:0">' + tag + '</span></div>' + body + '</div>';
+    var isOpen = OPEN === s.id, voted = votedFor(s.id);
+    var vote = '<button type="button" class="dg-vote dg-vote-s' + (voted ? ' on' : '') + '" data-spotvote="' + esc(s.id) + '" aria-pressed="' + voted + '" title="' + (voted ? 'You voted for this' : 'Vote for this') + '">' + HEART + '<b>' + votesOf(s.id) + '</b></button>';
+    var tog = '<button type="button" class="sa-tog" data-spot="' + esc(s.id) + '" aria-expanded="' + isOpen + '" aria-controls="sa-sb-' + esc(s.id) + '" aria-label="' + (isOpen ? 'Close ' : 'Open ') + esc(s.name) + '">' + (isOpen ? '&minus;' : '+') + '</button>';
+    return '<div class="sa-stand sa-fold' + (isOpen ? ' open' : '') + (ON === s.id ? ' on' : '') + '" id="sa-st-' + esc(s.id) + '"><div class="sa-stand-h" data-spot="' + esc(s.id) + '"><div class="sa-stand-t"><h3>' + num + esc(s.name) + '</h3><span class="sa-where">' + ICON.pin + esc(s.land || s.where || '') + '</span>' + tag +
+      '</div><div class="sa-stand-a">' + vote + tog + '</div></div>' +
+      (isOpen ? '<div class="sa-stand-b" id="sa-sb-' + esc(s.id) + '">' + (s.note ? '<p class="sa-snote">' + esc(s.note) + '</p>' : '') + body + '</div>' : '') + '</div>';
   }
   function standsOf(v, d) {
-    var list = d.spots.filter(function (s) { return !LAND || s.land === LAND; });
-    if (YOU) list = list.slice().sort(function (a, b) { var x = distOf(a), y = distOf(b); return (x == null ? 1e9 : x) - (y == null ? 1e9 : y); });
-    return list.length ? list.map(function (s) { return standCard(v, s, d.open); }).join('') : '<p class="dg-empty">No restaurants listed in this land yet.</p>';
+    var list = d.spots.filter(function (s) { return !LAND || s.land === LAND; }).slice();
+    if (SORT === 'near' && !YOU) SORT = 'num';
+    if (SORT === 'near') list.sort(function (a, b) { var x = distOf(a), y = distOf(b); return (x == null ? 1e9 : x) - (y == null ? 1e9 : y); });
+    else if (SORT === 'votes') list.sort(function (a, b) { return votesOf(b.id) - votesOf(a.id) || a.num - b.num; });
+    else list.sort(function (a, b) { return a.num - b.num; });
+    var top = list.filter(function (s) { return s.id === OPEN; });
+    if (top.length) list = top.concat(list.filter(function (s) { return s.id !== OPEN; }));
+    var opt = function (k, l) { return '<option value="' + k + '"' + (SORT === k ? ' selected' : '') + '>' + l + '</option>'; };
+    var bar = '<div class="sa-listbar"><label class="sa-sort"><span>Sort</span><select data-spotsort aria-label="Sort the restaurants">' + opt('num', 'Map order') + opt('votes', 'Most votes') + (YOU ? opt('near', 'Nearest to you') : '') + '</select></label>' +
+      '<button type="button" class="sa-mini" data-spotclear' + (OPEN || SORT !== 'num' || LAND ? '' : ' disabled') + '>Clear</button><span class="sa-listnote" id="vpVoteNote" role="status" aria-live="polite"></span></div>';
+    return bar + (list.length ? list.map(function (s) { return standCard(v, s, d.open); }).join('') : '<p class="dg-empty">No restaurants listed in this land yet.</p>');
   }
   function viewVenue(slug, rest) {
     var r = (rest || '').split('/');
@@ -300,6 +333,8 @@
     if (d.error) { main.innerHTML = crumb([['Parks', '#/venues']]) + '<p class="dg-empty">We could not find that park.</p>'; return; }
     var v = d.venue; CUR = d;
     if (!YOU) ON = '';
+    if (CUR_SLUG !== v.slug) { CUR_SLUG = v.slug; OPEN = ''; SORT = 'num'; LAND = ''; }
+    REPAINT = null; loadVotes(v.slug);
     d.spots.forEach(function (s, i) { s.num = i + 1; });
     var lede = esc(v.resort || 'Theme park') + ' &middot; ' + esc(v.city || '') + (v.state ? ', ' + esc(v.state) : '');
     var acts = '<div class="dg-btns">' + saveBtn('venue', v.slug, d.saved) + '<a class="dg-btn dg-ghost" href="#/venue/' + esc(v.slug) + '/report/missing">Add something missing</a>' +
@@ -317,7 +352,7 @@
     return '<section class="sa-vgrid2" aria-label="Map of ' + esc(v.name) + '">' +
       '<div class="sa-g-form"><div class="sa-map-h"><div><h2>Where you are</h2><p>Turn on your location to see a dot on the map and how far each restaurant is. It stays on your phone and is not sent or saved.</p></div>' +
       '<div class="sa-seat"><button class="dg-btn" type="button" id="vpLoc">Show where I am</button></div></div>' + chips + '<p class="sa-snote" id="vpAcc" role="status" aria-live="polite"></p></div>' +
-      '<div class="sa-g-map"><div class="sa-map-box" id="saMapBox"></div><div class="sa-map-foot"><button type="button" class="sa-mini" id="saZoom" aria-pressed="false">Bigger map</button><span>Our own drawing, from each restaurant\'s coordinates. Distances are the straight line times about 1.3, not turn by turn. Accuracy drops under trees and indoors.</span></div></div>' +
+      '<div class="sa-g-map"><div class="sa-map-box" id="saMapBox"></div><div class="sa-map-foot"><button type="button" class="sa-mini" id="saZoom" aria-pressed="false">Bigger map</button><span>' + (v.layout && v.layout.base ? 'Our own drawing of the park from OpenStreetMap, with each restaurant at its coordinates. Not an official park map. ' : 'Our own drawing, from each restaurant\'s coordinates. ') + 'Distances are the straight line times about 1.3, not turn by turn. Accuracy drops under trees and indoors.</span></div></div>' +
       '<div class="sa-g-dirs" id="saDirs" aria-live="polite"></div>' +
       '<div class="sa-g-stands" id="vpStands">' + standsHtml + '</div></section>';
   }
@@ -326,7 +361,7 @@
     var noteHtml = stands.querySelector('p.dg-lede') ? stands.querySelector('p.dg-lede').outerHTML : '';
     var pins = d.spots.filter(hasPin).map(function (s) { return { n: s.num, id: s.id, name: s.name, lat: s.lat, lng: s.lng, land: s.land }; });
     function paint() {
-      box.innerHTML = VEParkMap.svg(pins, { you: YOU, on: ON, title: 'Map of ' + v.name });
+      box.innerHTML = VEParkMap.svg(pins, { you: YOU, on: ON, title: 'Map of ' + v.name, base: v.layout && v.layout.base });
       stands.innerHTML = standsOf(v, d) + noteHtml;
       var near = YOU ? d.spots.filter(function (s) { return hasPin(s) && (!LAND || s.land === LAND); }).sort(function (a, b) { return distOf(a) - distOf(b); }).slice(0, 3) : [];
       dirs.innerHTML = near.length ? '<div class="sa-lost"><b>Closest to you:</b><ol class="sa-dirs">' + near.map(function (s) {
@@ -339,9 +374,10 @@
       }
     }
     function focus(id) {
-      ON = id; paint();
-      var el = document.getElementById('sa-st-' + id); if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); el.classList.add('on'); }
+      ON = id; OPEN = id; paint();
+      var el = document.getElementById('sa-st-' + id); if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); el.classList.add('on'); }
     }
+    REPAINT = paint;
     paint();
     box.addEventListener('click', function (e) { var p = e.target.closest('.vvm-pin'); if (p) focus(p.getAttribute('data-id')); });
     box.addEventListener('keydown', function (e) { var p = e.target.closest('.vvm-pin'); if (p && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); focus(p.getAttribute('data-id')); } });
@@ -354,7 +390,7 @@
     btn.addEventListener('click', function () {
       if (STOP) { stopWatch(); return; }
       btn.textContent = 'Finding you...';
-      STOP = VEParkMap.watch(function (p) { YOU = p; btn.textContent = 'Hide my location'; paint(); }, function (e) {
+      STOP = VEParkMap.watch(function (p) { if (!YOU && SORT === 'num') SORT = 'near'; YOU = p; btn.textContent = 'Hide my location'; paint(); }, function (e) {
         STOP = null; btn.textContent = 'Show where I am';
         acc.textContent = e && e.code === 1 ? 'Your browser said no. Allow location for this site in its settings, then try again.' : 'We could not find you just now. Try again in a moment, outside if you can.';
       });
@@ -619,6 +655,25 @@
       if (a) a.showAuthModal('Sign in to open the Vegan Theme Park Guide and send reports.', function () { location.reload(); }, 'login');
       return;
     }
+    var vb = e.target.closest('[data-spotvote]');
+    if (vb) { e.preventDefault(); spotVote(vb); return; }
+    var cl = e.target.closest('[data-spotclear]');
+    if (cl) {
+      e.preventDefault(); OPEN = ''; ON = ''; SORT = 'num'; LAND = '';
+      [].forEach.call(document.querySelectorAll('#vpLands [data-land]'), function (x) { x.setAttribute('aria-pressed', String(x.getAttribute('data-land') === '')); });
+      repaint(); var st = document.getElementById('vpStands'); if (st) st.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      return;
+    }
+    var sp = e.target.closest('[data-spot]');
+    if (sp && !e.target.closest('a')) {
+      e.preventDefault();
+      var id = sp.getAttribute('data-spot'), wasOpen = OPEN === id;
+      OPEN = wasOpen ? '' : id; ON = wasOpen ? '' : id;
+      repaint();
+      var card = document.getElementById('sa-st-' + id);
+      if (card) { if (!wasOpen) card.scrollIntoView({ behavior: 'smooth', block: 'start' }); var t = card.querySelector('.sa-tog'); if (t) t.focus({ preventScroll: true }); }
+      return;
+    }
     var sv = e.target.closest('[data-save]');
     if (sv) {
       e.preventDefault();
@@ -647,6 +702,27 @@
       if (m === 'points') unlockPoints(jb); else buyNow(jb);
     }
   });
+  document.addEventListener('change', function (e) {
+    var sel = e.target.closest('[data-spotsort]');
+    if (sel) { SORT = sel.value; repaint(); }
+  });
+  // A vote on a restaurant: the Guide's owners vote; everyone sees the counts.
+  function spotVote(btn) {
+    var id = btn.getAttribute('data-spotvote'), note = document.getElementById('vpVoteNote');
+    var say = function (m) { if (note) note.textContent = m; };
+    if (!token()) { var a = auth(); if (a) a.showAuthModal('Sign in to vote for your favorite park restaurants.', function () { location.reload(); }, 'login'); return; }
+    if (!owner()) { say('Voting comes with the Guide. Get it in Get access.'); return; }
+    var on = !votedFor(id);
+    btn.disabled = true;
+    cookApi({ action: 'gvote', kind: 'park_spot', key: id, on: on }).then(function (d) {
+      btn.disabled = false;
+      if (!d || !d.ok) { say(d && d.message ? d.message : 'That vote did not go through. Try again.'); return; }
+      GV.counts.park_spot = GV.counts.park_spot || {}; GV.mine.park_spot = GV.mine.park_spot || [];
+      GV.counts.park_spot[id] = d.count;
+      GV.mine.park_spot = GV.mine.park_spot.filter(function (k) { return k !== id; }); if (d.voted) GV.mine.park_spot.push(id);
+      repaint();
+    }).catch(function () { btn.disabled = false; say('That vote did not go through. Try again.'); });
+  }
   function unlockPoints(btn) {
     btn.disabled = true; btn.textContent = 'Unlocking...';
     unlockApi('unlock').then(function (d) {

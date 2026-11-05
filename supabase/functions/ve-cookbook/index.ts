@@ -16,7 +16,7 @@
 // Round 2 (Sean, 2026-10-10, migration 20261010_dairy_guide_v2.sql). With a guide, a "member" is someone who owns that
 // Guide (ve_owns_guide; credits pricing), not just any active member; a super admin always is.
 // POST { action: 'gvotes', guide }                anyone -> { counts: {swap:{key:n}, episode:{key:n}}, mine: {swap:[keys], ...} }
-// POST { action: 'gvote', guide, kind, key, on }  Guide member -> { ok, count }    kind swap | episode | fix | promo
+// POST { action: 'gvote', guide, kind, key, on }  Guide member -> { ok, count }    kind swap | episode | fix | promo | park_spot (a restaurant in the Theme Park Guide)
 // POST { action: 'photos', recipe_id, guide }     Guide member -> { photos: [{url, name}], mine: [{url, status}] }
 // POST { action: 'photo_start', recipe_id, guide, type }  Guide member -> { photo_id, upload_url }   PUT the file there
 // POST { action: 'photo_done', photo_id }         the uploader -> { ok }   waits for Sean in Depot > Cookbook
@@ -35,7 +35,7 @@ const db = createClient(SUPABASE_URL, SERVICE_KEY);
 const SITE = 'https://vegansexplore.com';
 const SEAN_EMAIL = 'contact@lesaruss.com';
 const GUIDES: Record<string, string> = { 'vegan-dairy-guide': 'The Vegan Dairy Guide', 'vegan-restaurant-guide': 'The Vegan Restaurant Guide',
-  'nonprofit-guide': 'The Nonprofit Guide', 'creator-guide': 'The Creator Guide', 'nutrition-guide': 'The Nutrition Guide' };
+  'nonprofit-guide': 'The Nonprofit Guide', 'creator-guide': 'The Creator Guide', 'nutrition-guide': 'The Nutrition Guide', 'theme-park-guide': 'The Vegan Theme Park Guide' };
 const GUIDE_NAMES: Record<string, string> = { maya: 'Maya' };
 const LIMITS = { submit: 5, report: 20, photo: 5 };
 const MEDIA = `${SUPABASE_URL}/storage/v1/object/public/vegan-media/`;
@@ -44,7 +44,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 // its tips as kind fix, its episodes and Directory listings, and so does the Creator Guide (2026-10-29), and the Nutrition Guide its
 // nutrients (2026-10-31).
 const SAVE_KINDS = ['swap', 'recipe', 'listing', 'episode', 'fix', 'promo'], SAVE_CAP = 500;
-const VOTE_KINDS = ['swap', 'episode', 'fix', 'promo'];
+const VOTE_KINDS = ['swap', 'episode', 'fix', 'promo', 'park_spot'];
 
 const cors = {
   'Access-Control-Allow-Origin': '*',
@@ -194,8 +194,10 @@ Deno.serve(async (req) => {
       if (!guide) return json({ error: 'guide_required' }, 400);
       const { data, error } = await db.from('ve_guide_votes').select('kind, item_key, member_id').eq('guide_slug', guide).limit(20000);
       if (error) return json({ error: 'votes_failed', message: error.message }, 500);
-      const counts: Record<string, Record<string, number>> = { swap: {}, episode: {}, fix: {}, promo: {} }, mine: Record<string, string[]> = { swap: [], episode: [], fix: [], promo: [] };
+      const counts: Record<string, Record<string, number>> = {}, mine: Record<string, string[]> = {};
+      for (const k of VOTE_KINDS) { counts[k] = {}; mine[k] = []; }
       for (const v of data || []) {
+        if (!counts[v.kind]) continue;
         counts[v.kind][v.item_key] = (counts[v.kind][v.item_key] || 0) + 1;
         if (viewer && v.member_id === viewer.id) mine[v.kind].push(v.item_key);
       }

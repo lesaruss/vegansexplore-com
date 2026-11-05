@@ -118,7 +118,7 @@
       sayMember: 'Hear from hosts who\'ve done it, and tell us your own story. Approved stories earn you points.' },
     { k: 'claim', label: 'Claim', lock: 1, say: 'Claim what\'s yours: your event on our calendar, your group or venue in the Directory, and your own profile. The steps open when you take the survey.',
       sayMember: 'Claim what\'s yours: the event on our calendar, your group or venue in the Directory, and your own profile. Then apply for a sponsorship.' },
-    { k: 'work', label: 'Work with us', say: 'We can sponsor your event, in marketing, never cash. You give us a little space at your event, and we put our community and our channels behind it. Every application starts with the free event survey, and we review them against each other, so it\'s never automatic.',
+    { k: 'work', label: 'Sponsorship', say: 'We can sponsor your event, in marketing, never cash. You give us a little space at your event, and we put our community and our channels behind it. Every application starts with the free event survey, and we review them against each other, so it\'s never automatic.',
       sayMember: 'Here\'s what a sponsorship from us looks like. If your event qualifies, apply right here. Every application is reviewed against the others, so apply early.' },
     { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you saved is here: sections, venues, vendors and episodes.' },
     { k: 'join', label: 'Get access', guest: 1, say: 'There are two ways through, and both make you a Vegans Explore member. Take the free event survey, with points for every answer, or get the eleven dollar Passport. What to do when it rains stays open to everyone either way.' }
@@ -159,6 +159,30 @@
   var MEM = null;                // members-only payload
   var ST = { rule: 'points', cost: 1100, balance: 0, active: false, via: null };
   var PODS = null, VENUES = null, VENDORS = null, STORIES = null;
+  // The 15 sections in 6 groups (Sean, 2026-11-05: "15 is way too many... I approve"). The dropdown and the tour go by group; a group
+  // opens as a page of tiles, one tile a section. Old #/<section> links still open the section, under its group. River's line on each
+  // group page is `say`, recorded as river-g-<k>-v1.mp3 (approved by Sean 2026-11-05); change a line, record -v2.
+  var GROUPS = [
+    { k: 'start', label: 'Start here', kids: [] },
+    { k: 'planit', label: 'Plan it', kids: ['kinds', 'plan', 'money'], line: 'Pick the kind of event, set the plan and know the money.',
+      say: 'Plan it is where your event starts. Pick the kind of event you\'re hosting, count down from twelve weeks out, and work out where you break even before you set a price.' },
+    { k: 'lineup', label: 'Line it up', kids: ['venue', 'vendors', 'gear'], line: 'The place, the vendors and everything you pack.',
+      say: 'Line it up is everything you book and pack. Find a venue and the vendors near you in our Directory, then pack from the gear list so nothing gets left behind.' },
+    { k: 'runit', label: 'Run it', kids: ['word', 'dayof', 'after'], line: 'Getting the word out, the day itself and the day after.',
+      say: 'Run it takes you from the first post to the thank you after. Get the word out, run the day, know what to do when it rains, and set up your next event the day after.' },
+    { k: 'learn', label: 'Learn from hosts', kids: ['elephants', 'hosts'], line: 'The hard questions, and hosts who have done it.',
+      say: 'Learn from hosts is the part people rarely talk about: the things that worry hosts, and the hosts who\'ve been through them on our shows. You can tell us your own story too.' },
+    { k: 'together', label: 'Work with us', kids: ['claim', 'work', 'join', 'mylist'], line: 'Claim what is yours, a sponsorship, and your access.',
+      say: 'Work with us is where we team up. Claim your event and your page, apply for a sponsorship paid in marketing, and see how to get the whole Guide.' }
+  ];
+  var GROUP_STILL = { planit: 'plan', lineup: 'venue', runit: 'dayof', learn: 'hosts', together: 'work' };
+  function groupOf(k) { if (/^g:/.test(k)) return k.slice(2); for (var i = 0; i < GROUPS.length; i++) if (GROUPS[i].kids.indexOf(k) >= 0) return GROUPS[i].k; return 'start'; }
+  function group(g) { for (var i = 0; i < GROUPS.length; i++) if (GROUPS[i].k === g) return GROUPS[i]; return GROUPS[0]; }
+  function gHref(g) { return g === 'start' ? '#/' : '#/g/' + g; }
+  function kidsOf(g) { var avail = tabs().map(function (t) { return t.k; }); return group(g).kids.filter(function (k) { return avail.indexOf(k) >= 0; }); }
+  // The tour, in order: Start here, then each group page followed by its sections.
+  function tourSteps() { var out = ['overview']; GROUPS.slice(1).forEach(function (g) { out.push('g:' + g.k); kidsOf(g.k).forEach(function (k) { out.push(k); }); }); return out; }
+  function stepHref(st) { return /^g:/.test(st) ? gHref(st.slice(2)) : href(st); }
   var curTab = 'overview';
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -195,22 +219,25 @@
   // ---------- tabs ----------
   function drawMenu(cur) {
     var locked = !member();
-    // One dropdown at every width (Sean, 2026-11-05), the locks kept on each closed tab.
-    var lst = tabs(), ci = 0, open = !!(menuEl.querySelector('.dg-dd-list') && !menuEl.querySelector('.dg-dd-list').hidden);
-    lst.forEach(function (t, n) { if (t.k === cur) ci = n; });
-    var curT = lst[ci] || { label: 'Search results' };
-    menuEl.innerHTML = '<button type="button" class="dg-dd-btn" aria-haspopup="true" aria-expanded="false">' + esc(cur === 'search' ? 'Search results' : curT.label) +
-      (locked && curT.lock && cur !== 'search' ? ' <span class="dg-lk" aria-label="locked">' + LOCK_SVG + '</span>' : '') +
-      '<small>' + (cur === 'search' ? '' : (ci + 1) + ' of ' + lst.length) + '</small></button>' +
-      '<div class="dg-dd-list" hidden>' + lst.map(function (t, n) {
-        return '<a href="' + href(t.k) + '"' + (t.k === cur ? ' aria-current="page"' : '') + '><span class="dg-dd-n">' + (n + 1) + '</span>' + esc(t.label) +
-          (locked && t.lock ? '<span class="dg-lk" aria-label="locked">' + LOCK_SVG + '</span>' : '') + '</a>';
+    // One dropdown at every width (Sean, 2026-11-05), now the 6 groups; each lists its sections under it in small type.
+    var open = !!(menuEl.querySelector('.dg-dd-list') && !menuEl.querySelector('.dg-dd-list').hidden);
+    var cg = cur === 'search' ? '' : groupOf(cur === 'overview' ? 'start' : cur), ci = 0;
+    GROUPS.forEach(function (g, n) { if (g.k === cg) ci = n; });
+    var curT = cur === 'search' ? { label: 'Search results' } : group(cg);
+    var sec = cur !== 'search' && cur !== 'overview' && !/^g:/.test(cur) ? tab(cur) : null;
+    menuEl.innerHTML = '<button type="button" class="dg-dd-btn" aria-haspopup="true" aria-expanded="false">' + esc(curT.label) +
+      (sec ? ' <span class="dg-dd-sec">&rsaquo; ' + esc(sec.label) + (locked && sec.lock ? ' ' + LOCK_SVG : '') + '</span>' : '') +
+      '<small>' + (cur === 'search' ? '' : (ci + 1) + ' of ' + GROUPS.length) + '</small></button>' +
+      '<div class="dg-dd-list" hidden>' + GROUPS.map(function (g, n) {
+        var kids = kidsOf(g.k).map(function (k) { var t = tab(k); return esc(t.label) + (locked && t.lock ? ' ' + LOCK_SVG : ''); });
+        return '<a href="' + gHref(g.k) + '"' + (g.k === cg ? ' aria-current="page"' : '') + '><span class="dg-dd-n">' + (n + 1) + '</span><span class="dg-dd-g"><b>' + esc(g.label) + '</b>' +
+          (kids.length ? '<small>' + kids.join(' &middot; ') + '</small>' : '') + '</span></a>';
       }).join('') + '</div>';
     if (open) setDD(true);
-    menuSel.innerHTML = tabs().map(function (t) { return '<option value="' + t.k + '"' + (t.k === cur ? ' selected' : '') + '>' + esc(t.label) + (locked && t.lock ? ' (locked)' : '') + '</option>'; }).join('') +
+    menuSel.innerHTML = GROUPS.map(function (g) { return '<option value="' + g.k + '"' + (g.k === cg ? ' selected' : '') + '>' + esc(g.label) + '</option>'; }).join('') +
       (cur === 'search' ? '<option value="search" selected>Search results</option>' : '');
   }
-  menuSel.addEventListener('change', function () { location.hash = href(menuSel.value); });
+  menuSel.addEventListener('change', function () { if (menuSel.value !== 'search') location.hash = gHref(menuSel.value); });
   function setDD(on) {
     var l = menuEl.querySelector('.dg-dd-list'), btn = menuEl.querySelector('.dg-dd-btn'); if (!l || !btn) return;
     l.hidden = !on; btn.setAttribute('aria-expanded', on ? 'true' : 'false');
@@ -913,27 +940,34 @@
   }
 
   // ---------- Overview ----------
+  function sectionTile(k) {
+    var t = tab(k), open = !t.lock;
+    var blurb = { kinds: 'Potlucks to festivals: what each costs, how big, and what goes wrong.', plan: 'A countdown from twelve weeks out to the day after.',
+      money: 'The budget, pricing and the break-even worksheet.', venue: 'Venues in our Directory, and what to ask before you sign.',
+      vendors: 'Vegan vendors near you, and what to agree with them.', gear: 'Everything to pack, one tap to shop.', word: 'When to post, where, and what to say.',
+      dayof: 'The run of show, and what to do when it rains.', after: 'Thank yous, the recap and the numbers to keep.', elephants: 'The questions hosts rarely ask out loud.',
+      hosts: 'Hosts who have done it, and your own story.', claim: 'Your event, your group or venue, and your profile.', work: 'A sponsorship from us, paid in marketing.',
+      join: 'Two ways in: the free event survey, or the $11 Passport.', mylist: 'Everything you saved.' }[k] || '';
+    var label = k === 'work' ? 'Sponsorship' : t.label;
+    return '<a class="dg-tile" href="' + href(k) + '"><div class="dg-ic">' + ic(ICON[k] || ICON.work) + '</div><div><b>' + esc(label) + '</b><span>' + esc(blurb) + '</span>' +
+      (!member() && t.lock ? '<span class="dg-mlock">' + LOCK_SVG + ' In the full Guide</span>' : !member() && open && k !== 'join' ? '<span class="dg-mlock" style="color:#1f5f22 !important">Open to everyone</span>' : '') + '</div></a>';
+  }
+  function viewGroup(g) {
+    var G = group(g);
+    if (G.k === 'start') return viewOverview();
+    main.innerHTML = crumb([[G.label]]) + head('The Vegan Events Guide', esc(G.label), esc(G.line)) +
+      '<div class="dg-tiles">' + kidsOf(G.k).map(sectionTile).join('') + '</div>';
+  }
   function viewOverview() {
-    var tiles = [
-      ['kinds', 'Kinds', 'Potlucks to festivals: what each costs, how big, and what goes wrong.'],
-      ['plan', 'The plan', 'A countdown from twelve weeks out to the day after.'],
-      ['money', 'Money', 'The budget, pricing and the break-even worksheet.', 1],
-      ['venue', 'Venue', 'Venues in our Directory, and what to ask before you sign.', 1],
-      ['vendors', 'Vendors', 'Vegan vendors near you, and what to agree with them.', 1],
-      ['gear', 'Gear', 'Everything to pack, one tap to shop.', 1],
-      ['word', 'The word', 'When to post, where, and what to say.'],
-      ['dayof', 'Day of', 'The run of show, and what to do when it rains.', 1],
-      ['elephants', 'Elephants', 'The questions hosts rarely ask out loud.'],
-      ['hosts', 'Hosts', 'Hosts who have done it, and your own story.', 1],
-      ['work', 'Work with us', 'A sponsorship from us, paid in marketing.', 1]
-    ];
     main.innerHTML = head('Vegans Explore Guides for hosts', 'Host a Vegan event people come back to', esc(PUB.intro)) +
-      '<div class="dg-tiles">' + tiles.map(function (t) {
-        return '<a class="dg-tile" href="' + href(t[0]) + '"><div class="dg-ic">' + ic(ICON[t[0]]) + '</div><div><b>' + esc(t[1]) + '</b><span>' + esc(t[2]) + '</span>' +
-          (!member() && !t[3] ? '<span class="dg-mlock">' + LOCK_SVG + ' In the full Guide</span>' : !member() && t[3] ? '<span class="dg-mlock" style="color:#1f5f22 !important">Open to everyone</span>' : '') + '</div></a>';
+      '<div class="dg-tiles">' + GROUPS.slice(1).map(function (g) {
+        var kids = kidsOf(g.k), anyOpen = kids.some(function (k) { return !tab(k).lock && k !== 'join'; });
+        return '<a class="dg-tile" href="' + gHref(g.k) + '"><div class="dg-ic">' + ic(ICON[GROUP_STILL[g.k]] || ICON.work) + '</div><div><b>' + esc(g.label) + '</b><span>' + esc(g.line) + '</span>' +
+          '<span class="dg-gkids">' + kids.map(function (k) { return esc(k === 'work' ? 'Sponsorship' : tab(k).label); }).join(' &middot; ') + '</span>' +
+          (!member() && anyOpen ? '<span class="dg-mlock" style="color:#1f5f22 !important">Some open to everyone</span>' : '') + '</div></a>';
       }).join('') + '</div>' +
       '<div class="dg-start"><a class="dg-btn" href="' + (member() ? '#/plan' : '#/dayof/rain') + '">' + (member() ? 'Start your plan' : 'Read: what to do when it rains') + '</a><a class="dg-btn dg-ghost" href="#/work">Work with us</a>' +
-      (member() ? '<p>The whole Guide is yours. Pick a tab, or follow River with Next.</p>' : '<p>The full Guide is free with the event survey, or $11. <a href="#/join" style="color:var(--g);font-weight:800">How to get access</a></p>') + '</div>';
+      (member() ? '<p>The whole Guide is yours. Pick a group, or follow River with Next.</p>' : '<p>The full Guide is free with the event survey, or $11. <a href="#/join" style="color:var(--g);font-weight:800">How to get access</a></p>') + '</div>';
   }
 
   // ---------- search (members) ----------
@@ -992,13 +1026,14 @@
   var VOICE_BASE = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/events-guide/river-';
   var STILL_BASE = '/public/guides/events-guide/still-';
   function riverAudio(k) {
+    if (/^g:/.test(k)) return VOICE_BASE + 'g-' + k.slice(2) + '-v1.mp3';
     if (k === 'search') k = 'overview';
     if (k === 'join') return VOICE_BASE + 'join-v1.mp3';
     if (k === 'mylist') return VOICE_BASE + 'mylist-member-v1.mp3';
     if (k === 'gear' || !member()) return VOICE_BASE + k + '-v1.mp3';
     return VOICE_BASE + k + '-member-v1.mp3';
   }
-  function riverStill(k) { return STILL_BASE + (k === 'mylist' || k === 'search' ? 'overview' : k) + '.jpg'; }
+  function riverStill(k) { if (/^g:/.test(k)) k = GROUP_STILL[k.slice(2)] || 'overview'; return STILL_BASE + (k === 'mylist' || k === 'search' ? 'overview' : k) + '.jpg'; }
   var RV = { started: false, paused: false, playing: false, shown: '' };
   var aud = new Audio(); aud.preload = 'none';
   aud.addEventListener('ended', function () { RV.playing = false; drawRiver(); });
@@ -1006,28 +1041,41 @@
     var key = curTab + (member() ? ':m' : '');
     if (RV.shown === key) return;
     RV.shown = key; try { aud.pause(); } catch (e) {} RV.playing = false;
-    aud.src = riverAudio(curTab);
+    var src = riverAudio(curTab);
+    if (src) aud.src = src; else aud.removeAttribute('src');
     var bx = document.getElementById('dgMaya'); if (bx) bx.style.backgroundImage = "url('" + riverStill(curTab) + "')";
-    if (RV.started && !RV.paused) playRiver();
+    if (src && RV.started && !RV.paused) playRiver();
   }
-  function playRiver() { aud.play().then(function () { RV.playing = true; drawRiver(); }).catch(function () { RV.playing = false; drawRiver(); }); }
+  function playRiver() { if (!aud.getAttribute('src')) { RV.playing = false; drawRiver(); return; } aud.play().then(function () { RV.playing = true; drawRiver(); }).catch(function () { RV.playing = false; drawRiver(); }); }
   playBtn.addEventListener('click', function () {
     if (!RV.started) { RV.started = true; RV.paused = false; playRiver(); return; }
     if (RV.playing) { aud.pause(); RV.playing = false; RV.paused = true; drawRiver(); } else { RV.paused = false; playRiver(); }
   });
   function drawRiver() {
-    var t = tab(curTab), lst = tabs(), i = 0;
-    lst.forEach(function (x, n) { if (x.k === curTab) i = n; });
+    var isG = /^g:/.test(curTab), G = isG ? group(curTab.slice(2)) : null, t = isG ? null : tab(curTab);
+    var st = tourSteps(), key = curTab === 'search' ? 'overview' : curTab, i = Math.max(0, st.indexOf(key));
     cueRiver();
-    bubble.innerHTML = '<span class="ev-bub-in">' + esc(member() && t.sayMember ? t.sayMember : t.say) + '</span>';
+    bubble.innerHTML = '<span class="ev-bub-in">' + esc(isG ? G.say : (member() && t.sayMember ? t.sayMember : t.say)) + '</span>';
+    // Group pages have River's recorded line too (river-g-<group>-v1.mp3, approved by Sean 2026-11-05).
+    playBtn.hidden = false;
     playBtn.classList.toggle('go', !RV.started);
     playBtn.innerHTML = !RV.started ? '&#9654; Start the tour' : RV.playing ? 'Pause River' : '&#9654; Play River';
-    tourEl.innerHTML = tourM.innerHTML = '<a class="dg-tnav" href="' + href(lst[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Back</a><span>' + (i + 1) + ' of ' + lst.length + '</span>' +
-      '<a class="dg-tnav next" href="' + href(lst[Math.min(lst.length - 1, i + 1)].k) + '"' + (i < lst.length - 1 ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Next</a>';
+    var gi = 0; GROUPS.forEach(function (g, n) { if (g.k === groupOf(key === 'overview' ? 'start' : key)) gi = n; });
+    tourEl.innerHTML = tourM.innerHTML = '<a class="dg-tnav" href="' + stepHref(st[Math.max(0, i - 1)]) + '"' + (i ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Back</a><span>' + (gi + 1) + ' of ' + GROUPS.length + '</span>' +
+      '<a class="dg-tnav next" href="' + stepHref(st[Math.min(st.length - 1, i + 1)]) + '"' + (i < st.length - 1 ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Next</a>';
   }
 
   // ---------- router ----------
-  var VIEWS = { overview: 1, kinds: 1, plan: 1, money: 1, venue: 1, vendors: 1, gear: 1, word: 1, dayof: 1, after: 1, elephants: 1, hosts: 1, claim: 1, work: 1, mylist: 1, join: 1, search: 1 };
+  var VIEWS = { overview: 1, kinds: 1, plan: 1, money: 1, venue: 1, vendors: 1, gear: 1, word: 1, dayof: 1, after: 1, elephants: 1, hosts: 1, claim: 1, work: 1, mylist: 1, join: 1, search: 1, g: 1 };
+  // A section's crumb names its group: Events Guide > Plan it > Money.
+  function groupCrumb(key) {
+    if (key === 'overview' || key === 'search' || /^g:/.test(key)) return;
+    var G = group(groupOf(key)); if (G.k === 'start') return;
+    var link = ' &rsaquo; <a href="' + gHref(G.k) + '">' + esc(G.label) + '</a>';
+    var c = main.querySelector('.dg-crumb');
+    if (c && c === main.firstElementChild) { var a = c.querySelector('a'); if (a) a.insertAdjacentHTML('afterend', link); }
+    else main.insertAdjacentHTML('afterbegin', '<div class="dg-crumb"><a href="#/">Events Guide</a>' + link + ' &rsaquo; ' + esc(tab(key).label) + '</div>');
+  }
   function route() {
     if (recorder && !/^#\/hosts\/tell\/2/.test(location.hash)) stopRec();
     var parts = (location.hash || '').replace(/^#\/?/, '').split('/');
@@ -1041,13 +1089,15 @@
     if (view === 'join' && signedIn()) key = 'overview';
     if (view === 'mylist' && !signedIn()) { view = 'overview'; key = 'overview'; }
     if (signedIn() && !svState) loadSaves();
+    if (view === 'g') { key = sub === 'start' || !sub ? 'overview' : 'g:' + group(sub).k; if (key === 'g:start') key = 'overview'; }
     drawMenu(view === 'search' ? 'search' : key);
     if (view !== 'search' && qEl.value && document.activeElement !== qEl) qEl.value = '';
     var bar = document.getElementById('vep-player');
     ({ overview: viewOverview, kinds: function () { viewKinds(sub); }, plan: viewPlan, money: viewMoney, venue: function () { viewVenue(sub); },
        vendors: function () { viewVendors(sub); }, gear: viewGear, word: viewWord, dayof: function () { viewDayof(sub); }, after: viewAfter,
        elephants: function () { viewElephants(sub); }, hosts: function () { viewHosts(sub); }, claim: viewClaim, work: function () { viewWork(sub); },
-       mylist: function () { viewMyList(sub); }, join: viewJoin, search: function () { viewSearch(decodeURIComponent(sub)); } })[view]();
+       mylist: function () { viewMyList(sub); }, join: viewJoin, search: function () { viewSearch(decodeURIComponent(sub)); }, g: function () { viewGroup(sub); } })[view]();
+    groupCrumb(key);
     keepPlayer(bar);
     curTab = key;
     drawRiver();

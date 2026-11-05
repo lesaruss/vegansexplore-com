@@ -5147,7 +5147,7 @@ function loadGuideTab(l){
     side(p ? p.primary : null);
   }
   if(window.VEGuideTab) return go();
-  var s = document.createElement('script'); s.src = '/public/ve-guide-tab.js?v=1'; s.onload = go; s.onerror = function(){ side(null); };
+  var s = document.createElement('script'); s.src = '/public/ve-guide-tab.js?v=2'; s.onload = go; s.onerror = function(){ side(null); };
   document.head.appendChild(s);
 }
 

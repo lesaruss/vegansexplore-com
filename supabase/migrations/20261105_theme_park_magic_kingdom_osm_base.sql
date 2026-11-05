@@ -1,0 +1,11 @@
+-- ve-theme-park-guide (Sean, 2026-11-05: "I want a visual... uniquely ours but true to the map"; "Go with 1, build the OpenStreetMap map").
+-- Magic Kingdom's illustrated park map: ve_venues.layout.base, our own drawing of OpenStreetMap shapes (ODbL, credited on the map),
+-- never Disney's map art. Drawn by /public/ve-park-map.js under the pins.
+--
+-- The data (149 KB) is docs/theme-park/magic-kingdom-osm-base.json, made by scripts/theme-park/osm_layout.py from the main OSM API
+-- (/api/0.6/map.json, four tiles over the park, read 2026-11-05 through the one-time function ve-once-osm-park, now the 410 stub; the
+-- build session and Overpass could not be reached). Applied 2026-11-05 through that function as:
+--   update public.ve_venues set layout = jsonb_set(coalesce(layout, '{}'::jsonb), '{base}', <the file>)
+--   where slug = 'magic-kingdom' and kind = 'theme_park';
+-- To refresh: read the tiles again, run the script, save the same way. Nothing else changed.
+select 1;
