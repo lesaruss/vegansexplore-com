@@ -3079,6 +3079,20 @@ claim unlocking top posts". Migration `20261103_listing_posts.sql`; edge functio
   post, no token 401, a non-admin refused on `admin_list`. Not yet seen in a browser: no preview deploy of the branch was checked.
 - Not built yet: Instagram only (no TikTok, YouTube or Facebook rows, the table allows `network` instagram), a Meta "Connect Instagram"
   button (real metrics, views and embeds, once the tokens are in), SEO data for the tab, and the other brands' listings.
+- **Index, in BrandDesk Social (Sean, 2026-11-05, playbook `ve-social-studio`)**: "a button next to content... an index of all the social content
+  that's been pulled, and a filtering system"; "stop using the gray background". BrandDesk > Vegans Explore > Social has an **Index** tab in the frame's
+  own Plan | Notes for Logan | Content row (HQ `public/branddesk/social.html`, added by `scripts/sync-branddesk-social.py` in lesaruss-hq so a re-sync keeps it;
+  the Depot's own Social page has none). It lists every post in `ve_listing_posts` (Featured by us and Their top posts) with search over captions, business names
+  and handles, filters for source, business, why it matched, status (Shown, Hidden by owner, Paused, Taken off) and sort, a post popup, and Take it off /
+  Put it back for featured posts (`ve-listing-posts` `admin_set`); a listing's own posts are the owner's to hide or pause. HQ `components/branddesk/SocialIndex.tsx`,
+  `app/api/branddesk/social-index/route.ts` (super admin only, reads the database, fetches nothing from Instagram or Apify), `?s=index` in the address, on a white
+  panel. Live on HQ `main` (b660a94, a5d53e2) and checked as `vegan@` at 1440 and 390 px; **Sean did not see it on his screen on 2026-11-05** (likely the cached frame file
+  or the Depot page; ask for his address and a screenshot). Take it off / Put it back were never clicked on real data. 1,657 posts on 2026-11-05. **The matcher
+  looks loose**: one Dina's Vegan Deli post is attached to La Chia Vegana, Be An Animal Hero, Florida Animal Rescue and Vegan Social Club (one row per post and listing
+  by tag); not changed. **The paused guard, 2026-11-05**: with `paused` true on `vegansexplore` the 2:17 AM ET run fetched nothing (`last_fetch_at` null, 0 posts), but the
+  function's reply and Apify's run list were not read, so it is not proven; `paused` was set back to false at 4:09 AM ET and the 2:17 AM ET Nov 6 run is the first real
+  fetch. A headless login worked again (canon `agent-headless-page-verification`, replacement 2026-10-27: a one-time function mints the `vegan@` session into a file,
+  Playwright reads it, sign it out and stub the function after); this sandbox refuses `*.vercel.app`, so a branch preview cannot be looked at, but `hq.lesaruss.ai` can.
 
 ## The Nutrition Guide (Sean, 2026-10-31: "build the Nutrition Guide")
 
