@@ -48,8 +48,14 @@ the community who cannot read well, and others will not read a page. It is not a
   tab plays until Pause. **Every Guide is also an intake** (Sean: "Every time somebody suggests something, that builds our directory"): Venue and Vendors ask for one we're
   missing (Join the Directory's Add it), and Gear has **Missing something?**, a suggestion sent to `ve-feedback` as kind missing (Depot > Feedback and the Inbox).
   The Events Guide's tabs are **one dropdown at every width** (numbered, locks kept; `drawMenu`, `setDD`), its join button reads **Take survey**, and on phones the
-  bubble beside River is as tall as his picture and scrolls (`.ev-bub-in`). **On branch `claude/funny-cori-thdm61`, not yet on `main`** (2026-11-05). A proposal to
-  group the 15 tabs into 6 tile pages waits on Sean (`docs/handoff/2026-11-05-ve-audio-accessibility-river-events-guide.md`).
+  bubble beside River is as tall as his picture and scrolls (`.ev-bub-in`). **On branch `claude/funny-cori-thdm61`, not yet on `main`** (2026-11-05). **Merged to `main` 2026-11-05** (cefdadf). **The 15 tabs are 6 groups** (Sean, 2026-11-05:
+  "15 is way too many... I approve"; `GROUPS` in the Guide script): Start here (the Overview); Plan it (Kinds, The plan, Money); Line it up (Venue,
+  Vendors, Gear); Run it (The word, Day of, After); Learn from hosts (Elephants, Hosts); Work with us (Claim, Sponsorship, Get access or My list).
+  The dropdown lists the 6 (each with its sections in small type), a group opens as a page of tiles (`#/g/<group>`), a section's crumb and the
+  dropdown name its group (Plan it > Money), old `#/<section>` links still work, and Back / Next walks Start here, each group page, then its
+  sections. River's lines for the 5 group pages are text drafts in `GROUPS[].say`, not recorded: on a group page Play steps aside and he says
+  nothing until Sean approves the lines (Start here keeps the Overview recording). The tab once called Work with us is Sponsorship.
+  On branch `claude/funny-brown-862zti` until Sean looks; the banner padding and the phone Hide me row are on `main` (a7e8954).
 - **Every page a person can land on has a script for its Guide** and, once Sean approves it, the recording in that Guide's roster-profile voice (Guide voices
   section; never a voice picked without Sean). A new page does not ship without its script. Redirect stubs, ad creatives and render frames are the exceptions.
 - **Logan writes the script, Sean reads and approves it, then it is recorded** (el-media tts, checked word for word with `stt`, `-v1.mp3`; a
