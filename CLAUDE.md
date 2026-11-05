@@ -5933,8 +5933,12 @@ did not hide the section) and `max_tokens` is 8000: six sections at 3000 were cu
 2026-10-05 to 2026-11-03: a Podcast section, verdict mixed (Vegans Explore 230 against 413, SoFlo 539 against 106, Vegans Who Lift 247 against 195, Pre-Vegans 42 against 8). Not yet seen in a browser.
 **The Audience layout** (HQ main 7063d6e, seen signed in on the branch preview first): the Insights page is white (`.bh-root:has(.in-root)`), the active toggle has white text, and Countries and
 State or province / City are two boxes fixed at 10 rows (`.in-aud-box`, `Table scroll`) that scroll inside; the right box shows a turning globe until a country is picked, then states, with a Show cities /
-Show states toggle, a click on a state shows its cities (`United States › Florida`), and a new country resets to its states; phones tighten the table. Not yet: the country `AA` (Captivate's, 309
-downloads on Vegans Who Lift) should read not placed in Audience, and Apps, Systems and Devices still use Show all buttons, not the scrolling box. **The headless login worked again** (canon
+Show states toggle, a click on a state shows its cities (`United States › Florida`), and a new country resets to its states; phones tighten the table. **Then, 2026-11-04 evening** (Sean: "go on AA and the
+scrolling boxes"; HQ main 64e879e, production READY, seen on the branch preview at 1440 and 390 px): Captivate's country `AA` (309 downloads on Vegans Who Lift all
+time, none in the last 30 days) reads **Not placed** in the Countries list, the right-hand box (with its own note) and the CSV (`cname` in `PodcastAudience`), and
+Apps and players, Systems and Devices are fixed 442 px scrolling boxes like the places (a title and N in all, a sticky header; a list of 8 or fewer shrinks to fit,
+`.in-aud-box.fit`). The Analysis write-up was read against the Podcast tab the same evening and matched (1,058 against 722, every percentage, Portugal 17.0%, Overcast 37.4%).
+Not done: a possible-bots caution on Portugal (17.0% of Vegans Explore) and Chrome (71.4% of Pre-Vegans), a guess Sean has not asked for; a saved snapshot of the places. **The headless login worked again** (canon
 `agent-headless-page-verification`, replacement 2026-10-27): a one-time function mints the vegan@ magiclink session and builds the `sb-fwbhwfxpncrsfhttimna-auth-token` cookie into a file; a Vercel
 branch preview needs `get_access_to_vercel_url` first (its `_vercel_share` link); Playwright in this session reached both. Sign the session out and stub the function afterwards (`ve-once-qa-session`, 410).
 
