@@ -6133,6 +6133,8 @@ shared, so it moves to HQ's People app unchanged.
 - Built since: pick people and make drafts, the Campaigns table and the Week view (see Three doors, one Welcome, campaigns on people). Not built yet: replied and joined counts, Logan's proposed 30 for the next day, campaigns from
   BrandDesk feeding the queue, and reply tracking (replies land in contact@lesaruss.com, not here).
 
+- **Checking in approved, Instagram followers, calls and meetings (2026-11-05, playbook `ve-outreach-buckets`; handoff `docs/handoff/2026-11-05-ve-outreach-buckets-checking-in-approved-ig-followers.md`)**: `closed-checking-in` reworded (no mention of closing), locked and approved by Sean, starts Mon Nov 9 (17 members, one email); a [TEST] send to contact@lesaruss.com was delivered; the `restaurant` campaign is back to draft. Instagram followers come only from Instagram's own export, uploaded in HQ Outreach › Roster › Instagram followers (`ve_ig_follows`, `ve_ig_follow_import`, migration `20261105_ig_follow_export.sql`; HQ branch `claude/quirky-hawking-7xrux2` c422fc6, not on `main`), shown on each profile as Follows us / We follow them. No Twilio: calls are recorded with Fieldy on speakerphone with a consent line, and video meetings with businesses go through the HQ Hot Lab (its recording webhook has never delivered: `lab_recordings` is empty).
+
 ## Money in: an email for every payment (Sean, 2026-11-01)
 
 "John registered as a creator and made a payment, and I didn't get any notification that he made a payment... Is there something that
