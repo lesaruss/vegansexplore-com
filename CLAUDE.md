@@ -6184,6 +6184,15 @@ sessions (payment links such as the LIVE Donation) read well from their own line
 2026-11-01 2:36 PM Eastern sent nothing; John Thomas's $11 Passport (11:00 AM that day) was sent as the first preview. Deployed as version 62
 from commit 3292d5a (source sha256 matched; the deployed source was checked against main first).
 
+## Brooke Sellers, our first founding partner (Sean, 2026-11-05, playbook `brooke-sellers`)
+
+Brooke (Meatless Muscle, Vegans Who Lift) is the first and only founding partner at $200 a month, never sold as hosting (never write "hosting" about
+her plan where she can see it). Her BrandDesk is the `meatless-muscle` brand kit (`ve_brand_cartridges`, logo, colors, type locked from her Edition 01;
+voice and story drafts), the first client desk duplicated from Vegans Explore. Her billing is HQ's client billing link (`client_billing_plans`, live row,
+"Vegans Explore Founding Partner", first charge 2026-11-30). We write to her at bsellersotss@gmail.com through Depot > Outreach. **A Guide made for one
+person**: `/guides/creator-guide?p=<token>` adds a For <first name> tab (`ve_guide_previews`, `ve_guide_preview(token, guide)`; `viewYou` in
+`guide-scripts/creator-guide.js`), held back on branch `claude/jolly-tesla-q16c04` until Sean says merge. Handoff: `docs/handoff/2026-11-05-brooke-sellers.md`.
+
 ## Revenue on the dashboard (Sean, 2026-11-02)
 
 "I just want to be able to see that revenue coming in through Vegans Explore in real time... just some little module... Eventually
