@@ -317,7 +317,7 @@
     return '<section class="sa-vgrid2" aria-label="Map of ' + esc(v.name) + '">' +
       '<div class="sa-g-form"><div class="sa-map-h"><div><h2>Where you are</h2><p>Turn on your location to see a dot on the map and how far each restaurant is. It stays on your phone and is not sent or saved.</p></div>' +
       '<div class="sa-seat"><button class="dg-btn" type="button" id="vpLoc">Show where I am</button></div></div>' + chips + '<p class="sa-snote" id="vpAcc" role="status" aria-live="polite"></p></div>' +
-      '<div class="sa-g-map"><div class="sa-map-box" id="saMapBox"></div><div class="sa-map-foot"><button type="button" class="sa-mini" id="saZoom" aria-pressed="false">Bigger map</button><span>Our own drawing, from each restaurant\'s coordinates. Distances are the straight line times about 1.3, not turn by turn. Accuracy drops under trees and indoors.</span></div></div>' +
+      '<div class="sa-g-map"><div class="sa-map-box" id="saMapBox"></div><div class="sa-map-foot"><button type="button" class="sa-mini" id="saZoom" aria-pressed="false">Bigger map</button><span>' + (v.layout && v.layout.base ? 'Our own drawing of the park from OpenStreetMap, with each restaurant at its coordinates. Not an official park map. ' : 'Our own drawing, from each restaurant\'s coordinates. ') + 'Distances are the straight line times about 1.3, not turn by turn. Accuracy drops under trees and indoors.</span></div></div>' +
       '<div class="sa-g-dirs" id="saDirs" aria-live="polite"></div>' +
       '<div class="sa-g-stands" id="vpStands">' + standsHtml + '</div></section>';
   }
@@ -326,7 +326,7 @@
     var noteHtml = stands.querySelector('p.dg-lede') ? stands.querySelector('p.dg-lede').outerHTML : '';
     var pins = d.spots.filter(hasPin).map(function (s) { return { n: s.num, id: s.id, name: s.name, lat: s.lat, lng: s.lng, land: s.land }; });
     function paint() {
-      box.innerHTML = VEParkMap.svg(pins, { you: YOU, on: ON, title: 'Map of ' + v.name });
+      box.innerHTML = VEParkMap.svg(pins, { you: YOU, on: ON, title: 'Map of ' + v.name, base: v.layout && v.layout.base });
       stands.innerHTML = standsOf(v, d) + noteHtml;
       var near = YOU ? d.spots.filter(function (s) { return hasPin(s) && (!LAND || s.land === LAND); }).sort(function (a, b) { return distOf(a) - distOf(b); }).slice(0, 3) : [];
       dirs.innerHTML = near.length ? '<div class="sa-lost"><b>Closest to you:</b><ol class="sa-dirs">' + near.map(function (s) {
