@@ -90,37 +90,38 @@
 
   // The tabs, in tour order, and what River says on each (text drafts for Sean; no recordings yet). `say` is for visitors (why get it),
   // `sayMember` walks an owner through what they have.
+  // Every line is River's recording, word for word (Sean approved V1, 2026-11-05; docs/proposals/liz-audio-scripts.md, Guide 2). Change a line, record it again as -v2.
   var TABS = [
-    { k: 'overview', label: 'Overview', say: 'I\'m River. I\'ve been to a lot of Vegan events, and the great ones have one thing in common: somebody planned for what could go wrong.',
-      sayMember: 'Welcome in. Start with the plan, work through each tab as your date gets closer, and come back before every event.' },
-    { k: 'kinds', label: 'Kinds', lock: 1, say: 'A potluck, a market, a festival, a dinner: each one costs different, grows different and goes wrong in its own way.',
-      sayMember: 'Pick the kind you are planning. Each one tells you what it costs, how big it gets and what usually goes wrong.' },
-    { k: 'plan', label: 'The plan', lock: 1, say: 'A countdown from twelve weeks out to the day after, so nothing important gets left to the last minute.',
-      sayMember: 'Tick things off as you go. It saves on this device, and you can copy or print it for your team.' },
-    { k: 'money', label: 'Money', say: 'Work out where your event breaks even before you set a price. The worksheet is open for you to try.',
-      sayMember: 'Your costs, your income and how to price it. Run the worksheet before you set a ticket price.' },
-    { k: 'venue', label: 'Venue', say: 'Venues in your chapter from our Directory, and in the full Guide, what to ask before you sign anything.',
-      sayMember: 'Find a venue near you, then take the questions with you when you visit. Watch for the red flags.' },
-    { k: 'vendors', label: 'Vendors', say: 'Vegan vendors, food trucks and caterers in your chapter. The full Guide covers how to pick them and what to agree.',
-      sayMember: 'Find vendors here, use the application questions, and put the agreement in writing.' },
-    { k: 'gear', label: 'Gear', say: 'Everything you need to pack, from canopy weights to the card reader. Tap any item to shop for it.',
-      sayMember: 'Your packing list. Tap any item to shop for it, and check it off when it is in the car.' },
-    { k: 'word', label: 'The word', lock: 1, say: 'When to post, where, and what to say, so people actually show up.',
+    { k: 'overview', label: 'Overview', say: 'Hey, I\'m River. This is the Vegan Events Guide, for anyone hosting a Vegan event: a potluck, a market, a festival, a dinner. Some of it is open to everyone right now: the break-even worksheet, venues and vendors near you, the gear list, and what to do when it rains. The rest opens when you take the short event survey. It\'s free, it earns you points, and it makes you a member.',
+      sayMember: 'Welcome in. The whole Guide is yours. Start with the plan, work through each tab as your date gets closer, and come back before every event. Everything you save goes in My list.' },
+    { k: 'kinds', label: 'Kinds', lock: 1, say: 'A potluck, a market, a festival, a dinner. Each kind costs differently, grows differently, and goes wrong in its own way. You can see every kind here. What each one costs and what usually goes wrong opens with the survey.',
+      sayMember: 'Pick the kind of event you\'re planning. Each one tells you what it costs, how big it gets, and what usually goes wrong.' },
+    { k: 'plan', label: 'The plan', lock: 1, say: 'The plan counts down from twelve weeks before your event to the day after, so nothing important gets left to the last minute. The full checklist, to tick off, copy and print, opens with the survey.',
+      sayMember: 'Tick things off as you go. It saves on this device, and you can copy it or print it for your team.' },
+    { k: 'money', label: 'Money', say: 'Before you set a ticket price, work out where your event breaks even. The worksheet is open for you now, and your numbers stay on this device. If you sell tickets through a Group Partner, we take five percent on paid tickets and nothing on free events. The full budget and pricing guide opens with the survey.',
+      sayMember: 'Your costs, your income, and how to set a price. Run the worksheet before you set a ticket price.' },
+    { k: 'venue', label: 'Venue', say: 'Here are event venues from our Directory, and the places where Vegan events were held this year. Pick your chapter to see yours. Know a venue we\'re missing? Add it, and it helps every host after you. What to ask before you sign opens with the survey.',
+      sayMember: 'Find a venue near you, then take the questions with you when you visit. Watch for the red flags. Know one we\'re missing? Add it.' },
+    { k: 'vendors', label: 'Vendors', say: 'Vegan vendors, food trucks and caterers in your chapter. Pick your chapter to see them. Know one we\'re missing? Add it, and it helps every host after you. How to choose them and what to put in writing opens with the survey.',
+      sayMember: 'Find vendors here, use the application questions, and put the agreement in writing. Know one we\'re missing? Add it.' },
+    { k: 'gear', label: 'Gear', say: 'Everything you\'d pack for an event, from canopy weights to a card reader. Tap any item to shop for it. Pack something that isn\'t on the list? Suggest it, and it helps every host after you.',
+      sayMember: 'Everything you\'d pack for an event, from canopy weights to a card reader. Tap any item to shop for it. Pack something that isn\'t on the list? Suggest it, and it helps every host after you.' },
+    { k: 'word', label: 'The word', lock: 1, say: 'Start by putting your event on our calendar. Drop in your flyer or a link, and we\'ll read it for you. You can also suggest it to your chapter\'s Daily Pulse. The timeline of when to post and what to say opens with the survey.',
       sayMember: 'Follow the timeline, use every channel on the list, and put your event on our calendar first.' },
-    { k: 'dayof', label: 'Day of', say: 'What to do when it rains is open for you. The full Guide adds the run of show, your helpers\' jobs and the door.',
+    { k: 'dayof', label: 'Day of', say: 'What to do when it rains is open to everyone, along with the other things that can turn your day. The hour-by-hour run of show, your helpers\' jobs and the door open with the survey.',
       sayMember: 'The run of show, who does what, the door and safety. And what to do when it rains.' },
-    { k: 'after', label: 'After', lock: 1, say: 'The day after is when the next event is made: the thank yous, the recap and the numbers.',
-      sayMember: 'Thank everyone, post the recap, write down the numbers and set the next date.' },
-    { k: 'elephants', label: 'Elephants', lock: 1, say: 'No-shows, vendors losing money, venues that are not Vegan. The things hosts worry about and rarely say out loud.',
+    { k: 'after', label: 'After', lock: 1, say: 'The day after is when your next event gets made: the thank yous, the recap, the numbers to write down, and a few questions for your guests. It opens with the survey.',
+      sayMember: 'Thank everyone, post the recap, write down the numbers, and set the next date.' },
+    { k: 'elephants', label: 'Elephants', lock: 1, say: 'The things hosts worry about and rarely say out loud: no-shows, vendors losing money, a venue that isn\'t Vegan. Each one comes with what to do. They open when you take the survey.',
       sayMember: 'Every one of these has happened to someone. Read them before your next event, not after.' },
-    { k: 'hosts', label: 'Hosts', say: 'Hosts who have done it, on our shows. Hosted an event? Tell us your story by voice and you could be on the podcast.',
-      sayMember: 'Hear from hosts who have done it, and tell us your own story. Approved stories earn you points.' },
-    { k: 'claim', label: 'Claim', lock: 1, say: 'Your event, your group and your own profile, claimed, so people find you and we can work together.',
-      sayMember: 'Claim what is yours: the event on our calendar, your group or venue in the Directory, and your own profile. Then apply for a sponsorship.' },
-    { k: 'work', label: 'Work with us', say: 'We can sponsor your event with marketing: our calendar, the Daily Pulse, our socials and someone to cover it.',
-      sayMember: 'Here is what a sponsorship from us looks like. If your event qualifies, apply right here.' },
+    { k: 'hosts', label: 'Hosts', say: 'Hosts who\'ve done it, on our shows. Play any episode right here. And if you\'ve hosted an event, you can tell us your story by voice, and the best become Host Notes on the Vegans Explore Podcast. Recording opens once you\'re a member.',
+      sayMember: 'Hear from hosts who\'ve done it, and tell us your own story. Approved stories earn you points.' },
+    { k: 'claim', label: 'Claim', lock: 1, say: 'Claim what\'s yours: your event on our calendar, your group or venue in the Directory, and your own profile. The steps open when you take the survey.',
+      sayMember: 'Claim what\'s yours: the event on our calendar, your group or venue in the Directory, and your own profile. Then apply for a sponsorship.' },
+    { k: 'work', label: 'Work with us', say: 'We can sponsor your event, in marketing, never cash. You give us a little space at your event, and we put our community and our channels behind it. Every application starts with the free event survey, and we review them against each other, so it\'s never automatic.',
+      sayMember: 'Here\'s what a sponsorship from us looks like. If your event qualifies, apply right here. Every application is reviewed against the others, so apply early.' },
     { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you saved is here: sections, venues, vendors and episodes.' },
-    { k: 'join', label: 'Get access', guest: 1, say: 'The Vegan Events Guide is eleven dollars, or 1,100 points, and it\'s yours to keep. Buying it makes you a member of Vegans Explore.' }
+    { k: 'join', label: 'Get access', guest: 1, say: 'There are two ways through, and both make you a Vegans Explore member. Take the free event survey, with points for every answer, or get the eleven dollar Passport. What to do when it rains stays open to everyone either way.' }
   ];
   var S = 'stroke="#1f5f22" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
   function ic(path, size) { return '<svg width="' + (size || 26) + '" height="' + (size || 26) + '" viewBox="0 0 24 24" fill="none" ' + S + ' aria-hidden="true">' + path + '</svg>'; }
@@ -194,14 +195,32 @@
   // ---------- tabs ----------
   function drawMenu(cur) {
     var locked = !member();
-    menuEl.innerHTML = tabs().map(function (t) {
-      return '<a href="' + href(t.k) + '"' + (t.k === cur ? ' aria-current="page"' : '') + (t.guest ? ' class="dg-join-tab"' : '') + '>' + esc(t.label) +
-        (locked && t.lock ? ' <span class="dg-lk" aria-label="locked">' + LOCK_SVG + '</span>' : '') + '</a>';
-    }).join('');
+    // One dropdown at every width (Sean, 2026-11-05), the locks kept on each closed tab.
+    var lst = tabs(), ci = 0, open = !!(menuEl.querySelector('.dg-dd-list') && !menuEl.querySelector('.dg-dd-list').hidden);
+    lst.forEach(function (t, n) { if (t.k === cur) ci = n; });
+    var curT = lst[ci] || { label: 'Search results' };
+    menuEl.innerHTML = '<button type="button" class="dg-dd-btn" aria-haspopup="true" aria-expanded="false">' + esc(cur === 'search' ? 'Search results' : curT.label) +
+      (locked && curT.lock && cur !== 'search' ? ' <span class="dg-lk" aria-label="locked">' + LOCK_SVG + '</span>' : '') +
+      '<small>' + (cur === 'search' ? '' : (ci + 1) + ' of ' + lst.length) + '</small></button>' +
+      '<div class="dg-dd-list" hidden>' + lst.map(function (t, n) {
+        return '<a href="' + href(t.k) + '"' + (t.k === cur ? ' aria-current="page"' : '') + '><span class="dg-dd-n">' + (n + 1) + '</span>' + esc(t.label) +
+          (locked && t.lock ? '<span class="dg-lk" aria-label="locked">' + LOCK_SVG + '</span>' : '') + '</a>';
+      }).join('') + '</div>';
+    if (open) setDD(true);
     menuSel.innerHTML = tabs().map(function (t) { return '<option value="' + t.k + '"' + (t.k === cur ? ' selected' : '') + '>' + esc(t.label) + (locked && t.lock ? ' (locked)' : '') + '</option>'; }).join('') +
       (cur === 'search' ? '<option value="search" selected>Search results</option>' : '');
   }
   menuSel.addEventListener('change', function () { location.hash = href(menuSel.value); });
+  function setDD(on) {
+    var l = menuEl.querySelector('.dg-dd-list'), btn = menuEl.querySelector('.dg-dd-btn'); if (!l || !btn) return;
+    l.hidden = !on; btn.setAttribute('aria-expanded', on ? 'true' : 'false');
+  }
+  menuEl.addEventListener('click', function (e) {
+    if (e.target.closest('.dg-dd-btn')) { var l = menuEl.querySelector('.dg-dd-list'); setDD(l && l.hidden); return; }
+    if (e.target.closest('.dg-dd-list a')) setDD(false);
+  });
+  document.addEventListener('click', function (e) { if (!menuEl.contains(e.target)) setDD(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setDD(false); });
 
   // ---------- pieces ----------
   function crumb(parts) {
@@ -256,7 +275,7 @@
   function drawJoinbox() {
     var b = document.querySelector('.dg-joinbox'); if (!b || signedIn()) return;
     var jb = b.querySelector('[data-survey]') || b.querySelector('[data-join]');
-    jb.textContent = 'Take the survey, free'; jb.setAttribute('data-survey', '1'); jb.removeAttribute('data-join');
+    jb.textContent = 'Take survey'; jb.setAttribute('data-survey', '1'); jb.removeAttribute('data-join');
     b.querySelector('.dg-jb-in').style.display = mode() === 'join' ? '' : 'none';
   }
 
@@ -505,7 +524,37 @@
         }).join('') + '</div>';
       }).join('') +
       '<h3 class="dg-k" style="margin:22px 0 8px">Packing list</h3>' + checkList('pack', GEAR.reduce(function (a, g) { return a.concat(g[1].map(function (x) { return x[1]; })); }, [])) +
+      gearSuggest() +
       '<p class="rg-fine">As an Amazon Associate, Vegans Explore earns from qualifying purchases. Buy local first when you can: many of these are sold by Vegan vendors in our Directory.</p>';
+    wireGearSuggest();
+  }
+
+  // Suggest gear (Sean, 2026-11-05: every Guide is an intake). Sent to ve-feedback as kind "missing", so it lands in Depot > Feedback and the Inbox.
+  function gearSuggest() {
+    return '<h3 class="dg-k" style="margin:22px 0 8px">Missing something?</h3><form class="ev-gsug" novalidate style="display:grid;gap:10px;max-width:640px">' +
+      '<p class="dg-srow-p" style="margin:0">Tell us what you pack that is not on this list, and why. We read every one, and the good ones go on the list for every host.</p>' +
+      '<label class="dg-srow-p">What is it?<input name="item" maxlength="120" required style="display:block;width:100%;padding:10px;border:1.5px solid rgba(0,0,0,.18);border-radius:6px;font:inherit;margin-top:4px"></label>' +
+      '<label class="dg-srow-p">Why it helps (optional)<input name="why" maxlength="300" style="display:block;width:100%;padding:10px;border:1.5px solid rgba(0,0,0,.18);border-radius:6px;font:inherit;margin-top:4px"></label>' +
+      '<label class="dg-srow-p">A link to it (optional)<input name="link" type="url" maxlength="400" placeholder="https://" style="display:block;width:100%;padding:10px;border:1.5px solid rgba(0,0,0,.18);border-radius:6px;font:inherit;margin-top:4px"></label>' +
+      '<label class="dg-srow-p">Your email, if you want a reply (optional)<input name="email" type="email" maxlength="200" style="display:block;width:100%;padding:10px;border:1.5px solid rgba(0,0,0,.18);border-radius:6px;font:inherit;margin-top:4px"></label>' +
+      '<div class="dg-btns"><button class="dg-btn" type="submit">Suggest it</button></div><p class="dg-srow-p" data-gmsg style="margin:0"></p></form>';
+  }
+  function wireGearSuggest() {
+    var f = main.querySelector('.ev-gsug'); if (!f) return;
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var item = f.item.value.trim(), msg = f.querySelector('[data-gmsg]'), btn = f.querySelector('button');
+      if (!item) { msg.textContent = 'Tell us what it is.'; return; }
+      var text = '[Events Guide gear suggestion] ' + item + (f.why.value.trim() ? '\nWhy: ' + f.why.value.trim() : '') + (f.link.value.trim() ? '\nLink: ' + f.link.value.trim() : '');
+      var vid = ''; try { vid = localStorage.getItem('ve_visitor') || ''; } catch (x) {}
+      btn.disabled = true; msg.textContent = 'Sending...';
+      fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ page_url: location.origin + '/guides/vegan-events-guide#/gear', page_label: 'Events Guide: Gear', kind: 'missing', message: text, email: f.email.value.trim(), visitor: vid, viewport: innerWidth + 'x' + innerHeight }) })
+        .then(function (r) { return r.json(); }).then(function (d) {
+          if (!d || !d.ok) throw d;
+          f.reset(); msg.textContent = 'Thank you. It is with our team, and if it helps hosts, it goes on the list.';
+        }).catch(function () { msg.textContent = 'That did not send. Try again in a minute.'; }).then(function () { btn.disabled = false; });
+    });
   }
 
   // ---------- Getting the word out ----------
@@ -928,7 +977,7 @@
   });
   document.getElementById('dgSearchForm').addEventListener('submit', function (e) { e.preventDefault(); var q = qEl.value.trim(); if (q) location.hash = '#/search/' + encodeURIComponent(q); });
 
-  // ---------- River, on the right of every tab (his words as text; no recordings yet) ----------
+  // ---------- River, on the right of every tab (his voice behind Play, a still for each tab) ----------
   var tourM = document.getElementById('dgTourM'), foldBtn = document.getElementById('dgFold'), railEl = document.getElementById('dgRail');
   function setFold(folded) {
     railEl.classList.toggle('dg-folded', folded);
@@ -937,11 +986,42 @@
   }
   foldBtn.addEventListener('click', function () { setFold(!railEl.classList.contains('dg-folded')); });
   try { if (sessionStorage.getItem('ev_river_folded')) setFold(true); } catch (e) {}
-  var bubble = document.getElementById('dgBubble'), tourEl = document.getElementById('dgTour');
+  var bubble = document.getElementById('dgBubble'), tourEl = document.getElementById('dgTour'), playBtn = document.getElementById('dgPlay');
+  // River's voice and a still of him for each tab (Sean, 2026-11-05: a Guide speaks on every page; still pictures for now, outfits that fit the tab).
+  // Recordings in vegan-media/media/voices/events-guide/ (el-media tts, his roster-profile voice); Gear is one line for everyone; My list reuses the Overview still.
+  var VOICE_BASE = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/events-guide/river-';
+  var STILL_BASE = '/public/guides/events-guide/still-';
+  function riverAudio(k) {
+    if (k === 'search') k = 'overview';
+    if (k === 'join') return VOICE_BASE + 'join-v1.mp3';
+    if (k === 'mylist') return VOICE_BASE + 'mylist-member-v1.mp3';
+    if (k === 'gear' || !member()) return VOICE_BASE + k + '-v1.mp3';
+    return VOICE_BASE + k + '-member-v1.mp3';
+  }
+  function riverStill(k) { return STILL_BASE + (k === 'mylist' || k === 'search' ? 'overview' : k) + '.jpg'; }
+  var RV = { started: false, paused: false, playing: false, shown: '' };
+  var aud = new Audio(); aud.preload = 'none';
+  aud.addEventListener('ended', function () { RV.playing = false; drawRiver(); });
+  function cueRiver() {
+    var key = curTab + (member() ? ':m' : '');
+    if (RV.shown === key) return;
+    RV.shown = key; try { aud.pause(); } catch (e) {} RV.playing = false;
+    aud.src = riverAudio(curTab);
+    var bx = document.getElementById('dgMaya'); if (bx) bx.style.backgroundImage = "url('" + riverStill(curTab) + "')";
+    if (RV.started && !RV.paused) playRiver();
+  }
+  function playRiver() { aud.play().then(function () { RV.playing = true; drawRiver(); }).catch(function () { RV.playing = false; drawRiver(); }); }
+  playBtn.addEventListener('click', function () {
+    if (!RV.started) { RV.started = true; RV.paused = false; playRiver(); return; }
+    if (RV.playing) { aud.pause(); RV.playing = false; RV.paused = true; drawRiver(); } else { RV.paused = false; playRiver(); }
+  });
   function drawRiver() {
     var t = tab(curTab), lst = tabs(), i = 0;
     lst.forEach(function (x, n) { if (x.k === curTab) i = n; });
-    bubble.textContent = member() && t.sayMember ? t.sayMember : t.say;
+    cueRiver();
+    bubble.innerHTML = '<span class="ev-bub-in">' + esc(member() && t.sayMember ? t.sayMember : t.say) + '</span>';
+    playBtn.classList.toggle('go', !RV.started);
+    playBtn.innerHTML = !RV.started ? '&#9654; Start the tour' : RV.playing ? 'Pause River' : '&#9654; Play River';
     tourEl.innerHTML = tourM.innerHTML = '<a class="dg-tnav" href="' + href(lst[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Back</a><span>' + (i + 1) + ' of ' + lst.length + '</span>' +
       '<a class="dg-tnav next" href="' + href(lst[Math.min(lst.length - 1, i + 1)].k) + '"' + (i < lst.length - 1 ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Next</a>';
   }
