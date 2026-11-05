@@ -68,7 +68,7 @@ with each tab's `say` set to the script text. Later the same day: `door-pulse-v1
 Events Guide, so these are his lines, guiding the host through it. This version is his voice over a still picture of him, changing from tab to tab, his outfit
 mixed up to fit the tab (a rain poncho on Day of, an apron on Vendors). Animation and B-roll come later.
 
-Drafted by Logan 2026-11-04 for Sean to read and approve. **Nothing here is recorded or wired.** Why this Guide next: it is the other door Guide (free with
+**Approved by Sean 2026-11-05 as V1** ("this is good for a V1"), with three changes: Gear invites suggestions, Vendors (like Venue) invites adding one, and The word says flyer or link. Sean: "we want all of these guides to be intakes as well. Every time somebody suggests something, that builds our directory." Drafted by Logan 2026-11-04. Why this Guide next: it is the other door Guide (free with
 its event survey, launched 2026-11-03), so it carries the same funnel as the Restaurant Guide and has the most silent tabs of any live Guide.
 Each line is written from what the screen shows today (checked against `guide-scripts/vegan-events-guide.js`). Vegan is spelled "Veegan" only at recording time.
 No counts of chapters, no promised survey length (the Restaurant Guide rule), no points amounts. Under 20 seconds each. A changed line is a new `-v2`.
@@ -91,13 +91,13 @@ No counts of chapters, no promised survey length (the Restaurant Guide rule), no
 "Here are event venues from our Directory, and the places where Vegan events were held this year. Pick your chapter to see yours. Know a venue we're missing? Add it, and it helps every host after you. What to ask before you sign opens with the survey."
 
 **6. Vendors** (CHANGED)
-"Vegan vendors, food trucks and caterers in your chapter. Pick your chapter to see them. How to choose them and what to put in writing opens with the survey."
+"Vegan vendors, food trucks and caterers in your chapter. Pick your chapter to see them. Know one we're missing? Add it, and it helps every host after you. How to choose them and what to put in writing opens with the survey."
 
 **7. Gear** (CHANGED, same for members)
-"Everything you'd pack for an event, from canopy weights to a card reader. Tap any item to shop for it."
+"Everything you'd pack for an event, from canopy weights to a card reader. Tap any item to shop for it. Pack something that isn't on the list? Suggest it, and it helps every host after you."
 
 **8. The word** (CHANGED)
-"Start by putting your event on our calendar. Drop in your flyer and we'll read it for you. You can also suggest it to your chapter's Daily Pulse. The timeline of when to post and what to say opens with the survey."
+"Start by putting your event on our calendar. Drop in your flyer or a link, and we'll read it for you. You can also suggest it to your chapter's Daily Pulse. The timeline of when to post and what to say opens with the survey."
 
 **9. Day of** (CHANGED)
 "What to do when it rains is open to everyone, along with the other things that can turn your day. The hour-by-hour run of show, your helpers' jobs and the door open with the survey."
@@ -137,10 +137,10 @@ Mostly River's existing member lines, kept word for word where they are true; on
 "Your costs, your income, and how to set a price. Run the worksheet before you set a ticket price."
 
 **5. Venue** (existing)
-"Find a venue near you, then take the questions with you when you visit. Watch for the red flags."
+"Find a venue near you, then take the questions with you when you visit. Watch for the red flags. Know one we're missing? Add it."
 
 **6. Vendors** (existing)
-"Find vendors here, use the application questions, and put the agreement in writing."
+"Find vendors here, use the application questions, and put the agreement in writing. Know one we're missing? Add it."
 
 **7. Gear:** same line as the visitor's.
 
