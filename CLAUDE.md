@@ -53,9 +53,9 @@ the community who cannot read well, and others will not read a page. It is not a
   Vendors, Gear); Run it (The word, Day of, After); Learn from hosts (Elephants, Hosts); Work with us (Claim, Sponsorship, Get access or My list).
   The dropdown lists the 6 (each with its sections in small type), a group opens as a page of tiles (`#/g/<group>`), a section's crumb and the
   dropdown name its group (Plan it > Money), old `#/<section>` links still work, and Back / Next walks Start here, each group page, then its
-  sections. River's lines for the 5 group pages are text drafts in `GROUPS[].say`, not recorded: on a group page Play steps aside and he says
-  nothing until Sean approves the lines (Start here keeps the Overview recording). The tab once called Work with us is Sponsorship.
-  On branch `claude/funny-brown-862zti` until Sean looks; the banner padding and the phone Hide me row are on `main` (a7e8954).
+  sections. River's lines for the 5 group pages (`GROUPS[].say`, approved by Sean 2026-11-05) are recorded as `river-g-<group>-v1.mp3`
+  (planit, lineup, runit, learn, together; each checked with `stt`), so Play shows on group pages (Start here keeps the Overview recording).
+  The tab once called Work with us is Sponsorship. **Live on `main`** (merge 37695b5, recordings wired 279ac81, checked at 1440 and 390 px).
 - **Every page a person can land on has a script for its Guide** and, once Sean approves it, the recording in that Guide's roster-profile voice (Guide voices
   section; never a voice picked without Sean). A new page does not ship without its script. Redirect stubs, ad creatives and render frames are the exceptions.
 - **Logan writes the script, Sean reads and approves it, then it is recorded** (el-media tts, checked word for word with `stt`, `-v1.mp3`; a

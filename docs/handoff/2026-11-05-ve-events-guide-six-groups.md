@@ -28,3 +28,10 @@ Learn from hosts (Elephants, Hosts); Work with us (Claim, Sponsorship, Get acces
 ## After approval (Logan)
 Record each line in River's roster voice `btaSeNTVh1pGx4pjFzub` via el-media tts called from the database (pg_net), check word for word with stt,
 save as `vegan-media/media/voices/events-guide/river-g-<group>-v1.mp3`, wire `riverAudio` for `g:` keys, then check live.
+
+## Done 2026-11-05 (Sean: "merge, lines approved as written")
+- Merged to main: 37695b5 (merge commit, author Sean A. Russell).
+- River's 5 group lines recorded in btaSeNTVh1pGx4pjFzub (eleven_multilingual_v2), each stt-checked (Work with us retaken once: the first take read
+  "paid and marketing"), at `vegan-media/media/voices/events-guide/river-g-<planit|lineup|runit|learn|together>-v1.mp3`; wired in 279ac81.
+- Checked live at 1440 and 390 px: 6 groups in the dropdown and phone select, group tile pages with Play, crumbs (Plan it > Money), old #/section
+  links, Back/Next order, no sideways scroll; Play on a group page loads its mp3. Nothing left on this step.
