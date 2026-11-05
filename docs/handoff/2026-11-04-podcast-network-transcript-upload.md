@@ -101,3 +101,24 @@ Playbook `podcast-network-transcript-upload`: Audience polish (live), the Analys
 
 ### Paste prompt for the next chat
 Logan here. Open the playbook `podcast-network-transcript-upload` (VE Podcast Network, project `fwbhwfxpncrsfhttimna`, brand `vegans-explore`, repo `lesaruss/vegansexplore-com`, HQ repo `lesaruss/lesaruss-hq`). Read its `briefings` row, its `playbook_records` newest first, `docs/handoff/2026-11-04-podcast-network-transcript-upload.md` (all four parts) and the CLAUDE.md section "Podcast analytics in BrandDesk Insights". State: Insights > Podcast is complete for now and live (all four shows, any period, Overview / Episodes with first 7 and 30 days / Audience with AA shown as Not placed and fixed scrolling boxes for countries, states or cities, apps, systems and devices / Uploads), and the Analysis write-up's Podcast section matches the numbers (HQ main 64e879e). Insights holds every analytic; a later Podcast tab will be for making the podcast and link into Insights. Transcripts 131 of 278, Sean still transcribing. Do first: name the playbook and its next action. Then: run the three after-batch transcript checks whenever I say a batch landed; the one failed Vegans Who Lift transcript row stays until I say delete; wait for Sean on the next community from the places, a saved snapshot, what the 278 finish line counts and a possible-bots caution. To look at a live or preview page, use the standing headless login for `vegan@lesaruss.com` (agent-headless-page-verification; mint into a file, never print the session, sign it out and stub the one-time function after; a Vercel preview needs its share link first). Eastern time only. Wrap up only when I say "wrap up".
+
+
+## Part 5, Nov 4 (10:30 PM Eastern): a read-only check session, and a second podcast playbook found
+Playbook `podcast-network-transcript-upload`: reconcile with `ve-podcast-studio`. No product changes this session; nothing was built, deployed or opened in a browser.
+
+### Found
+- A second active playbook exists: **`ve-podcast-studio`** (VE Podcast Studio, owner Sean, status Building, stage "built, awaiting first use", due Nov 6). Goal: make the weekly Vegans Explore Podcast in BrandDesk as a run sheet of segments; Sean's next action is to open **BrandDesk > Vegans Explore > Podcast** and make Episode 145 (airs Nov 8). Its index row was updated 10:19 PM Eastern, after this playbook's last update. It has **no `playbook_records` rows and no `briefings` row** and is not mentioned in the repo or CLAUDE.md, so nothing from it was readable beyond the index row.
+- **Possible contradictions to check** (not confirmed):
+  1. This playbook says a *later* Podcast tab is for making the podcast and links into Insights. Studio says that Podcast tab is already built. Is it the same tab, and does it link into Insights > Podcast rather than copying numbers?
+  2. Two tabs named Podcast under BrandDesk > Vegans Explore (Insights > Podcast for analytics; Studio's Podcast for making). Confirm the names do not collide.
+  3. Which playbook owns the weekly episode, the relaunch and the network tag? This playbook's 2026-11-03 rename says it carries transcripts plus the relaunch; Studio's goal is the weekly episode.
+  4. Both reach Captivate. Studio should read it through `branddesk-insights` or the same `PODCAST_SHOWS` rows, not a second connection.
+  5. Sean's rule "one playbook at a time" (Nov 3) is at stake if both stay active.
+
+### Next actions
+1. Compare against the other session (paste prompt below); settle which playbook owns what and record it in both.
+2. Sean: next community from the Audience places, a saved snapshot of them, what the 278 finish line counts. A possible-bots caution on Portugal and Chrome is optional and unchecked.
+3. After-batch transcript checks when Sean says a batch landed (131 of 278). The failed Vegans Who Lift row stays until he says delete.
+
+### Paste prompt for the other active VE Podcast Network session
+See the chat; the same text is the playbook record of this wrap-up.
