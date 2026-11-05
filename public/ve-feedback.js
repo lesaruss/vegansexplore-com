@@ -8,7 +8,7 @@
 (function () {
   if (window.VEFeedback) return;
   var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-feedback';
-  var KINDS = [['broken', 'Something is broken'], ['wrong', 'Wrong or out of date'], ['confusing', 'Confusing'], ['missing', 'Something is missing'], ['idea', 'An idea'], ['praise', 'Working well'], ['other', 'Something else']];
+  var KINDS = [['suggestion', 'A change to this page'], ['broken', 'Something is broken'], ['wrong', 'Wrong or out of date'], ['confusing', 'Confusing'], ['missing', 'Something is missing'], ['idea', 'An idea'], ['praise', 'Working well'], ['other', 'Something else']];
   var PAGES = [['Home', '/'], ['Directory', '/directory'], ['Events', '/events'], ['Daily Pulse', '/pulse'], ['Media', '/media'], ['Guides', '/guides'], ['Communities', '/communities'],
     ['Passport / joining', '/passport'], ['Search', '/search'], ['My dashboard', '/dashboard'], ['My Saves', '/dashboard/saves']];
   var ICON = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/></svg>';

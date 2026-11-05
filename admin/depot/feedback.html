@@ -70,6 +70,7 @@
     <p class="sub">What people send through the Feedback button on every page (Sean, 2026-11-03). Each one arrives as New and is also in the Inbox until you move it. Open one to see the page it was about, what they said and where they were; set it to Working, Fixed or Set aside, or mark it Spam, and leave a note.</p>
     <div id="gate" class="gate" hidden></div>
     <main id="app" hidden>
+      <div id="digest" class="sub" style="margin:0 0 14px"></div>
       <div id="view"></div>
     </main>
   </div>
@@ -80,8 +81,16 @@
       var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-feedback';
       var $ = function (id) { return document.getElementById(id); };
       var ST = [['new', 'New'], ['working', 'Working'], ['fixed', 'Fixed'], ['set_aside', 'Set aside'], ['spam', 'Spam'], ['all', 'All']];
-      var KINDS = { broken: 'Something is broken', wrong: 'Something is wrong or out of date', confusing: 'Something is confusing', missing: 'Something is missing', idea: 'An idea', praise: 'Something is working well', other: 'Something else' }, rows = [], loaded = false;
+      var KINDS = { suggestion: 'A change to this page', broken: 'Something is broken', wrong: 'Something is wrong or out of date', confusing: 'Something is confusing', missing: 'Something is missing', idea: 'An idea', praise: 'Something is working well', other: 'Something else' }, rows = [], loaded = false;
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function drawDigest(set) {
+        api(typeof set === 'boolean' ? { action: 'admin_settings', digest: set } : { action: 'admin_settings' }).then(function (d) {
+          if (!d || !d.ok) return; var on = d.settings.digest;
+          $('digest').innerHTML = (on ? '<b>Daily digest is on.</b> New items come to you in one email at 8:23 AM Eastern. ' : '<b>You get an email for each new item.</b> If there are too many, switch to one email a day. ') +
+            '<button type="button" id="dg-t" class="btn">' + (on ? 'Email me each one' : 'Switch to a daily digest') + '</button>';
+          $('dg-t').onclick = function () { drawDigest(!on); };
+        });
+      }
       function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
       function when(t) { return new Date(t).toLocaleString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' ET'; }
       function path(u) { try { var x = new URL(u); return x.pathname + x.search; } catch (e) { return u; } }
@@ -138,6 +147,7 @@
         if (loaded) return drawList(r);
         $('view').innerHTML = '<p class="sub">Loading...</p>';
         api({ action: 'admin_list' }).then(function (d) { if (!d || !d.ok) { $('view').innerHTML = '<p class="sub">That did not load. Refresh to try again.</p>'; return; } rows = d.rows; KINDS = d.kinds; loaded = true; drawList(route()); });
+        drawDigest();
       }
       window.addEventListener('hashchange', render);
       function start() {
