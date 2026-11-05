@@ -1333,7 +1333,13 @@ edit the row and read the playbook's records, newest first. Status words: Buildi
   block and the Depot moved to the bottom (above). Item 3, Done 2026-11-03 (main e7008ae): the footer overlapped the dashboard's content on phones
   because `html,body{height:100%}` with the flex-column body let `.console-frame` shrink; the body now grows (`height:auto`) and the frame is
   `flex:1 0 auto`. Any page that puts the footer last in a flex-column body must not give the body a fixed height.
-- Seeded 2026-11-03 with 23 rows (Vegans Explore, and BrandDesk in HQ) from these notes. A playbook with records and no row is added from Not in the
+- Seeded 2026-11-03 with 23 rows (Vegans Explore, and BrandDesk in HQ) from these notes.
+- **Every open playbook has a BrandDesk page** (Sean, 2026-11-05: "I'm looking for theme park guides and I don't see it... where does the plan live?").
+  BrandDesk > a brand > Blueprint > Playbooks and guides lists only `briefings` rows with `type` playbook and the brand's `brand_slug`; an index row
+  and records alone do not show there. A new playbook gets its page the day it opens, filled from the active `templates` row (subtype playbook,
+  v3) through the `lesaruss-playbook` skill, with the Decision History read from `playbook_records`. Each Guide links to its plan in
+  `guide_playbooks` (guide slug to playbook slug), which Blueprint shows as "The plan behind it"; a Guide with no row reads "No playbook yet".
+  On 2026-11-05 the 16 open playbooks with no page got one and all 9 live Guides were linked (Creator and Nutrition to `ve-guides`). A playbook with records and no row is added from Not in the
   index or left as history. Not built: rows for other brands, a Needs Sean count on the dashboard.
 
 ## The new header (Sean, 2026-11-03)
