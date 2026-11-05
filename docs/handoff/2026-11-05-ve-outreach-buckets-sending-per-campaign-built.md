@@ -44,10 +44,14 @@ Date: 2026-11-05 (Thursday). Playbook: `ve-outreach-buckets` (and `ve-restaurant
 - **Orientation** is a text draft: `docs/proposals/orientation-drip-draft.md` (one for everyone with a door line, four notes a week apart).
 
 ## Not done / not proven
-- **`ve-outreach` and `ve-nurture` are not deployed.** Deploying from the commit (`ve-function-deploy`) was refused by this session's
-  permission check. Until they are deployed: campaigns cannot send even if approved (safe: the database already stopped the old path),
-  Read and Send me a test on a campaign answer unknown action, and the restaurant notes do not exist. Deploy both from their commits
-  (5458925 for ve-outreach, f0347bd for ve-nurture) and compare the source sha256.
+- **Deployed 2026-11-05 on Sean's go** ("go ahead and deploy ve-outreach and ve-nurture"): both from 2e84e1d through `ve-function-deploy`
+  (called from SQL with pg_net, so the admin token stayed in the database). ve-outreach v27 sha256 7979c590..., ve-nurture v10 082b42ac...,
+  both matching the repo. Checked live: `campaign_preview` on Checking in renders ("Checking in, Antoinette", Natuurlik), and ve-nurture
+  `tasters` returns the restaurant notes (not approved, off) beside the Events Guide notes (approved, on, unchanged). Nothing sends: Checking
+  in is a draft, the restaurant notes are off.
+- **Do not contact, the People door and All** (same day, migration `20261105_outreach_do_not_contact.sql`, applied; HQ 4697195): a
+  `ve_do_not_contact` row per listing puts the email on `people_suppression` (read by `email_is_suppressed`), stops every campaign membership,
+  holds the contact; campaigns refuse and skip them; Take off undoes it. People-section listings are the `people` door (not ready).
 - HQ preview not seen signed in; checked only by `tsc`. The sender has never sent a real campaign email.
 - Evergreen tour recordings (`-v2`): text lines updated only, nothing recorded.
 
