@@ -148,7 +148,7 @@
       '<div class="pv-gate"><h3>The rule</h3><p>' + esc(g.rule) + '</p></div>' +
       '<div class="pv-gate"><h3>What you will show us</h3><p>' + esc(g.show) + '</p></div>' +
       '<div class="pv-gate"><h3>How to get ready</h3><ul class="pv-next" style="padding-left:18px;margin:0">' + g.ready.map(function (r) { return '<li>' + esc(r) + '</li>'; }).join('') + '</ul></div>' +
-      '<div class="dg-btns">' + (prev ? '<a href="#/gates/' + prev.id + '">&larr; ' + prev.n + '</a>' : '') + (nxt ? '<a href="#/gates/' + nxt.id + '">' + nxt.n + ' &rarr;</a>' : '') + '</div>';
+      '<div class="dg-btns">' + (prev ? '<a class="dg-tnav" href="#/gates/' + prev.id + '">&larr; ' + prev.n + '</a>' : '') + (nxt ? '<a class="dg-tnav next" href="#/gates/' + nxt.id + '">' + nxt.n + ' &rarr;</a>' : '') + '</div>';
   }
   function viewJoin() {
     main.innerHTML = head('Get in', 'One way in, and it is free',
