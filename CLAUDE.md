@@ -29,13 +29,19 @@ we have systems, so we don't waste time and usage." Canon `canon-template-gate` 
 First case: `/guides/taste` had been written from a blank file twice; on 2026-11-02 it was rebuilt on the Welcome Guide (see Earn your
 Passport, part 3).
 
-## Liz speaks on every page (LOCKED standard, Sean, 2026-11-04, playbook `ve-audio-accessibility`)
+## A Guide speaks on every page (LOCKED standard, Sean, 2026-11-04, corrected 2026-11-05, playbook `ve-audio-accessibility`)
 
 "I just want Liz to speak on each page. So the same voice that we have for Liz... create a script for the first page and any page that doesn't
 have audio. I just kind of read what you put." Sean's reason: King Mustafa (water and hydration) has a reading disability, Sean knows people in
 the community who cannot read well, and others will not read a page. It is not an accessibility widget or a "Listen" button.
 
-- **Every page a person can land on has a script for Liz** and, once Sean approves it, her recording in her roster-profile voice (Guide voices
+- **Corrected 2026-11-05 (Sean): not Liz everywhere. A Guide on every page.** "Liz doesn't need to be on every page. A guide needs to be on every page. So if
+  River is the guide for the events, then it should be him that's reading it... the experience on each page with the guide should be one of our guide guiding them
+  through it." Each page is voiced by **its own Guide** (who leads which Guide: the Guide banners note under Guides are mini apps; Liz on the Restaurant Guide, River on
+  the Events Guide), in the Guide's own words, guiding, never a reader of the screen. This version: a **still picture** of the Guide beside the line (no animation; B-roll
+  and animation come later), and the picture may change from tab to tab, **outfits mixed up to fit what is going on** (Sean: "They don't have to be wearing the same
+  outfit every single time").
+- **Every page a person can land on has a script for its Guide** and, once Sean approves it, the recording in that Guide's roster-profile voice (Guide voices
   section; never a voice picked without Sean). A new page does not ship without its script. Redirect stubs, ad creatives and render frames are the exceptions.
 - **Logan writes the script, Sean reads and approves it, then it is recorded** (el-media tts, checked word for word with `stt`, `-v1.mp3`; a
   line's text must match its recording, and a change is a new `-v2`). Scripts live in `docs/proposals/liz-audio-scripts.md` until recorded.
