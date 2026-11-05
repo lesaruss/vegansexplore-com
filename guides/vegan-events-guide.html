@@ -26,7 +26,7 @@
     *,*::before,*::after{box-sizing:border-box;}
 
     /* Header: the Guide's name, then the $11 box for visitors or search for members, then the tabs. */
-    .dg-top{background:linear-gradient(120deg,rgba(10,18,12,0.92) 0%,rgba(16,40,22,0.8) 50%,rgba(31,95,34,0.55) 100%),url('/communities/philadelphia/banner.jpg') center 40%/cover no-repeat;background-color:#14301c;color:#fff;padding:16px 40px 0;}
+    .dg-top{background:linear-gradient(120deg,rgba(10,18,12,0.92) 0%,rgba(16,40,22,0.8) 50%,rgba(31,95,34,0.55) 100%),url('/communities/philadelphia/banner.jpg') center 40%/cover no-repeat;background-color:#14301c;color:#fff;padding:16px 40px 14px;}
     .dg-top-row{display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
     .dg-brand-mark{flex:1 1 280px;min-width:0;}
     .dg-eyebrow{font-size:10.5px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;color:#c5f2c7;}
@@ -66,6 +66,15 @@
     .dg-dd-list a[aria-current="page"]{background:var(--gl);color:var(--g);font-weight:800;}
     .dg-dd-list .dg-lk{margin-left:auto;color:#8a8a8a;display:inline-flex;}
     .dg-dd-list .dg-dd-n{width:22px;font-size:11px;font-weight:800;color:#8a8a8a;}
+    /* Six groups (Sean, 2026-11-05): each entry is the group, its sections in small type under it; the button names the section you are on. */
+    .dg-dd-list .dg-dd-n{align-self:flex-start;padding-top:2px;flex:0 0 22px;}
+    .dg-dd-g{display:flex;flex-direction:column;gap:2px;min-width:0;}
+    .dg-dd-g b{font-size:14px;font-weight:800;}
+    .dg-dd-g small{display:flex;flex-wrap:wrap;align-items:center;gap:0 4px;font-size:11.5px;font-weight:600;color:#6b6b6b;line-height:1.4;}
+    .dg-dd-g small svg{width:10px;height:10px;opacity:.7;}
+    .dg-dd-sec{font-weight:700;color:#5b5b5b;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:inline-flex;align-items:center;gap:4px;}
+    .dg-dd-sec svg{width:11px;height:11px;}
+    .dg-gkids{font-size:11.5px !important;font-weight:700;color:var(--g) !important;margin-top:6px !important;}
 
     /* The Guide: content left, Maya right. */
     .dg-app{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:28px;padding:20px 40px 20px;align-items:stretch;}
@@ -397,6 +406,15 @@
     @media (max-width:900px){
       #dgRail>.dg-bubble{height:110px !important;box-sizing:border-box;display:flex;flex-direction:column;padding:10px 12px !important;}
       #dgRail>.dg-bubble .ev-bub-in{flex:1 1 auto;min-height:0;overflow-y:auto;scrollbar-width:thin;padding-right:4px;}
+    }
+    /* Phones: Hide me sits right under River's picture and Play beside it, one row, the same height, rounded (Sean, 2026-11-05).
+       Beats ve-guide-corner.js, which spans the picture over three rows and stacks the two buttons under the bubble. */
+    @media (max-width:900px){
+      html #dgRail>.dg-maya{grid-row:1 !important;} html #dgRail>.dg-bubble{grid-row:1;}
+      html #dgRail>#dgPlay:not([hidden]):not(:empty){grid-column:2 / -1 !important;grid-row:2;}
+      html #dgRail>.dg-fold{grid-column:1 !important;grid-row:2;width:110px !important;margin:0 !important;}
+      html #dgRail>#dgPlay:not([hidden]),html #dgRail>.dg-fold{height:42px;min-height:42px;padding:0 10px !important;border-radius:6px !important;display:flex !important;align-items:center;justify-content:center;box-sizing:border-box;}
+      html #dgRail.dg-folded>.dg-fold{grid-column:1 / -1 !important;width:100% !important;}
     }
 
     /* The Restaurant Guide's own pieces (2026-10-10): the audit, one fix at a time, the quiz, promotions. */
