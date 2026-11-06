@@ -732,7 +732,7 @@ Deno.serve(async (req) => {
     // Then, optionally, back on the Directory (live) in the same press.
     if (action === 'listing_fix') {
       if (!me || !isId(body.listing_id)) return json({ error: 'admins_only' }, 403);
-      const { data: l } = await db.from('listings').select('id,status,category,website,instagram,facebook,tiktok,phone,address_street,address_city,address_state,address_zip,location,latitude,longitude,description,google_hours_json,menu_crawl_url,details').eq('id', body.listing_id).maybeSingle();
+      const { data: l } = await db.from('listings').select('id,status,category,website,instagram,facebook,tiktok,youtube,twitter,linkedin,email,tagline,booking_url,uber_eats_url,doordash_url,phone,address_street,address_city,address_state,address_zip,location,latitude,longitude,description,google_hours_json,menu_crawl_url,details').eq('id', body.listing_id).maybeSingle();
       if (!l) return json({ error: 'not_found' }, 404);
       const f = body.fields || {};
       const url = (v: string) => (v && !/^https?:\/\//i.test(v) ? 'https://' + v : v);
@@ -741,8 +741,12 @@ Deno.serve(async (req) => {
       const S = (k: string, max: number, fn?: (v: string) => string) => { if (typeof f[k] === 'string') { const v = clean(f[k], max); next[k] = v ? (fn ? fn(v) : v) : null; } };
       S('website', 300, url); S('facebook', 300, url); S('instagram', 80, handle); S('tiktok', 80, handle);
       S('phone', 40); S('address_street', 200); S('address_zip', 12); S('description', 2000);
+      // The listing editor's Contact and links (Sean, 2026-11-06) adds these.
+      S('tagline', 300); S('youtube', 300, url); S('linkedin', 300, url); S('twitter', 80, (v) => v.replace(/^https?:\/\/(www\.)?(twitter|x)\.com\//i, '').replace(/^@/, '').replace(/[/?#].*$/, ''));
+      S('booking_url', 500, url); S('uber_eats_url', 500, url); S('doordash_url', 500, url);
+      if (typeof f.email === 'string') { const v = clean(f.email, 200).toLowerCase(); if (v && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return json({ error: 'bad_email' }, 400); next.email = v || null; }
       if (typeof f.menu_url === 'string') { const v = clean(f.menu_url, 500); next.menu_crawl_url = v ? url(v) : null; }
-      for (const k of ['website', 'facebook', 'menu_crawl_url']) {
+      for (const k of ['website', 'facebook', 'menu_crawl_url', 'youtube', 'linkedin', 'booking_url', 'uber_eats_url', 'doordash_url']) {
         if (next[k]) { try { const u = new URL(String(next[k])); if (!/^https?:$/.test(u.protocol)) throw 0; } catch { return json({ error: 'bad_link', field: k }, 400); } }
       }
       // The kind of business (Sean, 2026-10-25, Axiology: "an online beauty and personal care brand... they sell items online...
@@ -768,7 +772,7 @@ Deno.serve(async (req) => {
         const { error } = await db.from('listings').update(patch).eq('id', l.id);
         if (error) return json({ error: error.message }, 400);
         await db.from('ve_listing_edits').insert(changed.map((k) => ({ listing_id: l.id, member_id: me, field: k === 'google_hours_json' ? 'hours' : k,
-          old_value: cur[k] ?? null, new_value: next[k] ?? null, meta: { by: 'admin', where: 'directory_review' } })));
+          old_value: cur[k] ?? null, new_value: next[k] ?? null, meta: { by: 'admin', where: body.where === 'listing_editor' ? 'listing_editor' : 'directory_review' } })));
         // A menu link: the listing's Menu tab opens it (menus are linked, not copied, Sean 2026-10-27).
         if (changed.includes('menu_crawl_url')) {
           await db.from('ve_menu_imports').upsert({ listing_id: l.id, status: 'none', link_checked_at: new Date().toISOString(), link_note: next.menu_crawl_url ? 'Menu link from Directory review' : null }, { onConflict: 'listing_id' });
