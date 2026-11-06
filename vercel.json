@@ -51,6 +51,15 @@
     }
   ],
   "rewrites": [
+    {"source": "/project", "destination": "/api/gone?p=/project"},
+    {"source": "/project/:path*", "destination": "/api/gone?p=/project/:path*"},
+    {"source": "/project_category/:path*", "destination": "/api/gone?p=/project_category/:path*"},
+    {"source": "/category/:path*", "destination": "/api/gone?p=/category/:path*"},
+    {"source": "/showcase/:path*", "destination": "/api/gone?p=/showcase/:path*"},
+    {"source": "/author/:path*", "destination": "/api/gone?p=/author/:path*"},
+    {"source": "/tag/:path*", "destination": "/api/gone?p=/tag/:path*"},
+    {"source": "/regions/:path*", "destination": "/api/gone?p=/regions/:path*"},
+    {"source": "/directory/:a/:path+", "destination": "/api/gone?p=/directory/:a/:path+"},
     { "source": "/certified/:code([A-Za-z0-9]{4,16})", "destination": "/certified" },
     {
       "source": "/communities/:city(south-florida|central-florida|north-florida|atlanta|washington-dc|delaware|maryland|virginia|west-virginia|new-york|philadelphia|los-angeles|london)",
@@ -128,302 +137,7 @@
       "source": "/dashboard/depot/:page",
       "destination": "/dashboard/center-console"
     },
-    {
-      "source": "/project/a-lo-vegano",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/aishas-plant-based-eatery",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/al-andalus",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/anixi",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/bare-blends",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/be-an-animal-hero",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/blue-tree-vegan-cafe",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/bunnie-cakes",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/c4eats",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/calypso-bites",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/christophers-kitchen",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/darbster",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/dinas-vegan-deli-desserts",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/dope-vegan",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/earths-goddess-holistics-and-juicebar",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/earthy-picks-vegan-cafe",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/el-nopalito-vegan-taqueria",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/florida-animal-rescue-alliance",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/florish",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/good-intentions",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/good-ol-cookie",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/green-haus-foods",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/greens-and-grains-boca-raton",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/house-of-vegano",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/ittle-litaly",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/jajaja-mexicana",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/josephs-organic-bakery",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/kava-garden",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/la-chia-vegana",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/la-setima-club",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/little-bear-sanctuary",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/lotus-vegan-restaurant",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/love-food-central",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/love-life-cafe",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/maizly",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/mama-chea-cafe",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/market-on-south",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/mood",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/natuurlik",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/next-stop-vegan",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/normas-plant-based-cuisine",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/noshy",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/on-the-run-vegan",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/origamy-gelato",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/plant-based-mafia",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/plantees",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/purple-ocean-superfood-bar",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/rootz-soul-cafe",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/sen-saigon",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/sobe-vegan",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/soulicious-vegan-kitchen",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/stephanies-vegan-bakery",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/the-cocinita-miami",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/the-earthy-kitchen",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/the-plantisserie",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/the-rabbit-hole",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/the-twisted-vegan",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/the-vegan-marie",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/the-vgan-corner",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/true-vegan",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/unaltrd",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/under-the-mango-tree",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/utopia-juice-bar",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/v-collective",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/vegan-cuban-cuisine",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/vegan-delights",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/vegan-international-co",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/vegan-junkie",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/vegan-planet",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/vegan-scoops",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/vegan-tierra",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/vegetarian-delight-juice-bar",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/winter-park-biscuit-company",
-      "destination": "/directory/listing"
-    },
-    {
-      "source": "/project/zen-mystery",
-      "destination": "/directory/listing"
-    }
+    {"source": "/:slug([a-z0-9]+-[a-z0-9]+-[a-z0-9]+-[a-z0-9-]+)", "destination": "/api/gone?p=/:slug"}
   ],
   "redirects": [
     { "source": "/guides/taste", "missing": [{"type": "query", "key": "unsub"}], "destination": "/passport", "permanent": false },
@@ -479,26 +193,6 @@
       "permanent": false
     },
     {
-      "source": "/10-plant-based-calcium-sources",
-      "destination": "/pulse",
-      "permanent": false
-    },
-    {
-      "source": "/10-popular-plant-based-milk-alternatives",
-      "destination": "/pulse",
-      "permanent": false
-    },
-    {
-      "source": "/10-vegan-cookbooks-that-will-revolutionize-your-kitchen",
-      "destination": "/pulse",
-      "permanent": false
-    },
-    {
-      "source": "/10-vegan-documentaries-you-cant-miss",
-      "destination": "/pulse",
-      "permanent": false
-    },
-    {
       "source": "/20-of-the-biggest-fitness-myths-vegans-who-lift-podcast",
       "destination": "/pulse/20-of-the-biggest-fitness-myths-vegans-who-lift-podcast",
       "permanent": true
@@ -514,28 +208,8 @@
       "permanent": true
     },
     {
-      "source": "/5-vegan-restaurants-with-michelin-star-ratings",
-      "destination": "/pulse",
-      "permanent": false
-    },
-    {
-      "source": "/6-orlando-vegan-businesses-you-should-know",
-      "destination": "/pulse",
-      "permanent": false
-    },
-    {
-      "source": "/9-vegan-meat-alternatives-you-should-try",
-      "destination": "/pulse",
-      "permanent": false
-    },
-    {
       "source": "/advisor",
       "destination": "/",
-      "permanent": false
-    },
-    {
-      "source": "/animal-hero-kids-at-the-st-patricks-day-parade-on-march-8-2025",
-      "destination": "/communities",
       "permanent": false
     },
     {
@@ -564,27 +238,12 @@
       "permanent": true
     },
     {
-      "source": "/besties-vegan-paradise-showcase-on-vegan-explore",
-      "destination": "/directory",
-      "permanent": false
-    },
-    {
       "source": "/beta-testers",
       "destination": "/",
       "permanent": false
     },
     {
-      "source": "/black-radish-bodega-showcase-on-vegan-explore",
-      "destination": "/directory",
-      "permanent": false
-    },
-    {
       "source": "/blog",
-      "destination": "/pulse",
-      "permanent": false
-    },
-    {
-      "source": "/blue-zones-unveiling-the-secrets-of-the-worlds-longest-living-communities",
       "destination": "/pulse",
       "permanent": false
     },
@@ -619,11 +278,6 @@
       "permanent": false
     },
     {
-      "source": "/cali-scoops-food-truck-showcase-on-vegans-explore",
-      "destination": "/directory",
-      "permanent": false
-    },
-    {
       "source": "/cancel_payment",
       "destination": "/",
       "permanent": false
@@ -646,16 +300,6 @@
     {
       "source": "/checkout",
       "destination": "/",
-      "permanent": false
-    },
-    {
-      "source": "/chef-chicoye-showcase-on-vegans-explore",
-      "destination": "/directory",
-      "permanent": false
-    },
-    {
-      "source": "/cider-press-gastropub-showcase-on-vegan-explore",
-      "destination": "/directory",
       "permanent": false
     },
     {
@@ -924,11 +568,6 @@
       "permanent": false
     },
     {
-      "source": "/disneys-hollywood-studios-showcase-on-vegans-explore",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
       "source": "/earthypicks-showcase-on-vegans-explore",
       "destination": "/directory/earthy-picks-vegan-cafe",
       "permanent": true
@@ -984,16 +623,6 @@
       "permanent": false
     },
     {
-      "source": "/fmbrewing-showcase-on-vegans-explore",
-      "destination": "/directory",
-      "permanent": false
-    },
-    {
-      "source": "/frenchmen-street-food-showcase-on-vegans-explore",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
       "source": "/from-meat-to-plants-omar-glaspys-vegan-bodybuilding-success-s5e4-vegans-who-lift-podcast",
       "destination": "/pulse/from-meat-to-plants-omar-glaspys-vegan-bodybuilding-success-s5e4-vegans-who-lift-podcast",
       "permanent": true
@@ -1022,16 +651,6 @@
       "source": "/funky-love-vegan-showcase-on-vegan-explore",
       "destination": "/directory/funky-love-fort-lauderdale",
       "permanent": true
-    },
-    {
-      "source": "/georgia-vegfest-a-feast-for-the-senses-showcase-on-vegan-explore",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
-      "source": "/georgia-vegfest-showcase-on-vegan-explore",
-      "destination": "/communities",
-      "permanent": false
     },
     {
       "source": "/getinvolved",
@@ -1094,11 +713,6 @@
       "permanent": false
     },
     {
-      "source": "/golden-dinosaurs-showcase-on-vegans-explore",
-      "destination": "/directory",
-      "permanent": false
-    },
-    {
       "source": "/good-intentions-showcase-on-vegans-explore",
       "destination": "/directory/good-intentions",
       "permanent": true
@@ -1119,11 +733,6 @@
       "permanent": true
     },
     {
-      "source": "/heal-the-planet-day-2024-showcase-on-vegans-explore",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
       "source": "/how-feldi-uses-music-to-fight-for-animal-rights-veganism-s5e5-vegans-who-lift-podcast",
       "destination": "/pulse/how-feldi-uses-music-to-fight-for-animal-rights-veganism-s5e5-vegans-who-lift-podcast",
       "permanent": true
@@ -1132,11 +741,6 @@
       "source": "/how-skateboarding-and-bodybuilding-help-this-vegan-athlete-stay-strong",
       "destination": "/pulse/how-skateboarding-and-bodybuilding-help-this-vegan-athlete-stay-strong",
       "permanent": true
-    },
-    {
-      "source": "/how-to-avoid-burnout-and-communicate-effectively-as-an-animal-rights-activist-insights-from-top-activists",
-      "destination": "/pulse",
-      "permanent": false
     },
     {
       "source": "/how-to-build-strength-and-community-in-vegan-fitness-e3-vegans-who-lift-podcast",
@@ -1164,54 +768,9 @@
       "permanent": true
     },
     {
-      "source": "/international-vegan-film-festival-showcase-on-vegan-explore",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
-      "source": "/international-vegan-food-festival-2024-showcase-on-vegans-explore",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
-      "source": "/international-vegan-food-festival-in-orlando-on-7-27-showcase-on-vegan-explore",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
-      "source": "/international-vegan-food-festival-in-orlando-showcase-on-vegans-explore",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
-      "source": "/international-vegan-food-festival-showcase-on-vegans-explore",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
-      "source": "/international-vegan-food-festivals-pizza-eating-challenge-showcase-on-vegans-explore",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
-      "source": "/introducing-the-vegans-explore-directory-program-your-guide-to-plant-based-living",
-      "destination": "/pulse",
-      "permanent": false
-    },
-    {
-      "source": "/join-the-vegan-explorer-program-grow-make-an-impact",
-      "destination": "/pulse",
-      "permanent": false
-    },
-    {
       "source": "/join-the-vegans-who-lift-academy",
       "destination": "/pulse/join-the-vegans-who-lift-academy",
       "permanent": true
-    },
-    {
-      "source": "/krazy-vegan-showcase-on-vegan-explore",
-      "destination": "/directory",
-      "permanent": false
     },
     {
       "source": "/leave-a-review-2",
@@ -1237,11 +796,6 @@
       "source": "/love-life-cafe-restaurant-meetup-on-january-25-2025",
       "destination": "/directory/love-life-cafe",
       "permanent": true
-    },
-    {
-      "source": "/magic-of-mushrooms-an-exotic-tasting-experience",
-      "destination": "/communities",
-      "permanent": false
     },
     {
       "source": "/manager",
@@ -1304,16 +858,6 @@
       "permanent": true
     },
     {
-      "source": "/one-to-save-many-showcase-on-vegans-explore",
-      "destination": "/directory",
-      "permanent": false
-    },
-    {
-      "source": "/one-to-save-many-vegan-animal-sanctuaries-showcase-on-vegans-explore",
-      "destination": "/directory",
-      "permanent": false
-    },
-    {
       "source": "/online-vs-in-person-coaching",
       "destination": "/pulse/online-vs-in-person-coaching",
       "permanent": true
@@ -1336,16 +880,6 @@
     {
       "source": "/opportunities/vegan-explorers",
       "destination": "/dashboard/opportunities",
-      "permanent": false
-    },
-    {
-      "source": "/orland-obearded-vegan-showcase-on-vegans-explore",
-      "destination": "/directory",
-      "permanent": false
-    },
-    {
-      "source": "/orlando-vegan-block-party-2024-showcase-on-vegan-explore",
-      "destination": "/communities",
       "permanent": false
     },
     {
@@ -1474,31 +1008,6 @@
       "permanent": false
     },
     {
-      "source": "/physicians-committee-showcase-on-vegan-explore",
-      "destination": "/directory",
-      "permanent": false
-    },
-    {
-      "source": "/pizzanada-showcase-on-vegans-explore",
-      "destination": "/directory",
-      "permanent": false
-    },
-    {
-      "source": "/plant-based-world-expo-2024-showcase-on-vegan-explore",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
-      "source": "/planta-files-for-bankruptcy-what-it-means-for-south-floridas-vegan-scene",
-      "destination": "/pulse",
-      "permanent": false
-    },
-    {
-      "source": "/plantapalooza-showcase-on-vegans-explore",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
       "source": "/podcast-network",
       "destination": "/media",
       "permanent": false
@@ -1519,11 +1028,6 @@
       "permanent": false
     },
     {
-      "source": "/project",
-      "destination": "/",
-      "permanent": false
-    },
-    {
       "source": "/protein-packed-and-plant-powered-meat-alternatives-ep-1-pre-vegans-podcast",
       "destination": "/pulse/protein-packed-and-plant-powered-meat-alternatives-ep-1-pre-vegans-podcast",
       "permanent": true
@@ -1532,11 +1036,6 @@
       "source": "/publix-showcase-on-vegans-explore",
       "destination": "/directory/publix-super-markets",
       "permanent": true
-    },
-    {
-      "source": "/pura-vita-la-showcase-on-vegans-explore",
-      "destination": "/directory",
-      "permanent": false
     },
     {
       "source": "/qa-session-part-1-vegans-who-lift-podcast",
@@ -1584,19 +1083,9 @@
       "permanent": false
     },
     {
-      "source": "/reliving-the-vibrant-moments-of-the-vegan-block-party-in-fort-lauderdale-showcase-on-vegan-explore",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
       "source": "/saying-goodbye-to-happy-vegan-bakers-a-south-florida-staple-that-fed-us-with-heart",
       "destination": "/directory/happy-vegan-bakers-miami-lakes",
       "permanent": true
-    },
-    {
-      "source": "/seasonedgreen-showcase-on-vegans-explore",
-      "destination": "/directory",
-      "permanent": false
     },
     {
       "source": "/self-coaching-101-vegan-bodybuilding-secrets",
@@ -1604,44 +1093,14 @@
       "permanent": true
     },
     {
-      "source": "/shenas-confections-joins-vegans-explore-fort-lauderdale-on-april-5-2025",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
       "source": "/shop",
       "destination": "/",
-      "permanent": false
-    },
-    {
-      "source": "/showcase",
-      "destination": "/directory",
-      "permanent": false
-    },
-    {
-      "source": "/showcase/2024-2",
-      "destination": "/directory",
-      "permanent": false
-    },
-    {
-      "source": "/showcasing-the-vegan-community-on-local-10",
-      "destination": "/pulse",
-      "permanent": false
-    },
-    {
-      "source": "/slice-of-the-burg-showcase-on-vegans-explore",
-      "destination": "/directory",
       "permanent": false
     },
     {
       "source": "/slutty-vegan-showcase-on-vegan-explore",
       "destination": "/directory/slutty-vegan",
       "permanent": true
-    },
-    {
-      "source": "/smorgasburg-miami-showcase-on-vegans-explore",
-      "destination": "/communities",
-      "permanent": false
     },
     {
       "source": "/south-florida-vegan-events-april-june-2025",
@@ -1669,16 +1128,6 @@
       "permanent": true
     },
     {
-      "source": "/stunt-lifestyle-at-vegan-foodie-fest",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
-      "source": "/sunni-speaks-vegan-showcase-on-vegans-explore",
-      "destination": "/directory",
-      "permanent": false
-    },
-    {
       "source": "/surveys",
       "destination": "/contact",
       "permanent": false
@@ -1704,29 +1153,9 @@
       "permanent": true
     },
     {
-      "source": "/the-corn-soup-king-showcase-on-vegans-explore",
-      "destination": "/directory",
-      "permanent": false
-    },
-    {
       "source": "/the-difference-between-plant-based-and-vegan-e13-pre-vegans-podcast",
       "destination": "/pulse/the-difference-between-plant-based-and-vegan-e13-pre-vegans-podcast",
       "permanent": true
-    },
-    {
-      "source": "/the-felicitous-september-night-market-showcase-on-vegan-explore",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
-      "source": "/the-green-table-on-wheels-showcase-on-vegans-explore",
-      "destination": "/directory",
-      "permanent": false
-    },
-    {
-      "source": "/the-green-table-smash-box-showcase-on-vegans-explore",
-      "destination": "/directory",
-      "permanent": false
     },
     {
       "source": "/the-gut-microbiome-and-plant-based-nutrition-e12-pre-vegans-podcast",
@@ -1739,24 +1168,9 @@
       "permanent": true
     },
     {
-      "source": "/the-international-vegan-food-fest-showcase-on-vegans-explore",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
-      "source": "/the-international-vegan-food-festival-celebration-showcase-on-vegan-explore",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
       "source": "/the-kind-cleaver-showcase-on-vegans-explore",
       "destination": "/directory/the-kind-cleaver-orlando",
       "permanent": true
-    },
-    {
-      "source": "/the-krazy-vegan-showcase-on-vegans-explore",
-      "destination": "/directory",
-      "permanent": false
     },
     {
       "source": "/the-mystic-coffee-showcase-on-vegans-explore",
@@ -1772,11 +1186,6 @@
       "source": "/the-rabbit-hole-showcase-on-vegans-explore",
       "destination": "/directory/the-rabbit-hole",
       "permanent": true
-    },
-    {
-      "source": "/the-struggles-of-vegan-restaurants-and-how-we-can-help",
-      "destination": "/pulse",
-      "permanent": false
     },
     {
       "source": "/the-truth-about-processed-meat-e10-pre-vegans-podcast",
@@ -1809,19 +1218,9 @@
       "permanent": true
     },
     {
-      "source": "/thepoppinvegan-showcase-on-vegans-explore",
-      "destination": "/directory",
-      "permanent": false
-    },
-    {
       "source": "/thoughts-on-the-future-of-bodybuilding",
       "destination": "/pulse/thoughts-on-the-future-of-bodybuilding",
       "permanent": true
-    },
-    {
-      "source": "/tio-paella-showcase-on-vegans-explore",
-      "destination": "/directory",
-      "permanent": false
     },
     {
       "source": "/top-10-fitness-tips-for-vegans-start-strong-and-stay-consistent",
@@ -1854,34 +1253,9 @@
       "permanent": false
     },
     {
-      "source": "/unforgettable-vegan-dining-at-renees-mexican-kitchen",
-      "destination": "/pulse",
-      "permanent": false
-    },
-    {
       "source": "/unlocking-restful-sleep-e11-pre-vegans-podcast",
       "destination": "/pulse/unlocking-restful-sleep-e11-pre-vegans-podcast",
       "permanent": true
-    },
-    {
-      "source": "/vegan-block-party-in-orlando-lifestyle-showcase-on-vegan-explore",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
-      "source": "/vegan-block-party-official-in-orlando-historic-event-showcase-on-vegans-explore",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
-      "source": "/vegan-block-party-official-in-orlando-showcase-on-vegans-explore",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
-      "source": "/vegan-block-party-showcase-on-vegans-explore",
-      "destination": "/communities",
-      "permanent": false
     },
     {
       "source": "/vegan-bodybuilding-secrets-off-season-and-bulking",
@@ -1899,16 +1273,6 @@
       "permanent": true
     },
     {
-      "source": "/vegan-eats-in-st-pete-showcase-on-vegan-explore",
-      "destination": "/directory",
-      "permanent": false
-    },
-    {
-      "source": "/vegan-events-orlando-showcase-on-vegans-explore",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
       "source": "/vegan-father-powerlifter-nick-squire-redefines-strength",
       "destination": "/pulse/vegan-father-powerlifter-nick-squire-redefines-strength",
       "permanent": true
@@ -1917,16 +1281,6 @@
       "source": "/vegan-fitness-hacks-reduce-cortisol-for-better-results-with-brooke-sellers-john-thomas",
       "destination": "/pulse/vegan-fitness-hacks-reduce-cortisol-for-better-results-with-brooke-sellers-john-thomas",
       "permanent": true
-    },
-    {
-      "source": "/vegan-foodie-fest-recap-a-celebration-of-flavor-community-connection",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
-      "source": "/vegan-foodie-fest-showcase-on-vegan-explore",
-      "destination": "/communities",
-      "permanent": false
     },
     {
       "source": "/vegan-game-show",
@@ -1944,11 +1298,6 @@
       "permanent": false
     },
     {
-      "source": "/vegan-glow-party-orlando-on-december-8-2023",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
       "source": "/vegan-international-co-showcase-on-vegans-explore",
       "destination": "/directory/vegan-international-co",
       "permanent": true
@@ -1957,11 +1306,6 @@
       "source": "/vegan-international-cos-7th-anniversary-showcase-on-vegans-explore",
       "destination": "/directory/vegan-international-co",
       "permanent": true
-    },
-    {
-      "source": "/vegan-international-food-festival-at-wall-street-orlando-showcase-on-vegan-explore",
-      "destination": "/communities",
-      "permanent": false
     },
     {
       "source": "/vegan-or-vegetarian-whats-the-real-difference-pre-vegans-podcast",
@@ -1979,39 +1323,9 @@
       "permanent": true
     },
     {
-      "source": "/vegan-street-party-meetup-on-march-8-2025",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
-      "source": "/vegan-street-party-showcase-on-vegans-explore",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
-      "source": "/vegan-street-party-st-petersburg-showcase-on-vegans-explore",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
       "source": "/vegan-travel-hacks-staying-plant-based-anywhere-in-the-world",
       "destination": "/pulse/vegan-travel-hacks-staying-plant-based-anywhere-in-the-world",
       "permanent": true
-    },
-    {
-      "source": "/vegan-vibess-miami-celebrate-4-20-with-music-food-plant-based-community-fun",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
-      "source": "/vegans-explore-at-heal-the-planet-day-a-celebration-of-sustainability-community-conscious-living",
-      "destination": "/communities",
-      "permanent": false
-    },
-    {
-      "source": "/vegans-explore-fort-lauderdale-on-april-5-2025",
-      "destination": "/communities",
-      "permanent": false
     },
     {
       "source": "/vegans-explore-mission-statement",
@@ -2019,29 +1333,9 @@
       "permanent": false
     },
     {
-      "source": "/vegans-explore-newsletter-march-30-2025",
-      "destination": "/pulse",
-      "permanent": false
-    },
-    {
-      "source": "/vegans-explore-newsletter-may-16-2025",
-      "destination": "/pulse",
-      "permanent": false
-    },
-    {
-      "source": "/vegans-explore-newsletter-may-26-2025",
-      "destination": "/pulse",
-      "permanent": false
-    },
-    {
       "source": "/vegans-explore-restaurant-meetups-plant-based-mafia",
       "destination": "/directory/plant-based-mafia",
       "permanent": true
-    },
-    {
-      "source": "/vegans-of-the-world-showcase-on-vegans-explore",
-      "destination": "/directory",
-      "permanent": false
     },
     {
       "source": "/vegans-who-lift-podcast-preview-episode",
@@ -2069,21 +1363,6 @@
       "permanent": false
     },
     {
-      "source": "/vine-vegan-showcase-on-vegans-explore",
-      "destination": "/directory",
-      "permanent": false
-    },
-    {
-      "source": "/voodu-vegan-showcase-on-vegan-explore",
-      "destination": "/directory",
-      "permanent": false
-    },
-    {
-      "source": "/vooduvegan-showcase-on-vegans-explore",
-      "destination": "/directory",
-      "permanent": false
-    },
-    {
       "source": "/we-vegan-cafe-showcase-on-vegans-explore",
       "destination": "/directory/wevegan-cafe",
       "permanent": true
@@ -2097,11 +1376,6 @@
       "source": "/why-ditching-dairy-is-so-hard-ep-5-pre-vegans-podcast",
       "destination": "/pulse/why-ditching-dairy-is-so-hard-ep-5-pre-vegans-podcast",
       "permanent": true
-    },
-    {
-      "source": "/why-is-it-so-hard-to-ditch-dairy-breaking-down-the-science-and-finding-plant-based-alternatives",
-      "destination": "/pulse",
-      "permanent": false
     },
     {
       "source": "/why-vegan-fitness-coaches-struggle-and-how-to-fix-it-s5e7-vegans-who-lift-podcast",
@@ -2254,451 +1528,6 @@
     },
     {
       "source": "/xmlrpc.php",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/author/mdsalauddin",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/author/sean-russell",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/author/tlamhaouarlesaruss-com",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/author/v-egan",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/articles",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/articles/animals",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/articles/food",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/articles/lifestyle",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/articles/marketing",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/articles/recommendations",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/articles/seasoned-vegans",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/articles/wellness",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/community",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/events",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/events/online",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/events/restaurant-meetup",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/events/the-vegan-foodie-fest",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/events/vegans-explore-live",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/events/your-city",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/newsletters",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/nonprofits",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/nutrition",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/podcasts",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/podcasts/pre-vegans-podcast",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/podcasts/soflo-vegans-podcast",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/podcasts/vegans-explore-podcast",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/podcasts/vegans-who-lift",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/regions",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/regions/atlanta",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/regions/los-angeles",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/regions/new-york-city",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/regions/north-america",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/regions/north-america/florida",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/regions/north-america/florida/central-florida",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/regions/north-america/florida/north-florida",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/regions/north-america/florida/south-florida",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/regions/north-america/pennsylvania",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/regions/north-america/pennsylvania/philadelphia",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/showcase",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/showcase/showcase-2024",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/category/showcase/showcase-2025",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/altamonte-springs",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/boca-raton",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/boynton-beach",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/brands",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/broward",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/central-florida",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/cooper-city",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/coral-gables",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/dania-beach",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/davie",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/delray-beach",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/education",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/featured-partners",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/fort-lauderdale",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/hallandale",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/hollywood",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/kendall",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/lake-worth",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/manhattan",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/meat-alternative",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/miami-beach",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/miami-dade",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/miami",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/miramar",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/new-york",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/nonprofits",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/north-lauderdale",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/orlando",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/palm-beach-gardens",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/palm-beach",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/partners-2025",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/partners-2026",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/pompano-beach",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/q1-2025",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/q1-2026",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/q2-2025",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/q3-2025",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/q4-2025",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/riviera-beach",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/sanctuaries",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/south-florida",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/st-petersburg",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/tampa",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/tequesta",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/treats",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/vendors-south-florida",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/west-palm-beach",
-      "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/project_category/weston",
       "destination": "/",
       "permanent": true
     },
