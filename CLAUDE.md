@@ -46,6 +46,16 @@ invited, valued members tasting a business's dishes and sending honest, construc
 knows who said what); it ties into certification and stays Coming until one has run. Not yet changed without Sean: the Directory's "Vegan options"
 label, the Restaurant Guide and the certification copy.
 
+**Four badges for businesses (LOCKED by Sean 2026-11-06, "lock it"; canon `canon-ve-business-badges`; migration
+`20261106_business_badges_canon.sql`).** **100% Vegan** (everything Vegan, run for the animals), **100% Plant-based** (everything plant-based,
+the owner does not claim the Vegan motivation; respected, never a lower badge), **Pre-Vegan Certified** (named items we checked to Standard
+V1.2; about the items, not the whole business; the badge opens the boxes they passed), **Pre-Vegan** (any business with plant-based options).
+The owner's own intake answers set 100% Vegan or 100% Plant-based; we never judge it for them, they see the badge before it shows and can
+change their answers, and our team checks before 100% Vegan shows. It is peace of mind for customers and protection for the owner, never a
+penalty; a plant-based place that later adds meat broke no promise. 100% Vegan businesses get more from us (first in features and on the
+podcast, the most help staying open). Our copy never names a real business or owner as an example of either badge. **Not built**: the badges
+on listings, the intake questions (Sean reads them first), the Directory's Vegan options label (a later step).
+
 ## A Guide speaks on every page (LOCKED standard, Sean, 2026-11-04, corrected 2026-11-05, playbook `ve-audio-accessibility`)
 
 "I just want Liz to speak on each page. So the same voice that we have for Liz... create a script for the first page and any page that doesn't
@@ -92,6 +102,8 @@ the community who cannot read well, and others will not read a page. It is not a
   role under each) on the dashboard, member card and linked People profile; the **Explorer survey** (`/survey?s=explorer`, 8 questions, 250, `ve_surveys.reviewed`: points held
   and the account in Depot > Profiles > Waiting for review until a person approves) is the Welcome's and the $11 window's survey; the after-$11 prompt on the dashboard; the claim
   email links the event survey; policies, facts and saved answers updated.
+  **The old 31-question survey door is retired** (Sean, 2026-11-06, "retire it"; main 494e161, `ve-mission-survey` v11): `/survey?door=1` opens the Explorer
+  survey, `door_start` and `finalize` answer 410, the send-back email links the Explorer survey; the 31 questions stay as Build your profile.
 - **Every page a person can land on has a script for its Guide** and, once Sean approves it, the recording in that Guide's roster-profile voice (Guide voices
   section; never a voice picked without Sean). A new page does not ship without its script. Redirect stubs, ad creatives and render frames are the exceptions.
 - **Logan writes the script, Sean reads and approves it, then it is recorded** (el-media tts, checked word for word with `stt`, `-v1.mp3`; a
@@ -3255,7 +3267,14 @@ menu** (`ve_menu_items` and the Menu tab are untouched).
   changed by the owner and not by a vote, one vote counted once and taken back, the owner's own vote, an unpaid account's and a signed-out one refused,
   a stranger refused reading and saving; then every row and file removed, the 50 points given back and Love Life Cafe unclaimed again. Checked in a
   browser at 1440 and 390 px on the sample business beside its About and its Menu view. **Merged to `main` 2026-11-06** (Sean: "Merge to main"); the
-  playbook is **Done**. Parked by Sean: the slot reminder email (J) and chapter rankings (K). Not yet: a real owner using it.
+  playbook is **Done**. **J and K, done 2026-11-06** (Sean: "we can move forward if it looks good"; `docs/proposals/signature-dishes-j-k.md`):
+  **the slot reminder** is `ve-nurture` kind `dish-slot` (`dishTick`): 3 days before a paid slot ends, one note to the member who paid while they still own
+  the listing, only when a featured dish would come off the page and the slot is not already kept; any day 10 AM to 5 PM Eastern; claimed by
+  `ve_dish_slots.reminded_at` / `remind_result` (migration `20261106_dish_slot_reminder.sql`); campaign `ve-dish-slot-ending`; its own approval and switch
+  (`nurture.dish_approved_hash`, `dish_on`, both set), so a change to its words puts it back to draft. **Top dishes** on every chapter hub's Overview
+  (`#hub-ov-dishes` in `communities/hub.html`, the listing's `.sd-*` card): `ve-signature-dishes` `top` (public) returns each place's most voted shown dish
+  over the last 90 days with 3 or more votes, ties to the dish that reached its count first then A to Z, never boosted; the hub keeps its chapter's
+  (address by `HUB.match`, or `communities`) and shows up to six only once there are 3. Not yet: a real owner using any of it.
 
 ## The Nutrition Guide (Sean, 2026-10-31: "build the Nutrition Guide")
 
@@ -6197,6 +6216,7 @@ decision (the CSV is the first step), and the one bad Vegans Who Lift failed-tra
 
 **The run sheet mirrors Episode 144, and Captivate is one button** (Sean, 2026-11-06, playbook `ve-podcast-studio`; handoff `docs/handoff/2026-11-06-ve-podcast-studio-ep144-format-captivate.md`): every episode is opening sound, Sean's intro, Kai top stories, Liz what's new in the Directory (our own new listings), Dani from the community, Nori around the world, one commercial, Sean's outro, Kai's tag, closing sound; Propose news fills those four Guide slots and each script hands off to the next Guide. **Send to Captivate** at the bottom of an episode takes the finished MP3, show notes and an Eastern date and time, and **Approve and schedule on Captivate** uploads it and schedules it (HQ migration 080). Episode 145's rows are fixed live; the code is on HQ branch `claude/affectionate-keller-gfobbo`, not on HQ main until Sean says merge. Not proven: a real upload and schedule.
 **Episode 145 and the studio fixes** (2026-11-06, playbook `ve-podcast-studio`; handoff `docs/handoff/2026-11-06-ve-podcast-studio-ep145-scripts.md`). HQ main has the 144 format, Propose news and Send to Captivate (5057bdd). Fixes: Propose news filters to Vegans Explore inside the query, skips social-post leads and ranks real outlets first (bdec7d4); the script writer gets max_tokens 16000 and saves nothing unless stop_reason is end_turn, since Opus 5.5's thinking counts against max_tokens (25168e1). **Every Claude call on the 5.x models needs room for thinking**: a small max_tokens returns a cut-off or empty answer (audit filed in Blueprint > Ideas). Ep 145 has Jane Velez-Mitchell's own words from VEP 43 as a drop-in after Liz's Directory spotlight and a Maya spot on the Guides before the commercial. Our own episodes' audio is read through the database (`net.http_get` on the enclosure gives the real `podcasts.captivate.fm/media/...` link), and podcast audio can run seconds off TurboScribe's YouTube timing, so stt a window before cutting a clip.
+**Episode 145, Sean's voice and the Captivate time fix** (2026-11-06, playbook `ve-podcast-studio`; handoff `docs/handoff/2026-11-06-ve-podcast-studio-ep145-voice-and-schedule-fix.md`). **Captivate reads an episode's `date` as wall time in the show's zone (America/New_York)**: Ep 144 (7:00 AM Eastern) is stored 07:00; the button had sent UTC and would have aired 145 at noon. Fixed on HQ main 60573ed. Sean's intro and outro are voiced in his own Higgsfield voice (`seed_audio`, element "Sean A. Russell"), stt-checked, long pauses trimmed; if he does not like a take he records his own. Ep 145 runs: intro, Kai's Coming up today, a commercial, Kai, Liz, a commercial, Jane's clip, Dani, Nori, Maya, a commercial, outro; the outro and Maya point to the Explorer Guide.
 **Two playbooks, one owner each** (Sean, 2026-11-05: "agreed"): `ve-podcast-studio` owns making the weekly episode in BrandDesk > Vegans Explore > **Podcast** (HQ `PodcastRoom.tsx`, `/api/branddesk/podcast`, migration 079: run sheet, news, scripts, voicing, commercials, Kai's tag, the network tag pre-roll, sending to Captivate by hand); it reads no Captivate numbers and its line "Listening numbers are in Insights" links to Insights > Podcast for the open show. `podcast-network-transcript-upload` (Watching) owns transcripts, Insights > Podcast, the Analysis write-up, the parked production service and the relaunch reels until they close (future reels: `ve-social-studio`). The top-level Podcast tab and the Insights > Podcast toggle are different levels with their own addresses.
 **Insights holds every analytic, Podcast included** (Sean, 2026-11-04: "I wanted to be able to look at all of the analytics in one go... podcasts will become its own tab later", a Podcast
 tab for making the podcast; when it comes it links into Insights > Podcast and never copies the numbers). **The Analysis write-up reads the podcast** (`branddesk-insights` v14 from 9c246f3,

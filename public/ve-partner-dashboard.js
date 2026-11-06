@@ -36,6 +36,8 @@
 (function () {
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var FRONT_ROW = Date.now() < Date.parse('2027-01-01T05:00:00Z');
+  // Guides that open with their own short survey (ve_guides.door); the list is the fallback when the server sends no door flag.
+  var DOOR_GUIDES = ['vegan-restaurant-guide', 'vegan-events-guide', 'creator-guide', 'nonprofit-guide', 'pre-vegan-business-guide'];
   // A Group Partner (canon-ve-group-partners) adds Your members, Events and Earnings (D.group from the server; the sample group feeds it).
   var VIEWS = [['home', 'Home'], ['managed', 'Managed by us'], ['gmembers', 'Your members'], ['gevents', 'Events'], ['announce', 'Announcements'], ['gift', 'Gift a membership'], ['earnings', 'Earnings'], ['insights', 'Insights'], ['audience', 'Your audience'], ['checkins', 'Check-ins'], ['saves', 'Saves'], ['page', 'Your page'], ['menu', 'Menu'], ['dishes', 'Signature dishes'], ['ads', 'Ads'], ['opps', 'Opportunities'], ['audit', 'Audit'], ['guides', 'Guides'], ['plan', 'Your plan']];
   // Views a member needs (Home, Your page, Menu and Your plan work without).
@@ -244,10 +246,13 @@
       wire(view);
     }
     function joinBox() {
-      return '<div class="vpd-join"><b>Open your whole dashboard for $11</b>' +
-        '<p>Become a Founding Member, one time, and this dashboard opens: your numbers and what people do on your page, ' + (KIND === 'show' ? 'who plays and saves your episodes, our podcast opportunities and ads, ' : 'our campaigns and ads, ') +
-        (KIND === 'place' ? 'the audit, the Guides, and every new tool we add, as soon as it is ready. Editing your page and your menu stays free.' : 'the Guides, and every new tool we add, as soon as it is ready. Editing your page stays free.') + '</p>' +
-        '<button type="button" class="vpd-btn" data-vpd-join>Become a Founding Member, $11</button></div>';
+      // Membership is free through Explorer (canon-ve-door-guides v7, Sean 2026-11-06); the $11 Passport is the other way in.
+      return '<div class="vpd-join"><b>Become a member and your whole dashboard opens</b>' +
+        '<p>Membership is free: take the short Explorer survey, about two minutes. As a member you get your numbers and what people do on your page, ' + (KIND === 'show' ? 'who plays and saves your episodes, our podcast opportunities and ads, ' : 'our campaigns and ads, ') +
+        (KIND === 'place' ? 'the audit, the Guides, and every new tool we add, as soon as it is ready. Editing your page and your menu is open to you now.' : 'the Guides, and every new tool we add, as soon as it is ready. Editing your page is open to you now.') +
+        (FRONT_ROW ? ' Join before January 1, 2027 and you are a Founding Member, for good.' : '') + '</p>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:10px"><a class="vpd-btn" href="/survey?s=explorer">Take the Explorer survey</a>' +
+        '<button type="button" class="vpd-btn o" data-vpd-join>Or join with the $11 Passport, with 1,100 points</button></div></div>';
     }
 
     // What the taps-and-clicks number is made of, e.g. "2 social links, 1 menu opened".
@@ -555,7 +560,7 @@
         // Every live Guide's banner is /public/guides/<slug>.jpg (the scene banners, 2026-11-01).
         var pic = g.cover_url || '/public/guides/' + g.slug + '.jpg?v=3';
         return '<div class="vpd-card"><div style="aspect-ratio:16/10;border-radius:8px;background:#f3f3f3 center/cover no-repeat;background-image:url(\'' + esc(pic) + '\')"></div>' +
-          '<span class="vpd-tag' + (g.owned ? '' : ' off') + '">' + (g.access_rule === 'free' ? 'Free' : g.owned ? 'Yours' : '$11 or 1,100 points') + '</span><b>' + esc(g.title) + '</b><p>' + esc(g.description || '') + '</p>' +
+          '<span class="vpd-tag' + (g.owned ? '' : ' off') + '">' + (g.access_rule === 'free' ? 'Free' : g.owned ? 'Yours' : g.door || DOOR_GUIDES.indexOf(g.slug) >= 0 ? 'Free with a short survey' : '$11 or 1,100 points') + '</span><b>' + esc(g.title) + '</b><p>' + esc(g.description || '') + '</p>' +
           '<a class="vpd-btn sm' + (g.owned ? '' : ' o') + '" href="/guides/' + esc(g.slug) + '">' + (g.owned ? 'Open it' : 'See it') + '</a></div>';
       }).join('') + '</div>';
     }
@@ -563,8 +568,8 @@
     // ---- Your plan
     function drawPlan() {
       var member = D.member_active || D.admin;
-      return '<div class="vpd-grid"><div class="vpd-card' + (member ? ' done' : '') + '"><b>Founding Member</b><p>' + (D.member_active ? 'You are a Founding Member. Your whole dashboard is open.' : D.admin ? 'Super admins see every dashboard.' : '$11 one time opens your whole dashboard.') + '</p>' +
-        (member ? '' : '<button type="button" class="vpd-btn sm" data-vpd-join>Become a Founding Member, $11</button>') + '</div>' +
+      return '<div class="vpd-grid"><div class="vpd-card' + (member ? ' done' : '') + '"><b>Member</b><p>' + (D.member_active ? 'You are a member. Your whole dashboard is open.' : D.admin ? 'Super admins see every dashboard.' : 'Free with the short Explorer survey, or $11 with the Passport and 1,100 points. Either opens your whole dashboard' + (FRONT_ROW ? ', and before January 1, 2027 makes you a Founding Member.' : '.')) + '</p>' +
+        (member ? '' : '<a class="vpd-btn sm" href="/survey?s=explorer">Take the Explorer survey</a> <button type="button" class="vpd-btn sm o" data-vpd-join>Join with the $11 Passport</button>') + '</div>' +
         '<div class="vpd-card' + (D.plan ? ' done' : '') + '"><b>' + esc(D.plan ? D.plan.name || 'Partner' : 'Partner') + '</b><p>' +
         (D.plan ? (D.plan.status === 'trialing' ? 'Your plan is paid. Your next period starts ' + (D.plan.renews_at ? esc(new Date(D.plan.renews_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })) : 'soon') + ', with every Partner.' : 'Your plan is live.' + (D.plan.renews_at ? ' Renews ' + esc(new Date(D.plan.renews_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })) + '.' : ''))
           : 'A front-row seat on every campaign, ads placed for you and a campaign manager. ' + (FRONT_ROW ? 'Front Row Start: join now and every day until January 1 is on us: your $111 covers Period 1 (January 1 to April 21, 2027), then $111 every 111 days.' : '$111 a period of 111 days; join mid-period and pay only for the days left.')) + '</p>' +

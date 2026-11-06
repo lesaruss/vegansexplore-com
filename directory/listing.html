@@ -3719,7 +3719,29 @@ function loadPartnerHome(l){
 // live at once and each one is logged (ve_listing_edits) so Vegans Explore can undo it.
 var OE_STEPS = [['about', 'About'], ['hours', 'Hours'], ['contact', 'Contact and links'], ['social', 'Social'], ['photos', 'Logo and photos']];
 var OE_DATA = null;
+// The sample business (Sean, 2026-11-06: "the whole Your Page button, I don't get. If we can't let them see it, then why do we even have it?"):
+// Your page opens the real editor there too, fed from the sample listing; every save says so in a toast and changes nothing.
+var OE_DEMO = false;
+function oeDemo(body, l){
+  var r = { ok: true };
+  if(body.action === 'owner_page') r = { ok: true, days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], limits: { logo_min: 400, photo_min: 1000, photos_max: 12 },
+    listing: { name: l.name, tagline: l.tagline || '', description: l.description || '', hours: l.google_hours_json || {}, phone: l.phone || '', website: l.website || '', instagram: l.instagram || '',
+      booking_url: l.booking_url || '', uber_eats_url: l.uber_eats_url || '', doordash_url: l.doordash_url || '', address_street: l.address_street || '', address_zip: l.address_zip || '',
+      address_city: l.address_city || '', address_state: l.address_state || '', logo_url: l.logo_url || '', photos: (l.gallery_urls || []).slice() } };
+  else if(body.action === 'owner_update'){ r = { ok: true, changed: false }; demoToast('Sample page: on your own page this saves and goes live at once. Nothing was changed here.'); }
+  else if(body.action === 'owner_get') r = { ok: true, handle: l.instagram || 'greenleafkitchen', switched_on: true, paused: false, last_fetch_at: new Date(Date.now() - 3 * 864e5).toISOString(),
+    posts: (l.gallery_urls || []).map(function(u, k){ return { id: 's' + k, thumb_url: u, status: 'shown', pinned: k === 0 }; }) };
+  else { r = { ok: false, error: 'demo' }; demoToast('Sample page: on your own page this uploads, hides or pins for real. Nothing was changed here.'); }
+  return Promise.resolve(r);
+}
 function ownerEditGo(el, l, step){
+  if(OE_DEMO){
+    var du = new URL(location.href); du.searchParams.delete('pd');
+    if(step){ du.searchParams.set('tab', 'brand'); du.searchParams.set('edit', step); } else du.searchParams.delete('edit');
+    history.pushState(null, '', du.pathname + du.search + du.hash);
+    if(step) mountOwnerEditor(el, l, step); else { OE_DEMO = false; OE_DATA = null; if(SAMPLE_DASH) SAMPLE_DASH.redraw(); }
+    return;
+  }
   var u = new URL(location.href);
   u.searchParams.delete('pd');
   if(step){ u.searchParams.set('tab', 'brand'); u.searchParams.set('edit', step); } else u.searchParams.delete('edit');
@@ -3750,6 +3772,7 @@ function oeCss(){
   document.head.appendChild(st);
 }
 function oeCall(body){
+  if(OE_DEMO) return oeDemo(body, window.__veListing || {});
   return fetch(SUPABASE_URL + '/functions/v1/ve-claims', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) })
     .then(function(r){ return r.json(); }).catch(function(){ return { error: 'network' }; });
 }
@@ -3757,6 +3780,7 @@ function oeCall(body){
 // then it does it"). Any claim unlocks it: the handle is the Instagram on the Contact step; we pull their recent posts (when the team has
 // switched that on, weekly) and show the top ones on their Social tab. They can hide, pin or pause. ve-listing-posts owner_* actions.
 function oeSocialCall(body){
+  if(OE_DEMO) return oeDemo(body, window.__veListing || {});
   return fetch(SUPABASE_URL + '/functions/v1/ve-listing-posts', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) })
     .then(function(r){ return r.json(); }).catch(function(){ return { error: 'network' }; });
 }
@@ -3865,7 +3889,7 @@ function mountOwnerEditor(el, l, step){
   var bk = el.querySelector('[data-oe-back]'); if(bk) bk.addEventListener('click', function(){ ownerEditGo(el, l, OE_STEPS[i - 1][0]); });
   el.querySelector('[data-oe-next]').addEventListener('click', function(){
     var b = this; b.disabled = true;
-    save().then(function(ok){ b.disabled = false; if(!ok) return; if(i < OE_STEPS.length - 1) ownerEditGo(el, l, OE_STEPS[i + 1][0]); else { ownerEditGo(el, l, null); setTimeout(function(){ location.reload(); }, 50); } });
+    save().then(function(ok){ b.disabled = false; if(!ok) return; if(i < OE_STEPS.length - 1) ownerEditGo(el, l, OE_STEPS[i + 1][0]); else { var dm = OE_DEMO; ownerEditGo(el, l, null); if(!dm) setTimeout(function(){ location.reload(); }, 50); } });
   });
   function dims(file){ return new Promise(function(res){ var u = URL.createObjectURL(file), im = new Image(); im.onload = function(){ res({ w: im.naturalWidth, h: im.naturalHeight }); URL.revokeObjectURL(u); }; im.onerror = function(){ res(null); URL.revokeObjectURL(u); }; im.src = u; }); }
   Array.prototype.forEach.call(el.querySelectorAll('[data-oe-up]'), function(inp){
@@ -4356,7 +4380,7 @@ function sampleView(l){
   if(owner && el && window.VEPartnerDash){
     if(!SAMPLE_DASH) SAMPLE_DASH = VEPartnerDash.mount(el, l, {
       call: function(body){ return DEMO.dashboard(body, demoToast); },
-      editPage: function(){ demoToast('Sample dashboard: on your own page, Your page opens the editor for your story, hours, links and photos.'); },
+      editPage: function(step){ OE_DEMO = true; OE_DATA = null; window.__veListing = l; ownerEditGo(el, l, step || 'about'); },
       onJoin: function(){ location.href = '/business#/start'; }
     });
     else SAMPLE_DASH.redraw();
