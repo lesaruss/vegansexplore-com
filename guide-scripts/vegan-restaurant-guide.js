@@ -829,20 +829,36 @@
     var bits = ['kind', 'label', 'q'].filter(function (k) { return q[k]; }).map(function (k) { return k + '=' + encodeURIComponent(q[k]); });
     return '#/sourcing/' + domain + (bits.length ? '?' + bits.join('&') : '');
   }
+  // A material named for the animal product reads as that product, so it shows as "<x> alternatives". Display only: the stored kind
+  // keeps the source list's own word, so the filter value, search and later imports never change (Logan, 2026-11-05).
+  var SRC_ALT = { leather: 1, suede: 1, down: 1, wool: 1, fur: 1, cashmere: 1, silk: 1, feathers: 1 };
+  function kindName(k) {
+    var t = String(k || ''); t = t.charAt(0).toUpperCase() + t.slice(1);
+    return SRC_ALT[String(k).toLowerCase()] ? t + ' alternatives' : t;
+  }
+  var SRC_MEAN = {
+    peta_approved: 'PETA has approved this company\'s products as Vegan under its own mark.',
+    fully_vegan: 'Everything this company sells is Vegan, by what the company says of itself.',
+    offers_options: 'A real supplier with Vegan lines. Not everything it sells is Vegan, so check each product with them.',
+    plant_material: 'Made from plant fiber. That is a material, not a claim that it is Vegan, so check with the supplier.'
+  };
   function srcRow(s) {
     var L = SRC_LABEL[s.label] || SRC_LABEL.offers_options;
-    var kinds = (s.kinds || []).join(', ');
-    return row({ icon: SRC_ICON, title: s.name, pre: '<span class="rg-lab ' + L[1] + '">' + esc(L[0]) + '</span>',
+    var kinds = (s.kinds || []).map(kindName).join(', ');
+    return row({ icon: SRC_ICON, title: s.name, href: '#/sourcing/s/' + encodeURIComponent(s.slug), pre: '<span class="rg-lab ' + L[1] + '">' + esc(L[0]) + '</span>',
       body: '<p class="dg-srow-p">' + esc(s.bio || (kinds ? 'Makes: ' + kinds + '.' : '')) + '</p>',
       acts: s.website ? '<a class="dg-btn dg-ghost" href="' + esc(s.website) + '" target="_blank" rel="noopener nofollow">Visit website</a>' : '' });
   }
   function viewSourcing(sub) {
+    if (/^make(\/|$)/.test(String(sub || ''))) return viewMake(String(sub).split('?')[0].split('/')[1] || '');
+    if (/^s\//.test(String(sub || ''))) return viewSupplier(decodeURIComponent(String(sub).split('?')[0].split('/')[1] || ''));
     var P = srcParams(sub), cur = SRC_DOMAINS.filter(function (d) { return d.k === P.domain; })[0];
-    var note = '<p class="dg-lede rg-srcnote">Every supplier wears one label. <b>PETA-Approved Vegan</b> is PETA\'s own mark. <b>Plant-based material</b> means the product is made from plant fiber; that is a material, not a claim that it is Vegan, so check it with them. <b>Offers vegan options</b> is a real supplier with vegan lines: check each product with them. Starred suppliers come from PETA\'s <i>Guide to Vegan Suppliers and Manufacturers</i>, October 2026.</p>';
+    var note = '<p class="dg-lede rg-srcnote">Every supplier wears one label. <b>PETA-Approved Vegan</b> is PETA\'s own mark. <b>Plant-based material</b> means the product is made from plant fiber; that is a material, not a claim that it is Vegan, so check it with them. <b>Offers vegan options</b> is a real supplier with vegan lines: check each product with them. The PETA-Approved Vegan mark and the materials list come from PETA\'s <i>Guide to Vegan Suppliers and Manufacturers</i>, October 2026.</p>';
+    var matNote = '<p class="rg-srcmat" id="rgSrcMat" hidden><b>Plant-based material</b> means made from plant fiber. It is a material, not a claim that it is Vegan, so check with the supplier.</p>';
     if (!cur) {
       main.innerHTML = head('Sourcing', 'Buy it from someone who already makes it', 'Not everything has to come out of your kitchen. Pick what you are looking for.') +
         '<div class="dg-srows" id="rgSrcDomains">' + SRC_DOMAINS.map(function (d) { return row({ icon: SRC_ICON, title: d.t, pre: '<span class="rg-promo-tag rg-soon" data-src-tag="' + d.k + '">Checking</span>', body: '<p class="dg-srow-p">' + esc(d.d) + '</p>' }); }).join('') + '</div>' +
-        '<div class="rg-week" style="margin-top:16px"><b>Buy or make</b>For each item, buy it from a supplier here or make it yourself with a recipe. Coming: recipes are written for a home kitchen today, and a restaurant needs batch sizes and costs.</div>' + note;
+        '<div class="dg-srows" style="margin-top:16px">' + row({ icon: SRC_ICON, title: 'Buy or make', href: '#/sourcing/make', pre: '<span class="rg-promo-tag rg-live">Dairy basics</span>', body: '<p class="dg-srow-p">Cheese, cream, butter, milk and more: who sells it ready-made, and the recipe to make it yourself.</p>' }) + '</div>' + note;
       srcFetch({ action: 'list', limit: 1 }).then(function (r) {
         if (curTab !== 'sourcing') return;
         var c = (r && r.counts && r.counts.domain) || {}; SRC.counts = c;
@@ -860,10 +876,11 @@
       '<div class="rg-srcbar"><input type="search" id="rgSrcQ" placeholder="Search suppliers" value="' + esc(q.q) + '" aria-label="Search suppliers">' +
       '<select id="rgSrcLabel" aria-label="Label"><option value="">All labels</option>' + Object.keys(SRC_LABEL).map(function (k) { return '<option value="' + k + '"' + (q.label === k ? ' selected' : '') + '>' + SRC_LABEL[k][0] + '</option>'; }).join('') + '</select>' +
       '<select id="rgSrcKind" aria-label="Kind"><option value="">All kinds</option></select></div>' +
-      '<div class="dg-srows" id="rgSrcList">' + skel('', 3) + '</div><div class="dg-btns" id="rgSrcMore"></div>' + note;
+      matNote + '<div class="dg-srows" id="rgSrcList">' + skel('', 3) + '</div><div class="dg-btns" id="rgSrcMore"></div>' + note;
     var listEl = document.getElementById('rgSrcList'), moreEl = document.getElementById('rgSrcMore'), kindEl = document.getElementById('rgSrcKind'), timer = null, seq = 0, got = [];
     function paint(total) {
       listEl.innerHTML = got.length ? got.map(srcRow).join('') : '<p class="dg-lede">Nothing matches. Try fewer filters.</p>';
+      var mn = document.getElementById('rgSrcMat'); if (mn) mn.hidden = !got.some(function (x) { return x.label === 'plant_material'; });
       moreEl.innerHTML = got.length < total ? '<button class="dg-btn dg-ghost" id="rgSrcMoreBtn">Show more (' + (total - got.length) + ' left)</button>' : '';
       var b = document.getElementById('rgSrcMoreBtn'); if (b) b.onclick = function () { load(true); };
     }
@@ -873,15 +890,82 @@
         if (my !== seq || curTab !== 'sourcing') return;
         if (!r || !r.ok) { listEl.innerHTML = '<p class="dg-lede">' + (r && r.error === 'guide_required' ? 'The Sourcing tab is for members.' : 'We could not load the suppliers. Try again in a moment.') + '</p>'; return; }
         got = got.concat(r.suppliers || []);
-        if (kindEl.options.length <= 1) kindEl.innerHTML = '<option value="">All kinds</option>' + (r.kinds || []).map(function (k) { return '<option value="' + esc(k) + '"' + (q.kind === k ? ' selected' : '') + '>' + esc(k.charAt(0).toUpperCase() + k.slice(1)) + '</option>'; }).join('');
+        if (kindEl.options.length <= 1) kindEl.innerHTML = '<option value="">All kinds</option>' + (r.kinds || []).map(function (k) { return '<option value="' + esc(k) + '"' + (q.kind === k ? ' selected' : '') + '>' + esc(kindName(k)) + '</option>'; }).join('');
         paint(r.total);
       }).catch(function () { listEl.innerHTML = '<p class="dg-lede">We could not load the suppliers. Try again in a moment.</p>'; });
     }
-    function changed() { history.replaceState(null, '', srcHash(cur.k, q)); load(false); }
+    SRC.back = { hash: srcHash(cur.k, q), t: cur.t };
+    function changed() { SRC.back = { hash: srcHash(cur.k, q), t: cur.t }; history.replaceState(null, '', SRC.back.hash); load(false); }
     document.getElementById('rgSrcQ').addEventListener('input', function (e) { q.q = e.target.value; clearTimeout(timer); timer = setTimeout(changed, 250); });
     document.getElementById('rgSrcLabel').addEventListener('change', function (e) { q.label = e.target.value; changed(); });
     kindEl.addEventListener('change', function (e) { q.kind = e.target.value; changed(); });
     load(false);
+  }
+
+  // One supplier on its own (#/sourcing/s/<slug>): the whole bio, the label and what it means, what they make, their website. The list
+  // clamps each bio to two rows, so this is where a supplier is read in full. The crumb goes back to the list it was opened from.
+  function viewSupplier(slug) {
+    var back = SRC.back, trail = [['Sourcing', '#/sourcing']];
+    if (back && back.make) trail.push(['Buy or make', '#/sourcing/make']);
+    if (back) trail.push([back.t, back.hash]);
+    main.innerHTML = crumb(trail.concat([['...']])) + '<div id="rgSup">' + skel('', 3) + '</div>';
+    srcFetch({ action: 'get', slug: slug }).then(function (r) {
+      if (curTab !== 'sourcing') return;
+      var box = document.getElementById('rgSup'); if (!box) return;
+      if (!r || !r.ok) { box.innerHTML = '<p class="dg-lede">' + (r && r.error === 'not_found' ? 'We could not find that supplier.' : 'We could not load this. Try again in a moment.') + ' <a href="' + (back ? back.hash : '#/sourcing') + '">Back</a></p>'; return; }
+      var s = r.supplier, L = SRC_LABEL[s.label] || SRC_LABEL.offers_options;
+      var dom = SRC_DOMAINS.filter(function (d) { return d.k === s.domain; })[0];
+      if (!back && dom) trail.push([dom.t, '#/sourcing/' + dom.k]);
+      var c = main.querySelector('.dg-crumb'); if (c) c.outerHTML = crumb(trail.concat([[s.name]]));
+      box.innerHTML = head(dom ? dom.t : 'Sourcing', esc(s.name), '') +
+        '<div class="rg-sup"><span class="rg-lab ' + L[1] + '">' + esc(L[0]) + '</span><p class="rg-sup-mean">' + esc(SRC_MEAN[s.label] || '') + '</p>' +
+        (s.bio ? '<p class="rg-sup-bio">' + esc(s.bio) + '</p>' : '<p class="rg-sup-bio">We have not written about this supplier yet. Their website says what they make.</p>') +
+        ((s.kinds || []).length ? '<h4>What they make</h4><div class="rg-sup-kinds">' + s.kinds.map(function (k) { return '<span>' + esc(kindName(k)) + '</span>'; }).join('') + '</div>' : '') +
+        '<div class="dg-btns" style="margin-top:18px">' + (s.website ? '<a class="dg-btn" href="' + esc(s.website) + '" target="_blank" rel="noopener nofollow">Visit their website</a>' : '') +
+        '<a class="dg-btn dg-ghost" href="' + (back ? back.hash : (dom ? '#/sourcing/' + dom.k : '#/sourcing')) + '">Back to the list</a></div>' +
+        '<p class="rg-sup-note">Ask the supplier about each product before it goes on your menu. Featuring a supplier here never buys its place in the list.</p></div>';
+    }).catch(function () { var box = document.getElementById('rgSup'); if (box) box.innerHTML = '<p class="dg-lede">We could not load this. Try again in a moment.</p>'; });
+  }
+
+  // Buy or make (Sean, 2026-11-05: pair the recipes we already have). Each item: who sells it ready-made, and the Cookbook recipe
+  // at home scale. #/sourcing/make lists them, #/sourcing/make/<key> opens one. The pairs live in ve-sourcing (MAKE).
+  function viewMake(key) {
+    var homeTag = '<span class="rg-promo-tag rg-soon">Home scale</span>';
+    if (!key) {
+      main.innerHTML = crumb([['Sourcing', '#/sourcing'], ['Buy or make']]) + head('Sourcing', 'Buy or make', 'For each item, buy it from someone who already makes it, or make it yourself. The recipes are written for a home kitchen; scale them up and cost them before they go on a menu.') +
+        '<div class="dg-srows" id="rgMakeList">' + skel('', 4) + '</div>';
+      srcFetch({ action: 'make' }).then(function (r) {
+        if (curTab !== 'sourcing') return;
+        var el = document.getElementById('rgMakeList'); if (!el) return;
+        if (!r || !r.ok) { el.innerHTML = '<p class="dg-lede">We could not load this. Try again in a moment.</p>'; return; }
+        el.innerHTML = (r.items || []).map(function (it) {
+          var pic = it.recipe && it.recipe.photo_url ? '<img src="' + esc(it.recipe.photo_url) + '" alt="" loading="lazy" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">' : SRC_ICON;
+          return row({ icon: pic, title: it.t, href: '#/sourcing/make/' + encodeURIComponent(it.key), pre: '<span class="rg-promo-tag ' + (it.buy ? 'rg-live">' + it.buy + (it.buy === 1 ? ' supplier' : ' suppliers') : 'rg-soon">Make it') + '</span>',
+            body: '<p class="dg-srow-p">' + (it.buy ? 'Buy it ready-made, or make it: ' : 'No supplier for this yet. Make it: ') + esc(it.recipe.title) + '.</p>' });
+        }).join('');
+      }).catch(function () { var el = document.getElementById('rgMakeList'); if (el) el.innerHTML = '<p class="dg-lede">We could not load this. Try again in a moment.</p>'; });
+      return;
+    }
+    main.innerHTML = crumb([['Sourcing', '#/sourcing'], ['Buy or make', '#/sourcing/make'], ['...']]) + '<div id="rgMake">' + skel('', 3) + '</div>';
+    srcFetch({ action: 'make_get', key: key }).then(function (r) {
+      if (curTab !== 'sourcing') return;
+      var box = document.getElementById('rgMake'); if (!box) return;
+      if (!r || !r.ok) { box.innerHTML = '<p class="dg-lede">' + (r && r.error === 'not_found' ? 'We could not find that item.' : 'We could not load this. Try again in a moment.') + ' <a href="#/sourcing/make">Back to Buy or make</a></p>'; return; }
+      var c = main.querySelector('.dg-crumb'); if (c) c.outerHTML = crumb([['Sourcing', '#/sourcing'], ['Buy or make', '#/sourcing/make'], [r.item.t]]);
+      SRC.back = { hash: '#/sourcing/make/' + encodeURIComponent(r.item.key), t: r.item.t, make: 1 };
+      var R = r.recipe, sup = r.suppliers || [];
+      var buy = '<h3 class="rg-bom-h">Buy it</h3>' + (sup.length ? '<div class="dg-srows">' + sup.map(srcRow).join('') + '</div>' :
+        '<p class="dg-lede">No supplier in our directory sells this ready-made yet. We add suppliers every week.</p>');
+      var make = '<h3 class="rg-bom-h">Make it ' + homeTag + '</h3>' + (R ? '<div class="rg-bom-rec">' +
+        (R.photo_url ? '<figure><img src="' + esc(R.photo_url) + '" alt="' + esc(R.title) + '" loading="lazy">' + (R.photo_illustrative ? '<figcaption>Illustrative photo</figcaption>' : '') + '</figure>' : '') +
+        '<b class="rg-bom-t">' + esc(R.title) + '</b>' + (R.time_text ? '<span class="rg-bom-m">' + esc(R.time_text) + '</span>' : '') +
+        '<h4>What you need</h4><ul>' + (R.ingredients || []).map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' +
+        '<h4>How to make it</h4><ol>' + (R.instructions || []).map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ol>' +
+        (R.tip ? '<p class="rg-bom-tip"><b>Tip</b> ' + esc(R.tip) + '</p>' : '') +
+        '<p class="rg-bom-note">A home-kitchen recipe from Maya\'s Cookbook in the Vegan Dairy Guide. Scale it up and work out the cost per portion before it goes on your menu.</p></div>' :
+        '<p class="dg-lede">The recipe is not available right now.</p>');
+      box.innerHTML = head('Buy or make', esc(r.item.t), 'Buy it from someone who already makes it, or make it in your own kitchen.') + '<div class="rg-bom">' + '<div>' + buy + '</div><div>' + make + '</div></div>';
+    }).catch(function () { var box = document.getElementById('rgMake'); if (box) box.innerHTML = '<p class="dg-lede">We could not load this. Try again in a moment.</p>'; });
   }
 
   // ---------- Test yourself: the quiz, one question at a time ----------
