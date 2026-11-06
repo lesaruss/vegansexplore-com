@@ -23,6 +23,7 @@
 //   { action: 'preview', kind, offer_id?, taster_id? }  super admins: {subject, html} of any email, on a real or a sample person
 //   { action: 'test', kind, offer_id?, taster_id? }     super admins: that email to the signed-in admin, [Test] in the subject
 //   { action: 'tasters' }                            super admins: Tasters on the track, what each was sent and what is next
+// Signature dishes (item J): kind 'dish-slot' in preview / test (slot_id optional), settings dish_approve / dish_on; dishTick sends.
 // Sending (Sean, 2026-11-01: "where is this living? Do we have an email system in the HQ?"): every email goes through email-send, the
 // LESARUSS email system HQ > Email reads (brand vegans-explore: VEGANS EXPLORE <hello@mail.lesaruss.ai>, replies to contact@lesaruss.com,
 // one-click unsubscribe, the postal address, the brand's suppressions, an email_sends row per email). Each email has one campaign_ref
@@ -135,6 +136,7 @@ function refOf(kind: string) {
   if (kind.startsWith('pulse-')) return { ref: `ve-taster-pulse-${kind.slice(6)}`, name: `Taster: the Daily Pulse (${kind.slice(6)})` };
   if (kind === 'door-rg-in') return { ref: 've-rg-door-in', name: "Restaurant Guide: You're in" };
   if (kind === 'door-rg-7') return { ref: 've-rg-door-7', name: 'Restaurant Guide: Day 7' };
+  if (kind === DISH_KIND) return { ref: 've-dish-slot-ending', name: 'Signature dishes: your slot ends soon' };
   const dec = DECEMBER.find(([k]) => k === kind);
   if (dec) return { ref: `ve-taster-founding-${dec[1]}`, name: `Taster: Founding deadline note (${dec[1]})` };
   return { ref: `ve-taster-${kind}`, name: `Taster: ${kind.replace('day-', 'Day ')}` };
@@ -155,7 +157,7 @@ async function registerCampaign(ref: string, name: string, subject: string, html
 // result: sent | already_sent | suppressed | invalid | failed
 async function send(kind: string, to: string, name: string | null, subject: string, html: string, testTo?: string): Promise<{ result: string; id?: string; error?: string }> {
   const { ref, name: cname } = refOf(kind);
-  const res: any = await emailSend({ brand: BRAND, campaign_ref: ref, list_ref: kind.startsWith('pulse-') || kind.startsWith('day-') || kind.startsWith('dec-') || kind.startsWith('door-') ? 've-tasters' : 've-pc-offers',
+  const res: any = await emailSend({ brand: BRAND, campaign_ref: ref, list_ref: kind.startsWith('pulse-') || kind.startsWith('day-') || kind.startsWith('dec-') || kind.startsWith('door-') ? 've-tasters' : kind === DISH_KIND ? 've-dish-owners' : 've-pc-offers',
     subject, html, recipients: [{ email: to, name: name || undefined }], ...(testTo ? { test_to: [testTo] } : {}) });
   const r = res?.results?.[0];
   if (!r) return { result: 'failed', error: res?.error || (res?.errors || []).join('; ') || 'email-send' };
@@ -383,6 +385,75 @@ async function rgTick(cfg: any, e: any, inHours: boolean, out: Record<string, nu
   }
 }
 
+// ---------- Signature dishes: a note before a paid slot ends (playbook ve-signature-dishes, item J, un-parked 2026-11-06) ----------
+// Slots 4 and 5 cost 50 points for 30 days and never renew on their own (canon-ve-signature-dishes). Three days before a paid slot ends,
+// one note to the member who bought it, while they still own the listing: the date, which featured dish leaves the page when it ends (it
+// stays saved), and Keep it 30 more days (the dashboard's own button, open in a slot's last 7 days). Only when a dish would really come off
+// the page (Logan's default): a slot nobody is using gets no email. Not when the slot is already kept (a later period of the same slot).
+// Same rules as the other drafts: its OWN switch and approval (nurture.dish_on, dish_approved_hash), draft until Sean approves the words,
+// any change to the words puts it back to draft. From VEGANS EXPLORE, signed Vegans Explore team, any day 10 AM to 5 PM Eastern (a 3-day
+// window cannot wait for Monday). One email per slot period (ve_dish_slots.reminded_at, claimed before sending).
+const DISH_KIND = 'dish-slot';
+const DISH_SAMPLE = { first: 'Alex', slot: 4, ends: '2026-12-06T18:00:00Z', biz: { name: 'Green Leaf Kitchen', slug: 'green-leaf-kitchen' }, off: ['Jerk Jackfruit Tacos'] };
+const fmtDay = (t: string) => new Date(t).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'America/New_York' });
+function dishEmail(x: { first: string; slot: number; ends: string; biz: { name: string; slug: string }; off: string[] }) {
+  const first = esc(x.first || 'there'), bn = esc(x.biz.name), day = esc(fmtDay(x.ends));
+  const dash = utm(`${SITE}/directory/${encodeURIComponent(x.biz.slug)}?tab=brand&pd=dishes`, DISH_KIND);
+  const off = x.off.map((d) => `<b>${esc(d)}</b>`), offWords = off.length > 1 ? off.slice(0, -1).join(', ') + ' and ' + off[off.length - 1] : off[0] || 'one of your dishes';
+  const foot = `You are getting this because you added a signature dish slot for ${bn} on Vegans Explore.`;
+  return { subject: `Your dish slot ${x.slot} for ${x.biz.name} ends ${fmtDay(x.ends).split(',')[0]}`, unsub: '', html: shell(P(`Hi ${first},`) +
+    P(`Slot ${x.slot} for ${bn} ends on ${day}. Slots do not renew on their own, so we wanted you to know ahead of time.`) +
+    P(`When it ends, ${offWords} ${off.length > 1 ? 'come' : 'comes'} off your page. ${off.length > 1 ? 'They stay' : 'It stays'} saved in your dashboard, so you can put ${off.length > 1 ? 'them' : 'it'} back any time.`) +
+    P('To keep it on your page, add 30 more days for 50 points. Nothing is taken unless you choose to.') +
+    btn(dash, 'Keep it 30 more days') + P('If you would rather let it end, there is nothing to do.') + sign, foot) };
+}
+async function dishHash() {
+  const m = dishEmail(DISH_SAMPLE);
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(m.subject + '\n' + m.html));
+  return Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+async function dishState(cfg: any) { const hash = await dishHash(); return { on: !!cfg.dish_on, approved: !!cfg.dish_approved_hash && cfg.dish_approved_hash === hash, hash }; }
+// The featured dishes that leave the page when this slot ends: the listing's featured dishes past the cap it will have then.
+async function dishOff(slot: any): Promise<string[]> {
+  const capAt = async (t: string) => {
+    const { data } = await db.from('ve_dish_slots').select('slot').eq('listing_id', slot.listing_id).lte('starts_at', t).gt('ends_at', t);
+    return 3 + new Set((data || []).map((r: any) => r.slot)).size;
+  };
+  const capNow = await capAt(new Date().toISOString()), capThen = await capAt(new Date(Date.parse(slot.ends_at) + 60e3).toISOString());
+  if (capThen >= capNow) return [];
+  const { data: ds } = await db.from('ve_signature_dishes').select('name').eq('listing_id', slot.listing_id).eq('featured', true).order('position').order('created_at');
+  return (ds || []).slice(capThen, capNow).map((d: any) => d.name);
+}
+async function dishCtx(slot: any) {
+  const { data: l } = await db.from('listings').select('name, slug, owner_member_id, status').eq('id', slot.listing_id).maybeSingle();
+  const { data: m } = await db.from('members').select('id, email, name, membership_status, member_class, standing').eq('id', slot.member_id).maybeSingle();
+  return { l, m, off: l ? await dishOff(slot) : [] };
+}
+async function dishTick(cfg: any, e: any, inHours: boolean, out: Record<string, number>) {
+  const ds = await dishState(cfg);
+  if (!(ds.on && ds.approved && inHours)) return;
+  const now = Date.now();
+  const { data: slots } = await db.from('ve_dish_slots').select('id, listing_id, slot, member_id, starts_at, ends_at').is('reminded_at', null)
+    .gt('ends_at', new Date(now).toISOString()).lte('ends_at', new Date(now + 3 * 864e5).toISOString()).limit(200);
+  for (const s of slots || []) {
+    if ((out.dishes || 0) >= cfg.per_tick) break;
+    // Kept already: a later period of the same slot starts where this one ends.
+    const { count: kept } = await db.from('ve_dish_slots').select('id', { count: 'exact', head: true }).eq('listing_id', s.listing_id).eq('slot', s.slot).gt('ends_at', s.ends_at);
+    const { l, m, off } = await dishCtx(s);
+    const skip = kept ? 'kept' : !l || l.status !== 'approved' || l.owner_member_id !== s.member_id ? 'not_owner' : !off.length ? 'nothing_comes_off'
+      : !m?.email || m.membership_status !== 'active' || (m.member_class || 'member') !== 'member' || (m.standing || 'good') !== 'good' || /\[TEST\]/i.test(m.name || '') ? 'not_sendable'
+      : (await suppressed(m.email)) ? 'suppressed' : null;
+    // Claim the row first so a second tick never sends twice; a skip is recorded too, so it is decided once.
+    const { data: claimed } = await db.from('ve_dish_slots').update({ reminded_at: new Date().toISOString(), remind_result: skip || 'sending' }).eq('id', s.id).is('reminded_at', null).select('id').maybeSingle();
+    if (!claimed || skip) continue;
+    const mail = dishEmail({ first: String(m!.name || '').trim().split(/\s+/)[0] || '', slot: s.slot, ends: s.ends_at, biz: { name: l!.name, slug: l!.slug }, off });
+    const r = await send(DISH_KIND, m!.email, m!.name, mail.subject, mail.html);
+    if (r.result === 'failed') { await db.from('ve_dish_slots').update({ reminded_at: null, remind_result: null }).eq('id', s.id); continue; }
+    await db.from('ve_dish_slots').update({ remind_result: r.result, remind_send_id: r.id || null }).eq('id', s.id);
+    out.dishes = (out.dishes || 0) + 1;
+  }
+}
+
 async function tick() {
   const cfg = await settings(), e = eastern(), out: Record<string, number> = { offers: 0, routed: 0, tasters: 0 };
   const inHours = e.hour >= cfg.send_hour && e.hour < 17;
@@ -403,7 +474,7 @@ async function tick() {
     }
   }
   if (!inHours) return out;
-  if (!cfg.tasters_on) { await doorTick(cfg, e, inHours, out); await rgTick(cfg, e, inHours, out); return out; }
+  if (!cfg.tasters_on) { await doorTick(cfg, e, inHours, out); await rgTick(cfg, e, inHours, out); await dishTick(cfg, e, inHours, out); return out; }
   const { data: ts } = await db.from('ve_tasters').select('id, email, name, chapter, why, suggested_guide, created_at, account_id, consent_basis, pulse_opt_in_at, ve_taster_emails(kind, sent_at)')
     .is('unsubscribed_at', null).is('member_id', null).not('why', 'is', null).not('name', 'ilike', '%[TEST]%').or('source.is.null,source.neq.pulse-subscribe').limit(1000);  // Pulse subscribers get only the Pulse (Sean, 2026-11-03)
   for (const t of ts || []) {
@@ -432,6 +503,7 @@ async function tick() {
   }
   await doorTick(cfg, e, inHours, out);
   await rgTick(cfg, e, inHours, out);
+  await dishTick(cfg, e, inHours, out);
   return out;
 }
 
@@ -486,6 +558,8 @@ Deno.serve(async (req) => {
     const cur = await settings();
     if (body.door_approve === true) { const next = { ...cur, door_approved_hash: await doorHash() }; await db.from('ve_site_settings').upsert({ key: 'nurture', value: next }); return json({ ok: true, settings: next, door: await doorState(next) }); }
     if (body.rg_door_approve === true) { const next = { ...cur, rg_door_approved_hash: await rgHash() }; await db.from('ve_site_settings').upsert({ key: 'nurture', value: next }); return json({ ok: true, settings: next, rg_door: await rgState(next) }); }
+    if (body.dish_approve === true) { const next = { ...cur, dish_approved_hash: await dishHash() }; await db.from('ve_site_settings').upsert({ key: 'nurture', value: next }); return json({ ok: true, settings: next, dish: await dishState(next) }); }
+    if (typeof body.dish_on === 'boolean') { const next = { ...cur, dish_on: body.dish_on }; await db.from('ve_site_settings').upsert({ key: 'nurture', value: next }); return json({ ok: true, settings: next, dish: await dishState(next) }); }
     if (typeof body.rg_door_on === 'boolean') { const next = { ...cur, rg_door_on: body.rg_door_on }; await db.from('ve_site_settings').upsert({ key: 'nurture', value: next }); return json({ ok: true, settings: next, rg_door: await rgState(next) }); }
     if (typeof body.door_on === 'boolean') { const next = { ...cur, door_on: body.door_on }; await db.from('ve_site_settings').upsert({ key: 'nurture', value: next }); return json({ ok: true, settings: next, door: await doorState(next) }); }
     if (typeof body.offers_on === 'boolean' || typeof body.tasters_on === 'boolean') {
@@ -493,7 +567,7 @@ Deno.serve(async (req) => {
       await db.from('ve_site_settings').upsert({ key: 'nurture', value: next });
       return json({ ok: true, settings: next });
     }
-    return json({ ok: true, settings: cur, door: await doorState(cur), rg_door: await rgState(cur) });
+    return json({ ok: true, settings: cur, door: await doorState(cur), rg_door: await rgState(cur), dish: await dishState(cur) });
   }
 
   if (action === 'offers') {
@@ -558,6 +632,12 @@ Deno.serve(async (req) => {
       if (body.listing_slug) { const { data: l } = await db.from('listings').select('id, name, slug').eq('slug', String(body.listing_slug)).eq('status', 'approved').maybeSingle();
         if (l) { const { data: c } = await db.from('ve_outreach_contacts').select('link_code').eq('listing_id', l.id).limit(1).maybeSingle(); x = { first: String(body.first || 'there'), founding: Date.now() < DEADLINE, biz: { name: l.name, slug: l.slug, code: (c as any)?.link_code || null } }; } }
       m = rgEmail(kind, x);
+    } else if (kind === DISH_KIND) {
+      // A real slot when given (its business, owner and the dish that would come off), else the sample.
+      let x: any = DISH_SAMPLE;
+      if (isId(body.slot_id)) { const { data: s } = await db.from('ve_dish_slots').select('id, listing_id, slot, member_id, ends_at').eq('id', body.slot_id).maybeSingle();
+        if (s) { const c = await dishCtx(s); if (c.l) x = { first: String(c.m?.name || '').trim().split(/\s+/)[0] || '', slot: s.slot, ends: s.ends_at, biz: { name: c.l.name, slug: c.l.slug }, off: c.off }; } }
+      m = dishEmail(x);
     } else if (DOOR_KINDS.includes(kind)) {
       m = await doorEmail(kind, SAMPLE_MEMBER);
     } else if (['day-3', 'day-7', 'day-14', 'pulse', 'dec-1', 'dec-2', 'dec-3'].includes(kind)) {
@@ -578,7 +658,7 @@ Deno.serve(async (req) => {
     const rows = (data || []).map((t: any) => ({ id: t.id, name: t.name, email: t.email, chapter: t.chapter, joined: t.created_at,
       state: t.member_id ? 'Member' : t.unsubscribed_at ? 'Stopped our emails' : 'On the list',
       sent: (t.ve_taster_emails || []).sort((a: any, b: any) => Date.parse(a.sent_at) - Date.parse(b.sent_at)) }));
-    { const cfgNow = await settings(); return json({ ok: true, rows, settings: cfgNow, door: await doorState(cfgNow), rg_door: await rgState(cfgNow) }); }
+    { const cfgNow = await settings(); return json({ ok: true, rows, settings: cfgNow, door: await doorState(cfgNow), rg_door: await rgState(cfgNow), dish: await dishState(cfgNow) }); }
   }
 
   return json({ error: 'unknown_action' }, 400);
