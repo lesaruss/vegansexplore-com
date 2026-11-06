@@ -6629,6 +6629,15 @@ above that it contradicts (the person check at the door, the 31 questions as the
   parked), Elle Jimenez and Vegans in Clermont (`ve-outreach`). No Explorer Guide exists yet: today it is two pieces, `/passport` (the Welcome)
   and `/survey?s=explorer` (8 questions, still person-reviewed); step 3 joins them.
 
+## Media drafts and the organizations door (Sean, 2026-11-06, playbook `ve-outreach`)
+
+Explorer step 3 and free media claims are live (main 2a5ef27; the Explorer survey admits on finishing; a member claims a podcast, YouTube or
+news page free; `ve-claims` v50). `ve_people_outreach.template_key` `team` sends as brand `vegans-explore`, never Sean's name (`ve-people-outreach` v9).
+32 media drafts (`media-nov`, Mon Nov 9) and 25 civic drafts (`civic-nov`, Tue Nov 10) wait in Depot > Outreach. The organizations questionnaire
+(`ve_surveys` `organizations`, Inbox source `org_survey`) is live; its slideshow preview (`business/organizations.html`, branch only) was rejected by
+Sean as the old style: rebuild it as a Guide on the Creator Guide, in his words, no travel headline, and rewrite the civic drafts before any approval.
+Handoff `docs/handoff/2026-11-06-ve-outreach-media-drafts-organizations-door.md`.
+
 ## Abuse watch: a judge decides (Sean, 2026-11-03)
 
 "Have some sort of security mechanism that looks for abuse... if an account is suspected of trying to game the system, internally we can
