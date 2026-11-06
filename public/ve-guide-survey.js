@@ -19,7 +19,7 @@
     return fetch(FN + action, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON }, body: JSON.stringify(Object.assign({ token: tok() }, body)) })
       .then(function (r) { return r.json().then(function (d) { d = d || {}; d._status = r.status; return d; }); });
   }
-  // Words a member reads. Draft for Sean (docs/proposals/shared-intake-questions.md); nothing shows until a question is shared.
+  // Words a member reads, approved by Sean 2026-11-06 (docs/proposals/membership-rule-wording-steps-3-9.md).
   var T = { filled: 'Filled in from what you told us before. Change it if it is different now.', list: 'You answered these before, so we filled them in:', change: 'Change' };
   function mount(el, opts) {
     if (!document.getElementById('vgs-css')) { var st = document.createElement('style'); st.id = 'vgs-css'; st.textContent = CSS; document.head.appendChild(st); }
@@ -58,7 +58,8 @@
       if (!L.length) return '';
       return '<p class="vgs-h">' + esc(T.list) + '</p>' + L.map(function (q) { return '<p><a class="vgs-b g" href="#q/' + (S.questions.indexOf(q) + 1) + '">' + esc(T.change) + ': ' + esc(q.prompt) + '</a></p>'; }).join('');
     }
-    function finished(res) { say('<h2 class="vgs-q">You finished.</h2><p class="vgs-h">Thank you. Your answers are saved.</p>' + sharedList()); if (opts.onDone) opts.onDone(res || {}); }
+    // opts.doneHtml replaces the finish screen (the Explorer survey: a person reads it before it admits, membership_rule_v6).
+    function finished(res) { say((typeof opts.doneHtml === 'function' ? opts.doneHtml(A) : opts.doneHtml) || ('<h2 class="vgs-q">You finished.</h2><p class="vgs-h">Thank you. Your answers are saved.</p>' + sharedList())); if (opts.onDone) opts.onDone(res || {}); }
     function save() {
       var q = S.questions[n - 1], v = A[q.id], err = document.getElementById('vgsErr');
       if (q.required && empty(v)) { err.textContent = 'Pick or write an answer to go on.'; return; }
@@ -66,6 +67,7 @@
       if (busy) return; busy = true; var b = document.getElementById('vgsNext'); b.disabled = true;
       api('survey_answer', { survey: S.slug, id: q.id, value: empty(v) ? null : v }).then(function (d) {
         busy = false;
+        if (d.error === 'under_review') { S.completed = true; return finished(d); }
         if (d.error) { b.disabled = false; err.textContent = d.error === 'not_eligible' ? 'This account cannot take this survey. Sign in again, or get your Passport.' : 'That did not save. Try again.'; return; }
         // The server wrote every carried answer into this intake with this save; they stay skipped on the way through and listed at the end.
         var nx = step(n - 1, 1);

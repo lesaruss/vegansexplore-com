@@ -156,6 +156,11 @@ Deno.serve(async (req) => {
       const { data, error } = await supabase.rpc('ve_survey_answer', { p_member: memberId, p_survey: String(body.survey ?? ''), p_question: String(body.id ?? ''), p_value: body.value ?? null });
       if (error) throw new Error('survey_answer: ' + error.message);
       if (data?.error) return json(data, data.error === 'not_eligible' ? 403 : 400);
+      // The Explorer survey waits for a person (membership_rule_v6, Sean 2026-11-06): the team hears the moment it is finished.
+      if (data?.review === 'pending') {
+        const { data: m } = await supabase.from('members').select('name, email').eq('id', memberId).maybeSingle();
+        await notifyTeam(`Explorer survey waiting for review: ${m?.name || m?.email || 'a new member'}`, `${m?.name || ''} (${m?.email || ''}) finished the Explorer survey. Review it in Depot > Profiles > Waiting for review: https://vegansexplore.com/admin/depot/profiles#review`);
+      }
       return json(data);
     }
     if (action === 'shown') {
@@ -178,7 +183,8 @@ Deno.serve(async (req) => {
       const { data, error } = await supabase.rpc('ve_profile_admin_get', { p_member: mid });
       if (error) throw new Error('admin_get: ' + error.message);
       if (!data) return json({ error: 'not_found' }, 404);
-      return json({ ok: true, profile: data });
+      const { data: guideSurveys } = await supabase.rpc('ve_member_guide_surveys', { p_member: mid });
+      return json({ ok: true, profile: data, guide_surveys: guideSurveys ?? [] });
     }
 
 

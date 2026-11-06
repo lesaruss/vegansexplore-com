@@ -1111,6 +1111,7 @@
         if (!e) { el.innerHTML = head() + '<div class="vev-form"><h2>That event is not on the calendar</h2><button type="button" class="vev-btn ghost" data-go="list">See the events</button></div>'; bind(); return; }
         if (sent) {
           el.innerHTML = head(e.title) + '<div class="vev-form"><h2>Thanks, your claim is in</h2><p class="lead">Our team checks every claim before it is approved, usually within a day or two, and emails you either way. Once it is approved, ' + esc(e.title) + ' carries your name, and you can message the guests who say yes, through us.</p>' +
+            '<p>While you wait: the event survey is free, opens the Vegan Events Guide and pays up to 250 points. <a class="vev-btn" href="/survey?s=vegan-events-guide">Take the event survey</a></p>' +
             '<p class="lead">While you wait, the <a class="vev-link" href="/guides/vegan-events-guide">Vegan Events Guide</a> is free with a short event survey, and it has what we know about running a Vegan event, from the 12-week plan to what to do when it rains.</p>' +
             '<div class="vev-nav"><button type="button" class="vev-btn ghost" data-go="event">Back to the event</button></div></div>';
           bind(); return;
