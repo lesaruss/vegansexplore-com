@@ -204,12 +204,14 @@ async function readBlueprint(id: string, reply: string, maxTokens = MAX_TOKENS) 
   const body = [idea.title, idea.detail].filter(Boolean).join('\n\n');
   const r = await readCore({ body, links: idea.links || [], files: idea.files || [], thread }, maxTokens);
   if (r.error) {
-    await db.from('blueprint_ideas').update({ read_error: r.detail ? `${r.error}: ${r.detail}` : r.error, read_at: now, files: r.files, updated_at: now }).eq('id', id);
+    // The failed try stays in the conversation too, so the scroll shows what happened (never a half read: only the error line).
+    const failNote = { role: 'logan', text: r.error === 'cut_off' ? 'My read was cut off before it finished, so I saved nothing. Read it again.' : 'My read did not finish, so I saved nothing. Read it again.', error: r.error, at: now };
+    await db.from('blueprint_ideas').update({ read_error: r.detail ? `${r.error}: ${r.detail}` : r.error, read_at: now, files: r.files, thread: [...thread, failNote], updated_at: now }).eq('id', id);
     await db.from('blueprint_idea_events').insert({ idea_id: id, by: 'Logan', action: 'read_failed', detail: { error: r.error } });
     return { error: r.error, detail: r.detail || null };
   }
   const read = r.read;
-  const patch: Record<string, unknown> = { read, read_error: null, read_at: read.at, files: r.files, thread: [...thread, { role: 'logan', text: read.ask, at: read.at }], updated_at: read.at };
+  const patch: Record<string, unknown> = { read, read_error: null, read_at: read.at, files: r.files, thread: [...thread, { role: 'logan', text: read.ask, read, at: read.at }], updated_at: read.at };
   if (idea.status === 'new' && (read.playbook || read.new_playbook) && (!idea.suggested_playbook || idea.suggested_by_read)) {
     patch.suggested_playbook = read.playbook || 'new';
     patch.suggest_reason = read.playbook ? `From Logan's read of the idea and its files (above).` : `From Logan's read: nothing fits, so a new playbook, ${read.new_playbook}.`;
