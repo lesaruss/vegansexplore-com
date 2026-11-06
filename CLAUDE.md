@@ -2469,6 +2469,7 @@ The listing editor's **Upload a logo / Replace the logo** (`ve-listing-admin.js`
 we implement that into the replace logo button?") opens the same logo editor under the logo, with the logo as it is loaded in, and
 links to look on (their website, Instagram, Facebook, Google Images); **Save logo** saves it the Logos way (`add_logo_url`,
 `logo_set`), so it shows in Logos > Done. Copy it into our storage and Remove stay as they were.
+**Contact and links in Edit listing** (Sean, 2026-11-06, playbook `ve-feedback`: "I don't have a way of updating that information... from my phone"): every listing that is not a person has one line, about, website, Instagram, Facebook, TikTok, YouTube, X, LinkedIn, phone, email and booking link; food places add menu link, Uber Eats and DoorDash; places with a storefront add each day's hours. Only what changed is sent, through `ve-outreach` `listing_fix` (each change a `ve_listing_edits` row, `where: listing_editor`); on phones the editor fills the screen, fields stack and inputs are 16px. `ve-outreach` v28 from 0d6eb2b.
 **The listing editor follows what it is** (Sean, 2026-10-27: "the main section... should come after the logo... based off what you
 choose, the next part populates"). Name, Logo, then **What it is** (main section, sub-section, Also show it under); nothing more
 shows until a main section is picked, and Save asks for one. Media (Podcasts, YouTube, News Outlets, Other media, Documentaries &
