@@ -79,3 +79,22 @@ insert into stream_events (timestamp, owner, station, summary, keywords, status,
 select now(), 'Logan', 'vegans-explore', 've-explorer-path: Explorer path and badges locked (canon-ve-door-guides v10, canon-ve-group-partners v5); review gate open for Sean.',
   array['ve-explorer-path','canon','badges'], 'completed', 'https://claude.ai/artifact/QwQRB9sMGVk7GJKB4Whgiz'
 where not exists (select 1 from stream_events where summary like 've-explorer-path: Explorer path and badges locked%');
+
+-- Sean, 2026-11-06 (same session): "I agree. Let's go with what you just said." The review gate closes on v7's straight-in.
+update knowledge_records
+set body = jsonb_set(body, '{explorer_badges_v10,review_gate}', to_jsonb('Decided (Sean, 2026-11-06): v7 stands. Finishing Explorer admits at once, no person check, so the paths page opens in the same sitting; the abuse watch is the guard and voiding, suspending or banning stays Sean''s call. The explorer survey''s reviewed flag is to be turned off when the build reaches v7 step 3.'::text)),
+  change_summary = change_summary || ' Review gate decided: v7 straight-in.',
+  updated_at = now()
+where slug = 'canon-ve-door-guides' and body #>> '{explorer_badges_v10,review_gate}' like 'Open:%';
+
+update ve_playbook_index
+set status = 'building', owner = 'Logan',
+  stage = 'Locked 2026-11-06 (canon-ve-door-guides v10 on top of v7, group partners v5). v7 step 1 (Explorer re-weight) built. Review gate decided: straight-in.',
+  next_action = 'Logan: v7 step 2, tag Explorer''s questions as the shared questions; then step 3 (Welcome ends in Explorer, straight-in admission, reviewed flag off, toughest-thing question added at 35 points). Badge look from the v10 mock at step 6.',
+  updated_at = now()
+where slug = 've-explorer-path' and status = 'waiting_on_sean';
+
+insert into playbook_records (slug, brand_slug, author, kind, source, body)
+select 've-explorer-path', 'vegans-explore', 'Logan', 'decision', 'text',
+  've-explorer-path: review gate decided (Sean, 2026-11-06: "I agree. Let''s go with what you just said."). Explorer admits straight in on finishing, as canon v7 says; the abuse watch is the guard. The explorer survey''s reviewed flag comes off at v7 step 3. Playbook status Building, owner Logan, next v7 step 2.'
+where not exists (select 1 from playbook_records where slug = 've-explorer-path' and body like 've-explorer-path: review gate decided%');
