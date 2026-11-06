@@ -8,6 +8,7 @@
 //   POST { action: 'scan_batch', site, limit? }     read the next pages (default 60); closes the run and groups issues when done
 //   POST { action: 'aggregate', site }              group page problems into signal_issues again
 //   POST { action: 'issues', site }                 the issue list and the latest run
+//   POST { action: 'gsc_urls', site, days? }        every address Google showed for us (default 480 days), with clicks and impressions
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -72,6 +73,21 @@ async function gscCheck(site: any) {
   return { ok: true, property: prop.siteUrl, permission: prop.permissionLevel, period: { startDate, endDate },
     totals: tot.rows?.[0] ?? tot.error?.message ?? null, top_queries: queries.rows ?? [], top_pages: pages.rows ?? [],
     sitemaps: (maps.sitemap ?? []).map((m: any) => ({ path: m.path, lastSubmitted: m.lastSubmitted, lastDownloaded: m.lastDownloaded, errors: m.errors, warnings: m.warnings, contents: m.contents })) };
+}
+
+
+async function gscUrls(site: any, days: number) {
+  if (!site.gsc_property) return { ok: false, error: 'run gsc_check first' };
+  const tok = await googleToken('https://www.googleapis.com/auth/webmasters.readonly');
+  const enc = encodeURIComponent(site.gsc_property); const rows: any[] = [];
+  for (let start = 0; start < 100000; start += 25000) {
+    const r = await (await fetch(`https://www.googleapis.com/webmasters/v3/sites/${enc}/searchAnalytics/query`, { method: 'POST', headers: { Authorization: 'Bearer ' + tok, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ startDate: dayEastern(-days), endDate: dayEastern(-2), dimensions: ['page'], rowLimit: 25000, startRow: start }) })).json();
+    if (r.error) return { ok: false, error: r.error.message };
+    rows.push(...(r.rows ?? []).map((x: any) => ({ url: x.keys[0], clicks: x.clicks, impressions: x.impressions })));
+    if ((r.rows ?? []).length < 25000) break;
+  }
+  return { ok: true, days, count: rows.length, urls: rows };
 }
 
 // ---- Sitemap and page scan ----
@@ -197,6 +213,7 @@ Deno.serve(async (req) => {
     if (!site) return json({ error: 'unknown_site' }, 404);
 
     if (body.action === 'gsc_check') return json(await gscCheck(site));
+    if (body.action === 'gsc_urls') return json(await gscUrls(site, Math.min(Math.max(Number(body.days) || 480, 7), 480)));
     if (body.action === 'issues') {
       const { data: issues } = await db.from('signal_issues').select('*').eq('site', site.site).order('status').order('affected', { ascending: false });
       const { data: run } = await db.from('signal_scan_runs').select('*').eq('site', site.site).order('started_at', { ascending: false }).limit(1).maybeSingle();
