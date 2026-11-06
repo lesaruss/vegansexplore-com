@@ -16,7 +16,7 @@
  *   Pulse          our episodes with creators, played in place (PULSE_PICKS, ve-podcast)
  *   Become a creator  the creator application itself (ve-gigs' Apply, #/next/join/<n>, ve-ambassador creator_apply)
  *   My list        members: saved tips, episodes and creators (ve_guide_saves through ve-cookbook: fix, episode, listing)
- *   Get access     visitors: free with the creator survey (ve_surveys 'creator-guide'), or the $11 Passport
+ *   Get access     visitors: free with the creator survey (ve_surveys 'creator-guide'), the only way in (membership rule v6: a business Guide opens with its intake)
  *
  * Access is every Guide's: ve-guide-unlock for this slug decides; an active Ambassador has it (via 'ambassador').
  * The members-only text (tips 2 to 10) is ve_guides.content_html, handed out only to its owners. Never add it to this repo.
@@ -68,7 +68,7 @@
     { k: 'pulse', label: 'Pulse', lock: 1, voice: 'tab-pulse', say: 'Our conversations with creators: how they built a following, made a living and kept going. Play them right here.' },
     { k: 'mylist', label: 'My list', mine: 1, voice: 'tab-mylist', say: 'Everything you saved is right here: your tips, episodes and creators.' },
     // Kai's old Get access line said eleven dollars; this one is text until Sean approves it and it is recorded (-v2).
-    { k: 'join', label: 'Get access', guest: 1, say: 'The whole Creator Guide is free when you take the short creator survey. It makes you a member, and your answers are how we match you to campaigns.' },
+    { k: 'join', label: 'Get access', guest: 1, say: 'The whole Creator Guide is free when you take the short creator survey. If you\'re not a member yet, it makes you one, and your answers are how we match you to campaigns.' },
     { k: 'next', label: 'Become a creator' }
   ];
   var S = 'stroke="#1f5f22" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
@@ -145,7 +145,7 @@
   function skel(title, lines) { var h = '<div class="dg-skel">' + (title ? '<h3>' + esc(title) + '</h3>' : '<i></i>'); for (var i = 0; i < (lines || 3); i++) h += '<i style="width:' + (92 - i * 9) + '%"></i>'; return h + '</div>'; }
   function gated(inner, title, text) {
     return '<div class="dg-gated"><div class="dg-blur" aria-hidden="true">' + inner + '</div><div class="dg-gate"><span class="dg-lockic">' + LOCK_SVG.replace(/width="11" height="11"/, 'width="16" height="16"').replace('currentColor', '#1f5f22') + '</span>' +
-      '<b>' + esc(title) + '</b><p>' + esc(text) + ' Take the free creator survey to open the rest of the Guide. It makes you a member.</p>' + surveyBtns() + '</div></div>';
+      '<b>' + esc(title) + '</b><p>' + esc(text) + ' Take the free creator survey to open the rest of the Guide.' + (ST.active ? '' : ' It makes you a member.') + '</p>' + surveyBtns() + '</div></div>';
   }
   // Free with the Guide's survey (Sean, 2026-11-06), the Events Guide's way: about ten minutes, up to 250 points, opens the Guide and a membership.
   var SURVEY_URL = '/survey?s=' + SLUG;
@@ -417,8 +417,8 @@
       '<li><b>All ten tips</b>, each with a real Vegan creator doing it and three action items for this week.</li>' +
       '<li><b>The Creator Pulse:</b> our conversations with creators, played right here.</li>' +
       '<li><b>My list</b>, to keep the tips, episodes and creators you are working from.</li></ul></div>';
-    main.innerHTML = head('Get access', 'Open the whole Creator Guide', 'The Creator Guide is free when you take the short creator survey. Your answers are how we match you to paid campaigns, collabs and events, and finishing it makes you a Vegans Explore member. The overview, People doing it and Become a creator stay open to everyone.') + list;
-    main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox"><div class="dg-big">Free<small>with the creator survey</small></div><p>About ten minutes, up to 250 points, and your membership opens when you finish. Before midnight Eastern on January 1, 2027, that makes you a Founding Member.</p><button type="button" class="dg-btn" data-survey>Take the creator survey, free</button>' +
+    main.innerHTML = head('Get access', 'Open the whole Creator Guide', 'The Creator Guide is free when you take the short creator survey. Your answers are how we match you to paid campaigns, collabs and events, ' + (ST.active ? 'and you are already a member, so this survey just opens the Guide.' : 'and finishing it makes you a Vegans Explore member.') + ' The overview, People doing it and Become a creator stay open to everyone.') + list;
+    main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox"><div class="dg-big">Free<small>with the creator survey</small></div><p>' + (ST.active ? 'About ten minutes, up to 250 points, and the Guide opens when you finish.' : 'About ten minutes, up to 250 points, and your membership opens when you finish. Before midnight Eastern on January 1, 2027, that makes you a Founding Member.') + '</p><button type="button" class="dg-btn" data-survey>Take the creator survey, free</button>' +
       (access === 'guest' ? '<p class="dg-pp">Already a member? <a href="#" data-signin>Sign in</a>.</p>' : '') + '</div>');
   }
 
