@@ -6610,7 +6610,23 @@ above that it contradicts (the person check at the door, the 31 questions as the
   never open on our launch or ask them to support us or join our journey. Every email is a draft for Sean.
 - **Build order**: 1 re-weight Explorer and add the two options; 2 tag Explorer as the shared questions; 3 the Welcome ends in Explorer,
   straight-in admission; 4 the paths page; 5 path Guides gated with Explorer inline; 6 badges on profiles and as tags; 7 Build your profile;
-  8 the invitations as drafts; 9 policies, the Guides' facts, saved answers.
+  8 the invitations as drafts; 9 policies, the Guides' facts, saved answers. Step 1 (the re-weight) is built; the rest is not.
+- **v10, its own playbook `ve-explorer-path`** (Sean, 2026-11-06, concept session with V, "lock it"; canon `canon-ve-door-guides` v10 key
+  `explorer_badges_v10`, `canon-ve-group-partners` v5; migration `20261106_explorer_path_playbook_badges_v10.sql`; handoff
+  `docs/handoff/2026-11-06-ve-explorer-path-badges-locked.md`). The Explorer build moved here from `ve-outreach`. Added to v7: a new optional
+  question, **"What is one of the toughest things you are dealing with on your Vegan journey?"** (35 points, taken from "worth it" 75 to 40): it
+  suggests a Guide, and a person reads the answers into a monthly "what people ask for" list beside the search queue that feeds new Guides,
+  podcast topics and social. **Badges look like the Pre-Vegan Certification stamp** (ring, mark, dashed stamp card; path name over the top and
+  "Vegans Explore" under the bottom, both upright), **a color per path**, Explorer in the stamp green; mock
+  https://claude.ai/artifact/QwQRB9sMGVk7GJKB4Whgiz. A member sets a **main badge** (default: the path finished most recently), shown on the
+  corner of their picture and never repeated; others as small seals with their name on hover or tap; Explorer never on cards or as the main
+  badge. The profile header: a bigger picture, the name to its right, badge pills in up to two rows. A Restaurant or Nonprofit badge links to a
+  listing only after the claim is approved. Each badge also opens that path's own bounties. The review gate is v7's straight-in (Sean
+  confirmed). **Group Partners v5**: the guest pass retires once Explorer is live; no exclusivity rule; ticketing open to any group; perks by
+  activity here (a monthly chapter ranking of events held, tickets sold, members brought in). Ideas filed elsewhere: the event booth program
+  and scavenger hunt (`ve-events-guide`, extend `ve-hunt`, the Vault's PIN as purchase proof), event food delivery and colleges (Blueprint,
+  parked), Elle Jimenez and Vegans in Clermont (`ve-outreach`). No Explorer Guide exists yet: today it is two pieces, `/passport` (the Welcome)
+  and `/survey?s=explorer` (8 questions, still person-reviewed); step 3 joins them.
 
 ## Abuse watch: a judge decides (Sean, 2026-11-03)
 
