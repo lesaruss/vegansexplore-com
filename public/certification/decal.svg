@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000" role="img" aria-label="Selected dishes certified here">
+  <!-- Window decal, 8 x 10 in, DRAFT (B5, 2026-11-06). Never a stand-alone restaurant seal: the count, what else they serve and the live
+       status link are part of the decal. The QR square (#qr) is filled per certificate from the Depot's Download the QR.
+       Placeholders: [N] [M] [serves] [CODE]. Removed within 2 business days of a suspension or expiry. -->
+  <rect width="800" height="1000" rx="36" fill="#ffffff"/>
+  <rect x="10" y="10" width="780" height="980" rx="28" fill="none" stroke="#2D5C27" stroke-width="8"/>
+  <image href="stamp.svg" x="230" y="44" width="340" height="340"/>
+  <g font-family="Montserrat, Arial, sans-serif" text-anchor="middle">
+    <text x="400" y="452" font-weight="900" font-size="52" fill="#2D5C27">Selected dishes</text>
+    <text x="400" y="512" font-weight="900" font-size="52" fill="#2D5C27">certified here</text>
+    <text x="400" y="566" font-weight="800" font-size="30" fill="#1A1A1A">[N] of [M] menu items. Look for the stamp.</text>
+    <text x="400" y="608" font-weight="600" font-size="25" fill="#1A1A1A">This restaurant also serves [meat, fish, dairy and eggs].</text>
+  </g>
+  <rect id="qr" x="300" y="636" width="200" height="200" fill="#ffffff" stroke="#1A1A1A" stroke-width="3" stroke-dasharray="10 8"/>
+  <g font-family="Montserrat, Arial, sans-serif" text-anchor="middle" fill="#1A1A1A">
+    <text x="400" y="742" font-weight="700" font-size="20">QR for [CODE]</text>
+    <text x="400" y="880" font-weight="800" font-size="25">Scan to see which dishes, and if they are certified today</text>
+    <text x="400" y="918" font-weight="700" font-size="22" fill="#2D5C27">vegansexplore.com/certified/[CODE]</text>
+    <text x="400" y="958" font-weight="600" font-size="18" fill="#555555">Not a health, allergen or food-safety claim.</text>
+  </g>
+</svg>

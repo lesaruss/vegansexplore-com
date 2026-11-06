@@ -24,3 +24,11 @@ Merging `claude/charming-carson-58ep5d` brings both. Nothing here changes `ve-so
 - Sean: Liz's Sourcing line (`docs/proposals/liz-audio-scripts.md`); nothing recorded until he approves.
 - Logan: machinery and distribution are still Coming, and 5 Buy or make items have no supplier. A Google Places scan does not fit them (they
   are not walk-in places); next pass is web search, a handful at a time, same honesty rules.
+
+**Update, 7:30 PM Eastern: merged and confirmed live.** Neither branch was on `main` when Sean said "Merged, go with your defaults", so Logan
+merged `claude/charming-carson-58ep5d` (with `claude/magical-gates-pq0cp6`) into `main` (2c7ce133, clean) and fixed "Feathers" to "Feather
+alternatives" (0210240a). Checked live with one-hour tokens (`ve-once-sourcing-proof`, back to the stub) as a Guide owner who is not a super admin
+and as a super admin, at 1440 and 390 px: every domain count, the alternatives labels, the Plant-based material note, the certifiers and their
+supplier view, Buy or make (14, cheese sauce with 8 suppliers); every `ve-sourcing` call 200, no sideways scroll, no script errors. Defaults
+taken: BeVeg left out; Dairy recipes stay readable in the Restaurant Guide. Next: distribution, machinery and the 5 Buy or make gaps by web search;
+Liz's line waits on Sean.

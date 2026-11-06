@@ -19,9 +19,15 @@
     return fetch(FN + action, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON }, body: JSON.stringify(Object.assign({ token: tok() }, body)) })
       .then(function (r) { return r.json().then(function (d) { d = d || {}; d._status = r.status; return d; }); });
   }
+  // Words a member reads, approved by Sean 2026-11-06 (docs/proposals/membership-rule-wording-steps-3-9.md).
+  var T = { filled: 'Filled in from what you told us before. Change it if it is different now.', list: 'You answered these before, so we filled them in:', change: 'Change' };
   function mount(el, opts) {
     if (!document.getElementById('vgs-css')) { var st = document.createElement('style'); st.id = 'vgs-css'; st.textContent = CSS; document.head.appendChild(st); }
-    var S = null, A = {}, n = 1, busy = false;
+    var S = null, A = {}, C = {}, n = 1, busy = false;
+    // Shared answers given in another intake (canon-ve-door-guides v6, shared_answers): filled in and skipped on the way through;
+    // the server writes them into this intake with the next answer saved, and lists them at the end to change.
+    function carried(q) { return q && Object.prototype.hasOwnProperty.call(C, q.id); }
+    function step(from, dir) { var Q = S.questions; for (var i = from + dir; i >= 0 && i < Q.length; i += dir) if (!carried(Q[i])) return i; return -1; }
     function say(h) { el.innerHTML = '<div class="vgs">' + h + '</div>'; if (opts.onChange) opts.onChange(); }
     function fromHash() { var m = /^#q\/(\d+)/.exec(location.hash); return m ? parseInt(m[1], 10) : 1; }
     function draw() {
@@ -35,8 +41,9 @@
       } else if (q.kind === 'long') opts2 = '<textarea class="vgs-in" maxlength="2000" aria-label="' + esc(q.prompt) + '">' + esc(v || '') + '</textarea>';
       else opts2 = '<input class="vgs-in" maxlength="200" aria-label="' + esc(q.prompt) + '" value="' + esc(v || '') + '">';
       say('<div class="vgs-bar"><i style="width:' + Math.round(((n - 1) / Q.length) * 100) + '%"></i></div><p class="vgs-k">' + esc(S.title) + '<span class="vgs-pts">' + q.points + ' points</span></p>' +
-        '<h2 class="vgs-q">' + esc(q.prompt) + (q.required ? '' : ' (optional)') + '</h2>' + (q.help ? '<p class="vgs-h">' + esc(q.help) + '</p>' : '<p class="vgs-h"></p>') + opts2 +
-        '<p class="vgs-err" id="vgsErr" role="alert"></p><div class="vgs-nav">' + (n > 1 ? '<a class="vgs-b g" href="#q/' + (n - 1) + '">Back</a>' : '<span></span>') +
+        '<h2 class="vgs-q">' + esc(q.prompt) + (q.required ? '' : ' (optional)') + '</h2>' + (q.help ? '<p class="vgs-h">' + esc(q.help) + '</p>' : '<p class="vgs-h"></p>') +
+        (carried(q) || (q.shared && !empty(v)) ? '<p class="vgs-h"><b>' + esc(T.filled) + '</b></p>' : '') + opts2 +
+        '<p class="vgs-err" id="vgsErr" role="alert"></p><div class="vgs-nav">' + (step(n - 1, -1) >= 0 ? '<a class="vgs-b g" href="#q/' + (step(n - 1, -1) + 1) + '">Back</a>' : '<span></span>') +
         '<span class="vgs-c">Question ' + n + ' of ' + Q.length + '</span><button type="button" class="vgs-b" id="vgsNext">' + (n === Q.length ? 'Finish' : 'Next') + '</button></div>');
     }
     function summary() {
@@ -46,7 +53,13 @@
         (left.length ? left.map(function (q) { return '<p><a class="vgs-b g" href="#q/' + (S.questions.indexOf(q) + 1) + '">' + esc(q.prompt) + '</a></p>'; }).join('') : ''));
     }
     function empty(v) { return v == null || v === '' || (Array.isArray(v) && !v.length); }
-    function finished(res) { say('<h2 class="vgs-q">You finished.</h2><p class="vgs-h">Thank you. Your answers are saved.</p>'); if (opts.onDone) opts.onDone(res || {}); }
+    function sharedList() {
+      var L = S.questions.filter(function (q) { return q.shared && !empty(A[q.id]); });
+      if (!L.length) return '';
+      return '<p class="vgs-h">' + esc(T.list) + '</p>' + L.map(function (q) { return '<p><a class="vgs-b g" href="#q/' + (S.questions.indexOf(q) + 1) + '">' + esc(T.change) + ': ' + esc(q.prompt) + '</a></p>'; }).join('');
+    }
+    // opts.doneHtml replaces the finish screen (the Explorer survey: a person reads it before it admits, membership_rule_v6).
+    function finished(res) { say((typeof opts.doneHtml === 'function' ? opts.doneHtml(A) : opts.doneHtml) || ('<h2 class="vgs-q">You finished.</h2><p class="vgs-h">Thank you. Your answers are saved.</p>' + sharedList())); if (opts.onDone) opts.onDone(res || {}); }
     function save() {
       var q = S.questions[n - 1], v = A[q.id], err = document.getElementById('vgsErr');
       if (q.required && empty(v)) { err.textContent = 'Pick or write an answer to go on.'; return; }
@@ -54,9 +67,13 @@
       if (busy) return; busy = true; var b = document.getElementById('vgsNext'); b.disabled = true;
       api('survey_answer', { survey: S.slug, id: q.id, value: empty(v) ? null : v }).then(function (d) {
         busy = false;
+        if (d.error === 'under_review') { S.completed = true; return finished(d); }
         if (d.error) { b.disabled = false; err.textContent = d.error === 'not_eligible' ? 'This account cannot take this survey. Sign in again, or get your Passport.' : 'That did not save. Try again.'; return; }
-        if (d.completed && (d.admitted || n === S.questions.length)) { S.completed = true; return finished(d); }
-        if (n < S.questions.length) location.hash = '#q/' + (n + 1); else summary();
+        // The server wrote every carried answer into this intake with this save; they stay skipped on the way through and listed at the end.
+        var nx = step(n - 1, 1);
+        var ahead = S.questions.slice(n).some(function (x) { return !carried(x) && empty(A[x.id]); });
+        if (d.completed && (d.admitted || nx < 0 || !ahead)) { S.completed = true; return finished(d); }
+        if (nx >= 0) location.hash = '#q/' + (nx + 1); else summary();
       }).catch(function () { busy = false; b.disabled = false; err.textContent = 'That did not go through. Try again.'; });
     }
     el.addEventListener('click', function (e) {
@@ -72,10 +89,17 @@
     say('<p class="vgs-h">Loading the questions...</p>');
     api('survey_get', { survey: opts.survey }).then(function (d) {
       if (d.error || !d.survey) { say('<p class="vgs-h">We could not open this survey. Sign in and try again.</p>'); return; }
-      S = d.survey; A = S.answers || {}; if (opts.onLoaded) opts.onLoaded(S);
+      S = d.survey; A = S.answers || {}; C = S.carried || {}; if (opts.onLoaded) opts.onLoaded(S);
+      Object.keys(C).forEach(function (id) { A[id] = C[id].value; });
       if (S.completed) { if (opts.onAlreadyDone) { opts.onAlreadyDone(S); } return finished(); }
       // Resume at the first unanswered required question.
-      if (!/^#q\//.test(location.hash)) { var first = 0; S.questions.some(function (q, i) { if (q.required && empty(A[q.id])) { first = i; return true; } return false; }); n = first + 1; location.replace('#q/' + n); }
+      if (!/^#q\//.test(location.hash)) {
+        var first = -1; S.questions.some(function (q, i) { if (!carried(q) && q.required && empty(A[q.id])) { first = i; return true; } return false; });
+        // Only carried answers are left: saving one writes them all in and finishes the intake.
+        if (first < 0 && Object.keys(C).length && !S.questions.some(function (q) { return !carried(q) && q.required && empty(A[q.id]); })) { var cq = S.questions.filter(carried)[0]; n = S.questions.indexOf(cq) + 1; draw(); return save(); }
+        if (first < 0) first = step(-1, 1);
+        n = Math.max(first, 0) + 1; location.replace('#q/' + n);
+      }
       else n = fromHash();
       draw();
     }).catch(function () { say('<p class="vgs-h">We could not reach the survey. Try again in a minute.</p>'); });

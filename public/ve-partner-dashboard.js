@@ -20,6 +20,8 @@
  *             campaign (ve-campaign-window audience / message_send)
  *   page      Edit your page (the four-step editor in directory/listing.html, opts.editPage)
  *   menu      the menu, by category; an item opens on its own (ve-claims menu_save / menu_delete)
+ *   dishes    Signature dishes (playbook ve-signature-dishes): up to 3 featured free, slots 4 and 5 at 50 points a slot for 30 days,
+ *             up to 20 saved, the owner's order; a dish opens on its own (&item=<id|new>). ve-signature-dishes owner_*; the menu is untouched.
  *   ads       their ads with impressions and clicks, and the spots they can ask about (ad_request)
  *   opps      our campaigns (I'm interested: partner_interest) and the open roles in their city
  *   audit     their audits and the $49 / $149 audit, through the Restaurant Guide (restaurants and other food places)
@@ -34,8 +36,10 @@
 (function () {
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var FRONT_ROW = Date.now() < Date.parse('2027-01-01T05:00:00Z');
+  // Guides that open with their own short survey (ve_guides.door); the list is the fallback when the server sends no door flag.
+  var DOOR_GUIDES = ['vegan-restaurant-guide', 'vegan-events-guide', 'creator-guide', 'nonprofit-guide', 'pre-vegan-business-guide'];
   // A Group Partner (canon-ve-group-partners) adds Your members, Events and Earnings (D.group from the server; the sample group feeds it).
-  var VIEWS = [['home', 'Home'], ['managed', 'Managed by us'], ['gmembers', 'Your members'], ['gevents', 'Events'], ['announce', 'Announcements'], ['gift', 'Gift a membership'], ['earnings', 'Earnings'], ['insights', 'Insights'], ['audience', 'Your audience'], ['checkins', 'Check-ins'], ['saves', 'Saves'], ['page', 'Your page'], ['menu', 'Menu'], ['ads', 'Ads'], ['opps', 'Opportunities'], ['audit', 'Audit'], ['guides', 'Guides'], ['plan', 'Your plan']];
+  var VIEWS = [['home', 'Home'], ['managed', 'Managed by us'], ['gmembers', 'Your members'], ['gevents', 'Events'], ['announce', 'Announcements'], ['gift', 'Gift a membership'], ['earnings', 'Earnings'], ['insights', 'Insights'], ['audience', 'Your audience'], ['checkins', 'Check-ins'], ['saves', 'Saves'], ['page', 'Your page'], ['menu', 'Menu'], ['dishes', 'Signature dishes'], ['ads', 'Ads'], ['opps', 'Opportunities'], ['audit', 'Audit'], ['guides', 'Guides'], ['plan', 'Your plan']];
   // Views a member needs (Home, Your page, Menu and Your plan work without).
   // The Audit view is free on claim (Sean, 2026-11-01, playbook ve-listing-check): the listing check and the check-up flags show to every owner.
   var MEMBERS = ['insights', 'audience', 'checkins', 'saves', 'ads', 'opps', 'guides'];
@@ -124,7 +128,7 @@
     '.vpd-row b{display:block;font-size:14px}.vpd-row small{display:block;font-size:12.5px;color:rgba(26,26,26,.65);margin-top:2px}' +
     '.vpd-cat{background:#f6f8f6;font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#1f5f22;padding:9px 14px;border-top:1px solid rgba(0,0,0,.07)}.vpd-cat:first-child{border-top:0}' +
     '.vpd-f{display:flex;flex-direction:column;gap:5px;margin:0 0 14px;font-size:13px;font-weight:800}.vpd-f small{font-weight:500;color:rgba(26,26,26,.7)}' +
-    '.vpd-f input,.vpd-f textarea{font:inherit;font-size:15px;font-weight:400;padding:10px 12px;min-height:44px;border:1px solid rgba(0,0,0,.25);border-radius:6px;width:100%;box-sizing:border-box}.vpd-f textarea{min-height:90px;resize:vertical}' +
+    '.vpd-f input,.vpd-f textarea,.vpd-f select{font:inherit;font-size:15px;font-weight:400;padding:10px 12px;min-height:44px;border:1px solid rgba(0,0,0,.25);border-radius:6px;width:100%;box-sizing:border-box}.vpd-f select{-webkit-appearance:none;-moz-appearance:none;appearance:none;padding-right:46px;cursor:pointer;background:#fff url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2714%27 height=%279%27 viewBox=%270 0 14 9%27%3E%3Cpath d=%27M1 1l6 6 6-6%27 fill=%27none%27 stroke=%27%231f5f22%27 stroke-width=%272.2%27 stroke-linecap=%27round%27 stroke-linejoin=%27round%27/%3E%3C/svg%3E") no-repeat right 16px center/14px 9px}.vpd-f textarea{min-height:90px;resize:vertical}' +
     '.vpd-checks{display:flex;flex-wrap:wrap;gap:8px 18px;margin:0 0 16px}.vpd-checks label{display:flex;gap:8px;align-items:center;font-size:14px;font-weight:700;cursor:pointer}.vpd-checks input{width:18px;height:18px;accent-color:#1f5f22}' +
     '.vpd-form{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:0 14px}' +
     '.vpd-bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;border-top:1px solid rgba(0,0,0,.09);padding-top:14px;margin-top:6px}' +
@@ -219,6 +223,7 @@
         if (D.group && ['audience', 'saves', 'checkins', 'ads', 'plan', 'menu', 'audit'].indexOf(v[0]) >= 0) return false;
         if (v[0] === 'managed') return !!D.bd;
         if (v[0] === 'menu') return D.listing.food || D.menu_count > 0;
+        if (v[0] === 'dishes') return !!D.listing.food && !D.group;
         if (v[0] === 'audit') return D.listing.food || !!(D.health && D.health.checks && D.health.checks.length);
         if (v[0] === 'checkins') return KIND === 'place';
         if (v[0] === 'saves') return KIND !== 'place';
@@ -241,10 +246,13 @@
       wire(view);
     }
     function joinBox() {
-      return '<div class="vpd-join"><b>Open your whole dashboard for $11</b>' +
-        '<p>Become a Founding Member, one time, and this dashboard opens: your numbers and what people do on your page, ' + (KIND === 'show' ? 'who plays and saves your episodes, our podcast opportunities and ads, ' : 'our campaigns and ads, ') +
-        (KIND === 'place' ? 'the audit, the Guides, and every new tool we add, as soon as it is ready. Editing your page and your menu stays free.' : 'the Guides, and every new tool we add, as soon as it is ready. Editing your page stays free.') + '</p>' +
-        '<button type="button" class="vpd-btn" data-vpd-join>Become a Founding Member, $11</button></div>';
+      // Membership is free through Explorer (canon-ve-door-guides v7, Sean 2026-11-06); the $11 Passport is the other way in.
+      return '<div class="vpd-join"><b>Become a member and your whole dashboard opens</b>' +
+        '<p>Membership is free: take the short Explorer survey, about two minutes. As a member you get your numbers and what people do on your page, ' + (KIND === 'show' ? 'who plays and saves your episodes, our podcast opportunities and ads, ' : 'our campaigns and ads, ') +
+        (KIND === 'place' ? 'the audit, the Guides, and every new tool we add, as soon as it is ready. Editing your page and your menu is open to you now.' : 'the Guides, and every new tool we add, as soon as it is ready. Editing your page is open to you now.') +
+        (FRONT_ROW ? ' Join before January 1, 2027 and you are a Founding Member, for good.' : '') + '</p>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:10px"><a class="vpd-btn" href="/survey?s=explorer">Take the Explorer survey</a>' +
+        '<button type="button" class="vpd-btn o" data-vpd-join>Or join with the $11 Passport, with 1,100 points</button></div></div>';
     }
 
     // What the taps-and-clicks number is made of, e.g. "2 social links, 1 menu opened".
@@ -552,7 +560,7 @@
         // Every live Guide's banner is /public/guides/<slug>.jpg (the scene banners, 2026-11-01).
         var pic = g.cover_url || '/public/guides/' + g.slug + '.jpg?v=3';
         return '<div class="vpd-card"><div style="aspect-ratio:16/10;border-radius:8px;background:#f3f3f3 center/cover no-repeat;background-image:url(\'' + esc(pic) + '\')"></div>' +
-          '<span class="vpd-tag' + (g.owned ? '' : ' off') + '">' + (g.access_rule === 'free' ? 'Free' : g.owned ? 'Yours' : '$11 or 1,100 points') + '</span><b>' + esc(g.title) + '</b><p>' + esc(g.description || '') + '</p>' +
+          '<span class="vpd-tag' + (g.owned ? '' : ' off') + '">' + (g.access_rule === 'free' ? 'Free' : g.owned ? 'Yours' : g.door || DOOR_GUIDES.indexOf(g.slug) >= 0 ? 'Free with a short survey' : '$11 or 1,100 points') + '</span><b>' + esc(g.title) + '</b><p>' + esc(g.description || '') + '</p>' +
           '<a class="vpd-btn sm' + (g.owned ? '' : ' o') + '" href="/guides/' + esc(g.slug) + '">' + (g.owned ? 'Open it' : 'See it') + '</a></div>';
       }).join('') + '</div>';
     }
@@ -560,8 +568,8 @@
     // ---- Your plan
     function drawPlan() {
       var member = D.member_active || D.admin;
-      return '<div class="vpd-grid"><div class="vpd-card' + (member ? ' done' : '') + '"><b>Founding Member</b><p>' + (D.member_active ? 'You are a Founding Member. Your whole dashboard is open.' : D.admin ? 'Super admins see every dashboard.' : '$11 one time opens your whole dashboard.') + '</p>' +
-        (member ? '' : '<button type="button" class="vpd-btn sm" data-vpd-join>Become a Founding Member, $11</button>') + '</div>' +
+      return '<div class="vpd-grid"><div class="vpd-card' + (member ? ' done' : '') + '"><b>Member</b><p>' + (D.member_active ? 'You are a member. Your whole dashboard is open.' : D.admin ? 'Super admins see every dashboard.' : 'Free with the short Explorer survey, or $11 with the Passport and 1,100 points. Either opens your whole dashboard' + (FRONT_ROW ? ', and before January 1, 2027 makes you a Founding Member.' : '.')) + '</p>' +
+        (member ? '' : '<a class="vpd-btn sm" href="/survey?s=explorer">Take the Explorer survey</a> <button type="button" class="vpd-btn sm o" data-vpd-join>Join with the $11 Passport</button>') + '</div>' +
         '<div class="vpd-card' + (D.plan ? ' done' : '') + '"><b>' + esc(D.plan ? D.plan.name || 'Partner' : 'Partner') + '</b><p>' +
         (D.plan ? (D.plan.status === 'trialing' ? 'Your plan is paid. Your next period starts ' + (D.plan.renews_at ? esc(new Date(D.plan.renews_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })) : 'soon') + ', with every Partner.' : 'Your plan is live.' + (D.plan.renews_at ? ' Renews ' + esc(new Date(D.plan.renews_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })) + '.' : ''))
           : 'A front-row seat on every campaign, ads placed for you and a campaign manager. ' + (FRONT_ROW ? 'Front Row Start: join now and every day until January 1 is on us: your $111 covers Period 1 (January 1 to April 21, 2027), then $111 every 111 days.' : '$111 a period of 111 days; join mid-period and pay only for the days left.')) + '</p>' +
@@ -788,7 +796,153 @@
       return out;
     }
 
-    var VIEW_FN = { managed: drawManaged, gift: drawGift, announce: drawAnnounce, home: drawHome, gmembers: drawMembers, gevents: drawEvents, earnings: drawEarnings, insights: drawInsights, audience: drawAudience, checkins: drawCheckins, saves: drawSaves, menu: drawMenu, ads: drawAds, opps: drawOpps, audit: drawAudit, guides: drawGuides, plan: drawPlan };
+    // ---- Signature dishes (playbook ve-signature-dishes, canon canon-ve-signature-dishes). Copied from the Menu view: the list, then one dish on its own.
+    var DS = null;
+    function dcall(body) {
+      if (!REAL) return Promise.resolve(sampleDishes(body));
+      return fetch(SB + '/functions/v1/ve-signature-dishes', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token() }, body: JSON.stringify(Object.assign({ listing_id: l.id }, body)) })
+        .then(function (r) { return r.json(); }).catch(function () { return { error: 'network' }; });
+    }
+    function drawDishes() {
+      if (!DS) { dcall({ action: 'owner_get' }).then(function (d) { DS = d && d.ok ? d : { ok: false }; draw(); }); return '<p class="vpd-empty">Loading your signature dishes...</p>'; }
+      if (!DS.ok) return '<p class="vpd-empty">We could not open your signature dishes just now. Try again in a moment.</p>';
+      var item = q('item');
+      if (item) return drawDish(item);
+      var feat = DS.dishes.filter(function (d) { return d.featured; }), saved = DS.dishes.filter(function (d) { return !d.featured; });
+      var thumb = function (d) { return d.photo_url ? '<img src="' + esc(d.photo_url) + '" alt="" loading="lazy" style="width:56px;height:56px;object-fit:cover;border-radius:6px;flex:none">' : '<span style="width:56px;height:56px;border-radius:6px;background:#E8F5E9;flex:none;display:inline-block"></span>'; };
+      var row = function (d, i, list) {
+        var tag = d.featured ? (d.shown ? '<span class="vpd-tag">On your page</span>' : '<span class="vpd-tag off">Waiting for a slot</span>') : '<span class="vpd-tag off">Saved</span>';
+        var mv = d.featured ? '<span style="display:flex;gap:4px">' + (i > 0 ? '<button type="button" class="vpd-btn sm o" data-vpd-dmove="' + esc(d.id) + '" data-dir="-1" aria-label="Move ' + esc(d.name) + ' up">&uarr;</button>' : '') +
+          (i < list.length - 1 ? '<button type="button" class="vpd-btn sm o" data-vpd-dmove="' + esc(d.id) + '" data-dir="1" aria-label="Move ' + esc(d.name) + ' down">&darr;</button>' : '') + '</span>' : '';
+        return '<div class="vpd-row" style="grid-template-columns:56px 1fr auto">' + thumb(d) + '<div><b>' + esc(d.name) + (d.price_display ? ' &middot; ' + esc(d.price_display) : '') + '</b><small>' + esc(d.line || 'No line yet') +
+          ' &middot; ' + n(d.votes) + (d.votes === 1 ? ' vote' : ' votes') + '</small></div><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">' + tag + mv +
+          '<a class="vpd-btn sm o" href="?tab=brand&pd=dishes&item=' + esc(d.id) + '" data-vpd="dishes" data-vpd-item="' + esc(d.id) + '">Edit</a></div></div>';
+      };
+      var run = function (k) { return (DS.slots || []).filter(function (x) { return x.slot === k; }).sort(function (a, b) { return a.ends_at < b.ends_at ? 1 : -1; })[0]; };
+      var dt = function (t) { return new Date(t).toLocaleDateString('en-US', { month: 'long', day: 'numeric' }); };
+      var slotBox = '<div class="vpd-rows" style="margin:0 0 14px">' + [4, 5].map(function (k) {
+        var r = run(k), soon = r && Date.parse(r.ends_at) - Date.now() < 7 * 864e5;
+        return '<div><span>Slot ' + k + (r ? ' &middot; on until ' + esc(dt(r.ends_at)) : ' &middot; 50 points for 30 days') + '</span>' +
+          (!r || soon ? '<button type="button" class="vpd-btn sm' + (r ? ' o' : '') + '" data-vpd-dslot="' + k + '"' + (k === 5 && !run(4) ? ' disabled title="Add slot 4 first"' : '') + '>' + (r ? 'Keep it 30 more days' : 'Add slot ' + k) + '</button>' : '<b>On</b>') + '</div>';
+      }).join('') + '</div>';
+      return '<p class="vpd-empty" style="padding:0 0 10px">Show off up to ' + DS.free + ' dishes on your page for free. Members vote on them, and the counts show, but you choose the order. Your menu stays as it is.</p>' +
+        '<div class="vpd-bar" style="border:0;padding:0;margin:0 0 14px"><span class="vpd-empty" style="padding:0"><b>' + feat.filter(function (d) { return d.shown; }).length + ' of ' + DS.cap + '</b> featured &middot; ' + DS.dishes.length + ' of ' + DS.max_saved + ' saved &middot; ' + n(DS.balance) + ' points to spend</span>' +
+        (DS.dishes.length < DS.max_saved ? '<a class="vpd-btn" href="?tab=brand&pd=dishes&item=new" data-vpd="dishes" data-vpd-item="new">New dish</a>' : '') + '</div>' +
+        '<h4>More slots</h4>' + slotBox +
+        '<p class="vpd-msg" id="vpd-msg" role="status"></p>' +
+        '<h4>Featured, in the order your page shows them</h4>' + (feat.length ? '<div class="vpd-list">' + feat.map(row).join('') + '</div>' : '<p class="vpd-empty">Nothing featured yet. Add a dish with a photo and a line, then tick Feature it on my page.</p>') +
+        (saved.length ? '<h4>Saved, not on your page</h4><div class="vpd-list">' + saved.map(function (d, i, a) { return row(d, i, a); }).join('') + '</div>' : '');
+    }
+    var DPHOTO = null;
+    function drawDish(id) {
+      var d = id === 'new' ? { tags: [], featured: DS.dishes.filter(function (x) { return x.featured; }).length < DS.cap } : DS.dishes.filter(function (x) { return x.id === id; })[0];
+      if (!d) return '<p class="vpd-empty">That dish is not saved anymore. <a href="?tab=brand&pd=dishes" data-vpd="dishes">Back to your dishes</a></p>';
+      if (!DPHOTO || DPHOTO.id !== id) DPHOTO = { id: id, url: d.photo_url || null };
+      return '<p class="vpd-crumb"><a href="?tab=brand&pd=dishes" data-vpd="dishes">Signature dishes</a> &rsaquo; ' + esc(id === 'new' ? 'New dish' : d.name) + '</p>' +
+        '<div class="vpd-form"><label class="vpd-f">Name<input id="vpd-dname" maxlength="80" value="' + esc(d.name) + '"></label>' +
+        '<label class="vpd-f">Price<small>As you want it shown, for example $14</small><input id="vpd-dprice" maxlength="30" value="' + esc(d.price_display) + '"></label>' +
+        '<label class="vpd-f">Tags<small>Up to 5, with commas: Gluten-free, Spicy, Best seller</small><input id="vpd-dtags" maxlength="130" value="' + esc((d.tags || []).join(', ')) + '"></label>' +
+        '<label class="vpd-f">On your menu<small>Optional: the item it is on your menu</small><select id="vpd-dmenu"><option value="">Not linked</option>' + (DS.menu || []).map(function (m) { return '<option value="' + esc(m.id) + '"' + (m.id === d.menu_item_id ? ' selected' : '') + '>' + esc(m.name) + '</option>'; }).join('') + '</select></label></div>' +
+        '<label class="vpd-f">One line about it<small>What makes it yours, in a sentence (160 characters)</small><textarea id="vpd-dline" maxlength="160">' + esc(d.line) + '</textarea></label>' +
+        '<div class="vpd-f">Photo<small>A real photo of the dish, at least ' + DS.min_px + ' pixels on the shorter side</small>' +
+        '<div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:6px">' + (DPHOTO.url ? '<img src="' + esc(DPHOTO.url) + '" alt="" style="width:120px;height:120px;object-fit:cover;border-radius:6px">' : '') +
+        '<label class="vpd-btn o" style="cursor:pointer">' + (DPHOTO.url ? 'Replace the photo' : 'Add a photo') + '<input type="file" accept="image/jpeg,image/png,image/webp" data-vpd-dphoto hidden></label></div></div>' +
+        '<div class="vpd-checks"><label><input type="checkbox" id="vpd-dfeat"' + (d.featured ? ' checked' : '') + '> Feature it on my page</label></div>' +
+        '<p class="vpd-msg" id="vpd-msg" role="status"></p><div class="vpd-bar"><a class="vpd-btn o" href="?tab=brand&pd=dishes" data-vpd="dishes">Back to your dishes</a>' +
+        (id === 'new' ? '' : '<button type="button" class="vpd-btn o" data-vpd-ddel style="color:#a61b1b">Remove it</button>') +
+        '<button type="button" class="vpd-btn" data-vpd-dsave="' + esc(id) + '">Save</button></div>';
+    }
+    var DERR = { photo_needed: 'A featured dish needs a photo.', line_needed: 'A featured dish needs one line about it.', low_quality: 'That photo is too small to look sharp. Please use one at least 800 pixels on the shorter side.',
+      no_slot: 'All your slots are in use. Add a slot for 50 points, or take another dish off your page.', too_many: 'You can keep 20 dishes saved. Remove one first.', name_needed: 'Give the dish a name.',
+      not_enough_points: 'You need 50 points for a slot.', already_running: 'That slot is already on. You can keep it 30 more days in its last week.', slot_4_first: 'Add slot 4 first.', demo_only: 'This is the sample business, so nothing is saved.' };
+    function wireDishes() {
+      var up = el.querySelector('[data-vpd-dphoto]');
+      if (up) up.addEventListener('change', function () {
+        var file = up.files && up.files[0]; if (!file) return;
+        if (!/^image\/(jpeg|png|webp)$/.test(file.type)) return msg('Please use a JPG, PNG or WebP file.', true);
+        var u0 = URL.createObjectURL(file), im = new Image();
+        im.onerror = function () { msg('That file could not be read as a picture.', true); };
+        im.onload = function () {
+          URL.revokeObjectURL(u0);
+          if (Math.min(im.naturalWidth, im.naturalHeight) < DS.min_px) return msg('This picture is ' + im.naturalWidth + ' by ' + im.naturalHeight + ' pixels, too small to look sharp. Please use one at least ' + DS.min_px + ' pixels on the shorter side.', true);
+          if (!REAL) return msg(DERR.demo_only);
+          msg('Uploading...');
+          dcall({ action: 'photo_url', content_type: file.type, bytes: file.size }).then(function (u) {
+            if (!u || !u.signed_url) return msg(u && u.error === 'file_size' ? 'That file is over 15 MB. Please use a smaller one.' : 'Could not start the upload. Try again.', true);
+            var x = new XMLHttpRequest(); x.open('PUT', u.signed_url); x.setRequestHeader('Content-Type', file.type); x.setRequestHeader('x-upsert', 'true');
+            x.onload = function () {
+              if (x.status >= 300) return msg('The upload did not go through. Try again.', true);
+              dcall({ action: 'photo_done', path: u.path }).then(function (r) {
+                if (!r || !r.ok) return msg(DERR[r && r.error] || 'Could not save it. Try again.', true);
+                DPHOTO.url = r.url; var keep = keepForm(); draw(); putForm(keep); msg('Photo added. Save to keep it.');
+              });
+            };
+            x.onerror = function () { msg('The upload did not go through. Check your connection and try again.', true); };
+            x.send(file);
+          });
+        };
+        im.src = u0;
+      });
+      var sv = el.querySelector('[data-vpd-dsave]');
+      if (sv) sv.addEventListener('click', function () {
+        var f = keepForm(), id = sv.dataset.vpdDsave;
+        if (!f.name.trim()) return msg(DERR.name_needed, true);
+        sv.disabled = true; msg('Saving...');
+        dcall({ action: 'save', dish: { id: id === 'new' ? undefined : id, name: f.name, line: f.line, price_display: f.price, tags: f.tags, menu_item_id: f.menu || null, featured: f.feat, photo_url: DPHOTO.url } }).then(function (d) {
+          sv.disabled = false;
+          if (!d || !d.ok) return msg(DERR[d && d.error] || 'That did not save. Try again.', true);
+          DS = null; DPHOTO = null; go('dishes');
+        });
+      });
+      var del = el.querySelector('[data-vpd-ddel]');
+      if (del) del.addEventListener('click', function () {
+        if (!confirm('Remove this dish? Its votes go with it.')) return;
+        dcall({ action: 'remove', id: q('item') }).then(function (d) { if (!d || !d.ok) return msg(DERR[d && d.error] || 'That did not go through. Try again.', true); DS = null; go('dishes'); });
+      });
+      el.querySelectorAll('[data-vpd-dmove]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var ids = DS.dishes.filter(function (d) { return d.featured; }).map(function (d) { return d.id; }), i = ids.indexOf(b.dataset.vpdDmove), j = i + Number(b.dataset.dir);
+          if (i < 0 || j < 0 || j >= ids.length) return;
+          var t = ids[i]; ids[i] = ids[j]; ids[j] = t;
+          ids = ids.concat(DS.dishes.filter(function (d) { return !d.featured; }).map(function (d) { return d.id; }));
+          b.disabled = true;
+          dcall({ action: 'order', ids: ids }).then(function (d) { if (!d || !d.ok) { b.disabled = false; return msg(DERR[d && d.error] || 'That did not go through. Try again.', true); } DS = null; draw(); });
+        });
+      });
+      el.querySelectorAll('[data-vpd-dslot]').forEach(function (b) {
+        b.addEventListener('click', function () {
+          var k = Number(b.dataset.vpdDslot);
+          if (!confirm('Use 50 of your points for slot ' + k + ' for 30 days? It does not renew on its own.')) return;
+          b.disabled = true; msg('Adding slot ' + k + '...');
+          dcall({ action: 'slot_buy', slot: k }).then(function (d) {
+            if (!d || !d.ok) { b.disabled = false; return msg(DERR[d && d.error] || 'That did not go through. Try again.', true); }
+            DS = null; draw();
+          });
+        });
+      });
+    }
+    function keepForm() {
+      var v = function (k) { return (el.querySelector('#vpd-' + k) || {}).value || ''; };
+      return { name: v('dname'), line: v('dline'), price: v('dprice'), tags: v('dtags'), menu: v('dmenu'), feat: !!(el.querySelector('#vpd-dfeat') || {}).checked };
+    }
+    function putForm(f) {
+      var set = function (k, x) { var e = el.querySelector('#vpd-' + k); if (e) e.value = x; };
+      set('dname', f.name); set('dline', f.line); set('dprice', f.price); set('dtags', f.tags); set('dmenu', f.menu);
+      var c = el.querySelector('#vpd-dfeat'); if (c) c.checked = f.feat;
+    }
+    // The sample business (Green Leaf Kitchen): its dishes are made up and nothing saves.
+    function sampleDishes(b) {
+      if (b.action !== 'owner_get') return { error: 'demo_only' };
+      var img = function (k) { return '/business/sample/img/m-' + k + '.webp'; };
+      var mk = function (id, name, line, price, tags, k, feat, pos, votes) { return { id: id, name: name, line: line, price_display: price, tags: tags, photo_url: img(k), featured: feat, position: pos, votes: votes, shown: feat }; };
+      return { ok: true, cap: 3, free: 3, max_saved: 20, min_px: 800, slot_points: 50, balance: 1100, slots: [], menu: [],
+        dishes: [mk('s1', 'Smoky BBQ Jackfruit Plate', 'Slow-cooked jackfruit, our house sauce and slaw on the side.', '$16', ['Best seller'], 'bbq', true, 0, 42),
+          mk('s2', 'Island Burrito Bowl', 'Black beans, plantains and mango salsa over coconut rice.', '$14', ['Gluten-free'], 'burritobowl', true, 1, 57),
+          mk('s3', 'Vanilla Bean Cheesecake', 'Cashew cream on a date crust, made every morning.', '$9', [], 'cheesecake', true, 2, 31),
+          mk('s4', 'Pesto Panini', 'Basil pesto, roasted peppers and our cashew mozzarella.', '$13', [], 'panini', false, 3, 0)] };
+    }
+
+    var VIEW_FN = { managed: drawManaged, gift: drawGift, announce: drawAnnounce, home: drawHome, gmembers: drawMembers, gevents: drawEvents, earnings: drawEarnings, insights: drawInsights, audience: drawAudience, checkins: drawCheckins, saves: drawSaves, menu: drawMenu, dishes: drawDishes, ads: drawAds, opps: drawOpps, audit: drawAudit, guides: drawGuides, plan: drawPlan };
 
     // Managed by us (BrandDesk): the client's onboarding, Library and asset sheet, drawn by /public/ve-branddesk-client.js (&bd=<view>).
     function drawManaged() { return '<div id="vpd-bd"><p class="vpd-empty">Loading...</p></div>'; }
@@ -805,6 +959,7 @@
     function msg(t, bad) { var m = el.querySelector('#vpd-msg'); if (m) { m.textContent = t; m.classList.toggle('bad', !!bad); } }
     function wire(view) {
       if (view === 'managed') mountManaged();
+      if (view === 'dishes') wireDishes();
       el.querySelectorAll('[data-vpd]').forEach(function (a) {
         a.addEventListener('click', function (e) { e.preventDefault(); go(a.dataset.vpd, a.dataset.vpdItem ? { item: a.dataset.vpdItem } : null); });
       });

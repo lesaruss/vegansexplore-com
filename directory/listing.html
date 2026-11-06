@@ -134,6 +134,17 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .listing-sidebar{padding:28px 40px 40px 28px;position:sticky;top:0;max-height:100vh;overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column}
 .listing-sidebar::-webkit-scrollbar{display:none}
 .he-list{display:flex;flex-direction:column;gap:8px}
+.sd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr));gap:16px}
+.sd-card{border:1px solid var(--ve-border,rgba(0,0,0,.1));border-radius:8px;background:#fff;overflow:hidden;display:flex;flex-direction:column}
+.sd-pic{aspect-ratio:4/3;background:var(--vb-soft,#E8F5E9)}.sd-pic img{width:100%;height:100%;object-fit:cover;display:block}
+.sd-body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+.sd-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}.sd-name{font-size:15px;font-weight:800}.sd-price{font-weight:700;color:var(--ve-text-75);white-space:nowrap}
+.sd-line{margin:0;font-size:14px;line-height:1.45;color:var(--ve-text-75);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.sd-tags{display:flex;flex-wrap:wrap;gap:6px}.sd-tags span{font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;background:var(--vb-soft,#E8F5E9);color:var(--vb-deep,#1f5f22)}
+.sd-vote{margin-top:auto;align-self:flex-start;display:inline-flex;align-items:center;gap:6px;padding:7px 12px;border-radius:6px;border:1px solid var(--ve-border,rgba(0,0,0,.15));background:#fff;font:inherit;font-size:13px;cursor:pointer;color:var(--ve-text-75)}
+.sd-vote.on{background:var(--vb-go,#2D5C27);border-color:var(--vb-go,#2D5C27);color:#fff}.sd-vote:disabled{cursor:default;opacity:.7}
+.sd-note{margin-top:12px;font-size:13px}
+@media (max-width:560px){.sd-grid{grid-template-columns:1fr 1fr;gap:10px}.sd-body{padding:10px}.sd-top{flex-direction:column;gap:2px}.sd-name{font-size:14px}.sd-line{font-size:13px}.sd-vote{padding:6px 10px}}
 .he-scroll{max-height:520px;overflow:auto}
 .he-row{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--ve-border,rgba(0,0,0,.1));border-radius:8px;background:#fff}
 .he-past{opacity:.7}
@@ -1448,6 +1459,45 @@ function loadInPulse(l){
       + '<p class="pp-sub">Daily Pulse stories that name ' + esc(l.name) + '.</p><div class="pulse-link-list">' + cards + '</div></div>';
   }).catch(function(){});
 }
+// Signature dishes (playbook ve-signature-dishes, canon canon-ve-signature-dishes, Sean 2026-11-06): a claimed food place's featured dishes
+// in the owner's order, each with its vote count. Members vote once per dish (ve-signature-dishes vote); votes never change the order.
+// The owner edits them on the business dashboard (?tab=brand&pd=dishes). The sample business reads DEMO.dishes and saves nothing.
+var SIG_FN = SUPABASE_URL + '/functions/v1/ve-signature-dishes';
+function loadSigDishes(l){
+  var box = document.getElementById('sig-dishes'); if(!box) return;
+  var tok = window.VEAuth && VEAuth.getToken ? VEAuth.getToken() : null;
+  var call = function(body){ return fetch(SIG_FN, { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, tok ? { Authorization: 'Bearer ' + tok } : {}), body: JSON.stringify(body) }).then(function(r){ return r.json(); }); };
+  (DEMO ? Promise.resolve({ ok: true, dishes: DEMO.dishes || [] }) : call({ action: 'list', listing_id: l.id })).then(function(d){
+    var ds = (d && d.dishes) || []; if(!ds.length) return;
+    var heart = '<svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21s-7.5-4.6-10-9.3C.3 8.3 2.4 4 6.4 4c2.2 0 3.7 1.2 4.6 2.6C11.9 5.2 13.4 4 15.6 4c4 0 6.1 4.3 4.4 7.7C19.5 16.4 12 21 12 21z"/></svg>';
+    var card = function(x){
+      var own = d.own;
+      return '<div class="sd-card"><div class="sd-pic"><img src="' + esc(x.photo_url) + '" alt="' + esc(x.name) + '" loading="lazy" decoding="async"></div><div class="sd-body">' +
+        '<div class="sd-top"><b class="sd-name">' + esc(x.name) + '</b>' + (x.price_display ? '<span class="sd-price">' + esc(x.price_display) + '</span>' : '') + '</div>' +
+        '<p class="sd-line">' + esc(x.line) + '</p>' +
+        ((x.tags || []).length ? '<div class="sd-tags">' + x.tags.map(function(t){ return '<span>' + esc(t) + '</span>'; }).join('') + '</div>' : '') +
+        '<button type="button" class="sd-vote' + (x.voted ? ' on' : '') + '" data-sd-vote="' + esc(x.id) + '" aria-pressed="' + (x.voted ? 'true' : 'false') + '"' + (own ? ' disabled title="You cannot vote on your own dishes"' : '') +
+        ' aria-label="' + (x.voted ? 'Take back your vote for ' : 'Vote for ') + esc(x.name) + '">' + heart + '<b>' + Number(x.votes || 0).toLocaleString() + '</b><span>' + (x.votes === 1 ? 'vote' : 'votes') + '</span></button></div></div>';
+    };
+    box.hidden = false; box.className = 'section';
+    box.innerHTML = '<h2 class="section-title">Signature dishes</h2><div class="sd-grid">' + ds.map(card).join('') + '</div>' +
+      '<p class="about-text sd-note">Chosen by ' + esc(l.name) + '. Members vote for their favorites.</p>';
+    box.querySelectorAll('[data-sd-vote]').forEach(function(b){
+      b.addEventListener('click', function(){
+        if(DEMO){ alert('This is the sample business, so votes are not counted.'); return; }
+        if(!window.VEAuth || !VEAuth.isLoggedIn()){ if(window.VEVotes && VEVotes.passportPrompt) VEVotes.passportPrompt(); return; }
+        var on = b.getAttribute('aria-pressed') !== 'true'; b.disabled = true;
+        call({ action: 'vote', dish_id: b.dataset.sdVote, on: on }).then(function(r){
+          b.disabled = false;
+          if(!r || !r.ok){ if(r && r.error === 'members_only' && window.VEVotes && VEVotes.passportPrompt) VEVotes.passportPrompt(); return; }
+          b.classList.toggle('on', r.voted); b.setAttribute('aria-pressed', r.voted ? 'true' : 'false');
+          b.querySelector('b').textContent = Number(r.votes).toLocaleString(); b.querySelector('span').textContent = r.votes === 1 ? 'vote' : 'votes';
+        }, function(){ b.disabled = false; });
+      });
+    });
+  }).catch(function(){});
+}
+
 function loadHostedEvents(l){
   var box = document.getElementById('hosted-events'); if(!box) return;
   // Events it puts on (host_listing_id) and events held at it (venue_listing_id, Sean, 2026-11-01: where Vegans hold their events;
@@ -3352,6 +3402,9 @@ function personRoles(l){
 function httpsOnly(u){ return /^https:\/\//i.test(String(u || '')) ? String(u) : ''; }
 function renderPersonOverview(l){
   var p = personOf(l), h = '';
+  // Registered badges of the member this profile belongs to (details.person.member_id), one per finished business intake, the
+  // role in small text under it (canon-ve-door-guides v6, Sean 2026-11-06). Filled by loadPerson; hidden when there are none.
+  if(p.member_id) h += '<div id="pp-badges" style="display:none;flex-wrap:wrap;gap:8px;margin:0 0 18px"></div>';
   if(l.description){
     h += '<div class="section"><h2 class="section-title">About</h2>' +
       String(l.description).split(/\n\s*\n/).map(function(par){ return '<p class="about-text">' + esc(par.trim()) + '</p>'; }).join('') +
@@ -3409,6 +3462,14 @@ function loadPerson(l){
     .then(function(r){ return r.ok ? r.json() : {}; }).catch(function(){ return {}; });
   var moments = fetch(SUPABASE_URL + '/rest/v1/rpc/ve_person_moments', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, H), body: JSON.stringify({ p_listing: l.id }) })
     .then(function(r){ return r.ok ? r.json() : []; }).catch(function(){ return []; });
+  if(personOf(l).member_id) fetch(SUPABASE_URL + '/rest/v1/rpc/ve_person_badges', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, H), body: JSON.stringify({ p_listing: l.id }) })
+    .then(function(r){ return r.ok ? r.json() : []; }).then(function(list){
+      var el = document.getElementById('pp-badges'); if(!el || !list || !list.length) return;
+      var ck = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>';
+      el.innerHTML = list.map(function(b){ return '<span style="display:inline-flex;flex-direction:column;gap:1px;padding:6px 10px;border-radius:6px;background:var(--vb-soft,#e8f5e9);border:1px solid rgba(45,92,39,.22);color:#1f3f1b;line-height:1.25">' +
+        '<b style="font-size:12px;font-weight:800;display:flex;align-items:center;gap:5px">' + ck + esc(b.badge) + '</b>' + (b.role ? '<i style="font-style:normal;font-size:11px;color:rgba(0,0,0,.62)">' + esc(b.role) + '</i>' : '') + '</span>'; }).join('');
+      el.style.display = 'flex';
+    }).catch(function(){});
   Promise.all([credits, eps, moments]).then(function(x){
       var rows = x[0] || [], pe = x[1] || {};
       rows = rows.map(function(c){
@@ -3658,7 +3719,29 @@ function loadPartnerHome(l){
 // live at once and each one is logged (ve_listing_edits) so Vegans Explore can undo it.
 var OE_STEPS = [['about', 'About'], ['hours', 'Hours'], ['contact', 'Contact and links'], ['social', 'Social'], ['photos', 'Logo and photos']];
 var OE_DATA = null;
+// The sample business (Sean, 2026-11-06: "the whole Your Page button, I don't get. If we can't let them see it, then why do we even have it?"):
+// Your page opens the real editor there too, fed from the sample listing; every save says so in a toast and changes nothing.
+var OE_DEMO = false;
+function oeDemo(body, l){
+  var r = { ok: true };
+  if(body.action === 'owner_page') r = { ok: true, days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'], limits: { logo_min: 400, photo_min: 1000, photos_max: 12 },
+    listing: { name: l.name, tagline: l.tagline || '', description: l.description || '', hours: l.google_hours_json || {}, phone: l.phone || '', website: l.website || '', instagram: l.instagram || '',
+      booking_url: l.booking_url || '', uber_eats_url: l.uber_eats_url || '', doordash_url: l.doordash_url || '', address_street: l.address_street || '', address_zip: l.address_zip || '',
+      address_city: l.address_city || '', address_state: l.address_state || '', logo_url: l.logo_url || '', photos: (l.gallery_urls || []).slice() } };
+  else if(body.action === 'owner_update'){ r = { ok: true, changed: false }; demoToast('Sample page: on your own page this saves and goes live at once. Nothing was changed here.'); }
+  else if(body.action === 'owner_get') r = { ok: true, handle: l.instagram || 'greenleafkitchen', switched_on: true, paused: false, last_fetch_at: new Date(Date.now() - 3 * 864e5).toISOString(),
+    posts: (l.gallery_urls || []).map(function(u, k){ return { id: 's' + k, thumb_url: u, status: 'shown', pinned: k === 0 }; }) };
+  else { r = { ok: false, error: 'demo' }; demoToast('Sample page: on your own page this uploads, hides or pins for real. Nothing was changed here.'); }
+  return Promise.resolve(r);
+}
 function ownerEditGo(el, l, step){
+  if(OE_DEMO){
+    var du = new URL(location.href); du.searchParams.delete('pd');
+    if(step){ du.searchParams.set('tab', 'brand'); du.searchParams.set('edit', step); } else du.searchParams.delete('edit');
+    history.pushState(null, '', du.pathname + du.search + du.hash);
+    if(step) mountOwnerEditor(el, l, step); else { OE_DEMO = false; OE_DATA = null; if(SAMPLE_DASH) SAMPLE_DASH.redraw(); }
+    return;
+  }
   var u = new URL(location.href);
   u.searchParams.delete('pd');
   if(step){ u.searchParams.set('tab', 'brand'); u.searchParams.set('edit', step); } else u.searchParams.delete('edit');
@@ -3689,6 +3772,7 @@ function oeCss(){
   document.head.appendChild(st);
 }
 function oeCall(body){
+  if(OE_DEMO) return oeDemo(body, window.__veListing || {});
   return fetch(SUPABASE_URL + '/functions/v1/ve-claims', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) })
     .then(function(r){ return r.json(); }).catch(function(){ return { error: 'network' }; });
 }
@@ -3696,6 +3780,7 @@ function oeCall(body){
 // then it does it"). Any claim unlocks it: the handle is the Instagram on the Contact step; we pull their recent posts (when the team has
 // switched that on, weekly) and show the top ones on their Social tab. They can hide, pin or pause. ve-listing-posts owner_* actions.
 function oeSocialCall(body){
+  if(OE_DEMO) return oeDemo(body, window.__veListing || {});
   return fetch(SUPABASE_URL + '/functions/v1/ve-listing-posts', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) })
     .then(function(r){ return r.json(); }).catch(function(){ return { error: 'network' }; });
 }
@@ -3804,7 +3889,7 @@ function mountOwnerEditor(el, l, step){
   var bk = el.querySelector('[data-oe-back]'); if(bk) bk.addEventListener('click', function(){ ownerEditGo(el, l, OE_STEPS[i - 1][0]); });
   el.querySelector('[data-oe-next]').addEventListener('click', function(){
     var b = this; b.disabled = true;
-    save().then(function(ok){ b.disabled = false; if(!ok) return; if(i < OE_STEPS.length - 1) ownerEditGo(el, l, OE_STEPS[i + 1][0]); else { ownerEditGo(el, l, null); setTimeout(function(){ location.reload(); }, 50); } });
+    save().then(function(ok){ b.disabled = false; if(!ok) return; if(i < OE_STEPS.length - 1) ownerEditGo(el, l, OE_STEPS[i + 1][0]); else { var dm = OE_DEMO; ownerEditGo(el, l, null); if(!dm) setTimeout(function(){ location.reload(); }, 50); } });
   });
   function dims(file){ return new Promise(function(res){ var u = URL.createObjectURL(file), im = new Image(); im.onload = function(){ res({ w: im.naturalWidth, h: im.naturalHeight }); URL.revokeObjectURL(u); }; im.onerror = function(){ res(null); URL.revokeObjectURL(u); }; im.src = u; }); }
   Array.prototype.forEach.call(el.querySelectorAll('[data-oe-up]'), function(inp){
@@ -4295,7 +4380,7 @@ function sampleView(l){
   if(owner && el && window.VEPartnerDash){
     if(!SAMPLE_DASH) SAMPLE_DASH = VEPartnerDash.mount(el, l, {
       call: function(body){ return DEMO.dashboard(body, demoToast); },
-      editPage: function(){ demoToast('Sample dashboard: on your own page, Your page opens the editor for your story, hours, links and photos.'); },
+      editPage: function(step){ OE_DEMO = true; OE_DATA = null; window.__veListing = l; ownerEditGo(el, l, step || 'about'); },
       onJoin: function(){ location.href = '/business#/start'; }
     });
     else SAMPLE_DASH.redraw();
@@ -4411,6 +4496,8 @@ function renderListing(l){
   }
   if(l.category === 'News Outlets' && !isYouTubeL(l) && !DEMO) overviewContent += newsStoriesHtml();
 
+  // Signature dishes (playbook ve-signature-dishes): a claimed food place's featured dishes, right under About. Filled by loadSigDishes.
+  if(PLACE_MENU_CATS.indexOf(l.category) >= 0 && !l._brandSite) overviewContent += '<div id="sig-dishes" hidden></div>';
   // A group's events, or any listing that hosts events (Sean, 2026-10-29), right under About. Filled by loadHostedEvents.
   if(!person && catType !== 'media' && !l._brandSite && (!DEMO || DEMO.events)) overviewContent += '<div id="hosted-events"' + (l.category === 'Groups' ? '' : ' hidden') + '></div>';
   overviewContent += '<div id="in-pulse"></div>';
@@ -5520,6 +5607,7 @@ if(!slug || slug === 'listing'){
       // Always fetch menu items — show tab for any listing that has them
       loadLocations(l);
       if(!DEMO || DEMO.events) loadHostedEvents(l);
+      if(!DEMO || DEMO.dishes) loadSigDishes(l);
       if(!DEMO && l.category === 'Groups') loadGroupLive(l);
       // A location with no menu of its own shows its main listing's.
       // A food place's menu has to be current (Sean, 2026-10-27: "only if we can keep the menu up to date with our processes").
@@ -5788,6 +5876,7 @@ function renderDemo(){
   var donate = document.getElementById('donate-btn'); if(donate) donate.disabled = true;
   root.addEventListener('change', function(e){ if(e.target && e.target.id === 'demo-week') setDemoWeek(parseInt(e.target.value,10), l); });
   if(DEMO.group) renderGroupDemo(l);
+  if(DEMO.dishes) loadSigDishes(l);
   if(DEMO.business){
     // Claim Listing and Own this business open the owner's side; anything that would buy or claim the sample goes to /business.
     root.addEventListener('click', function(e){

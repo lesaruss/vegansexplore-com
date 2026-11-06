@@ -62,18 +62,28 @@ with each tab's `say` set to the script text. Later the same day: `door-pulse-v1
 
 ---
 
-## Sourcing tab (members only): DRAFT for Sean, nothing recorded (Logan, 2026-11-05, playbook `ve-vegan-sourcing-guide`)
+## Sourcing tab (members only): APPROVED and RECORDED 2026-11-06 (Sean: "approve K and L"), `door-sourcing-member-v1.mp3`, checked with stt (playbook `ve-restaurant-guide`)
 
-Today the tab shows one line as text: "Not everything has to come out of your kitchen. Here is who to buy it from, and every supplier wears an honest label."
-Proposed recording, about 20 seconds, Vegan spelled "Veegan", file `liz/restaurant-guide/door-sourcing-member-v1.mp3`. Every claim checked against the live
-directory on 2026-11-05: ready-made food and drink, ingredients, packaging and co-packers have suppliers; machinery, distributors and certification say Coming;
-recipes for buy or make are not written.
+Sourcing now lives in `ve-restaurant-guide` (the `ve-vegan-sourcing-guide` playbook was folded in on 2026-11-06). This replaces the 2026-11-05 draft,
+which said machinery, distributors and certification were Coming and Buy or make was not built; all of that is live now. Checked against the live
+directory on 2026-11-06: 236 suppliers in all 8 kinds, five labels (PETA-Approved Vegan, Fully vegan company, Offers vegan options, Plant-based
+material, Equipment), Buy or make 14 of 14.
 
-> "Not everything has to come out of your kitchen. This is who to buy it from: ready-made food, ingredients, packaging, and people who can make your recipe for you. Every supplier wears one label. A fully Vegan company is Vegan all the way through. Offers Vegan options means check each product with them. And plant-based material is about what the packaging is made of, not a Vegan promise. More kinds of suppliers are coming."
+Proposed recording, about 30 seconds, Vegan spelled "Veegan", file `liz/restaurant-guide/door-sourcing-member-v1.mp3`:
 
-Short line for the screen (the recording does the work, the `show` pattern): "Who to buy it from, so it doesn't all come out of your kitchen."
+> "Not everything has to come out of your kitchen. This is who to buy it from: ready-made food, ingredients, packaging, people who can make your recipe for you, even machines, distributors and certifiers. Every supplier wears one label. A fully Vegan company is Vegan all the way through. Offers Vegan options means check each product with them. Plant-based material and Equipment are about what something is made of or what it does, not a Vegan promise. And under Buy or make, every item has a supplier right beside a recipe you can make yourself."
 
-Once approved: record with el-media tts in Liz's roster-profile voice, check word for word with `stt`, add `sourcing` to `AUDIO_M` and set the tab's `sayMember` to the recording's words (or `show` to the short line).
+Short line for the screen (the `show` pattern): "Who to buy it from, so it doesn't all come out of your kitchen."
+
+Once approved: record with el-media tts in Liz's roster-profile voice, check word for word with `stt`, add `sourcing` to `AUDIO_M`, set the tab's
+`sayMember` to the recording's words and `show` to the short line. The Pre-Vegan Business Guide's Sourcing tab gets the same words in Maya's voice at its launch.
+
+**Maya's matching Sourcing line, READY TO RECORD at the Pre-Vegan Business Guide's launch** (playbook `ve-pre-vegan-business-guide`): file `maya/pre-vegan-business-guide/sourcing-member-v1.mp3`,
+Maya's roster-profile voice `sM8RysETdBj1LIqLd9tl`, Vegan spelled "Veegan". Same words as Liz's, with that Guide's plant-based rule ("Offers plant-based options"):
+
+> "Not everything has to come out of your kitchen. This is who to buy it from: ready-made food, ingredients, packaging, people who can make your recipe for you, even machines, distributors and certifiers. Every supplier wears one label. A fully Vegan company is Vegan all the way through. Offers plant-based options means check each product with them. Plant-based material and Equipment are about what something is made of or what it does, not a Vegan promise. And under Buy or make, every item has a supplier right beside a recipe you can make yourself."
+
+Line on screen: "Who to buy it from, so it doesn't all come out of your kitchen." Open at launch (Sean's call): the supplier label on screen still reads "Offers vegan options"; default, the line follows whatever the label shows.
 
 # River's script, Guide 2: The Vegan Events Guide (playbook `ve-audio-accessibility`, Guide `ve-events-guide`)
 
@@ -199,3 +209,10 @@ wire as `AUDIO_V` and `AUDIO_M` like the Restaurant Guide, each tab's on-screen 
 **Still pictures (this version):** one still of River per tab, in our illustration style from his current art (short twists with a fade), his outfit fitting the tab,
 no other brand's logos, every finger in frame, his face never covered. Made in Higgsfield (`nano_banana_pro`, about 2 credits each, about 30 credits for 15 tabs),
 shown to Sean before they go in, stored at 960 px in `vegan-media/media/river/events-guide/still-<tab>.jpg`.
+
+# Liz, Restaurant Guide Overview (visitor) v3: APPROVED and RECORDED 2026-11-06 (Sean: "approve K and L"), matches Start here
+
+`door-overview-v3.mp3` (43 s), checked with stt. Replaces overview-v2 (the old "does three things" welcome, file kept). On-screen line unchanged (the `show` pattern).
+
+> "Hi, I'm Liz, and welcome to the Vegan Restaurant Guide. You feed people, and that's the most direct way anyone meets Vegan food, so thank you. Most owners are great at the food and stretched thin on everything else: your Google listing, your hours, your photos, your menu online. Customers decide from what they find before they ever walk in. This Guide shows you what they find, and what to fix first. Start with Run my free check. Then take the short survey. It's free, it makes you a member, and the rest of the Guide opens. And this Guide is built with you. If something isn't clear, ask me. If I can't help, our team will."
+

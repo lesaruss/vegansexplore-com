@@ -114,7 +114,7 @@ Deno.serve(async (req) => {
     let action = url.searchParams.get('action') || 'submit';
     if (action === 'draft') action = 'profile';
     if (action === 'draft_save') action = 'save';
-    if (!['profile', 'answer', 'save', 'submit', 'shown', 'door_start', 'survey_get', 'survey_answer', 'admin_list', 'admin_get', 'finalize', 'review_list', 'review_decide', 'place_search', 'place_lead'].includes(action)) return json({ error: 'unknown_action' }, 400);
+    if (!['profile', 'answer', 'save', 'submit', 'shown', 'door_start', 'survey_get', 'survey_answer', 'admin_list', 'admin_get', 'finalize', 'review_list', 'review_decide', 'place_search', 'place_lead', 'preveg_readiness'].includes(action)) return json({ error: 'unknown_action' }, 400);
 
     const body = await req.json().catch(() => ({}));
     const token = body.token;
@@ -122,7 +122,7 @@ Deno.serve(async (req) => {
     const decoded = await verifyToken(token);
     if (!decoded) return json({ error: 'Invalid or expired token' }, 401);
     const memberId = decoded.sub;
-    const READ_ACTIONS = new Set(['profile', 'survey_get', 'admin_list', 'admin_get', 'review_list', 'place_search']);
+    const READ_ACTIONS = new Set(['profile', 'survey_get', 'admin_list', 'admin_get', 'review_list', 'place_search', 'preveg_readiness']);
     if (!READ_ACTIONS.has(action) && await standingBlocked(supabase, memberId)) return json(NOT_IN_GOOD_STANDING, 403);
 
     const state = async () => {
@@ -130,15 +130,18 @@ Deno.serve(async (req) => {
       if (error || !data) throw new Error('state: ' + (error?.message ?? 'none'));
       return data as Record<string, unknown>;
     };
-    // The survey door (Sean, 2026-11-03): an account waiting on its Passport may earn its membership with the whole survey.
-    if (action === 'door_start') {
-      const { data, error } = await supabase.rpc('ve_survey_door_start', { p_member: memberId });
-      if (error) throw new Error('door_start: ' + error.message);
-      if (data?.error) return json(data, 403);
-      return json(data);
-    }
+    // The old 31-question survey door was retired by Sean on 2026-11-06 ("retire it"): the free general way in is the Explorer
+    // survey (/survey?s=explorer). door_start and finalize answer 410; the review queue stays for the Explorer survey.
+    if (action === 'door_start' || action === 'finalize') return json({ error: 'retired', use: '/survey?s=explorer' }, 410);
     // A Guide's own survey (ve_surveys rows; 2026-11-03): the questions and a member's answers, and one answer at a time.
     // An account waiting on its Passport may answer a survey that admits; finishing it makes them a member.
+    // The Pre-Vegan readiness check (vegans-explore-initiative-business-certification B2/B3): a member's own private score,
+    // read from their pre-vegan-assessment answers. Self-reported advice, never a certification decision.
+    if (action === 'preveg_readiness') {
+      const { data, error } = await supabase.rpc('ve_preveg_readiness', { p_member: memberId });
+      if (error) throw new Error('preveg_readiness: ' + error.message);
+      return json({ ok: true, readiness: data });
+    }
     if (action === 'survey_get') {
       const { data, error } = await supabase.rpc('ve_survey_get', { p_survey: String(body.survey ?? ''), p_member: memberId });
       if (error) throw new Error('survey_get: ' + error.message);
@@ -149,6 +152,11 @@ Deno.serve(async (req) => {
       const { data, error } = await supabase.rpc('ve_survey_answer', { p_member: memberId, p_survey: String(body.survey ?? ''), p_question: String(body.id ?? ''), p_value: body.value ?? null });
       if (error) throw new Error('survey_answer: ' + error.message);
       if (data?.error) return json(data, data.error === 'not_eligible' ? 403 : 400);
+      // The Explorer survey waits for a person (membership_rule_v6, Sean 2026-11-06): the team hears the moment it is finished.
+      if (data?.review === 'pending') {
+        const { data: m } = await supabase.from('members').select('name, email').eq('id', memberId).maybeSingle();
+        await notifyTeam(`Explorer survey waiting for review: ${m?.name || m?.email || 'a new member'}`, `${m?.name || ''} (${m?.email || ''}) finished the Explorer survey. Review it in Depot > Profiles > Waiting for review: https://vegansexplore.com/admin/depot/profiles#review`);
+      }
       return json(data);
     }
     if (action === 'shown') {
@@ -171,22 +179,12 @@ Deno.serve(async (req) => {
       const { data, error } = await supabase.rpc('ve_profile_admin_get', { p_member: mid });
       if (error) throw new Error('admin_get: ' + error.message);
       if (!data) return json({ error: 'not_found' }, 404);
-      return json({ ok: true, profile: data });
+      const { data: guideSurveys } = await supabase.rpc('ve_member_guide_surveys', { p_member: mid });
+      return json({ ok: true, profile: data, guide_surveys: guideSurveys ?? [] });
     }
 
 
-    // The survey door waits for a person (Sean, 2026-11-03; migration 20261103_survey_review_gate.sql): Finalize sends the answers to the team,
-    // who approve (points paid, member, Founding by the day they finalized) or send them back with a note.
-    if (action === 'finalize') {
-      const { data, error } = await supabase.rpc('ve_survey_finalize', { p_member: memberId });
-      if (error) throw new Error('finalize: ' + error.message);
-      if (data?.error) return json(data, data.error === 'not_eligible' ? 403 : 400);
-      if (!data?.already) {
-        const { data: m } = await supabase.from('members').select('name, email').eq('id', memberId).maybeSingle();
-        await notifyTeam(`Survey waiting for review: ${m?.name || m?.email || 'a new member'}`, `${m?.name || ''} (${m?.email || ''}) finalized the survey. Review it in Depot > Profiles > Waiting for review: https://vegansexplore.com/admin/depot/profiles#review`);
-      }
-      return json(data);
-    }
+    // The review queue (Depot > Profiles > Waiting for review): the Explorer survey waits here for a person.
     if (action === 'review_list' || action === 'review_decide') {
       const { data: me } = await supabase.from('members').select('is_superadmin, name').eq('id', memberId).maybeSingle();
       if (!me?.is_superadmin) return json({ error: 'forbidden' }, 403);
@@ -214,7 +212,7 @@ Deno.serve(async (req) => {
         } else {
           mail = await sendMemberEmail(`ve-survey-sentback-${mid}-${Date.now()}`, m.email, m.name, 'A few of your answers need another look',
             `<p>Hi ${esc(first)},</p><p>Thank you for taking the survey. Before we can open your membership, our team asked for a change:</p><blockquote style="margin:14px 0;padding:10px 14px;border-left:3px solid #1f5f22;background:#f4f8f4">${esc(note)}</blockquote>` +
-            `<p>Your answers are saved. Open the survey, fix what needs fixing and finalize again.</p><p><a href="https://vegansexplore.com/survey?door=1" style="display:inline-block;background:#1f5f22;color:#fff;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:13px;padding:13px 24px;border-radius:6px;text-decoration:none">Open my survey</a></p><p>Vegans Explore team</p>`);
+            `<p>Your answers are saved. Open the survey, fix what needs fixing and finalize again.</p><p><a href="https://vegansexplore.com/survey?s=explorer" style="display:inline-block;background:#1f5f22;color:#fff;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:13px;padding:13px 24px;border-radius:6px;text-decoration:none">Open my survey</a></p><p>Vegans Explore team</p>`);
         }
       }
       return json({ ...data, mail });

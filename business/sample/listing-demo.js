@@ -117,7 +117,7 @@
         ] } }
     ],
     guides: [
-      { slug: 'vegan-restaurant-guide', title: 'The Vegan Restaurant Guide', description: 'Your Google listing, website and social, checked and fixed in order, with Liz.', access_rule: 'points', owned: true },
+      { slug: 'vegan-restaurant-guide', title: 'The Vegan Restaurant Guide', description: 'How your place looks to people searching, the top challenges, Vegan suppliers, your page and dashboard. Free with a short survey. With Liz.', access_rule: 'points', owned: true },
       { slug: 'vegan-dairy-guide', title: 'The Vegan Dairy Guide', description: 'The brands, swaps and recipes members use to leave dairy behind, with Maya.', access_rule: 'points', owned: false }
     ],
     opportunities: [{ id: 'sample-role', title: 'Community Manager', opportunity_type: 'Gig work', commitment: 'A few hours a week', compensation: 'Paid as the community grows', city_slug: 'south-florida' }],
@@ -126,6 +126,12 @@
 
   window.VE_DEMO = {
     business: true,
+    // Signature dishes on the Overview (playbook ve-signature-dishes); the same four the sample dashboard shows, the first three featured.
+    dishes: [
+      { id: 's1', name: 'Smoky BBQ Jackfruit Plate', line: 'Slow-cooked jackfruit, our house sauce and slaw on the side.', price_display: '$16', tags: ['Best seller'], photo_url: '/business/sample/img/m-bbq.webp', votes: 42 },
+      { id: 's2', name: 'Island Burrito Bowl', line: 'Black beans, plantains and mango salsa over coconut rice.', price_display: '$14', tags: ['Gluten-free'], photo_url: '/business/sample/img/m-burritobowl.webp', votes: 57 },
+      { id: 's3', name: 'Vanilla Bean Cheesecake', line: 'Cashew cream on a date crust, made every morning.', price_display: '$9', tags: [], photo_url: '/business/sample/img/m-cheesecake.webp', votes: 31 }
+    ],
     tour: false,
     label: 'Green Leaf Kitchen is a made-up restaurant. Everything around it is the real page and the real business dashboard, so you can see what owners get.',
     listing: {

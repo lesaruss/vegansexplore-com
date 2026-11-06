@@ -43,6 +43,23 @@ Two rules hold at every step:
 - **Members-only content** lives in the `<slug>-site` row of `ve_guides` (`content_html` holds the JSON); only the free preview
   ships in the page (`#dg-public`).
 
+## Start here: every Guide opens with it (LOCKED by Sean 2026-11-06)
+
+"Each of the guides needs to kick off with this... I don't want to have to keep explaining that to every single guide." Every Guide's
+Overview carries **Start here**, drawn by `/public/ve-guide-intro.js` (`VEGuideIntro.html({...})`, then `VEGuideIntro.wire(main)`),
+as text on the page, so it reaches people who never press Play. Open for visitors, folded under its heading for members. Six parts:
+
+1. **Why you are here** (the Guide's own words: who it is for).
+2. **Why we do what we do** (shared, in the file: Vegans Explore's why).
+3. **Why this Guide was made** (the Guide's own: the problem it solves).
+4. **What changes for you** (the Guide's own: the transformation once they have been through it).
+5. **How to use this Guide** (shared basics for first-timers: tabs are the steps, the Guide's Play, nothing breaks; plus the Guide's own first step).
+6. **It is built with you** (shared: tell the Guide or send feedback, our team sees what you share with the Guide and a person picks up what the
+   Guide cannot; if it does not work for you, we have not done our job), with Talk to <Guide> and Send feedback.
+
+A Guide passes only parts 1, 3, 4 and its extra steps (`INTRO` in `guide-scripts/vegan-restaurant-guide.js` is the example). The Guide's
+Overview line, when recorded, says the same in the Guide's voice. A Guide does not launch without Start here.
+
 ## 3. The page
 
 Copy the shell and keep its layout exactly:

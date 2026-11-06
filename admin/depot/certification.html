@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Pre-Vegan Certification | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);--ve-red:#8a1c12;}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:13px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:14px;}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;}
+    .tabs a{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-text);text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(360px,100%),1fr));gap:14px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
+    .card .body{padding:14px 16px;display:flex;flex-direction:column;gap:8px;flex:1;}
+    .who{display:flex;gap:12px;align-items:center;}
+    .av{width:44px;height:44px;border-radius:8px;flex:none;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:15px;background:var(--ve-green-deep);object-fit:cover;}
+    .who b{font-size:15px;font-weight:800;line-height:1.25;display:block;}
+    .meta{font-size:12.5px;color:var(--ve-text-75);}
+    .excerpt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13.5px;}
+    .chips{display:flex;gap:6px;flex-wrap:wrap;}
+    .chip{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:6px;background:#f1f3f1;color:#333;}
+    .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;align-items:center;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;}
+    .btn:disabled{opacity:.5;cursor:default;}
+    .btn-quiet{background:#fff;color:var(--ve-green-deep);border:1px solid var(--ve-green-deep);}
+    .btn-stop{background:var(--ve-red);}
+    .btn-ghost{background:#fff;color:var(--ve-red);border:1px solid rgba(0,0,0,0.25);}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);}
+    .msg.err{color:var(--ve-red);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .tools{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px;}
+    .tools input{font-family:inherit;font-size:13px;min-height:40px;padding:8px 12px;border:1px solid var(--ve-border);border-radius:6px;background:#fff;color:var(--ve-text);flex:1;min-width:200px;}
+    .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:#eef1ee;color:#333;}
+    .tag.watching{background:#fff1dc;color:#8a5200;}.tag.suspended{background:#e3eefc;color:#0f4a91;}.tag.banned,.tag.voided{background:#fde7e5;color:var(--ve-red);}.tag.cleared,.tag.good{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .mode{background:#fff;border:1px solid var(--ve-border);border-left:4px solid var(--ve-orange);border-radius:10px;padding:12px 16px;margin:0 0 16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-size:13.5px;}
+    .mode.on{border-left-color:var(--ve-green);}
+    .mode p{flex:1;min-width:240px;}
+    .crumb{font-size:12.5px;margin-bottom:12px;}.crumb a{color:var(--ve-green-deep);font-weight:700;}
+    .cols{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:16px;align-items:start;}
+    @media (max-width:1000px){.cols{grid-template-columns:1fr;}}
+    .box{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:18px 20px;margin-bottom:16px;}
+    .box dl{display:grid;grid-template-columns:150px 1fr;gap:6px 14px;font-size:13.5px;}.box dt{font-weight:800;color:var(--ve-text-75);}.box dd{word-break:break-word;}
+    @media (max-width:600px){.box dl{grid-template-columns:1fr;}.box dt{margin-top:6px;}}
+    .scroll{max-height:300px;overflow:auto;border:1px solid var(--ve-border);border-radius:8px;}
+    table{width:100%;border-collapse:collapse;font-size:12.5px;}th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--ve-border);vertical-align:top;}th{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);position:sticky;top:0;background:#f7faf7;}
+    .row{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--ve-border);font-size:13.5px;flex-wrap:wrap;}.row:last-child{border-bottom:0;}.row a{color:var(--ve-green-deep);font-weight:700;}
+    .log{list-style:none;display:grid;gap:10px;font-size:13.5px;}.log li{border-left:3px solid var(--ve-green);padding:2px 0 2px 12px;}
+    textarea{font-family:inherit;font-size:14px;width:100%;min-height:96px;padding:10px 12px;border:1px solid var(--ve-border);border-radius:6px;margin:6px 0 10px;}
+    .judge{border:2px solid var(--ve-green-deep);}
+    .neg{color:var(--ve-red);font-weight:700;}.pos{color:var(--ve-green-deep);font-weight:700;}
+    .pick{display:grid;gap:8px;margin-bottom:12px;}
+    [hidden]{display:none !important;}
+  
+    .tag.applied{background:#eef1ee;color:#333}.tag.pending{background:#fff1dc;color:#8a5200}.tag.active{background:var(--ve-green-light);color:var(--ve-green-deep)}.tag.suspended{background:#fde7e5;color:var(--ve-red)}.tag.expired,.tag.withdrawn{background:#eef1ee;color:#555}.tag.revoked{background:#fde7e5;color:var(--ve-red)}
+    .qr{display:flex;gap:16px;align-items:center;flex-wrap:wrap}.qr svg{width:148px;height:148px;border:1px solid var(--ve-border);border-radius:8px;background:#fff}
+    .code{font-family:ui-monospace,Menlo,monospace;font-size:20px;font-weight:800;letter-spacing:.12em}
+    label.f{display:block;font-size:12px;font-weight:800;color:var(--ve-text-75);margin:10px 0 4px}
+    input.t{font-family:inherit;font-size:14px;width:100%;min-height:40px;padding:8px 12px;border:1px solid var(--ve-border);border-radius:6px;background:#fff;color:var(--ve-text)}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}@media (max-width:600px){.two{grid-template-columns:1fr}}
+    .checks{display:flex;gap:14px;flex-wrap:wrap;font-size:13.5px}.checks label{display:flex;gap:6px;align-items:center}
+    .dish{border-bottom:1px solid var(--ve-border);padding:12px 0}.dish:last-child{border-bottom:0}
+    .dish-h{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.dish-h b{font-size:15px}
+    .move{background:#f7faf7;border:1px solid var(--ve-border);border-radius:8px;padding:12px 14px;margin-top:10px}
+    .moves{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px}.moves label{display:flex;gap:6px;align-items:center;font-size:13px;font-weight:700;background:#fff;border:1px solid var(--ve-border);border-radius:6px;padding:7px 10px;cursor:pointer}
+    .pub{border-left:4px solid var(--ve-green)}.pub.suspended{border-left-color:var(--ve-red)}.pub.none{border-left-color:#999}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Pre-Vegan Certification</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">The dish registry. Each certificate is one location for one 12-month term, and each named dish on it has its own status. Only Certified and Suspended dishes show on the public status page (the QR); Applied and In review never show, and no reason ever leaves this page. A dish becomes Certified only when you approve it, and you cannot be its Verifier or desk reviewer. Every change needs a reason and is kept for the term plus 5 years.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden>
+      <div id="view"></div>
+    </main>
+  </div>
+  <script src="/public/vendor-qrcode.js"></script>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-certification';
+      var SITE = 'https://vegansexplore.com';
+      var $ = function (id) { return document.getElementById(id); };
+      var WORD = { applied: 'Applied', pending: 'In review', active: 'Certified', suspended: 'Suspended', expired: 'Expired', revoked: 'Revoked', withdrawn: 'Withdrawn' };
+      var MOVES = { applied: ['pending', 'withdrawn'], pending: ['active', 'applied', 'withdrawn'], active: ['suspended', 'expired', 'revoked', 'withdrawn'], suspended: ['active', 'expired', 'revoked', 'withdrawn'], expired: ['applied'], revoked: [], withdrawn: [] };
+      var MOVE_WORD = { 'applied>pending': 'Send to review', 'pending>active': 'Approve: certify it', 'pending>applied': 'Did not pass: back to Applied (re-test)', 'suspended>active': 'Lift the suspension', 'expired>applied': 'Renew: a new review', active: 'Certify', suspended: 'Suspend', expired: 'Expire', revoked: 'Revoke', withdrawn: 'Withdraw' };
+      var SERVES = [['meat', 'Meat'], ['fish', 'Fish'], ['dairy', 'Dairy'], ['eggs', 'Eggs']];
+      var TABS = [['certified', 'Certified'], ['suspended', 'Has a suspension'], ['progress', 'In progress'], ['ended', 'Not current'], ['all', 'All']];
+      var ERR = { reason_required: 'Write the reason first.', not_allowed: 'That move is not allowed from here.', term_needed: 'Set the term first.', term_over: 'The term has ended. Set a new term.', menu_count_needed: 'Set how many items are on the menu first.', people_needed: 'Name the Verifier and the desk reviewer first.', approver_must_differ: 'You are named as the Verifier or desk reviewer, so someone else must approve.', no_access: 'Only a super admin can do that.', view_only: 'This account can look but not change anything.', certified_name_fixed: 'A certified dish keeps its name. A changed dish is a new review.', same_person: 'The Verifier and the desk reviewer must be different people.', bad_term: 'The term must end after it starts.', bad_menu_count: 'Menu items must be between 1 and 2,000.', name_needed: 'Name the dish.', listing_not_found: 'That listing is not on the Directory.' };
+      var data = null, viewOnly = false;
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function when(t) { return t ? new Date(t).toLocaleString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' ET' : ''; }
+      function day(d) { if (!d) return ''; var x = /^\d{4}-\d\d-\d\d$/.test(d) ? new Date(d + 'T12:00:00Z') : new Date(d); return x.toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', year: 'numeric' }); }
+      function tag(s) { return '<span class="tag ' + esc(s) + '">' + esc(WORD[s] || s) + '</span>'; }
+      function avatar(l) { l = l || {}; return l.logo_url ? '<img class="av" src="' + esc(l.logo_url) + '" alt="">' : '<span class="av">' + esc((l.name || '?').slice(0, 1).toUpperCase()) + '</span>'; }
+      function fail(m, e) { m.className = 'msg err'; m.textContent = ERR[e] || 'That did not go through.'; }
+      function statusUrl(code) { return SITE + '/certified/' + code; }
+      function qrSvg(code) { try { var q = qrcode(0, 'M'); q.addData(statusUrl(code)); q.make(); return q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); } catch (e) { return ''; } }
+      function qrPng(code) { var q = qrcode(0, 'M'); q.addData(statusUrl(code)); q.make(); return q.createDataURL(16, 4); }
+      function route() { var h = location.hash.replace(/^#/, '').split('/'); if (h[0] === 'c') return { v: 'item', id: h[1] }; if (h[0] === 'new') return { v: 'new' }; var t = h[1]; return { v: 'list', tab: TABS.some(function (x) { return x[0] === t; }) ? t : 'all' }; }
+      function bucket(c) { var n = c.counts || {}; if (n.active) return 'certified'; if (n.applied || n.pending) return 'progress'; return 'ended'; }
+      function card(c) {
+        var l = c.listing || {}, n = c.counts || {};
+        var parts = Object.keys(WORD).filter(function (k) { return n[k]; }).map(function (k) { return n[k] + ' ' + WORD[k].toLowerCase(); });
+        return '<div class="card"><div class="body"><div class="who">' + avatar(l) + '<div><b>' + esc(l.name || 'Listing') + '</b><span class="meta">' + esc([l.address_city, l.address_state].filter(Boolean).join(', ')) + '</span></div></div>' +
+          '<div class="meta"><span class="code" style="font-size:13px">' + esc(c.code) + '</span> &middot; ' + (c.term_end ? 'Term ' + esc(day(c.term_start)) + ' to ' + esc(day(c.term_end)) : 'No term set') + '</div>' +
+          '<div class="chips">' + (parts.length ? parts.map(function (p) { return '<span class="chip">' + esc(p) + '</span>'; }).join('') : '<span class="chip">No dishes yet</span>') + (n.suspended ? ' ' + tag('suspended') : '') + '</div>' +
+          '<div class="acts"><a class="btn" href="#c/' + c.id + '">Open</a></div></div></div>';
+      }
+      function drawList(r) {
+        var cs = data.certs, cnt = { all: cs.length };
+        cs.forEach(function (c) { var b = bucket(c); cnt[b] = (cnt[b] || 0) + 1; if ((c.counts || {}).suspended) cnt.suspended = (cnt.suspended || 0) + 1; });
+        var tabs = TABS.map(function (t) { return '<a href="#list/' + t[0] + '" class="' + (t[0] === r.tab ? 'on' : '') + '">' + t[1] + ' (' + (cnt[t[0]] || 0) + ')</a>'; }).join('');
+        var list = cs.filter(function (c) { return r.tab === 'all' || (r.tab === 'suspended' ? (c.counts || {}).suspended : bucket(c) === r.tab); });
+        $('view').innerHTML = '<nav class="tabs" aria-label="Filter">' + tabs + (viewOnly ? '' : '<a href="#new">New certificate</a>') + '<a href="/certified" target="_blank" rel="noopener">The public registry</a></nav>' +
+          (list.length ? '<div class="grid">' + list.map(card).join('') + '</div>' : '<p class="sub">' + (cs.length ? 'None here.' : 'No certificates yet. Start one with New certificate when a restaurant applies.') + '</p>');
+      }
+      function dl(rows) { return '<dl>' + rows.filter(Boolean).map(function (x) { return '<dt>' + x[0] + '</dt><dd>' + x[1] + '</dd>'; }).join('') + '</dl>'; }
+      function drawItem(r) {
+        $('view').innerHTML = '<p class="sub">Loading...</p>';
+        api({ action: 'get', id: r.id }).then(function (d) {
+          if (!d || !d.ok) { $('view').innerHTML = '<p class="sub">That one did not load.</p>'; return; }
+          var c = d.cert, l = d.listing || {}, p = d.public || {};
+          var head = '<div class="box"><div class="who">' + avatar(l) + '<div><b style="font-size:18px">' + esc(l.name) + '</b><span class="meta">' + esc([l.address_street, l.address_city, l.address_state].filter(Boolean).join(', ')) + '</span></div></div>' +
+            '<div class="qr" style="margin-top:14px"><div id="qr">' + qrSvg(c.code) + '</div><div><p class="meta">Status code</p><p class="code">' + esc(c.code) + '</p><p class="meta" style="margin:4px 0 10px">' + esc(statusUrl(c.code)) + '</p><div class="acts" style="padding:0"><a class="btn" href="/certified/' + esc(c.code) + '" target="_blank" rel="noopener">Open the status page</a><a class="btn btn-quiet" id="qrdl" download="pre-vegan-' + esc(c.code) + '.png" href="#">Download the QR</a>' + (l.slug ? '<a class="btn btn-quiet" href="/directory/' + esc(l.slug) + '" target="_blank" rel="noopener">Their listing</a>' : '') + '</div></div></div></div>';
+          var pubWord = { certified: 'Certified dishes are showing.', suspended: 'Showing as Suspended: no dish is certified right now.', not_current: 'No current certification is showing.', not_found: 'Nothing public yet: no dish has been certified.' }[p.state] || '';
+          var pub = '<div class="box pub ' + (p.state === 'certified' ? '' : p.state === 'suspended' ? 'suspended' : 'none') + '"><h2>What the public sees</h2><p style="font-size:14px">' + esc(pubWord) + '</p>' +
+            (p.state === 'certified' || p.state === 'suspended' ? '<p class="meta">' + p.certified + ' of ' + esc(p.menu_items) + ' menu items certified' + ((p.also_serves || []).length ? '. Also serves ' + esc(p.also_serves.join(', ')) : '') + '.</p>' : '') + '</div>';
+          var dishes = '<div class="box"><h2>Dishes</h2>' + (d.dishes.length ? d.dishes.map(function (x) {
+            var moves = MOVES[x.status] || [];
+            return '<div class="dish" data-dish="' + x.id + '"><div class="dish-h"><b>' + esc(x.name) + '</b>' + tag(x.status) + '<span class="meta">' + esc(x.menu_section || '') + (x.menu_section ? ' &middot; ' : '') + 'since ' + esc(day(x.status_at)) + (x.certified_at ? ' &middot; first certified ' + esc(day(x.certified_at)) : '') + '</span>' +
+              (moves.length && !viewOnly ? '<button type="button" class="btn btn-quiet" data-open="' + x.id + '" style="margin-left:auto">Change status</button>' : '') + '</div>' +
+              (moves.length && !viewOnly ? '<div class="move" id="mv-' + x.id + '" hidden><div class="moves">' + moves.map(function (to) { return '<label><input type="radio" name="to-' + x.id + '" value="' + to + '"> ' + esc(MOVE_WORD[x.status + '>' + to] || MOVE_WORD[to]) + '</label>'; }).join('') + '</div>' +
+                '<label class="f" for="rs-' + x.id + '">Reason (required, team only, kept in the history)</label><textarea id="rs-' + x.id + '" style="min-height:70px"></textarea><div class="acts" style="padding:0"><button type="button" class="btn" data-save="' + x.id + '">Save</button><span class="msg" id="mm-' + x.id + '"></span></div></div>' : '') + '</div>';
+          }).join('') : '<p class="meta">No dishes yet.</p>') +
+            (viewOnly ? '' : '<div style="margin-top:14px"><div class="two"><div><label class="f" for="dn">Add a dish (its name on the menu)</label><input class="t" id="dn" maxlength="120"></div><div><label class="f" for="ds">Menu section (optional)</label><input class="t" id="ds" maxlength="80"></div></div><div class="acts"><button type="button" class="btn" id="dadd">Add the dish</button><span class="msg" id="dmsg"></span></div></div>') + '</div>';
+          var serves = c.also_serves || [];
+          var form = '<div class="box judge"><h2>The certificate</h2>' +
+            '<div class="two"><div><label class="f" for="ts">Term starts</label><input class="t" type="date" id="ts" value="' + esc(c.term_start || '') + '"></div><div><label class="f" for="te">Term ends (12 months, no grace period)</label><input class="t" type="date" id="te" value="' + esc(c.term_end || '') + '"></div></div>' +
+            '<label class="f" for="mi">Items on their menu (the M in N of M)</label><input class="t" type="number" min="1" max="2000" id="mi" value="' + esc(c.menu_items_total || '') + '">' +
+            '<label class="f">What else they serve (shown beside the stamp)</label><div class="checks">' + SERVES.map(function (s) { return '<label><input type="checkbox" data-serve="' + s[0] + '"' + (serves.indexOf(s[0]) > -1 ? ' checked' : '') + '> ' + s[1] + '</label>'; }).join('') + '</div>' +
+            '<div class="two"><div><label class="f" for="vn">Verifier (did the visit)</label><input class="t" id="vn" value="' + esc(c.verifier_name || '') + '"></div><div><label class="f" for="rn">Desk reviewer</label><input class="t" id="rn" value="' + esc(c.desk_reviewer_name || '') + '"></div></div>' +
+            '<p class="meta" style="margin-top:6px">You approve as ' + esc(d.me.name) + '. The approver must be a third person.</p>' +
+            '<label class="f" for="tn">Team note (never public)</label><textarea id="tn" style="min-height:70px">' + esc(c.team_note || '') + '</textarea>' +
+            (viewOnly ? '' : '<div class="acts"><button type="button" class="btn" id="csave">Save the certificate</button><span class="msg" id="cmsg"></span></div>') + '</div>';
+          var hist = '<div class="box"><h2>History</h2>' + (d.events.length ? '<ul class="log">' + d.events.slice().reverse().map(function (e) {
+            var dn = (d.dishes.filter(function (x) { return x.id === e.dish_id; })[0] || {}).name || 'A dish';
+            return '<li><b>' + esc(dn) + '</b>: ' + esc(WORD[e.from_status] || e.from_status || 'new') + ' to ' + esc(WORD[e.to_status] || e.to_status) + ' &middot; ' + esc(e.actor_name || '') + ' &middot; ' + esc(when(e.created_at)) + '<br><span class="meta">' + esc(e.reason) + '</span></li>';
+          }).join('') + '</ul>' : '<p class="meta">No changes yet.</p>') + '</div>';
+          $('view').innerHTML = '<p class="crumb"><a href="#list/all">Pre-Vegan Certification</a> / ' + esc(l.name) + '</p><div class="cols"><div>' + head + dishes + hist + '</div><div>' + pub + form + '</div></div>';
+          wireItem(d);
+        });
+      }
+      function wireItem(d) {
+        var dlq = $('qrdl'); if (dlq) dlq.onclick = function () { dlq.href = qrPng(d.cert.code); };
+        [].forEach.call(document.querySelectorAll('[data-open]'), function (b) { b.onclick = function () { var el = $('mv-' + b.getAttribute('data-open')); el.hidden = !el.hidden; }; });
+        [].forEach.call(document.querySelectorAll('[data-save]'), function (b) { b.onclick = function () {
+          var id = b.getAttribute('data-save'), m = $('mm-' + id), pick = document.querySelector('input[name="to-' + id + '"]:checked');
+          if (!pick) { m.className = 'msg err'; m.textContent = 'Pick a change.'; return; }
+          if (($('rs-' + id).value || '').trim().length < 3) return fail(m, 'reason_required');
+          var to = pick.value, name = (d.dishes.filter(function (x) { return x.id === id; })[0] || {}).name;
+          var sure = to === 'active' ? 'Certify "' + name + '"? It shows on the public status page at once.' : to === 'suspended' ? 'Suspend "' + name + '"? The status page shows it as Suspended at once.' : to === 'revoked' ? 'Revoke "' + name + '"? This is final; a new application is a new review.' : 'Save this change for "' + name + '"?';
+          if (!confirm(sure)) return;
+          b.disabled = true; m.className = 'msg'; m.textContent = 'Saving...';
+          api({ action: 'dish_status', id: id, to: to, reason: $('rs-' + id).value }).then(function (r) { if (r && r.ok) { data = null; drawItem(route()); } else { b.disabled = false; fail(m, r && r.error); } });
+        }; });
+        var add = $('dadd'); if (add) add.onclick = function () { var m = $('dmsg'); if (($('dn').value || '').trim().length < 2) return fail(m, 'name_needed'); add.disabled = true; api({ action: 'dish_add', cert_id: d.cert.id, name: $('dn').value, menu_section: $('ds').value }).then(function (r) { if (r && r.ok) { data = null; drawItem(route()); } else { add.disabled = false; fail(m, r && r.error); } }); };
+        var cs = $('csave'); if (cs) cs.onclick = function () {
+          var m = $('cmsg'), serves = [].map.call(document.querySelectorAll('[data-serve]:checked'), function (x) { return x.getAttribute('data-serve'); });
+          cs.disabled = true; m.className = 'msg'; m.textContent = 'Saving...';
+          api({ action: 'cert_save', id: d.cert.id, term_start: $('ts').value, term_end: $('te').value, menu_items_total: $('mi').value, also_serves: serves, verifier_name: $('vn').value, desk_reviewer_name: $('rn').value, team_note: $('tn').value }).then(function (r) { cs.disabled = false; if (r && r.ok) { data = null; m.className = 'msg'; m.textContent = 'Saved.'; } else fail(m, r && r.error); });
+        };
+        // A term start fills a 12-month end when it is empty.
+        var ts = $('ts'), te = $('te'); if (ts && te) ts.onchange = function () { if (ts.value && !te.value) { var x = new Date(ts.value + 'T12:00:00Z'); x.setUTCFullYear(x.getUTCFullYear() + 1); x.setUTCDate(x.getUTCDate() - 1); te.value = x.toISOString().slice(0, 10); } };
+      }
+      function drawNew() {
+        $('view').innerHTML = '<p class="crumb"><a href="#list/all">Pre-Vegan Certification</a> / New certificate</p><div class="box"><h2>New certificate</h2><p class="meta" style="margin-bottom:8px">Find the restaurant on the Directory. A certificate is one location; add its named dishes next. Nothing is public until you certify a dish.</p><div class="tools"><input id="fq" type="search" placeholder="Restaurant name" data-dictate="off"></div><div class="pick" id="found"></div><span class="msg" id="nmsg"></span></div>';
+        var t; $('fq').oninput = function () { clearTimeout(t); var q = this.value; t = setTimeout(function () { if (q.trim().length < 2) { $('found').innerHTML = ''; return; } api({ action: 'listing_find', q: q }).then(function (r) {
+          $('found').innerHTML = r && r.rows && r.rows.length ? r.rows.map(function (l) { return '<div class="row">' + avatar(l) + '<b>' + esc(l.name) + '</b><span class="meta">' + esc([l.address_city, l.address_state].filter(Boolean).join(', ')) + (l.vegan_status ? ' &middot; ' + esc(String(l.vegan_status).replace(/_/g, ' ')) : '') + '</span><button type="button" class="btn" data-mk="' + l.id + '" style="margin-left:auto">Start a certificate</button></div>'; }).join('') : '<p class="meta">Nothing found.</p>';
+          [].forEach.call(document.querySelectorAll('[data-mk]'), function (b) { b.onclick = function () { b.disabled = true; api({ action: 'cert_save', listing_id: b.getAttribute('data-mk') }).then(function (r) { if (r && r.ok) { data = null; location.hash = 'c/' + r.id; } else { b.disabled = false; fail($('nmsg'), r && r.error); } }); }; });
+        }); }, 250); };
+      }
+      function render() {
+        var r = route();
+        if (r.v === 'item') return drawItem(r);
+        if (r.v === 'new') return drawNew();
+        if (data) return drawList(r);
+        $('view').innerHTML = '<p class="sub">Loading...</p>';
+        api({ action: 'list' }).then(function (d) { if (!d || !d.ok) { $('view').innerHTML = '<p class="sub">That did not load. Refresh to try again.</p>'; return; } data = d; viewOnly = !!d.view_only; drawList(route()); });
+      }
+      window.addEventListener('hashchange', render);
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="si">Sign in</button>'; $('si').onclick = function () { VEAuth.showAuthModal('Sign in to open Pre-Vegan Certification.', function () { location.reload(); }); }; return; }
+        if (!m || !m.is_superadmin) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+        $('app').hidden = false; render();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
