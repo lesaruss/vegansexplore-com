@@ -35,10 +35,11 @@ async function verifyToken(token: string): Promise<string | null> {
   } catch { return null; }
 }
 
-// ---- Google (the same reader as GA4, lesaruss_secrets GA4_SERVICE_ACCOUNT_JSON) ----
+// ---- Google. Search Console uses its own reader, made for it on 2026-08-29 under contact@lesaruss.com (Google Cloud project
+// lesaruss-493806, gsc-admin service account, lesaruss_secrets GSC_SERVICE_ACCOUNT_JSON), never the GA4 project. ----
 const b64u = (s: string) => btoa(s).replace(/=/g, '').replace(/\+/g, '-').replace(/\//g, '_');
-async function googleToken(scope: string): Promise<string> {
-  const raw = await secret('GA4_SERVICE_ACCOUNT_JSON'); if (!raw) throw new Error('no_reader');
+async function googleToken(scope: string, keyName = 'GSC_SERVICE_ACCOUNT_JSON'): Promise<string> {
+  const raw = await secret(keyName); if (!raw) throw new Error('no_reader');
   const sa = JSON.parse(raw); const now = Math.floor(Date.now() / 1000);
   const input = b64u(JSON.stringify({ alg: 'RS256', typ: 'JWT' })) + '.' + b64u(JSON.stringify({ iss: sa.client_email, scope, aud: 'https://oauth2.googleapis.com/token', exp: now + 3600, iat: now }));
   const pem = sa.private_key.replace('-----BEGIN PRIVATE KEY-----', '').replace('-----END PRIVATE KEY-----', '').replace(/\n/g, '');
@@ -57,7 +58,7 @@ async function gscCheck(site: any) {
   const props: { siteUrl: string; permissionLevel: string }[] = sl.siteEntry ?? [];
   const host = site.site.toLowerCase();
   const prop = props.find((p) => p.siteUrl === `sc-domain:${host}`) ?? props.find((p) => p.siteUrl.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '') === host);
-  if (!prop) return { ok: false, error: 'no_property', reader_sees: props.map((p) => p.siteUrl), google_error: sl.error?.message ?? null };
+  if (!prop) return { ok: false, error: 'no_property', reader: JSON.parse((await secret('GSC_SERVICE_ACCOUNT_JSON')) || '{}').client_email ?? null, reader_sees: props.map((p) => p.siteUrl), google_error: sl.error?.message ?? null };
   await db.from('signal_sites').update({ gsc_property: prop.siteUrl }).eq('site', site.site);
   const enc = encodeURIComponent(prop.siteUrl);
   const q = async (body: unknown) => (await fetch(`https://www.googleapis.com/webmasters/v3/sites/${enc}/searchAnalytics/query`, { method: 'POST', headers: H, body: JSON.stringify(body) })).json();
