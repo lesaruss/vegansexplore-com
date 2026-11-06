@@ -6609,6 +6609,10 @@ above that it contradicts (the person check at the door, the 31 questions as the
 - **Build order**: 1 re-weight Explorer and add the two options; 2 tag Explorer as the shared questions; 3 the Welcome ends in Explorer,
   straight-in admission; 4 the paths page; 5 path Guides gated with Explorer inline; 6 badges on profiles and as tags; 7 Build your profile;
   8 the invitations as drafts; 9 policies, the Guides' facts, saved answers.
+- **Step 1 done 2026-11-06** (migration `20261106_explorer_v7_points.sql`): the weights and the two options were already live (applied with
+  no file; nobody had answered, so nobody was paid the old weights); the file records them (250 in all, 50 required). In every Guide survey,
+  "None of these" now clears the other ticks and any other tick clears it (`public/ve-guide-survey.js`). The intro still says a person reads
+  every one; step 3 changes that.
 
 ## Abuse watch: a judge decides (Sean, 2026-11-03)
 

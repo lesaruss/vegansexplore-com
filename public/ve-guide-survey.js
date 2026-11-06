@@ -79,7 +79,7 @@
     el.addEventListener('click', function (e) {
       var o = e.target.closest('.vgs-opt'); if (o && S) {
         var q = S.questions[n - 1], val = o.getAttribute('data-v');
-        if (q.kind === 'multi') { var cur = (A[q.id] || []).slice(), i = cur.indexOf(val); if (i >= 0) cur.splice(i, 1); else cur.push(val); A[q.id] = cur; } else A[q.id] = val;
+        if (q.kind === 'multi') { var cur = (A[q.id] || []).slice(), i = cur.indexOf(val); if (i >= 0) cur.splice(i, 1); else if (val === 'none') cur = ['none']; else { cur = cur.filter(function (x) { return x !== 'none'; }); cur.push(val); } A[q.id] = cur; } else A[q.id] = val;
         draw(); return;
       }
       if (e.target.id === 'vgsNext') save();
