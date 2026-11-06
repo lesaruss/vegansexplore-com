@@ -4883,6 +4883,40 @@ Canon `canon-ve-pre-vegan-certification` v5. The standard (V1.2), the A-to-Z wor
 - **Next (Logan)**: B4, the dish status registry and the QR status page. **Sean**: A4 the attorney, A2 the entity, approve Liz's lines and the
   go to publish, both branch merges, the `ve_outreach_due` people-only guard, and whether invitation members also get 1,100 on a first $11.
 
+## Pre-Vegan Certification: B4, the dish registry and the QR status page (Logan, 2026-11-06, playbook `vegans-explore-initiative-business-certification`)
+
+Built from Standard V1.2 (playbook record 044b9cf2). The standard, the queue and B1 to B3 live on branches `claude/fervent-hamilton-fc48qo` and
+`claude/inspiring-hypatia-ilwro1` (not on `main`); this is on `claude/gracious-gauss-d7r3h7` (not on `main`). **Nothing is certified, sent or launched.**
+
+- **Data** (migration `20261106_pre_vegan_dish_registry.sql`, applied through the one-time `ve-once-preveg-registry`, now the 410 stub, since the
+  connector held it): `ve_preveg_certs` (one location for one 12-month term: `listing_id`, the QR `code` (7 characters, no 0, O, 1, I or L),
+  `term_start`, `term_end`, `menu_items_total` (the M in N of M), `also_serves` (meat, fish, dairy, eggs), `verifier_name`, `desk_reviewer_name`
+  (must differ), `team_note`), `ve_preveg_dishes` (`status` applied, pending, active, suspended, expired, revoked, withdrawn; `certified_at`) and
+  `ve_preveg_dish_events` (every move with its reason and who). RLS on, no policies. **Records are kept**: a delete on any of the three, or an edit to
+  the history, raises `records_are_kept` (G8, term plus 5 years); a direct status update raises `use_ve_preveg_dish_set_status`.
+- **Moves** (`ve_preveg_dish_set_status(dish, to, reason, actor)`, service role only): applied to pending or withdrawn; pending to active (the approver),
+  applied (did not pass, re-test) or withdrawn; active to suspended, expired, revoked or withdrawn; suspended to active, expired, revoked or withdrawn;
+  expired to applied (renewal); revoked and withdrawn are final. A reason is always required; only a super admin moves; **active needs** a current
+  term, the menu count, both people named, and an approver who is neither of them (by member id or name). **No grace period**: cron
+  `ve-preveg-expire` (05:05 UTC) and every team read expire dishes whose term ended, and the public read treats an ended term as not current at once.
+- **Public** (`ve_preveg_cert_public(code)`, `ve_preveg_registry_public()`): only active and suspended dishes in a current term, N of M, what else
+  they serve, the term; never a reason, never applied or pending, never the people or the note. States: certified, suspended (none active), not_current
+  (once certified, nothing now, no detail), not_found (never certified). Never a failure log.
+- **Edge function `ve-certification`** (verify_jwt off): public `status {code}`, `registry` (no-store, so a suspension shows at once); team (a super
+  admin's token, or the admin token with `as_member`; a Guide account is view only) `list`, `get`, `listing_find`, `cert_save`, `dish_add`,
+  `dish_edit` (a certified dish keeps its name: a changed dish is a new review), `dish_status`. Deployed from bdd8538, source sha256 matched.
+- **Depot > Pre-Vegan Certification** (`/admin/depot/certification`, Directory in the Go to menu; copied from the Watchlist): certificates by
+  Certified, Has a suspension, In progress, Not current; New certificate (find the Directory listing); one certificate (`#c/<id>`): the QR (drawn in
+  the browser by `/public/vendor-qrcode.js`, qrcode-generator 1.4.4, MIT, our own copy) with Download the QR, the dishes with Change status (a move and
+  its reason), Add a dish, What the public sees, the certificate form, the history.
+- **The public pages** (`certified.html`, `noindex` until launch, not in the sitemap; copied from the listing page's hero, info bar and two columns):
+  `/certified/<code>` (rewrite in `vercel.json`) is the QR status page: the stamp line "Plant-Based Dish, Pre-Vegan Certified", N of M, what else they
+  serve beside it, each dish Certified or Suspended, Read before you order, What the stamp means (never a health, allergen or food-safety claim),
+  Something wrong? (the Feedback window, the diner report until its own form is built), checked live with the time. `/certified` is the registry.
+- **Proven 2026-11-06** in a rolled-back transaction (every move and refusal above, the public read with no reason leaking, expiry, the record locks)
+  and live (public actions, the team actions refuse no token). Pages checked at 1440 and 390 px beside the listing page and the Watchlist against
+  mocked answers. **Not proven**: a real certificate made through the Depot (it cannot be deleted, so the first real one should be a pilot restaurant).
+
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
 
 Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-venue-guides`). The Stadium & Arena
