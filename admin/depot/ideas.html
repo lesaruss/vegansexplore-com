@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Ideas | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:14px;}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;}
+    .tabs a{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-text);text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:14px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
+    .card img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#eee;cursor:zoom-in;}
+    .card .body{padding:14px 16px;display:flex;flex-direction:column;gap:6px;flex:1;}
+    .kind{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .card h3{font-size:15px;font-weight:800;line-height:1.3;}
+    .card h3 a{color:inherit;}
+    .meta{font-size:12.5px;color:var(--ve-text-75);}
+    .quote{font-size:14px;background:#f7faf7;border-left:3px solid var(--ve-green);padding:8px 12px;border-radius:6px;}
+    .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;}
+    .btn:disabled{opacity:.5;cursor:default;}
+    .btn-ghost{background:#fff;color:#8a1c12;border:1px solid rgba(0,0,0,0.25);}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .lb{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;cursor:zoom-out;}
+    .lb img{max-width:100%;max-height:100%;border-radius:8px;}
+    .tools{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px;}
+    .tools select,.tools input{font-family:inherit;font-size:13px;min-height:40px;padding:8px 12px;border:1px solid var(--ve-border);border-radius:6px;background:#fff;color:var(--ve-text);}
+    .tools select{appearance:none;-webkit-appearance:none;padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;}
+    .tools input{flex:1;min-width:200px;}
+    .btn-quiet{background:#fff;color:var(--ve-green-deep);border:1px solid var(--ve-green-deep);}
+    @media (max-width:600px){.tools select{flex:1 1 100%;}}
+    .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:#eef1ee;color:#333;}
+    .tag.new{background:#fff1dc;color:#8a5200;}.tag.working{background:#e3eefc;color:#0f4a91;}.tag.fixed{background:var(--ve-green-light);color:var(--ve-green-deep);}.tag.spam{background:#fde7e5;color:#8a1c12;}
+    .card .excerpt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:14px;}
+    .crumb{font-size:12.5px;margin-bottom:12px;}.crumb a{color:var(--ve-green-deep);font-weight:700;}
+    .item{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:20px 22px;display:grid;gap:14px;}
+    .item .full{white-space:pre-wrap;font-size:15px;background:#f7faf7;border-left:3px solid var(--ve-green);padding:12px 14px;border-radius:6px;}
+    .item dl{display:grid;grid-template-columns:140px 1fr;gap:6px 14px;font-size:13.5px;}.item dt{font-weight:800;color:var(--ve-text-75);}.item dd{word-break:break-word;}
+    .item textarea{font-family:inherit;font-size:14px;width:100%;min-height:90px;padding:10px 12px;border:1px solid var(--ve-border);border-radius:6px;}
+    @media (max-width:600px){.item dl{grid-template-columns:1fr;}.item dt{margin-top:6px;}}
+    .tag.read{background:#e3eefc;color:#0f4a91;}.tag.approved{background:#fff1dc;color:#8a5200;}.tag.building{background:#efe4fb;color:#5b2a91;}.tag.done{background:var(--ve-green-light);color:var(--ve-green-deep);}.tag.set_aside{background:#eef1ee;color:#555;}
+    .newbtn{margin:0 0 16px;}
+    .form{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:20px 22px;display:grid;gap:14px;max-width:860px;}
+    .form label{font-size:12.5px;font-weight:800;color:var(--ve-text-75);display:block;margin-bottom:6px;}
+    .form textarea,.form input[type=text],.form input[type=url]{font-family:inherit;font-size:16px;width:100%;padding:10px 12px;border:1px solid var(--ve-border);border-radius:6px;background:#fff;color:var(--ve-text);}
+    .form textarea#body{min-height:180px;}
+    .drop{border:2px dashed rgba(31,95,34,.35);border-radius:10px;padding:18px;text-align:center;font-size:14px;color:var(--ve-text-75);cursor:pointer;background:#fbfdfb;}
+    .drop.over{background:var(--ve-green-light);}
+    .files{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:10px;}
+    .file{position:relative;border:1px solid var(--ve-border);border-radius:8px;overflow:hidden;background:#fff;font-size:11px;}
+    .file img{width:100%;aspect-ratio:1;object-fit:cover;display:block;}
+    .file .fn{padding:4px 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .file .ph{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--ve-green-deep);background:#f3f7f3;}
+    .file button{position:absolute;top:4px;right:4px;width:26px;height:26px;border-radius:6px;border:0;background:rgba(0,0,0,.65);color:#fff;font-size:15px;cursor:pointer;}
+    .read{background:#f7faf7;border-left:3px solid var(--ve-green);border-radius:6px;padding:14px 16px;display:grid;gap:10px;}
+    .read h3{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .read p,.read li{font-size:15px;}
+    .read ol,.read ul{padding-left:20px;display:grid;gap:4px;}
+    .thread{display:grid;gap:10px;}
+    .turn{font-size:14px;padding:10px 12px;border-radius:8px;white-space:pre-wrap;}
+    .turn.sean{background:#fff;border:1px solid var(--ve-border);}
+    .turn.logan{background:#eef6ee;}
+    .turn b{display:block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px;}
+    .thumbs{display:flex;gap:8px;flex-wrap:wrap;}
+    .thumbs a{display:block;width:96px;}
+    .thumbs img{width:96px;height:96px;object-fit:cover;border-radius:8px;border:1px solid var(--ve-border);cursor:zoom-in;}
+    .wait{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:700;color:var(--ve-green-deep);}
+    .spin{width:18px;height:18px;border:3px solid var(--ve-green-light);border-top-color:var(--ve-green-deep);border-radius:50%;animation:sp 1s linear infinite;}
+    @keyframes sp{to{transform:rotate(360deg)}}
+    @media (max-width:600px){.form{padding:16px 14px;}.acts .btn{flex:1 1 auto;}}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Ideas</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Your idea inbox (Sean, 2026-11-06). Drop an idea the way you would say it to Logan: speak it or type it, add screenshots, photos and links. Logan reads it and writes back what he thinks you are asking, the playbook it belongs to and how he would do it. Correct him or approve it; once it is built, its link shows here.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden>
+      <div id="view"></div>
+    </main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-ideas';
+      var $ = function (id) { return document.getElementById(id); };
+      var ST = [['open', 'Open'], ['new', 'New'], ['read', 'Read back'], ['approved', 'Approved'], ['building', 'Building'], ['done', 'Done'], ['set_aside', 'Set aside'], ['all', 'All']];
+      var OPEN = { 'new': 1, read: 1, approved: 1, building: 1 };
+      var SIZE = { tweak: 'A tweak', build: 'A build', big: 'A big one, its own playbook' };
+      var rows = [], loaded = false, picked = [];
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }).catch(function () { return { error: 'network' }; }); }
+      function when(t) { return new Date(t).toLocaleString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' ET'; }
+      function stLabel(s) { for (var i = 0; i < ST.length; i++) if (ST[i][0] === s) return ST[i][1]; return s; }
+      function waitHtml(t) { return '<div class="wait"><span class="spin"></span>' + esc(t) + '</div>'; }
+      // #list/<status>, #new, #idea/<id>
+      function route() { var h = location.hash.replace(/^#/, '').split('/'); if (h[0] === 'new') return { v: 'new' }; if (h[0] === 'idea') return { v: 'idea', id: h[1] }; return { v: 'list', st: ST.some(function (s) { return s[0] === h[1]; }) ? h[1] : 'open' }; }
+      function inSt(x, st) { return st === 'all' || (st === 'open' ? OPEN[x.status] : x.status === st); }
+
+      function drawList(r) {
+        var tabs = ST.map(function (s) { var n = rows.filter(function (x) { return inSt(x, s[0]); }).length; return '<a href="#list/' + s[0] + '" class="' + (s[0] === r.st ? 'on' : '') + '">' + s[1] + ' (' + n + ')</a>'; }).join('');
+        $('view').innerHTML = '<div class="newbtn"><a class="btn" href="#new">New idea</a></div><nav class="tabs" aria-label="Filter by status">' + tabs + '</nav>' +
+          '<div class="tools"><input id="q" type="search" placeholder="Search your ideas" data-dictate="off"></div><div class="grid" id="grid"></div>';
+        $('q').oninput = function () { fill(r); };
+        fill(r);
+      }
+      function fill(r) {
+        var q = $('q').value.toLowerCase();
+        var list = rows.filter(function (x) { return inSt(x, r.st) && (!q || ((x.body || '') + ' ' + ((x.read && x.read.ask) || '') + ' ' + (x.playbook_slug || '')).toLowerCase().indexOf(q) >= 0); });
+        $('grid').innerHTML = list.length ? list.map(function (x) {
+          var title = (x.read && x.read.ask) || x.body || (x.links || [])[0] || ((x.files || []).length + ' attachment' + ((x.files || []).length === 1 ? '' : 's'));
+          return '<div class="card"><div class="body"><span class="kind">' + esc(x.playbook_slug || 'No playbook yet') + '</span><div><span class="tag ' + esc(x.status) + '">' + esc(stLabel(x.status)) + '</span></div>' +
+            '<div class="excerpt">' + esc(title) + '</div><span class="meta">' + esc(when(x.created_at)) + ((x.files || []).length ? ' &middot; ' + x.files.length + ' file' + (x.files.length === 1 ? '' : 's') : '') + ((x.links || []).length ? ' &middot; ' + x.links.length + ' link' + (x.links.length === 1 ? '' : 's') : '') + '</span>' +
+            '<div class="acts"><a class="btn" href="#idea/' + x.id + '">Open</a>' + (x.result_url ? '<a class="btn btn-quiet" href="' + esc(x.result_url) + '" target="_blank" rel="noopener">See it</a>' : '') + '</div></div></div>';
+        }).join('') : '<p class="sub">' + (r.st === 'open' ? 'Nothing open. Tap New idea to drop one.' : 'None here.') + '</p>';
+      }
+
+      // Pictures shrink to 1600 px JPEG in the browser so Logan can read them; other files go as they are.
+      function shrink(file) {
+        return new Promise(function (res) {
+          if (!/^image\/(jpeg|png|webp|heic|heif)$/i.test(file.type) || file.size < 900000) return res(file);
+          var img = new Image(), u = URL.createObjectURL(file);
+          img.onload = function () {
+            var s = Math.min(1, 1600 / Math.max(img.width, img.height)), c = document.createElement('canvas');
+            c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
+            c.getContext('2d').drawImage(img, 0, 0, c.width, c.height); URL.revokeObjectURL(u);
+            c.toBlob(function (b) { res(b ? new File([b], file.name.replace(/\.[^.]+$/, '') + '.jpg', { type: 'image/jpeg' }) : file); }, 'image/jpeg', 0.85);
+          };
+          img.onerror = function () { URL.revokeObjectURL(u); res(file); };
+          img.src = u;
+        });
+      }
+      function addFiles(list) {
+        [].forEach.call(list || [], function (f) { if (picked.length < 12) picked.push({ file: f, url: /^image\//.test(f.type) ? URL.createObjectURL(f) : null }); });
+        drawPicked();
+      }
+      function drawPicked() {
+        $('files').innerHTML = picked.map(function (p, i) {
+          return '<div class="file">' + (p.url ? '<img src="' + p.url + '" alt="">' : '<div class="ph">' + esc((p.file.name.split('.').pop() || 'file').toUpperCase()) + '</div>') + '<div class="fn">' + esc(p.file.name) + '</div><button type="button" data-rm="' + i + '" aria-label="Remove">&times;</button></div>';
+        }).join('');
+        [].forEach.call(document.querySelectorAll('[data-rm]'), function (b) { b.onclick = function () { picked.splice(+b.getAttribute('data-rm'), 1); drawPicked(); }; });
+      }
+      function upload(p) {
+        return shrink(p.file).then(function (f) {
+          var type = f.type || 'application/octet-stream';
+          return api({ action: 'upload_start', name: f.name, type: type, size: f.size }).then(function (u) {
+            if (!u || !u.ok) throw new Error((u && u.error) === 'file_type' ? f.name + ' is a kind of file we do not take' : (u && u.error) === 'too_big' ? f.name + ' is over 25 MB' : 'Upload of ' + f.name + ' did not start');
+            return fetch(u.url, { method: 'PUT', headers: { 'Content-Type': type }, body: f }).then(function (r) {
+              if (!r.ok) throw new Error('Upload of ' + f.name + ' failed');
+              return { path: u.path, name: f.name, type: type, size: f.size };
+            });
+          });
+        });
+      }
+      function drawNew() {
+        picked = [];
+        var from = new URLSearchParams(location.search).get('from') || '';
+        $('view').innerHTML = '<p class="crumb"><a href="#list/open">Ideas</a> / New idea</p><div class="form">' +
+          '<div><label for="body">What is the idea?</label><textarea id="body" placeholder="Say it or type it, the way you would tell Logan. Tap in the box and use the mic to speak."></textarea></div>' +
+          '<div><label>Screenshots, photos and files</label><div class="drop" id="drop" tabindex="0" role="button">Tap to add, drop them here, or paste a screenshot</div><input id="fi" type="file" multiple accept="image/*,application/pdf,video/*,audio/*,text/plain" hidden><div class="files" id="files" style="margin-top:10px"></div></div>' +
+          '<div><label for="links">Links (one a line)</label><textarea id="links" rows="3" placeholder="https://..." data-dictate="off"></textarea></div>' +
+          '<div><label for="pg">The page it is about (optional)</label><input id="pg" type="url" value="' + esc(from) + '" placeholder="https://vegansexplore.com/..." data-dictate="off"></div>' +
+          '<div class="acts"><button type="button" class="btn" id="send">Send to Logan</button><a class="btn btn-quiet" href="#list/open">Cancel</a></div><div id="msg" class="msg"></div></div>';
+        $('drop').onclick = function () { $('fi').click(); };
+        $('drop').onkeydown = function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('fi').click(); } };
+        $('fi').onchange = function () { addFiles(this.files); this.value = ''; };
+        $('drop').ondragover = function (e) { e.preventDefault(); this.classList.add('over'); };
+        $('drop').ondragleave = function () { this.classList.remove('over'); };
+        $('drop').ondrop = function (e) { e.preventDefault(); this.classList.remove('over'); addFiles(e.dataTransfer.files); };
+        document.onpaste = function (e) { if (route().v !== 'new') return; var fs = [].filter.call((e.clipboardData || {}).files || [], function (f) { return /^image\//.test(f.type); }); if (fs.length) { e.preventDefault(); addFiles(fs); } };
+        $('send').onclick = function () {
+          var body = $('body').value.trim(), links = $('links').value.split(/\s+/).map(function (s) { return s.trim(); }).filter(function (s) { return /^https?:\/\//i.test(s); });
+          if (!body && !links.length && !picked.length) { $('msg').textContent = 'Say or type the idea, or add a picture or a link.'; return; }
+          var btn = this; btn.disabled = true;
+          $('msg').innerHTML = waitHtml(picked.length ? 'Uploading ' + picked.length + ' file' + (picked.length === 1 ? '' : 's') + '...' : 'Sending...');
+          Promise.all(picked.map(upload)).then(function (files) {
+            $('msg').innerHTML = waitHtml('Logan is reading it. This takes about half a minute.');
+            return api({ action: 'create', body: body, links: links, files: files, page_url: $('pg').value.trim() });
+          }).then(function (d) {
+            if (!d || !d.ok) throw new Error('It did not save. ' + ((d && d.error) || ''));
+            loaded = false; location.hash = 'idea/' + d.idea.id;
+          }).catch(function (e) { btn.disabled = false; $('msg').textContent = e.message || 'That did not go through.'; });
+        };
+      }
+
+      function drawIdea(id) {
+        $('view').innerHTML = '<p class="sub">Loading...</p>';
+        api({ action: 'get', id: id }).then(function (d) {
+          if (!d || !d.idea) { $('view').innerHTML = '<p class="sub">That one did not load.</p>'; return; }
+          var x = d.idea, rd = x.read;
+          var pics = (x.files || []).filter(function (f) { return /^image\//.test(f.type) && f.url; });
+          var other = (x.files || []).filter(function (f) { return !/^image\//.test(f.type) || !f.url; });
+          var readHtml = rd ? '<div class="read"><h3>What I think you are asking</h3><p>' + esc(rd.ask) + '</p>' +
+            '<h3>Where it belongs</h3><p>' + esc(SIZE[rd.size] || rd.size) + ' &middot; ' + (rd.playbook ? 'playbook <b>' + esc(rd.playbook) + '</b>' : rd.new_playbook ? 'a new playbook, <b>' + esc(rd.new_playbook) + '</b>' : 'no playbook yet') + '</p>' +
+            (rd.plan && rd.plan.length ? '<h3>How I would do it</h3><ol>' + rd.plan.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ol>' : '') +
+            (rd.questions && rd.questions.length ? '<h3>What I need from you</h3><ul>' + rd.questions.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>' : '') + '</div>'
+            : '<div class="read"><p>Logan has not read this one yet.</p></div>';
+          var turns = (x.thread || []).slice(1).filter(function (t, i, a) { return !(t.role === 'logan' && i === a.length - 1); });
+          var canAct = x.status === 'new' || x.status === 'read';
+          $('view').innerHTML = '<p class="crumb"><a href="#list/open">Ideas</a> / ' + esc(when(x.created_at)) + '</p><div class="item">' +
+            '<div><span class="tag ' + esc(x.status) + '">' + esc(stLabel(x.status)) + '</span>' + (x.playbook_slug ? ' <span class="kind">' + esc(x.playbook_slug) + '</span>' : '') + '</div>' +
+            (x.body ? '<div class="full">' + esc(x.body) + '</div>' : '') +
+            (pics.length ? '<div class="thumbs">' + pics.map(function (f) { return '<a href="' + esc(f.url) + '" data-lb="' + esc(f.url) + '"><img src="' + esc(f.url) + '" alt="' + esc(f.name) + '"></a>'; }).join('') + '</div>' : '') +
+            (other.length ? '<p class="meta">' + other.map(function (f) { return f.url ? '<a href="' + esc(f.url) + '" target="_blank" rel="noopener">' + esc(f.name) + '</a>' : esc(f.name); }).join(' &middot; ') + '</p>' : '') +
+            ((x.links || []).length ? '<p class="meta">' + x.links.map(function (l) { return '<a href="' + esc(l) + '" target="_blank" rel="noopener">' + esc(l) + '</a>'; }).join('<br>') + '</p>' : '') +
+            (x.page_url ? '<p class="meta">About <a href="' + esc(x.page_url) + '" target="_blank" rel="noopener">' + esc(x.page_url) + '</a></p>' : '') +
+            readHtml +
+            (turns.length ? '<div class="thread">' + turns.map(function (t) { return '<div class="turn ' + esc(t.role) + '"><b>' + (t.role === 'logan' ? 'Logan' : 'You') + ' &middot; ' + esc(when(t.at)) + '</b>' + esc(t.text) + '</div>'; }).join('') + '</div>' : '') +
+            (canAct ? '<div><label class="meta" for="reply"><b>Correct me or answer my questions</b></label><textarea id="reply" placeholder="No, I meant... (tap the mic to speak)"></textarea></div>' +
+              '<div class="acts"><button type="button" class="btn" id="ok">Approve, go build it</button><button type="button" class="btn btn-quiet" id="re">Send and read it again</button><button type="button" class="btn btn-ghost" data-st="set_aside">Set aside</button></div>' : '') +
+            (x.status === 'approved' ? '<p class="sub"><b>Approved ' + esc(when(x.approved_at)) + '.</b> Logan picks it up in his next build session and puts the link here when it is done.</p>' : '') +
+            (x.session_url ? '<p class="meta">Build session: <a href="' + esc(x.session_url) + '" target="_blank" rel="noopener">open it</a></p>' : '') +
+            (x.result_url ? '<div class="acts"><a class="btn" href="' + esc(x.result_url) + '" target="_blank" rel="noopener">See what was done</a></div>' : '') +
+            (x.note ? '<p class="meta"><b>Note:</b> ' + esc(x.note) + '</p>' : '') +
+            (!canAct ? '<div class="acts">' + (x.status === 'set_aside' || x.status === 'done' ? '<button type="button" class="btn btn-quiet" data-st="read">Open it again</button>' : '') + (x.status !== 'set_aside' && x.status !== 'done' ? '<button type="button" class="btn btn-ghost" data-st="set_aside">Set aside</button>' : '') + '</div>' : '') +
+            '<div id="msg" class="msg"></div></div>';
+          [].forEach.call(document.querySelectorAll('[data-lb]'), function (a) { a.onclick = function (e) { e.preventDefault(); var lb = document.createElement('div'); lb.className = 'lb'; lb.innerHTML = '<img src="' + esc(a.getAttribute('data-lb')) + '" alt="">'; lb.onclick = function () { lb.remove(); }; document.body.appendChild(lb); }; });
+          function after(r) { if (r && r.ok) { loaded = false; drawIdea(id); } else $('msg').textContent = 'That did not go through. ' + ((r && r.error) || ''); }
+          if ($('ok')) $('ok').onclick = function () { this.disabled = true; $('msg').innerHTML = waitHtml('Approving...'); api({ action: 'approve', id: id }).then(after); };
+          if ($('re')) $('re').onclick = function () { this.disabled = true; $('msg').innerHTML = waitHtml('Logan is reading it again...'); api({ action: 'read', id: id, reply: $('reply').value }).then(after); };
+          [].forEach.call(document.querySelectorAll('[data-st]'), function (b) { b.onclick = function () { api({ action: 'set', id: id, status: b.getAttribute('data-st') }).then(after); }; });
+        });
+      }
+
+      function render() {
+        var r = route();
+        if (r.v === 'new') return drawNew();
+        if (r.v === 'idea') return drawIdea(r.id);
+        if (loaded) return drawList(r);
+        $('view').innerHTML = '<p class="sub">Loading...</p>';
+        api({ action: 'list' }).then(function (d) { if (!d || !d.ok) { $('view').innerHTML = '<p class="sub">That did not load. Refresh to try again.</p>'; return; } rows = d.rows; loaded = true; drawList(route()); });
+      }
+      window.addEventListener('hashchange', render);
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="si">Sign in</button>'; $('si').onclick = function () { VEAuth.showAuthModal('Sign in to drop an idea.', function () { location.reload(); }); }; return; }
+        if (!m || !m.is_superadmin) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+        $('app').hidden = false; render();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

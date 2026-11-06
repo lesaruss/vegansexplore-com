@@ -55,6 +55,7 @@
     { group: 'Content', href: '/admin/depot/social', label: 'Social' },
     { group: 'Content', href: '/admin/depot/search-questions', label: 'Search questions' },
     { group: 'Site', href: '/admin/depot/feedback', label: 'Feedback' },
+    { group: 'Site', href: '/admin/depot/ideas', label: 'Ideas' },
     { group: 'Content', href: '/admin/depot/sources', label: 'Sources' },
     { group: 'Content', href: '/admin/depot/cookbook', label: 'Cookbook' },
     { group: 'Content', href: '/admin/depot/content-index', label: 'Content index' },
