@@ -6663,6 +6663,13 @@ suspended or banned." Sean is the judge: every suspend, ban and void is his deci
 - **`/policies#community` paragraph written 2026-11-03** (Sean approved the wording): **Earning points fairly**, between Don't and Reporting (points gained by gaming are voided, an account can be put on hold, serious or repeated cases can be closed, a person decides, every decision can be undone). It is live once this branch is on `main`; it must be live before opening cases is turned on. **Not built yet**: the standing check in the functions not listed above. Canon
   `canon-ve-abuse-watch`, playbook `ve-abuse-watch`.
 
+## Moving off the $11 Passport (Sean, 2026-11-06, NOT built, playbook `ve-pricing-points-passport`)
+
+"Let's move away from the $11 passport and it just be the certification... get people through the door and keep them engaged... versus us
+throttling it because of the $11 charge." Direction only; scope questions and touch list in
+`docs/handoff/2026-11-06-ve-restaurant-guide-dashboard-scan-and-11-direction.md`. Until Sean confirms scope, nothing about the $11 changes on
+the site. The sample dashboard (main 354a462) already leads with free Explorer and keeps the $11 as the second way in.
+
 ## Image conventions
 
 - Mobile hero images: stored in the same folder as the page's desktop banner.
