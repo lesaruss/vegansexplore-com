@@ -3157,6 +3157,35 @@ claim unlocking top posts". Migration `20261103_listing_posts.sql`; edge functio
   shown at 6:53:16, no script errors). A headless login worked again (canon `agent-headless-page-verification`, replacement 2026-10-27: a one-time function mints the `vegan@` session into a file,
   Playwright reads it, sign it out and stub the function after); this sandbox refuses `*.vercel.app`, so a branch preview cannot be looked at, but `hq.lesaruss.ai` can.
 
+## Signature dishes (LOCKED by Sean 2026-11-06, playbook `ve-signature-dishes`)
+
+Sean's idea, his four calls answered with Logan's recommendations (canon `canon-ve-signature-dishes`; A-to-Z list in
+`docs/playbooks/ve-signature-dishes.md`). A perk of claiming: **any owner of a food listing** (Restaurants, Bakeries & Cafes, Food Trucks,
+Vendors, Catering, Meal Prep) whose claim Sean approved (`owner_member_id`), member or Partner, features up to 3 dishes on its Overview for
+free; **slots 4 and 5 are 50 points a slot for 30 days** from the owner's own balance, never renewing on their own (a lapsed slot's dish stays
+saved, not shown); up to 20 saved. A featured dish needs a name, a real photo at least 800 px on the shorter side (measured on the server) and one
+line; price, up to 5 tags and a link to a menu item are optional. **The owner sets the order; votes never change it.** Passport holders vote once
+per dish and can take it back; the counts show; owners cannot vote on their own dishes; signed out gets the Passport window. **It never replaces the
+menu** (`ve_menu_items` and the Menu tab are untouched).
+- **Data** (migration `20261106_signature_dishes.sql`; RLS on, no policies): `ve_signature_dishes` (a check refuses featured without a photo and
+  line), `ve_dish_votes`, `ve_dish_slots`; `ve_dish_cap(listing)` (3 plus each running slot), `ve_dish_slot_buy(member, listing, slot)` (50 points
+  from both balances, ledger reason `dish_slot`, ref `dish-slot:<id>`; refused while that slot has more than 7 days left, then the new 30 days start
+  where it ends; slot 5 needs slot 4; frozen accounts refused).
+- **Edge function `ve-signature-dishes`** (verify_jwt off, the VE token checked inside, standing check on writes): public `list` (featured, owner's
+  order, cut to the cap, with counts and the viewer's own votes), `vote`, and the owner's `owner_get`, `save`, `remove`, `order`, `photo_url`,
+  `photo_done` (pictures in `vegan-media/media/dishes/<slug>/`), `slot_buy`.
+- **The owner** edits on the business dashboard's **Signature dishes** view (`?tab=brand&pd=dishes`, `&item=<id|new>`; `drawDishes`, `drawDish`,
+  `wireDishes` in `public/ve-partner-dashboard.js`, copied from its Menu view): featured in order with up and down arrows, saved ones, More slots.
+- **The page** shows **Signature dishes** under About (`#sig-dishes`, `loadSigDishes` in `directory/listing.html`), a card grid (two across on
+  phones), the line clamped to two rows. The sample business shows Green Leaf Kitchen's three (`dishes` in `business/sample/listing-demo.js`).
+- **Proven live 2026-11-06** through the one-time `ve-once-dishes-proof` (now the 410 stub; script `scripts/supabase-once/signature-dishes-proof.ts`):
+  [TEST] dishes on Love Life Cafe with the Logan test account as owner for the run: a 458 px photo and a photo from another site refused, featured
+  with no photo refused, a fourth featured refused until slot 4 was bought (50 points once, slot 5 first refused, a second slot 4 refused), the order
+  changed by the owner and not by a vote, one vote counted once and taken back, the owner's own vote, an unpaid account's and a signed-out one refused,
+  a stranger refused reading and saving; then every row and file removed, the 50 points given back and Love Life Cafe unclaimed again. Checked in a
+  browser at 1440 and 390 px on the sample business beside its About and its Menu view. Not yet: a real owner using it, the slot reminder email and
+  chapter rankings (later items J and K).
+
 ## The Nutrition Guide (Sean, 2026-10-31: "build the Nutrition Guide")
 
 **Launched 2026-10-31** (Sean: "lines are good, launch the Nutrition Guide"; migration `20261031_nutrition_guide_launch.sql`). The
