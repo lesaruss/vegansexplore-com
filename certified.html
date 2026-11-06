@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<!-- vegans-explore-initiative-business-certification B4 (2026-11-06): the public QR status page (/certified/<code>) and the registry
+     (/certified). Parent: directory/listing.html (a listing or profile): its city-art hero, badges, info bar and two-column body.
+     Read live from ve-certification (no cache), so a suspension shows at once. Never a reason, never a dish in review.
+     noindex until Sean launches the program (D1). -->
+<meta name="robots" content="noindex, nofollow"/>
+<title>Pre-Vegan Certified status — Vegans Explore</title>
+<meta name="description" content="Check which dishes at a restaurant are Pre-Vegan Certified right now, live from the Vegans Explore registry."/>
+<meta property="og:type" content="website"/>
+<meta property="og:site_name" content="VEGANS EXPLORE"/>
+<meta property="og:title" content="Pre-Vegan Certified status"/>
+<meta property="og:description" content="Check which dishes at a restaurant are Pre-Vegan Certified right now."/>
+<meta property="og:image" content="https://vegansexplore.com/public/og-default.jpg"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+*,::before,::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ve-green:#3A9B3E;--ve-green-dark:var(--vb-go,#2d7d31);--ve-green-light:#e8f5e9;
+  --ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-surface:#f7faf7;
+  --ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-text-50:rgba(26,26,26,0.50);--ve-red:#8a1c12;
+}
+html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text);background:#f5f5f5}
+#frame{width:100%;min-height:60vh;background:#fff;display:flex;flex-direction:column}
+:focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px}
+
+/* HERO (copied from directory/listing.html) */
+.listing-hero{background:#111;padding:40px 40px 32px;border-bottom:1px solid #222;display:flex;gap:28px;align-items:stretch}
+.listing-hero-avatar{width:120px;height:120px;min-width:120px;border-radius:14px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:28px;font-weight:900;color:#fff;overflow:hidden;align-self:flex-start;background:#1f5f22}
+.listing-hero-avatar img{width:100%;height:100%;object-fit:cover;background:#fff}
+.listing-hero-content{display:flex;align-items:flex-start;gap:16px;flex:1;min-width:0}
+.listing-hero-body{flex:1;min-width:0}
+.listing-breadcrumb{font-size:10px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:#666;margin-bottom:8px}
+.listing-breadcrumb a{color:var(--vb-accent,#5EC47A);text-decoration:none}
+.listing-breadcrumb a:hover{text-decoration:underline}
+.listing-name{font-size:32px;font-weight:900;color:#fff;letter-spacing:-0.02em;line-height:1.1;margin-bottom:8px}
+.listing-badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+.badge-cat{font-size:10px;font-weight:800;letter-spacing:0.18em;text-transform:uppercase;padding:4px 12px;border-radius:20px;background:var(--vb-accent,#5EC47A);color:#000}
+.badge-subcat{font-size:10px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;padding:4px 12px;border-radius:20px;background:rgba(255,255,255,0.1);color:#e8e8e8;border:1px solid #666}
+.badge-stop{background:#ffd8d3;color:#5a0d06;border-color:#ffd8d3}
+.listing-tagline{font-size:14px;color:#ddd;line-height:1.5;max-width:640px}
+.listing-hero.city-bg{position:relative;background-color:#111;background-size:cover;background-position:center center}
+.listing-hero.city-bg::before{content:'';position:absolute;inset:0;background:linear-gradient(180deg, rgba(6,14,10,0.86) 0%, rgba(6,14,10,0.8) 45%, rgba(6,14,10,0.9) 100%)}
+.listing-hero.city-bg .listing-hero-avatar,.listing-hero.city-bg .listing-hero-content{position:relative}
+.listing-hero.city-bg .listing-breadcrumb{color:rgba(255,255,255,0.72)}
+.listing-hero.city-bg .listing-breadcrumb span{color:rgba(255,255,255,0.72)}
+
+/* QUICK INFO BAR */
+.info-bar{background:#f9f9f9;border-bottom:1px solid var(--ve-border);padding:12px 40px;display:flex;gap:24px;flex-wrap:wrap;align-items:center}
+.info-chip{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--ve-text-75);letter-spacing:0.04em}
+.info-chip svg{color:var(--vb-accent,#5EC47A);flex-shrink:0}
+.info-chip a{color:inherit}
+
+/* CONTENT AREA */
+.listing-body{display:grid;grid-template-columns:1fr 320px;gap:28px;padding:32px 40px 48px;max-width:100%}
+.sec-title{font-size:12px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-text-75);margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid var(--ve-green-light)}
+.sec{margin-bottom:28px}
+.dishes{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:12px}
+.dish{border:1px solid var(--ve-border);border-left:4px solid var(--ve-green);border-radius:10px;padding:14px 16px;background:#fff}
+.dish b{display:block;font-size:16px;font-weight:800;line-height:1.3}
+.dish .m{font-size:12.5px;color:var(--ve-text-75);margin-top:4px}
+.dish .st{display:inline-block;margin-top:8px;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:var(--ve-green-light);color:#1f5f22}
+.dish.susp{border-left-color:var(--ve-red);background:#fff8f7}
+.dish.susp .st{background:#fde7e5;color:var(--ve-red)}
+.disclose{border:2px solid #1a1a1a;border-radius:12px;padding:16px 18px;background:#fff;font-size:14.5px;line-height:1.6}
+.disclose strong{display:block;font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px}
+.note{font-size:14px;line-height:1.65;color:var(--ve-text-75);max-width:860px}
+.note li{margin:4px 0 4px 18px}
+.side-card{border:1px solid var(--ve-border);border-radius:12px;padding:18px;background:#fff;margin-bottom:16px}
+.side-card h3{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-text-75);margin-bottom:10px}
+.side-card p{font-size:13.5px;line-height:1.6;color:var(--ve-text-75);margin-bottom:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:9px 16px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:#1f5f22;color:#fff;text-decoration:none}
+.btn-quiet{background:#fff;color:#1f5f22;border:1px solid #1f5f22}
+.stamp{display:flex;gap:12px;align-items:center;border:1px dashed #1f5f22;border-radius:10px;padding:12px;background:#f7faf7}
+.stamp svg{flex:none}
+.stamp b{font-size:13px;font-weight:900;line-height:1.3;color:#1f5f22}
+.stamp span{display:block;font-size:11.5px;color:var(--ve-text-75)}
+
+/* REGISTRY */
+.reg{padding:28px 40px 48px}
+.reg-tools{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px}
+.reg-tools input{font-family:inherit;font-size:14px;min-height:42px;padding:8px 12px;border:1px solid var(--ve-border);border-radius:6px;flex:1;min-width:220px}
+.reg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(360px,100%),1fr));gap:14px}
+.reg-card{display:flex;gap:14px;align-items:center;border:1px solid var(--ve-border);border-radius:12px;padding:14px;background:#fff;text-decoration:none;color:inherit}
+.reg-card:hover{border-color:#1f5f22}
+.reg-av{width:64px;height:64px;border-radius:10px;flex:none;background:#1f5f22;color:#fff;font-weight:900;font-size:20px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.reg-av img{width:100%;height:100%;object-fit:cover;background:#fff}
+.reg-card b{display:block;font-size:15px;font-weight:800}
+.reg-card .m{display:block;font-size:12.5px;color:var(--ve-text-75)}
+.reg-card .s{display:block;margin-top:2px;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-red)}
+.empty{padding:32px 0;font-size:15px;color:var(--ve-text-75);max-width:760px;line-height:1.6}
+
+@media(max-width:900px){.listing-body{grid-template-columns:1fr;padding:24px 16px 40px}}
+@media(max-width:768px){
+  .listing-hero{padding:20px 16px 20px;gap:14px}
+  .listing-hero-avatar{width:76px;height:76px;min-width:76px;border-radius:10px;font-size:20px}
+  .listing-name{font-size:24px}
+  .info-bar{padding:10px 16px;gap:12px}
+  .reg{padding:20px 16px 40px}
+}
+</style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+<div id="frame"><div id="root"><p class="empty" style="padding:40px">Checking the registry...</p></div></div>
+<script src="/public/ve-hubs.js"></script>
+<script>
+(function(){
+  var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-certification';
+  var SF_HERO_ART = 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260719_144549_57bc2592-c910-4189-94d7-828e4af569a5_min.webp';
+  var SERVES = { meat: 'meat', fish: 'fish', dairy: 'dairy', eggs: 'eggs' };
+  var root = document.getElementById('root');
+  function esc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function day(d){ if(!d) return ''; var x = /^\d{4}-\d\d-\d\d$/.test(d) ? new Date(d+'T12:00:00Z') : new Date(d); return x.toLocaleDateString('en-US',{timeZone:'America/New_York',month:'long',day:'numeric',year:'numeric'}); }
+  function clock(d){ return new Date(d).toLocaleTimeString('en-US',{timeZone:'America/New_York',hour:'numeric',minute:'2-digit'}) + ' ET'; }
+  function api(body){ return fetch(FN,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),cache:'no-store'}).then(function(r){ return r.json(); }); }
+  // The header's city art, as the listing page picks it (heroArt in directory/listing.html).
+  function heroArt(l){
+    if(!window.VE_HUBS) return SF_HERO_ART;
+    var h = VE_HUBS.filter(function(x){ var m = x.match || {};
+      return (l.city || l.state) && (!m.cities || m.cities.indexOf(l.city) > -1) && (!m.states || m.states.indexOf(l.state) > -1);
+    })[0] || VE_HUBS.filter(function(x){ return (l.communities || []).indexOf(x.slug) > -1; })[0];
+    return !h || h.slug === 'south-florida' || !h.page || !h.page.banner ? SF_HERO_ART : h.page.banner;
+  }
+  function serveLine(list){
+    var w = (list || []).map(function(k){ return SERVES[k]; }).filter(Boolean);
+    if(!w.length) return '';
+    var s = w.length === 1 ? w[0] : w.slice(0,-1).join(', ') + ' and ' + w[w.length-1];
+    return 'This restaurant also serves ' + s + '.';
+  }
+  var STAMP = '<svg width="44" height="44" viewBox="0 0 44 44" aria-hidden="true"><circle cx="22" cy="22" r="20" fill="none" stroke="#1f5f22" stroke-width="2.5"/><path d="M22 31c-6-3-9-8-8-15 6 0 10 3 8 15zm0 0c6-3 9-8 8-15-6 0-10 3-8 15z" fill="#3A9B3E"/></svg>';
+  var MEANS = '<ul class="note">'+
+    '<li>Only the dishes named here are certified, at this one location. It never means the restaurant is Vegan.</li>'+
+    '<li>Each dish was checked against eight gates: every ingredient traced by brand, nothing hidden in stocks, doughs, glazes or oil, a protected cooking path (never shared fryer oil, cooking water or an uncleaned grill with animal products), accurate wording on every menu and delivery app, staff who answered every critical question right, and records we can inspect.</li>'+
+    '<li>A changed recipe stops a dish\'s mark until we approve the change. A certification lasts 12 months, with an unannounced check in between.</li>'+
+    '<li>It is not a health, allergen or food-safety claim. If you have an allergy, ask the restaurant.</li>'+
+  '</ul>';
+
+  var m = location.pathname.match(/^\/certified\/([A-Za-z0-9]{4,16})\/?$/);
+  var code = m ? m[1].toUpperCase() : (new URLSearchParams(location.search).get('c') || '').toUpperCase();
+  if(code) showStatus(code); else showRegistry();
+
+  function showStatus(code){
+    api({action:'status', code:code}).then(function(d){
+      if(!d || d.state === 'not_found' || !d.listing){ return notFound(code); }
+      var l = d.listing, av = l.logo_url ? '<img src="'+esc(l.logo_url)+'" alt="">' : esc((l.name||'?').slice(0,1).toUpperCase());
+      var place = [l.city, l.state].filter(Boolean).join(', ');
+      document.title = l.name + ': Pre-Vegan Certified status — Vegans Explore';
+      var state = d.state, n = d.certified || 0, M = d.menu_items;
+      var badge = state === 'certified' ? '<span class="badge-cat">Plant-Based Dish, Pre-Vegan Certified</span>'
+        : state === 'suspended' ? '<span class="badge-subcat badge-stop">Suspended right now</span>'
+        : '<span class="badge-subcat">No current certification</span>';
+      var tagline = state === 'certified' ? n + ' of ' + M + ' menu items certified. ' + serveLine(d.also_serves)
+        : state === 'suspended' ? 'No dish here is certified right now. Do not rely on the mark until this page says Certified again.'
+        : 'This location has no current Pre-Vegan certification. Do not rely on any mark you see for it.';
+      var hero = '<div class="listing-hero city-bg" style="background-image:url(\''+esc(heroArt(l))+'\')">'+
+        '<div class="listing-hero-avatar">'+av+'</div>'+
+        '<div class="listing-hero-content"><div class="listing-hero-body">'+
+          '<div class="listing-breadcrumb"><a href="/certified">Pre-Vegan Certified</a> <span>/ Status '+esc(d.code)+'</span></div>'+
+          '<h1 class="listing-name">'+esc(l.name)+'</h1>'+
+          '<div class="listing-badges">'+badge+(place ? '<span class="badge-subcat">'+esc(place)+'</span>' : '')+'</div>'+
+          '<p class="listing-tagline">'+esc(tagline)+'</p>'+
+        '</div></div></div>';
+      var chips = [
+        '<span class="info-chip"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>Checked live at '+esc(clock(d.checked_at))+'</span>'
+      ];
+      if(d.term_end) chips.push('<span class="info-chip"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Term through '+esc(day(d.term_end))+'</span>');
+      if(l.street) chips.push('<span class="info-chip"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>'+esc([l.street, l.city, l.state].filter(Boolean).join(', '))+'</span>');
+      var dishes = (d.dishes || []);
+      var main = '';
+      if(dishes.length){
+        main += '<section class="sec"><h2 class="sec-title">'+(state === 'certified' ? 'Certified dishes' : 'Dishes')+'</h2><div class="dishes">'+dishes.map(function(x){
+          var s = x.status === 'suspended';
+          return '<div class="dish'+(s?' susp':'')+'"><b>'+esc(x.name)+'</b>'+(x.section ? '<div class="m">'+esc(x.section)+'</div>' : '')+
+            '<span class="st">'+(s ? 'Suspended: do not rely on the mark' : 'Certified since '+esc(day(x.since)))+'</span></div>';
+        }).join('')+'</div></section>';
+      }
+      if(state === 'certified' || state === 'suspended'){
+        main += '<section class="sec"><div class="disclose"><strong>Read before you order</strong>'+
+          esc(n + ' of ' + M + ' menu items here are certified.') + ' ' + esc(serveLine(d.also_serves)) + ' Every other item on the menu is not certified.</div></section>';
+      }
+      main += '<section class="sec"><h2 class="sec-title">What the stamp means</h2>'+MEANS+'</section>';
+      var side = '<div class="side-card"><h3>The stamp</h3><div class="stamp">'+STAMP+'<div><b>Plant-Based Dish, Pre-Vegan Certified</b><span>Selected dishes certified here. Scan to check them live.</span></div></div></div>'+
+        '<div class="side-card"><h3>Something wrong?</h3><p>If a certified dish did not seem right, or the mark is shown on a dish not listed here, tell us. A person reads every report.</p><button type="button" class="btn" data-ve-feedback>Tell us</button></div>'+
+        (l.slug ? '<div class="side-card"><h3>The restaurant</h3><p>Hours, menu and directions are on their page in the Directory.</p><a class="btn btn-quiet" href="/directory/'+esc(l.slug)+'">Open their page</a></div>' : '')+
+        '<div class="side-card"><h3>Every certified place</h3><p>See every location with a certified dish.</p><a class="btn btn-quiet" href="/certified">The registry</a></div>';
+      root.innerHTML = hero + '<div class="info-bar">'+chips.join('')+'</div><div class="listing-body"><div>'+main+'</div><aside>'+side+'</aside></div>';
+    }).catch(function(){ root.innerHTML = '<div class="reg"><p class="empty">We could not reach the registry just now. Refresh to try again. Until it loads, do not rely on any mark.</p></div>'; });
+  }
+  function notFound(code){
+    root.innerHTML = '<div class="listing-hero city-bg" style="background-image:url(\''+esc(SF_HERO_ART)+'\')"><div class="listing-hero-avatar">?</div><div class="listing-hero-content"><div class="listing-hero-body">'+
+      '<div class="listing-breadcrumb"><a href="/certified">Pre-Vegan Certified</a> <span>/ Status '+esc(code)+'</span></div><h1 class="listing-name">No certification found</h1>'+
+      '<div class="listing-badges"><span class="badge-subcat">Not in the registry</span></div><p class="listing-tagline">This code is not a current Pre-Vegan certification. Do not rely on any mark that points here.</p></div></div></div>'+
+      '<div class="listing-body"><div><section class="sec"><h2 class="sec-title">What the stamp means</h2>'+MEANS+'</section></div><aside><div class="side-card"><h3>Something wrong?</h3><p>Seen the stamp somewhere it should not be? Tell us.</p><button type="button" class="btn" data-ve-feedback>Tell us</button></div><div class="side-card"><h3>Every certified place</h3><a class="btn btn-quiet" href="/certified">The registry</a></div></aside></div>';
+  }
+  function showRegistry(){
+    api({action:'registry'}).then(function(d){
+      var rows = (d && d.rows) || [];
+      var hero = '<div class="listing-hero city-bg" style="background-image:url(\''+esc(SF_HERO_ART)+'\')"><div class="listing-hero-avatar">'+STAMP.replace('#1f5f22','#ffffff').replace('#1f5f22','#ffffff')+'</div><div class="listing-hero-content"><div class="listing-hero-body">'+
+        '<div class="listing-breadcrumb"><a href="/directory">Directory</a> <span>/ Pre-Vegan Certified</span></div><h1 class="listing-name">Pre-Vegan Certified dishes</h1>'+
+        '<div class="listing-badges"><span class="badge-cat">The registry</span></div><p class="listing-tagline">Restaurants with named dishes certified right now. Certification is of dishes, never of a whole restaurant. Every page here is live.</p></div></div></div>';
+      var body = '<div class="reg">';
+      if(!rows.length){
+        body += '<p class="empty">No restaurant holds a certification yet. The first locations are being reviewed in South Florida.</p><section class="sec"><h2 class="sec-title">What the stamp means</h2>'+MEANS+'</section>';
+      } else {
+        body += '<div class="reg-tools"><input id="rq" type="search" placeholder="Search by restaurant or city" data-dictate="off"></div><div class="reg-grid" id="rg"></div>';
+      }
+      root.innerHTML = hero + body + '</div>';
+      if(!rows.length) return;
+      function draw(q){
+        q = (q || '').toLowerCase();
+        document.getElementById('rg').innerHTML = rows.filter(function(r){ return !q || (r.name + ' ' + (r.city||'') + ' ' + (r.state||'')).toLowerCase().indexOf(q) > -1; }).map(function(r){
+          return '<a class="reg-card" href="/certified/'+esc(r.code)+'"><span class="reg-av">'+(r.logo_url ? '<img src="'+esc(r.logo_url)+'" alt="">' : esc(r.name.slice(0,1)))+'</span><span><b>'+esc(r.name)+'</b>'+
+            '<span class="m">'+esc([r.city, r.state].filter(Boolean).join(', '))+' &middot; '+r.certified+' of '+esc(r.menu_items)+' menu items certified</span>'+
+            (r.suspended ? '<span class="s">'+r.suspended+' suspended</span>' : '')+'</span></a>';
+        }).join('') || '<p class="empty">Nothing matches.</p>';
+      }
+      draw('');
+      document.getElementById('rq').oninput = function(){ draw(this.value); };
+    }).catch(function(){ root.innerHTML = '<div class="reg"><p class="empty">We could not reach the registry just now. Refresh to try again.</p></div>'; });
+  }
+})();
+</script>
+<script src="/public/footer.js"></script>
+</body>
+</html>
