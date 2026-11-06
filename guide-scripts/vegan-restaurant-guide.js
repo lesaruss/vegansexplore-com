@@ -105,6 +105,40 @@
   // A line's text must match its recording; a changed line is a new version (-v2). Checked word for word with stt, 2026-11-04.
   var AUDIO_V = { overview: 'overview-v3', audit: 'audit-v2', expect: 'expect-v1', join: 'join-v1' };
   var AUDIO_M = { overview: 'overview-member-v1', fixes: 'fixes-v1', dashboard: 'dashboard-v1', featured: 'featured-v2', demo: 'demo-v2', pulse: 'pulse-v1', promos: 'promos-v1', mylist: 'mylist-v1', next: 'next-v1', sourcing: 'sourcing-member-v1' };
+  // Members: the tabs as 5 groups in one dropdown under the title (Sean, 2026-11-06: "way too much... grouped... or a drop down"),
+  // the Events Guide's and the Pre-Vegan Business Guide's GROUPS. A group opens as a page of picture tiles (#/g/<group>); the dropdown
+  // and Back / Next go by group. Visitors keep their four flat tabs. Liz's group-page lines are text until Sean approves them for recording.
+  var GROUPS = [
+    { k: 'start', label: 'Start here', kids: [] },
+    { k: 'business', label: 'Your restaurant', kids: ['audit', 'fixes'], line: 'How your restaurant looks online today, and the challenges owners run into most.',
+      say: 'Your restaurant is where we start: your free check, then the challenges other owners run into. Tick the ones that sound like you.' },
+    { k: 'page', label: 'Your page', kids: ['featured', 'dashboard', 'demo'], line: 'Your page on Vegans Explore, the numbers behind it, and a sample to look around.',
+      say: 'Your page is already in our Directory. Claim it, see who finds you on your dashboard, or look around the sample restaurant first.' },
+    { k: 'help', label: 'Resources', kids: ['sourcing', 'pulse'], line: 'Who to buy from, and what other owners learned the hard way.',
+      say: 'Resources is help you can use this week: who to buy from, and interviews with owners who have been where you are.' },
+    { k: 'grow', label: 'Grow with us', kids: ['promos', 'next', 'mylist'], line: 'Promotions, what to do next, and everything you saved.',
+      say: 'Grow with us is how we bring people to your door: promotions you can join, what to do next, and everything you saved.' }
+  ];
+  // A real picture for each section tile and each kind of supplier (Higgsfield, 2026-11-06, illustrative: no words or logos).
+  var PIC_BASE = '/public/guides/restaurant-guide/';
+  function pic(name) { return '<img src="' + PIC_BASE + name + '.jpg" alt="" loading="lazy" decoding="async" width="640" height="640" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">'; }
+  var TILE = { audit: 'Your free check: what people find when they look you up.', fixes: 'The ten things owners run into most. Tick yours.',
+    featured: 'Your page in the Directory. Claim it and keep it current.', dashboard: 'Who looks at your page, where they come from, what they do next.',
+    demo: 'A sample restaurant to click around, nothing real touched.', sourcing: 'Who sells it ready-made, and Buy or make.',
+    pulse: 'Interviews with Vegan business owners, played right here.', promos: 'Events, features and campaigns that bring people in.',
+    next: 'Claim your page, open your dashboard, follow us.', mylist: 'Everything you saved, in one place.' };
+  var TILE_PIC = { audit: 't-audit', fixes: 't-fixes', featured: 't-featured', dashboard: 't-dashboard', demo: 't-demo', sourcing: 'src-food_drink',
+    pulse: 't-pulse', promos: 't-promos', next: 't-next', mylist: 't-mylist' };
+  function groupOf(k) { if (/^g:/.test(k)) return k.slice(2); for (var i = 0; i < GROUPS.length; i++) if (GROUPS[i].kids.indexOf(k) >= 0) return GROUPS[i].k; return 'start'; }
+  function group(g) { for (var i = 0; i < GROUPS.length; i++) if (GROUPS[i].k === g) return GROUPS[i]; return GROUPS[0]; }
+  function gHref(g) { return g === 'start' ? '#/' : '#/g/' + g; }
+  function kidsOf(g) { var avail = tabs().map(function (t) { return t.k; }); return group(g).kids.filter(function (k) { return avail.indexOf(k) >= 0; }); }
+  // The tour: members go Start here, then each group page followed by its sections; visitors go tab by tab.
+  function tourSteps() {
+    if (!member()) return tabs().map(function (t) { return t.k; });
+    var out = ['overview']; GROUPS.slice(1).forEach(function (g) { out.push('g:' + g.k); kidsOf(g.k).forEach(function (k) { out.push(k); }); }); return out;
+  }
+  function stepHref(st) { return /^g:/.test(st) ? gHref(st.slice(2)) : href(st); }
 
   // What we run for restaurants (Sean, 2026-10-10). Never show a planned thing as live: each says Live or Coming.
   var PROMOS = [
@@ -172,13 +206,49 @@
 
   // ---------- tabs ----------
   function drawMenu(cur) {
-    var locked = !member();
-    menuEl.innerHTML = tabs().map(function (t) {
-      return '<a href="' + href(t.k) + '"' + (t.k === cur ? ' aria-current="page"' : '') + (t.guest ? ' class="dg-join-tab"' : '') + '>' + esc(t.label) +
-        '' + '</a>';
-    }).join('');
-    menuSel.innerHTML = tabs().map(function (t) { return '<option value="' + t.k + '"' + (t.k === cur ? ' selected' : '') + '>' + esc(t.label) + '' + '</option>'; }).join('') +
-      (cur === 'search' ? '<option value="search" selected>Search results</option>' : '');
+    menuEl.classList.toggle('dg-dd-on', member()); menuSel.classList.toggle('dg-dd-on', member());
+    if (!member()) {
+      menuEl.innerHTML = tabs().map(function (t) {
+        return '<a href="' + href(t.k) + '"' + (t.k === cur ? ' aria-current="page"' : '') + (t.guest ? ' class="dg-join-tab"' : '') + '>' + esc(t.label) + '</a>';
+      }).join('');
+      menuSel.innerHTML = tabs().map(function (t) { return '<option value="' + t.k + '"' + (t.k === cur ? ' selected' : '') + '>' + esc(t.label) + '</option>'; }).join('') +
+        (cur === 'search' ? '<option value="search" selected>Search results</option>' : '');
+      return;
+    }
+    // Members: one dropdown at every width, the 5 groups, each with its sections in small type (the Events Guide's drawMenu).
+    var open = !!(menuEl.querySelector('.dg-dd-list') && !menuEl.querySelector('.dg-dd-list').hidden);
+    var cg = cur === 'search' ? '' : groupOf(cur === 'overview' ? 'start' : cur), ci = 0;
+    GROUPS.forEach(function (g, n) { if (g.k === cg) ci = n; });
+    var curT = cur === 'search' ? { label: 'Search results' } : group(cg);
+    var sec = cur !== 'search' && cur !== 'overview' && !/^g:/.test(cur) ? tab(cur) : null;
+    menuEl.innerHTML = '<button type="button" class="dg-dd-btn" aria-haspopup="true" aria-expanded="false">' + esc(curT.label) +
+      (sec ? ' <span class="dg-dd-sec">&rsaquo; ' + esc(sec.label) + '</span>' : '') +
+      '<small>' + (cur === 'search' ? '' : (ci + 1) + ' of ' + GROUPS.length) + '</small></button>' +
+      '<div class="dg-dd-list" hidden>' + GROUPS.map(function (g, n) {
+        var kids = kidsOf(g.k).map(function (k) { return esc(tab(k).label); });
+        return '<a href="' + gHref(g.k) + '"' + (g.k === cg ? ' aria-current="page"' : '') + '><span class="dg-dd-n">' + (n + 1) + '</span><span class="dg-dd-g"><b>' + esc(g.label) + '</b>' +
+          (kids.length ? '<small>' + kids.join(' &middot; ') + '</small>' : '<small>Why this Guide, and how to use it</small>') + '</span></a>';
+      }).join('') + '</div>';
+    if (open) setDD(true);
+  }
+  function setDD(on) {
+    var l = menuEl.querySelector('.dg-dd-list'), btn = menuEl.querySelector('.dg-dd-btn'); if (!l || !btn) return;
+    l.hidden = !on; btn.setAttribute('aria-expanded', on ? 'true' : 'false');
+  }
+  menuEl.addEventListener('click', function (e) {
+    if (e.target.closest('.dg-dd-btn')) { var l = menuEl.querySelector('.dg-dd-list'); setDD(l && l.hidden); return; }
+    if (e.target.closest('.dg-dd-list a')) setDD(false);
+  });
+  document.addEventListener('click', function (e) { if (!menuEl.contains(e.target)) setDD(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setDD(false); });
+  // A group's page: a picture tile for each of its sections.
+  function viewGroup(g) {
+    var G = group(g);
+    if (G.k === 'start') return viewOverview();
+    main.innerHTML = crumb([[G.label]]) + head('The Vegan Restaurant Guide', esc(G.label), esc(G.line)) +
+      '<div class="rg-gtiles">' + kidsOf(G.k).map(function (k) {
+        return '<a class="rg-gtile" href="' + href(k) + '"><span class="rg-gpic">' + pic(TILE_PIC[k] || 't-next') + '</span><span class="rg-gtxt"><b>' + esc(tab(k).label) + '</b><span>' + esc(TILE[k] || '') + '</span></span></a>';
+      }).join('') + '</div>';
   }
   menuSel.addEventListener('change', function () { location.hash = href(menuSel.value); });
 
@@ -851,7 +921,7 @@
   function srcRow(s) {
     var L = SRC_LABEL[s.label] || SRC_LABEL.offers_options;
     var kinds = (s.kinds || []).map(kindName).join(', ');
-    return row({ icon: SRC_ICON, title: s.name, href: '#/sourcing/s/' + encodeURIComponent(s.slug), pre: '<span class="rg-lab ' + L[1] + '">' + esc(L[0]) + '</span>',
+    return row({ icon: s.domain ? pic('src-' + s.domain) : SRC_ICON, title: s.name, href: '#/sourcing/s/' + encodeURIComponent(s.slug), pre: '<span class="rg-lab ' + L[1] + '">' + esc(L[0]) + '</span>',
       body: '<p class="dg-srow-p">' + esc(s.bio || (kinds ? 'Makes: ' + kinds + '.' : '')) + '</p>',
       acts: s.website ? '<a class="dg-btn dg-ghost" href="' + esc(s.website) + '" target="_blank" rel="noopener nofollow">Visit website</a>' : '' });
   }
@@ -863,8 +933,8 @@
     var matNote = '<p class="rg-srcmat" id="rgSrcMat" hidden><b>Plant-based material</b> means made from plant fiber. It is a material, not a claim that it is Vegan, so check with the supplier.</p>';
     if (!cur) {
       main.innerHTML = head('Sourcing', 'Buy it from someone who already makes it', 'Not everything has to come out of your kitchen. Pick what you are looking for.') +
-        '<div class="dg-srows" id="rgSrcDomains">' + SRC_DOMAINS.map(function (d) { return row({ icon: SRC_ICON, title: d.t, pre: '<span class="rg-promo-tag rg-soon" data-src-tag="' + d.k + '">Checking</span>', body: '<p class="dg-srow-p">' + esc(d.d) + '</p>' }); }).join('') + '</div>' +
-        '<div class="dg-srows" style="margin-top:16px">' + row({ icon: SRC_ICON, title: 'Buy or make', href: '#/sourcing/make', pre: '<span class="rg-promo-tag rg-live">Dairy basics</span>', body: '<p class="dg-srow-p">Cheese, cream, butter, milk and more: who sells it ready-made, and the recipe to make it yourself.</p>' }) + '</div>' + note;
+        '<div class="dg-srows" id="rgSrcDomains">' + SRC_DOMAINS.map(function (d) { return row({ icon: pic('src-' + d.k), title: d.t, pre: '<span class="rg-promo-tag rg-soon" data-src-tag="' + d.k + '">Checking</span>', body: '<p class="dg-srow-p">' + esc(d.d) + '</p>' }); }).join('') + '</div>' +
+        '<div class="dg-srows" style="margin-top:16px">' + row({ icon: pic('src-make'), title: 'Buy or make', href: '#/sourcing/make', pre: '<span class="rg-promo-tag rg-live">Dairy basics</span>', body: '<p class="dg-srow-p">Cheese, cream, butter, milk and more: who sells it ready-made, and the recipe to make it yourself.</p>' }) + '</div>' + note;
       srcFetch({ action: 'list', limit: 1 }).then(function (r) {
         if (curTab !== 'sourcing') return;
         var c = (r && r.counts && r.counts.domain) || {}; SRC.counts = c;
@@ -1177,22 +1247,14 @@
       if (window.VEGuideIntro) VEGuideIntro.wire(main);
       return;
     }
-    var tiles = [
-      ['audit', PERSONAL ? 'Your business' : 'Your audit', 'A free check of your Google listing, website, search and social, and a list of what to work on first.'],
-      ['featured', 'Claim your page', 'Your page already exists. Claiming makes it yours.'],
-      ['demo', 'Try the demo', 'See what a page and its dashboard look like, on a sample restaurant.'],
-      ['fixes', 'Top challenges', 'The top 10 things Vegan businesses run into. Tick the ones you relate to, ranked by owners.'],
-      ['dashboard', 'Your dashboard', 'How many people look at your page, where they come from and what they do next.'],
-      ['pulse', 'Pulse', 'Our interviews with business owners, and the research behind them.'],
-      ['promos', 'Promotions', 'The campaigns, events, features and ads that bring members through your door.']
-    ];
+    // Members: the four groups as picture tiles (Sean, 2026-11-06: visual, inviting, not eleven tabs). Each opens its group page.
+    var GPIC = { business: 't-audit', page: 't-featured', help: 'src-food_drink', grow: 't-promos' };
     main.innerHTML = head('Vegans Explore Guides for business', 'Thank you for what you do for the Vegan movement',
-      'The whole Guide is yours. Pick a tab, or let Liz walk you through it.') +
+      'The whole Guide is yours, in four parts. Pick one, or let Liz walk you through it.') +
       intro(false) +
-      '<div class="dg-tiles">' + tiles.map(function (t) {
-        return '<a class="dg-tile' + (t[0] === 'audit' ? ' dg-warm' : '') + '" href="' + href(t[0]) + '"><div class="dg-ic">' + ICON[t[0]] + '</div><div><b>' + esc(t[1]) + '</b><span>' + esc(t[2]) + '</span></div></a>';
-      }).join('') + '</div>' +
-      '<div class="dg-start"><a class="dg-btn" href="#/next">What\'s next</a></div>';
+      '<div class="rg-gtiles rg-g4">' + GROUPS.slice(1).map(function (g) {
+        return '<a class="rg-gtile" href="' + gHref(g.k) + '"><span class="rg-gpic">' + pic(GPIC[g.k]) + '</span><span class="rg-gtxt"><b>' + esc(g.label) + '</b><span>' + esc(g.line) + '</span></span></a>';
+      }).join('') + '</div>';
     if (window.VEGuideIntro) VEGuideIntro.wire(main);
   }
   // What to expect: what opens after the survey, each marked Live or Coming (never a planned thing as live).
@@ -1297,15 +1359,18 @@
   vid.addEventListener('click', function () { if (!TOUR.started) return startTour(); if (TOUR.playing) { TOUR.paused = true; stopLiz(); drawLiz(); } else { TOUR.paused = false; playLiz(); } });
   playBtn.addEventListener('click', function () { if (!TOUR.started) return startTour(); if (TOUR.playing) { TOUR.paused = true; stopLiz(); } else { TOUR.paused = false; playLiz(); } drawLiz(); });
   function drawLiz() {
-    var t = tab(curTab), list = tabs(), i = 0;
-    list.forEach(function (x, n) { if (x.k === curTab) i = n; });
-    bubble.textContent = !member() && t.show && lizAudio(t.k) ? t.show : member() && t.showMember && lizAudio(t.k) ? t.showMember : member() && t.sayMember ? t.sayMember : onPoints() && t.sayPoints ? t.sayPoints : t.k === 'join' && mode() === 'unlock' ? t.sayCredit : t.say;
+    var steps = tourSteps(), i = 0, isG = /^g:/.test(curTab), t = tab(curTab);
+    var cs = member() && curTab !== 'overview' && !isG ? groupOf(curTab) : null;
+    steps.forEach(function (x, n) { if (x === curTab) i = n; });
+    var shown = member() ? (curTab === 'overview' ? 0 : GROUPS.map(function (g) { return g.k; }).indexOf(groupOf(curTab))) : i;
+    var total = member() ? GROUPS.length : steps.length;
+    bubble.textContent = isG ? group(curTab.slice(2)).say : !member() && t.show && lizAudio(t.k) ? t.show : member() && t.showMember && lizAudio(t.k) ? t.showMember : member() && t.sayMember ? t.sayMember : onPoints() && t.sayPoints ? t.sayPoints : t.k === 'join' && mode() === 'unlock' ? t.sayCredit : t.say;
     var has = !!clip(curTab) || !!lizAudio(curTab);
     playBtn.hidden = TOUR.started && !has;
     playBtn.classList.toggle('go', !TOUR.started);
     playBtn.innerHTML = !TOUR.started ? '&#9654; Start the tour' : TOUR.playing ? 'Pause Liz' : '&#9654; Watch Liz';
-    tourEl.innerHTML = tourM.innerHTML = '<a class="dg-tnav" href="' + href(list[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Back</a><span>' + (i + 1) + ' of ' + list.length + '</span>' +
-      '<a class="dg-tnav next" href="' + href(list[Math.min(list.length - 1, i + 1)].k) + '"' + (i < list.length - 1 ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Next</a>';
+    tourEl.innerHTML = tourM.innerHTML = '<a class="dg-tnav" href="' + stepHref(steps[Math.max(0, i - 1)]) + '"' + (i ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Back</a><span>' + (shown + 1) + ' of ' + total + '</span>' +
+      '<a class="dg-tnav next" href="' + stepHref(steps[Math.min(steps.length - 1, i + 1)]) + '"' + (i < steps.length - 1 ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Next</a>';
   }
 
   // ---------- router ----------
@@ -1313,7 +1378,7 @@
     var parts = (location.hash || '').replace(/^#\/?/, '').split('/');
     var view = parts[0] || 'overview', sub = parts.slice(1).join('/');
     if (view === 'search' && (!sub || !member())) view = 'overview';
-    var known = { next: 1, overview: 1, audit: 1, expect: 1, fixes: 1, pulse: 1, sourcing: 1, featured: 1, dashboard: 1, demo: 1, promos: 1, mylist: 1, join: 1, search: 1 };
+    var known = { next: 1, overview: 1, audit: 1, expect: 1, fixes: 1, pulse: 1, sourcing: 1, featured: 1, dashboard: 1, demo: 1, promos: 1, mylist: 1, join: 1, search: 1, g: 1 };
     if (!known[view]) view = 'overview';
     // Before the survey only Overview, Your audit, What to expect and Get in open (Sean, 2026-11-04); the rest open once the access check says member.
     if (access !== 'checking' && !member() && TABS.some(function (t) { return t.k === view && t.after; })) { view = 'join'; sub = ''; location.replace('#/join'); }
@@ -1326,6 +1391,7 @@
     if (view === 'next' && !member()) { view = 'join'; key = 'join'; }
     if (view === 'mylist' && !member()) { view = 'overview'; key = 'overview'; }
     if (view === 'sourcing' && !member()) { view = 'overview'; key = 'overview'; }
+    if (view === 'g') { if (!member() || sub === 'start' || !sub) { view = 'overview'; key = 'overview'; } else key = 'g:' + group(sub).k; }
     if (member() && !svState) loadSaves();
     drawMenu(view === 'search' ? 'search' : key);
     if (view !== 'search' && qEl.value && document.activeElement !== qEl) qEl.value = '';
@@ -1333,7 +1399,7 @@
     var bar = document.getElementById('vep-player');
     ({ next: function () { viewNext(sub); }, overview: viewOverview, expect: viewExpect, audit: function () { viewAudit(sub); }, fixes: function () { viewFixes(sub); }, pulse: function () { viewPulse(sub); }, sourcing: function () { viewSourcing(sub); },
        featured: function () { viewFeatured(sub); }, dashboard: function () { viewDashboard(); }, demo: function () { viewDemo(sub); }, promos: function () { viewPromos(sub); },
-       mylist: function () { viewMyList(sub); }, join: viewJoin, search: function () { viewSearch(decodeURIComponent(sub)); } })[view]();
+       mylist: function () { viewMyList(sub); }, g: function () { viewGroup(sub); }, join: viewJoin, search: function () { viewSearch(decodeURIComponent(sub)); } })[view]();
     keepPlayer(bar);
     var moved = key !== curTab;
     curTab = key;
