@@ -57,7 +57,7 @@
   // The tabs, in tour order, and what Liz says on each. A tab's `say` must match its recording (Sean approved every line,
   // 2026-10-10). `say` is for visitors (why get it), `sayMember` walks an owner of the Guide through what they have.
   var TABS = [
-    { k: 'overview', label: 'Overview', show: 'Hi, I\'m Liz. Press play and I\'ll walk you through it. Start with Run my free check.', say: 'Hi, I\'m Liz, and welcome to the Vegans Explore Restaurant Guide. Thank you for what you do. This Guide does three things. It gives you a crash course in how Vegans Explore works. It shows you something new about your business. And it puts you one step closer to growing with us as we launch on January 1st. Here\'s how to start. Step one: tap Run my free check, and see how your place looks online. Step two: take the short survey. That makes you a member, and the rest of this Guide opens: the top challenges owners face, your page, your dashboard, and what\'s coming. It\'s free, no card, and you can stop any time.',
+    { k: 'overview', label: 'Overview', show: 'Hi, I\'m Liz. Press play and I\'ll walk you through it. Start with Run my free check.', say: 'Hi, I\'m Liz, and welcome to the Vegan Restaurant Guide. You feed people, and that\'s the most direct way anyone meets Vegan food, so thank you. Most owners are great at the food and stretched thin on everything else: your Google listing, your hours, your photos, your menu online. Customers decide from what they find before they ever walk in. This Guide shows you what they find, and what to fix first. Start with Run my free check. Then take the short survey. It\'s free, it makes you a member, and the rest of the Guide opens. And this Guide is built with you. If something isn\'t clear, ask me. If I can\'t help, our team will.',
       sayMember: 'Welcome in. Thank you for joining. Your business is the place to start. Then the top challenges, your page, your dashboard, and what\'s coming. Everything you save goes in My list, so you can pick up where you left off.' },
     { k: 'audit', label: 'Your audit', say: 'This is your restaurant, and we\'ve already checked it. We looked at your Google listing, your website, how you show up in search, and your social. Here\'s what we found, and the first things to work on. It\'s free, and this check is just for you.',
       sayMember: 'Your free check is right here. Run it anytime. When you want us to go deeper, the full audit is an add-on.' },
@@ -68,7 +68,8 @@
       sayMember: 'Every business interview we\'ve recorded is here, with the research. Play any of them right here. We keep adding more.' },
     // Sourcing (Sean, 2026-11-04): members only, so a visitor never sees an empty tab. Text drafts for Sean until approved.
     { k: 'sourcing', label: 'Sourcing', mine: 1, say: 'Not everything has to come out of your kitchen. Here is who to buy it from, and every supplier wears an honest label.',
-      sayMember: 'Not everything has to come out of your kitchen. Here is who to buy it from, and every supplier wears an honest label.' },
+      showMember: 'Who to buy it from, so it doesn\'t all come out of your kitchen.',
+      sayMember: 'Not everything has to come out of your kitchen. This is who to buy it from: ready-made food, ingredients, packaging, people who can make your recipe for you, even machines, distributors and certifiers. Every supplier wears one label. A fully Vegan company is Vegan all the way through. Offers Vegan options means check each product with them. Plant-based material and Equipment are about what something is made of or what it does, not a Vegan promise. And under Buy or make, every item has a supplier right beside a recipe you can make yourself.' },
     { k: 'featured', label: 'Claim your page', after: 1, say: 'This is your page, just as members see it. It\'s already in the Directory. Click around. When you claim it, it\'s yours: your hours, your photos and your menu link, changed whenever you like.',
       sayMember: 'This is your page, just as members see it. It\'s already in the Directory. Click around. When you claim it, it\'s yours: your hours, your photos and your menu link, changed whenever you like.' },
     { k: 'dashboard', label: 'Your dashboard', after: 1, say: 'This is your dashboard. It shows how many people look at your page, where they come from, and what they do next. It opens fully once you claim your page.',
@@ -102,8 +103,8 @@
   CLIPS.join_credit = null;
   // Her voice over her picture (door copy, 2026-11-04): el-media tts in her roster-profile voice, one mp3 a tab for visitors.
   // A line's text must match its recording; a changed line is a new version (-v2). Checked word for word with stt, 2026-11-04.
-  var AUDIO_V = { overview: 'overview-v2', audit: 'audit-v2', expect: 'expect-v1', join: 'join-v1' };
-  var AUDIO_M = { overview: 'overview-member-v1', fixes: 'fixes-v1', dashboard: 'dashboard-v1', featured: 'featured-v2', demo: 'demo-v2', pulse: 'pulse-v1', promos: 'promos-v1', mylist: 'mylist-v1', next: 'next-v1' };
+  var AUDIO_V = { overview: 'overview-v3', audit: 'audit-v2', expect: 'expect-v1', join: 'join-v1' };
+  var AUDIO_M = { overview: 'overview-member-v1', fixes: 'fixes-v1', dashboard: 'dashboard-v1', featured: 'featured-v2', demo: 'demo-v2', pulse: 'pulse-v1', promos: 'promos-v1', mylist: 'mylist-v1', next: 'next-v1', sourcing: 'sourcing-member-v1' };
 
   // What we run for restaurants (Sean, 2026-10-10). Never show a planned thing as live: each says Live or Coming.
   var PROMOS = [
@@ -1161,7 +1162,7 @@
   function intro(open) { return window.VEGuideIntro ? VEGuideIntro.html(Object.assign({ open: open }, INTRO)) : ''; }
   function viewOverview() {
     if (!member()) {
-      main.innerHTML = head('Vegans Explore Guides for business', 'Welcome to the Vegans Explore Restaurant Guide',
+      main.innerHTML = head('Vegans Explore Guides for business', 'Welcome to the Vegan Restaurant Guide',
         'Thank you for what you do. Read Start here first, then run your free check.') +
         intro(true) +
         '<h3 class="dg-k" style="margin:22px 0 8px">Here is how to start</h3>' +
@@ -1298,7 +1299,7 @@
   function drawLiz() {
     var t = tab(curTab), list = tabs(), i = 0;
     list.forEach(function (x, n) { if (x.k === curTab) i = n; });
-    bubble.textContent = !member() && t.show && lizAudio(t.k) ? t.show : member() && t.sayMember ? t.sayMember : onPoints() && t.sayPoints ? t.sayPoints : t.k === 'join' && mode() === 'unlock' ? t.sayCredit : t.say;
+    bubble.textContent = !member() && t.show && lizAudio(t.k) ? t.show : member() && t.showMember && lizAudio(t.k) ? t.showMember : member() && t.sayMember ? t.sayMember : onPoints() && t.sayPoints ? t.sayPoints : t.k === 'join' && mode() === 'unlock' ? t.sayCredit : t.say;
     var has = !!clip(curTab) || !!lizAudio(curTab);
     playBtn.hidden = TOUR.started && !has;
     playBtn.classList.toggle('go', !TOUR.started);
