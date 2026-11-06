@@ -21,7 +21,7 @@ const json = (body: unknown, status = 200) => new Response(JSON.stringify(body),
 // The Guides that carry the Sourcing tab. A new Guide is one entry here.
 const GUIDES = new Set(['vegan-restaurant-guide', 'pre-vegan-business-guide']);
 const DOMAINS = ['food_drink', 'ingredients', 'packaging', 'co_packing', 'machinery', 'materials', 'distribution', 'certification'];
-const LABELS = ['peta_approved', 'fully_vegan', 'offers_options', 'plant_material'];
+const LABELS = ['peta_approved', 'fully_vegan', 'offers_options', 'plant_material', 'equipment'];
 
 function b64urlToBytes(str: string): Uint8Array {
   str = str.replace(/-/g, '+').replace(/_/g, '/');
@@ -45,7 +45,7 @@ async function verifyToken(token: string): Promise<string | null> {
 const bearer = (req: Request) => (req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '');
 
 const PUBLIC_FIELDS = 'slug,name,website,domain,kinds,label,bio';
-const RANK: Record<string, number> = { peta_approved: 0, fully_vegan: 1, offers_options: 2, plant_material: 3 };
+const RANK: Record<string, number> = { peta_approved: 0, fully_vegan: 1, offers_options: 2, plant_material: 3, equipment: 4 };
 
 // Buy or make (Sean, 2026-11-05: "pair existing recipes"). Each item pairs one Cookbook recipe (home scale) with the supplier kinds that
 // sell it ready-made (ready-made food and drink, ingredients). A new item is one row; only recipes that are live are shown.
