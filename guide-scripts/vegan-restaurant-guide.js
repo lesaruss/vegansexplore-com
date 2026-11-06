@@ -834,6 +834,7 @@
   var SRC_ALT = { leather: 1, suede: 1, down: 1, wool: 1, fur: 1, cashmere: 1, silk: 1, feathers: 1 };
   function kindName(k) {
     var t = String(k || ''); t = t.charAt(0).toUpperCase() + t.slice(1);
+    if (String(k).toLowerCase() === 'feathers') t = 'Feather';
     return SRC_ALT[String(k).toLowerCase()] ? t + ' alternatives' : t;
   }
   var SRC_MEAN = {
