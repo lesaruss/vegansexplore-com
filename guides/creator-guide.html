@@ -231,6 +231,20 @@
     .dg-tag{display:inline-block;font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;border-radius:4px;padding:3px 8px;white-space:nowrap;}
     .dg-tag-live{background:var(--gl);color:var(--g);}
     .dg-tag-wait{background:#fff4e2;color:#6b3f00;}
+    /* For <first name>: the Guide made for one person (?p=<token>, brooke-sellers 2026-11-05). */
+    body.cg-made .dg-joinbox{display:none !important;}
+    .cg-you-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:6px;}
+    .cg-you-stat{border:1px solid var(--gm);background:var(--gl);border-radius:12px;padding:14px 16px;}
+    .cg-you-stat b{display:block;font-size:30px;font-weight:900;line-height:1.05;color:var(--g);}
+    .cg-you-stat span{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink55);margin-top:4px;}
+    .cg-you-h{font-size:13px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;margin:24px 0 10px;}
+    .cg-you-pg{display:flex;gap:12px;align-items:center;min-width:0;}
+    .cg-you-pg b{display:block;font-size:14.5px;font-weight:800;}
+    .cg-you-th{flex:0 0 48px;height:48px;border-radius:10px;background:var(--gl) center/cover no-repeat;}
+    .cg-you-k{display:block;font-size:12px;color:var(--ink55);margin-top:2px;}
+    .cg-you-n{font-size:12.5px;font-weight:700;color:var(--ink75);white-space:nowrap;}
+    @media (max-width:900px){.dg-row.cg-you-row{grid-template-columns:minmax(0,1fr);gap:8px;}.cg-you-n{white-space:normal;}}
+    @media (max-width:560px){.cg-you-stats{gap:8px;}.cg-you-stat{padding:10px 10px;}.cg-you-stat b{font-size:22px;}.cg-you-stat span{font-size:9.5px;letter-spacing:.04em;}}
     .dg-tag-retest{background:#fff4e2;color:#8a5a00;}
     .dg-tag-change{background:#fbeeec;color:#8a1c12;}
     .dg-tag-off{background:#eef0ee;color:#4a4f4a;}

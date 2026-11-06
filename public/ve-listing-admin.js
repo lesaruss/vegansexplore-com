@@ -113,7 +113,7 @@
     ['Accessibility', [['a', 'Wheelchair Accessible']]],
     ['Ownership', [['o', 'is_black_owned', 'Black-owned'], ['o', 'is_women_owned', 'Women-owned'], ['o', 'is_latino_owned', 'Latino/Hispanic-owned'], ['o', 'is_asian_owned', 'Asian-owned'], ['o', 'is_lgbtq_owned', 'LGBTQ+-owned'], ['o', 'is_immigrant_owned', 'Immigrant-owned'], ['o', 'is_veteran_owned', 'Veteran-owned'], ['o', 'is_indigenous_owned', 'Indigenous-owned'], ['o', 'is_family_owned', 'Family-owned']]]
   ];
-  var CSS = '#vla{position:fixed;inset:0;z-index:9997;background:rgba(10,20,12,.6);display:flex;align-items:center;justify-content:center;padding:16px;font-family:Montserrat,sans-serif}' +
+  var CSS = '#vla input,#vla select,#vla textarea,#vla .box{box-sizing:border-box}#vla{position:fixed;inset:0;z-index:9997;background:rgba(10,20,12,.6);display:flex;align-items:center;justify-content:center;padding:16px;font-family:Montserrat,sans-serif}' +
     '#vla .box{background:#fff;border-radius:14px;max-width:600px;width:100%;max-height:calc(100vh - 32px);overflow:auto;padding:22px 22px 18px;color:#1a1a1a;box-shadow:0 24px 60px rgba(0,0,0,.35)}' +
     '#vla h2{font-size:17px;font-weight:900;margin:0 0 2px}#vla .who{font-size:12px;color:#666;margin-bottom:6px}' +
     '#vla h3{font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#1f5f22;margin:18px 0 4px;padding-top:12px;border-top:1px solid #eee}' +
@@ -130,7 +130,10 @@
     '#vla .acts{display:flex;gap:8px;justify-content:flex-end;align-items:center;margin-top:18px;position:sticky;bottom:-18px;background:#fff;padding:12px 0 4px}#vla .msg{flex:1;font-size:13px;font-weight:700;color:#1f5f22}#vla .msg.bad{color:#8a1c12}' +
     '#vla button,#vla a.cancel{font:inherit;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;border-radius:8px;padding:10px 16px;cursor:pointer;min-height:40px}#vla a.cancel{display:inline-flex;align-items:center}' +
     '#vla .save{background:#1f5f22;color:#fff;border:0}#vla .save:disabled{opacity:.5}#vla .cancel{background:#fff;color:#1f5f22;border:1px solid rgba(0,0,0,.25)}' +
-    '@media(max-width:520px){#vla .row{grid-template-columns:1fr 1fr}#vla .row .street{grid-column:1/-1}}' +
+    '@media(max-width:520px){#vla .row{grid-template-columns:1fr 1fr}#vla .row .street{grid-column:1/-1}#vla .row2{grid-template-columns:1fr}' +
+    '#vla{padding:0;align-items:stretch}#vla .box{border-radius:0;max-height:100vh;max-height:100dvh;padding:18px 16px 14px}#vla select,#vla input[type=text],#vla textarea{font-size:16px}}' +
+    '#vla textarea{width:100%;font:inherit;font-size:14px;padding:9px 10px;border:1px solid rgba(0,0,0,.25);border-radius:8px;background:#fff;color:#1a1a1a;resize:vertical}' +
+    '#vla .hrs{display:grid;grid-template-columns:96px 1fr;gap:6px 8px;align-items:center}#vla .hrs span{font-size:12.5px;font-weight:700;color:#444}' +
     '.vla-edit{font-family:Montserrat,sans-serif;font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:4px 9px;border-radius:4px;border:1px dashed #b7791f;background:#fffaf0;color:#7a4b00;cursor:pointer}' +
     '.vla-edit:hover{background:#fff1d6}' +
     'a.vla-edit{text-decoration:none;display:inline-block}' +
@@ -143,7 +146,7 @@
     '#vla .ledit-look{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}#vla .ledit-look a{font-size:12px;font-weight:700;color:#1f5f22;border:1px solid rgba(0,0,0,.2);border-radius:6px;padding:6px 10px;text-decoration:none;background:#fff}' +
     '#vla .ledit-hint{font-size:12px;color:#555;margin:0 0 12px}#vla .ledit-acts{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}' +
     '#vla .ledit .vle button{min-height:0;letter-spacing:0;text-transform:none;font-weight:700;padding:8px 12px;border-radius:6px}';
-  var FIELDS = 'id,slug,name,logo_url,initials,color,website,instagram,facebook,category,extra_categories,communities,product_kinds,cuisines,vetted_at,voter_count,rss_url,claim_status,vegan_status,business_status,address_street,address_city,address_state,address_zip,atmosphere,accommodations,indoor_seating,late_hours,high_speed_wifi,is_black_owned,is_women_owned,is_latino_owned,is_asian_owned,is_lgbtq_owned,is_immigrant_owned,is_veteran_owned,is_indigenous_owned,is_family_owned,lgbtq_friendly,parent_id,location_label,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type,shared_kitchen:details->shared_kitchen,description,tiktok,youtube,person:details->person';
+  var FIELDS = 'id,slug,name,logo_url,initials,color,website,instagram,facebook,category,extra_categories,communities,product_kinds,cuisines,vetted_at,voter_count,rss_url,claim_status,vegan_status,business_status,address_street,address_city,address_state,address_zip,atmosphere,accommodations,indoor_seating,late_hours,high_speed_wifi,is_black_owned,is_women_owned,is_latino_owned,is_asian_owned,is_lgbtq_owned,is_immigrant_owned,is_veteran_owned,is_indigenous_owned,is_family_owned,lgbtq_friendly,parent_id,location_label,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type,shared_kitchen:details->shared_kitchen,description,tiktok,youtube,person:details->person,tagline,phone,email,linkedin,twitter,booking_url,uber_eats_url,doordash_url,menu_crawl_url,google_hours_json';
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function isAdmin() {
@@ -230,6 +233,26 @@
 
       '<div class="note" id="vla-first" hidden>Pick the main section and sub-section first. The rest of the listing follows from what it is.</div>' +
       '<div id="vla-rest">' +
+
+      // Contact and links (Sean, 2026-11-06: "I'd like to have all the categories... update the Instagram... from my phone"): every
+      // listing that is not a person gets the full set, saved through ve-outreach listing_fix (each change a ve_listing_edits row).
+      (function () {
+        var hrs = l.google_hours_json; if (typeof hrs === 'string') { try { hrs = JSON.parse(hrs); } catch (e) { hrs = null; } } hrs = hrs || {};
+        var T = function (id, label, val, ph) { return '<div><label class="h" for="' + id + '">' + label + '</label><input type="text" id="' + id + '"' + (ph ? ' placeholder="' + ph + '"' : '') + ' value="' + esc(val || '') + '"></div>'; };
+        return '<div id="vla-p-contact"><h3>Contact and links</h3>' +
+          '<label class="h" for="vla-c-tag">One line</label><input type="text" id="vla-c-tag" maxlength="300" value="' + esc(l.tagline || '') + '">' +
+          '<label class="h" for="vla-c-about">About</label><textarea id="vla-c-about" rows="4" maxlength="2000">' + esc(l.description || '') + '</textarea>' +
+          '<div class="row2">' + T('vla-c-web', 'Website', l.website, 'https://') + T('vla-c-ig', 'Instagram', l.instagram, '@handle') + '</div>' +
+          '<div class="row2">' + T('vla-c-fb', 'Facebook', l.facebook, 'https://facebook.com/...') + T('vla-c-tt', 'TikTok', l.tiktok, '@handle') + '</div>' +
+          '<div class="row2">' + T('vla-c-yt', 'YouTube', l.youtube, 'https://youtube.com/@...') + T('vla-c-x', 'X (Twitter)', l.twitter, '@handle') + '</div>' +
+          '<div class="row2">' + T('vla-c-li', 'LinkedIn', l.linkedin, 'https://linkedin.com/...') + T('vla-c-phone', 'Phone', l.phone) + '</div>' +
+          '<div class="row2">' + T('vla-c-email', 'Email', l.email) + T('vla-c-book', 'Booking link', l.booking_url, 'https://') + '</div>' +
+          '<div id="vla-c-food"><div class="row2">' + T('vla-c-menu', 'Menu link', l.menu_crawl_url, 'https://') + T('vla-c-ue', 'Uber Eats', l.uber_eats_url, 'https://') + '</div>' +
+          '<div class="row2">' + T('vla-c-dd', 'DoorDash', l.doordash_url, 'https://') + '<div></div></div></div>' +
+          '<div id="vla-c-hours"><label class="h">Hours</label><div class="hrs">' + ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'].map(function (d) {
+            return '<span>' + d + '</span><input type="text" data-day="' + d + '" placeholder="Closed, or 11 AM to 9 PM" value="' + esc(hrs[d] || '') + '">'; }).join('') + '</div>' +
+          '<div class="note">Leave a day empty to hide it.</div></div></div>';
+      })() +
 
       // Episodes (Sean, 2026-10-27): the show's RSS feed fills its Episodes tab (ve-podcast). Found from Apple Podcasts when empty.
       // A book or a film says when it came out, and a book what kind it is (Sean, 2026-10-27), on its card in place of a city.
@@ -362,6 +385,7 @@
       $('#vla-bs-t').hidden = $('#vla-bs').hidden = person;
       $('#vla-logo-t').textContent = person ? 'Photo' : 'Logo';
       $('#vla-p-rss').hidden = cur !== 'Podcasts';
+      $('#vla-p-contact').hidden = person; $('#vla-c-food').hidden = $('#vla-p-shared').hidden; $('#vla-c-hours').hidden = kind !== 'place' || $('#vla-online').checked;
       $('#vla-p-health').hidden = cur !== 'Health Professionals';
       $('#vla-p-work').hidden = kind !== 'work'; $('#vla-bt-wrap').hidden = cur !== 'Books';
       $('#vla-name-l').textContent = media ? 'Name' : 'Business name';
@@ -458,6 +482,7 @@
         : 'Its address is outside our chapters. Tick the chapters it serves.';
     }
     ['#vla-all', '#vla-online'].forEach(function (s) { $(s).addEventListener('change', syncChapters); });
+    $('#vla-online').addEventListener('change', function () { $('#vla-c-hours').hidden = kindOf($('#vla-sub').value) !== 'place' || this.checked; });
     ['#vla-city', '#vla-state'].forEach(function (s) { $(s).addEventListener('input', syncChapters); });
     syncChapters();
     // ---- Logo: saves on its own, right away.
@@ -646,7 +671,7 @@
               .then(function (r) { return r.json(); }).then(function (x) {
                 if (!x || !x.ok) throw new Error(x && x.error === 'bad_year' ? 'the year should be four digits.' : 'try again.');
                 l.release_year = target.release_year = x.release_year; l.book_type = target.book_type = x.book_type; l.health_type = target.health_type = x.health_type;
-              }) : Promise.resolve()).then(saveShared).then(savePerson).then(afterWork, function (e) { btn.disabled = false; bad('Saved, but ' + e.message); });
+              }) : Promise.resolve()).then(saveShared).then(savePerson).then(saveContact).then(afterWork, function (e) { btn.disabled = false; bad('Saved, but ' + e.message); });
           // The shared kitchen, through ve-listing-media; only when it changed.
           function saveShared() {
             if ($('#vla-p-shared').hidden) return;
@@ -669,6 +694,30 @@
               tiktok: $('#vla-ptt').value.trim(), youtube: $('#vla-pyt').value.trim(),
               account_email: $('#vla-pacct').dataset.loaded && $('#vla-pacct').value.trim().toLowerCase() !== ($('#vla-pacct').dataset.was || '').toLowerCase() ? $('#vla-pacct').value.trim() : undefined })
               .then(function (x) { if (!x || !x.ok) throw new Error('their profile did not: ' + ((x && (x.message || x.error)) || 'try again.')); });
+          }
+          // Contact and links: only what changed, through ve-outreach listing_fix (each change a ve_listing_edits row).
+          function saveContact() {
+            if ($('#vla-p-contact').hidden) return;
+            var MAP = [['vla-c-tag', 'tagline'], ['vla-c-about', 'description'], ['vla-c-web', 'website'], ['vla-c-ig', 'instagram'], ['vla-c-fb', 'facebook'],
+              ['vla-c-tt', 'tiktok'], ['vla-c-yt', 'youtube'], ['vla-c-x', 'twitter'], ['vla-c-li', 'linkedin'], ['vla-c-phone', 'phone'], ['vla-c-email', 'email'],
+              ['vla-c-book', 'booking_url']];
+            if (!$('#vla-c-food').hidden) MAP = MAP.concat([['vla-c-menu', 'menu_url', 'menu_crawl_url'], ['vla-c-ue', 'uber_eats_url'], ['vla-c-dd', 'doordash_url']]);
+            var fields = {}, n = 0;
+            MAP.forEach(function (m) { var v = $('#' + m[0]).value.trim(); if (v !== String(l[m[2] || m[1]] || '').trim()) { fields[m[1]] = v; n++; } });
+            if (!$('#vla-c-hours').hidden) {
+              var was = l.google_hours_json; if (typeof was === 'string') { try { was = JSON.parse(was); } catch (e) { was = null; } } was = was || {};
+              var h = {}, diff = false;
+              wrap.querySelectorAll('#vla-c-hours input[data-day]').forEach(function (i) { var d = i.getAttribute('data-day'), v = i.value.trim(); h[d] = v; if (v !== String(was[d] || '')) diff = true; });
+              if (diff) { fields.hours = h; n++; }
+            }
+            if (!n) return;
+            return fetch(SB + '/functions/v1/ve-outreach', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() },
+              body: JSON.stringify({ action: 'listing_fix', listing_id: l.id, fields: fields, where: 'listing_editor' }) })
+              .then(function (r) { return r.json(); }).then(function (x) {
+                if (!x || !x.ok) throw new Error('the contact details did not: ' + (x && x.error === 'bad_link' ? 'one of the links is not a web address (' + x.field + ').' : x && x.error === 'bad_email' ? 'that email does not look right.' : (x && x.error) || 'try again.'));
+                MAP.forEach(function (m) { if (m[1] in fields) l[m[2] || m[1]] = target[m[2] || m[1]] = fields[m[1]]; });
+                if (fields.hours) l.google_hours_json = target.google_hours_json = fields.hours;
+              });
           }
           function afterWork() {
           // A changed feed is read at once, so a wrong one says so before the window closes.
