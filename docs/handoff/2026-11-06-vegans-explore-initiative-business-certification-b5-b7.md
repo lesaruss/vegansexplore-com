@@ -6,7 +6,7 @@ Date: 2026-11-06. Logan, build mode. Branch `claude/blissful-fermi-qmyiwt` (B5 t
 - B4 wrap-up: canon `canon-ve-pre-vegan-certification` v6 (`built_b4`, `open` refreshed), `ve_playbook_index` row, a `brief_checkpoints` and a `stream_events` row.
 - Merged the three branches to `main` in order (16b85ca), CLAUDE.md sections kept. All B1 to B4 data was already applied and is dark.
 - `ve-stripe-webhook` v66 from 16b85ca (sha256 58d2dc3b matched): restores the survey-door 1,100 welcome points that v65 had dropped; money alerts kept.
-- B5 art (`public/certification/`) and `docs/certification/b5-stamp-and-diner-test.md` with the art sheet PNG.
+- B5 art (`public/certification/`; the seal and small mark carry our suitcase mark from `public/ve-logo-mark.svg`, Sean's call the same day, 42c5d8b) and `docs/certification/b5-stamp-and-diner-test.md` with the art sheet PNG.
 - B6 `docs/certification/b6-restaurant-agreement-draft.md`. B7 `docs/certification/b7-verifier-manual.md`. C2 `docs/certification/c2-pilot-invitation-draft.md`.
 
 ## Not done / not proven
@@ -22,3 +22,6 @@ Date: 2026-11-06. Logan, build mode. Branch `claude/blissful-fermi-qmyiwt` (B5 t
 
 ## Logan next
 - Nothing until Sean's items move: C2 drafts go into Depot > Outreach after C1 and A4; C3 to C6, D2 follow the pilot.
+
+## Waiting on
+Sean's feedback on the B5 art, the diner test, the B6 draft and the B7 manual (he said he has feedback for the next chat).

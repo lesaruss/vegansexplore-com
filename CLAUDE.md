@@ -4929,7 +4929,7 @@ Built from Standard V1.2 (playbook record 044b9cf2). The standard, the queue and
   `main`; `docs/certification/b5-stamp-and-diner-test.md`, sheet `docs/certification/b5-art-sheet.png`): the seal (color, one color, reversed), a small mark for
   under 1 inch (always with the words), the menu line, the menu key, the 8 x 10 decal with a QR square, and a made-up test menu (Harbor Table). Usage rules feed
   the agreement and the manual. The test: 40 adults, 5 critical questions, pass at 85% each, and the C4 "almost Vegan" misread at 10% or less; if C4 fails, the
-  name "Pre-Vegan" goes back to Sean before print and before A5.
+  name "Pre-Vegan" goes back to Sean before print and before A5. **The seal carries our suitcase mark** (Sean, 2026-11-06: "use the actual suitcase that we use for our logo"), copied from `public/ve-logo-mark.svg`, never redrawn, in every version.
 - **B6, the restaurant agreement draft for counsel** (`docs/certification/b6-restaurant-agreement-draft.md`): 14 sections and schedules A to F from the locked
   records, open choices in brackets, seven questions for counsel. To reconcile with the A3 Standard doc's 14 clauses (that Claude Doc is not shared with build
   sessions).
