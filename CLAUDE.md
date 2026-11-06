@@ -4805,6 +4805,34 @@ v1 history: the email-only reader level is retired (step 2 replaced it), and the
 - **The Restaurant Guide is ready to send, and the on-screen line is short (Sean, 2026-11-05, playbooks `ve-restaurant-guide`, `ve-audio-accessibility`; main `78935f0`; handoff `docs/handoff/2026-11-04-ve-restaurant-guide-liz-audio-invitation-lock.md`)**: the full recorded welcome had pushed Liz's Start the tour button off screen on laptops (the bubble grew to about 370 px under the footer). Fixed: in the desktop fit layout Play sits right under her name and a long line scrolls in its box, and a tab can carry `show`, a short line shown while its recording exists (Overview, What to expect, Try the demo). **Sean: short text in the box, the audio does the work**, so for those tabs the text need not equal the recording; the recordings are unchanged. Proven live: a signed-in member click-through (all ten tabs, Play on screen, audio plays, a challenge tick, Claim your page, Your dashboard, the demo pop-out; the tick is a real vote in `ve_guide_votes`, remove a test one) and a real `/go/bo-` click with a [TEST] contact (302 to the Guide with `?b=`, the Guide opens on the business; a bot browser is logged and not counted; a click makes a contact Interested only if it was emailed first, then routes it, Sean when the chapter has no Community Manager; test rows removed). To drive the live site as a member, a one-time function signs a one-hour token as `ve-switch-account` does, then goes back to the 410 stub, and the browser holds `ve_token` and `ve_member`. Liz's Events Guide scripts are drafted in `docs/proposals/liz-audio-scripts.md` for Sean to read, nothing recorded. Nothing has been sent and no city is on; what is left before sending is Sean's (approve the emails, turn a city on, read the pulled addresses by eye).
 - Rule change: every Guide is $11 or 1,100 points except the door Guides. The producer's dissent (one free clip for everyone) was declined.
 
+## Pre-Vegan Certification: B1 to B3 (Sean, 2026-11-05, playbook `vegans-explore-initiative-business-certification`)
+
+Canon `canon-ve-pre-vegan-certification` v5. The standard (V1.2), the A-to-Z work queue and the earlier CLAUDE.md notes live on branch
+`claude/fervent-hamilton-fc48qo` (not on `main`); this section covers B1 to B3, built on `claude/inspiring-hypatia-ilwro1` (not on `main`).
+**Nothing is launched, sent or charged.**
+
+- **B1, the Verifier forms** (Claude Doc https://claude.ai/artifact/CPSYLTidahPfAWWQv2QXWG): Form A, the desk review (12 application checks,
+  12 checks for each dish, the outcome) and Form B, the visit (arrival, storage with a 3-invoice sample, watching each dish, two staff
+  questioned with 7 critical questions where one wrong critical answer fails G5, a channel spot check, the photo log, to the approver within 2
+  business days). The approver cannot overrule a Fail.
+- **B2, the pre-assessment** (migration `20261105_pre_vegan_assessment.sql`): survey `pre-vegan-assessment`, 27 questions (`pv_license` to
+  `pv_notes`, 0 points), `ve_preveg_rules` (95 rows: question, gate, value, score 0 to 2, blocker, advice; RLS on, no policies) and
+  `ve_preveg_readiness(member)` (answered, overall %, each gate's %, blockers, next steps, ready to apply = no blocker, all answered and every
+  gate at 75% or more). A multi-select answer scores as its worst tick; an unanswered question counts 0. **Private**: only the member reads it,
+  through `ve-mission-survey` `preveg_readiness` (v9). Never shown to anyone outside the team.
+- **B3, the Pre-Vegan Restaurant Guide** (migration `20261105_pre_vegan_guide.sql`; `guides/pre-vegan-restaurant-guide.html`,
+  `guide-scripts/pre-vegan-restaurant-guide.js`, copied from the Vegan Restaurant Guide, `noindex`): a free door Guide opened by finishing its
+  survey (`ve_guides.door`, `survey_slug`; the survey `admits`, so finishing makes them a member). Tabs: Overview, The stamp, How it works,
+  The 8 gates (`#/gates/g1..g8`), Start the check (guests); Your readiness and What's next (members). What's next has an **optional $11
+  contribution** (`/dashboard?contribute=1`) with the normal **1,100 welcome points** on a first payment (Sean: no double points); the page
+  says it has no effect on certification or the score. Liz's lines are text drafts. `survey.html` now sends a finished Guide survey to its
+  `guide_slug`. **Not launched**: `published` false and the survey `active` false until Sean says go.
+- **Webhook fix** (`ve-stripe-webhook` v64): a member who joined by a survey door gets the 1,100 welcome points on their first $11
+  (`!entry_paid_at`), where before it counted as a repeat contribution and paid none.
+- **Not proven live**: a real member reading their readiness, and a real first $11 granting the points (both tested in rolled-back transactions).
+- **Next (Logan)**: B4, the dish status registry and the QR status page. **Sean**: A4 the attorney, A2 the entity, approve Liz's lines and the
+  go to publish, both branch merges, the `ve_outreach_due` people-only guard, and whether invitation members also get 1,100 on a first $11.
+
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
 
 Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-venue-guides`). The Stadium & Arena
