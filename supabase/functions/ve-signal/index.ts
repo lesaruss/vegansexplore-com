@@ -9,6 +9,7 @@
 //   POST { action: 'aggregate', site }              group page problems into signal_issues again
 //   POST { action: 'issues', site }                 the issue list and the latest run
 //   POST { action: 'gsc_urls', site, days? }        every address Google showed for us (default 480 days), with clicks and impressions
+//   POST { action: 'old_check', site, limit? }      follow the next signal_gsc_urls addresses to where they land (default 80)
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -88,6 +89,28 @@ async function gscUrls(site: any, days: number) {
     if ((r.rows ?? []).length < 25000) break;
   }
   return { ok: true, days, count: rows.length, urls: rows };
+}
+
+
+// Follow an address the way a visitor does (up to 6 hops) and say where it lands: ok (a real page), loading_copy (a page whose
+// server title is "Loading...", the old /project copies), not_found (404 or our not-found page), broken (5xx or no answer),
+// home (sent to the home page, value lost).
+async function follow(url: string) {
+  let u = url; const hops: string[] = []; let status = 0; let title = '';
+  for (let i = 0; i < 6; i++) {
+    let r: Response;
+    try { r = await fetch(u, { headers: { 'User-Agent': UA, Accept: 'text/html' }, redirect: 'manual', signal: AbortSignal.timeout(15000) }); }
+    catch (e) { return { status: 0, location: u, hops, title: '', verdict: 'broken', note: String((e as Error).message || e).slice(0, 120) }; }
+    status = r.status;
+    if (status >= 300 && status < 400 && r.headers.get('location')) { await r.body?.cancel(); u = new URL(r.headers.get('location')!, u).href; hops.push(String(status)); continue; }
+    const html = status < 500 ? (await r.text()).slice(0, 60000) : ''; title = decode(html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1] ?? '').replace(/\s+/g, ' ');
+    break;
+  }
+  const path = (() => { try { return new URL(u).pathname; } catch { return ''; } })();
+  const verdict = status >= 500 || status === 0 ? 'broken' : status === 404 || status === 410 || /not found/i.test(title) ? 'not_found'
+    : /^loading/i.test(title) ? 'loading_copy' : status === 200 && (path === '/' || path === '') && url.replace(/\/$/, '') !== new URL(u).origin ? 'home'
+    : status === 200 ? 'ok' : 'broken';
+  return { status, location: u, hops, title, verdict, note: null };
 }
 
 // ---- Sitemap and page scan ----
@@ -220,6 +243,13 @@ Deno.serve(async (req) => {
       return json({ site: site.site, run, issues });
     }
     if (body.action === 'aggregate') return json(await aggregate(site.site));
+    if (body.action === 'old_check') {
+      const limit = Math.min(Math.max(Number(body.limit) || 80, 1), 150);
+      const { data: todo } = await db.from('signal_gsc_urls').select('url').eq('site', site.site).is('checked_at', null).order('impressions', { ascending: false }).limit(limit);
+      await pool(todo || [], 6, async (p: any) => { const f = await follow(p.url); await db.from('signal_gsc_urls').update({ status_code: f.status, location: f.location, verdict: f.verdict, checked_at: new Date().toISOString() }).eq('site', site.site).eq('url', p.url); });
+      const { count } = await db.from('signal_gsc_urls').select('url', { count: 'exact', head: true }).eq('site', site.site).is('checked_at', null);
+      return json({ checked: todo?.length ?? 0, left: count });
+    }
     if (body.action === 'scan_start') {
       const { data: running } = await db.from('signal_scan_runs').select('id').eq('site', site.site).eq('status', 'running').maybeSingle();
       if (running) return json({ error: 'already_running', run_id: running.id }, 409);
