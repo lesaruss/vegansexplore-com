@@ -3255,7 +3255,14 @@ menu** (`ve_menu_items` and the Menu tab are untouched).
   changed by the owner and not by a vote, one vote counted once and taken back, the owner's own vote, an unpaid account's and a signed-out one refused,
   a stranger refused reading and saving; then every row and file removed, the 50 points given back and Love Life Cafe unclaimed again. Checked in a
   browser at 1440 and 390 px on the sample business beside its About and its Menu view. **Merged to `main` 2026-11-06** (Sean: "Merge to main"); the
-  playbook is **Done**. Parked by Sean: the slot reminder email (J) and chapter rankings (K). Not yet: a real owner using it.
+  playbook is **Done**. **J and K, done 2026-11-06** (Sean: "we can move forward if it looks good"; `docs/proposals/signature-dishes-j-k.md`):
+  **the slot reminder** is `ve-nurture` kind `dish-slot` (`dishTick`): 3 days before a paid slot ends, one note to the member who paid while they still own
+  the listing, only when a featured dish would come off the page and the slot is not already kept; any day 10 AM to 5 PM Eastern; claimed by
+  `ve_dish_slots.reminded_at` / `remind_result` (migration `20261106_dish_slot_reminder.sql`); campaign `ve-dish-slot-ending`; its own approval and switch
+  (`nurture.dish_approved_hash`, `dish_on`, both set), so a change to its words puts it back to draft. **Top dishes** on every chapter hub's Overview
+  (`#hub-ov-dishes` in `communities/hub.html`, the listing's `.sd-*` card): `ve-signature-dishes` `top` (public) returns each place's most voted shown dish
+  over the last 90 days with 3 or more votes, ties to the dish that reached its count first then A to Z, never boosted; the hub keeps its chapter's
+  (address by `HUB.match`, or `communities`) and shows up to six only once there are 3. Not yet: a real owner using any of it.
 
 ## The Nutrition Guide (Sean, 2026-10-31: "build the Nutrition Guide")
 

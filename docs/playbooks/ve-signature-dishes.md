@@ -30,8 +30,8 @@ Overview. A perk of claiming. It never replaces the menu.
 | G | Proof with a test dish | Logan | On a food listing, with a [TEST] dish: added as owner, refused without a photo when featured, a fourth featured refused until slot 4 is bought (50 points taken once), voted by a member once and taken back, the owner refused voting on their own dish, a stranger refused editing; then every test row removed and the points put back. |
 | H | The words | Logan | `/policies#business` names signature dishes and the 50-point slots, `ve-guide-platform-facts` and one saved answer say the same, and CLAUDE.md has the section. |
 | I | Merge to main | Sean | Sean says merge, it is on `main`, and the live page is checked at 1440 and 390 px. |
-| J | Slot reminder email (**un-parked 2026-11-06, built off on a branch, draft with Sean**) | Logan | A note 3 days before a paid slot ends is built **off** and shown to Sean as a draft; it sends only once he approves it. |
-| K | Top Vegan dishes by chapter (**un-parked 2026-11-06, proposal with Sean**) | Logan | A ranking of the most voted featured dishes per chapter, brought to Sean as a proposal (where it shows, how ties break) before it is built. |
+| J | Slot reminder email (**done 2026-11-06: approved by Sean, on**) | Logan | A note 3 days before a paid slot ends is built **off** and shown to Sean as a draft; it sends only once he approves it. |
+| K | Top Vegan dishes by chapter (**done 2026-11-06: Sean approved the defaults**) | Logan | A ranking of the most voted featured dishes per chapter, brought to Sean as a proposal (where it shows, how ties break) before it is built. |
 
 The playbook is closed when A through I are done and each later item (J, K and any added below them) is either done or parked by Sean.
 
@@ -40,3 +40,5 @@ The playbook is closed when A through I are done and each later item (J, K and a
 Done 2026-11-06: A to H built and proven, I merged to `main` (Sean: "Merge to main"), J and K parked by Sean. The playbook is closed.
 
 Un-parked 2026-11-06: J built in `ve-nurture` off and undeployed (migration `20261106_dish_slot_reminder.sql` not applied), K written up as a proposal; both in `docs/proposals/signature-dishes-j-k.md`. Waiting on Sean.
+
+Done 2026-11-06 (Sean: "we can move forward if it looks good"): J live in `ve-nurture` v10 (main 89936dd), the columns applied, a test sent to contact@lesaruss.com, words approved (`dish_approved_hash`) and `dish_on` true; K built with the proposal's defaults (`ve-signature-dishes` `top`, Top dishes on each chapter hub's Overview). The playbook is closed again.

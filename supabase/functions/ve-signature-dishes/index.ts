@@ -1,5 +1,7 @@
 // ve-signature-dishes: a claimed food listing's signature dishes (playbook ve-signature-dishes, canon canon-ve-signature-dishes,
 // locked by Sean 2026-11-06; migration 20261106_signature_dishes.sql). Parent: ve-listing-posts (owner actions) and ve-claims (photos).
+//   top         public (item K, 2026-11-06): each claimed food place's most voted shown dish over the last 90 days, 3 votes or more; the
+//               chapter hub filters by its own rule and shows the list only with 3 or more
 //   list        public: the featured dishes in the owner's order, cut to the listing's cap, with vote counts (and the viewer's own votes)
 //   vote        an active member (not a Guide account, not the listing's owner): one vote per dish, `on` false takes it back
 //   owner_get / save / remove / order / photo_url / photo_done / slot_buy   the listing's owner (owner_member_id) or a super admin
@@ -22,7 +24,7 @@ const json = (body: unknown, status = 200) =>
 
 const FOOD = ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Catering', 'Meal Prep'];
 const MAX_SAVED = 20, FREE_SLOTS = 3, MIN_PX = 800;
-const READ_ACTIONS = new Set(['list', 'owner_get']);
+const READ_ACTIONS = new Set(['list', 'top', 'owner_get']);
 const COLS = 'id, name, line, photo_url, photo_w, photo_h, price_display, tags, menu_item_id, featured, position, updated_at';
 
 
@@ -127,6 +129,41 @@ Deno.serve(async (req) => {
     }
     return json({ ok: true, cap, own: !!memberId && memberId === l.owner_member_id,
       dishes: dishes.map((d: any) => ({ ...d, votes: c[d.id] || 0, voted: mine.includes(d.id) })) });
+  }
+
+  // ----- public: top dishes for the chapter hubs (item K; Sean approved Logan's defaults 2026-11-06) -----
+  // Only dishes on a page right now (featured, within the cap, approved, claimed, open, not LESARUSS.ai). One per place (its top dish).
+  // Votes from the last 90 days; ties: the dish that reached its count first (earliest latest vote), then A to Z. Never an owner or team boost.
+  if (action === 'top') {
+    const { data: rows } = await db.from('ve_signature_dishes').select('id, name, line, photo_url, price_display, position, created_at, listing_id, ' +
+      'listings!inner(id, slug, name, category, status, owner_member_id, business_status, tags, address_city, address_state, communities, vegan_status)')
+      .eq('featured', true).limit(2000);
+    const LR = ['lesaruss-ai-directory', 'lesaruss-ai-directory-candidate', 'lesaruss-ai-business-member'];
+    const live = (rows || []).filter((r: any) => { const l = r.listings; return l && l.status === 'approved' && l.owner_member_id && FOOD.includes(l.category) &&
+      l.business_status !== 'CLOSED_PERMANENTLY' && !(l.tags || []).some((t: string) => LR.includes(t)); });
+    if (!live.length) return json({ ok: true, days: 90, min_votes: 3, dishes: [] });
+    const lids = [...new Set(live.map((r: any) => String(r.listing_id)))] as string[], nowIso = new Date().toISOString();
+    const { data: run } = await db.from('ve_dish_slots').select('listing_id, slot').in('listing_id', lids).lte('starts_at', nowIso).gt('ends_at', nowIso);
+    const extra: Record<string, Set<number>> = {};
+    for (const r of run || []) (extra[r.listing_id] ||= new Set()).add(r.slot);
+    const byL: Record<string, any[]> = {};
+    for (const r of live) (byL[r.listing_id] ||= []).push(r);
+    const shownIds: any[] = [];
+    for (const lid of lids) {
+      const cap = FREE_SLOTS + (extra[lid]?.size || 0);
+      byL[lid].sort((a, b) => (a.position - b.position) || (a.created_at < b.created_at ? -1 : 1)).slice(0, cap).forEach((r) => shownIds.push(r));
+    }
+    const since = new Date(Date.now() - 90 * 864e5).toISOString();
+    const { data: vs } = await db.from('ve_dish_votes').select('dish_id, created_at').in('dish_id', shownIds.map((r) => r.id)).gte('created_at', since);
+    const tally: Record<string, { n: number; last: string }> = {};
+    for (const v of vs || []) { const t = (tally[v.dish_id] ||= { n: 0, last: '' }); t.n++; if (v.created_at > t.last) t.last = v.created_at; }
+    const rank = (a: any, b: any) => (tally[b.id].n - tally[a.id].n) || (tally[a.id].last < tally[b.id].last ? -1 : tally[a.id].last > tally[b.id].last ? 1 : 0) || a.name.localeCompare(b.name);
+    const best: Record<string, any> = {};
+    for (const r of shownIds) { if ((tally[r.id]?.n || 0) < 3) continue; if (!best[r.listing_id] || rank(r, best[r.listing_id]) < 0) best[r.listing_id] = r; }
+    const out = Object.values(best).sort(rank).slice(0, 300).map((r: any) => ({ id: r.id, name: r.name, line: r.line, photo_url: r.photo_url, price_display: r.price_display,
+      votes: tally[r.id].n, listing: { slug: r.listings.slug, name: r.listings.name, city: r.listings.address_city, state: r.listings.address_state,
+        communities: r.listings.communities || [], vegan_status: r.listings.vegan_status } }));
+    return json({ ok: true, days: 90, min_votes: 3, dishes: out });
   }
 
   if (!memberId) return json({ error: 'not_authenticated' }, 401);
