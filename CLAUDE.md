@@ -6485,6 +6485,35 @@ Sean: "people don't have to pay to get in, but they do have to show some effort.
   for people who are only in a campaign by Instagram handle in the pick list (the pick list is email-only).
 - **Build order**: Pulse subscribe (built, dark), the people sender (built), the survey door (built), the updated Welcome (live), retire the Taster and challenges (done), profiles with groups (steps 1 to 3 built: tags and rules, the person page, pick by tag), campaign homes (next, waits for the first campaign).
 
+## The Explorer path and badges (LOCKED by Sean 2026-11-06, playbook `ve-outreach`)
+
+"Lock it" (canon `canon-ve-door-guides` v7, key `explorer_path_v7`; voice canon `canon-ve-voice-hero-guide`; migration
+`20261106_explorer_path_v7_canon.sql`). **Not built yet; queued behind Checking in's Monday sends and the Hot Lab meetings merge.** Sean: "if
+I was on that list, what would you give me? I'm a business owner, I do events, I have groups, I'm a content creator... you're going to guess."
+So we stop picking a door per person: everyone takes Explorer, then chooses their own paths. It replaces the parts of v6 and of "Three doors"
+above that it contradicts (the person check at the door, the 31 questions as the door).
+
+- **Explorer is everyone's door and path** (part 1): the Welcome tour (about 3 minutes) plus the 8-question `explorer` survey (about 2
+  minutes). Finishing it makes them a member at once, with the **Explorer badge**; no person check, the abuse watch is the guard. The 31
+  questions become **Build your profile**, filled in over time and paid per answer.
+- **The paths page** comes next: every path as a card to preview and start (Creator, Restaurant, Event host, Nonprofit, Business, later Group
+  leader), ordered by "Do you run any of these?", never hidden. People take as many as fit.
+- **Path Guides are part 2**, about the path only. Locked in the catalog until Explorer ("Starts after Explorer"); reached early, Explorer opens
+  inside the Guide as its first step; with the badge that step shows done and they go straight to the path's intake. Topic Guides ($11 or 1,100
+  points) are not gated. Existing members take Explorer too.
+- **Points**: every survey is 250 for answering everything; required questions are few and worth less, optional and open ones more, weighted
+  by how useful the answer is. Explorer: chapter 15, journey 15, Do you run any of these 20 (required); what brings you 30, what you want more
+  of 35, how to hear from us 15, a place or person to add 45, in your own words 75. Add "I organize a group or community" and "Another kind of
+  business" to Do you run any of these.
+- **Badges**: Explorer, then Registered creator, restaurant owner, event host, nonprofit, business (automatic on finishing the intake), Group
+  leader later; Ambassador invitation only; each badge a `ve_person_tags` tag. A badge opens its Guide and its opportunities, never money.
+- **One invitation for everyone**, plus a restaurant version on the business's personal link (Explorer first, then their Restaurant path).
+  **Voice: they are the hero, we are the guide** (Sean: "It's about them"): open on what they do for the community, say what opens for them;
+  never open on our launch or ask them to support us or join our journey. Every email is a draft for Sean.
+- **Build order**: 1 re-weight Explorer and add the two options; 2 tag Explorer as the shared questions; 3 the Welcome ends in Explorer,
+  straight-in admission; 4 the paths page; 5 path Guides gated with Explorer inline; 6 badges on profiles and as tags; 7 Build your profile;
+  8 the invitations as drafts; 9 policies, the Guides' facts, saved answers.
+
 ## Abuse watch: a judge decides (Sean, 2026-11-03)
 
 "Have some sort of security mechanism that looks for abuse... if an account is suspected of trying to game the system, internally we can
