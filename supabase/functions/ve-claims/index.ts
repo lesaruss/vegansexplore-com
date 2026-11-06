@@ -1264,7 +1264,7 @@ Deno.serve(async (req) => {
       db.from('ad_placements').select('page_slug, page_name, slot_id, estimated_monthly_views').eq('brand_slug', 'vegans-explore').eq('status', 'active'),
       db.from('ve_audits').select('id, tier, status, score, max_score, created_at, source').eq('listing_id', lid).neq('status', 'failed').order('created_at', { ascending: false }).limit(5),
       db.from('ve_audit_orders').select('id, tier, status, paid_at, audit_id, recheck_audit_id, shopper_status').eq('listing_id', lid).eq('status', 'paid').order('paid_at', { ascending: false }).limit(5),
-      db.from('ve_guides').select('id, slug, title, description, cover_url, access_rule').eq('published', true).order('sort_order'),
+      db.from('ve_guides').select('id, slug, title, description, cover_url, access_rule, door').eq('published', true).order('sort_order'),
       db.from('ve_guide_purchases').select('guide_id').eq('member_id', memberId),
       db.from('opportunities').select('id, title, description, opportunity_type, city_slug, compensation, commitment').eq('is_active', true)
         .or(hub ? `city_slug.is.null,city_slug.eq.${hub}` : 'city_slug.is.null').order('created_at', { ascending: false }).limit(12),
@@ -1321,7 +1321,7 @@ Deno.serve(async (req) => {
       plan: plan ? { tier: plan.tier, name: TIERS[plan.tier]?.name, status: plan.status, renews_at: plan.renews_at } : null,
       ads, spots: Object.values(spots).sort((a: any, b: any) => b.views - a.views),
       audits: auditsQ.data || [], orders: ordersQ.data || [],
-      guides: (guidesQ.data || []).map((g: any) => ({ slug: g.slug, title: g.title, description: g.description, cover_url: g.cover_url, access_rule: g.access_rule, owned: member.is_superadmin || owned.has(g.id) || g.access_rule === 'free' })),
+      guides: (guidesQ.data || []).map((g: any) => ({ slug: g.slug, title: g.title, description: g.description, cover_url: g.cover_url, access_rule: g.access_rule, door: !!g.door, owned: member.is_superadmin || owned.has(g.id) || g.access_rule === 'free' })),
       opportunities: oppsQ.data || [], interests: (intsQ.data || []).map((x: any) => x.initiative_slug), checkins: await ownerCheckins() });
   }
 
