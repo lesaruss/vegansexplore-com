@@ -80,7 +80,10 @@ the community who cannot read well, and others will not read a page. It is not a
   (Dairy, Nutrition, Airport, Stadium & Arena, Theme Park, Supermarket) are $11 or 1,100 points for members, no survey route (Supermarket free while sponsored); business
   Guides (Restaurant, Creator, Events, Nonprofit) open by finishing their intake, for anyone, members included (replacing "open to any active member"); one survey system
   for every Guide; shared answers fill in on later intakes, newest wins; a Registered badge per intake; 250 per intake, stacking; the general survey becomes the short
-  Explorer survey on the Welcome, checked by a person. Done 2026-11-06: canon, the Events and Restaurant intakes pay 250. Not built: steps 3 to 9 of `build_order`.
+  Explorer survey on the Welcome, checked by a person. Done 2026-11-06: canon, the Events and Restaurant intakes pay 250, and step 3's mechanism
+  (`ve_shared_questions`, `ve_member_shared_answers`, `ve_survey_questions.shared_key`, `carried` in `ve_survey_get`, skip and Change in `public/ve-guide-survey.js`;
+  migration `20261106_shared_intake_answers.sql`) with no question tagged yet: the wording waits on Sean (`docs/proposals/shared-intake-questions.md`). Not built:
+  steps 4 to 9 (handoff `docs/handoff/2026-11-06-ve-events-guide-membership-rule-locked-shared-answers.md`).
   The free organizer account is dropped: a host with no account takes the event survey.
 - **Every page a person can land on has a script for its Guide** and, once Sean approves it, the recording in that Guide's roster-profile voice (Guide voices
   section; never a voice picked without Sean). A new page does not ship without its script. Redirect stubs, ad creatives and render frames are the exceptions.
