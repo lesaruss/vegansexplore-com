@@ -28,7 +28,8 @@
 //                                              the ones that fail a check are left alone and listed
 //   { action: 'tick' }                      sends approved emails whose send_at has passed (cron, every 5 minutes)
 // Emails go through email-send as brand lesaruss: from Sean A. Russell, replies to contact@lesaruss.com, one-click unsubscribe,
-// the postal address, campaign_ref ve-people-<id> so nothing goes twice. Opens come from email_events, clicks from ve_links.
+// the postal address, campaign_ref ve-people-<id> so nothing goes twice. A message with template_key 'team' goes as brand
+// vegans-explore instead (VEGANS EXPLORE, signed by the team, never Sean's name: media and civic pitches, Sean 2026-11-06). Opens come from email_events, clicks from ve_links.
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -36,6 +37,7 @@ const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const db = createClient(SUPABASE_URL, SERVICE_KEY);
 const SITE = 'https://vegansexplore.com';
 const BRAND = 'lesaruss';
+const brandOf = (m: { template_key?: string | null }) => (m.template_key === 'team' ? 'vegans-explore' : BRAND);
 const TZ = 'America/New_York';
 const BUCKETS = ['business', 'community', 'sponsor', 'nonprofit', 'group'];
 const CHANNELS = ['email', 'instagram', 'text', 'call', 'meetup', 'other'];
@@ -309,14 +311,14 @@ async function handle(body: any, who: Who): Promise<Record<string, unknown>> {
     const { data: me } = await db.from('members').select('email').eq('id', who.id).maybeSingle();
     const to = String(me?.email || '').toLowerCase();
     if (!isEmail(to)) return { error: 'no_email_for_you' };
-    const { data: m } = await db.from('ve_people_outreach').select('id,channel,subject,body,name,link_code').eq('id', body.id).maybeSingle();
+    const { data: m } = await db.from('ve_people_outreach').select('id,channel,subject,body,name,link_code,template_key').eq('id', body.id).maybeSingle();
     if (!m || m.channel !== 'email') return { error: 'not_email' };
     if (m.link_code) {
       // A test shows the page itself, so a test click never counts as theirs.
       const { data: l } = await db.from('ve_links').select('destination').eq('code', m.link_code).maybeSingle();
       if (l?.destination) m.body = String(m.body).split(`${SITE}/go/${m.link_code}`).join(l.destination);
     }
-    const res = await emailSend({ brand: BRAND, campaign_ref: `ve-people-test-${m.id}-${Date.now()}`, subject: '[Test] ' + (m.subject || ''),
+    const res = await emailSend({ brand: brandOf(m), campaign_ref: `ve-people-test-${m.id}-${Date.now()}`, subject: '[Test] ' + (m.subject || ''),
       html: toHtml(m.body), text: toText(m.body), test_to: [to], recipients: [{ email: to }] });
     const result = res?.results?.[0]?.result || (res?.ok ? 'sent' : 'failed');
     return { ok: result === 'sent', result, to, error: result === 'sent' ? undefined : (res?.error || result) };
@@ -534,7 +536,7 @@ async function handle(body: any, who: Who): Promise<Record<string, unknown>> {
 }
 
 async function tick() {
-  const { data: due } = await db.from('ve_people_outreach').select('id,to_address,subject,body,name').eq('status', 'approved').eq('channel', 'email').lte('send_at', new Date().toISOString()).order('send_at').limit(20);
+  const { data: due } = await db.from('ve_people_outreach').select('id,to_address,subject,body,name,template_key').eq('status', 'approved').eq('channel', 'email').lte('send_at', new Date().toISOString()).order('send_at').limit(20);
   const out: unknown[] = [];
   for (const m of due || []) {
     // Claim it first, so two ticks never send the same message.
@@ -542,7 +544,7 @@ async function tick() {
     if (!claimed?.length) continue;
     try {
       const first = (m.name || '').trim().split(/\s+/)[0] || undefined;
-      const res = await emailSend({ brand: BRAND, campaign_ref: `ve-people-${m.id}`, list_ref: 've-people-outreach', subject: m.subject,
+      const res = await emailSend({ brand: brandOf(m), campaign_ref: `ve-people-${m.id}`, list_ref: 've-people-outreach', subject: m.subject,
         html: toHtml(m.body), text: toText(m.body), recipients: [{ email: m.to_address, first_name: first, name: m.name }] });
       const result = res?.results?.[0]?.result || (res?.ok ? 'unknown' : 'failed');
       if (result === 'sent' || result === 'already_sent') {
