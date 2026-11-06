@@ -58,6 +58,9 @@ the community who cannot read well, and others will not read a page. It is not a
   The tab once called Work with us is Sponsorship. **Live on `main`** (merge 37695b5, recordings wired 279ac81, checked at 1440 and 390 px).
   **The Resources tab on Event Venues and Community > Events listings opens the Events Guide** (2026-11-05, main 29eb511; `vegan-events-guide` in `GUIDES`
   and `MAP` of `public/ve-guide-tab.js`, a `door` Guide: "Free with a short survey", ownership from `ve-guide-unlock` status), checked live at 1440 and 390 px.
+  **Sean's membership rule, stated 2026-11-05, not locked** (handoff `docs/handoff/2026-11-06-ve-events-guide-resources-tab-and-membership-rule.md`): in by a Guide's
+  survey (250 points) or the $11 (survey then prompted for 250); members buy Guides for $11; the four business Guides' surveys are their applications. Waiting on Sean's
+  "lock it" and one reading. The free organizer account is dropped: a host with no account takes the event survey.
 - **Every page a person can land on has a script for its Guide** and, once Sean approves it, the recording in that Guide's roster-profile voice (Guide voices
   section; never a voice picked without Sean). A new page does not ship without its script. Redirect stubs, ad creatives and render frames are the exceptions.
 - **Logan writes the script, Sean reads and approves it, then it is recorded** (el-media tts, checked word for word with `stt`, `-v1.mp3`; a
