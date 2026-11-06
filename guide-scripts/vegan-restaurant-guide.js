@@ -1144,15 +1144,20 @@
   });
 
   // ---------- Overview ----------
+  // Start here: the shared opening every Guide carries (public/ve-guide-intro.js, Sean 2026-11-06).
+  var INTRO = {
+    guide: 'Liz', name: 'the Vegan Restaurant Guide',
+    audience: 'You run a Vegan restaurant, or you are about to. You feed people, and that is the most direct way anyone meets Vegan food. This Guide is here to help your restaurant get found and keep growing.',
+    problem: 'Most owners are great at the food and stretched thin on everything else: the Google listing, the hours, the photos, the menu online, social media. Customers decide from what they find online before they ever walk in, and small gaps there quietly send them somewhere else. This Guide puts what to look at, and what to fix first, in one place.',
+    change: 'Once you have been through it, you will know how your restaurant looks to someone searching today, what to fix first and how, the challenges other Vegan owners run into, and how your page on Vegans Explore brings members through your door. Instead of guessing, you will have a short list and a place to come back to.',
+    how: [['Start with your free check', 'It shows what people find when they look you up. The short survey after it makes you a member and opens the rest of the Guide.']]
+  };
+  function intro(open) { return window.VEGuideIntro ? VEGuideIntro.html(Object.assign({ open: open }, INTRO)) : ''; }
   function viewOverview() {
     if (!member()) {
       main.innerHTML = head('Vegans Explore Guides for business', 'Welcome to the Vegans Explore Restaurant Guide',
-        'Thank you for what you do. This Guide is built for you, and it does three things.') +
-        '<div class="dg-srows">' + [
-          ['1', 'A crash course in Vegans Explore', 'How the platform works, so you know what is here for your restaurant.'],
-          ['2', 'Learn something new about your business', 'See how your place looks online today, including things you may not have known.'],
-          ['3', 'One step closer to growing with us', 'We launch on January 1, 2027, and the people who join early help shape it.']
-        ].map(function (x) { return '<div class="dg-srow"><span class="dg-th rg-th" aria-hidden="true" style="font-weight:900;font-size:20px;color:#1f5f22">' + x[0] + '</span><div class="dg-srow-b"><h3>' + esc(x[1]) + '</h3><p>' + esc(x[2]) + '</p></div></div>'; }).join('') + '</div>' +
+        'Thank you for what you do. Read Start here first, then run your free check.') +
+        intro(true) +
         '<h3 class="dg-k" style="margin:22px 0 8px">Here is how to start</h3>' +
         '<div class="dg-start" style="margin:0 0 6px"><button type="button" class="dg-btn" data-run-check>Run my free check</button><p>For 100% Vegan restaurants.</p></div>' +
         '<h3 class="dg-k" style="margin:22px 0 8px">Three steps</h3>' +
@@ -1161,9 +1166,8 @@
           ['2', 'Take the short survey', 'It tells us how to serve you, and it makes you a member.'],
           ['3', 'The rest of the Guide opens', 'The top challenges owners face, your page, your dashboard, and what is coming.']
         ].map(function (x) { return '<div class="dg-srow"><span class="dg-th rg-th" aria-hidden="true" style="font-weight:900;font-size:20px;color:#1f5f22">' + x[0] + '</span><div class="dg-srow-b"><h3>' + esc(x[1]) + '</h3><p>' + esc(x[2]) + '</p></div></div>'; }).join('') + '</div>' +
-        '<p class="dg-lede" style="margin:14px 0 0"><b>Free. No card. Stop any time.</b></p>' +
-        '<h3 class="dg-k" style="margin:26px 0 8px">Who we are</h3>' +
-        '<p class="dg-lede" style="margin:0 0 6px">We have covered the Vegan community with SoFlo Vegans since 2016. Vegans Explore is the same work with better tools, built city by city with the people who join early.</p>';
+        '<p class="dg-lede" style="margin:14px 0 0"><b>Free. No card. Stop any time.</b></p>';
+      if (window.VEGuideIntro) VEGuideIntro.wire(main);
       return;
     }
     var tiles = [
@@ -1177,10 +1181,12 @@
     ];
     main.innerHTML = head('Vegans Explore Guides for business', 'Thank you for what you do for the Vegan movement',
       'The whole Guide is yours. Pick a tab, or let Liz walk you through it.') +
+      intro(false) +
       '<div class="dg-tiles">' + tiles.map(function (t) {
         return '<a class="dg-tile' + (t[0] === 'audit' ? ' dg-warm' : '') + '" href="' + href(t[0]) + '"><div class="dg-ic">' + ICON[t[0]] + '</div><div><b>' + esc(t[1]) + '</b><span>' + esc(t[2]) + '</span></div></a>';
       }).join('') + '</div>' +
       '<div class="dg-start"><a class="dg-btn" href="#/next">What\'s next</a></div>';
+    if (window.VEGuideIntro) VEGuideIntro.wire(main);
   }
   // What to expect: what opens after the survey, each marked Live or Coming (never a planned thing as live).
   function viewExpect() {

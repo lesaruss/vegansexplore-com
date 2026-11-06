@@ -3857,6 +3857,11 @@ brands as approved Directory listings with votes, a Cookbook, and Maya as the Gu
 "This is the prototype"). It lists every step that made the Dairy Guide, in order: decide, content, the page, pictures, the
 two scripts, recording, test, launch. Copy the Dairy Guide's files; never start a Guide from a blank page.
 
+- **Every Guide opens with Start here (LOCKED by Sean 2026-11-06, canon `canon-ve-guide-start-here`)**: why they are here, why we do what we
+  do, why this Guide was made, what changes for them, how to use it, and that it is built with them (tell the Guide or send feedback; the
+  team sees it). Shared component `/public/ve-guide-intro.js`; the rule is in `docs/guides/BUILD-A-GUIDE.md`. First on the Restaurant Guide.
+  The other Guides get it one by one; a new Guide never launches without it.
+
 - Signed out: the header holds the $11 Founding Membership box (members get search there). Each locked tab shows the
   real section blurred with a membership note on top (since 2026-10-09; the slideshow previews are gone), see The layout.
 - The Cookbook is the recipe and chef tool (Phase 1 live 2026-10-10): recipes are rows in `recipes` (status `live` or
