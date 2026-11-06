@@ -4960,6 +4960,13 @@ Sean: "No, we're not doing free anything... This is real work... it pays for its
 - **Starter kit included** (decal and menu marks as files); **print upgrade paid** (we redesign, print and deliver, approved before print; price after a
   printer quote). Recipes, sourcing and chef placement are separate services. The distributor pitch (Cheney Brothers, Sysco) is its own campaign.
 - **Gate**: no paid application before A2 (who owns the program and the Stripe account), A4 and B6 (the attorney-reviewed agreement) and A7 (insurance).
+- **The Guide gives the answers** (Sean, 2026-11-06: "we want to give them the answers... before they even decide to pay the 250, they can put those
+  things into action... if all a restaurant does is takes this free guide and upgrades what they do in their kitchen and never takes the 250, I say this is
+  successful"; canon v9 `guide_gives_answers_v9`). The free Pre-Vegan Restaurant Guide spells out exactly how to pass every gate (the protected cooking path,
+  sourcing proof, labels, staff answers, what the Verifier checks), so a kitchen can put it in place without paying. A restaurant that only uses the Guide counts
+  as a success: a traveler who will not go to a Vegan restaurant can trust one dish without asking whether the cheese is dairy or the pho has fish sauce. The $250
+  buys our independent check and the public mark, never the knowledge. Measure Guide adoption on its own (readiness answers moving to ready), not only paid
+  certifications.
 - **Drafts rewritten 2026-11-06** on `claude/blissful-fermi-qmyiwt`: B6 (fees, term, change and deception clauses, tasting night, Schedule G), B7 (contractor,
   plain-words Form A, the Supermarket Guide scanner as a storeroom check, courtesy checks and secret shoppers, the member training path), C2 (a $250 invitation
   pointing to the free Guide), and the test menu (v2: starters and mains, 2 of 8 marked; `docs/certification/b5-art-sheet.png` redrawn). An SVG shown as an
