@@ -25,6 +25,7 @@
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var UNLOCK_URL = SB + '/functions/v1/ve-guide-unlock';
   var SURVEY_URL = SB + '/functions/v1/ve-mission-survey';
+  var COOK_URL = SB + '/functions/v1/ve-cookbook';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
 
   // Liz's lines: text drafts for Sean (no recordings). `say` for visitors, `sayMember` once they are in.
@@ -159,6 +160,30 @@
   function startBtn(label) { return '<div class="dg-start"><button type="button" class="dg-btn" data-survey>' + esc(label || 'Take the readiness check') + '</button><p>Free, private, and you can stop any time.</p></div>'; }
   function surveyGo() { try { sessionStorage.setItem('ve_survey_for', SURVEY_SLUG); } catch (e) {} location.href = '/survey?s=' + SURVEY_SLUG; }
 
+  // ---------- step ticks: "Done in my kitchen" (a second adoption signal; never changes the score) ----------
+  // A tick is a save on the member's account: ve-cookbook, kind 'fix', key '<gate id>-<step n>'.
+  var TICKS = {}, ticksState = '';
+  function cookApi(body) {
+    var tok = token(), h = { 'Content-Type': 'application/json' };
+    if (tok) h.Authorization = 'Bearer ' + tok;
+    body.guide = SLUG;
+    return fetch(COOK_URL, { method: 'POST', headers: h, body: JSON.stringify(body) }).then(function (r) { return r.json(); });
+  }
+  function loadTicks(then) {
+    if (!member() || ticksState === 'loaded' || ticksState === 'failed') { if (then) then(); return; }
+    if (ticksState === 'loading') return;
+    ticksState = 'loading';
+    cookApi({ action: 'saves' }).then(function (d) {
+      if (d && d.saves) { d.saves.forEach(function (x) { if (x.kind === 'fix') TICKS[x.key] = 1; }); ticksState = 'loaded'; } else ticksState = 'failed';
+      if (then) then();
+    }).catch(function () { ticksState = 'failed'; if (then) then(); });
+  }
+  function tickBox(key) {
+    if (!member()) return '';
+    var on = !!TICKS[key];
+    return ' <button type="button" class="pv-tick' + (on ? ' on' : '') + '" data-tick="' + esc(key) + '" aria-pressed="' + on + '">' + (on ? '&#10003; Done in my kitchen' : 'Mark done') + '</button>';
+  }
+
   // ---------- views ----------
   function viewOverview() {
     main.innerHTML = head('The Pre-Vegan Restaurant Guide', 'Certify the plant-based dishes you already serve',
@@ -206,10 +231,11 @@
         '<div class="pv-gate pv-own"><h3>Doing it without us</h3><p>Everything here is yours to use. If you put it in place and never apply, your kitchen is ready for the guest who will not walk into a Vegan restaurant but wants to trust one dish. That counts as a win for us too. If you want an independent check and the public mark that tells diners it was checked, that is what certification is for.</p></div>';
       return;
     }
+    if (member() && !ticksState) loadTicks(function () { if (curTab === 'gates' && location.hash.indexOf(sub) > -1) viewGates(sub); });
     var i = GATES.indexOf(g), prev = GATES[i - 1], nxt = GATES[i + 1];
     main.innerHTML = crumb([['The gates', '#/gates'], [g.n + ' ' + g.t]]) + head(g.n, esc(g.t), null) +
       '<div class="pv-gate"><h3>The rule</h3><p>' + esc(g.rule) + '</p></div>' +
-      '<div class="pv-gate"><h3>What to do</h3><ol class="pv-next pv-todo">' + g.todo.map(function (r) { return '<li>' + esc(r) + '</li>'; }).join('') + '</ol>' +
+      '<div class="pv-gate"><h3>What to do</h3><ol class="pv-next pv-todo">' + g.todo.map(function (r, n) { return '<li>' + esc(r) + tickBox(g.id + '-' + (n + 1)) + '</li>'; }).join('') + '</ol>' +
         (g.qa ? '<dl class="pv-qa">' + g.qa.map(function (q) { return '<dt>' + esc(q[0]) + '</dt><dd>' + esc(q[1]) + '</dd>'; }).join('') + '</dl>' : '') + '</div>' +
       (g.table ? '<div class="pv-pf"><div class="pv-pf-col ok"><h3>Passes</h3><ul>' + g.table.pass.map(function (r) { return '<li>' + esc(r) + '</li>'; }).join('') + '</ul></div>' +
         '<div class="pv-pf-col no"><h3>Fails</h3><ul>' + g.table.fail.map(function (r) { return '<li>' + esc(r) + '</li>'; }).join('') + '</ul></div></div>' : '') +
@@ -294,6 +320,18 @@
   document.addEventListener('click', function (e) {
     var a = auth();
     if (e.target.closest('[data-survey]')) { e.preventDefault(); surveyGo(); return; }
+    var tk = e.target.closest('[data-tick]');
+    if (tk) {
+      e.preventDefault();
+      var key = tk.getAttribute('data-tick'), on = !TICKS[key];
+      var paint = function () { tk.classList.toggle('on', !!TICKS[key]); tk.setAttribute('aria-pressed', String(!!TICKS[key])); tk.innerHTML = TICKS[key] ? '&#10003; Done in my kitchen' : 'Mark done'; };
+      if (on) TICKS[key] = 1; else delete TICKS[key];
+      paint();
+      cookApi({ action: 'save', kind: 'fix', key: key, on: on }).then(function (r) { if (!r || !r.ok) throw r; }).catch(function () {
+        if (on) delete TICKS[key]; else TICKS[key] = 1; paint();
+      });
+      return;
+    }
     if (e.target.closest('[data-signin]')) { e.preventDefault(); if (a) a.showAuthModal('Sign in and the Pre-Vegan Guide opens.', function () { location.reload(); }, 'login'); }
   });
 
