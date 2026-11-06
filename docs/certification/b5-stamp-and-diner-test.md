@@ -7,10 +7,10 @@ Draft for Sean, 2026-11-06 (Logan). Built from Standard V1.2 (playbook record 04
 
 | File | What it is | Where it goes |
 |---|---|---|
-| `stamp.svg` | The seal: PLANT-BASED DISH on top, PRE-VEGAN CERTIFIED below, the leaf, VEGANS EXPLORE | Menu key, decal, the status page. 1 inch or larger |
+| `stamp.svg` | The seal: PLANT-BASED DISH on top, PRE-VEGAN CERTIFIED below, our suitcase mark (from `public/ve-logo-mark.svg`, never redrawn), VEGANS EXPLORE | Menu key, decal, the status page. 1 inch or larger |
 | `stamp-mono.svg` | One color (black) | Menus printed in one color |
 | `stamp-reversed.svg` | White on forest green | Dark menus |
-| `stamp-small.svg` | Leaf in a ring, no words | Beside a dish on a menu or delivery app, under 1 inch, always with the words beside it |
+| `stamp-small.svg` | The suitcase mark in a ring, no words | Beside a dish on a menu or delivery app, under 1 inch, always with the words beside it |
 | `menu-line.svg` | Small mark + "Plant-Based Dish, Pre-Vegan Certified" | Under each certified dish |
 | `menu-key.svg` | The key: N of M, what else they serve, not an allergen claim, the live link | Once on every menu page that carries the mark |
 | `decal.svg` | Window decal, 8 x 10 in: "Selected dishes certified here", N of M, what else they serve, the QR, the link | Window or counter |
