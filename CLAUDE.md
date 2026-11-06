@@ -29,6 +29,23 @@ we have systems, so we don't waste time and usage." Canon `canon-template-gate` 
 First case: `/guides/taste` had been written from a blank file twice; on 2026-11-02 it was rebuilt on the Welcome Guide (see Earn your
 Passport, part 3).
 
+## Every Guide opens the same way, and businesses earn the word Vegan (Sean, 2026-11-06)
+
+Canon `canon-ve-guide-overview-standard`: "we need to address the elephant in the room, let them know they're in the right place, give them an
+idea of what they can expect, and then clearly lay out the transformation... let them know how to use this guide... educate them... inspire them...
+remove any obstacle... feel free to ask our guide... and if I can't answer your questions, we'll escalate it to one of our team members." Every
+Guide's Overview, before any doing, in order: the elephant in the room, you're in the right place (who it is for), why it exists, what to expect,
+the transformation and what finishing means (a short checklist), how to use the Guide, inspire and remove obstacles, then the Guide in first person:
+ask me, and our team if I can't answer. Promise only what exists (Talk to <Guide>). First: the Pre-Vegan Business Guide
+(`docs/proposals/pre-vegan-business-guide-overview.md`, waiting on Sean), then each Guide with Sean reading its script.
+
+Canon `canon-ve-pre-vegan-meaning`: Pre-Vegans is a dignified pathway for people who are not Vegan yet, met with education and compassion; a title
+for now ("I'm Pre-Vegan, working toward it"). We hold the word Vegan sacred: **a business that is not Vegan offers plant-based (Pre-Vegan) options,
+never "Vegan options", in our own copy**; it earns the word Vegan. We use the right words without lecturing about the rule. A **tasting night** is
+invited, valued members tasting a business's dishes and sending honest, constructive feedback, anonymous to the business through our app (our team
+knows who said what); it ties into certification and stays Coming until one has run. Not yet changed without Sean: the Directory's "Vegan options"
+label, the Restaurant Guide and the certification copy.
+
 ## A Guide speaks on every page (LOCKED standard, Sean, 2026-11-04, corrected 2026-11-05, playbook `ve-audio-accessibility`)
 
 "I just want Liz to speak on each page. So the same voice that we have for Liz... create a script for the first page and any page that doesn't
