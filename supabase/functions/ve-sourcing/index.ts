@@ -2,6 +2,8 @@
 // The shared vegan sourcing directory (ve_suppliers), served only inside the Guides that carry a Sourcing tab.
 //   POST { action: 'list', guide?, domain?, kind?, label?, q?, limit?, offset? }   suppliers plus counts by domain and label
 //   POST { action: 'get', guide?, slug }                                            one supplier
+//   POST { action: 'make', guide? }                                                  buy or make: each item, how many sell it, its recipe
+//   POST { action: 'make_get', guide?, key }                                         one item: the suppliers who sell it and the recipe
 // The member token is checked here, then the member must own the Guide (a door Guide opens for any active member, ve_owns_guide)
 // or be a super admin. ve_suppliers has RLS on and no policies, so nothing else reads it. Never returns source or internal notes.
 import { createClient } from 'jsr:@supabase/supabase-js@2';
@@ -43,6 +45,27 @@ async function verifyToken(token: string): Promise<string | null> {
 const bearer = (req: Request) => (req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '');
 
 const PUBLIC_FIELDS = 'slug,name,website,domain,kinds,label,bio';
+const RANK: Record<string, number> = { peta_approved: 0, fully_vegan: 1, offers_options: 2, plant_material: 3 };
+
+// Buy or make (Sean, 2026-11-05: "pair existing recipes"). Each item pairs one Cookbook recipe (home scale) with the supplier kinds that
+// sell it ready-made (ready-made food and drink, ingredients). A new item is one row; only recipes that are live are shown.
+const MAKE: { key: string; t: string; recipe: string; re: RegExp }[] = [
+  { key: 'cheese-sauce', t: 'Cheese and cheese sauce', recipe: 'maya-homemade-cheese-sauce', re: /chees(e|y)(?!cake)|cheese alternatives/i },
+  { key: 'cream-cheese', t: 'Cream cheese', recipe: 'maya-homemade-cream-cheese', re: /cream cheese|cheese spread/i },
+  { key: 'parmesan', t: 'Parmesan', recipe: 'maya-homemade-parmesan', re: /parmesan/i },
+  { key: 'ricotta', t: 'Ricotta', recipe: 'maya-homemade-ricotta', re: /ricotta/i },
+  { key: 'sour-cream', t: 'Sour cream', recipe: 'maya-homemade-sour-cream', re: /sour cream/i },
+  { key: 'yogurt', t: 'Yogurt', recipe: 'maya-homemade-yogurt', re: /yog(h)?urt(?! powder)/i },
+  { key: 'heavy-cream', t: 'Heavy cream', recipe: 'maya-homemade-heavy-cream', re: /plant-based creams?$|heavy cream|cooking cream/i },
+  { key: 'whipped-cream', t: 'Whipped cream', recipe: 'maya-homemade-whipped-cream', re: /whip/i },
+  { key: 'butter', t: 'Butter and ghee', recipe: 'maya-homemade-ghee', re: /(dairy-free|plant|plant-based|vegan|foodservice) butter|butter (sticks|spreads)|ghee/i },
+  { key: 'milk', t: 'Plant milk', recipe: 'maya-nut-milk', re: /plant-based milks|soymilk|soy milk|cashew milk|almond milk|oat milk$|nut milk$/i },
+  { key: 'buttermilk', t: 'Buttermilk', recipe: 'maya-homemade-buttermilk', re: /buttermilk/i },
+  { key: 'evaporated-milk', t: 'Evaporated milk', recipe: 'maya-homemade-evaporated-milk', re: /evaporated/i },
+  { key: 'condensed-milk', t: 'Sweetened condensed milk', recipe: 'maya-homemade-sweetened-condensed-milk', re: /condensed/i },
+  { key: 'ice-cream', t: 'Ice cream', recipe: 'maya-banana-ice-cream', re: /ice cream(?! co-packing)|sorbet|frozen dessert|gelato|soft serve/i },
+];
+const MAKE_DOMAINS = ['food_drink', 'ingredients'];
 
 Deno.serve(async (req: Request) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
@@ -81,8 +104,7 @@ Deno.serve(async (req: Request) => {
         (!kind || (r.kinds ?? []).some((k: string) => k.toLowerCase() === kind)) &&
         (!q || String(r.name).toLowerCase().includes(q) || (r.kinds ?? []).some((k: string) => k.toLowerCase().includes(q))));
       // PETA-Approved Vegan first, then A to Z.
-      const rank: Record<string, number> = { peta_approved: 0, fully_vegan: 1, offers_options: 2, plant_material: 3 };
-      list = list.sort((a: any, b: any) => (rank[a.label] - rank[b.label]) || String(a.name).localeCompare(String(b.name)));
+      list = list.sort((a: any, b: any) => (RANK[a.label] - RANK[b.label]) || String(a.name).localeCompare(String(b.name)));
       const limit = Math.min(Math.max(parseInt(body.limit) || 48, 1), 100);
       const offset = Math.max(parseInt(body.offset) || 0, 0);
       const kinds = [...new Set(rows.filter((r: any) => !domain || r.domain === domain).flatMap((r: any) => r.kinds ?? []))].sort();
@@ -94,6 +116,23 @@ Deno.serve(async (req: Request) => {
       const { data } = await db.from('ve_suppliers').select(PUBLIC_FIELDS).eq('slug', slug).eq('status', 'active').maybeSingle();
       if (!data) return json({ error: 'not_found' }, 404);
       return json({ ok: true, supplier: data });
+    }
+
+    if (action === 'make' || action === 'make_get') {
+      const one = action === 'make_get' ? MAKE.find((m) => m.key === String(body.key ?? '')) : null;
+      if (action === 'make_get' && !one) return json({ error: 'not_found' }, 404);
+      const items = one ? [one] : MAKE;
+      const [{ data: sup, error: e1 }, { data: rec, error: e2 }] = await Promise.all([
+        db.from('ve_suppliers').select(PUBLIC_FIELDS).eq('status', 'active').in('domain', MAKE_DOMAINS),
+        db.from('recipes').select(one ? 'slug,title,time_text,servings,photo_url,photo_illustrative,ingredients,instructions,tip' : 'slug,title,time_text,photo_url')
+          .eq('status', 'live').in('slug', items.map((m) => m.recipe)),
+      ]);
+      if (e1 || e2) return json({ error: 'db' }, 500);
+      const sells = (m: typeof MAKE[number]) => (sup ?? []).filter((r: any) => (r.kinds ?? []).some((k: string) => m.re.test(k)))
+        .sort((a: any, b: any) => (RANK[a.label] - RANK[b.label]) || String(a.name).localeCompare(String(b.name)));
+      const recOf = (m: typeof MAKE[number]) => (rec ?? []).find((r: any) => r.slug === m.recipe) ?? null;
+      if (one) return json({ ok: true, item: { key: one.key, t: one.t }, suppliers: sells(one), recipe: recOf(one) });
+      return json({ ok: true, items: MAKE.map((m) => ({ key: m.key, t: m.t, buy: sells(m).length, recipe: recOf(m) })).filter((i) => i.recipe) });
     }
 
     return json({ error: 'unknown_action' }, 400);

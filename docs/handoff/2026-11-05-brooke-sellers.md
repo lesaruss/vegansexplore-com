@@ -33,3 +33,39 @@ Playbook slug brooke-sellers, brand meatless-muscle, owner Logan, Waiting on Sea
 The project: Brooke Sellers is our first and only founding partner at $200 a month. Not a hosting sale (never write "hosting" where she can see it). We give her the Creator Guide tailored to her, built in a preview and held back, and what we learn from her becomes the coaching site template. The billing link (lesaruss-hq main ed0d443, /pay/<token>, table client_billing_plans) is live and proven in Stripe test mode. Do not send her anything. Do not touch the Blueprint or the theme park guide. The Stripe connector is not connected in sessions, so you cannot see Stripe; you can only use the billing link code and the database.
 Open with where it stands and the one next action. Sean's open items are in the playbook (cancel her old Vegans Explore Stripe subscription before Nov 30, her email, the billing line name, the founding rate). Default next build: the preview of her tailored Creator Guide (copy guides/vegan-dairy-guide.html and the Creator Guide; docs/guides/BUILD-A-GUIDE.md; the template gate in CLAUDE.md applies). Bring Sean a recommendation for anything bigger than that.
 ```
+
+---
+
+# brooke-sellers: second session, 2026-11-05 (her BrandDesk, live billing row, email ready, Creator Guide preview)
+
+## brooke-sellers: what Sean said
+- Her old Vegans Explore subscription already expired October 31. Nothing to cancel.
+- Use the address we have always written to; do not guess a new one. If she does not open or click, regroup.
+- Send it through the People platform (Depot > Outreach), to test how we reach clients.
+- Set up a BrandDesk for her as a client from what we have; Vegans Explore is the prototype, its improvements get ported to Meatless Muscle later.
+- "Approved, go ahead and build the Creator Guide preview." (Read as approval of the build, not of the email.)
+
+## brooke-sellers: done and checked
+- **Her address**: bsellersotss@gmail.com (HQ People: 13 emails through contact@ and srussell@, latest 2026-09-14).
+- **Her BrandDesk**: `ve_brand_cartridges` row `meatless-muscle` (frame brand, building; migration `20261105_meatless_muscle_brand_kit.sql`, applied).
+  Logo, colors, type locked from her Brand Guidelines Edition 01 (approved by Brooke and her marketing lead 2026-09-23); logo and portrait copied to
+  `vegan-media/media/logos/meatless-muscle-*.jpg`; voice and story drafted from her own site words, in progress. Meatless Muscle was already a HQ
+  CLIENT_BRANDS entry, so the wall card now opens her desk. Not seen in a browser signed in. Not added: People, Podcast, Social tabs (Vegans Explore
+  only; Social needs a Metricool brand).
+- **Live billing row** `fb28f444-cf66-45f8-bf80-00fd1744990e` (mode live, "Vegans Explore Founding Partner", $200 a month, first charge 2026-11-30 noon
+  Eastern, her email). /pay page checked live. Line name and the $200 founding rate are Logan's defaults until Sean says otherwise.
+- **Tracked links**: `brooke-card` (her pay page) and `brooke-books`, beside the existing `brooke-profile` and `brooke-creators`.
+- **The email** (`ve_people_outreach` `4fbbd9f4-9c2b-4b3d-b597-d8de794999cd`): to her, every link a `/go/` link, no "hosting" about her plan, date
+  filled, still **draft** for 2026-11-06 at 10 AM Eastern. A test copy went through `ve-people-outreach` `test` to contact@lesaruss.com.
+- **Her tailored Creator Guide preview** (branch `claude/jolly-tesla-q16c04`, commit cc62d52, **not on main**): `/guides/creator-guide?p=<token>`
+  adds a For Brooke tab (her five pages and their numbers since each went up, her Creator Dashboard via the sample walkthrough, After January 1 as Coming,
+  Write to us); the $11 box and Get access tab hidden for her; the token leaves the address on load. Data: `ve_guide_previews` and
+  `ve_guide_preview(token, guide)` (migration `20261105_guide_previews.sql`, applied; her token is in the table). Template gate: checked at 1440 and
+  390 px beside the Creator Guide, same family, no errors. Copy and Kai's line are text drafts.
+
+## brooke-sellers: open
+- Sean: approve the email in Depot > Outreach (or tell Logan to).
+- Sean: how she opens the rest of the Creator Guide (tips and Pulse stay locked; $11 or 1,100 points; comps are off).
+- Sean: review For Brooke, then "merge" and Logan merges the branch to main and confirms it live with her token.
+- Sean: line name and the $200 founding rate (defaults stand until he says).
+- Logan: after the email goes out, watch opens and clicks (People > Campaigns, `brooke-resend`); the 20-minute conversation questions.
