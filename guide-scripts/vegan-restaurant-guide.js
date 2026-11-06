@@ -213,6 +213,8 @@
   function credits(n) { return n + ' Guide credit' + (n === 1 ? '' : 's'); }
   function mode() {
     if (access === 'guest' || access === 'checking') return 'join';
+    // A business Guide opens only with its intake, members included (canon-ve-door-guides v6 membership_rule_v6, Sean 2026-11-06).
+    if (ST.active) return 'buy';
     if (!priced()) return 'activate';
     if (onPoints()) return ST.balance >= ST.cost ? 'points' : 'buy';
     if (ST.credits >= 1) return 'unlock';
@@ -225,6 +227,7 @@
   }
   function offerLine() {
     var m = mode();
+    if (ST.active && m === 'buy') return 'You are a member, so this one is free. Answer a few questions about your restaurant and it opens, with up to 250 more points.';
     if (m === 'join' || m === 'activate' || m === 'buy') return 'Take the free restaurant survey. When you finish, you are a member and the whole Guide opens.';
     if (onPoints()) {
       if (m === 'points') return 'Unlock it with ' + pts(ST.cost) + ' points: you have ' + pts(ST.balance) + '. Or get it for $11.';

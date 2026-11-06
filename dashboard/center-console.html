@@ -954,6 +954,8 @@
       <!-- Your business first (Sean, 2026-11-01, playbook ve-listing-check: "the dashboard on that profile becomes their dashboard"):
            an owner opening /dashboard sees each listing they own on top, with its listing check score and the way into its business
            dashboard. Filled by renderBusinessFirst() from ve-dashboard home and ve-claims owner_dashboard (only: 'health'). -->
+      <div id="dash-after-host" style="display:none;margin:0 0 18px"></div>
+      <div id="dash-badges-host" style="display:none;margin:0 0 18px"></div>
       <div id="dash-biz" style="display:none;"></div>
 
       <!-- Dashboard preview hub (Sean, 2026-09-22): a preview of the member's
@@ -3714,7 +3716,7 @@
       var owned = (d.listings || []).map(function (l) { return '<li><a href="/directory/' + encodeURIComponent(l.slug) + '" data-mc-listing="' + e(l.slug) + '">' + e(l.name) + '</a><span>' + (l.owner ? 'Owner' : 'Their profile') + '</span></li>'; }).join('');
       box.innerHTML = '<button type="button" class="dash-mc-x" aria-label="Close">&times;</button>' +
         '<div class="dash-mc-top"><div class="dash-mc-av"' + (m.color && !m.avatar_url ? ' style="background:' + e(m.color) + '"' : '') + '>' + av + '</div>' +
-        '<div style="min-width:0"><div class="dash-mc-name">' + e(name) + '</div>' + (m.email ? '<div class="dash-mc-email">' + e(m.email) + '</div>' : '') + '<div class="dash-mc-tags">' + tags + '</div></div></div>' +
+        '<div style="min-width:0"><div class="dash-mc-name">' + e(name) + '</div>' + (m.email ? '<div class="dash-mc-email">' + e(m.email) + '</div>' : '') + '<div class="dash-mc-tags">' + tags + '</div>' + veBadgesHtml(d.badges) + '</div></div>' +
         // A super admin earns no points, so level and points read infinity (Sean, 2026-10-30: "I don't want to make the illusion
         // that I'm earning points"). Votes received shows when they have pages: listings they own or a People profile naming them.
         '<div class="dash-mc-stats">' + (m.is_superadmin ? stat(INF, 'Level') + stat(INF, 'Points to spend') + stat(INF, 'Lifetime points')
@@ -4276,6 +4278,36 @@
     if (member.membership_status === 'active') return member.founding_member ? 'Thank you for being a Founding Member.' : 'Thank you for being a member.';
     return DASH_FOUNDING_OPEN ? 'Founding Membership closes at midnight Eastern on January 1, 2027. Join before then and Founding Member stays on your profile for good.' : 'Get your Passport: $11, one time.';
   }
+  // Registered badges, one per finished business intake, the member's role in small text under it (canon-ve-door-guides v6, Sean 2026-11-06).
+  function veBadgesHtml(list) {
+    if (!list || !list.length) return '';
+    if (!document.getElementById('ve-badge-css')) {
+      var st = document.createElement('style'); st.id = 've-badge-css';
+      st.textContent = '.ve-badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.ve-badge{display:inline-flex;flex-direction:column;gap:1px;padding:6px 10px;border-radius:6px;background:var(--ve-green-soft,#e8f5e9);border:1px solid rgba(45,92,39,.22);color:#1f3f1b;line-height:1.25;max-width:100%}.ve-badge b{font-size:12px;font-weight:800;display:flex;align-items:center;gap:5px}.ve-badge i{font-style:normal;font-size:11px;color:rgba(0,0,0,.62)}';
+      document.head.appendChild(st);
+    }
+    var esc = function (t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+    var ck = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="M5 12l5 5L20 7"/></svg>';
+    return '<div class="ve-badges">' + list.map(function (b) { return '<span class="ve-badge"><b>' + ck + esc(b.badge) + '</b>' + (b.role ? '<i>' + esc(b.role) + '</i>' : '') + '</span>'; }).join('') + '</div>';
+  }
+  function dashApplyBadges(list) {
+    var host = document.getElementById('dash-badges-host'); if (!host) return;
+    var h = veBadgesHtml(list);
+    host.innerHTML = h ? '<p style="margin:0;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-text-50,rgba(0,0,0,.6))">Registered</p>' + h : '';
+    host.style.display = h ? '' : 'none';
+  }
+  // After the $11, a prompt to take a survey (not required; membership_rule_v6, wording approved by Sean 2026-11-06). Not now hides it on this browser.
+  function dashSurveyPrompt(show) {
+    var host = document.getElementById('dash-after-host'); if (!host) return;
+    var off = false; try { off = localStorage.getItem('ve_after_survey_off') === '1'; } catch (e) {}
+    if (!show || off) { host.style.display = 'none'; host.innerHTML = ''; return; }
+    host.innerHTML = '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;padding:16px 18px;border:1px solid var(--ve-border,rgba(0,0,0,.12));border-radius:10px;background:var(--ve-green-soft,#e8f5e9)">' +
+      '<p style="margin:0;flex:1 1 320px;font-weight:600">You\'re in. Want 250 more points? Take the Explorer survey, or the survey for your business, events or work.</p>' +
+      '<a class="dash-btn" href="/survey?s=explorer" style="display:inline-block;background:#1f5f22;color:#fff;font-weight:800;font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:11px 18px;border-radius:6px;text-decoration:none">Take the Explorer survey</a>' +
+      '<button type="button" id="dash-after-off" style="background:none;border:0;font-weight:700;cursor:pointer;color:inherit;text-decoration:underline">Not now</button></div>';
+    host.style.display = '';
+    document.getElementById('dash-after-off').onclick = function () { try { localStorage.setItem('ve_after_survey_off', '1'); } catch (e) {} host.style.display = 'none'; };
+  }
   function dashApplyFounding(member) {
     var eb = document.getElementById('dash-eyebrow');
     if (eb && !member.is_superadmin && member.ve_role !== 'community_manager' && member.ve_role !== 'ambassador') eb.textContent = member.membership_status === 'active' && member.founding_member ? 'Founding Member' : 'Member';
@@ -4290,6 +4322,8 @@
       Array.prototype.forEach.call(list.querySelectorAll('.dv-tile'), function (t) { t.remove(); });
       if (!d || !d.ok) return;
       if (d.member_id === member.id && typeof d.founding_member === 'boolean') { member.founding_member = d.founding_member; dashApplyFounding(member); }
+      if (d.member_id === member.id) dashApplyBadges(d.badges);
+      if (d.member_id === member.id) dashSurveyPrompt(!!d.survey_prompt);
       DASH_VERSION = d.version;
       var wiz = d.cards.filter(function (c) { return c.kind === 'wizard'; }), news = d.cards.filter(function (c) { return c.kind !== 'wizard'; });
       var TAG = { offer: 'Offer' }, out = '';
