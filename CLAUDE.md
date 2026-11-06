@@ -3184,8 +3184,8 @@ menu** (`ve_menu_items` and the Menu tab are untouched).
   with no photo refused, a fourth featured refused until slot 4 was bought (50 points once, slot 5 first refused, a second slot 4 refused), the order
   changed by the owner and not by a vote, one vote counted once and taken back, the owner's own vote, an unpaid account's and a signed-out one refused,
   a stranger refused reading and saving; then every row and file removed, the 50 points given back and Love Life Cafe unclaimed again. Checked in a
-  browser at 1440 and 390 px on the sample business beside its About and its Menu view. Not yet: a real owner using it, the slot reminder email and
-  chapter rankings (later items J and K).
+  browser at 1440 and 390 px on the sample business beside its About and its Menu view. **Merged to `main` 2026-11-06** (Sean: "Merge to main"); the
+  playbook is **Done**. Parked by Sean: the slot reminder email (J) and chapter rankings (K). Not yet: a real owner using it.
 
 ## The Nutrition Guide (Sean, 2026-10-31: "build the Nutrition Guide")
 
