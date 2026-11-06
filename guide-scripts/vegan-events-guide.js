@@ -121,7 +121,7 @@
     { k: 'work', label: 'Sponsorship', say: 'We can sponsor your event, in marketing, never cash. You give us a little space at your event, and we put our community and our channels behind it. Every application starts with the free event survey, and we review them against each other, so it\'s never automatic.',
       sayMember: 'Here\'s what a sponsorship from us looks like. If your event qualifies, apply right here. Every application is reviewed against the others, so apply early.' },
     { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you saved is here: sections, venues, vendors and episodes.' },
-    { k: 'join', label: 'Get access', guest: 1, say: 'There are two ways through, and both make you a Vegans Explore member. Take the free event survey, with points for every answer, or get the eleven dollar Passport. What to do when it rains stays open to everyone either way.' }
+    { k: 'join', label: 'Get access', guest: 1, say: 'This Guide opens when you take the free event survey. It takes about ten minutes, with points for every answer, and if you\'re not a member yet, finishing it makes you one. What to do when it rains stays open to everyone.' }
   ];
   var S = 'stroke="#1f5f22" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
   function ic(path, size) { return '<svg width="' + (size || 26) + '" height="' + (size || 26) + '" viewBox="0 0 24 24" fill="none" ' + S + ' aria-hidden="true">' + path + '</svg>'; }
@@ -940,7 +940,7 @@
       vendors: 'Vegan vendors near you, and what to agree with them.', gear: 'Everything to pack, one tap to shop.', word: 'When to post, where, and what to say.',
       dayof: 'The run of show, and what to do when it rains.', after: 'Thank yous, the recap and the numbers to keep.', elephants: 'The questions hosts rarely ask out loud.',
       hosts: 'Hosts who have done it, and your own story.', claim: 'Your event, your group or venue, and your profile.', work: 'A sponsorship from us, paid in marketing.',
-      join: 'Two ways in: the free event survey, or the $11 Passport.', mylist: 'Everything you saved.' }[k] || '';
+      join: 'Free with the event survey.', mylist: 'Everything you saved.' }[k] || '';
     var label = k === 'work' ? 'Sponsorship' : t.label;
     return '<a class="dg-tile" href="' + href(k) + '"><div class="dg-ic">' + ic(ICON[k] || ICON.work) + '</div><div><b>' + esc(label) + '</b><span>' + esc(blurb) + '</span>' +
       (!member() && t.lock ? '<span class="dg-mlock">' + LOCK_SVG + ' In the full Guide</span>' : !member() && open && k !== 'join' ? '<span class="dg-mlock" style="color:#1f5f22 !important">Open to everyone</span>' : '') + '</div></a>';
@@ -960,7 +960,7 @@
           (!member() && anyOpen ? '<span class="dg-mlock" style="color:#1f5f22 !important">Some open to everyone</span>' : '') + '</div></a>';
       }).join('') + '</div>' +
       '<div class="dg-start"><a class="dg-btn" href="' + (member() ? '#/plan' : '#/dayof/rain') + '">' + (member() ? 'Start your plan' : 'Read: what to do when it rains') + '</a><a class="dg-btn dg-ghost" href="#/work">Work with us</a>' +
-      (member() ? '<p>The whole Guide is yours. Pick a group, or follow River with Next.</p>' : '<p>The full Guide is free with the event survey, or $11. <a href="#/join" style="color:var(--g);font-weight:800">How to get access</a></p>') + '</div>';
+      (member() ? '<p>The whole Guide is yours. Pick a group, or follow River with Next.</p>' : '<p>The full Guide is free with the event survey. <a href="#/join" style="color:var(--g);font-weight:800">How to get access</a></p>') + '</div>';
   }
 
   // ---------- search (members) ----------
@@ -1021,7 +1021,7 @@
   function riverAudio(k) {
     if (/^g:/.test(k)) return VOICE_BASE + 'g-' + k.slice(2) + '-v1.mp3';
     if (k === 'search') k = 'overview';
-    if (k === 'join') return VOICE_BASE + 'join-v1.mp3';
+    if (k === 'join') return VOICE_BASE + 'join-v2.mp3'; // v2 (Sean 2026-11-06): survey only, no $11
     if (k === 'mylist') return VOICE_BASE + 'mylist-member-v1.mp3';
     if (k === 'gear' || !member()) return VOICE_BASE + k + '-v1.mp3';
     return VOICE_BASE + k + '-member-v1.mp3';

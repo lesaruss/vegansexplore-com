@@ -119,7 +119,7 @@
       chips: [{ text: 'Walked through by Theo' }, { text: 'B12 free' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
     { slug: 'creator-guide', shelf: 'work', label: 'Creators', tag: 'New', title: 'The Creator Guide', banner: '/public/guides/creator-guide.jpg?v=3', interests: ['creators', 'business'], href: '/guides/creator-guide',
       desc: 'For Vegan creators going from hobby to professional: ten moves, each with a real creator doing it and three action items, the creators and channels in our Directory, our creator conversations, and your next step as an Ambassador, with Kai walking you through it.',
-      chips: [{ text: 'Walked through by Kai' }, { text: 'Tip 1 free' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
+      chips: [{ text: 'Walked through by Kai' }, { text: 'Free with the survey' }], cta: 'Open the Guide' },
     { slug: 'vegan-meat-alternatives', shelf: 'soon', see: 'members', soon: true, banner: '/public/guides/vegan-meat-alternatives.jpg?v=2', guide: 'Pascal', icon: 'burger', interests: ['food', 'starting'], label: 'Food', title: 'The Vegan Meat Alternatives Guide',
       desc: 'Burgers, chicken, sausage, deli slices and more made from plants: the brands to buy, how to cook them and where to find them.' },
     { slug: 'entrepreneur', shelf: 'soon', see: 'members', soon: true, banner: '/public/guides/entrepreneur.jpg', guide: 'Liz', icon: 'briefcase', interests: ['business'], label: 'Entrepreneur Path', title: 'Entrepreneur Guide',

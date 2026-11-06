@@ -82,6 +82,8 @@
     { k: 'next', label: 'What\'s next', mine: 1, say: 'You are in. Thank you. Here is what you can do next. Claim your page, open your dashboard, and follow us so we can follow you back.',
       sayMember: 'You are in. Thank you. Here is what you can do next. Claim your page, open your dashboard, and follow us so we can follow you back.' },
     { k: 'join', label: 'Get in', guest: 1, say: 'There is one way in, and it is free. Take the short survey. When you finish, you are a member.',
+      // A member who has not taken this Guide's survey yet (Sean approved 2026-11-06). Text until it is recorded.
+      sayActive: 'You\'re already a member, thank you. This Guide opens with its own short survey about your restaurant. Finish it and every tab is yours.',
       sayCredit: 'You have a Guide credit. Use it here and the whole Guide is yours to keep.',
       // On points (Sean locked 2026-10-25). Not recorded yet, so this tab shows her picture and the bubble carries the words.
       sayPoints: 'There is one way in, and it is free. Take the short survey. When you finish, you are a member.' }
@@ -1108,6 +1110,15 @@
     if (member()) {
       main.innerHTML = head('Your Guide', 'The whole Guide is yours', (ST.via === 'purchase' ? 'You unlocked it, and it is yours to keep.' : 'It is yours to keep.') + ' Thank you for being here.') + '<a class="dg-btn" href="#/">Back to the overview</a>'; return;
     }
+    if (ST.active) {
+      // Already a member, not yet through this Guide's survey (Sean approved 2026-11-06): no membership pitch, no Founding line.
+      var opens = ['Your audit and your top challenges, in order', 'Claim your page and your dashboard', 'Try the demo', 'Sourcing and Buy or make', 'Pulse', 'Promotions', 'My list'];
+      main.innerHTML = head('Get in', 'You\'re a member. One short survey opens this Guide.',
+        'This Guide opens with its own survey, about your restaurant. It takes a few minutes and pays points for every answer, and what you tell us is how we know what your business needs. When you finish, every tab is yours to keep.') +
+        '<div class="dg-access"><div class="dg-pricebox"><div class="dg-big">Free<small>with the restaurant survey</small></div><button type="button" class="dg-btn" data-survey>Take the restaurant survey</button><p class="dg-pp">Your answers are saved as you go.</p></div>' +
+        '<div><h3 class="dg-k" style="margin:0 0 8px">What opens when you finish</h3><ul>' + opens.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div></div>';
+      return;
+    }
     var m = mode();
     var doors = '<div class="dg-access"><div class="dg-pricebox"><div class="dg-big">Free<small>the short survey</small></div><p>It tells us how to serve you, and your membership opens when you finish.</p><button type="button" class="dg-btn" data-survey>Take the survey</button><p class="dg-pp">No card needed.</p>' +
       (m === 'join' ? '<p class="dg-pp">Already a member? <a href="#" data-signin>Sign in</a>.</p>' : '') + '</div>' +
@@ -1327,10 +1338,11 @@
   var vid = document.createElement('video');
   vid.preload = 'metadata'; vid.playsInline = true; vid.setAttribute('playsinline', '');
   vid.setAttribute('aria-label', 'Liz, your Guide');
-  function lizAudio(k) { var f = (member() ? AUDIO_M : AUDIO_V)[k]; return f ? CLIP_BASE + 'door-' + f + '.mp3' : null; }
+  function joinActive() { return !member() && !!(ST && ST.active); }
+  function lizAudio(k) { if (k === 'join' && joinActive()) return null; var f = (member() ? AUDIO_M : AUDIO_V)[k]; return f ? CLIP_BASE + 'door-' + f + '.mp3' : null; }
   var aud = new Audio(); aud.preload = 'none';
   aud.addEventListener('ended', function () { TOUR.playing = false; drawLiz(); });
-  function clip(k) { if (member() && CLIPS_M[k]) return CLIPS_M[k]; if (k === 'join' && onPoints()) return null; return k === 'join' && mode() === 'unlock' ? CLIPS.join_credit : CLIPS[k] || null; }
+  function clip(k) { if (member() && CLIPS_M[k]) return CLIPS_M[k]; if (k === 'join' && joinActive()) return null; if (k === 'join' && onPoints()) return null; return k === 'join' && mode() === 'unlock' ? CLIPS.join_credit : CLIPS[k] || null; }
   function cueLiz(k) {
     var c = clip(k), key = k + (member() ? ':m' : '') + (k === 'join' && mode() === 'unlock' ? ':c' : '');
     if (TOUR.shown === key) return;
@@ -1364,7 +1376,7 @@
     steps.forEach(function (x, n) { if (x === curTab) i = n; });
     var shown = member() ? (curTab === 'overview' ? 0 : GROUPS.map(function (g) { return g.k; }).indexOf(groupOf(curTab))) : i;
     var total = member() ? GROUPS.length : steps.length;
-    bubble.textContent = isG ? group(curTab.slice(2)).say : !member() && t.show && lizAudio(t.k) ? t.show : member() && t.showMember && lizAudio(t.k) ? t.showMember : member() && t.sayMember ? t.sayMember : onPoints() && t.sayPoints ? t.sayPoints : t.k === 'join' && mode() === 'unlock' ? t.sayCredit : t.say;
+    bubble.textContent = isG ? group(curTab.slice(2)).say : t.k === 'join' && joinActive() ? t.sayActive : !member() && t.show && lizAudio(t.k) ? t.show : member() && t.showMember && lizAudio(t.k) ? t.showMember : member() && t.sayMember ? t.sayMember : onPoints() && t.sayPoints ? t.sayPoints : t.k === 'join' && mode() === 'unlock' ? t.sayCredit : t.say;
     var has = !!clip(curTab) || !!lizAudio(curTab);
     playBtn.hidden = TOUR.started && !has;
     playBtn.classList.toggle('go', !TOUR.started);
