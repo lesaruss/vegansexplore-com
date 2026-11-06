@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 80" width="760" height="80" role="img" aria-label="Plant-Based Dish, Pre-Vegan Certified">
+  <!-- The line printed beside each certified dish, DRAFT (B5, 2026-11-06). Only beside a dish that is active on /certified/<code>. -->
+  <image href="stamp-small.svg" x="4" y="4" width="72" height="72"/>
+  <text x="96" y="50" font-family="Montserrat, Arial, sans-serif" font-weight="800" font-size="30" fill="#2D5C27">Plant-Based Dish, Pre-Vegan Certified</text>
+</svg>

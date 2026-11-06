@@ -3240,6 +3240,8 @@ claim unlocking top posts". Migration `20261103_listing_posts.sql`; edge functio
   shown at 6:53:16, no script errors). A headless login worked again (canon `agent-headless-page-verification`, replacement 2026-10-27: a one-time function mints the `vegan@` session into a file,
   Playwright reads it, sign it out and stub the function after); this sandbox refuses `*.vercel.app`, so a branch preview cannot be looked at, but `hq.lesaruss.ai` can.
 
+- **First real fetch, the owner proof and the content direction (2026-11-06, playbook `ve-social-studio`; handoff `docs/handoff/2026-11-06-ve-social-studio-owner-proof-philly-carousel.md`)**. The 2:17 AM ET run read @vegansexplore (35 posts, pictures in `vegan-media`, no failures) and @soflovegans (1 post kept for a full run; to explain); each Apify read is about $0.092. **The owner's Social step is proven in a browser** at 1440 and 390 px: as Sean on the Vegans Explore Podcast (Hide, Show, Pin, Unpin, Stop showing, which drops Their top posts from the public tab, Show again, Read my page now, which really reads for a super admin since `too_soon` is skipped) and as Priya, a non-admin owner, on Planted Table ("Add your Instagram first", nothing written); sessions came from the one-time `ve-once-owner-proof` (now the 410 stub). The build phase closes Fri Nov 13 (Sean), then the playbook stays open as Watching for all social work. **Content direction (Sean, 2026-11-06)**: the relaunch Guide reels are abandoned (all 6 skipped); no commercials on social; content is about the community and ends with a call to action that serves the viewer (find places, join free with the survey, vote, give points), a contribution only as an option; Vegans Explore Podcast clips become animated news-style posts (built in `ve-podcast-studio`, scheduled here); city carousels go out through the week so people see every chapter, starting outside Florida. **First city carousel**: Canva `DAHaJ8TQI0I` "5 Vegan Restaurants to Try in Philadelphia", copied from "Top 10 Vegan Restaurants in the U.S." (`DAHDRMBJWw4`, the parent: full-bleed food photo, logo bar, name and city): Vedge, Monster Vegan, HipCityVeg, Batter & Crumbs, Miss Rachel's Pantry (all confirmed open on Google; Charlie was a sinner. dropped, no Instagram or food photo found), photos are each restaurant's own Instagram posts, credited by tagging in the caption, as the U.S. carousel did. Liz's closing line is `vegan-media/media/social/philly-carousel/liz-close-v1.mp3` (20.8 s, checked with `stt`). Never claim points can pay for our services on social until that rule is built. Sean has look-and-feel changes to make on it, which become the locked city carousel template.
+
 ## Signature dishes (LOCKED by Sean 2026-11-06, playbook `ve-signature-dishes`)
 
 Sean's idea, his four calls answered with Logan's recommendations (canon `canon-ve-signature-dishes`; A-to-Z list in
@@ -5041,6 +5043,60 @@ Built from Standard V1.2 (playbook record 044b9cf2). The standard, the queue and
   and live (public actions, the team actions refuse no token). Pages checked at 1440 and 390 px beside the listing page and the Watchlist against
   mocked answers. **Not proven**: a real certificate made through the Depot (it cannot be deleted, so the first real one should be a pilot restaurant).
 
+## Pre-Vegan Certification: merged, and B5 to B7 drafted (Logan, 2026-11-06, playbook `vegans-explore-initiative-business-certification`)
+
+- **Merged to `main` 2026-11-06** (Sean: "Merge all, in order"): `claude/fervent-hamilton-fc48qo`, `claude/inspiring-hypatia-ilwro1`, `claude/gracious-gauss-d7r3h7`
+  (16b85ca; only CLAUDE.md conflicted, all three sections kept). Everything stays dark: the Pre-Vegan Restaurant Guide unpublished, its survey inactive,
+  `/certified` noindex with 0 certificates. **The live webhook had lost B3's fix**: `ve-stripe-webhook` v65 was deployed from `main` before the merge, so a
+  survey-door member's first $11 paid no 1,100 welcome points. Redeployed as v66 from 16b85ca (source sha256 58d2dc3b matched; it has both the money-in alerts
+  and `firstPayment`). Lesson: before deploying a function from `main`, check that no unmerged branch has deployed a newer version of it.
+- **B5, stamp and decal art and the diner comprehension test** (draft for Sean; `public/certification/*.svg` on branch `claude/blissful-fermi-qmyiwt`, not on
+  `main`; `docs/certification/b5-stamp-and-diner-test.md`, sheet `docs/certification/b5-art-sheet.png`): the seal (color, one color, reversed), a small mark for
+  under 1 inch (always with the words), the menu line, the menu key, the 8 x 10 decal with a QR square, and a made-up test menu (Harbor Table). Usage rules feed
+  the agreement and the manual. The test: 40 adults, 5 critical questions, pass at 85% each, and the C4 "almost Vegan" misread at 10% or less; if C4 fails, the
+  name "Pre-Vegan" goes back to Sean before print and before A5. **The seal carries our suitcase mark** (Sean, 2026-11-06: "use the actual suitcase that we use for our logo"), copied from `public/ve-logo-mark.svg`, never redrawn, in every version.
+- **B6, the restaurant agreement draft for counsel** (`docs/certification/b6-restaurant-agreement-draft.md`): 14 sections and schedules A to F from the locked
+  records, open choices in brackets, seven questions for counsel. To reconcile with the A3 Standard doc's 14 clauses (that Claude Doc is not shared with build
+  sessions).
+- **B7, the Verifier manual** (`docs/certification/b7-verifier-manual.md`): the job and independence rules, desk review, the visit, a G3 protected-path table for
+  A6 to approve, training, a 10-case ring test (9 of 10 and no false pass), and the A6 reviewer profile. **C2 invitation text** drafted
+  (`docs/certification/c2-pilot-invitation-draft.md`); it goes into Depot > Outreach only after C1 and A4.
+- Nothing sent, printed, published or charged.
+
+## Pre-Vegan Certification: the paid model (LOCKED by Sean 2026-11-06, playbook `vegans-explore-initiative-business-certification`)
+
+Sean: "No, we're not doing free anything... This is real work... it pays for itself"; "lock it with my notes". Canon
+`canon-ve-pre-vegan-certification` v8 (`paid_model_v8`), playbook decision 49755c18 and WORK QUEUE v2 13bcfd3d (replaces a194e04a for C and D).
+**This replaces the free pilot in Standard V1.2.**
+
+- **The Guide is free with its survey** (the education and the way in). **Certification is $250 per dish**, paid up front: the desk review, the
+  Verifier's kitchen check, one community tasting night (feedback to the restaurant, anonymous to it, never pass or fail), the 12-month term and one
+  courtesy check during it. **Renewal $150 per dish a year.** The fee buys the review, never the outcome; a failed dish may be submitted again. No free
+  visits and no points for certification work.
+- **The term never pauses**: a dish pulled from the menu keeps its clock running; the same unchanged dish back within the term still counts until the
+  original end date.
+- **Changes**: the restaurant tells us before any change to a certified dish; any change voids that dish's certification; ignorance is no excuse.
+  **Hiding a change or misleading diners** ends every certification at the location and removes the restaurant from Vegans Explore (listing removed, never
+  deleted) for **2 years**, then it may apply again.
+- **Accountability**: every dish shows when it was last checked; secret shoppers spot check between visits (staff must say it is 100% plant-based); an
+  anonymous report button on the QR page and the listing; staff kept trained.
+- **Verifiers** are trained, paid-per-visit contractors, never staff. Members can train: self-paced modules, a quiz each with up to 3 tries, the 10-case ring
+  test, a shadowed first visit; city by city (B7b builds the modules).
+- **Starter kit included** (decal and menu marks as files); **print upgrade paid** (we redesign, print and deliver, approved before print; price after a
+  printer quote). Recipes, sourcing and chef placement are separate services. The distributor pitch (Cheney Brothers, Sysco) is its own campaign.
+- **Gate**: no paid application before A2 (who owns the program and the Stripe account), A4 and B6 (the attorney-reviewed agreement) and A7 (insurance).
+- **The Guide gives the answers** (Sean, 2026-11-06: "we want to give them the answers... before they even decide to pay the 250, they can put those
+  things into action... if all a restaurant does is takes this free guide and upgrades what they do in their kitchen and never takes the 250, I say this is
+  successful"; canon v9 `guide_gives_answers_v9`). The free Pre-Vegan Restaurant Guide spells out exactly how to pass every gate (the protected cooking path,
+  sourcing proof, labels, staff answers, what the Verifier checks), so a kitchen can put it in place without paying. A restaurant that only uses the Guide counts
+  as a success: a traveler who will not go to a Vegan restaurant can trust one dish without asking whether the cheese is dairy or the pho has fish sauce. The $250
+  buys our independent check and the public mark, never the knowledge. Measure Guide adoption on its own (readiness answers moving to ready), not only paid
+  certifications.
+- **Drafts rewritten 2026-11-06** on `claude/blissful-fermi-qmyiwt`: B6 (fees, term, change and deception clauses, tasting night, Schedule G), B7 (contractor,
+  plain-words Form A, the Supermarket Guide scanner as a storeroom check, courtesy checks and secret shoppers, the member training path), C2 (a $250 invitation
+  pointing to the free Guide), and the test menu (v2: starters and mains, 2 of 8 marked; `docs/certification/b5-art-sheet.png` redrawn). An SVG shown as an
+  `<img>` cannot load the seal files it references, so the art sheet is rendered with them inlined as data URIs.
+
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
 
 Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-venue-guides`). The Stadium & Arena
@@ -6608,6 +6664,13 @@ suspended or banned." Sean is the judge: every suspend, ban and void is his deci
 - **The standing check in the token-only edge functions, built and live 2026-11-03** (commits e7d3bce and 30bdda7, deployed through `ve-function-deploy` from 30bdda79, source sha256 matched on all 15): `ve-board`, `ve-checkin`, `ve-bounties`, `ve-events`, `ve-venues`, `ve-products`, `ve-cookbook`, `ve-vault`, `ve-challenge`, `ve-group`, `ve-guide-unlock`, `ve-podcast`, `ve-referrer`, `ve-mission-survey` and `ve-claims` (owner actions; super admins skipped). Each has an inlined `standingBlocked` and a `READ_ACTIONS` set at one choke point after the member token is verified; **anything not in the set is a write and is refused with 403 `account_not_in_good_standing`** (fails closed, so a new action is blocked for a frozen member until it is added to the read list). Ops-token `as_member` calls, Taster keys, public actions and crons are never checked (`ve-group` `msg_*` link-token actions stay open so a frozen member can still stop emails). Proven live 2026-11-03 with a session for Test Manager suspended for a few seconds: a write on each of the 15 answered 403 and reads on `ve-board`, `ve-vault`, `ve-checkin`, `ve-cookbook` and `ve-mission-survey` answered 200 (`ve-once-standing-proof`, now the 410 stub; standing put back to good). Other edge functions (`ve-dashboard`, `ve-affiliate`, `ve-bounties` aside, `ve-people-outreach`, `ve-nonprofit`, `ve-ambassador`...) still check only the token; points are frozen everywhere by the trigger regardless.
 - **`/policies#community` paragraph written 2026-11-03** (Sean approved the wording): **Earning points fairly**, between Don't and Reporting (points gained by gaming are voided, an account can be put on hold, serious or repeated cases can be closed, a person decides, every decision can be undone). It is live once this branch is on `main`; it must be live before opening cases is turned on. **Not built yet**: the standing check in the functions not listed above. Canon
   `canon-ve-abuse-watch`, playbook `ve-abuse-watch`.
+
+## Moving off the $11 Passport (Sean, 2026-11-06, NOT built, playbook `ve-pricing-points-passport`)
+
+"Let's move away from the $11 passport and it just be the certification... get people through the door and keep them engaged... versus us
+throttling it because of the $11 charge." Direction only; scope questions and touch list in
+`docs/handoff/2026-11-06-ve-restaurant-guide-dashboard-scan-and-11-direction.md`. Until Sean confirms scope, nothing about the $11 changes on
+the site. The sample dashboard (main 354a462) already leads with free Explorer and keeps the $11 as the second way in.
 
 ## Image conventions
 
