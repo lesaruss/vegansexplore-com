@@ -159,7 +159,7 @@ function showActivateModal(message){
   var msg=document.getElementById('ve-pm-msg');
   if(msg)msg.textContent=message||'$11, one time. Your Passport and the full community.';
   // A Guide's own survey (ve_surveys): a door Guide's gate sets sessionStorage ve_survey_for, so the free path is that Guide's survey.
-  try{var sf=sessionStorage.getItem('ve_survey_for');var sl=document.getElementById('ve-pm-survey');if(sl)sl.setAttribute('href',sf&&/^[a-z0-9-]{1,60}$/.test(sf)?'/survey?s='+sf:'/survey?door=1');}catch(e){}
+  try{var sf=sessionStorage.getItem('ve_survey_for');var sl=document.getElementById('ve-pm-survey');if(sl)sl.setAttribute('href',sf&&/^[a-z0-9-]{1,60}$/.test(sf)?'/survey?s='+sf:'/survey?s=explorer');}catch(e){}
   var e=document.getElementById('ve-pm-error');if(e){e.textContent='';e.style.display='none';}
   // Sean, 2026-10-25: the $11, one time, is the way in everywhere, and it is the Passport. No monthly
   // Passport upsell here; members buy Guides, merchandise and event tickets after. Benefits always shown.
@@ -224,7 +224,7 @@ el.innerHTML=
 '<button type="button" id="ve-pm-founding-btn">'+(VE_FOUNDING_OPEN?'Founding Membership':'Passport')+' - $11 one time</button>'+
 '<p id="ve-pm-hint">One time. It never renews.'+(VE_FOUNDING_OPEN?' <b>Founding Membership closes at midnight Eastern on January 1, 2027.</b> Join before then and Founding Member stays on your profile for good.':'')+'</p>'+
 '<div class="ve-pm-divider"><div class="ve-pm-divider-line"></div><span class="ve-pm-divider-text">or give us your time</span><div class="ve-pm-divider-line"></div></div>'+
-'<a id="ve-pm-survey" href="/survey?door=1" style="display:block;text-align:center;padding:13px;border:1.5px solid rgba(0,0,0,0.2);border-radius:6px;color:#1a1a1a;font:800 12px Montserrat,sans-serif;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;">Take the survey instead - free</a>'+
+'<a id="ve-pm-survey" href="/survey?s=explorer" style="display:block;text-align:center;padding:13px;border:1.5px solid rgba(0,0,0,0.2);border-radius:6px;color:#1a1a1a;font:800 12px Montserrat,sans-serif;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;">Take the survey instead - free</a>'+
 '<p style="margin:8px 0 0;font-size:11px;color:#595959;text-align:center;line-height:1.5;font-family:Montserrat,sans-serif;">Answer the whole profile and your membership opens when you finish, with the survey\'s 250 points. The $11 comes with 1,100.'+(VE_FOUNDING_OPEN?' Either way, join before the deadline and you are a Founding Member.':'')+'</p>'+
 '<div id="ve-pm-passport">'+
 '<div class="ve-pm-divider"><div class="ve-pm-divider-line"></div><span class="ve-pm-divider-text">or go further with Passport</span><div class="ve-pm-divider-line"></div></div>'+

@@ -306,6 +306,17 @@
     }
     .hub-content-grid.hub-wide .hub-content-sidebar { display: none; }
     /* The Overview (Sean, 2026-11-01). */
+    /* Top dishes (playbook ve-signature-dishes, item K): the listing page's dish card (.sd-*), copied. */
+    .sd-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr));gap:16px}
+    .sd-card{border:1px solid var(--ve-border,rgba(0,0,0,.1));border-radius:8px;background:#fff;overflow:hidden;display:flex;flex-direction:column;text-decoration:none;color:var(--ve-text)}
+    .sd-card:hover,.sd-card:focus-visible{border-color:var(--ve-green);outline:none}
+    .sd-pic{aspect-ratio:4/3;background:var(--vb-soft,#E8F5E9)}.sd-pic img{width:100%;height:100%;object-fit:cover;display:block}
+    .sd-body{padding:12px 14px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+    .sd-top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}.sd-name{font-size:15px;font-weight:800}.sd-price{font-weight:700;color:var(--ve-text-75);white-space:nowrap}
+    .sd-place{font-size:13px;font-weight:700;color:var(--ve-text-75)}.sd-place em{font-style:normal;font-size:11px;font-weight:800;padding:2px 6px;border-radius:6px;background:var(--vb-soft,#E8F5E9);color:var(--vb-deep,#1f5f22);margin-left:6px;white-space:nowrap;display:inline-block}
+    .sd-line{margin:0;font-size:14px;line-height:1.45;color:var(--ve-text-75);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .sd-votes{margin-top:auto;font-size:13px;font-weight:700;color:var(--ve-text-75)}
+    @media (max-width:560px){.sd-grid{grid-template-columns:1fr 1fr;gap:10px}.sd-body{padding:10px}.sd-top{flex-direction:column;gap:2px}.sd-name{font-size:14px}.sd-line{font-size:13px}}
     #hub-ov-card { margin: 4px 0 18px; }
     .hov-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 0 0 26px; }
     .hov-stat { display: block; text-align: left; border: 1.5px solid var(--ve-border); border-radius: 10px; padding: 14px 16px; background: #fff; text-decoration: none; color: var(--ve-text); font: inherit; cursor: pointer; min-height: 44px; }
@@ -414,6 +425,11 @@
       <h3 class="hov-h" data-hub-text="Most voted in {name}"></h3>
       <div class="vrd-root"><div class="rank-grid" id="hub-ov-top-grid"></div></div>
       <p class="hov-more"><a href="?tab=directory" data-hov-tab="directory">See the whole Directory</a></p>
+    </div>
+    <div id="hub-ov-dishes" hidden>
+      <h3 class="hov-h" data-hub-text="Top dishes in {name}"></h3>
+      <div class="sd-grid" id="hub-ov-dishes-grid"></div>
+      <p class="hov-more">Signature dishes the places chose themselves, ranked by member votes over the last 90 days.</p>
     </div>
   </section>
 
@@ -826,6 +842,28 @@
       var a = e.target.closest('[data-hov-tab]'); if (!a || e.metaKey || e.ctrlKey) return;
       e.preventDefault(); switchTab(a.getAttribute('data-hov-tab')); window.scrollTo(0, 0);
     });
+    // Top dishes (playbook ve-signature-dishes, item K): one dish per place, 3 or more member votes in 90 days, shown once the chapter has 3.
+    fetch(SUPABASE_URL + '/functions/v1/ve-signature-dishes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'top' }) })
+      .then(function (r) { return r.json(); }).then(function (d) {
+        var VG = { fully_vegan: '100% Vegan', vegan_options: 'Vegan options', vegan_friendly: 'Vegan friendly' };
+        var mine = ((d && d.dishes) || []).filter(function (x) {
+          var l = x.listing || {}, c = l.communities || [];
+          if (c.indexOf(SLUG) >= 0 || c.indexOf('all') >= 0) return true;
+          if (!l.city && !l.state) return false;
+          if (HUB.match.cities && HUB.match.cities.indexOf(l.city) < 0) return false;
+          if (HUB.match.states && HUB.match.states.indexOf(l.state) < 0) return false;
+          return true;
+        });
+        if (mine.length < 3) return;
+        document.getElementById('hub-ov-dishes-grid').innerHTML = mine.slice(0, 6).map(function (x) {
+          var l = x.listing;
+          return '<a class="sd-card" href="/directory/' + encodeURIComponent(l.slug) + '"><div class="sd-pic"><img src="' + esc(x.photo_url) + '" alt="' + esc(x.name) + '" loading="lazy" decoding="async"></div><div class="sd-body">' +
+            '<div class="sd-top"><b class="sd-name">' + esc(x.name) + '</b>' + (x.price_display ? '<span class="sd-price">' + esc(x.price_display) + '</span>' : '') + '</div>' +
+            '<span class="sd-place">' + esc(l.name) + (VG[l.vegan_status] ? '<em>' + VG[l.vegan_status] + '</em>' : '') + '</span>' +
+            '<p class="sd-line">' + esc(x.line) + '</p><span class="sd-votes">' + Number(x.votes).toLocaleString() + (x.votes === 1 ? ' vote' : ' votes') + '</span></div></a>';
+        }).join('');
+        document.getElementById('hub-ov-dishes').hidden = false;
+      }).catch(function () {});
     // Most voted: open places in this chapter with votes, 100% Vegan first in a tie (public at once), the Directory's own card.
     if (!window.VERegionDirectory) return;
     var q = 'listings?select=' + VERegionDirectory.FIELDS + '&status=eq.approved&vote_count=gt.0&vegan_status=eq.fully_vegan&order=vote_count.desc&limit=400';

@@ -466,6 +466,7 @@ async function publicAction(action: string, body: any, memberId: string | null) 
         p(`Hi ${esc(first)},`) +
         p(`Thanks for telling us you run <b>${esc(ev.title)}</b>. Our team checks every claim before it is approved, usually within a day or two, and we will email you either way.`) +
         p('While you wait, the Vegan Events Guide has what we know about running a Vegan event, from the 12-week plan to what to do when it rains.') +
+        p(`It is free: <a href="${SITE}/survey?s=vegan-events-guide">take the short event survey</a> and the Guide opens for you, with up to 250 points.`) +
         btnLink(`${SITE}/events?event=${ev.id}`, 'See your event page') +
         p('If anything on the page is wrong, reply to this email and tell us.') + p('Vegans Explore team') + FOOT);
     }

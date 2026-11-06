@@ -1,17 +1,23 @@
 /* The Pre-Vegan Business Guide (playbook ve-pre-vegan-business-guide; Sean approved the tabs, survey and Maya's lines 2026-11-06,
- * draft docs/proposals/pre-vegan-business-guide.md). For businesses that are not Vegan and are adding Vegan: coffee shops, gyms,
- * juice bars, cafes, caterers. Copied from the Vegan Restaurant Guide under the template gate; only the content changed.
+ * draft docs/proposals/pre-vegan-business-guide.md). For businesses that are not Vegan and are adding plant-based (Pre-Vegan)
+ * options: coffee shops, gyms, juice bars, cafes, caterers. Copied from the Vegan Restaurant Guide under the template gate.
+ * canon-ve-pre-vegan-meaning (Sean, 2026-11-06): a business that is not Vegan offers plant-based or Pre-Vegan options, never
+ * "Vegan options", in our own copy; it earns the word Vegan. The Overview follows canon-ve-guide-overview-standard
+ * (docs/proposals/pre-vegan-business-guide-overview.md, approved by Sean 2026-11-06).
  *
  * The tabs are the tour. Maya stays on the right of every tab; her lines are text beside her still picture until Sean approves a
  * recording (her voice is on her roster profile). Back / N of M / Next under her walks the tabs in order.
  *
- *   Overview       what the Guide is, the three steps, one button: Take the survey
- *   Why add Vegan  honest reasons, sourced, and what it does not do
+ *   Overview       the story (the opening standard) and the 5-step checklist; members tick it, saved on the account
+ *   Why add plant-based  honest reasons, sourced, and what it does not do
  *   What to add    by kind of business; the coffee shop is open to everyone (the free example), the rest after the survey
- *   How to say it  menu words: Vegan, Vegan options, never fully Vegan for a mixed menu, the shared kitchen line
+ *   How to say it  menu words: plant-based for an item, plant-based options for a menu, the shared kitchen line
  *   Sourcing       members: the shared supplier directory (ve-sourcing), honest labels
  *   Buy or make    members: each item, who sells it ready-made, or a home-scale recipe
- *   Get found      members: how the Directory lists Vegan options, vetting by member votes, votes rank, nobody pays to move up
+ *   Get found      members: how the Directory lists places, vetting by member votes, votes rank, nobody pays to move up
+ *
+ * Members see the tabs as 5 groups in one dropdown (Sean, 2026-11-06; the Events Guide's GROUPS): Start here, Learn it, Add it,
+ * Get found, Your list. Visitors keep the flat tabs.
  *   Claim your page members: find your page and claim it, or add your business
  *   What's next    members: what to do next; tasting nights are Coming until one has run
  *   My list        members: saved kinds of business (ve_guide_saves through ve-cookbook)
@@ -28,26 +34,41 @@
   var COOK_URL = SB + '/functions/v1/ve-cookbook';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
 
-  // The tabs, in tour order, and what Maya says on each (Sean approved every line, 2026-11-06). Text only until recorded.
+  // The tabs, in tour order, and what Maya says on each (Sean approved every line, 2026-11-06). A line's text must match its recording; change one and record -v2.
   var TABS = [
-    { k: 'overview', label: 'Overview', say: 'Hi, I\'m Maya. If you\'re adding Vegan to your menu, this Guide walks you through it: what to add, who to buy it from, and how to say it honestly. Read around. When you\'re ready, take the short survey and the whole Guide opens. It\'s free.',
-      sayMember: 'Welcome in. Start with What to add for your kind of business, then Sourcing to find who sells it. Save anything to My list.' },
-    { k: 'why', label: 'Why add Vegan', say: 'Here\'s the honest version. Who asks for Vegan, what a short Vegan list costs you, and what it won\'t do. Every number has its source under it.' },
+    { k: 'overview', label: 'Overview', say: 'Hi, I\'m Maya. If you\'re adding plant-based options, you might be worried about getting it wrong, or that nobody will order them. That\'s normal, and it\'s why this Guide exists. It\'s for coffee shops, gyms, juice bars, cafes and restaurants that aren\'t Vegan yet. Inside, you\'ll find what to add first, who sells it, a recipe to make it, and the right words for your menu. When you finish, you\'ll have your first items picked, a supplier or recipe for each, your menu wording set, and your page claimed. Press Play on any page and I\'ll walk you through it. Take the short survey and the whole Guide opens. It\'s free. And if you get stuck, ask me. If I can\'t answer, our team will.',
+      sayMember: 'Welcome in. Start here has your five steps. Tick each one as you go, and it stays on your account. The menu at the top has the rest of the Guide, or follow me with Next.' },
+    { k: 'why', label: 'Why add plant-based', say: 'Here\'s the honest version. Who asks for plant-based options, what a short list costs you, and what it won\'t do. Every number has its source under it.' },
     { k: 'add', label: 'What to add', say: 'Pick your kind of business. Coffee shops are open to everyone: the first things to add, what to stock, and what to watch for. The rest open with the survey.',
       sayMember: 'Pick your kind of business. Each one has a few easy first items, what to stock, and what to watch for.' },
-    { k: 'say', label: 'How to say it', say: 'The words matter. Call an item Vegan only when it has nothing from an animal. Call your menu Vegan options, not fully Vegan, unless it is. Here\'s a line for shared kitchens too.' },
+    { k: 'say', label: 'How to say it', say: 'The words matter. Call an item plant-based only when it has nothing from an animal: no meat, dairy, eggs or honey. Call your menu plant-based options. Here\'s a line for shared kitchens too.' },
     { k: 'sourcing', label: 'Sourcing', mine: 1, say: 'You don\'t have to make it all. Here\'s who sells it, and every supplier wears an honest label. Check with the supplier before you order.' },
     { k: 'make', label: 'Buy or make', mine: 1, say: 'For each item, see who sells it ready, or a recipe to make it. The recipes are home scale, so test a batch before you scale it.' },
-    { k: 'found', label: 'Get found', mine: 1, say: 'Here\'s how people find you in our Directory. Places with Vegan options are vetted by member votes, and nobody can pay to move up.' },
+    { k: 'found', label: 'Get found', mine: 1, say: 'Here\'s how people find you in our Directory. Places with plant-based options are vetted by member votes, and nobody can pay to move up.' },
     { k: 'claim', label: 'Claim your page', mine: 1, say: 'If your business is in our Directory, claim your page and keep it current. If it isn\'t, add it here.' },
     { k: 'next', label: 'What\'s next', mine: 1, say: 'You\'re in. Thank you. Claim your page, save what you need, and follow us. Tasting nights are coming, and we\'ll tell you when the first one runs.' },
     { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you saved is right here.' },
     { k: 'join', label: 'Get in', guest: 1, say: 'There\'s one way in, and it\'s free. Take the short survey about your business, and the whole Guide opens.' }
   ];
-  // Maya's recordings, once Sean approves her lines (el-media tts in her roster-profile voice, checked word for word with stt).
-  // Until then every tab shows her picture and the bubble carries the words; Play is hidden.
+  // Maya's recordings (2026-11-06: el-media tts in her roster-profile voice, each checked word for word with stt).
+  // AUDIO_V is the visitor's line, AUDIO_M the member's; a member tab with no entry of its own plays the visitor line (same words).
   var AUDIO_BASE = SB + '/storage/v1/object/public/vegan-media/media/maya/pre-vegan-business-guide/';
-  var AUDIO_V = {}, AUDIO_M = {};
+  // -v2 (2026-11-06): the new Overview and the plant-based language (canon-ve-pre-vegan-meaning). The -v1 files stay in storage.
+  var AUDIO_V = { overview: 'overview-v2', why: 'why-v2', add: 'add-v1', say: 'say-v2', join: 'join-v1' };
+  var AUDIO_M = { overview: 'overview-member-v2', add: 'add-member-v1', sourcing: 'sourcing-v1', make: 'make-v1', found: 'found-v2', claim: 'claim-v1', next: 'next-v1', mylist: 'mylist-v1' };
+  // Members: the tabs as 5 groups (Sean, 2026-11-06), copied from the Events Guide's GROUPS. A group opens as a page of tiles; the
+  // dropdown and Back / Next go by group. Maya's line on a group page (`say`) is text until Sean approves it for recording.
+  var GROUPS = [
+    { k: 'start', label: 'Start here', kids: [] },
+    { k: 'learn', label: 'Learn it', kids: ['why', 'say'], line: 'Why plant-based options are worth it, and the right words for your menu.',
+      say: 'Learn it is the why and the words. Start with the honest reasons, then the words that make customers trust your menu.' },
+    { k: 'addit', label: 'Add it', kids: ['add', 'sourcing', 'make'], line: 'What to add first, who sells it, and a recipe to make it.',
+      say: 'Add it is where it happens. Pick your first items, then buy them from a supplier or make them from a recipe.' },
+    { k: 'gofound', label: 'Get found', kids: ['found', 'claim'], line: 'How people find you, and your page on Vegans Explore.',
+      say: 'Get found is how people looking for plant-based food find you, and how you claim your page.' },
+    { k: 'yours', label: 'Your list', kids: ['mylist', 'next'], line: 'Everything you saved, and what to do next.',
+      say: 'Your list keeps everything you saved, and what you can do next.' }
+  ];
 
   var S = 'stroke="#1f5f22" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
   var NI = function (d) { return '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" ' + S + ' aria-hidden="true">' + d + '</svg>'; };
@@ -86,6 +107,16 @@
   var MEM = null;                // members-only payload: { adds: [...] }
   var ST = { rule: 'points', cost: 1100, balance: 0, active: false, via: null };
   var curTab = 'overview';
+  function groupOf(k) { if (/^g:/.test(k)) return k.slice(2); for (var i = 0; i < GROUPS.length; i++) if (GROUPS[i].kids.indexOf(k) >= 0) return GROUPS[i].k; return 'start'; }
+  function group(g) { for (var i = 0; i < GROUPS.length; i++) if (GROUPS[i].k === g) return GROUPS[i]; return GROUPS[0]; }
+  function gHref(g) { return g === 'start' ? '#/' : '#/g/' + g; }
+  function kidsOf(g) { var avail = tabs().map(function (t) { return t.k; }); return group(g).kids.filter(function (k) { return avail.indexOf(k) >= 0; }); }
+  // The tour: members go Start here, then each group page followed by its sections; visitors go tab by tab.
+  function tourSteps() {
+    if (!member()) return tabs().map(function (t) { return t.k; });
+    var out = ['overview']; GROUPS.slice(1).forEach(function (g) { out.push('g:' + g.k); kidsOf(g.k).forEach(function (k) { out.push(k); }); }); return out;
+  }
+  function stepHref(st) { return /^g:/.test(st) ? gHref(st.slice(2)) : href(st); }
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function auth() { return window.VEAuth || null; }
@@ -99,12 +130,41 @@
 
   // ---------- tabs ----------
   function drawMenu(cur) {
-    menuEl.innerHTML = tabs().map(function (t) {
-      return '<a href="' + href(t.k) + '"' + (t.k === cur ? ' aria-current="page"' : '') + (t.guest ? ' class="dg-join-tab"' : '') + '>' + esc(t.label) + '</a>';
-    }).join('');
-    menuSel.innerHTML = tabs().map(function (t) { return '<option value="' + t.k + '"' + (t.k === cur ? ' selected' : '') + '>' + esc(t.label) + '</option>'; }).join('') +
-      (cur === 'search' ? '<option value="search" selected>Search results</option>' : '');
+    menuEl.classList.toggle('dg-dd-on', member()); menuSel.classList.toggle('dg-dd-on', member());
+    if (!member()) {
+      menuEl.innerHTML = tabs().map(function (t) {
+        return '<a href="' + href(t.k) + '"' + (t.k === cur ? ' aria-current="page"' : '') + (t.guest ? ' class="dg-join-tab"' : '') + '>' + esc(t.label) + '</a>';
+      }).join('');
+      menuSel.innerHTML = tabs().map(function (t) { return '<option value="' + t.k + '"' + (t.k === cur ? ' selected' : '') + '>' + esc(t.label) + '</option>'; }).join('') +
+        (cur === 'search' ? '<option value="search" selected>Search results</option>' : '');
+      return;
+    }
+    // Members: one dropdown at every width, the 5 groups, each with its sections in small type (the Events Guide's drawMenu).
+    var open = !!(menuEl.querySelector('.dg-dd-list') && !menuEl.querySelector('.dg-dd-list').hidden);
+    var cg = cur === 'search' ? '' : groupOf(cur === 'overview' ? 'start' : cur), ci = 0;
+    GROUPS.forEach(function (g, n) { if (g.k === cg) ci = n; });
+    var curT = cur === 'search' ? { label: 'Search results' } : group(cg);
+    var sec = cur !== 'search' && cur !== 'overview' && !/^g:/.test(cur) ? tab(cur) : null;
+    menuEl.innerHTML = '<button type="button" class="dg-dd-btn" aria-haspopup="true" aria-expanded="false">' + esc(curT.label) +
+      (sec ? ' <span class="dg-dd-sec">&rsaquo; ' + esc(sec.label) + '</span>' : '') +
+      '<small>' + (cur === 'search' ? '' : (ci + 1) + ' of ' + GROUPS.length) + '</small></button>' +
+      '<div class="dg-dd-list" hidden>' + GROUPS.map(function (g, n) {
+        var kids = kidsOf(g.k).map(function (k) { return esc(tab(k).label); });
+        return '<a href="' + gHref(g.k) + '"' + (g.k === cg ? ' aria-current="page"' : '') + '><span class="dg-dd-n">' + (n + 1) + '</span><span class="dg-dd-g"><b>' + esc(g.label) + '</b>' +
+          (kids.length ? '<small>' + kids.join(' &middot; ') + '</small>' : '<small>Your story and five steps</small>') + '</span></a>';
+      }).join('') + '</div>';
+    if (open) setDD(true);
   }
+  function setDD(on) {
+    var l = menuEl.querySelector('.dg-dd-list'), btn = menuEl.querySelector('.dg-dd-btn'); if (!l || !btn) return;
+    l.hidden = !on; btn.setAttribute('aria-expanded', on ? 'true' : 'false');
+  }
+  menuEl.addEventListener('click', function (e) {
+    if (e.target.closest('.dg-dd-btn')) { var l = menuEl.querySelector('.dg-dd-list'); setDD(l && l.hidden); return; }
+    if (e.target.closest('.dg-dd-list a')) setDD(false);
+  });
+  document.addEventListener('click', function (e) { if (!menuEl.contains(e.target)) setDD(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setDD(false); });
   menuSel.addEventListener('change', function () { location.hash = href(menuSel.value); });
 
   // ---------- pieces ----------
@@ -177,9 +237,9 @@
     });
   }
 
-  // ---------- Why add Vegan ----------
+  // ---------- Why add plant-based ----------
   function viewWhy() {
-    main.innerHTML = head('Why add Vegan', 'The honest version', 'Who asks for it, what a short Vegan list costs you, and what it will not do. A number here always has its source under it.') +
+    main.innerHTML = head('Why add plant-based', 'The honest version', 'Who asks for it, what a short plant-based list costs you, and what it will not do. A number here always has its source under it.') +
       '<div class="dg-srows">' + PUB.why.map(function (w) { return row({ icon: ICON.why, title: w.title, body: '<p class="dg-srow-p" style="-webkit-line-clamp:unset;display:block">' + esc(w.text) + '</p>' + sources(w.sources) }); }).join('') + '</div>' +
       '<h3 class="dg-k" style="margin:22px 0 8px">What it will not do</h3>' +
       '<div class="dg-srows">' + PUB.wont.map(function (x) { return row({ icon: ICON.why, title: x[0], body: '<p class="dg-srow-p">' + esc(x[1]) + '</p>' }); }).join('') + '</div>' +
@@ -232,7 +292,7 @@
 
   // ---------- How to say it ----------
   function viewSay() {
-    main.innerHTML = head('How to say it', 'The words on your menu', 'Say exactly what is true. People who eat Vegan read menus closely, and one wrong word costs their trust.') +
+    main.innerHTML = head('How to say it', 'The words on your menu', 'Say exactly what is true. People who eat Vegan read menus closely, and the right words earn their trust.') +
       '<div class="dg-srows">' + PUB.say.map(function (x) { return row({ icon: ICON.say, title: x[0], body: '<p class="dg-srow-p" style="-webkit-line-clamp:unset;display:block">' + esc(x[1]) + '</p>' }); }).join('') + '</div>' +
       '<h3 class="dg-k" style="margin:22px 0 8px">Lines you can use</h3>' +
       '<div class="dg-srows">' + PUB.lines.map(function (x) { return row({ icon: ICON.say, title: x[0], body: '<p class="dg-srow-p" style="-webkit-line-clamp:unset;display:block">&ldquo;' + esc(x[1]) + '&rdquo;</p>', acts: '<button type="button" class="dg-btn dg-ghost" data-copy="' + esc(x[1]) + '">Copy</button>' }); }).join('') + '</div>' +
@@ -404,12 +464,12 @@
   // ---------- Get found ----------
   function viewFound() {
     var steps = [
-      ['Listed in the Directory', 'Members find places by city, search and kind. A place that is not Vegan but has Vegan items is listed as Vegan options.', '/directory', 'See the Directory'],
-      ['Vetted by members', 'A place with Vegan options shows to everyone once 10 different members vote for it, its business claims it, or our team checks it. Until then members see it under Being vetted.', '/directory', 'How the Directory works'],
+      ['Listed in the Directory', 'Members find places by city, search and kind. A place that is not Vegan but has plant-based items is listed too, marked so people know what to expect.', '/directory', 'See the Directory'],
+      ['Vetted by members', 'A place with plant-based options shows to everyone once 10 different members vote for it, its business claims it, or our team checks it. Until then members see it under Being vetted.', '/directory', 'How the Directory works'],
       ['Votes move you up', 'Members vote for the places they love, and the most voted rise to the top of their city. Votes are the only thing that moves a place up.', '/directory', 'See the most voted'],
       ['Nobody can pay to move up', 'Being featured, an ad or a plan never buys a better place in the list. That is why members trust it.', '', '']
     ];
-    main.innerHTML = head('Get found', 'How people find you on Vegans Explore', 'An honest list is the point. Here is how a place gets in front of the people looking for Vegan food.') +
+    main.innerHTML = head('Get found', 'How people find you on Vegans Explore', 'An honest list is the point. Here is how a place gets in front of the people looking for plant-based food.') +
       '<div class="rg-steps">' + steps.map(function (st, i) { return '<div class="rg-step"><em>' + (i + 1) + '</em><b>' + esc(st[0]) + '</b><p>' + esc(st[1]) + '</p>' + (st[2] ? '<a href="' + st[2] + '">' + esc(st[3]) + ' &rsaquo;</a>' : '') + '</div>'; }).join('') + '</div>' +
       '<div class="dg-start" style="margin-top:16px"><a class="dg-btn" href="#/claim">Claim your page</a></div>';
   }
@@ -461,7 +521,7 @@
     var tiles = [
       { icon: ICON.claim, title: 'Claim your page', body: 'Your page may already be in the Directory. Claiming makes it yours to run.', acts: go('Claim it', '#/claim') },
       { icon: ICON.add, title: 'What to add', body: 'First items, what to stock and what to watch for, for your kind of business.', acts: go('Open it', '#/add') },
-      { icon: ICON.tasting, pre: tag, title: 'Tasting nights', body: 'Members tasting what you add, at your place. Coming: we will tell you when the first one runs.', acts: '<button type="button" class="dg-btn dg-ghost" data-notify="tasting-nights">Tell me when it opens</button>' },
+      { icon: ICON.tasting, pre: tag, title: 'Tasting nights', body: 'Invited members taste your dishes and send honest feedback, anonymous to you. Coming: we will tell you when the first one runs.', acts: '<button type="button" class="dg-btn dg-ghost" data-notify="tasting-nights">Tell me when it opens</button>' },
       { icon: ICON.dash, title: 'Open your dashboard', body: 'Your points, your level, the Directory, the Daily Pulse and everything you can do as a member.', acts: go('Open it', '/dashboard') },
       { icon: ICON.give, title: 'Make a contribution', body: 'From $11. Our thanks, and it helps us grow faster. A contribution to the community, never a donation.', acts: go('Contribute', '/dashboard?contribute=1') },
       { icon: ICON.share, title: 'Share your link', body: 'Your own link. When someone joins with it, you get the credit.', acts: '<button type="button" class="dg-btn dg-ghost" data-copylink>Copy my link</button>' },
@@ -498,43 +558,76 @@
 
   // ---------- Get in ----------
   function viewJoin() {
-    main.innerHTML = head('Get in', 'Adding Vegan to your menu?', 'Tell us about your business in a short survey and the whole Guide opens. Free, no card.') +
+    main.innerHTML = head('Get in', 'Adding plant-based options?', 'Tell us about your business in a short survey and the whole Guide opens. Free, no card.') +
       '<div class="dg-access"><div class="dg-pricebox"><div class="dg-big">Free<small>the short survey</small></div><p>It tells us how to serve you, and your membership opens when you finish.</p><button type="button" class="dg-btn" data-survey>Take the survey</button><p class="dg-pp">No card needed.</p>' +
       (access === 'guest' ? '<p class="dg-pp">Already a member? <a href="#" data-signin>Sign in</a>.</p>' : '') + '</div>' +
       '<div><ul><li><b>What to add</b> for gyms, juice bars, cafes and caterers, not only coffee shops.</li><li><b>Sourcing and Buy or make:</b> who sells it ready-made, and the recipe to make it yourself.</li><li><b>Your page:</b> claim it and keep it current.</li><li><b>Founding Member</b> stays on your profile for good if you finish before midnight Eastern on January 1, 2027.</li></ul></div></div>';
   }
 
-  // ---------- Overview ----------
-  function viewOverview() {
-    if (!member()) {
-      main.innerHTML = head('Vegans Explore Guides for business', 'Adding Vegan to your menu?',
-        'This Guide walks you through it: what to add, who to buy it from, and how to say it honestly. For coffee shops, gyms, juice bars, cafes, caterers and any business that is not Vegan and is adding Vegan.') +
-        '<h3 class="dg-k" style="margin:18px 0 8px">Three steps</h3>' +
-        '<div class="dg-srows">' + numRow('1', 'Read around', 'Why add Vegan, how to say it, and the coffee shop\'s first items are open to everyone.') +
-          numRow('2', 'Take the short survey', 'It tells us about your business, and it makes you a member.') +
-          numRow('3', 'Use the whole Guide', 'What to add for your kind of business, who sells it, a recipe to make it, and your page.') + '</div>' +
-        '<div class="dg-start" style="margin-top:16px"><button type="button" class="dg-btn" data-survey>Take the survey</button><p>Free, no card.</p></div>';
-      return;
-    }
-    var tiles = [
-      ['add', 'What to add', 'First items, what to stock and what to watch for, for your kind of business.'],
-      ['sourcing', 'Sourcing', 'Who sells it ready-made, each supplier with an honest label.'],
-      ['make', 'Buy or make', 'For each item, a supplier or a home-scale recipe.'],
-      ['say', 'How to say it', 'The words for your menu, and a line for a shared kitchen.'],
-      ['found', 'Get found', 'How the Directory lists places with Vegan options.'],
-      ['claim', 'Claim your page', 'Find your business and make the page yours.']
-    ];
-    main.innerHTML = head('Vegans Explore Guides for business', 'Welcome in', 'The whole Guide is yours. Pick a tab, or follow Maya with Next.') +
-      '<div class="dg-tiles">' + tiles.map(function (t) {
-        return '<a class="dg-tile' + (t[0] === 'add' ? ' dg-warm' : '') + '" href="' + href(t[0]) + '"><div class="dg-ic">' + ICON[t[0]] + '</div><div><b>' + esc(t[1]) + '</b><span>' + esc(t[2]) + '</span></div></a>';
-      }).join('') + '</div>' +
-      '<div class="dg-start"><a class="dg-btn" href="#/next">What\'s next</a></div>';
+  // ---------- Overview: Start here (canon-ve-guide-overview-standard; approved by Sean 2026-11-06) ----------
+  // The five steps to finishing. Members tick them; a tick is a save on their account (ve-cookbook, kind 'fix', key 'step-<n>').
+  var STEPS = [
+    ['1', 'Pick your kind of business', '#/add'],
+    ['2', 'Choose your first items', '#/add'],
+    ['3', 'Line up a supplier or a recipe for each', '#/make'],
+    ['4', 'Set your menu wording', '#/say'],
+    ['5', 'Claim your page', '#/claim']
+  ];
+  function stepsDone() { return STEPS.filter(function (st) { return SV.fix['step-' + st[0]]; }).length; }
+  function checklist() {
+    if (!member()) return '<ol class="pb-check">' + STEPS.map(function (st) { return '<li><em>' + st[0] + '</em><span class="pb-t">' + esc(st[1]) + '</span></li>'; }).join('') + '</ol>';
+    return '<p class="pb-prog" id="pbProg">' + stepsDone() + ' of ' + STEPS.length + ' done</p><ol class="pb-check" id="pbCheck">' + STEPS.map(function (st) {
+      var on = !!SV.fix['step-' + st[0]];
+      return '<li' + (on ? ' class="on"' : '') + '><em>' + st[0] + '</em><span class="pb-t">' + esc(st[1]) + '</span><a href="' + st[2] + '">Open &rsaquo;</a>' +
+        '<button type="button" class="pb-tick' + (on ? ' on' : '') + '" data-step="' + st[0] + '" aria-pressed="' + on + '">' + (on ? 'Done' : 'Mark done') + '</button></li>';
+    }).join('') + '</ol>';
   }
+  function paintSteps() {
+    var box = document.getElementById('pbCheck'); if (!box) return;
+    [].forEach.call(box.querySelectorAll('[data-step]'), function (b) {
+      var on = !!SV.fix['step-' + b.getAttribute('data-step')];
+      b.classList.toggle('on', on); b.setAttribute('aria-pressed', String(on)); b.textContent = on ? 'Done' : 'Mark done';
+      b.closest('li').classList.toggle('on', on);
+    });
+    var p = document.getElementById('pbProg'); if (p) p.textContent = stepsDone() + ' of ' + STEPS.length + ' done';
+  }
+  function viewOverview() {
+    var ul = function (xs) { return '<ul>' + xs.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>'; };
+    main.innerHTML = head('Vegans Explore Guides for business', 'Adding plant-based options? You\'re in the right place.', '') +
+      '<div class="pb-story">' +
+      '<h3>The elephant in the room</h3><p>You might be worried you\'ll get it wrong. You\'ll call something plant-based and someone will find butter in it. Or you\'ll put a dish on the menu that nobody orders. Or you\'ll feel like a Vegan crowd is waiting to judge you. That\'s normal, and it\'s exactly why this Guide exists.</p>' +
+      '<h3>You\'re in the right place</h3><p>This Guide is for businesses that aren\'t Vegan and want to offer plant-based options: coffee shops, gyms, juice bars, cafes, caterers and restaurants. You don\'t have to change who you are to start.</p>' +
+      '<h3>Why this Guide exists</h3><p>We started Pre-Vegans as a pathway: a place where people who aren\'t Vegan yet are met with education and compassion, not judgment. This Guide is that same pathway for businesses. Plant-based options are where it starts. Where it goes is up to you.</p>' +
+      '<h3>What to expect</h3>' + ul(['What to add first for your kind of business, what to stock and what to watch for', 'Who sells it ready-made, every supplier with an honest label', 'A recipe for each item if you\'d rather make it', 'The right words for your menu, so customers trust what they read', 'How people find you on Vegans Explore, and how to claim your page']) +
+      '<h3>When you finish</h3><p>You\'ll have your first plant-based items picked, someone to buy them from or a recipe to make them, the right words on your menu, and your page on Vegans Explore where people are looking. Finishing means five things, and you can tick them as you go:</p>' +
+      checklist() +
+      '<h3>How to use this Guide</h3>' + ul(['The tabs across the top are the tour. Go in order with Back and Next, or jump to what you need.', 'Press Play under my name and I\'ll talk you through each page.', 'Save anything to My list so it\'s there next time.', 'If a page is locked, take the short survey and the whole Guide opens.']) +
+      '<h3>It\'s easier than it looks</h3><p>It\'s free. The survey takes a few minutes. There is no wrong place to start, and nobody is grading you.</p>' +
+      '<h3>Ask me</h3><p>Stuck on something? Ask me. If I can\'t answer it, I\'ll pass it to our team and a real person will get back to you.</p>' +
+      '</div>' +
+      '<div class="dg-start" style="margin-top:16px">' + (member() ? '<a class="dg-btn" href="#/add">Start with What to add</a>' : '<button type="button" class="dg-btn" data-survey>Take the survey</button><p>Free, no card.</p>') + '</div>' +
+      '<p class="dg-status" role="status" aria-live="polite"></p>';
+    if (member()) loadSaves(paintSteps);
+  }
+  // A group page (members): its sections as tiles.
+  function viewGroup(g) {
+    var G = group(g);
+    if (G.k === 'start') return viewOverview();
+    main.innerHTML = crumb([[G.label]]) + head('The Pre-Vegan Business Guide', esc(G.label), esc(G.line)) +
+      '<div class="dg-tiles">' + kidsOf(G.k).map(function (k) {
+        var t = tab(k), blurb = { why: 'Honest reasons, with sources, and what it will not do.', say: 'The words for your menu, and a line for a shared kitchen.',
+          add: 'First items, what to stock and what to watch for.', sourcing: 'Who sells it ready-made, each with an honest label.', make: 'For each item, a supplier or a home-scale recipe.',
+          found: 'How people find you in the Directory.', claim: 'Find your business and make the page yours.', mylist: 'Everything you saved.', next: 'What you can do next.' }[k] || '';
+        return '<a class="dg-tile' + (k === 'add' ? ' dg-warm' : '') + '" href="' + href(k) + '"><div class="dg-ic">' + (ICON[k] || ICON.book) + '</div><div><b>' + esc(t.label) + '</b><span>' + esc(blurb) + '</span></div></a>';
+      }).join('') + '</div>';
+  }
+  ICON.mylist = BOOKMARK.replace('width="13" height="13"', 'width="24" height="24"').replace('fill="currentColor"', 'fill="#1f5f22"');
+  ICON.next = ICON.follow;
 
   // ---------- search (members) ----------
   function index() {
     var out = [];
-    PUB.why.forEach(function (w) { out.push({ t: 'Why add Vegan', title: w.title, text: w.text, href: '#/why' }); });
+    PUB.why.forEach(function (w) { out.push({ t: 'Why add plant-based', title: w.title, text: w.text, href: '#/why' }); });
     PUB.say.forEach(function (x) { out.push({ t: 'How to say it', title: x[0], text: x[1], href: '#/say' }); });
     allAdds().forEach(function (a) { if (!a.locked) out.push({ t: 'What to add', title: a.title, text: [a.short].concat(a.firsts || [], a.stock || [], a.watch || [], [a.start]).join(' '), href: '#/add/' + a.id }); });
     return out;
@@ -545,7 +638,7 @@
     var hits = index().filter(function (h) { var hay = (h.title + ' ' + h.text).toLowerCase(); return words.every(function (w) { return hay.indexOf(w) >= 0; }); });
     var groups = {}; hits.forEach(function (h) { (groups[h.t] = groups[h.t] || []).push(h); });
     var html = crumb([['Search']]) + '<h2 class="dg-h1">' + hits.length + (hits.length === 1 ? ' result' : ' results') + ' for &ldquo;' + esc(q) + '&rdquo;</h2><div class="dg-res">';
-    ['What to add', 'How to say it', 'Why add Vegan'].forEach(function (g) {
+    ['What to add', 'How to say it', 'Why add plant-based'].forEach(function (g) {
       if (!groups[g]) return;
       html += '<h2>' + esc(g) + ' (' + groups[g].length + ')</h2><div class="dg-grid">' + groups[g].slice(0, 24).map(function (h) {
         return '<a class="dg-card dg-hit" href="' + h.href + '"><h3>' + esc(h.title) + '</h3><p>' + esc(h.text.length > 160 ? h.text.slice(0, 157) + '...' : h.text) + '</p></a>';
@@ -579,7 +672,7 @@
   });
   try { if (sessionStorage.getItem('pb_maya_folded')) setFold(true); } catch (e) {}
   var mayaBox = document.getElementById('dgMaya'), bubble = document.getElementById('dgBubble'), playBtn = document.getElementById('dgPlay'), tourEl = document.getElementById('dgTour');
-  function mayaAudio(k) { var f = (member() ? AUDIO_M : AUDIO_V)[k] || AUDIO_V[k]; return f ? AUDIO_BASE + f + '.mp3' : null; }
+  function mayaAudio(k) { if (/^g:/.test(k)) return null; var f = (member() ? AUDIO_M : AUDIO_V)[k] || AUDIO_V[k]; return f ? AUDIO_BASE + f + '.mp3' : null; }
   var aud = new Audio(); aud.preload = 'none';
   aud.addEventListener('ended', function () { TOUR.playing = false; drawMaya(); });
   function cueMaya(k) {
@@ -596,15 +689,27 @@
   function stopMaya() { try { aud.pause(); } catch (e) {} TOUR.playing = false; }
   playBtn.addEventListener('click', function () { if (!TOUR.started) { TOUR.started = true; TOUR.paused = false; playMaya(); } else if (TOUR.playing) { TOUR.paused = true; stopMaya(); } else { TOUR.paused = false; playMaya(); } drawMaya(); });
   function drawMaya() {
-    var t = tab(curTab), list = tabs(), i = 0;
-    list.forEach(function (x, n) { if (x.k === curTab) i = n; });
-    bubble.textContent = member() && t.sayMember ? t.sayMember : t.say;
-    // No recording yet: no Play button, her words are in the bubble.
+    var isG = /^g:/.test(curTab), t = isG ? null : tab(curTab);
+    var st = tourSteps(), key = curTab === 'search' ? 'overview' : curTab, i = Math.max(0, st.indexOf(key));
+    bubble.textContent = isG ? group(curTab.slice(2)).say : (member() && t.sayMember ? t.sayMember : t.say);
+    // A page with no recording for this visitor (a group page, for now): no Play button, her words are in the bubble.
     playBtn.hidden = !mayaAudio(curTab);
     playBtn.classList.toggle('go', !TOUR.started);
     playBtn.innerHTML = !TOUR.started ? '&#9654; Play Maya' : TOUR.playing ? 'Pause Maya' : '&#9654; Play Maya';
-    tourEl.innerHTML = tourM.innerHTML = '<a class="dg-tnav" href="' + href(list[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Back</a><span>' + (i + 1) + ' of ' + list.length + '</span>' +
-      '<a class="dg-tnav next" href="' + href(list[Math.min(list.length - 1, i + 1)].k) + '"' + (i < list.length - 1 ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Next</a>';
+    var pos;
+    if (member()) { var gi = 0; GROUPS.forEach(function (g, n) { if (g.k === groupOf(key === 'overview' ? 'start' : key)) gi = n; }); pos = (gi + 1) + ' of ' + GROUPS.length; }
+    else pos = (i + 1) + ' of ' + st.length;
+    tourEl.innerHTML = tourM.innerHTML = '<a class="dg-tnav" href="' + stepHref(st[Math.max(0, i - 1)]) + '"' + (i ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Back</a><span>' + pos + '</span>' +
+      '<a class="dg-tnav next" href="' + stepHref(st[Math.min(st.length - 1, i + 1)]) + '"' + (i < st.length - 1 ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Next</a>';
+  }
+  // A section's crumb names its group for members: Pre-Vegan Business Guide > Add it > Sourcing.
+  function groupCrumb(key) {
+    if (!member() || key === 'overview' || key === 'search' || /^g:/.test(key)) return;
+    var G = group(groupOf(key)); if (G.k === 'start') return;
+    var link = ' &rsaquo; <a href="' + gHref(G.k) + '">' + esc(G.label) + '</a>';
+    var c = main.querySelector('.dg-crumb');
+    if (c && c === main.firstElementChild) { var a = c.querySelector('a'); if (a) a.insertAdjacentHTML('afterend', link); }
+    else main.insertAdjacentHTML('afterbegin', '<div class="dg-crumb"><a href="#/">Pre-Vegan Business Guide</a>' + link + ' &rsaquo; ' + esc(tab(key).label) + '</div>');
   }
 
   // ---------- router ----------
@@ -612,7 +717,8 @@
     var parts = (location.hash || '').replace(/^#\/?/, '').split('/');
     var view = parts[0] || 'overview', sub = parts.slice(1).join('/');
     if (view === 'search' && (!sub || !member())) view = 'overview';
-    var known = { overview: 1, why: 1, add: 1, say: 1, sourcing: 1, make: 1, found: 1, claim: 1, next: 1, mylist: 1, join: 1, search: 1 };
+    var known = { overview: 1, why: 1, add: 1, say: 1, sourcing: 1, make: 1, found: 1, claim: 1, next: 1, mylist: 1, join: 1, search: 1, g: 1 };
+    if (view === 'g' && !member()) { view = 'overview'; sub = ''; }
     if (!known[view]) view = 'overview';
     // The members' tabs send a visitor to Get in, once the access check has answered.
     if (access !== 'checking' && !member() && TABS.some(function (t) { return t.k === view && t.mine; })) { view = 'join'; sub = ''; location.replace('#/join'); }
@@ -622,12 +728,17 @@
     if (view === 'search') key = curTab;
     if (view === 'join' && member()) { view = 'next'; sub = ''; key = 'next'; location.replace('#/next'); }
     if (member() && !svState) loadSaves();
+    if (view === 'g') { key = !sub || group(sub).k === 'start' ? 'overview' : 'g:' + group(sub).k; }
     drawMenu(view === 'search' ? 'search' : key);
     if (view !== 'search' && qEl.value && document.activeElement !== qEl) qEl.value = '';
+    var moved = key !== curTab;
     curTab = key;
     ({ overview: viewOverview, why: viewWhy, add: function () { viewAdd(sub); }, say: viewSay, sourcing: function () { viewSourcing(sub); }, make: function () { viewMake(sub); },
-       found: viewFound, claim: viewClaim, next: function () { viewNext(sub); }, mylist: viewMyList, join: viewJoin, search: function () { viewSearch(decodeURIComponent(sub)); } })[view]();
+       found: viewFound, claim: viewClaim, next: function () { viewNext(sub); }, mylist: viewMyList, join: viewJoin, search: function () { viewSearch(decodeURIComponent(sub)); },
+       g: function () { viewGroup(sub); } })[view]();
+    groupCrumb(key);
     cueMaya(key);
+    if (moved && TOUR.started && !TOUR.paused) playMaya();
     drawMaya();
     if (view !== 'search') { main.scrollTop = 0; if (!document.documentElement.classList.contains('dg-fit') || window.innerWidth <= 900) window.scrollTo(0, 0); }
   }
@@ -653,6 +764,16 @@
     if ((el = e.target.closest('[data-notify]'))) { e.preventDefault(); notifyMe(el.getAttribute('data-notify'), el); return; }
     if ((el = e.target.closest('[data-copylink]'))) { e.preventDefault(); copyText(shareLink()).then(function () { setStatus('Copied. Anyone who joins with it is credited to you: ' + shareLink()); }); return; }
     if ((el = e.target.closest('[data-copy]'))) { e.preventDefault(); copyText(el.getAttribute('data-copy')).then(function () { setStatus('Copied.'); }); return; }
+    if ((el = e.target.closest('[data-step]'))) {
+      e.preventDefault();
+      var sk = 'step-' + el.getAttribute('data-step'), son = !SV.fix[sk];
+      if (son) SV.fix[sk] = 1; else delete SV.fix[sk];
+      paintSteps();
+      cookApi({ action: 'save', kind: 'fix', key: sk, on: son }).then(function (r) { if (!r || !r.ok) throw r; }).catch(function () {
+        if (son) delete SV.fix[sk]; else SV.fix[sk] = 1; paintSteps(); setStatus('We could not save that just now. Try again in a moment.');
+      });
+      return;
+    }
     if ((el = e.target.closest('[data-save]'))) {
       e.preventDefault(); e.stopPropagation();
       var kk = el.getAttribute('data-save'), i = kk.indexOf(':'), kind = kk.slice(0, i), key = kk.slice(i + 1), on = !SV[kind][key];

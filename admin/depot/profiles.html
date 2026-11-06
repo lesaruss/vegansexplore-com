@@ -198,6 +198,11 @@
             }).join('') + '</div>';
           }).join('');
           var pubKeys = Object.keys(pub.answers || {});
+          // Guide surveys (the Explorer survey first, then each business Guide's intake), as they answered them (membership_rule_v6).
+          var gsecs = (d.guide_surveys || []).map(function (g) {
+            return '<h3 class="sec">' + esc(g.title) + (g.completed_at ? ' <span class="tag t-shown">Finished ' + esc(day(g.completed_at)) + '</span>' : ' <span class="tag t-private">Not finished</span>') + '</h3><div class="qa">' +
+              (g.qa || []).map(function (x) { return '<div><span class="q">' + esc(x.q) + '</span><span class="a">' + esc(x.a == null || x.a === '' ? 'Not answered' : x.a) + '</span></div>'; }).join('') + '</div>';
+          }).join('');
           setTimeout(function () { if (rev) wireDecision(rev); }, 0);
           app.innerHTML = '<p class="crumb"><a href="#list">Profiles</a> / ' + (rev ? '<a href="#review">Waiting for review</a> / ' : '') + esc(m.name || 'Member') + '</p>' + (rev ? decisionPanel(rev) : '') +
             '<div class="kv"><div><span>Name</span>' + esc(m.name) + '</div><div><span>Email</span>' + esc(m.email) + '</div><div><span>City</span>' + esc(city(m.home_community)) + '</div>' +
@@ -205,7 +210,7 @@
             '<div><span>Profile points</span>' + Number(P.earned || 0) + ' of ' + Number(P.total || 250) + '</div></div>' +
             '<div class="card pub"><h2>What anyone outside the team could see</h2><p><b>' + esc(pub.name || '') + '</b></p>' +
             (pubKeys.length ? '<p>' + pubKeys.map(function (k) { var x = VEMissionSurvey.steps.reduce(function (f, st) { return f || st.qs.filter(function (q) { return q.id === k; })[0]; }, null); return x ? esc(x.label) + ' <b>' + esc(VEMissionSurvey.said(x, pub.answers[k])) + '</b>' : ''; }).join('<br>') + '</p>' : '<p>Nothing yet: no answer they marked Can be shown.</p>') +
-            '<p class="hint">Shown only inside a window we open (an event they RSVP to, a campaign they opt into), never in a public list.</p></div>' + secs;
+            '<p class="hint">Shown only inside a window we open (an event they RSVP to, a campaign they opt into), never in a public list.</p></div>' + gsecs + secs;
         });
       }
 
