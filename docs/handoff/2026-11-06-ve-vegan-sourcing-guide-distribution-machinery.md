@@ -29,3 +29,8 @@ Migration `20261106_sourcing_batch_distribution_machinery.sql`, applied. No Goog
 - Logan: more machinery (tempeh incubators, nut milk lines at production scale, filling and pasteurizing) and US regional distributors with
   real Vegan ranges, a handful at a time; the Pre-Vegan Business Guide shows the same tab.
 - Sean: Liz's Sourcing line (`docs/proposals/liz-audio-scripts.md`) still waits; nothing recorded.
+
+**Update, batch 2 (same day).** Sean: "Keep Equipment, go with your defaults." Equipment stays as named. Added Earthly Gourmet (Portland; its own
+product criteria require 100% plant-based, so Fully vegan company), UNFI (Offers vegan options), ProSoya (soy, oat and almond milk equipment) and The Oater
+(a café oat milk machine from Cologne, pilots only, so its bio_source says confirm first) as Equipment. Migration `20261106_sourcing_batch_2.sql`, applied.
+Machinery 6, Distributors 6, 232 active. Playbook record and index row updated. Liz's Sourcing line is not recorded: it still needs Sean's read.
