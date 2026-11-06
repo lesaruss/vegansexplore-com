@@ -11,7 +11,14 @@
  * pascal); with no guide it reads the page: the Guide rail (#dgRail data-guide), the Resources tab's Guide, else Liz. For a super
  * admin this file also puts a "Talk to <Guide>" button on every Guide panel it finds, now and as tabs draw: the Guide rail on a
  * Guide page, the Partner Dashboard tour's narrator (.vgt-narr), and each Resources card (.gt-card). ve-feedback.js loads this file
- * for super admins. On a page that is not a listing the Guide answers and files Notes for Logan (Depot > Feedback). */
+ * for super admins. On a page that is not a listing the Guide answers and files Notes for Logan (Depot > Feedback).
+ *
+ * Step 3 (2026-11-06, Sean: "Go with your defaults"): the same "Talk to <Guide>" button for everyone, on the Guide panels only (the
+ * Feedback button stays the plain form for anyone but a super admin). A member (a paid or survey account, VEAuth.isLoggedIn) asks the
+ * page's Guide: saved answers first (ve-auth guide_ask, free), and when none fits, "Ask <Guide> directly · 4 points" (guide_chat_send,
+ * the monthly allowance, told which page they are on) or "Ask a person" (guide_ask_person, free). No changes, no Apply. A visitor or an
+ * unpaid account gets "Suggest a change" in the Guide's voice (one box and an optional email, sent to ve-feedback as kind suggestion),
+ * with a note that members can ask the Guide. ve-feedback.js loads this file on any page with a Guide panel. */
 (function () {
   if (window.VEPageGuide) return;
   var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-page-guide';
@@ -50,14 +57,13 @@
       '.vepg-ch .ap:disabled{opacity:.5;cursor:default;}.vepg-f{border-top:1px solid rgba(0,0,0,.1);padding:12px 16px;}' +
       '.vepg-f textarea{display:block;width:100%;box-sizing:border-box;min-height:70px;max-height:180px;resize:vertical;border:1px solid rgba(0,0,0,.22);border-radius:6px;padding:9px 12px;font:500 14px/1.45 inherit;font-family:inherit;color:#14261a;}' +
       '.vepg-f .row{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-top:8px;flex-wrap:wrap;}.vepg-f .go{background:var(--vb-accent,#1E7A3E);color:#fff;border:0;border-radius:6px;padding:11px 18px;font:800 14px/1 inherit;font-family:inherit;cursor:pointer;}' +
-      '.vepg-f .go:disabled{opacity:.5;}.vepg-f .lnk{background:none;border:0;font:700 12.5px inherit;font-family:inherit;cursor:pointer;color:rgba(0,0,0,.6);text-decoration:underline;padding:0;}' +
+      '.vepg-f .go:disabled{opacity:.5;}.vepg .lnk{background:none;border:0;font:700 12.5px inherit;font-family:inherit;cursor:pointer;color:rgba(0,0,0,.6);text-decoration:underline;padding:0;}' +
       '.vepg-talk{display:inline-flex;align-items:center;gap:6px;background:#fff;color:var(--vb-accent,#1E7A3E);border:1.5px solid var(--vb-accent,#1E7A3E);border-radius:6px;padding:8px 12px;font:800 13px/1.1 Montserrat,system-ui,sans-serif;cursor:pointer;margin:8px 0 0;}' +
       '.vepg-talk:hover,.vepg-talk:focus-visible{background:var(--vb-accent,#1E7A3E);color:#fff;}#dgRail>.vepg-talk{align-self:flex-start;}' +
       '@media(max-width:560px){.vepg{width:100%;}}';
     document.head.appendChild(st);
   }
-  function open(o) {
-    o = o || {}; G = slugOf(o.guide) || detect(); css();
+  function openAdmin(o) {
     var N = NAMES[G], isListing = /^\/(dashboard\/)?directory\/[a-z0-9-]+\/?$/i.test(location.pathname);
     var turns = load(), busy = false;
     var wrap = document.createElement('div'); wrap.className = 'vepg-wrap'; wrap.setAttribute('role', 'dialog'); wrap.setAttribute('aria-modal', 'true'); wrap.setAttribute('aria-label', 'Talk to ' + N + ' about this page');
@@ -126,11 +132,134 @@
     ta.addEventListener('keydown', function (e) { if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) f.requestSubmit(); });
     draw(); setTimeout(function () { ta.focus(); }, 30);
   }
-  // "Talk to <Guide>" on every Guide panel, for a super admin signed in as themselves.
   function isAdmin() { try { var m = window.VEAuth && VEAuth.isLoggedIn && VEAuth.isLoggedIn() && VEAuth.getMember && VEAuth.getMember(); return !!(m && m.is_superadmin); } catch (e) { return false; } }
+  function isMember() { try { return !!(window.VEAuth && VEAuth.isLoggedIn && VEAuth.isLoggedIn()); } catch (e) { return false; } }
+  function open(o) {
+    o = o || {}; G = slugOf(o.guide) || detect(); css();
+    if (isAdmin()) return openAdmin(o);
+    if (isMember()) return openMember(o);
+    return openVisitor(o);
+  }
+  // The panel every mode shares: the Guide's picture, a line, the log and the box.
+  function shell(sub, ph, foot, sendLabel) {
+    var N = NAMES[G];
+    var wrap = document.createElement('div'); wrap.className = 'vepg-wrap'; wrap.setAttribute('role', 'dialog'); wrap.setAttribute('aria-modal', 'true'); wrap.setAttribute('aria-label', 'Talk to ' + N);
+    wrap.innerHTML = '<div class="vepg"><div class="vepg-h"><img alt="" src="' + esc(pic()) + '"><div><b>Talk to ' + esc(N) + '</b><span>' + sub + '</span></div><button type="button" class="x" aria-label="Close">&times;</button></div>' +
+      '<div class="vepg-log" aria-live="polite"></div><form class="vepg-f" novalidate><textarea name="t" placeholder="' + esc(ph) + '"></textarea>' + (foot.top || '') +
+      '<div class="row"><span>' + (foot.links || '') + '</span><button type="submit" class="go">' + esc(sendLabel || 'Send') + '</button></div></form></div>';
+    document.body.appendChild(wrap);
+    function close() { wrap.remove(); document.removeEventListener('keydown', onKey); }
+    function onKey(e) { if (e.key === 'Escape') close(); }
+    document.addEventListener('keydown', onKey);
+    wrap.addEventListener('click', function (e) { if (e.target === wrap || e.target.closest('.x')) close(); });
+    return { wrap: wrap, log: wrap.querySelector('.vepg-log'), f: wrap.querySelector('form'), close: close };
+  }
+  var AUTH = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth?action=';
+  var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  function auth(action, body) {
+    body.token = window.VEAuth && VEAuth.getToken ? VEAuth.getToken() : '';
+    return fetch(AUTH + action, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { d._status = r.status; return d; }); }).catch(function () { return { error: 'offline' }; });
+  }
+  function shareUrl() { var u = pageUrl(); return /^https:\/\//.test(u) ? u : location.origin + location.pathname; }
+  // A member: saved answers first, free; then the Guide (4 points) or a person (free). The conversation is kept for the visit.
+  function openMember() {
+    var N = NAMES[G], k = 've_pgm_' + G + '_' + location.pathname, turns, busy = false, conv;
+    try { turns = JSON.parse(sessionStorage.getItem(k) || '[]'); conv = sessionStorage.getItem(k + '_c'); } catch (e) { turns = []; }
+    function newConv() { conv = Math.random().toString(36).slice(2, 10).replace(/[^a-z0-9]/g, 'a'); try { sessionStorage.setItem(k + '_c', conv); } catch (e) {} }
+    if (!conv || !/^[a-z0-9]{4,16}$/.test(conv)) newConv();
+    function keep() { try { sessionStorage.setItem(k, JSON.stringify(turns.slice(-30))); } catch (e) {} }
+    var S = shell('Ask me about this page. Saved answers are free; asking me directly is 4 points.', 'For example: what should I bring to my first potluck?',
+      { links: '<button type="button" class="lnk" data-new>Start over</button>' }, 'Ask');
+    var log = S.log, f = S.f, ta = f.t, go = f.querySelector('.go');
+    function offer(q) { return '<div class="vepg-ch vepg-offer" data-q="' + esc(q) + '"><button type="button" class="ap" data-direct>Ask ' + esc(N) + ' directly &middot; 4 points</button> <button type="button" class="lnk" data-person>Ask a person, free</button></div>'; }
+    function draw() {
+      log.innerHTML = (turns.length ? '' : '<div class="vepg-m s">Ask ' + esc(N) + ' anything about this page or being Vegan here.</div>') + turns.map(function (t) {
+        if (t.role === 'user') return '<div class="vepg-m u">' + esc(t.text) + '</div>';
+        if (t.role === 'note') return '<div class="vepg-m s">' + t.html + '</div>';
+        var link = t.link_url ? '<br><a href="' + esc(t.link_url) + '" style="font-weight:800;color:var(--vb-accent,#1E7A3E)">' + esc(t.link_label || 'Open it') + '</a>' : '';
+        var rel = (t.related || []).length ? '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">' + t.related.map(function (r) { return '<button type="button" class="vepg-talk" style="margin:0" data-rel="' + esc(r.question) + '">' + esc(r.question) + '</button>'; }).join('') + '</div>' : '';
+        return (t.text ? '<div class="vepg-m a">' + esc(t.text) + link + '</div>' : '') + rel + (t.offer && !t.used ? offer(t.offer) : '');
+      }).join('') + (busy ? '<div class="vepg-m s">' + esc(N) + ' is thinking...</div>' : '');
+      log.scrollTop = log.scrollHeight;
+    }
+    function ask(text) {
+      if (!text || busy) return;
+      turns.push({ role: 'user', text: text }); busy = true; go.disabled = true; keep(); draw();
+      auth('guide_ask', { message: text, agent_slug: G, page_url: shareUrl() }).then(function (d) {
+        busy = false; go.disabled = false;
+        if (d && d.answer) turns.push({ role: 'assistant', text: d.answer.answer, link_url: d.answer.link_url, link_label: d.answer.link_label, related: d.related, offer: text, kb: 1 });
+        else turns.push({ role: 'assistant', text: d && d.error ? 'I could not look that up just now. Try again in a moment.' : 'I do not have a saved answer for that yet.', related: d && d.related, offer: text });
+        keep(); draw(); ta.focus();
+      });
+    }
+    f.addEventListener('submit', function (e) { e.preventDefault(); var t = (ta.value || '').trim(); ta.value = ''; ask(t); });
+    ta.addEventListener('keydown', function (e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); f.requestSubmit(); } });
+    S.wrap.addEventListener('click', function (e) {
+      if (e.target.closest('[data-new]')) { turns = []; newConv(); keep(); draw(); return; }
+      var rel = e.target.closest('[data-rel]'); if (rel) { ask(rel.getAttribute('data-rel')); return; }
+      var box = e.target.closest('.vepg-offer'); if (!box || busy) return;
+      var q = box.getAttribute('data-q'), src = null;
+      for (var i = turns.length - 1; i >= 0; i--) if (turns[i].offer === q && !turns[i].used) { src = turns[i]; break; }
+      if (e.target.closest('[data-direct]')) {
+        if (src) src.used = 1; busy = true; go.disabled = true; keep(); draw();
+        auth('guide_chat_send', { agent_slug: G, message: q, conversation: conv, page_url: shareUrl(), page_label: document.title }).then(function (d) {
+          busy = false; go.disabled = false;
+          if (d && d.reply) {
+            turns.push({ role: 'assistant', text: d.reply });
+            if (d.balance != null) turns.push({ role: 'note', html: esc(d.balance) + ' points left.' + (d.memory && d.memory.used >= 16 ? ' ' + esc(N) + ' remembers the last 20 messages. <button type="button" class="lnk" data-new>Start a new conversation</button>' : '') });
+          } else if (d && d.error === 'insufficient_points') {
+            if (src) src.used = 0;
+            turns.push({ role: 'note', html: 'You have ' + esc(d.balance || 0) + ' points, and asking directly is 4. Earn more with <a href="/bounties">Bounties</a>, or ask a person for free.' });
+          } else { if (src) src.used = 0; turns.push({ role: 'note', html: esc(N) + ' could not answer just now. No points were taken. Try again in a moment.' }); }
+          keep(); draw();
+        });
+      }
+      if (e.target.closest('[data-person]')) {
+        if (src) src.used = 1; busy = true; keep(); draw();
+        auth('guide_ask_person', { message: q, agent_slug: G, page_url: shareUrl() }).then(function (d) {
+          busy = false;
+          if (d && d.ok) turns.push({ role: 'note', html: 'Sent to our team. They reply to your email.' });
+          else { if (src) src.used = 0; turns.push({ role: 'note', html: d && d.error === 'daily_limit' ? 'You have sent five today. The team has them.' : 'That did not send. Try again in a moment.' }); }
+          keep(); draw();
+        });
+      }
+    });
+    draw(); setTimeout(function () { ta.focus(); }, 30);
+  }
+  // A visitor, or an account that has not joined yet: a suggestion in the Guide's voice, sent to the team (ve-feedback, kind suggestion).
+  function openVisitor() {
+    var N = NAMES[G];
+    var S = shell('I can pass a change to the team. What should be different on this page?', 'For example: the hours on this page are out of date.',
+      { top: '<input name="em" type="email" autocomplete="email" placeholder="Your email, if you would like a reply (optional)" style="display:block;width:100%;box-sizing:border-box;margin-top:8px;border:1px solid rgba(0,0,0,.22);border-radius:6px;padding:9px 12px;font:500 14px/1.4 inherit;font-family:inherit;">' }, 'Send to the team');
+    var log = S.log, f = S.f, ta = f.t, go = f.querySelector('.go');
+    var join = '<div class="vepg-m s" style="text-align:left;align-self:stretch;background:#f1f6f2;border-radius:10px;padding:10px 12px;color:#14261a">Members can ask ' + esc(N) + ' questions here too. ' +
+      'Join free with a short survey, or with the $11 Passport. <a href="/passport#/join" style="font-weight:800;color:var(--vb-accent,#1E7A3E)">See how to join</a></div>';
+    log.innerHTML = '<div class="vepg-m a">Hi, I am ' + esc(N) + '. Spotted something wrong, missing or out of date? Tell me and I will make sure the team sees it.</div>' + join;
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var msg = (ta.value || '').trim(), em = (f.em.value || '').trim();
+      var bad = msg.length < 5 ? 'A few words about it, please.' : em && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em) ? 'That email does not look right.' : '';
+      var old = log.querySelector('.vepg-err'); if (old) old.remove();
+      if (bad) { log.insertAdjacentHTML('beforeend', '<div class="vepg-m s vepg-err" style="color:#8a1c12">' + bad + '</div>'); return; }
+      go.disabled = true; go.textContent = 'Sending...';
+      var vid = ''; try { vid = localStorage.getItem('ve_visitor') || ''; } catch (er) {}
+      fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ page_url: shareUrl(), page_label: (document.title || '').replace(/\s*[—|-]\s*Vegans Explore\s*$/i, '').slice(0, 80), kind: 'suggestion', message: msg, email: em,
+          name: 'A visitor (via ' + N + ')', visitor: vid, signed_in: false, viewport: innerWidth + 'x' + innerHeight }) })
+        .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+        .then(function (x) {
+          if (!x.ok || !x.d.ok) { go.disabled = false; go.textContent = 'Send to the team'; log.insertAdjacentHTML('beforeend', '<div class="vepg-m s vepg-err" style="color:#8a1c12">' + (x.d && x.d.error === 'daily_limit' ? 'You have sent a few already. Thank you, we have them.' : 'That did not go through. Try again in a moment.') + '</div>'); return; }
+          f.remove();
+          log.innerHTML = '<div class="vepg-m u">' + esc(msg) + '</div><div class="vepg-m a">Thank you. The team has it' + (em ? ', and if they need more they will write to ' + esc(em) : '') + '.</div>' + join;
+        })
+        .catch(function () { go.disabled = false; go.textContent = 'Send to the team'; });
+    });
+    setTimeout(function () { ta.focus(); }, 30);
+  }
+  // "Talk to <Guide>" on every Guide panel, for everyone (step 3; super admins only in step 2).
   function talkBtn(g) { return '<button type="button" class="vepg-talk" data-vepg-talk="' + g + '">Talk to ' + esc(NAMES[g]) + '</button>'; }
   function attach() {
-    if (!isAdmin()) return;
     css();
     var rail = document.getElementById('dgRail');
     if (rail && !rail.querySelector('[data-vepg-talk]')) {
