@@ -1387,6 +1387,15 @@ are three idea places (this tab, Depot > Ideas with `ve_ideas` and the `idea-fil
 merging them in one chat. The Blueprint is finite: build its main parts first, then it becomes the one idea capture, with uploads (screenshots,
 documents, voice memos) queued under New for Logan to sort. Handoff `docs/handoff/2026-11-06-ve-feedback-blueprint-ideas.md`.
 
+## One Blueprint, and Signal (Sean, 2026-11-06, playbooks `branddesk-production-wing`, `signal`)
+
+The three Blueprint chats are one: `branddesk-production-wing` is the Blueprint playbook (ve-idea-intake parked and folded in), and **`ve-feedback` is the Blueprint's small-fixes queue**.
+Blueprint > Ideas holds every idea, Blueprint or not; sorting sends each to its playbook. The A to Z (A to G live, H and I waiting on Sean, J to R pending, K next: uploads on Ideas with the
+Claude output-limit check built in) is in `docs/handoff/2026-11-06-branddesk-production-wing-one-blueprint-a-to-z.md`. **Signal is its own playbook, `signal`** (Sean: "our version of ISD,
+Information Systems Division... everything about technology, the background, the platform"): Search Console, page speed, tag manager, uptime and errors, database security, costs and the technical
+fixes, building on `canon-branddesk-blueprint-signal`. Logan's defaults, not yet confirmed: Sentinel (`sentinel-gap-closure-playbook`) becomes Signal's monitoring engine, and the older
+`arch-signal-system` (an interest-based comms layer) gets renamed so Signal means IT only.
+
 ## Wrap up (Sean, 2026-11-03, canon `canon-wrap-up-standard`)
 
 "When we leave this room, I don't want anything on the floor." On Sean's cue ("wrap up", about 70% context) Logan sweeps the session into the
