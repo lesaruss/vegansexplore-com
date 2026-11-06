@@ -56,9 +56,10 @@ update public.ve_survey_questions q set points = 7 where q.survey_slug = 'pre-ve
 
 drop function public.ve_badge_questions_place(text, text, text, int, int[]);
 
-do $$ declare r record; begin
+do $$ declare r record; want int; begin
   for r in select survey_slug, sum(points) t from public.ve_survey_questions where survey_slug in ('vegan-events-guide','vegan-restaurant-guide','pre-vegan-business-guide') group by 1 loop
-    if r.t <> case r.survey_slug when 'pre-vegan-business-guide' then 100 else 250 end then raise exception '% totals %', r.survey_slug, r.t; end if;
+    want := 250; if r.survey_slug = 'pre-vegan-business-guide' then want := 100; end if;
+    if r.t <> want then raise exception '% totals %', r.survey_slug, r.t; end if;
   end loop;
 end $$;
 
