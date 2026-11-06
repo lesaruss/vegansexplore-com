@@ -67,7 +67,7 @@ async function readIdea(id: string) {
   if (!idea) return { error: 'not_found' };
   const apiKey = await secret('ANTHROPIC_API_KEY');
   if (!apiKey) return { error: 'no_model_key' };
-  const { data: pbs } = await db.from('ve_playbook_index').select('slug,title,goal,status').neq('status', 'Done').limit(120);
+  const { data: pbs } = await db.from('ve_playbook_index').select('slug,title,goal,status').neq('status', 'done').limit(120);
   const pbText = (pbs || []).map((p: any) => `- ${p.slug}: ${p.title || ''}${p.goal ? ' (' + String(p.goal).slice(0, 160) + ')' : ''}`).join('\n');
   const content: any[] = [];
   for (const f of (idea.files || []).slice(0, 8)) {
