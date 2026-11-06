@@ -50,6 +50,7 @@
     { group: 'Directory', href: '/admin/depot/checkins', label: 'Check-ins' },
     { group: 'Directory', href: '/admin/depot/challenge-stops', label: 'Passport Challenge stops' },
     { group: 'Directory', href: '/admin/depot/event-sponsors', label: 'Event sponsors' },
+    { group: 'Directory', href: '/admin/depot/badges', label: 'Business badges' },
     { group: 'Directory', href: '/admin/depot/certification', label: 'Pre-Vegan Certification' },
     { group: 'Content', href: '/admin/depot/inbox', label: 'Inbox' },
     { group: 'Content', href: '/admin/depot/social', label: 'Social' },

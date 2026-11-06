@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Business badges | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);--ve-red:#8a1c12;}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:13px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:14px;}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;}
+    .tabs a{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-text);text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(360px,100%),1fr));gap:14px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
+    .card .body{padding:14px 16px;display:flex;flex-direction:column;gap:8px;flex:1;}
+    .who{display:flex;gap:12px;align-items:center;}
+    .av{width:44px;height:44px;border-radius:8px;flex:none;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:15px;background:var(--ve-green-deep);object-fit:cover;}
+    .who b{font-size:15px;font-weight:800;line-height:1.25;display:block;}
+    .meta{font-size:12.5px;color:var(--ve-text-75);}
+    .excerpt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13.5px;}
+    .chips{display:flex;gap:6px;flex-wrap:wrap;}
+    .chip{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:6px;background:#f1f3f1;color:#333;}
+    .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;align-items:center;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;}
+    .btn:disabled{opacity:.5;cursor:default;}
+    .btn-quiet{background:#fff;color:var(--ve-green-deep);border:1px solid var(--ve-green-deep);}
+    .btn-stop{background:var(--ve-red);}
+    .btn-ghost{background:#fff;color:var(--ve-red);border:1px solid rgba(0,0,0,0.25);}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);}
+    .msg.err{color:var(--ve-red);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .tools{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px;}
+    .tools input{font-family:inherit;font-size:13px;min-height:40px;padding:8px 12px;border:1px solid var(--ve-border);border-radius:6px;background:#fff;color:var(--ve-text);flex:1;min-width:200px;}
+    .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:#eef1ee;color:#333;}
+    .tag.checking{background:#fff1dc;color:#8a5200;}.tag.follow_up{background:#e3eefc;color:#0f4a91;}.tag.shown{background:var(--ve-green-light);color:var(--ve-green-deep);}.badge{display:inline-block;font-size:12px;font-weight:900;padding:4px 10px;border-radius:6px;background:var(--ve-green-deep);color:#fff;}
+    .mode{background:#fff;border:1px solid var(--ve-border);border-left:4px solid var(--ve-orange);border-radius:10px;padding:12px 16px;margin:0 0 16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-size:13.5px;}
+    .mode.on{border-left-color:var(--ve-green);}
+    .mode p{flex:1;min-width:240px;}
+    .crumb{font-size:12.5px;margin-bottom:12px;}.crumb a{color:var(--ve-green-deep);font-weight:700;}
+    .cols{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:16px;align-items:start;}
+    @media (max-width:1000px){.cols{grid-template-columns:1fr;}}
+    .box{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:18px 20px;margin-bottom:16px;}
+    .box dl{display:grid;grid-template-columns:150px 1fr;gap:6px 14px;font-size:13.5px;}.box dt{font-weight:800;color:var(--ve-text-75);}.box dd{word-break:break-word;}
+    @media (max-width:600px){.box dl{grid-template-columns:1fr;}.box dt{margin-top:6px;}}
+    .scroll{max-height:300px;overflow:auto;border:1px solid var(--ve-border);border-radius:8px;}
+    table{width:100%;border-collapse:collapse;font-size:12.5px;}th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--ve-border);vertical-align:top;}th{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);position:sticky;top:0;background:#f7faf7;}
+    .row{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--ve-border);font-size:13.5px;flex-wrap:wrap;}.row:last-child{border-bottom:0;}.row a{color:var(--ve-green-deep);font-weight:700;}
+    .log{list-style:none;display:grid;gap:10px;font-size:13.5px;}.log li{border-left:3px solid var(--ve-green);padding:2px 0 2px 12px;}
+    textarea{font-family:inherit;font-size:14px;width:100%;min-height:96px;padding:10px 12px;border:1px solid var(--ve-border);border-radius:6px;margin:6px 0 10px;}
+    .judge{border:2px solid var(--ve-green-deep);}
+    .neg{color:var(--ve-red);font-weight:700;}.pos{color:var(--ve-green-deep);font-weight:700;}
+    .pick{display:grid;gap:8px;margin-bottom:12px;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Business badges</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Each business's own intake answers set its badge (100% Vegan, 100% Plant-based or Pre-Vegan). We never judge it for them. <b>100% Vegan shows only after you check it</b>; until then their page shows 100% Plant-based. Open one to read their answers, then approve 100% Vegan or note that the team will follow up. Pre-Vegan Certified never comes from answers, only from our item checks.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden>
+      <div id="view"></div>
+    </main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-badges';
+      var $ = function (id) { return document.getElementById(id); };
+      var TABS = [['checking', 'Waiting for a check'], ['follow_up', 'Team follows up'], ['shown', 'Showing'], ['all', 'All']];
+      var STATUS = { checking: 'Waiting for a check', follow_up: 'Team follows up', shown: 'Showing' };
+      var BADGE = { vegan: '100% Vegan', plant_based: '100% Plant-based', pre_vegan: 'Pre-Vegan' };
+      var data = null;
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function when(t) { return t ? new Date(t).toLocaleString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' ET' : ''; }
+      function day(t) { return t ? new Date(t).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+      function avatar(m) { m = m || {}; return m.avatar_url ? '<img class="av" src="' + esc(m.avatar_url) + '" alt="">' : '<span class="av" style="background:' + esc(m.color || '#1f5f22') + '">' + esc(m.initials || (m.name || '?').slice(0, 2).toUpperCase()) + '</span>'; }
+      function tag(s) { return '<span class="tag ' + esc(s) + '">' + esc(STATUS[s] || s) + '</span>'; }
+      function biz(m) { var b = (m && m.business) || {}; return b.org_name || (m && m.listings && m.listings[0] && m.listings[0].name) || ''; }
+      function route() { var h = location.hash.replace(/^#/, '').split('/'); if (h[0] === 'b') return { v: 'item', id: h[1] }; var t = h[1]; return { v: 'list', tab: TABS.some(function (x) { return x[0] === t; }) ? t : 'checking' }; }
+      function card(r) {
+        var m = r.member || {}, name = biz(m);
+        return '<div class="card"><div class="body"><div class="who">' + avatar(m) + '<div><b>' + esc(name || m.name || 'Unknown') + '</b><span class="meta">' + esc(name ? (m.name || '') + ' &middot; ' : '') + esc(m.email || '') + '</span></div></div>' +
+          '<div>' + tag(r.status) + ' <span class="meta">Their answers say <b>' + esc(BADGE[r.claimed]) + '</b> &middot; showing ' + esc(BADGE[r.shown]) + '</span></div>' +
+          (r.team_note ? '<div class="excerpt meta">' + esc(r.team_note) + '</div>' : '') +
+          '<div class="acts"><a class="btn" href="#b/' + r.member_id + '">Open</a><span class="meta">Since ' + esc(day(r.claimed_at)) + '</span></div></div></div>';
+      }
+      function drawList(r) {
+        var c = data.counts || {};
+        var html = '<nav class="tabs" aria-label="Filter">' + TABS.map(function (t) { return '<a href="#list/' + t[0] + '" class="' + (t[0] === r.tab ? 'on' : '') + '">' + t[1] + ' (' + (c[t[0]] || 0) + ')</a>'; }).join('') + '</nav>';
+        var list = data.rows.filter(function (x) { return r.tab === 'all' || x.status === r.tab; });
+        html += list.length ? '<div class="grid">' + list.map(card).join('') + '</div>' : '<p class="sub">' + (r.tab === 'checking' ? 'Nothing is waiting for a check.' : 'None here.') + '</p>';
+        $('view').innerHTML = html;
+      }
+      function dl(rows) { return '<dl>' + rows.filter(Boolean).map(function (x) { return '<dt>' + x[0] + '</dt><dd>' + x[1] + '</dd>'; }).join('') + '</dl>'; }
+      var KIND = { answers: 'Their answers changed', approve: 'Approved 100% Vegan', follow_up: 'Team follows up', note: 'Note' };
+      function drawItem(r) {
+        $('view').innerHTML = '<p class="sub">Loading...</p>';
+        api({ action: 'get', member_id: r.id }).then(function (d) {
+          if (!d || !d.ok) { $('view').innerHTML = '<p class="sub">That one did not load.</p>'; return; }
+          var b = d.badge, m = d.member || {}, bz = m.business || {}, name = biz(m);
+          var who = '<div class="box"><div class="who">' + avatar(m) + '<div><b style="font-size:18px">' + esc(name || m.name) + '</b><span class="meta">' + esc(m.name || '') + ' &middot; ' + esc(m.email || '') + '</span></div></div><div style="margin:10px 0 12px">' + tag(b.status) + '</div>' +
+            dl([['Their answers say', '<span class="badge">' + esc(BADGE[b.claimed]) + '</span>'], ['Showing now', esc(BADGE[b.shown])],
+              bz.org_link ? ['Website or Instagram', '<a href="' + esc(/^https?:/.test(bz.org_link) ? bz.org_link : 'https://' + bz.org_link) + '" target="_blank" rel="noopener">' + esc(bz.org_link) + '</a>'] : null,
+              bz.chapter ? ['Chapter', esc(bz.chapter)] : null,
+              ['Listings they own', m.listings && m.listings.length ? m.listings.map(function (l) { return '<a href="/directory/' + esc(l.slug) + '" target="_blank" rel="noopener">' + esc(l.name) + '</a>'; }).join(', ') : 'None claimed yet'],
+              ['Since', esc(when(b.claimed_at))], b.approved_at ? ['Approved', esc(when(b.approved_at))] : null, b.team_note ? ['Team note', esc(b.team_note)] : null]) + '</div>';
+          var ans = '<div class="box"><h2>Their answers</h2>' + (d.answers.length ? dl(d.answers.map(function (a) { return [esc(a.q), esc(a.a)]; })) : '<p class="meta">No answers.</p>') + '</div>';
+          var hist = '<div class="box"><h2>History</h2>' + (d.history.length ? '<ul class="log">' + d.history.map(function (e) { return '<li><b>' + esc(KIND[e.kind] || e.kind) + '</b>: ' + esc(BADGE[e.claimed] || '') + ' &middot; ' + esc(e.by_name || 'the owner') + ' &middot; ' + esc(when(e.at)) + (e.note ? '<br><span class="meta">' + esc(e.note) + '</span>' : '') + '</li>'; }).join('') + '</ul>' : '<p class="meta">Nothing yet.</p>') + '</div>';
+          $('view').innerHTML = '<p class="crumb"><a href="#list/' + esc(b.status) + '">Business badges</a> / ' + esc(name || m.name) + '</p><div class="cols"><div>' + who + ans + '</div><div>' + decision(b) + hist + '</div></div>';
+          wireDecision(b, m, name);
+        });
+      }
+      function decision(b) {
+        var waiting = b.claimed === 'vegan' && !b.approved_at, btns = [];
+        if (waiting) btns.push(['approve', 'Approve 100% Vegan', '']);
+        if (waiting && b.status === 'checking') btns.push(['follow_up', 'We will follow up first', 'btn-quiet']);
+        btns.push(['note', 'Save note only', 'btn-quiet']);
+        var said = waiting ? (b.status === 'checking' ? 'They say they are 100% Vegan. Check their page, menu and socials. Approving shows 100% Vegan. Until then they show 100% Plant-based.' : 'The team is following up. Approve when they are ready.')
+          : b.claimed === 'vegan' ? 'Approved. Their page shows 100% Vegan.' : b.status === 'follow_up' ? 'They picked Vegan but are still checking a few things beyond the plate, so they show 100% Plant-based for now. Reach out to help.' : 'Their answers set this badge. Nothing to check.';
+        return '<div class="box judge"><h2>Your decision</h2><p class="meta" style="margin-bottom:8px">' + esc(said) + '</p><label class="meta" for="note"><b>Note</b> (only the team sees it; needed to follow up)</label><textarea id="note"></textarea><div class="acts">' + btns.map(function (x) { return '<button type="button" class="btn ' + x[2] + '" data-d="' + x[0] + '">' + x[1] + '</button>'; }).join('') + '<span class="msg" id="msg"></span></div></div>';
+      }
+      function wireDecision(b, m, name) {
+        var ERR = { note_needed: 'Write a note first.', already_approved: 'This is already approved.', not_a_vegan_claim: 'Their answers do not say 100% Vegan any more.', not_waiting: 'This is not waiting any more.', forbidden: 'Only a super admin can decide.' };
+        [].forEach.call(document.querySelectorAll('[data-d]'), function (btn) { btn.onclick = function () {
+          var k = btn.getAttribute('data-d'), msg = $('msg'), note = $('note').value || '';
+          if (k !== 'approve' && note.trim().length < 3) { msg.className = 'msg err'; msg.textContent = ERR.note_needed; return; }
+          if (k === 'approve' && !confirm('Show 100% Vegan for ' + (name || m.name) + '?')) return;
+          msg.className = 'msg'; msg.textContent = 'Saving...'; btn.disabled = true;
+          api({ action: 'decide', member_id: b.member_id, decision: k, note: note }).then(function (r) { if (r && r.ok) { data = null; drawItem(route()); } else { btn.disabled = false; msg.className = 'msg err'; msg.textContent = ERR[r && r.error] || 'That did not go through.'; } });
+        }; });
+      }
+      function render() {
+        var r = route();
+        if (r.v === 'item') return drawItem(r);
+        if (data) return drawList(r);
+        $('view').innerHTML = '<p class="sub">Loading...</p>';
+        api({ action: 'list' }).then(function (d) { if (!d || !d.ok) { $('view').innerHTML = '<p class="sub">That did not load. Refresh to try again.</p>'; return; } data = d; drawList(route()); });
+      }
+      window.addEventListener('hashchange', render);
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="si">Sign in</button>'; $('si').onclick = function () { VEAuth.showAuthModal('Sign in to open Business badges.', function () { location.reload(); }); }; return; }
+        if (!m || !m.is_superadmin) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+        $('app').hidden = false; render();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
