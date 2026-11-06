@@ -28,7 +28,7 @@
   var COOK_URL = SB + '/functions/v1/ve-cookbook';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
 
-  // The tabs, in tour order, and what Maya says on each (Sean approved every line, 2026-11-06). Text only until recorded.
+  // The tabs, in tour order, and what Maya says on each (Sean approved every line, 2026-11-06). A line's text must match its recording; change one and record -v2.
   var TABS = [
     { k: 'overview', label: 'Overview', say: 'Hi, I\'m Maya. If you\'re adding Vegan to your menu, this Guide walks you through it: what to add, who to buy it from, and how to say it honestly. Read around. When you\'re ready, take the short survey and the whole Guide opens. It\'s free.',
       sayMember: 'Welcome in. Start with What to add for your kind of business, then Sourcing to find who sells it. Save anything to My list.' },
@@ -44,10 +44,11 @@
     { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you saved is right here.' },
     { k: 'join', label: 'Get in', guest: 1, say: 'There\'s one way in, and it\'s free. Take the short survey about your business, and the whole Guide opens.' }
   ];
-  // Maya's recordings, once Sean approves her lines (el-media tts in her roster-profile voice, checked word for word with stt).
-  // Until then every tab shows her picture and the bubble carries the words; Play is hidden.
+  // Maya's recordings (2026-11-06: el-media tts in her roster-profile voice, each checked word for word with stt).
+  // AUDIO_V is the visitor's line, AUDIO_M the member's; a member tab with no entry of its own plays the visitor line (same words).
   var AUDIO_BASE = SB + '/storage/v1/object/public/vegan-media/media/maya/pre-vegan-business-guide/';
-  var AUDIO_V = {}, AUDIO_M = {};
+  var AUDIO_V = { overview: 'overview-v1', why: 'why-v1', add: 'add-v1', say: 'say-v1', join: 'join-v1' };
+  var AUDIO_M = { overview: 'overview-member-v1', add: 'add-member-v1', sourcing: 'sourcing-v1', make: 'make-v1', found: 'found-v1', claim: 'claim-v1', next: 'next-v1', mylist: 'mylist-v1' };
 
   var S = 'stroke="#1f5f22" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
   var NI = function (d) { return '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" ' + S + ' aria-hidden="true">' + d + '</svg>'; };
@@ -599,7 +600,7 @@
     var t = tab(curTab), list = tabs(), i = 0;
     list.forEach(function (x, n) { if (x.k === curTab) i = n; });
     bubble.textContent = member() && t.sayMember ? t.sayMember : t.say;
-    // No recording yet: no Play button, her words are in the bubble.
+    // A tab with no recording for this visitor: no Play button, her words are in the bubble.
     playBtn.hidden = !mayaAudio(curTab);
     playBtn.classList.toggle('go', !TOUR.started);
     playBtn.innerHTML = !TOUR.started ? '&#9654; Play Maya' : TOUR.playing ? 'Pause Maya' : '&#9654; Play Maya';
@@ -624,10 +625,12 @@
     if (member() && !svState) loadSaves();
     drawMenu(view === 'search' ? 'search' : key);
     if (view !== 'search' && qEl.value && document.activeElement !== qEl) qEl.value = '';
+    var moved = key !== curTab;
     curTab = key;
     ({ overview: viewOverview, why: viewWhy, add: function () { viewAdd(sub); }, say: viewSay, sourcing: function () { viewSourcing(sub); }, make: function () { viewMake(sub); },
        found: viewFound, claim: viewClaim, next: function () { viewNext(sub); }, mylist: viewMyList, join: viewJoin, search: function () { viewSearch(decodeURIComponent(sub)); } })[view]();
     cueMaya(key);
+    if (moved && TOUR.started && !TOUR.paused) playMaya();
     drawMaya();
     if (view !== 'search') { main.scrollTop = 0; if (!document.documentElement.classList.contains('dg-fit') || window.innerWidth <= 900) window.scrollTo(0, 0); }
   }
