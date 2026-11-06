@@ -105,7 +105,7 @@ async function transcribe(f: FileRef): Promise<string | null> {
 }
 
 // The read. Returns { read, files } (files with any new transcripts) or { error }. Never a partial read.
-async function readCore(src: Src): Promise<{ read?: any; files: FileRef[]; error?: string; detail?: string }> {
+async function readCore(src: Src, maxTokens = MAX_TOKENS): Promise<{ read?: any; files: FileRef[]; error?: string; detail?: string }> {
   const files: FileRef[] = (src.files || []).map((f) => ({ ...f }));
   const apiKey = await secret('ANTHROPIC_API_KEY');
   if (!apiKey) return { error: 'no_model_key', files };
@@ -153,13 +153,13 @@ async function readCore(src: Src): Promise<{ read?: any; files: FileRef[]; error
   try {
     const client = new Anthropic({ apiKey });
     const res: any = await client.beta.messages.create({
-      model: MODEL, max_tokens: MAX_TOKENS, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
+      model: MODEL, max_tokens: maxTokens, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
       output_config: { effort: 'medium', format: { type: 'json_schema', schema: SCHEMA } },
       system: SYSTEM, messages: [{ role: 'user', content }],
     } as any);
     stop = String(res.stop_reason || '');
     if (stop === 'refusal') return { error: 'refused', files };
-    if (stop === 'max_tokens') return { error: 'cut_off', detail: `The read ran past ${MAX_TOKENS} tokens and stopped part way.`, files };
+    if (stop === 'max_tokens') return { error: 'cut_off', detail: `The read ran past ${maxTokens} tokens and stopped part way.`, files };
     if (stop !== 'end_turn' && stop !== 'stop_sequence') return { error: `stopped_${stop || 'unknown'}`, files };
     out = JSON.parse((res.content || []).filter((x: any) => x.type === 'text').map((x: any) => x.text).join(''));
     if (!out || typeof out.ask !== 'string' || !out.ask.trim()) return { error: 'model_output', files };
@@ -192,7 +192,7 @@ async function readIdea(id: string) {
   return { idea: row };
 }
 
-async function readBlueprint(id: string, reply: string) {
+async function readBlueprint(id: string, reply: string, maxTokens = MAX_TOKENS) {
   const { data: idea } = await db.from('blueprint_ideas').select('*').eq('id', id).maybeSingle();
   if (!idea) return { error: 'not_found' };
   const now = new Date().toISOString();
@@ -202,7 +202,7 @@ async function readBlueprint(id: string, reply: string) {
     await db.from('blueprint_ideas').update({ thread, updated_at: now }).eq('id', id);
   }
   const body = [idea.title, idea.detail].filter(Boolean).join('\n\n');
-  const r = await readCore({ body, links: idea.links || [], files: idea.files || [], thread });
+  const r = await readCore({ body, links: idea.links || [], files: idea.files || [], thread }, maxTokens);
   if (r.error) {
     await db.from('blueprint_ideas').update({ read_error: r.detail ? `${r.error}: ${r.detail}` : r.error, read_at: now, files: r.files, updated_at: now }).eq('id', id);
     await db.from('blueprint_idea_events').insert({ idea_id: id, by: 'Logan', action: 'read_failed', detail: { error: r.error } });
@@ -296,7 +296,9 @@ Deno.serve(async (req) => {
   }
   if (b.action === 'read_blueprint') {
     if (!isId(b.id)) return json({ error: 'id' }, 400);
-    const r: any = await readBlueprint(b.id, clean(b.reply, 10000));
+    // test_max_tokens (ops only): proves a cut-off read is an error and saves nothing half read (R).
+    const tmt = Math.floor(Number(b.test_max_tokens) || 0);
+    const r: any = await readBlueprint(b.id, clean(b.reply, 10000), tmt >= 16 && tmt < MAX_TOKENS ? tmt : MAX_TOKENS);
     if (r.error) return json({ error: r.error, detail: r.detail || null }, r.error === 'not_found' ? 404 : 502);
     return json({ ok: true, idea: r.idea });
   }
