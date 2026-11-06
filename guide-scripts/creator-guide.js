@@ -16,7 +16,7 @@
  *   Pulse          our episodes with creators, played in place (PULSE_PICKS, ve-podcast)
  *   Become a creator  the creator application itself (ve-gigs' Apply, #/next/join/<n>, ve-ambassador creator_apply)
  *   My list        members: saved tips, episodes and creators (ve_guide_saves through ve-cookbook: fix, episode, listing)
- *   Get access     visitors: $11 or 1,100 points
+ *   Get access     visitors: free with the creator survey (ve_surveys 'creator-guide'), or the $11 Passport
  *
  * Access is every Guide's: ve-guide-unlock for this slug decides; an active Ambassador has it (via 'ambassador').
  * The members-only text (tips 2 to 10) is ve_guides.content_html, handed out only to its owners. Never add it to this repo.
@@ -67,7 +67,8 @@
     { k: 'people', label: 'People doing it', voice: 'tab-people', say: 'These are creators and channels in our Directory. See how they show up, and vote for the ones you watch.' },
     { k: 'pulse', label: 'Pulse', lock: 1, voice: 'tab-pulse', say: 'Our conversations with creators: how they built a following, made a living and kept going. Play them right here.' },
     { k: 'mylist', label: 'My list', mine: 1, voice: 'tab-mylist', say: 'Everything you saved is right here: your tips, episodes and creators.' },
-    { k: 'join', label: 'Get access', guest: 1, voice: 'tab-join', say: 'The Creator Guide is eleven dollars, or eleven hundred points, and it\'s yours to keep.' },
+    // Kai's old Get access line said eleven dollars; this one is text until Sean approves it and it is recorded (-v2).
+    { k: 'join', label: 'Get access', guest: 1, say: 'The whole Creator Guide is free when you take the short creator survey. It makes you a member, and your answers are how we match you to campaigns.' },
     { k: 'next', label: 'Become a creator' }
   ];
   var S = 'stroke="#1f5f22" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
@@ -111,7 +112,7 @@
   function auth() { return window.VEAuth || null; }
   function token() { var a = auth(); return a && a.isLoggedIn && a.isLoggedIn() ? a.getToken() : null; }
   function member() { return access === 'member'; }
-  function tabs() { return TABS.filter(function (t) { return !(t.guest && member()) && !(t.mine && !member()) && !(t.k === 'you' && !PREV) && !(t.guest && PREV); }); }
+  function tabs() { return TABS.filter(function (t) { return !(t.guest && member()) && !(t.mine && !member()) && !(t.k === 'you' && !PREV); }); }
   function tab(k) { for (var i = 0; i < TABS.length; i++) if (TABS[i].k === k) return TABS[i]; return TABS[1]; }
   function href(k) { return '#/' + (k === 'overview' ? (PREV ? 'overview' : '') : k); }
   function store(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
@@ -144,7 +145,14 @@
   function skel(title, lines) { var h = '<div class="dg-skel">' + (title ? '<h3>' + esc(title) + '</h3>' : '<i></i>'); for (var i = 0; i < (lines || 3); i++) h += '<i style="width:' + (92 - i * 9) + '%"></i>'; return h + '</div>'; }
   function gated(inner, title, text) {
     return '<div class="dg-gated"><div class="dg-blur" aria-hidden="true">' + inner + '</div><div class="dg-gate"><span class="dg-lockic">' + LOCK_SVG.replace(/width="11" height="11"/, 'width="16" height="16"').replace('currentColor', '#1f5f22') + '</span>' +
-      '<b>' + esc(title) + '</b><p>' + esc(text) + ' ' + esc(offerLine()) + '</p>' + ctaBtns() + '</div></div>';
+      '<b>' + esc(title) + '</b><p>' + esc(text) + ' Take the free creator survey to open the rest of the Guide. It makes you a member.</p>' + surveyBtns() + '</div></div>';
+  }
+  // Free with the Guide's survey (Sean, 2026-11-06), the Events Guide's way: about ten minutes, up to 250 points, opens the Guide and a membership.
+  var SURVEY_URL = '/survey?s=' + SLUG;
+  function surveyGo() { try { sessionStorage.setItem('ve_survey_for', SLUG); } catch (e) {} location.href = SURVEY_URL; }
+  function surveyBtns() {
+    return '<div class="dg-btns"><button type="button" class="dg-btn" data-survey>Take the creator survey, free</button>' +
+      (access === 'guest' || access === 'checking' ? '<a href="#" data-signin>Already a member? Sign in</a>' : '') + '</div>';
   }
   function row(o) {
     return '<div class="dg-srow"' + (o.href ? ' data-href="' + o.href + '"' : '') + '>' + (o.icon ? '<span class="dg-th rg-th" aria-hidden="true">' + o.icon + '</span>' : '') +
@@ -177,7 +185,6 @@
   }
   function drawJoinbox() {
     var box = document.querySelector('.dg-joinbox'); if (!box || member()) return;
-    box.querySelector('[data-join]').textContent = ctaLabel();
     box.querySelector('.dg-jb-in').style.display = mode() === 'join' ? '' : 'none';
   }
 
@@ -406,20 +413,13 @@
   // ---------- Get access ----------
   function viewJoin() {
     if (member()) { main.innerHTML = head('Your Guide', 'The whole Guide is yours', 'It is yours to keep. Make something good.') + '<a class="dg-btn" href="#/">Back to the overview</a>'; return; }
-    var m = mode(), status = '<span class="dg-status" role="status" style="display:block;margin-top:10px;color:#8a5a00"></span>';
     var list = '<div class="dg-access"><ul>' +
       '<li><b>All ten tips</b>, each with a real Vegan creator doing it and three action items for this week.</li>' +
       '<li><b>The Creator Pulse:</b> our conversations with creators, played right here.</li>' +
       '<li><b>My list</b>, to keep the tips, episodes and creators you are working from.</li></ul></div>';
-    var box = m === 'points'
-      ? '<div class="dg-big">' + pts(ST.cost) + '<small>points</small></div><p>You have ' + pts(ST.balance) + ' points. Unlock the Guide with ' + pts(ST.cost) + ' of them and it is yours to keep.</p>' +
-        '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button><button type="button" class="dg-btn dg-ghost" data-buy style="margin-top:8px">Or get it for $11</button>' + status
-      : '<div class="dg-big">$11<small>yours to keep</small></div><p>' + (m === 'join' ? 'Create your account and get the Guide for $11, one time. Buying it makes you a member of Vegans Explore. Already a member? <a href="#" data-signin>Sign in</a>.'
-          : 'Get the Guide for $11, one time, and it is yours to keep' + (ST.active ? '.' : '. Buying it also makes you a member of Vegans Explore.')) + '</p>' +
-        '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status +
-        '<p class="dg-pp">Or get your <a href="/passport">Passport</a>: $11, one time, with 1,100 welcome points, enough for this Guide.</p>';
-    main.innerHTML = head('Get access', 'Open the whole Creator Guide', 'Every Vegans Explore Guide is $11, or 1,100 points, and yours to keep. Ambassadors get it included. The overview, People doing it and Become a creator stay open to everyone.') + list;
-    main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox">' + box + '</div>');
+    main.innerHTML = head('Get access', 'Open the whole Creator Guide', 'The Creator Guide is free when you take the short creator survey. Your answers are how we match you to paid campaigns, collabs and events, and finishing it makes you a Vegans Explore member. The overview, People doing it and Become a creator stay open to everyone.') + list;
+    main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox"><div class="dg-big">Free<small>with the creator survey</small></div><p>About ten minutes, up to 250 points, and your membership opens when you finish. Before midnight Eastern on January 1, 2027, that makes you a Founding Member.</p><button type="button" class="dg-btn" data-survey>Take the creator survey, free</button>' +
+      (access === 'guest' ? '<p class="dg-pp">Already a member? <a href="#" data-signin>Sign in</a>.</p>' : '') + '</div>');
   }
 
   // ---------- Overview: the creator pathway, Kai walking the Creator Dashboard, ending on the application ----------
@@ -538,7 +538,7 @@
     if (!known[view]) view = 'overview';
     document.body.classList.toggle('dg-member', member());
     document.body.classList.toggle('cg-wide', view === 'overview');
-    // Made for one person: no $11 box or Get access tab; how they open the rest of the Guide is settled with them.
+    // Made for one person: they open the rest of the Guide with the creator survey, like everyone (Sean, 2026-11-06).
     document.body.classList.toggle('cg-made', !!PREV);
     drawJoinbox();
     var key = view;
@@ -623,6 +623,7 @@
       if (a) a.showAuthModal('Sign in and the Creator Guide opens if it is yours.', function () { location.reload(); }, 'login');
       return;
     }
+    if ((el = e.target.closest('[data-survey]'))) { e.preventDefault(); surveyGo(); return; }
     if ((el = e.target.closest('[data-buy]'))) { e.preventDefault(); if (token()) buyNow(el); return; }
     var jb = e.target.closest('[data-join]');
     if (jb) {

@@ -71,7 +71,7 @@
   function guideSurvey(slug) {
     var rm = VEAuth.getRealMember && VEAuth.getRealMember();
     if (!VEAuth.getToken() || !rm) {
-      $('lede').textContent = 'Make your free account first, then answer a few questions about your events. It takes about ten minutes and nothing is charged.';
+      $('lede').textContent = 'Make your free account first, then answer a few questions about ' + ({ 'vegan-events-guide': 'your events', 'vegan-restaurant-guide': 'your restaurant', 'creator-guide': 'you and what you make' }[slug] || 'you') + '. It takes about ten minutes and nothing is charged.';
       $('why').innerHTML = '<span>Free</span><span>Earns points</span><span>Saved as you go</span>';
       $('gate').hidden = false;
       $('gate').innerHTML = '<p>Make your free account to start.</p><p><button class="btn" id="gsStart" type="button">Start</button></p>';
