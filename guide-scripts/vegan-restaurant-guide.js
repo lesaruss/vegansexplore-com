@@ -896,8 +896,8 @@
         paint(r.total);
       }).catch(function () { listEl.innerHTML = '<p class="dg-lede">We could not load the suppliers. Try again in a moment.</p>'; });
     }
-    SRC.back = { hash: srcHash(cur.k, q), t: cur.t };
-    function changed() { SRC.back = { hash: srcHash(cur.k, q), t: cur.t }; history.replaceState(null, '', SRC.back.hash); load(false); }
+    SRC.back = { hash: srcHash(cur.k, q), t: cur.t, k: cur.k };
+    function changed() { SRC.back = { hash: srcHash(cur.k, q), t: cur.t, k: cur.k }; history.replaceState(null, '', SRC.back.hash); load(false); }
     document.getElementById('rgSrcQ').addEventListener('input', function (e) { q.q = e.target.value; clearTimeout(timer); timer = setTimeout(changed, 250); });
     document.getElementById('rgSrcLabel').addEventListener('change', function (e) { q.label = e.target.value; changed(); });
     kindEl.addEventListener('change', function (e) { q.kind = e.target.value; changed(); });
@@ -917,6 +917,8 @@
       if (!r || !r.ok) { box.innerHTML = '<p class="dg-lede">' + (r && r.error === 'not_found' ? 'We could not find that supplier.' : 'We could not load this. Try again in a moment.') + ' <a href="' + (back ? back.hash : '#/sourcing') + '">Back</a></p>'; return; }
       var s = r.supplier, L = SRC_LABEL[s.label] || SRC_LABEL.offers_options;
       var dom = SRC_DOMAINS.filter(function (d) { return d.k === s.domain; })[0];
+      // A list remembered from earlier counts only when it is this supplier's own domain (opened by link after another list, it is not).
+      if (back && !back.make && back.k && back.k !== s.domain) { back = null; trail = [['Sourcing', '#/sourcing']]; }
       if (!back && dom) trail.push([dom.t, '#/sourcing/' + dom.k]);
       var c = main.querySelector('.dg-crumb'); if (c) c.outerHTML = crumb(trail.concat([[s.name]]));
       box.innerHTML = head(dom ? dom.t : 'Sourcing', esc(s.name), '') +
