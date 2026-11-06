@@ -46,6 +46,16 @@ invited, valued members tasting a business's dishes and sending honest, construc
 knows who said what); it ties into certification and stays Coming until one has run. Not yet changed without Sean: the Directory's "Vegan options"
 label, the Restaurant Guide and the certification copy.
 
+**Four badges for businesses (LOCKED by Sean 2026-11-06, "lock it"; canon `canon-ve-business-badges`; migration
+`20261106_business_badges_canon.sql`).** **100% Vegan** (everything Vegan, run for the animals), **100% Plant-based** (everything plant-based,
+the owner does not claim the Vegan motivation; respected, never a lower badge), **Pre-Vegan Certified** (named items we checked to Standard
+V1.2; about the items, not the whole business; the badge opens the boxes they passed), **Pre-Vegan** (any business with plant-based options).
+The owner's own intake answers set 100% Vegan or 100% Plant-based; we never judge it for them, they see the badge before it shows and can
+change their answers, and our team checks before 100% Vegan shows. It is peace of mind for customers and protection for the owner, never a
+penalty; a plant-based place that later adds meat broke no promise. 100% Vegan businesses get more from us (first in features and on the
+podcast, the most help staying open). Our copy never names a real business or owner as an example of either badge. **Not built**: the badges
+on listings, the intake questions (Sean reads them first), the Directory's Vegan options label (a later step).
+
 ## A Guide speaks on every page (LOCKED standard, Sean, 2026-11-04, corrected 2026-11-05, playbook `ve-audio-accessibility`)
 
 "I just want Liz to speak on each page. So the same voice that we have for Liz... create a script for the first page and any page that doesn't
