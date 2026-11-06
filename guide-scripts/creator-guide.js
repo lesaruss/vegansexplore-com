@@ -59,6 +59,9 @@
   // that they do"), and Kai's line on each. Each `say` must match its recording, voices/creator-guide/kai-<voice>-v1.mp3 in vegan-media
   // (VEGigs.voice plays it); the Overview and Become a creator take their lines from ve-gigs.js (LINES), view by view.
   var TABS = [
+    // A Guide made for one person (brooke-sellers, 2026-11-05): ?p=<token> opens this tab first, drawn from ve_guide_preview(). Shown only
+    // with a good token; its label and Kai's line are set from the person when the preview loads. Kai's line here is text, not recorded.
+    { k: 'you', label: 'Your page', say: '' },
     { k: 'overview', label: 'Overview' },
     { k: 'tips', label: 'The 10 tips', lock: 1, voice: 'tab-tips', say: 'Ten moves from hobby to professional, each with a real Vegan creator doing it and three things you can start this week. The first one, purpose and niche, is open to try.' },
     { k: 'people', label: 'People doing it', voice: 'tab-people', say: 'These are creators and channels in our Directory. See how they show up, and vote for the ones you watch.' },
@@ -102,14 +105,15 @@
   var ST = { rule: 'points', cost: 1100, balance: 0, active: false, via: null };
   var PODS = null, CREATORS = null;
   var curTab = 'overview';
+  var PREV = null;               // the person this Guide is made for (ve_guide_preview), or null
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function auth() { return window.VEAuth || null; }
   function token() { var a = auth(); return a && a.isLoggedIn && a.isLoggedIn() ? a.getToken() : null; }
   function member() { return access === 'member'; }
-  function tabs() { return TABS.filter(function (t) { return !(t.guest && member()) && !(t.mine && !member()); }); }
-  function tab(k) { for (var i = 0; i < TABS.length; i++) if (TABS[i].k === k) return TABS[i]; return TABS[0]; }
-  function href(k) { return '#/' + (k === 'overview' ? '' : k); }
+  function tabs() { return TABS.filter(function (t) { return !(t.guest && member()) && !(t.mine && !member()) && !(t.k === 'you' && !PREV) && !(t.guest && PREV); }); }
+  function tab(k) { for (var i = 0; i < TABS.length; i++) if (TABS[i].k === k) return TABS[i]; return TABS[1]; }
+  function href(k) { return '#/' + (k === 'overview' ? (PREV ? 'overview' : '') : k); }
   function store(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
   function recall(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function pts(n) { return Number(n || 0).toLocaleString('en-US'); }
@@ -479,15 +483,63 @@
       '<a class="dg-tnav next" href="' + href(list[Math.min(list.length - 1, i + 1)].k) + '"' + (i < list.length - 1 ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Next</a>';
   }
 
+  // ---------- Your page: the Guide made for one person (?p=<token>) ----------
+  function fmtN(n) { return Number(n || 0).toLocaleString('en-US'); }
+  function day(iso) { return iso ? new Date(iso).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'long', day: 'numeric' }) : ''; }
+  var CAT_WORD = { Athletes: 'Your profile', YouTube: 'Your YouTube channel', Podcasts: 'Your podcast', Books: 'Your book' };
+  function viewYou() {
+    if (!PREV) { location.hash = '#/overview'; return; }
+    var P = PREV, pages = P.pages || [], first = P.first_name || '';
+    var views = 0, votes = 0, starts = [];
+    pages.forEach(function (x) { views += x.views || 0; votes += x.votes || 0; if (x.since) starts.push(x.since); });
+    starts.sort();
+    var since = starts.length ? day(starts[0]) : '';
+    var badge = P.status === 'preview' ? '<span class="dg-tag dg-tag-wait">Preview, not shared yet</span>' : '';
+    var stat = function (n, l) { return '<div class="cg-you-stat"><b>' + n + '</b><span>' + l + '</span></div>'; };
+    var rows = pages.map(function (x) {
+      return '<div class="dg-row cg-you-row"><div class="cg-you-pg"><span class="cg-you-th"' + (x.logo_url ? ' style="background-image:url(\'' + esc(x.logo_url) + '\')"' : '') + '></span><div><b>' + esc(x.name) + '</b>' +
+        '<span class="cg-you-k">' + esc(CAT_WORD[x.category] || x.category) + (x.since ? ' · on Vegans Explore since ' + esc(day(x.since)) : '') + '</span></div></div>' +
+        '<div class="cg-you-n">' + fmtN(x.views) + ' views · ' + fmtN(x.visitors) + ' people · ' + fmtN(x.votes) + (x.votes === 1 ? ' vote' : ' votes') + '</div>' +
+        '<a class="dg-btn dg-ghost" href="/directory/' + encodeURIComponent(x.slug) + '" target="_blank" rel="noopener">Open</a></div>';
+    }).join('');
+    var soon = function (h, p) { return '<div class="dg-card"><span class="dg-tag dg-tag-wait">Coming</span><h3 style="margin-top:8px">' + h + '</h3><p>' + p + '</p></div>'; };
+    main.innerHTML = head('Made for ' + first, first + ', this is your Creator Guide',
+      'Everything Vegans Explore has built around you so far, in one place: your pages, the people finding them, and what opens up when our campaigns start on January 1.', badge) +
+      '<div class="cg-you-stats">' + stat(fmtN(pages.length), 'Pages about you') + stat(fmtN(views), 'Views so far') + stat(fmtN(votes), 'Member votes') + '</div>' +
+      '<p class="dg-pp" style="margin:8px 0 22px">Counting from the day your pages went up' + (since ? ' (' + esc(since) + ')' : '') + '. These are views on Vegans Explore, our own team\'s visits included, not your Instagram or YouTube numbers.</p>' +
+      '<h3 class="cg-you-h">Your pages on Vegans Explore</h3><div class="dg-rows">' + (rows || '<p class="dg-empty">Your pages are being set up.</p>') + '</div>' +
+      '<h3 class="cg-you-h">Your Creator Dashboard</h3>' +
+      '<div class="dg-tiles"><a class="dg-tile" href="#/overview/dashboard"><span class="dg-ic">' + ICON.people + '</span><span><b>See how it works</b><span>Where paid gigs come to you, your media kit and how you rise, shown on our sample creator.</span></span></a></div>' +
+      '<h3 class="cg-you-h">After January 1</h3><div class="dg-grid">' +
+        soon('Paid brand campaigns', 'Brands book our official creators for the 2027 campaigns. You keep your full rate: half when you say yes, half when your posts are live.') +
+        soon('Hosting and collaborations', 'Host our events and shows, and work with the Vegan brands in our Directory.') +
+        soon('The Gig Board', 'Paid gigs, perk jobs and points jobs on one board, matched to what you make.') +
+      '</div>' +
+      '<h3 class="cg-you-h">Tell us what would help</h3><div class="dg-card"><p>We are building this with you. A short talk about what would help your coaching business most shapes what we build next.</p>' +
+        '<div class="dg-btns" style="margin-top:12px"><a class="dg-btn" href="mailto:contact@lesaruss.com?subject=' + encodeURIComponent(first + ': my Creator Guide') + '">Write to us</a></div></div>';
+  }
+  function loadPreview(tok) {
+    return fetch(SB + '/rest/v1/rpc/ve_guide_preview', { method: 'POST', headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_token: tok, p_guide: SLUG }) }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      if (!d || !d.first_name) { store('cg_p', null); return; }
+      PREV = d; store('cg_p', tok);
+      var t = tab('you'); t.label = 'For ' + d.first_name;
+      t.say = d.first_name + ', this part of the Guide is made just for you: your pages on Vegans Explore, the people finding them, and what opens up on January 1.';
+      if (!location.hash || location.hash === '#' || location.hash === '#/') location.hash = '#/you'; else route();
+    }).catch(function () {});
+  }
+
   // ---------- router ----------
   function route() {
     var parts = (location.hash || '').replace(/^#\/?/, '').split('/');
     var view = parts[0] || 'overview', sub = parts.slice(1).join('/');
     if (view === 'search' && (!sub || !member())) view = 'overview';
-    var known = { overview: 1, tips: 1, people: 1, pulse: 1, next: 1, mylist: 1, join: 1, search: 1 };
+    var known = { you: 1, overview: 1, tips: 1, people: 1, pulse: 1, next: 1, mylist: 1, join: 1, search: 1 };
     if (!known[view]) view = 'overview';
     document.body.classList.toggle('dg-member', member());
     document.body.classList.toggle('cg-wide', view === 'overview');
+    // Made for one person: no $11 box or Get access tab; how they open the rest of the Guide is settled with them.
+    document.body.classList.toggle('cg-made', !!PREV);
     drawJoinbox();
     var key = view;
     if (view === 'search') key = curTab;
@@ -497,7 +549,7 @@
     drawMenu(view === 'search' ? 'search' : key);
     if (view !== 'search' && qEl.value && document.activeElement !== qEl) qEl.value = '';
     var bar = document.getElementById('vep-player');
-    ({ overview: viewOverview, tips: function () { viewTips(sub); }, people: function () { viewPeople(sub); }, pulse: function () { viewPulse(sub); },
+    ({ you: viewYou, overview: viewOverview, tips: function () { viewTips(sub); }, people: function () { viewPeople(sub); }, pulse: function () { viewPulse(sub); },
        next: viewNext, mylist: function () { viewMyList(sub); }, join: viewJoin, search: function () { viewSearch(decodeURIComponent(sub)); } })[view]();
     keepPlayer(bar);
     curTab = key;
@@ -627,6 +679,10 @@
     var box = document.getElementById('dgMaya');
     if (window.VEGuideArt) { var art = VEGuideArt('kai', 'square'); if (art) box.style.backgroundImage = "url('" + art + "')"; }
     var params = new URLSearchParams(location.search);
+    // A Guide made for one person: the token comes once on the link, is kept in this browser and leaves the address (so Share never copies it).
+    var ptok = params.get('p') || recall('cg_p');
+    if (params.get('p')) { params.delete('p'); history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params : '') + location.hash); }
+    if (ptok && /^[a-f0-9]{16,64}$/.test(ptok)) loadPreview(ptok);
     route();
     loadPublic();
     var a = auth(), viewAs = a && a.getViewAs ? a.getViewAs() : null;

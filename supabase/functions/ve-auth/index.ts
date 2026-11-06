@@ -1681,6 +1681,8 @@ serve(async (req: Request) => {
       const askToken = typeof body.token === 'string' ? body.token : '';
       const askDecoded = askToken ? await decodeToken(askToken) : null;
       const askMemberId = askDecoded?.sub ?? null;
+      // The page they asked from (ve-page-guide step 3, 2026-11-06): kept with the question so the gaps list says where people ask.
+      const askPage = typeof body.page_url === 'string' && /^https:\/\//.test(body.page_url) ? body.page_url.slice(0, 400) : null;
 
       const { data: hits, error: matchErr } = await supabase.rpc('guide_kb_match', { p_brand: KB_BRAND, p_question: message, p_limit: 4 });
       if (matchErr) console.error('guide_ask: guide_kb_match failed', matchErr);
@@ -1693,7 +1695,7 @@ serve(async (req: Request) => {
       if (answered) await supabase.rpc('guide_kb_served', { p_id: best.id });
       await supabase.from('guide_kb_questions').insert({
         brand_slug: KB_BRAND, member_id: askMemberId, guide_slug: guideSlug, question: message,
-        matched_answer_id: best?.id ?? null, score: best?.score ?? null, outcome: answered ? 'answered' : 'no_match',
+        matched_answer_id: best?.id ?? null, score: best?.score ?? null, outcome: answered ? 'answered' : 'no_match', page_url: askPage,
       });
 
       return kbJson({
@@ -1754,7 +1756,7 @@ serve(async (req: Request) => {
         console.error('guide_ask_person: email failed', sendRes.status, await sendRes.text().catch(() => ''));
         return personJson({ error: 'send_failed' }, 502);
       }
-      await supabase.from('guide_kb_questions').insert({ brand_slug: 'vegans-explore', member_id: asker.id, guide_slug: guideSlug, question: message, outcome: 'sent_to_person' });
+      await supabase.from('guide_kb_questions').insert({ brand_slug: 'vegans-explore', member_id: asker.id, guide_slug: guideSlug, question: message, outcome: 'sent_to_person', page_url: typeof body.page_url === 'string' && /^https:\/\//.test(body.page_url) ? body.page_url.slice(0, 400) : null });
       return personJson({ ok: true, to_cm: cmEmails.length > 0 });
     }
 
@@ -1819,6 +1821,13 @@ serve(async (req: Request) => {
       // without one it is the member's ongoing conversation with this Guide.
       const conversation = typeof body.conversation === 'string' && /^[a-z0-9]{4,16}$/.test(body.conversation) ? body.conversation : '';
       const roomSlug = `ve-guide-${agent_slug}-${speakerKey}` + (conversation ? `-${conversation}` : '');
+      // Asked from a page's Guide panel (ve-page-guide step 3, 2026-11-06): the Guide is told which page they are on. Only the reply
+      // engine sees the line; the question logged and saved as a draft answer stays as they typed it.
+      const chatPage = typeof body.page_url === 'string' && /^https:\/\//.test(body.page_url) ? body.page_url.slice(0, 400) : null;
+      const chatPageLabel = typeof body.page_label === 'string' ? body.page_label.replace(/\s+/g, ' ').trim().slice(0, 120) : '';
+      const chatPageText = chatPage && typeof body.page_text === 'string' ? body.page_text.replace(/\s+/g, ' ').trim().slice(0, 1500) : '';
+      const engineMessage = chatPage ? `[They are asking from this Vegans Explore page: ${chatPageLabel ? chatPageLabel + ' - ' : ''}${chatPage}` +
+        (chatPageText ? `\nWhat the page shows them now (an excerpt): ${chatPageText}` : '') + `]\n\n${message}` : message;
 
       const { data: priorRows } = await supabase
         .from('character_agent_conversations')
@@ -1834,14 +1843,14 @@ serve(async (req: Request) => {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${SERVICE_KEY}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          agent_slug, message, room_slug: roomSlug, history,
+          agent_slug, message: engineMessage, room_slug: roomSlug, history,
           speaker: { key: speakerKey, name: speakerName },
         }),
       });
       const respondData = await respondRes.json().catch(() => ({}));
       if (!respondRes.ok || !respondData?.reply) {
         console.error('guide_chat_send: character-respond failed', respondRes.status, respondData?.error, respondData?.detail);
-        await supabase.from('guide_kb_questions').insert({ brand_slug: 'vegans-explore', member_id: chargeMemberId, guide_slug: agent_slug, question: message, outcome: 'guide_failed' });
+        await supabase.from('guide_kb_questions').insert({ brand_slug: 'vegans-explore', member_id: chargeMemberId, guide_slug: agent_slug, question: message, outcome: 'guide_failed', page_url: chatPage });
         return new Response(JSON.stringify({ error: respondData?.error || 'guide_unavailable' }), { status: respondRes.ok ? 502 : respondRes.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
 
@@ -1853,7 +1862,7 @@ serve(async (req: Request) => {
       // Into the knowledge base: the question and the Guide's reply are logged, and the reply becomes a
       // draft answer (one per question) for Logan or Sean to check and make live, so the next member
       // who asks gets it free. A question that already has an answer keeps it.
-      await supabase.from('guide_kb_questions').insert({ brand_slug: 'vegans-explore', member_id: chargeMemberId, guide_slug: agent_slug, question: message, outcome: 'sent_to_guide', reply: respondData.reply });
+      await supabase.from('guide_kb_questions').insert({ brand_slug: 'vegans-explore', member_id: chargeMemberId, guide_slug: agent_slug, question: message, outcome: 'sent_to_guide', reply: respondData.reply, page_url: chatPage });
       const { error: draftErr } = await supabase.from('guide_kb_answers').upsert(
         { brand_slug: 'vegans-explore', question: message, answer: respondData.reply, status: 'draft', source: 'guide', created_by: `guide:${agent_slug}` },
         { onConflict: 'brand_slug,question_key', ignoreDuplicates: true });

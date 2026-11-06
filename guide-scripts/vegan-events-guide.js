@@ -935,7 +935,7 @@
         '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status +
         '<p class="dg-pp">Or get your <a href="/passport">Passport</a>: $11, one time, with 1,100 welcome points, enough for this Guide. Group Partner leads have it included.</p>';
     main.innerHTML = head('Get access', 'Open the whole Vegan Events Guide', 'There are two ways through, and both make you a Vegans Explore member. Take the free event survey (about ten minutes, with points for every answer), or get the $11 Passport. Either way you can claim your profile, apply for a sponsorship and record your story for the podcast. What to do when it rains stays open to everyone.') + lst;
-    if (!signedIn()) main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox" style="margin-bottom:14px"><div class="dg-big">Free<small>with the event survey</small></div><p>About ten minutes, up to 100 points, and your membership opens when you finish.</p><button type="button" class="dg-btn" data-survey>Take the event survey, free</button></div>');
+    if (!signedIn()) main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox" style="margin-bottom:14px"><div class="dg-big">Free<small>with the event survey</small></div><p>About ten minutes, up to 250 points, and your membership opens when you finish.</p><button type="button" class="dg-btn" data-survey>Take the event survey, free</button></div>');
     main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox">' + bx + '</div>');
   }
 
