@@ -212,8 +212,12 @@ serve(async (req: Request) => {
         : guide!.access_rule === 'membership' && status === 'active' ? 'membership' : null;
       // Super admins see every Guide open (Sean, 2026-10-30: "I should be seeing this completely unlocked as a super admin. And if I
       // want to see how it looks otherwise, I can change my view"). View As previews send no token, so they still see it locked.
-      // A door Guide (canon-ve-door-guides) is open to any active member: they got in with the $11 or by finishing the survey (Sean, 2026-11-03).
-      if (!via && member && guide!.door && status === 'active') via = 'door';
+      // A business Guide (a door Guide, canon-ve-door-guides v6 membership_rule_v6, Sean 2026-11-06) opens by finishing its own intake,
+      // for anyone, members included. Being a member alone no longer opens it; a purchase or comp already given still does.
+      if (!via && member && guide!.door && guide!.survey_slug) {
+        const { data: done } = await supabase.from('ve_survey_completions').select('member_id').eq('member_id', auth.sub).eq('survey_slug', guide!.survey_slug).maybeSingle();
+        if (done) via = 'door';
+      }
       if (!via && member?.is_superadmin) via = 'admin';
       if (!via && member && await isDiplomat(member.email ?? auth.email)) via = 'diplomat';
       // The Creator Guide comes with being an active Ambassador (canon-ve-ambassadors-talent-shop, Sean 2026-10-29).
@@ -232,6 +236,11 @@ serve(async (req: Request) => {
         out.html = full?.content_html ?? '';
       }
       return json(out);
+    }
+
+    // A business Guide is never bought or unlocked with points: it opens with its intake (membership_rule_v6).
+    if ((action === 'unlock' || action === 'checkout') && guide.door) {
+      return json({ error: 'survey_only', message: 'This Guide opens when you finish its short survey. It is free.', survey: guide.survey_slug ?? null }, 409);
     }
 
     if (action === 'unlock' && guide.access_rule === 'credit') {

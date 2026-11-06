@@ -262,12 +262,14 @@
   function skel(title, lines) { var h = '<div class="dg-skel">' + (title ? '<h3>' + esc(title) + '</h3>' : '<i></i>'); for (var i = 0; i < (lines || 3); i++) h += '<i style="width:' + (92 - i * 9) + '%"></i>'; return h + '</div>'; }
   function gated(inner, title, text) {
     return '<div class="dg-gated"><div class="dg-blur" aria-hidden="true">' + inner + '</div><div class="dg-gate"><span class="dg-lockic">' + LOCK_SVG.replace(/width="11" height="11"/, 'width="16" height="16"').replace('currentColor', '#1f5f22') + '</span>' +
-      '<b>' + esc(title) + '</b><p>' + esc(text) + ' Take the free event survey to open the rest of the Guide, or ' + esc(offerLine().replace(/^It is /, 'it is ')) + '</p>' + surveyBtns() + '</div></div>';
+      '<b>' + esc(title) + '</b><p>' + esc(text) + ' ' + esc(ST.active ? MEMBER_LINE : 'Take the free event survey to open the rest of the Guide.') + '</p>' + surveyBtns() + '</div></div>';
   }
   // Free with the Guide's survey (Sean, 2026-11-03): about ten minutes, earns points, opens the Guide and a membership. The $11 is the other way through.
+  // A business Guide opens only with its intake, members included (canon-ve-door-guides v6 membership_rule_v6, Sean 2026-11-06): no $11 or points path.
+  var MEMBER_LINE = 'You are a member, so this one is free. Answer a few questions about your events and it opens, with up to 250 more points.';
   function surveyBtns() {
     return '<div class="dg-btns"><button type="button" class="dg-btn" data-survey>Take the event survey, free</button>' +
-      '<button type="button" class="dg-btn dg-ghost" data-join>' + esc(ctaLabel()) + '</button>' + (mode() === 'join' ? '<a href="#" data-signin>Already a member? Sign in</a>' : '') + '</div>';
+      (mode() === 'join' ? '<a href="#" data-signin>Already a member? Sign in</a>' : '') + '</div>';
   }
   function row(o) {
     return '<div class="dg-srow"' + (o.href ? ' data-href="' + o.href + '"' : '') + '>' + (o.icon ? '<span class="dg-th rg-th" aria-hidden="true">' + o.icon + '</span>' : '') +
@@ -920,23 +922,14 @@
   // ---------- Get access ----------
   function viewJoin() {
     if (signedIn()) { main.innerHTML = head('Your Guide', 'The whole Guide is yours', 'It is yours to keep.') + '<a class="dg-btn" href="#/">Back to the overview</a>'; return; }
-    var m = mode(), status = '<span class="dg-status" role="status" style="display:block;margin-top:10px;color:#8a5a00"></span>';
     var lst = '<div class="dg-access"><ul>' +
       '<li><b>Every kind of event</b>, what it costs, how big it gets and what goes wrong.</li>' +
       '<li><b>The countdown plan</b> from twelve weeks out to the day after, to tick off, copy and print.</li>' +
       '<li><b>Money, venues and vendors:</b> the budget, what to ask a venue, the red flags, the vendor agreement, labels and permits.</li>' +
       '<li><b>The word, the day and after:</b> the timeline, the run of show, your helpers\' jobs, the door and the recap.</li>' +
       '<li><b>The elephants in the room</b>, each with what to do, and My list to keep your place.</li></ul></div>';
-    var bx = m === 'points'
-      ? '<div class="dg-big">' + pts(ST.cost) + '<small>points</small></div><p>You have ' + pts(ST.balance) + ' points. Unlock the Guide with ' + pts(ST.cost) + ' of them and it is yours to keep.</p>' +
-        '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button><button type="button" class="dg-btn dg-ghost" data-buy style="margin-top:8px">Or get it for $11</button>' + status
-      : '<div class="dg-big">$11<small>yours to keep</small></div><p>' + (m === 'join' ? 'Create your account and get the Guide for $11, one time. Buying it makes you a member of Vegans Explore. Already a member? <a href="#" data-signin>Sign in</a>.'
-          : 'Get the Guide for $11, one time, and it is yours to keep' + (ST.active ? '.' : '. Buying it also makes you a member of Vegans Explore.')) + '</p>' +
-        '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status +
-        '<p class="dg-pp">Or get your <a href="/passport">Passport</a>: $11, one time, with 1,100 welcome points, enough for this Guide. Group Partner leads have it included.</p>';
-    main.innerHTML = head('Get access', 'Open the whole Vegan Events Guide', 'There are two ways through, and both make you a Vegans Explore member. Take the free event survey (about ten minutes, with points for every answer), or get the $11 Passport. Either way you can claim your profile, apply for a sponsorship and record your story for the podcast. What to do when it rains stays open to everyone.') + lst;
-    if (!signedIn()) main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox" style="margin-bottom:14px"><div class="dg-big">Free<small>with the event survey</small></div><p>About ten minutes, up to 250 points, and your membership opens when you finish.</p><button type="button" class="dg-btn" data-survey>Take the event survey, free</button></div>');
-    main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox">' + bx + '</div>');
+    main.innerHTML = head('Get access', 'Open the whole Vegan Events Guide', 'The Guide opens when you take the free event survey, members included: about ten minutes, with points for every answer. If you are not a member yet, finishing it makes you one. Then you can claim your profile, apply for a sponsorship and record your story for the podcast. What to do when it rains stays open to everyone.') + lst;
+    main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox" style="margin-bottom:14px"><div class="dg-big">Free<small>with the event survey</small></div><p>About ten minutes, up to 250 points, and the Guide opens when you finish.</p><button type="button" class="dg-btn" data-survey>Take the event survey, free</button></div>');
   }
 
   // ---------- Overview ----------

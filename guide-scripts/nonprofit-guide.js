@@ -19,7 +19,7 @@
  *   Partner        Become a Nonprofit Partner (playbook ve-nonprofit-partners) and Tell us about your organization, a survey
  *                  paid in points once (ve-nonprofit `survey`)
  *   My list        members: saved tips, episodes and organizations (ve_guide_saves through ve-cookbook: fix, episode, listing)
- *   Get access     visitors: $11 or 1,100 points
+ *   Get access     visitors and members: the Guide's intake, free (ve_surveys 'nonprofit-guide', 250 points; canon-ve-door-guides v6)
  *
  * Access is every Guide's: ve-guide-unlock for this slug decides; a Nonprofit Partner's lead owns it (ve_nonprofit_partner_start).
  * The members-only text (tips 2 to 10, the kit, the pitch, the support plan) is ve_guides.content_html, handed out only to its
@@ -87,7 +87,7 @@
     { k: 'partner', label: 'Become a Partner', say: 'Nonprofit Partners get their own link, earn twenty percent when people join through it, and get points, a kit and a badge.',
       sayMember: 'Tell us about your organization. It helps us support you, and it pays points.' },
     { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you saved lives here: tips, episodes and organizations.' },
-    { k: 'join', label: 'Get access', guest: 1, say: 'The Nonprofit Guide is eleven dollars, or 1,100 points, and it\'s yours to keep. Buying it makes you a member of Vegans Explore.' }
+    { k: 'join', label: 'Get access', guest: 1, say: 'The Nonprofit Guide opens when you finish its short survey about your organization. It\'s free, it earns you points, and if you\'re not a member yet, it makes you one.' }
   ];
   var S = 'stroke="#1f5f22" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
   var TIP_ICON = {
@@ -179,22 +179,16 @@
     return '<div class="ng-copy"><pre id="' + id + '">' + esc(text) + '</pre><button type="button" class="dg-btn dg-ghost" data-copy="' + id + '">' + esc(label || 'Copy') + '</button></div>';
   }
 
-  // ---------- the offer: $11 or 1,100 points ----------
-  function mode() {
-    if (access === 'guest' || access === 'checking') return 'join';
-    return ST.balance >= ST.cost ? 'points' : 'buy';
-  }
-  function ctaLabel() { return { join: 'Get it for $11', points: 'Unlock with ' + pts(ST.cost) + ' points', buy: 'Get it for $11' }[mode()]; }
-  function offerLine() {
-    if (mode() === 'points') return 'Unlock it with ' + pts(ST.cost) + ' points: you have ' + pts(ST.balance) + '. Or get it for $11.';
-    return 'It is $11, or ' + pts(ST.cost) + ' points, and yours to keep. Buying it makes you a member of Vegans Explore.';
-  }
+  // ---------- the offer: the Guide's intake, free (canon-ve-door-guides v6 membership_rule_v6, Sean 2026-11-06) ----------
+  // A business Guide opens only by finishing its own intake, members included: no $11 or points path.
+  var SURVEY_SLUG = 'nonprofit-guide';
+  function surveyGo() { try { sessionStorage.setItem('ve_survey_for', SURVEY_SLUG); } catch (e) {} location.href = '/survey?s=' + SURVEY_SLUG; }
+  var MEMBER_LINE = 'You are a member, so this one is free. Answer a few questions about your organization and it opens, with up to 250 more points.';
+  function mode() { return access === 'guest' || access === 'checking' ? 'join' : 'buy'; }
+  function offerLine() { return ST.active ? MEMBER_LINE : 'Take the free survey about your organization. When you finish, you are a member and the whole Guide opens.'; }
   function ctaBtns() {
-    var m = mode();
-    return '<div class="dg-btns"><button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' +
-      (m === 'join' ? '<a href="#" data-signin>Already a member? Sign in</a>' : '') +
-      (m === 'points' ? '<a href="#" data-buy>Or get it for $11</a>' : '') +
-      (m === 'buy' ? '<a href="/passport">Or get your Passport: $11 with 1,100 points</a>' : '') + '</div>';
+    return '<div class="dg-btns"><button type="button" class="dg-btn" data-survey>Take the survey, free</button>' +
+      (mode() === 'join' ? '<a href="#" data-signin>Already a member? Sign in</a>' : '') + '</div>';
   }
   function take(d) {
     if (!d || d.error) return;
@@ -204,7 +198,6 @@
   }
   function drawJoinbox() {
     var box = document.querySelector('.dg-joinbox'); if (!box || member()) return;
-    box.querySelector('[data-join]').textContent = ctaLabel();
     box.querySelector('.dg-jb-in').style.display = mode() === 'join' ? '' : 'none';
   }
 
@@ -497,18 +490,6 @@
   }
 
   // ---------- Become a Nonprofit Partner, and the organization survey ----------
-  var SURVEY = [
-    { k: 'org', t: 'text', l: 'Your organization\'s name', req: 1, max: 160 },
-    { k: 'role', t: 'text', l: 'Your role there', max: 120 },
-    { k: 'kind', t: 'one', l: 'What kind of organization is it?', o: ['Nonprofit', 'Rescue', 'Sanctuary', 'Something else'], req: 1 },
-    { k: 'where', t: 'text', l: 'Where are you based, and where do you serve?', max: 200 },
-    { k: 'challenge', t: 'many', l: 'What is hardest right now?', o: ['Raising money', 'Finding volunteers', 'Getting seen', 'Burnout', 'Running events', 'Something else'] },
-    { k: 'money', t: 'many', l: 'How do you raise money today?', o: ['Events', 'Monthly donors', 'Grants', 'Merchandise', 'Business partners', 'Peer-to-peer', 'Other'] },
-    { k: 'monthly', t: 'one', l: 'Do you have a monthly giving program?', o: ['Yes', 'We are starting one', 'Not yet'] },
-    { k: 'help', t: 'many', l: 'What would help most from Vegans Explore?', o: ['Being found in the Directory', 'Promoting our events', 'Business partners', 'Volunteers', 'Being on a podcast or in the Daily Pulse', 'Ads', 'Earning through our own link'] },
-    { k: 'note', t: 'long', l: 'Anything else we should know?', max: 1000 }
-  ];
-  var SV_SURVEY = null; // what they sent before
   function npApi(body) {
     var tok = token(), h = { 'Content-Type': 'application/json' };
     if (tok) h.Authorization = 'Bearer ' + tok;
@@ -532,39 +513,10 @@
         '<div class="dg-btns"><a class="dg-btn" href="#/partner/tell">Tell us about your organization</a><a class="dg-btn dg-ghost" href="/policies#membership">The terms</a></div>';
       return;
     }
-    var fields = SURVEY.map(function (q) {
-      var v = (SV_SURVEY && SV_SURVEY.answers) ? SV_SURVEY.answers[q.k] : null;
-      if (q.t === 'text') return '<label class="dg-field"><span>' + esc(q.l) + (q.req ? '' : ' <i>(optional)</i>') + '</span><input name="' + q.k + '" maxlength="' + q.max + '"' + (q.req ? ' required' : '') + ' value="' + esc(v || '') + '"></label>';
-      if (q.t === 'long') return '<label class="dg-field"><span>' + esc(q.l) + ' <i>(optional)</i></span><textarea name="' + q.k + '" rows="3" maxlength="' + q.max + '">' + esc(v || '') + '</textarea></label>';
-      var arr = Array.isArray(v) ? v : v ? [v] : [];
-      return '<fieldset class="ng-q"><legend>' + esc(q.l) + (q.t === 'many' ? ' <i>(pick any)</i>' : '') + '</legend>' + q.o.map(function (o) {
-        return '<label><input type="' + (q.t === 'many' ? 'checkbox' : 'radio') + '" name="' + q.k + '" value="' + esc(o) + '"' + (arr.indexOf(o) >= 0 ? ' checked' : '') + (q.req && q.t === 'one' ? ' required' : '') + '><span>' + esc(o) + '</span></label>';
-      }).join('') + '</fieldset>';
-    }).join('');
-    var pay = PUB.survey_points;
+    // Tell us about your organization is the Guide's intake now (ve_surveys 'nonprofit-guide', membership_rule_v6).
     main.innerHTML = head('Become a Partner', 'Tell us about your organization',
-      'It helps us shape what we build for Vegan nonprofits, and our team reads every one. ' + (SV_SURVEY && SV_SURVEY.points ? 'You earned your ' + pts(SV_SURVEY.points) + ' points; you can update your answers any time.' : 'Members earn ' + pts(pay) + ' points for it, once.'), t) +
-      (token() ? '<form class="dg-form" id="ngSurvey">' + fields + '<span class="dg-status" role="status"></span><button type="submit" class="dg-btn">' + (SV_SURVEY ? 'Update my answers' : 'Send it') + '</button></form>'
-        : '<div class="dg-door"><p>Sign in to tell us about your organization. Members earn ' + pts(pay) + ' points for it.</p><div class="dg-btns"><button type="button" class="dg-btn" data-signin>Sign in</button><a href="/passport">Get your Passport</a></div></div>');
-    var f = document.getElementById('ngSurvey'); if (!f) return;
-    if (!SV_SURVEY) npApi({ action: 'survey_get' }).then(function (d) { if (d && d.survey && !SV_SURVEY) { SV_SURVEY = d.survey; if (curTab === 'partner' && /tell/.test(location.hash)) viewPartner('tell'); } }).catch(function () {});
-    f.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var ans = {};
-      SURVEY.forEach(function (q) {
-        if (q.t === 'many') ans[q.k] = [].map.call(f.querySelectorAll('input[name="' + q.k + '"]:checked'), function (x) { return x.value; });
-        else if (q.t === 'one') { var c = f.querySelector('input[name="' + q.k + '"]:checked'); ans[q.k] = c ? c.value : ''; }
-        else ans[q.k] = f.elements[q.k].value.trim();
-      });
-      var btn = f.querySelector('button[type=submit]'), st = f.querySelector('.dg-status');
-      btn.disabled = true; btn.textContent = 'Sending...'; st.textContent = '';
-      npApi({ action: 'survey', answers: ans }).then(function (d) {
-        if (!d || !d.ok) throw d;
-        SV_SURVEY = d.survey;
-        main.innerHTML = head('Become a Partner', 'Thank you', (d.paid ? 'We added ' + pts(d.paid) + ' points to your account. ' : '') + 'Our team reads every one, and we will be in touch about the partnership.', t) +
-          '<div class="dg-btns"><a class="dg-btn" href="#/tips">Back to the tips</a><a class="dg-btn dg-ghost" href="#/partner/tell">See my answers</a></div>';
-      }).catch(function (d) { btn.disabled = false; btn.textContent = SV_SURVEY ? 'Update my answers' : 'Send it'; st.textContent = (d && d.message) || 'That did not go through. Try again in a minute.'; });
-    });
+      'It helps us shape what we build for Vegan nonprofits, and our team reads every one. It is the same short survey that opens this Guide, with up to 250 points.', t) +
+      '<div class="dg-btns"><button type="button" class="dg-btn" data-survey>Take the survey</button></div>';
   }
 
   // ---------- My list ----------
@@ -592,21 +544,13 @@
   // ---------- Get access ----------
   function viewJoin() {
     if (member()) { main.innerHTML = head('Your Guide', 'The whole Guide is yours', 'It is yours to keep. Thank you for the work you do.') + '<a class="dg-btn" href="#/">Back to the overview</a>'; return; }
-    var m = mode(), status = '<span class="dg-status" role="status" style="display:block;margin-top:10px;color:#8a5a00"></span>';
     var list = '<div class="dg-access"><ul>' +
       '<li><b>All ten tips</b>, each with what to do this week and the episode behind it.</li>' +
       '<li><b>The Nonprofit Pulse:</b> our five-part series and our interviews with nonprofit leaders, played right here.</li>' +
       '<li><b>Businesses near you</b> that fit a tie-in, and a pitch you can send today.</li>' +
       '<li><b>The peer-to-peer kit</b>, the support plan, and My list to keep your place.</li></ul></div>';
-    var box = m === 'points'
-      ? '<div class="dg-big">' + pts(ST.cost) + '<small>points</small></div><p>You have ' + pts(ST.balance) + ' points. Unlock the Guide with ' + pts(ST.cost) + ' of them and it is yours to keep.</p>' +
-        '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button><button type="button" class="dg-btn dg-ghost" data-buy style="margin-top:8px">Or get it for $11</button>' + status
-      : '<div class="dg-big">$11<small>yours to keep</small></div><p>' + (m === 'join' ? 'Create your account and get the Guide for $11, one time. Buying it makes you a member of Vegans Explore. Already a member? <a href="#" data-signin>Sign in</a>.'
-          : 'Get the Guide for $11, one time, and it is yours to keep' + (ST.active ? '.' : '. Buying it also makes you a member of Vegans Explore.')) + '</p>' +
-        '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status +
-        '<p class="dg-pp">Or get your <a href="/passport">Passport</a>: $11, one time, with 1,100 welcome points, enough for this Guide.</p>';
-    main.innerHTML = head('Get access', 'Open the whole Nonprofit Guide', 'Every Vegans Explore Guide is $11, or 1,100 points, and yours to keep. Nonprofit Partners get it with the partnership. The Directory, Get found, Events and the partnership stay open to everyone.') + list;
-    main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox">' + box + '</div>');
+    main.innerHTML = head('Get access', 'Open the whole Nonprofit Guide', 'The Guide opens when you take the free survey about your organization, members included: a few minutes, with points for every answer. If you are not a member yet, finishing it makes you one. Nonprofit Partners get it with the partnership. The Directory, Get found, Events and the partnership stay open to everyone.') + list;
+    main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox"><div class="dg-big">Free<small>with the survey</small></div><p>A few minutes, up to 250 points, and the Guide opens when you finish.</p><button type="button" class="dg-btn" data-survey>Take the survey, free</button>' + (mode() === 'join' ? '<p class="dg-pp">Already a member? <a href="#" data-signin>Sign in</a>.</p>' : '') + '</div>');
   }
 
   // ---------- Overview ----------
@@ -628,7 +572,7 @@
           (!member() && !t[3] ? '<span class="dg-mlock">' + LOCK_SVG + ' In the full Guide</span>' : !member() && t[3] ? '<span class="dg-mlock" style="color:#1f5f22 !important">Open to everyone</span>' : '') + '</div></a>';
       }).join('') + '</div>' +
       '<div class="dg-start"><a class="dg-btn" href="#/tips/' + PUB.tip_example.id + '">' + (member() ? 'Start with tip 1' : 'Try tip 1, free') + '</a><a class="dg-btn dg-ghost" href="#/found">Find your organization</a>' +
-      (member() ? '<p>The whole Guide is yours. Pick a tab, or follow Dani with Next.</p>' : '<p>The full Guide is $11 or 1,100 points. <a href="#/join" style="color:var(--g);font-weight:800">How to get access</a></p>') + '</div>';
+      (member() ? '<p>The whole Guide is yours. Pick a tab, or follow Dani with Next.</p>' : '<p>The full Guide is free with a short survey. <a href="#/join" style="color:var(--g);font-weight:800">How to get access</a></p>') + '</div>';
   }
 
   // ---------- search (members) ----------
@@ -784,20 +728,7 @@
       if (a) a.showAuthModal('Sign in and the Nonprofit Guide opens if it is yours.', function () { location.reload(); }, 'login');
       return;
     }
-    if ((el = e.target.closest('[data-buy]'))) { e.preventDefault(); if (token()) buyNow(el); return; }
-    var jb = e.target.closest('[data-join]');
-    if (jb) {
-      if (!a || access === 'checking' || jb.disabled) return;
-      var m = mode();
-      // A new account goes straight on to the Guide's own $11 checkout, since buying the Guide is what makes them a member.
-      if (m === 'join') {
-        var go = function () { delete window.VE_ACTIVATE_HANDLER; buyNow(jb); };
-        window.VE_ACTIVATE_HANDLER = go;
-        a.showAuthModal('Create your account, then get the Nonprofit Guide for $11. Buying it makes you a member.', go, 'signup');
-        return;
-      }
-      if (m === 'points') unlockPoints(jb); else buyNow(jb);
-    }
+    if (e.target.closest('[data-survey]')) { e.preventDefault(); surveyGo(); return; }
   });
   document.addEventListener('change', function (e) {
     var el = e.target.closest && e.target.closest('[data-check]'); if (!el) return;
@@ -805,24 +736,6 @@
     if (el.checked) c[k] = 1; else delete c[k];
     store('ng_checks', JSON.stringify(c));
   });
-  function unlockPoints(btn) {
-    var tok = token(); if (!tok) return;
-    btn.disabled = true; btn.textContent = 'Unlocking...';
-    api('unlock', tok).then(function (d) {
-      if (d && d.unlocked) return api('open', tok).then(function (o) { take(o); if (o && o.unlocked && o.html) becomeMember(o.html); else throw 0; });
-      if (d && d.error === 'insufficient_points') { ST.balance = d.balance || 0; route(); return; }
-      throw 0;
-    }).catch(function () { btn.disabled = false; btn.textContent = ctaLabel(); setStatus('That did not go through, and no points were spent. Try again in a minute.'); });
-  }
-  function buyNow(btn) {
-    var tok = token(); if (!tok) return;
-    btn.disabled = true; btn.textContent = 'Opening checkout...';
-    fetch(UNLOCK_URL + '?action=checkout', { method: 'POST', headers: { 'apikey': ANON_KEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify({ slug: SLUG, token: tok, return_url: location.origin + location.pathname }) })
-      .then(function (r) { return r.json(); })
-      .then(function (d) { if (d && d.url) { (window.top || window).location.href = d.url; return; } if (d && d.already) { location.reload(); return; } throw 0; })
-      .catch(function () { btn.disabled = false; btn.textContent = ctaLabel(); setStatus('Checkout did not open. Try again in a minute.'); });
-  }
   function confirmAfterCheckout(tok, tries) {
     setStatus('Opening your Guide...');
     access = 'pending';

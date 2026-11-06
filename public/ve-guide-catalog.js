@@ -113,7 +113,7 @@
       chips: [{ text: 'Walked through by River' }, { text: 'Magic Kingdom free' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
     { slug: 'nonprofit-guide', shelf: 'work', label: 'Nonprofits', tag: 'New', title: 'The Nonprofit Guide', banner: '/public/guides/nonprofit-guide.jpg?v=3', interests: ['causes', 'business'], href: '/guides/nonprofit-guide',
       desc: 'For the people who keep Vegan nonprofits, rescues and sanctuaries going: ten ways to fundraise and stay relevant, our nonprofit series and interviews, the Directory, businesses near you that fit a tie-in, and how to get found, with Dani walking you through it.',
-      chips: [{ text: 'Walked through by Dani' }, { text: 'Tip 1 free' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },
+      chips: [{ text: 'Walked through by Dani' }, { text: 'Tip 1 free' }, { text: 'Free with a short survey', cls: 'price' }], cta: 'Open the Guide' },
     { slug: 'nutrition-guide', shelf: 'everyday', label: 'Nutrition', tag: 'New', title: 'The Nutrition Guide', banner: '/public/guides/nutrition-guide.jpg', interests: ['health', 'food', 'starting'], href: '/guides/nutrition-guide',
       desc: 'What a Vegan plate needs, nutrient by nutrient: B12, protein, iron, calcium, vitamin D, omega-3s, iodine and zinc, how much, where to get it and when to supplement, sourced, with our physicians on the podcast and Theo walking you through it. B12 is free.',
       chips: [{ text: 'Walked through by Theo' }, { text: 'B12 free' }, { text: PRICE, cls: 'price' }], cta: 'Open the Guide' },

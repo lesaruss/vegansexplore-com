@@ -121,7 +121,7 @@ Deno.serve(async (req) => {
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
   const memberId = token ? await verifyToken(token) : null;
   if (!memberId) return json({ error: 'not_authenticated' }, 401);
-  const { data: member } = await db.from('members').select('id, name, email, dashboard_version, membership_status, mission_survey_completed_at, is_superadmin, ve_role, home_community, founding_member').eq('id', memberId).maybeSingle();
+  const { data: member } = await db.from('members').select('id, name, email, dashboard_version, membership_status, mission_survey_completed_at, is_superadmin, ve_role, home_community, founding_member, entry_paid_at').eq('id', memberId).maybeSingle();
   if (!member) return json({ error: 'not_found' }, 404);
 
   if (body.action === 'set_version') {
@@ -139,6 +139,11 @@ Deno.serve(async (req) => {
       db.rpc('ve_member_level', { p_member: memberId }),
       db.rpc('ve_profile_state', { p_member: memberId }),
     ]);
+    // Registered badges, one per finished business intake (canon-ve-door-guides v6, Sean 2026-11-06).
+    const { data: badges } = await db.rpc('ve_member_badges', { p_member: memberId });
+    // After the $11, a prompt (not required) to take a survey for 250 more points (membership_rule_v6): shown until any survey is finished.
+    const { count: surveysDone } = await db.from('ve_survey_completions').select('survey_slug', { count: 'exact', head: true }).eq('member_id', memberId);
+    const surveyPrompt = member.membership_status === 'active' && !!(member as any).entry_paid_at && !surveysDone;
     const version = auto || 'member';
     const now = Date.now();
     const { data: rows } = await db.from('ve_dashboard_cards').select('kind, title, body, cta_label, cta_url, starts_at, ends_at').in('audience', [version, 'all']).order('sort');
@@ -152,7 +157,7 @@ Deno.serve(async (req) => {
     // founding_member (Sean, 2026-11-01): the dashboard says Founding Member only for those marked so (paid before January 1, 2027,
     // or a comp given before 2026-11-01), never for every active member.
     return json({ ok: true, member_id: memberId, founding_member: !!(member as any).founding_member, version, auto: auto || 'member', chosen: member.dashboard_version, versions: VERSIONS.map(([k, label]) => ({ k, label })),
-      listings: listings || [], cards, level: level || null,
+      listings: listings || [], cards, level: level || null, badges: badges || [], survey_prompt: surveyPrompt,
       survey: { completed: !!member.mission_survey_completed_at, earned: prof?.earned ?? 0, total: prof?.total ?? 250, active: member.membership_status === 'active' } });
   }
 
@@ -222,7 +227,8 @@ Deno.serve(async (req) => {
       return { at: v.at, member: { id: v.member_id, name: x.name || x.email || 'Member', avatar_url: x.avatar_url || null, color: x.color || null }, page: l.name || null, episode: v.episode };
     });
     const { data: gifts } = await db.from('points_ledger').select('created_at, delta, ref_id').eq('member_id', id).eq('reason', 'admin_adjust').like('ref_id', 'founder:%').order('created_at', { ascending: false }).limit(10);
-    return json({ ok: true, member: m, level: level || null, points: pts || null,
+    const { data: badges } = await db.rpc('ve_member_badges', { p_member: id });
+    return json({ ok: true, member: m, level: level || null, points: pts || null, badges: badges || [],
       gifts: (gifts || []).map((g: any) => ({ at: g.created_at, amount: g.delta, note: String(g.ref_id || '').split(':').slice(2).join(':') })),
       counts: { votes: votesN.count || 0, votes_received: recv.count || 0, saves_received: (lsN.count || 0) + (epsN.count || 0), checkins: checkinsN.count || 0, saves: savesN.count || 0, episodes: epN.count || 0 },
       recent_votes: (recent || []).filter((r: any) => !isLr(r.listings)).slice(0, 8).map((r: any) => ({ at: r.created_at, name: r.listings?.name || null, slug: r.listings?.slug || null })),
