@@ -161,7 +161,9 @@
     return fetch(AUTH + action, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON }, body: JSON.stringify(body) })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (d) { d._status = r.status; return d; }); }).catch(function () { return { error: 'offline' }; });
   }
-  function shareUrl() { var u = pageUrl(); return /^https:\/\//.test(u) ? u : location.origin + location.pathname; }
+  // The page as anyone opens it, without a member's own ?ref= or sign-in bits.
+  function shareUrl() { var u = pageUrl(); try { var x = new URL(/^https:\/\//.test(u) ? u : location.href); x.searchParams.delete('ref'); x.searchParams.delete('vl'); return x.origin + x.pathname + x.search + x.hash; } catch (e) { return location.origin + location.pathname; } }
+  function pageExcerpt() { try { var m = document.querySelector('#dgApp') || document.querySelector('main') || document.body; return (m.innerText || '').replace(/\s+/g, ' ').trim().slice(0, 1500); } catch (e) { return ''; } }
   // A member: saved answers first, free; then the Guide (4 points) or a person (free). The conversation is kept for the visit.
   function openMember() {
     var N = NAMES[G], k = 've_pgm_' + G + '_' + location.pathname, turns, busy = false, conv;
@@ -173,13 +175,16 @@
       { links: '<button type="button" class="lnk" data-new>Start over</button>' }, 'Ask');
     var log = S.log, f = S.f, ta = f.t, go = f.querySelector('.go');
     function offer(q) { return '<div class="vepg-ch vepg-offer" data-q="' + esc(q) + '"><button type="button" class="ap" data-direct>Ask ' + esc(N) + ' directly &middot; 4 points</button> <button type="button" class="lnk" data-person>Ask a person, free</button></div>'; }
+    // Only the newest question keeps its Ask buttons. A Guide's reply is plain text with light markdown: bold, headings and bullets.
+    function lastOffer() { for (var i = turns.length - 1; i >= 0; i--) if (turns[i].offer) return turns[i]; return null; }
+    function md(t) { return esc(t).replace(/^#{1,6}\s*(.+)$/gm, '<b>$1</b>').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/(^|\W)\*([^*\n]+)\*(?=\W|$)/g, '$1<i>$2</i>').replace(/^\s*[-*]\s+/gm, '&bull; '); }
     function draw() {
       log.innerHTML = (turns.length ? '' : '<div class="vepg-m s">Ask ' + esc(N) + ' anything about this page or being Vegan here.</div>') + turns.map(function (t) {
         if (t.role === 'user') return '<div class="vepg-m u">' + esc(t.text) + '</div>';
         if (t.role === 'note') return '<div class="vepg-m s">' + t.html + '</div>';
         var link = t.link_url ? '<br><a href="' + esc(t.link_url) + '" style="font-weight:800;color:var(--vb-accent,#1E7A3E)">' + esc(t.link_label || 'Open it') + '</a>' : '';
         var rel = (t.related || []).length ? '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px">' + t.related.map(function (r) { return '<button type="button" class="vepg-talk" style="margin:0" data-rel="' + esc(r.question) + '">' + esc(r.question) + '</button>'; }).join('') + '</div>' : '';
-        return (t.text ? '<div class="vepg-m a">' + esc(t.text) + link + '</div>' : '') + rel + (t.offer && !t.used ? offer(t.offer) : '');
+        return (t.text ? '<div class="vepg-m a">' + (t.ai ? md(t.text) : esc(t.text)) + link + '</div>' : '') + rel + (t.offer && !t.used && t === lastOffer() ? offer(t.offer) : '');
       }).join('') + (busy ? '<div class="vepg-m s">' + esc(N) + ' is thinking...</div>' : '');
       log.scrollTop = log.scrollHeight;
     }
@@ -203,10 +208,10 @@
       for (var i = turns.length - 1; i >= 0; i--) if (turns[i].offer === q && !turns[i].used) { src = turns[i]; break; }
       if (e.target.closest('[data-direct]')) {
         if (src) src.used = 1; busy = true; go.disabled = true; keep(); draw();
-        auth('guide_chat_send', { agent_slug: G, message: q, conversation: conv, page_url: shareUrl(), page_label: document.title }).then(function (d) {
+        auth('guide_chat_send', { agent_slug: G, message: q, conversation: conv, page_url: shareUrl(), page_label: document.title, page_text: pageExcerpt() }).then(function (d) {
           busy = false; go.disabled = false;
           if (d && d.reply) {
-            turns.push({ role: 'assistant', text: d.reply });
+            turns.push({ role: 'assistant', text: d.reply, ai: 1 });
             if (d.balance != null) turns.push({ role: 'note', html: esc(d.balance) + ' points left.' + (d.memory && d.memory.used >= 16 ? ' ' + esc(N) + ' remembers the last 20 messages. <button type="button" class="lnk" data-new>Start a new conversation</button>' : '') });
           } else if (d && d.error === 'insufficient_points') {
             if (src) src.used = 0;

@@ -1825,7 +1825,9 @@ serve(async (req: Request) => {
       // engine sees the line; the question logged and saved as a draft answer stays as they typed it.
       const chatPage = typeof body.page_url === 'string' && /^https:\/\//.test(body.page_url) ? body.page_url.slice(0, 400) : null;
       const chatPageLabel = typeof body.page_label === 'string' ? body.page_label.replace(/\s+/g, ' ').trim().slice(0, 120) : '';
-      const engineMessage = chatPage ? `[They are asking from this Vegans Explore page: ${chatPageLabel ? chatPageLabel + ' - ' : ''}${chatPage}]\n\n${message}` : message;
+      const chatPageText = chatPage && typeof body.page_text === 'string' ? body.page_text.replace(/\s+/g, ' ').trim().slice(0, 1500) : '';
+      const engineMessage = chatPage ? `[They are asking from this Vegans Explore page: ${chatPageLabel ? chatPageLabel + ' - ' : ''}${chatPage}` +
+        (chatPageText ? `\nWhat the page shows them now (an excerpt): ${chatPageText}` : '') + `]\n\n${message}` : message;
 
       const { data: priorRows } = await supabase
         .from('character_agent_conversations')
