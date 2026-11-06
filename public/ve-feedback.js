@@ -100,11 +100,18 @@
   var pgLoading = null;
   function loadGuide(cb) {
     if (window.VEPageGuide) { if (cb) cb(); return; }
-    if (!pgLoading) { pgLoading = []; var sc = document.createElement('script'); sc.src = '/public/ve-page-guide.js?v=2'; sc.onload = function () { pgLoading.forEach(function (f) { f(); }); }; document.head.appendChild(sc); }
+    if (!pgLoading) { pgLoading = []; var sc = document.createElement('script'); sc.src = '/public/ve-page-guide.js?v=3'; sc.onload = function () { pgLoading.forEach(function (f) { f(); }); }; document.head.appendChild(sc); }
     if (cb) pgLoading.push(cb);
   }
-  function adminPanels() { if (isAdmin()) loadGuide(); }
-  if (document.readyState === 'complete') setTimeout(adminPanels, 1200); else window.addEventListener('load', function () { setTimeout(adminPanels, 1200); });
+  // Step 3 (2026-11-06): everyone gets "Talk to <Guide>" on a page's Guide panels, so the script loads on any page that has one,
+  // now or once a tab draws one (the Guide rail, the tour's narrator, a Resources card). A super admin gets it on every page.
+  var PANELS = '#dgRail,.vgt-narr,.gt-card[data-gt]';
+  function panels() {
+    if (window.VEPageGuide) return;
+    if (isAdmin() || document.querySelector(PANELS)) { loadGuide(); return; }
+    try { var ob = new MutationObserver(function () { if (document.querySelector(PANELS)) { ob.disconnect(); loadGuide(); } }); ob.observe(document.body, { childList: true, subtree: true }); } catch (e) {}
+  }
+  if (document.readyState === 'complete') setTimeout(panels, 1200); else window.addEventListener('load', function () { setTimeout(panels, 1200); });
   btnCss();
   window.VEFeedback = { open: open, button: button, url: here };
   document.addEventListener('click', function (e) { var a = e.target.closest && e.target.closest('[data-ve-feedback]'); if (!a) return; e.preventDefault(); open(); });
