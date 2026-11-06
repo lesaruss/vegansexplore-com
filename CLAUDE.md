@@ -1326,6 +1326,22 @@ and apply is a `ve_page_guide_log` row (RLS on, no policies). Migration `2026110
 carries the check-up line; business outreach sends as email brand `ve-business-outreach` (unsubscribe on vegansexplore.com; people lists stay `lesaruss`). Proven live
 2026-11-05 as Sean (proposals only, nothing applied). **Step 2, live on `main` 2026-11-05 (merge 8885bd1, function from d89d768, source sha256 64f851e5 matched)**: the same chat speaks as the page's own Guide (`guide` liz, maya, river, nori, dani, theo, kai, pascal; `GUIDES` in the function, `NAMES` and `GT` in `ve-page-guide.js`). For a super admin `ve-feedback.js` loads `ve-page-guide.js`, which puts **Talk to <Guide>** on the Guide rail (`#dgRail` `data-guide`), the Partner Dashboard tour's narrator (`.vgt-narr`) and each Resources card (`.gt-card`), watching for tabs that draw later; the Feedback button opens the rail's Guide, else the Resources Guide, else Liz. On a page that is not a listing the Guide files a **Note for Logan** (target `logan`: a `ve_feedback` row, kind suggestion, named "Sean (via <Guide>)") and listing edits are refused (`not_a_listing`). Proven live as Sean through the one-time `ve-once-page-guide-step2` (now 410): River filed a note from the Events Guide, a phone edit there refused, Maya answered on The Rabbit Hole as herself; the test row removed. Confirmed live signed in as Sean (a one-hour session from the one-time `ve-once-session-proof`, now 410) at 1440 and 390 px: Talk to River on the Events Guide, Talk to Maya and Talk to Liz on The Rabbit Hole's Resources tab, Talk to Liz on the Restaurant Guide, each opening its chat, no script errors, no sideways scroll; the deployed `ve-page-guide.js` and `ve-feedback.js` match the repo byte for byte. **Step 3, members and visitors, built 2026-11-06** (Sean: "Go with your defaults, build step 3"; `ve-auth` v74 from 9362197, source sha256 acc450e3 matched; migration `20261106_guide_kb_questions_page_url.sql`). **Talk to <Guide>** is on the Guide panels for everyone (`ve-feedback.js` loads `ve-page-guide.js` on any page with `#dgRail`, `.vgt-narr` or `.gt-card`, watching for tabs that draw later; the Feedback button stays the plain form for anyone but a super admin). `open()` picks the mode: a super admin gets the step 2 chat (`openAdmin`); a **member** (`VEAuth.isLoggedIn`, paid or survey) gets `openMember`: saved answers first (`ve-auth` `guide_ask`, free, with related questions as chips), then on the newest question **Ask <Guide> directly · 4 points** (`guide_chat_send`, the monthly allowance, a conversation id kept for the visit, points left shown, a failed reply costs nothing) or **Ask a person, free** (`guide_ask_person`); no changes, no Apply. A **visitor or unpaid account** gets `openVisitor`: Suggest a change in the Guide's voice (one box, an optional email) sent to `ve-feedback` as kind suggestion, named "A visitor (via <Guide>)", with a note that members can ask the Guide and a link to join. `guide_ask`, `guide_chat_send` and `guide_ask_person` take an optional `page_url` (kept in `guide_kb_questions.page_url`, so the gaps list says where people ask); `guide_chat_send` also takes `page_label` and `page_text` (an excerpt of the page, 1,500 characters), which only the reply engine sees as a line before the question, so River answers from the page (without it he said the Events Guide had no rain plan). The page link drops a member's `?ref=`. Guide replies render light markdown (bold, italics, headings, bullets). Proven 2026-11-06 at 1440 and 390 px on the Events Guide (River) and The Rabbit Hole's Resources tab (Maya), as the Logan test member (a token from the one-time `ve-once-member-proof`, now 410; a saved answer, a no-match, a 4-point reply in context, 1,117 points left) and signed out (the suggestion window, its POST answered locally so nothing reached the team); no script errors, no sideways scroll; the test questions and draft answers removed. Not proven live: Ask a person (it emails the team; unchanged code), the window on a phone signed in with a real member.
 
+## Ideas: Sean's idea inbox (Sean, 2026-11-06, playbook `ve-idea-intake`)
+
+"An intake somewhere that I can go to drop ideas... voice dictation, upload assets... links... give you context... you confirm what I'm asking,
+and then I approve, and then you start working on it... provide me with the link to see what you've done." **Depot > Ideas** (`/admin/depot/ideas`,
+Site in the Go to menu; super admins), copied from Depot > Feedback: **New idea** (`#new`: the idea typed or spoken with the site's mic, screenshots,
+photos and files (tap, drop or paste; pictures shrunk to 1600 px JPEG in the browser, 25 MB each, up to 12, into the private bucket `idea-files`),
+links one a line, the page it is about, `?from=<url>` fills it), the list (`#list/open|new|read|approved|building|done|set_aside|all`, search) and
+one idea (`#idea/<id>`). Sending it has **Logan read it** (edge function `ve-ideas`, Claude Opus 5.5 on the API key, about 7 to 30 seconds, cents
+a read; it sees the pictures and PDFs): what he thinks is asked, tweak / build / big, the playbook it belongs to (from `ve_playbook_index`, or a new
+slug), how he would do it and up to three questions. **Correct me** adds Sean's words to the thread and reads it again; **Approve** sets it approved;
+Set aside. Table `ve_ideas` (migration `20261106_ve_ideas.sql`, RLS on, no policies): body, links, files, page_url, status new | read | approved |
+building | done | set_aside, read, thread, playbook_slug, session_url, result_url, note. `ve-ideas` actions `list`, `get`, `upload_start`, `create`,
+`read`, `approve`, `set`. **Step 3 is not wired**: approving does not start a build yet; Logan picks approved ideas up in his next session and sets
+`session_url`, `result_url` and done (`set`). Proven live 2026-11-06 as Sean (upload, create and read with a screenshot in 7 s, a correction read
+again, approve, a second approve refused, a bad status and a bad file type refused, the page at 1440 and 390 px); the test idea is Set aside.
+
 ## Wrap up (Sean, 2026-11-03, canon `canon-wrap-up-standard`)
 
 "When we leave this room, I don't want anything on the floor." On Sean's cue ("wrap up", about 70% context) Logan sweeps the session into the
@@ -3157,6 +3173,35 @@ claim unlocking top posts". Migration `20261103_listing_posts.sql`; edge functio
   the first real fetch. **The X and Undo were clicked signed in as `vegan@` on hq.lesaruss.ai** the same morning (La Chia Vegana on Dina's post: removed at 6:52:49 AM ET,
   shown at 6:53:16, no script errors). A headless login worked again (canon `agent-headless-page-verification`, replacement 2026-10-27: a one-time function mints the `vegan@` session into a file,
   Playwright reads it, sign it out and stub the function after); this sandbox refuses `*.vercel.app`, so a branch preview cannot be looked at, but `hq.lesaruss.ai` can.
+
+## Signature dishes (LOCKED by Sean 2026-11-06, playbook `ve-signature-dishes`)
+
+Sean's idea, his four calls answered with Logan's recommendations (canon `canon-ve-signature-dishes`; A-to-Z list in
+`docs/playbooks/ve-signature-dishes.md`). A perk of claiming: **any owner of a food listing** (Restaurants, Bakeries & Cafes, Food Trucks,
+Vendors, Catering, Meal Prep) whose claim Sean approved (`owner_member_id`), member or Partner, features up to 3 dishes on its Overview for
+free; **slots 4 and 5 are 50 points a slot for 30 days** from the owner's own balance, never renewing on their own (a lapsed slot's dish stays
+saved, not shown); up to 20 saved. A featured dish needs a name, a real photo at least 800 px on the shorter side (measured on the server) and one
+line; price, up to 5 tags and a link to a menu item are optional. **The owner sets the order; votes never change it.** Passport holders vote once
+per dish and can take it back; the counts show; owners cannot vote on their own dishes; signed out gets the Passport window. **It never replaces the
+menu** (`ve_menu_items` and the Menu tab are untouched).
+- **Data** (migration `20261106_signature_dishes.sql`; RLS on, no policies): `ve_signature_dishes` (a check refuses featured without a photo and
+  line), `ve_dish_votes`, `ve_dish_slots`; `ve_dish_cap(listing)` (3 plus each running slot), `ve_dish_slot_buy(member, listing, slot)` (50 points
+  from both balances, ledger reason `dish_slot`, ref `dish-slot:<id>`; refused while that slot has more than 7 days left, then the new 30 days start
+  where it ends; slot 5 needs slot 4; frozen accounts refused).
+- **Edge function `ve-signature-dishes`** (verify_jwt off, the VE token checked inside, standing check on writes): public `list` (featured, owner's
+  order, cut to the cap, with counts and the viewer's own votes), `vote`, and the owner's `owner_get`, `save`, `remove`, `order`, `photo_url`,
+  `photo_done` (pictures in `vegan-media/media/dishes/<slug>/`), `slot_buy`.
+- **The owner** edits on the business dashboard's **Signature dishes** view (`?tab=brand&pd=dishes`, `&item=<id|new>`; `drawDishes`, `drawDish`,
+  `wireDishes` in `public/ve-partner-dashboard.js`, copied from its Menu view): featured in order with up and down arrows, saved ones, More slots.
+- **The page** shows **Signature dishes** under About (`#sig-dishes`, `loadSigDishes` in `directory/listing.html`), a card grid (two across on
+  phones), the line clamped to two rows. The sample business shows Green Leaf Kitchen's three (`dishes` in `business/sample/listing-demo.js`).
+- **Proven live 2026-11-06** through the one-time `ve-once-dishes-proof` (now the 410 stub; script `scripts/supabase-once/signature-dishes-proof.ts`):
+  [TEST] dishes on Love Life Cafe with the Logan test account as owner for the run: a 458 px photo and a photo from another site refused, featured
+  with no photo refused, a fourth featured refused until slot 4 was bought (50 points once, slot 5 first refused, a second slot 4 refused), the order
+  changed by the owner and not by a vote, one vote counted once and taken back, the owner's own vote, an unpaid account's and a signed-out one refused,
+  a stranger refused reading and saving; then every row and file removed, the 50 points given back and Love Life Cafe unclaimed again. Checked in a
+  browser at 1440 and 390 px on the sample business beside its About and its Menu view. **Merged to `main` 2026-11-06** (Sean: "Merge to main"); the
+  playbook is **Done**. Parked by Sean: the slot reminder email (J) and chapter rankings (K). Not yet: a real owner using it.
 
 ## The Nutrition Guide (Sean, 2026-10-31: "build the Nutrition Guide")
 
@@ -6281,7 +6326,7 @@ her plan where she can see it). Her BrandDesk is the `meatless-muscle` brand kit
 voice and story drafts), the first client desk duplicated from Vegans Explore. Her billing is HQ's client billing link (`client_billing_plans`, live row,
 "Vegans Explore Founding Partner", first charge 2026-11-30). We write to her at bsellersotss@gmail.com through Depot > Outreach. **A Guide made for one
 person**: `/guides/creator-guide?p=<token>` adds a For <first name> tab (`ve_guide_previews`, `ve_guide_preview(token, guide)`; `viewYou` in
-`guide-scripts/creator-guide.js`), held back on branch `claude/jolly-tesla-q16c04` until Sean says merge. Handoff: `docs/handoff/2026-11-05-brooke-sellers.md`.
+`guide-scripts/creator-guide.js`), merged to `main` 2026-11-06 (7dc75a0, checked live; its "Not shared yet" badge comes off before she gets it). **The Creator Guide is free with the creator survey** (2026-11-06, Sean): `ve_surveys` `creator-guide`, 16 questions, 6 required, 250 points, `ve_guides` door true (migration `20261106_creator_guide_door_survey.sql`, applied); the page wording is on branch `claude/optimistic-mendel-box698` until Sean says merge. Handoffs: `docs/handoff/2026-11-05-brooke-sellers.md`, `docs/handoff/2026-11-06-brooke-sellers.md`.
 
 ## Revenue on the dashboard (Sean, 2026-11-02)
 
