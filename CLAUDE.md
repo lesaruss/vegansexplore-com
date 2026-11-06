@@ -1338,9 +1338,9 @@ a read; it sees the pictures and PDFs): what he thinks is asked, tweak / build /
 slug), how he would do it and up to three questions. **Correct me** adds Sean's words to the thread and reads it again; **Approve** sets it approved;
 Set aside. Table `ve_ideas` (migration `20261106_ve_ideas.sql`, RLS on, no policies): body, links, files, page_url, status new | read | approved |
 building | done | set_aside, read, thread, playbook_slug, session_url, result_url, note. `ve-ideas` actions `list`, `get`, `upload_start`, `create`,
-`read`, `approve`, `set`. **Step 3 is not wired**: approving does not start a build yet; Logan picks approved ideas up in his next session and sets
+`read`, `approve`, `set`. **Step 3 is not wired**: approving does not start a build yet (requested 2026-11-06, the plan is in `docs/handoff/2026-11-06-ve-idea-intake.md`: a scheduled task picks up approved ideas); Logan picks approved ideas up in his next session and sets
 `session_url`, `result_url` and done (`set`). Proven live 2026-11-06 as Sean (upload, create and read with a screenshot in 7 s, a correction read
-again, approve, a second approve refused, a bad status and a bad file type refused, the page at 1440 and 390 px); the test idea is Set aside.
+again, approve, a second approve refused, a bad status and a bad file type refused, the page at 1440 and 390 px); the test idea is Set aside. On `main` since 12920c8.
 
 ## Wrap up (Sean, 2026-11-03, canon `canon-wrap-up-standard`)
 
