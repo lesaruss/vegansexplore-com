@@ -6326,7 +6326,7 @@ her plan where she can see it). Her BrandDesk is the `meatless-muscle` brand kit
 voice and story drafts), the first client desk duplicated from Vegans Explore. Her billing is HQ's client billing link (`client_billing_plans`, live row,
 "Vegans Explore Founding Partner", first charge 2026-11-30). We write to her at bsellersotss@gmail.com through Depot > Outreach. **A Guide made for one
 person**: `/guides/creator-guide?p=<token>` adds a For <first name> tab (`ve_guide_previews`, `ve_guide_preview(token, guide)`; `viewYou` in
-`guide-scripts/creator-guide.js`), held back on branch `claude/jolly-tesla-q16c04` until Sean says merge. Handoff: `docs/handoff/2026-11-05-brooke-sellers.md`.
+`guide-scripts/creator-guide.js`), merged to `main` 2026-11-06 (7dc75a0, checked live; its "Not shared yet" badge comes off before she gets it). **The Creator Guide is free with the creator survey** (2026-11-06, Sean): `ve_surveys` `creator-guide`, 16 questions, 6 required, 250 points, `ve_guides` door true (migration `20261106_creator_guide_door_survey.sql`, applied); the page wording is on branch `claude/optimistic-mendel-box698` until Sean says merge. Handoffs: `docs/handoff/2026-11-05-brooke-sellers.md`, `docs/handoff/2026-11-06-brooke-sellers.md`.
 
 ## Revenue on the dashboard (Sean, 2026-11-02)
 
