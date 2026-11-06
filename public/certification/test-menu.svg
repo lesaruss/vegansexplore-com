@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 1100" width="850" height="1100" role="img" aria-label="Sample menu for the diner comprehension test">
+  <!-- Diner comprehension test card, B5 (2026-11-06). "Harbor Table" is made up; never a real restaurant. Shown for 10 seconds, then the questions. -->
+  <rect width="850" height="1100" fill="#fbf8f2"/>
+  <g font-family="Montserrat, Arial, sans-serif" fill="#1A1A1A">
+    <text x="425" y="90" text-anchor="middle" font-weight="900" font-size="46">HARBOR TABLE</text>
+    <text x="425" y="126" text-anchor="middle" font-weight="600" font-size="20" fill="#555">Lunch and dinner</text>
+    <text x="70" y="200" font-weight="900" font-size="26">Mains</text>
+    <text x="70" y="250" font-weight="800" font-size="22">Grilled Snapper</text><text x="780" y="250" text-anchor="end" font-weight="700" font-size="22">24</text>
+    <text x="70" y="276" font-weight="600" font-size="17" fill="#555">Citrus butter, rice, greens</text>
+    <text x="70" y="326" font-weight="800" font-size="22">Chickpea Coconut Curry</text><text x="780" y="326" text-anchor="end" font-weight="700" font-size="22">18</text>
+    <text x="70" y="352" font-weight="600" font-size="17" fill="#555">Spinach, tomato, basmati rice</text>
+    <image href="stamp-small.svg" x="70" y="364" width="28" height="28"/><text x="106" y="385" font-weight="800" font-size="16" fill="#2D5C27">Plant-Based Dish, Pre-Vegan Certified</text>
+    <text x="70" y="440" font-weight="800" font-size="22">Chicken Milanese</text><text x="780" y="440" text-anchor="end" font-weight="700" font-size="22">21</text>
+    <text x="70" y="466" font-weight="600" font-size="17" fill="#555">Arugula, parmesan, lemon</text>
+    <text x="70" y="516" font-weight="800" font-size="22">Black Bean Burger</text><text x="780" y="516" text-anchor="end" font-weight="700" font-size="22">16</text>
+    <text x="70" y="542" font-weight="600" font-size="17" fill="#555">Avocado, pickled onion, sweet potato fries</text>
+    <image href="stamp-small.svg" x="70" y="554" width="28" height="28"/><text x="106" y="575" font-weight="800" font-size="16" fill="#2D5C27">Plant-Based Dish, Pre-Vegan Certified</text>
+    <text x="70" y="630" font-weight="800" font-size="22">Mushroom Risotto</text><text x="780" y="630" text-anchor="end" font-weight="700" font-size="22">19</text>
+    <text x="70" y="656" font-weight="600" font-size="17" fill="#555">Arborio, wild mushrooms, herbs</text>
+    <text x="70" y="706" font-weight="800" font-size="22">Steak Frites</text><text x="780" y="706" text-anchor="end" font-weight="700" font-size="22">29</text>
+    <text x="70" y="732" font-weight="600" font-size="17" fill="#555">Hanger steak, fries, chimichurri</text>
+  </g>
+  <rect x="60" y="790" width="730" height="260" rx="14" fill="#ffffff" stroke="#2D5C27" stroke-width="3"/>
+  <image href="stamp.svg" x="84" y="830" width="130" height="130"/>
+  <g font-family="Montserrat, Arial, sans-serif" fill="#1A1A1A">
+    <text x="236" y="846" font-weight="900" font-size="21" fill="#2D5C27">Plant-Based Dish, Pre-Vegan Certified</text>
+    <text x="236" y="880" font-weight="700" font-size="17">2 of 6 menu items certified. Only the marked dishes.</text>
+    <text x="236" y="908" font-weight="600" font-size="16">This restaurant also serves meat, fish, dairy and eggs.</text>
+    <text x="236" y="936" font-weight="600" font-size="16">Not a health, allergen or food-safety claim. Allergies? Ask us.</text>
+    <text x="236" y="980" font-weight="800" font-size="16" fill="#2D5C27">Check them live: vegansexplore.com/certified/HBR7KQ2</text>
+    <text x="236" y="1022" font-weight="600" font-size="13" fill="#777">Test card. Harbor Table is not a real restaurant.</text>
+  </g>
+</svg>

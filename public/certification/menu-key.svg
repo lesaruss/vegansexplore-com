@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 300" width="1000" height="300" role="img" aria-label="What the stamp means on this menu">
+  <!-- The key printed once on every menu that carries the stamp, on the same page, readable before ordering. DRAFT (B5, 2026-11-06).
+       Placeholders in brackets are filled per certificate: [N] [M] [serves] [CODE]. -->
+  <rect x="2" y="2" width="996" height="296" rx="18" fill="#ffffff" stroke="#2D5C27" stroke-width="4"/>
+  <image href="stamp.svg" x="28" y="40" width="150" height="150"/>
+  <g font-family="Montserrat, Arial, sans-serif" fill="#1A1A1A">
+    <text x="206" y="74" font-weight="900" font-size="32" fill="#2D5C27">Plant-Based Dish, Pre-Vegan Certified</text>
+    <text x="206" y="118" font-weight="700" font-size="25">[N] of [M] menu items certified. Only the marked dishes.</text>
+    <text x="206" y="156" font-weight="600" font-size="23">This restaurant also serves [meat, fish, dairy and eggs].</text>
+    <text x="206" y="192" font-weight="600" font-size="23">Not a health, allergen or food-safety claim. Allergies? Ask us.</text>
+    <text x="206" y="246" font-weight="800" font-size="24" fill="#2D5C27">Check them live: vegansexplore.com/certified/[CODE]</text>
+  </g>
+</svg>

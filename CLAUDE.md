@@ -4918,6 +4918,26 @@ Built from Standard V1.2 (playbook record 044b9cf2). The standard, the queue and
   and live (public actions, the team actions refuse no token). Pages checked at 1440 and 390 px beside the listing page and the Watchlist against
   mocked answers. **Not proven**: a real certificate made through the Depot (it cannot be deleted, so the first real one should be a pilot restaurant).
 
+## Pre-Vegan Certification: merged, and B5 to B7 drafted (Logan, 2026-11-06, playbook `vegans-explore-initiative-business-certification`)
+
+- **Merged to `main` 2026-11-06** (Sean: "Merge all, in order"): `claude/fervent-hamilton-fc48qo`, `claude/inspiring-hypatia-ilwro1`, `claude/gracious-gauss-d7r3h7`
+  (16b85ca; only CLAUDE.md conflicted, all three sections kept). Everything stays dark: the Pre-Vegan Restaurant Guide unpublished, its survey inactive,
+  `/certified` noindex with 0 certificates. **The live webhook had lost B3's fix**: `ve-stripe-webhook` v65 was deployed from `main` before the merge, so a
+  survey-door member's first $11 paid no 1,100 welcome points. Redeployed as v66 from 16b85ca (source sha256 58d2dc3b matched; it has both the money-in alerts
+  and `firstPayment`). Lesson: before deploying a function from `main`, check that no unmerged branch has deployed a newer version of it.
+- **B5, stamp and decal art and the diner comprehension test** (draft for Sean; `public/certification/*.svg` on branch `claude/blissful-fermi-qmyiwt`, not on
+  `main`; `docs/certification/b5-stamp-and-diner-test.md`, sheet `docs/certification/b5-art-sheet.png`): the seal (color, one color, reversed), a small mark for
+  under 1 inch (always with the words), the menu line, the menu key, the 8 x 10 decal with a QR square, and a made-up test menu (Harbor Table). Usage rules feed
+  the agreement and the manual. The test: 40 adults, 5 critical questions, pass at 85% each, and the C4 "almost Vegan" misread at 10% or less; if C4 fails, the
+  name "Pre-Vegan" goes back to Sean before print and before A5.
+- **B6, the restaurant agreement draft for counsel** (`docs/certification/b6-restaurant-agreement-draft.md`): 14 sections and schedules A to F from the locked
+  records, open choices in brackets, seven questions for counsel. To reconcile with the A3 Standard doc's 14 clauses (that Claude Doc is not shared with build
+  sessions).
+- **B7, the Verifier manual** (`docs/certification/b7-verifier-manual.md`): the job and independence rules, desk review, the visit, a G3 protected-path table for
+  A6 to approve, training, a 10-case ring test (9 of 10 and no false pass), and the A6 reviewer profile. **C2 invitation text** drafted
+  (`docs/certification/c2-pilot-invitation-draft.md`); it goes into Depot > Outreach only after C1 and A4.
+- Nothing sent, printed, published or charged.
+
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
 
 Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-venue-guides`). The Stadium & Arena
