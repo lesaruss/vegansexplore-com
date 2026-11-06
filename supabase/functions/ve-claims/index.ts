@@ -111,6 +111,9 @@ const FN_URL = `${SUPABASE_URL}/functions/v1/ve-claims`;
 const SEAN_EMAIL = 'contact@lesaruss.com';
 const MIN_CENTS = 1100, MAX_CENTS = 1000000; // $11 minimum (Sean), $10,000 sanity ceiling
 const BRAND_CATS = /^(Food Brands|Nutrition & Supplements|Brands)$/; // product brands: no restaurant questions
+// Media pages a member claims free (Sean, 2026-11-06, ve-outreach: podcasts, channels and outlets claim their page by joining,
+// the survey door or the $11). Still reviewed by hand; no How Vegan or restaurant questions.
+const MEDIA_CATS = /^(Podcasts|YouTube|News Outlets)$/;
 const STATUSES = ['fully_vegan', 'vegan_friendly', 'vegan_options'];
 // Every sub-section the city hubs know (CAT_MAP in /public/ve-region-directory.js), by section.
 const CATEGORIES = [
@@ -1127,6 +1130,16 @@ Deno.serve(async (req) => {
       listing = l; claimId = c.id;
     }
     if (!listing) return json({ error: 'save_failed' }, 500);
+    if (free) {
+      const now = new Date().toISOString();
+      await db.from('ve_listing_claims').update({ status: 'submitted', proposed: { ...proposed, paid_with: 'membership' }, updated_at: now }).eq('id', claim.id);
+      await db.from('listings').update({ claim_status: 'pending', claim_submitted_at: now }).eq('id', id).neq('claim_status', 'verified');
+      await mail(`${test ? '[TEST] ' : ''}Listing claim: ${listing.name}, free with membership`,
+        `<p><b>${esc(listing.name)}</b> (${esc(listing.category || '')}) was claimed free by a member.</p>` +
+        `<p>${esc(contact_name)}${row.contact_role ? ', ' + esc(row.contact_role) : ''}<br>${esc(contact_email)}${row.contact_phone ? '<br>' + esc(row.contact_phone) : ''}</p>` +
+        `<p>Check it is really them, then review it in the Depot: <a href="https://vegansexplore.com/admin/depot/claims">vegansexplore.com/admin/depot/claims</a></p>`, contact_email);
+      return json({ ok: true, paid_with: 'membership', slug: listing.slug });
+    }
     if (points) {
       const { data: spent } = await db.rpc('ve_listing_submit_points', { p_member: memberId, p_claim: claimId });
       if (!spent || spent.error) return json({ error: spent?.error || 'points_failed', balance: spent?.balance }, 400);
@@ -1383,8 +1396,12 @@ Deno.serve(async (req) => {
     // listing... it's like a guide or any other thing... they get the 1100 points to use towards something").
     const points = !tier && body.pay === 'points';
     if (points && Number(member.lesars_balance || 0) < 1100) return json({ error: 'not_enough_points', balance: Number(member.lesars_balance || 0) }, 400);
-    const cents = points ? 0 : tier ? TIERS[tier].cents : Math.round(Number(body.amount_cents));
-    if (!points && (!Number.isFinite(cents) || cents < MIN_CENTS || cents > MAX_CENTS)) return json({ error: 'invalid_amount', min_cents: MIN_CENTS }, 400);
+    const media = MEDIA_CATS.test(listing.category || '');
+    const free = !tier && body.pay === 'member';
+    if (free && !media) return json({ error: 'not_free_to_claim' }, 400);
+    if (free && !(member.membership_status === 'active' && member.membership_tier !== 'guest')) return json({ error: 'membership_needed' }, 403);
+    const cents = points || free ? 0 : tier ? TIERS[tier].cents : Math.round(Number(body.amount_cents));
+    if (!points && !free && (!Number.isFinite(cents) || cents < MIN_CENTS || cents > MAX_CENTS)) return json({ error: 'invalid_amount', min_cents: MIN_CENTS }, 400);
     const contact_name = plain(body.contact_name, 120), contact_email = plain(body.contact_email, 200).toLowerCase();
     if (!contact_name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(contact_email)) return json({ error: 'missing_contact' }, 400);
     const p = body.proposed || {};
@@ -1395,7 +1412,7 @@ Deno.serve(async (req) => {
     };
     // A product brand (Brand Partner) is not asked how Vegan it is or to describe itself: its page is built from our Guides.
     // Join the Directory (Sean, 2026-10-09): a brand can also claim with the $11 lock-in, without the restaurant questions.
-    if (!BRAND_CATS.test(listing.category || '') && (!proposed.vegan_status || !proposed.description)) return json({ error: 'missing_details' }, 400);
+    if (!BRAND_CATS.test(listing.category || '') && !media && (!proposed.vegan_status || !proposed.description)) return json({ error: 'missing_details' }, 400);
     const test = await isTestAccount(member.email);
     const back = backTo(body.return_url, `https://vegansexplore.com/claim?listing=${encodeURIComponent(listing.slug)}`);
     const row = { listing_id: id, member_id: memberId, status: 'awaiting_contribution', contact_name, contact_role: plain(body.contact_role, 120),
