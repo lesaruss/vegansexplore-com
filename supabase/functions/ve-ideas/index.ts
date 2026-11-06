@@ -212,7 +212,7 @@ async function readBlueprint(id: string, reply: string, maxTokens = MAX_TOKENS) 
   const patch: Record<string, unknown> = { read, read_error: null, read_at: read.at, files: r.files, thread: [...thread, { role: 'logan', text: read.ask, at: read.at }], updated_at: read.at };
   if (idea.status === 'new' && (read.playbook || read.new_playbook) && (!idea.suggested_playbook || idea.suggested_by_read)) {
     patch.suggested_playbook = read.playbook || 'new';
-    patch.suggest_reason = read.playbook ? `From Logan's read: ${read.ask}` : `From Logan's read, a new playbook (${read.new_playbook}): ${read.ask}`;
+    patch.suggest_reason = read.playbook ? `From Logan's read of the idea and its files (above).` : `From Logan's read: nothing fits, so a new playbook, ${read.new_playbook}.`;
     patch.suggested_at = read.at;
     patch.suggested_by_read = true;
   }
