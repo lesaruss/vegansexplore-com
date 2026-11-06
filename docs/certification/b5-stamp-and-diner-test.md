@@ -14,7 +14,7 @@ Draft for Sean, 2026-11-06 (Logan). Built from Standard V1.2 (playbook record 04
 | `menu-line.svg` | Small mark + "Plant-Based Dish, Pre-Vegan Certified" | Under each certified dish |
 | `menu-key.svg` | The key: N of M, what else they serve, not an allergen claim, the live link | Once on every menu page that carries the mark |
 | `decal.svg` | Window decal, 8 x 10 in: "Selected dishes certified here", N of M, what else they serve, the QR, the link | Window or counter |
-| `test-menu.svg` | Made-up menu (Harbor Table) for the diner test | The test only |
+| `test-menu.svg` | Made-up menu (Harbor Table, v2 2026-11-06: starters and mains, 2 of 8 marked) for the diner test | The test only |
 
 Placeholders `[N] [M] [serves] [CODE]` are filled per certificate from the Depot. The QR square in the decal takes the Depot's Download the QR.
 
@@ -43,9 +43,9 @@ Standard V1.2 as the condition for keeping "Pre-Vegan".
 
 ### Who
 
-- 40 adults, no Vegans Explore team, no one who works at a pilot restaurant.
+- 40 adults, no Vegans Explore team, no one who works at a first-round restaurant.
 - At least 15 who do not eat Vegan, at least 10 who do, the rest in between (asked at the start, never used to screen out).
-- Sources, in order: C5 tasting guests and walk-ins at pilot restaurants (on paper, with the restaurant's OK), then members. Nobody
+- Sources, in order: tasting-night guests and walk-ins at first-round restaurants (on paper, with the restaurant's OK), then members. Nobody
   is paid for an answer; a small thank-you (25 points for members) is the same whatever they answer.
 
 ### How
@@ -81,5 +81,5 @@ Two people code C4 apart; disagreements go to a third. The result is a dated pla
 ## What Sean decides
 
 1. Approve the art as drawn, or say what to change.
-2. Approve the test, its pass marks and where it runs. Default: at the pilot's C5 tastings and the pilot restaurants, paper sheets.
+2. Approve the test, its pass marks and where it runs. Default: at the first round's tasting nights and restaurants, paper sheets.
 3. Hold "Pre-Vegan" until C4 passes (default yes).

@@ -4938,6 +4938,33 @@ Built from Standard V1.2 (playbook record 044b9cf2). The standard, the queue and
   (`docs/certification/c2-pilot-invitation-draft.md`); it goes into Depot > Outreach only after C1 and A4.
 - Nothing sent, printed, published or charged.
 
+## Pre-Vegan Certification: the paid model (LOCKED by Sean 2026-11-06, playbook `vegans-explore-initiative-business-certification`)
+
+Sean: "No, we're not doing free anything... This is real work... it pays for itself"; "lock it with my notes". Canon
+`canon-ve-pre-vegan-certification` v8 (`paid_model_v8`), playbook decision 49755c18 and WORK QUEUE v2 13bcfd3d (replaces a194e04a for C and D).
+**This replaces the free pilot in Standard V1.2.**
+
+- **The Guide is free with its survey** (the education and the way in). **Certification is $250 per dish**, paid up front: the desk review, the
+  Verifier's kitchen check, one community tasting night (feedback to the restaurant, anonymous to it, never pass or fail), the 12-month term and one
+  courtesy check during it. **Renewal $150 per dish a year.** The fee buys the review, never the outcome; a failed dish may be submitted again. No free
+  visits and no points for certification work.
+- **The term never pauses**: a dish pulled from the menu keeps its clock running; the same unchanged dish back within the term still counts until the
+  original end date.
+- **Changes**: the restaurant tells us before any change to a certified dish; any change voids that dish's certification; ignorance is no excuse.
+  **Hiding a change or misleading diners** ends every certification at the location and removes the restaurant from Vegans Explore (listing removed, never
+  deleted) for **2 years**, then it may apply again.
+- **Accountability**: every dish shows when it was last checked; secret shoppers spot check between visits (staff must say it is 100% plant-based); an
+  anonymous report button on the QR page and the listing; staff kept trained.
+- **Verifiers** are trained, paid-per-visit contractors, never staff. Members can train: self-paced modules, a quiz each with up to 3 tries, the 10-case ring
+  test, a shadowed first visit; city by city (B7b builds the modules).
+- **Starter kit included** (decal and menu marks as files); **print upgrade paid** (we redesign, print and deliver, approved before print; price after a
+  printer quote). Recipes, sourcing and chef placement are separate services. The distributor pitch (Cheney Brothers, Sysco) is its own campaign.
+- **Gate**: no paid application before A2 (who owns the program and the Stripe account), A4 and B6 (the attorney-reviewed agreement) and A7 (insurance).
+- **Drafts rewritten 2026-11-06** on `claude/blissful-fermi-qmyiwt`: B6 (fees, term, change and deception clauses, tasting night, Schedule G), B7 (contractor,
+  plain-words Form A, the Supermarket Guide scanner as a storeroom check, courtesy checks and secret shoppers, the member training path), C2 (a $250 invitation
+  pointing to the free Guide), and the test menu (v2: starters and mains, 2 of 8 marked; `docs/certification/b5-art-sheet.png` redrawn). An SVG shown as an
+  `<img>` cannot load the seal files it references, so the art sheet is rendered with them inlined as data URIs.
+
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
 
 Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-venue-guides`). The Stadium & Arena

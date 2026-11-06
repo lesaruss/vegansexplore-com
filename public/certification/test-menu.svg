@@ -1,33 +1,58 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 1100" width="850" height="1100" role="img" aria-label="Sample menu for the diner comprehension test">
-  <!-- Diner comprehension test card, B5 (2026-11-06). "Harbor Table" is made up; never a real restaurant. Shown for 10 seconds, then the questions. -->
-  <rect width="850" height="1100" fill="#fbf8f2"/>
-  <g font-family="Montserrat, Arial, sans-serif" fill="#1A1A1A">
-    <text x="425" y="90" text-anchor="middle" font-weight="900" font-size="46">HARBOR TABLE</text>
-    <text x="425" y="126" text-anchor="middle" font-weight="600" font-size="20" fill="#555">Lunch and dinner</text>
-    <text x="70" y="200" font-weight="900" font-size="26">Mains</text>
-    <text x="70" y="250" font-weight="800" font-size="22">Grilled Snapper</text><text x="780" y="250" text-anchor="end" font-weight="700" font-size="22">24</text>
-    <text x="70" y="276" font-weight="600" font-size="17" fill="#555">Citrus butter, rice, greens</text>
-    <text x="70" y="326" font-weight="800" font-size="22">Chickpea Coconut Curry</text><text x="780" y="326" text-anchor="end" font-weight="700" font-size="22">18</text>
-    <text x="70" y="352" font-weight="600" font-size="17" fill="#555">Spinach, tomato, basmati rice</text>
-    <image href="stamp-small.svg" x="70" y="364" width="28" height="28"/><text x="106" y="385" font-weight="800" font-size="16" fill="#2D5C27">Plant-Based Dish, Pre-Vegan Certified</text>
-    <text x="70" y="440" font-weight="800" font-size="22">Chicken Milanese</text><text x="780" y="440" text-anchor="end" font-weight="700" font-size="22">21</text>
-    <text x="70" y="466" font-weight="600" font-size="17" fill="#555">Arugula, parmesan, lemon</text>
-    <text x="70" y="516" font-weight="800" font-size="22">Black Bean Burger</text><text x="780" y="516" text-anchor="end" font-weight="700" font-size="22">16</text>
-    <text x="70" y="542" font-weight="600" font-size="17" fill="#555">Avocado, pickled onion, sweet potato fries</text>
-    <image href="stamp-small.svg" x="70" y="554" width="28" height="28"/><text x="106" y="575" font-weight="800" font-size="16" fill="#2D5C27">Plant-Based Dish, Pre-Vegan Certified</text>
-    <text x="70" y="630" font-weight="800" font-size="22">Mushroom Risotto</text><text x="780" y="630" text-anchor="end" font-weight="700" font-size="22">19</text>
-    <text x="70" y="656" font-weight="600" font-size="17" fill="#555">Arborio, wild mushrooms, herbs</text>
-    <text x="70" y="706" font-weight="800" font-size="22">Steak Frites</text><text x="780" y="706" text-anchor="end" font-weight="700" font-size="22">29</text>
-    <text x="70" y="732" font-weight="600" font-size="17" fill="#555">Hanger steak, fries, chimichurri</text>
-  </g>
-  <rect x="60" y="790" width="730" height="260" rx="14" fill="#ffffff" stroke="#2D5C27" stroke-width="3"/>
-  <image href="stamp.svg" x="84" y="830" width="130" height="130"/>
-  <g font-family="Montserrat, Arial, sans-serif" fill="#1A1A1A">
-    <text x="236" y="846" font-weight="900" font-size="21" fill="#2D5C27">Plant-Based Dish, Pre-Vegan Certified</text>
-    <text x="236" y="880" font-weight="700" font-size="17">2 of 6 menu items certified. Only the marked dishes.</text>
-    <text x="236" y="908" font-weight="600" font-size="16">This restaurant also serves meat, fish, dairy and eggs.</text>
-    <text x="236" y="936" font-weight="600" font-size="16">Not a health, allergen or food-safety claim. Allergies? Ask us.</text>
-    <text x="236" y="980" font-weight="800" font-size="16" fill="#2D5C27">Check them live: vegansexplore.com/certified/HBR7KQ2</text>
-    <text x="236" y="1022" font-weight="600" font-size="13" fill="#777">Test card. Harbor Table is not a real restaurant.</text>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 850 1300" width="850" height="1300" role="img" aria-label="Sample menu for the diner comprehension test">
+  <!-- Diner comprehension test card, B5 v2 (2026-11-06). "Harbor Table" is made up; never a real restaurant. Shown for 10 seconds, then the questions. 2 of 8 items marked (the curry and the burger). -->
+<rect width="850" height="1300" fill="#f7f2e8"/>
+<rect x="26" y="26" width="798" height="1248" fill="none" stroke="#1f2a1e" stroke-width="2"/>
+<rect x="36" y="36" width="778" height="1228" fill="none" stroke="#1f2a1e" stroke-width="0.8"/>
+<g font-family="Montserrat, Arial, sans-serif" fill="#1f2a1e">
+<text x="425" y="112" text-anchor="middle" font-weight="900" font-size="52" letter-spacing="10">HARBOR TABLE</text>
+<line x1="250" y1="140" x2="380" y2="140" stroke="#1f2a1e" stroke-width="1.2"/><circle cx="425" cy="140" r="4" fill="#1f2a1e"/><line x1="470" y1="140" x2="600" y2="140" stroke="#1f2a1e" stroke-width="1.2"/>
+<text x="425" y="176" text-anchor="middle" font-weight="600" font-size="16" letter-spacing="5" fill="#6b6253">COASTAL KITCHEN · LUNCH AND DINNER</text>
+<text x="425" y="250" text-anchor="middle" font-weight="800" font-size="20" letter-spacing="8" fill="#6b6253">STARTERS</text>
+<text x="90" y="306" font-weight="800" font-size="22">Crispy Calamari</text>
+<line x1="282" y1="300" x2="725" y2="300" stroke="#b9ae98" stroke-width="2" stroke-dasharray="1 7" stroke-linecap="round"/>
+<text x="760" y="306" text-anchor="end" font-weight="800" font-size="22">14</text>
+<text x="90" y="332" font-weight="500" font-size="16" fill="#6b6253" font-style="italic">Lemon aioli, pickled chili</text>
+<text x="90" y="380" font-weight="800" font-size="22">Charred Street Corn</text>
+<line x1="328" y1="374" x2="725" y2="374" stroke="#b9ae98" stroke-width="2" stroke-dasharray="1 7" stroke-linecap="round"/>
+<text x="760" y="380" text-anchor="end" font-weight="800" font-size="22">11</text>
+<text x="90" y="406" font-weight="500" font-size="16" fill="#6b6253" font-style="italic">Lime, chili, cilantro</text>
+<text x="90" y="454" font-weight="800" font-size="22">Burrata</text>
+<line x1="188" y1="448" x2="725" y2="448" stroke="#b9ae98" stroke-width="2" stroke-dasharray="1 7" stroke-linecap="round"/>
+<text x="760" y="454" text-anchor="end" font-weight="800" font-size="22">15</text>
+<text x="90" y="480" font-weight="500" font-size="16" fill="#6b6253" font-style="italic">Heirloom tomato, basil oil</text>
+<text x="425" y="558" text-anchor="middle" font-weight="800" font-size="20" letter-spacing="8" fill="#6b6253">MAINS</text>
+<text x="90" y="614" font-weight="800" font-size="22">Grilled Snapper</text>
+<line x1="282" y1="608" x2="725" y2="608" stroke="#b9ae98" stroke-width="2" stroke-dasharray="1 7" stroke-linecap="round"/>
+<text x="760" y="614" text-anchor="end" font-weight="800" font-size="22">24</text>
+<text x="90" y="640" font-weight="500" font-size="16" fill="#6b6253" font-style="italic">Citrus butter, rice, greens</text>
+<text x="90" y="688" font-weight="800" font-size="22">Chickpea Coconut Curry</text>
+<image href="stamp-small.svg" x="357" y="663" width="32" height="32"/>
+<line x1="403" y1="682" x2="725" y2="682" stroke="#b9ae98" stroke-width="2" stroke-dasharray="1 7" stroke-linecap="round"/>
+<text x="760" y="688" text-anchor="end" font-weight="800" font-size="22">18</text>
+<text x="90" y="714" font-weight="500" font-size="16" fill="#6b6253" font-style="italic">Spinach, tomato, basmati rice</text>
+<text x="90" y="738" font-weight="800" font-size="13" letter-spacing="2" fill="#2D5C27">PLANT-BASED DISH · PRE-VEGAN CERTIFIED</text>
+<text x="90" y="786" font-weight="800" font-size="22">Chicken Milanese</text>
+<line x1="293" y1="780" x2="725" y2="780" stroke="#b9ae98" stroke-width="2" stroke-dasharray="1 7" stroke-linecap="round"/>
+<text x="760" y="786" text-anchor="end" font-weight="800" font-size="22">21</text>
+<text x="90" y="812" font-weight="500" font-size="16" fill="#6b6253" font-style="italic">Arugula, parmesan, lemon</text>
+<text x="90" y="860" font-weight="800" font-size="22">Black Bean Burger</text>
+<image href="stamp-small.svg" x="299" y="835" width="32" height="32"/>
+<line x1="345" y1="854" x2="725" y2="854" stroke="#b9ae98" stroke-width="2" stroke-dasharray="1 7" stroke-linecap="round"/>
+<text x="760" y="860" text-anchor="end" font-weight="800" font-size="22">16</text>
+<text x="90" y="886" font-weight="500" font-size="16" fill="#6b6253" font-style="italic">Avocado, pickled onion, sweet potato fries</text>
+<text x="90" y="910" font-weight="800" font-size="13" letter-spacing="2" fill="#2D5C27">PLANT-BASED DISH · PRE-VEGAN CERTIFIED</text>
+<text x="90" y="958" font-weight="800" font-size="22">Steak Frites</text>
+<line x1="246" y1="952" x2="725" y2="952" stroke="#b9ae98" stroke-width="2" stroke-dasharray="1 7" stroke-linecap="round"/>
+<text x="760" y="958" text-anchor="end" font-weight="800" font-size="22">29</text>
+<text x="90" y="984" font-weight="500" font-size="16" fill="#6b6253" font-style="italic">Hanger steak, fries, chimichurri</text>
+</g>
+<line x1="90" y1="1048" x2="760" y2="1048" stroke="#1f2a1e" stroke-width="0.8"/>
+<image href="stamp.svg" x="90" y="1076" width="120" height="120"/>
+<g font-family="Montserrat, Arial, sans-serif" fill="#1f2a1e">
+<text x="232" y="1098" font-weight="900" font-size="20" fill="#2D5C27">Plant-Based Dish, Pre-Vegan Certified</text>
+<text x="232" y="1125" font-weight="700" font-size="16" fill="#1f2a1e">2 of 8 menu items certified. Only the marked dishes.</text>
+<text x="232" y="1152" font-weight="500" font-size="15" fill="#1f2a1e">This restaurant also serves meat, fish, dairy and eggs.</text>
+<text x="232" y="1177" font-weight="500" font-size="15" fill="#1f2a1e">Not a health, allergen or food-safety claim. Allergies? Ask us.</text>
+<text x="232" y="1202" font-weight="800" font-size="15" fill="#2D5C27">Check them live: vegansexplore.com/certified/HBR7KQ2</text>
+<text x="232" y="1235" font-weight="500" font-size="12" fill="#8a8170">Test card. Harbor Table is not a real restaurant.</text>
+</g></svg>
