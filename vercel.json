@@ -844,7 +844,7 @@
     },
     {
       "source": "/network/soflo-vegans-podcast",
-      "destination": "/directory/soflo-vegans-podcast",
+      "destination": "/communities/south-florida?utm_source=soflovegans.com&utm_medium=redirect",
       "permanent": false
     },
     {
