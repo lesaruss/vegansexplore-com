@@ -1,6 +1,6 @@
 # ve-events-guide: after the survey door retirement (2026-11-06)
 
-Logan's drafts for Sean. Nothing here is live, recorded or merged.
+Logan's drafts for Sean. **Items 1 to 3 approved and merged to `main` 2026-11-06 (687b0c2).** River's v2 is recorded; Liz's member line (item 2) stays text until Sean approves a recording.
 
 ## 1. River's Events Guide "Get access" line
 
