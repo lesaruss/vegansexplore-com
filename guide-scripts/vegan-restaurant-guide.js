@@ -813,7 +813,7 @@
     { k: 'distribution', t: 'Distributors', d: 'Who gets your product onto shelves.' },
     { k: 'certification', t: 'Certification and testing', d: 'Who checks and certifies that it is vegan.' }
   ];
-  var SRC_LABEL = { peta_approved: ['PETA-Approved Vegan', 'peta'], fully_vegan: ['Fully vegan company', 'full'], offers_options: ['Offers vegan options', 'opts'], plant_material: ['Plant-based material', 'mat'] };
+  var SRC_LABEL = { peta_approved: ['PETA-Approved Vegan', 'peta'], fully_vegan: ['Fully vegan company', 'full'], offers_options: ['Offers vegan options', 'opts'], plant_material: ['Plant-based material', 'mat'], equipment: ['Equipment', 'eqp'] };
   var SRC_ICON = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" ' + S + ' aria-hidden="true"><path d="M3 7l9-4 9 4-9 4z"/><path d="M3 7v10l9 4 9-4V7"/><path d="M12 11v10"/></svg>';
   var SRC = { counts: null, shown: 0 };
   function srcFetch(body) {
@@ -841,7 +841,8 @@
     peta_approved: 'PETA has approved this company\'s products as Vegan under its own mark.',
     fully_vegan: 'Everything this company sells is Vegan, by what the company says of itself.',
     offers_options: 'A real supplier with Vegan lines. Not everything it sells is Vegan, so check each product with them.',
-    plant_material: 'Made from plant fiber. That is a material, not a claim that it is Vegan, so check with the supplier.'
+    plant_material: 'Made from plant fiber. That is a material, not a claim that it is Vegan, so check with the supplier.',
+    equipment: 'A maker of machines, not food. Being listed here is about what you can make with them, not a claim that the company is Vegan.'
   };
   function srcRow(s) {
     var L = SRC_LABEL[s.label] || SRC_LABEL.offers_options;
