@@ -85,6 +85,13 @@ the community who cannot read well, and others will not read a page. It is not a
   migration `20261106_shared_intake_answers.sql`) with no question tagged yet: the wording waits on Sean (`docs/proposals/shared-intake-questions.md`). Not built:
   steps 4 to 9 (handoff `docs/handoff/2026-11-06-ve-events-guide-membership-rule-locked-shared-answers.md`).
   The free organizer account is dropped: a host with no account takes the event survey.
+  **Steps 3 to 9 live 2026-11-06** (Sean approved `docs/proposals/membership-rule-wording-steps-3-9.md`, then "Merge and go live"; main 68083a3; handoff
+  `docs/handoff/2026-11-06-ve-events-guide-membership-rule-steps-3-9-live.md`): shared questions tagged (chapter, org_name, org_link, vegan_level, "Plant-based options"
+  never "Vegan options"); the Nonprofit Guide is a door Guide with its 11-question intake; **a door Guide opens only with its own intake** (`ve-guide-unlock`, `ve_owns_guide`;
+  `unlock`/`checkout` answer 409 `survey_only`; purchases and comps still count); Registered badges (`ve_member_badges`: Registered restaurant, event host, creator, nonprofit,
+  role under each) on the dashboard, member card and linked People profile; the **Explorer survey** (`/survey?s=explorer`, 8 questions, 250, `ve_surveys.reviewed`: points held
+  and the account in Depot > Profiles > Waiting for review until a person approves) is the Welcome's and the $11 window's survey; the after-$11 prompt on the dashboard; the claim
+  email links the event survey; policies, facts and saved answers updated.
 - **Every page a person can land on has a script for its Guide** and, once Sean approves it, the recording in that Guide's roster-profile voice (Guide voices
   section; never a voice picked without Sean). A new page does not ship without its script. Redirect stubs, ad creatives and render frames are the exceptions.
 - **Logan writes the script, Sean reads and approves it, then it is recorded** (el-media tts, checked word for word with `stt`, `-v1.mp3`; a
