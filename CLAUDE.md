@@ -102,6 +102,8 @@ the community who cannot read well, and others will not read a page. It is not a
   role under each) on the dashboard, member card and linked People profile; the **Explorer survey** (`/survey?s=explorer`, 8 questions, 250, `ve_surveys.reviewed`: points held
   and the account in Depot > Profiles > Waiting for review until a person approves) is the Welcome's and the $11 window's survey; the after-$11 prompt on the dashboard; the claim
   email links the event survey; policies, facts and saved answers updated.
+  **The old 31-question survey door is retired** (Sean, 2026-11-06, "retire it"; main 494e161, `ve-mission-survey` v11): `/survey?door=1` opens the Explorer
+  survey, `door_start` and `finalize` answer 410, the send-back email links the Explorer survey; the 31 questions stay as Build your profile.
 - **Every page a person can land on has a script for its Guide** and, once Sean approves it, the recording in that Guide's roster-profile voice (Guide voices
   section; never a voice picked without Sean). A new page does not ship without its script. Redirect stubs, ad creatives and render frames are the exceptions.
 - **Logan writes the script, Sean reads and approves it, then it is recorded** (el-media tts, checked word for word with `stt`, `-v1.mp3`; a
