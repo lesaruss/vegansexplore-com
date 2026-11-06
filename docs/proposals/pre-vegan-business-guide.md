@@ -1,8 +1,8 @@
-# ve-pre-vegan-business-guide: tab list, survey and Pascal's lines (draft for Sean, 2026-11-05)
+# ve-pre-vegan-business-guide: tab list, survey and Maya's lines (draft for Sean, 2026-11-05)
 
 Free door Guide for businesses that are not Vegan and are adding Vegan (coffee shops, gyms, juice bars, cafes, caterers).
-Parent: the Vegan Restaurant Guide (copied under the template gate, content changed only). Pascal narrates. Header box:
-"Free with a short survey". Nothing below is built. Every line is a text draft; nothing is recorded (Pascal has no approved voice).
+Parent: the Vegan Restaurant Guide (copied under the template gate, content changed only). Maya narrates (Sean, 2026-11-06: "Maya is our pre-vegans person"). Header box:
+"Free with a short survey". Nothing below is built. Every line is a text draft; nothing is recorded until Sean approves the lines (Maya's voice is approved on her roster profile).
 
 Rules kept throughout: no promise of sales, customers or no backlash; tasting nights are Coming until one has run; never
 "fully Vegan" for a mixed menu or a mixed-line company; plant-based material is not a Vegan claim; featuring never buys rank;
@@ -56,11 +56,11 @@ Points add up to 100: the five required are 12 each (60), the eight optional are
 They also feed Sourcing and Buy or make, so a supplier campaign can be matched later. City is a text field, not a chapter picker,
 because these businesses are anywhere. **Default:** as above.
 
-## 3. Pascal's lines (text drafts)
+## 3. Maya's lines (text drafts)
 
 `say` is for visitors, `sayMember` for members. Where only one is given, both are the same.
 
-- **Overview.** say: "Hi, I'm Pascal. If you're adding Vegan to your menu, this Guide walks you through it: what to add, who to buy it from, and how to say it honestly. Read around. When you're ready, take the short survey and the whole Guide opens. It's free." sayMember: "Welcome in. Start with What to add for your kind of business, then Sourcing to find who sells it. Save anything to My list."
+- **Overview.** say: "Hi, I'm Maya. If you're adding Vegan to your menu, this Guide walks you through it: what to add, who to buy it from, and how to say it honestly. Read around. When you're ready, take the short survey and the whole Guide opens. It's free." sayMember: "Welcome in. Start with What to add for your kind of business, then Sourcing to find who sells it. Save anything to My list."
 - **Why add Vegan.** "Here's the honest version. Who asks for Vegan, what a short Vegan list costs you, and what it won't do. Every number has its source under it."
 - **What to add.** say: "Pick your kind of business. Coffee shops are open to everyone: the first things to add, what to stock, and what to watch for. The rest open with the survey." sayMember: "Pick your kind of business. Each one has a few easy first items, what to stock, and what to watch for."
 - **How to say it.** "The words matter. Call an item Vegan only when it has nothing from an animal. Call your menu Vegan options, not fully Vegan, unless it is. Here's a line for shared kitchens too."
@@ -72,11 +72,11 @@ because these businesses are anywhere. **Default:** as above.
 - **My list.** "Everything you saved is right here."
 - **Get in.** "There's one way in, and it's free. Take the short survey about your business, and the whole Guide opens."
 
-**Default:** these words, shown as text beside Pascal's still picture until you approve a voice.
+**Default:** these words, shown as text beside Maya's still picture until you approve a voice.
 
 ## After approval (step 2, Logan)
 
 A migration with the `ve_guides` row (door true, survey_slug, unpublished) and the survey rows, then the page and script copied
-from the Restaurant Guide (noindex, Pascal, nav, footer, corner and min scripts), then step 3: prove it live.
+from the Restaurant Guide (noindex, Maya, nav, footer, corner and min scripts), then step 3: prove it live.
 
-Open calls for launch (Sean): Pascal's voice (none approved on his roster profile), the banner (Higgsfield credits), and the catalog card and sitemap.
+Open calls for launch (Sean): approving Maya's lines so they can be recorded in her voice (`sM8RysETdBj1LIqLd9tl`), the banner (Maya in the Vegans Explore Tee at a coffee shop counter, Higgsfield credits), and the catalog card and sitemap.
