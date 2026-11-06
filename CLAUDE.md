@@ -4832,6 +4832,40 @@ v1 history: the email-only reader level is retired (step 2 replaced it), and the
 - **Outreach is two tabs, Roster and Campaigns (Sean, 2026-11-05, playbook `ve-outreach-buckets`; handoff `docs/handoff/2026-11-05-ve-outreach-buckets-roster-campaigns-built.md`)**: built in HQ (`lesaruss/lesaruss-hq` branch `claude/quirky-hawking-7xrux2`, `components/branddesk/OutreachDesk.tsx`, **not on HQ main**). Roster by door (restaurant first), search above the list, one Filters button, the campaign on a row is its picker, a name opens a person page (status and next step, emails with As they see it / Plain text and a spoken note, the pages they will click with a Looks right tick, survey answers and notes). Campaigns: a tile per door, scheduled campaigns by start day, one campaign with its three emails (edit, comment, Redraft, Lock it in) and Approve. Migration `20261105_outreach_campaigns_v2.sql` (`start_on`, `cities`, `approved_at`, `ve_outreach_campaign_emails`). **Approving records the approval only: sending is not connected to campaigns** (the engine still sends from city lists and send days), and Sean wants sending described as governed per campaign, never per city list. Orientation (the always-on drip after joining) is a Coming card. The restaurant door was verified 2026-11-05 (the survey door admits on the 5 required answers, a Founding Member) and Day 0 now says one door (the survey); the two after-membership notes are drafts in `docs/proposals/restaurant-door-after-membership-notes.md`. Not signed in on real data yet; no email sent, no city on.
 - **Cities are a filter, not the campaign; Roster statuses Cold, Warm, Hot (Sean, 2026-11-05, playbook `ve-outreach-buckets`; handoff `docs/handoff/2026-11-05-ve-outreach-buckets-cold-warm-hot-closed-group.md`)**: Sean: "Cities can be a criteria within a campaign, but it shouldn't define the campaign... I've mentioned this before." A campaign is its audience (door, kind of listing, criteria) and its emails; city is one optional filter, and sending is governed per campaign (approval, start day, pace, its own pause), never by a city list or city switch (a gratitude box campaign to CPG brands has no city). Roster statuses are **Cold** (nothing heard), **Warm** (opened an outreach email, no click; opens are a floor and can be false), **Hot** (clicked or replied, or started a claim), **Member**, **Unsubscribed**: `ve_outreach_roster` reads opens from `email_sends` (`campaign_ref` `ve-outreach-<contact>-<step>`), migration `20261105_outreach_roster_cold_warm_hot.sql`, applied live; HQ 710f1a0 on the same branch. Sean judged Roster and Campaigns good for V1. **Proposed, awaiting Sean's go**: sending wired to campaigns as above, and a **No longer open** group (Permanently and Temporarily closed listings leave the door tabs, never deleted; Removed ones left out; 72 permanently closed, 17 with an email, on 2026-11-05) with a one-email Checking in campaign from Sean (draft in the handoff), a reply moving them back to a door or to a person record.
 
+## Pre-Vegan Certification: B4, the dish registry and the QR status page (Logan, 2026-11-06, playbook `vegans-explore-initiative-business-certification`)
+
+Built from Standard V1.2 (playbook record 044b9cf2). The standard, the queue and B1 to B3 live on branches `claude/fervent-hamilton-fc48qo` and
+`claude/inspiring-hypatia-ilwro1` (not on `main`); this is on `claude/gracious-gauss-d7r3h7` (not on `main`). **Nothing is certified, sent or launched.**
+
+- **Data** (migration `20261106_pre_vegan_dish_registry.sql`, applied through the one-time `ve-once-preveg-registry`, now the 410 stub, since the
+  connector held it): `ve_preveg_certs` (one location for one 12-month term: `listing_id`, the QR `code` (7 characters, no 0, O, 1, I or L),
+  `term_start`, `term_end`, `menu_items_total` (the M in N of M), `also_serves` (meat, fish, dairy, eggs), `verifier_name`, `desk_reviewer_name`
+  (must differ), `team_note`), `ve_preveg_dishes` (`status` applied, pending, active, suspended, expired, revoked, withdrawn; `certified_at`) and
+  `ve_preveg_dish_events` (every move with its reason and who). RLS on, no policies. **Records are kept**: a delete on any of the three, or an edit to
+  the history, raises `records_are_kept` (G8, term plus 5 years); a direct status update raises `use_ve_preveg_dish_set_status`.
+- **Moves** (`ve_preveg_dish_set_status(dish, to, reason, actor)`, service role only): applied to pending or withdrawn; pending to active (the approver),
+  applied (did not pass, re-test) or withdrawn; active to suspended, expired, revoked or withdrawn; suspended to active, expired, revoked or withdrawn;
+  expired to applied (renewal); revoked and withdrawn are final. A reason is always required; only a super admin moves; **active needs** a current
+  term, the menu count, both people named, and an approver who is neither of them (by member id or name). **No grace period**: cron
+  `ve-preveg-expire` (05:05 UTC) and every team read expire dishes whose term ended, and the public read treats an ended term as not current at once.
+- **Public** (`ve_preveg_cert_public(code)`, `ve_preveg_registry_public()`): only active and suspended dishes in a current term, N of M, what else
+  they serve, the term; never a reason, never applied or pending, never the people or the note. States: certified, suspended (none active), not_current
+  (once certified, nothing now, no detail), not_found (never certified). Never a failure log.
+- **Edge function `ve-certification`** (verify_jwt off): public `status {code}`, `registry` (no-store, so a suspension shows at once); team (a super
+  admin's token, or the admin token with `as_member`; a Guide account is view only) `list`, `get`, `listing_find`, `cert_save`, `dish_add`,
+  `dish_edit` (a certified dish keeps its name: a changed dish is a new review), `dish_status`. Deployed from bdd8538, source sha256 matched.
+- **Depot > Pre-Vegan Certification** (`/admin/depot/certification`, Directory in the Go to menu; copied from the Watchlist): certificates by
+  Certified, Has a suspension, In progress, Not current; New certificate (find the Directory listing); one certificate (`#c/<id>`): the QR (drawn in
+  the browser by `/public/vendor-qrcode.js`, qrcode-generator 1.4.4, MIT, our own copy) with Download the QR, the dishes with Change status (a move and
+  its reason), Add a dish, What the public sees, the certificate form, the history.
+- **The public pages** (`certified.html`, `noindex` until launch, not in the sitemap; copied from the listing page's hero, info bar and two columns):
+  `/certified/<code>` (rewrite in `vercel.json`) is the QR status page: the stamp line "Plant-Based Dish, Pre-Vegan Certified", N of M, what else they
+  serve beside it, each dish Certified or Suspended, Read before you order, What the stamp means (never a health, allergen or food-safety claim),
+  Something wrong? (the Feedback window, the diner report until its own form is built), checked live with the time. `/certified` is the registry.
+- **Proven 2026-11-06** in a rolled-back transaction (every move and refusal above, the public read with no reason leaking, expiry, the record locks)
+  and live (public actions, the team actions refuse no token). Pages checked at 1440 and 390 px beside the listing page and the Watchlist against
+  mocked answers. **Not proven**: a real certificate made through the Depot (it cannot be deleted, so the first real one should be a pilot restaurant).
+
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
 
 Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-venue-guides`). The Stadium & Arena

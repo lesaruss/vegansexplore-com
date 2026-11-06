@@ -51,6 +51,7 @@
     }
   ],
   "rewrites": [
+    { "source": "/certified/:code([A-Za-z0-9]{4,16})", "destination": "/certified" },
     {
       "source": "/communities/:city(south-florida|central-florida|north-florida|atlanta|washington-dc|delaware|maryland|virginia|west-virginia|new-york|philadelphia|los-angeles|london)",
       "destination": "/communities/hub"
