@@ -7,7 +7,9 @@
     (function () {
       var alone = true; try { alone = window.self === window.top; } catch (e) { alone = false; }
       var signedIn = false; try { signedIn = !!localStorage.getItem('ve_token'); } catch (e) {}
-      var door = /[?&](door=1|s=)/.test(location.search);
+      // The old 31-question survey door was retired 2026-11-06 (Sean: "retire it"); its link opens the Explorer survey.
+      if (/[?&]door=1/.test(location.search)) { location.replace('/survey?s=explorer'); return; }
+      var door = /[?&]s=/.test(location.search);
       if (alone && signedIn && !door) location.replace('/dashboard/survey' + location.search + location.hash);
     })();
   </script>
@@ -106,15 +108,6 @@
     if (!window.VEAuth || !window.VEMissionSurvey || !window.VEGuideSurvey) return setTimeout(start, 200);
     var gs = /[?&]s=([a-z0-9-]{1,60})/.exec(location.search);
     if (gs) { $('h1').textContent = 'Free with a short survey'; return guideSurvey(gs[1]); }
-    var rm = VEAuth.getRealMember && VEAuth.getRealMember();
-    if (/[?&]door=1/.test(location.search) && VEAuth.getToken() && rm && rm.membership_status === 'pending_payment') return door();
-    if (!VEAuth.isLoggedIn() && /[?&]door=1/.test(location.search)) {
-      // A visitor with no account yet (a shared link, or the $11 window closed): make one, then the survey door opens.
-      $('gate').hidden = false;
-      $('gate').innerHTML = '<p>Make your account, then take the survey. Finishing it makes you a member, free.</p><p><button class="btn" id="gDoorStart" type="button">Make my account</button></p><p><a href="/login?next=/survey%3Fdoor%3D1">Already have an account? Sign in</a></p>';
-      $('gDoorStart').onclick = function () { VEAuth.showAuthModal('Make your account, then take the survey. It is free.', function () { location.reload(); }, 'signup'); };
-      return;
-    }
     if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<p>Sign in to build your profile.</p><p><a class="btn" href="/login?next=/dashboard/survey">Sign in</a></p>'; return; }
     var m = VEAuth.getMember();
     if (m && m.membership_status !== 'active') { $('gate').hidden = false; $('gate').textContent = 'Your profile opens once your Passport is active.'; return; }
@@ -125,27 +118,6 @@
       preview: preview,
       // One question per view: the page's introduction shows on the cards only.
       onChange: function () { var q = /^#q\//.test(location.hash); $('lede').hidden = q; $('why').hidden = q; try { window.scrollTo(0, 0); } catch (e) {} tellParent(); }
-    });
-  }
-  // The survey door (Sean, 2026-11-03: "people don't have to pay to get in, but they do have to show some effort"): an account
-  // waiting on its Passport answers the whole profile and the last answer makes it a member (Founding before January 1, 2027).
-  function door() {
-    $('lede').textContent = 'No $11 needed. Answer every question, check your answers, and finalize. Our team reviews them; when they check out you get the survey\'s 250 points and your membership, and you are a Founding Member if you finalize before January 1, 2027. Your answers save as you go, so you can stop and come back.';
-    $('why').innerHTML = '<span>Free</span><span>250 points</span><span>Reviewed by our team</span><span>Saved as you go</span>';
-    VEMissionSurvey.doorStart().then(function (d) {
-      if (!d || d.error) { $('gate').hidden = false; $('gate').textContent = 'This account cannot start the survey. Sign in again, or get your Passport.'; return; }
-      if (d.already_member) { location.href = '/dashboard'; return; }
-      $('host').hidden = false;
-      VEMissionSurvey.profile($('host'), {
-        // A short video on what happens after finalizing goes here when it is recorded: video: '/path.mp4', poster: '/path.jpg'.
-        onChange: function () { var q = /^#(q\/|review)/.test(location.hash); $('lede').hidden = q; $('why').hidden = q; try { window.scrollTo(0, 0); } catch (e) {} tellParent(); },
-        onFinalized: function () { $('lede').hidden = true; $('why').hidden = true; tellParent(); },
-        onExit: function () {
-          $('lede').hidden = true; $('why').hidden = true;
-          $('host').innerHTML = '<div class="card done"><h2>Saved. Come back whenever you like.</h2><p>Your answers are kept exactly as you left them. To pick up again, sign in and choose Take the survey instead, or open this page again.</p><p><a class="btn" href="/survey?door=1" onclick="location.reload();return false">Keep going</a></p></div>';
-          try { window.scrollTo(0, 0); } catch (e) {} tellParent();
-        }
-      });
     });
   }
   start();

@@ -130,13 +130,9 @@ Deno.serve(async (req) => {
       if (error || !data) throw new Error('state: ' + (error?.message ?? 'none'));
       return data as Record<string, unknown>;
     };
-    // The survey door (Sean, 2026-11-03): an account waiting on its Passport may earn its membership with the whole survey.
-    if (action === 'door_start') {
-      const { data, error } = await supabase.rpc('ve_survey_door_start', { p_member: memberId });
-      if (error) throw new Error('door_start: ' + error.message);
-      if (data?.error) return json(data, 403);
-      return json(data);
-    }
+    // The old 31-question survey door was retired by Sean on 2026-11-06 ("retire it"): the free general way in is the Explorer
+    // survey (/survey?s=explorer). door_start and finalize answer 410; the review queue stays for the Explorer survey.
+    if (action === 'door_start' || action === 'finalize') return json({ error: 'retired', use: '/survey?s=explorer' }, 410);
     // A Guide's own survey (ve_surveys rows; 2026-11-03): the questions and a member's answers, and one answer at a time.
     // An account waiting on its Passport may answer a survey that admits; finishing it makes them a member.
     // The Pre-Vegan readiness check (vegans-explore-initiative-business-certification B2/B3): a member's own private score,
@@ -188,18 +184,7 @@ Deno.serve(async (req) => {
     }
 
 
-    // The survey door waits for a person (Sean, 2026-11-03; migration 20261103_survey_review_gate.sql): Finalize sends the answers to the team,
-    // who approve (points paid, member, Founding by the day they finalized) or send them back with a note.
-    if (action === 'finalize') {
-      const { data, error } = await supabase.rpc('ve_survey_finalize', { p_member: memberId });
-      if (error) throw new Error('finalize: ' + error.message);
-      if (data?.error) return json(data, data.error === 'not_eligible' ? 403 : 400);
-      if (!data?.already) {
-        const { data: m } = await supabase.from('members').select('name, email').eq('id', memberId).maybeSingle();
-        await notifyTeam(`Survey waiting for review: ${m?.name || m?.email || 'a new member'}`, `${m?.name || ''} (${m?.email || ''}) finalized the survey. Review it in Depot > Profiles > Waiting for review: https://vegansexplore.com/admin/depot/profiles#review`);
-      }
-      return json(data);
-    }
+    // The review queue (Depot > Profiles > Waiting for review): the Explorer survey waits here for a person.
     if (action === 'review_list' || action === 'review_decide') {
       const { data: me } = await supabase.from('members').select('is_superadmin, name').eq('id', memberId).maybeSingle();
       if (!me?.is_superadmin) return json({ error: 'forbidden' }, 403);
@@ -227,7 +212,7 @@ Deno.serve(async (req) => {
         } else {
           mail = await sendMemberEmail(`ve-survey-sentback-${mid}-${Date.now()}`, m.email, m.name, 'A few of your answers need another look',
             `<p>Hi ${esc(first)},</p><p>Thank you for taking the survey. Before we can open your membership, our team asked for a change:</p><blockquote style="margin:14px 0;padding:10px 14px;border-left:3px solid #1f5f22;background:#f4f8f4">${esc(note)}</blockquote>` +
-            `<p>Your answers are saved. Open the survey, fix what needs fixing and finalize again.</p><p><a href="https://vegansexplore.com/survey?door=1" style="display:inline-block;background:#1f5f22;color:#fff;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:13px;padding:13px 24px;border-radius:6px;text-decoration:none">Open my survey</a></p><p>Vegans Explore team</p>`);
+            `<p>Your answers are saved. Open the survey, fix what needs fixing and finalize again.</p><p><a href="https://vegansexplore.com/survey?s=explorer" style="display:inline-block;background:#1f5f22;color:#fff;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:13px;padding:13px 24px;border-radius:6px;text-decoration:none">Open my survey</a></p><p>Vegans Explore team</p>`);
         }
       }
       return json({ ...data, mail });
