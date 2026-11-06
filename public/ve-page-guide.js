@@ -171,7 +171,7 @@
     function newConv() { conv = Math.random().toString(36).slice(2, 10).replace(/[^a-z0-9]/g, 'a'); try { sessionStorage.setItem(k + '_c', conv); } catch (e) {} }
     if (!conv || !/^[a-z0-9]{4,16}$/.test(conv)) newConv();
     function keep() { try { sessionStorage.setItem(k, JSON.stringify(turns.slice(-30))); } catch (e) {} }
-    var S = shell('Ask me about this page. Saved answers are free; asking me directly is 4 points.', 'For example: what should I bring to my first potluck?',
+    var S = shell('Ask me about this page. Saved answers are free; asking me directly is 4 points.', 'For example: what should I do first on this page?',
       { links: '<button type="button" class="lnk" data-new>Start over</button>' }, 'Ask');
     var log = S.log, f = S.f, ta = f.t, go = f.querySelector('.go');
     function offer(q) { return '<div class="vepg-ch vepg-offer" data-q="' + esc(q) + '"><button type="button" class="ap" data-direct>Ask ' + esc(N) + ' directly &middot; 4 points</button> <button type="button" class="lnk" data-person>Ask a person, free</button></div>'; }
