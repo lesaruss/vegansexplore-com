@@ -21,3 +21,15 @@ Cost note: each firing with nothing approved should end in one read.
 ## Next
 - Logan: build step 3 as above, prove it with one [TEST] idea, then delete the test rows.
 - Sean: drop a real idea at /admin/depot/ideas.
+
+## Step 3 built (later 2026-11-06)
+- `ve-ideas` v3 (74a4089, sha256 ff0c6367 matched): ops path for `list`, `get`, `next`, `claim`, `set` only; `claim` is the lock (one build at a time, oldest
+  first, a stale build stops blocking after 6 hours); `set` done needs `result_url`. Proven live: no token 401, ops approve 403 `not_for_ops`, `as_member` not a
+  super admin 403, bad session link 400, done without a link 400, `next` returned the [TEST] idea.
+- Depot > Ideas: Building (Watch the build session) and Done (See what was done, waiting for your merge); the list card has Watch it build.
+- Scheduled task `trig_01XcpkAgN2brjAZTAJB1oREJ`, hourly at :15, fresh session each firing; prompt `docs/ideas/build-session-prompt.md`.
+- First run (fired by hand): no Supabase connector, no repo, Sonnet 5.5; it stopped safely at step 1. **The task is paused.** A routine made from a session
+  cannot attach connectors in this org. Sean: open the routine on claude.ai's routines page, add the Supabase connector and the vegansexplore-com repository,
+  set the model to Opus, enable it. Then approve a real idea; the next :15 picks it up.
+- Proven live: next, claim, a second claim refused busy, done with the link, on a [TEST] idea, driven from this session; page states checked at 1440 and 390
+  px against mocked answers. Test row deleted. The page change is on branch claude/dazzling-pasteur-1zrvhn, not on main (Sean's merge).

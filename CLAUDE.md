@@ -1358,8 +1358,19 @@ a read; it sees the pictures and PDFs): what he thinks is asked, tweak / build /
 slug), how he would do it and up to three questions. **Correct me** adds Sean's words to the thread and reads it again; **Approve** sets it approved;
 Set aside. Table `ve_ideas` (migration `20261106_ve_ideas.sql`, RLS on, no policies): body, links, files, page_url, status new | read | approved |
 building | done | set_aside, read, thread, playbook_slug, session_url, result_url, note. `ve-ideas` actions `list`, `get`, `upload_start`, `create`,
-`read`, `approve`, `set`. **Step 3 is not wired**: approving does not start a build yet (requested 2026-11-06, the plan is in `docs/handoff/2026-11-06-ve-idea-intake.md`: a scheduled task picks up approved ideas); Logan picks approved ideas up in his next session and sets
-`session_url`, `result_url` and done (`set`). Proven live 2026-11-06 as Sean (upload, create and read with a screenshot in 7 s, a correction read
+`read`, `approve`, `set`, `next`, `claim`. **Step 3, Approve starts a build (2026-11-06, `ve-ideas` v3 from 74a4089, sha256 ff0c6367 matched)**: `ve-ideas`
+takes ops (`LESARUSS_ADMIN_TOKEN`, optional `as_member` a super admin) for `list`, `get`, `next`, `claim`, `set` only (anything else 403 `not_for_ops`; approving stays
+Sean's). `next` is the oldest approved idea and whether one is building; `claim {session_url}` moves it to building in one step (refused `busy` while another idea
+built in the last 6 hours, `BUSY_HOURS`; one build at a time, oldest first); `set` done needs a `result_url`. A scheduled task on Sean's account,
+**ve-idea-intake: build approved ideas (hourly)** (`trig_01XcpkAgN2brjAZTAJB1oREJ`, fresh session each firing; its prompt is `docs/ideas/build-session-prompt.md`),
+checks `next` and stops if nothing is waiting, else claims, builds on its own branch, commits as Sean, never merges to main, and sets done with the link. Depot > Ideas
+shows Building (Watch the build session) and Done (See what was done, waiting for your merge). A stale Building (session died) stops blocking after 6 hours and
+stays Building for Sean to see. **The scheduled task is paused** (enabled false): its first run (fired by hand 2026-11-06) started with no Supabase connector,
+no repository and on Sonnet 5.5, because a routine made from a session here cannot attach connectors (`connectors` is refused for the organization) and
+stores no source repo; it stopped safely at step 1 (about $0.10). To turn it on, Sean edits it in claude.ai's routines page: add the Supabase connector and
+the lesaruss/vegansexplore-com repository, set the model to Opus, then enable it. Proven live without it 2026-11-06: the whole path (next, claim, busy refused,
+done) on a [TEST] idea driven from a build session through the same calls, the page's Building and Done at 1440 and 390 px against mocked answers; the test
+row deleted. Proven live 2026-11-06 as Sean (upload, create and read with a screenshot in 7 s, a correction read
 again, approve, a second approve refused, a bad status and a bad file type refused, the page at 1440 and 390 px); the test idea is Set aside. On `main` since 12920c8.
 
 ## Wrap up (Sean, 2026-11-03, canon `canon-wrap-up-standard`)
