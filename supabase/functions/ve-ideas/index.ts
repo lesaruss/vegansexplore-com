@@ -9,8 +9,14 @@
 //   read         { id, reply? }           Logan (Claude) reads the idea, its pictures and the thread, and writes back what he thinks is
 //                                         asked, the playbook it belongs to, how he would do it and anything he needs answered.
 //                                         A reply from Sean is added to the thread first, so "no, I meant..." gets a fresh read.
-//   approve      { id }                   Sean's go: status approved (step 3, starting a build session, is not wired yet)
-//   set          { id, status?, note?, session_url?, result_url?, playbook_slug? }
+//   approve      { id }                   Sean's go: status approved. A scheduled build session (hourly, fresh each firing) picks it up.
+//   set          { id, status?, note?, session_url?, result_url?, playbook_slug? }   done needs a result_url
+//   next                                  the oldest approved idea (id, a short excerpt) and whether a build is already running
+//   claim        { session_url, id? }     takes the oldest approved idea (or that one) and makes it building with the session's link,
+//                                         in one step, so two sessions never build the same idea; refused (busy) while another builds
+//
+// Who: a super admin's VE token, or ops: Bearer LESARUSS_ADMIN_TOKEN, optionally with as_member (a super admin). Ops reads and moves
+// ideas through the build (list, get, next, claim, set); approving, writing and reading an idea stay Sean's (step 3, 2026-11-06).
 import Anthropic from 'npm:@anthropic-ai/sdk';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
@@ -23,6 +29,8 @@ const STATUSES = ['new', 'read', 'approved', 'building', 'done', 'set_aside'];
 const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type', 'Access-Control-Allow-Methods': 'POST, OPTIONS' };
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
 const clean = (v: unknown, n: number) => String(v ?? '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '').trim().slice(0, n);
+const OPS_ACTIONS = new Set(['list', 'get', 'next', 'claim', 'set']);
+const BUSY_HOURS = 6;   // a build untouched this long stops blocking the next one (the session likely died; Sean sees it as Building)
 const isId = (v: unknown) => typeof v === 'string' && /^[0-9a-f-]{36}$/i.test(v);
 
 function b64d(s: string): Uint8Array { const pad = s.length % 4 === 0 ? '' : '='.repeat(4 - (s.length % 4)); const bin = atob(s.replace(/-/g, '+').replace(/_/g, '/') + pad); const o = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) o[i] = bin.charCodeAt(i); return o; }
@@ -133,13 +141,46 @@ Deno.serve(async (req) => {
   let b: any = {};
   try { b = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
-  const me = token ? await verifyToken(token) : null;
-  if (!me) return json({ error: 'not_authenticated' }, 401);
-  const { data: m } = await db.from('members').select('is_superadmin').eq('id', me).maybeSingle();
-  if (!m?.is_superadmin) return json({ error: 'admins_only' }, 403);
+  const adminTok = token ? await secret('LESARUSS_ADMIN_TOKEN') : null;
+  const ops = !!token && !!adminTok && token === adminTok;
+  if (ops && !OPS_ACTIONS.has(b.action)) return json({ error: 'not_for_ops' }, 403);
+  const me = ops ? (isId(b.as_member) ? b.as_member : null) : (token ? await verifyToken(token) : null);
+  if (!me && !ops) return json({ error: 'not_authenticated' }, 401);
+  if (me) {
+    const { data: m } = await db.from('members').select('is_superadmin').eq('id', me).maybeSingle();
+    if (!m?.is_superadmin) return json({ error: 'admins_only' }, 403);
+  }
+  const busySince = () => new Date(Date.now() - BUSY_HOURS * 3600_000).toISOString();
+
+  if (b.action === 'next') {
+    const { data: busy } = await db.from('ve_ideas').select('id,session_url,updated_at').eq('status', 'building').gte('updated_at', busySince()).order('updated_at', { ascending: false }).limit(1).maybeSingle();
+    const { data: nx } = await db.from('ve_ideas').select('id,body,playbook_slug,approved_at').eq('status', 'approved').order('approved_at', { ascending: true, nullsFirst: false }).order('created_at').limit(1).maybeSingle();
+    const { count } = await db.from('ve_ideas').select('id', { count: 'exact', head: true }).eq('status', 'approved');
+    return json({ ok: true, busy: busy || null, waiting: count || 0, next: nx ? { id: nx.id, playbook_slug: nx.playbook_slug, approved_at: nx.approved_at, excerpt: String(nx.body || '').slice(0, 200) } : null });
+  }
+  if (b.action === 'claim') {
+    const url = clean(b.session_url, 1000);
+    if (!/^https:\/\//i.test(url)) return json({ error: 'session_url' }, 400);
+    const { data: busy } = await db.from('ve_ideas').select('id').eq('status', 'building').gte('updated_at', busySince()).limit(1).maybeSingle();
+    if (busy) return json({ error: 'busy', building: busy.id }, 409);
+    let id = isId(b.id) ? b.id : null;
+    if (!id) {
+      const { data: nx } = await db.from('ve_ideas').select('id').eq('status', 'approved').order('approved_at', { ascending: true, nullsFirst: false }).order('created_at').limit(1).maybeSingle();
+      if (!nx) return json({ ok: true, idea: null });
+      id = nx.id;
+    }
+    const now = new Date().toISOString();
+    const { data: cur } = await db.from('ve_ideas').select('thread').eq('id', id).maybeSingle();
+    // The status filter makes this the lock: only one caller moves an approved idea to building.
+    const { data } = await db.from('ve_ideas').update({ status: 'building', session_url: url, updated_at: now,
+      thread: [...(cur?.thread || []), { role: 'logan', text: 'Building it now. The build session is linked below.', at: now }] })
+      .eq('id', id).eq('status', 'approved').select('*').maybeSingle();
+    if (!data) return json({ error: 'not_approved' }, 409);
+    return json({ ok: true, idea: await withLinks(data) });
+  }
 
   if (b.action === 'list') {
-    const { data } = await db.from('ve_ideas').select('id,body,links,files,status,read,playbook_slug,result_url,created_at,updated_at').order('created_at', { ascending: false }).limit(300);
+    const { data } = await db.from('ve_ideas').select('id,body,links,files,status,read,playbook_slug,result_url,session_url,done_at,created_at,updated_at').order('created_at', { ascending: false }).limit(300);
     return json({ ok: true, rows: data || [] });
   }
   if (b.action === 'get') {
@@ -197,6 +238,12 @@ Deno.serve(async (req) => {
     if (b.note !== undefined) patch.note = clean(b.note, 4000) || null;
     for (const k of ['session_url', 'result_url']) if (b[k] !== undefined) { const v = clean(b[k], 1000); if (v && !/^https?:\/\//i.test(v)) return json({ error: k }, 400); patch[k] = v || null; }
     if (b.playbook_slug !== undefined) patch.playbook_slug = clean(b.playbook_slug, 80) || null;
+    if (b.status === 'done' || b.status === 'building') {
+      const { data: cur } = await db.from('ve_ideas').select('result_url,thread').eq('id', b.id).maybeSingle();
+      if (!cur) return json({ error: 'not_found' }, 404);
+      if (b.status === 'done' && !(patch.result_url ?? cur.result_url)) return json({ error: 'result_url_needed' }, 400);
+      if (b.status === 'done') patch.thread = [...(cur.thread || []), { role: 'logan', text: 'Built. It is on its own branch, waiting for you to look and say merge.' + (patch.note ? ' ' + patch.note : ''), at: patch.updated_at }];
+    }
     const { data } = await db.from('ve_ideas').update(patch).eq('id', b.id).select('*').maybeSingle();
     if (!data) return json({ error: 'not_found' }, 404);
     return json({ ok: true, idea: await withLinks(data) });

@@ -54,6 +54,7 @@
     .item textarea{font-family:inherit;font-size:14px;width:100%;min-height:90px;padding:10px 12px;border:1px solid var(--ve-border);border-radius:6px;}
     @media (max-width:600px){.item dl{grid-template-columns:1fr;}.item dt{margin-top:6px;}}
     .tag.read{background:#e3eefc;color:#0f4a91;}.tag.approved{background:#fff1dc;color:#8a5200;}.tag.building{background:#efe4fb;color:#5b2a91;}.tag.done{background:var(--ve-green-light);color:var(--ve-green-deep);}.tag.set_aside{background:#eef1ee;color:#555;}
+    .state{border-radius:6px;padding:14px 16px;margin:6px 0;font-size:14px;line-height:1.5}.state.building{background:#f6effd;color:#3d1d63}.state.done{background:var(--ve-green-light);color:var(--ve-green-deep)}.state .acts{margin-top:10px}
     .newbtn{margin:0 0 16px;}
     .form{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:20px 22px;display:grid;gap:14px;max-width:860px;}
     .form label{font-size:12.5px;font-weight:800;color:var(--ve-text-75);display:block;margin-bottom:6px;}
@@ -136,7 +137,7 @@
           var title = (x.read && x.read.ask) || x.body || (x.links || [])[0] || ((x.files || []).length + ' attachment' + ((x.files || []).length === 1 ? '' : 's'));
           return '<div class="card"><div class="body"><span class="kind">' + esc(x.playbook_slug || 'No playbook yet') + '</span><div><span class="tag ' + esc(x.status) + '">' + esc(stLabel(x.status)) + '</span></div>' +
             '<div class="excerpt">' + esc(title) + '</div><span class="meta">' + esc(when(x.created_at)) + ((x.files || []).length ? ' &middot; ' + x.files.length + ' file' + (x.files.length === 1 ? '' : 's') : '') + ((x.links || []).length ? ' &middot; ' + x.links.length + ' link' + (x.links.length === 1 ? '' : 's') : '') + '</span>' +
-            '<div class="acts"><a class="btn" href="#idea/' + x.id + '">Open</a>' + (x.result_url ? '<a class="btn btn-quiet" href="' + esc(x.result_url) + '" target="_blank" rel="noopener">See it</a>' : '') + '</div></div></div>';
+            '<div class="acts"><a class="btn" href="#idea/' + x.id + '">Open</a>' + (x.status === 'building' && x.session_url ? '<a class="btn btn-quiet" href="' + esc(x.session_url) + '" target="_blank" rel="noopener">Watch it build</a>' : '') + (x.result_url ? '<a class="btn btn-quiet" href="' + esc(x.result_url) + '" target="_blank" rel="noopener">See it</a>' : '') + '</div></div></div>';
         }).join('') : '<p class="sub">' + (r.st === 'open' ? 'Nothing open. Tap New idea to drop one.' : 'None here.') + '</p>';
       }
 
@@ -233,9 +234,11 @@
             (turns.length ? '<div class="thread">' + turns.map(function (t) { return '<div class="turn ' + esc(t.role) + '"><b>' + (t.role === 'logan' ? 'Logan' : 'You') + ' &middot; ' + esc(when(t.at)) + '</b>' + esc(t.text) + '</div>'; }).join('') + '</div>' : '') +
             (canAct ? '<div><label class="meta" for="reply"><b>Correct me or answer my questions</b></label><textarea id="reply" placeholder="No, I meant... (tap the mic to speak)"></textarea></div>' +
               '<div class="acts"><button type="button" class="btn" id="ok">Approve, go build it</button><button type="button" class="btn btn-quiet" id="re">Send and read it again</button><button type="button" class="btn btn-ghost" data-st="set_aside">Set aside</button></div>' : '') +
-            (x.status === 'approved' ? '<p class="sub"><b>Approved ' + esc(when(x.approved_at)) + '.</b> Logan picks it up in his next build session and puts the link here when it is done.</p>' : '') +
-            (x.session_url ? '<p class="meta">Build session: <a href="' + esc(x.session_url) + '" target="_blank" rel="noopener">open it</a></p>' : '') +
-            (x.result_url ? '<div class="acts"><a class="btn" href="' + esc(x.result_url) + '" target="_blank" rel="noopener">See what was done</a></div>' : '') +
+            (x.status === 'approved' ? '<p class="sub"><b>Approved ' + esc(when(x.approved_at)) + '.</b> A build session picks it up within the hour (one build at a time, oldest first) and links itself here.</p>' : '') +
+            (x.status === 'building' ? '<div class="state building"><b>Building since ' + esc(when(x.updated_at)) + '.</b> Logan is building it on its own branch. Nothing goes to the live site until you say merge.' + (x.session_url ? '<div class="acts"><a class="btn" href="' + esc(x.session_url) + '" target="_blank" rel="noopener">Watch the build session</a></div>' : '') + '</div>' : '') +
+            (x.status === 'done' ? '<div class="state done"><b>Done ' + esc(when(x.done_at)) + '.</b> It is on its own branch, waiting for you to look and say merge.<div class="acts">' + (x.result_url ? '<a class="btn" href="' + esc(x.result_url) + '" target="_blank" rel="noopener">See what was done</a>' : '') + (x.session_url ? '<a class="btn btn-quiet" href="' + esc(x.session_url) + '" target="_blank" rel="noopener">The build session</a>' : '') + '</div></div>' : '') +
+            (x.status !== 'building' && x.status !== 'done' && x.session_url ? '<p class="meta">Build session: <a href="' + esc(x.session_url) + '" target="_blank" rel="noopener">open it</a></p>' : '') +
+            (x.status !== 'done' && x.result_url ? '<div class="acts"><a class="btn" href="' + esc(x.result_url) + '" target="_blank" rel="noopener">See what was done</a></div>' : '') +
             (x.note ? '<p class="meta"><b>Note:</b> ' + esc(x.note) + '</p>' : '') +
             (!canAct ? '<div class="acts">' + (x.status === 'set_aside' || x.status === 'done' ? '<button type="button" class="btn btn-quiet" data-st="read">Open it again</button>' : '') + (x.status !== 'set_aside' && x.status !== 'done' ? '<button type="button" class="btn btn-ghost" data-st="set_aside">Set aside</button>' : '') + '</div>' : '') +
             '<div id="msg" class="msg"></div></div>';
