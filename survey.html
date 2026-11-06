@@ -81,12 +81,12 @@
     $('host').hidden = false;
     VEGuideSurvey.mount($('host'), {
       survey: slug,
-      onLoaded: function (S) { $('lede').textContent = S.intro || ''; $('why').innerHTML = '<span>Free</span><span>Up to ' + S.total + ' points</span><span>Saved as you go</span>'; },
+      onLoaded: function (S) { window.__vgsGuide = S.guide_slug || null; $('lede').textContent = S.intro || ''; $('why').innerHTML = '<span>Free</span>' + (S.total ? '<span>Up to ' + S.total + ' points</span>' : '<span>Private</span>') + '<span>Saved as you go</span>'; },
       onChange: function () { var q = /^#q\//.test(location.hash); $('lede').hidden = q; $('why').hidden = q; try { window.scrollTo(0, 0); } catch (e) {} tellParent(); },
       onDone: function (res) {
         fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth?action=me', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON }, body: JSON.stringify({ token: VEAuth.getToken() }) })
           .then(function (r) { return r.json(); }).then(function (d) { if (d && d.member) VEAuth.setSession(VEAuth.getToken(), d.member); }).catch(function () {})
-          .then(function () { try { sessionStorage.removeItem('ve_survey_for'); } catch (e) {} setTimeout(function () { location.href = '/guides/' + slug + '?welcome=survey'; }, 1500); });
+          .then(function () { try { sessionStorage.removeItem('ve_survey_for'); } catch (e) {} setTimeout(function () { location.href = '/guides/' + (window.__vgsGuide || slug) + '?welcome=survey'; }, 1500); });
       }
     });
   }

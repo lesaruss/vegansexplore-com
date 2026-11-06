@@ -114,7 +114,7 @@ Deno.serve(async (req) => {
     let action = url.searchParams.get('action') || 'submit';
     if (action === 'draft') action = 'profile';
     if (action === 'draft_save') action = 'save';
-    if (!['profile', 'answer', 'save', 'submit', 'shown', 'door_start', 'survey_get', 'survey_answer', 'admin_list', 'admin_get', 'finalize', 'review_list', 'review_decide', 'place_search', 'place_lead'].includes(action)) return json({ error: 'unknown_action' }, 400);
+    if (!['profile', 'answer', 'save', 'submit', 'shown', 'door_start', 'survey_get', 'survey_answer', 'admin_list', 'admin_get', 'finalize', 'review_list', 'review_decide', 'place_search', 'place_lead', 'preveg_readiness'].includes(action)) return json({ error: 'unknown_action' }, 400);
 
     const body = await req.json().catch(() => ({}));
     const token = body.token;
@@ -122,7 +122,7 @@ Deno.serve(async (req) => {
     const decoded = await verifyToken(token);
     if (!decoded) return json({ error: 'Invalid or expired token' }, 401);
     const memberId = decoded.sub;
-    const READ_ACTIONS = new Set(['profile', 'survey_get', 'admin_list', 'admin_get', 'review_list', 'place_search']);
+    const READ_ACTIONS = new Set(['profile', 'survey_get', 'admin_list', 'admin_get', 'review_list', 'place_search', 'preveg_readiness']);
     if (!READ_ACTIONS.has(action) && await standingBlocked(supabase, memberId)) return json(NOT_IN_GOOD_STANDING, 403);
 
     const state = async () => {
@@ -139,6 +139,13 @@ Deno.serve(async (req) => {
     }
     // A Guide's own survey (ve_surveys rows; 2026-11-03): the questions and a member's answers, and one answer at a time.
     // An account waiting on its Passport may answer a survey that admits; finishing it makes them a member.
+    // The Pre-Vegan readiness check (vegans-explore-initiative-business-certification B2/B3): a member's own private score,
+    // read from their pre-vegan-assessment answers. Self-reported advice, never a certification decision.
+    if (action === 'preveg_readiness') {
+      const { data, error } = await supabase.rpc('ve_preveg_readiness', { p_member: memberId });
+      if (error) throw new Error('preveg_readiness: ' + error.message);
+      return json({ ok: true, readiness: data });
+    }
     if (action === 'survey_get') {
       const { data, error } = await supabase.rpc('ve_survey_get', { p_survey: String(body.survey ?? ''), p_member: memberId });
       if (error) throw new Error('survey_get: ' + error.message);

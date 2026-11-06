@@ -4855,6 +4855,34 @@ where, so the playbook shows how to run the program again. **Work it from the pl
 D Launch, Parked; GATE steps block what follows); anything not in the queue is a new idea for Sean, never built quietly. The Pre-Vegan
 Restaurant Guide copies `guides/vegan-restaurant-guide.html` (template gate).
 
+## Pre-Vegan Certification: B1 to B3 (Sean, 2026-11-05, playbook `vegans-explore-initiative-business-certification`)
+
+Canon `canon-ve-pre-vegan-certification` v5. The standard (V1.2), the A-to-Z work queue and the earlier CLAUDE.md notes live on branch
+`claude/fervent-hamilton-fc48qo` (not on `main`); this section covers B1 to B3, built on `claude/inspiring-hypatia-ilwro1` (not on `main`).
+**Nothing is launched, sent or charged.**
+
+- **B1, the Verifier forms** (Claude Doc https://claude.ai/artifact/CPSYLTidahPfAWWQv2QXWG): Form A, the desk review (12 application checks,
+  12 checks for each dish, the outcome) and Form B, the visit (arrival, storage with a 3-invoice sample, watching each dish, two staff
+  questioned with 7 critical questions where one wrong critical answer fails G5, a channel spot check, the photo log, to the approver within 2
+  business days). The approver cannot overrule a Fail.
+- **B2, the pre-assessment** (migration `20261105_pre_vegan_assessment.sql`): survey `pre-vegan-assessment`, 27 questions (`pv_license` to
+  `pv_notes`, 0 points), `ve_preveg_rules` (95 rows: question, gate, value, score 0 to 2, blocker, advice; RLS on, no policies) and
+  `ve_preveg_readiness(member)` (answered, overall %, each gate's %, blockers, next steps, ready to apply = no blocker, all answered and every
+  gate at 75% or more). A multi-select answer scores as its worst tick; an unanswered question counts 0. **Private**: only the member reads it,
+  through `ve-mission-survey` `preveg_readiness` (v9). Never shown to anyone outside the team.
+- **B3, the Pre-Vegan Restaurant Guide** (migration `20261105_pre_vegan_guide.sql`; `guides/pre-vegan-restaurant-guide.html`,
+  `guide-scripts/pre-vegan-restaurant-guide.js`, copied from the Vegan Restaurant Guide, `noindex`): a free door Guide opened by finishing its
+  survey (`ve_guides.door`, `survey_slug`; the survey `admits`, so finishing makes them a member). Tabs: Overview, The stamp, How it works,
+  The 8 gates (`#/gates/g1..g8`), Start the check (guests); Your readiness and What's next (members). What's next has an **optional $11
+  contribution** (`/dashboard?contribute=1`) with the normal **1,100 welcome points** on a first payment (Sean: no double points); the page
+  says it has no effect on certification or the score. Liz's lines are text drafts. `survey.html` now sends a finished Guide survey to its
+  `guide_slug`. **Not launched**: `published` false and the survey `active` false until Sean says go.
+- **Webhook fix** (`ve-stripe-webhook` v64): a member who joined by a survey door gets the 1,100 welcome points on their first $11
+  (`!entry_paid_at`), where before it counted as a repeat contribution and paid none.
+- **Not proven live**: a real member reading their readiness, and a real first $11 granting the points (both tested in rolled-back transactions).
+- **Next (Logan)**: B4, the dish status registry and the QR status page. **Sean**: A4 the attorney, A2 the entity, approve Liz's lines and the
+  go to publish, both branch merges, the `ve_outreach_due` people-only guard, and whether invitation members also get 1,100 on a first $11.
+
 ## Venue Guides: Stadium & Arena and Airport (LOCKED by Sean 2026-10-28, playbook `ve-venue-guides`)
 
 Concept session with V, locked by Sean: "lock it, go with your defaults" (canon `canon-ve-venue-guides`). The Stadium & Arena
