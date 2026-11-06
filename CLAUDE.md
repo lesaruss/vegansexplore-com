@@ -1362,6 +1362,24 @@ building | done | set_aside, read, thread, playbook_slug, session_url, result_ur
 `session_url`, `result_url` and done (`set`). Proven live 2026-11-06 as Sean (upload, create and read with a screenshot in 7 s, a correction read
 again, approve, a second approve refused, a bad status and a bad file type refused, the page at 1440 and 390 px); the test idea is Set aside. On `main` since 12920c8.
 
+## Blueprint > Ideas, and one Blueprint (Sean, 2026-11-06, playbook `ve-feedback`)
+
+"Every idea goes through the Blueprint, and the Blueprint sends it to the right playbook or decides it needs its own." **BrandDesk > a brand >
+Blueprint > Ideas** (HQ `components/branddesk/IdeasView.tsx`, `app/api/branddesk/blueprint/ideas/route.ts`, `lib/blueprintIdeas.ts` with tests;
+tables `blueprint_ideas` and `blueprint_idea_events`, HQ migration `082_blueprint_ideas.sql`, RLS on, no policies; on HQ main b63cdb3, seen live
+2026-11-06 as the QA account at 1440 and 390 px): chips New, Sent, Own playbook, Parked, Declined, All, search, **Add an idea** (typed or spoken);
+one idea per view (`?b=ideas&pb=<id>`) with Logan's suggested home (`suggested_playbook`, `suggest_reason`, written from his session) and, for
+Sean's owner accounts only, **Send to a playbook** (a decision record plus a pending item under "From the Blueprint ideas" on its page, edited
+without a model; a page without the template markup gets the record only), **Make it its own playbook** (a page from the active template, an
+index row, Parked or Building), **Park it** (optional date), **Decline** (reason required), Open it again. Nothing is deleted. Not proven: the
+sort buttons (the QA account is not an owner). `ve-feedback` is the tweak queue again, titled Feedback; its ideas (Vegan House, the talent shop,
+the bounty rules) moved to Ideas as Parked. On 2026-11-06 the stale pass closed 122 items on Launch to January 1 and Chapters and Community
+Managers (Completed tab, "Closed in the stale pass, Nov 6, 2026", each labelled Done, Off or past, Replaced) and moved 27 more into 16 ideas; the
+pages before each change are in `zz_playbook_close_20261106` (drop it once Sean is happy). **Next (Sean, same morning): one Blueprint.** There
+are three idea places (this tab, Depot > Ideas with `ve_ideas` and the `idea-files` bucket, and the Blueprint's own build threads); Sean is
+merging them in one chat. The Blueprint is finite: build its main parts first, then it becomes the one idea capture, with uploads (screenshots,
+documents, voice memos) queued under New for Logan to sort. Handoff `docs/handoff/2026-11-06-ve-feedback-blueprint-ideas.md`.
+
 ## Wrap up (Sean, 2026-11-03, canon `canon-wrap-up-standard`)
 
 "When we leave this room, I don't want anything on the floor." On Sean's cue ("wrap up", about 70% context) Logan sweeps the session into the
