@@ -157,7 +157,7 @@ function showActivateModal(message){
   if(typeof global.VE_ACTIVATE_HANDLER==='function'){global.VE_ACTIVATE_HANDLER(message);return;}
   if(!_amInited){_buildActivateModal();_amInited=true;}
   var msg=document.getElementById('ve-pm-msg');
-  if(msg)msg.textContent=message||'$11, one time. Your Passport and the full community.';
+  if(msg)msg.textContent=message||'Membership is free. Take a short survey and you are in.';
   // A Guide's own survey (ve_surveys): a door Guide's gate sets sessionStorage ve_survey_for, so the free path is that Guide's survey.
   try{var sf=sessionStorage.getItem('ve_survey_for');var sl=document.getElementById('ve-pm-survey');if(sl)sl.setAttribute('href',sf&&/^[a-z0-9-]{1,60}$/.test(sf)?'/survey?s='+sf:'/survey?s=explorer');}catch(e){}
   var e=document.getElementById('ve-pm-error');if(e){e.textContent='';e.style.display='none';}
@@ -166,6 +166,9 @@ function showActivateModal(message){
   var fo=true;
   var pp=document.getElementById('ve-pm-passport');if(pp)pp.style.display=fo?'none':'';
   var bl=document.getElementById('ve-pm-benefits');if(bl)bl.style.display=fo?'':'none';
+  // Sean, 2026-11-07 (canon-ve-door-guides v12): the survey is the only way in. The $11 shows only for another brand's account that our server sent to checkout.
+  var fb=document.getElementById('ve-pm-founding-btn'),fh=document.getElementById('ve-pm-hint'),fd=document.getElementById('ve-pm-paydiv');
+  [fb,fh,fd].forEach(function(x){if(x)x.style.display=_needUrl?'':'none';});
   var modal=document.getElementById('ve-pledge-modal');
   if(modal){modal.style.display='flex';document.body.style.overflow='hidden';}
   // "Did someone send you?" (Sean, 2026-11-03): the sponsor's name, so the right member is credited when the link was lost.
@@ -210,22 +213,22 @@ el.id='ve-pledge-modal';el.setAttribute('role','dialog');el.setAttribute('aria-m
 el.innerHTML=
 '<div id="ve-pm-box">'+
 '<button id="ve-pm-close" aria-label="Close">x</button>'+
-'<h2 id="ve-pm-title">'+(VE_FOUNDING_OPEN?'Become a Founding Member':'Get your Passport')+'</h2>'+
-'<p id="ve-pm-msg">$11, one time. Your Passport and the full community.</p>'+
+'<h2 id="ve-pm-title">'+(VE_FOUNDING_OPEN?'Become a Founding Member':'Become a member')+'</h2>'+
+'<p id="ve-pm-msg">Membership is free. Take a short survey and you are in.</p>'+
 '<div id="ve-pm-error" role="alert"></div>'+
 '<ul id="ve-pm-benefits" style="display:none;">'+
-'<li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1f5f22"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Your Passport, with 1,100 welcome points</span></li>'+
+'<li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1f5f22"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Your membership, with 250 points for the survey</span></li>'+
 '<li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1f5f22"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Vote for your favorite listings in the Directory</span></li>'+
 '<li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1f5f22"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Your dashboard, to build your Vegan world with our tools</span></li>'+
-'<li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1f5f22"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Guides for $11 or 1,100 points, plus merchandise and event tickets</span></li>'+
+'<li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1f5f22"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Free Guides for your work, topic Guides for $11, and event tickets</span></li>'+
 '<li><svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="#1f5f22"/><path d="M5.5 10.4l3 3 6-6.4" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>For businesses: advertising, sponsorships and marketing services, only for members</span></li>'+
 '</ul>'+
 '<div id="ve-pm-ref"></div>'+
-'<button type="button" id="ve-pm-founding-btn">'+(VE_FOUNDING_OPEN?'Founding Membership':'Passport')+' - $11 one time</button>'+
-'<p id="ve-pm-hint">One time. It never renews.'+(VE_FOUNDING_OPEN?' <b>Founding Membership closes at midnight Eastern on January 1, 2027.</b> Join before then and Founding Member stays on your profile for good.':'')+'</p>'+
-'<div class="ve-pm-divider"><div class="ve-pm-divider-line"></div><span class="ve-pm-divider-text">or give us your time</span><div class="ve-pm-divider-line"></div></div>'+
-'<a id="ve-pm-survey" href="/survey?s=explorer" style="display:block;text-align:center;padding:13px;border:1.5px solid rgba(0,0,0,0.2);border-radius:6px;color:#1a1a1a;font:800 12px Montserrat,sans-serif;letter-spacing:0.06em;text-transform:uppercase;text-decoration:none;">Take the survey instead - free</a>'+
-'<p style="margin:8px 0 0;font-size:11px;color:#595959;text-align:center;line-height:1.5;font-family:Montserrat,sans-serif;">Answer the whole profile and your membership opens when you finish, with the survey\'s 250 points. The $11 comes with 1,100.'+(VE_FOUNDING_OPEN?' Either way, join before the deadline and you are a Founding Member.':'')+'</p>'+
+'<a id="ve-pm-survey" href="/survey?s=explorer" style="display:block;text-align:center;padding:14px;background:#22C55E;border-radius:6px;color:#03170a;font:800 12px Montserrat,sans-serif;letter-spacing:0.08em;text-transform:uppercase;text-decoration:none;">Take the survey - free</a>'+
+'<p style="margin:8px 0 0;font-size:11px;color:#595959;text-align:center;line-height:1.5;font-family:Montserrat,sans-serif;">About two minutes. Your membership opens when you finish, with 250 points.'+(VE_FOUNDING_OPEN?' <b>Join before midnight Eastern on January 1, 2027</b> and Founding Member stays on your profile for good.':'')+'</p>'+
+'<div id="ve-pm-paydiv" class="ve-pm-divider" style="display:none"><div class="ve-pm-divider-line"></div><span class="ve-pm-divider-text">or finish your Passport</span><div class="ve-pm-divider-line"></div></div>'+
+'<button type="button" id="ve-pm-founding-btn" style="display:none">Passport - $11 one time</button>'+
+'<p id="ve-pm-hint" style="display:none">One time. It never renews.</p>'+
 '<div id="ve-pm-passport">'+
 '<div class="ve-pm-divider"><div class="ve-pm-divider-line"></div><span class="ve-pm-divider-text">or go further with Passport</span><div class="ve-pm-divider-line"></div></div>'+
 '<button type="button" id="ve-pm-member-btn" class="ve-pm-secondary">Passport - $11/mo</button>'+
@@ -267,7 +270,7 @@ var _modalCb=null,_modalInited=false,_gBtnInited=false;
 // "Create a free Passport...", "Create your account first...", etc.) pass
 // 'signup' so the modal opens on the create-account tab instead of making
 // a brand-new visitor land on sign-in by default.
-function showAuthModal(message,onSuccess,mode){if(!onSuccess&&quietPickup(mode==='signup'?'signup':'login'))return;_modalCb=onSuccess||null;if(!_modalInited){_buildModal();_modalInited=true;}var msg=document.getElementById('ve-am-msg');if(msg)msg.textContent=message||'Sign in to your Passport, or get yours to continue.';_setAuthMode(mode==='signup'?'signup':'login');var modal=document.getElementById('ve-auth-modal');if(modal){modal.style.display='flex';document.body.style.overflow='hidden';}_loadGSI(function(){if(!_gBtnInited){var el=document.getElementById('ve-am-google-btn');if(el)_initGBtn(el);}});}
+function showAuthModal(message,onSuccess,mode){if(!onSuccess&&quietPickup(mode==='signup'?'signup':'login'))return;_modalCb=onSuccess||null;if(!_modalInited){_buildModal();_modalInited=true;}var msg=document.getElementById('ve-am-msg');if(msg)msg.textContent=message||'Sign in, or join free to continue.';_setAuthMode(mode==='signup'?'signup':'login');var modal=document.getElementById('ve-auth-modal');if(modal){modal.style.display='flex';document.body.style.overflow='hidden';}_loadGSI(function(){if(!_gBtnInited){var el=document.getElementById('ve-am-google-btn');if(el)_initGBtn(el);}});}
 function hideAuthModal(){var m=document.getElementById('ve-auth-modal');if(m){m.style.display='none';document.body.style.overflow='';}var e=document.getElementById('ve-am-error');if(e){e.textContent='';e.style.display='none';}}
 function _onSuccess(){hideAuthModal();if(_modalCb)_modalCb();else location.reload();}
 function _showErr(msg){var e=document.getElementById('ve-am-error');if(e){e.textContent=msg;e.style.display='block';}}
@@ -282,7 +285,7 @@ hideAuthModal();
 // 2026-09-17, same bug as the email path: the field was missing from the
 // insert/lookup .select(), so this check always silently failed before).
 if(d.member&&d.member.membership_status==='pending_payment'){
-showActivateModal('One step left: your Passport. It is $11, one time, with 1,100 welcome points, and your account opens once it is paid.');
+showActivateModal('One step left: a short survey. It is free, about two minutes, and your membership opens when you finish.');
 }else if(_modalCb){_modalCb();}else{location.reload();}
 }).catch(function(){_showErr('Something went wrong. Please try again.');});}});window.google.accounts.id.renderButton(el,{type:'standard',shape:'rectangular',theme:'outline',text:'continue_with',size:'large',width:el.offsetWidth||336});_gBtnInited=true;}
 // Login/Create-Account are two tabs on the SAME modal (2026-08-19, V direction:
@@ -312,13 +315,13 @@ function _setAuthMode(mode){
   if(pwInput)pwInput.setAttribute('autocomplete',isSignup?'new-password':'current-password');
   var submit=document.getElementById('ve-am-submit');
   if(submit)submit.textContent=isSignup?_signupLabel():'Sign In';
-  var tab=document.getElementById('ve-am-tab-signup');if(tab)tab.textContent=_ownJoin()?'Create Account':'Get your Passport';
+  var tab=document.getElementById('ve-am-tab-signup');if(tab)tab.textContent=_ownJoin()?'Create Account':'Join free';
   _clearErr();
 }
 // A page that finishes the join itself (an invitation, a dinner seat, a Guide's own $11) sets VE_ACTIVATE_HANDLER; everywhere
 // else, making the account goes straight on to the Passport's checkout, so the button says so.
 function _ownJoin(){return typeof global.VE_ACTIVATE_HANDLER==='function';}
-function _signupLabel(){return _ownJoin()?'Create Account':'Continue to checkout';}
+function _signupLabel(){return _ownJoin()?'Create Account':'Continue to the survey';}
 function _buildModal(){
 var s=document.createElement('style');
 s.textContent=
@@ -354,10 +357,10 @@ el.innerHTML=
 '<button id="ve-am-close" aria-label="Close">x</button>'+
 '<div id="ve-am-logo"><img src="/public/logo-ve-landscape-v1.svg" alt="VEGANS EXPLORE"></div>'+
 '<h2 id="ve-am-title">Welcome Back</h2>'+
-'<p id="ve-am-msg">Sign in to your Passport.</p>'+
+'<p id="ve-am-msg">Sign in to Vegans Explore.</p>'+
 '<div id="ve-am-tabs" role="tablist">'+
 '<button type="button" id="ve-am-tab-login" class="ve-am-tab active" role="tab" aria-selected="true">Sign In</button>'+
-'<button type="button" id="ve-am-tab-signup" class="ve-am-tab" role="tab" aria-selected="false">Get your Passport</button>'+
+'<button type="button" id="ve-am-tab-signup" class="ve-am-tab" role="tab" aria-selected="false">Join free</button>'+
 '</div>'+
 '<div id="ve-am-error" role="alert"></div>'+
 '<div id="ve-am-google-wrap"><div id="ve-am-google-btn"></div></div>'+LESARUSS_NOTE+
@@ -392,7 +395,7 @@ btn.disabled=false;btn.textContent=_signupLabel();
 if(d.error){_showErr(d.error);return;}
 hideAuthModal();
 if(d.member&&d.member.membership_status==='pending_payment'){
-showActivateModal('One step left: your Passport. It is $11, one time, with 1,100 welcome points, and your account opens once it is paid.');
+showActivateModal('One step left: a short survey. It is free, about two minutes, and your membership opens when you finish.');
 }else if(_modalCb){_modalCb();}else{location.reload();}
 }).catch(function(){btn.disabled=false;btn.textContent=_signupLabel();_showErr('Something went wrong. Please try again.');});
 return;
@@ -403,7 +406,7 @@ login(email,pw).then(function(d){
 btn.disabled=false;btn.textContent='Sign In';
 if(d.error){_showErr(d.error);return;}
 // An account that never paid signs in to its Passport checkout, not to the site.
-if(isPending(d.member)){hideAuthModal();showActivateModal('Your account is waiting on its Passport. It is $11, one time, with 1,100 welcome points, and your account opens once it is paid.');return;}
+if(isPending(d.member)){hideAuthModal();showActivateModal('One step left: a short survey. It is free, about two minutes, and your membership opens when you finish.');return;}
 _onSuccess();
 }).catch(function(){btn.disabled=false;btn.textContent='Sign In';_showErr('Something went wrong. Please try again.');});
 });}

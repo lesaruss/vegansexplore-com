@@ -92,7 +92,7 @@
       var picks = (runs || []).filter(function (k) { return GUIDE_FOR[k]; });
       return '<h2 class="vgs-q">Thanks.</h2><p class="vgs-h">' + (pendingAcct ? 'You are in. Your membership is open and your points are in.' : 'Your points are in.') + '</p>' +
         picks.map(function (k) { return '<p class="vgs-h">' + GUIDE_FOR[k][1] + ' opens with its own short survey, with up to 250 more points. <a style="color:#1f5f22;font-weight:800" href="/survey?s=' + GUIDE_FOR[k][0] + '">Take it</a></p>'; }).join('') +
-        (claimBack() ? '<p><a class="vgs-b" href="/claim?listing=' + encodeURIComponent(claimBack()) + '">Finish claiming your page</a></p>' : '<p><a class="vgs-b" href="/dashboard">Open your dashboard</a></p>');
+        (claimBack() ? (claimBack() === '_add_' ? '<p><a class="vgs-b" href="/claim?add=1">Finish adding your business</a></p>' : '<p><a class="vgs-b" href="/claim?listing=' + encodeURIComponent(claimBack()) + '">Finish claiming your page</a></p>') : '<p><a class="vgs-b" href="/dashboard">Open your dashboard</a></p>');
     }
     VEGuideSurvey.mount($('host'), {
       survey: slug,

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Join the Directory — Vegans Explore</title>
 <script src="/public/ve-brand.js"></script>
-  <meta name="description" content="Any Vegan business, anywhere: find yours in the Vegans Explore Directory and claim it, or add it. $11 locks it in.">
+  <meta name="description" content="Any Vegan business, anywhere: find yours in the Vegans Explore Directory and claim it, or add it. Free for members.">
   <link rel="icon" href="/public/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -354,19 +354,21 @@
           (o.text ? '<span class="plan-text">' + o.text + '</span>' : '') +
           '<ul class="ticks">' + o.ticks.map(function (t) { return '<li>' + t + '</li>'; }).join('') + '</ul></label>';
       }
-      function partnerCard(name) {
+      function partnerCard(name, checked) {
         var guide = isBrand() ? 'Maya, your Guide, on your page' : 'Liz, your Guide, on your Partner Dashboard' + COMING;
         return planCard(name, 'brand', { lead: 'The full experience', title: (frontRow() ? 'Front Row Start: ' : '') + pName(),
           price: '$' + PT.first + ' today', sub: 'then $111 every 111 days, from ' + PT.renews,
           text: partnerNow() + ' Then $111 a period, renewing with every Partner on ' + PT.renews + '. Cancel any time.',
           ticks: ['Everything in the membership: your page, your dashboard and your numbers',
             'A front-row seat on every campaign before it opens: game days, the Plant-Based Showcase, community nights', guide,
-            'Ads placed for you on our pages', 'A campaign manager who works with you', 'Founding Member of Vegans Explore'] }, true);
+            'Ads placed for you on our pages', 'A campaign manager who works with you', 'Founding Member of Vegans Explore'] }, checked !== false);
       }
       function mediaCard() {
-        return planCard('plan', 'member', { lead: 'Free for members', title: 'Claim it free', price: 'Free', sub: 'with your membership',
-          text: isActiveMember() ? 'You are a member, so claiming this page is free.' : 'Members claim their show, channel or outlet free. Not a member yet? Take the two-minute survey, free, then come back here.',
-          ticks: ['Your page, claimed and yours to keep current', 'Your dashboard: who visits and what they do next', 'We check it is really you before it is yours'] }, true);
+        // Sean, 2026-11-07 (canon-ve-door-guides v12): claiming or adding any listing is free for members; membership is the survey.
+        var add = MODE === 'add';
+        return planCard('plan', 'member', { lead: 'Free for members', title: add ? 'Add it free' : 'Claim it free', price: 'Free', sub: 'with your membership',
+          text: isActiveMember() ? 'You are a member, so ' + (add ? 'adding your business' : 'claiming this page') + ' is free.' : 'Membership is free with a two-minute survey. Take it, then come back here and ' + (add ? 'add your business.' : 'claim your page.'),
+          ticks: [add ? 'Your page in the Directory, once we approve it' : 'Your page, claimed and yours to keep current', 'Your dashboard: who visits and what they do next', 'We check it is really you before it is yours'] }, true);
       }
       function memberCard() {
         return planCard('plan', 'claim', { lead: 'Your page and your dashboard', title: 'Become a member', price: 'From $11', sub: 'one time',
@@ -414,7 +416,7 @@
         var keep = document.querySelector('input[name=plan]:checked'), keepU = document.querySelector('input[name=uplan]:checked');
         keep = keep && keep.value; keepU = keepU && keepU.value;
         var passport = !isBrand() && MODE !== 'add' && PASSPORT && !full;
-        $('plans').innerHTML = isMedia() ? mediaCard() : partnerCard('plan') + (passport ? passportCards('plan', f) : '') + pointsCard() + memberCard();
+        $('plans').innerHTML = isMedia() ? mediaCard() : mediaCard() + partnerCard('plan', false) + (passport ? passportCards('plan', f) : '');
         $('up-plans').innerHTML = partnerCard('uplan') + (isBrand() || full ? '' : passportCards('uplan', f));
         var note = !f || isBrand() ? '' : full ? 'Founding Passport spots in ' + OFFER.hub_name + ' are full for now. Email hello@vegansexplore.com and we will let you know when a spot opens.'
           : 'Founding Passport spots in ' + OFFER.hub_name + ': the Passport Challenge launches there in 2027. Reserve now and pay nothing until your first Challenge month starts; your founding price stays locked as long as you stay.';
@@ -439,7 +441,7 @@
         var p = plan(), f = founding() && /^(verified|plus)$/.test(p);
         $('amount-card').hidden = p !== 'claim';
         $('c-guarantee').hidden = !/^(verified|plus)$/.test(p);
-        $('go').textContent = VB ? 'Continue to secure checkout' : p === 'member' ? (isActiveMember() ? 'Claim it free' : 'Take the two-minute survey') : p === 'points' ? (MODE === 'add' ? 'Submit with 1,100 points' : 'Claim with 1,100 points') : p === 'claim' ? 'Become a member' : f ? 'Reserve my founding spot' : p === 'brand' && frontRow() ? 'Take my front-row seat' : 'Continue to secure checkout';
+        $('go').textContent = VB ? 'Continue to secure checkout' : p === 'member' ? (isActiveMember() ? (MODE === 'add' ? 'Add it free' : 'Claim it free') : 'Take the two-minute survey') : p === 'points' ? (MODE === 'add' ? 'Submit with 1,100 points' : 'Claim with 1,100 points') : p === 'claim' ? 'Become a member' : f ? 'Reserve my founding spot' : p === 'brand' && frontRow() ? 'Take my front-row seat' : 'Continue to secure checkout';
         $('go-note').textContent = checkoutNote(p, f);
         var u = uplan(), uf = founding() && /^(verified|plus)$/.test(u);
         $('up-go').textContent = uf ? 'Reserve my founding spot' : u === 'brand' && frontRow() ? 'Take my front-row seat' : 'Continue to secure checkout';
@@ -685,9 +687,9 @@
           }).catch(function () { $('go').disabled = false; bad('Could not connect. Please try again.'); });
           return;
         }
-        if (p === 'member' && !isActiveMember()) { saveDraft(); try { sessionStorage.setItem('ve_claim_after_survey', L.slug); } catch (e) {} location.href = '/survey?s=explorer'; return; }
+        if (p === 'member' && !isActiveMember()) { saveDraft(); try { sessionStorage.setItem('ve_claim_after_survey', add ? '_add_' : L.slug); } catch (e) {} location.href = '/survey?s=explorer'; return; }
         $('go').disabled = true; $('msg').className = 'msg'; $('msg').textContent = p === 'member' ? 'Claiming your page...' : p === 'points' ? (add ? 'Submitting your listing...' : 'Claiming your page...') : p === 'claim' ? 'Taking you to the secure contribution page...' : 'Taking you to the secure checkout...';
-        if (add && p !== 'claim' && p !== 'brand' && p !== 'points') p = 'brand';
+        if (add && p !== 'claim' && p !== 'brand' && p !== 'points' && p !== 'member') p = 'brand';
         saveDraft();
         var body = add ? { action: 'listing_apply', pay: p === 'points' ? 'points' : undefined, tier: p === 'brand' ? 'brand' : undefined, offer: p === 'brand' && frontRow() ? 'front-row' : undefined,
             amount_cents: p === 'claim' ? Math.round(amount * 100) : undefined, return_url: location.origin + '/claim?add=1', business: {

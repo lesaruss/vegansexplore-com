@@ -4582,6 +4582,8 @@ function renderListing(l){
             verifiedBadge+
             // A Nonprofit Partner (Sean, 2026-10-29; listings.tags ve-nonprofit-partner while the partnership is active).
             ((l.tags||[]).indexOf('ve-nonprofit-partner')>=0 ? '<span class="badge-subcat" style="color:#ffd27a;border-color:#ffd27a">Nonprofit Partner</span>' : '')+
+            // The business badge its owner's intake set (canon-ve-business-badges, 2026-11-07); 100% Vegan only after our team checked it.
+            (function(){ var t=l.tags||[], b=t.indexOf('ve-badge-vegan')>=0?'100% Vegan badge':t.indexOf('ve-badge-plant-based')>=0?'100% Plant-based badge':t.indexOf('ve-badge-pre-vegan')>=0?'Pre-Vegan badge':''; return b&&!VB ? '<span class="badge-subcat" style="color:#ffffff;border-color:#ffffff" title="Set by the owner\'s own answers'+(b.indexOf('100% Vegan')===0?', checked by our team':'')+'">'+b+'</span>' : ''; })()+
           '</div>'+
           (l.tagline || (person && personOf(l).title) ? '<p class="listing-tagline">'+esc(l.tagline || personOf(l).title)+'</p>' : '')+
         '</div>'+

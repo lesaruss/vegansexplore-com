@@ -76,8 +76,17 @@ Deno.serve(async (req) => {
     const { data: me } = await db.from('members').select('id, name, is_superadmin, standing, member_class').eq('id', who).maybeSingle();
     if (!me?.is_superadmin || (me.standing && me.standing !== 'good')) return json({ error: 'no_access' }, 403);
     const viewOnly = me.member_class === 'agent';
-    const READS = ['list', 'get', 'listing_find'];
+    const READS = ['list', 'get', 'listing_find', 'adoption'];
     if (!READS.includes(action) && viewOnly) return json({ error: 'view_only' }, 403);
+
+    // Guide adoption (canon v9): counts only, never a named restaurant's score. days: 30 | 90 | 0 (all time).
+    if (action === 'adoption') {
+      const days = [30, 90].includes(Number(b.days)) ? Number(b.days) : 0;
+      const from = days ? new Date(Date.now() - days * 86400000).toISOString() : null;
+      const { data, error } = await db.rpc('ve_preveg_adoption', { p_from: from, p_to: null });
+      if (error) return json({ error: 'adoption_failed' }, 500);
+      return json({ ok: true, days, adoption: data });
+    }
 
     if (action === 'list') {
       await rpc('ve_preveg_expire_sweep');

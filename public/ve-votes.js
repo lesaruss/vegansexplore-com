@@ -149,33 +149,33 @@
   function here() { return location.pathname + location.search + location.hash; }
   // A members-only action, signed out: why, then Explore the Passport (from= tells the Passport Guide which note to show).
   var GATES = {
-    vote: { icon: 'heart', title: 'Voting is for Passport holders',
-      body: 'Member votes decide which places lead every list. With your Passport, <b>$11 one time</b>, you can vote for the places you love every day, check in, earn points and unlock the Guides.' },
-    save: { icon: 'bookmark', title: 'Saving is for Passport holders',
-      body: 'Save the places you love to My list and find them again from your dashboard. With your Passport, <b>$11 one time</b>, you can also vote every day, check in, earn points and unlock the Guides.' },
-    checkin: { icon: 'pin', title: 'Check-ins are for Passport holders',
-      body: 'Check in when you visit a place and earn <b>10 points</b> a visit, and your check-ins show the community the place is open. With your Passport, <b>$11 one time</b>, you can also vote every day, save places and unlock the Guides.' },
+    vote: { icon: 'heart', title: 'Voting is for members',
+      body: 'Member votes decide which places lead every list. Join free with a short survey and you can vote for the places you love every day, check in, earn points and unlock the Guides.' },
+    save: { icon: 'bookmark', title: 'Saving is for members',
+      body: 'Save the places you love to My list and find them again from your dashboard. Join free with a short survey and you can also vote every day, check in, earn points and unlock the Guides.' },
+    checkin: { icon: 'pin', title: 'Check-ins are for members',
+      body: 'Check in when you visit a place and earn <b>10 points</b> a visit, and your check-ins show the community the place is open. Join free with a short survey and you can also vote every day, save places and unlock the Guides.' },
     // The Daily Pulse board (Sean, 2026-10-26: "you have to be a member in order to reply or comment... it should give
     // them that pop-up"), from=board on the Passport Guide.
-    post: { icon: 'chat', from: 'board', title: 'Posting is for Passport holders',
-      body: 'Anyone can read the Daily Pulse. Members post to their city\'s board: classifieds, fosters, rescues and topic ideas. Your Passport is <b>$11 one time</b> and comes with <b>1,100 welcome points</b>.' },
-    comment: { icon: 'chat', from: 'board', title: 'Comments are for Passport holders',
-      body: 'Every Daily Pulse briefing and every post has a conversation under it, and members are the ones talking. Your Passport, <b>$11 one time</b>, lets you comment, post and reach people directly.' },
-    contact: { icon: 'chat', from: 'board', title: 'Contact details are for Passport holders',
-      body: 'People share how to reach them with members only, so the board stays safe. Your Passport, <b>$11 one time</b>, shows contact details and lets you comment and post.' },
-    report: { icon: 'chat', from: 'board', title: 'Reports come from Passport holders',
-      body: 'Members keep the board safe: a report goes to your city\'s Community Manager. Your Passport is <b>$11 one time</b>.' },
-    job: { icon: 'briefcase', from: 'board', title: 'Jobs are for Passport holders',
-      body: 'Members post when they are looking for work, and businesses in the Directory post their openings: hiring is one of the perks of a listed business. Your Passport is <b>$11 one time</b>.' },
+    post: { icon: 'chat', from: 'board', title: 'Posting is for members',
+      body: 'Anyone can read the Daily Pulse. Members post to their city\'s board: classifieds, fosters, rescues and topic ideas. Membership is <b>free</b> with a short survey.' },
+    comment: { icon: 'chat', from: 'board', title: 'Comments are for members',
+      body: 'Every Daily Pulse briefing and every post has a conversation under it, and members are the ones talking. Membership, <b>free</b> with a short survey, lets you comment, post and reach people directly.' },
+    contact: { icon: 'chat', from: 'board', title: 'Contact details are for members',
+      body: 'People share how to reach them with members only, so the board stays safe. Membership, <b>free</b> with a short survey, shows contact details and lets you comment and post.' },
+    report: { icon: 'chat', from: 'board', title: 'Reports come from members',
+      body: 'Members keep the board safe: a report goes to your city\'s Community Manager. Membership is <b>free</b> with a short survey.' },
+    job: { icon: 'briefcase', from: 'board', title: 'Jobs are for members',
+      body: 'Members post when they are looking for work, and businesses in the Directory post their openings: hiring is one of the perks of a listed business. Membership is <b>free</b> with a short survey.' },
     // Members-only tickets (Sean, 2026-10-28, the Dolphins game: "this is a member-only event. You must be a member in order to
     // access the tickets"): an event whose tickets come through our group link, opened signed out.
     tickets: { icon: 'ticket', title: 'This is a members-only event',
-      body: 'Tickets come through our Vegans Explore group link, and you must be a member to get them. Your Passport is <b>$11 one time</b> and comes with <b>1,100 welcome points</b>. Join, and we take you straight to the tickets.' },
+      body: 'Tickets come through our Vegans Explore group link, and you must be a member to get them. Membership is <b>free</b> with a short survey. Join, and we take you straight to the tickets.' },
     // A group (Sean, 2026-10-29): joining one, and getting its announcements, is for members.
-    group: { icon: 'heart', title: 'Groups are for Passport holders',
-      body: 'Join any group, in any city: its events, its announcements and its people. Your Passport is <b>$11 one time</b> and comes with <b>1,100 welcome points</b>.' },
-    give: { icon: 'gift', title: 'Giving points is for Passport holders',
-      body: 'Members earn points by taking part, and can give them to the businesses and nonprofits they love as a boost (never money). Your Passport, <b>$11 one time</b>, comes with <b>1,100 welcome points</b>, so you can give from day one.' }
+    group: { icon: 'heart', title: 'Groups are for members',
+      body: 'Join any group, in any city: its events, its announcements and its people. Membership is <b>free</b> with a short survey.' },
+    give: { icon: 'gift', title: 'Giving points is for members',
+      body: 'Members earn points by taking part, and can give them to the businesses and nonprofits they love as a boost (never money). Membership is <b>free</b> with a short survey, and the survey starts you with 250 points to give.' }
   };
   // o.signedIn: they are signed in but not a member yet, so no Sign in line. Inside a frame (the dashboard window) the
   // links open in the whole window.
@@ -191,7 +191,7 @@
       // and sign-in, in its own words; Vegans Explore sets none.
       // A brand that signs in with LESARUSS shows Sign in as its own button beside the Passport (Sean, 2026-10-29: on lesaruss.ai
       // "I don't see how to log in"), with Not now under them; Vegans Explore keeps Not now beside and Sign in under.
-      actions: '<a class="ve-vm-btn ve-vm-go"' + top + ' href="' + (VB.passportUrl ? VB.passportUrl + (VB.passportUrl.indexOf('?') < 0 ? '?' : '&') + 'from=' + from + '&back=' + back : '/passport?from=' + from + '&back=' + back) + '">' + (VB.passportLabel || 'Explore the Passport') + '</a>' +
+      actions: '<a class="ve-vm-btn ve-vm-go"' + top + ' href="' + (VB.passportUrl ? VB.passportUrl + (VB.passportUrl.indexOf('?') < 0 ? '?' : '&') + 'from=' + from + '&back=' + back : '/passport?from=' + from + '&back=' + back) + '">' + (VB.passportLabel || 'Join free') + '</a>' +
                (VB.signIn === 'lesaruss' && !o.signedIn
                  ? '<button type="button" class="ve-vm-btn ve-vm-alt" data-ve-lesaruss="' + here().replace(/"/g, '&quot;') + '">Sign in with LESARUSS</button>'
                  : '<button type="button" class="ve-vm-btn ve-vm-alt" data-vm-close>Not now</button>'),
