@@ -28,6 +28,7 @@ const TRASH = new Set([
   '/admin/depot/challenges', '/admin/depot/challenge', '/admin/depot/challenge-card', '/admin/depot/challenge-kit',
   '/admin/depot/pulse', '/admin/depot/pulse-cities', '/admin/depot/verified', '/admin/depot/logos', '/admin/depot/tours',
   '/admin/depot/services', '/admin/depot/dinners', '/admin/depot/narration', '/dashboard/guest-reviews',
+  '/admin/depot/social', '/admin/depot/playbooks', '/admin/depot/business-outreach',
 ]);
 
 function b64d(s: string): Uint8Array { const pad = s.length % 4 === 0 ? '' : '='.repeat(4 - (s.length % 4)); const bin = atob(s.replace(/-/g, '+').replace(/_/g, '/') + pad); const o = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) o[i] = bin.charCodeAt(i); return o; }
@@ -84,7 +85,7 @@ Deno.serve(async (req) => {
 
   if (b.action === 'pin_set') {
     const href = typeof b.href === 'string' ? b.href : '';
-    if (!/^\/[a-z0-9\/#?=&_-]{1,160}$/i.test(href)) return json({ error: 'bad_href' }, 400);
+    if (!/^(\/|https:\/\/hq\.lesaruss\.ai\/)[a-z0-9\/#?=&_.-]{1,160}$/i.test(href)) return json({ error: 'bad_href' }, 400);
     const all = await pinsAll();
     const mine = (all[me] || []).filter((h) => h !== href);
     if (b.pinned === true) { if (mine.length >= 40) return json({ error: 'too_many' }, 400); mine.push(href); }

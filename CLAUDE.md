@@ -1485,7 +1485,17 @@ People in BrandDesk.
 **Where each lives (Sean, 2026-11-07, "I totally agree"; replaces the pass-through plan above):** BrandDesk lives only in HQ (`hq.lesaruss.ai/branddesk`);
 Vegans Explore links to it (a button that opens HQ in a new tab, signed in through the LESARUSS connector), because BrandDesk is the step up for the
 higher tier, closer to the source. The Depot lives only in Vegans Explore: it is the platform's back office on this site's database; the relationship
-tools still move to BrandDesk one at a time. No pass-through, no iframe, no two-door sync. To check before promising automatic sign-in: Vegans Explore
+tools still move to BrandDesk one at a time. No pass-through, no iframe, no two-door sync. **Depot clean-up (Sean, 2026-11-07: "make sure they don't touch the BrandDesk... old, inferior versions of what we've built"):** the
+Depot's copies of what BrandDesk already does are in the trash bin (still working by address, restorable): Social, Playbooks and Business outreach
+(BrandDesk > People has Roster, Campaigns, Cities and Send days). A **BrandDesk** section on the Depot home opens those BrandDesk rooms in HQ in a new
+tab (`kind: 'hq'` in `TABS`). Nothing in HQ was changed. Still in Moving to BrandDesk because BrandDesk has no version yet: People, Outreach (the
+personal message queue, `ve_people_outreach`), the partner and invite consoles, Members, Leads, Role applications, Links, Analytics (Insights lacks the
+chapter ranking, Guide tabs and Google costs), Community Insights, Platform health, BrandDesk clients (onboarding, Library, check-ins, rotation).
+The podcast stays in BrandDesk; its platform side (content index, Books, the Pulse's episode pages) stays in Depot > Content.
+**Depot home extras (2026-11-07):** **My list** (a star on every tool; `ve-depot` `pin_set`, `ve_site_settings` `depot_pins`, per account), Logos back
+inside Directory, a thumbnail on every tool (demos: `public/depot/demos/`, the public pages taken signed out; admin tools: live captures in the private
+bucket `depot-thumbs`, `tools/<slug>.jpg`, handed to super admins as one-hour links by `ve-depot` `home`; never put admin captures in the repo), each
+tool's own waiting count, and the Guide banners on the Guides section. To check before promising automatic sign-in: Vegans Explore
 to HQ needs a one-time code exchange (the reverse of `ve-lesaruss-sso`); not built. **Next: the two tours** (Depot, V; BrandDesk, V, on the existing
 `lib/branddeskTours.ts` in lesaruss-hq, which has only the People tour so far), each as a video per `canon-ve-guide-tour-standard` v3.
 
