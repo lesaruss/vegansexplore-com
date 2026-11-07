@@ -317,15 +317,18 @@ Deno.serve(async (req) => {
     const runId = typeof body.run_id === 'string' && /^[a-z0-9-]{4,40}$/.test(body.run_id) ? body.run_id : 'h' + Date.now().toString(36);
     await db.from('ve_logo_hunts').upsert(ids.map((id: string) => ({ run_id: runId, listing_id: id, status: 'queued' })), { onConflict: 'run_id,listing_id', ignoreDuplicates: true });
     const batches: string[][] = []; for (let i = 0; i < ids.length; i += 5) batches.push(ids.slice(i, i + 5));  // 5 a group: with the Facebook search and the browser, 10 ran past the background time limit
-    // @ts-ignore EdgeRuntime is the Supabase runtime's
-    EdgeRuntime.waitUntil((async () => { for (const b of batches) await runBatch(runId, b); })());
+    // Each group is its own call to this function (action batch), so each gets its own background time limit.
+    const self = `${SUPABASE_URL}/functions/v1/ve-logo-hunt`;
+    const hdr = { 'Content-Type': 'application/json', 'Authorization': req.headers.get('authorization') || '', 'x-ops-token': token };
+    await Promise.all(batches.map((b) => fetch(self, { method: 'POST', headers: hdr, body: JSON.stringify({ action: 'batch', run_id: runId, listing_ids: b }) }).catch(() => null)));
     return json({ ok: true, run_id: runId, listings: ids.length });
   }
   if (body.action === 'batch') {
     // one batch in the foreground (up to 10), for a run already started
     const ids = (Array.isArray(body.listing_ids) ? body.listing_ids : []).slice(0, 10);
-    await runBatch(String(body.run_id || ''), ids);
-    return json({ ok: true });
+    // @ts-ignore EdgeRuntime is the Supabase runtime's
+    EdgeRuntime.waitUntil(runBatch(String(body.run_id || ''), ids));
+    return json({ ok: true, started: ids.length });
   }
   if (body.action === 'status') {
     const { data } = await db.from('ve_logo_hunts').select('listing_id, status, verdict, confidence, sources_agree, why, error').eq('run_id', String(body.run_id || ''));
