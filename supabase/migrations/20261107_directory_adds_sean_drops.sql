@@ -1,0 +1,15 @@
+-- ve-feedback: Directory adds from Sean's drops (2026-11-07). Record only: these rows were written live through the connector the same
+-- day; running this again would duplicate nothing harmful only if the guards below hold.
+-- 1. Craving Lisa's Compassionate Cuisine: new Food Trucks listing, 100% Vegan (Google type vegan_restaurant), Port Richey FL, chapter
+--    central-florida set by hand (Port Richey is not in CF's city list). slug craving-lisas-compassionate-cuisine, id bdb53731-1e7e-4dbf-9169-01349f3e3a41.
+-- 2. Natuurlik (cd0c1596-b830-4e6a-b57a-dde58d532e5f): moved from Boynton Beach to 1301 10th St Suite #6, Lake Park FL 33403, Google place
+--    ChIJSRtNXD7V2IgRn6sduGB-dL4, phone (561) 507-7117, OPERATIONAL, hours cleared (unknown), a ve_listing_edits row (field location),
+--    41 ve_menu_items from Sean's takeout menu screenshot (source import, checked_at 2026-11-07, so they show 35 days). Duplicate
+--    natuurlik-vegan-restaurant-boynton-beach (0f8dff60-...) merged into it (status rejected, details.merged_into).
+-- 3. MyForest Foods: new Food Brands listing, product_kinds meat, every chapter, fully_vegan. slug myforest-foods.
+-- 4. WildKind Packaging: ve_suppliers row, domain packaging, label plant_material. slug wildkind-packaging.
+-- 5. Vegan Squad Retreat: approved event c80c68ab-8ad8-4218-bd96-5f474da4e64c, Jan 29 to Feb 1 2027, Orange Springs Retreat Center,
+--    host Vegan Squad (b6282724-...), category health, ticket vegansquadcoaching.com/retreat. Orange Springs is in no chapter's eventCities.
+-- Not added: The Pop Up NYC (Vegan Pop Eats, Nov 10): Eventbrite marks it Cancelled.
+-- Google: once:directory-adds-2026-11-07, 3 text searches, closed.
+select 1;
