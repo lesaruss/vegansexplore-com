@@ -3,6 +3,10 @@
 // POST { action: 'home' }                          -> { counts, restored }   the numbers on the home's tiles (ve_depot_counts) and
 //                                                      the retired tools Sean has put back.
 // POST { action: 'trash_set', href, restored }     -> { restored }           restore a retired tool (true) or retire it again (false).
+// POST { action: 'pin_set', href, pinned }          -> { pins }               My list (Sean, 2026-11-07): star a tool so it sits in My
+//                                                      list on the home. Per account, in ve_site_settings depot_pins {member: [href]}.
+// home also returns pins (mine) and thumbs: a one-hour signed link per tool picture in the private bucket depot-thumbs
+// (tools/<slug>.jpg, slug = the href with every run of other characters as one dash). They are live admin pages, so never public.
 //                                                      href must be one of TRASH (the same list as TRASH in public/depot-tabs.js).
 // Depot > Guides, the back end of every tour video (canon-ve-guide-tour-standard v3; tables ve_video_tours, ve_video_chapters,
 // ve_video_shots, migration 20261107_tour_backend.sql):
@@ -38,6 +42,23 @@ async function verifyToken(token: string): Promise<string | null> {
   } catch { return null; }
 }
 
+async function pinsAll(): Promise<Record<string, string[]>> {
+  const { data } = await db.from('ve_site_settings').select('value').eq('key', 'depot_pins').maybeSingle();
+  const v = data?.value as Record<string, unknown> | null;
+  const out: Record<string, string[]> = {};
+  if (v && typeof v === 'object') for (const [k, x] of Object.entries(v)) if (Array.isArray(x)) out[k] = x.filter((h) => typeof h === 'string');
+  return out;
+}
+async function thumbs(): Promise<Record<string, string>> {
+  const { data: files } = await db.storage.from('depot-thumbs').list('tools', { limit: 500 });
+  const names = (files || []).map((f) => 'tools/' + f.name).filter((n) => n.endsWith('.jpg'));
+  if (!names.length) return {};
+  const { data } = await db.storage.from('depot-thumbs').createSignedUrls(names, 3600);
+  const out: Record<string, string> = {};
+  for (const d of data || []) if (d.signedUrl && d.path) out[d.path.replace(/^tools\//, '').replace(/\.jpg$/, '')] = d.signedUrl;
+  return out;
+}
+
 async function restoredList(): Promise<string[]> {
   const { data } = await db.from('ve_site_settings').select('value').eq('key', 'depot_trash').maybeSingle();
   const r = (data?.value as { restored?: unknown } | null)?.restored;
@@ -56,9 +77,21 @@ Deno.serve(async (req) => {
   if (!m?.is_superadmin) return json({ error: 'admins_only' }, 403);
 
   if (b.action === 'home') {
-    const [{ data: counts, error }, restored] = await Promise.all([db.rpc('ve_depot_counts'), restoredList()]);
+    const [{ data: counts, error }, restored, pins, th] = await Promise.all([db.rpc('ve_depot_counts'), restoredList(), pinsAll(), thumbs().catch(() => ({}))]);
     if (error) return json({ error: 'counts_failed' }, 500);
-    return json({ ok: true, counts, restored });
+    return json({ ok: true, counts, restored, pins: pins[me] || [], thumbs: th });
+  }
+
+  if (b.action === 'pin_set') {
+    const href = typeof b.href === 'string' ? b.href : '';
+    if (!/^\/[a-z0-9\/#?=&_-]{1,160}$/i.test(href)) return json({ error: 'bad_href' }, 400);
+    const all = await pinsAll();
+    const mine = (all[me] || []).filter((h) => h !== href);
+    if (b.pinned === true) { if (mine.length >= 40) return json({ error: 'too_many' }, 400); mine.push(href); }
+    all[me] = mine;
+    const { error } = await db.from('ve_site_settings').upsert({ key: 'depot_pins', value: all, updated_at: new Date().toISOString(), updated_by: me });
+    if (error) return json({ error: 'save_failed' }, 500);
+    return json({ ok: true, pins: mine });
   }
 
   if (b.action === 'trash_set') {

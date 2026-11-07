@@ -58,6 +58,19 @@
     .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
     .msg{font-size:13px;font-weight:700;color:var(--ve-green-deep);margin:0 0 12px;}
     @media (max-width:600px){.row{grid-template-columns:1fr;}}
+    /* Tool cards: the tool's own page as its picture, a count when something waits, and a star for My list (Sean, 2026-11-07). */
+    .tile.tool img{object-position:top center;border-bottom:1px solid var(--ve-border);}
+    .tile .noimg{display:grid;place-items:center;aspect-ratio:16/9;background:var(--ve-green-light);}
+    .tile .noimg svg{width:34px;height:34px;stroke:var(--ve-green-deep);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+    .tile.tool .ct{left:10px;right:auto;}
+    .star{position:absolute;top:8px;right:8px;width:36px;height:36px;border-radius:8px;border:1px solid var(--ve-border);background:#fff;display:grid;place-items:center;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.12);z-index:2;}
+    .star svg{width:19px;height:19px;fill:none;stroke:#777;stroke-width:1.8;stroke-linejoin:round;}
+    .star.on svg{fill:var(--ve-orange);stroke:#c47000;}
+    .star.flat{position:static;box-shadow:none;}
+    .gart{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(150px,1fr);gap:10px;overflow-x:auto;margin:0 0 16px;padding-bottom:4px;}
+    .gart a{display:block;text-decoration:none;color:inherit;font-size:12px;font-weight:800;}
+    .gart img{display:block;width:100%;aspect-ratio:8/5;object-fit:cover;border-radius:10px;border:1px solid var(--ve-border);margin-bottom:4px;}
+    @media (max-width:600px){.tile.tool .tx{padding-right:44px;}.tile.tool .star{top:auto;bottom:10px;}}
     [hidden]{display:none !important;}
   </style>
 </head>
@@ -84,7 +97,7 @@
       var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-depot';
       var $ = function (id) { return document.getElementById(id); };
       var SECTIONS = window.VE_DEPOT_SECTIONS || [], TABS = window.VE_DEPOT_TABS || [], TRASH = window.VE_DEPOT_TRASH || [];
-      var counts = null, restored = [];
+      var counts = null, restored = [], pins = [], thumbs = {};
       var IC = {
         directory: '<path d="M4 6h16M4 12h16M4 18h10"/>',
         logos: '<rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="12" cy="12" r="3.5"/>',
@@ -105,7 +118,6 @@
       function waiting(k) {
         if (!counts) return null;
         if (k === 'directory') return { v: n('events_waiting') + n('claims_waiting') + n('listings_on_hold'), w: 'waiting' };
-        if (k === 'logos') return { v: n('logos_to_do'), w: 'to do' };
         if (k === 'content') return { v: n('inbox_open') + n('search_questions_open'), w: 'open' };
         if (k === 'bounties') return { v: n('bounty_proofs') + n('checkin_actions') + n('watchlist'), w: 'waiting' };
         if (k === 'ideas') return { v: n('ideas_new') + n('feedback_new'), w: 'new' };
@@ -113,10 +125,46 @@
         return null;
       }
       function toolsOf(label) { return TABS.filter(function (t) { return t.group === label; }); }
+      // A tool's picture (Sean, 2026-11-07: "I should see their demo page... these things need to have thumbnails"). Demos are
+      // public pages, so their pictures are in the repo; every other tool is a live admin page, so its picture sits in the private
+      // bucket depot-thumbs and ve-depot home hands a one-hour link to super admins only.
+      function slugOf(href) { return href.replace(/^\//, '').replace(/[^a-z0-9]+/gi, '-').replace(/-$/, ''); }
+      function thumbOf(t) { var sl = slugOf(t.href); return t.kind === 'demo' ? '/public/depot/demos/' + sl + '.jpg' : (thumbs[sl] || ''); }
+      // What waits in one tool today, for its badge.
+      var TOOL_COUNT = { '/admin/depot/directory-review': ['listings_on_hold', 'on hold'], '/admin/depot/directory-review#logos': ['logos_to_do', 'to do'],
+        '/admin/depot/events': ['events_waiting', 'waiting'], '/admin/depot/claims': ['claims_waiting', 'waiting'], '/admin/depot/inbox': ['inbox_open', 'open'],
+        '/admin/depot/search-questions': ['search_questions_open', 'open'], '/admin/depot/bounties': ['bounty_proofs', 'waiting'],
+        '/admin/depot/checkins': ['checkin_actions', 'waiting'], '/admin/depot/watchlist': ['watchlist', 'watching'], '/admin/depot/ideas': ['ideas_new', 'new'],
+        '/admin/depot/feedback': ['feedback_new', 'new'] };
+      var STAR = '<svg viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1 5.8L12 16.8 6.8 19.6l1-5.8-4.3-4.1 5.9-.8z"/></svg>';
+      // Guide banners for the Guides section (Sean: "we have thumbnails for the guides. Why aren't we using them there?").
+      var GUIDE_ART = [['vegan-dairy-guide', 'Dairy'], ['vegan-restaurant-guide', 'Restaurant'], ['vegan-events-guide', 'Events'], ['nutrition-guide', 'Nutrition'],
+        ['airport-guide', 'Airport'], ['stadium-arena-guide', 'Stadium & Arena'], ['creator-guide', 'Creator'], ['nonprofit-guide', 'Nonprofit'], ['pre-vegan-business-guide', 'Pre-Vegan Business']];
+      function toolCard(t, k) {
+        var how = t.kind === 'demo' ? 'Opens in a new tab, as the public sees it' : t.kind === 'dash' ? 'Opens in the dashboard' : (t.restored ? 'Restored from the trash bin' : (k === 'mine' ? t.group : ''));
+        var c = TOOL_COUNT[t.href], ct = '';
+        if (c && n(c[0]) != null) ct = '<span class="ct' + (n(c[0]) > 0 && c[1] !== 'watching' ? ' hot' : '') + '">' + fmt(n(c[0])) + ' ' + c[1] + '</span>';
+        var on = pins.indexOf(t.href) >= 0, src = thumbOf(t);
+        var star = '<button type="button" class="star' + (on ? ' on' : '') + '" data-pin="' + esc(t.href) + '" aria-pressed="' + on + '" aria-label="' + (on ? 'Take ' + esc(t.label) + ' off My list' : 'Add ' + esc(t.label) + ' to My list') + '" title="' + (on ? 'On My list' : 'Add to My list') + '">' + STAR + '</button>';
+        var pic = src ? '<img src="' + esc(src) + '" alt="" loading="lazy" decoding="async">' : '<span class="noimg"><svg viewBox="0 0 24 24">' + (t.kind === 'demo' ? IC.demos : IC.tool) + '</svg></span>';
+        return '<a class="tile pic tool" href="' + esc(t.href) + '" data-tool="' + esc(t.href) + '">' + pic + ct + star + '<span class="tx"><b>' + esc(t.label) + '</b><span class="ln">' + esc(how) + '</span></span></a>';
+      }
+      function wirePins(root) {
+        Array.prototype.forEach.call(root.querySelectorAll('[data-pin]'), function (b) {
+          b.onclick = function (e) {
+            e.preventDefault(); e.stopPropagation();
+            var href = b.getAttribute('data-pin'), on = pins.indexOf(href) < 0;
+            pins = on ? pins.concat([href]) : pins.filter(function (h) { return h !== href; });
+            b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); savePins();
+            api({ action: 'pin_set', href: href, pinned: on }).then(function (d) { if (d && d.ok) { pins = d.pins; savePins(); } if (/^#?s\/mine/.test(location.hash.replace(/^#/, ''))) render(); });
+          };
+        });
+      }
+      function savePins() { try { localStorage.setItem('ve_depot_pins', JSON.stringify(pins)); } catch (e) {} }
       // A picture per section, from art we already have (no new credits). A section with none keeps its icon.
       var PIC = {
         directory: '/public/guides/pre-vegan-business/t-found.jpg',
-        logos: '/public/guides/restaurant-guide/t-featured.jpg',
+        mine: '/public/guides/restaurant-guide/t-featured.jpg',
         content: '/public/guides/restaurant-guide/t-pulse.jpg',
         bounties: '/public/guides/venues/river-report.webp',
         guides: '/public/guides/welcome-guide.jpg',
@@ -135,11 +183,13 @@
         var html = '<p class="sub">Where we run Vegans Explore behind the scenes. Each tile is a section; the number is what is waiting today.</p>' +
           '<input id="find" class="find" type="search" placeholder="Find a tool by name" aria-label="Find a tool by name" data-dictate="off">' +
           '<div id="hits" class="list" style="margin-bottom:18px" hidden></div><div class="tiles">';
+        var mine = pins.map(function (h) { return TABS.filter(function (t) { return t.href === h; })[0]; }).filter(Boolean);
+        html += tile('#s/mine', 'mine', 'My list', mine.length ? mine.map(function (t) { return t.label; }).join(', ') : 'Star any tool and it waits here for you. Tap a section to start.', { t: mine.length + ' saved' });
         SECTIONS.forEach(function (s) {
           var w = waiting(s.k), ct = null;
           if (w && w.v != null) ct = { t: fmt(w.v) + ' ' + w.w, hot: !w.info && w.v > 0 };
           else if (s.k === 'demos' || s.k === 'moving') ct = { t: toolsOf(s.label).length + (s.k === 'demos' ? ' demos' : ' tools') };
-          var href = s.k === 'logos' ? '/admin/depot/directory-review#logos' : '#s/' + s.k;
+          var href = '#s/' + s.k;
           html += tile(href, s.k, s.label, s.line, ct, s.k === 'moving' ? ' dash' : '');
         });
         var inTrash = TRASH.filter(function (t) { return restored.indexOf(t.href) < 0; }).length;
@@ -152,13 +202,14 @@
           var m = TABS.filter(function (t) { return (t.label + ' ' + t.group).toLowerCase().indexOf(q) >= 0; }).slice(0, 8);
           hits.hidden = false;
           hits.innerHTML = m.length ? m.map(toolRow).join('') : '<p class="sub">No tool by that name. Retired ones are in the Trash bin.</p>';
-          wireTools(hits);
+          wireTools(hits); wirePins(hits);
         };
       }
       function toolRow(t) {
         var how = t.kind === 'demo' ? 'Opens in a new tab' : t.kind === 'dash' ? 'Opens in the dashboard' : '';
+        var on = pins.indexOf(t.href) >= 0;
         return '<div class="row"><div><b>' + esc(t.label) + '</b> ' + (t.restored ? '<span class="tag r">Restored</span>' : '') + '<p>' + esc(t.group) + (how ? ' · ' + how : '') + '</p></div>' +
-          '<a class="btn" href="' + esc(t.href) + '" data-tool="' + esc(t.href) + '">Open</a></div>';
+          '<div style="display:flex;gap:8px;align-items:center"><button type="button" class="star flat' + (on ? ' on' : '') + '" data-pin="' + esc(t.href) + '" aria-pressed="' + on + '" aria-label="My list">' + STAR + '</button><a class="btn" href="' + esc(t.href) + '" data-tool="' + esc(t.href) + '">Open</a></div></div>';
       }
       // A demo opens in a new tab; a dashboard page asks the dashboard around this frame to open it (as the Go to menu does).
       function wireTools(root) {
@@ -175,16 +226,17 @@
         });
       }
       function section(k) {
-        var s = SECTIONS.filter(function (x) { return x.k === k; })[0]; if (!s) return home();
-        $('title').textContent = s.label;
-        var tools = toolsOf(s.label);
-        var note = k === 'moving' ? '<p class="sub">BrandDesk is taking these over. Each one stays here, working, until BrandDesk does everything it does.</p>' : '';
-        $('view').innerHTML = '<p class="crumb"><a href="#">The Depot</a> &rsaquo; ' + esc(s.label) + '</p>' + note +
-          '<div class="tiles">' + tools.map(function (t) {
-            var how = t.kind === 'demo' ? 'Opens in a new tab, as the public sees it' : t.kind === 'dash' ? 'Opens in the dashboard' : (t.restored ? 'Restored from the trash bin' : '');
-            return '<a class="tile" href="' + esc(t.href) + '" data-tool="' + esc(t.href) + '"><span class="ic"><svg viewBox="0 0 24 24">' + (k === 'demos' ? IC.demos : IC.tool) + '</svg></span><b>' + esc(t.label) + '</b><span class="ln">' + esc(how) + '</span></a>';
-          }).join('') + '</div>';
-        wireTools($('view'));
+        var mineView = k === 'mine';
+        var s0 = mineView ? { k: 'mine', label: 'My list' } : SECTIONS.filter(function (x) { return x.k === k; })[0]; if (!s0) return home();
+        $('title').textContent = s0.label;
+        var tools = mineView ? pins.map(function (h) { return TABS.filter(function (t) { return t.href === h; })[0]; }).filter(Boolean) : toolsOf(s0.label);
+        var note = k === 'moving' ? '<p class="sub">BrandDesk is taking these over. Each one stays here, working, until BrandDesk does everything it does.</p>'
+          : mineView ? '<p class="sub">The tools you use most. Tap the star on any tool, in any section or in search, to add it here or take it off.</p>'
+          : '<p class="sub">Tap the star on a tool to keep it in My list on the Depot home.</p>';
+        var art = k === 'guides' ? '<div class="gart">' + GUIDE_ART.map(function (g) { return '<a href="/guides/' + g[0] + '" target="_blank" rel="noopener"><img src="/public/guides/' + g[0] + '.jpg" alt="" loading="lazy"><span>' + esc(g[1]) + '</span></a>'; }).join('') + '</div>' : '';
+        $('view').innerHTML = '<p class="crumb"><a href="#">The Depot</a> &rsaquo; ' + esc(s0.label) + '</p>' + note + art +
+          (tools.length ? '<div class="tiles">' + tools.map(function (t) { return toolCard(t, k); }).join('') + '</div>' : '<p class="sub">Nothing here yet. Open a section and tap the star on a tool.</p>');
+        wireTools($('view')); wirePins($('view'));
       }
       function trash(msg) {
         $('title').textContent = 'Trash bin';
@@ -224,7 +276,7 @@
         $('app').hidden = false; render();
         api({ action: 'home' }).then(function (d) {
           if (!d || !d.ok) return;
-          counts = d.counts;
+          counts = d.counts; pins = d.pins || pins; thumbs = d.thumbs || {}; savePins();
           var before = JSON.stringify(restored);
           restored = d.restored || []; save();
           if (before !== JSON.stringify(restored) && localStorage.getItem('ve_depot_restored_seen') !== JSON.stringify(restored)) {
@@ -235,6 +287,7 @@
         });
       }
       try { restored = JSON.parse(localStorage.getItem('ve_depot_restored') || '[]') || []; } catch (e) {}
+      try { pins = JSON.parse(localStorage.getItem('ve_depot_pins') || '[]') || []; } catch (e) {}
       start();
     })();
   </script>

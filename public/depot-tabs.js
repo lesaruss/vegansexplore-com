@@ -33,8 +33,7 @@
   // are gone: their tools moved into these sections. "Moving to BrandDesk" holds what BrandDesk takes over, each tool staying here
   // until BrandDesk does everything it does. Retired tools are in TRASH, below, never deleted, restorable from the home's Trash bin.
   var SECTIONS = [
-    { k: 'directory', label: 'Directory', line: 'Directory review, Events, Claims, Venues, Badges, Certification, Secret Shopper' },
-    { k: 'logos', label: 'Logos', line: 'Pick, fix and upload logos' },
+    { k: 'directory', label: 'Directory', line: 'Directory review, Logos, Events, Claims, Venues, Badges, Certification, Secret Shopper' },
     { k: 'content', label: 'Content', line: 'Inbox, Sources, Content index, Books, Cookbook, Search questions, Library' },
     { k: 'bounties', label: 'Bounties', line: 'Bounty proofs, check-in photos and receipts, submissions, the watchlist' },
     { k: 'guides', label: 'Guides', line: 'Every tour video: script, recordings, lookbook. Journeys, onboarding, the checklist' },
@@ -44,6 +43,8 @@
   ];
   var TABS = [
     { group: 'Directory', href: '/admin/depot/directory-review', label: 'Directory review' },
+    // Logos is a Directory tool again (Sean, 2026-11-07: "it should be in a directory with everything else"); star it for My list.
+    { group: 'Directory', href: '/admin/depot/directory-review#logos', label: 'Logos' },
     { group: 'Directory', href: '/admin/depot/events', label: 'Events' },
     { group: 'Directory', href: '/admin/depot/claims', label: 'Claims' },
     { group: 'Directory', href: '/admin/depot/venues', label: 'Venues' },
@@ -53,7 +54,6 @@
     { group: 'Directory', href: '/admin/depot/event-sponsors', label: 'Event sponsors' },
     { group: 'Directory', href: '/admin/depot/brand-campaigns', label: 'Brand campaigns' },
     { group: 'Directory', href: '/dashboard/secret-shopper', label: 'Secret Shopper', kind: 'dash' },
-    { group: 'Logos', href: '/admin/depot/directory-review#logos', label: 'Logos' },
     { group: 'Content', href: '/admin/depot/inbox', label: 'Inbox' },
     { group: 'Content', href: '/admin/depot/sources', label: 'Sources' },
     { group: 'Content', href: '/admin/depot/content-index', label: 'Content index' },
@@ -121,7 +121,7 @@
     { href: '/admin/depot/pulse', label: 'Pulse (old articles)', group: 'Content', why: 'The old article Pulse. The Daily Pulse on the Community Board replaced it.' },
     { href: '/admin/depot/pulse-cities', label: 'Pulse Cities', group: 'Content', why: 'City news, retired on October 5, 2026 for the Daily Pulse.' },
     { href: '/admin/depot/verified', label: 'Passport Partners', group: 'Directory', why: 'The $250 and $500 plans, replaced by the $111 Partner plan.' },
-    { href: '/admin/depot/logos', label: 'Logos (old page)', group: 'Logos', why: 'A second Logos page. Logos in Directory review does it.' },
+    { href: '/admin/depot/logos', label: 'Logos (old page)', group: 'Directory', why: 'A second Logos page. Logos in Directory review does it.' },
     { href: '/admin/depot/tours', label: 'Tours', group: 'Directory', why: 'A 2027 idea. No tour was ever made.' },
     { href: '/admin/depot/services', label: 'Services', group: 'Directory', why: 'The old one-thing services. The shop is BrandDesk\'s now. No order was ever made.' },
     { href: '/admin/depot/dinners', label: 'Dinner guests', group: 'Moving to BrandDesk', why: 'Dinner seats on us ended with comps. One dinner, October 4.' },
