@@ -296,6 +296,17 @@ Deno.serve(async (req) => {
     if (up.error) return json({ error: up.error.message }, 500);
     return json({ ok: true, url: `${SUPABASE_URL}/storage/v1/object/public/vegan-media/${path}`, rows: rows.length });
   }
+  if (body.action === 'stage') {
+    // Short-lived upload links (media/listings/_new/<uuid>.jpg) for squared logos, used by apply's staged_path.
+    const n = Math.min(Math.max(1, Number(body.n) || 1), 20), out = [];
+    for (let i = 0; i < n; i++) {
+      const path = `media/listings/_new/${crypto.randomUUID()}.jpg`;
+      const { data, error } = await db.storage.from('vegan-media').createSignedUploadUrl(path);
+      if (error) return json({ error: error.message }, 500);
+      out.push({ path, url: data.signedUrl });
+    }
+    return json({ ok: true, uploads: out });
+  }
   if (body.action === 'apply') {
     // A logo the hunter found becomes the listing's logo. The caller squares the picked picture (logo centered on its
     // background, at least 400 px) and sends it as a JPEG; it is saved the way ve-discover's logo_set saves one:
@@ -305,8 +316,15 @@ Deno.serve(async (req) => {
     const { data: h } = await db.from('ve_logo_hunts').select('pick, verdict, candidates, sources_agree, confidence').eq('run_id', runId).eq('listing_id', lid).maybeSingle();
     if (!h || h.pick < 0) return json({ error: 'no pick for this listing in this run' }, 404);
     if (h.verdict !== 'auto' && body.reviewed !== true) return json({ error: 'not confirmed: pass reviewed: true for a pick a person checked' }, 409);
-    let bytes: Uint8Array;
-    try { bytes = Uint8Array.from(atob(String(body.jpeg_b64 || '')), (c) => c.charCodeAt(0)); } catch { return json({ error: 'bad picture' }, 400); }
+    let bytes: Uint8Array; const staged = String(body.staged_path || '');
+    if (staged) {
+      if (!/^media\/listings\/_new\/[0-9a-f-]{36}\.jpg$/.test(staged)) return json({ error: 'not our upload' }, 400);
+      const { data: file, error: dErr } = await db.storage.from('vegan-media').download(staged);
+      if (dErr || !file) return json({ error: 'upload not found' }, 404);
+      bytes = new Uint8Array(await file.arrayBuffer());
+    } else {
+      try { bytes = Uint8Array.from(atob(String(body.jpeg_b64 || '')), (c) => c.charCodeAt(0)); } catch { return json({ error: 'bad picture' }, 400); }
+    }
     if (bytes[0] !== 0xff || bytes[1] !== 0xd8) return json({ error: 'not a JPEG' }, 400);
     const size = imageSize(bytes); if (!size || Math.min(size.w, size.h) < 200) return json({ error: 'too small' }, 400);
     const { data: l } = await db.from('listings').select('id, slug, logo_url, details').eq('id', lid).maybeSingle();
@@ -315,6 +333,7 @@ Deno.serve(async (req) => {
     const path = `media/listings/${l.slug}/logo-${at.slice(0, 10)}-${crypto.randomUUID().slice(0, 8)}.jpg`;
     const up = await db.storage.from('vegan-media').upload(path, bytes, { contentType: 'image/jpeg', upsert: false });
     if (up.error) return json({ error: up.error.message }, 500);
+    if (staged) await db.storage.from('vegan-media').remove([staged]);
     const url = `${SUPABASE_URL}/storage/v1/object/public/vegan-media/${path}`;
     const pickRow = (h.candidates || [])[h.pick] || {};
     const details = { ...(l.details || {}) } as Record<string, any>;
