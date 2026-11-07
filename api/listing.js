@@ -13,6 +13,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const SEO = require('../public/ve-seo-text.js');
 
 const SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
@@ -89,8 +90,8 @@ function headFor(l) {
 
   const where = l.address_city && !media && !person ? l.address_city + (l.address_state ? ', ' + l.address_state : '') : '';
   // "in <city>" only for a local business; an organization's address is its headquarters, not its reach.
-  const title = l.name + (where && place && !ORGS.test(c) ? ' in ' + where : '') + ' — Vegans Explore';
-  const desc = clip((l.description || l.tagline || '') + (where ? ' · ' + where : ''), 200) || 'Find the best Vegan-friendly businesses on Vegans Explore.';
+  const title = SEO.title(l.name, where && place && !ORGS.test(c) ? ' in ' + where : '');
+  const desc = SEO.desc(l.name, l.description || l.tagline || '', where);
   const img = l.logo_url || OG_DEFAULT;
 
   const type = person ? 'Person' : c === 'Restaurants' ? 'Restaurant' : c === 'Bakeries & Cafes' ? 'CafeOrCoffeeShop'
@@ -156,7 +157,10 @@ module.exports = async (req, res) => {
       .replace(/(<meta id="og-description" property="og:description" content=")[^"]*(")/, '$1' + attr(h.desc) + '$2')
       .replace(/(<meta id="og-image" property="og:image" content=")[^"]*(")/, '$1' + attr(h.img) + '$2')
       .replace(/(<meta id="meta-description" name="description" content=")[^"]*(")/, '$1' + attr(h.desc) + '$2')
-      .replace('</head>', h.tags + '\n</head>');
+      .replace('</head>', h.tags + '\n</head>')
+      .replace('<div class="listing-loading">Loading...</div>', '<h1 class="listing-ssr">' + text(l.name) + '</h1>' +
+        (l.tagline || l.description ? '<p class="listing-ssr-sub">' + text(SEO.clip(l.tagline || l.description, 240)) + '</p>' : '') +
+        '<div class="listing-loading">Loading...</div>');
   }
 
   res.setHeader('Content-Type', 'text/html; charset=utf-8');

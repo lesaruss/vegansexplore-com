@@ -158,8 +158,10 @@ async function checkPage(url: string) {
     if (n === 'og:image' && !out.og_image) out.og_image = a.content ?? '';
   }
   for (const m of head.matchAll(/<link\b[^>]*>/gi)) { const a = attrs(m[0]); if ((a.rel || '').toLowerCase() === 'canonical') { out.canonical = a.href; break; } }
-  out.h1_count = (html.match(/<h1[\s>]/gi) || []).length;
-  const imgs = html.match(/<img\b[^>]*>/gi) || []; out.img_total = imgs.length; out.img_no_alt = imgs.filter((t) => !/\balt\s*=/i.test(t)).length;
+  // Count only the page itself: a heading or picture written inside a <script> is code the browser runs later, not the page.
+  const page = html.replace(/<script\b[\s\S]*?<\/script>/gi, '').replace(/<style\b[\s\S]*?<\/style>/gi, '').replace(/<!--[\s\S]*?-->/g, '');
+  out.h1_count = (page.match(/<h1[\s>]/gi) || []).length;
+  const imgs = page.match(/<img\b[^>]*>/gi) || []; out.img_total = imgs.length; out.img_no_alt = imgs.filter((t) => !/\balt\s*=/i.test(t)).length;
   const P = out.problems as string[];
   if (!out.title) P.push('no_title'); else if (out.title.length > 70) P.push('title_too_long'); else if (out.title.length < 15) P.push('title_too_short');
   if (out.description == null || out.description === '') P.push('no_description');
