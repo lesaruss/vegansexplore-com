@@ -1482,7 +1482,7 @@ and **Restore** (`ve-depot` `trash_set`, `ve_site_settings` `depot_trash`) puts 
 `docs/proposals/depot-tour-script.md` (13 chapters, approved by Sean; recorded 2026-11-07 at `geekfon-media/voice_samples/v/depot/tour-<n>-v1.mp3`, all 13 checked word for word with stt). Not built yet: V's tour and
 Ask V on the Depot, Logos as its own tool (category filters, Most viewed), better logo suggestions, the Guides back end and See every page,
 People in BrandDesk.
-**Analytics into BrandDesk Insights, step 1 (2026-11-07, lesaruss-hq branch `claude/adoring-fermi-3r3lbx`, not on HQ main):** BrandDesk > Vegans Explore >
+**Analytics into BrandDesk Insights, step 1 (2026-11-07, merged to HQ main 2026-11-07 (ce9fc16), Sean: "merge both branches to main"):** BrandDesk > Vegans Explore >
 Insights gained Chapters, Site sections (Directory, Events, Media, Daily Pulse, Guide tabs), Members (Who joined; What they told us = Community Insights),
 Costs (the Google ledger) and Health (Platform health), Vegans Explore only (`components/branddesk/InsightsPlatform.tsx`, `lib/vePlatformInsights.ts`:
 `ve_report` is `ve-analytics` with the admin token, `ve_members` the ported `ve-insights` tally, `ve_health` `ve_ops_snapshot`; super admins only). The Depot
