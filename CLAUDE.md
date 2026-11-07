@@ -6836,6 +6836,21 @@ Stopping them at the door for $11." Replaces "Registration is the Passport", "Gu
 - `/policies#membership` (Last updated November 7), the Guides' facts (v25, `20261107_survey_only_facts.sql`) and 30 saved answers
   (`20261107_survey_only_answers.sql`) say it. Keep: $111 Partner plan; topic Guides $11 or 1,100 points; Founding until midnight Eastern Jan 1, 2027.
 
+## The Vegans Explore app (LOCKED by Sean 2026-11-07, playbook `ve-mobile-app`, canon `canon-ve-mobile-app`)
+
+"Most people would be expecting Vegans Explore to be an app... I want it available as soon as it's available." Name **Vegans Explore**, made by
+**LESARUSS Inc.**, in the stores as soon as it passes review (no held date). A **native app written fresh** in React Native (Expo) in
+`lesaruss/vegansexplore-app`, not the website in a container; the June prototype (code name Sapphire, Supabase Auth, made-up stats) is retired.
+Version 1 tabs: Home, Explore (search, Directory, place pages, map), Events, Saves, Profile; join through the Explorer survey with the same
+account as the website (ve-auth, never Supabase Auth); Guides, Pulse articles and the board, policies and the business dashboard open as web
+pages inside the app, signed in. One back end: the app calls the same edge functions as the site. iOS keeps bundle `com.lesaruss.sapphire`
+(the existing App Store record VEGANS EXPLORE, app 6776554626; Apple never lets it change); Android is `com.lesaruss.vegansexplore`. Store keys
+are in Key Room (`hq.lesaruss.ai/keys`: `ASC_API_KEY_P8` saved without its BEGIN/END lines, `ASC_KEY_ID`, `ASC_ISSUER_ID`,
+`GOOGLE_PLAY_SERVICE_JSON`, `EXPO_TOKEN` for Expo user `lesaruss`), all checked live 2026-11-07. The A to Z is in the playbook and
+`docs/handoff/2026-11-07-ve-mobile-app-a-to-z-locked.md`; next are D (installable website: `manifest.json` icons 404 today), E (icon to Sean)
+and F (a clickable phone mock approved before any app code). Store rules to build: delete account inside the app, block a member, nothing
+sold inside the app in v1. The old SoFlo Vegans iOS app (`com.lmg.soflo`, live since 2021) comes off sale on launch day unless Sean says otherwise.
+
 ## Image conventions
 
 - Mobile hero images: stored in the same folder as the page's desktop banner.
