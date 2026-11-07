@@ -215,6 +215,37 @@ The pictures come from the business's website, a Google Images search, its Faceb
 }
 
 // ---- One batch ----
+// Saves one squared JPEG as a listing's logo (the way ve-discover's logo_set does): media/listings/<slug>/logo-*, details,
+// a ve_listing_edits row, the suggestion marked used, the hunt row marked applied. Only for a pick the hunter confirmed
+// (verdict auto) unless a person checked it (reviewed).
+async function applyLogo(runId: string, lid: string, bytes: Uint8Array, reviewed: boolean, by: string): Promise<{ ok: true; logo_url: string } | { error: string }> {
+  const { data: h } = await db.from('ve_logo_hunts').select('pick, verdict, candidates, sources_agree, confidence, applied_at').eq('run_id', runId).eq('listing_id', lid).maybeSingle();
+  if (!h || h.pick < 0) return { error: 'no pick for this listing in this run' };
+  if (h.applied_at) return { error: 'already applied' };
+  if (h.verdict !== 'auto' && !reviewed) return { error: 'not confirmed' };
+  if (bytes[0] !== 0xff || bytes[1] !== 0xd8) return { error: 'not a JPEG' };
+  const size = imageSize(bytes); if (!size || Math.min(size.w, size.h) < 200) return { error: 'too small' };
+  const { data: l } = await db.from('listings').select('id, slug, logo_url, details').eq('id', lid).maybeSingle();
+  if (!l) return { error: 'listing not found' };
+  const at = new Date().toISOString();
+  const path = `media/listings/${l.slug}/logo-${at.slice(0, 10)}-${crypto.randomUUID().slice(0, 8)}.jpg`;
+  const up = await db.storage.from('vegan-media').upload(path, bytes, { contentType: 'image/jpeg', upsert: false });
+  if (up.error) return { error: up.error.message };
+  const url = `${SUPABASE_URL}/storage/v1/object/public/vegan-media/${path}`;
+  const pickRow = (h.candidates || [])[h.pick] || {};
+  const details = { ...(l.details || {}) } as Record<string, any>;
+  details.logo_source = 'logo-hunt';
+  details.logo_checked = { by, at, w: size.w, h: size.h, from: String(pickRow.url || '').slice(0, 400), source: pickRow.source || null, run: runId, agree: h.sources_agree || [], confidence: h.confidence, reviewed };
+  if (details.logo_unverified) { details.logo_replaced = { url: details.logo_unverified, at }; delete details.logo_unverified; delete details.logo_unverified_at; delete details.logo_unverified_why; }
+  delete details.logo_letter_ok;
+  const { error } = await db.from('listings').update({ logo_url: url, details, updated_at: at }).eq('id', l.id);
+  if (error) return { error: error.message };
+  await db.from('ve_listing_edits').insert({ listing_id: l.id, field: 'logo', old_value: l.logo_url || null, new_value: url, meta: { by: 'logo_hunt', run: runId, where: 've-logo-hunt' } });
+  await db.from('ve_logo_suggestions').update({ status: 'used', decided_at: at }).eq('listing_id', l.id);
+  await db.from('ve_logo_hunts').update({ applied_at: at, applied_url: url }).eq('run_id', runId).eq('listing_id', lid);
+  return { ok: true, logo_url: url };
+}
+
 let FB_SEARCH = false;
 // Claims up to 5 listings still queued in the run and starts them as their own call (action batch).
 async function nextGroup(req: Request, token: string, runId: string, fbSearch: boolean) {
@@ -371,9 +402,9 @@ Deno.serve(async (req) => {
   }
   if (body.action === 'stage') {
     // Short-lived upload links (media/listings/_new/<uuid>.jpg) for squared logos, used by apply's staged_path.
-    const n = Math.min(Math.max(1, Number(body.n) || 1), 20), out = [];
+    const n = Math.min(Math.max(1, Number(body.n) || 1), 20), out = [], ext = body.ext === 'zip' ? 'zip' : 'jpg';
     for (let i = 0; i < n; i++) {
-      const path = `media/listings/_new/${crypto.randomUUID()}.jpg`;
+      const path = `media/listings/_new/${crypto.randomUUID()}.${ext}`;
       const { data, error } = await db.storage.from('vegan-media').createSignedUploadUrl(path);
       if (error) return json({ error: error.message }, 500);
       out.push({ path, url: data.signedUrl });
@@ -381,14 +412,9 @@ Deno.serve(async (req) => {
     return json({ ok: true, uploads: out });
   }
   if (body.action === 'apply') {
-    // A logo the hunter found becomes the listing's logo. The caller squares the picked picture (logo centered on its
-    // background, at least 400 px) and sends it as a JPEG; it is saved the way ve-discover's logo_set saves one:
-    // media/listings/<slug>/logo-*, details.logo_source and logo_checked, a ve_listing_edits row, the suggestion marked used.
+    // One squared logo, as jpeg_b64 or staged_path (a stage upload). For many at once, apply_zip.
     const runId = String(body.run_id || ''), lid = String(body.listing_id || '');
     if (!/^[a-z0-9-]{4,40}$/.test(runId) || !/^[0-9a-f-]{36}$/i.test(lid)) return json({ error: 'bad request' }, 400);
-    const { data: h } = await db.from('ve_logo_hunts').select('pick, verdict, candidates, sources_agree, confidence').eq('run_id', runId).eq('listing_id', lid).maybeSingle();
-    if (!h || h.pick < 0) return json({ error: 'no pick for this listing in this run' }, 404);
-    if (h.verdict !== 'auto' && body.reviewed !== true) return json({ error: 'not confirmed: pass reviewed: true for a pick a person checked' }, 409);
     let bytes: Uint8Array; const staged = String(body.staged_path || '');
     if (staged) {
       if (!/^media\/listings\/_new\/[0-9a-f-]{36}\.jpg$/.test(staged)) return json({ error: 'not our upload' }, 400);
@@ -398,28 +424,28 @@ Deno.serve(async (req) => {
     } else {
       try { bytes = Uint8Array.from(atob(String(body.jpeg_b64 || '')), (c) => c.charCodeAt(0)); } catch { return json({ error: 'bad picture' }, 400); }
     }
-    if (bytes[0] !== 0xff || bytes[1] !== 0xd8) return json({ error: 'not a JPEG' }, 400);
-    const size = imageSize(bytes); if (!size || Math.min(size.w, size.h) < 200) return json({ error: 'too small' }, 400);
-    const { data: l } = await db.from('listings').select('id, slug, logo_url, details').eq('id', lid).maybeSingle();
-    if (!l) return json({ error: 'listing not found' }, 404);
-    const at = new Date().toISOString();
-    const path = `media/listings/${l.slug}/logo-${at.slice(0, 10)}-${crypto.randomUUID().slice(0, 8)}.jpg`;
-    const up = await db.storage.from('vegan-media').upload(path, bytes, { contentType: 'image/jpeg', upsert: false });
-    if (up.error) return json({ error: up.error.message }, 500);
+    const r = await applyLogo(runId, lid, bytes, body.reviewed === true, String(body.by || 'Logan (logo hunt)'));
     if (staged) await db.storage.from('vegan-media').remove([staged]);
-    const url = `${SUPABASE_URL}/storage/v1/object/public/vegan-media/${path}`;
-    const pickRow = (h.candidates || [])[h.pick] || {};
-    const details = { ...(l.details || {}) } as Record<string, any>;
-    details.logo_source = 'logo-hunt';
-    details.logo_checked = { by: body.by || 'Logan (logo hunt)', at, w: size.w, h: size.h, from: String(pickRow.url || '').slice(0, 400), source: pickRow.source || null, run: runId, agree: h.sources_agree || [], confidence: h.confidence };
-    if (details.logo_unverified) { details.logo_replaced = { url: details.logo_unverified, at }; delete details.logo_unverified; delete details.logo_unverified_at; delete details.logo_unverified_why; }
-    delete details.logo_letter_ok;
-    const { error } = await db.from('listings').update({ logo_url: url, details, updated_at: at }).eq('id', l.id);
-    if (error) return json({ error: error.message }, 500);
-    await db.from('ve_listing_edits').insert({ listing_id: l.id, field: 'logo', old_value: l.logo_url || null, new_value: url, meta: { by: 'logo_hunt', run: runId, where: 've-logo-hunt' } });
-    await db.from('ve_logo_suggestions').update({ status: 'used', decided_at: at }).eq('listing_id', l.id);
-    await db.from('ve_logo_hunts').update({ applied_at: at, applied_url: url }).eq('run_id', runId).eq('listing_id', lid);
-    return json({ ok: true, logo_url: url });
+    return 'error' in r ? json(r, 400) : json(r);
+  }
+  if (body.action === 'apply_zip') {
+    // A zip (staged with stage ext zip) of <listing_id>.jpg files, each squared by the caller: every one is applied.
+    const runId = String(body.run_id || ''), staged = String(body.staged_path || '');
+    if (!/^[a-z0-9-]{4,40}$/.test(runId) || !/^media\/listings\/_new\/[0-9a-f-]{36}\.zip$/.test(staged)) return json({ error: 'bad request' }, 400);
+    const { data: file, error: dErr } = await db.storage.from('vegan-media').download(staged);
+    if (dErr || !file) return json({ error: 'upload not found' }, 404);
+    const JSZip = (await import('npm:jszip@3.10.1')).default;
+    const zip = await JSZip.loadAsync(new Uint8Array(await file.arrayBuffer()));
+    const out: Record<string, unknown> = {};
+    for (const name of Object.keys(zip.files)) {
+      const m = name.match(/^([0-9a-f-]{36})\.jpg$/i); if (!m) continue;
+      const bytes = await zip.files[name].async('uint8array');
+      const r = await applyLogo(runId, m[1], bytes, body.reviewed === true, String(body.by || 'Logan (logo hunt)'));
+      out[m[1]] = 'error' in r ? r.error : 'ok';
+    }
+    await db.storage.from('vegan-media').remove([staged]);
+    const ok = Object.values(out).filter((v) => v === 'ok').length;
+    return json({ ok: true, applied: ok, total: Object.keys(out).length, results: out });
   }
   return json({ error: 'unknown action' }, 400);
 });
