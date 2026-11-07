@@ -6821,6 +6821,34 @@ Stopping them at the door for $11." Replaces "Registration is the Passport", "Gu
 - `/policies#membership` (Last updated November 7), the Guides' facts (v25, `20261107_survey_only_facts.sql`) and 30 saved answers
   (`20261107_survey_only_answers.sql`) say it. Keep: $111 Partner plan; topic Guides $11 or 1,100 points; Founding until midnight Eastern Jan 1, 2027.
 
+## The Holiday Guide, ThanksLiving and Give back (LOCKED by Sean 2026-11-07, playbook `ve-holiday-guide`)
+
+Concept session with V, locked by Sean: "lock it" (canon `canon-ve-holiday-guide`; migration `20261107_holiday_guide_canon.sql`; handoff
+`docs/handoff/2026-11-07-ve-holiday-guide-locked.md`). **Not built yet.** One Holiday Guide that grows holiday by holiday, the holidays at
+hand first: business holiday menus by chapter, a gift list we compile (credited, never copied; tracked `/go/` links), member wish lists feeding
+a Most wanted shelf, and a permanent **Give back** tab. Theo narrates (text until Sean approves lines). Copy `guides/vegan-dairy-guide.html`
+for the Guide and `claim.html` for the menu form (template gate).
+- **Free and public**; join prompts only at moments of intent (Save, Add to my wish list, Remind me, Submit your holiday menu), one short
+  window, what they tapped kept through sign-up and saved once they are in. People join by the Explorer survey (one optional question: What
+  are you hoping to find this season?); businesses: join free, the Restaurant or Pre-Vegan Business survey, claim free, then the menu form with
+  the deadline counting down. An exception to topic Guides being $11.
+- **ThanksLiving** is the first holiday: the fourth Thursday of November (2026-11-26), shown as ThanksLiving (Thanksgiving) the first year so
+  search finds it. The word is shared (sanctuary fundraisers, Explore Veg, vKind, Christian writing; no trademark found, Justia only): never
+  claim we coined it or try to trademark it; we become where everyone finds it, every sanctuary's ThanksLiving event on our calendar. Five
+  rules: three thanks (a person, a place, a thing on your table), the Gratitude Table (a shared plant-based meal), say it out loud, give back,
+  start your reflection. Never tear down Thanksgiving; the same day is the National Day of Mourning, so point to Indigenous-led voices.
+  "Gratitude Day" was dropped (World Gratitude Day is September 21).
+- **Business menus**: any member business with a claimed listing, free, person-checked, 100% Vegan first, a business that is not Vegan shows a
+  plant-based (Pre-Vegan) menu; any holiday is the same form. A dated `ve_dashboard_cards` card and a holiday hours field on Your page. A
+  one-time note to restaurants with a published email is drafted for Sean; nothing sends without him.
+- **Give back**: link out to each organization's own donation page through its own tracked `/go/` link (each partner sees the people we sent);
+  we never handle money or call anything tax-deductible. Nonprofit Partners featured, every other Directory nonprofit, rescue and sanctuary
+  listed plainer with "Become a Nonprofit Partner to be featured". Points to the same organizations. Giving Tuesday is 2026-12-01.
+- **Calendar**: ThanksLiving menus close 2026-11-18; Hanukkah (starts 12-04) closes 11-30; Christmas and Kwanzaa close 12-14. No paid ad
+  budget until Sean names one (the Guide takes a rail banner slot, a Daily Pulse mention and city posts).
+- **Build order**: 1 the menu form (live about 11-10); 2 the dashboard card and holiday hours; 3 the Guide, its ThanksLiving tab and the
+  sanctuary events; 4 Give back by 12-01; 5 wish lists and gifts; 6 Hanukkah, Christmas, Kwanzaa.
+
 ## Image conventions
 
 - Mobile hero images: stored in the same folder as the page's desktop banner.
