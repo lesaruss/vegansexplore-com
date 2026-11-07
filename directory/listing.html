@@ -2436,7 +2436,7 @@ function renderSidebar(l){
   // copy says exactly that rather than implying a paid unlock.
   // The one claim box (Sean, 2026-10-27: "keep it very sleek in two places", this and At a Glance): it opens the listing's
   // claim page (the Partner Dashboard view, ?tab=brand) and says every claim is checked before it is approved.
-  var claimSection = !l.claimed_by_member_id ? '<div style="margin-bottom:14px"><div class="claim-box"><p>Is this your '+esc(listingNoun(l))+'? Claim your listing to tell the community your story, keep your details right, and open it to everyone. It takes the $11 Passport (its 1,100 points cover the claim), which also shows you how many people find your page and puts you first in line for sponsorships and ads.</p><p class="claim-review">'+CLAIM_REVIEW+'</p><a href="'+claimHref(l)+'" data-claim-open class="claim-btn">Claim Listing</a></div></div>' : '';
+  var claimSection = !l.claimed_by_member_id ? '<div style="margin-bottom:14px"><div class="claim-box"><p>Is this your '+esc(listingNoun(l))+'? Claim your listing to tell the community your story, keep your details right, and open it to everyone. Claiming is free for members, and joining is free with a short survey. It also shows you how many people find your page and puts you first in line for sponsorships and ads.</p><p class="claim-review">'+CLAIM_REVIEW+'</p><a href="'+claimHref(l)+'" data-claim-open class="claim-btn">Claim Listing</a></div></div>' : '';
 
   // Collaboration badges
   var collabBadges = '';
@@ -2487,7 +2487,7 @@ function renderSidebar(l){
       '</div>'+
       '<div class="donate-confirm" id="donate-confirm" role="status"></div>'+
       // Points are a boost, never money (Sean locked 2026-10-25, playbook ve-pricing-points-passport): ve-votes contribute.
-      '<p class="member-note">Members give points to the places they love as a boost. It never lowers your level. <a href="/passport">Get your Passport, $11 one time</a>.</p>'+
+      '<p class="member-note">Members give points to the places they love as a boost. It never lowers your level. <a href="/survey?s=explorer">Join free with a short survey</a>.</p>'+
     '</div>';
 
   // A brand's site: the votes, no points (points are ours, playbook ve-pricing-points-passport).
@@ -3938,9 +3938,9 @@ function mountOwnerEditor(el, l, step){
 function partnerUpsell(l){
   var front = Date.now() < Date.parse('2027-01-01T05:00:00Z');
   return '<div class="bd-locked"><p><b>' + esc(l.name) + ' is yours.</b> Keep your details, photos and story up to date from this page.</p>' +
-    '<p>Become a Founding Member, $11 one time, and your whole dashboard opens: your numbers (views, visitors and what people open), our campaigns and ads, the audit and the Guides.' +
+    '<p>Join Vegans Explore, free with a short survey, and your whole dashboard opens: your numbers (views, visitors and what people open), our campaigns and ads, the audit and the Guides.' +
     ' The Partner plan adds a front-row seat on every campaign and ads placed for you' + (front ? ': join now and every day until January 1 is on us: your $111 covers Period 1 (January 1 to April 21, 2027), then $111 every 111 days.' : ', $111 a period of 111 days.') + '</p>' +
-    '<div class="bd-btns"><button type="button" class="bd-btn" onclick="this.disabled=true;VEAuth.startEntryCheckout(1100).then(function(d){if(d&&d.url)location.href=d.url;})">Become a Founding Member, $11</button>' +
+    '<div class="bd-btns"><a class="bd-btn" href="/survey?s=explorer">Join free with a short survey</a>' +
     '<a class="bd-btn o" href="/claim?listing=' + encodeURIComponent(l.slug || '') + '&plan=brand">' + (front ? 'Take my front-row seat' : 'Become a Partner') + '</a></div></div>';
 }
 // Is the signed-in visitor this brand's partner (ve-claims partner_status)? ?partner=preview shows the partner's view to
@@ -4701,8 +4701,8 @@ function renderListing(l){
     }
     document.getElementById('listing-root').insertAdjacentHTML('beforeend',
       '<section class="lv-vote" aria-label="Your Passport"><div class="lv-vote-copy"><strong>Your votes <span>rank them.</span></strong>'+
-      '<p>$11, one time, gets you your Passport: vote once a day for every business you love (the votes decide who leads each list), 1,100 welcome points and your own dashboard to build your Vegan world. Businesses come in at the same $11 and get the advertising, sponsorships and marketing services we offer only to members.</p></div>'+
-      '<a class="lv-vote-btn" href="/passport?from=vote&back='+back+'#/join">Get your Passport, $11</a></section>');
+      '<p>Joining is free with a short survey: vote once a day for every business you love (the votes decide who leads each list), points for the survey and your own dashboard to build your Vegan world. Businesses join the same way and claim their page free.</p></div>'+
+      '<a class="lv-vote-btn" href="/survey?s=explorer">Join free</a></section>');
   })();
 
   // Vote button (2026-09-17, Logan: wired to the real vote_listing backend --
@@ -4866,7 +4866,7 @@ function renderListing(l){
         return;
       }
       var m = VEAuth.getMember ? VEAuth.getMember() : null;
-      if(!(m && m.membership_status === 'active')){ if(VEAuth.showActivateModal) VEAuth.showActivateModal('Check-ins are for members: 10 points every time you visit a place. Join for $11, one time.'); return; }
+      if(!(m && m.membership_status === 'active')){ if(VEAuth.showActivateModal) VEAuth.showActivateModal('Check-ins are for members: 10 points every time you visit a place. Joining is free with a short survey.'); return; }
       if(!navigator.geolocation){ say('Your browser cannot share your location, so we cannot check you in.'); return; }
       btn.disabled = true; say('Finding where you are...');
       navigator.geolocation.getCurrentPosition(function(pos){
@@ -4994,7 +4994,7 @@ function renderListing(l){
             say('Thank you. You gave ' + amt.toLocaleString() + ' points' + (typeof d.balance === 'number' ? '; you have ' + d.balance.toLocaleString() + ' left.' : '.'));
             return;
           }
-          if(d && d.error === 'payment_required'){ say('Get your Passport, $11 one time, to give points.', true); if(VEAuth.showActivateModal) VEAuth.showActivateModal(d.message); return; }
+          if(d && d.error === 'payment_required'){ say('Join free with a short survey to give points.', true); if(VEAuth.showActivateModal) VEAuth.showActivateModal(d.message); return; }
           if(d && d.error === 'not_enough_points'){ say('You have ' + Number(d.balance || 0).toLocaleString() + ' points to give.', true); return; }
           say('That did not go through, and no points were given. Try again in a minute.', true);
         }).catch(function(){ donateBtn.disabled = false; donateBtn.textContent = 'Give'; say('That did not go through, and no points were given. Try again in a minute.', true); });
@@ -5293,14 +5293,14 @@ function showMembersOnly(l, T){
     '<div class="listing-not-found">'+
       '<h2>Members only, for now</h2>'+
       '<p>The Vegans Explore community is still vetting '+esc(l.name)+'. It opens to everyone once '+T.min_voters+' different members vote for it, or once the '+esc(listingNoun(l))+' claims its listing.</p>'+
-      '<p><button type="button" id="mo-join" class="back-link" style="border:0;cursor:pointer;font:inherit">Become a member, $11 one time</button></p>'+
+      '<p><button type="button" id="mo-join" class="back-link" style="border:0;cursor:pointer;font:inherit">Become a member, free with a short survey</button></p>'+
       '<p><a href="/claim?listing='+slugq+'" class="back-link">Is this your '+esc(listingNoun(l))+'? Claim it</a></p>'+
     '</div>';
   var b = document.getElementById('mo-join');
   if(b) b.onclick = function(){
     if(!window.VEAuth) return;
     if(!VEAuth.isLoggedIn()) VEAuth.showAuthModal('Sign in or create your Passport to see every listing.', function(){ window.location.reload(); });
-    else if(VEAuth.showActivateModal) VEAuth.showActivateModal('Get your Passport for $11, one time, to see every listing and vote for the places you love.');
+    else if(VEAuth.showActivateModal) VEAuth.showActivateModal('Join free with a short survey to see every listing and vote for the places you love.');
   };
 }
 
@@ -5732,14 +5732,13 @@ function demoEvent(id){
     else if(!newcomer){
       body = e.price_cents ? ticket + '<div class="dm-total"><span>Total</span><b>' + money2(e.price_cents + fee) + '</b></div></div><button type="button" class="dm-go" data-act="buy">Get my ticket</button>'
         : '<p>' + e.going + ' going. As a Passport holder, every event is yours to RSVP.</p><button type="button" class="dm-go" data-act="rsvp">I\'m going</button>';
-    } else if(DEMO.nonprofit){
+    } else if(DEMO.nonprofit || !e.price_cents){
       body = '<div class="dm-pass"><b>Joining Vegans Explore is free.</b><span>Take a short survey and you are a member: every event is yours to RSVP, and you can follow ' + esc(DEMO.listing.name) + ' for its news and foster calls.</span></div><button type="button" class="dm-go" data-act="npjoin">Join free and RSVP</button>';
     } else if(!e.price_cents && !GDEMO.guestUsed){
       body = '<div class="dm-pass"><b>Your guest pass covers this one.</b><span>Your first free event with any group is on us. From your second, you join Vegans Explore with the Passport: $11, one time.</span></div><button type="button" class="dm-go" data-act="guest">RSVP with my guest pass</button>';
     } else {
-      body = '<div class="dm-pass"><b>' + (e.price_cents ? 'Ticketed events are for Passport holders.' : 'You used your guest pass.') + '</b><span>Join Vegans Explore with the Passport: $11, one time, with 1,100 points. Then every group and every event is open to you.</span></div>' +
-        '<div class="dm-bill"><div><span>The Passport, one time</span><b>$11.00</b></div>' + (e.price_cents ? '<div><span>Ticket</span><b>' + money2(e.price_cents) + '</b></div><div><span>Card processing</span><b>' + money2(fee) + '</b></div>' : '') +
-        '<div class="dm-total"><span>Total</span><b>' + money2(1100 + e.price_cents + fee) + '</b></div></div><button type="button" class="dm-go" data-act="join">Join and ' + (e.price_cents ? 'get my ticket' : 'RSVP') + '</button>';
+      body = '<div class="dm-pass"><b>Ticketed events are for members.</b><span>Joining Vegans Explore is free with a short survey. Then every group and every event is open to you.</span></div>' +
+        ticket + '<div class="dm-total"><span>Total</span><b>' + money2(e.price_cents + fee) + '</b></div></div><button type="button" class="dm-go" data-act="join">Join free and get my ticket</button>';
     }
     demoModal(head + tabs + body, function(m){
       m.querySelectorAll('[data-who]').forEach(function(b){ b.onclick = function(){ GDEMO.who = b.getAttribute('data-who'); draw(); }; });
@@ -5748,7 +5747,7 @@ function demoEvent(id){
         var k = a.getAttribute('data-act');
         if(k === 'npjoin'){ GDEMO.who = 'member'; GDEMO.joined = true; GDEMO.going[e.id] = 'You joined Vegans Explore free with the survey, and you are on ' + DEMO.listing.name + '\'s guest list.'; }
         else if(k === 'guest'){ GDEMO.guestUsed = true; GDEMO.going[e.id] = 'On your guest pass. Next time, the $11 Passport opens every event.'; }
-        else if(k === 'join'){ GDEMO.who = 'member'; GDEMO.joined = true; GDEMO.going[e.id] = 'You joined Vegans Explore through Sprout Social Society, so the group earns its share of your $11.'; }
+        else if(k === 'join'){ GDEMO.who = 'member'; GDEMO.joined = true; GDEMO.going[e.id] = 'You joined Vegans Explore free through ' + DEMO.listing.name + ', and your ticket is in My events.'; }
         else if(k === 'buy'){ GDEMO.going[e.id] = 'Your ticket is in My events. The group gets the ticket price less our 5%.'; }
         else GDEMO.going[e.id] = 'It is on My events, and the organizer can message the guests who say yes.';
         draw();
@@ -5778,7 +5777,7 @@ function demoJoinGroup(){
       (done ? '<div class="dm-done"><b>Welcome to Sprout Social Society.</b><span>Its board and events are on your dashboard. This is the sample: nothing was saved.</span></div>'
         : '<p>' + (g.members_total || '') + ' members. Joining a group is free for Passport holders: its board, its events first, and its members, from any city.</p>' +
           (GDEMO.who === 'member' ? '<button type="button" class="dm-go" data-act="j">Join the group</button>'
-            : '<div class="dm-pass"><b>Groups are for Passport holders.</b><span>Your first free event is on a guest pass. To join a group, the Passport: $11, one time, with 1,100 points.</span></div><button type="button" class="dm-go" data-act="jp">Get the Passport and join</button>')), function(m){
+            : '<div class="dm-pass"><b>Groups are for members.</b><span>Joining Vegans Explore is free with a short survey. Then join any group, in any city.</span></div><button type="button" class="dm-go" data-act="jp">Get the Passport and join</button>')), function(m){
         var a = m.querySelector('[data-act]'); if(a) a.onclick = function(){ GDEMO.joinedGroup = true; GDEMO.who = 'member'; draw(); };
       });
   };
