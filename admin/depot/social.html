@@ -753,6 +753,7 @@
         '<label>Title <small>For YouTube and our own planning.</small><input id="f_title" value="' + esc(x.title || '') + '"' + dis + '></label>' +
         '<label>Caption <small id="f_count"></small><textarea class="big" id="f_caption"' + dis + '>' + esc(x.caption || '') + '</textarea></label>' +
         '<label>First comment<textarea id="f_first"' + dis + '>' + esc(x.first_comment || '') + '</textarea></label>' +
+        '<label>Instagram collaborators <small>Their @handles, up to 5. They are invited as collaborators; they do not have to accept.</small><input id="f_collab" placeholder="@vedgerestaurant @monstervegan" value="' + esc((x.collaborators || []).map(function (h) { return '@' + h; }).join(' ')) + '"' + dis + '></label>' +
         '<label>Links <small>One a line. Use our /go/ tracked links.</small><textarea id="f_links"' + dis + '>' + esc((x.links || []).join('\n')) + '</textarea></label>' +
         '<label>Pictures and videos <small>One link a line, in the order they show.</small><textarea id="f_assets"' + dis + '>' + esc((x.assets || []).map(function (a) { return a && a.url; }).filter(Boolean).join('\n')) + '</textarea></label>' +
         (x.kind !== 'story' && x.kind !== 'thread' && (editable || x._story) ? '<label style="display:flex;gap:8px;align-items:center;letter-spacing:.04em"><input type="checkbox" id="f_story" style="width:auto"' + (x._story ? ' checked' : '') + dis + '> Also share as a story <small>A story slot ' + 15 + ' minutes after the post, on Instagram and Facebook. It waits until it has a 9:16 picture or video.</small></label>' : '') +
@@ -770,7 +771,7 @@
         also_story: story ? story.checked : undefined,
         slot_at: at ? eastIso(at) : null, kind: $('f_kind').value,
         channels: Array.prototype.map.call(app.querySelectorAll('.nets input:checked'), function (i) { return i.value; }),
-        title: $('f_title').value.trim() || null, caption: $('f_caption').value, first_comment: $('f_first').value.trim() || null,
+        title: $('f_title').value.trim() || null, caption: $('f_caption').value, first_comment: $('f_first').value.trim() || null, collaborators: $('f_collab').value,
         links: $('f_links').value.split(/\n+/).map(function (u) { return u.trim(); }).filter(Boolean), assets: assets, manual_steps: $('f_manual').value.trim() || null
       };
     }
