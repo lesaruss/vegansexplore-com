@@ -9,6 +9,7 @@
 //
 // POST { action: 'start', listing_ids: [...], run_id? }   ops   -> { run_id }   works in the background, 10 listings a batch
 // POST { action: 'status', run_id }                        ops   -> { counts, rows }
+// POST { action: 'export', run_id }                        ops   -> { url }   the run as media/logo-hunt/<run>/report.json
 // Ops is the LESARUSS_ADMIN_TOKEN, sent as x-ops-token (verify_jwt is on, so Authorization carries the anon key). Sources: Apify (hooli/google-images-scraper, apify/facebook-pages-scraper,
 // apify/instagram-profile-scraper) on APIFY_API_TOKEN; Claude on ANTHROPIC_API_KEY. No Google API calls (no Places spend).
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
@@ -280,6 +281,20 @@ Deno.serve(async (req) => {
     const { data } = await db.from('ve_logo_hunts').select('listing_id, status, verdict, confidence, sources_agree, why, error').eq('run_id', String(body.run_id || ''));
     const counts: Record<string, number> = {}; for (const r of data || []) { const k = r.status === 'done' ? 'done:' + r.verdict : r.status; counts[k] = (counts[k] || 0) + 1; }
     return json({ counts, rows: data });
+  }
+  if (body.action === 'export') {
+    // The run as one public JSON file next to its pictures (media/logo-hunt/<run>/report.json), for the review page.
+    const runId = String(body.run_id || '');
+    if (!/^[a-z0-9-]{4,40}$/.test(runId)) return json({ error: 'bad run' }, 400);
+    const { data } = await db.from('ve_logo_hunts').select('listing_id, status, verdict, confidence, sources_agree, background, pick, same_logo_in, why, error, site, socials, candidates, cost_usd').eq('run_id', runId);
+    const ids = (data || []).map((r: any) => r.listing_id);
+    const { data: ls } = ids.length ? await db.from('listings').select('id, slug, name, category, address_city, address_state, website, logo_url').in('id', ids) : { data: [] };
+    const byId = new Map((ls || []).map((l: any) => [l.id, l]));
+    const rows = (data || []).map((r: any) => ({ ...r, listing: byId.get(r.listing_id) || null }));
+    const path = `media/logo-hunt/${runId}/report.json`;
+    const up = await db.storage.from('vegan-media').upload(path, new TextEncoder().encode(JSON.stringify({ run_id: runId, at: new Date().toISOString(), rows })), { contentType: 'application/json', upsert: true });
+    if (up.error) return json({ error: up.error.message }, 500);
+    return json({ ok: true, url: `${SUPABASE_URL}/storage/v1/object/public/vegan-media/${path}`, rows: rows.length });
   }
   return json({ error: 'unknown action' }, 400);
 });
