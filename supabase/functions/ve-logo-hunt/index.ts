@@ -9,7 +9,7 @@
 //
 // POST { action: 'start', listing_ids: [...], run_id? }   ops   -> { run_id }   works in the background, 10 listings a batch
 // POST { action: 'status', run_id }                        ops   -> { counts, rows }
-// Ops is the LESARUSS_ADMIN_TOKEN. Sources: Apify (hooli/google-images-scraper, apify/facebook-pages-scraper,
+// Ops is the LESARUSS_ADMIN_TOKEN, sent as x-ops-token (verify_jwt is on, so Authorization carries the anon key). Sources: Apify (hooli/google-images-scraper, apify/facebook-pages-scraper,
 // apify/instagram-profile-scraper) on APIFY_API_TOKEN; Claude on ANTHROPIC_API_KEY. No Google API calls (no Places spend).
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 import Anthropic from 'npm:@anthropic-ai/sdk';
@@ -255,7 +255,8 @@ async function runBatch(runId: string, ids: string[]) {
 
 Deno.serve(async (req) => {
   if (req.method !== 'POST') return json({ error: 'post only' }, 405);
-  const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
+  // verify_jwt is on: the gateway takes the project's anon key in Authorization, and the ops token rides in x-ops-token.
+  const token = req.headers.get('x-ops-token') || (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
   const ops = await secret('LESARUSS_ADMIN_TOKEN');
   if (!ops || token !== ops) return json({ error: 'not allowed' }, 401);
   const body = await req.json().catch(() => ({}));
