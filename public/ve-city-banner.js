@@ -126,7 +126,6 @@
   ].join('');
 
   function hdrNew() { return document.documentElement.classList.contains('ve-hdr-new'); }
-  function isHubPage() { return /^\/communities\/[^\/]+\/?$/.test(location.pathname); }
 
   function injectCss() {
     if (document.getElementById('vcb-css')) return;
@@ -192,8 +191,9 @@
         '</div>' +
       '</div>';
 
-    // New header: one-line page bar (not on a chapter's hub page, which keeps its art). Share lives here instead of the menu bar.
-    var bar = hdrNew() && !isHubPage() && !opts.hero;
+    // New header: one-line page bar, chapter hubs included (Sean, 2026-11-07: "remove that expanded menu at the top for the communities...
+    // so it matches the rest of the site"). Share lives here instead of the menu bar.
+    var bar = hdrNew() && !opts.hero;
     if (bar) {
       el.classList.add('vcb-bar'); document.documentElement.classList.add('ve-has-pagebar');
       var _ac = el.querySelector('.vcb-actions'), _tg = el.querySelector('.vcb-toggle');
