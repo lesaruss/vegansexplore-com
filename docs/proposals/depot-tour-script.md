@@ -1,8 +1,8 @@
-# The Depot tour: V's script (draft for Sean)
+# The Depot tour: V's script (approved and recorded)
 
 Canon `canon-ve-guide-tour-standard` v2 (locked 2026-11-07): V narrates the Depot and BrandDesk. Playbook `branddesk-production-wing`.
 This is the prototype tour: once Sean approves it, the shared tour player is built on the new Depot home, then BrandDesk and the Guides use the same player.
-**Nothing is recorded until Sean approves this.** Each chapter is recorded on its own in V's profile voice (`Nhs7eitvQWFTQBsf0yiT`, the same
+**Recorded 2026-11-07** (Sean approved the script and the Ideas line): all 13 chapters at `geekfon-media/voice_samples/v/depot/tour-<n>-v1.mp3`, each checked word for word with stt (all 13 match; stt writes "its" as "it's" and "V" as "Vee", which sound the same). A changed line is recorded again as -v2. Each chapter is recorded on its own in V's profile voice (`Nhs7eitvQWFTQBsf0yiT`, the same
 settings as her BrandDesk lines, "Vegan" spelled "Veegan" for the recording), checked word for word with stt, saved as
 `geekfon-media/voice_samples/v/depot/tour-<n>-v1.mp3`. About 290 words, roughly 1 minute 50 seconds. Approved by Sean 2026-11-07 ("the rest looks good, we can go with it"), with the Ideas chapter added after (Sean, the same day: Ideas lives in the Depot); read chapter 9 before it is recorded. Revised 2026-11-07 with Sean's notes: Community became Bounties, Site and QA became Guides, BrandDesk left the tour, the end is tips for a normal day.
 

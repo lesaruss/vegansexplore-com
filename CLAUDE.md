@@ -1453,7 +1453,7 @@ rows of another group sat between Content rows). **The trash bin** (`TRASH` in `
 Passport Challenge and its card and kit, Pulse (old articles), Pulse Cities, Passport Partners, the old Logos page, Tours, Services, Dinner
 guests, Import narration and Guest reviews (empty since free accounts ended). Nothing is deleted; a retired page opened by its address says so,
 and **Restore** (`ve-depot` `trash_set`, `ve_site_settings` `depot_trash`) puts it back in its section. Mock `/mocks/depot/`; V's tour script
-`docs/proposals/depot-tour-script.md` (13 chapters, Ideas included; recording waits on Sean reading chapter 9). Not built yet: V's tour and
+`docs/proposals/depot-tour-script.md` (13 chapters, approved by Sean; recorded 2026-11-07 at `geekfon-media/voice_samples/v/depot/tour-<n>-v1.mp3`, all 13 checked word for word with stt). Not built yet: V's tour and
 Ask V on the Depot, Logos as its own tool (category filters, Most viewed), better logo suggestions, the Guides back end and See every page,
 BrandDesk inside Vegans Explore, People in BrandDesk.
 
