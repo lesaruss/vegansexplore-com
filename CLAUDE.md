@@ -6705,6 +6705,16 @@ suspended or banned." Sean is the judge: every suspend, ban and void is his deci
 - **`/policies#community` paragraph written 2026-11-03** (Sean approved the wording): **Earning points fairly**, between Don't and Reporting (points gained by gaming are voided, an account can be put on hold, serious or repeated cases can be closed, a person decides, every decision can be undone). It is live once this branch is on `main`; it must be live before opening cases is turned on. **Not built yet**: the standing check in the functions not listed above. Canon
   `canon-ve-abuse-watch`, playbook `ve-abuse-watch`.
 
+## Restaurant Guide Overview: short Start here, groups as pills, illustrated pictures (Sean, 2026-11-06, playbook `ve-restaurant-guide`)
+
+Sean's live review: "too much clicking... it should be instructions on how to use this thing. Very simple, not a lot." The Overview (members and
+visitors) is a short **Start here** card (`/public/ve-guide-intro.js`, now the short version for every Guide: right place, why us, when you are done,
+how to use it, a picture), then the four groups as headings with their sections as pills (visitors' pills locked; Run my free check under the card).
+The six-part Start here is retired (`docs/guides/BUILD-A-GUIDE.md`). **Generic pictures are our illustrated style, never photorealistic**; real photos
+only for real customers, events and a business's own food and space. All 18 pictures in `public/guides/restaurant-guide/` were redrawn (Higgsfield
+nano_banana_pro from the old photos with Liz's banner as the style reference, 2 credits each; `pic()` asks `?v=2`), plus `t-start.jpg`. Liz's member
+welcome is `door-overview-member-v2` ("Welcome in. You run a Vegan restaurant..."), checked with `stt`.
+
 ## Moving off the $11 Passport (Sean, 2026-11-06, NOT built, playbook `ve-pricing-points-passport`)
 
 "Let's move away from the $11 passport and it just be the certification... get people through the door and keep them engaged... versus us
