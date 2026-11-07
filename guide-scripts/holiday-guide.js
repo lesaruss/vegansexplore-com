@@ -34,11 +34,18 @@
   var TABS = [
     { k: 'overview', label: 'Overview', say: 'I\'m Theo. The holidays are about the people at the table. This Guide helps you find Vegan holiday menus near you, celebrate in a way that feels good, and give back. It\'s free, and it grows with every holiday.',
       sayMember: 'Welcome back. Start with ThanksLiving, find a holiday menu near you, and save the places you want to order from.' },
-    { k: 'thanksliving', label: 'ThanksLiving', say: 'ThanksLiving is Thanksgiving with a full plant-based table. Five simple ways to make it yours, whether you host or you\'re a guest.' },
+    { k: 'thanksliving', label: 'ThanksLiving', pic: '/public/guides/holiday/theo-thanksliving.jpg', say: 'ThanksLiving is Thanksgiving with a full plant-based table. Five simple ways to make it yours, whether you host or you\'re a guest.' },
     { k: 'menus', label: 'Holiday menus', say: 'Vegan places near you are cooking for the holiday. Pick your chapter, see what they\'re offering and when to order by. Save one to find it again.' },
     { k: 'events', label: 'Events', say: 'Sanctuary dinners, potlucks and Friendsgivings. If you\'re hosting one, add it to our calendar so people can find it.' },
     { k: 'giveback', label: 'Give back', say: 'Giving is part of the season. Here are the nonprofits, rescues and sanctuaries in our Directory. Giving Tuesday is December first.' },
     { k: 'business', label: 'For businesses', say: 'Cooking for the holidays? Send us your menu and we feature it here, free for members. ThanksLiving menus close November eighteenth.' }
+  ];
+  var RULE_ICON = [
+    '<path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.1 4.3 2.4.7-1.3 2.2-2.4 4.3-2.4 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/>',
+    '<path d="M3 11h18M5 11a7 5 0 0114 0M12 4v2M4 15h16l-1.5 4h-13z"/>',
+    '<path d="M4 5h16v10H9l-5 4z"/><path d="M8 9h8M8 12h5"/>',
+    '<rect x="3" y="8" width="18" height="5" rx="1"/><path d="M12 8v13M5 13v8h14v-8M12 8c-2-4-6-4-6-1s6 1 6 1zm0 0c2-4 6-4 6-1s-6 1-6 1z"/>',
+    '<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h5"/>'
   ];
   var RULES = [
     ['Three thanks', 'Before you eat, everyone names three things they are thankful for: a person, a place, and a thing on the table.'],
@@ -142,18 +149,33 @@
     ];
     main.innerHTML = head('Free for everyone', 'The holidays, the Vegan way',
       'Holiday menus from Vegan places near you, simple ways to celebrate, events and where to give back. We start with the holidays at hand and add each one as it comes. ' +
-      esc(t.name) + ' is ' + esc(dayFmt(onDay(t.holiday_on))) + '.') + countdown() +
+      esc(t.name) + ' is ' + esc(dayFmt(onDay(t.holiday_on))) + '.') + videoCard() + countdown() +
       '<div class="dg-tiles">' + tiles.map(function (x) { return '<a class="dg-tile" href="' + href(x[0]) + '"><div class="dg-ic">' + ICON[x[0]] + '</div><div><b>' + esc(x[1]) + '</b><span>' + esc(x[2]) + '</span></div></a>'; }).join('') + '</div>' +
       '<div class="dg-start"><a class="dg-btn" href="#/menus">Find a holiday menu</a><a class="dg-btn dg-ghost" href="#/thanksliving">Celebrate ThanksLiving</a></div>' +
       (up.length > 1 ? '<h3 style="margin:22px 0 8px;font-size:16px">Coming up</h3><div class="hg-facts">' + up.map(function (h) { return '<span><b>' + esc(h.name) + '</b> ' + esc(dayFmt(onDay(h.holiday_on), { month: 'long', day: 'numeric' })) + '</span>'; }).join('') + '</div>' : '') +
       (member() ? '' : '<div class="hg-note">Everything here is free to read. Members (free, with a short survey) can save the places they want to order from and find them again in My Saves.</div>');
   }
 
+  // The Overview is a video (canon-ve-guide-tour-standard v3): Theo walks them through the Guide. Until it is made this is its
+  // placeholder: the frame it will play in and its chapters, so everyone can see what is coming (Sean, 2026-11-07).
+  var VIDEO_CHAPTERS = ['Welcome, I\'m Theo', 'Why this Guide, and what it does for you', 'ThanksLiving', 'Holiday menus near you', 'Events',
+    'Give back', 'For businesses', 'A living Guide: what is new, and share it'];
+  function videoCard() {
+    var art = window.VEGuideArt ? VEGuideArt('theo', 'square') : '';
+    return '<div class="hg-video"><div class="hg-vframe"' + (art ? ' style="background-image:url(\'' + esc(art) + '\')"' : '') + '>' +
+      '<button type="button" class="hg-vplay" data-hg-video aria-label="Play the overview video"><svg width="30" height="30" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></button>' +
+      '<span class="hg-vbadge">Video in production</span></div>' +
+      '<div class="hg-vside"><div class="dg-k">Watch first</div><h3>How to use the Holiday Guide</h3>' +
+      '<p>Theo walks you through it in about two minutes. Until the video is ready, everything below works.</p>' +
+      '<ol class="hg-vch">' + VIDEO_CHAPTERS.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ol>' +
+      '<button type="button" class="dg-btn dg-ghost" data-ve-share>Share this Guide</button></div></div>';
+  }
+
   // ---------- ThanksLiving ----------
   function viewThanksLiving() {
     var t = thanks();
     main.innerHTML = head('November 26', 'ThanksLiving', 'Thanksgiving with a full plant-based table, on ' + esc(dayFmt(onDay(t.holiday_on))) + '. Host it, bring a dish, or order from a Vegan place near you. Five ways to make it yours:') +
-      '<div class="hg-rules">' + RULES.map(function (r, i) { return '<div class="hg-rule"><span class="n">' + (i + 1) + '</span><h3>' + esc(r[0]) + '</h3><p>' + esc(r[1]) + '</p></div>'; }).join('') + '</div>' +
+      '<div class="hg-rules">' + RULES.map(function (r, i) { return '<div class="hg-rule"><div class="hg-ric">' + ic(RULE_ICON[i]).replace('width="26" height="26"', 'width="30" height="30"') + '<span class="n">' + (i + 1) + '</span></div><h3>' + esc(r[0]) + '</h3><p>' + esc(r[1]) + '</p></div>'; }).join('') + '</div>' +
       '<div class="dg-btns" style="margin-top:16px"><a class="dg-btn" href="#/menus">Find a holiday menu</a><a class="dg-btn dg-ghost" href="#/events">See events</a></div>' +
       '<div class="hg-note"><b>A shared word.</b> Sanctuaries and Vegan groups have called it ThanksLiving for years, and many hold ThanksLiving dinners for the animals. We are glad to be one more place people find it.</div>' +
       '<div class="hg-note" style="background:#f6f4ef"><b>The same day is the National Day of Mourning.</b> Since 1970, United American Indians of New England have gathered in Plymouth on this day. To learn more, start with Indigenous-led voices like <a href="https://www.uaine.org/" target="_blank" rel="noopener">uaine.org</a>.</div>';
@@ -181,18 +203,73 @@
       '<a class="dg-btn dg-ghost" href="/directory/' + encodeURIComponent(l.slug) + '">Their page</a>' +
       '<button type="button" class="dg-save' + (saved ? ' on' : '') + '" data-hg-save="' + esc(l.id) + '" aria-pressed="' + saved + '">' + (saved ? 'Saved' : 'Save') + '</button></div></div>';
   }
+  // Search, then Filters to the right of it (the Directory and Events way): chapter, kind of menu, ordering and sort; each filter set
+  // shows as a pill with an x. The chapter is kept (hg_chapter) and in the address (#/menus/<chapter>); the rest is for the visit.
+  var MF = { q: '', type: 'all', order: 'all', sort: 'vegan' };
+  var MF_LABEL = { type: { vegan: '100% Vegan', pv: 'Plant-based (Pre-Vegan)' }, order: { open: 'Still taking orders', online: 'Order online' }, sort: { az: 'A to Z', soon: 'Order by soonest' } };
+  function today() { return new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }); }
+  function menuText(m) { var l = m.listing || {}; return [l.name, l.address_city, l.address_state, m.summary, m.pickup].concat((m.items || []).map(function (x) { return x.name + ' ' + (x.desc || ''); })).join(' ').toLowerCase(); }
+  function filtered(ch) {
+    var q = MF.q.trim().toLowerCase(), t = today();
+    var list = (MENUS || []).filter(function (m) {
+      var l = m.listing || {}, vegan = l.vegan_status === 'fully_vegan';
+      if (!inChapter(l, ch)) return false;
+      if (MF.type === 'vegan' && !vegan) return false;
+      if (MF.type === 'pv' && vegan) return false;
+      if (MF.order === 'open' && m.order_by && m.order_by < t) return false;
+      if (MF.order === 'online' && !m.order_url) return false;
+      if (q && q.split(/\s+/).some(function (w) { return menuText(m).indexOf(w) < 0; })) return false;
+      return true;
+    });
+    if (MF.sort === 'az') list.sort(function (a, b) { return String(a.listing.name).localeCompare(String(b.listing.name)); });
+    if (MF.sort === 'soon') list.sort(function (a, b) { return String(a.order_by || '9999').localeCompare(String(b.order_by || '9999')); });
+    return list;
+  }
+  function sel(id, label, cur, opts) {
+    return '<label class="hg-pf"><span>' + esc(label) + '</span><select class="dg-sort" id="' + id + '">' + opts.map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === cur ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select></label>';
+  }
+  function pills(ch) {
+    var out = [];
+    if (ch !== 'all') out.push(['ch', chapterName(ch)]);
+    ['type', 'order', 'sort'].forEach(function (k) { var v = MF[k]; if (MF_LABEL[k][v]) out.push([k, MF_LABEL[k][v]]); });
+    return out;
+  }
   function viewMenus(sub) {
     if (/^listing\//.test(sub)) return viewListing(decodeURIComponent(sub.slice(8)), ['Holiday menus', '#/menus']);
-    var ch = chapter(sub), t = thanks();
-    var tools = '<div class="hg-tools">' + chapterPick('hgChapter', ch) + '</div>';
-    if (MENUS === null) { main.innerHTML = head(t.name, 'Holiday menus near you', '') + tools + '<div class="dg-loading">Loading the menus...</div>'; wireChapter('menus'); return; }
-    var list = MENUS.filter(function (m) { return inChapter(m.listing || {}, ch); });
-    var open = daysUntil(t.submit_close) > 0;
-    main.innerHTML = head(t.name, 'Holiday menus near you', 'What Vegan places are cooking for ' + esc(t.name) + ', 100% Vegan places first. Every menu is checked by our team before it shows.') + tools +
-      (list.length ? '<div class="hg-menus">' + list.map(menuCard).join('') + '</div>' :
-        '<div class="hg-empty"><h3>No holiday menus ' + (ch === 'all' ? '' : 'in ' + esc(chapterName(ch)) + ' ') + 'yet</h3><p>' + (open ? 'Menus are coming in now, and each one shows here once our team has checked it. Know a place cooking for the holiday? Send them this Guide.' : 'Menus for this holiday are closed.') + '</p>' +
+    var ch = chapter(sub), t = thanks(), n = pills(ch).length;
+    main.innerHTML = head(t.name, 'Holiday menus near you', 'What Vegan places are cooking for ' + esc(t.name) + '. Every menu is checked by our team before it shows.') +
+      '<div class="hg-tools2"><div class="hg-search"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#525252" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
+      '<input type="search" id="hgQ" placeholder="Search places, dishes, cities..." aria-label="Search holiday menus" value="' + esc(MF.q) + '" autocomplete="off" data-dictate="off"></div>' +
+      '<button type="button" class="hg-fbtn" id="hgFbtn" aria-expanded="false" aria-controls="hgPop">Filters<span class="hg-fcount"' + (n ? '' : ' hidden') + '>' + n + '</span></button>' +
+      '<div class="hg-pop" id="hgPop" hidden><div class="hg-pgrid">' +
+        '<label class="hg-pf"><span>Chapter</span>' + chapterPick('hgChapter', ch) + '</label>' +
+        sel('hgType', 'Menu', MF.type, [['all', 'Every menu'], ['vegan', '100% Vegan'], ['pv', 'Plant-based (Pre-Vegan)']]) +
+        sel('hgOrder', 'Ordering', MF.order, [['all', 'Any'], ['open', 'Still taking orders'], ['online', 'Order online']]) +
+        sel('hgSort', 'Sort by', MF.sort, [['vegan', '100% Vegan first'], ['az', 'A to Z'], ['soon', 'Order by soonest']]) +
+      '</div><div class="hg-pfoot"><button type="button" class="dg-btn dg-ghost" data-hg-reset>Reset filters</button><button type="button" class="dg-btn" data-hg-done>Done</button></div></div></div>' +
+      '<div class="hg-pills">' + pills(ch).map(function (p) { return '<button type="button" class="hg-pill" data-hg-unpill="' + p[0] + '">' + esc(p[1]) + ' <span aria-hidden="true">&times;</span></button>'; }).join('') + '</div>' +
+      '<div id="hgMenuList"></div>';
+    drawMenuList(ch);
+    wireMenuTools(ch);
+  }
+  function drawMenuList(ch) {
+    var box = document.getElementById('hgMenuList'); if (!box) return;
+    if (MENUS === null) { box.innerHTML = '<div class="dg-loading">Loading the menus...</div>'; return; }
+    var t = thanks(), open = daysUntil(t.submit_close) > 0, list = filtered(ch), any = MF.q || pills(ch).length;
+    box.innerHTML = list.length ? '<div class="hg-menus">' + list.map(menuCard).join('') + '</div>' :
+      (MENUS.length && any ? '<div class="hg-empty"><h3>Nothing matches</h3><p>Try fewer words or reset the filters.</p><button type="button" class="dg-btn dg-ghost" data-hg-reset>Reset filters</button></div>' :
+      '<div class="hg-empty"><h3>No holiday menus ' + (ch === 'all' ? '' : 'in ' + esc(chapterName(ch)) + ' ') + 'yet</h3><p>' + (open ? 'Menus are coming in now, and each one shows here once our team has checked it. Know a place cooking for the holiday? Send them this Guide.' : 'Menus for this holiday are closed.') + '</p>' +
         (open ? '<a class="dg-btn dg-ghost" href="#/business">Run a business? Send your menu</a>' : '') + '</div>');
-    wireChapter('menus');
+  }
+  function wireMenuTools(ch) {
+    var q = document.getElementById('hgQ'), btn = document.getElementById('hgFbtn'), pop = document.getElementById('hgPop');
+    var tq; q.addEventListener('input', function () { MF.q = q.value; clearTimeout(tq); tq = setTimeout(function () { drawMenuList(ch); }, 120); });
+    function show(on) { pop.hidden = !on; btn.setAttribute('aria-expanded', String(on)); }
+    btn.addEventListener('click', function () { show(pop.hidden); });
+    document.getElementById('hgChapter').addEventListener('change', function (e) { store('hg_chapter', e.target.value); location.hash = '#/menus/' + e.target.value; });
+    [['hgType', 'type'], ['hgOrder', 'order'], ['hgSort', 'sort']].forEach(function (x) {
+      document.getElementById(x[0]).addEventListener('change', function (e) { MF[x[1]] = e.target.value; viewMenus(ch); var p2 = document.getElementById('hgPop'), b2 = document.getElementById('hgFbtn'); p2.hidden = false; b2.setAttribute('aria-expanded', 'true'); });
+    });
   }
   function wireChapter(view) {
     var s = document.getElementById('hgChapter');
@@ -279,6 +356,9 @@
     var t = tab(curTab), i = 0;
     TABS.forEach(function (x, n) { if (x.k === curTab) i = n; });
     bubble.textContent = member() && t.sayMember ? t.sayMember : t.say;
+    // Theo dresses for the page he is on (Sean, 2026-11-07): a holiday tab carries its own picture, every other tab his usual one.
+    var box = document.getElementById('dgMaya'), art = t.pic || (window.VEGuideArt ? VEGuideArt('theo', 'square') : '');
+    if (art && box.getAttribute('data-art') !== art) { box.style.backgroundImage = "url('" + art + "')"; box.setAttribute('data-art', art); }
     tourEl.innerHTML = tourM.innerHTML = '<a class="dg-tnav" href="' + href(TABS[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Back</a><span>' + (i + 1) + ' of ' + TABS.length + '</span>' +
       '<a class="dg-tnav next" href="' + href(TABS[Math.min(TABS.length - 1, i + 1)].k) + '"' + (i < TABS.length - 1 ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Next</a>';
   }
@@ -339,6 +419,14 @@
     var el, a = auth();
     if (e.target.closest('[data-hg-close]') || e.target.id === 'hgJoin') { closeJoin(); return; }
     if (e.target.closest('[data-hg-survey]')) { goSurvey(); return; }
+    if (e.target.closest('[data-hg-video]')) { var vb = document.querySelector('.hg-vbadge'); if (vb) vb.textContent = 'The video is being made. Start below for now.'; return; }
+    if (e.target.closest('[data-hg-done]')) { var pp = document.getElementById('hgPop'); if (pp) { pp.hidden = true; document.getElementById('hgFbtn').setAttribute('aria-expanded', 'false'); } return; }
+    if (e.target.closest('[data-hg-reset]')) { MF = { q: '', type: 'all', order: 'all', sort: 'vegan' }; store('hg_chapter', 'all'); if (location.hash === '#/menus/all') viewMenus('all'); else location.hash = '#/menus/all'; return; }
+    if ((el = e.target.closest('[data-hg-unpill]'))) {
+      var k = el.getAttribute('data-hg-unpill');
+      if (k === 'ch') { store('hg_chapter', 'all'); location.hash = '#/menus/all'; return; }
+      MF[k] = k === 'sort' ? 'vegan' : 'all'; viewMenus(chapter(null)); return;
+    }
     if ((el = e.target.closest('[data-hg-save]'))) {
       e.preventDefault();
       var id = el.getAttribute('data-hg-save');
@@ -365,7 +453,7 @@
   function loadAll() {
     var again = function (re) { return function () { if (re.test(curTab)) route(); }; };
     hol('holidays').then(function (d) { HOLS = (d && d.holidays) || []; }).catch(function () { HOLS = []; }).then(function () { route(); });
-    hol('live', { holiday: HOLIDAY }).then(function (d) { MENUS = (d && d.menus) || []; }).catch(function () { MENUS = []; }).then(again(/^menus$/));
+    hol('live', { holiday: HOLIDAY }).then(function (d) { MENUS = (d && d.menus) || []; }).catch(function () { MENUS = []; }).then(function () { if (curTab === 'menus') drawMenuList(chapter(null)); });
     rest(EVENTS_URL).then(function (d) { EVENTS = Array.isArray(d) ? d : []; }).catch(function () { EVENTS = []; }).then(again(/^events$/));
     rest(GIVE_URL).then(function (d) { GIVE = ours(d); }).catch(function () { GIVE = []; }).then(again(/^giveback$/));
     var a = auth();
@@ -376,7 +464,7 @@
         var p = null; try { p = JSON.parse(recall('hg_pending') || 'null'); } catch (e) {}
         store('hg_pending', null);
         if (p && p.save && !SAVED[p.save] && Date.now() - (p.at || 0) < 864e5) saveListing(p.save, null);
-        if (curTab === 'menus') route();
+        if (curTab === 'menus') drawMenuList(chapter(null));
       }).catch(function () {});
     }
   }

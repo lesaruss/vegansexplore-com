@@ -6911,6 +6911,13 @@ for the Guide and `claim.html` for the menu form (template gate).
   live data, and a menu card and the join window against a mocked menu. **The restaurant note (step H)** is a draft for Sean,
   `docs/proposals/holiday-guide-restaurant-note.md` (96 published addresses, two versions, from the team, Tuesday Nov 10 by default). Not yet: a
   ThanksLiving banner, sanctuary ThanksLiving events on the calendar, Theo's recordings, donation links (Give back step 4).
+  **Round 2 (Sean, 2026-11-07)**: the Overview opens with the **video placeholder** (`videoCard`: a 16:9 frame with Theo, Play, "Video in production", the
+  eight planned chapters and Share this Guide); the video follows canon-ve-guide-tour-standard v3 and the Depot tour's framework (script, recordings, lookbook in
+  Depot > Guides and tours, animation, edit). ThanksLiving's five ways each have a flat icon thumbnail. Holiday menus has **search with Filters to its right**
+  (chapter, menu 100% Vegan or Plant-based (Pre-Vegan), ordering still open or online, sort), each set filter a pill with an x (`MF`, `filtered`). **Theo
+  dresses for each holiday tab** (a tab's `pic`; ThanksLiving is `public/guides/holiday/theo-thanksliving.jpg`, Higgsfield nano_banana, the store tee and an apron,
+  a plant-based roast); Hanukkah, Christmas and Kwanzaa get theirs when their tabs are built, respectful and never stereotypical (no costume of a culture,
+  checked against how each tradition presents itself).
 
 ## Image conventions
 
