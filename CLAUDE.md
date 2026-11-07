@@ -6929,7 +6929,15 @@ white); and one clickable phone with every v1 screen, using real listings and ev
 mosaic suitcase `public/ve-mark.png` is the old logo and is retired**: never use it again). The website's icons in `public/app/` are A since the
 same day. The opening screen is **the stacked (portrait) logo on white**: `public/logo-ve-portrait-v1.svg` (Sean's file; the suitcase over
 VEGANS in black and EXPLORE in green), with `public/logo-ve-portrait-v1-inverted.svg` (all white, the leaf green, no background) kept on file
-for green or dark backgrounds. F (the screens) still waits for Sean's approval.
+for green or dark backgrounds. **F approved by Sean 2026-11-07** ("I approved the look. We can always make adjustments later"), after six rounds on the canvas: tabs
+**Home, Explore, Menu (raised center button: every feature, built-in or the website's page inside the app), Saves, Profile**; Bounties and
+Events live in the Menu; Profile is the profile survey (every question we want answered, % complete, points per answer) with collectible
+badge stamps and a + that lists the Guides that earn each badge; an Admin group in the Menu for super admins (the Depot signed in; BrandDesk
+on HQ asks for the HQ sign-in the first time); fixed headers with only the list scrolling; anything opened fills the screen with a back button
+naming where you came from. **The app reuses the website's Directory card and listing page design, never a new style.** First visit: the
+opening screen, a short welcome, pick your chapter or use location, then Home with no account (Apple forbids forced sign-up); voting, saving,
+checking in, Saves and Profile ask to join free through the Explorer survey. **One Expo build serves the stores and vegansexplore.com on
+phones** (the homepage and the home-screen icon; pages people land on from search keep their own page; computers keep the website). Next: G.
 
 ## Image conventions
 
