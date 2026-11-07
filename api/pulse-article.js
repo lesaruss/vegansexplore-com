@@ -12,6 +12,7 @@
 // Categories and ad rail here must mirror pulse.html exactly (same consolidated
 // Community/Recipes taxonomy, same ad_placements/ad_campaigns rail via ad-resolve).
 
+const SEO = require('../public/ve-seo-text.js');
 const SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
 
@@ -217,7 +218,10 @@ module.exports = async (req, res) => {
   }
 
   const title = post.headline;
-  const description = (post.excerpt || '').slice(0, 200);
+  // Google cuts descriptions at about 155 characters and titles at about 65 (Signal, 2026-11-07; public/ve-seo-text.js).
+  let description = SEO.clip(post.excerpt || '', SEO.DESC_MAX);
+  if (description.length < SEO.DESC_MIN) description = SEO.clip((description ? description.replace(/[.\s]+$/, '') + '. ' : '') + 'From the Daily Pulse on Vegans Explore.', SEO.DESC_MAX);
+  const pageTitle = SEO.title(title);
   const image = post.img || (epData && epData.show.logo) || 'https://vegansexplore.com/public/pulse-ve-banner.jpg';
   const caption = 'Read this on VEGANS EXPLORE Pulse: ' + title;
 
@@ -323,18 +327,18 @@ module.exports = async (req, res) => {
     + '<html lang="en"><head>'
     + '<meta charset="UTF-8">'
     + '<meta name="viewport" content="width=device-width, initial-scale=1.0">'
-    + '<title>' + esc(title) + ' — Vegans Explore</title>'
+    + '<title>' + esc(pageTitle) + '</title>'
     + '<meta name="description" content="' + esc(description) + '">'
     + (preview ? '<meta name="robots" content="noindex, nofollow">' : '')
     + '<link rel="canonical" href="' + pageUrl + '">'
     + '<meta property="og:type" content="article">'
     + '<meta property="og:site_name" content="Vegans Explore">'
-    + '<meta property="og:title" content="' + esc(title) + '">'
+    + '<meta property="og:title" content="' + esc(pageTitle) + '">'
     + '<meta property="og:description" content="' + esc(description) + '">'
     + '<meta property="og:image" content="' + esc(image) + '">'
     + '<meta property="og:url" content="' + pageUrl + '">'
     + '<meta name="twitter:card" content="summary_large_image">'
-    + '<meta name="twitter:title" content="' + esc(title) + '">'
+    + '<meta name="twitter:title" content="' + esc(pageTitle) + '">'
     + '<meta name="twitter:description" content="' + esc(description) + '">'
     + '<meta name="twitter:image" content="' + esc(image) + '">'
     + (ld ? '<script type="application/ld+json">' + JSON.stringify(ld).replace(/</g, '\\u003c') + '</script>' : '')

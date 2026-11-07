@@ -129,17 +129,17 @@
     if (!token()) return 'join';
     return ST.balance >= ST.cost ? 'points' : 'buy';
   }
-  function ctaLabel() { return { soon: 'Coming soon', join: 'Get it for $11', points: 'Unlock with ' + pts(ST.cost) + ' points', buy: 'Get it for $11' }[mode()]; }
+  function ctaLabel() { return { soon: 'Coming soon', join: 'Get it for $11', points: 'Use ' + pts(ST.cost) + ' points', buy: 'Get it for $11' }[mode()]; }
   function offerLine() {
     var m = mode();
     if (m === 'soon') return 'The full Guide opens soon. Hard Rock Stadium is open to everyone now.';
-    if (m === 'points') return 'Unlock it with ' + pts(ST.cost) + ' points: you have ' + pts(ST.balance) + '. Or get it for $11.';
-    return 'It is $11, or ' + pts(ST.cost) + ' points, and yours to keep. Buying it makes you a member of Vegans Explore.';
+    if (m === 'points') return 'Pick how you pay: $11, or ' + pts(ST.cost) + ' of your ' + pts(ST.balance) + ' points.';
+    return m === 'join' ? 'It is $11 and yours to keep. Members can pay with ' + pts(ST.cost) + ' points instead.' : 'It is $11 and yours to keep, or ' + pts(ST.cost) + ' points: you have ' + pts(ST.balance) + '.';
   }
   function ctaBtns() {
     var m = mode();
     return '<div class="dg-btns"><button type="button" class="dg-btn" data-join' + (m === 'soon' ? ' disabled style="opacity:.6;cursor:default"' : '') + '>' + esc(ctaLabel()) + '</button>' +
-      (m === 'join' ? '<a href="#" data-signin style="font-size:12.5px;font-weight:800;color:var(--g)">Already a member? Sign in</a>' : '') +
+      (m === 'join' ? '<a href="#" data-signin style="font-size:12.5px;font-weight:800;color:var(--g)">Member? Sign in</a>' : '') +
       (m === 'points' ? '<a href="#" data-buy style="font-size:12.5px;font-weight:800;color:var(--g)">Or get it for $11</a>' : '') + '</div>';
   }
   function gated(inner, title, text) {
@@ -151,6 +151,8 @@
     var btn = box.querySelector('[data-join]'), signin = box.querySelector('.dg-jb-in');
     btn.textContent = ctaLabel(); btn.disabled = mode() === 'soon'; btn.style.opacity = mode() === 'soon' ? '.6' : '';
     signin.style.display = mode() === 'join' || mode() === 'soon' ? '' : 'none';
+    var jin = box.querySelector('.dg-jb-in'), jm = mode();
+    if (jin) { if (jm === 'points') { jin.innerHTML = 'Or<br><a href="#" data-buy>pay $11</a>'; jin.style.display = ''; } else if (jm === 'join') jin.innerHTML = 'Member?<br><a href="#" data-signin>Sign in</a>'; }
   }
 
   // ---------- views ----------
@@ -194,7 +196,7 @@
   function viewOverview() {
     var own = owner();
     var cta = own ? '<div class="dg-btns"><a class="dg-btn" href="' + OV.listHash + '">' + esc(OV.choose) + '</a><a class="dg-btn dg-ghost" href="#/mylist">My list</a></div>'
-      : '<div class="dg-btns"><a class="dg-btn" href="#/join">Get the Guide: $11 or ' + pts(ST.cost) + ' points</a><a class="dg-btn dg-ghost" href="' + OV.venueHash + FREE + '">Try ' + esc(OV.freeName) + ' free</a></div>';
+      : '<div class="dg-btns"><a class="dg-btn" href="#/join">Get the Guide</a><a class="dg-btn dg-ghost" href="' + OV.venueHash + FREE + '">Try ' + esc(OV.freeName) + ' free</a></div>';
     var newest = !VENUES ? '<div class="dg-loading">Loading...</div>'
       : '<div class="sa-vgrid ov-new">' + VENUES.slice().sort(function (a, b) { return String(b.added || '').localeCompare(String(a.added || '')) || (b.sort_order || 0) - (a.sort_order || 0); }).slice(0, 6).map(venueCard).join('') + '</div>';
     main.innerHTML =
@@ -205,7 +207,7 @@
       '<section class="ov-sec"><div class="dg-k">How to use it</div><h3 class="ov-h">Three steps, wherever you are</h3><div class="ov-steps">' +
         [['pick', OV.step1[0], OV.step1[1]], ['go', OV.step2[0], OV.step2[1]], ['save', 'Save it for later', OV.step3]].map(function (s, i) {
           return '<div class="ov-step"><span class="ov-ic">' + OV_ICON[s[0]] + '</span><b><span class="ov-n">' + (i + 1) + '</span>' + esc(s[1]) + '</b><p>' + esc(s[2]) + '</p></div>'; }).join('') + '</div></section>' +
-      (own ? '' : '<section class="ov-sec ov-join"><div><div class="dg-k">Get access</div><h3 class="ov-h">' + esc(OV.joinTitle) + '</h3><p>Every ' + esc(OV.place) + ' with ' + esc(OV.getThere) + ', My list, and the bounties. $11 or ' + pts(ST.cost) + ' points, yours to keep. Buying a Guide makes you a member of Vegans Explore.</p></div><a class="dg-btn" href="#/join">Get the Guide</a></section>') +
+      (own ? '' : '<section class="ov-sec ov-join"><div><div class="dg-k">Get access</div><h3 class="ov-h">' + esc(OV.joinTitle) + '</h3><p>Every ' + esc(OV.place) + ' with ' + esc(OV.getThere) + ', My list, and the bounties.</p></div><a class="dg-btn" href="#/join">Get the Guide</a></section>') +
       '<section class="ov-sec ov-built"><div><div class="dg-k">Built with you</div><h3 class="ov-h">Members keep it right</h3><p>' + OV.built + '</p>' +
         '<ul class="ov-list"><li><b>Still here:</b> it is still sold, as written.</li><li><b>Something changed:</b> a new price, a new name, or it is gone.</li><li><b>Something missing:</b> a Vegan item or a spot that is not in the Guide yet.</li></ul>' +
         '<p class="ov-small">Every item says where it came from and when a member last checked it, so you know what is fresh.</p></div>' +
@@ -495,8 +497,8 @@
     if (kind === 'scan') return viewScan(slug, itemId);
     if (kind === 'locate') return viewLocate(slug, itemId);
     if (!REPORT[kind]) kind = 'missing';
-    var gate = !token() ? '<div class="dg-door"><p>Sign in to send a report. Reports are for Passport holders.</p><div class="dg-btns"><button type="button" class="dg-btn" data-signin>Sign in</button><a href="/passport" style="font-weight:800;color:var(--g)">Get your Passport</a></div></div>'
-      : !ME.active ? '<div class="dg-door"><p>Reports are for Passport holders. Your Passport is $11, one time, with 1,100 welcome points.</p><a class="dg-btn" href="/passport">Get your Passport</a></div>'
+    var gate = !token() ? '<div class="dg-door"><p>Sign in to send a report. Reports are for members.</p><div class="dg-btns"><button type="button" class="dg-btn" data-signin>Sign in</button><a href="/survey?s=explorer" style="font-weight:800;color:var(--g)">Join free</a></div></div>'
+      : !ME.active ? '<div class="dg-door"><p>Reports are for members. Membership is free with a short survey.</p><a class="dg-btn" href="/survey?s=explorer">Take the survey</a></div>'
       // Bounties unlock with the Guide (Sean, 2026-10-29: "once you purchase a guide, you have a new set of bounties that unlock").
       : !owner() ? '<div class="dg-door"><p>Bounties unlock with the Guide. Once it is yours, every report you send from inside earns points, and the first to confirm an item earns the bounty.</p><a class="dg-btn" href="#/join">Get the Guide</a></div>' : '';
     if (!v.can_report) gate = '<div class="dg-door"><p>Reports for ' + esc(v.name) + ' open soon.</p></div>';
@@ -598,8 +600,8 @@
   }
   function reportGate(v) {
     if (!v.can_report) return '<div class="dg-door"><p>Reports for ' + esc(v.name) + ' open soon.</p></div>';
-    return !token() ? '<div class="dg-door"><p>Sign in to scan. Reports are for Passport holders.</p><div class="dg-btns"><button type="button" class="dg-btn" data-signin>Sign in</button><a href="/passport" style="font-weight:800;color:var(--g)">Get your Passport</a></div></div>'
-      : !ME.active ? '<div class="dg-door"><p>Reports are for Passport holders. Your Passport is $11, one time, with 1,100 welcome points.</p><a class="dg-btn" href="/passport">Get your Passport</a></div>'
+    return !token() ? '<div class="dg-door"><p>Sign in to scan. Reports are for members.</p><div class="dg-btns"><button type="button" class="dg-btn" data-signin>Sign in</button><a href="/survey?s=explorer" style="font-weight:800;color:var(--g)">Join free</a></div></div>'
+      : !ME.active ? '<div class="dg-door"><p>Reports are for members. Membership is free with a short survey.</p><a class="dg-btn" href="/survey?s=explorer">Take the survey</a></div>'
       : !owner() ? '<div class="dg-door"><p>Bounties unlock with the Guide. Once it is yours, every item you scan earns points.</p><a class="dg-btn" href="#/join">Get the Guide</a></div>' : '';
   }
   var SCAN = null;
@@ -767,12 +769,12 @@
       '<li><b>The community:</b> your member dashboard, Directory votes, the Daily Pulse and points.</li></ul></div>';
     var status = '<span class="dg-status" role="status" style="display:block;margin-top:10px;color:#8a5a00"></span>';
     var box = m === 'soon' ? '<div class="dg-big">Soon</div><p>The full Guide opens soon. Hard Rock Stadium is open to everyone now.</p><a class="dg-btn" href="#/venue/hard-rock-stadium">Open Hard Rock Stadium</a>'
-      : m === 'points' ? '<div class="dg-big">' + pts(ST.cost) + '<small>points</small></div><p>You have ' + pts(ST.balance) + ' points. Unlock the Guide with ' + pts(ST.cost) + ' of them and it is yours to keep.</p>' +
-        '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button><button type="button" class="dg-btn dg-ghost" data-buy style="margin-top:8px">Or get it for $11</button>' + status
-      : '<div class="dg-big">$11<small>yours to keep</small></div><p>' + (m === 'join' ? 'Create your account and get the Guide for $11, one time. Buying it makes you a member of Vegans Explore. Already a member? <a href="#" data-signin>Sign in</a>.'
+      : m === 'points' ? '<div class="dg-big">$11<small>or ' + pts(ST.cost) + ' points</small></div><p>Pick how you pay. You have ' + pts(ST.balance) + ' points. Either way the Guide is yours to keep.</p>' +
+        '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button><button type="button" class="dg-btn dg-ghost" data-buy style="margin-top:8px">Pay $11</button>' + status
+      : '<div class="dg-big">$11<small>yours to keep</small></div><p>' + (m === 'join' ? 'Get the Guide for $11, one time, and it is yours to keep. Members can pay with 1,100 points instead: <a href="#" data-signin>sign in</a>.'
         : 'Get the Guide for $11, one time, and it is yours to keep.') + '</p><button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status +
-        '<p class="dg-pp">Or get your <a href="/passport">Passport</a>: $11, one time, with 1,100 welcome points, enough for this Guide.</p>';
-    main.innerHTML = head('Get access', 'Open every venue', 'Every Vegans Explore Guide is $11, or 1,100 points. Buying a Guide makes you a member, and the Passport comes with 1,100 welcome points.') + list;
+        (m === 'buy' ? '<p class="dg-pp">Or ' + pts(ST.cost) + ' points: you have ' + pts(ST.balance) + '. Earn more with <a href="/bounties">bounties</a>.</p>' : '');
+    main.innerHTML = head('Get access', 'Open every venue', 'Every Vegans Explore Guide is $11, or 1,100 points for members, and yours to keep.') + list;
     main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox">' + box + '</div>');
   }
 
@@ -893,7 +895,7 @@
       if (m === 'join') {
         var go = function () { delete window.VE_ACTIVATE_HANDLER; buyNow(jb); };
         window.VE_ACTIVATE_HANDLER = go;
-        a.showAuthModal('Create your account, then get the Stadium & Arena Guide for $11. Buying it makes you a member.', go, 'signup');
+        a.showAuthModal('Create your account, then get the Stadium & Arena Guide for $11.', go, 'signup');
         return;
       }
       if (m === 'points') unlockPoints(jb); else buyNow(jb);

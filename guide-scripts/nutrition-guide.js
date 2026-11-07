@@ -77,7 +77,7 @@
     { k: 'pulse', label: 'Pulse', lock: 1, say: 'Our episodes with Dr. Barnard, Dr. Klaper, Dr. Bulsiewicz and more, on food and health. Play them right here.',
       sayMember: 'Every health episode we\'ve recorded is right here. Start with Dr. Barnard\'s answers to the questions beginners ask.' },
     { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you saved is here: nutrients, episodes and experts.' },
-    { k: 'join', label: 'Get access', guest: 1, say: 'The Nutrition Guide is eleven dollars, or 1,100 points, and it\'s yours to keep. Buying it makes you a member of Vegans Explore.' }
+    { k: 'join', label: 'Get access', guest: 1, say: 'The Nutrition Guide is eleven dollars, or 1,100 points, and it\'s yours to keep. Members can pick either one.' }
   ];
   var S = 'stroke="#1f5f22" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
   var NUT_ICON = {
@@ -166,17 +166,17 @@
     if (access === 'guest' || access === 'checking') return 'join';
     return ST.balance >= ST.cost ? 'points' : 'buy';
   }
-  function ctaLabel() { return { join: 'Get it for $11', points: 'Unlock with ' + pts(ST.cost) + ' points', buy: 'Get it for $11' }[mode()]; }
+  function ctaLabel() { return { join: 'Get it for $11', points: 'Use ' + pts(ST.cost) + ' points', buy: 'Get it for $11' }[mode()]; }
   function offerLine() {
     if (mode() === 'points') return 'Unlock it with ' + pts(ST.cost) + ' points: you have ' + pts(ST.balance) + '. Or get it for $11.';
-    return 'It is $11, or ' + pts(ST.cost) + ' points, and yours to keep. Buying it makes you a member of Vegans Explore.';
+    return m === 'join' ? 'It is $11 and yours to keep. Members can pay with ' + pts(ST.cost) + ' points instead.' : 'It is $11 and yours to keep, or ' + pts(ST.cost) + ' points: you have ' + pts(ST.balance) + '.';
   }
   function ctaBtns() {
     var m = mode();
     return '<div class="dg-btns"><button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' +
-      (m === 'join' ? '<a href="#" data-signin>Already a member? Sign in</a>' : '') +
+      (m === 'join' ? '<a href="#" data-signin>Member? Sign in</a>' : '') +
       (m === 'points' ? '<a href="#" data-buy>Or get it for $11</a>' : '') +
-      (m === 'buy' ? '<a href="/passport">Or get your Passport: $11 with 1,100 points</a>' : '') + '</div>';
+      (m === 'buy' ? '<a href="/bounties">Earn points with bounties</a>' : '') + '</div>';
   }
   function take(d) {
     if (!d || d.error) return;
@@ -188,6 +188,8 @@
     var box = document.querySelector('.dg-joinbox'); if (!box || member()) return;
     box.querySelector('[data-join]').textContent = ctaLabel();
     box.querySelector('.dg-jb-in').style.display = mode() === 'join' ? '' : 'none';
+    var jin = box.querySelector('.dg-jb-in'), jm = mode();
+    if (jin) { if (jm === 'points') { jin.innerHTML = 'Or<br><a href="#" data-buy>pay $11</a>'; jin.style.display = ''; } else if (jm === 'join') jin.innerHTML = 'Member?<br><a href="#" data-signin>Sign in</a>'; }
   }
 
   // ---------- saves and votes (ve-cookbook, the Guide's own lists) ----------
@@ -463,12 +465,12 @@
       '<li><b>What to look for in a supplement</b> before you buy.</li>' +
       '<li><b>The Nutrition Pulse:</b> our physicians and health experts, played right here, and My list to keep your place.</li></ul></div>';
     var box = m === 'points'
-      ? '<div class="dg-big">' + pts(ST.cost) + '<small>points</small></div><p>You have ' + pts(ST.balance) + ' points. Unlock the Guide with ' + pts(ST.cost) + ' of them and it is yours to keep.</p>' +
-        '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button><button type="button" class="dg-btn dg-ghost" data-buy style="margin-top:8px">Or get it for $11</button>' + status
-      : '<div class="dg-big">$11<small>yours to keep</small></div><p>' + (m === 'join' ? 'Create your account and get the Guide for $11, one time. Buying it makes you a member of Vegans Explore. Already a member? <a href="#" data-signin>Sign in</a>.'
-          : 'Get the Guide for $11, one time, and it is yours to keep' + (ST.active ? '.' : '. Buying it also makes you a member of Vegans Explore.')) + '</p>' +
+      ? '<div class="dg-big">$11<small>or ' + pts(ST.cost) + ' points</small></div><p>Pick how you pay. You have ' + pts(ST.balance) + ' points. Either way the Guide is yours to keep.</p>' +
+        '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button><button type="button" class="dg-btn dg-ghost" data-buy style="margin-top:8px">Pay $11</button>' + status
+      : '<div class="dg-big">$11<small>yours to keep</small></div><p>' + (m === 'join' ? 'Get the Guide for $11, one time, and it is yours to keep. Members can pay with 1,100 points instead: <a href="#" data-signin>sign in</a>.'
+          : 'Get the Guide for $11, one time, and it is yours to keep' + '.') + '</p>' +
         '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status +
-        '<p class="dg-pp">Or get your <a href="/passport">Passport</a>: $11, one time, with 1,100 welcome points, enough for this Guide.</p>';
+        (m === 'buy' ? '<p class="dg-pp">Or ' + pts(ST.cost) + ' points: you have ' + pts(ST.balance) + '. Earn more with <a href="/bounties">bounties</a>.</p>' : '');
     main.innerHTML = head('Get access', 'Open the whole Nutrition Guide', 'Every Vegans Explore Guide is $11, or 1,100 points, and yours to keep. Vitamin B12, the supplement brands and the experts stay open to everyone.') + list;
     main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox">' + box + '</div>');
   }
@@ -489,7 +491,7 @@
           (!member() && !t[3] ? '<span class="dg-mlock">' + LOCK_SVG + ' In the full Guide</span>' : !member() && t[3] ? '<span class="dg-mlock" style="color:#1f5f22 !important">Open to everyone</span>' : '') + '</div></a>';
       }).join('') + '</div>' +
       '<div class="dg-start"><a class="dg-btn" href="#/nutrients/' + PUB.example.id + '">' + (member() ? 'Start with B12' : 'Try B12, free') + '</a><a class="dg-btn dg-ghost" href="#/experts">Meet the experts</a>' +
-      (member() ? '<p>The whole Guide is yours. Pick a tab, or follow Theo with Next.</p>' : '<p>The full Guide is $11 or 1,100 points. <a href="#/join" style="color:var(--g);font-weight:800">How to get access</a></p>') + '</div>' + note();
+      (member() ? '<p>The whole Guide is yours. Pick a tab, or follow Theo with Next.</p>' : '') + '</div>' + note();
   }
 
   // ---------- search (members) ----------
@@ -653,7 +655,7 @@
       if (m === 'join') {
         var go = function () { delete window.VE_ACTIVATE_HANDLER; buyNow(jb); };
         window.VE_ACTIVATE_HANDLER = go;
-        a.showAuthModal('Create your account, then get the Nutrition Guide for $11. Buying it makes you a member.', go, 'signup');
+        a.showAuthModal('Create your account, then get the Nutrition Guide for $11.', go, 'signup');
         return;
       }
       if (m === 'points') unlockPoints(jb); else buyNow(jb);
