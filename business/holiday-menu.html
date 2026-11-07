@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Send your holiday menu — Vegans Explore</title>
+  <meta name="description" content="Selling something for ThanksLiving or the holidays? Members send their holiday menu and holiday hours free, and we feature it in the Vegans Explore Holiday Guide.">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.1);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.78);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0 auto;padding:40px 24px 64px;}
+    @media (max-width:600px){.wrap{padding:28px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:8px;}
+    h1{font-size:clamp(26px,4vw,36px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:12px;}
+    h2{font-size:13px;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-deep);margin:0 0 12px;}
+    .lede{font-size:15px;color:var(--ve-text-75);margin-bottom:24px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:22px 22px 24px;margin-bottom:16px;}
+    .biz{display:flex;gap:16px;align-items:center;}
+    .biz-logo{width:64px;height:64px;min-width:64px;border-radius:10px;object-fit:cover;display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px;font-weight:900;background:var(--ve-green);}
+    .biz b{display:block;font-size:17px;font-weight:800;line-height:1.25;}
+    .biz span{font-size:13px;color:var(--ve-text-75);}
+    label.f{display:block;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-green-deep);margin:14px 0 6px;}
+    label.f small{font-weight:600;letter-spacing:0;text-transform:none;color:var(--ve-text-75);}
+    input[type=text],input[type=email],input[type=tel],input[type=url],input[type=search],input[type=number],select,textarea{width:100%;font:inherit;font-size:15px;padding:11px 13px;border:1px solid rgba(0,0,0,0.25);border-radius:6px;background:#fff;color:var(--ve-text);}
+    textarea{min-height:96px;resize:vertical;}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px;}
+    @media (max-width:600px){.row2{grid-template-columns:1fr;}}
+    .choice{display:flex;flex-direction:column;gap:8px;}
+    .choice label{display:flex;gap:10px;align-items:flex-start;padding:11px 13px;border:1px solid var(--ve-border);border-radius:10px;cursor:pointer;background:#fff;font-size:14px;}
+    .choice label:has(input:checked){border-color:var(--ve-green-dark);background:var(--ve-green-light);}
+    .choice input{margin-top:4px;width:18px;height:18px;accent-color:var(--ve-green-deep);}
+    .choice b{font-weight:800;}
+    .amounts{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;}
+    .amounts button{font:inherit;font-size:15px;font-weight:800;padding:10px 18px;border-radius:6px;border:1.5px solid rgba(0,0,0,0.2);background:#fff;cursor:pointer;min-height:44px;}
+    .amounts button[aria-pressed="true"]{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .money{position:relative;max-width:220px;}
+    .money span{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-weight:800;}
+    .money input{padding-left:26px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 22px;border-radius:6px;font-family:inherit;font-size:13px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;}
+    .btn:hover{background:#174a1a;}
+    .btn:disabled{opacity:0.55;cursor:default;}
+    .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(0,0,0,0.25);}
+    .msg{font-size:14px;font-weight:700;color:var(--ve-green-deep);margin-top:12px;min-height:20px;}
+    .msg.bad{color:#8a1c12;}
+    .note{font-size:13px;color:var(--ve-text-75);}
+    .results a{display:flex;gap:12px;align-items:center;padding:10px 4px;border-bottom:1px solid var(--ve-border);color:inherit;text-decoration:none;}
+    .results a:hover b{text-decoration:underline;}
+    .results .biz-logo{width:40px;height:40px;min-width:40px;font-size:16px;border-radius:8px;}
+    .results span{font-size:12.5px;color:var(--ve-text-75);}
+    .plans .perks{margin:6px 0 0 18px;font-size:13px;color:var(--ve-text-75);}
+    .plans .perks li{margin-bottom:2px;}
+    .plans .price{display:inline-block;font-size:12px;font-weight:800;color:var(--ve-green-deep);background:var(--ve-green-light);border-radius:99px;padding:1px 10px;margin-left:6px;}
+    .vstat{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(160px,100%),1fr));gap:10px;margin:14px 0 4px;}
+    .vstat div{border:1px solid var(--ve-border);border-radius:10px;padding:10px 12px;}
+    .vstat small{display:block;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .vstat b{font-size:15px;}
+    .done{text-align:center;padding:34px 22px;}
+    .guarantee{margin-top:10px;padding:10px 12px;border-left:4px solid var(--ve-green-deep);background:var(--ve-green-light);border-radius:6px;text-align:left;}
+    .founding-note{margin-bottom:12px;padding:10px 12px;border:1px solid #e8c48a;background:#fff4e2;border-radius:8px;color:#6b3f00;font-weight:600;}
+    .sheets a{display:block;padding:8px 0;border-bottom:1px solid var(--ve-border);color:var(--ve-green-deep);font-weight:700;}
+    .done h2{font-size:18px;margin-bottom:8px;}
+    [hidden]{display:none !important;}
+    /* Join the Directory (Sean, 2026-10-09): one form, Liz on the right */
+    .jl{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;align-items:start;}
+    .jl-side{position:sticky;top:84px;}
+    @media (max-width:900px){.jl{grid-template-columns:minmax(0,1fr);}.jl-side{position:static;order:-1;}
+      .jl-side .vgt-narr{display:grid;grid-template-columns:148px minmax(0,1fr);gap:6px 14px;align-items:center;padding:14px;}.jl-side .vgt-vslot{grid-row:span 3;margin:0;}.jl-side .vgt-name{margin:0;}
+      .jl-side .vgt-bubble{padding:10px 12px;font-size:13.5px;}.jl-side .vgt-bubble::before{display:none;}.jl-side .vgt-play{margin-top:4px;}}
+    .add-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin-top:16px;padding-top:14px;border-top:1px solid var(--ve-border);font-size:14px;font-weight:700;}
+    .biz-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;}
+    .linkbtn{font:inherit;font-size:13px;font-weight:700;color:var(--ve-green-deep);background:none;border:0;text-decoration:underline;cursor:pointer;padding:4px 0;}
+    .results a{cursor:pointer;}
+    .results b{display:block;font-size:15px;font-weight:800;line-height:1.3;}
+    /* Dropdowns: our own arrow, 16px in from the right edge (Sean, 2026-10-09, canon-sean-interface-defaults rule 15) */
+    select{min-height:46px;-webkit-appearance:none;-moz-appearance:none;appearance:none;padding-right:46px;cursor:pointer;
+      background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%231f5f22' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center/14px 9px;}
+    select::-ms-expand{display:none;}
+    /* Steps (Sean, 2026-10-09, canon rule 14: paginated, Back and Next) */
+    .stepper{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px;padding:0;counter-reset:st;}
+    .stepper li{counter-increment:st;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ve-text-75);background:#fff;border:1px solid var(--ve-border);border-radius:6px;padding:7px 12px;}
+    .stepper li::before{content:counter(st);display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#e7ece8;color:#4a5a4d;font-size:11px;}
+    .stepper li.on{border-color:var(--ve-green-deep);color:var(--ve-green-deep);}.stepper li.on::before{background:var(--ve-green-deep);color:#fff;}
+    .stepper li.done::before{background:var(--ve-green);color:#fff;content:'\2713';}
+    .step-nav{display:flex;align-items:center;gap:12px;margin-top:4px;}
+    .step-nav .step-count{flex:1;text-align:center;font-size:13px;font-weight:800;color:var(--ve-text-75);}
+    .step-nav [hidden]{display:none !important;}
+    /* How to join: the two ways side by side */
+    .choice.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:12px;}
+    .choice.plans label{flex-direction:column;gap:6px;padding:18px 18px 16px;position:relative;}
+    .choice.plans input{position:absolute;top:18px;right:18px;margin:0;}
+    .plan-name{font-size:17px;font-weight:900;line-height:1.25;padding-right:30px;}
+    .plan-price{font-size:22px;font-weight:900;color:var(--ve-green-deep);line-height:1.1;}.plan-price small{font-size:13px;font-weight:700;color:var(--ve-text-75);}
+    .plan-lead{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-green);}
+    .plan-text{font-size:13.5px;color:var(--ve-text-75);}
+    .plans ul.ticks{list-style:none;margin:4px 0 0;padding:0;}
+    .plans ul.ticks li{position:relative;padding:3px 0 3px 24px;font-size:14px;line-height:1.4;}
+    .plans ul.ticks li::before{content:'\2713';position:absolute;left:2px;top:3px;font-weight:900;color:var(--ve-green);}
+    .step{display:inline-block;font-size:10px;font-weight:900;letter-spacing:.12em;color:#fff;background:var(--ve-green-deep);border-radius:99px;padding:2px 9px;margin-right:8px;vertical-align:2px;}
+    .nx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr));gap:12px;margin-top:16px;text-align:left;}
+    .nx{display:block;border:1px solid var(--ve-border);border-radius:12px;padding:16px;background:#fff;color:inherit;text-decoration:none;}
+    a.nx:hover{border-color:var(--ve-green-dark);}
+    .nx small{display:block;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--ve-green);margin-bottom:4px;}
+    .nx b{display:block;font-size:16px;font-weight:900;line-height:1.25;margin-bottom:4px;}
+    .nx span{font-size:13.5px;line-height:1.5;color:var(--ve-text-75);}
+    .nx.soon{border-style:dashed;background:#fbfdfb;}
+    .tag{display:inline-block;font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#2b1d00;background:#f3c86b;border-radius:4px;padding:2px 6px;margin-bottom:6px;}
+  </style>
+  <style>
+    /* Holiday menu form (ve-holiday-guide step 1, 2026-11-07): claim.html's family */
+    .countdown{display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;margin:0 0 18px;padding:12px 16px;border:1px solid #e8c48a;background:#fff4e2;border-radius:10px;color:#6b3f00;font-weight:700;font-size:14px;}
+    .countdown b{font-size:18px;font-weight:900;color:#6b3f00;}
+    .countdown.shut{border-color:var(--ve-border);background:#f1f3f1;color:var(--ve-text-75);}
+    .items .it{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr) 120px 40px;gap:8px;align-items:start;margin-bottom:8px;}
+    .items .it button{min-height:46px;border:1px solid rgba(0,0,0,0.2);border-radius:6px;background:#fff;cursor:pointer;font-size:18px;color:#8a1c12;}
+    @media (max-width:700px){.items .it{grid-template-columns:1fr 40px;padding:10px;border:1px solid var(--ve-border);border-radius:10px;}.items .it input:nth-child(1){grid-column:1}.items .it button{grid-column:2;grid-row:1}.items .it input:nth-child(2),.items .it input:nth-child(3){grid-column:1 / -1}}
+    .stag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:4px 10px;border-radius:6px;background:#eef1ee;color:#333;}
+    .stag.pending{background:#fff1dc;color:#8a5200;}.stag.live{background:var(--ve-green-light);color:var(--ve-green-deep);}.stag.declined{background:#fde8e6;color:#8a1c12;}
+    .pv{border:1px solid var(--ve-border);border-radius:12px;padding:16px;background:#fff;}
+    .pv h3{font-size:17px;font-weight:900;line-height:1.25;margin-bottom:2px;}
+    .pv .lbl{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:var(--ve-green-light);color:var(--ve-green-deep);margin:6px 0 8px;}
+    .pv .lbl.pre{background:#eef1ee;color:#333;}
+    .pv ul{list-style:none;margin:8px 0;padding:0;}.pv li{display:flex;gap:10px;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--ve-border);font-size:14px;}.pv li span{color:var(--ve-text-75);font-size:13px;display:block;}
+    .pv dl{display:grid;grid-template-columns:130px 1fr;gap:4px 12px;font-size:13.5px;margin-top:8px;}.pv dt{font-weight:800;color:var(--ve-text-75);}
+    @media (max-width:600px){.pv dl{grid-template-columns:1fr;}}
+    .joinbox{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+
+  <script src="/public/nav.js"></script>
+
+  <main class="wrap">
+    <p class="eyebrow">Holiday Guide &middot; For businesses</p>
+    <h1>Send your holiday menu</h1>
+    <p class="lede" id="lede">Selling something for the holiday? Send us your menu, when to order by and your hours on the day. Our team checks it, then we feature it in the Vegans Explore Holiday Guide, free for members.</p>
+    <div class="countdown" id="countdown" hidden></div>
+
+    <!-- Not a member yet, or no page to send for -->
+    <section class="card" id="gate" hidden></section>
+
+    <ol class="stepper" id="stepper" hidden></ol>
+    <section class="card" id="form" hidden>
+      <div id="status"></div>
+
+      <div data-step="business">
+        <h2>Your business</h2>
+        <div class="choice" id="pick-listing"></div>
+        <label class="f" for="holiday">Which holiday</label>
+        <select id="holiday"></select>
+        <p class="note" style="margin-top:10px">Not the right business? <a href="/claim" style="color:var(--ve-green-deep);font-weight:700">Claim your page</a> first, or <a href="/claim?add=1" style="color:var(--ve-green-deep);font-weight:700">add it</a> if it is not in the Directory yet. Claiming is free for members.</p>
+      </div>
+
+      <div data-step="menu" hidden>
+        <h2>The menu</h2>
+        <label class="f" for="summary">Your offer in a line or two <small>(what people read first)</small></label>
+        <textarea id="summary" maxlength="400" placeholder="Our full ThanksLiving dinner for four: roast, gravy, three sides and a pie. Order by Nov 22, pick up Nov 25."></textarea>
+        <label class="f">What's on it <small>(each dish, with a few words and a price if you like)</small></label>
+        <div class="items" id="items"></div>
+        <button type="button" class="btn btn-ghost" id="add-item">Add a dish</button>
+      </div>
+
+      <div data-step="details" hidden>
+        <h2>Ordering and hours</h2>
+        <div class="row2">
+          <div><label class="f" for="order_by">Order by <small>(optional)</small></label><input type="text" id="order_by" placeholder="YYYY-MM-DD" inputmode="numeric"></div>
+          <div><label class="f" for="price_range">Price range <small>(optional)</small></label><input type="text" id="price_range" maxlength="60" placeholder="$45 for two, $85 for four"></div>
+        </div>
+        <label class="f" for="pickup">Pickup or delivery <small>(when and how)</small></label>
+        <input type="text" id="pickup" maxlength="300" placeholder="Pick up Wednesday, Nov 25, 11 AM to 6 PM">
+        <label class="f" for="order_url">Where to order <small>(your ordering page, optional)</small></label>
+        <input type="url" id="order_url" maxlength="500" placeholder="https://">
+        <label class="f" for="holiday_hours">Your hours on the day <small>(or Closed)</small></label>
+        <input type="text" id="holiday_hours" maxlength="200" placeholder="Open 9 AM to 2 PM">
+        <label class="f" for="contact_note">Anything our team should know <small>(optional, not shown)</small></label>
+        <textarea id="contact_note" maxlength="600"></textarea>
+      </div>
+
+      <div data-step="review" hidden>
+        <h2>Check it and send</h2>
+        <p class="note" style="margin-bottom:12px">This is how it will show in the Holiday Guide once our team checks it.</p>
+        <div id="preview"></div>
+      </div>
+
+      <p class="msg" id="msg" role="status"></p>
+      <div class="step-nav" id="step-nav">
+        <button type="button" class="btn btn-ghost" id="step-back">Back</button>
+        <span class="step-count" id="step-count"></span>
+        <button type="button" class="btn" id="step-next">Next</button>
+        <button type="button" class="btn" id="send" hidden>Send my menu</button>
+      </div>
+    </section>
+
+    <section class="card done" id="done" hidden></section>
+  </main>
+
+  <script src="/public/ve-auth.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-holiday';
+      var $ = function (id) { return document.getElementById(id); };
+      var STEPS = ['business', 'menu', 'details', 'review'];
+      var NAME = { business: 'Your business', menu: 'The menu', details: 'Ordering and hours', review: 'Check and send' };
+      var STATUS = { pending: 'Waiting for our check', live: 'Approved', declined: 'Needs a change', withdrawn: 'Withdrawn' };
+      var D = null, STEP = 'business', SEL = { listing: null, holiday: null };
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + (window.VEAuth ? VEAuth.getToken() : '') }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function closeText(t) { return new Date(new Date(t).getTime() - 1000).toLocaleDateString('en-US', { timeZone: 'America/New_York', weekday: 'long', month: 'long', day: 'numeric' }); }
+      function holiday() { return (D.holidays || []).filter(function (h) { return h.slug === SEL.holiday; })[0] || null; }
+      function listing() { return (D.listings || []).filter(function (l) { return l.id === SEL.listing; })[0] || null; }
+      function menu() { return (D.menus || []).filter(function (m) { return m.listing_id === SEL.listing && m.holiday_slug === SEL.holiday; })[0] || null; }
+      function draftKey() { return 've_hmenu_' + SEL.listing + '_' + SEL.holiday; }
+
+      function countdown(list) {
+        var h = (list || []).filter(function (x) { return x.open; })[0], c = $('countdown');
+        if (!h) { c.hidden = false; c.className = 'countdown shut'; c.innerHTML = 'Holiday menus are closed right now. The next holiday opens soon.'; return; }
+        c.hidden = false; c.className = 'countdown';
+        c.innerHTML = '<span>' + esc(h.name) + ' menus close at 11:59 PM Eastern on ' + esc(closeText(h.submit_close)) + '.</span><b>' + (h.days_left <= 1 ? 'Last day' : h.days_left + ' days left') + '</b>';
+      }
+
+      // ---- Not signed in / not a member / no page ----
+      function joinGate() {
+        $('gate').hidden = false;
+        $('gate').innerHTML = '<h2>Members send menus free</h2><p class="lede" style="margin-bottom:8px">Joining Vegans Explore is free: a two-minute survey. Then claim your page (also free) and come straight back here to send your menu.</p>' +
+          '<div class="joinbox"><button type="button" class="btn" id="g-join">Join free</button><button type="button" class="btn btn-ghost" id="g-in">Sign in</button></div>';
+        $('g-join').onclick = function () { try { sessionStorage.setItem('ve_after_survey', '/business/holiday-menu'); } catch (e) {} location.href = '/survey?s=explorer'; };
+        $('g-in').onclick = function () { VEAuth.showAuthModal('Sign in to send your holiday menu.', function () { location.reload(); }, 'login'); };
+      }
+      function claimGate() {
+        $('gate').hidden = false;
+        $('gate').innerHTML = '<h2>First, claim your page</h2><p class="lede" style="margin-bottom:8px">Holiday menus go on your business\'s page in the Directory. Claim it (free for members), or add it if it is not there yet, then come back here.</p>' +
+          '<div class="joinbox"><a class="btn" href="/claim">Find and claim my page</a><a class="btn btn-ghost" href="/claim?add=1">Add my business</a></div>';
+      }
+
+      // ---- The form ----
+      function itemRow(it) {
+        it = it || {};
+        return '<div class="it"><input type="text" maxlength="120" placeholder="Dish" aria-label="Dish" value="' + esc(it.name) + '"><input type="text" maxlength="300" placeholder="A few words" aria-label="Description" value="' + esc(it.desc) + '"><input type="text" maxlength="30" placeholder="Price" aria-label="Price" value="' + esc(it.price) + '"><button type="button" aria-label="Remove this dish" data-rm>&times;</button></div>';
+      }
+      function readItems() {
+        return [].map.call(document.querySelectorAll('#items .it'), function (r) { var i = r.querySelectorAll('input'); return { name: i[0].value.trim(), desc: i[1].value.trim(), price: i[2].value.trim() }; }).filter(function (x) { return x.name; });
+      }
+      function drawItems(items) {
+        if (!items || !items.length) items = [{}, {}, {}];
+        $('items').innerHTML = items.map(itemRow).join('');
+      }
+      function read() {
+        return { summary: $('summary').value.trim(), items: readItems(), order_by: $('order_by').value.trim(), price_range: $('price_range').value.trim(), pickup: $('pickup').value.trim(), order_url: $('order_url').value.trim(), holiday_hours: $('holiday_hours').value.trim(), contact_note: $('contact_note').value.trim() };
+      }
+      function fill(v) {
+        v = v || {};
+        ['summary', 'order_by', 'price_range', 'pickup', 'order_url', 'holiday_hours', 'contact_note'].forEach(function (k) { $(k).value = v[k] || ''; });
+        drawItems(v.items);
+      }
+      function saveDraft() { try { localStorage.setItem(draftKey(), JSON.stringify(read())); } catch (e) {} }
+      function loadSelection() {
+        var m = menu(), d = null;
+        try { d = JSON.parse(localStorage.getItem(draftKey()) || 'null'); } catch (e) {}
+        fill(d || m || {});
+        var s = $('status');
+        if (!m) { s.innerHTML = ''; return; }
+        s.innerHTML = '<p style="margin-bottom:14px"><span class="stag ' + esc(m.status) + '">' + esc(STATUS[m.status] || m.status) + '</span> ' +
+          (m.status === 'live' ? '<span class="note">Changing it sends it back to our team for a quick look.</span>' : m.status === 'pending' ? '<span class="note">You can still change it before menus close.</span>' : '') + '</p>' +
+          (m.status === 'declined' && m.decline_note ? '<p class="founding-note">Our team asked for one change: ' + esc(m.decline_note) + '</p>' : '');
+      }
+      function drawBusiness() {
+        var ls = D.listings || [];
+        $('pick-listing').innerHTML = ls.map(function (l) {
+          return '<label><input type="radio" name="lst" value="' + esc(l.id) + '"' + (l.id === SEL.listing ? ' checked' : '') + '><span><b>' + esc(l.name) + '</b><br><span class="note">' + esc([l.address_city, l.address_state].filter(Boolean).join(', ') || 'Online') + (l.claim === 'waiting' ? ' &middot; your claim is waiting for approval' : '') + '</span></span></label>';
+        }).join('');
+        var open = (D.holidays || []).filter(function (h) { return h.open; });
+        $('holiday').innerHTML = open.map(function (h) { return '<option value="' + esc(h.slug) + '"' + (h.slug === SEL.holiday ? ' selected' : '') + '>' + esc(h.name) + ' (menus close ' + esc(closeText(h.submit_close)) + ')</option>'; }).join('');
+        [].forEach.call(document.querySelectorAll('input[name=lst]'), function (r) { r.onchange = function () { SEL.listing = r.value; loadSelection(); }; });
+        $('holiday').onchange = function () { SEL.holiday = $('holiday').value; loadSelection(); };
+      }
+      function preview() {
+        var v = read(), l = listing() || {}, h = holiday() || {};
+        var vegan = l.vegan_status === 'fully_vegan';
+        var dl = [v.order_by ? ['Order by', new Date(v.order_by + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })] : null, v.pickup ? ['Pickup or delivery', v.pickup] : null, v.price_range ? ['Price', v.price_range] : null, v.holiday_hours ? ['Hours on the day', v.holiday_hours] : null].filter(Boolean);
+        $('preview').innerHTML = '<div class="pv"><h3>' + esc(l.name) + '</h3><span class="note">' + esc([l.address_city, l.address_state].filter(Boolean).join(', ')) + '</span><br>' +
+          '<span class="lbl' + (vegan ? '' : ' pre') + '">' + (vegan ? '100% Vegan' : 'Plant-based (Pre-Vegan) menu') + ' &middot; ' + esc(h.name) + '</span>' +
+          '<p>' + esc(v.summary) + '</p><ul>' + v.items.map(function (i) { return '<li><div><b>' + esc(i.name) + '</b>' + (i.desc ? '<span>' + esc(i.desc) + '</span>' : '') + '</div>' + (i.price ? '<b>' + esc(i.price) + '</b>' : '') + '</li>'; }).join('') + '</ul>' +
+          (dl.length ? '<dl>' + dl.map(function (x) { return '<dt>' + esc(x[0]) + '</dt><dd>' + esc(x[1]) + '</dd>'; }).join('') + '</dl>' : '') +
+          (v.order_url ? '<p style="margin-top:10px"><a class="btn btn-ghost" href="' + esc(/^https?:/i.test(v.order_url) ? v.order_url : 'https://' + v.order_url) + '" target="_blank" rel="noopener">Order</a></p>' : '') + '</div>';
+      }
+      function bad(t, el) { $('msg').className = 'msg bad'; $('msg').textContent = t; if (el) el.focus(); return false; }
+      function check(name) {
+        $('msg').className = 'msg'; $('msg').textContent = '';
+        if (name === 'business') { if (!SEL.listing) return bad('Pick your business.'); if (!SEL.holiday) return bad('Pick the holiday.'); }
+        if (name === 'menu') { var v = read(); if (v.summary.length < 10) return bad('Tell people about your offer in a line or two.', $('summary')); if (!v.items.length) return bad('Add at least one dish.'); }
+        if (name === 'details') {
+          var ob = $('order_by').value.trim();
+          if (ob && !/^\d{4}-\d{2}-\d{2}$/.test(ob)) return bad('Write the order-by date as YYYY-MM-DD, for example 2026-11-22.', $('order_by'));
+        }
+        return true;
+      }
+      function goStep(name, push) {
+        if (STEPS.indexOf(name) < 0) name = 'business';
+        STEP = name;
+        var at = STEPS.indexOf(name);
+        [].forEach.call(document.querySelectorAll('#form [data-step]'), function (d) { d.hidden = d.getAttribute('data-step') !== name; });
+        $('stepper').innerHTML = STEPS.map(function (k, n) { return '<li class="' + (n < at ? 'done' : n === at ? 'on' : '') + '">' + NAME[k] + '</li>'; }).join('');
+        $('step-count').textContent = 'Step ' + (at + 1) + ' of ' + STEPS.length;
+        $('step-back').hidden = at === 0;
+        $('step-next').hidden = name === 'review';
+        $('send').hidden = name !== 'review';
+        $('lede').hidden = at > 0;
+        if (name === 'review') preview();
+        if (push !== undefined) { var u = new URL(location.href); if (name === 'business') u.searchParams.delete('step'); else u.searchParams.set('step', name); history[push ? 'pushState' : 'replaceState']({ step: name }, '', u.pathname + u.search); }
+        try { var t = $('stepper').getBoundingClientRect().top + scrollY - 90; if (scrollY > t) scrollTo(0, Math.max(0, t)); } catch (e) {}
+      }
+      $('step-next').onclick = function () { if (!check(STEP)) return; saveDraft(); var at = STEPS.indexOf(STEP); for (var i = 0; i < at + 1; i++) { if (!check(STEPS[i])) return goStep(STEPS[i], true); } goStep(STEPS[at + 1], true); };
+      $('step-back').onclick = function () { saveDraft(); goStep(STEPS[Math.max(0, STEPS.indexOf(STEP) - 1)], true); };
+      window.addEventListener('popstate', function () { goStep(new URLSearchParams(location.search).get('step') || 'business'); });
+      $('add-item').onclick = function () { if (document.querySelectorAll('#items .it').length >= 20) return bad('Up to 20 dishes.'); $('items').insertAdjacentHTML('beforeend', itemRow()); };
+      $('items').addEventListener('click', function (e) { var b = e.target.closest('[data-rm]'); if (!b) return; b.parentNode.remove(); if (!document.querySelectorAll('#items .it').length) drawItems(); });
+      document.getElementById('form').addEventListener('input', function () { if (SEL.listing && SEL.holiday) saveDraft(); });
+
+      var ERR = { closed: 'Menus for this holiday are closed.', not_your_listing: 'That page is not yours yet. Claim it first.', member_needed: 'Join free first, then send your menu.', summary_needed: 'Tell people about your offer in a line or two.', items_needed: 'Add at least one dish.', bad_order_by: 'Check the order-by date (YYYY-MM-DD).', bad_order_url: 'That ordering link does not look right.', account_not_in_good_standing: 'Your account is on hold. Write to contact@lesaruss.com.' };
+      $('send').onclick = function () {
+        for (var i = 0; i < STEPS.length - 1; i++) if (!check(STEPS[i])) return goStep(STEPS[i], true);
+        var btn = $('send'); btn.disabled = true; $('msg').className = 'msg'; $('msg').textContent = 'Sending...';
+        var v = read(); v.action = 'save'; v.holiday = SEL.holiday; v.listing_id = SEL.listing;
+        api(v).then(function (r) {
+          btn.disabled = false;
+          if (!r || !r.ok) return bad(ERR[r && r.error] || 'That did not go through. Try again in a moment.');
+          try { localStorage.removeItem(draftKey()); } catch (e) {}
+          var l = listing() || {}, h = holiday() || {};
+          $('form').hidden = true; $('stepper').hidden = true; $('lede').hidden = true;
+          $('done').hidden = false;
+          $('done').innerHTML = '<h2>Your ' + esc(h.name) + ' menu is in</h2><p class="lede">Our team checks every menu by hand, usually within a day. We email you when it is approved, and it shows in the Holiday Guide when the Guide opens for ' + esc(h.name) + '.</p>' +
+            '<div class="nx-grid"><a class="nx" href="/business/holiday-menu"><small>Change it</small><b>Edit your menu</b><span>Any change before menus close goes back for a quick look.</span></a>' +
+            '<a class="nx" href="/directory/' + esc(l.slug) + '?tab=brand&edit=hours"><small>While you are here</small><b>Update your hours</b><span>Make sure your regular hours are right for the season.</span></a>' +
+            '<a class="nx" href="/dashboard"><small>Your dashboard</small><b>Back to your dashboard</b><span>See your page, your numbers and what is coming next.</span></a></div>';
+          scrollTo(0, 0);
+        }).catch(function () { btn.disabled = false; bad('That did not go through. Try again in a moment.'); });
+      };
+
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 150);
+        if (!VEAuth.isLoggedIn()) {
+          api({ action: 'holidays' }).then(function (r) { countdown(r && r.holidays); });
+          return joinGate();
+        }
+        api({ action: 'mine' }).then(function (r) {
+          if (!r || !r.ok) { $('gate').hidden = false; $('gate').innerHTML = '<p>That did not load. Refresh to try again.</p>'; return; }
+          D = r; countdown(r.holidays);
+          try { sessionStorage.removeItem('ve_after_survey'); } catch (e) {}
+          if (!r.member) return joinGate();
+          if (!r.listings.length) return claimGate();
+          var open = r.holidays.filter(function (h) { return h.open; });
+          if (!open.length) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Menus are closed</h2><p class="lede">Holiday menus are closed right now. We will put a card on your dashboard when the next holiday opens.</p>'; return; }
+          var qs = new URLSearchParams(location.search);
+          SEL.listing = (r.listings.filter(function (l) { return l.slug === qs.get('listing'); })[0] || r.listings[0]).id;
+          SEL.holiday = (open.filter(function (h) { return h.slug === qs.get('holiday'); })[0] || open[0]).slug;
+          $('form').hidden = false; $('stepper').hidden = false;
+          drawBusiness(); loadSelection();
+          goStep(qs.get('step') || 'business');
+        }).catch(function () { $('gate').hidden = false; $('gate').innerHTML = '<p>That did not load. Refresh to try again.</p>'; });
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
