@@ -6922,6 +6922,9 @@ window, iPhone Safari's two Share steps, otherwise the browser menu steps; `?ins
 `install_prompt_accepted`, `install_prompt_dismissed`, `app_installed`. Checked locally in Chromium as a Pixel 7 and an iPhone 14 (manifest and
 icons 200, the worker active, a visited page served offline and an unvisited one showing the offline page, no script errors). The website icon is
 the plain suitcase mark; the app's own icon is step E and may replace it once Sean picks.
+**E and F sent to Sean 2026-11-07** on one canvas, https://claude.ai/artifact/D52VjPJvNiWXafBXZbvhCp: icon A (white suitcase on our
+green, recommended), B (green on white), C (the leaf mosaic); opening screen 1 (green with the white mark, recommended) or 2 (the logo on
+white); and one clickable phone with every v1 screen, using real listings and events. No app code until Sean picks and approves.
 
 ## Image conventions
 
