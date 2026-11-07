@@ -42,6 +42,12 @@ top (Summarize this page first and free, Where do I start?, What can I do here?,
 Visitors see the whole tour. The summary keeps a voice on every page (`ve-audio-accessibility`). The Dairy Guide stays as it is until Sean says
 otherwise. Pilot: the Vegan Restaurant Guide (script `docs/proposals/restaurant-guide-tour-script.md`, waiting on Sean), then the Events Guide.
 How to build it: `docs/guides/BUILD-A-GUIDE.md`.
+**v2 (Sean, 2026-11-07)**: V narrates the Depot and BrandDesk ("she's the face of that part of it"); the member Guides keep their own characters. One tour,
+three uses: the live tour, each chapter as its page's summary, and the same slides and voice rendered as a video for emails (a still with a play button
+linking to a watch page through a tracked /go/ link), social and client calls. Animating the Guide on the Overview tours, like the Dairy Guide, comes after
+every tour is locked, not before. Build order: the Depot home and its tour (prototype, script `docs/proposals/depot-tour-script.md`, waiting on Sean;
+mock `/mocks/depot/`), the BrandDesk Overview tour (client version first), its video, then the Restaurant Guide. One shared tour player for all of them,
+built on BrandDesk's existing V tours (`lib/branddeskTours.ts` in lesaruss-hq).
 
 ## Every Guide opens the same way, and businesses earn the word Vegan (Sean, 2026-11-06)
 
