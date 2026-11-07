@@ -33,6 +33,18 @@
     .tile .ct{position:absolute;top:14px;right:14px;font-size:11px;font-weight:800;border-radius:6px;padding:3px 8px;background:#eef1ee;color:#333;}
     .tile .ct.hot{background:var(--ve-orange);color:#1a1a1a;}
     .tile.dash{border-style:dashed;}
+    /* Section tiles wear a picture (Sean, 2026-11-07: "insert thumbnails to give it a little bit more life"): our illustrated art, reused. */
+    .tile.pic{padding:0;overflow:hidden;gap:0;}
+    .tile.pic img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;background:#f1f3f1;}
+    .tile.pic .tx{display:flex;flex-direction:column;gap:6px;padding:14px 16px 16px;}
+    .tile.pic .ct{top:10px;right:10px;box-shadow:0 1px 4px rgba(0,0,0,.18);}
+    .tile.pic.dash img{filter:saturate(.75);}
+    @media (max-width:600px){
+      .tile.pic{display:grid;grid-template-columns:96px minmax(0,1fr);align-items:center;gap:12px;padding:10px;min-height:0;}
+      .tile.pic img{aspect-ratio:1/1;border-radius:8px;}
+      .tile.pic .tx{padding:0 64px 0 0;}
+      .tile.pic .ct{top:10px;right:10px;box-shadow:none;}
+    }
     .tile.dash .ic{background:#f1f1f1;}.tile.dash .ic svg{stroke:#777;}
     .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:6px;background:#eef1ee;color:#333;}
     .tag.r{background:var(--ve-green-light);color:var(--ve-green-deep);}
@@ -101,9 +113,22 @@
         return null;
       }
       function toolsOf(label) { return TABS.filter(function (t) { return t.group === label; }); }
+      // A picture per section, from art we already have (no new credits). A section with none keeps its icon.
+      var PIC = {
+        directory: '/public/guides/pre-vegan-business/t-found.jpg',
+        logos: '/public/guides/restaurant-guide/t-featured.jpg',
+        content: '/public/guides/restaurant-guide/t-pulse.jpg',
+        bounties: '/public/guides/venues/river-report.webp',
+        guides: '/public/guides/welcome-guide.jpg',
+        ideas: '/public/guides/restaurant-guide/t-mylist.jpg',
+        demos: '/public/guides/restaurant-guide/t-demo.jpg',
+        moving: '/public/guides/restaurant-guide/t-dashboard.jpg'
+      };
       function tile(href, k, title, line, ct, extra) {
-        return '<a class="tile' + (extra || '') + '" href="' + href + '"><span class="ic"><svg viewBox="0 0 24 24">' + (IC[k] || IC.tool) + '</svg></span>' +
-          (ct ? '<span class="ct' + (ct.hot ? ' hot' : '') + '">' + esc(ct.t) + '</span>' : '') + '<b>' + esc(title) + '</b><span class="ln">' + esc(line) + '</span></a>';
+        var badge = ct ? '<span class="ct' + (ct.hot ? ' hot' : '') + '">' + esc(ct.t) + '</span>' : '';
+        var words = '<b>' + esc(title) + '</b><span class="ln">' + esc(line) + '</span>';
+        if (PIC[k]) return '<a class="tile pic' + (extra || '') + '" href="' + href + '"><img src="' + PIC[k] + '" alt="" loading="lazy" decoding="async">' + badge + '<span class="tx">' + words + '</span></a>';
+        return '<a class="tile' + (extra || '') + '" href="' + href + '"><span class="ic"><svg viewBox="0 0 24 24">' + (IC[k] || IC.tool) + '</svg></span>' + badge + words + '</a>';
       }
       function home() {
         $('title').textContent = 'The Depot';
