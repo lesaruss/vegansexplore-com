@@ -17,7 +17,7 @@
       var hub = (window.VE_HUBS || []).filter(function (h) { return h.slug === slug; })[0];
       if (!hub) { location.replace('/communities'); return; }
       window.HUB = hub;
-      document.title = hub.name + ' — ' + hub.page.brand + ' | Vegans Explore';
+      document.title = 'Vegan ' + hub.name + ' Community — Vegans Explore'; // same as api/chapter.js
     })();
   </script>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">

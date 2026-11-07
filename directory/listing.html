@@ -6,6 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Loading... — Vegans Explore</title>
 <script src="/public/ve-brand.js"></script>
+<script src="/public/ve-seo-text.js"></script>
 <meta property="og:type" content="website"/>
 <meta property="og:site_name" content="VEGANS EXPLORE"/>
 <meta id="og-title" property="og:title" content="VEGANS EXPLORE Directory"/>
@@ -413,6 +414,8 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .tab-locked-cta{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;padding:10px 20px;border-radius:6px;border:1px solid var(--ve-green);color:var(--ve-green-dark);background:var(--ve-green-light);text-decoration:none;margin-top:4px;display:inline-block}
 
 /* LOADING / ERROR */
+.listing-ssr{font-size:28px;font-weight:900;text-align:center;padding:48px 16px 0;margin:0}
+.listing-ssr-sub{max-width:760px;margin:12px auto 0;padding:0 16px;text-align:center;color:var(--ve-text-50);font-size:14px;line-height:1.5}
 .listing-loading{display:flex;align-items:center;justify-content:center;min-height:60vh;font-size:13px;font-weight:700;color:var(--ve-text-50);letter-spacing:0.1em}
 .listing-not-found{text-align:center;padding:80px 40px}
 .listing-not-found h2{font-size:24px;font-weight:900;margin-bottom:12px}
@@ -4542,8 +4545,11 @@ function renderListing(l){
   // SEO: title, OG tags, schema.org
   // The same title api/listing.js serves (keep them in step): the city only for a local business.
   var _titleCity = listingKind(l) === 'place' && l.address_city && !/Nonprofit|Rescue|Sanctuar|Advocacy|Organization|Groups|Events/i.test(l.category || '') ? ' in ' + l.address_city + (l.address_state ? ', ' + l.address_state : '') : '';
-  var _ogTitle = VB ? esc(brandTitle(l.name)) : esc(l.name + _titleCity) + ' — Vegans Explore';
-  var _ogDesc = ((l.description || l.tagline || '')+(l.address_city && !mediaKind ? ' · '+l.address_city+(l.address_state?', '+l.address_state:'') : '')).substring(0,200) || 'Find the best Vegan-friendly businesses on VEGANS EXPLORE.';
+  // setAttribute and document.title take plain text, so nothing here is HTML-escaped (it showed &amp; before).
+  var _where = l.address_city && !mediaKind && !person ? l.address_city + (l.address_state ? ', ' + l.address_state : '') : '';
+  var _seo = window.VESeoText;
+  var _ogTitle = VB ? brandTitle(l.name) : (_seo ? _seo.title(l.name, _titleCity) : l.name + _titleCity + ' — Vegans Explore');
+  var _ogDesc = _seo ? _seo.desc(l.name, l.description || l.tagline || '', _where) : ((l.description || l.tagline || '') + (_where ? ' · ' + _where : '')).substring(0, 155);
   var _ogImg = l.logo_url || 'https://vegansexplore.com/public/og-default.jpg';
   document.title = _ogTitle;
   var _metaMap = {'og-title':_ogTitle,'og-description':_ogDesc,'og-image':_ogImg,'meta-description':_ogDesc};
@@ -5060,7 +5066,7 @@ function renderInstagramContent(veBusinessId){
           '<div class="photos-tab-grid">' +
           igUrls.map(function(url, i){
             return '<div class="photo-item" tabindex="0" role="button" aria-label="View photo" data-lb-key="'+igLbKey+'" data-lb-idx="'+i+'">'+
-              '<img src="'+esc(url)+'" loading="lazy"/></div>';
+              '<img src="'+esc(url)+'" alt="Explorer photo '+(i+1)+'" loading="lazy"/></div>';
           }).join('') +
           '</div></div>';
         photoEl.innerHTML += igSection;
@@ -5460,7 +5466,7 @@ function openArticle(post, listingName){
       '<span class="pulse-type-badge' + typeClass + '">' + (typeLabels[post.type]||'Post') + '</span>' +
       (date ? '<span class="pulse-date">' + date + '</span>' : '') +
     '</div>' +
-    '<h1 class="article-h1">' + esc(post.headline) + '</h1>' +
+    '<h2 class="article-h1">' + esc(post.headline) + '</h2>' +
     (post.subhead ? '<p class="article-subhead">' + esc(post.subhead) + '</p>' : '') +
     '<div class="article-prose">' + bodyToHtml(post.body) + '</div>' +
     (post.source_url ?

@@ -8,6 +8,7 @@
 // out unchanged.
 
 const fs = require('fs');
+const SEO = require('../public/ve-seo-text.js');
 const path = require('path');
 
 const SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
@@ -95,8 +96,10 @@ function build(e) {
   const cancelled = e.status === 'cancelled';
   const where = online ? 'Online' : [p.name, p.city, p.region].filter(Boolean).join(', ');
   const date = when(e);
-  const title = (cancelled ? 'Cancelled: ' : '') + e.title + (p.city && !online ? ' in ' + p.city : '') + ' — Vegans Explore';
-  const desc = clip([date, where].filter(Boolean).join(' · ') + '. ' + (e.description || ''), 158);
+  // Google cuts titles at about 65 characters (Signal, 2026-11-07): the shared rule drops the city, then trims the name.
+  const title = SEO.title((cancelled ? 'Cancelled: ' : '') + e.title, p.city && !online ? ' in ' + p.city : '');
+  let desc = clip([date, where].filter(Boolean).join(' · ') + '. ' + (e.description || ''), SEO.DESC_MAX);
+  if (desc.length < SEO.DESC_MIN) desc = clip(desc.replace(/[.\s]+$/, '') + '. The date, the place and the official link, on the Vegans Explore events calendar.', SEO.DESC_MAX);
   const canonical = SITE + '/events?event=' + e.id;
   const img = goodUrl(e.image_url) || goodUrl(e.host && e.host.logo_url) || goodUrl(e.venue && e.venue.logo_url) || OG_DEFAULT;
   const hostName = (e.host && e.host.name) || e.organizer_name || null;
@@ -195,6 +198,11 @@ module.exports = async (req, res) => {
     html = html
       .replace(/<title>[^<]*<\/title>/, '<title>' + text(h.title) + '</title>')
       .replace(/(<meta name="description" content=")[^"]*(")/, '$1' + attr(h.desc) + '$2')
+      // The Events page's own share tags and heading give way to the event's (one canonical, one main heading).
+      .replace(/\s*<!-- Search and share previews[^>]*-->/, '')
+      .replace(/\s*<link rel="canonical"[^>]*>/g, '')
+      .replace(/\s*<meta (property="og:[a-z_:]+"|name="twitter:[a-z]+")[^>]*>/g, '')
+      .replace(/<h1 class="vcb-ssr"[^>]*>[^<]*<\/h1>/, '')
       .replace('</head>', h.tags + '\n</head>')
       .replace('<div class="vear-main" id="ev-cal"></div>', '<div class="vear-main" id="ev-cal">' + h.body + '</div>');
   }
