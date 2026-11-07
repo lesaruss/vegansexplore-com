@@ -117,8 +117,11 @@
     .countdown b{font-size:18px;font-weight:900;color:#6b3f00;}
     .countdown.shut{border-color:var(--ve-border);background:#f1f3f1;color:var(--ve-text-75);}
     .items .it{display:grid;grid-template-columns:64px minmax(0,2fr) minmax(0,3fr) 120px 40px;gap:8px;align-items:start;margin-bottom:8px;}
-    .items .ph{width:64px;height:64px;border-radius:10px;border:1.5px dashed rgba(0,0,0,0.3);background:#fafafa center/cover no-repeat;cursor:pointer;font:inherit;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ve-green-deep);line-height:1.2;padding:4px;}
-    .items .ph.has{border-style:solid;border-color:rgba(0,0,0,0.12);color:transparent;}
+    .items .it .ph{width:64px;height:64px;min-height:64px;border-radius:10px;border:1.5px dashed rgba(0,0,0,0.3);background:#fafafa center/cover no-repeat;cursor:pointer;font-family:inherit;font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--ve-green-deep);line-height:1.25;padding:4px;white-space:normal;overflow:hidden;}
+    .items .it .ph.has{border-style:solid;border-color:rgba(0,0,0,0.12);color:transparent;}
+    /* The logo editor, used here for dish photos: no link field (dish photos are dropped or pasted) and no logo-size previews. */
+    #phm .vle-url,#phm .vle-url + *,#phm .vle-prev{display:none !important;}
+    #phm .vle-side > div:has(.vle-url),#phm .vle-tools:has(.vle-prev){display:none !important;}
     .scan{border:2px dashed rgba(0,0,0,0.22);border-radius:12px;padding:18px;margin:0 0 18px;background:#fbfdfb;text-align:center;}
     .scan.over{border-color:var(--ve-green-deep);background:var(--ve-green-light);}
     .scan b{display:block;font-size:15px;font-weight:900;margin-bottom:4px;}
@@ -270,7 +273,7 @@
       function itemRow(it) {
         it = it || {};
         var ph = it.photo ? ' has" style="background-image:url(\'' + esc(it.photo) + '\')' : '';
-        return '<div class="it" data-photo="' + esc(it.photo || '') + '"><button type="button" class="ph' + ph + '" data-ph aria-label="Add a photo of this dish">+ Photo</button><input type="text" maxlength="120" placeholder="Dish" aria-label="Dish" value="' + esc(it.name) + '"><input type="text" maxlength="300" placeholder="A few words" aria-label="Description" value="' + esc(it.desc) + '"><input type="text" maxlength="30" placeholder="Price" aria-label="Price" value="' + esc(it.price) + '"><button type="button" aria-label="Remove this dish" data-rm>&times;</button></div>';
+        return '<div class="it" data-photo="' + esc(it.photo || '') + '"><button type="button" class="ph' + ph + '" data-ph aria-label="Add a photo of this dish">+<br>Photo</button><input type="text" maxlength="120" placeholder="Dish" aria-label="Dish" value="' + esc(it.name) + '"><input type="text" maxlength="300" placeholder="A few words" aria-label="Description" value="' + esc(it.desc) + '"><input type="text" maxlength="30" placeholder="Price" aria-label="Price" value="' + esc(it.price) + '"><button type="button" aria-label="Remove this dish" data-rm>&times;</button></div>';
       }
       function readItems() {
         return [].map.call(document.querySelectorAll('#items .it'), function (r) { var i = r.querySelectorAll('input'), o = { name: i[0].value.trim(), desc: i[1].value.trim(), price: i[2].value.trim() }; if (r.getAttribute('data-photo')) o.photo = r.getAttribute('data-photo'); return o; }).filter(function (x) { return x.name; });
