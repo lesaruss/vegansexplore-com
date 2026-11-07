@@ -54,7 +54,21 @@ The owner's own intake answers set 100% Vegan or 100% Plant-based; we never judg
 change their answers, and our team checks before 100% Vegan shows. It is peace of mind for customers and protection for the owner, never a
 penalty; a plant-based place that later adds meat broke no promise. 100% Vegan businesses get more from us (first in features and on the
 podcast, the most help staying open). Our copy never names a real business or owner as an example of either badge. **Not built**: the badges
-on listings, the intake questions (Sean reads them first), the Directory's Vegan options label (a later step).
+on listings, the Directory's Vegan options label (a later step).
+
+**The badge intake, built 2026-11-06** (Sean: "approved", with Logan's defaults; migration `20261106_business_badge_intake.sql`, run through the one-time
+`ve-once-badge-intake`, now the 410 stub; handoff `docs/handoff/2026-11-06-ve-pre-vegan-business-guide-badge-intake-built.md`). Four shared questions
+replace "How Vegan is what you run?" (`vegan_level`) in the Restaurant, Events and Pre-Vegan Business intakes: `biz_all_plant` (Is everything you sell
+plant-based?), `biz_word` (Vegan. We run it for the animals. / Plant-based), `biz_beyond` (beyond the plate: all, mostly, not yet), `biz_help`. `r_vegan`
+and `e_vegan` are Question 1 now. **Questions can be skipped**: `ve_survey_questions.show_if {q, in}`, `ve_survey_states` (shown, skipped, waiting); a
+skipped question is never required and pays its points as if answered, so every path pays the full total (Restaurant and Events 250, 20 a question;
+Pre-Vegan Business 100, 10/5/5/5). `ve-guide-survey.js` skips them, counts only shown ones and shows **Your badge** (Change my answers, Continue) when the
+answers set or change it. **The badge** is `ve_business_badges` (one row a member, kept by a trigger on `ve_member_shared_answers`; history
+`ve_business_badge_events`): 100% Vegan waits for the team (`checking`, shows 100% Plant-based meanwhile); Vegan + Mostly or Not yet shows 100%
+Plant-based (`follow_up`); Plant-based and Pre-Vegan show at once; leaving 100% Vegan clears its approval. **Depot > Business badges**
+(`/admin/depot/badges`, Directory; edge function `ve-badges`): Waiting for a check, Team follows up, Showing, All; Approve 100% Vegan, We will follow up
+first (note), Save note only (`ve_business_badge_decide`). Event sponsors' Compare scores the new answers. Proven 2026-11-06 in a rolled-back transaction
+and at 1440 and 390 px against mocked answers. **Not built**: the badge on listings and cards, an email when approved, an Inbox row for a new claim.
 
 ## A Guide speaks on every page (LOCKED standard, Sean, 2026-11-04, corrected 2026-11-05, playbook `ve-audio-accessibility`)
 
@@ -102,6 +116,7 @@ the community who cannot read well, and others will not read a page. It is not a
   role under each) on the dashboard, member card and linked People profile; the **Explorer survey** (`/survey?s=explorer`, 8 questions, 250, `ve_surveys.reviewed`: points held
   and the account in Depot > Profiles > Waiting for review until a person approves) is the Welcome's and the $11 window's survey; the after-$11 prompt on the dashboard; the claim
   email links the event survey; policies, facts and saved answers updated.
+  **After the retirement (Sean, 2026-11-06, main 687b0c2; `docs/proposals/events-guide-after-survey-door.md`)**: River's Get access line is `river-join-v2.mp3` (survey only, no $11; checked with `stt`), and the Get access tile and the Overview footer say free with the event survey. The Vegan Restaurant Guide's Get in shows an active member who has not taken the restaurant survey its own screen ("You're a member. One short survey opens this Guide.", `joinActive`, `sayActive`; no Founding line); Liz speaks it (`door-join-member-v1.mp3`, recorded 2026-11-07, stt 24 of 24; `AUDIO_ACTIVE` in the Guide script). Proven live through `ve-once-survey-proof` (now the 410 stub): a signed-in event survey admitted its [TEST] account and opened the Guide; an Explorer finish waited for review and Sean's `review_decide` approved it; test rows removed. **Checked signed in, 2026-11-07** (main de2738f; `ve-once-guide-run`, now 410, script `scripts/supabase-once/guide-run.ts`; [TEST] member-class accounts, since `ve_survey_answer` refuses the internal Logan test account): Liz's member Get in plays at 1440 and 390 px; Restaurant Get in > survey > the Guide on What's next; Events Get access > survey > the member menu; Creator > survey > the Guide opens (a capture right after the redirect can show the visitor header before `open` returns; a fresh load is the member view). **The Explorer review email is dormant by design**: `ve_surveys` explorer is `reviewed` false (Explorer path v7, straight in), so a real finish made the account active, Founding, 220 points, with no review and no email; `notifyTeam` fires only on `review: 'pending'`. Found: `nav.js` labels every active member Founding Member (queued in `ve-feedback`), and the creator survey's finish screen shows the business badge line (Sean's call).
   **The old 31-question survey door is retired** (Sean, 2026-11-06, "retire it"; main 494e161, `ve-mission-survey` v11): `/survey?door=1` opens the Explorer
   survey, `door_start` and `finalize` answer 410, the send-back email links the Explorer survey; the 31 questions stay as Build your profile.
 - **Every page a person can land on has a script for its Guide** and, once Sean approves it, the recording in that Guide's roster-profile voice (Guide voices
@@ -1449,7 +1464,7 @@ the search box on its own row. The search is `VESearch.mount` (`/public/ve-searc
 touch devices do not. On a list page (the Directory's sub-sections) the box carries a scope chip, "in Documentaries & Films x", set through
 `window.VEHeaderScope.set({label, cat})` and sent to `/search?cat=`; the list's own box reads **Filter**. A banner (`VECityBanner`) outside a chapter hub
 is a **one-line page bar** (`vcb-bar`: the title as the way home, the picker, the page's buttons, Share); on phones the page name sits on its own row
-and the Directory's sub-section picker joins the section picker in the bar. Chapter hubs keep their art. **One header, no copy** (Sean, 2026-11-03: "the font is not the same for the dashboard pages versus the non-dashboard pages... why aren't we using the
+and the Directory's sub-section picker joins the section picker in the bar. Since 2026-11-07 the chapter hubs use the same one-line bar (Sean: "remove that expanded menu at the top for the communities... so it matches the rest of the site"); their Page tour button stays in `communities/hub.html`'s actions, hidden by the bar, in case Sean wants it back. In Edit listing, the logo editor's Save and Cancel sit centered under the logo square. **One header, no copy** (Sean, 2026-11-03: "the font is not the same for the dashboard pages versus the non-dashboard pages... why aren't we using the
 same elements?... no drift"): the dashboard (`dashboard/center-console.html`) loads `/public/nav.js` like every page and holds no header markup, CSS or
 script of its own; `ve-header-search.js` was deleted. Its Directory, Events, Daily Pulse, Media, Guides and Communities are links to the public pages, and
 `/dashboard/<section>` and `/dashboard/directory/<slug>` redirect to them (`vercel.json`). Only Dashboard, My Saves and the Depot are under `/dashboard`:
@@ -6462,7 +6477,7 @@ her plan where she can see it). Her BrandDesk is the `meatless-muscle` brand kit
 voice and story drafts), the first client desk duplicated from Vegans Explore. Her billing is HQ's client billing link (`client_billing_plans`, live row,
 "Vegans Explore Founding Partner", first charge 2026-11-30). We write to her at bsellersotss@gmail.com through Depot > Outreach. **A Guide made for one
 person**: `/guides/creator-guide?p=<token>` adds a For <first name> tab (`ve_guide_previews`, `ve_guide_preview(token, guide)`; `viewYou` in
-`guide-scripts/creator-guide.js`), merged to `main` 2026-11-06 (7dc75a0, checked live; its "Not shared yet" badge comes off before she gets it). **The Creator Guide is free with the creator survey** (2026-11-06, Sean): `ve_surveys` `creator-guide`, 16 questions, 6 required, 250 points, `ve_guides` door true (migration `20261106_creator_guide_door_survey.sql`, applied); the page wording is on branch `claude/optimistic-mendel-box698` until Sean says merge. Handoffs: `docs/handoff/2026-11-05-brooke-sellers.md`, `docs/handoff/2026-11-06-brooke-sellers.md`.
+`guide-scripts/creator-guide.js`), merged to `main` 2026-11-06 (7dc75a0, checked live; its "Not shared yet" badge comes off before she gets it). **The Creator Guide is free with the creator survey** (2026-11-06, Sean): `ve_surveys` `creator-guide`, 16 questions, 6 required, 250 points, `ve_guides` door true (migration `20261106_creator_guide_door_survey.sql`, applied); the page wording is live on `main` since 2026-11-06 (merge 687b0c2: Free with the creator survey, the comment fixed for v6, "It makes you a member" only for someone not yet a member). Handoffs: `docs/handoff/2026-11-05-brooke-sellers.md`, `docs/handoff/2026-11-06-brooke-sellers.md`.
 
 ## Revenue on the dashboard (Sean, 2026-11-02)
 
@@ -6610,7 +6625,33 @@ above that it contradicts (the person check at the door, the 31 questions as the
   never open on our launch or ask them to support us or join our journey. Every email is a draft for Sean.
 - **Build order**: 1 re-weight Explorer and add the two options; 2 tag Explorer as the shared questions; 3 the Welcome ends in Explorer,
   straight-in admission; 4 the paths page; 5 path Guides gated with Explorer inline; 6 badges on profiles and as tags; 7 Build your profile;
-  8 the invitations as drafts; 9 policies, the Guides' facts, saved answers.
+  8 the invitations as drafts; 9 policies, the Guides' facts, saved answers. Step 1 (the re-weight) is built; the rest is not.
+- **v10, its own playbook `ve-explorer-path`** (Sean, 2026-11-06, concept session with V, "lock it"; canon `canon-ve-door-guides` v10 key
+  `explorer_badges_v10`, `canon-ve-group-partners` v5; migration `20261106_explorer_path_playbook_badges_v10.sql`; handoff
+  `docs/handoff/2026-11-06-ve-explorer-path-badges-locked.md`). The Explorer build moved here from `ve-outreach`. Added to v7: a new optional
+  question, **"What is one of the toughest things you are dealing with on your Vegan journey?"** (35 points, taken from "worth it" 75 to 40): it
+  suggests a Guide, and a person reads the answers into a monthly "what people ask for" list beside the search queue that feeds new Guides,
+  podcast topics and social. **Badges look like the Pre-Vegan Certification stamp** (ring, mark, dashed stamp card; path name over the top and
+  "Vegans Explore" under the bottom, both upright), **a color per path**, Explorer in the stamp green; mock
+  https://claude.ai/artifact/QwQRB9sMGVk7GJKB4Whgiz. A member sets a **main badge** (default: the path finished most recently), shown on the
+  corner of their picture and never repeated; others as small seals with their name on hover or tap; Explorer never on cards or as the main
+  badge. The profile header: a bigger picture, the name to its right, badge pills in up to two rows. A Restaurant or Nonprofit badge links to a
+  listing only after the claim is approved. Each badge also opens that path's own bounties. The review gate is v7's straight-in (Sean
+  confirmed). **Group Partners v5**: the guest pass retires once Explorer is live; no exclusivity rule; ticketing open to any group; perks by
+  activity here (a monthly chapter ranking of events held, tickets sold, members brought in). Ideas filed elsewhere: the event booth program
+  and scavenger hunt (`ve-events-guide`, extend `ve-hunt`, the Vault's PIN as purchase proof), event food delivery and colleges (Blueprint,
+  parked), Elle Jimenez and Vegans in Clermont (`ve-outreach`). No Explorer Guide exists yet: today it is two pieces, `/passport` (the Welcome)
+  and `/survey?s=explorer` (8 questions, still person-reviewed); step 3 joins them.
+- **Steps 2 and 3 live 2026-11-07 (main cad2dc5)**: journey, chapter and runs are shared questions; Explorer admits on finishing (no review); `x_tough` (35) added and `x_worth` 40, nine questions, 250 points. **Step 4, the paths page, approved by Sean 2026-11-07 with its wording, not built**: the wording and build notes are in `docs/handoff/2026-11-07-ve-explorer-path-steps-2-3-live-step-4-approved.md`.
+
+## Media drafts and the organizations door (Sean, 2026-11-06, playbook `ve-outreach`)
+
+Explorer step 3 and free media claims are live (main 2a5ef27; the Explorer survey admits on finishing; a member claims a podcast, YouTube or
+news page free; `ve-claims` v50). `ve_people_outreach.template_key` `team` sends as brand `vegans-explore`, never Sean's name (`ve-people-outreach` v9).
+32 media drafts (`media-nov`, Mon Nov 9) and 25 civic drafts (`civic-nov`, Tue Nov 10) wait in Depot > Outreach. The organizations questionnaire
+(`ve_surveys` `organizations`, Inbox source `org_survey`) is live; its slideshow preview (`business/organizations.html`, branch only) was rejected by
+Sean as the old style: rebuild it as a Guide on the Creator Guide, in his words, no travel headline, and rewrite the civic drafts before any approval.
+Handoff `docs/handoff/2026-11-06-ve-outreach-media-drafts-organizations-door.md`.
 
 ## Abuse watch: a judge decides (Sean, 2026-11-03)
 
@@ -6665,12 +6706,34 @@ suspended or banned." Sean is the judge: every suspend, ban and void is his deci
 - **`/policies#community` paragraph written 2026-11-03** (Sean approved the wording): **Earning points fairly**, between Don't and Reporting (points gained by gaming are voided, an account can be put on hold, serious or repeated cases can be closed, a person decides, every decision can be undone). It is live once this branch is on `main`; it must be live before opening cases is turned on. **Not built yet**: the standing check in the functions not listed above. Canon
   `canon-ve-abuse-watch`, playbook `ve-abuse-watch`.
 
-## Moving off the $11 Passport (Sean, 2026-11-06, NOT built, playbook `ve-pricing-points-passport`)
+## Restaurant Guide Overview: short Start here, groups as pills, illustrated pictures (Sean, 2026-11-06, playbook `ve-restaurant-guide`)
 
-"Let's move away from the $11 passport and it just be the certification... get people through the door and keep them engaged... versus us
-throttling it because of the $11 charge." Direction only; scope questions and touch list in
-`docs/handoff/2026-11-06-ve-restaurant-guide-dashboard-scan-and-11-direction.md`. Until Sean confirms scope, nothing about the $11 changes on
-the site. The sample dashboard (main 354a462) already leads with free Explorer and keeps the $11 as the second way in.
+Sean's live review: "too much clicking... it should be instructions on how to use this thing. Very simple, not a lot." The Overview (members and
+visitors) is a short **Start here** card (`/public/ve-guide-intro.js`, now the short version for every Guide: right place, why us, when you are done,
+how to use it, a picture), then the four groups as headings with their sections as pills (visitors' pills locked; Run my free check under the card).
+The six-part Start here is retired (`docs/guides/BUILD-A-GUIDE.md`). **Generic pictures are our illustrated style, never photorealistic**; real photos
+only for real customers, events and a business's own food and space. All 18 pictures in `public/guides/restaurant-guide/` were redrawn (Higgsfield
+nano_banana_pro from the old photos with Liz's banner as the style reference, 2 credits each; `pic()` asks `?v=2`), plus `t-start.jpg`. Liz's member
+welcome is `door-overview-member-v2` ("Welcome in. You run a Vegan restaurant..."), checked with `stt`.
+
+## The survey is the only way in (LOCKED by Sean 2026-11-07, playbook `ve-pricing-points-passport`, canon `canon-ve-door-guides` v12)
+
+"We don't want to inhibit them from being able to complete the survey, and we really don't even want them to bypass the survey...
+Stopping them at the door for $11." Replaces "Registration is the Passport", "Guide pricing, points and levels" and the two-door parts of
+"Three doors" where they conflict. **Built and live 2026-11-07**:
+- **Membership is free; the survey is the only way in** (the Explorer survey, or a business Guide's survey), 250 points, no welcome points.
+  The $11 window in `public/ve-auth.js` leads with Take the survey; its $11 button shows only for another brand's account the server sent to
+  checkout (`_needUrl`). The sign-up tab reads **Join free**, its button Continue to the survey. `/passport` Enter the room is one card (the
+  survey, `/survey?s=explorer`); `/business` Get started is Join free, then claim free. `ve-votes.js` members-only prompts say join free.
+- **The $11 is an optional give once in** (contribute, events, topic Guides, ads). `ve-stripe-webhook` (v67 from eb1f4e6, sha256 c7281e93)
+  no longer grants 1,100 welcome points on a first $11; the receipt says Your membership is active. Paying a topic Guide does not admit (policy
+  wording; the server's `ve_guide_purchase_paid` still admits a buyer, Logan's open item).
+- **Claiming or adding a listing is free for members** (`ve-claims` from eb1f4e6, sha256 6769848e, `start` `pay: 'member'` for any listing;
+  `claim.html` offers Claim it free / Add it free first and the Partner plan second; a non-member goes to the survey and back, `_add_` for Add it).
+- **Cash commissions paused** (`ve_site_settings` `affiliate_program.paused` true and `live` false; `ve_affiliate_earn` returns `skipped: paused`;
+  migration `20261107_survey_only_door.sql`). Referral points (111) continue. Earned commissions are still paid.
+- `/policies#membership` (Last updated November 7), the Guides' facts (v25, `20261107_survey_only_facts.sql`) and 30 saved answers
+  (`20261107_survey_only_answers.sql`) say it. Keep: $111 Partner plan; topic Guides $11 or 1,100 points; Founding until midnight Eastern Jan 1, 2027.
 
 ## Image conventions
 
@@ -6822,4 +6885,21 @@ signed-in run of `ve-sourcing` on the deployed site.
 **Sourcing line recorded, Start here merged, Overview v3 (Sean, 2026-11-06: "approve K and L, merge the branch"; handoff `docs/handoff/2026-11-06-ve-restaurant-guide-sourcing-liz-line.md`)**: Start here is on `main` (merge 6b941e4) and the visitor heading reads the locked name, Welcome to the Vegan Restaurant Guide. Liz's Sourcing line (`door-sourcing-member-v1`, 36 s) and her new Overview (`door-overview-v3`, 43 s, matches Start here; v2 kept) are recorded in her roster-profile voice and checked word for word with `stt`; `AUDIO_M.sourcing`, `AUDIO_V.overview`. A member tab can carry `showMember`, a short on-screen line while its recording plays (the members' version of `show`). Maya's matching Sourcing line is in `docs/proposals/liz-audio-scripts.md`, ready to record at the Pre-Vegan Business Guide's launch.
 **Members' tabs grouped, real pictures (Sean, 2026-11-06: "way too much... grouped... or a drop down", then "merge it"; main 3e90b8b, checked live at 1440 and 390 px)**: members see one dropdown under the title with 5 groups (`GROUPS` in `guide-scripts/vegan-restaurant-guide.js`, the Events Guide's pattern): Start here; Your restaurant (Your audit, Top challenges); Your page (Claim your page, Your dashboard, Try the demo); Resources (Sourcing, Pulse); Grow with us (Promotions, What's next, My list). A group opens as a page of picture tiles (`#/g/<group>`, `viewGroup`), the members' Overview shows the 4 groups as picture tiles, Back / Next and N of 5 go by group; visitors keep their four tabs. 18 illustrative pictures (Higgsfield nano_banana, no words or logos) in `public/guides/restaurant-guide/` (`t-<section>.jpg` for tiles, `src-<kind>.jpg` for each supplier kind and `src-make.jpg`; `pic()`, `TILE_PIC`); every supplier row shows its kind's picture. 18px under the dropdown on desktop. Not yet: Liz's group-page lines (text only) and re-recording her member welcome to name the four groups.
 
-**The Pre-Vegan Business Guide, drafted 2026-11-05 (playbook `ve-pre-vegan-business-guide`; draft `docs/proposals/pre-vegan-business-guide.md`, handoff `docs/handoff/2026-11-05-ve-pre-vegan-business-guide-draft.md`)**: a free door Guide (survey, "Free with a short survey") for businesses that are not Vegan and are adding Vegan. **Maya narrates** (Sean, 2026-11-06: "Maya is our pre-vegans person, so this would be a Maya guide"; canon v4). Parent template: the Vegan Restaurant Guide. It carries Sourcing and Buy or make (`ve-sourcing` already lists `pre-vegan-business-guide`). The tab list, the 13-question survey (100 points, 5 required) and Maya's lines wait for Sean. **Built 2026-11-06, not launched** (Sean: "Approved, go with your defaults and build it"; handoff `docs/handoff/2026-11-06-ve-pre-vegan-business-guide-built.md`): `guides/pre-vegan-business-guide.html` and `guide-scripts/pre-vegan-business-guide.js` (noindex, Maya's lines as text, Play hidden until recorded), the business survey (migration `20261106_pre_vegan_business_guide.sql`), members content in `content_html` (`pb-data`), `ve-cookbook` v12. The `ve_guides` row stays published (unpublished, `ve-guide-unlock` answers guide_not_found); launch is noindex off, the sitemap and a catalog card. Proven live: the survey door end to end, `ve-sourcing` for a member and refused for a pending account, screenshots beside the Restaurant Guide. `ve_survey_answer` refuses any `member_class` but member, so test on a member-class account. **Merged to `main` and Maya's lines recorded 2026-11-06** (Sean: "merge it and record Maya's lines"): 13 recordings in her roster-profile voice (`sM8RysETdBj1LIqLd9tl`) at `vegan-media/media/maya/pre-vegan-business-guide/<tab>-v1.mp3` and `<tab>-member-v1.mp3` (overview, add), each checked word for word with `stt`; `AUDIO_V` and `AUDIO_M` in the Guide script (a member tab with no line of its own plays the visitor line), Play under her name, nothing plays until pressed, then each tab plays until Pause. Checked at 1440 and 390 px. Launch still waits on Sean: a banner, the catalog card, the sitemap, noindex off. **New Overview, plant-based language, member menu (Sean approved 2026-11-06; handoff `docs/handoff/2026-11-06-ve-pre-vegan-business-guide-built-plant-based.md`)**: the Overview follows `canon-ve-guide-overview-standard` with a 5-step checklist members tick (a `ve-cookbook` save, kind `fix`, key `step-<n>`); every "Vegan options" in this Guide, its members' text and its survey is now plant-based (Pre-Vegan) options (migration `20261106_pre_vegan_business_plant_based_language.sql`); members get the Events Guide's group dropdown (Start here, Learn it, Add it, Get found, Your list); Maya's overview, overview-member, why, say and found are `-v2`, each checked with `stt`. el-media prefixes `media/` to `path`, so pass `maya/...`. Group-page lines are text drafts for Sean.
+**The Pre-Vegan Business Guide, drafted 2026-11-05 (playbook `ve-pre-vegan-business-guide`; draft `docs/proposals/pre-vegan-business-guide.md`, handoff `docs/handoff/2026-11-05-ve-pre-vegan-business-guide-draft.md`)**: a free door Guide (survey, "Free with a short survey") for businesses that are not Vegan and are adding Vegan. **Maya narrates** (Sean, 2026-11-06: "Maya is our pre-vegans person, so this would be a Maya guide"; canon v4). Parent template: the Vegan Restaurant Guide. It carries Sourcing and Buy or make (`ve-sourcing` already lists `pre-vegan-business-guide`). The tab list, the 13-question survey (100 points, 5 required) and Maya's lines wait for Sean. **Built 2026-11-06, not launched** (Sean: "Approved, go with your defaults and build it"; handoff `docs/handoff/2026-11-06-ve-pre-vegan-business-guide-built.md`): `guides/pre-vegan-business-guide.html` and `guide-scripts/pre-vegan-business-guide.js` (noindex, Maya's lines as text, Play hidden until recorded), the business survey (migration `20261106_pre_vegan_business_guide.sql`), members content in `content_html` (`pb-data`), `ve-cookbook` v12. The `ve_guides` row stays published (unpublished, `ve-guide-unlock` answers guide_not_found); launch is noindex off, the sitemap and a catalog card. Proven live: the survey door end to end, `ve-sourcing` for a member and refused for a pending account, screenshots beside the Restaurant Guide. `ve_survey_answer` refuses any `member_class` but member, so test on a member-class account. **Merged to `main` and Maya's lines recorded 2026-11-06** (Sean: "merge it and record Maya's lines"): 13 recordings in her roster-profile voice (`sM8RysETdBj1LIqLd9tl`) at `vegan-media/media/maya/pre-vegan-business-guide/<tab>-v1.mp3` and `<tab>-member-v1.mp3` (overview, add), each checked word for word with `stt`; `AUDIO_V` and `AUDIO_M` in the Guide script (a member tab with no line of its own plays the visitor line), Play under her name, nothing plays until pressed, then each tab plays until Pause. Checked at 1440 and 390 px. Launch still waits on Sean: a banner, the catalog card, the sitemap, noindex off. **New Overview, plant-based language, member menu (Sean approved 2026-11-06; handoff `docs/handoff/2026-11-06-ve-pre-vegan-business-guide-built-plant-based.md`)**: the Overview follows `canon-ve-guide-overview-standard` with a 5-step checklist members tick (a `ve-cookbook` save, kind `fix`, key `step-<n>`); every "Vegan options" in this Guide, its members' text and its survey is now plant-based (Pre-Vegan) options (migration `20261106_pre_vegan_business_plant_based_language.sql`); members get the Events Guide's group dropdown (Start here, Learn it, Add it, Get found, Your list); Maya's overview, overview-member, why, say and found are `-v2`, each checked with `stt`. el-media prefixes `media/` to `path`, so pass `maya/...`. Group-page lines are text drafts for Sean. **Badges live, launch next (2026-11-07; handoff `docs/handoff/2026-11-07-ve-pre-vegan-business-guide-badges-live-launch-next.md`)**: the badge on listings and cards, the approval email and the Inbox row are live (main e85d7ee). Sean approved Maya's 4 group lines and the banner and said launch; recording, banner and launch are not done yet.
+
+## Pre-Vegan Certification: gate how-tos and Guide adoption (Sean approved 2026-11-06, playbook `vegans-explore-initiative-business-certification`)
+
+Sean approved `docs/proposals/pre-vegan-guide-gate-howtos.md` and the three defaults: **$150** for a re-review or re-check (B6 brackets removed), the
+restaurant provides the tasting-night portions (about 10 to 15 guests, one tasting portion each), and the 2-year bar removes the whole listing (status
+Removed, never deleted; only for concealment or misleading diners). On branch `claude/dazzling-faraday-k6y4dw`, not on `main`; the Guide stays unpublished.
+- **Gate pages** (`GATES` in `guide-scripts/pre-vegan-restaurant-guide.js`, public, not `content_html`, which is empty for this Guide): The rule, What to do
+  (numbered), Passes / Fails for G3, the seven staff questions with answers for G5 (drafts: they must match Form B's critical questions before launch), How to
+  prove it, What the Verifier checks, Common ways kitchens fail, and Doing it without us on the gates list. Members get **Mark done** on each step (a
+  `ve-cookbook` save, kind `fix`, key `<gate id>-<n>`; `pre-vegan-restaurant-guide` added to `GUIDES`, v13 from 990950d, sha256 matched). Ticks never change the score.
+- **Adoption** (migration `20261106_preveg_guide_adoption.sql`, applied through the one-time `ve-once-preveg-adoption`, now the 410 stub): `ve_preveg_readiness_snaps`
+  (RLS on, no policies): one row when the assessment is first finished (`is_first`, never overwritten), then at most one a member a day as answers change (triggers on
+  `ve_survey_answers` and `ve_survey_completions`, which never block an answer). `ve_preveg_adoption(from, to)`: started, came back, moved up, cleared a blocker, reached
+  ready, **ready without applying** (the headline), applied, median days to ready, gates improved, ticks by gate. **Depot > Pre-Vegan Certification > Guide adoption**
+  (`#adoption/30|90|all`, `ve-certification` `adoption`, v4 from 990950d, sha256 matched): counts only, never a restaurant's score. Proven in a rolled-back transaction
+  (no snapshot before finishing, the first kept with its blocker, same-day changes folded into one row, ticks counted); the card checked at 1440 and 390 px against
+  sample answers. `ve-certification`'s admin-token route answers 401 (its `LESARUSS_ADMIN_TOKEN` env is not set; it was so before this change), so test it signed in.

@@ -73,7 +73,8 @@
   function guideSurvey(slug) {
     var rm = VEAuth.getRealMember && VEAuth.getRealMember();
     if (!VEAuth.getToken() || !rm) {
-      $('lede').textContent = slug === 'vegan-events-guide' ? 'Make your free account first, then answer a few questions about your events. It takes about ten minutes and nothing is charged.'
+      var about = { 'vegan-events-guide': 'your events', 'vegan-restaurant-guide': 'your restaurant', 'creator-guide': 'you and what you make' }[slug];
+      $('lede').textContent = about ? 'Make your free account first, then answer a few questions about ' + about + '. It takes about ten minutes and nothing is charged.'
         : 'Make your free account first, then answer a few questions. Nothing is charged.';
       $('why').innerHTML = '<span>Free</span><span>Earns points</span><span>Saved as you go</span>';
       $('gate').hidden = false;
@@ -82,14 +83,16 @@
       return;
     }
     $('host').hidden = false;
-    // The Explorer survey on the Welcome (membership_rule_v6, wording approved by Sean 2026-11-06): a person reads it before it admits.
+    // The Explorer survey on the Welcome. Since Explorer v7 step 3 (canon-ve-door-guides v7, 2026-11-06) it admits on finishing; the abuse watch is the guard.
     var explorer = slug === 'explorer', pendingAcct = rm.membership_status === 'pending_payment';
     var GUIDE_FOR = { restaurant: ['vegan-restaurant-guide', 'The Vegan Restaurant Guide'], events: ['vegan-events-guide', 'The Vegan Events Guide'], nonprofit: ['nonprofit-guide', 'The Nonprofit Guide'], creator: ['creator-guide', 'The Creator Guide'] };
+    // Sent here from a free media claim (claim.html, ve_claim_after_survey): finishing takes them back to it.
+    function claimBack() { try { var v = sessionStorage.getItem('ve_claim_after_survey') || ''; return /^[a-z0-9_-]{1,120}$/.test(v) ? v : ''; } catch (e) { return ''; } }
     function explorerDone(runs) {
       var picks = (runs || []).filter(function (k) { return GUIDE_FOR[k]; });
-      return '<h2 class="vgs-q">Thanks.</h2><p class="vgs-h">' + (pendingAcct ? 'A person on our team reads every one, usually within a day or two. We will email you when you are in.' : 'Your points are in.') + '</p>' +
+      return '<h2 class="vgs-q">Thanks.</h2><p class="vgs-h">' + (pendingAcct ? 'You are in. Your membership is open and your points are in.' : 'Your points are in.') + '</p>' +
         picks.map(function (k) { return '<p class="vgs-h">' + GUIDE_FOR[k][1] + ' opens with its own short survey, with up to 250 more points. <a style="color:#1f5f22;font-weight:800" href="/survey?s=' + GUIDE_FOR[k][0] + '">Take it</a></p>'; }).join('') +
-        (pendingAcct ? '' : '<p><a class="vgs-b" href="/dashboard">Open your dashboard</a></p>');
+        (claimBack() ? (claimBack() === '_add_' ? '<p><a class="vgs-b" href="/claim?add=1">Finish adding your business</a></p>' : '<p><a class="vgs-b" href="/claim?listing=' + encodeURIComponent(claimBack()) + '">Finish claiming your page</a></p>') : '<p><a class="vgs-b" href="/dashboard">Open your dashboard</a></p>');
     }
     VEGuideSurvey.mount($('host'), {
       survey: slug,
@@ -97,7 +100,12 @@
       onLoaded: function (S) { window.__vgsGuide = S.guide_slug || null; $('lede').textContent = S.intro || ''; $('why').innerHTML = '<span>Free</span>' + (S.total ? '<span>Up to ' + S.total + ' points</span>' : '<span>Private</span>') + '<span>Saved as you go</span>'; },
       onChange: function () { var q = /^#q\//.test(location.hash); $('lede').hidden = q; $('why').hidden = q; try { window.scrollTo(0, 0); } catch (e) {} tellParent(); },
       onDone: function (res) {
-        if (explorer) return;
+        if (explorer) {
+          // Finishing admitted them: refresh the saved session so every page treats them as a member.
+          fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth?action=me', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON }, body: JSON.stringify({ token: VEAuth.getToken() }) })
+            .then(function (r) { return r.json(); }).then(function (d) { if (d && d.member) VEAuth.setSession(VEAuth.getToken(), d.member); }).catch(function () {});
+          return;
+        }
         fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth?action=me', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON }, body: JSON.stringify({ token: VEAuth.getToken() }) })
           .then(function (r) { return r.json(); }).then(function (d) { if (d && d.member) VEAuth.setSession(VEAuth.getToken(), d.member); }).catch(function () {})
           .then(function () { try { sessionStorage.removeItem('ve_survey_for'); } catch (e) {} setTimeout(function () { location.href = '/guides/' + (window.__vgsGuide || slug) + '?welcome=survey'; }, 1500); });

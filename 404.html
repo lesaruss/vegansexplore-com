@@ -133,6 +133,18 @@
   </style>
 </head>
 <body>
+  <script>
+    // signal (Sean, 2026-11-06): nobody lands on a broken page. A missing address goes to /api/gone, which sends it to the listing or
+    // Pulse article it matches, else to the Explorer intake (/passport?from=old-link), and logs it for Signal. The 404 status stays,
+    // so search engines drop the dead address. Bots and a loop back here are left on this page.
+    (function () {
+      var p = location.pathname || '/';
+      if (/^\/(api|public|_vercel)\//.test(p) || /\.(js|css|png|jpe?g|gif|webp|svg|ico|json|xml|txt|mp3|mp4|pdf|woff2?)$/i.test(p)) return;
+      if (/bot|crawl|spider|slurp|preview/i.test(navigator.userAgent || '')) return;
+      try { if (sessionStorage.getItem('ve_gone') === p) return; sessionStorage.setItem('ve_gone', p); } catch (e) {}
+      location.replace('/api/gone?p=' + encodeURIComponent(p));
+    })();
+  </script>
 
   <script src="/public/nav.js"></script>
 

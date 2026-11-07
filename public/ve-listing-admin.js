@@ -144,7 +144,7 @@
     // The logo editor opens under the logo, and the dialog widens while it is open.
     '#vla .box.vla-wide{max-width:880px}#vla .ledit{border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:14px;margin:4px 0 6px;background:#fafafa}' +
     '#vla .ledit-look{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 6px}#vla .ledit-look a{font-size:12px;font-weight:700;color:#1f5f22;border:1px solid rgba(0,0,0,.2);border-radius:6px;padding:6px 10px;text-decoration:none;background:#fff}' +
-    '#vla .ledit-hint{font-size:12px;color:#555;margin:0 0 12px}#vla .ledit-acts{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}' +
+    '#vla .ledit-hint{font-size:12px;color:#555;margin:0 0 12px}#vla .ledit-acts{display:flex;gap:8px;justify-content:flex-end;margin-top:12px}#vla .ledit-acts.under{justify-content:center;margin-top:10px}' +
     '#vla .ledit .vle button{min-height:0;letter-spacing:0;text-transform:none;font-weight:700;padding:8px 12px;border-radius:6px}';
   var FIELDS = 'id,slug,name,logo_url,initials,color,website,instagram,facebook,category,extra_categories,communities,product_kinds,cuisines,vetted_at,voter_count,rss_url,claim_status,vegan_status,business_status,address_street,address_city,address_state,address_zip,atmosphere,accommodations,indoor_seating,late_hours,high_speed_wifi,is_black_owned,is_women_owned,is_latino_owned,is_asian_owned,is_lgbtq_owned,is_immigrant_owned,is_veteran_owned,is_indigenous_owned,is_family_owned,lgbtq_friendly,parent_id,location_label,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type,shared_kitchen:details->shared_kitchen,description,tiktok,youtube,person:details->person,tagline,phone,email,linkedin,twitter,booking_url,uber_eats_url,doordash_url,menu_crawl_url,google_hours_json';
 
@@ -531,6 +531,10 @@
         panel.hidden = false; wrap.querySelector('.box').classList.add('vla-wide'); drawLogo();
         var save = $('#vla-le-save');
         var ed = LE.mount($('#vla-le'), { fetchUrl: function (url) { return disc({ action: 'logo_fetch', url: url }); }, onChange: function (on) { save.disabled = !on; } });
+        // Save and Cancel sit centered under the square, so they stay on screen while the logo is being adjusted (Sean, 2026-11-07:
+        // "I forget to save, and then I have to do it all over again").
+        var acts = panel.querySelector('.ledit-acts'), stage = panel.querySelector('.vle-stage');
+        if (acts && stage && stage.parentNode) { stage.parentNode.appendChild(acts); acts.classList.add('under'); }
         if (l.logo_url) ed.load(l.logo_url);
         $('#vla-le-x').onclick = closeEditor;
         save.onclick = function () {
