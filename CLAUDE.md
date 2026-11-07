@@ -1472,7 +1472,13 @@ guests, Import narration and Guest reviews (empty since free accounts ended). No
 and **Restore** (`ve-depot` `trash_set`, `ve_site_settings` `depot_trash`) puts it back in its section. Mock `/mocks/depot/`; V's tour script
 `docs/proposals/depot-tour-script.md` (13 chapters, approved by Sean; recorded 2026-11-07 at `geekfon-media/voice_samples/v/depot/tour-<n>-v1.mp3`, all 13 checked word for word with stt). Not built yet: V's tour and
 Ask V on the Depot, Logos as its own tool (category filters, Most viewed), better logo suggestions, the Guides back end and See every page,
-BrandDesk inside Vegans Explore, People in BrandDesk.
+People in BrandDesk.
+**Where each lives (Sean, 2026-11-07, "I totally agree"; replaces the pass-through plan above):** BrandDesk lives only in HQ (`hq.lesaruss.ai/branddesk`);
+Vegans Explore links to it (a button that opens HQ in a new tab, signed in through the LESARUSS connector), because BrandDesk is the step up for the
+higher tier, closer to the source. The Depot lives only in Vegans Explore: it is the platform's back office on this site's database; the relationship
+tools still move to BrandDesk one at a time. No pass-through, no iframe, no two-door sync. To check before promising automatic sign-in: Vegans Explore
+to HQ needs a one-time code exchange (the reverse of `ve-lesaruss-sso`); not built. **Next: the two tours** (Depot, V; BrandDesk, V, on the existing
+`lib/branddeskTours.ts` in lesaruss-hq, which has only the People tour so far), each as a video per `canon-ve-guide-tour-standard` v3.
 
 ## One Blueprint, and Signal (Sean, 2026-11-06, playbooks `branddesk-production-wing`, `signal`)
 
