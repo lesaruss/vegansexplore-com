@@ -180,9 +180,9 @@
       ready: function () { return !!q('.depot-head'); },
       launcher: function (btn) { var host = q('.depot-head'); if (!host) return false; btn.className += ' ve-tour-launch-green'; host.appendChild(btn); return true; },
       steps: [
-        { page: '/admin/depot', sel: ['.depot-head'], title: 'Welcome to the Depot',
+        { page: '/admin/depot/library', sel: ['.depot-head'], title: 'The Library',
           body: 'Everything behind Vegans Explore lives here. Use Go to on any page to jump around. This tour visits the parts you will use most.' },
-        { page: '/admin/depot', sel: ['#ml-drop', '.depot-head'], title: 'The Library',
+        { page: '/admin/depot/library', sel: ['#ml-drop', '.depot-head'], title: 'The Library',
           body: 'Drop pictures, sound and video here. Everything is kept in our own storage and tagged, so any page can use it.' },
         { page: '/admin/depot/inbox', sel: ['.depot-head'], title: 'Inbox',
           body: 'Every story idea in one place: links you paste, stories members send from their hub, and what our sources find.' },

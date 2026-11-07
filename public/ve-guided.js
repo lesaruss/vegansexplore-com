@@ -31,6 +31,7 @@
  * data-path are shared by everyone, in page order.
  * Buttons: [data-vg-go="slide-id"] jumps to a slide; [data-vg-next] acts like Next.
  * Event: 'vg:change' on document, detail { id, index, total }, after every move.
+ * White theme: add vg-light to the stage (<main class="vg-stage vg-light">). Every new mock and walkthrough uses it.
  * Styling helpers: .vg-eyebrow .vg-h .vg-lede .vg-split .vg-glass .vg-panel .vg-btn .vg-btn-ghost
  */
 (function () {
@@ -80,6 +81,27 @@
     '@media (min-width:901px) and (max-height:820px){.vg-slide{padding-top:28px;padding-bottom:84px;}.vg-h{font-size:clamp(24px,2.5vw,32px);margin-bottom:10px;}.vg-lede{font-size:15px;margin-bottom:10px;}.vg-nav{padding-top:8px;padding-bottom:10px;}}',
     /* Phones and tablets: a slide stacks, the page scrolls within it, controls follow it. */
     '@media (max-width:900px){.vg-stage{height:auto;min-height:0;overflow:visible;background-image:none !important;}.vg-stage::before,.vg-stage::after{display:none;}.vg-bg{display:block;position:fixed;inset:0;z-index:-1;background:#0d130e center/cover no-repeat;}.vg-bg::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,0.78);}.vg-slide{position:relative;inset:auto;padding:28px 16px 8px;overflow:visible;}.vg-nav{position:relative;padding:8px 16px 32px;}.vg-split{grid-template-columns:minmax(0,1fr);gap:22px;}.vg-note{padding:9px 16px;}}',
+    /* White theme (Sean, 2026-11-07: "I like the clean white background look"): <main class="vg-stage vg-light">. The default for every
+     * new mock and walkthrough; the dark stage stays only for pages already built on it (/partners, the pitch decks). */
+    '.vg-stage.vg-light{background:#fff !important;color:#1a1a1a;}',
+    '.vg-light::before,.vg-light::after{display:none !important;}',
+    '.vg-light .vg-eyebrow{color:#2D5C27;}',
+    '.vg-light .vg-h,.vg-light .vg-lede{color:#1a1a1a;}',
+    '.vg-light .vg-fine{color:#555;}',
+    '.vg-light .vg-glass{background:#fff;border:1px solid #e3e3e3;color:#1a1a1a;box-shadow:0 1px 2px rgba(0,0,0,0.04);}',
+    '.vg-light .vg-panel{box-shadow:none;border:1px solid #e3e3e3;}',
+    '.vg-light .vg-dots i{background:#d6d6d6;}',
+    '.vg-light .vg-dots i.vg-done{background:#9a9a9a;}',
+    '.vg-light .vg-dots i.vg-on{background:#2D5C27;}',
+    '.vg-light .vg-step{color:#1a1a1a;}',
+    '.vg-light .vg-step span{color:#2D5C27;}',
+    '.vg-light .vg-back{color:#1a1a1a;}',
+    '.vg-light .vg-btn{background:#2D5C27;color:#fff;}',
+    '.vg-light .vg-btn:hover{background:#3A9B3E;}',
+    '.vg-light .vg-btn-ghost{background:#fff;color:#2D5C27;border-color:#2D5C27;}',
+    '.vg-light .vg-pick.vg-picked{background:#E8F5E9 !important;}',
+    '@media (max-width:900px){.vg-light .vg-bg{display:none;}}',
+    'html.vg-on.vg-light-page .vg-note{background:#FFF7EC;color:#5a3a00;border-bottom-color:#f5d9b0;}',
     '@media print{.vg-nav{display:none;}.vg-slide{display:block !important;position:relative;page-break-after:always;}html.vg-on,html.vg-on body{overflow:visible;height:auto;}.vg-stage{height:auto;overflow:visible;}}'
   ].join('');
 
@@ -90,6 +112,7 @@
     st.textContent = CSS;
     document.head.appendChild(st);
     document.documentElement.classList.add('vg-on');
+    if (stage.classList.contains('vg-light')) document.documentElement.classList.add('vg-light-page');
 
     var bg = stage.getAttribute('data-bg');
     var bgLayer = document.createElement('div');

@@ -43,7 +43,30 @@ Two rules hold at every step:
 - **Members-only content** lives in the `<slug>-site` row of `ve_guides` (`content_html` holds the JSON); only the free preview
   ships in the page (`#dg-public`).
 
-## Start here: every Guide opens with it, short (LOCKED by Sean 2026-11-06, revised the same day)
+## The Overview is a tour, then the Guide steps back (LOCKED by Sean 2026-11-07, canon `canon-ve-guide-tour-standard`)
+
+"Having the guides take them through all of the different pages and tabs... it's a little disorienting." This replaces Start here (below,
+kept for history) and the Overview standard. Every new Guide is built this way; the Vegan Dairy Guide stays as it is until Sean says otherwise.
+
+1. **The Overview is a tour of the whole Guide.** Play runs it by itself as a moving slideshow, slides synced to the Guide's voice
+   (the Ambassador Guide's card cues are the starting point), chapter dots to jump, **Skip the tour** always visible. About 90 seconds, two
+   minutes at most. Visitors see all of it, members-only sections included.
+2. **Its beats, in order**: welcome to Vegans Explore, the Guide introduces themself; you have reached the <name> Guide, and the
+   transformation (from X to Y); the map, one beat per section (what it is, what to do there), shown on a real picture of that tab with the
+   part named lit up; where to start (one first step); I'm here (ask me anything, I take what I can't answer to our team; hide me to see the
+   full page, tap me to bring me back; on any page tap me and I'll summarize it).
+3. **Each section's beat is its own recorded chapter.** Back to back they are the tour; alone, a chapter is that page's summary. One script,
+   two uses.
+4. **Every other page starts with the Guide hidden**, folded in the corner as **Ask <Guide>**.
+5. **Tapping the Guide opens a chat window**: suggestions on top (**Summarize this page** always first, free, the chapter's voice with its
+   words; Where do I start?; What can I do here?; one or two real questions from saved answers), then the ask box and Ask a person.
+6. Deeper pages (one fix, one listing inside the Guide) use their section's chapter.
+7. The summary is the voice on every page, so the rule that a Guide speaks on every page still holds.
+
+Script first, to Sean, before anything is recorded. Pilot: the Vegan Restaurant Guide
+(`docs/proposals/restaurant-guide-tour-script.md`), then the Vegan Events Guide.
+
+## Start here: every Guide opens with it, short (LOCKED 2026-11-06, replaced by the tour on 2026-11-07)
 
 "The first thing we need to get across... did they land on the right page? How is this going to help them on their hero's journey? How is
 Vegans Explore set up as the perfect guide for that journey? What's the transformation... And how do they actually use the platform?...

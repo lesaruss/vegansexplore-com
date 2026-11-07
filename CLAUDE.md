@@ -30,6 +30,25 @@ we have systems, so we don't waste time and usage." Canon `canon-template-gate` 
 First case: `/guides/taste` had been written from a blank file twice; on 2026-11-02 it was rebuilt on the Welcome Guide (see Earn your
 Passport, part 3).
 
+## The Overview is a tour, then the Guide steps back (LOCKED by Sean 2026-11-07, canon `canon-ve-guide-tour-standard`)
+
+"Having the guides take them through all of the different pages and tabs... it's a little disorienting." Supersedes the Start here card and
+the Overview standard below (their beats live inside the tour). The Overview is a full tour of the Guide: Play runs a moving slideshow synced
+to the Guide's voice (welcome, I'm <Guide>; you've reached the <name> Guide and the transformation; one beat per section, each on a picture of
+that tab with the part named lit up; where to start; I'm here, I take what I can't answer to our team, hide me, tap me on any page and I'll
+summarize it), chapter dots and Skip the tour, about 90 seconds. Each section's beat is its own recorded chapter: back to back the tour, alone
+that page's **Summarize this page**. On every other page the Guide starts hidden as **Ask <Guide>**; tapping opens a chat with suggestions on
+top (Summarize this page first and free, Where do I start?, What can I do here?, real saved questions), then the ask box and Ask a person.
+Visitors see the whole tour. The summary keeps a voice on every page (`ve-audio-accessibility`). The Dairy Guide stays as it is until Sean says
+otherwise. Pilot: the Vegan Restaurant Guide (script `docs/proposals/restaurant-guide-tour-script.md`, waiting on Sean), then the Events Guide.
+How to build it: `docs/guides/BUILD-A-GUIDE.md`.
+**v2 (Sean, 2026-11-07)**: V narrates the Depot and BrandDesk ("she's the face of that part of it"); the member Guides keep their own characters. One tour,
+three uses: the live tour, each chapter as its page's summary, and the same slides and voice rendered as a video for emails (a still with a play button
+linking to a watch page through a tracked /go/ link), social and client calls. Animating the Guide on the Overview tours, like the Dairy Guide, comes after
+every tour is locked, not before. Build order: the Depot home and its tour (prototype, script `docs/proposals/depot-tour-script.md`, waiting on Sean;
+mock `/mocks/depot/`), the BrandDesk Overview tour (client version first), its video, then the Restaurant Guide. One shared tour player for all of them,
+built on BrandDesk's existing V tours (`lib/branddeskTours.ts` in lesaruss-hq).
+
 ## Every Guide opens the same way, and businesses earn the word Vegan (Sean, 2026-11-06)
 
 Canon `canon-ve-guide-overview-standard`: "we need to address the elephant in the room, let them know they're in the right place, give them an
@@ -433,7 +452,9 @@ Sean: "I say this every time... I don't like the scroll... put it in that view s
 navigating through and seeing everything." Canon `canon-sean-interface-defaults` rule 0.
 
 Any mock, demo, pitch walkthrough, illustrative report or concept page is built as the guided
-view on the first pass, never a long scroll: one full-height slide at a time on a dark stage,
+view on the first pass, never a long scroll: one full-height slide at a time on a **clean white stage** (Sean, 2026-11-07:
+"Why is it a green background? You should know me by now. I like the clean white background look"; `<main class="vg-stage vg-light">`,
+the dark stage only for pages already built on it: /partners and the pitch decks),
 Back / "N of M" / Next at the bottom, nothing to scroll on desktop (nav, stage and footer share
 one screen), every slide fitting at 1440x900 and 1366x768, and on phones the slide stacks with
 the controls after it. The format is the `/partners` page; the shared shell is
@@ -1414,6 +1435,27 @@ pages before each change are in `zz_playbook_close_20261106` (drop it once Sean 
 are three idea places (this tab, Depot > Ideas with `ve_ideas` and the `idea-files` bucket, and the Blueprint's own build threads); Sean is
 merging them in one chat. The Blueprint is finite: build its main parts first, then it becomes the one idea capture, with uploads (screenshots,
 documents, voice memos) queued under New for Logan to sort. Handoff `docs/handoff/2026-11-06-ve-feedback-blueprint-ideas.md`.
+
+## The Depot home, and Ideas lives in the Depot (Sean, 2026-11-07, playbook `branddesk-production-wing`)
+
+"We are going to keep the depot, this is where the ideas should live instead of the blueprint, because I feel like it's kind of buried in the
+blueprint." **This replaces "Blueprint > Ideas holds every idea" below**: Depot > Ideas (`ve_ideas`) is the one place ideas are dropped, with
+Feedback beside it; BrandDesk's Blueprint > Ideas (`blueprint_ideas` in HQ) stays as it is until the two are merged (not done).
+**The Depot opens on its home** (`/admin/depot`, `admin/depot/index.html`), not the Library (now `/admin/depot/library`): one tile per section
+with what is waiting today (`ve-depot` `home`, `ve_depot_counts()`, migration `20261107_depot_home.sql`), a search that finds any tool by name,
+`#s/<section>` for a section's tools and `#trash` for the trash bin. Sections (`SECTIONS` in `public/depot-tabs.js`): Directory (with Secret
+Shopper), Logos (Directory review > Logos for now), Content (with the Library), Bounties (Bounties, Check-ins, Submissions, Watchlist), Guides
+(Preview journeys, Onboarding, Dashboard checklist), Ideas (Ideas, Feedback), Demos, and **Moving to BrandDesk** (People, Outreach, Business
+outreach, Ambassadors, Founding Members, Nonprofit and Group Partners, Community Managers, Profiles, Invites, Referral claims, Links, Members,
+Leads, Role applications, Social, Playbooks, Analytics, Community Insights, Platform health, BrandDesk clients), each tool staying here, working,
+until BrandDesk does everything it does. Admin and Site and QA are gone. The Go to menu lists each section once (it showed Content twice when
+rows of another group sat between Content rows). **The trash bin** (`TRASH` in `depot-tabs.js`, the same list in `ve-depot`): Challenges,
+Passport Challenge and its card and kit, Pulse (old articles), Pulse Cities, Passport Partners, the old Logos page, Tours, Services, Dinner
+guests, Import narration and Guest reviews (empty since free accounts ended). Nothing is deleted; a retired page opened by its address says so,
+and **Restore** (`ve-depot` `trash_set`, `ve_site_settings` `depot_trash`) puts it back in its section. Mock `/mocks/depot/`; V's tour script
+`docs/proposals/depot-tour-script.md` (13 chapters, Ideas included; recording waits on Sean reading chapter 9). Not built yet: V's tour and
+Ask V on the Depot, Logos as its own tool (category filters, Most viewed), better logo suggestions, the Guides back end and See every page,
+BrandDesk inside Vegans Explore, People in BrandDesk.
 
 ## One Blueprint, and Signal (Sean, 2026-11-06, playbooks `branddesk-production-wing`, `signal`)
 
