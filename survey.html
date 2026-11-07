@@ -88,11 +88,13 @@
     var GUIDE_FOR = { restaurant: ['vegan-restaurant-guide', 'The Vegan Restaurant Guide'], events: ['vegan-events-guide', 'The Vegan Events Guide'], nonprofit: ['nonprofit-guide', 'The Nonprofit Guide'], creator: ['creator-guide', 'The Creator Guide'] };
     // Sent here from a free media claim (claim.html, ve_claim_after_survey): finishing takes them back to it.
     function claimBack() { try { var v = sessionStorage.getItem('ve_claim_after_survey') || ''; return /^[a-z0-9_-]{1,120}$/.test(v) ? v : ''; } catch (e) { return ''; } }
+    // Sent here from another page that wanted a member (the holiday menu form, ve-holiday-guide 2026-11-07): finishing goes back there.
+    function pageBack() { try { var v = sessionStorage.getItem('ve_after_survey') || ''; return /^\/[a-z0-9/_-]{1,120}$/.test(v) ? v : ''; } catch (e) { return ''; } }
     function explorerDone(runs) {
       var picks = (runs || []).filter(function (k) { return GUIDE_FOR[k]; });
       return '<h2 class="vgs-q">Thanks.</h2><p class="vgs-h">' + (pendingAcct ? 'You are in. Your membership is open and your points are in.' : 'Your points are in.') + '</p>' +
         picks.map(function (k) { return '<p class="vgs-h">' + GUIDE_FOR[k][1] + ' opens with its own short survey, with up to 250 more points. <a style="color:#1f5f22;font-weight:800" href="/survey?s=' + GUIDE_FOR[k][0] + '">Take it</a></p>'; }).join('') +
-        (claimBack() ? (claimBack() === '_add_' ? '<p><a class="vgs-b" href="/claim?add=1">Finish adding your business</a></p>' : '<p><a class="vgs-b" href="/claim?listing=' + encodeURIComponent(claimBack()) + '">Finish claiming your page</a></p>') : '<p><a class="vgs-b" href="/dashboard">Open your dashboard</a></p>');
+        (pageBack() ? '<p><a class="vgs-b" href="' + pageBack() + '">Pick up where you left off</a></p>' : claimBack() ? (claimBack() === '_add_' ? '<p><a class="vgs-b" href="/claim?add=1">Finish adding your business</a></p>' : '<p><a class="vgs-b" href="/claim?listing=' + encodeURIComponent(claimBack()) + '">Finish claiming your page</a></p>') : '<p><a class="vgs-b" href="/dashboard">Open your dashboard</a></p>');
     }
     VEGuideSurvey.mount($('host'), {
       survey: slug,
