@@ -196,7 +196,7 @@
   function viewOverview() {
     var own = owner();
     var cta = own ? '<div class="dg-btns"><a class="dg-btn" href="' + OV.listHash + '">' + esc(OV.choose) + '</a><a class="dg-btn dg-ghost" href="#/mylist">My list</a></div>'
-      : '<div class="dg-btns"><a class="dg-btn" href="#/join">Get the Guide: $11 or ' + pts(ST.cost) + ' points</a><a class="dg-btn dg-ghost" href="' + OV.venueHash + FREE + '">Try ' + esc(OV.freeName) + ' free</a></div>';
+      : '<div class="dg-btns"><a class="dg-btn" href="#/join">Get the Guide</a><a class="dg-btn dg-ghost" href="' + OV.venueHash + FREE + '">Try ' + esc(OV.freeName) + ' free</a></div>';
     var newest = !VENUES ? '<div class="dg-loading">Loading...</div>'
       : '<div class="sa-vgrid ov-new">' + VENUES.slice().sort(function (a, b) { return String(b.added || '').localeCompare(String(a.added || '')) || (b.sort_order || 0) - (a.sort_order || 0); }).slice(0, 6).map(venueCard).join('') + '</div>';
     main.innerHTML =
@@ -207,7 +207,7 @@
       '<section class="ov-sec"><div class="dg-k">How to use it</div><h3 class="ov-h">Three steps, wherever you are</h3><div class="ov-steps">' +
         [['pick', OV.step1[0], OV.step1[1]], ['go', OV.step2[0], OV.step2[1]], ['save', 'Save it for later', OV.step3]].map(function (s, i) {
           return '<div class="ov-step"><span class="ov-ic">' + OV_ICON[s[0]] + '</span><b><span class="ov-n">' + (i + 1) + '</span>' + esc(s[1]) + '</b><p>' + esc(s[2]) + '</p></div>'; }).join('') + '</div></section>' +
-      (own ? '' : '<section class="ov-sec ov-join"><div><div class="dg-k">Get access</div><h3 class="ov-h">' + esc(OV.joinTitle) + '</h3><p>Every ' + esc(OV.place) + ' with ' + esc(OV.getThere) + ', My list, and the bounties. $11 or ' + pts(ST.cost) + ' points, yours to keep.</p></div><a class="dg-btn" href="#/join">Get the Guide</a></section>') +
+      (own ? '' : '<section class="ov-sec ov-join"><div><div class="dg-k">Get access</div><h3 class="ov-h">' + esc(OV.joinTitle) + '</h3><p>Every ' + esc(OV.place) + ' with ' + esc(OV.getThere) + ', My list, and the bounties.</p></div><a class="dg-btn" href="#/join">Get the Guide</a></section>') +
       '<section class="ov-sec ov-built"><div><div class="dg-k">Built with you</div><h3 class="ov-h">Members keep it right</h3><p>' + OV.built + '</p>' +
         '<ul class="ov-list"><li><b>Still here:</b> it is still sold, as written.</li><li><b>Something changed:</b> a new price, a new name, or it is gone.</li><li><b>Something missing:</b> a Vegan item or a spot that is not in the Guide yet.</li></ul>' +
         '<p class="ov-small">Every item says where it came from and when a member last checked it, so you know what is fresh.</p></div>' +
