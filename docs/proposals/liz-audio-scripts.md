@@ -216,3 +216,20 @@ shown to Sean before they go in, stored at 960 px in `vegan-media/media/river/ev
 
 > "Hi, I'm Liz, and welcome to the Vegan Restaurant Guide. You feed people, and that's the most direct way anyone meets Vegan food, so thank you. Most owners are great at the food and stretched thin on everything else: your Google listing, your hours, your photos, your menu online. Customers decide from what they find before they ever walk in. This Guide shows you what they find, and what to fix first. Start with Run my free check. Then take the short survey. It's free, it makes you a member, and the rest of the Guide opens. And this Guide is built with you. If something isn't clear, ask me. If I can't help, our team will."
 
+
+# Dani: the Nonprofit Guide tour (APPROVED by Sean 2026-11-07, "Approved", not recorded; playbook `ve-nonprofit-guide`, canon `canon-ve-guide-tour-standard`)
+
+Records once the shared tour player exists (build order: Depot, BrandDesk, Restaurant Guide). Each beat is its own chapter; a map beat alone is that tab's Summarize this page. Recorded in Dani's roster-profile voice (`b5RPB35vTODb3BEmR3Fc`), "Vegan" spelled "Veegan" for the voice, checked word for word with stt. About 2 minutes.
+
+1. **Welcome**: "Hi, I'm Dani. Welcome to Vegans Explore. I'll be your guide."
+2. **You've reached the Nonprofit Guide**: "If you lead a Vegan nonprofit, a rescue or a sanctuary, you probably have a thousand ideas and not enough hands. Passion keeps the doors open, but it can't do the fundraising, the marketing and the day-to-day on its own. And the people who help steer the ship often get pulled somewhere else. Our founder has worked alongside hundreds of organizations, and we built this so you don't have to do it alone. You go from carrying everything yourself to having a home base, a playbook and a community behind you."
+3. **The map**
+   - The 10 tips: "The ten tips cover fundraising and staying relevant, one at a time, each with what to do this week."
+   - Pulse: "Pulse has our conversations with nonprofit leaders. Hear how they did it, right here."
+   - Directory and Get found: "The Directory is where members find nonprofits, rescues and sanctuaries, city by city. Get found shows you how to claim your page and keep it current. If anyone sees something wrong with a listing, they can tell our team, and we look into it."
+   - Businesses: "Businesses shows Vegan brands and restaurants near you that fit a partnership, with a pitch you can send."
+   - Events: "Events puts your next event on our calendar and in the Daily Pulse. Need a foster? Post it on your city's Fosters board, where local members are looking."
+   - Support: "Support covers what wears small teams down, and how to share the load."
+   - Become a Partner: "And when you're ready, Become a Partner gives your organization its own link, points for our services and a badge."
+4. **Where to start**: "Start with the short survey about your organization. It's free, it makes you a member, and it tells us what you need, because we're building this with you."
+5. **I'm here**: "I'm right here. Ask me anything, and if I can't answer, I'll take it to our team. Hide me to see the full page, tap me to bring me back, and on any page, tap me and I'll summarize it."

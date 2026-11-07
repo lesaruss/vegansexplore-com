@@ -118,18 +118,18 @@
     if (!token()) return 'join';
     return ST.balance >= ST.cost ? 'points' : 'buy';
   }
-  function ctaLabel() { return { free: 'Free right now', soon: 'Coming soon', join: 'Get it for $11', points: 'Unlock with ' + pts(ST.cost) + ' points', buy: 'Get it for $11' }[mode()]; }
+  function ctaLabel() { return { free: 'Free right now', soon: 'Coming soon', join: 'Get it for $11', points: 'Use ' + pts(ST.cost) + ' points', buy: 'Get it for $11' }[mode()]; }
   function offerLine() {
     var m = mode();
     if (m === 'free') return 'It is free right now, thanks to our sponsors.';
     if (m === 'soon') return 'The full Guide opens soon. Publix at Brickell Village in Miami is open to everyone now.';
-    if (m === 'points') return 'Unlock it with ' + pts(ST.cost) + ' points: you have ' + pts(ST.balance) + '. Or get it for $11.';
+    if (m === 'points') return 'Pick how you pay: $11, or ' + pts(ST.cost) + ' of your ' + pts(ST.balance) + ' points.';
     return 'It is free while a supermarket sponsors it. Until then it is $11, or ' + pts(ST.cost) + ' points, and yours to keep.';
   }
   function ctaBtns() {
     var m = mode();
     return '<div class="dg-btns"><button type="button" class="dg-btn" data-join' + (m === 'soon' || m === 'free' ? ' disabled style="opacity:.6;cursor:default"' : '') + '>' + esc(ctaLabel()) + '</button>' +
-      (m === 'join' ? '<a href="#" data-signin style="font-size:12.5px;font-weight:800;color:var(--g)">Already a member? Sign in</a>' : '') +
+      (m === 'join' ? '<a href="#" data-signin style="font-size:12.5px;font-weight:800;color:var(--g)">Member? Sign in</a>' : '') +
       (m === 'points' ? '<a href="#" data-buy style="font-size:12.5px;font-weight:800;color:var(--g)">Or get it for $11</a>' : '') + '</div>';
   }
   function gated(inner, title, text) {
@@ -143,6 +143,8 @@
     btn.textContent = ctaLabel(); btn.disabled = m === 'soon' || m === 'free'; btn.style.opacity = btn.disabled ? '.6' : '';
     if (price) price.innerHTML = m === 'free' ? '<b>Free</b><small>while<br>sponsored</small>' : '<b>$11</b><small>one time<br>purchase</small>';
     signin.style.display = m === 'join' || m === 'soon' ? '' : 'none';
+    var jin = box.querySelector('.dg-jb-in'), jm = mode();
+    if (jin) { if (jm === 'points') { jin.innerHTML = 'Or<br><a href="#" data-buy>pay $11</a>'; jin.style.display = ''; } else if (jm === 'join') jin.innerHTML = 'Member?<br><a href="#" data-signin>Sign in</a>'; }
   }
 
   // ---------- stores ----------
@@ -688,8 +690,8 @@
     var back = '#/store/' + v.slug;
     if (kind === 'choose' && item) return viewChoose(v, item, back);
     if (!REPORT[kind]) kind = 'missing';
-    var gate = !token() ? '<div class="dg-door"><p>Sign in to send a report. Reports are for Passport holders.</p><div class="dg-btns"><button type="button" class="dg-btn" data-signin>Sign in</button><a href="/passport" style="font-weight:800;color:var(--g)">Get your Passport</a></div></div>'
-      : !ME.active ? '<div class="dg-door"><p>Reports are for Passport holders. Your Passport is $11, one time, with 1,100 welcome points.</p><a class="dg-btn" href="/passport">Get your Passport</a></div>'
+    var gate = !token() ? '<div class="dg-door"><p>Sign in to send a report. Reports are for members.</p><div class="dg-btns"><button type="button" class="dg-btn" data-signin>Sign in</button><a href="/survey?s=explorer" style="font-weight:800;color:var(--g)">Join free</a></div></div>'
+      : !ME.active ? '<div class="dg-door"><p>Reports are for members. Membership is free with a short survey.</p><a class="dg-btn" href="/survey?s=explorer">Take the survey</a></div>'
       : !owner() ? '<div class="dg-door"><p>Bounties unlock with the Guide. Once it is yours, every report you send from the store earns points, and the first to map a section earns the bounty.</p><a class="dg-btn" href="#/join">Get the Guide</a></div>' : '';
     if (!v.can_report) gate = '<div class="dg-door"><p>Reports for ' + esc(v.name) + ' open soon.</p></div>';
     var what = item ? '<p class="dg-sharenote"><b>' + esc(item.it.name) + '</b> &middot; ' + esc(item.spot.name) + '</p>' : '';
@@ -1001,11 +1003,11 @@
       '<li><b>The community:</b> your member dashboard, Directory votes, the Daily Pulse and points.</li></ul></div>';
     var status = '<span class="dg-status" role="status" style="display:block;margin-top:10px;color:#8a5a00"></span>';
     var box = m === 'soon' ? '<div class="dg-big">Soon</div><p>The full Guide opens soon. Publix at Brickell Village is open to everyone now.</p><a class="dg-btn" href="#/store/' + FREE + '">Open Brickell Village</a>'
-      : m === 'points' ? '<div class="dg-big">' + pts(ST.cost) + '<small>points</small></div><p>You have ' + pts(ST.balance) + ' points. Unlock the Guide with ' + pts(ST.cost) + ' of them and it is yours to keep.</p>' +
-        '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button><button type="button" class="dg-btn dg-ghost" data-buy style="margin-top:8px">Or get it for $11</button>' + status
-      : '<div class="dg-big">$11<small>yours to keep</small></div><p>' + (m === 'join' ? 'Create your account and get the Guide for $11, one time. Buying it makes you a member of Vegans Explore. Already a member? <a href="#" data-signin>Sign in</a>.'
+      : m === 'points' ? '<div class="dg-big">$11<small>or ' + pts(ST.cost) + ' points</small></div><p>Pick how you pay. You have ' + pts(ST.balance) + ' points. Either way the Guide is yours to keep.</p>' +
+        '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button><button type="button" class="dg-btn dg-ghost" data-buy style="margin-top:8px">Pay $11</button>' + status
+      : '<div class="dg-big">$11<small>yours to keep</small></div><p>' + (m === 'join' ? 'Get the Guide for $11, one time, and it is yours to keep. Members can pay with 1,100 points instead: <a href="#" data-signin>sign in</a>.'
         : 'Get the Guide for $11, one time, and it is yours to keep.') + '</p><button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status +
-        '<p class="dg-pp">It is free whenever a supermarket sponsors it. Or get your <a href="/passport">Passport</a>: $11, one time, with 1,100 welcome points, enough for this Guide.</p>';
+        '<p class="dg-pp">It is free whenever a supermarket sponsors it.' + (m === 'buy' ? ' Or ' + pts(ST.cost) + ' points: you have ' + pts(ST.balance) + '. Earn more with <a href="/bounties">bounties</a>.' : '') + '</p>';
     main.innerHTML = head('Get access', 'Open every store', 'The Supermarket Guide is free while a supermarket sponsors it. Otherwise it is $11, or 1,100 points, like every Vegans Explore Guide.') + list;
     main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox">' + box + '</div>');
   }
@@ -1087,7 +1089,7 @@
       if (m === 'join') {
         var go = function () { delete window.VE_ACTIVATE_HANDLER; buyNow(jb); };
         window.VE_ACTIVATE_HANDLER = go;
-        a.showAuthModal('Create your account, then get the Supermarket Guide for $11. Buying it makes you a member.', go, 'signup');
+        a.showAuthModal('Create your account, then get the Supermarket Guide for $11.', go, 'signup');
         return;
       }
       if (m === 'points') unlockPoints(jb); else buyNow(jb);

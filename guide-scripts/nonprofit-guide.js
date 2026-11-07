@@ -68,7 +68,7 @@
   // The tabs, in tour order, and what Dani says on each (text drafts for Sean; no recordings yet). `say` is for visitors (why get
   // it), `sayMember` walks an owner through what they have.
   var TABS = [
-    { k: 'overview', label: 'Overview', say: 'Hi, I\'m Dani. This Guide is for the people who keep Vegan nonprofits, rescues and sanctuaries going: how to raise money, stay relevant and get found.',
+    { k: 'overview', label: 'Overview', say: 'Hi, I\'m Dani. If you run a Vegan nonprofit, you carry a lot. One short survey makes your organization a member, free, with one place to run it all. And you help us build it.',
       sayMember: 'Welcome in. Start with the ten tips, then find your organization in the Directory and make its page yours.' },
     { k: 'tips', label: 'The 10 tips', lock: 1, say: 'Ten ways to fundraise and stay relevant, each with what to do this week and an episode that backs it up. Storytelling is open for you to try.',
       sayMember: 'Here are all ten tips. Each has a short checklist for this week. Tick it off as you go, and save the ones you\'re working on.' },
@@ -84,7 +84,7 @@
       sayMember: 'Add your event to our calendar, then use the peer-to-peer kit so your supporters fundraise for you.' },
     { k: 'support', label: 'Support', lock: 1, say: 'Passion alone doesn\'t keep a nonprofit going. Here\'s what drains small organizations, and what to do instead.',
       sayMember: 'You don\'t have to carry it alone. Here\'s how to share the load, and where to find help.' },
-    { k: 'partner', label: 'Become a Partner', say: 'Nonprofit Partners get their own link, earn twenty percent when people join through it, and get points, a kit and a badge.',
+    { k: 'partner', label: 'Become a Partner', say: 'Nonprofit Partners get their own link, points for our services, a kit and a badge. Partnership is by invitation.',
       sayMember: 'Tell us about your organization. It helps us support you, and it pays points.' },
     { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you saved lives here: tips, episodes and organizations.' },
     { k: 'join', label: 'Get access', guest: 1, say: 'The Nonprofit Guide opens when you finish its short survey about your organization. It\'s free, it earns you points, and if you\'re not a member yet, it makes you one.' }
@@ -404,7 +404,7 @@
     if (sub && sub.indexOf('listing/') === 0) return viewListing(decodeURIComponent(sub.slice(8)), ['Get found', '#/found']);
     var steps = [
       ['Find your page', 'Many Vegan nonprofits, rescues and sanctuaries are already in our Directory. Search for yours below.', '#/found', 'Search below'],
-      ['Claim it', 'Make the page yours: your story, links, photos and events. Claiming is $11 or 1,100 points, and our team checks every claim.', '/business', 'How claiming works'],
+      ['Claim it', 'Make the page yours: your story, links, photos and events. Claiming is free for members, and our team checks every claim.', '/business', 'How claiming works'],
       ['Not listed? Add it', 'Add your organization to the Directory. It waits for our team to check it, then it goes live.', '/claim?add=1', 'Add your organization'],
       ['Every chapter you serve', 'A statewide or national organization shows in every chapter it serves, not just its home city. Tell us which.', 'mailto:contact@lesaruss.com?subject=' + encodeURIComponent('Chapters our organization serves'), 'Tell our team'],
       ['Votes and points', 'Members vote for the organizations they love, and they can give your organization points right from its page.', '/directory?tab=community', 'See the Community Directory'],
@@ -501,7 +501,6 @@
     if (!tell) {
       var what = [
         ['Your own link', 'A short link for your organization, separate from anyone\'s personal one. Visits and sign-ups through it count for the organization.'],
-        ['20% of what comes through it', 'A flat 20% of the $11 Passport and of Guides bought through your link, paid to the organization as referral earnings once $25 is ready and after a W-9. Never a donation, and not tax-deductible.'],
         ['Points for our services', 'Points your organization holds, set when you are invited, toward promoting your events, a feature or a social push. Members can give you more.'],
         ['A marketing kit', 'Ready-to-post messages, a website button and banner, and an email blurb, all carrying your link.'],
         ['A badge and your own Guide', 'The Nonprofit Partner badge on your page and Directory card, and a Guide for your lead with your numbers.'],
@@ -563,10 +562,17 @@
       ['businesses', 'Businesses', 'Vegan brands and restaurants near you that fit a tie-in, and a pitch to send.'],
       ['events', 'Events', 'Your event on our calendar, promoted, with vendors. Plus the peer-to-peer kit.', 1],
       ['support', 'Support', 'What drains small nonprofits, and what to do instead.'],
-      ['partner', 'Become a Partner', 'Your own link, 20% of what comes through it, points, a kit and a badge.', 1]
+      ['partner', 'Become a Partner', 'Your own link, points for our services, a kit and a badge.', 1]
     ];
-    main.innerHTML = head('Vegans Explore Guides for nonprofits', 'Fundraise, stay relevant and get found',
-      'For the people who keep Vegan nonprofits, rescues and sanctuaries going. Based on The Vegan Nonprofit Survival Guide by Sean A. Russell, with our Directory and our interviews built in.') +
+    var pitch = [
+      ['You\'re in the right place', 'If you\'re running a Vegan nonprofit, there\'s a lot. You shouldn\'t have to build the tools yourself.'],
+      ['What you get, free', 'One short survey and your organization is a member. Your page in our Directory, your events on our calendar and in the Daily Pulse, a way to reach our members as they join, and one place to run it all.'],
+      ['You help build it', 'We\'re building a national rescue and foster network, where members follow the organizations near them and see who needs a home. We want the organizations doing the work to shape it. Tell us what you need and we\'ll build it with you.']
+    ];
+    main.innerHTML = head('Vegans Explore Guides for nonprofits', 'A home for your Vegan nonprofit',
+      'Built with the organizations doing the work, with the ten tips from The Vegan Nonprofit Survival Guide by Sean A. Russell, our Directory and our interviews inside.') +
+      '<div class="rg-steps">' + pitch.map(function (w, i) { return '<div class="rg-step"><em>' + (i + 1) + '</em><b>' + esc(w[0]) + '</b><p>' + esc(w[1]) + '</p></div>'; }).join('') + '</div>' +
+      (member() ? '' : '<div class="dg-btns" style="margin-bottom:22px"><button type="button" class="dg-btn" data-survey>Start with the survey, free</button></div>') +
       '<div class="dg-tiles">' + tiles.map(function (t) {
         return '<a class="dg-tile' + (t[0] === 'partner' ? ' dg-warm' : '') + '" href="' + href(t[0]) + '"><div class="dg-ic">' + ICON[t[0]] + '</div><div><b>' + esc(t[1]) + '</b><span>' + esc(t[2]) + '</span>' +
           (!member() && !t[3] ? '<span class="dg-mlock">' + LOCK_SVG + ' In the full Guide</span>' : !member() && t[3] ? '<span class="dg-mlock" style="color:#1f5f22 !important">Open to everyone</span>' : '') + '</div></a>';

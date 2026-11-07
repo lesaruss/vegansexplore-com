@@ -281,7 +281,11 @@ async function build(from: string, to: string, blogId?: number | null, withPodca
 // brand with no Metricool brand yet, makes the slot Manual with the reason, so it is known ahead of time. sync marks Metricool's
 // published posts Posted with their links and copies their numbers from the analytics (matched by link).
 type Who = { ops: boolean; admin: boolean; id: string | null; name: string };
-const EDITABLE = ['slot_at', 'channels', 'kind', 'title', 'caption', 'first_comment', 'links', 'assets', 'manual_steps', 'batch', 'sound'];
+const EDITABLE = ['slot_at', 'channels', 'kind', 'title', 'caption', 'first_comment', 'links', 'assets', 'manual_steps', 'batch', 'sound', 'collaborators'];
+// Collaborators (Sean, 2026-11-07): the Instagram accounts invited as collaborators on a post (instagramData.collaborators
+// [{username}] in Metricool's spec). They do not have to accept; a slot holds at most COLLAB_MAX handles.
+const COLLAB_MAX = 5;
+const cleanCollabs = (v: unknown) => [...new Set((Array.isArray(v) ? v : String(v || '').split(/[\s,]+/)).map((h) => String(h || '').trim().replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/^@/, '').replace(/\/.*$/, '').toLowerCase()).filter((h) => /^[a-z0-9._]{1,30}$/.test(h)))].slice(0, COLLAB_MAX);
 // Music (Sean, 2026-11-01). Checked against Metricool's OpenAPI spec (app.metricool.com/api/swagger.json) the same day:
 //   Instagram: instagramData.audioConfiguration {audioId (required), title, audioType music|original_sound, durationMs, igUsername,
 //     displayArtist, coverArtworkUrl, audioVolume 0-100, videoVolume 0-100}, Reels only; songs from GET
@@ -347,6 +351,8 @@ function mcBody(s: any, nets: string[]) {
   };
   if (nets.includes('instagram')) {
     body.instagramData = { autoPublish: true, type };
+    const co = Array.isArray(s.collaborators) ? s.collaborators.filter(Boolean) : [];
+    if (co.length && type !== 'STORY') body.instagramData.collaborators = co.map((u: string) => ({ username: u }));
     const ig = s.sound?.instagram;
     if (ig?.audioId && type === 'REEL') {
       const [audioVolume, videoVolume] = MIX[ig.mix] || MIX.both;
@@ -548,6 +554,7 @@ async function studio(body: any, who: Who) {
     if ('assets' in clean && !Array.isArray(clean.assets)) return { error: 'bad_assets' };
     if ('caption' in clean) clean.caption = String(clean.caption || '').slice(0, 5000);
     if ('sound' in clean) clean.sound = cleanSound(clean.sound);
+    if ('collaborators' in clean) clean.collaborators = cleanCollabs(clean.collaborators);
     if ('assets' in clean) clean.assets = (clean.assets as any[]).map((a: any) => a && typeof a === 'object' ? { ...a, ...(Number(a.w) > 0 && Number(a.h) > 0 ? { w: Math.round(Number(a.w)), h: Math.round(Number(a.h)) } : {}) } : a);
     if (!s) {
       if (!clean.slot_at) return { error: 'bad_time' };
