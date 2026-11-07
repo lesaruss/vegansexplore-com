@@ -6899,6 +6899,18 @@ for the Guide and `claim.html` for the menu form (template gate).
   (now 410) with a drawn test menu: the photo uploaded and public, a photo from elsewhere dropped, a GIF and another member's file refused,
   the photo and the PDF both read as the 4 (V) dishes with prices and the 3 others left out by name; told a business was 100% Vegan, the
   reader still left out turkey and cheese dishes on that menu (the safer answer). Every test row and file removed.
+- **Step 3, the Holiday Guide page, built 2026-11-07 on branch `claude/busy-goodall-709pe8`, not on `main`** (Sean: "start F"): `/guides/holiday-guide`
+  (`guides/holiday-guide.html`, `guide-scripts/holiday-guide.js`, copied from the Nutrition Guide, the Dairy Guide family), free and public, Theo on the
+  right (his lines are text drafts, `docs/proposals/holiday-guide-theo-lines.md`). Tabs: Overview (countdowns), ThanksLiving (the five ways, the shared
+  word, the National Day of Mourning with uaine.org), Holiday menus (`ve-holiday` `live`, chapter picker `hg_chapter`, 100% Vegan first, Save keeps the
+  listing in My Saves through `VEAuth.saveListing`), Events (ThanksLiving, Thanksgiving and Friendsgiving events on our calendar, none on 2026-11-07),
+  Give back (Nonprofit Partners first, then the Directory's nonprofits, rescues and sanctuaries by chapter), For businesses (the steps and every
+  holiday's close date). Signed out, Save or Join free opens one window; what they tapped is kept (`localStorage` `hg_pending`) and saved when the
+  Explorer survey brings them back (`ve_after_survey`). It replaced the Coming soon Vegan Holidays card in the catalog (a heart icon, since the old
+  banner is a Christmas scene with Theo out of store clothing) and is in the sitemap. Checked at 1440 and 390 px beside the Nutrition Guide against
+  live data, and a menu card and the join window against a mocked menu. **The restaurant note (step H)** is a draft for Sean,
+  `docs/proposals/holiday-guide-restaurant-note.md` (96 published addresses, two versions, from the team, Tuesday Nov 10 by default). Not yet: a
+  ThanksLiving banner, sanctuary ThanksLiving events on the calendar, Theo's recordings, donation links (Give back step 4).
 
 ## Image conventions
 
