@@ -1339,12 +1339,13 @@
   vid.preload = 'metadata'; vid.playsInline = true; vid.setAttribute('playsinline', '');
   vid.setAttribute('aria-label', 'Liz, your Guide');
   function joinActive() { return !member() && !!(ST && ST.active); }
-  function lizAudio(k) { if (k === 'join' && joinActive()) return null; var f = (member() ? AUDIO_M : AUDIO_V)[k]; return f ? CLIP_BASE + 'door-' + f + '.mp3' : null; }
+  var AUDIO_ACTIVE = 'join-member-v1'; // the join screen for a member who has not taken the restaurant survey (sayActive)
+  function lizAudio(k) { if (k === 'join' && joinActive()) return CLIP_BASE + 'door-' + AUDIO_ACTIVE + '.mp3'; var f = (member() ? AUDIO_M : AUDIO_V)[k]; return f ? CLIP_BASE + 'door-' + f + '.mp3' : null; }
   var aud = new Audio(); aud.preload = 'none';
   aud.addEventListener('ended', function () { TOUR.playing = false; drawLiz(); });
   function clip(k) { if (member() && CLIPS_M[k]) return CLIPS_M[k]; if (k === 'join' && joinActive()) return null; if (k === 'join' && onPoints()) return null; return k === 'join' && mode() === 'unlock' ? CLIPS.join_credit : CLIPS[k] || null; }
   function cueLiz(k) {
-    var c = clip(k), key = k + (member() ? ':m' : '') + (k === 'join' && mode() === 'unlock' ? ':c' : '');
+    var c = clip(k), key = k + (member() ? ':m' : '') + (k === 'join' && joinActive() ? ':a' : '') + (k === 'join' && mode() === 'unlock' ? ':c' : '');
     if (TOUR.shown === key) return;
     TOUR.shown = key; stopLiz();
     var au = lizAudio(k); if (au) aud.src = au; else aud.removeAttribute('src');
