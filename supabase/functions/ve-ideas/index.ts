@@ -33,6 +33,12 @@ const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const db = createClient(SUPABASE_URL, SERVICE_KEY);
 const MODEL = 'claude-opus-5-5';
 const MAX_TOKENS = 16000;
+// The read searches the web (branddesk-production-wing L, 2026-11-07): web_search and web_fetch, the dynamic-filtering versions,
+// at most 5 searches and 3 pages a read. A paused turn (the server's search loop hit its limit) is sent back to resume, up to 4 times.
+const WEB_TOOLS = [
+  { type: 'web_search_20260209', name: 'web_search', max_uses: 5 },
+  { type: 'web_fetch_20260209', name: 'web_fetch', max_uses: 3, max_content_tokens: 20000 },
+];
 const BUCKET = 'idea-files';
 const STATUSES = ['new', 'read', 'approved', 'building', 'done', 'set_aside'];
 const UPLOAD_TYPES = /^(image\/|application\/pdf$|video\/|audio\/|text\/(plain|markdown|csv)$|application\/vnd\.openxmlformats-officedocument\.wordprocessingml\.document$)/;
@@ -81,7 +87,10 @@ say back what he is asking, in plain words, so he can approve it or correct you.
 Rules: plain American English, short sentences, no em dashes, "Vegan" always capitalized. Never invent facts about the site; when you do not
 know whether something exists, say what you would check. If an attachment could not be opened, say so in one line. Name the playbook it
 belongs to from the list (Sean wants every piece of work tied to a playbook). A small tweak to something that exists belongs in ve-feedback.
-Ask a question only when the answer changes what you build.`;
+Ask a question only when the answer changes what you build.
+You can search the web and open pages. Use them when the idea turns on something outside our own site: a company, product, person, show,
+law, price, tool or event, or a link he added (open it). Do not search for things about our own site; you are not given its code. Say in the
+ask what you found and where, in plain words, and never present something you did not find as fact.`;
 
 type FileRef = { path: string; name: string; type: string; size: number; transcript?: string };
 type Src = { body: string; links: string[]; files: FileRef[]; page_url?: string | null; thread: { role: string; text: string }[] };
@@ -150,18 +159,38 @@ async function readCore(src: Src, maxTokens = MAX_TOKENS): Promise<{ read?: any;
     (thread ? `What has been said since:\n${thread}\n\nRead it again with his latest words in mind.` : 'Write back what you think he is asking.') });
   let out: any;
   let stop = '';
+  const searched: string[] = [];
+  const sources: { title: string; url: string }[] = [];
   try {
     const client = new Anthropic({ apiKey });
-    const res: any = await client.beta.messages.create({
-      model: MODEL, max_tokens: maxTokens, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
-      output_config: { effort: 'medium', format: { type: 'json_schema', schema: SCHEMA } },
-      system: SYSTEM, messages: [{ role: 'user', content }],
-    } as any);
-    stop = String(res.stop_reason || '');
+    const messages: any[] = [{ role: 'user', content }];
+    let res: any = null;
+    for (let turn = 0; turn < 5; turn++) {
+      res = await client.beta.messages.create({
+        model: MODEL, max_tokens: maxTokens, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
+        output_config: { effort: 'medium', format: { type: 'json_schema', schema: SCHEMA } },
+        tools: WEB_TOOLS, system: SYSTEM, messages,
+      } as any);
+      for (const b of (res.content || [])) {
+        if (b.type === 'server_tool_use') searched.push(clean(b.input?.query || b.input?.url, 200));
+        if (b.type === 'web_search_tool_result' && Array.isArray(b.content)) for (const r of b.content) if (r?.url) sources.push({ title: clean(r.title, 200), url: String(r.url).slice(0, 600) });
+        if (b.type === 'web_fetch_tool_result' && b.content?.url) sources.push({ title: clean(b.content?.content?.title || b.content.url, 200), url: String(b.content.url).slice(0, 600) });
+      }
+      if (res.stop_reason !== 'pause_turn') break;
+      const prev = messages[messages.length - 1];
+      if (prev.role === 'assistant') prev.content = [...prev.content, ...(res.content || [])];
+      else messages.push({ role: 'assistant', content: res.content || [] });
+    }
+    stop = String(res?.stop_reason || '');
     if (stop === 'refusal') return { error: 'refused', files };
     if (stop === 'max_tokens') return { error: 'cut_off', detail: `The read ran past ${maxTokens} tokens and stopped part way.`, files };
+    if (stop === 'pause_turn') return { error: 'cut_off', detail: 'The web search did not finish.', files };
     if (stop !== 'end_turn' && stop !== 'stop_sequence') return { error: `stopped_${stop || 'unknown'}`, files };
-    out = JSON.parse((res.content || []).filter((x: any) => x.type === 'text').map((x: any) => x.text).join(''));
+    const blocks: any[] = res.content || [];
+    // The answer is the text after the last tool result (text before a search is the model talking to itself).
+    let last = -1;
+    blocks.forEach((b, i) => { if (/_tool_result$|^server_tool_use$/.test(String(b.type))) last = i; });
+    out = JSON.parse(blocks.slice(last + 1).filter((x: any) => x.type === 'text').map((x: any) => x.text).join(''));
     if (!out || typeof out.ask !== 'string' || !out.ask.trim()) return { error: 'model_output', files };
   } catch (e) {
     const msg = String((e as Error).message || e);
@@ -174,6 +203,8 @@ async function readCore(src: Src, maxTokens = MAX_TOKENS): Promise<{ read?: any;
     plan: (out.plan || []).map((s: unknown) => clean(s, 400)).filter(Boolean).slice(0, 6),
     questions: (out.questions || []).map((s: unknown) => clean(s, 400)).filter(Boolean).slice(0, 3),
     unread, at: new Date().toISOString(),
+    searched: searched.filter(Boolean).slice(0, 8),
+    sources: [...new Map(sources.map((x) => [x.url, x])).values()].slice(0, 8),
   };
   return { read, files };
 }

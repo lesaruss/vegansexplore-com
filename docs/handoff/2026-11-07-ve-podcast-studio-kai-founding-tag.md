@@ -6,9 +6,9 @@ Velez-Mitchell Unchained", airs **Sunday Nov 8, 7:00 AM Eastern** (`publish_at` 
 
 ## Where it stands
 - **Final file**: `media/podcast/vep-weekly/2026-11-08/episode-final-v4.mp3` (13 min 12.6 s, -16.5 LUFS, peak -1.5 dBFS), set as `final_path`.
-- **Not on Captivate yet.** At 9:45 AM Eastern the episode had no Captivate ids and `GET /shows/5f0184ac-771d-41be-9db2-49f08fc0b880/episodes/scheduled`
-  returned `{"count":0}`. Sean presses **Approve and schedule on Captivate** (reload the Podcast page first so it picks up v4), then check that list reads
-  2026-11-08 07:00 (Captivate stores show-local wall time). If it refuses status Scheduled, find the right value; a retry reuses the upload.
+- **Scheduled and confirmed on Captivate.** Sean pressed Approve and schedule at 9:44 AM Eastern. `GET /shows/5f0184ac-771d-41be-9db2-49f08fc0b880/episodes/scheduled`
+  reads 2026-11-08 07:00 (7:00 AM Eastern), status Scheduled; Captivate episode 902d9d96-bfd3-49b6-ab13-31e91b1365f3, media_name episode-final-v4,
+  original_media_id 04918ac7 (ours); its active copy runs 798.7 s, about 6 s longer than v4 (likely the network tag pre-roll). Playbook record ec24dcf3.
 
 ## What happened this session
 - **Who made v3**: Claude session `016TNa9TGZ1qb9KHiHy6u3Yk`, 8:21 AM Eastern Nov 7, on Sean's instruction (music under his intro, record b4465044,
