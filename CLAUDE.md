@@ -6848,6 +6848,20 @@ for the Guide and `claim.html` for the menu form (template gate).
   budget until Sean names one (the Guide takes a rail banner slot, a Daily Pulse mention and city posts).
 - **Build order**: 1 the menu form (live about 11-10); 2 the dashboard card and holiday hours; 3 the Guide, its ThanksLiving tab and the
   sanctuary events; 4 Give back by 12-01; 5 wish lists and gifts; 6 Hanukkah, Christmas, Kwanzaa.
+- **Step 1 built 2026-11-07, not on `main`** (branch `claude/busy-goodall-709pe8`, e07dce6; migration `20261107_holiday_menus.sql` applied):
+  **`/business/holiday-menu`** (`business/holiday-menu.html`, `noindex`, claim.html's family): four steps (`?step=business|menu|details|review`),
+  the countdown to the holiday's close, drafts in `localStorage` `ve_hmenu_<listing>_<holiday>`, the preview as it will show (100% Vegan, else
+  Plant-based (Pre-Vegan) menu). Signed out or not a member: Join free sends them to the Explorer survey, which brings them back
+  (`sessionStorage` `ve_after_survey`, `pageBack` in `survey.html`); a member with no page is sent to claim. Edge function **`ve-holiday`**
+  (verify_jwt off; `holidays`, `live` public; `mine`, `save`, `withdraw` for the listing's owner or a member with an open claim on it, members
+  only, standing checked on writes; `queue`, `get`, `review` for super admins). Tables `ve_holidays` (slug, name, `submit_close`, promo dates;
+  a new holiday is a row) and `ve_holiday_menus` (one per listing and holiday; any edit goes back to `pending`; statuses pending, live,
+  declined, withdrawn; RLS on, no policies). **Depot > Holiday menus** (`/admin/depot/holiday-menus`, Directory in the Go to menu): approve or
+  ask for a change, each emailing the owner through `email-send` (a `[TEST]` listing sends nothing); the team is emailed each new or changed
+  menu. The business dashboard card (`ve_dashboard_cards`, `/business/holiday-menu`, ends 2026-11-19 05:00Z) is **held at starts_at 2099** until
+  the merge; set it to now after. Proven live 25 of 25 through `ve-once-holiday-proof` (now 410; script
+  `scripts/supabase-once/holiday-proof.ts`), every test row removed; page checked at 1440 and 390 px beside `claim.html` against mocked answers.
+  Not yet: a Guide voice on the page (Theo, text until approved), the Holiday Guide page showing live menus (step 3).
 
 ## Image conventions
 
