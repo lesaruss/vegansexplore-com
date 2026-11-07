@@ -364,7 +364,8 @@ Deno.serve(async (req: Request) => {
       const part = {
         record: ({ '0': 0, '1-3': 8, '4-12': 16, '13+': 20 } as any)[a.e_count] ?? 0,
         crowd: ({ '<25': 4, '25-75': 8, '75-200': 12, '200-1000': 16, '1000+': 20 } as any)[a.e_crowd] ?? 0,
-        vegan: ({ all: 20, mostly: 12, friendly: 6, notyet: 2 } as any)[a.e_vegan] ?? 0,
+        // The business badge questions (canon-ve-business-badges): everything plant-based and run Vegan beyond the plate scores most.
+        vegan: a.e_vegan === 'yes' ? (a.e_word === 'vegan' ? (a.e_beyond === 'all' ? 20 : 16) : 14) : a.e_vegan === 'notyet' ? 4 : a.e_vegan === 'no' ? 2 : 0,
         fit: (ap.venue_vegan === 'Yes' ? 10 : 0) + (ap.booth === 'Yes' ? 5 : 0) + (ap.meals === 'Yes' ? 5 : 0),
         care: Math.min(10, Math.floor((String(a.e_audience || '').length + String(a.e_help || '').length) / 40)) + (a.e_story ? 5 : 0),
       };

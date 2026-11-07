@@ -54,7 +54,21 @@ The owner's own intake answers set 100% Vegan or 100% Plant-based; we never judg
 change their answers, and our team checks before 100% Vegan shows. It is peace of mind for customers and protection for the owner, never a
 penalty; a plant-based place that later adds meat broke no promise. 100% Vegan businesses get more from us (first in features and on the
 podcast, the most help staying open). Our copy never names a real business or owner as an example of either badge. **Not built**: the badges
-on listings, the intake questions (Sean reads them first), the Directory's Vegan options label (a later step).
+on listings, the Directory's Vegan options label (a later step).
+
+**The badge intake, built 2026-11-06** (Sean: "approved", with Logan's defaults; migration `20261106_business_badge_intake.sql`, run through the one-time
+`ve-once-badge-intake`, now the 410 stub; handoff `docs/handoff/2026-11-06-ve-pre-vegan-business-guide-badge-intake-built.md`). Four shared questions
+replace "How Vegan is what you run?" (`vegan_level`) in the Restaurant, Events and Pre-Vegan Business intakes: `biz_all_plant` (Is everything you sell
+plant-based?), `biz_word` (Vegan. We run it for the animals. / Plant-based), `biz_beyond` (beyond the plate: all, mostly, not yet), `biz_help`. `r_vegan`
+and `e_vegan` are Question 1 now. **Questions can be skipped**: `ve_survey_questions.show_if {q, in}`, `ve_survey_states` (shown, skipped, waiting); a
+skipped question is never required and pays its points as if answered, so every path pays the full total (Restaurant and Events 250, 20 a question;
+Pre-Vegan Business 100, 10/5/5/5). `ve-guide-survey.js` skips them, counts only shown ones and shows **Your badge** (Change my answers, Continue) when the
+answers set or change it. **The badge** is `ve_business_badges` (one row a member, kept by a trigger on `ve_member_shared_answers`; history
+`ve_business_badge_events`): 100% Vegan waits for the team (`checking`, shows 100% Plant-based meanwhile); Vegan + Mostly or Not yet shows 100%
+Plant-based (`follow_up`); Plant-based and Pre-Vegan show at once; leaving 100% Vegan clears its approval. **Depot > Business badges**
+(`/admin/depot/badges`, Directory; edge function `ve-badges`): Waiting for a check, Team follows up, Showing, All; Approve 100% Vegan, We will follow up
+first (note), Save note only (`ve_business_badge_decide`). Event sponsors' Compare scores the new answers. Proven 2026-11-06 in a rolled-back transaction
+and at 1440 and 390 px against mocked answers. **Not built**: the badge on listings and cards, an email when approved, an Inbox row for a new claim.
 
 ## A Guide speaks on every page (LOCKED standard, Sean, 2026-11-04, corrected 2026-11-05, playbook `ve-audio-accessibility`)
 
@@ -6690,6 +6704,16 @@ suspended or banned." Sean is the judge: every suspend, ban and void is his deci
 - **The standing check in the token-only edge functions, built and live 2026-11-03** (commits e7d3bce and 30bdda7, deployed through `ve-function-deploy` from 30bdda79, source sha256 matched on all 15): `ve-board`, `ve-checkin`, `ve-bounties`, `ve-events`, `ve-venues`, `ve-products`, `ve-cookbook`, `ve-vault`, `ve-challenge`, `ve-group`, `ve-guide-unlock`, `ve-podcast`, `ve-referrer`, `ve-mission-survey` and `ve-claims` (owner actions; super admins skipped). Each has an inlined `standingBlocked` and a `READ_ACTIONS` set at one choke point after the member token is verified; **anything not in the set is a write and is refused with 403 `account_not_in_good_standing`** (fails closed, so a new action is blocked for a frozen member until it is added to the read list). Ops-token `as_member` calls, Taster keys, public actions and crons are never checked (`ve-group` `msg_*` link-token actions stay open so a frozen member can still stop emails). Proven live 2026-11-03 with a session for Test Manager suspended for a few seconds: a write on each of the 15 answered 403 and reads on `ve-board`, `ve-vault`, `ve-checkin`, `ve-cookbook` and `ve-mission-survey` answered 200 (`ve-once-standing-proof`, now the 410 stub; standing put back to good). Other edge functions (`ve-dashboard`, `ve-affiliate`, `ve-bounties` aside, `ve-people-outreach`, `ve-nonprofit`, `ve-ambassador`...) still check only the token; points are frozen everywhere by the trigger regardless.
 - **`/policies#community` paragraph written 2026-11-03** (Sean approved the wording): **Earning points fairly**, between Don't and Reporting (points gained by gaming are voided, an account can be put on hold, serious or repeated cases can be closed, a person decides, every decision can be undone). It is live once this branch is on `main`; it must be live before opening cases is turned on. **Not built yet**: the standing check in the functions not listed above. Canon
   `canon-ve-abuse-watch`, playbook `ve-abuse-watch`.
+
+## Restaurant Guide Overview: short Start here, groups as pills, illustrated pictures (Sean, 2026-11-06, playbook `ve-restaurant-guide`)
+
+Sean's live review: "too much clicking... it should be instructions on how to use this thing. Very simple, not a lot." The Overview (members and
+visitors) is a short **Start here** card (`/public/ve-guide-intro.js`, now the short version for every Guide: right place, why us, when you are done,
+how to use it, a picture), then the four groups as headings with their sections as pills (visitors' pills locked; Run my free check under the card).
+The six-part Start here is retired (`docs/guides/BUILD-A-GUIDE.md`). **Generic pictures are our illustrated style, never photorealistic**; real photos
+only for real customers, events and a business's own food and space. All 18 pictures in `public/guides/restaurant-guide/` were redrawn (Higgsfield
+nano_banana_pro from the old photos with Liz's banner as the style reference, 2 credits each; `pic()` asks `?v=2`), plus `t-start.jpg`. Liz's member
+welcome is `door-overview-member-v2` ("Welcome in. You run a Vegan restaurant..."), checked with `stt`.
 
 ## Moving off the $11 Passport (Sean, 2026-11-06, NOT built, playbook `ve-pricing-points-passport`)
 
