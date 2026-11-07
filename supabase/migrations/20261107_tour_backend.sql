@@ -1,4 +1,4 @@
--- STATUS 2026-11-07: NOT YET APPLIED. The connector held it for approval (it drops two empty tables made by mistake); waiting on Sean.
+-- STATUS: applied 2026-11-07 through the one-time function ve-once-tour-tables (now the 410 stub); the connector had held it for approval.
 -- branddesk-production-wing / ve-guide-tour-standard v3: Depot > Guides, the back end of every Guide's (and tool's) tour video
 -- (Sean, 2026-11-07: "it should be something that lives within the guide section we're creating in the depot, where we can see
 -- everything, all the assets, all the recordings, everything for each guide on the back end"). One tour per Guide or tool; its

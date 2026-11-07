@@ -4,6 +4,12 @@
 //                                                      the retired tools Sean has put back.
 // POST { action: 'trash_set', href, restored }     -> { restored }           restore a retired tool (true) or retire it again (false).
 //                                                      href must be one of TRASH (the same list as TRASH in public/depot-tabs.js).
+// Depot > Guides, the back end of every tour video (canon-ve-guide-tour-standard v3; tables ve_video_tours, ve_video_chapters,
+// ve_video_shots, migration 20261107_tour_backend.sql):
+// POST { action: 'tours' }                          -> { tours }   every tour with its chapter and shot counts
+// POST { action: 'tour', slug }                     -> { tour, chapters, shots }
+// POST { action: 'shot_decide', id, status, note? } -> { shot }    status approved | redo (redo needs a note) | proposed
+// POST { action: 'chapter_approve', id, approved }  -> { chapter }
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -64,6 +70,52 @@ Deno.serve(async (req) => {
     const { error } = await db.from('ve_site_settings').upsert({ key: 'depot_trash', value: { restored }, updated_at: new Date().toISOString(), updated_by: me });
     if (error) return json({ error: 'save_failed' }, 500);
     return json({ ok: true, restored });
+  }
+
+  if (b.action === 'tours') {
+    const [{ data: tours }, { data: ch }, { data: sh }] = await Promise.all([
+      db.from('ve_video_tours').select('id, slug, title, kind, narrator, status, page_url, video_url, youtube_url, updated_at').order('created_at'),
+      db.from('ve_video_chapters').select('tour_id, approved_at, seconds'),
+      db.from('ve_video_shots').select('tour_id, status'),
+    ]);
+    const out = (tours || []).map((t) => {
+      const c = (ch || []).filter((x) => x.tour_id === t.id), s = (sh || []).filter((x) => x.tour_id === t.id);
+      return { ...t, chapters: c.length, seconds: c.reduce((a, x) => a + Number(x.seconds || 0), 0),
+        shots: s.length, approved: s.filter((x) => x.status === 'approved').length, redo: s.filter((x) => x.status === 'redo').length };
+    });
+    return json({ ok: true, tours: out });
+  }
+
+  if (b.action === 'tour') {
+    const slug = typeof b.slug === 'string' ? b.slug : '';
+    const { data: tour } = await db.from('ve_video_tours').select('*').eq('slug', slug).maybeSingle();
+    if (!tour) return json({ error: 'not_found' }, 404);
+    const [{ data: chapters }, { data: shots }] = await Promise.all([
+      db.from('ve_video_chapters').select('*').eq('tour_id', tour.id).order('n'),
+      db.from('ve_video_shots').select('*').eq('tour_id', tour.id).order('chapter_n').order('ord'),
+    ]);
+    return json({ ok: true, tour, chapters: chapters || [], shots: shots || [] });
+  }
+
+  if (b.action === 'shot_decide') {
+    const id = typeof b.id === 'string' ? b.id : '';
+    const status = b.status === 'approved' || b.status === 'redo' || b.status === 'proposed' ? b.status : '';
+    const note = typeof b.note === 'string' ? b.note.trim().slice(0, 2000) : '';
+    if (!id || !status) return json({ error: 'bad_request' }, 400);
+    if (status === 'redo' && !note) return json({ error: 'note_needed' }, 400);
+    const { data: shot, error } = await db.from('ve_video_shots')
+      .update({ status, note: note || null, decided_at: status === 'proposed' ? null : new Date().toISOString(), decided_by: status === 'proposed' ? null : me, updated_at: new Date().toISOString() })
+      .eq('id', id).select('*').maybeSingle();
+    if (error || !shot) return json({ error: 'not_found' }, 404);
+    return json({ ok: true, shot });
+  }
+
+  if (b.action === 'chapter_approve') {
+    const id = typeof b.id === 'string' ? b.id : '';
+    if (!id) return json({ error: 'bad_request' }, 400);
+    const { data: chapter, error } = await db.from('ve_video_chapters').update({ approved_at: b.approved === false ? null : new Date().toISOString() }).eq('id', id).select('*').maybeSingle();
+    if (error || !chapter) return json({ error: 'not_found' }, 404);
+    return json({ ok: true, chapter });
   }
 
   return json({ error: 'unknown_action' }, 400);

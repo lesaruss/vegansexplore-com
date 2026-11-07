@@ -53,6 +53,18 @@ YouTube, is downloadable, and is cut into clips for social and the podcast. Pipe
 checked with stt (unchanged); 3. a **lookbook** of every shot per chapter for Sean to approve before any animation or credits; 4. animation, the Guide on camera
 with lip sync (the Dairy Guide standard); 5. the edit, chapters as video chapters, and Summarize this page still plays that chapter. The live slideshow player is
 dropped. The Depot's 13 chapters are already recorded (step 2 done).
+**Depot > Guides > Guides and tours** (`/admin/depot/guides`, built 2026-11-07; Sean: "it should be something that lives within the guide section we're
+creating in the depot, where we can see everything, all the assets, all the recordings"): every tour video's back end, the lookbook living here instead of an
+artifact. `#list`; `#t/<slug>/lookbook` (each chapter's line and recording, then its shots: **On camera** with the exact seconds of her words, **Page capture**,
+**Illustration** (an idea until approved, then drawn), each **Approve** or **Redo** with a note, or Undo); `#t/<slug>/script` (each recording, its version and the
+word-for-word check); `#t/<slug>/video` (the edit, once made). Tables `ve_video_tours`, `ve_video_chapters`, `ve_video_shots` (migration
+`20261107_tour_backend.sql`; named ve_video_* because `ve_tours` is the old Tours feature), through `ve-depot` `tours`, `tour`, `shot_decide`, `chapter_approve`.
+**On camera is three short moments** (Sean: "first 2.5 seconds, maybe in the middle, and then at the end"): lip sync needs about 3 s, so each is cut at a natural
+pause and held to 3 s with the mouth closed. The rest is B-roll of the real pages plus a few illustrations. **The Depot tour** is the first: 13 chapters (1:56), 19
+shots; V on camera at chapter 1 (0 to 2.4 s), 9 (0 to 2.5 s) and 13 (6.9 to 9.6 s), from her existing closed-mouth start frames
+(`geekfon-media/artists/v/business-tour/join-1-v2.jpg`, `join-5-v2.jpg`, `start-4-v2.jpg`, no new credits); 12 real Depot captures at 1920 x 1080 in
+`vegan-media/media/tours/depot/`; two illustration ideas (chapters 7 and 9). Next: Sean approves the lookbook, then the three moments are lip-synced and the video
+is edited. The Nonprofit Guide (Dani) is the next tour to load here.
 
 ## Every Guide opens the same way, and businesses earn the word Vegan (Sean, 2026-11-06)
 

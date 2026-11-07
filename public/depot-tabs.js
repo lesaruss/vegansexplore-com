@@ -37,7 +37,7 @@
     { k: 'logos', label: 'Logos', line: 'Pick, fix and upload logos' },
     { k: 'content', label: 'Content', line: 'Inbox, Sources, Content index, Books, Cookbook, Search questions, Library' },
     { k: 'bounties', label: 'Bounties', line: 'Bounty proofs, check-in photos and receipts, submissions, the watchlist' },
-    { k: 'guides', label: 'Guides', line: 'See every page of a Guide or a journey, onboarding, the checklist' },
+    { k: 'guides', label: 'Guides', line: 'Every tour video: script, recordings, lookbook. Journeys, onboarding, the checklist' },
     { k: 'ideas', label: 'Ideas', line: 'Every idea you drop in, and feedback from the site' },
     { k: 'demos', label: 'Demos', line: 'The sample restaurant, sample group, Gig Board, Campaign Engine, pitch decks' },
     { k: 'moving', label: 'Moving to BrandDesk', line: 'People, outreach, Social, Playbooks, Analytics. Here until BrandDesk does all of it.' }
@@ -67,6 +67,7 @@
     { group: 'Bounties', href: '/admin/depot/checkins', label: 'Check-ins' },
     { group: 'Bounties', href: '/dashboard/submissions', label: 'Submissions', kind: 'dash' },
     { group: 'Bounties', href: '/admin/depot/watchlist', label: 'Watchlist' },
+    { group: 'Guides', href: '/admin/depot/guides', label: 'Guides and tours' },
     { group: 'Guides', href: '/admin/depot/preview', label: 'Preview journeys' },
     { group: 'Guides', href: '/admin/depot/onboarding', label: 'Onboarding' },
     { group: 'Guides', href: '/admin/depot/dashboard-checklist', label: 'Dashboard checklist' },

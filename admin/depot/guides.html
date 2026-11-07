@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Guides and tours | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Depot > Guides (Sean, 2026-11-07, canon-ve-guide-tour-standard v3): the back end of every Guide's and tool's tour video, every
+       asset in one place. #list is every tour; #t/<slug>/lookbook (the shots per chapter, Approve or Redo with a note before anything
+       is animated), #t/<slug>/script (each chapter's line and recording with its word-for-word check), #t/<slug>/video (the edit).
+       Data: ve-depot tours, tour, shot_decide, chapter_approve (tables ve_video_tours, ve_video_chapters, ve_video_shots). -->
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:18px;font-weight:800;line-height:1.25;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:14px;}
+    .crumb{font-size:12.5px;margin-bottom:12px;}.crumb a{color:var(--ve-green-deep);font-weight:700;}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;}
+    .tabs a{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-text);text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:14px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:16px 18px;display:flex;flex-direction:column;gap:6px;color:inherit;text-decoration:none;}
+    .card:hover{border-color:var(--ve-green);}
+    .meta{font-size:12.5px;color:var(--ve-text-75);}
+    .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:#eef1ee;color:#333;}
+    .tag.approved{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .tag.redo{background:#fde7e5;color:#8a1c12;}
+    .tag.proposed{background:#fff1dc;color:#8a5200;}
+    .tag.k{background:#eef1ee;color:#333;}
+    .steps{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 16px;}
+    .steps span{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;color:#888;}
+    .steps span.done{background:var(--ve-green-light);color:var(--ve-green-deep);border-color:transparent;}
+    .steps span.now{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .bar{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:12px 16px;margin:0 0 18px;font-size:13.5px;display:flex;gap:16px;flex-wrap:wrap;align-items:center;}
+    .bar b{font-size:15px;}
+    .chap{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:16px 18px;margin:0 0 14px;}
+    .chap-h{display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;margin-bottom:12px;}
+    .chap-h .n{flex:none;width:34px;height:34px;border-radius:8px;background:var(--ve-green-deep);color:#fff;font-weight:900;display:grid;place-items:center;font-size:14px;}
+    .chap-h .tx{flex:1 1 320px;min-width:0;}
+    .chap-h .line{font-size:14px;color:var(--ve-text-75);margin-top:2px;}
+    .chap-h audio{height:36px;max-width:100%;}
+    .shots{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:12px;}
+    .shot{border:1px solid var(--ve-border);border-radius:10px;overflow:hidden;display:flex;flex-direction:column;background:#fff;}
+    .shot.approved{border-color:var(--ve-green);}
+    .shot.redo{border-color:#e59a92;}
+    .shot .pic{aspect-ratio:16/9;background:#f1f3f1 center/cover no-repeat;cursor:zoom-in;display:grid;place-items:center;}
+    .shot .pic.square{background-size:contain;background-color:#fff;}
+    .shot .pic.empty{cursor:default;color:#888;font-size:12.5px;font-weight:700;text-align:center;padding:16px;background:repeating-linear-gradient(45deg,#f7f8f7,#f7f8f7 10px,#f1f3f1 10px,#f1f3f1 20px);}
+    .shot .body{padding:12px 14px;display:flex;flex-direction:column;gap:8px;flex:1;}
+    .shot .brief{font-size:13px;line-height:1.5;}
+    .shot .note{font-size:12.5px;background:#fff7ec;border-left:3px solid var(--ve-orange);padding:6px 10px;border-radius:6px;}
+    .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;}
+    .btn-quiet{background:#fff;color:var(--ve-green-deep);border:1px solid var(--ve-green-deep);}
+    .btn-red{background:#fff;color:#8a1c12;border:1px solid rgba(138,28,18,.45);}
+    .btn:disabled{opacity:.5;cursor:default;}
+    textarea{font-family:inherit;font-size:13.5px;width:100%;min-height:70px;padding:8px 10px;border:1px solid var(--ve-border);border-radius:6px;}
+    table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;font-size:13.5px;}
+    th{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-text-75);text-align:left;padding:10px 12px;border-bottom:1px solid var(--ve-border);}
+    td{padding:10px 12px;border-bottom:1px solid #f0f0f0;vertical-align:top;}
+    td audio{height:34px;width:220px;max-width:100%;}
+    .ok{color:var(--ve-green-deep);font-weight:800;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .lb{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;cursor:zoom-out;}
+    .lb img{max-width:100%;max-height:100%;border-radius:8px;background:#fff;}
+    @media (max-width:700px){table,thead,tbody,tr,td{display:block;}thead{display:none;}tr{border-bottom:1px solid var(--ve-border);padding:8px 0;}td{border:0;padding:4px 12px;}}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1 id="title">Guides and tours</h1>
+    <div id="depot-tabs"></div>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden><div id="view"></div></main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-depot';
+      var $ = function (id) { return document.getElementById(id); };
+      var NARR = { v: 'V', liz: 'Liz', maya: 'Maya', river: 'River', dani: 'Dani', nori: 'Nori', theo: 'Theo', kai: 'Kai', pascal: 'Pascal' };
+      var STEPS = [['script', 'Script'], ['recorded', 'Recorded'], ['lookbook', 'Lookbook'], ['animating', 'Animation'], ['editing', 'The edit'], ['live', 'Live']];
+      var KIND = { on_camera: 'On camera', screen: 'Page capture', illustration: 'Illustration' };
+      var ST = { proposed: 'Waiting for you', approved: 'Approved', redo: 'Redo' };
+      var data = null;
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function secs(n) { n = Math.round(Number(n) || 0); return Math.floor(n / 60) + ':' + String(n % 60).padStart(2, '0'); }
+      function route() { var h = location.hash.replace(/^#/, '').split('/'); return h[0] === 't' ? { v: 'tour', slug: h[1], tab: h[2] || 'lookbook' } : { v: 'list' }; }
+
+      function list() {
+        $('title').textContent = 'Guides and tours';
+        $('view').innerHTML = '<p class="sub">Every Guide\'s and tool\'s tour video, with everything behind it: the script, each recorded chapter, the lookbook of shots to approve before anything is animated, and the finished video.</p><div id="tl" class="grid"><p class="meta">Loading...</p></div>';
+        api({ action: 'tours' }).then(function (d) {
+          if (!d || !d.ok) { $('tl').innerHTML = '<p class="meta">Could not load the tours.</p>'; return; }
+          $('tl').innerHTML = d.tours.length ? d.tours.map(function (t) {
+            var step = STEPS.filter(function (s) { return s[0] === t.status; })[0];
+            return '<a class="card" href="#t/' + esc(t.slug) + '"><span class="meta">' + (t.kind === 'tool' ? 'Tool' : 'Guide') + ' · narrated by ' + esc(NARR[t.narrator] || t.narrator) + '</span>' +
+              '<h2>' + esc(t.title) + '</h2><span><span class="tag">' + esc(step ? step[1] : t.status) + '</span></span>' +
+              '<span class="meta">' + t.chapters + ' chapters, ' + secs(t.seconds) + ' · ' + t.approved + ' of ' + t.shots + ' shots approved' + (t.redo ? ', ' + t.redo + ' to redo' : '') + '</span></a>';
+          }).join('') : '<p class="meta">No tours yet.</p>';
+        });
+      }
+
+      function tour(r) {
+        api({ action: 'tour', slug: r.slug }).then(function (d) {
+          if (!d || !d.ok) { $('view').innerHTML = '<p class="crumb"><a href="#">Guides and tours</a></p><p class="sub">That tour was not found.</p>'; return; }
+          data = d; draw(r);
+        });
+      }
+      function draw(r) {
+        var t = data.tour, si = STEPS.map(function (s) { return s[0]; }).indexOf(t.status);
+        $('title').textContent = t.title;
+        var total = data.chapters.reduce(function (a, c) { return a + Number(c.seconds || 0); }, 0);
+        var ap = data.shots.filter(function (s) { return s.status === 'approved'; }).length, rd = data.shots.filter(function (s) { return s.status === 'redo'; }).length;
+        var cam = data.shots.filter(function (s) { return s.kind === 'on_camera'; });
+        var camSecs = cam.reduce(function (a, s) { return a + Math.max(3, Number(s.audio_to || 0) - Number(s.audio_from || 0)); }, 0);
+        var html = '<p class="crumb"><a href="#">Guides and tours</a> &rsaquo; ' + esc(t.title) + '</p>' +
+          '<div class="steps">' + STEPS.map(function (s, i) { return '<span class="' + (i < si ? 'done' : i === si ? 'now' : '') + '">' + (i + 1) + '. ' + s[1] + '</span>'; }).join('') + '</div>' +
+          '<div class="bar"><span>Narrated by <b>' + esc(NARR[t.narrator] || t.narrator) + '</b></span><span><b>' + data.chapters.length + '</b> chapters, <b>' + secs(total) + '</b></span>' +
+          '<span><b>' + ap + '</b> of ' + data.shots.length + ' shots approved' + (rd ? ', <b>' + rd + '</b> to redo' : '') + '</span>' +
+          '<span><b>' + cam.length + '</b> on-camera moments, about <b>' + Math.round(camSecs) + ' s</b> to animate</span>' +
+          (t.page_url ? '<a class="btn btn-quiet" href="' + esc(t.page_url) + '">Open the page</a>' : '') + '</div>' +
+          '<div class="tabs">' + [['lookbook', 'Lookbook'], ['script', 'Script and recordings'], ['video', 'Video']].map(function (x) {
+            return '<a href="#t/' + esc(t.slug) + '/' + x[0] + '" class="' + (r.tab === x[0] ? 'on' : '') + '">' + x[1] + '</a>';
+          }).join('') + '</div><div id="pane"></div>';
+        $('view').innerHTML = html;
+        if (r.tab === 'script') script(); else if (r.tab === 'video') video(); else lookbook();
+      }
+      function shotCard(s, ch) {
+        var pic = s.image_url
+          ? '<div class="pic' + (s.kind === 'on_camera' ? ' square' : '') + '" data-big="' + esc(s.image_url) + '" style="background-image:url(\'' + esc(s.image_url) + '\')" role="img" aria-label="' + esc(KIND[s.kind]) + '"></div>'
+          : '<div class="pic empty">Not drawn yet. Approve the idea and it gets drawn.</div>';
+        var moment = s.kind === 'on_camera' && ch && ch.audio_url
+          ? '<span class="meta">Her words from ' + Number(s.audio_from).toFixed(1) + ' s to ' + Number(s.audio_to).toFixed(1) + ' s of this chapter</span><audio controls preload="none" src="' + esc(ch.audio_url) + '#t=' + s.audio_from + ',' + s.audio_to + '"></audio>' : '';
+        return '<div class="shot ' + esc(s.status) + '" data-id="' + esc(s.id) + '">' + pic + '<div class="body">' +
+          '<span><span class="tag k">' + esc(KIND[s.kind]) + '</span> <span class="tag ' + esc(s.status) + '">' + esc(ST[s.status]) + '</span></span>' +
+          '<p class="brief">' + esc(s.brief) + '</p>' + moment + (s.note ? '<p class="note"><b>Your note:</b> ' + esc(s.note) + '</p>' : '') +
+          '<div class="redo-box" hidden><textarea placeholder="What should change?" aria-label="What should change?"></textarea><div class="acts"><button type="button" class="btn btn-red" data-do="redo-send">Send it back</button><button type="button" class="btn btn-quiet" data-do="redo-cancel">Cancel</button></div></div>' +
+          '<div class="acts main">' + (s.status !== 'approved' ? '<button type="button" class="btn" data-do="approved">Approve</button>' : '') +
+          (s.status !== 'redo' ? '<button type="button" class="btn btn-red" data-do="redo">Redo</button>' : '') +
+          (s.status !== 'proposed' ? '<button type="button" class="btn btn-quiet" data-do="proposed">Undo</button>' : '') + '</div></div></div>';
+      }
+      function lookbook() {
+        var html = '<p class="sub">Every shot, chapter by chapter. Approve what works; send back what doesn\'t with a note. Nothing is animated or drawn until it is approved.</p>';
+        data.chapters.forEach(function (c) {
+          var shots = data.shots.filter(function (s) { return s.chapter_n === c.n; });
+          html += '<section class="chap"><div class="chap-h"><span class="n">' + c.n + '</span><div class="tx"><h2>' + esc(c.title) + '</h2><p class="line">' + esc(c.line) + '</p></div>' +
+            (c.audio_url ? '<audio controls preload="none" src="' + esc(c.audio_url) + '"></audio>' : '') + '</div>' +
+            '<div class="shots">' + (shots.length ? shots.map(function (s) { return shotCard(s, c); }).join('') : '<p class="meta">No shots for this chapter yet.</p>') + '</div></section>';
+        });
+        $('pane').innerHTML = html;
+        Array.prototype.forEach.call($('pane').querySelectorAll('.shot'), wireShot);
+        Array.prototype.forEach.call($('pane').querySelectorAll('[data-big]'), function (el) {
+          el.onclick = function () { var lb = document.createElement('div'); lb.className = 'lb'; lb.innerHTML = '<img alt="" src="' + esc(el.getAttribute('data-big')) + '">'; lb.onclick = function () { lb.remove(); }; document.body.appendChild(lb); };
+        });
+      }
+      function wireShot(card) {
+        var id = card.getAttribute('data-id'), box = card.querySelector('.redo-box'), main = card.querySelector('.acts.main');
+        Array.prototype.forEach.call(card.querySelectorAll('button[data-do]'), function (b) {
+          b.onclick = function () {
+            var d = b.getAttribute('data-do');
+            if (d === 'redo') { box.hidden = false; main.hidden = true; box.querySelector('textarea').focus(); return; }
+            if (d === 'redo-cancel') { box.hidden = true; main.hidden = false; return; }
+            var status = d === 'redo-send' ? 'redo' : d, note = d === 'redo-send' ? box.querySelector('textarea').value.trim() : '';
+            if (status === 'redo' && !note) { box.querySelector('textarea').focus(); return; }
+            b.disabled = true;
+            api({ action: 'shot_decide', id: id, status: status, note: note }).then(function (r) {
+              if (!r || !r.ok) { b.disabled = false; return; }
+              data.shots = data.shots.map(function (s) { return s.id === id ? r.shot : s; });
+              var ch = data.chapters.filter(function (c) { return c.n === r.shot.chapter_n; })[0];
+              var tmp = document.createElement('div'); tmp.innerHTML = shotCard(r.shot, ch); var fresh = tmp.firstChild;
+              card.parentNode.replaceChild(fresh, card); wireShot(fresh);
+              var pic = fresh.querySelector('[data-big]'); if (pic) pic.onclick = function () { var lb = document.createElement('div'); lb.className = 'lb'; lb.innerHTML = '<img alt="" src="' + esc(pic.getAttribute('data-big')) + '">'; lb.onclick = function () { lb.remove(); }; document.body.appendChild(lb); };
+            });
+          };
+        });
+      }
+      function script() {
+        var t = data.tour;
+        $('pane').innerHTML = '<p class="sub">Each chapter is recorded on its own in ' + esc(NARR[t.narrator] || t.narrator) + '\'s voice and checked word for word.' + (t.script_doc ? ' The script lives in <code>' + esc(t.script_doc) + '</code>.' : '') + ' A changed line is recorded again as a new version.</p>' +
+          '<table><thead><tr><th>#</th><th>Chapter and line</th><th>Recording</th><th>Checked</th></tr></thead><tbody>' + data.chapters.map(function (c) {
+            return '<tr><td><b>' + c.n + '</b></td><td><b>' + esc(c.title) + '</b><br>' + esc(c.line) + '</td>' +
+              '<td>' + (c.audio_url ? '<audio controls preload="none" src="' + esc(c.audio_url) + '"></audio><br><span class="meta">Version ' + c.audio_ver + ', ' + Number(c.seconds || 0).toFixed(1) + ' s</span>' : '<span class="meta">Not recorded</span>') + '</td>' +
+              '<td>' + (c.stt_ok ? '<span class="ok">Matches</span>' : c.stt_ok === false ? '<span style="color:#8a1c12;font-weight:800">Does not match</span>' : '<span class="meta">Not checked</span>') + (c.stt_text ? '<br><span class="meta">Heard: ' + esc(c.stt_text) + '</span>' : '') + '</td></tr>';
+          }).join('') + '</tbody></table>';
+      }
+      function video() {
+        var t = data.tour;
+        $('pane').innerHTML = t.video_url
+          ? '<video controls style="width:100%;max-width:960px;border-radius:12px;background:#000" src="' + esc(t.video_url) + '"></video><p class="meta"><a class="btn btn-quiet" href="' + esc(t.video_url) + '" download>Download</a> ' + (t.youtube_url ? '<a class="btn btn-quiet" href="' + esc(t.youtube_url) + '" target="_blank" rel="noopener">On YouTube</a>' : '') + '</p>'
+          : '<div class="chap"><h2>Not made yet</h2><p class="sub" style="margin-top:6px">The video is put together once every shot in the lookbook is approved and the on-camera moments are animated. It will play here, with a download, its chapters, and the YouTube link once it is up.</p></div>';
+      }
+      function render() { var r = route(); if (r.v === 'tour') { if (data && data.tour.slug === r.slug) draw(r); else tour(r); } else { data = null; list(); } window.scrollTo(0, 0); }
+      window.addEventListener('hashchange', render);
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="si">Sign in</button>'; $('si').onclick = function () { VEAuth.showAuthModal('Sign in to open the Depot.', function () { location.reload(); }); }; return; }
+        if (!m || !m.is_superadmin) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+        $('app').hidden = false; render();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
