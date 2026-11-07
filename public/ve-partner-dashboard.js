@@ -246,13 +246,12 @@
       wire(view);
     }
     function joinBox() {
-      // Membership is free through Explorer (canon-ve-door-guides v7, Sean 2026-11-06); the $11 Passport is the other way in.
+      // Membership is free through Explorer; since 2026-11-07 the survey is the only way in (canon-ve-door-guides v12).
       return '<div class="vpd-join"><b>Become a member and your whole dashboard opens</b>' +
         '<p>Membership is free: take the short Explorer survey, about two minutes. As a member you get your numbers and what people do on your page, ' + (KIND === 'show' ? 'who plays and saves your episodes, our podcast opportunities and ads, ' : 'our campaigns and ads, ') +
         (KIND === 'place' ? 'the audit, the Guides, and every new tool we add, as soon as it is ready. Editing your page and your menu is open to you now.' : 'the Guides, and every new tool we add, as soon as it is ready. Editing your page is open to you now.') +
         (FRONT_ROW ? ' Join before January 1, 2027 and you are a Founding Member, for good.' : '') + '</p>' +
-        '<div style="display:flex;flex-wrap:wrap;gap:10px"><a class="vpd-btn" href="/survey?s=explorer">Take the Explorer survey</a>' +
-        '<button type="button" class="vpd-btn o" data-vpd-join>Or join with the $11 Passport, with 1,100 points</button></div></div>';
+        '<div style="display:flex;flex-wrap:wrap;gap:10px"><a class="vpd-btn" href="/survey?s=explorer">Take the Explorer survey</a></div></div>';
     }
 
     // What the taps-and-clicks number is made of, e.g. "2 social links, 1 menu opened".
@@ -568,8 +567,8 @@
     // ---- Your plan
     function drawPlan() {
       var member = D.member_active || D.admin;
-      return '<div class="vpd-grid"><div class="vpd-card' + (member ? ' done' : '') + '"><b>Member</b><p>' + (D.member_active ? 'You are a member. Your whole dashboard is open.' : D.admin ? 'Super admins see every dashboard.' : 'Free with the short Explorer survey, or $11 with the Passport and 1,100 points. Either opens your whole dashboard' + (FRONT_ROW ? ', and before January 1, 2027 makes you a Founding Member.' : '.')) + '</p>' +
-        (member ? '' : '<a class="vpd-btn sm" href="/survey?s=explorer">Take the Explorer survey</a> <button type="button" class="vpd-btn sm o" data-vpd-join>Join with the $11 Passport</button>') + '</div>' +
+      return '<div class="vpd-grid"><div class="vpd-card' + (member ? ' done' : '') + '"><b>Member</b><p>' + (D.member_active ? 'You are a member. Your whole dashboard is open.' : D.admin ? 'Super admins see every dashboard.' : 'Free with the short Explorer survey. It opens your whole dashboard' + (FRONT_ROW ? ', and before January 1, 2027 makes you a Founding Member.' : '.')) + '</p>' +
+        (member ? '' : '<a class="vpd-btn sm" href="/survey?s=explorer">Take the Explorer survey</a>') + '</div>' +
         '<div class="vpd-card' + (D.plan ? ' done' : '') + '"><b>' + esc(D.plan ? D.plan.name || 'Partner' : 'Partner') + '</b><p>' +
         (D.plan ? (D.plan.status === 'trialing' ? 'Your plan is paid. Your next period starts ' + (D.plan.renews_at ? esc(new Date(D.plan.renews_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })) : 'soon') + ', with every Partner.' : 'Your plan is live.' + (D.plan.renews_at ? ' Renews ' + esc(new Date(D.plan.renews_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })) + '.' : ''))
           : 'A front-row seat on every campaign, ads placed for you and a campaign manager. ' + (FRONT_ROW ? 'Front Row Start: join now and every day until January 1 is on us: your $111 covers Period 1 (January 1 to April 21, 2027), then $111 every 111 days.' : '$111 a period of 111 days; join mid-period and pay only for the days left.')) + '</p>' +

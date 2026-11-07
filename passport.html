@@ -5,12 +5,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Welcome to Vegans Explore</title>
-  <meta name="description" content="How Vegans Explore works, free to read: the Directory, your city's Daily Pulse, Guides and points. Then come in with the survey, or the $11 Passport with 1,100 welcome points.">
+  <meta name="description" content="How Vegans Explore works, free to read: the Directory, your city's Daily Pulse, Guides and points. Then come in free with a short survey and 250 points.">
   <link rel="canonical" href="https://vegansexplore.com/passport">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Vegans Explore">
   <meta property="og:title" content="Welcome to Vegans Explore">
-  <meta property="og:description" content="How Vegans Explore works, then two ways in: take the survey, or the $11 Passport with 1,100 welcome points.">
+  <meta property="og:description" content="How Vegans Explore works, then come in free with a short survey.">
   <meta property="og:url" content="https://vegansexplore.com/passport">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
@@ -20,7 +20,7 @@
        a Guide stays on the right of every tab with their words in a bubble, the content sits to the left on a clean white
        page, Back / N of M / Next, and on desktop the nav, the Guide and the footer share one screen. No clips: each tab
        shows a Guide's picture (VEGuideArt square). A signed-out Vote, Save, Check in or Give anywhere on the site lands here (?from=vote|save|checkin|give|board|tickets&back=).
-       $11, one time: the Founding Membership checkout (VEAuth.showActivateModal), which comes with 1,100 welcome points.
+       Since 2026-11-07 (canon-ve-door-guides v12) the survey is the only way in; the $11 is an optional contribution once in.
        Since 2026-11-03 this page is the Welcome (Sean: "the welcome should just be the passport too... we're merging the passport, the
        welcome, and the taster all together"): free and public, how to use Vegans Explore, ending on the two ways in (the survey at
        /survey?s=explorer, the Explorer survey since 2026-11-06, or the $11). canon-ve-people-campaigns-doors; docs/proposals/people-campaigns-doors.md section 2. */
@@ -181,8 +181,8 @@
       <h1 class="dg-title">Welcome</h1>
     </div>
     <div class="dg-joinbox" id="pgJoinbox">
-      <div class="dg-jb-price"><b>$11</b><small>one time<br>purchase</small></div>
-      <button type="button" class="dg-btn" data-join>Get your Passport</button>
+      <div class="dg-jb-price"><b>Free</b><small>with a short<br>survey</small></div>
+      <button type="button" class="dg-btn" data-join>Join free</button>
       <div class="dg-jb-in" id="pgSignin">Already a member?<br><a href="#" data-signin>Sign in</a></div>
     </div>
   </div>
@@ -228,7 +228,7 @@
     { k: 'supports', label: 'What it supports', g: 'dani', say: 'I\'m Dani, from the Nonprofit Guide. What you give, your time or eleven dollars, keeps the community growing, city by city, and it reaches the animals too.' },
     { k: 'bring', label: 'Bring people in', g: 'kai', say: 'I\'m Kai, from the Creator Guide. The more people who join, the more there is to find. Bring a friend in and you earn points when they join.' },
     { k: 'business', label: 'For businesses', g: 'liz', say: 'I\'m Liz, from the Vegan Restaurant Guide. Businesses are members too, and get what we offer only to members. Start with a free check of your page.' },
-    { k: 'join', label: 'Enter the room', g: 'nori', say: 'I\'m Nori, from the Airport Guide. There are two ways in, and it is the same room. Give your time with the survey, or give eleven dollars. Come join us!' }
+    { k: 'join', label: 'Enter the room', g: 'nori', say: 'I\'m Nori, from the Airport Guide. One way in, and it is free: a short survey. Finish it and the whole room is open. Come join us!' }
   ];
   // For businesses (Sean, 2026-10-27: "a page specifically for businesses... anytime we're asking them to become a member or
   // do something, they could take them to that version of the passport page"). /business is this page (rewrite in vercel.json)
@@ -241,7 +241,7 @@
     { k: 'found', label: 'Get found', g: 'nori', say: 'Members find you in the Directory, the Guides, the Daily Pulse and at our events. Here is what is live and what is coming.' },
     { k: 'partner', label: 'Partner plan', g: 'maya', say: 'When you want the full experience, the Partner plan puts you in the front row of every campaign.' },
     { k: 'managed', label: 'Managed by us', g: 'dani', say: 'Running a restaurant is a lot. If you would rather we handled your website, Google, photos and brand, this is how that works.' },
-    { k: 'start', label: 'Get started', g: 'liz', say: 'Eleven dollars, one time. Your 1,100 welcome points cover your page. Come join us!' }
+    { k: 'start', label: 'Get started', g: 'liz', say: 'Take a short survey and you are in, free. Then claim your page. Come join us!' }
   ];
   // The Welcome is the default. /business (BIZ) keeps its own tabs. ?guide=welcome, the old Welcome Guide's address, lands here too.
   var WELCOME = !BIZ;
@@ -274,7 +274,7 @@
 
   // Founding Membership closes at midnight Eastern on January 1, 2027 (Sean, 2026-11-01), and since 2026-11-03 either door before then makes
   // a Founding Member ("anyone who becomes a member before January is a founding member"); the line goes away by itself after.
-  var FOUNDING_LINE = Date.now() < Date.parse('2027-01-01T05:00:00Z') ? '<p class="dg-note"><b>Founding Membership closes at midnight Eastern on January 1, 2027.</b> Come in by either door before then and Founding Member stays on your profile for good.</p>' : '';
+  var FOUNDING_LINE = Date.now() < Date.parse('2027-01-01T05:00:00Z') ? '<p class="dg-note"><b>Founding Membership closes at midnight Eastern on January 1, 2027.</b> Join before then and Founding Member stays on your profile for good.</p>' : '';
   var TRY = [
     ['The Buttermilk swap', 'Maya, Dairy Guide: milk, butter and cheese swaps, and what to use instead.', '/guides/vegan-dairy-guide#/swaps'],
     ['Vitamin B12', 'Theo, Nutrition Guide: how much, and where to get it.', '/guides/nutrition-guide#/nutrients/b12'],
@@ -287,7 +287,7 @@
   var VIEWS = {
     overview: function () {
       var BL = { places: 'The Directory, search, votes and saves.', community: 'The Daily Pulse, boards, events and bounties.', guides: 'Mini apps, and a free piece of each.', points: 'Earn them, spend them, give them. Four levels.',
-        supports: 'What your time or your $11 builds.', bring: 'Your link, and what it earns.', business: 'Members too, with services of their own.', join: 'Two ways in: the survey, or $11.' };
+        supports: 'What your time builds.', bring: 'Your link, and what it earns.', business: 'Members too, with services of their own.', join: 'One way in: a short survey, free.' };
       var tiles = TABS.filter(function (t) { return t.k !== 'overview'; }).map(function (t) {
         return '<a class="dg-tile" href="' + href(t.k) + '"><div class="dg-ic" style="background-image:url(\'' + esc(art(t.g) || '') + '\')"></div><div><b>' + esc(t.label) + '</b><span>' + esc(BL[t.k]) + '</span></div></a>';
       }).join('');
@@ -320,26 +320,26 @@
     },
     guides: function () {
       var tries = TRY.map(function (t) { return card(t[0], esc(t[1]) + ' <a href="' + t[2] + '">Open it</a>.', 'Free to try'); }).join('');
-      return gateNote() + head('Guides', 'Mini apps, one topic each', 'A Guide brings our tools together around one topic, walked through by one of our Guides. Most are <b>$11 or 1,100 points</b>, yours to keep, and some, like the Vegan Events Guide, are free with a short survey. Buying one also makes you a member.') +
+      return gateNote() + head('Guides', 'Mini apps, one topic each', 'A Guide brings our tools together around one topic, walked through by one of our Guides. Guides for your work, like the Vegan Restaurant Guide and the Vegan Events Guide, are free with a short survey. Topic Guides are <b>$11 or 1,100 points</b>, yours to keep.') +
         '<div class="dg-k" style="margin:4px 0 10px">Try a piece of each, free</div><div class="dg-grid">' + tries + '</div>' +
         '<div class="dg-btns"><a class="dg-btn dg-ghost" href="/guides">See every Guide</a></div>' + joinBtns();
     },
     points: function () {
-      return gateNote() + head('Points and levels', 'Points come from what you do', 'Points are never bought. You earn them by taking part: bounties, check-ins, campaigns, the Daily Pulse and the boards. The survey starts you with <b>250</b>, and the $11 Passport with <b>1,100</b>. Every purchase earns a <b>25-point thank-you</b>.') +
+      return gateNote() + head('Points and levels', 'Points come from what you do', 'Points are never bought. You earn them by taking part: bounties, check-ins, campaigns, the Daily Pulse and the boards. The survey starts you with <b>250</b>. Every purchase earns a <b>25-point thank-you</b>.') +
         '<div class="dg-levels">' +
         '<div class="dg-level"><b>Level 1</b><strong>Start</strong><span>Every member</span></div>' +
         '<div class="dg-level"><b>Level 2</b><strong>2,500</strong><span>points earned</span></div>' +
         '<div class="dg-level"><b>Level 3</b><strong>10,000</strong><span>points earned</span></div>' +
         '<div class="dg-level"><b>Level 4</b><strong>25,000</strong><span>points earned</span></div></div>' +
         '<div class="dg-grid">' +
-        card('Unlock Guides', 'Any Guide for 1,100 points. The Passport\'s welcome points cover your first one, and with the survey you earn the rest by taking part.', 'Spend') +
+        card('Unlock Guides', 'Any topic Guide for 1,100 points, earned by taking part. Guides for your work are free with their survey.', 'Spend') +
         card('Boost the places you love', 'Give points to a business or nonprofit. Points are a boost, never money.', 'Give') +
         card('Talk with your Guide', 'Ask your Guide anything Vegan, a few points a message.', 'Spend') +
         card('Your level never drops', 'Your level comes from every point you have ever earned, so spending or giving points never lowers it.', 'Levels') +
         '</div>' + joinBtns();
     },
     supports: function () {
-      return gateNote() + head('What it supports', 'What you give keeps it growing', 'Give your time with the survey or $11 one time, and you are helping build the Vegan community\'s home base. The $11 is a membership contribution, never a tax-deductible donation.') +
+      return gateNote() + head('What it supports', 'What you give keeps it growing', 'Give your time with the survey and you are helping build the Vegan community\'s home base. Members who want to give more can contribute from $11 any time, a membership contribution, never a tax-deductible donation.') +
         '<div class="dg-grid">' +
         card('Events', 'Community nights and gatherings in our cities, where members meet in person.', 'In person') +
         card('Community Managers', 'Local people in each city who welcome members and businesses and keep the hub alive. It is gig work, paid as the community grows.', 'People') +
@@ -360,7 +360,7 @@
     business: function () {
       return gateNote() + head('For businesses', 'Members too, with services of their own', 'Businesses come in the same ways as everyone. Then they get the advertising, sponsorships and marketing services we offer only to members.') +
         '<div class="dg-grid">' +
-        card('Your page, yours to update', 'Find your business in the Directory and claim it, or add it. Each page is $11 or 1,100 points. <a href="/claim">Join the Directory</a>.', 'Claim it') +
+        card('Your page, yours to update', 'Find your business in the Directory and claim it, or add it. Free for members. <a href="/claim">Join the Directory</a>.', 'Claim it') +
         card('Your business dashboard', 'Your numbers, your page and menu, ads and the campaigns open to you, on your own page.', 'Members') +
         card('Advertising and sponsorships', 'Ad spots across the site, and sponsorships of our campaigns and events, only for members.', 'Members') +
         card('Marketing services', 'Help with your Google listing, website and social, starting with a free check in the Restaurant Guide.', 'Members') +
@@ -373,16 +373,12 @@
           '<div class="dg-btns"><a class="dg-btn" href="' + esc(back || '/dashboard') + '">' + (back ? 'Go back' : 'Open your dashboard') + '</a></div>' + status;
       }
       var vid = window.VEVideo ? VEVideo.markup({ src: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/home/next-v1.mp4', vtt: '/public/home/next-v1.vtt', poster: '/public/home/next-poster.jpg?v=1', title: 'Watch the video', sub: 'What you can do on Vegans Explore, in 40 seconds', label: 'What you can do on Vegans Explore, narrated by Liz', ga: 'passport_next_v1' }) : '';
-      return gateNote() + head('Enter the room', 'Two ways in, the same room', 'Either way you are a member with everything open: vote, post, join your city, take on bounties, earn points and unlock Guides. Choose the one that suits you.') + FOUNDING_LINE +
-        '<div class="dg-paths">' +
-        '<div class="dg-path"><span class="dg-tag">Give your time</span><div class="dg-big">Free</div><b>Take the survey</b>' +
-        '<p>The Explorer survey: nine quick questions about you and where you live, about two minutes. Finish it and your membership opens right away.</p><ul>' +
-        '<li><b>250 points</b>, earned by the survey itself</li><li><b>Everything open</b>, with more points from bounties and check-ins</li></ul>' +
-        '<a class="dg-btn" href="/survey?s=explorer">Start the survey</a></div>' +
-        '<div class="dg-path"><span class="dg-tag">Give $11</span><div class="dg-big">$11<small>one time</small></div><b>Get your Passport</b>' +
-        '<p>' + (me() ? 'Your account is not a member yet. ' : '') + 'It opens at once and never renews. Already a member? <a href="#" data-signin>Sign in</a>.</p><ul>' +
-        '<li><b>1,100 welcome points</b>, enough for your first Guide</li><li><b>Everything open</b>, with more points from bounties and check-ins</li></ul>' +
-        '<button type="button" class="dg-btn" data-join>' + (OPEN ? 'Become a Founding Member &middot; $11' : 'Get your Passport &middot; $11') + '</button></div></div>' + status +
+      return gateNote() + head('Enter the room', 'One way in, and it is free', 'Take a short survey and you are a member with everything open: vote, post, join your city, take on bounties, earn points and open Guides.') + FOUNDING_LINE +
+        '<div class="dg-paths" style="grid-template-columns:1fr">' +
+        '<div class="dg-path"><span class="dg-tag">Free</span><div class="dg-big">Free</div><b>Take the survey</b>' +
+        '<p>The Explorer survey: a few quick questions about you and where you live, about two minutes. Finish it and your membership opens right away.' + (me() ? '' : ' Already a member? <a href="#" data-signin>Sign in</a>.') + '</p><ul>' +
+        '<li><b>250 points</b>, earned by the survey itself</li><li><b>Everything open</b>, with more points from bounties and check-ins</li><li><b>Want to give more?</b> Once you are in, you can contribute from $11 any time. It is optional.</li></ul>' +
+        '<a class="dg-btn" href="/survey?s=explorer">' + (OPEN ? 'Become a Founding Member, free' : 'Start the survey') + '</a></div></div>' + status +
         '<p class="dg-lede" style="margin-top:6px">Not sure yet? Nothing here needs an account: <a href="' + href('overview') + '" style="color:var(--g);font-weight:800">look around first</a>.</p>' + (vid ? '<div style="max-width:520px">' + vid + '</div>' : '');
     }
   };
@@ -401,7 +397,7 @@
       var tiles = TABS.filter(function (t) { return t.k !== 'overview'; }).map(function (t) {
         return '<a class="dg-tile" href="' + href(t.k) + '"><div class="dg-ic" style="background-image:url(\'' + esc(art(t.g) || '') + '\')"></div><div><b>' + esc(t.label) + '</b><span>' + esc(BIZ_BLURB[t.k]) + '</span></div></a>';
       }).join('');
-      return head('Vegans Explore for businesses', 'Be found by the people looking for you', 'Vegans Explore is where Vegans and the Vegan-curious look for places to eat, shop and go, city by city. Businesses come in the same way as everyone: the Passport, <b>$11 one time</b>. Its 1,100 welcome points cover your page.') +
+      return head('Vegans Explore for businesses', 'Be found by the people looking for you', 'Vegans Explore is where Vegans and the Vegan-curious look for places to eat, shop and go, city by city. Businesses come in the same way as everyone: a short survey, <b>free</b>. Then claiming your page is free too.') +
         '<div class="dg-tiles">' + tiles + '</div>' + sampleBtns();
     },
     page: function () {
@@ -441,7 +437,7 @@
         card('A front-row seat', 'First in line for every campaign we run, in your city and beyond.', 'Partner') +
         card('Ads placed for you', 'We place your ads where your customers are looking.', 'Partner') +
         card('A campaign manager', 'One person on our team who knows your business.', 'Partner') +
-        card('Start with the basics', 'Not ready? Your page and dashboard come with the $11. Add the Partner plan any time.', 'Members') +
+        card('Start with the basics', 'Not ready? Your page and dashboard come free with your membership. Add the Partner plan any time.', 'Members') +
         '</div>' + startBtns();
     },
     // Managed by us (BrandDesk, canon canon-ve-front-of-house; 2026-10-31). The name BrandDesk stays off this public page until its
@@ -464,19 +460,19 @@
     start: function () {
       var status = '<span class="dg-status" id="pgStatus" role="status"></span>';
       var steps = '<div class="dg-access"><ul>' +
-        '<li><b>1. Get your Passport</b>, $11 one time, with 1,100 welcome points.</li>' +
-        (LISTING ? '<li><b>2. Claim your page.</b>' : '<li><b>2. Find your business</b> in the Directory and claim it, or add it.') + ' Each page is 1,100 points or $11, so your welcome points cover it.</li>' +
+        '<li><b>1. Join free</b> with a short survey, about two minutes, with 250 points.</li>' +
+        (LISTING ? '<li><b>2. Claim your page.</b>' : '<li><b>2. Find your business</b> in the Directory and claim it, or add it.') + ' Claiming is free for members.</li>' +
         '<li><b>3. We review it.</b> Before anything is approved, our team carefully reviews each claim to make sure it is accurate.</li>' +
         '<li><b>4. Your dashboard opens</b> on your page.</li></ul>';
       var box = isMember()
-        ? '<div class="dg-big">&#10003;<small>you\'re in</small></div><p>You have your Passport. ' + (LISTING ? 'Claim your page next.' : 'Find your business next.') + '</p><a class="dg-btn" href="' + CLAIM + '">' + (LISTING ? 'Claim your page' : 'Find your business') + '</a>' + status
-        : '<div class="dg-big">$11<small>one time</small></div><p>' + (me() ? 'Your account is not a member yet.' : 'Create your account and get your Passport. Already a member? <a href="#" data-signin>Sign in</a>.') +
-          '</p><button type="button" class="dg-btn" data-join>Get your Passport</button><p style="margin-top:10px"><a href="' + CLAIM + '">' + (LISTING ? 'Or claim your page first' : 'Or find your business first') + '</a></p>' + status;
-      return head('Get started', 'Your page, in four steps', 'Your $11 is a membership contribution, one time. After that, you buy only what you want.') + steps + '<div class="dg-pricebox">' + box + '</div></div>';
+        ? '<div class="dg-big">&#10003;<small>you\'re in</small></div><p>You are a member. ' + (LISTING ? 'Claim your page next.' : 'Find your business next.') + '</p><a class="dg-btn" href="' + CLAIM + '">' + (LISTING ? 'Claim your page' : 'Find your business') + '</a>' + status
+        : '<div class="dg-big">Free<small>a short survey</small></div><p>' + (me() ? 'Your account is not a member yet.' : 'Take the survey and you are in. Already a member? <a href="#" data-signin>Sign in</a>.') +
+          '</p><button type="button" class="dg-btn" data-join>Take the survey</button><p style="margin-top:10px"><a href="' + CLAIM + '">' + (LISTING ? 'Or claim your page first' : 'Or find your business first') + '</a></p>' + status;
+      return head('Get started', 'Your page, in four steps', 'Membership is free with a short survey. After that, you buy only what you want.') + steps + '<div class="dg-pricebox">' + box + '</div></div>';
     }
   };
   var BIZ_BLURB = { page: 'Claim it or add it. Yours to keep up to date.', dash: 'Your numbers, check-ins, menu and ads.', found: 'The Directory, Events, ads and Guides.',
-    partner: '$111 a period of 111 days. Join now and until January is bonus.', managed: 'We do your website, Google, photos and brand.', start: '$11 one time. Your points cover your page.' };
+    partner: '$111 a period of 111 days. Join now and until January is bonus.', managed: 'We do your website, Google, photos and brand.', start: 'A short survey, free. Then claim your page, free.' };
 
   // Old links: the four Founding Member pages (2026-11-01) and the nine-tab Welcome Guide's tabs land on the page that holds them now.
   var OLD = { can: 'places', now: 'supports' };
@@ -486,9 +482,9 @@
     var w = fromVote ? ['Voting is for members.', 'vote every day for the places you love'] : fromSave ? ['Saving is for members.', 'keep the places you love on My list'] :
       fromCheckin ? ['Check-ins are for members.', 'earn 10 points every time you visit a place'] : fromGive ? ['Giving points is for members.', 'give your points to the places you love'] :
       fromTickets ? ['This is a members-only event.', 'we take you straight to the tickets'] : fromBoard ? ['Posting and comments are for members.', 'join the conversation on the Daily Pulse in every city'] : null;
-    if (fromOld && !w) return '<p class="dg-note"><b>That page has moved.</b> Vegans Explore has a new home, and this is the best place to start: see how it works, then come in free with a short survey. ' + (isMember() ? '<a href="/dashboard" style="color:var(--g);font-weight:800">Open your dashboard</a>.' : '<a href="' + href('join') + '" style="color:var(--g);font-weight:800">See the two ways in</a>.') + '</p>';
+    if (fromOld && !w) return '<p class="dg-note"><b>That page has moved.</b> Vegans Explore has a new home, and this is the best place to start: see how it works, then come in free with a short survey. ' + (isMember() ? '<a href="/dashboard" style="color:var(--g);font-weight:800">Open your dashboard</a>.' : '<a href="' + href('join') + '" style="color:var(--g);font-weight:800">See how to join</a>.') + '</p>';
     if (!w || isMember()) return '';
-    return '<p class="dg-note"><b>' + w[0] + '</b> Enter the room, with the survey or the $11 Passport, and ' + w[1] + '.' + (me() ? '' : ' Already a member? <a href="#" data-signin style="color:var(--g);font-weight:800">Sign in</a> and you go right back.') + ' <a href="' + href('join') + '" style="color:var(--g);font-weight:800">See the two ways in</a>.</p>';
+    return '<p class="dg-note"><b>' + w[0] + '</b> Enter the room with a short survey, free, and ' + w[1] + '.' + (me() ? '' : ' Already a member? <a href="#" data-signin style="color:var(--g);font-weight:800">Sign in</a> and you go right back.') + ' <a href="' + href('join') + '" style="color:var(--g);font-weight:800">See how to join</a>.</p>';
   }
   if (WELCOME && /^#\/join/.test(location.hash) && (fromVote || fromSave || fromCheckin || fromGive || fromBoard || fromTickets)) history.replaceState(null, '', location.pathname + location.search + '#/overview');
   function tickCd() {
@@ -533,15 +529,14 @@
     var a = auth();
     if (e.target.closest('[data-signin]')) {
       e.preventDefault(); if (!a) return;
-      a.showAuthModal('Sign in to your Passport.', function () { if (back) location.href = back; else location.reload(); }, 'login');
+      a.showAuthModal('Sign in to Vegans Explore.', function () { if (back) location.href = back; else location.reload(); }, 'login');
       return;
     }
     var jb = e.target.closest('[data-join]');
     if (!jb || !a) return;
     if (isMember()) { location.href = back || '/dashboard'; return; }
-    // A new account meets the $11 window on its own after signup (ve-auth); a signed-in non-member gets it now.
-    if (!a.isLoggedIn()) a.showAuthModal('Create your account and get your Passport: $11 one time, with 1,100 welcome points.', function () { draw(); }, 'signup');
-    else a.showActivateModal('Your Passport: $11, one time, with 1,100 welcome points, enough for your first Guide.');
+    // Sean, 2026-11-07 (canon-ve-door-guides v12): the survey is the only way in; /survey makes the free account first.
+    location.href = '/survey?s=explorer';
   });
   window.addEventListener('hashchange', draw);
   if (activated === 'success') { if (!location.hash) location.hash = BIZ ? '#/start' : '#/join'; }
@@ -559,7 +554,7 @@
   draw();
   if (activated === 'success') {
     // The webhook marks the member active; ve-auth's me refreshes the stored member.
-    setStatus('Welcome in! Your Passport is being confirmed, and your 1,100 welcome points come with it.');
+    setStatus('Thank you! Your contribution is being confirmed.');
     var tries = 0, a0 = auth();
     (function poll() {
       if (!a0 || !a0.getToken()) return;
@@ -567,7 +562,7 @@
       fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth?action=me', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY }, body: JSON.stringify({ action: 'me', token: a0.getToken() }) })
         .then(function (r) { return r.json(); }).then(function (d) {
           if (d && d.member) { try { var old = JSON.parse(localStorage.getItem('ve_member') || '{}') || {}; localStorage.setItem('ve_member', JSON.stringify(Object.assign(old, d.member))); } catch (e) {} }
-          if (d && d.member && d.member.membership_status === 'active') { draw(); setStatus('Welcome in! Your Passport is active, and your 1,100 welcome points are in.'); return; }
+          if (d && d.member && d.member.membership_status === 'active') { draw(); setStatus('Thank you! You are in.'); return; }
           if (++tries < 6) setTimeout(poll, 2500);
         }).catch(function () { if (++tries < 6) setTimeout(poll, 2500); });
     })();
