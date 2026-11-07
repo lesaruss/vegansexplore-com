@@ -30,6 +30,19 @@ we have systems, so we don't waste time and usage." Canon `canon-template-gate` 
 First case: `/guides/taste` had been written from a blank file twice; on 2026-11-02 it was rebuilt on the Welcome Guide (see Earn your
 Passport, part 3).
 
+## The Overview is a tour, then the Guide steps back (LOCKED by Sean 2026-11-07, canon `canon-ve-guide-tour-standard`)
+
+"Having the guides take them through all of the different pages and tabs... it's a little disorienting." Supersedes the Start here card and
+the Overview standard below (their beats live inside the tour). The Overview is a full tour of the Guide: Play runs a moving slideshow synced
+to the Guide's voice (welcome, I'm <Guide>; you've reached the <name> Guide and the transformation; one beat per section, each on a picture of
+that tab with the part named lit up; where to start; I'm here, I take what I can't answer to our team, hide me, tap me on any page and I'll
+summarize it), chapter dots and Skip the tour, about 90 seconds. Each section's beat is its own recorded chapter: back to back the tour, alone
+that page's **Summarize this page**. On every other page the Guide starts hidden as **Ask <Guide>**; tapping opens a chat with suggestions on
+top (Summarize this page first and free, Where do I start?, What can I do here?, real saved questions), then the ask box and Ask a person.
+Visitors see the whole tour. The summary keeps a voice on every page (`ve-audio-accessibility`). The Dairy Guide stays as it is until Sean says
+otherwise. Pilot: the Vegan Restaurant Guide (script `docs/proposals/restaurant-guide-tour-script.md`, waiting on Sean), then the Events Guide.
+How to build it: `docs/guides/BUILD-A-GUIDE.md`.
+
 ## Every Guide opens the same way, and businesses earn the word Vegan (Sean, 2026-11-06)
 
 Canon `canon-ve-guide-overview-standard`: "we need to address the elephant in the room, let them know they're in the right place, give them an
