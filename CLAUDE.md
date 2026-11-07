@@ -54,7 +54,21 @@ The owner's own intake answers set 100% Vegan or 100% Plant-based; we never judg
 change their answers, and our team checks before 100% Vegan shows. It is peace of mind for customers and protection for the owner, never a
 penalty; a plant-based place that later adds meat broke no promise. 100% Vegan businesses get more from us (first in features and on the
 podcast, the most help staying open). Our copy never names a real business or owner as an example of either badge. **Not built**: the badges
-on listings, the intake questions (Sean reads them first), the Directory's Vegan options label (a later step).
+on listings, the Directory's Vegan options label (a later step).
+
+**The badge intake, built 2026-11-06** (Sean: "approved", with Logan's defaults; migration `20261106_business_badge_intake.sql`, run through the one-time
+`ve-once-badge-intake`, now the 410 stub; handoff `docs/handoff/2026-11-06-ve-pre-vegan-business-guide-badge-intake-built.md`). Four shared questions
+replace "How Vegan is what you run?" (`vegan_level`) in the Restaurant, Events and Pre-Vegan Business intakes: `biz_all_plant` (Is everything you sell
+plant-based?), `biz_word` (Vegan. We run it for the animals. / Plant-based), `biz_beyond` (beyond the plate: all, mostly, not yet), `biz_help`. `r_vegan`
+and `e_vegan` are Question 1 now. **Questions can be skipped**: `ve_survey_questions.show_if {q, in}`, `ve_survey_states` (shown, skipped, waiting); a
+skipped question is never required and pays its points as if answered, so every path pays the full total (Restaurant and Events 250, 20 a question;
+Pre-Vegan Business 100, 10/5/5/5). `ve-guide-survey.js` skips them, counts only shown ones and shows **Your badge** (Change my answers, Continue) when the
+answers set or change it. **The badge** is `ve_business_badges` (one row a member, kept by a trigger on `ve_member_shared_answers`; history
+`ve_business_badge_events`): 100% Vegan waits for the team (`checking`, shows 100% Plant-based meanwhile); Vegan + Mostly or Not yet shows 100%
+Plant-based (`follow_up`); Plant-based and Pre-Vegan show at once; leaving 100% Vegan clears its approval. **Depot > Business badges**
+(`/admin/depot/badges`, Directory; edge function `ve-badges`): Waiting for a check, Team follows up, Showing, All; Approve 100% Vegan, We will follow up
+first (note), Save note only (`ve_business_badge_decide`). Event sponsors' Compare scores the new answers. Proven 2026-11-06 in a rolled-back transaction
+and at 1440 and 390 px against mocked answers. **Not built**: the badge on listings and cards, an email when approved, an Inbox row for a new claim.
 
 ## A Guide speaks on every page (LOCKED standard, Sean, 2026-11-04, corrected 2026-11-05, playbook `ve-audio-accessibility`)
 
