@@ -32,8 +32,9 @@
     "qualities": [75]
   },
   "functions": {
-    "api/listing.js": { "includeFiles": "directory/listing.html" },
-    "api/event.js": { "includeFiles": "events/index.html" }
+    "api/listing.js": { "includeFiles": "{directory/listing.html,public/ve-seo-text.js}" },
+    "api/event.js": { "includeFiles": "events/index.html" },
+    "api/chapter.js": { "includeFiles": "{communities/hub.html,public/ve-hubs.js}" }
   },
   "headers": [
     {
@@ -63,7 +64,7 @@
     { "source": "/certified/:code([A-Za-z0-9]{4,16})", "destination": "/certified" },
     {
       "source": "/communities/:city(south-florida|central-florida|north-florida|atlanta|washington-dc|delaware|maryland|virginia|west-virginia|new-york|philadelphia|los-angeles|london)",
-      "destination": "/communities/hub"
+      "destination": "/api/chapter?slug=:city"
     },
     {
       "source": "/campaign-engine/fieldhouse-protein",
