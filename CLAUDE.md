@@ -6642,6 +6642,7 @@ above that it contradicts (the person check at the door, the 31 questions as the
   and scavenger hunt (`ve-events-guide`, extend `ve-hunt`, the Vault's PIN as purchase proof), event food delivery and colleges (Blueprint,
   parked), Elle Jimenez and Vegans in Clermont (`ve-outreach`). No Explorer Guide exists yet: today it is two pieces, `/passport` (the Welcome)
   and `/survey?s=explorer` (8 questions, still person-reviewed); step 3 joins them.
+- **Steps 2 and 3 live 2026-11-07 (main cad2dc5)**: journey, chapter and runs are shared questions; Explorer admits on finishing (no review); `x_tough` (35) added and `x_worth` 40, nine questions, 250 points. **Step 4, the paths page, approved by Sean 2026-11-07 with its wording, not built**: the wording and build notes are in `docs/handoff/2026-11-07-ve-explorer-path-steps-2-3-live-step-4-approved.md`.
 
 ## Media drafts and the organizations door (Sean, 2026-11-06, playbook `ve-outreach`)
 
