@@ -2,7 +2,8 @@
    I find and then you do that for me, and then we can adjust it... crop it and size it so it looks good, maybe drop a background
    in it if it's a transparent image").
 
-   VELogoEditor.mount(el, { fetchUrl(url) -> Promise<{ data: base64, type }>, onChange(ready), background?, trim? })
+   VELogoEditor.mount(el, { fetchUrl(url) -> Promise<{ data: base64, type }>, onChange(ready), background?, trim?, fill? })
+     (fill: a new picture starts covering the square, for photos such as a holiday menu's dishes)
      -> { load(file|blob|url), toBlob() -> Promise<Blob>, ready() }
    VELogoEditor.auto(file|blob|url, { fetchUrl, background? }) -> Promise<{ canvas, toBlob() }>   the same square with no hands:
      trimmed, fitted and filled (background "match", "white", "black" or #rrggbb; by default the editor's own choice). The logo
@@ -264,7 +265,7 @@
       // A suggestion opened to adjust starts the way the sweep showed it: trimmed, on its background.
       if (opts.trim) { var t = trimmed(src, sw, sh, { alpha: alpha, edge: edge }); if (t) { src = t; sw = t.width; sh = t.height; } opts.trim = false; }
       if (opts.background) { bg = bgFor(opts.background, { alpha: alpha, edge: edge }); bgMode = opts.background === 'match' ? 'edge' : bg; opts.background = ''; }
-      tools(true); setFit('fit'); cutUi();
+      tools(true); setFit(opts.fill ? 'fill' : 'fit'); cutUi();
     }
     function fromBlob(b) {
       if (!b || !/^image\//.test(b.type || 'image/')) { say('That is not a picture.'); return; }

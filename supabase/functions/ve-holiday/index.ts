@@ -2,8 +2,11 @@
 // A member business with a claimed listing (or an open claim on it) sends its holiday menu; a person checks it before it shows.
 // POST { action, ... }. verify_jwt off; the Vegans Explore token is checked here.
 // Public:  holidays, live {holiday}
-// Member:  mine, save {holiday, listing_id, summary, items, order_url, order_by, pickup, price_range, holiday_hours, contact_note}, withdraw {id}
+// Member:  mine, save {holiday, listing_id, summary, items, order_url, order_by, pickup, price_range, holiday_hours, contact_note}, withdraw {id},
+//          photo_url {listing_id} (a dish photo, squared in the browser, into vegan-media), scan_start {listing_id, type},
+//          scan_read {listing_id, holiday, paths[]} (up to 3 photos or a PDF of their menu, read by Claude into dishes; 10 reads a day)
 // Admin:   queue {holiday?, status?}, get {id}, review {id, decision: approve | decline | note, note}
+import Anthropic from 'npm:@anthropic-ai/sdk';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
 const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type', 'Access-Control-Allow-Methods': 'POST, OPTIONS' };
@@ -13,6 +16,61 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const SLUG = /^[a-z0-9-]{1,40}$/;
 const CLOSED_CLAIM = ['rejected', 'declined', 'cancelled', 'canceled', 'expired', 'test'];
 const READ_ACTIONS = new Set(['holidays', 'live', 'mine']);
+const PUBLIC_BASE = `${Deno.env.get('SUPABASE_URL')}/storage/v1/object/public/vegan-media/`;
+const PHOTO_PREFIX = 'media/holiday-menus/';
+const SCAN_BUCKET = 'holiday-menu-scans';
+const SCAN_TYPES: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'application/pdf': 'pdf' };
+const SCAN_READS_A_DAY = 10;
+const MODEL = 'claude-opus-5-5';
+// A dish photo must be one we hold, uploaded through photo_url.
+const okPhoto = (u: string) => u.startsWith(PUBLIC_BASE + PHOTO_PREFIX) && /^[A-Za-z0-9/_.-]+$/.test(u.slice(PUBLIC_BASE.length));
+
+function toBase64(bytes: Uint8Array) {
+  let s = '';
+  for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
+  return btoa(s);
+}
+const MENU_SCHEMA = {
+  type: 'object', additionalProperties: false, required: ['is_menu', 'summary', 'items', 'left_out', 'note'],
+  properties: {
+    is_menu: { type: 'boolean', description: 'True if this shows food or drink for sale with names (a menu, a holiday order form, a flyer listing dishes).' },
+    summary: { type: 'string', description: 'One or two lines on the offer, only from words printed (a bundle, a pickup date). Empty if the menu does not describe one.' },
+    items: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['name', 'desc', 'price'],
+      properties: { name: { type: 'string' }, desc: { type: 'string', description: 'The printed description, shortened to one line if long. Empty if none.' }, price: { type: 'string', description: 'As printed, with the currency sign. Empty if none.' } } } },
+    left_out: { type: 'integer', description: 'How many printed dishes were left out (not plant-based on a menu that mixes, or past 20).' },
+    note: { type: 'string', description: 'One short sentence for the owner: what could not be read, or what was left out and why. Empty if nothing.' },
+  },
+};
+async function readMenu(files: { bytes: Uint8Array; type: string }[], holidayName: string, fullyVegan: boolean) {
+  const { data: k } = await db.from('lesaruss_secrets').select('value').eq('key', 'ANTHROPIC_API_KEY').maybeSingle();
+  if (!k?.value) return { error: 'reader_unavailable' };
+  const client = new Anthropic({ apiKey: String(k.value) });
+  const content: any[] = files.map((f) => f.type === 'application/pdf'
+    ? { type: 'document', source: { type: 'base64', media_type: 'application/pdf', data: toBase64(f.bytes) } }
+    : { type: 'image', source: { type: 'base64', media_type: f.type, data: toBase64(f.bytes) } });
+  content.push({ type: 'text', text: `Read this menu for the business's ${holidayName} offer and list its dishes.` });
+  try {
+    const r: any = await client.beta.messages.create({
+      model: MODEL, max_tokens: 16000, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
+      output_config: { effort: 'medium', format: { type: 'json_schema', schema: MENU_SCHEMA } },
+      system: `You read a restaurant's menu (photos or a PDF) so the owner does not have to type it into the Vegans Explore Holiday Guide.
+- Copy dish names, descriptions and prices exactly as printed. Never invent a dish, a price or a description. Leave a field empty when it is not printed.
+- If the menu has a section for ${holidayName} (or Thanksgiving, holiday, seasonal or catering), take only that section. Otherwise take the dishes printed.
+- ${fullyVegan ? 'This business is 100% Vegan, so every dish counts.' : 'This business is not 100% Vegan. Take only dishes the menu marks Vegan or plant-based (a V, VG, a leaf, the word Vegan or plant-based). Count the others in left_out and say so in note. If nothing is marked, take nothing and say in note that the owner should add their plant-based dishes by hand.'}
+- At most 20 dishes, in the order printed.
+- Write "Vegan" with a capital V. No em dashes.`,
+      messages: [{ role: 'user', content }],
+    } as any);
+    if (r.stop_reason === 'refusal') return { error: 'unreadable' };
+    if (r.stop_reason !== 'end_turn') return { error: 'unreadable' };
+    const text = (r.content || []).filter((b: any) => b.type === 'text').map((b: any) => b.text).join('');
+    return { result: JSON.parse(text) };
+  } catch (e) {
+    if (e instanceof Anthropic.RateLimitError) return { error: 'busy' };
+    console.error('menu read', String(e));
+    return { error: 'reader_unavailable' };
+  }
+}
 
 function b64d(s: string): Uint8Array { const pad = s.length % 4 === 0 ? '' : '='.repeat(4 - (s.length % 4)); const bin = atob(s.replace(/-/g, '+').replace(/_/g, '/') + pad); const o = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) o[i] = bin.charCodeAt(i); return o; }
 // Same key derivation as ve-auth's signJWT / decodeToken.
@@ -121,7 +179,7 @@ Deno.serve(async (req) => {
 
     const summary = clean(b.summary, 400);
     const items = (Array.isArray(b.items) ? b.items : []).slice(0, 20)
-      .map((x: any) => ({ name: clean(x?.name, 120), desc: clean(x?.desc, 300), price: clean(x?.price, 30) })).filter((x: any) => x.name);
+      .map((x: any) => { const ph = clean(x?.photo, 500); return { name: clean(x?.name, 120), desc: clean(x?.desc, 300), price: clean(x?.price, 30), ...(ph && okPhoto(ph) ? { photo: ph } : {}) }; }).filter((x: any) => x.name);
     if (summary.length < 10) return json({ error: 'summary_needed' }, 400);
     if (!items.length) return json({ error: 'items_needed' }, 400);
     const orderBy = clean(b.order_by, 10);
@@ -153,6 +211,58 @@ Deno.serve(async (req) => {
       sendEmail({ email: 'contact@lesaruss.com', name: 'Vegans Explore team' }, `ve-holiday-menu-team-${saved.data.id}-${Date.now()}`, `[Holiday menu] ${listing?.name || ''}: ${h.name}`, body).catch(() => {});
     }
     return json({ ok: true, id: saved.data.id, status: 'pending', was: prev?.status || null });
+  }
+
+  if (action === 'photo_url' || action === 'scan_start' || action === 'scan_read') {
+    if (!member) return json({ error: 'member_needed' }, 403);
+    const lid = String(b.listing_id || '');
+    if (!UUID.test(lid)) return json({ error: 'bad_request' }, 400);
+    const listing = (await myListings(me)).find((l) => l.id === lid);
+    let L: any = listing;
+    if (!L && admin) L = (await db.from('listings').select('id, slug, name, vegan_status').eq('id', lid).maybeSingle()).data;
+    if (!L) return json({ error: 'not_your_listing' }, 403);
+
+    if (action === 'photo_url') {
+      const path = `${PHOTO_PREFIX}${L.slug}/dish-${crypto.randomUUID()}.jpg`;
+      const { data: up, error } = await db.storage.from('vegan-media').createSignedUploadUrl(path);
+      if (error || !up) return json({ error: 'upload_failed' }, 500);
+      return json({ ok: true, upload_url: up.signedUrl, url: PUBLIC_BASE + path });
+    }
+    if (action === 'scan_start') {
+      const ext = SCAN_TYPES[String(b.type || '')];
+      if (!ext) return json({ error: 'bad_type' }, 400);
+      const path = `${me}/${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}.${ext}`;
+      const { data: up, error } = await db.storage.from(SCAN_BUCKET).createSignedUploadUrl(path);
+      if (error || !up) return json({ error: 'upload_failed' }, 500);
+      return json({ ok: true, upload_url: up.signedUrl, path });
+    }
+    // scan_read
+    const paths = (Array.isArray(b.paths) ? b.paths : []).map((x: unknown) => String(x)).slice(0, 3);
+    if (!paths.length || paths.some((x: string) => !x.startsWith(me + '/') || x.includes('..'))) return json({ error: 'bad_request' }, 400);
+    if (!admin) {
+      const since = new Date(Date.now() - 86400000).toISOString();
+      const { count } = await db.from('ve_holiday_menu_reads').select('id', { count: 'exact', head: true }).eq('member_id', me).gte('created_at', since);
+      if ((count || 0) >= SCAN_READS_A_DAY) return json({ error: 'rate_limited' }, 429);
+    }
+    const files: { bytes: Uint8Array; type: string }[] = [];
+    let total = 0;
+    for (const pth of paths) {
+      const { data: f, error } = await db.storage.from(SCAN_BUCKET).download(pth);
+      if (error || !f) return json({ error: 'not_uploaded' }, 400);
+      const bytes = new Uint8Array(await f.arrayBuffer());
+      const type = pth.endsWith('.pdf') ? 'application/pdf' : pth.endsWith('.png') ? 'image/png' : pth.endsWith('.webp') ? 'image/webp' : 'image/jpeg';
+      if (type !== 'application/pdf' && bytes.length > 5 * 1024 * 1024) return json({ error: 'too_big' }, 400);
+      total += bytes.length; files.push({ bytes, type });
+    }
+    if (total > 25 * 1024 * 1024) return json({ error: 'too_big' }, 400);
+    const { data: h } = await db.from('ve_holidays').select('name').eq('slug', String(b.holiday || '')).maybeSingle();
+    const r: any = await readMenu(files, h?.name || 'holiday', L.vegan_status === 'fully_vegan');
+    const res = r.result || {};
+    const items = (Array.isArray(res.items) ? res.items : []).slice(0, 20).map((x: any) => ({ name: clean(x?.name, 120), desc: clean(x?.desc, 300), price: clean(x?.price, 30) })).filter((x: any) => x.name);
+    await db.from('ve_holiday_menu_reads').insert({ member_id: me, listing_id: lid, paths, items_found: r.error ? null : items.length, error: r.error || (res.is_menu === false ? 'not_a_menu' : null) });
+    if (r.error) return json({ error: r.error }, r.error === 'busy' ? 429 : 400);
+    if (res.is_menu === false) return json({ ok: true, is_menu: false, items: [], note: 'That does not look like a menu.' });
+    return json({ ok: true, is_menu: true, summary: clean(res.summary, 400), items, left_out: Number(res.left_out) || 0, note: clean(res.note, 300) });
   }
 
   if (action === 'withdraw') {

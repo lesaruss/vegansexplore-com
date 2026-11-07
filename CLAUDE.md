@@ -6879,6 +6879,19 @@ for the Guide and `claim.html` for the menu form (template gate).
   the merge; set it to now after. Proven live 25 of 25 through `ve-once-holiday-proof` (now 410; script
   `scripts/supabase-once/holiday-proof.ts`), every test row removed; page checked at 1440 and 390 px beside `claim.html` against mocked answers.
   Not yet: a Guide voice on the page (Theo, text until approved), the Holiday Guide page showing live menus (step 3).
+- **Merged to `main` 2026-11-07** (114b06e) and live; the dashboard card is on. **Dish photos and Scan your menu** (Sean, 2026-11-07: "a square where they
+  can upload it... like we did with the logos... scan their menu. Drop an image of their menu or a PDF"; migration
+  `20261107_holiday_menu_photos_scan.sql`): each dish row starts with a photo square that opens the logo editor in a window (`VELogoEditor`
+  with the new `fill: true` option, so a photo starts covering the square; its link field and logo previews are hidden there), saved through
+  `ve-holiday` `photo_url` to `vegan-media/media/holiday-menus/<slug>/dish-<uuid>.jpg`; `save` keeps an item's `photo` only when it is one of
+  ours. **Scan your menu** at the top of the menu step takes up to 3 photos (shrunk to 2000 px) or one PDF into the private bucket
+  `holiday-menu-scans` (`scan_start`), then `scan_read` (Claude Opus 5.5, structured output; no `maxItems` in the schema, which structured
+  output refuses) copies dish names, descriptions and prices as printed, takes only the holiday section when there is one, and for a business
+  that is not 100% Vegan only dishes the menu marks Vegan or plant-based (the rest counted in `left_out` and named in its note); 10 reads a day
+  per member (`ve_holiday_menu_reads`). Read dishes are added after what they typed, never over it. Proven live through `ve-once-holiday-proof`
+  (now 410) with a drawn test menu: the photo uploaded and public, a photo from elsewhere dropped, a GIF and another member's file refused,
+  the photo and the PDF both read as the 4 (V) dishes with prices and the 3 others left out by name; told a business was 100% Vegan, the
+  reader still left out turkey and cheese dishes on that menu (the safer answer). Every test row and file removed.
 
 ## Image conventions
 
