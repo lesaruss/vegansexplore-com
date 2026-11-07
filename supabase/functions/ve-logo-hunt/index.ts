@@ -316,7 +316,7 @@ Deno.serve(async (req) => {
     if (!ids.length) return json({ error: 'no listings' }, 400);
     const runId = typeof body.run_id === 'string' && /^[a-z0-9-]{4,40}$/.test(body.run_id) ? body.run_id : 'h' + Date.now().toString(36);
     await db.from('ve_logo_hunts').upsert(ids.map((id: string) => ({ run_id: runId, listing_id: id, status: 'queued' })), { onConflict: 'run_id,listing_id', ignoreDuplicates: true });
-    const batches: string[][] = []; for (let i = 0; i < ids.length; i += 10) batches.push(ids.slice(i, i + 10));
+    const batches: string[][] = []; for (let i = 0; i < ids.length; i += 5) batches.push(ids.slice(i, i + 5));  // 5 a group: with the Facebook search and the browser, 10 ran past the background time limit
     // @ts-ignore EdgeRuntime is the Supabase runtime's
     EdgeRuntime.waitUntil((async () => { for (const b of batches) await runBatch(runId, b); })());
     return json({ ok: true, run_id: runId, listings: ids.length });
