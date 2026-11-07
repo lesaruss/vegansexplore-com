@@ -144,7 +144,7 @@ function headFor(l) {
 }
 
 module.exports = async (req, res) => {
-  const slug = String((req.query && req.query.slug) || '').toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 200);
+  const slug = String((req.query && req.query.slug) || '').toLowerCase().replace(/[^a-z0-9_-]/g, '').slice(0, 200);
   const host = String(req.headers['x-forwarded-host'] || req.headers.host || 'vegansexplore.com');
   let html = await getTemplate(host);
 
