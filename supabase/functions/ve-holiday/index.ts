@@ -35,7 +35,7 @@ const MENU_SCHEMA = {
   properties: {
     is_menu: { type: 'boolean', description: 'True if this shows food or drink for sale with names (a menu, a holiday order form, a flyer listing dishes).' },
     summary: { type: 'string', description: 'One or two lines on the offer, only from words printed (a bundle, a pickup date). Empty if the menu does not describe one.' },
-    items: { type: 'array', maxItems: 20, items: { type: 'object', additionalProperties: false, required: ['name', 'desc', 'price'],
+    items: { type: 'array', items: { type: 'object', additionalProperties: false, required: ['name', 'desc', 'price'],
       properties: { name: { type: 'string' }, desc: { type: 'string', description: 'The printed description, shortened to one line if long. Empty if none.' }, price: { type: 'string', description: 'As printed, with the currency sign. Empty if none.' } } } },
     left_out: { type: 'integer', description: 'How many printed dishes were left out (not plant-based on a menu that mixes, or past 20).' },
     note: { type: 'string', description: 'One short sentence for the owner: what could not be read, or what was left out and why. Empty if nothing.' },
