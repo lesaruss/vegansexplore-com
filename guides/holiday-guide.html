@@ -486,6 +486,13 @@
     .nt-key p{margin:2px 0 0;font-size:13.5px;line-height:1.55;color:var(--ink75);}
     @media (max-width:900px){.nt-plate{grid-template-columns:minmax(0,1fr);}.nt-plate svg{max-width:280px;}}
   
+    /* The Restaurant Guide's Overview look (Sean, 2026-11-07: "that's the look I want"): Start here, one button, then sections as headings with pills. */
+    .rg-grow{margin:20px 0 0;}.rg-grow h3{margin:0;font-size:16px;font-weight:900;}.rg-grow>p{margin:2px 0 8px;font-size:13px;color:var(--ink75);}
+    .rg-pills{display:flex;flex-wrap:wrap;gap:8px;}
+    .rg-pill{display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border:1px solid var(--line);border-radius:999px;background:#fff;color:var(--ink);text-decoration:none;font-size:14px;font-weight:700;transition:border-color .12s,background .12s;}
+    a.rg-pill:hover{border-color:var(--g);background:var(--gl);}
+    .rg-pill-pic{width:30px;height:30px;border-radius:50%;overflow:hidden;flex:0 0 30px;background:var(--gl);}
+    .rg-pill-pic img{display:block;width:100%;height:100%;object-fit:cover;}
     /* Holiday pieces */
     .hg-rules{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:14px;margin:14px 0 6px}
     .hg-rule{border:1px solid var(--line);border-radius:12px;padding:18px 18px 16px;background:#fff}
@@ -593,6 +600,7 @@
 <script src="/public/ve-auth.js"></script>
 <script src="/public/ve-votes.js"></script>
 <script src="/public/ve-region-directory.js"></script>
+<script src="/public/ve-guide-intro.js"></script>
 <script src="/guide-scripts/holiday-guide.js"></script>
 <script src="/public/ve-guide-min.js"></script>
 </body>

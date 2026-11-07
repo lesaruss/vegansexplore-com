@@ -6918,6 +6918,11 @@ for the Guide and `claim.html` for the menu form (template gate).
   dresses for each holiday tab** (a tab's `pic`; ThanksLiving is `public/guides/holiday/theo-thanksliving.jpg`, Higgsfield nano_banana, the store tee and an apron,
   a plant-based roast); Hanukkah, Christmas and Kwanzaa get theirs when their tabs are built, respectful and never stereotypical (no costume of a culture,
   checked against how each tradition presents itself).
+  **Round 3 (Sean, 2026-11-07: the Restaurant Guide's Overview look "is the look I want... under the video")**: under the video the Overview is Start here
+  (`ve-guide-intro.js`, picture `public/guides/holiday/start.jpg`), one button (Find a holiday menu) with the countdown as its note, then the sections as headings
+  with a line and picture pills (`GROUPS`, `PILL_PIC`: Celebrate, Order your table, Give back, Run a business?; `.rg-grow`, `.rg-pill` copied from the Restaurant
+  Guide). Pictures are Higgsfield illustrations in the Restaurant Guide's style, `public/guides/holiday/p-*.jpg`; a table picture that came back with a turkey was
+  thrown out (ask for the plant-based dish by name and say no bird or meat, or the model draws a turkey).
 
 ## Image conventions
 

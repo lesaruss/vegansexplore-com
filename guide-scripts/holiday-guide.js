@@ -138,22 +138,35 @@
   function chapterName(slug) { var h = chapters().filter(function (x) { return x.slug === slug; })[0]; return h ? h.name : 'every chapter'; }
 
   // ---------- Overview ----------
+  // The Overview (Sean, 2026-11-07): the video, then the Restaurant Guide's look under it: Start here (public/ve-guide-intro.js), one
+  // button with a short note, then the Guide's sections as headings with a line and picture pills.
+  var PIC = '/public/guides/holiday/';
+  var GROUPS = [
+    { label: 'Celebrate', line: 'Five simple ways to make ThanksLiving yours, and where people are gathering.', kids: ['thanksliving', 'events'] },
+    { label: 'Order your table', line: 'What Vegan places near you are cooking, and when to order by.', kids: ['menus'] },
+    { label: 'Give back', line: 'The nonprofits, rescues and sanctuaries doing the work. Giving Tuesday is December 1.', kids: ['giveback'] },
+    { label: 'Run a business?', line: 'Send your holiday menu and we feature it here, free for members.', kids: ['business'] }
+  ];
+  var PILL_PIC = { thanksliving: 'p-thanks.jpg', events: 'p-events.jpg', menus: 'p-menus.jpg', giveback: 'p-giveback.jpg', business: 'p-business.jpg' };
+  function groupRows() {
+    return GROUPS.map(function (g) {
+      return '<section class="rg-grow"><h3>' + esc(g.label) + '</h3><p>' + esc(g.line) + '</p><div class="rg-pills">' + g.kids.map(function (k) {
+        return '<a class="rg-pill" href="' + href(k) + '"><span class="rg-pill-pic"><img src="' + PIC + PILL_PIC[k] + '" alt="" loading="lazy" width="60" height="60"></span><span>' + esc(tab(k).label) + '</span></a>';
+      }).join('') + '</div></section>';
+    }).join('');
+  }
   function viewOverview() {
-    var t = thanks(), up = (HOLS || []).filter(function (h) { return daysUntil(onDay(h.holiday_on)) > 0; });
-    var tiles = [
-      ['thanksliving', 'ThanksLiving', 'Thanksgiving with a full plant-based table: five simple ways to celebrate.'],
-      ['menus', 'Holiday menus', 'What the Vegan places near you are cooking, and when to order by.'],
-      ['events', 'Events', 'Sanctuary dinners, potlucks and Friendsgivings on our calendar.'],
-      ['giveback', 'Give back', 'The nonprofits, rescues and sanctuaries doing the work. Giving Tuesday is December 1.'],
-      ['business', 'For businesses', 'Send your holiday menu and we feature it here, free for members.']
-    ];
-    main.innerHTML = head('Free for everyone', 'The holidays, the Vegan way',
-      'Holiday menus from Vegan places near you, simple ways to celebrate, events and where to give back. We start with the holidays at hand and add each one as it comes. ' +
-      esc(t.name) + ' is ' + esc(dayFmt(onDay(t.holiday_on))) + '.') + videoCard() + countdown() +
-      '<div class="dg-tiles">' + tiles.map(function (x) { return '<a class="dg-tile" href="' + href(x[0]) + '"><div class="dg-ic">' + ICON[x[0]] + '</div><div><b>' + esc(x[1]) + '</b><span>' + esc(x[2]) + '</span></div></a>'; }).join('') + '</div>' +
-      '<div class="dg-start"><a class="dg-btn" href="#/menus">Find a holiday menu</a><a class="dg-btn dg-ghost" href="#/thanksliving">Celebrate ThanksLiving</a></div>' +
-      (up.length > 1 ? '<h3 style="margin:22px 0 8px;font-size:16px">Coming up</h3><div class="hg-facts">' + up.map(function (h) { return '<span><b>' + esc(h.name) + '</b> ' + esc(dayFmt(onDay(h.holiday_on), { month: 'long', day: 'numeric' })) + '</span>'; }).join('') + '</div>' : '') +
-      (member() ? '' : '<div class="hg-note">Everything here is free to read. Members (free, with a short survey) can save the places they want to order from and find them again in My Saves.</div>');
+    var t = thanks(), d = daysUntil(onDay(t.holiday_on)), c = daysUntil(t.submit_close);
+    var start = window.VEGuideIntro ? VEGuideIntro.html({
+      place: 'This Guide is for anyone celebrating the holidays the Vegan way, whether you host, bring a dish or order your table.',
+      why: ['The holidays are about the people at the table.', 'Vegans Explore has covered the Vegan community since 2016, city by city, so we know the places cooking near you and the groups doing good.'],
+      change: 'you will have a plan for ' + t.name + ', a place to order from if you want one, and a way to give back.',
+      how: member() ? 'pick a section below. Save the places you want to order from and find them in My Saves.' : 'watch the video, then pick a section below. Everything is free to read; join free to save places.',
+      pic: PIC + 'start.jpg' }) : '';
+    main.innerHTML = head('Free for everyone', 'Welcome to the Holiday Guide', '') + videoCard() + start +
+      '<div class="dg-start" style="margin:18px 0 6px"><a class="dg-btn" href="#/menus">Find a holiday menu</a><p>' +
+      (d ? d + ' days to ThanksLiving.' : 'Happy ThanksLiving.') + (c ? ' Businesses can send a menu for ' + c + ' more days.' : '') + '</p></div>' +
+      groupRows();
   }
 
   // The Overview is a video (canon-ve-guide-tour-standard v3): Theo walks them through the Guide. Until it is made this is its
