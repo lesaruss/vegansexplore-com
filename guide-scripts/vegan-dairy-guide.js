@@ -233,7 +233,7 @@
       points: 'Use ' + pts(ST.cost) + ' points', buy: onPoints() ? 'Get it for $11' : 'Get it now for $11' }[mode()];
   }
   function offerLine() {
-    if (!priced()) return 'It comes with the $11 Founding Membership, one time.';
+    if (!priced()) return 'It comes with membership, free with a short survey.';
     var m = mode();
     if (onPoints()) {
       if (m === 'points') return 'Pick how you pay: $11, or ' + pts(ST.cost) + ' of your ' + pts(ST.balance) + ' points.';
@@ -241,7 +241,7 @@
     }
     if (m === 'unlock') return 'Unlock it with 1 Guide credit. You have ' + ST.credits + '.';
     if (m === 'buy') return 'Get it now for $11, or use a Guide credit: Passport gives you one every month.';
-    return 'Joining is $11, one time, and comes with a Guide credit: unlock this Guide or any other.';
+    return 'Joining Vegans Explore is free with a short survey.';
   }
   function ctaBtns(small) {
     var m = mode(), link = small ? ' style="font-size:12.5px;font-weight:800;color:var(--g)"' : '';
@@ -1033,9 +1033,9 @@
       '<li><b>The community:</b> your member dashboard, Directory votes, the Community Board and points.</li></ul></div>';
     var status = '<span class="dg-status" role="status" style="display:block;margin-top:10px;color:#8a5a00"></span>';
     if (!priced()) {
-      main.innerHTML = '<div class="dg-join">' + head('Get access', 'The Dairy Guide comes with membership', 'One $11 Founding Membership, one time, opens this Guide and the whole Vegans Explore community.') + list + '</div>';
+      main.innerHTML = '<div class="dg-join">' + head('Get access', 'The Dairy Guide comes with membership', 'Membership, free with a short survey, opens this Guide and the whole Vegans Explore community.') + list + '</div>';
       main.querySelector('.dg-access').insertAdjacentHTML('beforeend',
-        '<div class="dg-pricebox"><div class="dg-big">$11<small>one time</small></div><p>' + (m === 'activate' ? 'Your account is not a Founding Member yet. Become one and the Guide opens right away.' :
+        '<div class="dg-pricebox"><div class="dg-big">Free<small>with the survey</small></div><p>' + (m === 'activate' ? 'Your account is not a member yet. Take the short survey and the Guide opens right away.' :
           'Already a Vegans Explore member? It is already yours: <a href="#" data-signin>sign in</a> and the Guide opens.') + '</p>' +
         '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status + '</div>');
       return;
@@ -1057,16 +1057,16 @@
       box = '<div class="dg-big">1<small>credit</small></div><p>You have ' + credits(ST.credits) + '. Unlock the Guide and it is yours to keep.</p>' +
         '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status;
     } else if (m === 'buy') {
-      box = '<div class="dg-big">$11<small>yours to keep</small></div><p>You have no Guide credits right now. Get it now for $11, one time.</p>' +
+      box = '<div class="dg-big">$11<small>yours to keep</small></div><p>Get it for $11, one time, and it is yours to keep.</p>' +
         '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' +
         (canExchange() ? '<button type="button" class="dg-btn dg-ghost" data-exchange style="margin-top:8px">Use ' + pts(ST.rate) + ' points for a credit</button><p class="dg-pp">You have ' + pts(ST.balance) + ' points.</p>' : '') +
         status + passport;
     } else {
-      box = '<div class="dg-big">$11<small>one time</small></div><p>' + (m === 'activate' ? 'Your account is not a Founding Member yet. Become one: $11, one time, and your first Guide credit comes with it.' :
-          'Join for $11, one time, and your first Guide credit comes with it: unlock this Guide or any other. Already a member? <a href="#" data-signin>Sign in</a>.') + '</p>' +
+      box = '<div class="dg-big">$11<small>one time</small></div><p>' + (m === 'activate' ? 'Your account is not a member yet. Joining is free with a short survey.' :
+          'Join free with a short survey, then get the Guide for $11 or 1,100 points. Already a member? <a href="#" data-signin>Sign in</a>.') + '</p>' +
         '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status + passport;
     }
-    main.innerHTML = '<div class="dg-join">' + head('Get access', 'Open the whole Dairy Guide', 'Every Vegans Explore Guide is $11 or 1 Guide credit. The $11 Founding Membership, one time, comes with your first credit and the whole community.') + list + '</div>';
+    main.innerHTML = '<div class="dg-join">' + head('Get access', 'Open the whole Dairy Guide', 'Topic Guides are $11 or 1,100 points, yours to keep. Joining Vegans Explore is free with a short survey.') + list + '</div>';
     main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox">' + box + '</div>');
   }
 
@@ -1371,10 +1371,10 @@
         a.showAuthModal('Create your account, then get the Dairy Guide for $11.', go, 'signup');
         return;
       }
-      if (m === 'join') a.showAuthModal(priced() ? 'Create your account. Then become a Founding Member: $11, and your first Guide credit comes with it.'
-        : 'Create your account. Then become a Founding Member and the Dairy Guide opens.', function () { location.reload(); }, 'signup');
-      else if (m === 'activate') a.showActivateModal(priced() ? 'Become a Founding Member: $11, one time. Your first Guide credit comes with it, and the full community.'
-        : 'The Dairy Guide comes with the $11 Founding Membership, one time. It also opens the full community.');
+      if (m === 'join') a.showAuthModal(priced() ? 'Create your account. Joining Vegans Explore is free with a short survey; then the Guide is $11 or 1,100 points.'
+        : 'Create your account. Joining is free with a short survey, and then the Dairy Guide opens.', function () { location.reload(); }, 'signup');
+      else if (m === 'activate') a.showActivateModal(priced() ? 'Join Vegans Explore free with a short survey. Then the Guide is $11 or 1,100 points, and the full community is yours.'
+        : 'The Dairy Guide comes with membership, free with a short survey. It also opens the full community.');
       else if (m === 'unlock') unlock(jb);
       else if (m === 'points') unlockPoints(jb);
       else buyNow(jb);

@@ -304,11 +304,11 @@
     if (m === 'join' || m === 'activate' || m === 'buy') return 'Take the free restaurant survey. When you finish, you are a member and the whole Guide opens.';
     if (onPoints()) {
       if (m === 'points') return 'Unlock it with ' + pts(ST.cost) + ' points: you have ' + pts(ST.balance) + '. Or get it for $11.';
-      return 'It is $11, or ' + pts(ST.cost) + ' points, and yours to keep. Buying it makes you a member of Vegans Explore.';
+      return 'It is $11, or ' + pts(ST.cost) + ' points, and yours to keep.';
     }
     if (m === 'unlock') return 'Unlock it with 1 Guide credit. You have ' + ST.credits + '.';
     if (m === 'buy') return 'Get it now for $11, or use a Guide credit: Passport gives you one every month.';
-    return 'Joining is $11, one time, and comes with a Guide credit: unlock this Guide or any other.';
+    return 'Joining Vegans Explore is free with a short survey.';
   }
   function ctaBtns() {
     var m = mode();
@@ -1513,8 +1513,8 @@
         a.showAuthModal('Create your account, then get the Restaurant Guide for $11. Buying it makes you a member.', go, 'signup');
         return;
       }
-      if (m === 'join') a.showAuthModal('Create your account. Then become a Founding Member: $11, and your first Guide credit comes with it.', function () { location.reload(); }, 'signup');
-      else if (m === 'activate') a.showActivateModal('Become a Founding Member: $11, one time. Your first Guide credit comes with it, and the full community.');
+      if (m === 'join') a.showAuthModal('Create your account. Joining is free with a short survey, and it opens this Guide.', function () { location.reload(); }, 'signup');
+      else if (m === 'activate') a.showActivateModal('Joining is free with a short survey. It opens this Guide and the full community.');
       else if (m === 'unlock') unlock(jb);
       else if (m === 'points') unlockPoints(jb);
       else buyNow(jb);

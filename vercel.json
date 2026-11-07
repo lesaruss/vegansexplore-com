@@ -91,6 +91,10 @@
       "destination": "/directory/listing"
     },
     {
+      "source": "/nonprofits/sample",
+      "destination": "/directory/listing"
+    },
+    {
       "source": "/gigs/sample",
       "destination": "/gigs/index"
     },
@@ -1471,6 +1475,31 @@
       "source": "/academy/community-manager-handbook",
       "destination": "/dashboard/handbook",
       "permanent": true
+    },
+    {
+      "source": "/guides/ve-path-creator",
+      "destination": "/passport",
+      "permanent": false
+    },
+    {
+      "source": "/guides/ve-path-entrepreneur",
+      "destination": "/passport",
+      "permanent": false
+    },
+    {
+      "source": "/guides/ve-path-nonprofit",
+      "destination": "/passport",
+      "permanent": false
+    },
+    {
+      "source": "/guides/ve-path-prevegan",
+      "destination": "/passport",
+      "permanent": false
+    },
+    {
+      "source": "/guides/ve-path-seasonedvegan",
+      "destination": "/passport",
+      "permanent": false
     },
     {
       "source": "/join",

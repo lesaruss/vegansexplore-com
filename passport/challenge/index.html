@@ -87,7 +87,7 @@
     <section id="soon" class="card" hidden>
       <h2>Coming in 2027</h2>
       <p class="muted" id="soon-text">The Passport Challenge is coming to your city: a monthly map of local Vegan spots, a stamp at every stop, and a badge and Points when you finish.</p>
-      <p style="margin-top:14px"><a class="btn" href="/passport">Get your Passport, $11</a></p>
+      <p style="margin-top:14px"><a class="btn" href="/survey?s=explorer">Join free</a></p>
     </section>
 
     <section id="gate" class="card" hidden></section>
@@ -253,7 +253,7 @@
       };
 
       function gate(html) { $('gate').innerHTML = html; $('gate').hidden = false; }
-      function soon() { $('soon-text').textContent = 'The Passport Challenge is coming to ' + HUB.name + ': a monthly map of local Vegan spots, a stamp at every stop, and a badge and Points when you finish. Your $11 Passport is your way in.'; $('soon').hidden = false; }
+      function soon() { $('soon-text').textContent = 'The Passport Challenge is coming to ' + HUB.name + ': a monthly map of local Vegan spots, a stamp at every stop, and a badge and Points when you finish. Joining Vegans Explore is free with a short survey.'; $('soon').hidden = false; }
       function load() {
         return api({ action: 'mine' }, true).then(function (d) {
           if (d.error === 'not_authenticated') { VEAuth.clearSession && VEAuth.clearSession(); return start(); }
@@ -262,8 +262,8 @@
           if (!d.launched && !d.preview) return soon();
           if (!d.hunt) { $('none').hidden = false; return; }
           if (!d.member) {
-            gate('<h2>The Passport Challenge is for members</h2><p class="muted" style="margin-bottom:14px">' + esc(d.hunt.name) + ' runs in ' + esc(d.hunt.area_name) + ' until ' + esc(day(d.hunt.ends_on)) + '. Get your Passport ($11, one time) to join.</p><button type="button" class="btn" id="g-pay">Get your Passport</button>');
-            $('g-pay').onclick = function () { VEAuth.showActivateModal ? VEAuth.showActivateModal('Get your Passport to join the Passport Challenge.') : (location.href = '/passport'); };
+            gate('<h2>The Passport Challenge is for members</h2><p class="muted" style="margin-bottom:14px">' + esc(d.hunt.name) + ' runs in ' + esc(d.hunt.area_name) + ' until ' + esc(day(d.hunt.ends_on)) + '. Join Vegans Explore, free with a short survey, to take part.</p><button type="button" class="btn" id="g-pay">Join free</button>');
+            $('g-pay').onclick = function () { VEAuth.showActivateModal ? VEAuth.showActivateModal('Join free with a short survey to take part in the Passport Challenge.') : (location.href = '/passport'); };
             return;
           }
           state = d; $('app').hidden = false; render();

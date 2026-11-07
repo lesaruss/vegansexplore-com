@@ -321,7 +321,7 @@ function guestPassEmail(e: any, g: any, code: string, name: string) {
     `<p style="margin:0 0 12px">You're on the guest list for <b>${esc(e.title)}</b> with <b>${esc(g.name)}</b>: ${esc(whenText(e))}${e.location_name ? `, ${esc(e.location_name)}` : ''}${e.city ? `, ${esc(e.city)}` : ''}.</p>` +
     `<p style="margin:0 0 8px">This is your guest pass, your one free event as our guest. Show this code at the door:</p>` +
     `<p style="font:800 22px/1.5 monospace;letter-spacing:.12em;margin:0 0 14px">${esc(code)}</p>` +
-    `<p style="margin:0 0 12px">Want to keep coming? From your next event, you join with the Vegans Explore Passport: $11, one time, with 1,100 points, and every group and event in every city opens.</p>` +
+    `<p style="margin:0 0 12px">Want to keep coming? Joining Vegans Explore is free with a short survey, and every group and event in every city opens.</p>` +
     `<p style="margin:0 0 12px"><a href="${SITE}/passport" style="color:#1f5f22;font-weight:700">See the Passport</a> &middot; <a href="${SITE}/events#event/${e.id}" style="color:#1f5f22;font-weight:700">The event</a></p>${FOOT}</div>`;
 }
 
@@ -563,7 +563,7 @@ Deno.serve(async (req) => {
     if (reg?.length && reg[0].membership_status === 'active') return json({ error: 'member', message: 'That email has a Passport. Sign in and tap I\'m going.' }, 400);
     const { data: had } = await db.from('ve_guest_passes').select('event_id, created_at').ilike('email', email).maybeSingle();
     if (had) return json({ error: 'used', message: had.event_id === e.id ? 'You are already on the guest list. Your code is in your email.' :
-      'Your guest pass has been used. From your second event, you join with the Vegans Explore Passport: $11, one time.' }, 409);
+      'Your guest pass has been used. Joining Vegans Explore is free with a short survey: then every event is open to you.' }, 409);
     const { data: c } = await db.rpc('ve_ticket_code');
     const { error: ge } = await db.from('ve_guest_passes').insert({ email, name, event_id: e.id, listing_id: hg.id, member_id: member?.id || null, code: c });
     if (ge) return json({ error: (ge as any).code === '23505' ? 'used' : 'save_failed', message: 'Your guest pass has been used.' }, (ge as any).code === '23505' ? 409 : 500);

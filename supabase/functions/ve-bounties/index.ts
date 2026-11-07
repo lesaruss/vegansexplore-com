@@ -1224,7 +1224,7 @@ Deno.serve(async (req) => {
       // The host is the listing's claimed owner unless an email names someone else.
       if (typeof body.host_email === 'string' && clean(body.host_email, 200)) {
         const { data: hm } = await db.from('members').select('id').ilike('email', clean(body.host_email, 200)).limit(1).maybeSingle();
-        if (!hm) return json({ error: 'host_email', message: 'No member with that email yet. The host joins first (the one-time $11 membership).' }, 400);
+        if (!hm) return json({ error: 'host_email', message: 'No member with that email yet. The host joins first (free, with a short survey).' }, 400);
         patch.host_member_id = hm.id;
       } else if (patch.host_listing_id && !(c && c.host_member_id)) {
         const { data: l } = await db.from('listings').select('owner_member_id, claimed_by_member_id').eq('id', patch.host_listing_id).maybeSingle();
@@ -1299,7 +1299,7 @@ Deno.serve(async (req) => {
       if (c.kind === 'place') {
         if (!c.host_listing_id) return json({ error: 'host', message: 'Pick the host restaurant\'s listing first.' }, 400);
         const { data: hm } = c.host_member_id ? await db.from('members').select('membership_status').eq('id', c.host_member_id).maybeSingle() : { data: null };
-        if (!hm || hm.membership_status !== 'active') return json({ error: 'host_member', message: 'The host has to be an active member (the one-time $11 membership) before this goes live.' }, 409);
+        if (!hm || hm.membership_status !== 'active') return json({ error: 'host_member', message: 'The host has to be an active member (joining is free, with a short survey) before this goes live.' }, 409);
       }
       const clk: any = campaignClocks(c);
       if (clk.error) return json({ error: 'dates', message: clk.error }, 400);

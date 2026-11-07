@@ -279,7 +279,7 @@
     main.innerHTML = head('What\'s next', 'You are in. Thank you.', 'Here is where to go from here.') +
       '<div class="pv-gates">' +
       '<div class="pv-gate"><h3>Your readiness</h3><p>Your private score, gate by gate, with what to fix first.</p><a class="dg-btn" href="#/ready">See it</a></div>' +
-      '<div class="pv-gate"><h3>Make a contribution (optional)</h3><p>From $11, one time. It helps us build the platform faster. If this is your first $11, it comes with the usual 1,100 welcome points. If not, we understand. This has no effect on your certification or your readiness score.</p><a class="dg-btn" href="/dashboard?contribute=1">Contribute</a></div>' +
+      '<div class="pv-gate"><h3>Make a contribution (optional)</h3><p>From $11, one time. It helps us build the platform faster. If not, we understand. This has no effect on your certification or your readiness score.</p><a class="dg-btn" href="/dashboard?contribute=1">Contribute</a></div>' +
       '<div class="pv-gate"><h3>Contribute later</h3><p>Any time, by getting a Guide or completing a bounty.</p><a href="/guides">See the Guides</a></div>' +
       '<div class="pv-gate"><h3>Your page</h3><p>Your restaurant may already be in our Directory. Claim it to keep your hours, photos and menu link up to date.</p><a href="/claim">Find your page</a></div>' +
       '</div>';

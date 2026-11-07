@@ -1263,9 +1263,9 @@
             for (var i = 1; i <= Math.min(d.max || 10, left); i++) opts += '<option value="' + i + '">' + i + '</option>';
             return '<div class="vev-tix"><div><b>' + esc(t.name) + '</b><small>' + esc(money(t.buyer_cents)) + ' each, card processing included' + (t.left != null ? ' &middot; ' + (left ? left + ' left' : 'Sold out') : '') + '</small></div>' +
               (left ? '<select data-q="' + esc(t.id) + '" aria-label="How many">' + opts + '</select><button type="button" class="vev-btn green" data-buy="' + esc(t.id) + '">Buy</button>' : '<span class="vev-note">Sold out</span>') + '</div>';
-          }).join('') + '<p class="vev-note" style="font-weight:600">Tickets are for Passport holders, sold through Vegans Explore for ' + esc(d.group.name) + '.' + (d.refund_policy ? ' Refunds: ' + esc(d.refund_policy) : '') + '</p>';
+          }).join('') + '<p class="vev-note" style="font-weight:600">Tickets are for members (joining is free), sold through Vegans Explore for ' + esc(d.group.name) + '.' + (d.refund_policy ? ' Refunds: ' + esc(d.refund_policy) : '') + '</p>';
         } else if (d.guest_pass && !v.active && !v.guest_pass) {
-          h += '<h3>Your first event is on us</h3><p class="vev-desc" style="margin:0 0 10px">No Passport yet? Come to one free event as our guest. From your second, you join with the $11 Passport.</p>' +
+          h += '<h3>Your first event is on us</h3><p class="vev-desc" style="margin:0 0 10px">New here? Come to this one as our guest. Joining Vegans Explore is free with a short survey.</p>' +
             '<div class="vev-gp"><input data-gp="name" placeholder="Your name" autocomplete="name"><input data-gp="email" type="email" placeholder="Your email" autocomplete="email">' +
             '<button type="button" class="vev-btn green" data-gp="go">Get my guest pass</button></div>';
         }

@@ -270,10 +270,10 @@
   function messages() {
     var o = org(), r = rate() + '%';
     return [
-      ['A post for your followers', o + ' is a Vegans Explore Nonprofit Partner. Vegans Explore is a community for Vegans, city by city: the Vegan places, events, rescues and sanctuaries near you, voted on by members. Join with our link and ' + o + ' earns ' + r + ' of your $11 Passport, at no extra cost to you.'],
-      ['A text to a supporter', 'We just became a Vegans Explore Nonprofit Partner. If you join with our link, ' + o + ' earns part of your $11 Passport, and you get the Vegan places, events and people near you. Here it is.'],
-      ['For your newsletter', 'Support ' + o + ' by joining Vegans Explore\n\nWe are proud to be one of the first Nonprofit Partners of Vegans Explore, a community for Vegans, city by city. Members find Vegan restaurants, events, rescues and sanctuaries near them, vote for the places they love, and join the conversation in their city. The Passport is $11, one time, with 1,100 points to start. When you join through our link, ' + o + ' earns ' + r + ' of it, at no extra cost to you.'],
-      ['For your volunteers', 'Thank you for everything you do for ' + o + '. One more easy way to help: join Vegans Explore with our link. ' + o + ' earns part of every $11 Passport, and you get a community that backs the work we do.']
+      ['A post for your followers', o + ' is a Vegans Explore Nonprofit Partner. Vegans Explore is a community for Vegans, city by city: the Vegan places, events, rescues and sanctuaries near you, voted on by members. Joining is free with a short survey. Join with our link so ' + o + ' can see who came through us.'],
+      ['A text to a supporter', 'We just became a Vegans Explore Nonprofit Partner. Joining is free with our link, and you get the Vegan places, events and people near you. Here it is.'],
+      ['For your newsletter', 'Support ' + o + ' by joining Vegans Explore\n\nWe are proud to be one of the first Nonprofit Partners of Vegans Explore, a community for Vegans, city by city. Members find Vegan restaurants, events, rescues and sanctuaries near them, vote for the places they love, and join the conversation in their city. Joining is free with a short survey. Please join through our link, so we can see the community we are growing.'],
+      ['For your volunteers', 'Thank you for everything you do for ' + o + '. One more easy way to help: join Vegans Explore with our link. It is free, and you get a community that backs the work we do.']
     ].map(function (m) { return { title: m[0], text: m[1], link: link() }; });
   }
   function messageText(m) { return m.text + '\n\n' + m.link; }
@@ -284,7 +284,7 @@
     return '<div style="font-family:Montserrat,Arial,sans-serif;background:#14301c;color:#fff;border-radius:12px;padding:24px;max-width:720px">' +
       '<div style="font-size:11px;font-weight:800;letter-spacing:.2em;text-transform:uppercase;color:#c5f2c7">Vegans Explore Nonprofit Partner</div>' +
       '<div style="font-size:22px;font-weight:900;line-height:1.2;margin:6px 0 8px">Join the community and support ' + esc(org()) + '</div>' +
-      '<div style="font-size:15px;line-height:1.5;color:#e6f4e7;margin:0 0 16px">Find the Vegan places, events, rescues and sanctuaries near you. When you join through our link, ' + esc(org()) + ' earns part of your $11 Passport.</div>' +
+      '<div style="font-size:15px;line-height:1.5;color:#e6f4e7;margin:0 0 16px">Find the Vegan places, events, rescues and sanctuaries near you. Joining is free with a short survey. Join through our link so ' + esc(org()) + ' can see who came through it.</div>' +
       '<a href="' + full() + '" style="display:inline-block;background:#22C55E;color:#03170a;font-weight:800;font-size:13px;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;padding:12px 22px;border-radius:6px">Join with our link</a></div>';
   }
 
@@ -293,14 +293,14 @@
       var tiles = TABS.filter(function (t) { return t.k !== 'overview'; }).map(function (t) {
         return '<a class="dg-tile" href="#/' + t.k + '"><div class="dg-ic am-ic" aria-hidden="true">' + icon(t.k) + '</div><div><b>' + esc(t.label) + '</b><span>' + esc(BLURB[t.k]) + '</span></div></a>';
       }).join('');
-      return head('Welcome', esc(org()) + ' is a Nonprofit Partner', 'Vegans Explore is a community for Vegans, city by city. ' + esc(org()) + ' is one of our first Nonprofit Partners: it has <b>its own link</b>, earns <b>' + rate() + '% of every $11 Passport</b> and Guide bought through it, holds <b>points for our services</b>, and wears a Nonprofit Partner badge in the Directory. You lead the account.' + (D && D.preview ? ' <b>(You are previewing this as an admin.)</b>' : '')) +
+      return head('Welcome', esc(org()) + ' is a Nonprofit Partner', 'Vegans Explore is a community for Vegans, city by city. ' + esc(org()) + ' is one of our first Nonprofit Partners: it has <b>its own link</b>, holds <b>points for our services</b>, and wears a Nonprofit Partner badge in the Directory. You lead the account.' + (D && D.preview ? ' <b>(You are previewing this as an admin.)</b>' : '')) +
         '<div class="dg-tiles">' + tiles + '</div>' + nextBtn('why', 'Start the Guide');
     },
     why: function () {
       return head('Why it matters', 'More people behind your work', 'Your supporters already trust you. Vegans Explore gives them a community that backs the organizations doing the work, and every one who joins through your link adds to ' + esc(org()) + '.') +
         '<div class="dg-grid">' +
         card('People find you', esc(org()) + ' has its page in the Directory\'s Community section, where members find rescues, sanctuaries and nonprofits in every chapter, vote for them and give them points. <a href="/directory/' + esc(P.org.slug) + '">See your page</a>.', 'The Directory') +
-        card('Your link earns', 'Every person who joins through your link earns ' + esc(org()) + ' ' + rate() + '% of their $11 Passport, and of Guides they buy, for 12 months after they join. It costs them nothing extra.', 'Income') +
+        card('Your link counts', 'Every person who joins through your link is counted for ' + esc(org()) + '. Cash commissions are paused from November 7, 2026. Your link still counts everyone who joins through it, and anything earned before then is paid as described here.', 'Your link') +
         card('Your people, in one place', 'Members get the Daily Pulse, events and the Vegan places in their city, and the Fosters and Rescues boards, where animals that need a home are posted.', 'Community') +
         card('Points for your work', 'Your organization holds points for our services: promoting your events, a feature, a social push. Members can give you more from your page.', 'Points') +
         card('Campaigns behind the cause', 'As the community grows, so does our promotion of the organizations doing the work.', 'Growing', true) +
@@ -312,8 +312,8 @@
         '<ol class="am-steps">' +
         '<li><b>They open your link</b>It takes them to the Passport, and remembers ' + esc(org()) + ' for their visit.</li>' +
         '<li><b>They make an account</b>With email, or Continue with Google. Your link still counts.</li>' +
-        '<li><b>They get their Passport</b>$11, one time, with 1,100 welcome points.</li>' +
-        '<li><b>' + esc(org()) + ' earns</b>' + rate() + '% of their Passport, and of Guides they buy in their first 12 months.</li></ol>' +
+        '<li><b>They join, free</b>A short survey, with 250 points to start.</li>' +
+        '<li><b>' + esc(org()) + ' gets the credit</b>They count as people your organization brought in.</li></ol>' +
         '<div class="dg-grid">' +
         card('It belongs to the organization', 'This is not your personal link. If someone else takes over the account, the link, its numbers and its earnings stay with ' + esc(org()) + '.', 'Yours to share') +
         card('Say that you earn', 'Whenever you share it, say that ' + esc(org()) + ' earns when people join with it. Every message in Your kit already does. The law asks for it, and it keeps trust.', 'Always') +
@@ -351,7 +351,7 @@
       var min = usd(((P.program || {}).min_payout_cents) || 2500);
       return head('Where the money goes', 'Paid to ' + esc(org()), 'Everything your link earns is ' + esc(org()) + '\'s: referral earnings paid to the organization, never to you personally.') +
         '<div class="dg-grid">' +
-        card('How much', rate() + '% of the $11 Passport, and of Guides bought with money, for 12 months after each person joins through your link. Never of anything someone gives on top.', 'The rate') +
+        card('Paused for now', 'Cash commissions are paused from November 7, 2026. Your link still counts everyone who joins through it, and anything earned before then is paid as described here.', 'The rate') +
         card('When', 'Each one waits 30 days in case of a refund, then it is ready. We pay once ' + min + ' is ready.', 'Timing') +
         card('What we need first', 'The organization\'s W-9 (or the form for your country) before the first payment. Send it to <a href="mailto:contact@lesaruss.com?subject=W-9%20for%20' + encodeURIComponent(org()) + '">contact@lesaruss.com</a>.', 'Before the first payment') +
         card('What it is, and is not', 'It is referral earnings paid by LESARUSS Inc., a company. It is not a donation from us and not tax-deductible to anyone. How your organization records it is a question for your accountant.', 'Straight talk') +

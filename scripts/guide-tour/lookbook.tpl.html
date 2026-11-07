@@ -1,0 +1,81 @@
+<title>Nonprofit Guide Lookbook</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700;800;900&display=swap">
+<style>
+/* Layout: a storyboard sheet. The animatic stage on top plays the frames in time with Dani's voice; numbered frames below for notes. */
+:root{--bg:#f6f8f5;--card:#ffffff;--fg:#1a1a1a;--mute:#5d6b5e;--line:#dfe6dd;--forest:#2D5C27;--go:#3A9B3E;--orange:#F69820;--stage:#0F1F14;--onstage:#f2f7f1;
+--display:'Montserrat',system-ui,sans-serif;--body:'Montserrat',system-ui,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1610;--card:#152018;--fg:#eef3ec;--mute:#a3b3a3;--line:#26362a;--forest:#7fca7a;--go:#3A9B3E;--orange:#F69820;--stage:#06100a;--onstage:#f2f7f1;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0d1610;--card:#152018;--fg:#eef3ec;--mute:#a3b3a3;--line:#26362a;--forest:#7fca7a;--go:#3A9B3E;--orange:#F69820;--stage:#06100a;--onstage:#f2f7f1;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.5}
+.wrap{padding-block:28px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));max-width:1280px;margin:0 auto}
+.eyebrow{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--forest)}
+h1{font-family:var(--display);font-weight:900;font-size:clamp(26px,4vw,38px);line-height:1.1;margin:6px 0 8px;text-wrap:balance}
+.sub{color:var(--mute);max-width:70ch;margin:0 0 20px}
+.how{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 24px}
+.how span{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:6px 10px;font-size:12.5px;font-weight:600}
+.how b{color:var(--forest)}
+.stage{background:var(--stage);border-radius:10px;overflow:hidden;color:var(--onstage);margin:0 auto 30px;max-width:980px}
+.screen{position:relative;aspect-ratio:16/9;max-width:100%;background:var(--stage);padding:16px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.screen img{width:100%;height:100%;object-fit:contain;transition:opacity .5s,transform 6s ease-out;transform:scale(1.0)}
+.screen img{border-radius:6px}.screen img.push{transform:scale(1.025)}
+.cap{position:absolute;left:0;right:0;bottom:0;padding:14px 18px;background:linear-gradient(transparent,rgba(0,0,0,.82));font-size:clamp(13px,1.6vw,17px);font-weight:600;text-wrap:balance}
+.fnum{position:absolute;top:12px;left:14px;background:rgba(0,0,0,.6);border-radius:6px;padding:4px 9px;font-size:12px;font-weight:800;letter-spacing:.06em}
+.ctrl{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:12px 16px}
+.ctrl button{font-family:var(--body);font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;border:0;border-radius:6px;padding:10px 16px;background:var(--go);color:#fff;cursor:pointer}
+.ctrl button:focus-visible,.play:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.bar{flex:1;min-width:140px;height:6px;background:rgba(255,255,255,.18);border-radius:3px;position:relative;cursor:pointer}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--orange);border-radius:3px;width:0}
+.clock{font-variant-numeric:tabular-nums;font-size:13px;font-weight:700;opacity:.85}
+.dots{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 14px}
+.dots button{width:30px;height:26px;border-radius:6px;border:1px solid rgba(255,255,255,.25);background:transparent;color:var(--onstage);font-family:var(--body);font-size:11px;font-weight:800;cursor:pointer}
+.dots button.on{background:var(--orange);border-color:var(--orange);color:#1a1a1a}
+h2{font-family:var(--display);font-weight:900;font-size:22px;margin:0 0 14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(380px,100%),1fr));gap:16px}
+.fr{background:var(--card);border:1px solid var(--line);border-radius:10px;overflow:hidden;display:flex;flex-direction:column}
+.fr.now{border-color:var(--orange);box-shadow:0 0 0 2px var(--orange)}
+.pic{aspect-ratio:16/9;background:#e9eee8;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.pic img{width:100%;height:100%;object-fit:cover;object-position:top}
+.meta{padding:14px 16px 16px;display:flex;flex-direction:column;gap:8px;min-width:0;flex:1}
+.top{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.num{font-family:var(--display);font-weight:900;font-size:20px;color:var(--forest);font-variant-numeric:tabular-nums}
+.time{font-size:12px;color:var(--mute);font-weight:700;font-variant-numeric:tabular-nums}
+.tag{margin-left:auto;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border-radius:6px;padding:3px 8px}
+.tag.have{background:#e3f2e1;color:#1f5f22}.tag.recapture{background:#fff1dc;color:#8a4b00}.tag.build{background:#ece9f7;color:#3f2f86}
+h3{margin:0;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+.line{margin:0;font-size:15px;font-weight:600}
+.shot,.broll,.note{margin:0;font-size:13.5px;color:var(--mute)}
+.note{color:#8a4b00}.broll{border-top:1px dashed var(--line);padding-top:8px}
+.play{align-self:flex-start;margin-top:auto;font-family:var(--body);font-size:12px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;background:transparent;border:1px solid var(--line);color:var(--forest);border-radius:6px;padding:7px 12px;cursor:pointer}
+@media (prefers-reduced-motion:reduce){.screen img{transition:none;transform:none!important}}
+</style>
+<div class="wrap">
+<div class="eyebrow">Vegans Explore · Nonprofit Guide · Storyboard v1</div>
+<h1>Dani's tour, frame by frame</h1>
+<p class="sub">Every frame is built from what we already have: Dani's art and real pictures of each page, with the spot she names outlined. Her voice is the real recording. Nothing has been generated yet. Note changes by frame number, then we cut the video.</p>
+<div class="how"><span><b>Ready</b> picture we have</span><span><b>Recapture</b> retake in the member view</span><span><b>Mock</b> not built yet</span><span><b>B-roll</b> optional round 2, costs credits</span><span>Total %%TOTAL%%</span></div>
+<section class="stage" aria-label="Animatic">
+<div class="screen"><img id="sImg" alt=""><span class="fnum" id="sNum">01</span><div class="cap" id="sCap"></div></div>
+<div class="ctrl"><button type="button" id="pp">Play the tour</button><div class="bar" id="bar"><i id="fill"></i></div><span class="clock" id="clk">0:00</span></div>
+<div class="dots" id="dots"></div>
+<audio id="au" preload="auto" src="%%AUD%%"></audio>
+</section>
+<h2>The frames</h2>
+<div class="grid">%%CARDS%%</div>
+</div>
+<script>
+(function(){var F=%%DATA%%,au=document.getElementById('au'),img=document.getElementById('sImg'),cap=document.getElementById('sCap'),num=document.getElementById('sNum'),pp=document.getElementById('pp'),fill=document.getElementById('fill'),clk=document.getElementById('clk'),dots=document.getElementById('dots'),cur=-1;
+F.forEach(function(f,i){var b=document.createElement('button');b.type='button';b.textContent=f.n;b.setAttribute('aria-label','Frame '+f.n);b.onclick=function(){go(f.t,true)};dots.appendChild(b);});
+function mm(s){s=Math.max(0,Math.floor(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
+function show(i){if(i===cur)return;cur=i;var f=F[i];img.classList.remove('push');img.src=f.img;void img.offsetWidth;img.classList.add('push');cap.textContent='“'+f.line+'”';num.textContent=String(f.n).padStart(2,'0');
+[].forEach.call(dots.children,function(d,k){d.classList.toggle('on',k===i)});[].forEach.call(document.querySelectorAll('.fr'),function(c,k){c.classList.toggle('now',k===i)});}
+function idx(t){var i=0;for(var k=0;k<F.length;k++)if(t>=F[k].t-0.01)i=k;return i}
+function tick(){var t=au.currentTime||0;show(idx(t));if(au.duration)fill.style.width=(t/au.duration*100)+'%';clk.textContent=mm(t)+' / '+mm(au.duration||0)}
+au.addEventListener('timeupdate',tick);au.addEventListener('loadedmetadata',tick);
+au.addEventListener('play',function(){pp.textContent='Pause'});au.addEventListener('pause',function(){pp.textContent='Play the tour'});au.addEventListener('ended',function(){pp.textContent='Play again'});
+pp.onclick=function(){if(au.paused)au.play();else au.pause()};
+function go(t,play){au.currentTime=t;tick();if(play)au.play();document.querySelector('.stage').scrollIntoView({behavior:'smooth',block:'start'})}
+document.getElementById('bar').onclick=function(e){var r=this.getBoundingClientRect();if(au.duration)go((e.clientX-r.left)/r.width*au.duration,!au.paused)};
+document.querySelectorAll('[data-go]').forEach(function(b){b.onclick=function(){go(parseFloat(b.getAttribute('data-go')),true)}});
+show(0);})();
+</script>

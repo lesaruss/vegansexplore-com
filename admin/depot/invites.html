@@ -86,7 +86,7 @@
     <p class="eyebrow">The Depot</p>
     <h1>Invites</h1>
     <div id="depot-tabs"></div>
-    <p class="sub">A personal invitation from you: an Ambassador, with the points you choose, or simply to join. No memberships are given away any more (Sean, 2026-11-01): anyone who is not a member joins with the $11, and Founding Membership closes at midnight Eastern on January 1, 2027. Comps given before stay. Each invitation works once, for 30 days.</p>
+    <p class="sub">A personal invitation from you: an Ambassador, with the points you choose, or simply to join. No memberships are given away any more (Sean, 2026-11-01): anyone who is not a member joins free with the short survey, and Founding Membership closes at midnight Eastern on January 1, 2027. Comps given before stay. Each invitation works once, for 30 days.</p>
     <div id="gate" class="gate" hidden></div>
     <main id="app" hidden></main>
   </div>
@@ -146,7 +146,7 @@
           '<label class="wide">Who<textarea id="f-people" required placeholder="Jordan Lee, jordan@example.com&#10;Ana Brooks &lt;ana@example.com&gt;&#10;Sam Ortiz, sam@example.com, 5000"></textarea><span class="hint">One person a line: their name and email. Add a number at the end to give that person different points.</span></label>' +
           '<fieldset class="wide kind"><legend>What it is</legend>' +
             '<label><input type="radio" name="f-kind" value="ambassador" checked> <span><b>An Ambassador</b> The Ambassador role and its onboarding (their share link and what to share), with the points below. Not a member yet: they join with the $11 and become an Ambassador when it is paid. Already a member: an Ambassador at once.</span></label>' +
-            '<label><input type="radio" name="f-kind" value="none"> <span><b>An invitation to join</b> Your note and the $11 Passport, with its 1,100 points. No extra points.</span></label></fieldset>' +
+            '<label><input type="radio" name="f-kind" value="none"> <span><b>An invitation to join</b> Your note and the free survey, with its 250 points. No extra points.</span></label></fieldset>' +
           '<label>Points<input id="f-points" type="number" min="0" max="100000" step="1" value="1100" required><span class="hint">Ambassadors only: points from you when they join, on top of the Passport's 1,100. 0 for none.</span><span class="chips">' +
             [0, 1100, 2500, 5000, 10000].map(function (n) { return '<button type="button" class="chip" data-pts="' + n + '">' + (n ? pts(n) : 'None') + '</button>'; }).join('') + '</span></label>' +
           '<label class="wide">A line from you (optional)<textarea id="f-reason" maxlength="600" placeholder="You joined LESARUSS AI this month, and I want to say thank you with a seat in Vegans Explore."></textarea><span class="hint">The first line of the email, before the rest. Leave it empty and the email starts with the invitation.</span></label>' +

@@ -375,7 +375,7 @@
     community: function () { return ['For the community', [
       card('Local Vegan places get found', 'Members rank the Directory with their votes. A new Vegan-friendly place stays in Being vetted, seen only by members, until 10 different members vote for it. Every person you bring in can help a local spot get seen.', 'The Directory'),
       card('Your city comes alive', 'More members means a busier city hub, a livelier Daily Pulse, more people at events, and more jobs and classifieds on the Board.', 'Community'),
-      card('It keeps the community running', 'Every Passport is a contribution, never a donation, that helps pay for events, the Community Managers in each city (gig work, paid as the community grows) and the tools members use.', 'Your $11 at work'),
+      card('It keeps the community running', 'Every contribution, never a donation, helps pay for events, the Community Managers in each city (gig work, paid as the community grows) and the tools members use.', 'Contributions at work'),
       card('Your voice carries', 'People listen to someone they know in a way they never listen to an ad. That is why we asked you.', 'Why you')]]; },
     business: function () { return ['For local businesses', [
       card('Every Vegan place gets a page', 'Every Vegan restaurant, bakery and brand in your city has a page in the Directory. Members vote it up, save it and check in when they visit.', 'The Directory'),
@@ -439,17 +439,17 @@
     var h = M && hub(M.home_community), city = h ? h.name : 'my city';
     var P = profileKey(), lv = level((M && M.total_points) || 0);
     var FIRST = {
-      animals: ['For someone who loves animals', 'Vegans Explore helps people find and support the rescues and sanctuaries near them, and the Vegan places around them, city by city. The Passport is $11, one time.'],
-      community: ['For a friend who loves ' + (h ? h.name : 'our city'), 'I\'m helping build Vegans Explore in ' + city + ': the Vegan places, events and people here, voted on by members, and it backs the local businesses and nonprofits doing the work. The Passport is $11, one time.'],
-      creator: ['A post for your audience', 'You ask me where to eat Vegan and how to find your people. This is where I look: Vegans Explore, a community for Vegans, city by city. $11, one time, with 1,100 points to start.'],
-      fitness: ['For the people you train', 'Looking for Vegan places to fuel up, Vegan coaches and gyms, or people who train like you? Vegans Explore has them, city by city, voted on by members. $11, one time.']
+      animals: ['For someone who loves animals', 'Vegans Explore helps people find and support the rescues and sanctuaries near them, and the Vegan places around them, city by city. Joining is free with a short survey.'],
+      community: ['For a friend who loves ' + (h ? h.name : 'our city'), 'I\'m helping build Vegans Explore in ' + city + ': the Vegan places, events and people here, voted on by members, and it backs the local businesses and nonprofits doing the work. Joining is free with a short survey.'],
+      creator: ['A post for your audience', 'You ask me where to eat Vegan and how to find your people. This is where I look: Vegans Explore, a community for Vegans, city by city. Free to join with a short survey.'],
+      fitness: ['For the people you train', 'Looking for Vegan places to fuel up, Vegan coaches and gyms, or people who train like you? Vegans Explore has them, city by city, voted on by members. Free to join with a short survey.']
     };
     // From Level 2 the link earns, so every message says so (the FTC's endorsement rules; /policies#membership).
     var tell = lv >= 2 ? ' I earn a little when you join with my link.' : '';
     return (FIRST[P] ? [FIRST[P]] : []).concat([
-      ['A text to a friend', 'I joined Vegans Explore. It\'s where I find the Vegan places, events and people in ' + city + ', voted on by members. The Passport is $11, one time, and comes with 1,100 points. Here\'s my link.'],
-      ['A post', 'I\'m a Vegans Explore Ambassador. It\'s a community for Vegans, city by city: a Directory members vote on, the Daily Pulse, events and Guides. Your Passport is $11, one time, with 1,100 points to start (enough for your first Guide). Join me.'],
-      ['For someone Vegan-curious', 'You don\'t have to be Vegan to join. Vegans Explore is where I find good Vegan food and the people around it. Look around for free, and if you like it, the Passport is $11, one time.'],
+      ['A text to a friend', 'I joined Vegans Explore. It\'s where I find the Vegan places, events and people in ' + city + ', voted on by members. Joining is free with a short survey. Here\'s my link.'],
+      ['A post', 'I\'m a Vegans Explore Ambassador. It\'s a community for Vegans, city by city: a Directory members vote on, the Daily Pulse, events and Guides. Joining is free with a short survey. Join me.'],
+      ['For someone Vegan-curious', 'You don\'t have to be Vegan to join. Vegans Explore is where I find good Vegan food and the people around it. Look around for free, and if you like it, joining is free too: a short survey.'],
       ['For a Vegan business', 'Is your business on Vegans Explore? Every Vegan place has a page in the Directory that members vote up, save and check in at. See what it offers businesses at vegansexplore.com/business, and if you join as a member, use my link.']
     ]).map(function (m) { return { title: m[0], text: m[1] + tell, link: link() }; });
   }
@@ -553,7 +553,7 @@
     account: function () {
       var total = (M && M.total_points) || 0, lv = level(total);
       var to = lv < 4 ? Math.max(0, LEVEL_AT[lv] - total) : 0;
-      return head('Your membership', 'A Founding Membership, on us', 'Everyone else joins with the Passport, $11 one time. Yours is our thank-you for your contributions to the movement. It is active, and everything a member has is yours: vote, save, check in, post on the Daily Pulse, join any community and build your Vegan world from your dashboard.') +
+      return head('Your membership', 'A Founding Membership, on us', 'Everyone else joins with a short survey. Yours is our thank-you for your contributions to the movement. It is active, and everything a member has is yours: vote, save, check in, post on the Daily Pulse, join any community and build your Vegan world from your dashboard.') +
         '<div class="dg-levels">' +
         '<div class="dg-level"><b>Your points</b><strong>' + n(M && M.points) + '</strong><span>to spend or give</span></div>' +
         '<div class="dg-level"><b>Your level</b><strong>' + lv + '</strong><span>' + (to > 0 ? n(to) + ' points to Level ' + (lv + 1) : 'the top level') + '</span></div>' +
@@ -623,10 +623,10 @@
         '<ol class="am-steps">' +
         '<li><b>They open your link</b>It takes them to the Passport, and remembers you for their visit.</li>' +
         '<li><b>They make an account</b>With email, or Continue with Google. Your link still counts.</li>' +
-        '<li><b>They get their Passport</b>$11, one time, with 1,100 welcome points.</li>' +
+        '<li><b>They join, free</b>A short survey, with 250 points to start.</li>' +
         '<li><b>The community grows</b>Another member voting for local places, joining their city and taking part. You also get 111 points, once per friend, to use or give away.</li></ol>' +
         '<div class="dg-grid">' +
-        card('It counts when they join', 'An account that has not paid its $11 shows as Waiting in Your progress until it does. Use the same link everywhere, so every member it brings in counts to you.', 'How it counts') +
+        card('It counts when they join', 'An account that has not finished its survey shows as Waiting in Your progress until it does. Use the same link everywhere, so every member it brings in counts to you.', 'How it counts') +
         card('From Level 2, it earns', 'Your link earns a share of the Passports, and from Level 3 the Guides, bought through it: 20%, then 25%, then 30%. Keep it, or send it all to a rescue or sanctuary in your name. See <a href="/dashboard/levels">Points and levels</a>, and always say you earn from your link when you share it.', 'Your link') +
         '</div><h3 class="am-sec">Who to share it with: anyone, anywhere</h3><div class="dg-grid">' +
         card('Friends and family, wherever they live', 'Friends who eat Vegan and the Vegan-curious, in your city or across the country. One message to one person who would love it.', 'Start here') +
@@ -646,8 +646,8 @@
     questions: function () {
       var qa = [
         ['What is Vegans Explore?', 'A community for Vegans and the Vegan-curious, city by city: a Directory of Vegan places that members vote on, a Daily Pulse, events, Guides and a hub for each city.'],
-        ['Is it free?', 'Looking around is free for everyone. The Passport, $11 one time, is how you take part: vote, save, post, join your city and unlock Guides. It never renews.'],
-        ['What do I get for $11?', 'Membership, and 1,100 welcome points, enough for your first Guide. After that you buy only what you want.'],
+        ['Is it free?', 'Yes. Looking around is free, and joining is free with a short survey: then you vote, save, post and join your city. Topic Guides are $11 or 1,100 points.'],
+        ['What do I get when I join?', 'Membership, and 250 points for the survey. After that you buy only what you want.'],
         ['Is it a donation?', 'No. It is a membership contribution to Vegans Explore, never a tax-deductible donation.'],
         ['What are points?', 'Points come from taking part, never from buying them. Spend them on Guides, give them to the places you love, and climb levels.'],
         ['My city is not on the list.', 'Anyone can join any community, and the Directory covers places everywhere. We open new chapters as members grow in a city.'],
@@ -658,7 +658,7 @@
         qa.map(function (x) { return '<div class="am-qa"><b>' + esc(x[0]) + '</b><p>' + esc(x[1]) + '</p></div>'; }).join('') +
         '<div class="am-two">' +
         '<div class="am-list"><h3>Do</h3><ul><li>Share with people you know, one at a time.</li><li>Say why you use it, in your words.</li><li>Capitalize Vegan.</li></ul></div>' +
-        '<div class="am-list"><h3>Please don\'t</h3><ul><li>Promise anything marked Coming.</li><li>Call the $11 a donation.</li><li>Message strangers in bulk or post your link where it is not welcome.</li></ul></div>' +
+        '<div class="am-list"><h3>Please don\'t</h3><ul><li>Promise anything marked Coming.</li><li>Call a contribution a donation.</li><li>Message strangers in bulk or post your link where it is not welcome.</li></ul></div>' +
         '</div>' +
         '<div class="am-ask"><b>Not on the list?</b><p>Ask us. We answer you by email, and if others will ask the same thing, it joins this list.</p>' +
         '<textarea id="askQ" maxlength="1000" placeholder="Your question"></textarea>' +

@@ -482,7 +482,7 @@
         '<figcaption>Sprout Social Society, our sample club.</figcaption></figure></div>' + nextBtn('numbers', 'Next: the numbers');
     },
     numbers: function () {
-      return head('The numbers', 'Your share grows with your group', 'Your group earns a share of every $11 Passport (and Guide) bought by someone who joins through your group\'s link, set by how many members it has brought in, all time. A new share counts from the day you reach it.') +
+      return head('The numbers', 'Your share grows with your group', 'Cash commissions are paused from November 7, 2026, for every link, groups included. Your link still counts everyone who joins through it, all time, and the ladder below shows how a group\'s share is set when commissions return. Tickets are unchanged.') +
         '<div class="gp-bars" role="table" aria-label="Members brought in and your share">' + LADDER.map(function (r) {
           return '<div class="gp-bar" role="row"><span role="rowheader">' + esc(r[0]) + '</span><div role="cell"><i style="width:' + (r[1] * 2) + '%">' + r[1] + '%</i></div></div>';
         }).join('') + '</div>' +
@@ -492,12 +492,12 @@
         '<h3 class="am-sec">Tickets</h3><p class="dg-lede">When you sell tickets here, <b>we take 5% of a paid ticket</b> and the rest is yours. Free events are free. The card processing is paid by the buyer, and you can pass our 5% on to them too.</p>' +
         '<ul class="gp-fees">' + FEES.map(function (f) { return '<li' + (f[2] ? ' class="us"' : '') + '><span>' + esc(f[0]) + '</span><span>' + esc(f[1]) + '</span></li>'; }).join('') + '</ul>' +
         '<p class="dg-lede" style="font-size:12.5px;margin-top:-8px">Other platforms\' fees as published in 2026. Partiful does not publish its fee; the figure is what has been reported.</p>' +
-        '<h3 class="am-sec">The guest pass: nobody pays to try you out</h3>' +
+        '<h3 class="am-sec">Nobody pays to try you out</h3>' +
         '<ol class="am-steps">' +
-        '<li><b>Their first free event</b>A newcomer comes as our guest. No account needed.</li>' +
-        '<li><b>From their second</b>They join with the Passport: $11, one time, with 1,100 points.</li>' +
-        '<li><b>Your group earns</b>Your share of their Passport, when they join through your group.</li>' +
-        '<li><b>Paid events</b>A paid ticket needs the Passport from the start.</li></ol>' + nextBtn('part', 'Next: your part');
+        '<li><b>They find your event</b>Anyone can look around and see what your group is up to.</li>' +
+        '<li><b>They join free</b>A short survey and they are a member, with 250 points.</li>' +
+        '<li><b>They count to your group</b>When they join through your group\'s link.</li>' +
+        '<li><b>Paid events</b>Members buy tickets here, and the card processing is on them.</li></ol>' + nextBtn('part', 'Next: your part');
     },
     part: function () {
       return head('Your part', 'Share your link, host here', 'Every group stays listed on Vegans Explore with its events, whatever it decides. Being a Group Partner is about hosting here.') +
@@ -511,9 +511,9 @@
     questions: function () {
       return head('Questions', 'Straight answers') +
         qa('Does it cost our group anything?', 'No. Your page, your events, our promotion and your organizer\'s Founding Membership are all on us.') +
-        qa('Do our members have to pay?', 'For free events, a newcomer\'s first one is free. From their second, they join with the Passport: $11, one time. Paid events need the Passport from the start.') +
+        qa('Do our members have to pay?', 'No. Joining Vegans Explore is free with a short survey. They pay only for tickets to paid events.') +
         qa('Can we keep using Meetup or Partiful?', 'Yes. Your group stays listed here with its events either way. The share ladder, featured status and our promotion come with hosting your events here.') +
-        qa('How much does our group earn?', 'From 20% of each Passport bought through your group\'s link, up to 50% once you have brought in 1,000 members. See The numbers.') +
+        qa('How much does our group earn?', 'Ticket sales, less our 5%. Cash commissions on links are paused from November 7, 2026. See The numbers.') +
         qa('When do we get paid?', 'Each payment waits 30 days in case of a refund. We pay once $25 is ready, after we have your W-9.') +
         qa('What do you take from tickets?', '5% of a paid ticket. Free events are free, and card processing is paid by the buyer.') +
         qa('What if our organizer changes?', 'The group is the partner, not one person. If someone new takes over, your page, your link and your earnings stay with the group.') +

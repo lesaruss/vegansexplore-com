@@ -108,7 +108,7 @@ Deno.serve(async (req) => {
     const ch = String(body.chapter || '');
     if (!CHAPTERS.includes(ch)) return json({ error: 'bad_chapter' }, 400);
     const { data: member } = await db.from('members').select('membership_status').eq('id', memberId).maybeSingle();
-    if (!member || member.membership_status !== 'active') return json({ error: 'payment_required', message: 'Get your Passport, $11 one time, to vote for the communities you love every day.' }, 402);
+    if (!member || member.membership_status !== 'active') return json({ error: 'payment_required', message: 'Join free with a short survey to vote for the communities you love every day.' }, 402);
     const { data: last } = await db.from('ve_chapter_votes').select('created_at').eq('member_id', memberId).eq('chapter', ch)
       .order('created_at', { ascending: false }).limit(1).maybeSingle();
     if (last && Date.now() - new Date(last.created_at).getTime() < DAY_MS) return json({ error: 'already_voted', next_vote_at: nextAt(last.created_at) }, 409);
@@ -125,7 +125,7 @@ Deno.serve(async (req) => {
     if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: 'bad_id' }, 400);
     const { data, error } = await db.rpc('ve_listing_contribute', { p_member: memberId, p_listing: id, p_points: points });
     if (error) return json({ error: 'contribute_failed' }, 500);
-    if (data?.error === 'payment_required') return json({ error: 'payment_required', message: 'Get your Passport, $11 one time, to contribute points to the places you love.' }, 402);
+    if (data?.error === 'payment_required') return json({ error: 'payment_required', message: 'Join free with a short survey to give points to the places you love.' }, 402);
     if (data?.error) return json(data, data.error === 'listing_not_found' ? 404 : 400);
     return json(data);
   }
@@ -156,7 +156,7 @@ Deno.serve(async (req) => {
         return json({ error: 'account_not_in_good_standing', message: 'Your account is on hold. Write to contact@lesaruss.com and we will help.' }, 403);
       }
       if (!member || member.membership_status !== 'active') {
-        return json({ error: 'payment_required', message: 'Get your Passport, $11 one time, to vote for the places you love every day.' }, 402);
+        return json({ error: 'payment_required', message: 'Join free with a short survey to vote for the places you love every day.' }, 402);
       }
       const { data: listing } = await db.from('listings').select('id').eq('id', id).eq('status', 'approved').maybeSingle();
       if (!listing) return json({ error: 'not_found' }, 404);

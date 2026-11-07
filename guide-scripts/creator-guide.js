@@ -168,7 +168,7 @@
   function ctaLabel() { return { join: 'Get it for $11', points: 'Unlock with ' + pts(ST.cost) + ' points', buy: 'Get it for $11' }[mode()]; }
   function offerLine() {
     if (mode() === 'points') return 'Unlock it with ' + pts(ST.cost) + ' points: you have ' + pts(ST.balance) + '. Or get it for $11.';
-    return 'It is $11, or ' + pts(ST.cost) + ' points, and yours to keep. Buying it makes you a member of Vegans Explore.';
+    return 'It is $11, or ' + pts(ST.cost) + ' points, and yours to keep.';
   }
   function ctaBtns() {
     var m = mode();

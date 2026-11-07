@@ -379,10 +379,10 @@
           <p class="eyebrow">Your founding seat</p>
           <h2>Take your founding seat.</h2>
           <div class="member-box" style="margin-top:0;margin-bottom:10px;">
-            <p class="member-price"><b>Your Passport</b> $11, one time</p>
-            <p class="member-copy">It comes with 1,100 welcome points, enough for your first Guide. Vote for the places you love, post and reply on the Community Board, join your city and build your Vegan world from your dashboard. Points come from what you do: Bounties, competitions and taking part in the community. It never renews.</p>
+            <p class="member-price"><b>Your membership</b> free, with a short survey</p>
+            <p class="member-copy">The survey earns you 250 points. Vote for the places you love, post and reply on the Community Board, join your city and build your Vegan world from your dashboard. Points come from what you do: Bounties, competitions and taking part in the community. It never renews.</p>
           </div>
-          <ul class="steps3"><li><b>1</b>See what the Passport opens</li><li><b>2</b>Create your account</li><li><b>3</b>Get your Passport, $11</li></ul>
+          <ul class="steps3"><li><b>1</b>See what the Passport opens</li><li><b>2</b>Create your account</li><li><b>3</b>Take the short survey</li></ul>
           <div class="cta-row">
             <div class="cta-main">
               <a class="btn btn-dark" id="join-btn" href="/passport">Take my founding seat</a>
@@ -408,16 +408,16 @@
   <dialog class="faq-dialog" id="faq" aria-labelledby="faq-h">
     <div class="faq-head"><h2 id="faq-h">Common questions</h2><button type="button" class="faq-x" id="faq-close" aria-label="Close"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
     <div class="faq-body">
-      <h3>Is it a subscription?</h3>
-      <p>No. Founding Membership is one contribution, one time, and it never renews. It is your Passport. It comes with 1,100 welcome points. After that you buy only what you want: Guides ($11 or 1,100 points), merchandise and event tickets.</p>
-      <h3>Why is there no free membership?</h3>
-      <p>You can look around the Directory, the Pulse, the communities and the Board without an account. Joining is how you take part: posting, replying, voting and reaching people directly. Your contribution is how we grow and keep this running.</p>
-      <h3>Is my contribution a donation?</h3>
-      <p>No. It is a membership contribution to Vegans Explore, not a tax-deductible donation.</p>
+      <h3>Does it cost anything?</h3>
+      <p>No. Joining is free: take a short survey and you are a member, with 250 points. After that you buy only what you want: topic Guides ($11 or 1,100 points), merchandise and event tickets. Members who want to give more can contribute from $11 at any time.</p>
+      <h3>Why a survey?</h3>
+      <p>You can look around the Directory, the Pulse, the communities and the Board without an account. Joining is how you take part: posting, replying, voting and reaching people directly. The survey tells us who you are and what you need, so we build the right things.</p>
+      <h3>Is a contribution a donation?</h3>
+      <p>No. A contribution goes to Vegans Explore, and it is not a tax-deductible donation.</p>
       <h3>What do points do?</h3>
-      <p>You earn points by taking part: Bounties, competitions and what you do in the community and on the site. Points unlock Guides (1,100 points each), let you talk with your Guide and give the places you love a boost. Every purchase earns a 25-point thank-you, and points are never bought. Your level, 1 to 3, comes from the points you have earned.</p>
+      <p>You earn points by taking part: Bounties, competitions and what you do in the community and on the site. Points unlock Guides (1,100 points each), let you talk with your Guide and give the places you love a boost. Every purchase earns a 25-point thank-you, and points are never bought. Your level, 1 to 4, comes from the points you have earned.</p>
       <h3>How does checkout work?</h3>
-      <p>Checkout is secure through Stripe, and Stripe emails your receipt. Your Passport and your 1,100 welcome points are added as soon as the payment goes through.</p>
+      <p>When you buy a Guide, a ticket or give a contribution, checkout is secure through Stripe, and Stripe emails your receipt.</p>
     </div>
   </dialog>
 
@@ -521,7 +521,7 @@
       // Coming back from checkout.
       if (params.get('activate') === 'success') {
                 joinMsg.className = 'join-msg ok';
-        joinMsg.innerHTML = 'Welcome in. Your 1,100 welcome points are on the way. <a href="/dashboard" style="color:#fff">Go to my dashboard</a>';
+        joinMsg.innerHTML = 'Welcome in. Your points are on the way. <a href="/dashboard" style="color:#fff">Go to my dashboard</a>';
         setTimeout(function () { location.href = '/dashboard'; }, 5000);
       } else if (params.get('activate') === 'cancelled') {
         joinMsg.textContent = 'No charge was made. Your seat is here whenever you are ready.';
@@ -530,7 +530,7 @@
       // and the account pop-up a new visitor sees. Finishing that pop-up does create a real account.
       if (PREVIEW === 'welcome-in') {
         joinMsg.className = 'join-msg ok';
-        joinMsg.innerHTML = 'Welcome in. Your 1,100 welcome points are on the way. <a href="/dashboard" style="color:#fff">Go to my dashboard</a>';
+        joinMsg.innerHTML = 'Welcome in. Your points are on the way. <a href="/dashboard" style="color:#fff">Go to my dashboard</a>';
       } else if (PREVIEW === 'signup') {
         window.addEventListener('load', function () { if (window.VEAuth) location.href = '/passport#/join'; });
       }

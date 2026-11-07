@@ -13,8 +13,8 @@
  *
  * Pricing is a member benefit (Sean, 2026-09-24): full details and prices show
  * only to Founding Members (membership_status 'active'). Everyone else answers
- * the questions, sees what the $11 one-time Founding Membership unlocks, joins
- * (VEAuth sign-up, then the $11 checkout) and lands back on their matches.
+ * the questions, sees what membership unlocks, joins free (VEAuth sign-up, then the
+ * member survey; canon-ve-door-guides v12) and lands back on their matches.
  *
  * Text colors meet WCAG AAA (7:1), matching the guided page around it.
  */
@@ -284,32 +284,31 @@
     var signedIn = loggedIn();
     track('pg_gate', { audience: G.state.audience, signed_in: signedIn });
     return '<h2 class="vpg-q-title" id="vpg-q-title">Your matches are ready.</h2>' +
-      '<p class="vpg-q-sub">Details and pricing are for Founding Members. It is one $11 contribution, one time, and it goes straight into what we are building.</p>' +
+      '<p class="vpg-q-sub">Details and pricing are for members. Joining is free: a short survey and you are in.</p>' +
       '<ul class="vpg-inc" style="margin-bottom:18px;">' +
         '<li>Every option that fits you, with full details and pricing</li>' +
         '<li>A seat in our upcoming campaigns, starting this season</li>' +
         '<li>Entry to member events, including Community Nights</li>' +
         '<li>Full community access: post, join your city, follow and save</li>' +
-        '<li>1,100 welcome points: enough for any Guide</li>' +
       '</ul>' +
-      '<div class="vpg-actions" style="margin-top:0;"><button type="button" class="vpg-btn" data-auth="' + (signedIn ? 'pay' : 'signup') + '">Become a Founding Member, $11</button>' +
+      '<div class="vpg-actions" style="margin-top:0;"><button type="button" class="vpg-btn" data-auth="' + (signedIn ? 'pay' : 'signup') + '">Join free</button>' +
       (signedIn ? '' : '<button type="button" class="vpg-btn ghost" data-auth="login">I am a member, log in</button>') + '</div>' +
-      '<p class="vpg-hint">One time. It never renews. Rather talk first? Use "Have a question instead?" below.</p>';
+      '<p class="vpg-hint">Nothing to pay. Rather talk first? Use "Have a question instead?" below.</p>';
   }
 
   // After sign-up the site may show its own activation prompt first; reopen on the
   // visitor's matches once they are signed in and every account pop-up is closed.
   function authThenResults(mode) {
-    if (PREVIEW) { previewNote('Preview: on the live page this opens ' + (mode === 'pay' ? 'the $11 Founding Membership checkout.' : (mode === 'login' ? 'log in.' : 'account sign-up, then the $11 checkout.'))); return; }
+    if (PREVIEW) { previewNote('Preview: on the live page this opens ' + (mode === 'pay' ? 'the free member survey.' : (mode === 'login' ? 'log in.' : 'account sign-up, then the free member survey.'))); return; }
     saveState();
     if (mode === 'pay' && window.VEAuth) {
-      track('pg_membership_checkout', {});
-      VEAuth.startEntryCheckout(1100).then(function (d) { if (d && d.url) location.href = d.url; }).catch(function () {});
+      track('pg_membership_survey', {});
+      location.href = '/survey?s=explorer';
       return;
     }
     close();
     if (!window.VEAuth) { location.href = '/join'; return; }
-    VEAuth.showAuthModal(mode === 'signup' ? 'Create your account, then become a Founding Member for $11 to see your matches and pricing.' : 'Log in to see your matches and pricing.', function () { refreshMember().then(function () { open({ step: 'results' }); }); }, mode);
+    VEAuth.showAuthModal(mode === 'signup' ? 'Create your account, then take the short survey to see your matches and pricing. Joining is free.' : 'Log in to see your matches and pricing.', function () { refreshMember().then(function () { open({ step: 'results' }); }); }, mode);
     var shown = function (id) { var el = document.getElementById(id); return el && el.style.display !== 'none' && el.style.display !== ''; };
     var started = Date.now();
     var timer = setInterval(function () {
@@ -321,7 +320,7 @@
     }, 700);
   }
 
-  // "Become a member": sign up (or log in), pay the $11 Founding Membership, then land
+  // "Become a member": sign up (or log in), take the free member survey, then land
   // in the intake with pricing unlocked. Members skip straight to the intake.
   function join(opts) {
     opts = opts || {};
@@ -355,7 +354,7 @@
   function resultsStep() {
     var s = G.state, list = matches();
     var head = s.audience === 'attendee' ? 'Your way in' : 'Here is what fits';
-    var sub = s.audience === 'attendee' ? 'Founding Membership is the one ask for everyone: $11 one time, and you are in.'
+    var sub = s.audience === 'attendee' ? 'Joining is free for everyone: a short survey, and you are in.'
       : 'Most options check out right here. A larger, multi-city campaign starts with a call.';
     var html = '<h2 class="vpg-q-title" id="vpg-q-title">' + head + '</h2><p class="vpg-q-sub">' + sub + '</p>';
     html += list.length ? '<div class="vpg-grid">' + list.map(function (o, i) { return card(o, i === 0); }).join('') + '</div>'
