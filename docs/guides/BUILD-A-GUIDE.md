@@ -99,6 +99,12 @@ Copy the shell and keep its layout exactly:
 - **Members** (`ve_owns_guide`) get: votes on everything (`ve_guide_votes`; recipes have their own), **Save** on everything
   and the **My list** tab (`ve_guide_saves`), search, and the full Cookbook-style tools the Guide needs.
 
+## Guides on phones (LOCKED by Sean 2026-11-07, canon `canon-guide-mobile-card`)
+
+**Guides on phones: one card that never grows (LOCKED by Sean 2026-11-07, canon `canon-guide-mobile-card`).** Sean: "I want the screen with V on mobile to always look like the first one... if there's more text... I don't want the screen to get longer... it becomes a scroll in that window where the text is... lock that in as the standard for guides appearing on mobile... you can still hide them." At 900 px and under (980 in HQ BrandDesk) every Guide, member Guides and V alike, is one card above the content: the picture a third of the card's width on the left; on the right the words in a fixed box (116 px) that scrolls, then one row of buttons (Play or Summary, then Ask a question or Talk to <Guide>), the picture's bottom level with the buttons' bottom (166 px); the card never grows with longer words. Hide stays (a small Hide me tag on the picture's corner on Vegans Explore, Hide me beside the name in BrandDesk). Vegans Explore: `/public/ve-guide-corner.js` (every Guide page loads it; a page never overrides it, the Events Guide's own phone rules were removed). HQ: the `@media (max-width:980px)` block in `components/branddesk/VDesk.tsx`. Not yet in the standard: the Passport's Enter the room button still sits under the card.
+
+A new Guide page loads `/public/ve-guide-corner.js` in `<head>` and adds no phone rules of its own for the rail.
+
 ## 4. Pictures
 
 - **Every item gets a picture on its left.** Made in Higgsfield (`nano_banana_pro`, about 2 credits each), photorealistic for

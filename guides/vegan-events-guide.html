@@ -402,20 +402,8 @@
       .dg-gated{max-height:none;}
     }
     @media (max-width:480px){.dg-bubble{font-size:13.5px;padding:11px 13px;}}
-    /* Phones: the bubble beside River is as tall as his picture, and the words scroll inside it (Sean, 2026-11-05). */
-    @media (max-width:900px){
-      #dgRail>.dg-bubble{height:110px !important;box-sizing:border-box;display:flex;flex-direction:column;padding:10px 12px !important;}
-      #dgRail>.dg-bubble .ev-bub-in{flex:1 1 auto;min-height:0;overflow-y:auto;scrollbar-width:thin;padding-right:4px;}
-    }
-    /* Phones: Hide me sits right under River's picture and Play beside it, one row, the same height, rounded (Sean, 2026-11-05).
-       Beats ve-guide-corner.js, which spans the picture over three rows and stacks the two buttons under the bubble. */
-    @media (max-width:900px){
-      html #dgRail>.dg-maya{grid-row:1 !important;} html #dgRail>.dg-bubble{grid-row:1;}
-      html #dgRail>#dgPlay:not([hidden]):not(:empty){grid-column:2 / -1 !important;grid-row:2;}
-      html #dgRail>.dg-fold{grid-column:1 !important;grid-row:2;width:110px !important;margin:0 !important;}
-      html #dgRail>#dgPlay:not([hidden]),html #dgRail>.dg-fold{height:42px;min-height:42px;padding:0 10px !important;border-radius:6px !important;display:flex !important;align-items:center;justify-content:center;box-sizing:border-box;}
-      html #dgRail.dg-folded>.dg-fold{grid-column:1 / -1 !important;width:100% !important;}
-    }
+    /* Phones: River's card is the shared Guide mobile card in /public/ve-guide-corner.js (LOCKED 2026-11-07); the words scroll in .ev-bub-in. */
+    @media (max-width:900px){#dgRail>.dg-bubble{display:flex;flex-direction:column;}#dgRail>.dg-bubble .ev-bub-in{flex:1 1 auto;min-height:0;overflow-y:auto;scrollbar-width:thin;padding-right:4px;}}
 
     /* The Restaurant Guide's own pieces (2026-10-10): the audit, one fix at a time, the quiz, promotions. */
     .rg-find{display:flex;gap:10px;flex-wrap:wrap;max-width:860px;margin-bottom:10px;}
