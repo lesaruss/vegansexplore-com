@@ -88,7 +88,9 @@
       return '<p class="vgs-h">' + esc(T.list) + '</p>' + L.map(function (q) { return '<p><a class="vgs-b g" href="#q/' + (S.questions.indexOf(q) + 1) + '">' + esc(T.change) + ': ' + esc(q.prompt) + '</a></p>'; }).join('');
     }
     // opts.doneHtml replaces the finish screen (the Explorer survey: a person reads it before it admits, membership_rule_v6).
-    function finished(res) { say((typeof opts.doneHtml === 'function' ? opts.doneHtml(A) : opts.doneHtml) || ('<h2 class="vgs-q">You finished.</h2><p class="vgs-h">Thank you. Your answers are saved.</p>' + badgeHtml(S.badge) + sharedList())); if (opts.onDone) opts.onDone(res || {}); }
+    // The business badge shows only on a survey that asks the badge questions (a creator's survey never shows a restaurant's badge; Sean 2026-11-07).
+    function asksBadge() { return S.questions.some(function (q) { return BADGE_KEYS.indexOf(q.shared) >= 0; }); }
+    function finished(res) { say((typeof opts.doneHtml === 'function' ? opts.doneHtml(A) : opts.doneHtml) || ('<h2 class="vgs-q">You finished.</h2><p class="vgs-h">Thank you. Your answers are saved.</p>' + (asksBadge() ? badgeHtml(S.badge) : '') + sharedList())); if (opts.onDone) opts.onDone(res || {}); }
     function save() {
       var q = S.questions[n - 1], v = A[q.id], err = document.getElementById('vgsErr');
       if (q.required && empty(v)) { err.textContent = 'Pick or write an answer to go on.'; return; }
