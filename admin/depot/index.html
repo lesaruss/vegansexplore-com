@@ -8,6 +8,9 @@
   <link rel="icon" href="/public/favicon.ico">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- The Depot home (Sean, 2026-11-07, playbook branddesk-production-wing): the Depot opens on an overview, one tile per section
+       with what is waiting today, instead of the Library. #s/<section> lists a section's tools, #trash the retired ones with Restore.
+       Sections and tools come from public/depot-tabs.js (SECTIONS, TABS, TRASH); the numbers from ve-depot (ve_depot_counts). -->
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
@@ -17,294 +20,199 @@
     @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
     .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
     h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
-    h2{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:0.08em;margin:26px 0 12px;}
-    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:720px;margin-bottom:20px;}
-    .drop{border:2px dashed #9cc79e;border-radius:14px;background:#fff;padding:36px 20px;text-align:center;cursor:pointer;transition:background .15s,border-color .15s;}
-    .drop.over{background:var(--ve-green-light);border-color:var(--ve-green);}
-    .drop b{display:block;font-size:17px;font-weight:800;margin-bottom:4px;}
-    .drop span{font-size:13.5px;color:var(--ve-text-75);}
-    .progress{margin-top:12px;font-size:13.5px;font-weight:700;color:var(--ve-green-deep);min-height:22px;}
-    .errs{font-size:13px;color:#8a1c12;margin-top:4px;}
-    .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px;}
-    .bar label{font-size:12.5px;font-weight:700;display:flex;align-items:center;gap:6px;}
-    select,input[type=text]{font:inherit;font-size:13.5px;font-weight:600;padding:8px 10px;border:1px solid rgba(0,0,0,0.22);border-radius:8px;background-color:#fff;color:var(--ve-text);}
-    /* Drop-down arrow drawn 14px in from the edge instead of the browser's own. */
-    select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%231a1a1a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-size:12px 8px;-webkit-appearance:none;-moz-appearance:none;appearance:none;padding-right:40px;}
-    .count{font-size:13px;font-weight:700;color:var(--ve-text-75);margin-left:auto;}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(250px,100%),1fr));gap:14px;}
-    .card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;min-width:0;}
-    .card.archived{opacity:0.55;}
-    .thumb{position:relative;background:#dde3dd;aspect-ratio:16/10;cursor:zoom-in;}
-    .thumb img,.thumb video{width:100%;height:100%;object-fit:contain;display:block;background:#1c241d;}
-    .thumb.audio{display:flex;align-items:center;justify-content:center;padding:28px 12px 12px;cursor:default;background:#1c241d;}
-    .thumb.audio audio{width:100%;}
-    .ori{position:absolute;left:8px;top:8px;font-size:10.5px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:3px 8px;border-radius:99px;background:rgba(0,0,0,0.78);color:#fff;}
-    .card-body{padding:10px 12px 12px;display:flex;flex-direction:column;gap:8px;}
-    .name{font-size:12px;color:var(--ve-text-75);font-weight:600;word-break:break-all;}
-    .uses{display:flex;flex-wrap:wrap;gap:6px;}
-    .chip{font:inherit;font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:99px;border:1.5px solid rgba(0,0,0,0.2);background:#fff;color:var(--ve-text);cursor:pointer;min-height:32px;}
-    .chip[aria-pressed="true"]{background:var(--ve-green-deep);border-color:var(--ve-green-deep);color:#fff;}
-    .row{display:flex;gap:8px;align-items:center;}
-    .row select,.row input{flex:1;min-width:0;}
-    .saved{font-size:11.5px;font-weight:700;color:var(--ve-green-deep);min-height:18px;}
-    .linkbtn{font:inherit;font-size:12px;font-weight:700;background:none;border:0;color:#5c2a00;text-decoration:underline;cursor:pointer;align-self:flex-start;padding:4px 0;margin-right:12px;}
-    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:12px 22px;border-radius:8px;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;}
-    .card.picked{outline:3px solid #8a1c12;outline-offset:-3px;}
-    .pick{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:800;color:#8a1c12;cursor:pointer;}
-    .pick input{width:18px;height:18px;accent-color:#8a1c12;}
-    .btn-danger{background:#8a1c12;}
-    .btn-danger:disabled{opacity:0.5;cursor:default;}
-    .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(0,0,0,0.22);}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:14px;}
+    .crumb{font-size:12.5px;margin-bottom:12px;}.crumb a{color:var(--ve-green-deep);font-weight:700;}
+    .find{font-family:inherit;font-size:14px;min-height:44px;width:100%;max-width:520px;padding:10px 14px;border:1px solid var(--ve-border);border-radius:6px;background:#fff;margin:0 0 18px;}
+    .tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:14px;}
+    .tile{position:relative;display:flex;flex-direction:column;gap:6px;background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:16px 18px;min-height:132px;color:inherit;text-decoration:none;cursor:pointer;font:inherit;text-align:left;transition:border-color .15s,box-shadow .15s;}
+    .tile:hover{border-color:var(--ve-green);box-shadow:0 4px 14px rgba(0,0,0,.05);}
+    .tile .ic{width:38px;height:38px;border-radius:10px;background:var(--ve-green-light);display:grid;place-items:center;}
+    .tile .ic svg{width:20px;height:20px;stroke:var(--ve-green-deep);fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+    .tile b{font-size:16px;font-weight:800;line-height:1.25;}
+    .tile span.ln{font-size:12.5px;color:var(--ve-text-75);line-height:1.45;}
+    .tile .ct{position:absolute;top:14px;right:14px;font-size:11px;font-weight:800;border-radius:6px;padding:3px 8px;background:#eef1ee;color:#333;}
+    .tile .ct.hot{background:var(--ve-orange);color:#1a1a1a;}
+    .tile.dash{border-style:dashed;}
+    .tile.dash .ic{background:#f1f1f1;}.tile.dash .ic svg{stroke:#777;}
+    .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:6px;background:#eef1ee;color:#333;}
+    .tag.r{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .list{display:grid;gap:10px;}
+    .row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:14px 16px;}
+    .row b{font-size:15px;}
+    .row p{font-size:13px;color:var(--ve-text-75);margin-top:2px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;white-space:nowrap;}
+    .btn-quiet{background:#fff;color:var(--ve-green-deep);border:1px solid var(--ve-green-deep);}
+    .btn:disabled{opacity:.5;cursor:default;}
     .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
-    .gate h2{font-size:21px;margin:0 0 10px;}
-    .gate p{color:var(--ve-text-75);margin-bottom:16px;}
-    .empty{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:28px;text-align:center;color:var(--ve-text-75);font-size:14px;}
-    dialog{border:0;border-radius:14px;padding:0;max-width:min(1200px,calc(100% - 32px));box-shadow:0 24px 60px rgba(0,0,0,0.35);}
-    dialog::backdrop{background:rgba(10,20,12,0.75);}
-    dialog img{display:block;max-width:100%;max-height:82vh;}
-    dialog .dlg-bar{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px 14px;font-size:13px;}
-      .rights{display:flex;flex-direction:column;gap:6px;margin-top:8px;padding-top:8px;border-top:1px solid var(--ve-border);}
-    .rights label{display:flex;flex-direction:column;gap:3px;font-size:11.5px;font-weight:800;}
-    .rights select,.rights input{font:inherit;font-size:13px;font-weight:400;padding:8px 10px;min-height:40px;border:1px solid rgba(0,0,0,.25);border-radius:8px;background:#fff;width:100%;box-sizing:border-box;}
+    .msg{font-size:13px;font-weight:700;color:var(--ve-green-deep);margin:0 0 12px;}
+    @media (max-width:600px){.row{grid-template-columns:1fr;}}
+    [hidden]{display:none !important;}
   </style>
 </head>
 <body>
   <div class="page-frame">
   <script>
-  /* Inside the dashboard frame (Sean, 2026-09-27: "it should be living inside of the frame
-     we created for the dashboard"): the console already supplies the header and a
-     breadcrumb back to Your Tools, so hide the sitewide nav and footer here and tighten
-     the margins. Same pattern as /dashboard/members. A normal visit is unaffected. */
   try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
   </script>
   <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
   <script src="/public/nav.js"></script>
-
   <div class="wrap">
-    <h1>The Depot <span class="eyebrow" style="margin:0 0 0 12px;vertical-align:middle;">Admin</span></h1>
+    <p class="eyebrow">The Depot</p>
+    <h1 id="title">The Depot</h1>
     <div id="depot-tabs"></div>
-    <p class="sub">Every picture, sound and video we keep for Vegans Explore, in our own storage so nothing depends on Higgsfield. Drop a folder of any mix of files, then tag them below. Pictures: Background (desktop), Background (phone) or Slide. Audio: Narration or Music. Video: Slide video. Add the place where it fits.</p>
-    <p class="sub" style="margin-top:-8px;">Put them on a page in <a href="/admin/depot/onboarding">Onboarding</a>: each slide's picture, narration, music and video.</p>
-    <div id="ml-gate" class="gate" hidden></div>
-    <div id="ml-app" hidden>
-      <div class="drop" id="ml-drop" tabindex="0" role="button" aria-label="Drop a folder of images, or click to choose files">
-        <b>Drop a folder here</b>
-        <span>or click to choose files. Pictures (PNG, JPG, WebP), audio (MP3, WAV, M4A) and video (MP4, MOV, WebM, up to 50 MB each). The same file dropped twice is kept once.</span>
-      </div>
-      <input type="file" id="ml-files" multiple accept="image/png,image/jpeg,image/webp,audio/*,video/mp4,video/quicktime,video/webm" hidden>
-      <p class="progress" id="ml-progress" role="status"></p>
-      <p class="errs" id="ml-errs"></p>
-
-      <h2>The library</h2>
-      <div class="bar">
-        <label>Type <select id="f-kind">
-          <option value="all">Everything</option>
-          <option value="image">Pictures</option>
-          <option value="audio">Audio</option>
-          <option value="video">Video</option>
-        </select></label>
-        <label>Tag <select id="f-use">
-          <option value="all">Any tag</option>
-          <option value="untagged">Not tagged yet</option>
-          <option value="bg_desktop">Background (desktop)</option>
-          <option value="bg_mobile">Background (phone)</option>
-          <option value="slide">Slide pictures</option>
-          <option value="logo">Directory logos</option>
-          <option value="narration">Narration</option>
-          <option value="music">Music</option>
-          <option value="video">Slide video</option>
-        </select></label>
-        <label>Place <select id="f-place">
-          <option value="all">Any place</option>
-          <option value="miami">Miami</option>
-          <option value="broward">Broward</option>
-          <option value="palm-beach">Palm Beach</option>
-          <option value="none">No place</option>
-        </select></label>
-        <label>Shape <select id="f-ori">
-          <option value="all">Any shape</option>
-          <option value="landscape">Landscape</option>
-          <option value="portrait">Portrait</option>
-          <option value="square">Square</option>
-        </select></label>
-        <label><input type="checkbox" id="f-arch"> Show hidden</label>
-        <span class="count" id="ml-count"></span>
-      </div>
-      <div class="bar" id="ml-selbar">
-        <button type="button" class="btn btn-danger" id="ml-del" disabled>Delete selected</button>
-        <button type="button" class="btn btn-ghost" id="ml-sel-all">Select all shown</button>
-        <button type="button" class="btn btn-ghost" id="ml-sel-none">Clear</button>
-        <span class="progress" id="ml-del-msg" role="status" style="margin-top:0;"></span>
-      </div>
-      <div class="grid" id="ml-grid"></div>
-    </div>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden>
+      <div id="view"></div>
+    </main>
   </div>
-
-  <dialog id="ml-dlg" aria-label="Picture preview">
-    <img id="ml-dlg-img" alt="">
-    <div class="dlg-bar"><span id="ml-dlg-cap"></span><button type="button" class="btn btn-ghost" id="ml-dlg-close">Close</button></div>
-  </dialog>
-
   <script src="/public/ve-auth.js"></script>
-  <script src="/public/ve-media-upload.js"></script>
   <script src="/public/depot-tabs.js"></script>
   <script>
     (function () {
-      // What each kind of media can be tagged as.
-      var USES = {
-        image: { bg_desktop: 'Background (desktop)', bg_mobile: 'Background (phone)', slide: 'Slide', logo: 'Logo' },
-        audio: { narration: 'Narration', music: 'Music' },
-        video: { video: 'Slide video' }
-      };
-      var PLACE_LABELS = { miami: 'Miami', broward: 'Broward', 'palm-beach': 'Palm Beach' };
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-depot';
       var $ = function (id) { return document.getElementById(id); };
-      var items = [], picked = {};
-      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-      function api(body) { return VEMediaUpload.api(VEAuth.getToken(), body); }
-      function fmt(sec) { sec = Math.round(sec || 0); return Math.floor(sec / 60) + ':' + ('0' + (sec % 60)).slice(-2); }
-      function mb(b) { return b ? (b / 1048576).toFixed(1) + ' MB' : ''; }
-
-      // ---- Upload (shared with Onboarding images, /public/ve-media-upload.js).
-      function addFiles(files) {
-        if (!files.some(VEMediaUpload.accepts)) { $('ml-progress').textContent = 'Nothing in that drop is an image, audio or video file this library keeps.'; return; }
-        $('ml-errs').textContent = '';
-        VEMediaUpload.upload(files, VEAuth.getToken(), function (i, n, f) { $('ml-progress').textContent = 'Uploading ' + i + ' of ' + n + ': ' + f.name; }).then(function (r) {
-          r.items.forEach(function (it) { items.unshift(it); });
-          render();
-          $('ml-progress').textContent = 'Done. ' + r.added + ' added' + (r.dupes ? ', ' + r.dupes + ' already in the library' : '') + (r.skipped ? ', ' + r.skipped + ' other files skipped' : '') + '.';
-          if (r.errors.length) $('ml-errs').textContent = 'Not uploaded: ' + r.errors.join(', ') + '. Try those again.';
-        });
-      }
-      VEMediaUpload.bindDrop($('ml-drop'), $('ml-files'), addFiles);
-
-      // ---- Library grid with tags.
-      function visible() {
-        var k = $('f-kind').value, u = $('f-use').value, pl = $('f-place').value, o = $('f-ori').value, arch = $('f-arch').checked;
-        return items.filter(function (it) {
-          if (it.archived && !arch) return false;
-          if (k !== 'all' && it.kind !== k) return false;
-          if (u === 'untagged' && (it.uses || []).length) return false;
-          if (u !== 'all' && u !== 'untagged' && (it.uses || []).indexOf(u) < 0) return false;
-          if (pl === 'none' && it.place) return false;
-          if (pl !== 'all' && pl !== 'none' && it.place !== pl) return false;
-          if (o !== 'all' && it.orientation !== o) return false;
-          return true;
-        });
-      }
-      function preview(it) {
-        if (it.kind === 'audio') return '<div class="thumb audio"><audio controls preload="none" src="' + esc(it.url) + '"></audio><span class="ori">audio' + (it.duration ? ' &middot; ' + fmt(it.duration) : '') + '</span></div>';
-        if (it.kind === 'video') return '<div class="thumb"><video controls muted playsinline preload="metadata" src="' + esc(it.url) + '#t=0.5"></video><span class="ori">video' + (it.duration ? ' &middot; ' + fmt(it.duration) : '') + (it.width ? ' &middot; ' + it.width + '&times;' + it.height : '') + '</span></div>';
-        return '<div class="thumb" data-prev="' + it.id + '"><img src="' + esc(it.thumb_url || it.url) + '" alt="" loading="lazy"><span class="ori">' + esc(it.orientation || 'image') + ' &middot; ' + it.width + '&times;' + it.height + '</span></div>';
-      }
-      // Where each picture came from and what lets us use it (Sean, 2026-09-29). A piece about a
-      // business can only go out with a real photo we may use, credited, or their logo card.
-      var LICENSES = [['', 'Not recorded yet'], ['press_kit', 'From their press or media page'], ['permission', 'They said yes when we asked'], ['owner_upload', 'The business sent it'],
-        ['own', 'We took it'], ['open_license', 'Creative Commons (places, not their food)'], ['logo_card', 'Their logo card'], ['logo', 'A business logo'], ['illustration', 'Illustration (made by us or AI)']];
-      function rights(it) {
-        if (it.kind !== 'image') return '';
-        return '<div class="rights"><label>What lets us use it<select data-license>' + LICENSES.map(function (l) { return '<option value="' + l[0] + '"' + ((it.license || '') === l[0] ? ' selected' : '') + '>' + l[1] + '</option>'; }).join('') + '</select></label>' +
-          '<label>Credit line<input type="text" data-credit maxlength="160" placeholder="Courtesy of the business" value="' + esc(it.credit || '') + '"></label>' +
-          '<label>Where it came from<input type="url" data-srcpage placeholder="https://their-site.com/press" value="' + esc(it.source_page_url || '') + '"></label></div>';
-      }
-      function card(it) {
-        var uses = it.uses || [], opts = USES[it.kind] || {};
-        return '<article class="card' + (it.archived ? ' archived' : '') + (picked[it.id] ? ' picked' : '') + '" data-id="' + it.id + '">' + preview(it) +
-          '<div class="card-body"><label class="pick"><input type="checkbox" data-pick' + (picked[it.id] ? ' checked' : '') + '> Select to delete</label><p class="name">' + esc(it.source_name || '') + (it.bytes ? ' &middot; ' + mb(it.bytes) : '') + '</p>' +
-          '<div class="uses">' + Object.keys(opts).map(function (k) { return '<button type="button" class="chip" data-use="' + k + '" aria-pressed="' + (uses.indexOf(k) >= 0) + '">' + opts[k] + '</button>'; }).join('') + '</div>' +
-          '<div class="row"><select data-place aria-label="Place"><option value="">No place</option>' + Object.keys(PLACE_LABELS).map(function (k) { return '<option value="' + k + '"' + (it.place === k ? ' selected' : '') + '>' + PLACE_LABELS[k] + '</option>'; }).join('') + '</select></div>' +
-          '<div class="row"><input type="text" data-labels aria-label="Labels, separated by commas" placeholder="Labels, comma separated" value="' + esc((it.labels || []).join(', ')) + '"></div>' +
-          rights(it) +
-          '<p class="saved" role="status"></p>' +
-          '<div class="row"><button type="button" class="linkbtn" data-copy>Copy link</button><button type="button" class="linkbtn" data-arch>' + (it.archived ? 'Show in library again' : 'Hide from library') + '</button></div>' +
-          '</div></article>';
-      }
-      function render() {
-        var list = visible();
-        $('ml-count').textContent = list.length + ' of ' + items.length;
-        $('ml-grid').innerHTML = list.length ? list.map(card).join('') : '<p class="empty">' + (items.length ? 'Nothing matches these filters.' : 'The library is empty. Drop your folder above, or sort your older pictures in <a href="/admin/depot/onboarding">Onboarding</a>.') + '</p>';
-        selBar();
-      }
-      function selBar() {
-        var n = Object.keys(picked).length;
-        $('ml-del').disabled = !n;
-        $('ml-del').textContent = n ? 'Delete ' + n + ' selected' : 'Delete selected';
-      }
-      // Delete for good: the files leave storage too. A picture on a live slide is kept.
-      $('ml-del').onclick = function () {
-        var sel = Object.keys(picked); if (!sel.length) return;
-        if (!confirm('Delete ' + sel.length + ' for good? This removes the files from storage and cannot be undone.')) return;
-        $('ml-del').disabled = true; $('ml-del-msg').textContent = 'Deleting...';
-        api({ action: 'delete', ids: sel }).then(function (d) {
-          if (!d.deleted) { $('ml-del-msg').textContent = 'That did not delete. Try again.'; selBar(); return; }
-          var gone = {}; d.deleted.forEach(function (id) { gone[id] = 1; delete picked[id]; });
-          items = items.filter(function (it) { return !gone[it.id]; });
-          $('ml-del-msg').textContent = 'Deleted ' + d.deleted.length + '.' + (d.in_use && d.in_use.length ? ' ' + d.in_use.length + ' kept because a live page or Pulse piece uses them; change it there first.' : '') + (d.ok ? '' : ' Some did not delete; try again.');
-          render();
-        }).catch(function () { $('ml-del-msg').textContent = 'Could not connect. Try again.'; selBar(); });
+      var SECTIONS = window.VE_DEPOT_SECTIONS || [], TABS = window.VE_DEPOT_TABS || [], TRASH = window.VE_DEPOT_TRASH || [];
+      var counts = null, restored = [];
+      var IC = {
+        directory: '<path d="M4 6h16M4 12h16M4 18h10"/>',
+        logos: '<rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="12" cy="12" r="3.5"/>',
+        content: '<path d="M4 5h16v11H8l-4 4z"/>',
+        bounties: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/>',
+        guides: '<path d="M4 5c3-1 6-1 8 1 2-2 5-2 8-1v14c-3-1-6-1-8 1-2-2-5-2-8-1z"/><path d="M12 6v14"/>',
+        ideas: '<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>',
+        demos: '<path d="M6 4l14 8-14 8z"/>',
+        moving: '<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.5 3-6 6-6s6 2.5 6 6M14 20c0-2.5 1.5-4.5 4-4.5s3 1.5 3 4.5"/>',
+        trash: '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',
+        tool: '<path d="M5 12h14M12 5l7 7-7 7"/>'
       };
-      $('ml-sel-all').onclick = function () { visible().forEach(function (it) { picked[it.id] = 1; }); render(); };
-      $('ml-sel-none').onclick = function () { picked = {}; render(); };
-      function find(id) { for (var i = 0; i < items.length; i++) if (items[i].id === id) return i; return -1; }
-      function save(el, patch) {
-        var c = el.closest('.card'), id = c.getAttribute('data-id'), msg = c.querySelector('.saved');
-        msg.textContent = 'Saving...';
-        api(Object.assign({ action: 'update', id: id }, patch)).then(function (d) {
-          if (!d.ok) { msg.textContent = 'That did not save. Try again.'; return; }
-          items[find(id)] = d.item; msg.textContent = 'Saved.';
-          if (patch.archived !== undefined) render();
-        }).catch(function () { msg.textContent = 'Could not connect. Try again.'; });
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function n(k) { return counts && typeof counts[k] === 'number' ? counts[k] : null; }
+      function fmt(x) { return Number(x).toLocaleString('en-US'); }
+      // What waits in each section today (null: nothing to count).
+      function waiting(k) {
+        if (!counts) return null;
+        if (k === 'directory') return { v: n('events_waiting') + n('claims_waiting') + n('listings_on_hold'), w: 'waiting' };
+        if (k === 'logos') return { v: n('logos_to_do'), w: 'to do' };
+        if (k === 'content') return { v: n('inbox_open') + n('search_questions_open'), w: 'open' };
+        if (k === 'bounties') return { v: n('bounty_proofs') + n('checkin_actions') + n('watchlist'), w: 'waiting' };
+        if (k === 'ideas') return { v: n('ideas_new') + n('feedback_new'), w: 'new' };
+        if (k === 'guides') return { v: n('guides_live'), w: 'live', info: true };
+        return null;
       }
-      $('ml-grid').addEventListener('click', function (e) {
-        var chip = e.target.closest('[data-use]');
-        if (chip) {
-          var on = chip.getAttribute('aria-pressed') !== 'true'; chip.setAttribute('aria-pressed', String(on));
-          var uses = Array.prototype.map.call(chip.parentNode.querySelectorAll('[aria-pressed="true"]'), function (b) { return b.getAttribute('data-use'); });
-          save(chip, { uses: uses }); return;
-        }
-        var arch = e.target.closest('[data-arch]');
-        if (arch) { var it = items[find(arch.closest('.card').getAttribute('data-id'))]; save(arch, { archived: !it.archived }); return; }
-        var cp = e.target.closest('[data-copy]');
-        if (cp) { var ci = items[find(cp.closest('.card').getAttribute('data-id'))], m = cp.closest('.card').querySelector('.saved'); try { navigator.clipboard.writeText(ci.url).then(function () { m.textContent = 'Link copied.'; }); } catch (err) { m.textContent = ci.url; } return; }
-        var prev = e.target.closest('[data-prev]');
-        if (prev) { var p = items[find(prev.getAttribute('data-prev'))]; $('ml-dlg-img').src = p.url; $('ml-dlg-cap').textContent = (p.source_name || '') + ' · ' + p.width + '×' + p.height; $('ml-dlg').showModal(); }
-      });
-      $('ml-grid').addEventListener('change', function (e) {
-        if (e.target.matches('[data-pick]')) {
-          var pc = e.target.closest('.card'), pid = pc.getAttribute('data-id');
-          if (e.target.checked) picked[pid] = 1; else delete picked[pid];
-          pc.classList.toggle('picked', e.target.checked); selBar(); return;
-        }
-        if (e.target.matches('[data-place]')) save(e.target, { place: e.target.value || null });
-        if (e.target.matches('[data-license]')) save(e.target, { license: e.target.value || null });
-        if (e.target.matches('[data-credit]')) save(e.target, { credit: e.target.value.trim() || null });
-        if (e.target.matches('[data-srcpage]')) {
-          var sp = e.target.value.trim();
-          if (sp && !/^https:\/\//i.test(sp)) { e.target.closest('.card').querySelector('.saved').textContent = 'Use the full https:// address.'; return; }
-          save(e.target, { source_page_url: sp || null });
-        }
-        if (e.target.matches('[data-labels]')) save(e.target, { labels: e.target.value.split(',').map(function (s) { return s.trim(); }).filter(Boolean) });
-      });
-      ['f-kind', 'f-use', 'f-place', 'f-ori', 'f-arch'].forEach(function (id) { $(id).addEventListener('change', render); });
-      $('ml-dlg-close').onclick = function () { $('ml-dlg').close(); };
-      $('ml-dlg').addEventListener('click', function (e) { if (e.target === $('ml-dlg')) $('ml-dlg').close(); });
-
+      function toolsOf(label) { return TABS.filter(function (t) { return t.group === label; }); }
+      function tile(href, k, title, line, ct, extra) {
+        return '<a class="tile' + (extra || '') + '" href="' + href + '"><span class="ic"><svg viewBox="0 0 24 24">' + (IC[k] || IC.tool) + '</svg></span>' +
+          (ct ? '<span class="ct' + (ct.hot ? ' hot' : '') + '">' + esc(ct.t) + '</span>' : '') + '<b>' + esc(title) + '</b><span class="ln">' + esc(line) + '</span></a>';
+      }
+      function home() {
+        $('title').textContent = 'The Depot';
+        var html = '<p class="sub">Where we run Vegans Explore behind the scenes. Each tile is a section; the number is what is waiting today.</p>' +
+          '<input id="find" class="find" type="search" placeholder="Find a tool by name" aria-label="Find a tool by name" data-dictate="off">' +
+          '<div id="hits" class="list" style="margin-bottom:18px" hidden></div><div class="tiles">';
+        SECTIONS.forEach(function (s) {
+          var w = waiting(s.k), ct = null;
+          if (w && w.v != null) ct = { t: fmt(w.v) + ' ' + w.w, hot: !w.info && w.v > 0 };
+          else if (s.k === 'demos' || s.k === 'moving') ct = { t: toolsOf(s.label).length + (s.k === 'demos' ? ' demos' : ' tools') };
+          var href = s.k === 'logos' ? '/admin/depot/directory-review#logos' : '#s/' + s.k;
+          html += tile(href, s.k, s.label, s.line, ct, s.k === 'moving' ? ' dash' : '');
+        });
+        var inTrash = TRASH.filter(function (t) { return restored.indexOf(t.href) < 0; }).length;
+        html += tile('#trash', 'trash', 'Trash bin', 'Retired tools. Nothing is deleted; restore any of them.', { t: String(inTrash) }, ' dash') + '</div>';
+        if (!counts) html += '<p class="sub" style="margin-top:14px">Counting what is waiting...</p>';
+        $('view').innerHTML = html;
+        $('find').oninput = function () {
+          var q = this.value.trim().toLowerCase(), hits = $('hits');
+          if (!q) { hits.hidden = true; hits.innerHTML = ''; return; }
+          var m = TABS.filter(function (t) { return (t.label + ' ' + t.group).toLowerCase().indexOf(q) >= 0; }).slice(0, 8);
+          hits.hidden = false;
+          hits.innerHTML = m.length ? m.map(toolRow).join('') : '<p class="sub">No tool by that name. Retired ones are in the Trash bin.</p>';
+          wireTools(hits);
+        };
+      }
+      function toolRow(t) {
+        var how = t.kind === 'demo' ? 'Opens in a new tab' : t.kind === 'dash' ? 'Opens in the dashboard' : '';
+        return '<div class="row"><div><b>' + esc(t.label) + '</b> ' + (t.restored ? '<span class="tag r">Restored</span>' : '') + '<p>' + esc(t.group) + (how ? ' · ' + how : '') + '</p></div>' +
+          '<a class="btn" href="' + esc(t.href) + '" data-tool="' + esc(t.href) + '">Open</a></div>';
+      }
+      // A demo opens in a new tab; a dashboard page asks the dashboard around this frame to open it (as the Go to menu does).
+      function wireTools(root) {
+        Array.prototype.forEach.call(root.querySelectorAll('[data-tool]'), function (a) {
+          a.onclick = function (e) {
+            var t = TABS.filter(function (x) { return x.href === a.getAttribute('data-tool'); })[0]; if (!t) return;
+            if (window.VE_DEPOT_USE) window.VE_DEPOT_USE(t.href);
+            if (t.kind === 'demo') { e.preventDefault(); window.open(t.href, '_blank', 'noopener'); return; }
+            if (t.kind === 'dash') {
+              var inDash = false; try { inDash = window.self !== window.top && /^\/dashboard/.test(window.top.location.pathname); } catch (x) {}
+              if (inDash) { e.preventDefault(); window.top.postMessage({ type: 've-open-tool', href: t.href, label: t.label }, location.origin); }
+            }
+          };
+        });
+      }
+      function section(k) {
+        var s = SECTIONS.filter(function (x) { return x.k === k; })[0]; if (!s) return home();
+        $('title').textContent = s.label;
+        var tools = toolsOf(s.label);
+        var note = k === 'moving' ? '<p class="sub">BrandDesk is taking these over. Each one stays here, working, until BrandDesk does everything it does.</p>' : '';
+        $('view').innerHTML = '<p class="crumb"><a href="#">The Depot</a> &rsaquo; ' + esc(s.label) + '</p>' + note +
+          '<div class="tiles">' + tools.map(function (t) {
+            var how = t.kind === 'demo' ? 'Opens in a new tab, as the public sees it' : t.kind === 'dash' ? 'Opens in the dashboard' : (t.restored ? 'Restored from the trash bin' : '');
+            return '<a class="tile" href="' + esc(t.href) + '" data-tool="' + esc(t.href) + '"><span class="ic"><svg viewBox="0 0 24 24">' + (k === 'demos' ? IC.demos : IC.tool) + '</svg></span><b>' + esc(t.label) + '</b><span class="ln">' + esc(how) + '</span></a>';
+          }).join('') + '</div>';
+        wireTools($('view'));
+      }
+      function trash(msg) {
+        $('title').textContent = 'Trash bin';
+        $('view').innerHTML = '<p class="crumb"><a href="#">The Depot</a> &rsaquo; Trash bin</p>' +
+          '<p class="sub">Retired tools. Nothing is deleted: each page, its data and its server side stay exactly as they were. Restore puts a tool back in its section at once.</p>' +
+          (msg ? '<p class="msg">' + esc(msg) + '</p>' : '') + '<div class="list">' + TRASH.map(function (t) {
+            var back = restored.indexOf(t.href) >= 0;
+            return '<div class="row"><div><b>' + esc(t.label) + '</b> ' + (back ? '<span class="tag r">Restored to ' + esc(t.group) + '</span>' : '') + '<p>' + esc(t.why) + '</p></div>' +
+              '<div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn btn-quiet" href="' + esc(t.href) + '">Look at it</a>' +
+              '<button type="button" class="btn" data-href="' + esc(t.href) + '" data-to="' + (back ? '0' : '1') + '">' + (back ? 'Retire it again' : 'Restore') + '</button></div></div>';
+          }).join('') + '</div>';
+        Array.prototype.forEach.call($('view').querySelectorAll('button[data-href]'), function (b) {
+          b.onclick = function () {
+            b.disabled = true;
+            var t = TRASH.filter(function (x) { return x.href === b.getAttribute('data-href'); })[0];
+            api({ action: 'trash_set', href: t.href, restored: b.getAttribute('data-to') === '1' }).then(function (d) {
+              if (!d || !d.ok) { b.disabled = false; return trash('That did not save. Try again.'); }
+              restored = d.restored; save();
+              // The Go to menu is built when the page loads, so reload to put the tool back in it.
+              location.reload();
+            }).catch(function () { b.disabled = false; trash('That did not save. Try again.'); });
+          };
+        });
+      }
+      function save() { try { localStorage.setItem('ve_depot_restored', JSON.stringify(restored)); } catch (e) {} }
+      function render() {
+        var h = location.hash.replace(/^#/, '').split('/');
+        if (h[0] === 's') section(h[1]); else if (h[0] === 'trash') trash(); else home();
+        window.scrollTo(0, 0);
+      }
+      window.addEventListener('hashchange', render);
       function start() {
         if (!window.VEAuth) return setTimeout(start, 200);
-        if (!VEAuth.isLoggedIn()) {
-          $('ml-gate').hidden = false;
-          $('ml-gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="ml-signin">Sign in</button>';
-          $('ml-signin').onclick = function () { VEAuth.showAuthModal('Sign in to manage the media library.', function () { location.reload(); }, 'login'); };
-          return;
-        }
         var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
-        if (!m || !m.is_superadmin) { $('ml-gate').hidden = false; $('ml-gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
-        $('ml-app').hidden = false;
-        api({ action: 'list' }).then(function (d) { items = d.items || []; render(); }).catch(render);
+        if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Sign in</h2><p>The Depot is for Vegans Explore admins.</p><button type="button" class="btn" id="si">Sign in</button>'; $('si').onclick = function () { VEAuth.showAuthModal('Sign in to open the Depot.', function () { location.reload(); }); }; return; }
+        if (!m || !m.is_superadmin) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Admins only</h2><p>The Depot is for Vegans Explore admins.</p>'; return; }
+        $('app').hidden = false; render();
+        api({ action: 'home' }).then(function (d) {
+          if (!d || !d.ok) return;
+          counts = d.counts;
+          var before = JSON.stringify(restored);
+          restored = d.restored || []; save();
+          if (before !== JSON.stringify(restored) && localStorage.getItem('ve_depot_restored_seen') !== JSON.stringify(restored)) {
+            try { localStorage.setItem('ve_depot_restored_seen', JSON.stringify(restored)); } catch (e) {}
+            return location.reload();
+          }
+          render();
+        });
       }
+      try { restored = JSON.parse(localStorage.getItem('ve_depot_restored') || '[]') || []; } catch (e) {}
       start();
     })();
   </script>
-
   <script src="/public/footer.js"></script>
   </div>
 </body>

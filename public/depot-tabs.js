@@ -27,64 +27,52 @@
   // Pulse and Pulse Cities (the old article Pulse and city news), Passport Partners (the $250 / $500 plans, replaced by the $111
   // Partner plan), Tours (2027), Passport Challenge (not running) and Import narration
   // (part of Onboarding). Put one back by adding its row here.
+  // The Depot home (Sean, 2026-11-07, playbook branddesk-production-wing): the Depot opens on an overview of sections, one tile
+  // each, instead of the Library. Every tool belongs to one section (its group); a section's tools are listed together, so the Go to
+  // menu shows each section once (it showed Content twice when rows of another group sat between Content rows). Admin and Site and QA
+  // are gone: their tools moved into these sections. "Moving to BrandDesk" holds what BrandDesk takes over, each tool staying here
+  // until BrandDesk does everything it does. Retired tools are in TRASH, below, never deleted, restorable from the home's Trash bin.
+  var SECTIONS = [
+    { k: 'directory', label: 'Directory', line: 'Directory review, Events, Claims, Venues, Badges, Certification, Secret Shopper' },
+    { k: 'logos', label: 'Logos', line: 'Pick, fix and upload logos' },
+    { k: 'content', label: 'Content', line: 'Inbox, Sources, Content index, Books, Cookbook, Search questions, Library' },
+    { k: 'bounties', label: 'Bounties', line: 'Bounty proofs, check-in photos and receipts, submissions, the watchlist' },
+    { k: 'guides', label: 'Guides', line: 'See every page of a Guide or a journey, onboarding, the checklist' },
+    { k: 'ideas', label: 'Ideas', line: 'Every idea you drop in, and feedback from the site' },
+    { k: 'demos', label: 'Demos', line: 'The sample restaurant, sample group, Gig Board, Campaign Engine, pitch decks' },
+    { k: 'moving', label: 'Moving to BrandDesk', line: 'People, outreach, Social, Playbooks, Analytics. Here until BrandDesk does all of it.' }
+  ];
   var TABS = [
-    { group: 'Insights', href: '/admin/depot/playbooks', label: 'Playbooks' },
-    { group: 'Insights', href: '/admin/depot/analytics', label: 'Analytics' },
-    // Admin (Sean, 2026-10-30: "all the things that are an admin right now should be an admin section within the depot"): the
-    // dashboard's own admin pages (kind 'dash'), which open in the dashboard's frame, never inside a Depot page.
-    { group: 'Admin', href: '/dashboard/leads', label: 'Leads', kind: 'dash' },
-    { group: 'Admin', href: '/dashboard/members', label: 'Members', kind: 'dash' },
-    { group: 'Admin', href: '/dashboard/submissions', label: 'Submissions', kind: 'dash' },
-    { group: 'Admin', href: '/dashboard/applications', label: 'Role applications', kind: 'dash' },
-    { group: 'Admin', href: '/dashboard/guest-reviews', label: 'Guest reviews', kind: 'dash' },
-    { group: 'Admin', href: '/dashboard/health', label: 'Platform health', kind: 'dash' },
-    { group: 'Admin', href: '/dashboard/insights', label: 'Community Insights', kind: 'dash' },
-    { group: 'Admin', href: '/dashboard/secret-shopper', label: 'Secret Shopper', kind: 'dash' },
     { group: 'Directory', href: '/admin/depot/directory-review', label: 'Directory review' },
-    { group: 'Directory', href: '/admin/depot/business-outreach', label: 'Business outreach' },
-    { group: 'Directory', href: '/admin/depot/branddesk', label: 'BrandDesk' },
-    { group: 'Directory', href: '/admin/depot/claims', label: 'Claims' },
     { group: 'Directory', href: '/admin/depot/events', label: 'Events' },
-    { group: 'Directory', href: '/admin/depot/brand-campaigns', label: 'Brand campaigns' },
+    { group: 'Directory', href: '/admin/depot/claims', label: 'Claims' },
     { group: 'Directory', href: '/admin/depot/venues', label: 'Venues' },
-    { group: 'Directory', href: '/admin/depot/checkins', label: 'Check-ins' },
-    { group: 'Directory', href: '/admin/depot/challenge-stops', label: 'Passport Challenge stops' },
-    { group: 'Directory', href: '/admin/depot/event-sponsors', label: 'Event sponsors' },
     { group: 'Directory', href: '/admin/depot/badges', label: 'Business badges' },
     { group: 'Directory', href: '/admin/depot/certification', label: 'Pre-Vegan Certification' },
+    { group: 'Directory', href: '/admin/depot/challenge-stops', label: 'Passport Challenge stops' },
+    { group: 'Directory', href: '/admin/depot/event-sponsors', label: 'Event sponsors' },
+    { group: 'Directory', href: '/admin/depot/brand-campaigns', label: 'Brand campaigns' },
+    { group: 'Directory', href: '/dashboard/secret-shopper', label: 'Secret Shopper', kind: 'dash' },
+    { group: 'Logos', href: '/admin/depot/directory-review#logos', label: 'Logos' },
     { group: 'Content', href: '/admin/depot/inbox', label: 'Inbox' },
-    { group: 'Content', href: '/admin/depot/social', label: 'Social' },
-    { group: 'Content', href: '/admin/depot/search-questions', label: 'Search questions' },
-    { group: 'Site', href: '/admin/depot/feedback', label: 'Feedback' },
-    { group: 'Site', href: '/admin/depot/ideas', label: 'Ideas' },
     { group: 'Content', href: '/admin/depot/sources', label: 'Sources' },
-    { group: 'Content', href: '/admin/depot/cookbook', label: 'Cookbook' },
     { group: 'Content', href: '/admin/depot/content-index', label: 'Content index' },
     { group: 'Content', href: '/admin/depot/books', label: 'Books' },
     { group: 'Content', href: '/admin/depot/mentions', label: 'In this story' },
     { group: 'Content', href: '/admin/depot/listing-posts', label: 'Social posts' },
-    { group: 'Content', href: '/admin/depot', label: 'Library' },
-    { group: 'People', href: '/admin/depot/outreach', label: 'Outreach' },
-    { group: 'People', href: '/admin/depot/people', label: 'People' },
-    { group: 'People', href: '/admin/depot/community-managers', label: 'Community Managers' },
-    { group: 'People', href: '/admin/depot/ambassadors', label: 'Ambassadors' },
-    { group: 'People', href: '/admin/depot/founding', label: 'Founding Members' },
-    { group: 'People', href: '/admin/depot/nonprofit-partners', label: 'Nonprofit Partners' },
-    { group: 'People', href: '/admin/depot/group-partners', label: 'Group Partners' },
-    { group: 'People', href: '/admin/depot/profiles', label: 'Profiles' },
-    { group: 'People', href: '/admin/depot/bounties', label: 'Bounties' },
-    { group: 'People', href: '/admin/depot/dinners', label: 'Dinner guests' },
-    { group: 'People', href: '/admin/depot/links', label: 'Links' },
-    { group: 'People', href: '/admin/depot/invites', label: 'Invites' },
-    { group: 'People', href: '/admin/depot/referral-claims', label: 'Referral claims' },
-    { group: 'People', href: '/admin/depot/challenges', label: 'Challenges' },
-    { group: 'People', href: '/admin/depot/watchlist', label: 'Watchlist' },
-    { group: 'Site', href: '/admin/depot/onboarding', label: 'Onboarding' },
-    { group: 'Site', href: '/admin/depot/preview', label: 'Preview journeys' },
-    { group: 'Site', href: '/admin/depot/dashboard-checklist', label: 'Dashboard checklist' },
-    { group: 'Site', href: '/admin/depot/services', label: 'Services' },
-    // Demos (Sean, 2026-10-30: "add the demo section and collect all the different demos"): the samples and walkthroughs we show
-    // people, kind 'demo', each opening in a new tab as the public sees it.
+    { group: 'Content', href: '/admin/depot/cookbook', label: 'Cookbook' },
+    { group: 'Content', href: '/admin/depot/search-questions', label: 'Search questions' },
+    { group: 'Content', href: '/admin/depot/library', label: 'Library' },
+    { group: 'Bounties', href: '/admin/depot/bounties', label: 'Bounties' },
+    { group: 'Bounties', href: '/admin/depot/checkins', label: 'Check-ins' },
+    { group: 'Bounties', href: '/dashboard/submissions', label: 'Submissions', kind: 'dash' },
+    { group: 'Bounties', href: '/admin/depot/watchlist', label: 'Watchlist' },
+    { group: 'Guides', href: '/admin/depot/preview', label: 'Preview journeys' },
+    { group: 'Guides', href: '/admin/depot/onboarding', label: 'Onboarding' },
+    { group: 'Guides', href: '/admin/depot/dashboard-checklist', label: 'Dashboard checklist' },
+    { group: 'Ideas', href: '/admin/depot/ideas', label: 'Ideas' },
+    { group: 'Ideas', href: '/admin/depot/feedback', label: 'Feedback' },
+    // Demos (Sean, 2026-10-30): the samples and walkthroughs we show people, kind 'demo', each opening in a new tab as the public sees it.
     { group: 'Demos', href: '/business/sample', label: 'Sample business', kind: 'demo' },
     { group: 'Demos', href: '/groups/sample', label: 'Sample group', kind: 'demo' },
     { group: 'Demos', href: '/gigs/sample', label: 'Sample Gig Board', kind: 'demo' },
@@ -98,8 +86,54 @@
     { group: 'Demos', href: '/partners/pitches/vegans-explore-supermarket-pitch', label: 'Pitch: Supermarkets', kind: 'demo' },
     { group: 'Demos', href: '/partners/pitches/vegans-explore-night-event-pitch', label: 'Pitch: Night events', kind: 'demo' },
     { group: 'Demos', href: '/partners/pitches/vegans-explore-global-tour-pitch', label: 'Pitch: Global tour', kind: 'demo' },
-    { group: 'Demos', href: '/partners/pitches/vegans-explore-cm-pitch', label: 'Pitch: Community Managers', kind: 'demo' }
+    { group: 'Demos', href: '/partners/pitches/vegans-explore-cm-pitch', label: 'Pitch: Community Managers', kind: 'demo' },
+    { group: 'Moving to BrandDesk', href: '/admin/depot/people', label: 'People' },
+    { group: 'Moving to BrandDesk', href: '/admin/depot/outreach', label: 'Outreach' },
+    { group: 'Moving to BrandDesk', href: '/admin/depot/business-outreach', label: 'Business outreach' },
+    { group: 'Moving to BrandDesk', href: '/admin/depot/ambassadors', label: 'Ambassadors' },
+    { group: 'Moving to BrandDesk', href: '/admin/depot/founding', label: 'Founding Members' },
+    { group: 'Moving to BrandDesk', href: '/admin/depot/nonprofit-partners', label: 'Nonprofit Partners' },
+    { group: 'Moving to BrandDesk', href: '/admin/depot/group-partners', label: 'Group Partners' },
+    { group: 'Moving to BrandDesk', href: '/admin/depot/community-managers', label: 'Community Managers' },
+    { group: 'Moving to BrandDesk', href: '/admin/depot/profiles', label: 'Profiles' },
+    { group: 'Moving to BrandDesk', href: '/admin/depot/invites', label: 'Invites' },
+    { group: 'Moving to BrandDesk', href: '/admin/depot/referral-claims', label: 'Referral claims' },
+    { group: 'Moving to BrandDesk', href: '/admin/depot/links', label: 'Links' },
+    { group: 'Moving to BrandDesk', href: '/dashboard/members', label: 'Members', kind: 'dash' },
+    { group: 'Moving to BrandDesk', href: '/dashboard/leads', label: 'Leads', kind: 'dash' },
+    { group: 'Moving to BrandDesk', href: '/dashboard/applications', label: 'Role applications', kind: 'dash' },
+    { group: 'Moving to BrandDesk', href: '/admin/depot/social', label: 'Social' },
+    { group: 'Moving to BrandDesk', href: '/admin/depot/playbooks', label: 'Playbooks' },
+    { group: 'Moving to BrandDesk', href: '/admin/depot/analytics', label: 'Analytics' },
+    { group: 'Moving to BrandDesk', href: '/dashboard/insights', label: 'Community Insights', kind: 'dash' },
+    { group: 'Moving to BrandDesk', href: '/dashboard/health', label: 'Platform health', kind: 'dash' },
+    { group: 'Moving to BrandDesk', href: '/admin/depot/branddesk', label: 'BrandDesk clients' }
   ];
+  // The trash bin (Sean, 2026-11-07: "a visible trash bin... if I ever want to resurrect it"). Retired, never deleted: the page,
+  // its data and its function stay. Restoring one (the home's Trash bin, ve-depot trash_set) puts it back in its section. Keep the
+  // hrefs in step with TRASH in supabase/functions/ve-depot.
+  var TRASH = [
+    { href: '/admin/depot/challenges', label: 'Challenges', group: 'Bounties', why: 'The three Earn your Passport challenges were retired on November 3, 2026: the survey is the way in.' },
+    { href: '/admin/depot/challenge', label: 'Passport Challenge', group: 'Directory', why: 'The scavenger hunt is not running. No hunt was ever made.' },
+    { href: '/admin/depot/challenge-card', label: 'Passport Challenge card', group: 'Directory', why: 'The scavenger hunt\'s printable card.' },
+    { href: '/admin/depot/challenge-kit', label: 'Passport Challenge kit', group: 'Directory', why: 'The scavenger hunt\'s kit for stops.' },
+    { href: '/admin/depot/pulse', label: 'Pulse (old articles)', group: 'Content', why: 'The old article Pulse. The Daily Pulse on the Community Board replaced it.' },
+    { href: '/admin/depot/pulse-cities', label: 'Pulse Cities', group: 'Content', why: 'City news, retired on October 5, 2026 for the Daily Pulse.' },
+    { href: '/admin/depot/verified', label: 'Passport Partners', group: 'Directory', why: 'The $250 and $500 plans, replaced by the $111 Partner plan.' },
+    { href: '/admin/depot/logos', label: 'Logos (old page)', group: 'Logos', why: 'A second Logos page. Logos in Directory review does it.' },
+    { href: '/admin/depot/tours', label: 'Tours', group: 'Directory', why: 'A 2027 idea. No tour was ever made.' },
+    { href: '/admin/depot/services', label: 'Services', group: 'Directory', why: 'The old one-thing services. The shop is BrandDesk\'s now. No order was ever made.' },
+    { href: '/admin/depot/dinners', label: 'Dinner guests', group: 'Moving to BrandDesk', why: 'Dinner seats on us ended with comps. One dinner, October 4.' },
+    { href: '/admin/depot/narration', label: 'Import narration', group: 'Guides', why: 'Part of Onboarding.' },
+    { href: '/dashboard/guest-reviews', label: 'Guest reviews', group: 'Moving to BrandDesk', kind: 'dash', why: 'The old free Guest Passport queue. Nobody has been in it since free accounts ended.' }
+  ];
+  // A restored tool goes back to its section. The home saves the list in this browser (ve_depot_restored) after reading it.
+  var restored = []; try { restored = JSON.parse(localStorage.getItem('ve_depot_restored') || '[]') || []; } catch (e) {}
+  TRASH.forEach(function (t) { if (restored.indexOf(t.href) >= 0) TABS.push({ group: t.group, href: t.href, label: t.label, kind: t.kind, restored: true }); });
+  var ORDER = SECTIONS.map(function (x) { return x.label; });
+  TABS.sort(function (a, b) { return ORDER.indexOf(a.group) - ORDER.indexOf(b.group); });
+  window.VE_DEPOT_SECTIONS = SECTIONS;
+  window.VE_DEPOT_TRASH = TRASH;
   // How often and when each one was opened, in this browser, for the dashboard's Depot box (Sean, 2026-10-30: "the most used depot
   // tools... sorted by most recently used"). A Depot page counts itself as it loads; the dashboard counts the others as it opens them.
   window.VE_DEPOT_USE = function (href) {
@@ -131,7 +165,7 @@
     var here = location.pathname.replace(/\.html$/, '').replace(/\/index$/, '').replace(/\/$/, '');
     var go = document.createElement('label'); go.className = 'depot-go';
     go.innerHTML = '<span>Go to</span><select aria-label="Go to another part of the Depot">' +
-      (TABS.some(function (t) { return t.href === here; }) ? '' : '<option value="" selected>Choose</option>') +
+      '<option value="/admin/depot"' + (here === '/admin/depot' ? ' selected' : '') + '>Depot home</option>' +
       TABS.reduce(function (h, t, k) {
         var open = !k || TABS[k - 1].group !== t.group, close = k === TABS.length - 1 || TABS[k + 1].group !== t.group;
         return h + (open ? '<optgroup label="' + t.group + '">' : '') + '<option value="' + t.href + '"' + (here === t.href ? ' selected' : '') + '>' + t.label + '</option>' + (close ? '</optgroup>' : '');
@@ -147,6 +181,16 @@
       }
       location.href = t.href;
     });
+    // A retired tool opened by its address says so, with Restore (the page still works; nothing was deleted).
+    var gone = TRASH.filter(function (t) { return t.href === here; })[0];
+    if (gone && restored.indexOf(gone.href) < 0) {
+      var note = document.createElement('div');
+      note.setAttribute('role', 'status');
+      note.style.cssText = 'background:#FFF7EC;border:1px solid #f5d9b0;border-radius:10px;padding:12px 14px;margin:0 0 16px;font-size:13.5px;color:#5a3a00;display:flex;flex-wrap:wrap;gap:10px;align-items:center;';
+      note.innerHTML = '<span style="flex:1 1 320px"><b>This tool is in the trash bin.</b> ' + gone.why + ' It still works; nothing was deleted.</span>' +
+        '<a href="/admin/depot#trash" style="font-weight:800;color:#1f5f22">Open the trash bin to restore it</a>';
+      el.parentNode.insertBefore(note, el.nextSibling);
+    }
     // Put the drop-down beside the page title when the title sits right above the old tab spot.
     var h1 = el.previousElementSibling;
     if (h1 && h1.tagName === 'H1') {

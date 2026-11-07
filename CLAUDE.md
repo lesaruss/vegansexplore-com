@@ -1436,6 +1436,27 @@ are three idea places (this tab, Depot > Ideas with `ve_ideas` and the `idea-fil
 merging them in one chat. The Blueprint is finite: build its main parts first, then it becomes the one idea capture, with uploads (screenshots,
 documents, voice memos) queued under New for Logan to sort. Handoff `docs/handoff/2026-11-06-ve-feedback-blueprint-ideas.md`.
 
+## The Depot home, and Ideas lives in the Depot (Sean, 2026-11-07, playbook `branddesk-production-wing`)
+
+"We are going to keep the depot, this is where the ideas should live instead of the blueprint, because I feel like it's kind of buried in the
+blueprint." **This replaces "Blueprint > Ideas holds every idea" below**: Depot > Ideas (`ve_ideas`) is the one place ideas are dropped, with
+Feedback beside it; BrandDesk's Blueprint > Ideas (`blueprint_ideas` in HQ) stays as it is until the two are merged (not done).
+**The Depot opens on its home** (`/admin/depot`, `admin/depot/index.html`), not the Library (now `/admin/depot/library`): one tile per section
+with what is waiting today (`ve-depot` `home`, `ve_depot_counts()`, migration `20261107_depot_home.sql`), a search that finds any tool by name,
+`#s/<section>` for a section's tools and `#trash` for the trash bin. Sections (`SECTIONS` in `public/depot-tabs.js`): Directory (with Secret
+Shopper), Logos (Directory review > Logos for now), Content (with the Library), Bounties (Bounties, Check-ins, Submissions, Watchlist), Guides
+(Preview journeys, Onboarding, Dashboard checklist), Ideas (Ideas, Feedback), Demos, and **Moving to BrandDesk** (People, Outreach, Business
+outreach, Ambassadors, Founding Members, Nonprofit and Group Partners, Community Managers, Profiles, Invites, Referral claims, Links, Members,
+Leads, Role applications, Social, Playbooks, Analytics, Community Insights, Platform health, BrandDesk clients), each tool staying here, working,
+until BrandDesk does everything it does. Admin and Site and QA are gone. The Go to menu lists each section once (it showed Content twice when
+rows of another group sat between Content rows). **The trash bin** (`TRASH` in `depot-tabs.js`, the same list in `ve-depot`): Challenges,
+Passport Challenge and its card and kit, Pulse (old articles), Pulse Cities, Passport Partners, the old Logos page, Tours, Services, Dinner
+guests, Import narration and Guest reviews (empty since free accounts ended). Nothing is deleted; a retired page opened by its address says so,
+and **Restore** (`ve-depot` `trash_set`, `ve_site_settings` `depot_trash`) puts it back in its section. Mock `/mocks/depot/`; V's tour script
+`docs/proposals/depot-tour-script.md` (13 chapters, Ideas included; recording waits on Sean reading chapter 9). Not built yet: V's tour and
+Ask V on the Depot, Logos as its own tool (category filters, Most viewed), better logo suggestions, the Guides back end and See every page,
+BrandDesk inside Vegans Explore, People in BrandDesk.
+
 ## One Blueprint, and Signal (Sean, 2026-11-06, playbooks `branddesk-production-wing`, `signal`)
 
 The three Blueprint chats are one: `branddesk-production-wing` is the Blueprint playbook (ve-idea-intake parked and folded in), and **`ve-feedback` is the Blueprint's small-fixes queue**.
