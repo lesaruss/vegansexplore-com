@@ -78,6 +78,45 @@
     .lb{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;cursor:zoom-out;}
     .lb img{max-width:100%;max-height:100%;border-radius:8px;background:#fff;}
     @media (max-width:700px){table,thead,tbody,tr,td{display:block;}thead{display:none;}tr{border-bottom:1px solid var(--ve-border);padding:8px 0;}td{border:0;padding:4px 12px;}}
+    .player{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:16px;margin:0 0 14px;}
+    .stage{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px;align-items:center;}
+    .st-img{aspect-ratio:16/9;border-radius:10px;background:#f1f3f1 center/cover no-repeat;border:1px solid var(--ve-border);}
+    .st-img.square{background-size:contain;background-color:#fff;}
+    .st-img.empty{background:repeating-linear-gradient(45deg,#f7f8f7,#f7f8f7 10px,#f1f3f1 10px,#f1f3f1 20px);}
+    .cap{display:flex;gap:12px;align-items:flex-start;}
+    .cap .fn{flex:none;font-weight:900;font-size:22px;color:var(--ve-green-deep);}
+    .q{font-size:15px;font-weight:700;line-height:1.45;}
+    .ctl{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0 10px;}
+    .ctl .meta{margin-left:auto;font-variant-numeric:tabular-nums;}
+    .prog{height:8px;background:#eef1ee;border-radius:6px;cursor:pointer;overflow:hidden;margin-bottom:10px;}
+    .prog span{display:block;height:100%;width:0;background:var(--ve-green);}
+    .fbtns{display:flex;flex-wrap:wrap;gap:6px;}
+    .fbtns button{font-family:inherit;font-size:12px;font-weight:800;min-width:38px;height:32px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;cursor:pointer;color:#555;}
+    .fbtns button.approved{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .fbtns button.redo{background:#fde7e5;color:#8a1c12;}
+    .fbtns button.on{outline:2px solid var(--ve-green-deep);outline-offset:1px;}
+    .legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:12.5px;color:var(--ve-text-75);margin:0 0 14px;align-items:center;}
+    .legend b{color:var(--ve-text);}
+    .tag.rd.ready{background:#e8f0fb;color:#1d4f91;}.tag.rd.recapture{background:#fff1dc;color:#8a5200;}.tag.rd.mock{background:#f1e8fb;color:#5b2d91;}.tag.rd.broll{background:#e6f6f4;color:#0f6158;}
+    .flag-dot{display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--ve-orange);vertical-align:middle;}
+    .frames{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:14px;}
+    .frame{background:#fff;border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
+    .frame.approved{border-color:var(--ve-green);}.frame.redo{border-color:#e59a92;}
+    .frame .pic,.brcard .pic{position:relative;aspect-ratio:16/9;background:#f1f3f1 center/cover no-repeat;cursor:zoom-in;}
+    .frame .pic.square{background-size:contain;background-color:#fff;}
+    .frame .pic.empty{cursor:default;display:grid;place-items:center;color:#888;font-size:12.5px;font-weight:700;background:repeating-linear-gradient(45deg,#f7f8f7,#f7f8f7 10px,#f1f3f1 10px,#f1f3f1 20px);}
+    .frame .fn{position:absolute;left:10px;top:10px;background:#fff;color:var(--ve-green-deep);font-weight:900;font-size:13px;padding:2px 8px;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,.15);}
+    .frame .body{padding:12px 14px;display:flex;flex-direction:column;gap:8px;flex:1;}
+    .fh{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}.fh .time{font-size:12px;font-weight:800;color:#555;margin-right:4px;font-variant-numeric:tabular-nums;}
+    .sec{font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .frame .brief{font-size:13px;line-height:1.5;}
+    .flag{font-size:12.5px;background:#fff4e5;border-left:3px solid var(--ve-orange);padding:6px 10px;border-radius:6px;color:#7a4300;}
+    .note{font-size:12.5px;background:#fff7ec;border-left:3px solid var(--ve-orange);padding:6px 10px;border-radius:6px;}
+    .linkbtn{align-self:flex-start;font-family:inherit;font-size:12px;font-weight:800;color:var(--ve-green-deep);background:none;border:0;cursor:pointer;padding:0;}
+    .dec{display:flex;flex-direction:column;gap:8px;}
+    .brcard{border:1px dashed #9fd3cc;border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:8px;background:#fbfefd;margin-top:4px;}
+    .brcard.approved{border-style:solid;border-color:var(--ve-green);}
+    @media (max-width:800px){.stage{grid-template-columns:1fr;}.ctl .meta{margin-left:0;width:100%;}}
     [hidden]{display:none !important;}
   </style>
 </head>
@@ -156,33 +195,134 @@
         $('view').innerHTML = html;
         if (r.tab === 'script') script(); else if (r.tab === 'video') video(); else lookbook();
       }
-      function shotCard(s, ch) {
-        var pic = s.image_url
-          ? '<div class="pic' + (s.kind === 'on_camera' ? ' square' : '') + '" data-big="' + esc(s.image_url) + '" style="background-image:url(\'' + esc(s.image_url) + '\')" role="img" aria-label="' + esc(KIND[s.kind]) + '"></div>'
-          : '<div class="pic empty">Not drawn yet. Approve the idea and it gets drawn.</div>';
-        var moment = s.kind === 'on_camera' && ch && ch.audio_url
-          ? '<span class="meta">Her words from ' + Number(s.audio_from).toFixed(1) + ' s to ' + Number(s.audio_to).toFixed(1) + ' s of this chapter</span><audio controls preload="none" src="' + esc(ch.audio_url) + '#t=' + s.audio_from + ',' + s.audio_to + '"></audio>' : '';
-        return '<div class="shot ' + esc(s.status) + '" data-id="' + esc(s.id) + '">' + pic + '<div class="body">' +
-          '<span><span class="tag k">' + esc(KIND[s.kind]) + '</span> <span class="tag ' + esc(s.status) + '">' + esc(ST[s.status]) + '</span></span>' +
-          '<p class="brief">' + esc(s.brief) + '</p>' + moment + (s.note ? '<p class="note"><b>Your note:</b> ' + esc(s.note) + '</p>' : '') +
-          '<div class="redo-box" hidden><textarea placeholder="What should change?" aria-label="What should change?"></textarea><div class="acts"><button type="button" class="btn btn-red" data-do="redo-send">Send it back</button><button type="button" class="btn btn-quiet" data-do="redo-cancel">Cancel</button></div></div>' +
+      // The lookbook (LOCKED by Sean 2026-11-07, from the Nonprofit Guide's lookbook): a white player that plays the tour
+      // frame by frame, then one card per frame with its readiness (Ready, Recapture, Mock, B-roll) kept apart from the
+      // decision (Waiting for you, Approved, Redo). An illustration is B-roll inside the frame it belongs to, with its own decision.
+      var RD = { ready: ['Ready', 'The picture is in hand.'], recapture: ['Recapture', 'The page changed; take it again.'], mock: ['Mock', 'A stand-in for something not built yet.'], broll: ['B-roll', 'An illustration, drawn only once you approve it.'] };
+      function frames() {
+        var off = {}, t = 0;
+        data.chapters.forEach(function (c) { off[c.n] = t; t += Number(c.seconds || 0); });
+        var main = [], broll = [];
+        data.shots.slice().sort(function (a, b) { return a.chapter_n - b.chapter_n || a.ord - b.ord; }).forEach(function (s) { (s.readiness === 'broll' ? broll : main).push(s); });
+        var fr = main.map(function (s, i) {
+          var c = data.chapters.filter(function (x) { return x.n === s.chapter_n; })[0] || {};
+          var a = Number(s.audio_from || 0), b = s.audio_to != null ? Number(s.audio_to) : Number(c.seconds || 0);
+          return { n: i + 1, s: s, c: c, from: a, to: b, g0: off[s.chapter_n] + a, g1: off[s.chapter_n] + b, broll: [] };
+        });
+        broll.forEach(function (s) {
+          var a = Number(s.audio_from || 0);
+          var host = fr.filter(function (f) { return f.s.chapter_n === s.chapter_n && a >= f.from && a < f.to; })[0] || fr.filter(function (f) { return f.s.chapter_n === s.chapter_n; }).pop();
+          if (host) host.broll.push(s);
+        });
+        return { list: fr, total: t, off: off };
+      }
+      function pad(n) { return String(n).padStart(2, '0'); }
+      function decide(s) {
+        return '<div class="dec" data-id="' + esc(s.id) + '">' +
+          (s.note ? '<p class="note"><b>Your note:</b> ' + esc(s.note) + '</p>' : '') +
+          '<div class="redo-box" hidden><textarea placeholder="What should change? Type it or tap the mic and say it." aria-label="What should change?"></textarea><div class="acts"><button type="button" class="btn btn-red" data-do="redo-send">Send it back</button><button type="button" class="btn btn-quiet" data-do="redo-cancel">Cancel</button></div></div>' +
           '<div class="acts main">' + (s.status !== 'approved' ? '<button type="button" class="btn" data-do="approved">Approve</button>' : '') +
           (s.status !== 'redo' ? '<button type="button" class="btn btn-red" data-do="redo">Redo</button>' : '') +
-          (s.status !== 'proposed' ? '<button type="button" class="btn btn-quiet" data-do="proposed">Undo</button>' : '') + '</div></div></div>';
+          (s.status !== 'proposed' ? '<button type="button" class="btn btn-quiet" data-do="proposed">Undo</button>' : '') + '</div></div>';
       }
+      function frameCard(f) {
+        var s = f.s, sq = s.kind === 'on_camera';
+        var pic = s.image_url ? '<div class="pic' + (sq ? ' square' : '') + '" data-big="' + esc(s.image_url) + '" style="background-image:url(\'' + esc(s.image_url) + '\')" role="img" aria-label="Frame ' + f.n + '"><span class="fn">' + pad(f.n) + '</span></div>'
+          : '<div class="pic empty"><span class="fn">' + pad(f.n) + '</span>No picture yet.</div>';
+        var rd = RD[s.readiness] || RD.ready;
+        var br = f.broll.map(function (b) {
+          return '<div class="brcard ' + esc(b.status) + '"><div class="br-h"><span class="tag rd broll">B-roll</span> <span class="tag ' + esc(b.status) + '">' + esc(ST[b.status]) + '</span></div>' +
+            (b.image_url ? '<div class="pic" data-big="' + esc(b.image_url) + '" style="background-image:url(\'' + esc(b.image_url) + '\')"></div>' : '') +
+            '<p class="brief">' + esc(b.brief) + '</p>' + decide(b) + '</div>';
+        }).join('');
+        return '<article class="frame ' + esc(s.status) + '" id="f' + f.n + '">' + pic + '<div class="body">' +
+          '<div class="fh"><span class="time">' + secs(f.g0) + ' to ' + secs(f.g1) + '</span><span class="tag rd ' + esc(s.readiness || 'ready') + '" title="' + esc(rd[1]) + '">' + rd[0] + '</span> <span class="tag ' + esc(s.status) + '">' + esc(ST[s.status]) + '</span></div>' +
+          '<p class="sec">' + f.c.n + '. ' + esc(f.c.title) + (sq ? ' · V on camera' : '') + '</p>' +
+          '<p class="q">“' + esc(s.line || f.c.line) + '”</p>' +
+          '<p class="brief"><b>On screen:</b> ' + esc(s.brief) + '</p>' +
+          (s.flag ? '<p class="flag">' + esc(s.flag) + '</p>' : '') +
+          '<button type="button" class="linkbtn" data-play="' + f.n + '">▶ Play from here</button>' +
+          decide(s) + br + '</div></article>';
+      }
+      var LB = null;
       function lookbook() {
-        var html = '<p class="sub">Every shot, chapter by chapter. Approve what works; send back what doesn\'t with a note. Nothing is animated or drawn until it is approved.</p>';
-        data.chapters.forEach(function (c) {
-          var shots = data.shots.filter(function (s) { return s.chapter_n === c.n; });
-          html += '<section class="chap"><div class="chap-h"><span class="n">' + c.n + '</span><div class="tx"><h2>' + esc(c.title) + '</h2><p class="line">' + esc(c.line) + '</p></div>' +
-            (c.audio_url ? '<audio controls preload="none" src="' + esc(c.audio_url) + '"></audio>' : '') + '</div>' +
-            '<div class="shots">' + (shots.length ? shots.map(function (s) { return shotCard(s, c); }).join('') : '<p class="meta">No shots for this chapter yet.</p>') + '</div></section>';
-        });
+        LB = frames();
+        var fr = LB.list, all = data.shots.length, ap = data.shots.filter(function (s) { return s.status === 'approved'; }).length;
+        var html = '<p class="sub">The tour frame by frame, the way it will play. Press Play to watch it with V\'s voice, or go frame by frame. Approve what works; Redo what doesn\'t with a note (type it or tap the mic and say it). Nothing is animated or drawn until its frame is approved.</p>' +
+          '<section class="player" aria-label="The tour"><div class="stage"><div class="st-img" id="lbImg"></div><div class="cap"><span class="fn" id="lbN"></span><div><p class="q" id="lbQ"></p><p class="meta" id="lbM"></p></div></div></div>' +
+          '<div class="ctl"><button type="button" class="btn" id="lbPlay">▶ Play the tour</button><button type="button" class="btn btn-quiet" id="lbPrev" aria-label="Back">Back</button><button type="button" class="btn btn-quiet" id="lbNext" aria-label="Next">Next</button><span class="meta" id="lbT">0:00 / ' + secs(LB.total) + '</span></div>' +
+          '<div class="prog" id="lbBar"><span id="lbFill"></span></div>' +
+          '<div class="fbtns">' + fr.map(function (f) { return '<button type="button" data-go="' + f.n + '" class="' + esc(f.s.status) + '">' + pad(f.n) + '</button>'; }).join('') + '</div>' +
+          '<audio id="lbAu" preload="none"></audio></section>' +
+          '<div class="legend"><b>' + fr.length + ' frames · ' + ap + ' of ' + all + ' decisions approved</b>' +
+          Object.keys(RD).map(function (k) { return '<span><span class="tag rd ' + k + '">' + RD[k][0] + '</span> ' + RD[k][1] + '</span>'; }).join('') +
+          '<span><span class="flag-dot"></span> Orange: the script says something that is not built yet.</span></div>' +
+          '<div class="frames" id="lbGrid">' + fr.map(frameCard).join('') + '</div>';
         $('pane').innerHTML = html;
-        Array.prototype.forEach.call($('pane').querySelectorAll('.shot'), wireShot);
-        Array.prototype.forEach.call($('pane').querySelectorAll('[data-big]'), function (el) {
+        wireGrid();
+        wirePlayer();
+      }
+      function wireGrid() {
+        Array.prototype.forEach.call($('lbGrid').querySelectorAll('.dec'), wireShot);
+        Array.prototype.forEach.call($('lbGrid').querySelectorAll('[data-big]'), function (el) {
           el.onclick = function () { var lb = document.createElement('div'); lb.className = 'lb'; lb.innerHTML = '<img alt="" src="' + esc(el.getAttribute('data-big')) + '">'; lb.onclick = function () { lb.remove(); }; document.body.appendChild(lb); };
         });
+        Array.prototype.forEach.call($('lbGrid').querySelectorAll('[data-play]'), function (b) {
+          b.onclick = function () { LB.go(Number(b.getAttribute('data-play')), true); $('pane').querySelector('.player').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+        });
+      }
+      function wirePlayer() {
+        var fr = LB.list, au = $('lbAu'), cur = 1, playing = false, chap = null;
+        function show(n) {
+          var f = fr[n - 1]; if (!f) return; cur = n;
+          var img = f.s.image_url || (f.broll[0] && f.broll[0].image_url) || '';
+          $('lbImg').style.backgroundImage = img ? 'url(\'' + img + '\')' : 'none';
+          $('lbImg').className = 'st-img' + (f.s.kind === 'on_camera' ? ' square' : '') + (img ? '' : ' empty');
+          $('lbN').textContent = pad(n);
+          $('lbQ').textContent = '“' + (f.s.line || f.c.line) + '”';
+          $('lbM').textContent = secs(f.g0) + ' to ' + secs(f.g1) + ' · ' + f.c.n + '. ' + f.c.title + ' · ' + KIND[f.s.kind] + ' · ' + ST[f.s.status];
+          Array.prototype.forEach.call($('pane').querySelectorAll('.fbtns button'), function (b) { b.classList.toggle('on', Number(b.getAttribute('data-go')) === n); });
+        }
+        function tick() {
+          if (chap == null) return;
+          var g = LB.off[chap] + au.currentTime;
+          $('lbT').textContent = secs(g) + ' / ' + secs(LB.total);
+          $('lbFill').style.width = Math.min(100, g / LB.total * 100) + '%';
+          var f = fr.filter(function (x) { return x.s.chapter_n === chap && au.currentTime >= x.from - 0.05; }).pop();
+          if (f && f.n !== cur) show(f.n);
+        }
+        function load(n, at, play) {
+          var c = data.chapters.filter(function (x) { return x.n === n; })[0];
+          if (!c || !c.audio_url) { playing = false; $('lbPlay').textContent = '▶ Play the tour'; return; }
+          if (chap !== n) { au.src = c.audio_url; chap = n; }
+          var seek = function () { try { au.currentTime = at || 0; } catch (e) {} if (play) au.play().catch(function () {}); tick(); };
+          if (au.readyState >= 1) seek(); else { au.addEventListener('loadedmetadata', seek, { once: true }); au.load(); }
+        }
+        LB.go = function (n, play) {
+          var f = fr[n - 1]; if (!f) return; show(n); playing = !!play;
+          $('lbPlay').textContent = playing ? '❚❚ Pause' : '▶ Play the tour';
+          load(f.s.chapter_n, f.from, playing);
+          if (!playing) au.pause();
+        };
+        au.addEventListener('timeupdate', tick);
+        au.addEventListener('ended', function () {
+          var next = data.chapters.filter(function (c) { return c.n > chap; })[0];
+          if (next && playing) load(next.n, 0, true); else { playing = false; $('lbPlay').textContent = '▶ Play the tour'; }
+        });
+        $('lbPlay').onclick = function () {
+          if (playing) { au.pause(); playing = false; $('lbPlay').textContent = '▶ Play the tour'; return; }
+          if (chap == null) { LB.go(cur, true); return; }
+          playing = true; $('lbPlay').textContent = '❚❚ Pause'; au.play().catch(function () {});
+        };
+        $('lbPrev').onclick = function () { LB.go(Math.max(1, cur - 1), playing); };
+        $('lbNext').onclick = function () { LB.go(Math.min(fr.length, cur + 1), playing); };
+        $('lbBar').onclick = function (e) {
+          var r = this.getBoundingClientRect(), g = (e.clientX - r.left) / r.width * LB.total;
+          var f = fr.filter(function (x) { return x.g0 <= g; }).pop() || fr[0];
+          show(f.n); load(f.s.chapter_n, g - LB.off[f.s.chapter_n], playing);
+        };
+        Array.prototype.forEach.call($('pane').querySelectorAll('[data-go]'), function (b) { b.onclick = function () { LB.go(Number(b.getAttribute('data-go')), playing); }; });
+        show(1);
       }
       function wireShot(card) {
         var id = card.getAttribute('data-id'), box = card.querySelector('.redo-box'), main = card.querySelector('.acts.main');
@@ -196,11 +336,13 @@
             b.disabled = true;
             api({ action: 'shot_decide', id: id, status: status, note: note }).then(function (r) {
               if (!r || !r.ok) { b.disabled = false; return; }
-              data.shots = data.shots.map(function (s) { return s.id === id ? r.shot : s; });
-              var ch = data.chapters.filter(function (c) { return c.n === r.shot.chapter_n; })[0];
-              var tmp = document.createElement('div'); tmp.innerHTML = shotCard(r.shot, ch); var fresh = tmp.firstChild;
-              card.parentNode.replaceChild(fresh, card); wireShot(fresh);
-              var pic = fresh.querySelector('[data-big]'); if (pic) pic.onclick = function () { var lb = document.createElement('div'); lb.className = 'lb'; lb.innerHTML = '<img alt="" src="' + esc(pic.getAttribute('data-big')) + '">'; lb.onclick = function () { lb.remove(); }; document.body.appendChild(lb); };
+              data.shots = data.shots.map(function (s) { return s.id === id ? Object.assign({}, s, r.shot) : s; });
+              var y = window.scrollY;
+              LB = Object.assign(frames(), { go: LB.go });
+              $('lbGrid').innerHTML = LB.list.map(frameCard).join('');
+              wireGrid();
+              Array.prototype.forEach.call($('pane').querySelectorAll('.fbtns button'), function (x) { var f = LB.list[Number(x.getAttribute('data-go')) - 1]; if (f) x.className = f.s.status + (x.classList.contains('on') ? ' on' : ''); });
+              window.scrollTo(0, y);
             });
           };
         });

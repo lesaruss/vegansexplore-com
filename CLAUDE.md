@@ -65,6 +65,15 @@ shots; V on camera at chapter 1 (0 to 2.4 s), 9 (0 to 2.5 s) and 13 (6.9 to 9.6 
 (`geekfon-media/artists/v/business-tour/join-1-v2.jpg`, `join-5-v2.jpg`, `start-4-v2.jpg`, no new credits); 12 real Depot captures at 1920 x 1080 in
 `vegan-media/media/tours/depot/`; two illustration ideas (chapters 7 and 9). Next: Sean approves the lookbook, then the three moments are lip-synced and the video
 is edited. The Nonprofit Guide (Dani) is the next tour to load here.
+**The lookbook format (LOCKED by Sean 2026-11-07, "let's lock it"; canon `canon-ve-guide-tour-standard` v4 `lookbook_format_v4`; migration
+`20261107_lookbook_frames.sql`)**: modelled on the Nonprofit Guide's lookbook artifact, with a white player, Approve and Redo on every card, and readiness
+kept apart from the decision. The Lookbook tab (`lookbook()`, `frameCard()` in `admin/depot/guides.html`) is a white player (the frame, its words and time,
+Play the tour through the chapter recordings back to back, Back / Next, a tappable progress bar, numbered frame buttons colored by decision), a legend, then
+one card per frame in play order (01 to N): picture, global time, readiness (`ve_video_shots.readiness`: Ready, Recapture, Mock, B-roll), decision
+(Waiting for you, Approved, Redo), section, the quoted words (`line`), On screen, an orange note when the script names something not built (`flag`), Play
+from here, Approve / Redo / Undo (a Redo note can be spoken with the site mic). An illustration is B-roll inside the frame whose window it shares, with its
+own decision. `audio_from` / `audio_to` are each frame's window in its chapter; a split inside a chapter is by sentence (approximate) unless stt word
+timings are taken. The Depot tour is 17 frames (19 decisions); its orange notes: Logos as its own tool, See every page, Ask V.
 
 ## Every Guide opens the same way, and businesses earn the word Vegan (Sean, 2026-11-06)
 
