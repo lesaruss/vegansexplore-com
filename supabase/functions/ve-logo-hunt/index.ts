@@ -208,11 +208,23 @@ The pictures come from the business's website, a Google Images search, its Faceb
     } as any);
     if (res.stop_reason !== 'end_turn') return { error: 'stopped: ' + res.stop_reason };
     const text = (res.content || []).filter((b: any) => b.type === 'text').map((b: any) => b.text).join('');
-    return { result: JSON.parse(text) as { pick: number; same_logo_in: number[]; confidence: string; background: string; why: string } };
+    const u = res.usage || {};
+    const usd = ((u.input_tokens || 0) + (u.cache_creation_input_tokens || 0)) * 4e-6 + (u.cache_read_input_tokens || 0) * 0.2e-6 + (u.output_tokens || 0) * 20e-6;  // Opus 5.5 list prices
+    return { usd, result: JSON.parse(text) as { pick: number; same_logo_in: number[]; confidence: string; background: string; why: string } };
   } catch (e) { return { error: e instanceof Anthropic.APIError ? `anthropic ${e.status}` : String((e as Error).message || e) }; }
 }
 
 // ---- One batch ----
+let FB_SEARCH = false;
+// Claims up to 5 listings still queued in the run and starts them as their own call (action batch).
+async function nextGroup(req: Request, token: string, runId: string, fbSearch: boolean) {
+  const { data: q } = await db.from('ve_logo_hunts').select('listing_id').eq('run_id', runId).eq('status', 'queued').limit(5);
+  const ids = (q || []).map((r: any) => r.listing_id); if (!ids.length) return;
+  const { data: got } = await db.from('ve_logo_hunts').update({ status: 'claimed' }).eq('run_id', runId).eq('status', 'queued').in('listing_id', ids).select('listing_id');
+  const mine = (got || []).map((r: any) => r.listing_id); if (!mine.length) return nextGroup(req, token, runId, fbSearch);
+  await fetch(`${SUPABASE_URL}/functions/v1/ve-logo-hunt`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': req.headers.get('authorization') || '', 'x-ops-token': token },
+    body: JSON.stringify({ action: 'batch', run_id: runId, listing_ids: mine, fb_search: fbSearch }) }).catch(() => null);
+}
 async function runBatch(runId: string, ids: string[]) {
   const { data: ls } = await db.from('listings').select('id, slug, name, category, address_city, address_state, website, instagram, ig_handle, facebook').in('id', ids);
   const L = (ls || []) as any[];
@@ -228,7 +240,7 @@ async function runBatch(runId: string, ids: string[]) {
   // 2. No Facebook link? Search Facebook for a page by the business's name and city (one search a listing: the actor's result
   // limit is for the whole run). Up to two pages whose name shares a word with ours go to the page reader with the rest.
   const fbFound: Record<string, string[]> = {};
-  const noFb = L.filter((l) => !fb[l.id]);
+  const noFb = FB_SEARCH ? L.filter((l) => !fb[l.id]) : [];  // off by default (Sean, 2026-11-07): it rarely found the right page and was ~40% of the Apify cost
   let fbSearchN = 0, next0 = 0;
   const searchOne = async () => {
     while (next0 < noFb.length) {
@@ -290,14 +302,22 @@ async function runBatch(runId: string, ids: string[]) {
           await db.from('ve_logo_hunts').update({ status: 'done', site, socials, candidates: candRows, pick: -1, verdict: 'none', why: 'No usable picture found anywhere.', cost_usd: per, done_at: new Date().toISOString() }).eq('run_id', runId).eq('listing_id', l.id);
           continue;
         }
-        const j = await judge(l.name, l.category || '', [l.address_city, l.address_state].filter(Boolean).join(', '), kept.map((c) => ({ label: c.label, type: c.type, bytes: c.bytes })));
+        // Claude sees each picture at most 512 px (Supabase's image resizer on the stored copy): logos read fine, about a quarter of the cost.
+        const small = await Promise.all(kept.map(async (c) => {
+          try {
+            const r = await fetch(c.stored.replace('/object/public/', '/render/image/public/') + '?width=512&height=512&resize=contain&format=origin', { signal: AbortSignal.timeout(15000) });
+            if (r.ok) { const b = new Uint8Array(await r.arrayBuffer()); if (imageSize(b)) return { bytes: b, type: typeOf(b) }; }
+          } catch { /* the original then */ }
+          return { bytes: c.bytes, type: c.type };
+        }));
+        const j = await judge(l.name, l.category || '', [l.address_city, l.address_state].filter(Boolean).join(', '), kept.map((c, n) => ({ label: c.label, type: small[n].type, bytes: small[n].bytes })));
         if ('error' in j) { await db.from('ve_logo_hunts').update({ status: 'failed', site, socials, candidates: candRows, error: j.error, cost_usd: per }).eq('run_id', runId).eq('listing_id', l.id); continue; }
-        const r = j.result!;
+        const r = j.result!; const claudeUsd = (j as any).usd || 0;
         const ok = r.pick >= 0 && r.pick < kept.length;
         const same = (r.same_logo_in || []).filter((n) => n >= 0 && n < kept.length && n !== r.pick);
         const agree = ok ? [...new Set([kept[r.pick].source, ...same.map((n) => kept[n].source)])] : [];
         const verdict = !ok ? 'none' : agree.length >= 2 && r.confidence === 'high' ? 'auto' : 'review';
-        await db.from('ve_logo_hunts').update({ status: 'done', site, socials, candidates: candRows, pick: ok ? r.pick : -1, same_logo_in: same, sources_agree: agree, confidence: r.confidence, background: r.background, verdict, why: r.why, cost_usd: per, done_at: new Date().toISOString() }).eq('run_id', runId).eq('listing_id', l.id);
+        await db.from('ve_logo_hunts').update({ status: 'done', site, socials, candidates: candRows, pick: ok ? r.pick : -1, same_logo_in: same, sources_agree: agree, confidence: r.confidence, background: r.background, verdict, why: r.why, cost_usd: per, claude_usd: claudeUsd, done_at: new Date().toISOString() }).eq('run_id', runId).eq('listing_id', l.id);
       } catch (e) { await db.from('ve_logo_hunts').update({ status: 'failed', error: String((e as Error).message || e) }).eq('run_id', runId).eq('listing_id', l.id); }
     }
   };
@@ -312,22 +332,22 @@ Deno.serve(async (req) => {
   if (!ops || token !== ops) return json({ error: 'not allowed' }, 401);
   const body = await req.json().catch(() => ({}));
   if (body.action === 'start') {
-    const ids = (Array.isArray(body.listing_ids) ? body.listing_ids : []).filter((x: unknown) => typeof x === 'string' && /^[0-9a-f-]{36}$/i.test(x as string)).slice(0, 60);
+    const ids = (Array.isArray(body.listing_ids) ? body.listing_ids : []).filter((x: unknown) => typeof x === 'string' && /^[0-9a-f-]{36}$/i.test(x as string)).slice(0, 300);
     if (!ids.length) return json({ error: 'no listings' }, 400);
     const runId = typeof body.run_id === 'string' && /^[a-z0-9-]{4,40}$/.test(body.run_id) ? body.run_id : 'h' + Date.now().toString(36);
     await db.from('ve_logo_hunts').upsert(ids.map((id: string) => ({ run_id: runId, listing_id: id, status: 'queued' })), { onConflict: 'run_id,listing_id', ignoreDuplicates: true });
-    const batches: string[][] = []; for (let i = 0; i < ids.length; i += 5) batches.push(ids.slice(i, i + 5));  // 5 a group: with the Facebook search and the browser, 10 ran past the background time limit
-    // Each group is its own call to this function (action batch), so each gets its own background time limit.
-    const self = `${SUPABASE_URL}/functions/v1/ve-logo-hunt`;
-    const hdr = { 'Content-Type': 'application/json', 'Authorization': req.headers.get('authorization') || '', 'x-ops-token': token };
-    await Promise.all(batches.map((b) => fetch(self, { method: 'POST', headers: hdr, body: JSON.stringify({ action: 'batch', run_id: runId, listing_ids: b }) }).catch(() => null)));
+    // Three chains of groups of 5: each group is its own call (its own background time limit), and when it finishes it claims
+    // the next 5 still queued in the run, so at most three groups run at once (Apify's limit on runs at the same time).
+    await Promise.all([0, 1, 2].map(() => nextGroup(req, token, runId, body.fb_search === true)));
     return json({ ok: true, run_id: runId, listings: ids.length });
   }
   if (body.action === 'batch') {
     // one batch in the foreground (up to 10), for a run already started
     const ids = (Array.isArray(body.listing_ids) ? body.listing_ids : []).slice(0, 10);
+    FB_SEARCH = body.fb_search === true;
+    const runId = String(body.run_id || '');
     // @ts-ignore EdgeRuntime is the Supabase runtime's
-    EdgeRuntime.waitUntil(runBatch(String(body.run_id || ''), ids));
+    EdgeRuntime.waitUntil((async () => { try { await runBatch(runId, ids); } finally { await nextGroup(req, token, runId, FB_SEARCH); } })());
     return json({ ok: true, started: ids.length });
   }
   if (body.action === 'status') {
