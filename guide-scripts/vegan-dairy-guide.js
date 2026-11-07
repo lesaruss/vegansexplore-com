@@ -91,7 +91,7 @@
       sayCredit: 'Every Guide is eleven dollars, or one Guide credit. Join for eleven dollars and your first credit comes with it, so this Guide can be yours. Come join us!',
       // On points (Sean locked 2026-10-25, playbook ve-pricing-points-passport). Not recorded yet, so this tab shows her
       // picture and the bubble carries the words; the credit and membership clips no longer match the offer.
-      sayPoints: 'The Dairy Guide is eleven dollars, or 1,100 points, and it\'s yours to keep. Buying it makes you a member of Vegans Explore. Come join us!' }
+      sayPoints: 'The Dairy Guide is eleven dollars, or 1,100 points, and it\'s yours to keep. Members can pick either one.' }
   ];
   // Maya on camera. Overview is her welcome; every other tab gets a clip under 10 seconds (el-media voice, Wan 2.7,
   // scripts/brand-door/assemble_r5.py), stored in vegan-media/media/maya/dairy-guide/. Until a tab has one, she shows
@@ -230,14 +230,14 @@
   function canExchange() { return ST.balance >= ST.rate && ST.credits < ST.cap; }
   function ctaLabel() {
     return { join: onPoints() ? 'Get it for $11' : 'Join for $11', activate: 'Become a Founding Member', unlock: 'Unlock with 1 credit',
-      points: 'Unlock with ' + pts(ST.cost) + ' points', buy: onPoints() ? 'Get it for $11' : 'Get it now for $11' }[mode()];
+      points: 'Use ' + pts(ST.cost) + ' points', buy: onPoints() ? 'Get it for $11' : 'Get it now for $11' }[mode()];
   }
   function offerLine() {
     if (!priced()) return 'It comes with the $11 Founding Membership, one time.';
     var m = mode();
     if (onPoints()) {
-      if (m === 'points') return 'Unlock it with ' + pts(ST.cost) + ' points: you have ' + pts(ST.balance) + '. Or get it for $11.';
-      return 'It is $11, or ' + pts(ST.cost) + ' points, and yours to keep. Buying it makes you a member of Vegans Explore.';
+      if (m === 'points') return 'Pick how you pay: $11, or ' + pts(ST.cost) + ' of your ' + pts(ST.balance) + ' points.';
+      return m === 'join' ? 'It is $11 and yours to keep. Members can pay with ' + pts(ST.cost) + ' points instead.' : 'It is $11 and yours to keep, or ' + pts(ST.cost) + ' points: you have ' + pts(ST.balance) + '.';
     }
     if (m === 'unlock') return 'Unlock it with 1 Guide credit. You have ' + ST.credits + '.';
     if (m === 'buy') return 'Get it now for $11, or use a Guide credit: Passport gives you one every month.';
@@ -246,9 +246,9 @@
   function ctaBtns(small) {
     var m = mode(), link = small ? ' style="font-size:12.5px;font-weight:800;color:var(--g)"' : '';
     return '<div class="dg-btns"' + (small ? ' style="margin-top:6px"' : '') + '><button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' +
-      (m === 'join' ? '<a href="#" data-signin' + link + '>Already a member? Sign in</a>' : '') +
-      (m === 'points' ? '<a href="#" data-buy' + link + '>Or get it for $11</a>' : '') +
-      (m === 'buy' && onPoints() ? '<a href="/passport"' + link + '>Or get your Passport: $11 with 1,100 points</a>' : '') +
+      (m === 'join' ? '<a href="#" data-signin' + link + '>Member? Sign in</a>' : '') +
+      (m === 'points' ? '<a href="#" data-buy' + link + '>Or pay $11</a>' : '') +
+      (m === 'buy' && onPoints() ? '<a href="/bounties"' + link + '>Earn points with bounties</a>' : '') +
       (m === 'buy' && !onPoints() ? (canExchange() ? '<a href="#" data-exchange' + link + '>Use ' + pts(ST.rate) + ' points for a credit</a>' : '<a href="/passport"' + link + '>Passport: a credit every month</a>') : '') + '</div>';
   }
   function take(d) {
@@ -267,6 +267,8 @@
       : '<b>$11</b><small>one time<br>purchase</small>'; // Sean, 2026-10-10: "$11 one time purchase", two rows
     btn.textContent = ctaLabel();
     signin.style.display = m === 'join' ? '' : 'none';
+    var jin = box.querySelector('.dg-jb-in'), jm = mode();
+    if (jin) { if (jm === 'points') { jin.innerHTML = 'Or<br><a href="#" data-buy>pay $11</a>'; jin.style.display = ''; } else if (jm === 'join') jin.innerHTML = 'Member?<br><a href="#" data-signin>Sign in</a>'; }
   }
 
   // Brands and cookbooks are Directory listings, so they look exactly like the Directory, and opening one keeps the
@@ -1040,13 +1042,13 @@
     }
     if (onPoints()) {
       var box2 = m === 'points'
-        ? '<div class="dg-big">' + pts(ST.cost) + '<small>points</small></div><p>You have ' + pts(ST.balance) + ' points. Unlock the Guide with ' + pts(ST.cost) + ' of them and it is yours to keep.</p>' +
-          '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button><button type="button" class="dg-btn dg-ghost" data-buy style="margin-top:8px">Or get it for $11</button>' + status
-        : '<div class="dg-big">$11<small>yours to keep</small></div><p>' + (m === 'join' ? 'Create your account and get the Guide for $11, one time. Buying it makes you a member of Vegans Explore. Already a member? <a href="#" data-signin>Sign in</a>.'
-            : 'Get the Guide for $11, one time, and it is yours to keep' + (ST.active ? '.' : '. Buying it also makes you a member of Vegans Explore.')) + '</p>' +
+        ? '<div class="dg-big">$11<small>or ' + pts(ST.cost) + ' points</small></div><p>Pick how you pay. You have ' + pts(ST.balance) + ' points. Either way the Guide is yours to keep.</p>' +
+          '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button><button type="button" class="dg-btn dg-ghost" data-buy style="margin-top:8px">Pay $11</button>' + status
+        : '<div class="dg-big">$11<small>yours to keep</small></div><p>' + (m === 'join' ? 'Get the Guide for $11, one time, and it is yours to keep. Members can pay with 1,100 points instead: <a href="#" data-signin>sign in</a>.'
+            : 'Get the Guide for $11, one time, and it is yours to keep' + '.') + '</p>' +
           '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status +
-          '<p class="dg-pp">Or get your <a href="/passport">Passport</a>: $11, one time, with 1,100 welcome points, enough for this Guide.</p>';
-      main.innerHTML = '<div class="dg-join">' + head('Get access', 'Open the whole Dairy Guide', 'Every Vegans Explore Guide is $11, or 1,100 points. $11 is the price of admission: buying a Guide makes you a member, and the Passport comes with 1,100 welcome points.') + list + '</div>';
+          (m === 'buy' ? '<p class="dg-pp">Or ' + pts(ST.cost) + ' points: you have ' + pts(ST.balance) + '. Earn more with <a href="/bounties">bounties</a>.</p>' : '');
+      main.innerHTML = '<div class="dg-join">' + head('Get access', 'Open the whole Dairy Guide', 'Every Vegans Explore Guide is $11, or 1,100 points for members, and yours to keep.') + list + '</div>';
       main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox">' + box2 + '</div>');
       return;
     }
@@ -1366,7 +1368,7 @@
       if (m === 'join' && onPoints()) {
         var go = function () { delete window.VE_ACTIVATE_HANDLER; buyNow(jb); };
         window.VE_ACTIVATE_HANDLER = go;
-        a.showAuthModal('Create your account, then get the Dairy Guide for $11. Buying it makes you a member.', go, 'signup');
+        a.showAuthModal('Create your account, then get the Dairy Guide for $11.', go, 'signup');
         return;
       }
       if (m === 'join') a.showAuthModal(priced() ? 'Create your account. Then become a Founding Member: $11, and your first Guide credit comes with it.'
@@ -1437,7 +1439,7 @@
       if (d && d.unlocked && d.html) { setStatus(''); becomeMember(d.html); return; }
       if (onPoints() && what === 'activate' && ST.active && ST.balance >= ST.cost) {
         location.hash = '#/join'; route();
-        setStatus('Welcome in! Your 1,100 welcome points are here. Unlock the Guide with them.'); return;
+        setStatus('Welcome in! Unlock the Guide with your points, or pay $11.'); return;
       }
       if (priced() && what === 'activate' && ST.active && ST.credits >= 1) {
         location.hash = '#/join'; route();
