@@ -1423,6 +1423,14 @@ Information Systems Division... everything about technology, the background, the
 fixes, building on `canon-branddesk-blueprint-signal`. Logan's defaults, not yet confirmed: Sentinel (`sentinel-gap-closure-playbook`) becomes Signal's monitoring engine, and the older
 `arch-signal-system` (an interest-based comms layer) gets renamed so Signal means IT only.
 
+**Old links and page templates, live (2026-11-06 and 07, playbook `signal`; handoff `docs/handoff/2026-11-07-signal-old-links-and-page-templates.md`).**
+Every old WordPress address and the 404 page go to `api/gone.js`, which asks `signal_resolve_old` (hand map `signal_redirects`, then a listing or a
+Pulse article, 301; else the Explorer intake `/passport?from=old-link`, 302), and every visit is a `signal_old_hits` row. Search titles and
+descriptions follow one rule, `public/ve-seo-text.js` (titles fit 65, descriptions 70 to 155), used by `api/listing.js`, `directory/listing.html`,
+`api/event.js` and `api/pulse-article.js`; chapters are served by `api/chapter.js` with their own head and heading; every banner page carries a seed
+`<h1 class="vcb-ssr">` the banner replaces (`api/event.js` strips it and the Events page's own share tags). The scanner counts headings and pictures only
+outside scripts. Rescan 2026-11-07: 3,325 pages, about 7,000 flags to 7. Waiting on Sean: merge 20309bf (slugs with an underscore). Next: the Signal tab in BrandDesk.
+
 ## Wrap up (Sean, 2026-11-03, canon `canon-wrap-up-standard`)
 
 "When we leave this room, I don't want anything on the floor." On Sean's cue ("wrap up", about 70% context) Logan sweeps the session into the
