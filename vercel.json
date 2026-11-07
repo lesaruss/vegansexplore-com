@@ -91,6 +91,10 @@
       "destination": "/directory/listing"
     },
     {
+      "source": "/nonprofits/sample",
+      "destination": "/directory/listing"
+    },
+    {
       "source": "/gigs/sample",
       "destination": "/gigs/index"
     },

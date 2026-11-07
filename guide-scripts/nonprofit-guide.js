@@ -509,7 +509,7 @@
       main.innerHTML = head('Become a Partner', 'Vegans Explore Nonprofit Partners',
         'The organization is the partner. Nonprofit Partners join by invitation; tell us about your organization and our team will be in touch.', t) +
         '<div class="rg-steps">' + what.map(function (w, i) { return '<div class="rg-step"><em>' + (i + 1) + '</em><b>' + esc(w[0]) + '</b><p>' + esc(w[1]) + '</p></div>'; }).join('') + '</div>' +
-        '<div class="dg-btns"><a class="dg-btn" href="#/partner/tell">Tell us about your organization</a><a class="dg-btn dg-ghost" href="/policies#membership">The terms</a></div>';
+        '<div class="dg-btns"><a class="dg-btn" href="#/partner/tell">Tell us about your organization</a><a class="dg-btn dg-ghost" href="/nonprofits/sample">See a sample organization</a><a class="dg-btn dg-ghost" href="/policies#membership">The terms</a></div>';
       return;
     }
     // Tell us about your organization is the Guide's intake now (ve_surveys 'nonprofit-guide', membership_rule_v6).
@@ -572,7 +572,7 @@
     main.innerHTML = head('Vegans Explore Guides for nonprofits', 'A home for your Vegan nonprofit',
       'Built with the organizations doing the work, with the ten tips from The Vegan Nonprofit Survival Guide by Sean A. Russell, our Directory and our interviews inside.') +
       '<div class="rg-steps">' + pitch.map(function (w, i) { return '<div class="rg-step"><em>' + (i + 1) + '</em><b>' + esc(w[0]) + '</b><p>' + esc(w[1]) + '</p></div>'; }).join('') + '</div>' +
-      (member() ? '' : '<div class="dg-btns" style="margin-bottom:22px"><button type="button" class="dg-btn" data-survey>Start with the survey, free</button></div>') +
+      '<div class="dg-btns" style="margin-bottom:22px">' + (member() ? '' : '<button type="button" class="dg-btn" data-survey>Start with the survey, free</button>') + '<a class="dg-btn dg-ghost" href="/nonprofits/sample">See a sample organization</a></div>' +
       '<div class="dg-tiles">' + tiles.map(function (t) {
         return '<a class="dg-tile' + (t[0] === 'partner' ? ' dg-warm' : '') + '" href="' + href(t[0]) + '"><div class="dg-ic">' + ICON[t[0]] + '</div><div><b>' + esc(t[1]) + '</b><span>' + esc(t[2]) + '</span>' +
           (!member() && !t[3] ? '<span class="dg-mlock">' + LOCK_SVG + ' In the full Guide</span>' : !member() && t[3] ? '<span class="dg-mlock" style="color:#1f5f22 !important">Open to everyone</span>' : '') + '</div></a>';

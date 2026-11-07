@@ -68,6 +68,7 @@
     /* Slide 4: three ways in */
     .ways{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:6px;}
     .way{display:grid;grid-template-columns:minmax(0,1fr);gap:2px;align-content:start;padding:12px 14px;border:1px solid var(--ve-border);border-radius:12px;}
+    a.way{text-decoration:none;color:inherit;transition:border-color .15s}a.way:hover,a.way:focus-visible{border-color:var(--ve-green,#3A9B3E)}a.way b{color:var(--ve-green-dark,#2D5C27)}
     .way b{font-size:14px;font-weight:900;}
     .way span{font-size:14.5px;color:var(--ve-text-75);font-weight:600;}
     .fine{font-size:13.5px;color:var(--ve-text-75);margin-top:14px;}
@@ -254,7 +255,7 @@
   <main class="stage" id="stage" aria-roledescription="carousel" aria-label="Partner with Vegans Explore">
     <div class="stage-bg" id="stage-bg" aria-hidden="true"></div>
 
-    <section class="slide slide-hero active" id="s-problem" aria-roledescription="slide" aria-label="1 of 6">
+    <section class="slide slide-hero active" id="s-problem" aria-roledescription="slide" aria-label="1 of 7">
       <div class="split">
         <div class="hero-inner">
           <p class="eyebrow">For South Florida businesses</p>
@@ -265,7 +266,7 @@
       </div>
     </section>
 
-    <section class="slide" id="s-why" aria-roledescription="slide" aria-label="2 of 6">
+    <section class="slide" id="s-why" aria-roledescription="slide" aria-label="2 of 7">
       <div class="split">
         <div>
           <p class="eyebrow">Why it matters</p>
@@ -277,7 +278,7 @@
       </div>
     </section>
 
-    <section class="slide" id="s-room" aria-roledescription="slide" aria-label="3 of 6">
+    <section class="slide" id="s-room" aria-roledescription="slide" aria-label="3 of 7">
       <div class="split">
         <div>
           <p class="eyebrow">You&rsquo;re not starting from zero</p>
@@ -295,7 +296,7 @@
       </div>
     </section>
 
-    <section class="slide" id="s-bring" aria-roledescription="slide" aria-label="4 of 6">
+    <section class="slide" id="s-bring" aria-roledescription="slide" aria-label="4 of 7">
       <div class="split">
         <div>
           <p class="eyebrow">What you bring</p>
@@ -312,7 +313,7 @@
       </div>
     </section>
 
-    <section class="slide" id="s-only" aria-roledescription="slide" aria-label="5 of 6">
+    <section class="slide" id="s-only" aria-roledescription="slide" aria-label="5 of 7">
       <div class="split">
         <div>
           <p class="eyebrow">Straight up</p>
@@ -324,7 +325,21 @@
       </div>
     </section>
 
-    <section class="slide" id="s-seat" aria-roledescription="slide" aria-label="6 of 6">
+    <section class="slide" id="s-demos" aria-roledescription="slide" aria-label="6 of 7">
+      <div>
+        <p class="eyebrow">See it from the inside</p>
+        <h2>Try a partner&rsquo;s side for yourself.</h2>
+        <p class="member-copy" style="max-width:62ch">Each sample is the real page and the real dashboard, run by a made-up partner, so you can click around and see what you get. Nothing is saved or charged. To sign in as the partner, use <b>demo@vegansexplore.com</b> / <b>explore11</b>.</p>
+        <div class="ways" style="margin-top:18px">
+          <a class="way" href="/nonprofits/sample"><b>A nonprofit</b><span>Open Gate Sanctuary: its members, events, foster and rescue calls, and the team&rsquo;s dashboard.</span></a>
+          <a class="way" href="/business/sample"><b>A restaurant</b><span>Green Leaf Kitchen: its page, its menu, and the owner&rsquo;s dashboard.</span></a>
+          <a class="way" href="/groups/sample"><b>A community group</b><span>Sprout Social Society: its board, events, announcements and the organizer&rsquo;s dashboard.</span></a>
+          <a class="way" href="/gigs/sample"><b>A creator</b><span>Kai Monroe: open gigs, the media kit and the Creator Dashboard.</span></a>
+        </div>
+      </div>
+    </section>
+
+    <section class="slide" id="s-seat" aria-roledescription="slide" aria-label="7 of 7">
       <div class="split">
         <div>
           <p class="eyebrow">Your seat at the table</p>

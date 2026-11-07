@@ -4109,6 +4109,8 @@ function demoSrc(){
   if(/^\/business\/sample\/?$/.test(location.pathname)) return '/business/sample/listing-demo.js';
   // The sample group (Sean, 2026-10-29): Sprout Social Society, a Group Partner's page and, with the demo sign-in, its organizer's dashboard.
   if(/^\/groups\/sample\/?$/.test(location.pathname)) return '/groups/sample/listing-demo.js';
+  // The sample nonprofit (Sean, 2026-11-07): Open Gate Sanctuary, a sanctuary and rescue with an active community, and its team's dashboard.
+  if(/^\/nonprofits\/sample\/?$/.test(location.pathname)) return '/nonprofits/sample/listing-demo.js';
   var s = demoSlug(); return s ? '/campaign-engine/' + s + '/listing-demo.js' : '';
 }
 function demoToast(msg){
@@ -4344,8 +4346,8 @@ function wireCampaign(l){
 }
 function demoBar(){
   if(DEMO.group) return '<div class="demo-bar" id="demo-bar" role="note"><div class="db-text"><strong>Sample</strong>'+esc(DEMO.label)+'</div>'+
-    '<div class="db-view" id="demo-bar-view"><span>Viewing as</span><button type="button" data-view="member" aria-pressed="true">A member</button><button type="button" data-view="owner" aria-pressed="false">The organizer</button></div>'+
-    '<div class="db-links"><a href="'+esc(DEMO.guideUrl || '/groups/welcome')+'">The Group Partner Guide</a><button type="button" id="demo-signout" hidden>Sign out of the demo</button></div></div>';
+    '<div class="db-view" id="demo-bar-view"><span>Viewing as</span><button type="button" data-view="member" aria-pressed="true">A member</button><button type="button" data-view="owner" aria-pressed="false">'+(DEMO.nonprofit ? 'The organization' : 'The organizer')+'</button></div>'+
+    '<div class="db-links"><a href="'+esc(DEMO.guideUrl || '/groups/welcome')+'">'+esc(DEMO.guideName || 'The Group Partner Guide')+'</a><button type="button" id="demo-signout" hidden>Sign out of the demo</button></div></div>';
   if(DEMO.business) return '<div class="demo-bar" id="demo-bar" role="note"><div class="db-text"><strong>Sample</strong>'+esc(DEMO.label)+'</div>'+
     '<div class="db-view" id="demo-bar-view"><span>Viewing as</span><button type="button" data-view="member" aria-pressed="true">A visitor</button><button type="button" data-view="owner" aria-pressed="false">The owner</button></div>'+
     '<div class="db-links"><a href="/business">For businesses</a><a href="/claim">Find your business</a></div></div>';
@@ -5693,8 +5695,9 @@ function demoModal(html, onWire){
 function closeDemoModal(){ var m = document.getElementById('demo-modal'); if(m){ m.classList.remove('show'); document.body.style.overflow = ''; } }
 function groupDemoLogin(l){
   var L = DEMO.login || {};
-  demoModal('<p class="dm-kicker">Sample group</p><h3>Sign in as the organizer</h3>' +
-    '<p>Use the demo sign-in to see what Sprout Social Society\'s organizer sees. It opens this sample only, in this browser.</p>' +
+  var who = DEMO.nonprofit ? 'team' : 'organizer';
+  demoModal('<p class="dm-kicker">' + (DEMO.nonprofit ? 'Sample organization' : 'Sample group') + '</p><h3>Sign in as the ' + who + '</h3>' +
+    '<p>Use the demo sign-in to see what ' + esc(DEMO.listing.name) + '\'s ' + who + ' sees. It opens this sample only, in this browser.</p>' +
     '<label class="dm-f">Email<input id="dm-email" type="email" autocomplete="off" placeholder="' + esc(L.email || '') + '"></label>' +
     '<label class="dm-f">Password<input id="dm-pass" type="password" autocomplete="off"></label>' +
     '<p class="dm-hint">Demo sign-in: <b>' + esc(L.email || '') + '</b> / <b>' + esc(L.password || '') + '</b></p><p class="dm-err" id="dm-err" role="alert"></p>' +
@@ -5716,18 +5719,21 @@ function demoEvent(id){
   var e = (DEMO.events || []).filter(function(x){ return x.id === id; })[0]; if(!e) return;
   var past = Date.parse(e.ends_at || e.starts_at) < Date.now();
   var when = new Date(e.starts_at).toLocaleString('en-US', { timeZone: 'America/New_York', weekday: 'long', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-  var head = '<p class="dm-kicker">' + (e.price_cents ? 'Ticketed event' : 'Free event') + ' · Sprout Social Society</p><h3>' + esc(e.title) + '</h3>' +
+  var head = '<p class="dm-kicker">' + (e.price_cents ? 'Ticketed event' : 'Free event') + ' · ' + esc(DEMO.listing.name) + '</p><h3>' + esc(e.title) + '</h3>' +
     '<p class="dm-meta">' + esc(when) + ' · ' + esc(e.location_name) + ', ' + esc(e.city) + '</p>' + (e.description ? '<p>' + esc(e.description) + '</p>' : '');
-  if(past){ demoModal(head + '<p class="dm-note">' + e.going + ' went. Past events stay on the group\'s page, so newcomers can see how active it is.</p>'); return; }
+  if(past){ demoModal(head + '<p class="dm-note">' + e.going + ' went. Past events stay on the ' + (DEMO.nonprofit ? 'organization' : 'group') + '\'s page, so newcomers can see how active it is.</p>'); return; }
   var draw = function(){
     var newcomer = GDEMO.who === 'new', going = GDEMO.going[e.id], body;
     var tabs = '<div class="dm-who" role="group" aria-label="Who are you in this sample?"><span>See it as</span><button type="button" data-who="new" aria-pressed="' + newcomer + '">Someone new</button><button type="button" data-who="member" aria-pressed="' + !newcomer + '">A Passport holder</button></div>';
     var fee = e.price_cents ? Math.round(e.price_cents * 0.029 + 30) : 0;
     var ticket = e.price_cents ? '<div class="dm-bill"><div><span>Ticket</span><b>' + money2(e.price_cents) + '</b></div><div><span>Card processing</span><b>' + money2(fee) + '</b></div>' : '';
+    if(DEMO.nonprofit) tabs = tabs.replace('A Passport holder', 'A member');
     if(going) body = '<div class="dm-done"><b>You\'re going.</b><span>' + esc(going) + '</span></div><p class="dm-note">This is the sample: nothing was charged or saved.</p>';
     else if(!newcomer){
       body = e.price_cents ? ticket + '<div class="dm-total"><span>Total</span><b>' + money2(e.price_cents + fee) + '</b></div></div><button type="button" class="dm-go" data-act="buy">Get my ticket</button>'
         : '<p>' + e.going + ' going. As a Passport holder, every event is yours to RSVP.</p><button type="button" class="dm-go" data-act="rsvp">I\'m going</button>';
+    } else if(DEMO.nonprofit){
+      body = '<div class="dm-pass"><b>Joining Vegans Explore is free.</b><span>Take a short survey and you are a member: every event is yours to RSVP, and you can follow ' + esc(DEMO.listing.name) + ' for its news and foster calls.</span></div><button type="button" class="dm-go" data-act="npjoin">Join free and RSVP</button>';
     } else if(!e.price_cents && !GDEMO.guestUsed){
       body = '<div class="dm-pass"><b>Your guest pass covers this one.</b><span>Your first free event with any group is on us. From your second, you join Vegans Explore with the Passport: $11, one time.</span></div><button type="button" class="dm-go" data-act="guest">RSVP with my guest pass</button>';
     } else {
@@ -5740,7 +5746,8 @@ function demoEvent(id){
       var a = m.querySelector('[data-act]'); if(!a) return;
       a.onclick = function(){
         var k = a.getAttribute('data-act');
-        if(k === 'guest'){ GDEMO.guestUsed = true; GDEMO.going[e.id] = 'On your guest pass. Next time, the $11 Passport opens every event.'; }
+        if(k === 'npjoin'){ GDEMO.who = 'member'; GDEMO.joined = true; GDEMO.going[e.id] = 'You joined Vegans Explore free with the survey, and you are on ' + DEMO.listing.name + '\'s guest list.'; }
+        else if(k === 'guest'){ GDEMO.guestUsed = true; GDEMO.going[e.id] = 'On your guest pass. Next time, the $11 Passport opens every event.'; }
         else if(k === 'join'){ GDEMO.who = 'member'; GDEMO.joined = true; GDEMO.going[e.id] = 'You joined Vegans Explore through Sprout Social Society, so the group earns its share of your $11.'; }
         else if(k === 'buy'){ GDEMO.going[e.id] = 'Your ticket is in My events. The group gets the ticket price less our 5%.'; }
         else GDEMO.going[e.id] = 'It is on My events, and the organizer can message the guests who say yes.';
@@ -5752,6 +5759,19 @@ function demoEvent(id){
 }
 function demoJoinGroup(){
   var g = DEMO.group || {};
+  if(DEMO.nonprofit){
+    var nm = DEMO.listing.name, drawNp = function(){
+      var done = GDEMO.joinedGroup;
+      demoModal('<p class="dm-kicker">' + esc(nm) + '</p><h3>' + (done ? 'You follow ' + esc(nm) : 'Follow ' + esc(nm)) + '</h3>' +
+        (done ? '<div class="dm-done"><b>You are in.</b><span>Their news, events and foster calls show on your dashboard, and you can turn on their emails. This is the sample: nothing was saved.</span></div>'
+          : '<p>' + (g.members_total || '') + ' members follow ' + esc(nm) + '. Members get their events first, their foster and rescue calls, and their news, from any city.</p>' +
+            (GDEMO.who === 'member' ? '<button type="button" class="dm-go" data-act="j">Follow</button>'
+              : '<div class="dm-pass"><b>Joining Vegans Explore is free.</b><span>Take a short survey and you are a member. Then follow any organization, in any city.</span></div><button type="button" class="dm-go" data-act="j">Join free and follow</button>')), function(m){
+          var a = m.querySelector('[data-act]'); if(a) a.onclick = function(){ GDEMO.joinedGroup = true; GDEMO.who = 'member'; drawNp(); };
+        });
+    };
+    drawNp(); return;
+  }
   var draw = function(){
     var done = GDEMO.joinedGroup;
     demoModal('<p class="dm-kicker">Sprout Social Society</p><h3>' + (done ? 'You\'re in the group' : 'Join the group') + '</h3>' +
@@ -5772,12 +5792,12 @@ function gdDate(id){
   return e ? new Date(e.starts_at).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'long', day: 'numeric', year: 'numeric' }) : '';
 }
 function gdBoard(){
-  return '<div class="gd-pad"><div class="gd-head"><div><h2 class="section-title">Message Board</h2><p class="gd-sub">Posts from the group\'s members. Members post and reply; anyone can read.</p></div>' +
+  return '<div class="gd-pad"><div class="gd-head"><div><h2 class="section-title">Message Board</h2><p class="gd-sub">' + (DEMO.nonprofit ? 'Rescue and foster calls, updates and conversations from the organization and its members. Members post and reply; anyone can read.' : 'Posts from the group\'s members. Members post and reply; anyone can read.') + '</p></div>' +
     '<button type="button" class="dm-go" data-demo-board>Write a post</button></div>' +
     (DEMO.board || []).map(function(p){
       var r = p.replies || [];
       return '<article class="gd-post' + (p.host ? ' host' : '') + '"><div class="gd-by"><i aria-hidden="true">' + esc(p.who.charAt(0)) + '</i><b>' + esc(p.who) + '</b>' +
-        (p.host ? '<em>Organizer</em>' : '') + (p.pinned ? '<em class="pin">Pinned</em>' : '') + '<span>' + gdAgo(p.when) + '</span></div><p>' + esc(p.text) + '</p>' +
+        (p.host ? '<em>' + (DEMO.nonprofit ? 'Team' : 'Organizer') + '</em>' : '') + (p.tag ? '<em class="pin">' + esc(p.tag) + '</em>' : '') + (p.pinned ? '<em class="pin">Pinned</em>' : '') + '<span>' + gdAgo(p.when) + '</span></div><p>' + esc(p.text) + '</p>' +
         (r.length ? '<div class="gd-replies">' + r.map(function(x){
           return '<div class="gd-reply' + (x.host ? ' host' : '') + '"><b>' + esc(x.who) + '</b><span>' + gdAgo(x.when) + '</span><p>' + esc(x.text) + '</p></div>';
         }).join('') + '</div>' : '') +
@@ -5809,7 +5829,7 @@ function groupDemoTabs(){
   var nav = document.querySelector('.listing-tabs'), ovBtn = nav && nav.querySelector('[data-tab="overview"]'), ov = document.getElementById('tab-overview');
   if(!ovBtn || !ov) return;
   var q = new URLSearchParams(location.search);
-  [['media', 'Media', gdMedia(q.get('album'))], ['board', 'Board', gdBoard()]].forEach(function(t){
+  [['media', 'Media', gdMedia(q.get('album'))], ['board', 'Board', gdBoard()]].filter(function(t){ return t[0] !== 'media' || (DEMO.galleries || []).length; }).forEach(function(t){
     var b = document.createElement('button'); b.className = 'tab-btn'; b.setAttribute('data-tab', t[0]); b.setAttribute('role', 'tab'); b.setAttribute('aria-selected', 'false'); b.textContent = t[1];
     b.addEventListener('click', function(){ if(t[0] === 'media') gdAlbum(''); showListingTab(t[0]); });
     ovBtn.insertAdjacentElement('afterend', b);
@@ -5828,7 +5848,7 @@ function gdAnnRender(){
   box.innerHTML = '<h2 class="section-title">Announcements</h2>' + A.slice(0, 3).map(function(x){
     return '<article class="gd-ann' + (x.pinned ? ' pin' : '') + '"><div class="gd-ann-h"><b>' + esc(x.title) + '</b>' + (x.pinned ? '<em>Pinned</em>' : '') +
       '<span>' + esc(new Date(x.at).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric' })) + '</span></div><p>' + esc(x.body) + '</p>' +
-      '<small>From the organizer</small></article>';
+      '<small>' + (DEMO.nonprofit ? 'From the team' : 'From the organizer') + '</small></article>';
   }).join('') + (A.length > 3 ? '<p class="gd-ann-more">The latest three. Members of the group get every announcement in their email.</p>' : '');
 }
 window.gdAnnRender = gdAnnRender;
@@ -5840,9 +5860,10 @@ function renderGroupDemo(l){
   var g = DEMO.group || {}, side = document.querySelector('.listing-page-grid .listing-sidebar');
   if(side){
     var c = document.createElement('div'); c.className = 'side-card gd-join';
-    c.innerHTML = '<div class="gd-badge">Group Partner</div><div class="gd-n"><b>' + (g.members_total || 0) + '</b> members</div>' +
+    c.innerHTML = '<div class="gd-badge">' + (DEMO.nonprofit ? 'Nonprofit Partner' : 'Group Partner') + '</div><div class="gd-n"><b>' + (g.members_total || 0) + '</b> members</div>' +
       '<div class="gd-faces" aria-hidden="true">' + (g.members || []).slice(0, 6).map(function(m){ return '<i>' + esc(m.name.charAt(0)) + '</i>'; }).join('') + '</div>' +
-      '<p>Anyone with a Passport can join, from any city. Your first free event is on a guest pass.</p><button type="button" class="dm-go" data-demo-join>Join the group</button>';
+      (DEMO.nonprofit ? '<p>Members follow them for events, foster and rescue calls and news, from any city. Joining Vegans Explore is free.</p><button type="button" class="dm-go" data-demo-join>Follow</button>'
+        : '<p>Anyone with a Passport can join, from any city. Your first free event is on a guest pass.</p><button type="button" class="dm-go" data-demo-join>Join the group</button>');
     side.insertBefore(c, side.firstChild);
   }
   groupDemoTabs();
@@ -5864,7 +5885,7 @@ function renderDemo(){
   l._campaign = DEMO.campaignAt ? DEMO.campaignAt(CST.week) : (DEMO.campaign || null);
   window._veDemoListing = l;
   renderListing(l); fitHeroAvatar();
-  document.title = l.name + (DEMO.group ? ' (Sample group)' : DEMO.business ? ' (Sample business)' : ' (Illustrative)') + ' — VEGANS EXPLORE';
+  document.title = l.name + (DEMO.nonprofit ? ' (Sample organization)' : DEMO.group ? ' (Sample group)' : DEMO.business ? ' (Sample business)' : ' (Illustrative)') + ' — VEGANS EXPLORE';
   var rb = document.createElement('meta'); rb.name = 'robots'; rb.content = 'noindex, nofollow'; document.head.appendChild(rb);
   document.getElementById('listing-root').insertAdjacentHTML('afterbegin', demoBar());
   if(DEMO.menu && DEMO.menu.length){

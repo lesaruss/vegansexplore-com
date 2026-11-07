@@ -216,9 +216,11 @@
     function views() {
       var G = ['gmembers', 'gevents', 'earnings'];
       return VIEWS.filter(function (v) {
+        // A nonprofit (the sample sanctuary): no earnings while cash commissions are paused (2026-11-07), and no managed marketing.
+        if (D.group && D.group.nonprofit && (v[0] === 'earnings' || v[0] === 'managed')) return false;
         if (G.indexOf(v[0]) >= 0) return !!D.group;
         if (v[0] === 'announce') return !!D.group || (D.listing && D.listing.kind === 'group');
-        if (v[0] === 'gift') return !!D.group && (!REAL || !!D.lead);
+        if (v[0] === 'gift') return !!D.group && !D.group.nonprofit && (!REAL || !!D.lead);
         // A Group Partner's dashboard: no hours, menu, audit, check-ins, ads or Partner plan; its members are its audience.
         if (D.group && ['audience', 'saves', 'checkins', 'ads', 'plan', 'menu', 'audit'].indexOf(v[0]) >= 0) return false;
         if (v[0] === 'managed') return !!D.bd;
@@ -583,14 +585,30 @@
     function nextRung(G) { var nx = null; G.ladder.forEach(function (r) { if (!nx && r[0] > G.brought) nx = r; }); return nx; }
     function groupTiles() {
       var G = D.group, E = G.earnings || {}, nx = nextRung(G);
+      if (G.nonprofit) return npTiles(G);
       return '<div class="vpd-tiles"><div><b>' + n(G.members_total) + '</b><span>Members in your group</span><em>' + n(G.new_this_month || 0) + ' new this month</em></div>' +
         '<div><b>' + n(G.brought) + '</b><span>Joined Vegans Explore through you</span><em>' + (nx ? n(nx[0] - G.brought) + ' to ' + nx[1] + '%' : 'The top rate') + '</em></div>' +
         '<div><b>' + G.rate_pct + '%</b><span>Your share of each Passport</span><em>Of the $11, from today</em></div>' +
         '<div><b>' + money((E.passports_cents || 0) + (E.tickets_cents || 0)) + '</b><span>Earned this year</span><em>' + money(E.ready_cents || 0) + ' ready to pay</em></div></div>' +
         '<p style="margin:-6px 0 18px"><a href="?tab=brand&pd=gmembers" data-vpd="gmembers" class="vpd-btn o sm">Your members</a> <a href="?tab=brand&pd=gevents" data-vpd="gevents" class="vpd-btn o sm">Events</a> <a href="?tab=brand&pd=announce" data-vpd="announce" class="vpd-btn o sm">Announcements</a> <a href="?tab=brand&pd=gift" data-vpd="gift" class="vpd-btn o sm">Gift a membership</a> <a href="?tab=brand&pd=earnings" data-vpd="earnings" class="vpd-btn o sm">Earnings</a></p>';
     }
+    // A nonprofit (the sample sanctuary): members who follow, people brought in, events and foster calls; no rate or earnings.
+    function npTiles(G) {
+      var up = (G.events || []).filter(function (e) { return Date.parse(e.starts_at) > Date.now(); });
+      return '<div class="vpd-tiles"><div><b>' + n(G.members_total) + '</b><span>Members who follow you</span><em>' + n(G.new_this_month || 0) + ' new this month</em></div>' +
+        '<div><b>' + n(G.brought) + '</b><span>Joined Vegans Explore through you</span><em>Through your link and your events</em></div>' +
+        '<div><b>' + n(up.reduce(function (a, e) { return a + (e.going || 0); }, 0)) + '</b><span>Going to your next events</span><em>' + n(up.length) + ' coming up</em></div>' +
+        '<div><b>' + n((G.placed || {}).homes || 0) + '</b><span>Animals placed from your posts</span><em>' + n((G.placed || {}).open || 0) + ' foster calls open</em></div></div>' +
+        '<p style="margin:-6px 0 18px"><a href="?tab=brand&pd=gmembers" data-vpd="gmembers" class="vpd-btn o sm">Your members</a> <a href="?tab=brand&pd=gevents" data-vpd="gevents" class="vpd-btn o sm">Events</a> <a href="?tab=brand&pd=announce" data-vpd="announce" class="vpd-btn o sm">Announcements</a> <a href="?tab=brand&pd=page" data-vpd="page" class="vpd-btn o sm">Your page</a></p>';
+    }
     function drawMembers() {
       var G = D.group, nx = nextRung(G), cur = 0;
+      if (G.nonprofit) return npTiles(G) +
+        '<h4>Your link</h4><div class="vpd-card" style="margin:0 0 18px"><b>' + esc(G.link) + '</b><p>Share it in your posts, emails and at your events. Everyone who joins Vegans Explore through it is counted as someone your organization brought in.</p>' +
+        '<button type="button" class="vpd-btn sm" data-vpd-copy="' + esc('https://' + G.link) + '">Copy your link</button></div>' +
+        '<h4>Your members</h4><div class="vpd-table-wrap vpd-scroll"><table class="vpd-table"><thead><tr><th>Member</th><th>Following since</th><th>How</th><th class="n">Events</th><th>Chapter</th></tr></thead><tbody>' +
+        G.members.map(function (m) { return '<tr><td>' + esc(m.name) + '</td><td>' + dt(m.joined, true) + '</td><td>' + esc(m.via) + '</td><td class="n">' + n(m.events) + '</td><td>' + esc(m.chapter) + '</td></tr>'; }).join('') +
+        '</tbody></table></div><p class="vpd-empty">You see a member\'s first name and last initial. Messages to your members go through us, and they choose to hear from you.</p>';
       G.ladder.forEach(function (r, i) { if (G.brought >= r[0]) cur = i; });
       var base = G.ladder[cur][0], pct = nx ? Math.round((G.brought - base) / (nx[0] - base) * 100) : 100;
       return '<div class="vpd-tiles"><div><b>' + n(G.members_total) + '</b><span>Members in your group</span><em>Anyone with a Passport, in any city</em></div>' +
@@ -617,7 +635,7 @@
         '<div class="vpd-form"><label>Name<input id="vpd-ev-name" placeholder="Game Night"></label><label>Day and time<input id="vpd-ev-when" type="datetime-local"></label>' +
         '<label>Where<input id="vpd-ev-where" placeholder="The venue and city"></label><label>Ticket price (leave empty for a free event)<input id="vpd-ev-price" inputmode="decimal" placeholder="$0"></label>' +
         '<label>How many can come<input id="vpd-ev-cap" inputmode="numeric" placeholder="40"></label><label>About it<textarea id="vpd-ev-about" rows="3"></textarea></label>' +
-        '<p class="vpd-empty">Free events: a newcomer uses their one guest pass, then joins with the $11 Passport. Paid events: we keep 5% of each ticket; the buyer pays card processing; the rest is yours.</p>' +
+        (D.group && D.group.nonprofit ? '<p class="vpd-empty">Anyone can RSVP once they join Vegans Explore, which is free with a short survey.</p>' : '') + '<p class="vpd-empty"' + (D.group && D.group.nonprofit ? ' hidden' : '') + '>Free events: a newcomer uses their one guest pass, then joins with the $11 Passport. Paid events: we keep 5% of each ticket; the buyer pays card processing; the rest is yours.</p>' +
         (REAL ? '<a class="vpd-btn" href="/events#submit/1">Add it on the events calendar</a>' : '<button type="button" class="vpd-btn" data-vpd-demo="Your event would go live on your page and the events calendar.">Put it live</button>') + '</div>';
       if (id) {
         var e = G.events.filter(function (x) { return x.id === id; })[0];
@@ -626,7 +644,7 @@
         return '<p class="vpd-crumb"><a href="?tab=brand&pd=gevents" data-vpd="gevents">Events</a> / ' + esc(e.title) + '</p>' +
           '<div class="vpd-tiles"><div><b>' + n(e.going) + (e.capacity ? '<small style="font-size:14px"> of ' + n(e.capacity) + '</small>' : '') + '</b><span>' + (over ? 'Went' : 'Going') + '</span></div>' +
           (e.price_cents ? '<div><b>' + money(gross * 0.95) + '</b><span>Yours from tickets</span><em>' + n(e.going) + ' at ' + price(e) + ', less our 5% (' + money(gross * 0.05) + ')</em></div>'
-            : '<div><b>' + n(e.guest_passes) + '</b><span>Guest passes</span><em>Newcomers on their one free event</em></div>') +
+            : D.group.nonprofit ? '<div><b>' + n(e.guest_passes) + '</b><span>First-timers</span><em>New to your events</em></div>' : '<div><b>' + n(e.guest_passes) + '</b><span>Guest passes</span><em>Newcomers on their one free event</em></div>') +
           '<div><b>' + dt(e.starts_at, true) + '</b><span>' + esc(e.location_name || '') + '</span><em>' + esc(e.city || '') + '</em></div></div>' +
           '<div class="vpd-grid"><div class="vpd-card"><b>Guests and messages</b><p>Message the guests who said yes, through us, until 7 days after the event.</p>' +
           (REAL ? '<a class="vpd-btn sm" href="/events#guests/' + esc(e.id) + '">Write to your guests</a>' : '<button type="button" class="vpd-btn sm" data-vpd-demo="Your message would go to the guests who said yes, by email from Vegans Explore with your group\'s name.">Write to your guests</button>') + '</div>' +
