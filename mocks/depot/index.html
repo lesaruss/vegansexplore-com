@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The new Depot: mocks — Vegans Explore</title>
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Mocks of the Depot home, Logos, Demos, the trash bin and BrandDesk inside Vegans Explore. Illustrative, not live.">
+  <link rel="canonical" href="https://vegansexplore.com/mocks/depot/">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:"Montserrat",sans-serif;background:#fff;color:#1a1a1a;line-height:1.5;}
+    .dm-row{display:flex;flex-wrap:wrap;gap:18px 26px;align-items:flex-start;}
+    .dm-main{flex:1 1 640px;min-width:0;}
+    .dm-side{flex:1 1 300px;min-width:0;font-size:12.5px;line-height:1.5;}
+    .dm-side h3{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#c5f2c7;margin:0 0 6px;}
+    .dm-side ul{list-style:none;display:grid;gap:5px;margin-bottom:12px;}
+    .dm-side li b{color:#22C55E;}
+    .dm-chip{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;background:#F69820;color:#1a1a1a;border-radius:6px;padding:2px 8px;margin-left:8px;vertical-align:middle;}
+
+    /* the mini Depot: a white app panel */
+    .ui{background:#fff;color:#1a1a1a;border-radius:10px;box-shadow:0 18px 40px rgba(0,0,0,.45);padding:16px 18px;font-size:12px;}
+    .ui-top{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+    .ui-eb{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#2D5C27;}
+    .ui-h{font-size:18px;font-weight:900;line-height:1.15;}
+    .ui-crumb{font-size:11px;color:#666;}
+    .ui-crumb b{color:#1a1a1a;}
+    .ui-search{flex:1 1 180px;border:1px solid #d6d6d6;border-radius:6px;padding:7px 10px;color:#888;font-size:11.5px;min-width:140px;}
+    .ui-btn{border-radius:6px;background:#2D5C27;color:#fff;font-weight:800;font-size:11px;padding:7px 12px;white-space:nowrap;}
+    .ui-btn.ghost{background:#fff;color:#2D5C27;border:1px solid #2D5C27;}
+    .tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
+    .tile{border:1px solid #e3e3e3;border-radius:10px;padding:11px 12px;display:flex;flex-direction:column;gap:5px;min-height:96px;position:relative;}
+    .tile .ic{width:30px;height:30px;border-radius:8px;background:#E8F5E9;display:grid;place-items:center;}
+    .tile .ic svg{width:17px;height:17px;stroke:#2D5C27;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+    .tile b{font-size:13px;font-weight:800;}
+    .tile span{font-size:10.5px;color:#666;line-height:1.35;}
+    .tile .ct{position:absolute;top:10px;right:10px;font-size:10px;font-weight:800;background:#f1f1f1;border-radius:6px;padding:2px 7px;color:#333;}
+    .tile .ct.hot{background:#F69820;color:#1a1a1a;}
+    .tile.bd{background:#0F1F14;color:#fff;border-color:#0F1F14;}
+    .tile.bd span{color:#c5f2c7;}
+    .tile.bd .ic{background:#2D5C27;}
+    .tile.bd .ic svg{stroke:#fff;}
+    .tile.trash{border-style:dashed;}
+    .tile.trash .ic{background:#f3f3f3;}
+    .tile.trash .ic svg{stroke:#777;}
+    .ui-sec{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#888;margin:12px 0 7px;}
+    .ui-sec:first-of-type{margin-top:0;}
+
+    /* lists */
+    .ui-list{display:grid;gap:6px;}
+    .ui-li{display:grid;grid-template-columns:40px minmax(0,1fr) auto auto;align-items:center;gap:10px;border:1px solid #ececec;border-radius:8px;padding:6px 10px;}
+    .ui-li .lg{width:40px;height:40px;border-radius:8px;display:grid;place-items:center;font-weight:900;color:#fff;font-size:16px;}
+    .ui-li .nm{font-weight:800;font-size:12px;line-height:1.25;}
+    .ui-li .nm small{display:block;font-weight:600;font-size:10.5px;color:#777;}
+    .ui-li .st{font-size:10.5px;color:#555;text-align:right;line-height:1.3;}
+    .ui-li .st b{font-size:13px;color:#1a1a1a;display:block;}
+    .tag{display:inline-block;font-size:9.5px;font-weight:800;border-radius:6px;padding:2px 7px;background:#E8F5E9;color:#2D5C27;}
+    .tag.or{background:#FFF1DF;color:#8a4b00;}
+    .tag.gr{background:#f1f1f1;color:#555;}
+    .pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+    .pill{font-size:10.5px;font-weight:700;border:1px solid #d6d6d6;border-radius:6px;padding:4px 9px;color:#333;background:#fff;}
+    .pill.on{background:#2D5C27;border-color:#2D5C27;color:#fff;}
+    .pill small{font-weight:800;opacity:.7;margin-left:4px;}
+    .sel{border:1px solid #d6d6d6;border-radius:6px;padding:6px 30px 6px 10px;font-size:11px;font-weight:700;position:relative;background:#fff;}
+    .sel::after{content:"";position:absolute;right:11px;top:50%;width:6px;height:6px;border-right:2px solid #555;border-bottom:2px solid #555;transform:translateY(-70%) rotate(45deg);}
+
+    /* logo picker */
+    .pick{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:8px;}
+    .pk{border:1px solid #e3e3e3;border-radius:8px;padding:6px;text-align:center;font-size:9.5px;color:#666;}
+    .pk i{display:block;aspect-ratio:1;border-radius:6px;margin-bottom:5px;}
+    .pk.on{outline:2px solid #22C55E;}
+
+    /* tables on dark */
+    .dm-tbl{width:100%;border-collapse:collapse;font-size:12px;}
+    .dm-tbl th{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#c5f2c7;text-align:left;padding:5px 8px;border-bottom:1px solid rgba(255,255,255,.18);}
+    .dm-tbl td{padding:5px 8px;border-bottom:1px solid rgba(255,255,255,.08);}
+    .dm-tbl td.n{text-align:right;font-variant-numeric:tabular-nums;}
+    .dm-card{padding:14px 16px;font-size:12.5px;line-height:1.5;}
+    .dm-card b.t{display:block;font-size:13px;font-weight:800;margin-bottom:4px;color:#fff;}
+    .dm-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+    .flow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 12px;}
+    .flow .bx{background:#fff;color:#1a1a1a;border-radius:10px;padding:10px 12px;font-size:11.5px;font-weight:700;min-width:150px;}
+    .flow .bx small{display:block;font-weight:600;color:#666;font-size:10.5px;}
+    .flow .ar{color:#c5f2c7;font-weight:900;font-size:18px;}
+    .flow .bx.db{background:#2D5C27;color:#fff;}
+    .flow .bx.db small{color:#c5f2c7;}
+
+    @media (min-width:901px) and (max-height:820px){.ui{padding:12px 14px;}.tile{min-height:82px;padding:9px 10px;}.dm-side{font-size:11.5px;}.ui-li{padding:4px 8px;}.ui-li .lg{width:32px;height:32px;font-size:13px;}}
+    @media (max-width:900px){
+      .tiles{grid-template-columns:repeat(2,minmax(0,1fr));}
+      .pick{grid-template-columns:repeat(2,minmax(0,1fr));}
+      .dm-grid3{grid-template-columns:1fr;}
+      .ui-li{grid-template-columns:34px minmax(0,1fr) auto;}
+      .ui-li .hide-m{display:none;}
+    }
+  </style>
+</head>
+<body>
+<div class="page-frame">
+  <script src="/public/nav.js"></script>
+  <div class="vg-note"><strong>Illustrative</strong>Depot mocks for review. Nothing here is live and nothing has been changed or deleted. Numbers marked live were read from the database on November 7, 2026.</div>
+
+  <main class="vg-stage" data-bg="linear-gradient(135deg,#0d130e 0%,#12301a 100%)" aria-label="The new Depot: mocks">
+
+    <!-- 1. Today -->
+    <section class="vg-slide" id="now" data-title="Today">
+      <div class="vg-eyebrow">1 · The Depot today</div>
+      <h2 class="vg-h">It opens on the Library, and the menu is one long dropdown</h2>
+      <div class="dm-grid3">
+        <div class="vg-glass dm-card"><b class="t">Opens on the Library</b>The Depot's address (<code>/admin/depot</code>) is the Library's page, so every visit starts on media you rarely use. The Library keeps collecting; it just stops being the front door.</div>
+        <div class="vg-glass dm-card"><b class="t">Why Content shows up twice</b>A menu bug, not two sections. In the list, Feedback and Ideas (Site) were added between the Content rows, so the dropdown closes Content, opens Site, then opens Content again. The new home groups by section, so it can't happen.</div>
+        <div class="vg-glass dm-card"><b class="t">Five things BrandDesk already does</b>Social (the same page), Ideas, Playbooks, Outreach (in four places) and Analytics. Those leave the Depot and live only in BrandDesk.</div>
+      </div>
+      <div class="dm-grid3" style="margin-top:12px">
+        <div class="vg-glass dm-card"><b class="t">12 old pages</b>Challenges, the Passport Challenge hunt and its card and kit, the old Pulse, Pulse Cities, Passport Partners, the second Logos page, Tours, Services, Dinner guests and Import narration. They go to a <b>visible trash bin</b> you can restore from (slide 7).</div>
+        <div class="vg-glass dm-card"><b class="t">What you use most: Logos</b>It's buried inside Directory review. It becomes its own tile, with category filters, a views sort and better suggestions (slides 4 and 5).</div>
+        <div class="vg-glass dm-card"><b class="t">Demos get a home</b>Green Leaf Kitchen, the sample group, the Gig Board, the Campaign Engine and the pitch decks become one Demos section (slide 6).</div>
+      </div>
+    </section>
+
+    <!-- 2. Home -->
+    <section class="vg-slide" id="home" data-title="The new home">
+      <div class="vg-eyebrow">2 · The Depot home <span class="dm-chip">New front door</span></div>
+      <h2 class="vg-h">Land on an overview: one thumbnail per section</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <div class="ui-top">
+            <div style="flex:1 1 200px"><div class="ui-eb">The Depot · Vegans Explore</div><div class="ui-h">Good morning, Sean</div></div>
+            <div class="ui-search">Find a tool, a listing or a person</div>
+          </div>
+          <div class="ui-sec">Run Vegans Explore</div>
+          <div class="tiles">
+            <div class="tile"><span class="ct hot">34 waiting</span><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/></svg></div><b>Directory</b><span>Directory review, Events, Claims, Venues, Check-ins, Badges, Certification</span></div>
+            <div class="tile"><span class="ct hot">564 to do</span><div class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><circle cx="12" cy="12" r="3.5"/></svg></div><b>Logos</b><span>Pick, fix and upload logos by category</span></div>
+            <div class="tile"><span class="ct">10 open</span><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg></div><b>Content</b><span>Inbox, Sources, Content index, Books, Cookbook, Search questions, Library</span></div>
+            <div class="tile"><span class="ct">92 bounties</span><div class="ic"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.5 3-6 6-6s6 2.5 6 6M14 20c0-2.5 1.5-4.5 4-4.5s3 1.5 3 4.5"/></svg></div><b>Community</b><span>Bounties, Ambassadors, Founding, Partners, Invites, Referrals, Watchlist</span></div>
+            <div class="tile"><span class="ct">8 tools</span><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3l8 4v5c0 5-3.5 8-8 9-4.5-1-8-4-8-9V7z"/></svg></div><b>Admin</b><span>Leads, Members, Submissions, Applications, Guest reviews, Health, Insights, Secret Shopper</span></div>
+            <div class="tile"><span class="ct">4 tools</span><div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8"/></svg></div><b>Site and QA</b><span>Preview journeys, Onboarding, Dashboard checklist, Feedback</span></div>
+            <div class="tile"><span class="ct">13 demos</span><div class="ic"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg></div><b>Demos</b><span>Green Leaf Kitchen, sample group, Gig Board, Campaign Engine, pitch decks</span></div>
+            <div class="tile trash"><span class="ct">12</span><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/></svg></div><b>Trash bin</b><span>Retired pages. Restore any of them.</span></div>
+          </div>
+          <div class="ui-sec">Lives in BrandDesk</div>
+          <div class="tiles">
+            <div class="tile bd"><div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div><b>BrandDesk</b><span>Social, Outreach, Playbooks, Ideas, Insights, Brand kit, Podcast</span></div>
+          </div>
+        </div></div>
+        <div class="dm-side">
+          <h3>How it works</h3>
+          <ul>
+            <li>Each thumbnail opens its section (slide 3). Counts are what's waiting today, so the urgent one stands out.</li>
+            <li>The search box finds any tool by name, so you never need the long dropdown. The dropdown stays as a shortcut, now grouped right.</li>
+            <li><b>BrandDesk</b> is one tile here and opens inside Vegans Explore (slide 8).</li>
+            <li>The Library is still collecting; it's under Content.</li>
+          </ul>
+          <h3>Counts shown</h3>
+          <ul>
+            <li>Live: 34 events waiting, 564 listings with no logo, 92 bounties, 10 Inbox items worked.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. A section -->
+    <section class="vg-slide" id="section" data-title="A section">
+      <div class="vg-eyebrow">3 · Inside a section</div>
+      <h2 class="vg-h">Directory, as its own page of tools</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <div class="ui-top"><div style="flex:1 1 200px"><div class="ui-crumb">Depot &rsaquo; <b>Directory</b></div><div class="ui-h">Directory</div></div><div class="ui-btn ghost">Back to the Depot</div></div>
+          <div class="tiles">
+            <div class="tile"><span class="ct hot">On hold</span><div class="ic"><svg viewBox="0 0 24 24"><path d="M5 12l4 4 10-10"/></svg></div><b>Directory review</b><span>Hold, fix, vet, add a listing, menus. 8,116 edits in 30 days.</span></div>
+            <div class="tile"><span class="ct hot">34</span><div class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></div><b>Events</b><span>Approve, crawl sources, claims, leads, weekly check, heads-up</span></div>
+            <div class="tile"><span class="ct">0</span><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 3l2.5 5.5L20 9l-4 4 1 6-5-3-5 3 1-6-4-4 5.5-.5z"/></svg></div><b>Claims</b><span>Owners claiming pages</span></div>
+            <div class="tile"><span class="ct">0</span><div class="ic"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="12" rx="9" ry="5"/><path d="M3 12v4c0 3 4 5 9 5s9-2 9-5v-4"/></svg></div><b>Venues</b><span>Stadium, airport, park and store reports</span></div>
+            <div class="tile"><span class="ct">0</span><div class="ic"><svg viewBox="0 0 24 24"><path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg></div><b>Check-ins</b><span>Meal photos, receipts, shout-outs</span></div>
+            <div class="tile"><span class="ct">0</span><div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="10" r="6"/><path d="M9 15l-2 6 5-2 5 2-2-6"/></svg></div><b>Business badges</b><span>100% Vegan checks</span></div>
+            <div class="tile"><span class="ct">0</span><div class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h4"/></svg></div><b>Pre-Vegan Certification</b><span>Dishes, the registry, adoption</span></div>
+            <div class="tile"><span class="ct">0</span><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 19V9l8-5 8 5v10"/><path d="M9 19v-6h6v6"/></svg></div><b>Passport Challenge stops</b><span>Monthly stops and the Vault</span></div>
+          </div>
+        </div></div>
+        <div class="dm-side">
+          <h3>Every section works the same way</h3>
+          <ul>
+            <li>A crumb back to the Depot, then one thumbnail per tool, what's waiting first.</li>
+            <li><b>0</b> means built and waiting for its program to launch, not broken. Those tiles sort to the end once something is waiting elsewhere.</li>
+            <li>Event sponsors and Brand campaigns sit here too; I've shown eight to keep the mock readable.</li>
+          </ul>
+          <h3>What each section holds</h3>
+          <ul>
+            <li><b>Content</b>: Inbox, Sources, Content index, Books, In this story, Cookbook, Search questions, Library.</li>
+            <li><b>Community</b>: Bounties, Ambassadors, Founding, Nonprofit and Group Partners, Profiles, Invites, Referral claims, Community Managers, Links, Watchlist.</li>
+            <li><b>Admin</b>: the eight dashboard admin pages.</li>
+            <li><b>Site and QA</b>: Preview journeys, Onboarding, Dashboard checklist, Feedback.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Logos -->
+    <section class="vg-slide" id="logos" data-title="Logos">
+      <div class="vg-eyebrow">4 · Logos, its own tool <span class="dm-chip">Your favorite</span></div>
+      <h2 class="vg-h">Pick a category, sort by views, work down the list</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <div class="ui-top"><div style="flex:1 1 200px"><div class="ui-crumb">Depot &rsaquo; <b>Logos</b></div><div class="ui-h">564 listings need a logo</div></div><div class="ui-btn">Look for more now</div></div>
+          <div class="pills">
+            <span class="pill">Suggested <small>2</small></span><span class="pill on">To find <small>564</small></span><span class="pill">Done</span>
+          </div>
+          <div class="pills">
+            <span class="pill">All</span><span class="pill">Restaurants <small>176</small></span><span class="pill on">Rescues <small>111</small></span><span class="pill">Nonprofits <small>62</small></span><span class="pill">Studios <small>62</small></span><span class="pill">Sanctuaries <small>59</small></span><span class="pill">Event Venues <small>37</small></span><span class="pill">Bakeries <small>21</small></span><span class="pill">Groups <small>14</small></span><span class="pill">Media <small>1</small></span><span class="pill">More</span>
+          </div>
+          <div class="ui-top" style="margin-bottom:8px"><div class="ui-search">Search Rescues</div><div class="sel">Most viewed</div><div class="sel">All cities</div></div>
+          <div class="ui-list">
+            <div class="ui-li"><div class="lg" style="background:#7a4fb5">S</div><div class="nm">Small Paws Big Heart Rescue<small>Rescues · Philadelphia</small></div><div class="st hide-m"><b>5</b>views, 30 days</div><div class="ui-btn">Add logo</div></div>
+            <div class="ui-li"><div class="lg" style="background:#c04a2b">A</div><div class="nm">Abby's Angels Animal Haven<small>Rescues · Bedford</small></div><div class="st hide-m"><b>3</b>views, 30 days</div><div class="ui-btn">Add logo</div></div>
+            <div class="ui-li"><div class="lg" style="background:#2b7a8a">A</div><div class="nm">ACCT<small>Rescues · Philadelphia</small></div><div class="st hide-m"><b>3</b>views, 30 days</div><div class="ui-btn">Add logo</div></div>
+            <div class="ui-li"><div class="lg" style="background:#5b6b2b">C</div><div class="nm">CHARM Rescue<small>Rescues · Columbia</small></div><div class="st hide-m"><b>3</b>views, 30 days</div><div class="ui-btn">Add logo</div></div>
+          </div>
+        </div></div>
+        <div class="dm-side">
+          <h3>What's new</h3>
+          <ul>
+            <li><b>Category pills</b> with counts, so you can do only Media, only Rescues, or only Restaurants.</li>
+            <li><b>Sort</b>: Most viewed (30 days), Most votes, A to Z. Plus a city picker.</li>
+            <li>Opening one goes straight to the logo editor you already use, with links to look on (slide 5).</li>
+          </ul>
+          <h3>Honest note on views (live)</h3>
+          <ul>
+            <li>Real traffic is still thin. The 564 listings had about 545 page views between them in 30 days, and restaurants only 3. Rescues, sanctuaries and nonprofits got the most (143, 132, 85).</li>
+            <li>So "Most viewed" breaks ties with votes until traffic grows. The four rescues shown are the real top four by views.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Better suggestions -->
+    <section class="vg-slide" id="pulls" data-title="Finding logos">
+      <div class="vg-eyebrow">5 · Why suggestions dry up, and the fix</div>
+      <h2 class="vg-h">The sweep only looks where you rarely find them</h2>
+      <div class="dm-row">
+        <div class="dm-main">
+          <table class="dm-tbl">
+            <thead><tr><th>Category (live)</th><th>No logo</th><th>Website on file</th><th>Instagram on file</th><th>Facebook on file</th></tr></thead>
+            <tbody>
+              <tr><td>Restaurants</td><td class="n">176</td><td class="n">163</td><td class="n">48</td><td class="n">52</td></tr>
+              <tr><td>Rescues</td><td class="n">111</td><td class="n">99</td><td class="n">1</td><td class="n">0</td></tr>
+              <tr><td>Nonprofits</td><td class="n">62</td><td class="n">53</td><td class="n">1</td><td class="n">0</td></tr>
+              <tr><td>Studios</td><td class="n">62</td><td class="n">62</td><td class="n">0</td><td class="n">0</td></tr>
+              <tr><td>Sanctuaries</td><td class="n">59</td><td class="n">53</td><td class="n">0</td><td class="n">0</td></tr>
+              <tr><td>Event Venues</td><td class="n">37</td><td class="n">37</td><td class="n">0</td><td class="n">0</td></tr>
+            </tbody>
+          </table>
+          <p class="vg-fine" style="margin-top:8px">The sweep has looked 1,971 times: 1,209 logos used, 755 found nothing, 5 turned down.</p>
+        </div>
+        <div class="dm-side">
+          <h3>Today</h3>
+          <ul>
+            <li>The sweep reads only the listing's <b>website</b> and its <b>Instagram</b>. It never looks at Facebook or Google, where you find them fastest.</li>
+            <li>The rescues, sanctuaries, studios and venues came from Google searches, so they have a website and nothing else on file. Their site often has no clean logo, so the sweep gives up.</li>
+          </ul>
+          <h3>The fix, in order</h3>
+          <ul>
+            <li><b>1</b> Read the socials linked from their own website and save them (free, already built for Add a listing).</li>
+            <li><b>2</b> Add their <b>Facebook page picture</b> as a candidate (through Apify, a fraction of a cent a page).</li>
+            <li><b>3</b> Add their <b>Google listing's photos</b> as candidates, the same photos you see on Google (counts against your $50 Google cap; about $7 per 1,000).</li>
+            <li><b>4</b> Re-run the sweep on the 755 that found nothing, most viewed first.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Demos -->
+    <section class="vg-slide" id="demos" data-title="Demos">
+      <div class="vg-eyebrow">6 · Demos</div>
+      <h2 class="vg-h">Everything we show people, in one place</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <div class="ui-top"><div style="flex:1 1 200px"><div class="ui-crumb">Depot &rsaquo; <b>Demos</b></div><div class="ui-h">Demos</div></div></div>
+          <div class="ui-sec">Sample pages</div>
+          <div class="tiles">
+            <div class="tile"><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 10l8-6 8 6v10H4z"/></svg></div><b>Green Leaf Kitchen</b><span>The sample restaurant: page, owner dashboard, website, brand kit, shot list</span></div>
+            <div class="tile"><div class="ic"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3.5 3-6 6-6s6 2.5 6 6"/></svg></div><b>Sprout Social Society</b><span>The sample group, member and organizer views</span></div>
+            <div class="tile"><div class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="14" rx="2"/><path d="M4 10h16"/></svg></div><b>Gig Board</b><span>Kai's Creator Dashboard</span></div>
+            <div class="tile"><div class="ic"><svg viewBox="0 0 24 24"><path d="M4 18l5-6 4 3 7-9"/></svg></div><b>Campaign Engine</b><span>Fieldhouse Protein: listing, feeds, sponsor dashboard, final report</span></div>
+          </div>
+          <div class="ui-sec">Pitches and walkthroughs</div>
+          <div class="tiles">
+            <div class="tile"><div class="ic"><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg></div><b>Partner walkthrough</b><span>/partners</span></div>
+            <div class="tile"><div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="12" rx="2"/></svg></div><b>Pitch decks</b><span>Dolphins, Supermarkets, Night events, Global tour, Community Managers</span></div>
+            <div class="tile"><div class="ic"><svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg></div><b>Restaurant pitch</b><span>/business/pitch?c=sample</span></div>
+            <div class="tile"><div class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/></svg></div><b>Supermarket pitch</b><span>/business/supermarkets</span></div>
+          </div>
+        </div></div>
+        <div class="dm-side">
+          <h3>How it works</h3>
+          <ul>
+            <li>Each opens in a new tab, as the public sees it.</li>
+            <li>The sample restaurant gets one tile with its parts inside, so it isn't five links.</li>
+            <li>Each tile gets a <b>Copy link</b> so you can send a demo to someone straight from here.</li>
+            <li>A new demo is one line in the list.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Trash bin -->
+    <section class="vg-slide" id="trash" data-title="Trash bin">
+      <div class="vg-eyebrow">7 · The trash bin</div>
+      <h2 class="vg-h">Retired, not deleted. Restore with one click.</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <div class="ui-top"><div style="flex:1 1 200px"><div class="ui-crumb">Depot &rsaquo; <b>Trash bin</b></div><div class="ui-h">12 retired pages</div></div></div>
+          <div class="ui-list">
+            <div class="ui-li"><div class="lg" style="background:#999">C</div><div class="nm">Challenges<small>Earn your Passport, retired Nov 3: the survey is the way in</small></div><div class="st hide-m"><span class="tag gr">0 rows</span></div><div class="ui-btn ghost">Restore</div></div>
+            <div class="ui-li"><div class="lg" style="background:#999">P</div><div class="nm">Passport Challenge, card and kit<small>The scavenger hunt, not running</small></div><div class="st hide-m"><span class="tag gr">0 hunts</span></div><div class="ui-btn ghost">Restore</div></div>
+            <div class="ui-li"><div class="lg" style="background:#999">P</div><div class="nm">Pulse and Pulse Cities<small>Old article Pulse and city news; the Daily Pulse replaced them</small></div><div class="st hide-m"><span class="tag gr">none in 30 days</span></div><div class="ui-btn ghost">Restore</div></div>
+            <div class="ui-li"><div class="lg" style="background:#999">P</div><div class="nm">Passport Partners<small>The $250 / $500 plans, replaced by the $111 Partner plan</small></div><div class="st hide-m"><span class="tag gr">1 old</span></div><div class="ui-btn ghost">Restore</div></div>
+            <div class="ui-li"><div class="lg" style="background:#999">+</div><div class="nm">Logos (old copy), Tours, Services, Dinner guests, Import narration<small>Each its own row, with why it was retired</small></div><div class="st hide-m"><span class="tag gr">5 more</span></div><div class="ui-btn ghost">Restore</div></div>
+          </div>
+        </div></div>
+        <div class="dm-side">
+          <h3>What retiring means</h3>
+          <ul>
+            <li>The page leaves the menu and the home. Its file, its data and its server function stay exactly as they are.</li>
+            <li>Its old address opens a note: "This tool is in the trash bin" with Restore.</li>
+            <li><b>Restore</b> puts it back in its section at once. No code change, so you can do it yourself.</li>
+            <li>Each row says why it was retired and when.</li>
+          </ul>
+          <h3>Not in the trash</h3>
+          <ul>
+            <li>Tools that are empty only because their program hasn't launched (Claims, Badges, Certification, the partner programs). They stay in their sections.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. BrandDesk inside Vegans Explore -->
+    <section class="vg-slide" id="branddesk" data-title="BrandDesk here">
+      <div class="vg-eyebrow">8 · BrandDesk inside Vegans Explore</div>
+      <h2 class="vg-h">One BrandDesk, two doors. Edit in either, both show it.</h2>
+      <div class="flow">
+        <div class="bx">vegansexplore.com/dashboard/branddesk<small>The Vegans Explore door</small></div>
+        <div class="ar">&rarr;</div>
+        <div class="bx db">The one BrandDesk app<small>HQ's code, HQ's database</small></div>
+        <div class="ar">&larr;</div>
+        <div class="bx">hq.lesaruss.ai/branddesk<small>The HQ door</small></div>
+      </div>
+      <div class="dm-grid3">
+        <div class="vg-glass dm-card"><b class="t">Why it's real time</b>It isn't a copy that has to sync. Both doors open the same app and the same database, so a change made in one is there the moment you open or refresh the other. There's only one BrandDesk to keep current.</div>
+        <div class="vg-glass dm-card"><b class="t">How it's served</b>vegansexplore.com passes the BrandDesk pages through from HQ (the way lesaruss.ai already shows our Directory). It opens on the Vegans Explore desk, with our menu around it.</div>
+        <div class="vg-glass dm-card"><b class="t">Signing in</b>You sign in once on Vegans Explore. A small bridge gives you an HQ session for the same account, so BrandDesk knows it's you. Only super admins and people you add to a brand get in.</div>
+      </div>
+      <div class="dm-grid3" style="margin-top:12px">
+        <div class="vg-glass dm-card"><b class="t">What moves off the Depot</b>Social, Outreach (Business outreach, Outreach, People), Playbooks, Ideas and Analytics. Each moves only after BrandDesk has everything that page does.</div>
+        <div class="vg-glass dm-card"><b class="t">Two gaps to close first</b>Analytics: Insights needs the Communities ranking, Directory, Events, Media, Guide tabs and Google costs. Outreach: the one-to-one messages and the people sender need a tab in BrandDesk > People.</div>
+        <div class="vg-glass dm-card"><b class="t">Not iframing HQ</b>I'm not putting HQ in a frame: Safari blocks sign-in inside a frame from another site, so you'd be signed out on your phone.</div>
+      </div>
+    </section>
+
+    <!-- 9. Decisions -->
+    <section class="vg-slide" id="decide" data-title="Your call">
+      <div class="vg-eyebrow">9 · Order and defaults</div>
+      <h2 class="vg-h">What I'd build, in this order</h2>
+      <div class="dm-row" style="gap:28px">
+        <div style="flex:1 1 520px;min-width:0" class="vg-glass dm-card">
+          <b class="t">Build order</b>
+          <ul style="list-style:none;display:grid;gap:7px;margin-top:6px">
+            <li><b style="color:#22C55E">1</b> The Depot home, sections, Demos and the trash bin, with the 12 pages in it. Fixes the double Content.</li>
+            <li><b style="color:#22C55E">2</b> Logos as its own tool: category pills, Most viewed sort, city picker.</li>
+            <li><b style="color:#22C55E">3</b> Better logo suggestions: socials from their website, then Facebook pictures, then Google photos, then re-run the 755.</li>
+            <li><b style="color:#22C55E">4</b> BrandDesk inside Vegans Explore, with the sign-in bridge.</li>
+            <li><b style="color:#22C55E">5</b> Move the five overlaps into BrandDesk one at a time, closing the two gaps first.</li>
+          </ul>
+        </div>
+        <div style="flex:1 1 360px;min-width:0" class="vg-glass dm-card">
+          <b class="t">Defaults I'll take unless you say otherwise</b>
+          <ul style="list-style:none;display:grid;gap:7px;margin-top:6px">
+            <li>The 12 pages above go in the trash bin.</li>
+            <li>Feedback lives under Site and QA, not Content.</li>
+            <li>Google photos for logos run inside the $50 Google cap, most viewed listings first.</li>
+            <li>BrandDesk opens at <code>/dashboard/branddesk</code> for super admins only.</li>
+          </ul>
+          <p style="margin-top:10px"><b style="color:#F69820">Your call:</b> say go to start step 1, or tell me what to change on any slide.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/public/footer.js"></script>
+</div>
+<script src="/public/ve-guided.js"></script>
+</body>
+</html>
