@@ -58,7 +58,7 @@
   // 2026-10-10). `say` is for visitors (why get it), `sayMember` walks an owner of the Guide through what they have.
   var TABS = [
     { k: 'overview', label: 'Overview', show: 'Hi, I\'m Liz. Press play and I\'ll walk you through it. Start with Run my free check.', say: 'Hi, I\'m Liz, and welcome to the Vegan Restaurant Guide. You feed people, and that\'s the most direct way anyone meets Vegan food, so thank you. Most owners are great at the food and stretched thin on everything else: your Google listing, your hours, your photos, your menu online. Customers decide from what they find before they ever walk in. This Guide shows you what they find, and what to fix first. Start with Run my free check. Then take the short survey. It\'s free, it makes you a member, and the rest of the Guide opens. And this Guide is built with you. If something isn\'t clear, ask me. If I can\'t help, our team will.',
-      sayMember: 'Welcome in. Thank you for joining. Your business is the place to start. Then the top challenges, your page, your dashboard, and what\'s coming. Everything you save goes in My list, so you can pick up where you left off.' },
+      sayMember: 'Welcome in. You run a Vegan restaurant, and we\'re here to help people find it. Pick a topic below: start with Your restaurant if you\'re not sure. Save anything to My list and come back any time.' },
     { k: 'audit', label: 'Your audit', say: 'This is your restaurant, and we\'ve already checked it. We looked at your Google listing, your website, how you show up in search, and your social. Here\'s what we found, and the first things to work on. It\'s free, and this check is just for you.',
       sayMember: 'Your free check is right here. Run it anytime. When you want us to go deeper, the full audit is an add-on.' },
     { k: 'expect', label: 'What to expect', pre: 1, show: 'Here\'s what opens when you\'re in. Press play and I\'ll explain.', say: 'Here\'s what opens when you\'re in. The top challenges: the things Vegan business owners run into, so you can tick the ones that sound like you. Your page: it already exists, and you can claim it. Your dashboard: how many people look at your page. Our interviews with other owners. And the campaigns and events that bring people to your door. Some of this is live now and some is coming, and each one tells you which. When you\'re ready, take the short survey.' },
@@ -104,7 +104,7 @@
   // Her voice over her picture (door copy, 2026-11-04): el-media tts in her roster-profile voice, one mp3 a tab for visitors.
   // A line's text must match its recording; a changed line is a new version (-v2). Checked word for word with stt, 2026-11-04.
   var AUDIO_V = { overview: 'overview-v3', audit: 'audit-v2', expect: 'expect-v1', join: 'join-v1' };
-  var AUDIO_M = { overview: 'overview-member-v1', fixes: 'fixes-v1', dashboard: 'dashboard-v1', featured: 'featured-v2', demo: 'demo-v2', pulse: 'pulse-v1', promos: 'promos-v1', mylist: 'mylist-v1', next: 'next-v1', sourcing: 'sourcing-member-v1' };
+  var AUDIO_M = { overview: 'overview-member-v2', fixes: 'fixes-v1', dashboard: 'dashboard-v1', featured: 'featured-v2', demo: 'demo-v2', pulse: 'pulse-v1', promos: 'promos-v1', mylist: 'mylist-v1', next: 'next-v1', sourcing: 'sourcing-member-v1' };
   // Members: the tabs as 5 groups in one dropdown under the title (Sean, 2026-11-06: "way too much... grouped... or a drop down"),
   // the Events Guide's and the Pre-Vegan Business Guide's GROUPS. A group opens as a page of picture tiles (#/g/<group>); the dropdown
   // and Back / Next go by group. Visitors keep their four flat tabs. Liz's group-page lines are text until Sean approves them for recording.
@@ -121,7 +121,7 @@
   ];
   // A real picture for each section tile and each kind of supplier (Higgsfield, 2026-11-06, illustrative: no words or logos).
   var PIC_BASE = '/public/guides/restaurant-guide/';
-  function pic(name) { return '<img src="' + PIC_BASE + name + '.jpg" alt="" loading="lazy" decoding="async" width="640" height="640" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">'; }
+  function pic(name) { return '<img src="' + PIC_BASE + name + '.jpg?v=2" alt="" loading="lazy" decoding="async" width="640" height="640" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">'; }
   var TILE = { audit: 'Your free check: what people find when they look you up.', fixes: 'The ten things owners run into most. Tick yours.',
     featured: 'Your page in the Directory. Claim it and keep it current.', dashboard: 'Who looks at your page, where they come from, what they do next.',
     demo: 'A sample restaurant to click around, nothing real touched.', sourcing: 'Who sells it ready-made, and Buy or make.',
@@ -1221,27 +1221,15 @@
   });
 
   // ---------- Overview ----------
-  // Start here: the shared opening every Guide carries (public/ve-guide-intro.js, Sean 2026-11-06).
-  var INTRO = {
-    guide: 'Liz', name: 'the Vegan Restaurant Guide',
-    audience: 'You run a Vegan restaurant, or you are about to. You feed people, and that is the most direct way anyone meets Vegan food. This Guide is here to help your restaurant get found and keep growing.',
-    problem: 'Most owners are great at the food and stretched thin on everything else: the Google listing, the hours, the photos, the menu online, social media. Customers decide from what they find online before they ever walk in, and small gaps there quietly send them somewhere else. This Guide puts what to look at, and what to fix first, in one place.',
-    change: 'Once you have been through it, you will know how your restaurant looks to someone searching today, what to fix first and how, the challenges other Vegan owners run into, and how your page on Vegans Explore brings members through your door. Instead of guessing, you will have a short list and a place to come back to.',
-    how: [['Start with your free check', 'It shows what people find when they look you up. The short survey after it makes you a member and opens the rest of the Guide.']]
-  };
-  function intro(open) { return window.VEGuideIntro ? VEGuideIntro.html(Object.assign({ open: open }, INTRO)) : ''; }
   // Start here, short (Sean, 2026-11-06 live review: "very simple, not a lot... how to use this thing"; draft approved the same day).
   // It replaces the six-part VEGuideIntro on this Guide's Overview; the groups sit under it as headings with their sections as pills, so one click less.
-  var START = [
-    ['You are in the right place.', 'This Guide is for people who run a Vegan restaurant, or are about to.'],
-    ['You feed people. We help them find you.', 'Customers decide from what they see online before they ever walk in. Vegans Explore brings Vegan diners to your door: the Directory, the Daily Pulse, our events and our members.'],
-    ['When you are done,', 'you will know how your restaurant looks to someone searching today, what to fix first, and how your page brings people in.']
-  ];
+  // Start here: the shared short opening (public/ve-guide-intro.js), in this Guide's words.
   function startCard(howTo) {
-    return '<section class="rg-start" aria-label="Start here"><span class="rg-start-pic">' + pic('t-next') + '</span><div class="rg-start-b">' +
-      '<div class="dg-k">Start here</div>' +
-      START.map(function (x) { return '<p><b>' + esc(x[0]) + '</b> ' + esc(x[1]) + '</p>'; }).join('') +
-      '<p><b>How to use it:</b> ' + esc(howTo) + '</p></div></section>';
+    var o = { place: 'This Guide is for people who run a Vegan restaurant, or are about to.',
+      why: ['You feed people. We help them find you.', 'Customers decide from what they see online before they ever walk in. Vegans Explore brings Vegan diners to your door: the Directory, the Daily Pulse, our events and our members.'],
+      change: 'you will know how your restaurant looks to someone searching today, what to fix first, and how your page brings people in.',
+      how: howTo, pic: PIC_BASE + 't-start.jpg?v=2' };
+    return window.VEGuideIntro ? VEGuideIntro.html(o) : '';
   }
   function groupRows(open) {
     return GROUPS.slice(1).map(function (g) {

@@ -43,22 +43,21 @@ Two rules hold at every step:
 - **Members-only content** lives in the `<slug>-site` row of `ve_guides` (`content_html` holds the JSON); only the free preview
   ships in the page (`#dg-public`).
 
-## Start here: every Guide opens with it (LOCKED by Sean 2026-11-06)
+## Start here: every Guide opens with it, short (LOCKED by Sean 2026-11-06, revised the same day)
 
-"Each of the guides needs to kick off with this... I don't want to have to keep explaining that to every single guide." Every Guide's
-Overview carries **Start here**, drawn by `/public/ve-guide-intro.js` (`VEGuideIntro.html({...})`, then `VEGuideIntro.wire(main)`),
-as text on the page, so it reaches people who never press Play. Open for visitors, folded under its heading for members. Six parts:
+"The first thing we need to get across... did they land on the right page? How is this going to help them on their hero's journey? How is
+Vegans Explore set up as the perfect guide for that journey? What's the transformation... And how do they actually use the platform?...
+very simple, not a lot." Every Guide's Overview opens with **Start here**, one short card drawn by `/public/ve-guide-intro.js`
+(`VEGuideIntro.html({ place, why, change, how, pic })`): You are in the right place (who it is for), why Vegans Explore is the right guide
+(a bold lead and one or two sentences), When you are done (the change), How to use it (one sentence), and an illustrated picture. It is
+text on the page, so it reaches people who never press Play. **Under it, the Guide's groups are headings with their sections as pills**
+(one click to any section; locked pills for visitors), never a page of tiles you must open first. The example is `startCard` and
+`groupRows` in `guide-scripts/vegan-restaurant-guide.js`. The Guide's Overview line, when recorded, says the same in the Guide's voice.
+A Guide does not launch without Start here. It replaced the six-part version (why you are here, why we do what we do, why it was made,
+what changes, how to use it, built with you), which read as too much.
 
-1. **Why you are here** (the Guide's own words: who it is for).
-2. **Why we do what we do** (shared, in the file: Vegans Explore's why).
-3. **Why this Guide was made** (the Guide's own: the problem it solves).
-4. **What changes for you** (the Guide's own: the transformation once they have been through it).
-5. **How to use this Guide** (shared basics for first-timers: tabs are the steps, the Guide's Play, nothing breaks; plus the Guide's own first step).
-6. **It is built with you** (shared: tell the Guide or send feedback, our team sees what you share with the Guide and a person picks up what the
-   Guide cannot; if it does not work for you, we have not done our job), with Talk to <Guide> and Send feedback.
-
-A Guide passes only parts 1, 3, 4 and its extra steps (`INTRO` in `guide-scripts/vegan-restaurant-guide.js` is the example). The Guide's
-Overview line, when recorded, says the same in the Guide's voice. A Guide does not launch without Start here.
+**Pictures**: generic scenes (tiles, Start here, supplier kinds) are drawn in our illustrated style, never photorealistic. Real photos are
+only for real things: customers, events, a business's own food and space (Sean, 2026-11-06: "that sets us apart from everybody else").
 
 ## 3. The page
 
