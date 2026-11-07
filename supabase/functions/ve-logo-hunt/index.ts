@@ -95,12 +95,36 @@ type Cand = { url: string; source: 'website' | 'google' | 'facebook' | 'instagra
 
 // The website, read better than the old sweep: any <img> that says logo, the pictures in the header and nav, pictures whose alt
 // text is the business's name, logo background images, then the app icon and share picture.
+// A site that turns automated visitors away (403, 429, a challenge page) or draws itself with scripts is opened in a real browser
+// (Apify's rag-web-browser, as ve-menu-reader does) and the rendered page is read the same way.
+async function browserHtml(url: string): Promise<{ html: string; url: string } | null> {
+  const token = await secret('APIFY_API_TOKEN'); if (!token) return null;
+  try {
+    const r = await fetch(`https://api.apify.com/v2/acts/apify~rag-web-browser/run-sync-get-dataset-items?token=${token}&timeout=70`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, signal: AbortSignal.timeout(85000),
+      body: JSON.stringify({ query: url, maxResults: 1, outputFormats: ['html'], scrapingTool: 'browser-playwright', requestTimeoutSecs: 60, dynamicContentWaitSecs: 8, removeCookieWarnings: true, htmlTransformer: 'none' }),
+    });
+    if (!r.ok) return null;
+    const d = ((await r.json()) as any[])[0] || {};
+    const html = String(d.html || '');
+    return html.length > 500 ? { html: html.slice(0, 800000), url: d?.metadata?.url || url } : null;
+  } catch { return null; }
+}
+const thin = (html: string) => html.length < 4000 || /cf-browser-verification|challenge-platform|Just a moment\.\.\.|enable JavaScript and cookies/i.test(html) || (html.match(/<img\b/gi) || []).length === 0;
+
 async function readSite(website: string, name: string) {
-  const out = { ok: false, error: '', instagram: '', facebook: '', cands: [] as Cand[], svg: 0, html_len: 0 };
-  let r: Response;
-  try { r = await fetchWithin(/^https?:/i.test(website) ? website : 'https://' + website, 12000); } catch { out.error = 'did not open'; return out; }
-  if (!r.ok) { out.error = `answered ${r.status}`; return out; }
-  const html = (await r.text()).slice(0, 800000), base = r.url || website;
+  const out = { ok: false, error: '', instagram: '', facebook: '', cands: [] as Cand[], svg: 0, html_len: 0, browser: false };
+  const start = /^https?:/i.test(website) ? website : 'https://' + website;
+  let html = '', base = start;
+  try {
+    const r = await fetchWithin(start, 12000);
+    if (r.ok) { html = (await r.text()).slice(0, 800000); base = r.url || start; } else out.error = `answered ${r.status}`;
+  } catch { out.error = 'did not open'; }
+  if (!html || thin(html)) {
+    const b = await browserHtml(base);
+    if (b && b.html.length > html.length) { html = b.html; base = b.url; out.browser = true; out.error = ''; }
+  }
+  if (!html) return out;
   out.ok = true; out.html_len = html.length;
   const abs = (u: string) => { try { return new URL(u.replace(/&amp;/g, '&').trim(), base).href; } catch { return ''; } };
   const hrefs = [...html.matchAll(/href=["']([^"']+)["']/gi)].map((m) => m[1].replace(/&amp;/g, '&').trim());
@@ -173,6 +197,9 @@ The pictures come from the business's website, a Google Images search, its Faceb
 - Never pick a photo of food, a storefront, a room, people, a menu or flyer, a logo inside a busy photo, a website builder's or
   platform's icon (Wix, Squarespace, Shopify, WordPress, Toast, Google, Yelp), a map, or another business's logo.
 - A Facebook or Instagram picture counts only when it is the logo itself, not a photo.
+- A Facebook page found by searching the name may belong to another business with the same or a similar name (another city,
+  another kind of business). Trust it only when its name and place fit this business, or its picture matches the logo from
+  their website, Google or Instagram.
 - When several pictures show the same logo, pick the largest, sharpest, least cropped one, and list the others in same_logo_in.
 - Never pick one that is faint, blurry or unreadable at small size.
 - confidence high only when you can read the business's name in the logo or the same logo appears in two different places.
@@ -198,21 +225,43 @@ async function runBatch(runId: string, ids: string[]) {
     const h = handleOf(l.ig_handle || l.instagram || '') || s?.instagram || ''; if (h) ig[l.id] = h;
     const f = (l.facebook && /facebook\.com\//i.test(l.facebook) ? l.facebook : '') || s?.facebook || ''; if (f) fb[l.id] = f;
   });
-  // 2-4. Google Images, Facebook, Instagram, side by side
+  // 2. No Facebook link? Search Facebook for a page by the business's name and city (one search a listing: the actor's result
+  // limit is for the whole run). Up to two pages whose name shares a word with ours go to the page reader with the rest.
+  const fbFound: Record<string, string[]> = {};
+  const noFb = L.filter((l) => !fb[l.id]);
+  let fbSearchN = 0, next0 = 0;
+  const searchOne = async () => {
+    while (next0 < noFb.length) {
+      const l = noFb[next0++];
+      const res = await apify('apify~facebook-search-scraper', { categories: [`${baseName(l.name)} ${l.address_city || ''}`.trim()], searchType: 'pages', resultsLimit: 5 }, 120);
+      fbSearchN += res.length;
+      const ours = words(baseName(l.name));
+      fbFound[l.id] = (res as any[]).map((r) => ({ url: String(r.url || ''), score: words(r.name || '').filter((w) => ours.includes(w)).length }))
+        .filter((r) => /facebook\.com\//i.test(r.url) && r.score > 0).sort((a, b) => b.score - a.score).slice(0, 2).map((r) => r.url);
+    }
+  };
+  await Promise.all([searchOne(), searchOne(), searchOne(), searchOne(), searchOne()]);
+  const fbUrls = [...new Set([...Object.values(fb), ...Object.values(fbFound).flat()])];
+  // 3-5. Google Images, Facebook pages, Instagram, side by side
   const q = (l: any) => `${baseName(l.name)} ${l.address_city || ''} logo`.replace(/\s+/g, ' ').trim();
   const [gi, fbr, igr] = await Promise.all([
     apify('hooli~google-images-scraper', { queries: L.map(q), maxResultsPerQuery: 6 }),
-    Object.keys(fb).length ? apify('apify~facebook-pages-scraper', { startUrls: [...new Set(Object.values(fb))].map((url) => ({ url })) }) : Promise.resolve([]),
+    fbUrls.length ? apify('apify~facebook-pages-scraper', { startUrls: fbUrls.map((url) => ({ url })) }) : Promise.resolve([]),
     Object.keys(ig).length ? apify('apify~instagram-profile-scraper', { usernames: [...new Set(Object.values(ig))] }) : Promise.resolve([]),
   ]);
   const igPic: Record<string, string> = {};
   for (const p of igr as any[]) { const u = String(p.username || '').toLowerCase(); const pic = p.profilePicUrlHD || p.profilePicUrl; if (u && pic && !p.error) igPic[u] = pic; }
   const fbPic: Record<string, string> = {};
   const fbKey = (u: string) => String(u || '').toLowerCase().replace(/^https?:\/\/(www\.|m\.)?facebook\.com\//, '').replace(/[/?#].*$/, '');
-  for (const p of fbr as any[]) { const pic = p.profilePictureUrl || pickField(p, /profilePic/i); const keys = [p.facebookUrl, p.pageUrl, p.url, p.inputUrl].filter(Boolean).map(fbKey); for (const k of keys) if (pic) fbPic[k] = pic; }
+  const fbInfo: Record<string, string> = {};
+  for (const p of fbr as any[]) {
+    const pic = p.profilePictureUrl || pickField(p, /profilePic/i); const keys = [p.facebookUrl, p.pageUrl, p.url, p.inputUrl].filter(Boolean).map(fbKey);
+    const info = [p.title || p.pageName || p.name, typeof p.address === 'string' ? p.address : '', Array.isArray(p.categories) ? p.categories.slice(0, 2).join(', ') : ''].filter(Boolean).join('; ').slice(0, 200);
+    for (const k of keys) { if (pic) fbPic[k] = pic; if (info) fbInfo[k] = info; }
+  }
   const giBy: Record<string, string[]> = {};
   for (const r of gi as any[]) { const qq = String(r.query || r.searchQuery || r.searchTerm || '').toLowerCase(); const u = r.imageUrl || r.originalUrl || r.url || pickField(r, /image/i); if (qq && u) (giBy[qq] ||= []).push(u); }
-  const cost = (gi.length * 0.0029) + (fbr.length * 0.0082) + (igr.length * 0.0026);
+  const cost = (gi.length * 0.0029) + (fbr.length * 0.0082) + (igr.length * 0.0026) + (fbSearchN * 0.005) + (noFb.length * 0.001);
   // 5. per listing: download, store, judge
   const per = cost / Math.max(1, L.length);
   let next = 0;
@@ -223,6 +272,7 @@ async function runBatch(runId: string, ids: string[]) {
         const cands: Cand[] = [...(s?.cands || [])];
         (giBy[q(l).toLowerCase()] || []).slice(0, 6).forEach((u, k) => cands.push({ url: u, source: 'google', label: `Google Images result ${k + 1} for "${q(l)}"` }));
         if (fb[l.id] && fbPic[fbKey(fb[l.id])]) cands.push({ url: fbPic[fbKey(fb[l.id])], source: 'facebook', label: 'Their Facebook page picture' });
+        for (const u of fbFound[l.id] || []) if (fbPic[fbKey(u)]) cands.push({ url: fbPic[fbKey(u)], source: 'facebook', label: `The picture of a Facebook page found by searching the name (${fbInfo[fbKey(u)] || u}). It may be another business with a similar name: check the name and place.` });
         if (ig[l.id] && igPic[ig[l.id]]) cands.push({ url: igPic[ig[l.id]], source: 'instagram', label: 'Their Instagram picture' });
         const kept: (Cand & { stored: string; w: number; h: number; type: string; bytes: Uint8Array })[] = [];
         const imgs = await Promise.all(cands.map((c) => readImage(c.url)));
@@ -234,8 +284,8 @@ async function runBatch(runId: string, ids: string[]) {
           kept.push({ ...cands[k], stored: `${SUPABASE_URL}/storage/v1/object/public/vegan-media/${path}`, w: im.w, h: im.h, type: im.type, bytes: im.bytes });
         }
         const candRows = kept.map((c, n) => ({ n, source: c.source, label: c.label, url: c.url.startsWith('data:') ? 'data:' : c.url, stored: c.stored, w: c.w, h: c.h }));
-        const site = s ? { ok: s.ok, error: s.error, svg: s.svg, html_len: s.html_len } : null;
-        const socials = { instagram: ig[l.id] || null, facebook: fb[l.id] || null, ig_found_on_site: !!s?.instagram, fb_found_on_site: !!s?.facebook };
+        const site = s ? { ok: s.ok, error: s.error, svg: s.svg, html_len: s.html_len, browser: s.browser } : null;
+        const socials = { instagram: ig[l.id] || null, facebook: fb[l.id] || null, fb_searched: fbFound[l.id] || null, ig_found_on_site: !!s?.instagram, fb_found_on_site: !!s?.facebook };
         if (!kept.length) {
           await db.from('ve_logo_hunts').update({ status: 'done', site, socials, candidates: candRows, pick: -1, verdict: 'none', why: 'No usable picture found anywhere.', cost_usd: per, done_at: new Date().toISOString() }).eq('run_id', runId).eq('listing_id', l.id);
           continue;
