@@ -404,7 +404,7 @@
     if (sub && sub.indexOf('listing/') === 0) return viewListing(decodeURIComponent(sub.slice(8)), ['Get found', '#/found']);
     var steps = [
       ['Find your page', 'Many Vegan nonprofits, rescues and sanctuaries are already in our Directory. Search for yours below.', '#/found', 'Search below'],
-      ['Claim it', 'Make the page yours: your story, links, photos and events. Claiming is $11 or 1,100 points, and our team checks every claim.', '/business', 'How claiming works'],
+      ['Claim it', 'Make the page yours: your story, links, photos and events. Claiming is free for members, and our team checks every claim.', '/business', 'How claiming works'],
       ['Not listed? Add it', 'Add your organization to the Directory. It waits for our team to check it, then it goes live.', '/claim?add=1', 'Add your organization'],
       ['Every chapter you serve', 'A statewide or national organization shows in every chapter it serves, not just its home city. Tell us which.', 'mailto:contact@lesaruss.com?subject=' + encodeURIComponent('Chapters our organization serves'), 'Tell our team'],
       ['Votes and points', 'Members vote for the organizations they love, and they can give your organization points right from its page.', '/directory?tab=community', 'See the Community Directory'],
