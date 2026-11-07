@@ -48,6 +48,11 @@ linking to a watch page through a tracked /go/ link), social and client calls. A
 every tour is locked, not before. Build order: the Depot home and its tour (prototype, script `docs/proposals/depot-tour-script.md`, waiting on Sean;
 mock `/mocks/depot/`), the BrandDesk Overview tour (client version first), its video, then the Restaurant Guide. One shared tour player for all of them,
 built on BrandDesk's existing V tours (`lib/branddeskTours.ts` in lesaruss-hq).
+**v3 (Sean, 2026-11-07, decided first on the Nonprofit Guide): the Overview tour is a video, not a live slideshow.** It plays on the Overview, goes on our
+YouTube, is downloadable, and is cut into clips for social and the podcast. Pipeline: 1. script approved; 2. each chapter recorded in the roster-profile voice and
+checked with stt (unchanged); 3. a **lookbook** of every shot per chapter for Sean to approve before any animation or credits; 4. animation, the Guide on camera
+with lip sync (the Dairy Guide standard); 5. the edit, chapters as video chapters, and Summarize this page still plays that chapter. The live slideshow player is
+dropped. The Depot's 13 chapters are already recorded (step 2 done).
 
 ## Every Guide opens the same way, and businesses earn the word Vegan (Sean, 2026-11-06)
 
