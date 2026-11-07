@@ -55,9 +55,11 @@
   var AUDIO_BASE = SB + '/storage/v1/object/public/vegan-media/media/maya/pre-vegan-business-guide/';
   // -v2 (2026-11-06): the new Overview and the plant-based language (canon-ve-pre-vegan-meaning). The -v1 files stay in storage.
   var AUDIO_V = { overview: 'overview-v2', why: 'why-v2', add: 'add-v1', say: 'say-v2', join: 'join-v1' };
+  // Group pages (members): Maya's `say` in GROUPS, recorded as g-<group>-v1.mp3 (approved by Sean 2026-11-06, recorded 2026-11-07, checked with stt).
+  var AUDIO_G = { learn: 'g-learn-v1', addit: 'g-addit-v1', gofound: 'g-gofound-v1', yours: 'g-yours-v1' };
   var AUDIO_M = { overview: 'overview-member-v2', add: 'add-member-v1', sourcing: 'sourcing-v1', make: 'make-v1', found: 'found-v2', claim: 'claim-v1', next: 'next-v1', mylist: 'mylist-v1' };
   // Members: the tabs as 5 groups (Sean, 2026-11-06), copied from the Events Guide's GROUPS. A group opens as a page of tiles; the
-  // dropdown and Back / Next go by group. Maya's line on a group page (`say`) is text until Sean approves it for recording.
+  // dropdown and Back / Next go by group. Maya's line on a group page (`say`) is recorded (AUDIO_G); change a line, record -v2.
   var GROUPS = [
     { k: 'start', label: 'Start here', kids: [] },
     { k: 'learn', label: 'Learn it', kids: ['why', 'say'], line: 'Why plant-based options are worth it, and the right words for your menu.',
@@ -672,7 +674,7 @@
   });
   try { if (sessionStorage.getItem('pb_maya_folded')) setFold(true); } catch (e) {}
   var mayaBox = document.getElementById('dgMaya'), bubble = document.getElementById('dgBubble'), playBtn = document.getElementById('dgPlay'), tourEl = document.getElementById('dgTour');
-  function mayaAudio(k) { if (/^g:/.test(k)) return null; var f = (member() ? AUDIO_M : AUDIO_V)[k] || AUDIO_V[k]; return f ? AUDIO_BASE + f + '.mp3' : null; }
+  function mayaAudio(k) { if (/^g:/.test(k)) { var gk = k.slice(2); return AUDIO_G[gk] ? AUDIO_BASE + AUDIO_G[gk] + '.mp3' : null; } var f = (member() ? AUDIO_M : AUDIO_V)[k] || AUDIO_V[k]; return f ? AUDIO_BASE + f + '.mp3' : null; }
   var aud = new Audio(); aud.preload = 'none';
   aud.addEventListener('ended', function () { TOUR.playing = false; drawMaya(); });
   function cueMaya(k) {
@@ -692,7 +694,7 @@
     var isG = /^g:/.test(curTab), t = isG ? null : tab(curTab);
     var st = tourSteps(), key = curTab === 'search' ? 'overview' : curTab, i = Math.max(0, st.indexOf(key));
     bubble.textContent = isG ? group(curTab.slice(2)).say : (member() && t.sayMember ? t.sayMember : t.say);
-    // A page with no recording for this visitor (a group page, for now): no Play button, her words are in the bubble.
+    // A page with no recording for this visitor: no Play button, her words are in the bubble.
     playBtn.hidden = !mayaAudio(curTab);
     playBtn.classList.toggle('go', !TOUR.started);
     playBtn.innerHTML = !TOUR.started ? '&#9654; Play Maya' : TOUR.playing ? 'Pause Maya' : '&#9654; Play Maya';
