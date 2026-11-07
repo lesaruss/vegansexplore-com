@@ -106,9 +106,6 @@
     { group: 'Moving to BrandDesk', href: '/dashboard/applications', label: 'Role applications', kind: 'dash' },
     { group: 'Moving to BrandDesk', href: '/admin/depot/social', label: 'Social' },
     { group: 'Moving to BrandDesk', href: '/admin/depot/playbooks', label: 'Playbooks' },
-    { group: 'Moving to BrandDesk', href: '/admin/depot/analytics', label: 'Analytics' },
-    { group: 'Moving to BrandDesk', href: '/dashboard/insights', label: 'Community Insights', kind: 'dash' },
-    { group: 'Moving to BrandDesk', href: '/dashboard/health', label: 'Platform health', kind: 'dash' },
     { group: 'Moving to BrandDesk', href: '/admin/depot/branddesk', label: 'BrandDesk clients' }
   ];
   // The trash bin (Sean, 2026-11-07: "a visible trash bin... if I ever want to resurrect it"). Retired, never deleted: the page,
@@ -127,6 +124,9 @@
     { href: '/admin/depot/services', label: 'Services', group: 'Directory', why: 'The old one-thing services. The shop is BrandDesk\'s now. No order was ever made.' },
     { href: '/admin/depot/dinners', label: 'Dinner guests', group: 'Moving to BrandDesk', why: 'Dinner seats on us ended with comps. One dinner, October 4.' },
     { href: '/admin/depot/narration', label: 'Import narration', group: 'Guides', why: 'Part of Onboarding.' },
+    { href: '/admin/depot/analytics', label: 'Analytics', group: 'Moving to BrandDesk', why: 'Moved to BrandDesk > Vegans Explore > Insights on November 7, 2026 (Web, Chapters, Site sections, Costs).' },
+    { href: '/dashboard/insights', label: 'Community Insights', group: 'Moving to BrandDesk', kind: 'dash', why: 'Moved to BrandDesk > Vegans Explore > Insights > Members on November 7, 2026.' },
+    { href: '/dashboard/health', label: 'Platform health', group: 'Moving to BrandDesk', kind: 'dash', why: 'Moved to BrandDesk > Vegans Explore > Insights > Health on November 7, 2026.' },
     { href: '/dashboard/guest-reviews', label: 'Guest reviews', group: 'Moving to BrandDesk', kind: 'dash', why: 'The old free Guest Passport queue. Nobody has been in it since free accounts ended.' }
   ];
   // A restored tool goes back to its section. The home saves the list in this browser (ve_depot_restored) after reading it.

@@ -970,7 +970,7 @@
            their city's Submissions, This Week in their city. Filled by renderRoleRow() from
            ve-ops action=summary. Replaced Your City / Pending Applications / Status Active. -->
       <div class="dash-stats" id="dash-stats-row" style="display:none;">
-        <a class="dash-stat" id="dash-role-first" href="/dashboard/health" onclick="openConsoleFrame(this.getAttribute('href'), this.dataset.frame || 'Platform Health'); return false;"><div class="dash-stat-label" id="dash-role-first-label">Platform Health</div><div class="dash-stat-value" id="dash-role-first-value">--</div><div class="dash-stat-sub" id="dash-role-first-sub">&nbsp;</div></a>
+        <a class="dash-stat" id="dash-role-first" href="https://hq.lesaruss.ai/branddesk/brands/vegans-explore?view=insights&in=health" target="_blank" rel="noopener" onclick="if (/^https?:/.test(this.getAttribute('href'))) return true; openConsoleFrame(this.getAttribute('href'), this.dataset.frame || 'Platform Health'); return false;"><div class="dash-stat-label" id="dash-role-first-label">Platform Health</div><div class="dash-stat-value" id="dash-role-first-value">--</div><div class="dash-stat-sub" id="dash-role-first-sub">&nbsp;</div></a>
         <a class="dash-stat" href="/dashboard/submissions" onclick="openConsoleFrame('/dashboard/submissions', 'Submissions'); return false;"><div class="dash-stat-label">Pending Submissions</div><div class="dash-stat-value" id="dash-stat-pending" style="color:#7d4a00;">--</div><div class="dash-stat-sub" id="dash-stat-pending-sub">&nbsp;</div></a>
         <a class="dash-stat" id="dash-role-week" href="/dashboard/members" onclick="openConsoleFrame('/dashboard/members', 'Members'); return false;"><div class="dash-stat-label" id="dash-role-week-label">This Week</div><div class="dash-stat-value" id="dash-role-week-value">--</div><div class="dash-stat-sub" id="dash-role-week-sub">&nbsp;</div></a>
       </div>
@@ -1083,7 +1083,7 @@
            with See full insights to Depot > Analytics. renderInsights(). The Depot moved to the bottom of the tab. -->
       <div id="dash-insights-block" hidden>
       <div class="dash-lb-head"><p class="dash-section-title">Insights</p>
-        <a class="dash-ins-more" id="dash-ins-more" href="/admin/depot/analytics">See full insights &rarr;</a></div>
+        <a class="dash-ins-more" id="dash-ins-more" href="https://hq.lesaruss.ai/branddesk/brands/vegans-explore?view=insights&in=web" target="_blank" rel="noopener">See full insights &rarr;</a></div>
       <div class="dash-ins-tabs" id="dash-ins-tabs" role="tablist" aria-label="Insights"></div>
       <div id="dash-ins-body"><p style="font-size:12px;color:var(--ve-text-50);">Loading&hellip;</p></div>
       </div>
@@ -1538,7 +1538,7 @@
         var city = d.city, mine = (d.pulse || []).filter(function (p) { return p.city === city; })[0];
         var fresh = mine && (Date.now() - new Date(mine.published_at).getTime()) < 30 * 3600 * 1000;
         document.getElementById('dash-role-first-label').textContent = "Today's Pulse";
-        first.setAttribute('href', '/dashboard/pulse-desk'); first.dataset.frame = 'Pulse Desk';
+        first.setAttribute('href', '/dashboard/pulse-desk'); first.dataset.frame = 'Pulse Desk'; first.removeAttribute('target');
         set('dash-role-first-value', fresh ? 'Published' : 'Not yet', fresh ? 'is-ok' : 'is-warn');
         set('dash-role-first-sub', fresh ? mine.title : (VE_CITY_NAMES[city] || city) + ' needs today\'s edition.');
       }
@@ -3797,7 +3797,7 @@
       var va = document.createElement('a'); va.className = 'dash-preview-viewall'; va.textContent = 'View all →'; va.href = viewAllHref;
       // Open the full admin page inside the console frame (Sean, 2026-09-22),
       // not as a full-page navigation.
-      va.addEventListener('click', function (e) { e.preventDefault(); openConsoleFrame(viewAllHref, title); });
+      va.addEventListener('click', function (e) { e.preventDefault(); if (/^https?:/.test(viewAllHref)) window.open(viewAllHref, '_blank', 'noopener'); else openConsoleFrame(viewAllHref, title); });
       head.appendChild(va);
     }
     var body = document.createElement('div'); body.className = 'dash-preview-body';
@@ -3975,7 +3975,8 @@
   // Insights beside For you (Sean, 2026-11-03): Web, Social and SEO at a glance, the last 30 days against the 30 before, scrolling inside the
   // box. Same reads as Depot > Analytics (ve-analytics report) and Depot > Social (ve-social report); See full insights opens them.
   var INS = { tab: 'web', web: null, social: null, at: 0, busy: false };
-  var INS_FULL = { web: '/admin/depot/analytics', social: '/admin/depot/social#analytics/all', seo: '/admin/depot/analytics#sources' };
+  // Since 2026-11-07 the full numbers live in BrandDesk > Vegans Explore > Insights (HQ), opened in a new tab.
+  var INS_FULL = { web: 'https://hq.lesaruss.ai/branddesk/brands/vegans-explore?view=insights&in=web', social: 'https://hq.lesaruss.ai/branddesk/brands/vegans-explore?view=insights&in=social', seo: 'https://hq.lesaruss.ai/branddesk/brands/vegans-explore?view=insights&in=seo' };
   function insDay(d) { return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); }
   function insN(v) { return v == null || isNaN(v) ? '-' : Number(v).toLocaleString('en-US'); }
   function insDelta(cur, prev) {
@@ -4047,7 +4048,7 @@
     }
     if (more && !more.dataset.wired) {
       more.dataset.wired = '1';
-      more.addEventListener('click', function (e) { e.preventDefault(); var h = INS_FULL[INS.tab]; if (typeof openDepotPage === 'function') openDepotPage(h); else location.href = h; });
+      more.addEventListener('click', function (e) { e.preventDefault(); window.open(INS_FULL[INS.tab], '_blank', 'noopener'); });
     }
     insDraw(); insLoad(false);
   }
@@ -4539,7 +4540,7 @@
         }).catch(function () { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; });
       }));
       // Recent Votes: what got the vote, and who gave it on the right (Sean, 2026-10-30: "who's voting, who's getting the votes").
-      recent.appendChild(dpDataCard('Recent Votes', '/admin/depot/analytics#directory', function (token, body, t) {
+      recent.appendChild(dpDataCard('Recent Votes', 'https://hq.lesaruss.ai/branddesk/brands/vegans-explore?view=insights&in=sections&isub=directory', function (token, body, t) {
         dvCall({ action: 'recent_votes', limit: 100 }).then(function (d) {
           var rows = (d && d.votes) || [];
           if (!d || !d.ok) { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; return; }
@@ -4582,7 +4583,7 @@
       }));
       // The Leaderboard, as one of these boxes for super admins (Sean, 2026-10-30: "drop that to one of the recent activity tiles and
       // keep it the same size"); its pictures open who they are.
-      recent.appendChild(dpDataCard('Leaderboard', '/admin/depot/analytics#members', function (token, body, t) {
+      recent.appendChild(dpDataCard('Leaderboard', 'https://hq.lesaruss.ai/branddesk/brands/vegans-explore?view=insights&in=members&isub=joined', function (token, body, t) {
         dvCall({ action: 'leaderboard' }).then(function (d) {
           if (!d || !d.ok) { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; return; }
           var rows = d.rows || [];
