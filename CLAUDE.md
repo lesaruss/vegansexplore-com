@@ -6925,6 +6925,11 @@ the plain suitcase mark; the app's own icon is step E and may replace it once Se
 **E and F sent to Sean 2026-11-07** on one canvas, https://claude.ai/artifact/D52VjPJvNiWXafBXZbvhCp: icon A (white suitcase on our
 green, recommended), B (green on white), C (the leaf mosaic); opening screen 1 (green with the white mark, recommended) or 2 (the logo on
 white); and one clickable phone with every v1 screen, using real listings and events. No app code until Sean picks and approves.
+**E decided by Sean 2026-11-07**: the app icon is **A**, the white suitcase mark on our green (B, green on white, stays on file; **the leaf
+mosaic suitcase `public/ve-mark.png` is the old logo and is retired**: never use it again). The website's icons in `public/app/` are A since the
+same day. The opening screen is **the stacked (portrait) logo on white**: `public/logo-ve-portrait-v1.svg` (Sean's file; the suitcase over
+VEGANS in black and EXPLORE in green), with `public/logo-ve-portrait-v1-inverted.svg` (all white, the leaf green, no background) kept on file
+for green or dark backgrounds. F (the screens) still waits for Sean's approval.
 
 ## Image conventions
 
