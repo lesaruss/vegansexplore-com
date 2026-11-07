@@ -296,5 +296,38 @@ Deno.serve(async (req) => {
     if (up.error) return json({ error: up.error.message }, 500);
     return json({ ok: true, url: `${SUPABASE_URL}/storage/v1/object/public/vegan-media/${path}`, rows: rows.length });
   }
+  if (body.action === 'apply') {
+    // A logo the hunter found becomes the listing's logo. The caller squares the picked picture (logo centered on its
+    // background, at least 400 px) and sends it as a JPEG; it is saved the way ve-discover's logo_set saves one:
+    // media/listings/<slug>/logo-*, details.logo_source and logo_checked, a ve_listing_edits row, the suggestion marked used.
+    const runId = String(body.run_id || ''), lid = String(body.listing_id || '');
+    if (!/^[a-z0-9-]{4,40}$/.test(runId) || !/^[0-9a-f-]{36}$/i.test(lid)) return json({ error: 'bad request' }, 400);
+    const { data: h } = await db.from('ve_logo_hunts').select('pick, verdict, candidates, sources_agree, confidence').eq('run_id', runId).eq('listing_id', lid).maybeSingle();
+    if (!h || h.pick < 0) return json({ error: 'no pick for this listing in this run' }, 404);
+    if (h.verdict !== 'auto' && body.reviewed !== true) return json({ error: 'not confirmed: pass reviewed: true for a pick a person checked' }, 409);
+    let bytes: Uint8Array;
+    try { bytes = Uint8Array.from(atob(String(body.jpeg_b64 || '')), (c) => c.charCodeAt(0)); } catch { return json({ error: 'bad picture' }, 400); }
+    if (bytes[0] !== 0xff || bytes[1] !== 0xd8) return json({ error: 'not a JPEG' }, 400);
+    const size = imageSize(bytes); if (!size || Math.min(size.w, size.h) < 200) return json({ error: 'too small' }, 400);
+    const { data: l } = await db.from('listings').select('id, slug, logo_url, details').eq('id', lid).maybeSingle();
+    if (!l) return json({ error: 'listing not found' }, 404);
+    const at = new Date().toISOString();
+    const path = `media/listings/${l.slug}/logo-${at.slice(0, 10)}-${crypto.randomUUID().slice(0, 8)}.jpg`;
+    const up = await db.storage.from('vegan-media').upload(path, bytes, { contentType: 'image/jpeg', upsert: false });
+    if (up.error) return json({ error: up.error.message }, 500);
+    const url = `${SUPABASE_URL}/storage/v1/object/public/vegan-media/${path}`;
+    const pickRow = (h.candidates || [])[h.pick] || {};
+    const details = { ...(l.details || {}) } as Record<string, any>;
+    details.logo_source = 'logo-hunt';
+    details.logo_checked = { by: body.by || 'Logan (logo hunt)', at, w: size.w, h: size.h, from: String(pickRow.url || '').slice(0, 400), source: pickRow.source || null, run: runId, agree: h.sources_agree || [], confidence: h.confidence };
+    if (details.logo_unverified) { details.logo_replaced = { url: details.logo_unverified, at }; delete details.logo_unverified; delete details.logo_unverified_at; delete details.logo_unverified_why; }
+    delete details.logo_letter_ok;
+    const { error } = await db.from('listings').update({ logo_url: url, details, updated_at: at }).eq('id', l.id);
+    if (error) return json({ error: error.message }, 500);
+    await db.from('ve_listing_edits').insert({ listing_id: l.id, field: 'logo', old_value: l.logo_url || null, new_value: url, meta: { by: 'logo_hunt', run: runId, where: 've-logo-hunt' } });
+    await db.from('ve_logo_suggestions').update({ status: 'used', decided_at: at }).eq('listing_id', l.id);
+    await db.from('ve_logo_hunts').update({ applied_at: at, applied_url: url }).eq('run_id', runId).eq('listing_id', lid);
+    return json({ ok: true, logo_url: url });
+  }
   return json({ error: 'unknown action' }, 400);
 });
