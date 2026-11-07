@@ -190,7 +190,7 @@ complaint (targeted check within [10 business days]), a recall touching an ingre
 (suspended), falsification (ended).
 
 **E. Fees.** $250 per dish for the first term (desk review, visit, one tasting night, one courtesy check). $150 per dish per renewal. A
-changed dish's new review: **[$150]**. A re-check after a suspension: **[$150]**. No free certifications.
+changed dish's new review: **$150**. A re-check after a suspension: **$150**. No free certifications.
 
 **F. The Standard**, version 1.2, as published in our methodology.
 

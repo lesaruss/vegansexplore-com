@@ -120,7 +120,7 @@
       function statusUrl(code) { return SITE + '/certified/' + code; }
       function qrSvg(code) { try { var q = qrcode(0, 'M'); q.addData(statusUrl(code)); q.make(); return q.createSvgTag({ cellSize: 4, margin: 2, scalable: true }); } catch (e) { return ''; } }
       function qrPng(code) { var q = qrcode(0, 'M'); q.addData(statusUrl(code)); q.make(); return q.createDataURL(16, 4); }
-      function route() { var h = location.hash.replace(/^#/, '').split('/'); if (h[0] === 'c') return { v: 'item', id: h[1] }; if (h[0] === 'new') return { v: 'new' }; var t = h[1]; return { v: 'list', tab: TABS.some(function (x) { return x[0] === t; }) ? t : 'all' }; }
+      function route() { var h = location.hash.replace(/^#/, '').split('/'); if (h[0] === 'c') return { v: 'item', id: h[1] }; if (h[0] === 'adoption') return { v: 'adoption', days: h[1] === '30' || h[1] === '90' ? +h[1] : 0 }; if (h[0] === 'new') return { v: 'new' }; var t = h[1]; return { v: 'list', tab: TABS.some(function (x) { return x[0] === t; }) ? t : 'all' }; }
       function bucket(c) { var n = c.counts || {}; if (n.active) return 'certified'; if (n.applied || n.pending) return 'progress'; return 'ended'; }
       function card(c) {
         var l = c.listing || {}, n = c.counts || {};
@@ -135,8 +135,27 @@
         cs.forEach(function (c) { var b = bucket(c); cnt[b] = (cnt[b] || 0) + 1; if ((c.counts || {}).suspended) cnt.suspended = (cnt.suspended || 0) + 1; });
         var tabs = TABS.map(function (t) { return '<a href="#list/' + t[0] + '" class="' + (t[0] === r.tab ? 'on' : '') + '">' + t[1] + ' (' + (cnt[t[0]] || 0) + ')</a>'; }).join('');
         var list = cs.filter(function (c) { return r.tab === 'all' || (r.tab === 'suspended' ? (c.counts || {}).suspended : bucket(c) === r.tab); });
-        $('view').innerHTML = '<nav class="tabs" aria-label="Filter">' + tabs + (viewOnly ? '' : '<a href="#new">New certificate</a>') + '<a href="/certified" target="_blank" rel="noopener">The public registry</a></nav>' +
+        $('view').innerHTML = '<nav class="tabs" aria-label="Filter">' + tabs + (viewOnly ? '' : '<a href="#new">New certificate</a>') + '<a href="#adoption">Guide adoption</a><a href="/certified" target="_blank" rel="noopener">The public registry</a></nav>' +
           (list.length ? '<div class="grid">' + list.map(card).join('') + '</div>' : '<p class="sub">' + (cs.length ? 'None here.' : 'No certificates yet. Start one with New certificate when a restaurant applies.') + '</p>');
+      }
+      var GATE_WORD = { eligibility: 'Who can apply', G1: 'G1 Ingredient evidence', G2: 'G2 Hidden in process', G3: 'G3 Protected path', G4: 'G4 Accurate use', G5: 'G5 Staff', G6: 'G6 Change approval', G7: 'G7 Access', G8: 'G8 Records' };
+      function drawAdoption(r) {
+        var per = [[30, 'Last 30 days'], [90, 'Last 90 days'], [0, 'All time']].map(function (x) { return '<a href="#adoption/' + (x[0] || 'all') + '" class="' + (x[0] === r.days ? 'on' : '') + '">' + x[1] + '</a>'; }).join('');
+        $('view').innerHTML = '<nav class="tabs" aria-label="Back"><a href="#list/all">Certificates</a><a href="#adoption" class="on">Guide adoption</a></nav><nav class="tabs" aria-label="Period">' + per + '</nav><p class="sub">Loading...</p>';
+        api({ action: 'adoption', days: r.days }).then(function (d) {
+          if (!d || !d.ok) { $('view').querySelector('.sub').textContent = 'That did not load.'; return; }
+          var a = d.adoption || {}, n = function (k) { return a[k] == null ? 0 : a[k]; };
+          var tile = function (v, label, note) { return '<div class="card"><div class="body"><b style="font-size:28px">' + esc(v) + '</b><span class="meta">' + esc(label) + '</span>' + (note ? '<span class="meta" style="font-size:12px">' + esc(note) + '</span>' : '') + '</div></div>'; };
+          var gi = a.gates_improved || {}, tk = a.ticks_by_gate || {};
+          var rows = Object.keys(GATE_WORD).map(function (g) { var t = tk[g.toLowerCase()] || {}; return '<tr><td>' + esc(GATE_WORD[g]) + '</td><td>' + (gi[g] || 0) + '</td><td>' + (t.ticks || 0) + '</td><td>' + (t.members || 0) + '</td></tr>'; }).join('');
+          $('view').innerHTML = '<nav class="tabs" aria-label="Back"><a href="#list/all">Certificates</a><a href="#adoption" class="on">Guide adoption</a></nav><nav class="tabs" aria-label="Period">' + per + '</nav>' +
+            '<p class="sub">Restaurants using the free Pre-Vegan Restaurant Guide, by when they first finished the readiness check. Counts only: no restaurant\'s score is shown here. A kitchen that gets ready without applying counts as a success.</p>' +
+            '<div class="grid">' + tile(n('ready_without_applying'), 'Ready without applying', 'The headline: ready, no certificate') + tile(n('moved_up'), 'Moved up', 'Latest score higher than their first') +
+              tile(n('started'), 'Finished the check') + tile(n('came_back'), 'Came back and changed answers') + tile(n('cleared_a_blocker'), 'Cleared a blocker') +
+              tile(n('reached_ready'), 'Reached ready', a.median_days_to_ready != null ? 'Median ' + a.median_days_to_ready + ' days' : '') + tile(n('applied'), 'Applied for certification') + tile(n('certificates'), 'Certificates (all time)') + '</div>' +
+            '<div class="box" style="margin-top:16px"><h2>By gate</h2><p class="meta">Improved: their gate score rose since their first check. Ticks: steps marked Done in my kitchen on the gate pages (a second signal; it never changes the score).</p>' +
+            '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:14px"><thead><tr><th style="text-align:left">Gate</th><th style="text-align:left">Improved</th><th style="text-align:left">Ticks</th><th style="text-align:left">Members ticking</th></tr></thead><tbody>' + rows + '</tbody></table></div></div>';
+        });
       }
       function dl(rows) { return '<dl>' + rows.filter(Boolean).map(function (x) { return '<dt>' + x[0] + '</dt><dd>' + x[1] + '</dd>'; }).join('') + '</dl>'; }
       function drawItem(r) {
@@ -207,6 +226,7 @@
         var r = route();
         if (r.v === 'item') return drawItem(r);
         if (r.v === 'new') return drawNew();
+        if (r.v === 'adoption') return drawAdoption(r);
         if (data) return drawList(r);
         $('view').innerHTML = '<p class="sub">Loading...</p>';
         api({ action: 'list' }).then(function (d) { if (!d || !d.ok) { $('view').innerHTML = '<p class="sub">That did not load. Refresh to try again.</p>'; return; } data = d; viewOnly = !!d.view_only; drawList(route()); });
