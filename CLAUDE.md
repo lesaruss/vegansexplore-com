@@ -433,7 +433,9 @@ Sean: "I say this every time... I don't like the scroll... put it in that view s
 navigating through and seeing everything." Canon `canon-sean-interface-defaults` rule 0.
 
 Any mock, demo, pitch walkthrough, illustrative report or concept page is built as the guided
-view on the first pass, never a long scroll: one full-height slide at a time on a dark stage,
+view on the first pass, never a long scroll: one full-height slide at a time on a **clean white stage** (Sean, 2026-11-07:
+"Why is it a green background? You should know me by now. I like the clean white background look"; `<main class="vg-stage vg-light">`,
+the dark stage only for pages already built on it: /partners and the pitch decks),
 Back / "N of M" / Next at the bottom, nothing to scroll on desktop (nav, stage and footer share
 one screen), every slide fitting at 1440x900 and 1366x768, and on phones the slide stacks with
 the controls after it. The format is the `/partners` page; the shared shell is

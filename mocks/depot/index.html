@@ -17,13 +17,13 @@
     .dm-row{display:flex;flex-wrap:wrap;gap:18px 26px;align-items:flex-start;}
     .dm-main{flex:1 1 640px;min-width:0;}
     .dm-side{flex:1 1 300px;min-width:0;font-size:12.5px;line-height:1.5;}
-    .dm-side h3{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#c5f2c7;margin:0 0 6px;}
+    .dm-side h3{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#2D5C27;margin:0 0 6px;}
     .dm-side ul{list-style:none;display:grid;gap:5px;margin-bottom:12px;}
-    .dm-side li b{color:#22C55E;}
+    .dm-side li b{color:#2D5C27;}
     .dm-chip{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;background:#F69820;color:#1a1a1a;border-radius:6px;padding:2px 8px;margin-left:8px;vertical-align:middle;}
 
     /* the mini Depot: a white app panel */
-    .ui{background:#fff;color:#1a1a1a;border-radius:10px;box-shadow:0 18px 40px rgba(0,0,0,.45);padding:16px 18px;font-size:12px;}
+    .ui{background:#fff;color:#1a1a1a;border-radius:10px;border:1px solid #e3e3e3;box-shadow:0 2px 10px rgba(0,0,0,.06);padding:16px 18px;font-size:12px;}
     .ui-top{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
     .ui-eb{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#2D5C27;}
     .ui-h{font-size:18px;font-weight:900;line-height:1.15;}
@@ -40,8 +40,8 @@
     .tile span{font-size:10.5px;color:#666;line-height:1.35;}
     .tile .ct{position:absolute;top:10px;right:10px;font-size:10px;font-weight:800;background:#f1f1f1;border-radius:6px;padding:2px 7px;color:#333;}
     .tile .ct.hot{background:#F69820;color:#1a1a1a;}
-    .tile.bd{background:#0F1F14;color:#fff;border-color:#0F1F14;}
-    .tile.bd span{color:#c5f2c7;}
+    .tile.bd{background:#E8F5E9;color:#1a1a1a;border-color:#2D5C27;}
+    .tile.bd span{color:#2D5C27;}
     .tile.bd .ic{background:#2D5C27;}
     .tile.bd .ic svg{stroke:#fff;}
     .tile.trash{border-style:dashed;}
@@ -76,16 +76,16 @@
 
     /* tables on dark */
     .dm-tbl{width:100%;border-collapse:collapse;font-size:12px;}
-    .dm-tbl th{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#c5f2c7;text-align:left;padding:5px 8px;border-bottom:1px solid rgba(255,255,255,.18);}
-    .dm-tbl td{padding:5px 8px;border-bottom:1px solid rgba(255,255,255,.08);}
+    .dm-tbl th{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#2D5C27;text-align:left;padding:5px 8px;border-bottom:1px solid #d6d6d6;}
+    .dm-tbl td{padding:5px 8px;border-bottom:1px solid #eee;}
     .dm-tbl td.n{text-align:right;font-variant-numeric:tabular-nums;}
     .dm-card{padding:14px 16px;font-size:12.5px;line-height:1.5;}
-    .dm-card b.t{display:block;font-size:13px;font-weight:800;margin-bottom:4px;color:#fff;}
+    .dm-card b.t{display:block;font-size:13px;font-weight:800;margin-bottom:4px;color:#1a1a1a;}
     .dm-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
     .flow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 12px;}
-    .flow .bx{background:#fff;color:#1a1a1a;border-radius:10px;padding:10px 12px;font-size:11.5px;font-weight:700;min-width:150px;}
+    .flow .bx{background:#fff;border:1px solid #e3e3e3;color:#1a1a1a;border-radius:10px;padding:10px 12px;font-size:11.5px;font-weight:700;min-width:150px;}
     .flow .bx small{display:block;font-weight:600;color:#666;font-size:10.5px;}
-    .flow .ar{color:#c5f2c7;font-weight:900;font-size:18px;}
+    .flow .ar{color:#2D5C27;font-weight:900;font-size:18px;}
     .flow .bx.db{background:#2D5C27;color:#fff;}
     .flow .bx.db small{color:#c5f2c7;}
 
@@ -104,7 +104,7 @@
   <script src="/public/nav.js"></script>
   <div class="vg-note"><strong>Illustrative</strong>Depot mocks for review. Nothing here is live and nothing has been changed or deleted. Numbers marked live were read from the database on November 7, 2026.</div>
 
-  <main class="vg-stage" data-bg="linear-gradient(135deg,#0d130e 0%,#12301a 100%)" aria-label="The new Depot: mocks">
+  <main class="vg-stage vg-light" aria-label="The new Depot: mocks">
 
     <!-- 1. Today -->
     <section class="vg-slide" id="now" data-title="Today">
@@ -369,11 +369,11 @@
         <div style="flex:1 1 520px;min-width:0" class="vg-glass dm-card">
           <b class="t">Build order</b>
           <ul style="list-style:none;display:grid;gap:7px;margin-top:6px">
-            <li><b style="color:#22C55E">1</b> The Depot home, sections, Demos and the trash bin, with the 12 pages in it. Fixes the double Content.</li>
-            <li><b style="color:#22C55E">2</b> Logos as its own tool: category pills, Most viewed sort, city picker.</li>
-            <li><b style="color:#22C55E">3</b> Better logo suggestions: socials from their website, then Facebook pictures, then Google photos, then re-run the 755.</li>
-            <li><b style="color:#22C55E">4</b> BrandDesk inside Vegans Explore, with the sign-in bridge.</li>
-            <li><b style="color:#22C55E">5</b> Move the five overlaps into BrandDesk one at a time, closing the two gaps first.</li>
+            <li><b style="color:#2D5C27">1</b> The Depot home, sections, Demos and the trash bin, with the 12 pages in it. Fixes the double Content.</li>
+            <li><b style="color:#2D5C27">2</b> Logos as its own tool: category pills, Most viewed sort, city picker.</li>
+            <li><b style="color:#2D5C27">3</b> Better logo suggestions: socials from their website, then Facebook pictures, then Google photos, then re-run the 755.</li>
+            <li><b style="color:#2D5C27">4</b> BrandDesk inside Vegans Explore, with the sign-in bridge.</li>
+            <li><b style="color:#2D5C27">5</b> Move the five overlaps into BrandDesk one at a time, closing the two gaps first.</li>
           </ul>
         </div>
         <div style="flex:1 1 360px;min-width:0" class="vg-glass dm-card">
@@ -384,7 +384,7 @@
             <li>Google photos for logos run inside the $50 Google cap, most viewed listings first.</li>
             <li>BrandDesk opens at <code>/dashboard/branddesk</code> for super admins only.</li>
           </ul>
-          <p style="margin-top:10px"><b style="color:#F69820">Your call:</b> say go to start step 1, or tell me what to change on any slide.</p>
+          <p style="margin-top:10px"><b style="color:#b45309">Your call:</b> say go to start step 1, or tell me what to change on any slide.</p>
         </div>
       </div>
     </section>
