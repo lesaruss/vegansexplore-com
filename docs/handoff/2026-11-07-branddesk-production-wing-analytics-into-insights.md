@@ -7,8 +7,10 @@
 - **Checked signed in** as `vegan@` on the branch preview at 1440 and 390 px: every view loads real numbers, no script errors, no sideways scroll. The QA session came from the one-time `ve-once-qa-session` (back to the 410 stub, version 34) and was signed out (204).
 - a40da58 (Depot clean-up) is still only on `claude/compassionate-newton-md1a49`: Sean has not said merge.
 
+## Retired (later the same day, Sean's word)
+- Depot > Analytics, Community Insights and Platform health are in the trash bin (depot-tabs.js TRASH, ve-depot v5); dashboard links open BrandDesk Insights. Live ve-depot came from a40da58's branch, so main's copy is behind until a40da58 merges.
+
 ## Not changed
-- No Depot page is retired. Analytics, Community Insights and Platform health stay until Sean says the Insights versions work.
 - Depot > Analytics' Top pages, Traffic sources, Places, Campaigns and Ads are already in Insights > Web, Ads and Campaigns (Web reads the brand's own GA property; check they agree before retiring the Depot page).
 
 ## Noticed, not fixed
