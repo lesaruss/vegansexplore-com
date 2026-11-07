@@ -1423,6 +1423,18 @@ Information Systems Division... everything about technology, the background, the
 fixes, building on `canon-branddesk-blueprint-signal`. Logan's defaults, not yet confirmed: Sentinel (`sentinel-gap-closure-playbook`) becomes Signal's monitoring engine, and the older
 `arch-signal-system` (an interest-based comms layer) gets renamed so Signal means IT only.
 
+**Ideas: uploads, Logan's read, the conversation and web search (2026-11-06 to 07, playbook `branddesk-production-wing`; handoff
+`docs/handoff/2026-11-07-branddesk-production-wing-web-search-wrap.md`).** Blueprint > Ideas takes typed or spoken ideas with screenshots,
+PDFs, text files and voice memos (private bucket `idea-files`; HQ migration 083). `ve-ideas` `read_blueprint` (v8) reads them: pictures and
+PDFs as attachments, audio as words (ElevenLabs, kept on the file), max_tokens 16000, anything but a clean end is an error (`cut_off`,
+`refused`, `stopped_*`), the last good read kept, never half a read. **The read searches the web** (Sean, 2026-11-07: "You start with the web
+search"): `web_search_20260209` and `web_fetch_20260209`, 5 searches and 3 pages a read, a paused turn resumed up to 4 times, `read.searched`
+and `read.sources` saved; proven on a test idea (5 searches, the real wholesaler's pages, the made-up link said unread). The conversation
+with Logan is a scroll that opens on the newest turn (HQ main f60acd9); this period's plan merged (HQ main 2458e72). **Not on HQ main**: the
+"Where I looked" list under each read (HQ branch `claude/keen-hamilton-7bia8n`, 75b8223) waits for Sean's merge and a check at 1440 and 390 px.
+The paused hourly idea task and `zz_playbook_close_20261106` are deleted (Sean, 2026-11-07). Next: Send to a chapter's Daily Pulse and today's
+podcast news (drafts, Sean approves each), then retire Depot > Ideas.
+
 ## Wrap up (Sean, 2026-11-03, canon `canon-wrap-up-standard`)
 
 "When we leave this room, I don't want anything on the floor." On Sean's cue ("wrap up", about 70% context) Logan sweeps the session into the
