@@ -39,6 +39,31 @@ async function people(ids: string[]) {
   return out;
 }
 
+const escH = (v: unknown) => String(v ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]!));
+// Tell the owner their 100% Vegan badge is on (Sean, 2026-11-07). Through HQ's email system, brand vegans-explore, signed by the team.
+// A [TEST] name sends nothing. Returns what email-send said, for the Depot.
+async function approvedEmail(id: string): Promise<string> {
+  const { data: m } = await db.from('members').select('name, email').eq('id', id).maybeSingle();
+  if (!m?.email) return 'no_email';
+  if (String(m.name || '').startsWith('[TEST]')) return 'test_skipped';
+  const { data: ls } = await db.from('listings').select('slug, name').eq('owner_member_id', id).eq('status', 'approved').limit(5);
+  const first = String(m.name || '').trim().split(/\s+/)[0];
+  const pages = (ls || []).map((l) => `<a href="https://vegansexplore.com/directory/${escH(l.slug)}" style="color:#2D5C27">${escH(l.name)}</a>`).join(', ');
+  const body = `<p>${first ? 'Hi ' + escH(first) + ',' : 'Hi there,'}</p>` +
+    `<p>Our team checked your answers, and your <b>100% Vegan</b> badge is now on. It tells people everything you sell is Vegan, and that you run your business for the animals.</p>` +
+    (pages ? `<p>It shows on ${pages} in the Vegans Explore Directory.</p>` : `<p>Once you claim your page in our Directory, the badge shows on it: <a href="https://vegansexplore.com/claim" style="color:#2D5C27">find your business</a>.</p>`) +
+    `<p>If anything changes in what you sell, update your answers any time so your badge stays right.</p><p>Thank you for what you do.<br>Vegans Explore team</p>`;
+  const html = `<div style="font-family:Montserrat,Arial,sans-serif;max-width:560px;font-size:15px;line-height:1.65;color:#1a1a1a"><p style="margin:0 0 18px"><img src="https://vegansexplore.com/public/logo-ve-landscape-v1.svg" alt="Vegans Explore" width="150" style="display:block;border:0"></p>${body}` +
+    `<p style="margin-top:28px;font-size:12px;line-height:1.5;color:#777">You are getting this because you asked for a business badge on Vegans Explore. <a href="{{unsubscribe_url}}" style="color:#777">Stop these emails</a>. {{postal_address}}.</p></div>`;
+  try {
+    const { data: t } = await db.from('lesaruss_secrets').select('value').eq('key', 'LESARUSS_ADMIN_TOKEN').maybeSingle();
+    const r = await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/email-send`, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${t?.value}` },
+      body: JSON.stringify({ brand: 'vegans-explore', campaign_ref: `ve-badge-approved-${id}`, list_ref: 've-business-badges', subject: 'Your 100% Vegan badge is on', html, recipients: [{ email: m.email, name: m.name || undefined }] }) });
+    const j = await r.json().catch(() => ({}));
+    return j?.results?.[0]?.result || j?.error || `email-send ${r.status}`;
+  } catch (e) { return String(e); }
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ error: 'post_only' }, 405);
@@ -86,6 +111,7 @@ Deno.serve(async (req) => {
     const { data, error } = await db.rpc('ve_business_badge_decide', { p_member: id, p_admin: me, p_decision: String(b.decision || ''), p_note: clean(b.note, 1000) });
     if (error) return json({ error: 'decide_failed' }, 500);
     if (data?.error) return json(data, data.error === 'not_found' ? 404 : data.error === 'forbidden' ? 403 : 400);
+    if (String(b.decision) === 'approve') data.email = await approvedEmail(id);
     return json(data);
   }
 

@@ -175,8 +175,7 @@ function buildContributionThanksEmail(amountCents: number): string {
 }
 
 // Branded receipt for the Passport, used by the $11 one-time join (entry_contribution) and the
-// legacy monthly subscription's signup and renewals. Sean locked 2026-10-25: the Passport comes with
-// 1,100 welcome points (one Guide's worth); more points come from taking part.
+// legacy monthly subscription's signup and renewals. Since 2026-11-07 no welcome points (the survey pays its 250).
 function buildPassportReceiptEmail(opts: { renewal: boolean }): string {
   const { renewal } = opts
   return `<!DOCTYPE html>
@@ -188,13 +187,8 @@ function buildPassportReceiptEmail(opts: { renewal: boolean }): string {
     <table width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:8px;overflow:hidden;">
       <tr><td style="background:#1a1a1a;padding:28px 32px;"><span style="color:#3A9B3E;font-size:18px;font-weight:700;letter-spacing:0.05em;">VEGANS EXPLORE</span></td></tr>
       <tr><td style="padding:32px;">
-        <h1 style="margin:0 0 12px;font-size:22px;font-weight:800;color:#111;">${renewal ? 'Your Passport renewed' : 'Your Passport is active'}</h1>
-        <p style="margin:0 0 18px;font-size:14px;line-height:1.6;color:#444;">${renewal ? 'Your Passport renewed. Thank you for being part of the community.' : 'Thank you for joining Vegans Explore. Your Passport is active: vote for your favorite listings in the Directory and build your Vegan world from your dashboard.'}</p>
-        ${renewal ? '' : `<div style="background:#e8f5e9;border:1px solid #b8ddb9;border-radius:8px;padding:18px 22px;margin:0 0 24px;">
-          <p style="margin:0 0 4px;font-size:12px;color:#2d7d31;font-weight:700;letter-spacing:.05em;">WELCOME POINTS</p>
-          <p style="margin:0;font-size:26px;font-weight:800;color:#2d7d31;">+1,100 points</p>
-          <p style="margin:6px 0 0;font-size:13px;color:#2d7d31;">One Guide's worth: unlock a Guide, or use them any way points work.</p>
-        </div>`}
+        <h1 style="margin:0 0 12px;font-size:22px;font-weight:800;color:#111;">${renewal ? 'Your Passport renewed' : 'Your membership is active'}</h1>
+        <p style="margin:0 0 18px;font-size:14px;line-height:1.6;color:#444;">${renewal ? 'Your Passport renewed. Thank you for being part of the community.' : 'Thank you for joining Vegans Explore. Your membership is active: vote for your favorite listings in the Directory and build your Vegan world from your dashboard.'}</p>
         <p style="margin:0 0 24px;font-size:13px;line-height:1.6;color:#444;">More points come from what you do in the community: Bounties, competitions and taking part on the site. Your lifetime points move you up through Level 1, 2 and 3.</p>
         <a href="https://vegansexplore.com/guides" style="display:inline-block;background:#3A9B3E;color:#fff;font-weight:700;padding:12px 24px;border-radius:6px;text-decoration:none;font-size:14px;">Pick your Guide</a>
       </td></tr>
@@ -1206,11 +1200,8 @@ Deno.serve(async (req: Request) => {
       // A member who came in through a survey door (or on an invitation) is already active but has never paid: their first $11
       // still brings the 1,100 welcome points (Sean, 2026-11-05, the Pre-Vegan Guide's optional contribution). ref 'welcome'
       // keeps it once per member.
-      const firstPayment = !before?.entry_paid_at
-      if (!repeat || firstPayment) {
-        const { error: wErr } = await supabase.rpc('ve_points_grant', { p_member: memberId, p_amount: 1100, p_reason: 'welcome', p_ref: 'welcome' })
-        if (wErr) console.error('welcome points error:', wErr)
-      }
+      // Sean, 2026-11-07 (canon-ve-door-guides v12, playbook ve-pricing-points-passport): the survey is the only way in and pays
+      // its own 250 points; the $11 is an optional contribution and brings no welcome points. The thank-you below stays.
       const { error: tErr } = await supabase.rpc('ve_purchase_thanks', { p_member: memberId, p_ref: `stripe:${session.id}` })
       if (tErr) console.error('purchase thanks error:', tErr)
       // The Passport pays the link that brought them, from Level 2 (Sean, 2026-10-28; ve_affiliate_earn, once per member).
@@ -1233,7 +1224,7 @@ Deno.serve(async (req: Request) => {
             body: JSON.stringify({
               from: 'VEGANS EXPLORE <hello@vegansexplore.com>',
               to: member.email,
-              subject: repeat ? 'Thank you for your contribution to Vegans Explore' : 'Your Passport is active - 1,100 welcome points are in',
+              subject: repeat ? 'Thank you for your contribution to Vegans Explore' : 'Your Vegans Explore membership is active',
               html: repeat ? buildContributionThanksEmail(points) : buildPassportReceiptEmail({ renewal: false })
             })
           })

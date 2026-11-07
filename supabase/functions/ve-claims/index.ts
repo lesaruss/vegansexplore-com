@@ -1398,7 +1398,7 @@ Deno.serve(async (req) => {
     if (points && Number(member.lesars_balance || 0) < 1100) return json({ error: 'not_enough_points', balance: Number(member.lesars_balance || 0) }, 400);
     const media = MEDIA_CATS.test(listing.category || '');
     const free = !tier && body.pay === 'member';
-    if (free && !media) return json({ error: 'not_free_to_claim' }, 400);
+    // Sean, 2026-11-07 (canon-ve-door-guides v12): claiming any listing is free for members (it was media only since 2026-11-06).
     if (free && !(member.membership_status === 'active' && member.membership_tier !== 'guest')) return json({ error: 'membership_needed' }, 403);
     const cents = points || free ? 0 : tier ? TIERS[tier].cents : Math.round(Number(body.amount_cents));
     if (!points && !free && (!Number.isFinite(cents) || cents < MIN_CENTS || cents > MAX_CENTS)) return json({ error: 'invalid_amount', min_cents: MIN_CENTS }, 400);
