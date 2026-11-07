@@ -30,9 +30,9 @@
   };
   // Central Florida closes out the middle of the state (Sean, 2026-10-27): Greater Orlando, Tampa Bay, the Space Coast, Volusia
   // and the southwest Gulf coast. North Florida (NF) is Jacksonville to the Panhandle. Every Florida city should be in one of the three.
-  var CF = ['Orlando','Altamonte Springs','Apopka','Lakeland','The Villages','Winter Haven','Ocala',
+  var CF = ['Orlando','Altamonte Springs','Apopka','Lakeland','The Villages','Winter Haven','Ocala','Orange Springs',
     'Sanford','Oviedo','Winter Park','Winter Garden','Kissimmee','Celebration','Clermont','Maitland','Longwood','Casselberry','Lake Mary','Windermere','Ocoee','Leesburg','Mount Dora','Eustis','Haines City','Bartow','Davenport','Sebring',
-    'Tampa','St. Petersburg','Saint Petersburg','Clearwater','Clearwater Beach','Largo','Dunedin','Palm Harbor','Tarpon Springs','Brandon','Riverview','Wesley Chapel','Land O\' Lakes','Lutz','Plant City','Temple Terrace','New Port Richey',
+    'Tampa','St. Petersburg','Saint Petersburg','Clearwater','Clearwater Beach','Largo','Dunedin','Palm Harbor','Tarpon Springs','Brandon','Riverview','Wesley Chapel','Land O\' Lakes','Lutz','Plant City','Temple Terrace','New Port Richey','Port Richey',
     'Bradenton','Sarasota','Venice','North Port','Myakka City','Duette','Punta Gorda','Port Charlotte','Fort Myers','Cape Coral','Naples','Bonita Springs','Estero',
     'Daytona Beach','Ormond Beach','Port Orange','New Smyrna Beach','DeLand','Deltona','Melbourne','Titusville','Cocoa','Cocoa Beach','Palm Bay',
     'Cape Canaveral','Lake Buena Vista','Nokomis','Gulfport','Pinellas Park','Poinciana','Sand Lake','Indialantic','Rockledge','Indian Harbour Beach','Belleair Bluffs','Daytona Beach Shores','South Daytona'];
