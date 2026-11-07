@@ -39,7 +39,8 @@
     { k: 'guides', label: 'Guides', line: 'Every tour video: script, recordings, lookbook. Journeys, onboarding, the checklist' },
     { k: 'ideas', label: 'Ideas', line: 'Every idea you drop in, and feedback from the site' },
     { k: 'demos', label: 'Demos', line: 'The sample restaurant, sample group, Gig Board, Campaign Engine, pitch decks' },
-    { k: 'moving', label: 'Moving to BrandDesk', line: 'People, outreach, Social, Playbooks, Analytics. Here until BrandDesk does all of it.' }
+    { k: 'branddesk', label: 'BrandDesk', line: 'Social, outreach campaigns and send days, playbooks, the podcast, Insights. Opens in HQ.' },
+    { k: 'moving', label: 'Moving to BrandDesk', line: 'People, personal outreach, partners and invites, members, Analytics. Here until BrandDesk does all of it.' }
   ];
   var TABS = [
     { group: 'Directory', href: '/admin/depot/directory-review', label: 'Directory review' },
@@ -89,9 +90,16 @@
     { group: 'Demos', href: '/partners/pitches/vegans-explore-night-event-pitch', label: 'Pitch: Night events', kind: 'demo' },
     { group: 'Demos', href: '/partners/pitches/vegans-explore-global-tour-pitch', label: 'Pitch: Global tour', kind: 'demo' },
     { group: 'Demos', href: '/partners/pitches/vegans-explore-cm-pitch', label: 'Pitch: Community Managers', kind: 'demo' },
+    // BrandDesk (Sean, 2026-11-07: BrandDesk lives in HQ and Vegans Explore links to it; the Depot copies BrandDesk already does
+    // better are in the trash bin). Kind 'hq': opens BrandDesk in a new tab, signed in with the LESARUSS account.
+    { group: 'BrandDesk', href: 'https://hq.lesaruss.ai/branddesk/brands/vegans-explore?view=social', label: 'Social', kind: 'hq' },
+    { group: 'BrandDesk', href: 'https://hq.lesaruss.ai/branddesk/brands/vegans-explore?view=people&p=campaigns', label: 'Outreach campaigns', kind: 'hq' },
+    { group: 'BrandDesk', href: 'https://hq.lesaruss.ai/branddesk/brands/vegans-explore?view=people&p=days', label: 'Send days and cities', kind: 'hq' },
+    { group: 'BrandDesk', href: 'https://hq.lesaruss.ai/branddesk/brands/vegans-explore?view=blueprint&b=playbooks', label: 'Playbooks', kind: 'hq' },
+    { group: 'BrandDesk', href: 'https://hq.lesaruss.ai/branddesk/brands/vegans-explore?view=podcast', label: 'Podcast', kind: 'hq' },
+    { group: 'BrandDesk', href: 'https://hq.lesaruss.ai/branddesk/brands/vegans-explore?view=insights', label: 'Insights', kind: 'hq' },
     { group: 'Moving to BrandDesk', href: '/admin/depot/people', label: 'People' },
     { group: 'Moving to BrandDesk', href: '/admin/depot/outreach', label: 'Outreach' },
-    { group: 'Moving to BrandDesk', href: '/admin/depot/business-outreach', label: 'Business outreach' },
     { group: 'Moving to BrandDesk', href: '/admin/depot/ambassadors', label: 'Ambassadors' },
     { group: 'Moving to BrandDesk', href: '/admin/depot/founding', label: 'Founding Members' },
     { group: 'Moving to BrandDesk', href: '/admin/depot/nonprofit-partners', label: 'Nonprofit Partners' },
@@ -104,8 +112,6 @@
     { group: 'Moving to BrandDesk', href: '/dashboard/members', label: 'Members', kind: 'dash' },
     { group: 'Moving to BrandDesk', href: '/dashboard/leads', label: 'Leads', kind: 'dash' },
     { group: 'Moving to BrandDesk', href: '/dashboard/applications', label: 'Role applications', kind: 'dash' },
-    { group: 'Moving to BrandDesk', href: '/admin/depot/social', label: 'Social' },
-    { group: 'Moving to BrandDesk', href: '/admin/depot/playbooks', label: 'Playbooks' },
     { group: 'Moving to BrandDesk', href: '/admin/depot/branddesk', label: 'BrandDesk clients' }
   ];
   // The trash bin (Sean, 2026-11-07: "a visible trash bin... if I ever want to resurrect it"). Retired, never deleted: the page,
@@ -127,6 +133,9 @@
     { href: '/admin/depot/analytics', label: 'Analytics', group: 'Moving to BrandDesk', why: 'Moved to BrandDesk > Vegans Explore > Insights on November 7, 2026 (Web, Chapters, Site sections, Costs).' },
     { href: '/dashboard/insights', label: 'Community Insights', group: 'Moving to BrandDesk', kind: 'dash', why: 'Moved to BrandDesk > Vegans Explore > Insights > Members on November 7, 2026.' },
     { href: '/dashboard/health', label: 'Platform health', group: 'Moving to BrandDesk', kind: 'dash', why: 'Moved to BrandDesk > Vegans Explore > Insights > Health on November 7, 2026.' },
+    { href: '/admin/depot/social', label: 'Social (Depot copy)', group: 'Moving to BrandDesk', why: 'BrandDesk > Social is the same studio and does more. Use BrandDesk.' },
+    { href: '/admin/depot/playbooks', label: 'Playbooks (Depot copy)', group: 'Moving to BrandDesk', why: 'BrandDesk > Blueprint > Playbooks replaced it. Use BrandDesk.' },
+    { href: '/admin/depot/business-outreach', label: 'Business outreach (Depot copy)', group: 'Moving to BrandDesk', why: 'BrandDesk > People (Roster, Campaigns, Cities, Send days) replaced it. Use BrandDesk.' },
     { href: '/dashboard/guest-reviews', label: 'Guest reviews', group: 'Moving to BrandDesk', kind: 'dash', why: 'The old free Guest Passport queue. Nobody has been in it since free accounts ended.' }
   ];
   // A restored tool goes back to its section. The home saves the list in this browser (ve_depot_restored) after reading it.
@@ -175,7 +184,7 @@
     // A Depot page goes here; a demo opens in a new tab; a dashboard page asks the dashboard around this frame to open it.
     go.querySelector('select').addEventListener('change', function () {
       var t = TABS.filter(function (x) { return x.href === this.value; }, this)[0]; if (!t) return;
-      if (t.kind === 'demo') { window.VE_DEPOT_USE(t.href); window.open(t.href, '_blank', 'noopener'); this.value = here; return; }
+      if (t.kind === 'demo' || t.kind === 'hq') { window.VE_DEPOT_USE(t.href); window.open(t.href, '_blank', 'noopener'); this.value = here; return; }
       if (t.kind === 'dash') {
         var inDash = false; try { inDash = window.self !== window.top && /^\/dashboard/.test(window.top.location.pathname); } catch (e) {}
         window.VE_DEPOT_USE(t.href);

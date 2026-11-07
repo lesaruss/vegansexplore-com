@@ -129,7 +129,10 @@
       // public pages, so their pictures are in the repo; every other tool is a live admin page, so its picture sits in the private
       // bucket depot-thumbs and ve-depot home hands a one-hour link to super admins only.
       function slugOf(href) { return href.replace(/^\//, '').replace(/[^a-z0-9]+/gi, '-').replace(/-$/, ''); }
-      function thumbOf(t) { var sl = slugOf(t.href); return t.kind === 'demo' ? '/public/depot/demos/' + sl + '.jpg' : (thumbs[sl] || ''); }
+      // BrandDesk rooms open in HQ, so they wear our illustrated art rather than a capture.
+      var HQ_PIC = { social: 't-featured', campaigns: 't-next', days: 't-audit', playbooks: 't-fixes', podcast: 't-pulse', insights: 't-dashboard' };
+      function hqPic(href) { var m = href.match(/[?&](?:p|b|view)=([a-z]+)(?!.*[?&](?:p|b)=)/); var k = m ? m[1] : ''; return HQ_PIC[k] ? '/public/guides/restaurant-guide/' + HQ_PIC[k] + '.jpg' : ''; }
+      function thumbOf(t) { var sl = slugOf(t.href); return t.kind === 'demo' ? '/public/depot/demos/' + sl + '.jpg' : t.kind === 'hq' ? hqPic(t.href) : (thumbs[sl] || ''); }
       // What waits in one tool today, for its badge.
       var TOOL_COUNT = { '/admin/depot/directory-review': ['listings_on_hold', 'on hold'], '/admin/depot/directory-review#logos': ['logos_to_do', 'to do'],
         '/admin/depot/events': ['events_waiting', 'waiting'], '/admin/depot/claims': ['claims_waiting', 'waiting'], '/admin/depot/inbox': ['inbox_open', 'open'],
@@ -141,7 +144,7 @@
       var GUIDE_ART = [['vegan-dairy-guide', 'Dairy'], ['vegan-restaurant-guide', 'Restaurant'], ['vegan-events-guide', 'Events'], ['nutrition-guide', 'Nutrition'],
         ['airport-guide', 'Airport'], ['stadium-arena-guide', 'Stadium & Arena'], ['creator-guide', 'Creator'], ['nonprofit-guide', 'Nonprofit'], ['pre-vegan-business-guide', 'Pre-Vegan Business']];
       function toolCard(t, k) {
-        var how = t.kind === 'demo' ? 'Opens in a new tab, as the public sees it' : t.kind === 'dash' ? 'Opens in the dashboard' : (t.restored ? 'Restored from the trash bin' : (k === 'mine' ? t.group : ''));
+        var how = t.kind === 'demo' ? 'Opens in a new tab, as the public sees it' : t.kind === 'hq' ? 'Opens BrandDesk in HQ, in a new tab' : t.kind === 'dash' ? 'Opens in the dashboard' : (t.restored ? 'Restored from the trash bin' : (k === 'mine' ? t.group : ''));
         var c = TOOL_COUNT[t.href], ct = '';
         if (c && n(c[0]) != null) ct = '<span class="ct' + (n(c[0]) > 0 && c[1] !== 'watching' ? ' hot' : '') + '">' + fmt(n(c[0])) + ' ' + c[1] + '</span>';
         var on = pins.indexOf(t.href) >= 0, src = thumbOf(t);
@@ -170,7 +173,8 @@
         guides: '/public/guides/welcome-guide.jpg',
         ideas: '/public/guides/restaurant-guide/t-mylist.jpg',
         demos: '/public/guides/restaurant-guide/t-demo.jpg',
-        moving: '/public/guides/restaurant-guide/t-dashboard.jpg'
+        moving: '/public/guides/restaurant-guide/t-dashboard.jpg',
+        branddesk: '/public/guides/restaurant-guide/t-promos.jpg'
       };
       function tile(href, k, title, line, ct, extra) {
         var badge = ct ? '<span class="ct' + (ct.hot ? ' hot' : '') + '">' + esc(ct.t) + '</span>' : '';
@@ -188,7 +192,7 @@
         SECTIONS.forEach(function (s) {
           var w = waiting(s.k), ct = null;
           if (w && w.v != null) ct = { t: fmt(w.v) + ' ' + w.w, hot: !w.info && w.v > 0 };
-          else if (s.k === 'demos' || s.k === 'moving') ct = { t: toolsOf(s.label).length + (s.k === 'demos' ? ' demos' : ' tools') };
+          else if (s.k === 'demos' || s.k === 'moving' || s.k === 'branddesk') ct = { t: toolsOf(s.label).length + (s.k === 'demos' ? ' demos' : ' tools') };
           var href = '#s/' + s.k;
           html += tile(href, s.k, s.label, s.line, ct, s.k === 'moving' ? ' dash' : '');
         });
@@ -206,7 +210,7 @@
         };
       }
       function toolRow(t) {
-        var how = t.kind === 'demo' ? 'Opens in a new tab' : t.kind === 'dash' ? 'Opens in the dashboard' : '';
+        var how = t.kind === 'demo' ? 'Opens in a new tab' : t.kind === 'hq' ? 'Opens BrandDesk in HQ' : t.kind === 'dash' ? 'Opens in the dashboard' : '';
         var on = pins.indexOf(t.href) >= 0;
         return '<div class="row"><div><b>' + esc(t.label) + '</b> ' + (t.restored ? '<span class="tag r">Restored</span>' : '') + '<p>' + esc(t.group) + (how ? ' · ' + how : '') + '</p></div>' +
           '<div style="display:flex;gap:8px;align-items:center"><button type="button" class="star flat' + (on ? ' on' : '') + '" data-pin="' + esc(t.href) + '" aria-pressed="' + on + '" aria-label="My list">' + STAR + '</button><a class="btn" href="' + esc(t.href) + '" data-tool="' + esc(t.href) + '">Open</a></div></div>';
@@ -217,7 +221,7 @@
           a.onclick = function (e) {
             var t = TABS.filter(function (x) { return x.href === a.getAttribute('data-tool'); })[0]; if (!t) return;
             if (window.VE_DEPOT_USE) window.VE_DEPOT_USE(t.href);
-            if (t.kind === 'demo') { e.preventDefault(); window.open(t.href, '_blank', 'noopener'); return; }
+            if (t.kind === 'demo' || t.kind === 'hq') { e.preventDefault(); window.open(t.href, '_blank', 'noopener'); return; }
             if (t.kind === 'dash') {
               var inDash = false; try { inDash = window.self !== window.top && /^\/dashboard/.test(window.top.location.pathname); } catch (x) {}
               if (inDash) { e.preventDefault(); window.top.postMessage({ type: 've-open-tool', href: t.href, label: t.label }, location.origin); }
@@ -230,7 +234,8 @@
         var s0 = mineView ? { k: 'mine', label: 'My list' } : SECTIONS.filter(function (x) { return x.k === k; })[0]; if (!s0) return home();
         $('title').textContent = s0.label;
         var tools = mineView ? pins.map(function (h) { return TABS.filter(function (t) { return t.href === h; })[0]; }).filter(Boolean) : toolsOf(s0.label);
-        var note = k === 'moving' ? '<p class="sub">BrandDesk is taking these over. Each one stays here, working, until BrandDesk does everything it does.</p>'
+        var note = k === 'moving' ? '<p class="sub">BrandDesk is taking these over. Each one stays here, working, until BrandDesk does everything it does. The ones BrandDesk already does are in the BrandDesk section and the old copies are in the trash bin.</p>'
+          : k === 'branddesk' ? '<p class="sub">BrandDesk lives in HQ. These open it in a new tab, signed in with your LESARUSS account. Nothing here is a copy.</p>'
           : mineView ? '<p class="sub">The tools you use most. Tap the star on any tool, in any section or in search, to add it here or take it off.</p>'
           : '<p class="sub">Tap the star on a tool to keep it in My list on the Depot home.</p>';
         var art = k === 'guides' ? '<div class="gart">' + GUIDE_ART.map(function (g) { return '<a href="/guides/' + g[0] + '" target="_blank" rel="noopener"><img src="/public/guides/' + g[0] + '.jpg" alt="" loading="lazy"><span>' + esc(g[1]) + '</span></a>'; }).join('') + '</div>' : '';
