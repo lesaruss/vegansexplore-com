@@ -1,29 +1,24 @@
 {
+  "id": "/",
   "name": "Vegans Explore",
-  "short_name": "VE",
-  "description": "The plant-based community platform.",
-  "start_url": "/",
+  "short_name": "Vegans Explore",
+  "description": "Find Vegan places, events, people and Guides in your city, and help build the Vegan community's home base.",
+  "start_url": "/?source=homescreen",
   "scope": "/",
   "display": "standalone",
-  "orientation": "portrait-primary",
-  "theme_color": "#F69820",
-  "background_color": "#ffffff",
-  "categories": [
-    "social",
-    "lifestyle"
-  ],
+  "orientation": "portrait",
+  "theme_color": "#2D5C27",
+  "background_color": "#FFFFFF",
+  "lang": "en",
+  "categories": ["lifestyle", "food", "social"],
   "icons": [
-    {
-      "src": "/public/images/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "/public/images/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    }
+    { "src": "/public/app/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/public/app/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/public/app/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Directory", "url": "/directory?source=homescreen", "icons": [{ "src": "/public/app/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Events", "url": "/events?source=homescreen", "icons": [{ "src": "/public/app/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Daily Pulse", "url": "/pulse?source=homescreen", "icons": [{ "src": "/public/app/icon-192.png", "sizes": "192x192" }] }
   ]
 }

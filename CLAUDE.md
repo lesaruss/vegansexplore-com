@@ -227,6 +227,8 @@ this list follows the rule above. A new exception goes on this list first.
   everything in `ads/` (Sean, 2026-10-04).
 - **The podcast frame**, a render target for the show's pictures, not a page: `business/podcast-frame.html` (`?kind=episode|youtube|
   story|carousel`, from the podcast's brand kit; 2026-10-31).
+- **The offline page**, `offline.html`, shown by the service worker (`/sw.js`) when there is no connection, so it cannot count on
+  nav.js or the footer loading; it is self-contained (2026-11-07, playbook `ve-mobile-app`).
 - **BrandDesk client websites** (the frame), the client's own site, not a Vegans Explore page: `business/site.html`
   (`/business/sample/site`, Green Leaf Kitchen's; every real client's site, served by `branddesk-sites/`). It carries only a small "Managed by Vegans Explore BrandDesk" line (Sean, 2026-10-31).
 
@@ -6907,6 +6909,19 @@ are in Key Room (`hq.lesaruss.ai/keys`: `ASC_API_KEY_P8` saved without its BEGIN
 `docs/handoff/2026-11-07-ve-mobile-app-a-to-z-locked.md`; next are D (installable website: `manifest.json` icons 404 today), E (icon to Sean)
 and F (a clickable phone mock approved before any app code). Store rules to build: delete account inside the app, block a member, nothing
 sold inside the app in v1. The old SoFlo Vegans iOS app (`com.lmg.soflo`, live since 2021) comes off sale on launch day unless Sean says otherwise.
+
+**D, the installable website, built 2026-11-07** (Logan; playbook `ve-mobile-app`): `manifest.json` (green `#2D5C27`, name Vegans Explore,
+`start_url` `/?source=homescreen`, shortcuts Directory, Events, Daily Pulse) with real icons in `public/app/` (`icon-192.png`, `icon-512.png`,
+`icon-maskable-512.png`, `apple-touch-icon.png`, `favicon-32.png`; and `/favicon.ico`), all drawn from `public/ve-logo-mark.svg`, never redrawn.
+`nav.js` adds the manifest, theme color, Apple and icon tags to every page (our hosts only, never under `VE_BRAND`), registers `/sw.js` and on
+phones loads `/public/ve-install.js`. **`sw.js`** (replacing a June shell that only the archived homepage registered): page loads go to the network
+first; offline it shows the last copy of that page it kept (30 pages) or `/offline.html`; never /admin/, /api/, /go/, /auth/, POSTs or other
+sites; bump `VERSION` on a change. `vercel.json` serves `/sw.js` uncached. **Add to home screen** (`ve-install.js`): from the 3rd page a visitor
+opens, not again for 30 days after Not now, never once installed, in a frame, an in-app browser or on a form or checkout; Android's own install
+window, iPhone Safari's two Share steps, otherwise the browser menu steps; `?install=1` shows it on any page; GA events `install_prompt_shown`,
+`install_prompt_accepted`, `install_prompt_dismissed`, `app_installed`. Checked locally in Chromium as a Pixel 7 and an iPhone 14 (manifest and
+icons 200, the worker active, a visited page served offline and an unvisited one showing the offline page, no script errors). The website icon is
+the plain suitcase mark; the app's own icon is step E and may replace it once Sean picks.
 
 ## Image conventions
 

@@ -9,6 +9,35 @@
   (document.head || document.documentElement).appendChild(s);
 })();
 
+/* ---- Installable website (playbook ve-mobile-app, step D, 2026-11-07) ----
+ * Every page gets the app manifest, icons and theme color, registers /sw.js (network first; /offline.html when there is no
+ * connection) and, on phones, loads /public/ve-install.js (Add to home screen, polite: from the 3rd page, 30 days after Not now).
+ * Our site only: never on another brand's site (window.VE_BRAND) or another host that loads this file. */
+(function () {
+  if (window.VE_BRAND || window.__veInstallable) return;
+  if (!/(^|\.)vegansexplore\.com$|\.vercel\.app$|^localhost$|^127\.0\.0\.1$/.test(location.hostname)) return;
+  window.__veInstallable = true;
+  var h = document.head || document.documentElement;
+  function tag(sel, make) { if (!document.querySelector(sel)) h.appendChild(make()); }
+  function link(rel, href, extra) { var l = document.createElement('link'); l.rel = rel; l.href = href; for (var k in (extra || {})) l.setAttribute(k, extra[k]); return l; }
+  function meta(name, content) { var m = document.createElement('meta'); m.name = name; m.content = content; return m; }
+  tag('link[rel="manifest"]', function () { return link('manifest', '/manifest.json'); });
+  tag('meta[name="theme-color"]', function () { return meta('theme-color', '#2D5C27'); });
+  tag('link[rel="apple-touch-icon"]', function () { return link('apple-touch-icon', '/public/app/apple-touch-icon.png'); });
+  tag('link[rel~="icon"]', function () { return link('icon', '/public/app/favicon-32.png', { type: 'image/png', sizes: '32x32' }); });
+  tag('meta[name="apple-mobile-web-app-capable"]', function () { return meta('apple-mobile-web-app-capable', 'yes'); });
+  tag('meta[name="mobile-web-app-capable"]', function () { return meta('mobile-web-app-capable', 'yes'); });
+  tag('meta[name="apple-mobile-web-app-title"]', function () { return meta('apple-mobile-web-app-title', 'Vegans Explore'); });
+  tag('meta[name="apple-mobile-web-app-status-bar-style"]', function () { return meta('apple-mobile-web-app-status-bar-style', 'default'); });
+  var framed = false; try { framed = window.self !== window.top; } catch (e) { framed = true; }
+  if ('serviceWorker' in navigator && !framed) {
+    window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function () {}); });
+  }
+  if (!framed && (/[?&]install=1\b/.test(location.search) || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches))) {
+    var s = document.createElement('script'); s.src = '/public/ve-install.js'; s.async = true; h.appendChild(s);
+  }
+})();
+
 /* ---- Speak instead of typing on every field (Sean, 2026-10-31): /public/ve-dictate.js puts a mic on the field in use. ---- */
 (function () {
   if (window.VEDictate || document.querySelector('script[src*="ve-dictate.js"]')) return;
