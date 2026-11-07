@@ -22,6 +22,7 @@ we have systems, so we don't waste time and usage." Canon `canon-template-gate` 
    | A browse page with a banner | `/public/ve-city-banner.js`, as the Directory and Events use it |
    | A search box or a results page | `/public/ve-search.js` and `search.html` (universal search, below) |
    | An email | `email-send`, as `ve-nurture` and `ve-people-outreach` call it |
+   | A city restaurant carousel for social | Canva `DAHaJ8TQI0I` "5 Vegan Restaurants to Try in Philadelphia" in Vegans Explore > Directory (canon `canon-ve-city-carousel`) |
 2. **Nothing fits?** Stop and bring Sean a recommendation (which parent, or a new template) before building.
 3. **Before it ships**, screenshot the new page beside its parent at 1440 and 390 px. If they do not read as the same family, it does
    not ship. A new template joins this table and the canon.
