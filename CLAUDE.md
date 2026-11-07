@@ -2915,6 +2915,8 @@ listing, so look a listing up by slug and `status = 'approved'`. An old link to 
 stays: `directory/listing.html` asks `ve_listing_merged_to(slug)` (migration `20261010_listing_merged_redirect.sql`)
 when a slug has no approved listing, keeping the address's tab and hash.
 
+**Ready to list worked 2026-11-07** (Logan, playbook `ve-community-directory`; handoff `docs/handoff/2026-11-07-ve-community-directory-ready-to-list-events.md`): 279 of the 330 listed after a light check (open on Google, website answers or 5+ reviews, no Google calls), 8 set aside, 44 left for Sean; the 15 waiting events cleared (12 approved, 3 turned down); Port Richey and Orange Springs are in Central Florida (`ve-claims` HUBS waits for a deploy from `main`); the Vegan Squad Retreat page carries the $250-off code line.
+
 ## Events, the menu and the city banner (Sean, 2026-10-26)
 
 "When you're not logged in... the events page needs to be there... select by city... search... It operates almost like our
