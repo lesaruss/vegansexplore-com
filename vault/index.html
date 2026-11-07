@@ -123,7 +123,7 @@
     function load() {
       api({ action: 'vault' }).then(function (d) {
         D = d || { cards: [], stops: [] }; chapters(); drawCards();
-        document.getElementById('joinbox').innerHTML = D.member ? '' : '<div class="join"><div><b>Bidding is for members.</b><div class="meta">Join with the $11 Passport and its 1,100 points, then bid on any card here.</div></div><a class="btn" href="/passport?from=vault&back=%2Fvault">Explore the Passport</a></div>';
+        document.getElementById('joinbox').innerHTML = D.member ? '' : '<div class="join"><div><b>Bidding is for members.</b><div class="meta">Join free with a short survey, then bid your points on any card here.</div></div><a class="btn" href="/survey?s=explorer">Join free</a></div>';
       }).catch(function () { document.getElementById('cards').innerHTML = '<p class="empty">The Vault did not load. Refresh to try again.</p>'; });
       if (tok()) api({ action: 'mine' }).then(function (m) { M = m && m.ok ? m : null; drawMine(); });
     }

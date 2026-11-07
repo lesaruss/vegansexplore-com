@@ -145,7 +145,7 @@ module.exports = async (req, res) => {
       const gateRows = await gateRes.json();
       const gateMember = Array.isArray(gateRows) ? gateRows[0] : null;
       if (!gateMember || gateMember.membership_status !== 'active' || gateMember.membership_tier === 'guest') {
-        res.status(402).json({ error: 'payment_required', message: 'Become a Founding Member ($11, one time) or a Passport Holder to comment.' });
+        res.status(402).json({ error: 'payment_required', message: 'Join Vegans Explore to comment. It is free with a short survey.' });
         return;
       }
 

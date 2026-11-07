@@ -239,7 +239,7 @@
       { top: '<input name="em" type="email" autocomplete="email" placeholder="Your email, if you would like a reply (optional)" style="display:block;width:100%;box-sizing:border-box;margin-top:8px;border:1px solid rgba(0,0,0,.22);border-radius:6px;padding:9px 12px;font:500 14px/1.4 inherit;font-family:inherit;">' }, 'Send to the team');
     var log = S.log, f = S.f, ta = f.t, go = f.querySelector('.go');
     var join = '<div class="vepg-m s" style="text-align:left;align-self:stretch;background:#f1f6f2;border-radius:10px;padding:10px 12px;color:#14261a">Members can ask ' + esc(N) + ' questions here too. ' +
-      'Join free with a short survey, or with the $11 Passport. <a href="/passport#/join" style="font-weight:800;color:var(--vb-accent,#1E7A3E)">See how to join</a></div>';
+      'Joining is free with a short survey. <a href="/survey?s=explorer" style="font-weight:800;color:var(--vb-accent,#1E7A3E)">See how to join</a></div>';
     log.innerHTML = '<div class="vepg-m a">Hi, I am ' + esc(N) + '. Spotted something wrong, missing or out of date? Tell me and I will make sure the team sees it.</div>' + join;
     f.addEventListener('submit', function (e) {
       e.preventDefault();

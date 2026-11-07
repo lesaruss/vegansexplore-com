@@ -168,7 +168,7 @@
           var ts = d.tours || [];
           $('preview').hidden = !d.preview;
           if (!ts.length && !(d.launched || []).length) {
-            $('tours').innerHTML = '<div class="card" style="grid-column:1/-1"><b>Coming in 2027.</b><p class="muted" style="margin-top:6px">Tours start in one city at a time. Get your <a href="/passport">$11 Passport</a> and you will hear first when one comes to yours.</p></div>';
+            $('tours').innerHTML = '<div class="card" style="grid-column:1/-1"><b>Coming in 2027.</b><p class="muted" style="margin-top:6px">Tours start in one city at a time. <a href="/survey?s=explorer">Join free</a> and you will hear first when one comes to yours.</p></div>';
             return;
           }
           $('tours').innerHTML = ts.length ? ts.map(function (t) {

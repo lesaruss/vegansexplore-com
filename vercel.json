@@ -1477,6 +1477,31 @@
       "permanent": true
     },
     {
+      "source": "/guides/ve-path-creator",
+      "destination": "/passport",
+      "permanent": false
+    },
+    {
+      "source": "/guides/ve-path-entrepreneur",
+      "destination": "/passport",
+      "permanent": false
+    },
+    {
+      "source": "/guides/ve-path-nonprofit",
+      "destination": "/passport",
+      "permanent": false
+    },
+    {
+      "source": "/guides/ve-path-prevegan",
+      "destination": "/passport",
+      "permanent": false
+    },
+    {
+      "source": "/guides/ve-path-seasonedvegan",
+      "destination": "/passport",
+      "permanent": false
+    },
+    {
       "source": "/join",
       "destination": "/passport",
       "permanent": false

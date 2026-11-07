@@ -170,8 +170,8 @@
           body: "Cover your city and earn points: recap videos, interviews, write-ups and more." },
         { hubTab: 'board', sel: ['#tab-board', '#hero-section'], title: 'The Community Board',
           body: 'Ask the city and find who can help: rescue, fostering, rides, food and more. It opens right here.' },
-        { hubTab: 'members', sel: ['#tab-members .section-hdr', '#hero-section'], title: 'For Founding Members',
-          body: 'Members and Rewards open for Founding Members: $11, one time. Enjoy exploring.' }
+        { hubTab: 'members', sel: ['#tab-members .section-hdr', '#hero-section'], title: 'For members',
+          body: 'Members and Rewards open for members. Joining is free with a short survey. Enjoy exploring.' }
       ]
     },
 
@@ -214,8 +214,8 @@
           body: 'This short guide shows how partnering works, one slide at a time.' },
         { slide: 's-problem', sel: ['#stage-nav'], placement: 'top', title: 'Move through the slides',
           body: 'Use Next and Back, or the arrow keys. Each slide has a short narration you can play.' },
-        { slide: 's-seat', sel: ['#s-seat .member-box'], title: 'Step 1: Founding Membership',
-          body: '$11, one time. It is how you join, and it unlocks full details and pricing for every option.' },
+        { slide: 's-seat', sel: ['#s-seat .member-box'], title: 'Step 1: Join Vegans Explore',
+          body: 'Free, with a short survey. It is how you join, and it unlocks full details and pricing for every option.' },
         { slide: 's-seat', sel: ['#s-seat .ways'], title: 'Step 2: choose your part',
           body: 'Fill the goodie bags, bring your table to a Community Night, grow your menu, or shape the whole season.' },
         { slide: 's-seat', sel: ['#s-seat [data-vpg-join]'], title: 'Take your seat',

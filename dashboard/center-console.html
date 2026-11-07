@@ -4276,7 +4276,7 @@
   var DASH_FOUNDING_OPEN = Date.now() < Date.parse('2027-01-01T05:00:00Z');
   function dashFoundingWords(member) {
     if (member.membership_status === 'active') return member.founding_member ? 'Thank you for being a Founding Member.' : 'Thank you for being a member.';
-    return DASH_FOUNDING_OPEN ? 'Founding Membership closes at midnight Eastern on January 1, 2027. Join before then and Founding Member stays on your profile for good.' : 'Get your Passport: $11, one time.';
+    return DASH_FOUNDING_OPEN ? 'Founding Membership closes at midnight Eastern on January 1, 2027. Join before then and Founding Member stays on your profile for good.' : 'Joining is free with a short survey.';
   }
   // Registered badges, one per finished business intake, the member's role in small text under it (canon-ve-door-guides v6, Sean 2026-11-06).
   function veBadgesHtml(list) {

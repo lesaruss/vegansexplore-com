@@ -407,8 +407,8 @@
           <div id="cm-decide">
             <p class="lede">If all of this sounds good to you, apply. It&rsquo;s open to every member, because we&rsquo;re always building a bench of people ready to lead as our cities grow.</p>
             <div class="member-box" id="cm-member-box">
-              <p class="member-price"><b>Founding Membership</b> $11, one time</p>
-              <p class="member-copy">Applying starts where our community starts. If you&rsquo;re not a member yet, you&rsquo;ll join first. Your contribution goes straight into what we&rsquo;re building.</p>
+              <p class="member-price"><b>Membership</b> free, with a short survey</p>
+              <p class="member-copy">Applying starts where our community starts. If you&rsquo;re not a member yet, you&rsquo;ll join first: a short survey, free.</p>
             </div>
             <ol class="steps" style="margin-top:14px;">
               <li>Become a member, or log in if you already are.</li>
@@ -612,7 +612,7 @@
       }
       function checkout() {
         track('cm_membership_checkout');
-        VEAuth.startEntryCheckout(1100).then(function (d) { if (d && d.url) location.href = d.url; }).catch(function () {});
+        location.href = '/survey?s=explorer';
       }
       function applyOrJoin() {
         status().then(function (st) { if (st === 'active') openApply(); else checkout(); });
@@ -622,7 +622,7 @@
         track('cm_apply', { signed_in: loggedIn() });
         if (!window.VEAuth) { location.href = '/join'; return; }
         if (!loggedIn()) {
-          VEAuth.showAuthModal('Create your account, or log in if you already have one. Applying starts with the $11 Founding Membership, one time.', applyOrJoin, 'signup');
+          VEAuth.showAuthModal('Create your account, or log in if you already have one. Applying starts with joining, free with a short survey.', applyOrJoin, 'signup');
           return;
         }
         applyOrJoin();

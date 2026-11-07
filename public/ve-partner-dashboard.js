@@ -635,7 +635,7 @@
         '<div class="vpd-form"><label>Name<input id="vpd-ev-name" placeholder="Game Night"></label><label>Day and time<input id="vpd-ev-when" type="datetime-local"></label>' +
         '<label>Where<input id="vpd-ev-where" placeholder="The venue and city"></label><label>Ticket price (leave empty for a free event)<input id="vpd-ev-price" inputmode="decimal" placeholder="$0"></label>' +
         '<label>How many can come<input id="vpd-ev-cap" inputmode="numeric" placeholder="40"></label><label>About it<textarea id="vpd-ev-about" rows="3"></textarea></label>' +
-        (D.group && D.group.nonprofit ? '<p class="vpd-empty">Anyone can RSVP once they join Vegans Explore, which is free with a short survey.</p>' : '') + '<p class="vpd-empty"' + (D.group && D.group.nonprofit ? ' hidden' : '') + '>Free events: a newcomer uses their one guest pass, then joins with the $11 Passport. Paid events: we keep 5% of each ticket; the buyer pays card processing; the rest is yours.</p>' +
+        '<p class="vpd-empty">Free events: anyone can RSVP once they join, which is free with a short survey. Paid events: we keep 5% of each ticket; the buyer pays card processing; the rest is yours.</p>' +
         (REAL ? '<a class="vpd-btn" href="/events#submit/1">Add it on the events calendar</a>' : '<button type="button" class="vpd-btn" data-vpd-demo="Your event would go live on your page and the events calendar.">Put it live</button>') + '</div>';
       if (id) {
         var e = G.events.filter(function (x) { return x.id === id; })[0];

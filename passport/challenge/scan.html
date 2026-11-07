@@ -63,8 +63,8 @@
               if (d.hub) hub = d.hub;
               if (d.ok) return go(d.progress && d.progress.completed && d.badge_name ? { scan: 'completed', badge: d.badge_name, biz: d.business || '' } : { scan: 'stamped', biz: d.business || '' });
               if (d.error === 'payment_required') {
-                show('Get your Passport to collect stamps', 'The Passport Challenge is for Vegans Explore Passport members. It is $11, one time.', '<button type="button" class="btn" id="pay">Get your Passport</button>');
-                document.getElementById('pay').onclick = function () { VEAuth.showActivateModal ? VEAuth.showActivateModal('Get your Passport to collect Passport Challenge stamps.') : (location.href = '/passport'); };
+                show('Get your Passport to collect stamps', 'The Passport Challenge is for Vegans Explore members. Joining is free with a short survey.', '<button type="button" class="btn" id="pay">Join free</button>');
+                document.getElementById('pay').onclick = function () { VEAuth.showActivateModal ? VEAuth.showActivateModal('Join free with a short survey to collect Passport Challenge stamps.') : (location.href = '/passport'); };
                 return;
               }
               if (d.error === 'already_stamped') return go({ scan: 'already', biz: d.business || '' });

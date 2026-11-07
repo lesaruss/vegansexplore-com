@@ -262,16 +262,16 @@ async function emailFor(inv: Invite) {
   if (inv.points_to === 'ambassador' && inv.profile === 'creator') paras.push(`See what being one of our ${b('official creators')} means, the work, how it pays and every city, in the <a href="${esc(`${SITE}/creators/welcome?c=${inv.code}`)}" style="color:#1f5f22;font-weight:700">Official Creator Guide</a>.`);
   if (inv.points_to === 'founding') {
     paras.push(`I'm building ${esc(brand)}, a community for Vegans, city by city, and I'm hand-picking the ${b('first Founding Members')}: the people who shape what this becomes before everyone else arrives.${inv.reason ? '' : ' You were one of the first people I thought of.'}`);
-    if (!inv.comp) paras.push(`It's ${b('$11, one time')}, with ${b('1,100 points')} to start: vote for the places you love, get the Daily Pulse in your city, check in, and unlock the Guides. Your $11 keeps the community running.`);
+    if (!inv.comp) paras.push(`Joining is ${b('free')}: a short survey, with ${b('250 points')} to start. Then vote for the places you love, get the Daily Pulse in your city and check in.`);
   }
   // An Ambassador invitation without a comp (2026-11-01): the $11 is how they join, and Sean's points and level come when they do.
-  if (inv.points_to === 'ambassador' && !inv.comp) paras.push(`If you're not a member yet, you join with the ${b('$11, one time')}, with ${b('1,100 points')} to start${inv.points > 0 ? `, and ${b(`${Number(inv.points).toLocaleString('en-US')} more points`)} from me when you join as an Ambassador` : ''}${inv.level > 1 ? `, starting at ${b(`Level ${inv.level}`)}` : ''}. Already a member? Accepting makes you an Ambassador right away.`);
+  if (inv.points_to === 'ambassador' && !inv.comp) paras.push(`If you're not a member yet, you join free with a short survey, with ${b('250 points')} to start${inv.points > 0 ? `, and ${b(`${Number(inv.points).toLocaleString('en-US')} more points`)} from me when you join as an Ambassador` : ''}${inv.level > 1 ? `, starting at ${b(`Level ${inv.level}`)}` : ''}. Already a member? Accepting makes you an Ambassador right away.`);
   if ((inv.points_to === 'founding' || inv.points_to === 'ambassador') && Date.now() < FOUNDING_DEADLINE) paras.push(b(DEADLINE_LINE));
   // A Nonprofit Partner invitation (Sean, 2026-10-29): the organization is the partner and earns; the person leads the account and
   // their membership is on us. Referral earnings paid to the organization, never a donation, never tax-deductible.
   if (inv.points_to === 'nonprofit') {
     paras.push(`I'm building ${esc(brand)}, a community for Vegans, city by city, and I'd like ${b(orgName)} to be one of our ${b('first Nonprofit Partners')}.`);
-    paras.push(`${esc(orgName)} gets ${b('its own link')} to share with your people. Every time someone joins ${esc(brand)} through it, ${esc(orgName)} earns ${b('20% of the $11 Passport')}, and of Guides bought through it, paid to ${esc(orgName)}. We give you ready-made posts, a button and banner for your website and an email blurb${inv.points > 0 ? `, plus ${b(`${Number(inv.points).toLocaleString('en-US')} points`)} for ${esc(orgName)} to use on our services` : ''}.`);
+    paras.push(`${esc(orgName)} gets ${b('its own link')} to share with your people. Every time someone joins ${esc(brand)} through it, it counts as someone ${esc(orgName)} brought in. We give you ready-made posts, a button and banner for your website and an email blurb${inv.points > 0 ? `, plus ${b(`${Number(inv.points).toLocaleString('en-US')} points`)} for ${esc(orgName)} to use on our services` : ''}.`);
     paras.push(`You would lead the account, and ${b('your own Founding Membership is on us')}. There's nothing to pay and nothing owed.`);
   }
   // A Group Partner invitation (Sean, 2026-10-29, the terms in canon canon-ve-group-partners): the group gets a home and a share of what
@@ -280,7 +280,7 @@ async function emailFor(inv: Invite) {
   if (inv.points_to === 'group') {
     const a = (href: string, t: string) => `<a href="${esc(href)}" style="color:#1f5f22;font-weight:700">${esc(t)}</a>`;
     paras.push(`I'm building ${esc(brand)}, a community for Vegans, city by city, and I'd like ${b(orgName)} to be one of our ${b('first Group Partners')}.`);
-    paras.push(`${esc(orgName)} would get ${b('its own home on ' + brand)}: your events on your page and on our calendar, with your history, members finding you in every city, and our help promoting you. When people join ${esc(brand)} through ${esc(orgName)}'s link, ${esc(orgName)} earns ${b('a share of every $11 Passport')}, starting at 20% and growing to 50% as you bring more people in, and you can sell tickets to your events here for a 5% fee. We're building it with the first groups now, so you would help shape it.`);
+    paras.push(`${esc(orgName)} would get ${b('its own home on ' + brand)}: your events on your page and on our calendar, with your history, members finding you in every city, and our help promoting you. When people join ${esc(brand)} through ${esc(orgName)}'s link, they count toward ${esc(orgName)}, and you can sell tickets to your events here for a 5% fee. We're building it with the first groups now, so you would help shape it.`);
     paras.push(`See how it works in the ${a(`${SITE}/groups/welcome?c=${inv.code}`, 'Group Partner Guide')}, and click around ${a(`${SITE}/groups/sample`, 'a sample group')}, from a member's side and an organizer's side.`);
     paras.push(`You would lead the account, and ${b('your own Founding Membership is on us')}. There's nothing to pay and nothing owed.`);
   }
@@ -310,7 +310,7 @@ async function nudgeFor(inv: Invite) {
     : inv.points_to === 'group' ? `${org?.name ?? 'your group'} being one of our first Group Partners`
     : inv.points_to === 'ambassador' ? 'being one of our first Ambassadors' : 'being one of our first Founding Members';
   const said = inv.status === 'accepted'
-    ? `You said yes to being one of our first ${inv.points_to === 'ambassador' ? 'Ambassadors' : 'Founding Members'}, thank you. The last step is the $11, and your spot is still held for you.${Date.now() < FOUNDING_DEADLINE ? ' ' + DEADLINE_LINE : ''}`
+    ? `You said yes to being one of our first ${inv.points_to === 'ambassador' ? 'Ambassadors' : 'Founding Members'}, thank you. The last step is a short survey, free, and your spot is still held for you.${Date.now() < FOUNDING_DEADLINE ? ' ' + DEADLINE_LINE : ''}`
     : inv.status === 'opened' || inv.email_opened_at
       ? `I wanted to follow up on my note about ${about}. No pressure at all: your spot is held a little longer if you'd like it.`
       : `I sent you a note last week about ${about}, and I didn't want it to get lost in your inbox.`;

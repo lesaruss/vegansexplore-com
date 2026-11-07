@@ -214,7 +214,7 @@ Deno.serve(async (req: Request) => {
     if (qs.length < 2 || qs.length !== list.length) return json({ error: 'bad_answers', message: 'Record at least two answers, each under 25 MB.' }, 400);
     // Door Guide rules (canon-ve-door-guides): 18 and over, and a claimed host's Host Notes is free; anyone else must be an active member, by either door (canon v3).
     if (body.adult !== true) return json({ error: 'adult', message: 'Tick the box to say you are 18 or over.' }, 400);
-    if (!(await mayRecord(me, email))) return json({ error: 'passport_needed', message: 'Recording is for hosts with a claimed event, and for members. Claim your event, or become a member free by taking the event survey (or the $11 Passport).' }, 403);
+    if (!(await mayRecord(me, email))) return json({ error: 'passport_needed', message: 'Recording is for hosts with a claimed event, and for members. Claim your event, or become a member free by taking the event survey.' }, 403);
     const since = new Date(Date.now() - DAY_MS).toISOString();
     const { count } = await db.from('ve_event_host_stories').select('id', { count: 'exact', head: true }).ilike('email', email).gte('created_at', since);
     if ((count ?? 0) >= 3) return json({ error: 'daily_limit', message: 'That is three stories today. Email us at contact@lesaruss.com.' }, 429);

@@ -130,7 +130,7 @@
     // Turning down the invitation never closes the door (Sean, 2026-10-28: "redirect them to still invite them to become a member, so that
     // way they can enjoy all of the resources that we'll be developing for the community").
     function declinedView(lede) {
-      closed('Thank you for letting us know.', lede + ' You are still welcome as a member: the Passport is $11, one time, with 1,100 points, and everything we are building for the community.', ['Get your Passport', '/passport']);
+      closed('Thank you for letting us know.', lede + ' You are still welcome as a member: joining is free with a short survey, and everything we are building for the community is yours.', ['Join free', '/survey?s=explorer']);
     }
 
     function render(inv) {
@@ -165,14 +165,14 @@
         // No comp (2026-11-01): the $11 is how they join; Sean's points and level come with it.
         if (!inv.comp) {
           $('pt-points').hidden = false;
-          $('pt-points').textContent = 'Not a member yet? You join with the $11, one time, with 1,100 points to start' + (inv.points > 0 ? ', plus ' + Number(inv.points).toLocaleString('en-US') + ' more from Sean when you join as an Ambassador' : '') + (inv.level > 1 ? ', starting at Level ' + inv.level : '') + '. Already a member? You become an Ambassador right away.';
+          $('pt-points').textContent = 'Not a member yet? You join free with a short survey, with 250 points to start' + (inv.points > 0 ? ', plus ' + Number(inv.points).toLocaleString('en-US') + ' more from Sean when you join as an Ambassador' : '') + (inv.level > 1 ? ', starting at Level ' + inv.level : '') + '. Already a member? You become an Ambassador right away.';
         }
       }
       // A Founding Member invitation (Sean, 2026-10-28): hand-picked, at the normal $11 unless Sean made it on us.
       if (inv.points_to === 'founding') {
         $('title').textContent = inv.first_name + ', be one of our first Founding Members.';
-        $('lede').textContent = 'I’m building Vegans Explore, a community for Vegans, city by city, and I’m hand-picking the first Founding Members: the people who shape what this becomes before everyone else arrives.' + (inv.comp ? '' : ' It’s $11, one time, with 1,100 points to start.');
-        if (!inv.comp) $('pt-points').hidden = false, $('pt-points').textContent = '1,100 points to start: vote, check in, unlock the Guides, and give to the places you love';
+        $('lede').textContent = 'I’m building Vegans Explore, a community for Vegans, city by city, and I’m hand-picking the first Founding Members: the people who shape what this becomes before everyone else arrives.' + (inv.comp ? '' : ' Joining is free: a short survey, with 250 points to start.');
+        if (!inv.comp) $('pt-points').hidden = false, $('pt-points').textContent = '250 points to start: vote, check in, and give to the places you love';
       }
       // A Nonprofit Partner invitation (Sean, 2026-10-29): the organization is the partner and earns; the person leads the account, on us.
       if (inv.points_to === 'nonprofit') {
@@ -180,7 +180,7 @@
         $('title').textContent = inv.first_name + ', bring ' + org + ' in as a Nonprofit Partner.';
         $('lede').textContent = 'I’m building Vegans Explore, a community for Vegans, city by city, and I’d like ' + org + ' to be one of our first Nonprofit Partners. You would lead the account.';
         $('gift').hidden = false; $('gift').textContent = 'Your own Founding Membership is on us';
-        $('points').innerHTML = ['<b>' + esc(org) + ' gets its own link.</b> Every time someone joins through it, ' + esc(org) + ' earns 20% of the $11 Passport, and of Guides bought through it, paid to ' + esc(org) + '.',
+        $('points').innerHTML = ['<b>' + esc(org) + ' gets its own link.</b> Every time someone joins through it, ' + esc(org) + ' counts it as someone it brought in, so you can see the community you are growing.',
           'A ready-made kit: posts to share, a button and banner for your website, and an email blurb, all with your link.',
           inv.points > 0 ? Number(inv.points).toLocaleString('en-US') + ' points for ' + esc(org) + ' to use on our services.' : '',
           'A Nonprofit Partner badge on ' + esc(org) + '’s page in the Directory, and a Guide that walks you through it.']
@@ -194,7 +194,7 @@
         $('lede').textContent = 'I’m building Vegans Explore, a community for Vegans, city by city, and I’d like ' + grp + ' to be one of our first Group Partners. You would lead the account.';
         $('gift').hidden = false; $('gift').textContent = 'Your own Founding Membership is on us';
         $('points').innerHTML = ['<b>' + esc(grp) + '’s home on Vegans Explore.</b> Your events on your page and on our calendar, with your history, and members finding you in every city.',
-          '<b>A share of every $11 Passport</b> bought through ' + esc(grp) + '’s link, starting at 20% and growing to 50% as you bring more people in.',
+          '<b>Its own link.</b> Everyone who joins Vegans Explore through it counts toward ' + esc(grp) + ', so you can see the community you are growing.',
           'Sell tickets to your events here for a 5% fee. Free events stay free.',
           'We’re building it with the first groups now. See it in the <a href="/groups/welcome?c=' + encodeURIComponent(code || '') + '">Group Partner Guide</a> and click around <a href="/groups/sample" target="_blank" rel="noopener">a sample group</a>.']
           .map(function (t) { return '<li>' + t + '</li>'; }).join('');
@@ -266,7 +266,7 @@
             $('done-lede').textContent = 'Thank you for saying yes for ' + ((invite.org && invite.org.name) || 'your group') + '. Your Founding Membership is active, and our team will be in touch to set up your group’s home on Vegans Explore.';
             $('done-next').textContent = 'Open the Group Partner Guide';
           }
-          if (d.membership_status !== 'active' && !invite.comp) $('done-lede').textContent = 'Your account is ready. Join with the $11 from your dashboard.' + (DEADLINE_LINE ? ' ' + DEADLINE_LINE : '');
+          if (d.membership_status !== 'active' && !invite.comp) $('done-lede').textContent = 'Your account is ready. Join free with a short survey from your dashboard.' + (DEADLINE_LINE ? ' ' + DEADLINE_LINE : '');
           show('done');
           return;
         }
@@ -281,16 +281,19 @@
     function mountReferrer(el, tok) { if (!el) return; var go = function () { window.VEReferrer.mount(el, tok ? { token: tok } : undefined); }; if (window.VEReferrer) return go(); var s = document.createElement('script'); s.src = '/public/ve-referrer.js'; s.onload = go; document.head.appendChild(s); }
     function oneStepLeft(inv) {
       $('title').textContent = 'One step left, ' + inv.first_name + '.';
-      $('lede').textContent = 'You said yes to being one of our first ' + (inv.points_to === 'ambassador' ? 'Ambassadors' : 'Founding Members') + '. Your membership is $11, one time, with 1,100 points to start' + (inv.points_to === 'ambassador' && inv.points > 0 ? ', plus ' + Number(inv.points).toLocaleString('en-US') + ' more from Sean' : '') + '.' + (DEADLINE_LINE ? ' ' + DEADLINE_LINE : '');
+      $('lede').textContent = 'You said yes to being one of our first ' + (inv.points_to === 'ambassador' ? 'Ambassadors' : 'Founding Members') + '. Joining is free: a short survey, with 250 points to start' + (inv.points_to === 'ambassador' && inv.points > 0 ? ', plus ' + Number(inv.points).toLocaleString('en-US') + ' more from Sean' : '') + '.' + (DEADLINE_LINE ? ' ' + DEADLINE_LINE : '');
       $('reason').hidden = true; $('gift').hidden = true; $('no-thanks').hidden = false;
-      $('accept').textContent = 'Finish joining, $11';
+      $('accept').textContent = 'Finish joining, free';
       show('invite');
       mountReferrer($('ve-ref-host'));
     }
     function pay() {
       var token = window.VEAuth && VEAuth.getToken();
       if (!token) { accept(); return; }
-      $('accept').disabled = true; say('Opening the checkout…', 'ok');
+      // Since 2026-11-07 (canon-ve-door-guides v12) joining is the free survey; ve_founding_invite_paid marks the invitation Joined
+      // (and Founding before the deadline) when the account turns active, however it does.
+      $('accept').disabled = true; say('Opening the survey…', 'ok');
+      location.href = '/survey?s=explorer'; return;
       var back = location.origin + '/invite?c=' + code;
       fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-entry-checkout', { method: 'POST', headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
         body: JSON.stringify({ amount_cents: 1100, success_url: back + '&paid=1', cancel_url: back + '&paid=0' }) })

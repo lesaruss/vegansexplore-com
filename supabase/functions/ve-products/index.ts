@@ -151,7 +151,7 @@ Deno.serve(async (req) => {
     return json({ error: 'account_not_in_good_standing', message: 'Your account is on hold. Write to contact@lesaruss.com and we will help.' }, 403);
   }
   const needMember = () => !viewer ? json({ error: 'not_authenticated', message: 'Sign in first.' }, 401)
-    : !viewer.active ? json({ error: 'payment_required', message: 'This is for Passport holders: $11, one time.' }, 402) : null;
+    : !viewer.active ? json({ error: 'payment_required', message: 'This is for members. Joining is free with a short survey.' }, 402) : null;
 
   if (action === 'lookup') {
     const code = gtin(body.code);
