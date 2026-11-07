@@ -6715,12 +6715,24 @@ only for real customers, events and a business's own food and space. All 18 pict
 nano_banana_pro from the old photos with Liz's banner as the style reference, 2 credits each; `pic()` asks `?v=2`), plus `t-start.jpg`. Liz's member
 welcome is `door-overview-member-v2` ("Welcome in. You run a Vegan restaurant..."), checked with `stt`.
 
-## Moving off the $11 Passport (Sean, 2026-11-06, NOT built, playbook `ve-pricing-points-passport`)
+## The survey is the only way in (LOCKED by Sean 2026-11-07, playbook `ve-pricing-points-passport`, canon `canon-ve-door-guides` v12)
 
-"Let's move away from the $11 passport and it just be the certification... get people through the door and keep them engaged... versus us
-throttling it because of the $11 charge." Direction only; scope questions and touch list in
-`docs/handoff/2026-11-06-ve-restaurant-guide-dashboard-scan-and-11-direction.md`. Until Sean confirms scope, nothing about the $11 changes on
-the site. The sample dashboard (main 354a462) already leads with free Explorer and keeps the $11 as the second way in.
+"We don't want to inhibit them from being able to complete the survey, and we really don't even want them to bypass the survey...
+Stopping them at the door for $11." Replaces "Registration is the Passport", "Guide pricing, points and levels" and the two-door parts of
+"Three doors" where they conflict. **Built and live 2026-11-07**:
+- **Membership is free; the survey is the only way in** (the Explorer survey, or a business Guide's survey), 250 points, no welcome points.
+  The $11 window in `public/ve-auth.js` leads with Take the survey; its $11 button shows only for another brand's account the server sent to
+  checkout (`_needUrl`). The sign-up tab reads **Join free**, its button Continue to the survey. `/passport` Enter the room is one card (the
+  survey, `/survey?s=explorer`); `/business` Get started is Join free, then claim free. `ve-votes.js` members-only prompts say join free.
+- **The $11 is an optional give once in** (contribute, events, topic Guides, ads). `ve-stripe-webhook` (v67 from eb1f4e6, sha256 c7281e93)
+  no longer grants 1,100 welcome points on a first $11; the receipt says Your membership is active. Paying a topic Guide does not admit (policy
+  wording; the server's `ve_guide_purchase_paid` still admits a buyer, Logan's open item).
+- **Claiming or adding a listing is free for members** (`ve-claims` from eb1f4e6, sha256 6769848e, `start` `pay: 'member'` for any listing;
+  `claim.html` offers Claim it free / Add it free first and the Partner plan second; a non-member goes to the survey and back, `_add_` for Add it).
+- **Cash commissions paused** (`ve_site_settings` `affiliate_program.paused` true and `live` false; `ve_affiliate_earn` returns `skipped: paused`;
+  migration `20261107_survey_only_door.sql`). Referral points (111) continue. Earned commissions are still paid.
+- `/policies#membership` (Last updated November 7), the Guides' facts (v25, `20261107_survey_only_facts.sql`) and 30 saved answers
+  (`20261107_survey_only_answers.sql`) say it. Keep: $111 Partner plan; topic Guides $11 or 1,100 points; Founding until midnight Eastern Jan 1, 2027.
 
 ## Image conventions
 
