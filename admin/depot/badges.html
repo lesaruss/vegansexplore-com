@@ -135,7 +135,7 @@
       }
       function decision(b) {
         var waiting = b.claimed === 'vegan' && !b.approved_at, btns = [];
-        if (waiting) btns.push(['approve', 'Approve 100% Vegan', '']);
+        if (waiting) btns.push(['approve', 'Approve 100% Vegan and email them', '']);
         if (waiting && b.status === 'checking') btns.push(['follow_up', 'We will follow up first', 'btn-quiet']);
         btns.push(['note', 'Save note only', 'btn-quiet']);
         var said = waiting ? (b.status === 'checking' ? 'They say they are 100% Vegan. Check their page, menu and socials. Approving shows 100% Vegan. Until then they show 100% Plant-based.' : 'The team is following up. Approve when they are ready.')

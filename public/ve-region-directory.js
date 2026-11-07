@@ -592,6 +592,9 @@
   }
   // A Nonprofit Partner (Sean, 2026-10-29): listings.tags carries ve-nonprofit-partner while the partnership is active.
   function partnerTag(l) { return (l.tags || []).indexOf('ve-nonprofit-partner') >= 0 ? ' <span class="vrd-mstat vrd-mstat-on">Nonprofit Partner</span>' : ''; }
+  // The business badge its owner's intake set (canon-ve-business-badges; tags kept by ve_listing_badge_apply). 100% Vegan shows only after our team checked it.
+  var BIZ_BADGES = [['ve-badge-vegan', '100% Vegan badge'], ['ve-badge-plant-based', '100% Plant-based badge'], ['ve-badge-pre-vegan', 'Pre-Vegan badge']];
+  function bizBadgeTag(l) { var t = l.tags || []; for (var i = 0; i < BIZ_BADGES.length; i++) if (t.indexOf(BIZ_BADGES[i][0]) >= 0) return ' <span class="vrd-mstat vrd-mstat-on" title="Set by the owner\'s own answers">' + BIZ_BADGES[i][1] + '</span>'; return ''; }
   function mediaTag(l) {
     var w = statusWords(l.category), s = l.business_status, work = /Books|Documentaries/.test(l.category);
     // A book or a film is simply there; it says so only when it is not (Sean, 2026-10-27: "Available doesn't tell me anything").
@@ -627,7 +630,7 @@
       (isPerson(l) ? '<div class="rank-meta">' + personMeta(l) + '</div>'
         : isMedia(l) ? '<div class="rank-meta">' + mediaMeta(l) + '</div>'
         : (anywhere ? (temp ? '<div class="rank-meta">' + temp + '</div>' : '') : '<div class="rank-meta">' + cardMeta(l) + temp + '</div>') +
-          '<div class="rank-subcat">' + esc(anywhere ? shelfOf(l, cfg) : subLabel(l.category || '')) + veganTag(l) + vendsTag(l) + partnerTag(l) + '</div>') + vettingNote(l) + '</div>' +
+          '<div class="rank-subcat">' + esc(anywhere ? shelfOf(l, cfg) : subLabel(l.category || '')) + veganTag(l) + vendsTag(l) + partnerTag(l) + bizBadgeTag(l) + '</div>') + vettingNote(l) + '</div>' +
       '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><button class="vote-btn" data-listing-id="' + esc(l.id) + '" title="Vote for this one">' + (votes === 1 ? 'Vote' : 'Votes') + '</button>' + adminBtn(l) + '</div>' +
       '</div>';
   }
