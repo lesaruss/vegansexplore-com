@@ -395,7 +395,7 @@
           (!member() ? '<span class="dg-mlock">' + LOCK_SVG + (priced() ? ' In the full Guide' : ' With membership') + '</span>' : '') + '</div></a>';
       }).join('') + '</div>' +
       '<div class="dg-start">' + (TOUR.started ? '' : '<button type="button" class="dg-btn" data-tour-start>&#9654; Start the tour</button>') +
-      (member() ? '<p>The whole Guide is yours. Pick a tab, or let Maya walk you through it.</p>' : '<p>' + esc(onPoints() ? 'The full Guide is $11 or 1,100 points.' : priced() ? 'The full Guide is $11 or 1 Guide credit.' : 'The Guide comes with the $11 Founding Membership.') + ' <a href="#/join" style="color:var(--g);font-weight:800">How to get access</a></p>') + '</div>';
+      (member() ? '<p>The whole Guide is yours. Pick a tab, or let Maya walk you through it.</p>' : '') + '</div>';
   }
 
   // The research is one fact at a time: the titles down the left, the chosen fact on the right (#/pulse/fact/<n>),

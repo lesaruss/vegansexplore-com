@@ -491,7 +491,7 @@
           (!member() && !t[3] ? '<span class="dg-mlock">' + LOCK_SVG + ' In the full Guide</span>' : !member() && t[3] ? '<span class="dg-mlock" style="color:#1f5f22 !important">Open to everyone</span>' : '') + '</div></a>';
       }).join('') + '</div>' +
       '<div class="dg-start"><a class="dg-btn" href="#/nutrients/' + PUB.example.id + '">' + (member() ? 'Start with B12' : 'Try B12, free') + '</a><a class="dg-btn dg-ghost" href="#/experts">Meet the experts</a>' +
-      (member() ? '<p>The whole Guide is yours. Pick a tab, or follow Theo with Next.</p>' : '<p>The full Guide is $11 or 1,100 points. <a href="#/join" style="color:var(--g);font-weight:800">How to get access</a></p>') + '</div>' + note();
+      (member() ? '<p>The whole Guide is yours. Pick a tab, or follow Theo with Next.</p>' : '') + '</div>' + note();
   }
 
   // ---------- search (members) ----------
