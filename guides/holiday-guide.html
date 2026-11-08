@@ -490,12 +490,10 @@
     .rg-grow{margin:20px 0 0;}.rg-grow h3{margin:0;font-size:16px;font-weight:900;}.rg-grow>p{margin:2px 0 8px;font-size:13px;color:var(--ink75);}
     .rg-pills{display:flex;flex-wrap:wrap;gap:8px;}
     /* ThanksLiving's section row (Sean, 2026-11-08): rectangles with 6px corners, square icons, one row that slides sideways, never a dropdown. */
-    .hg-sub{display:flex;flex-wrap:nowrap;gap:8px;margin:0 0 18px;padding-bottom:14px;border-bottom:1px solid var(--line);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
-    .hg-sub::-webkit-scrollbar{display:none}
-    .hg-sub .rg-pill{flex:0 0 auto;border-radius:6px;padding:5px 14px 5px 5px;white-space:nowrap;}
-    .hg-sub .rg-pill-pic{border-radius:6px;width:32px;height:32px;flex-basis:32px;}
-    .hg-sub .rg-pill[aria-current="page"]{border-color:var(--g);background:var(--g);color:#fff;}
-    @media (max-width:640px){.hg-sub{margin-right:-16px;padding-right:16px}}
+    .hg-sub{display:flex;align-items:center;gap:12px;margin:0 0 18px;padding-bottom:14px;border-bottom:1px solid var(--line);}
+    .hg-sub-l{font-size:13px;font-weight:800;color:var(--ink,#1A1A1A);white-space:nowrap}
+    .hg-subsel{min-width:240px}
+    @media (max-width:640px){.hg-sub{flex-wrap:wrap;gap:6px}.hg-subsel{width:100%;min-width:0;font-size:16px}}
     .rg-pill{display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);text-decoration:none;font-size:14px;font-weight:700;transition:border-color .12s,background .12s;}
     a.rg-pill:hover{border-color:var(--g);background:var(--gl);}
     .rg-pill-pic{width:30px;height:30px;border-radius:6px;overflow:hidden;flex:0 0 30px;background:var(--gl);}
@@ -701,7 +699,7 @@
 <script src="/public/ve-region-directory.js"></script>
 <script src="/public/ve-guide-intro.js"></script>
 <script src="/public/ve-episodes.js"></script>
-<script src="/guide-scripts/holiday-guide.js?v=8"></script>
+<script src="/guide-scripts/holiday-guide.js?v=9"></script>
 <script src="/public/ve-guide-min.js"></script>
 </body>
 </html>

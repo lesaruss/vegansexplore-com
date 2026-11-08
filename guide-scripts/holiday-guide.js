@@ -129,15 +129,15 @@
     return '<div class="dg-crumb"><a href="#/">Holiday Guide</a>' + parts.map(function (p) { return ' &rsaquo; ' + (p[1] ? '<a href="' + p[1] + '">' + esc(tc(p[0])) + '</a>' : esc(tc(p[0]))); }).join('') + '</div>';
   }
   // ThanksLiving's own row (Sean, 2026-11-08: "keep the recipes, at the store, holiday menus, events, and listen button visible... so people
-  // can easily navigate between the ThanksLiving pages"): on the holiday's page and each of its sections, under the crumb.
+  // can easily navigate between the ThanksLiving pages"): on the holiday's page and each of its sections, under the crumb. A dropdown since
+  // 2026-11-08 (Sean: the picture pills were hard to read and competed with At the Store's shelf chips).
   function subnav(cur) {
     var par = tab(cur).parent || cur, kids = TABS.filter(function (c) { return c.parent === par; });
     if (!kids.length) return '';
     var items = [tab(par)].concat(kids);
-    return '<nav class="hg-sub" aria-label="' + esc(tab(par).label) + '">' + items.map(function (c) {
-      var pic = c.k === par ? 'p-thanks.jpg' : PILL_PIC[c.k];
-      return '<a class="rg-pill" href="' + href(c.k) + '"' + (c.k === cur ? ' aria-current="page"' : '') + '><span class="rg-pill-pic"><img src="' + PIC + pic + '" alt="" loading="lazy" width="60" height="60"></span><span>' + esc(c.k === par ? 'Ideas' : c.label) + '</span></a>';
-    }).join('') + '</nav>';
+    return '<div class="hg-sub"><label class="hg-sub-l" for="hgSubSel">' + esc(tab(par).label) + '</label><select id="hgSubSel" class="dg-sort hg-subsel">' + items.map(function (c) {
+      return '<option value="' + c.k + '"' + (c.k === cur ? ' selected' : '') + '>' + esc(c.k === par ? 'Ideas' : c.label) + '</option>';
+    }).join('') + '</select></div>';
   }
   // Every title in this Guide has a capital on each word (Sean, 2026-11-08: "Holiday Menus Near You"); small joining words stay lower case.
   var SMALL = /^(a|an|the|and|or|of|to|at|in|on|for|by|with|from|as)$/i;
@@ -815,7 +815,7 @@
     V[view]();
     if (tab(view).parent && !main.querySelector('.dg-crumb')) main.insertAdjacentHTML('afterbegin', crumb([[tab(view).label]]));
     var sub = subnav(view);
-    if (sub) { var cr = main.querySelector('.dg-crumb'); if (cr && cr.parentNode === main) cr.insertAdjacentHTML('afterend', sub); else main.insertAdjacentHTML('afterbegin', sub); }
+    if (sub) { var cr = main.querySelector('.dg-crumb'); if (cr && cr.parentNode === main) cr.insertAdjacentHTML('afterend', sub); else main.insertAdjacentHTML('afterbegin', sub); var ss = main.querySelector('#hgSubSel'); if (ss) ss.addEventListener('change', function () { location.hash = href(ss.value); }); }
     keepPlayer(bar);
     curTab = view; drawTheo();
     main.scrollTop = 0; if (!document.documentElement.classList.contains('dg-fit') || window.innerWidth <= 900) window.scrollTo(0, 0);
