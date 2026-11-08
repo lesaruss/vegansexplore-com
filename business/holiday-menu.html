@@ -304,7 +304,7 @@
       function drawBusiness() {
         var ls = D.listings || [];
         $('pick-listing').innerHTML = ls.map(function (l) {
-          return '<label><input type="radio" name="lst" value="' + esc(l.id) + '"' + (l.id === SEL.listing ? ' checked' : '') + '><span><b>' + esc(l.name) + '</b><br><span class="note">' + esc([l.address_city, l.address_state].filter(Boolean).join(', ') || 'Online') + (l.claim === 'waiting' ? ' &middot; your claim is waiting for approval' : '') + '</span></span></label>';
+          return '<label><input type="radio" name="lst" value="' + esc(l.id) + '"' + (l.id === SEL.listing ? ' checked' : '') + '><span><b>' + esc(l.name) + '</b><br><span class="note">' + esc([l.address_city, l.address_state].filter(Boolean).join(', ') || 'Online') + (l.claim === 'waiting' ? ' &middot; your claim is waiting for approval' : l.claim === 'admin' ? ' &middot; uploading for them as our team' : '') + '</span></span></label>';
         }).join('');
         var open = (D.holidays || []).filter(function (h) { return h.open; });
         $('holiday').innerHTML = open.map(function (h) { return '<option value="' + esc(h.slug) + '"' + (h.slug === SEL.holiday ? ' selected' : '') + '>' + esc(h.name) + ' (menus close ' + esc(closeText(h.submit_close)) + ')</option>'; }).join('');
@@ -463,7 +463,7 @@
           api({ action: 'holidays' }).then(function (r) { countdown(r && r.holidays); });
           return joinGate();
         }
-        api({ action: 'mine' }).then(function (r) {
+        api({ action: 'mine', listing: new URLSearchParams(location.search).get('listing') || '' }).then(function (r) {
           if (!r || !r.ok) { $('gate').hidden = false; $('gate').innerHTML = '<p>That did not load. Refresh to try again.</p>'; return; }
           D = r; countdown(r.holidays);
           try { sessionStorage.removeItem('ve_after_survey'); } catch (e) {}
