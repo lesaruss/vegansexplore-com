@@ -92,7 +92,7 @@ async function settings() {
 function shell(body: string, foot: string) {
   return `<div style="font-family:Montserrat,Arial,sans-serif;max-width:600px;font-size:15px;line-height:1.6;color:#1a1a1a">` +
     `<p style="margin:0 0 18px"><img src="${SITE}/public/logo-ve-landscape-v1.svg" alt="Vegans Explore" width="150" style="display:block;border:0"></p>${body}` +
-    `<p style="margin-top:28px;font-size:12px;line-height:1.5;color:#777">${foot} {{postal_address}}.</p></div>`;
+    `<p style="margin-top:28px;font-size:12px;line-height:1.5;color:#777">${foot} <a href="{{unsubscribe_url}}" style="color:#777">Unsubscribe from all Vegans Explore emails</a>. {{postal_address}}.</p></div>`;
 }
 const btn = (href: string, label: string) => `<p style="margin:20px 0"><a href="${href}" style="display:inline-block;background:#1f5f22;color:#fff;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:13px;padding:13px 24px;border-radius:6px;text-decoration:none">${esc(label)}</a></p>`;
 const abs = (u: string) => (u.startsWith('http') ? u : SITE + (u.startsWith('/') ? '' : '/') + u);
