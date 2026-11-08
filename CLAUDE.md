@@ -6394,6 +6394,17 @@ banner, text, a logo or a card never sits over a person's or Guide's face, and a
 over a picture goes on a cityscape or an empty part of the frame; check each card's frame by eye before showing it. The homepage video
 opens on Jacksonville, puts the Founding card on Richmond and closes on London at dusk, so no Guide is behind a card.
 
+## Show the site with our demos, stamped Sample (Sean, 2026-11-08)
+
+"Anytime you want to do an illustration of our site and show what it can do, maybe we intentionally use our demos so they can see something
+that doesn't look half-baked... put like a stamp on there that says sample... so that we're not pretending it's a real listing." When a video,
+Guide picture, tour shot, pitch or social graphic shows what the site does, capture the demos, never a live page that is empty or thin: the
+sample business Green Leaf Kitchen (`/business/sample`, its dashboard, brand kit, site and shot list), the sample group (`/groups/sample`), the
+sample Gig Board (`/gigs/sample`, Kai Monroe) and the sample pitch (`/business/pitch?c=sample`). Every demo shot carries a visible **Sample**
+stamp (a corner tag on the frame), never cropped out, so no demo reads as a real listing or a real result. A real business appears only as
+itself, with what it really has. First: the Holiday Guide's Holiday Menus video (`theo-menus-v3`) shows Green Leaf Kitchen's holiday menu,
+stamped Sample, instead of waiting for real menus.
+
 ## Time is Sean's: Eastern (Sean, 2026-11-01)
 
 "Whatever time you have, it should be in sync with mine, so there's no confusion." Every time said to Sean is Eastern (America/New_York,
