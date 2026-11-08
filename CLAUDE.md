@@ -6718,6 +6718,13 @@ included for every client; a one-on-one Hot Lab $250 ($150 to the Community Mana
 no added features, and Sean is her Community Manager for now. Next: new website people join her client list automatically, Show me how pages (video plus steps,
 I'm stuck adds it to her next Hot Lab), then B3 Insights. Nothing sent to her; email draft 4fbbd9f4 held.
 
+**Website people join her client list on their own, live 2026-11-08** (HQ main 687b3e9, migration 086): triggers on `leads`, `coach_os_checkins` and paid
+`coach_os_digital_purchases` call `coach_os_contact_upsert` (one row per email, `ghl_contact_id` `site:<email>`, GoHighLevel's tag words); bots left out by
+`coach_os_looks_junk`. Backfill added 85 people (2,220 total). **Show me how, built, not merged** (HQ branch `claude/brooke-show-me-how`; migration 087 applied,
+tables `branddesk_client_tasks`/`_events`): BrandDesk > Meatless Muscle > Get set up > Search Console, Instagram, YouTube, TikTok (`?how=<key>`), I did it / I'm
+stuck (a "For your next Hot Lab" card), staff Confirm access; video scripts `docs/proposals/brooke-show-me-how-scripts.md`. Next: Sean's feedback, merge, then B3
+Insights. Handoff `docs/handoff/2026-11-08-brooke-sellers-contacts-auto-show-me-how.md`.
+
 ## Revenue on the dashboard (Sean, 2026-11-02)
 
 "I just want to be able to see that revenue coming in through Vegans Explore in real time... just some little module... Eventually
