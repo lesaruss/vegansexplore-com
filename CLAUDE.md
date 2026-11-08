@@ -7113,7 +7113,7 @@ on the page, an Inbox row for a new answer (it emails contact@lesaruss.com).
 - **Where the junk came from**: the home-page readers (`ve-restaurant-audit` essentials, `ve-discover`, `ve-logo-hunt`) matched
   `instagram.com/` anywhere in a link, so `static.cdninstagram.com/rsrc.php/...` read as `@rsrc.php`, and took Facebook's own pages from site
   footers. Both now require `instagram.com` as the host and skip Facebook's and Instagram's system paths (`TEMPLATE_HANDLES`). Deployed from
-  ec8f871 (ve-restaurant-audit v21, ve-discover v23, ve-logo-hunt v10, source sha256 matched). ve-discover's live copy had been behind main
+  2abef85 (ve-restaurant-audit v22, ve-discover, ve-logo-hunt v11; source sha256 matched). ve-discover's live copy had been behind main
   (no Google meter, max_tokens 4000, no Event Venues or Promoters); v23 brought it level.
 - **Checking a Facebook page from the server is not reliable**: logged out, Facebook answers a search-crawler request for a real page with
   its title and a missing one with the login wall, but after about 60 requests it sends everything to login. Apify's pages scraper says
