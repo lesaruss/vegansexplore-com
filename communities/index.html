@@ -189,6 +189,9 @@
   <section class="grid-section" aria-label="Communities">
     <div id="vch-list"></div>
   </section>
+  <!-- ve-auth.js before the cards: without it a signed-in member reads as signed out, and Vote and Save opened the
+       members-only window (Brion Hurley, 2026-11-08). -->
+  <script src="/public/ve-auth.js"></script>
   <script src="/public/ve-chapters.js"></script>
 
   <!-- BOTTOM CTA -->

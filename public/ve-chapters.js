@@ -31,6 +31,13 @@
       document.head.appendChild(s);
     });
   }
+  function authLoad() {
+    if (window.VEAuth) return Promise.resolve();
+    return new Promise(function (res) {
+      var s = document.createElement('script'); s.src = '/public/ve-auth.js';
+      s.onload = res; s.onerror = res; document.head.appendChild(s);
+    });
+  }
   function n(x) { return Number(x || 0).toLocaleString(); }
 
   var CSS = '.vch-bar[hidden]{display:none!important}.vch-bar{display:flex;gap:10px;align-items:center;margin:0 0 16px;flex-wrap:wrap}'
@@ -131,6 +138,13 @@
         return;
       }
       e.preventDefault(); e.stopPropagation();
+      // A page that did not load ve-auth.js (the cause of Brion Hurley's report, 2026-11-08): with a stored session, load it
+      // and try the click again rather than calling a signed-in member signed out.
+      if (!window.VEAuth && localStorage.getItem('ve_token')) {
+        var tgt = vb || sb;
+        authLoad().then(function () { if (window.VEAuth) tgt.click(); });
+        return;
+      }
       if (!token()) { votes().then(function (V) { if (!V) { location.href = '/passport'; return; } vb ? V.passportPrompt() : V.savePrompt(); }); return; }
       if (vb) {
         var slug = vb.getAttribute('data-vch-vote');
@@ -161,7 +175,8 @@
 
     draw();
     call({ action: 'chapter_stats' }).then(function (d) { (d.chapters || []).forEach(function (r) { stats[r.chapter] = r; }); draw(); }).catch(function () {});
-    if (token()) call({ action: 'chapter_today' }, true).then(function (d) { next = (d && d.next) || {}; draw(); }).catch(function () {});
+    if (!window.VEAuth && localStorage.getItem('ve_token')) authLoad().then(function () { draw(); if (token()) call({ action: 'chapter_today' }, true).then(function (d) { next = (d && d.next) || {}; draw(); }).catch(function () {}); });
+    else if (token()) call({ action: 'chapter_today' }, true).then(function (d) { next = (d && d.next) || {}; draw(); }).catch(function () {});
     return { redraw: draw };
   }
   window.VEChapters = { mount: mount };
