@@ -6642,6 +6642,21 @@ shows only them (`inFilt` in `admin/depot/social.html`). A skipped slot has **De
 refused with `not_skipped` for anything not skipped): the row goes, its notes and history with it (`ON DELETE CASCADE`), and a story made
 from it keeps its own slot. Proven 2026-11-01 on a [TEST] slot (refused while waiting, skipped, deleted, its history gone).
 
+## Episode pages as a discovery engine (Sean, 2026-11-08, playbook `ve-podcast-studio`)
+
+"Anybody mentioned, any organizations... any city that's brought up here, we put them in a holding pattern... when people go on these pages,
+it's a discovery engine for other things." Mocked four rounds and approved. An episode with structured notes (`ve_episode_notes`, listing + guid,
+read through `ve_episode_notes_get`; migration `20261108_episode_notes.sql`) draws `rich()` in `public/ve-episodes.js`: art beside a short title,
+summary, Play / Save / Share and section links (on phones the art is 180 px with the three buttons stacked to its height); each segment with its
+Guide and its stories, every story with the Directory's own cards (`VERegionDirectory.card`), chapter cards (`VEChapters.mount({only})`) and one
+See more in the Directory line; In this episode (pills by kind); Places on this episode; Keep listening (this file's `row()`, with Save). Use the
+existing components, never new tiles. Mentions not in the Directory yet are held (quarantined, tag `ve-held-place`, named in `notes.held_listings`),
+and places that are not chapters are logged to `ve_place_mentions`, the first rows of the chapter rankings (a playbook to open). Episodes with no
+notes keep the plain view. Episode 145's notes were written by hand; the studio writes them from the run sheet next. **On branch
+`claude/gracious-fermi-i4r1g1`, not on main** (waits on Sean's merge). Rich Roll's People profile and vegconomist (News Outlets) were added the
+same day. Podcast subscriptions (one tile per show in My Saves, New since your last visit, an opt-in daily-at-most email) are approved and queued.
+Handoff `docs/handoff/2026-11-08-ve-podcast-studio-episode-discovery-page.md`.
+
 ## Moving to BrandDesk: the Depot's people tools go into BrandDesk Outreach (Sean, 2026-11-08, playbook `branddesk-production-wing`)
 
 "We need to figure out how we can put all that into the outreach... I don't need those to sit idle." **Agents: never use a Depot page that
