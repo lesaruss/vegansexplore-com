@@ -1567,6 +1567,30 @@ serve(async (req: Request) => {
       return new Response(JSON.stringify({ member: { ...member, communities, hidden_modules, podcast_follows, points, total_points } }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
+    // ---- Delete my account (ve-mobile-app, 2026-11-08; Apple 5.1.1(v), Google Play) --------------------------------------------
+    // The person deletes their own account from the app or the website: { token, confirm: 'DELETE' }. ve_member_delete scrubs a
+    // Vegans Explore account (nothing left that names them, every sign-in cleared, old sessions refused as a closed account) or,
+    // for a login shared with another LESARUSS brand, removes only the Vegans Explore side. Never for a session someone switched
+    // into (Sign In As), a super admin or a Guide account.
+    if (action === 'delete_account') {
+      const decoded: any = body.token ? await decodeToken(body.token) : null;
+      if (!decoded) return new Response(JSON.stringify({ error: 'Sign in first.' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      if (decoded.switched_by) return new Response(JSON.stringify({ error: 'Switch back to your own account first.', code: 'switched' }), { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      if (body.confirm !== 'DELETE') return new Response(JSON.stringify({ error: 'Type DELETE to confirm.', code: 'confirm_needed' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      const { data, error } = await supabase.rpc('ve_member_delete', { p_member: decoded.sub });
+      if (error) throw new Error(`delete_account failed: ${error.message}`);
+      if (!data?.ok) {
+        const msg = data?.error === 'super_admin' ? 'A super admin account cannot be deleted here.'
+          : data?.error === 'guide_account' ? 'A Guide account cannot be deleted here.' : 'We could not find that account.';
+        return new Response(JSON.stringify({ error: msg, code: data?.error || 'not_found' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+      try {
+        await supabase.from('stream_events').insert({ owner: 'Logan', station: 'vegans-explore', status: 'completed', keywords: ['ve-mobile-app', 'account-deleted'],
+          summary: `ve-mobile-app: a member deleted their account${data.shared ? ' (Vegans Explore side only, shared login)' : ''}. Member ${decoded.sub}.` });
+      } catch (_) { /* the deletion stands either way */ }
+      return new Response(JSON.stringify({ deleted: true, shared: !!data.shared }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
     // ---- The Ambassador Guide's Your progress (Sean, 2026-10-27) ----------
     // The people who signed up with this member's link (members.referred_by): who became a member and who has an account
     // waiting on its $11, plus the referral points paid so far (points_ledger reason 'referral', paid by
