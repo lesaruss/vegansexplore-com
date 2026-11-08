@@ -13,7 +13,7 @@
  *   #/media         Media                           #/animals   For the animals
  *   #/guides        Guides                          #/founder   Become a Founder (the survey; members: your first steps)
  *
- * Liz's lines are text until recorded (the video is in production), so Play stays hidden. Every claim on these pages is
+ * The Overview's eight chapters are recorded (Play the tour); the section pages' lines are text until recorded. Every claim on these pages is
  * checked against what is live (CLAUDE.md); nothing promises an unbuilt feature.
  */
 (function () {
@@ -41,7 +41,7 @@
     { k: 'events', scene: 'welcome/liz-events.jpg', label: 'Events', pic: 'vegan-events-guide.jpg', lead: 'river', say: 'Find something to do this week, near you or anywhere.' },
     { k: 'media', scene: 'welcome/liz-media.jpg', label: 'Media', pic: 'holiday/p-listen.jpg', lead: 'kai', say: 'Our shows and the community\'s favorites, playing right on the page.' },
     { k: 'guides', scene: 'welcome/liz-guides.jpg', label: 'Guides', pic: 'welcome-guide.jpg', lead: 'maya', say: 'Every Guide in one place. Some are free with a short survey, and the rest are yours with points.' },
-    { k: 'points', scene: 'welcome/liz-points.jpg', label: 'Points and Levels', pic: 'thumb-bounties.jpg', lead: 'theo', say: 'Here is how points work: how you earn them, what they are for, and how you level up.' },
+    { k: 'points', scene: 'welcome/liz-points.jpg?v=2', label: 'Points and Levels', pic: 'thumb-bounties.jpg', lead: 'theo', say: 'Here is how points work: how you earn them, what they are for, and how you level up.' },
     { k: 'paths', scene: 'welcome/liz-paths.jpg', label: 'Your Path and Badges', pic: 'thumb-passport.jpg', lead: 'kai', say: 'Everyone starts as an Explorer. If you run something, your path takes you further.' },
     { k: 'better', scene: 'welcome/liz-better.jpg', label: 'Make It Better', pic: 'restaurant-guide/t-next.jpg', lead: 'liz', say: 'This is the part that matters most. Here is every way to tell us what is working and what is not.' },
     { k: 'animals', scene: 'welcome/liz-animals.jpg', label: 'For the Animals', pic: 'nonprofit-guide.jpg', lead: 'dani', say: 'Here is where it is all going, and how you can show up for the animals today.' },
@@ -129,10 +129,11 @@
   setInterval(tickCd, 1000);
 
   function tourCard() {
-    return '<div class="wg-tour"><div class="wg-tour-h"><div><div class="dg-k">Watch first</div><h3>Welcome to Vegans Explore</h3><p>Liz, about three minutes. The video is in production: read the tour below in the meantime.</p></div>' +
+    return '<div class="wg-tour"><div class="wg-tour-h"><div><div class="dg-k">Watch first</div><h3>Welcome to Vegans Explore</h3><p>Liz, about three minutes. The video is in production: listen to her or read the tour in the meantime.</p></div>' +
       '<span class="hg-vbadge" style="position:static">Video in production</span></div>' +
+      '<div class="dg-btns" style="margin:12px 0 4px"><button type="button" class="dg-btn" data-wg-tour>' + (PLAY.playing ? 'Pause Liz' : '&#9654; Listen to the tour') + '</button><span class="wg-now" id="wgNow">' + nowText() + '</span></div>' +
       '<details class="wg-chs"><summary>Read the tour: ' + CHAPTERS.map(function (c) { return esc(c[0]); }).join(' &middot; ') + '</summary><ol>' +
-      CHAPTERS.map(function (c) { return '<li><b>' + esc(c[0]) + '.</b> ' + esc(c[1]) + '</li>'; }).join('') + '</ol></details></div>';
+      CHAPTERS.map(function (c, n) { return '<li><b>' + esc(c[0]) + '.</b> ' + esc(c[1]) + ' <a href="#" class="wg-chplay" data-wg-ch="' + n + '">&#9654; Play</a></li>'; }).join('') + '</ol></details></div>';
   }
   function groupRows() {
     return GROUPS.map(function (g) {
@@ -271,6 +272,39 @@
     tourEl.innerHTML = tourM.innerHTML = '<a class="dg-tnav" href="' + href(TABS[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Back</a><span>' + (i + 1) + ' of ' + TABS.length + '</span>' +
       '<a class="dg-tnav next" href="' + href(TABS[Math.min(TABS.length - 1, i + 1)].k) + '"' + (i < TABS.length - 1 ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Next</a>';
   }
+  // Liz's eight recorded chapters (2026-11-08, her roster-profile voice, each checked word for word with stt), back to back on the Overview.
+  var AUDIO_BASE = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/tour-';
+  var playBtn = document.getElementById('dgPlay'), aud = new Audio(), PLAY = { at: 0, playing: false, started: false };
+  aud.preload = 'none';
+  function nowText() { return PLAY.started ? 'Chapter ' + (PLAY.at + 1) + ' of ' + CHAPTERS.length + ': ' + esc(CHAPTERS[PLAY.at][0]) : ''; }
+  function paintPlay() {
+    playBtn.hidden = curTab !== 'overview';
+    playBtn.classList.toggle('go', !PLAY.started);
+    playBtn.innerHTML = PLAY.playing ? 'Pause Liz' : '&#9654; Play the tour';
+    var b = document.querySelector('[data-wg-tour]'); if (b) b.innerHTML = PLAY.playing ? 'Pause Liz' : '&#9654; ' + (PLAY.started ? 'Keep listening' : 'Listen to the tour');
+    var n = document.getElementById('wgNow'); if (n) n.innerHTML = nowText();
+  }
+  function playAt(n) {
+    PLAY.at = n; PLAY.started = true;
+    aud.src = AUDIO_BASE + (n + 1) + '-v1.mp3';
+    if (curTab === 'overview') bubble.textContent = CHAPTERS[n][1];
+    aud.play().then(function () { PLAY.playing = true; paintPlay(); if (!n) try { gtag('event', 'audio_start', { audio: 'welcome_tour' }); } catch (e) {} }).catch(function () { PLAY.playing = false; paintPlay(); });
+    paintPlay();
+  }
+  aud.addEventListener('ended', function () {
+    if (PLAY.at < CHAPTERS.length - 1) { playAt(PLAY.at + 1); return; }
+    PLAY.playing = false; PLAY.at = 0; paintPlay(); try { gtag('event', 'audio_complete', { audio: 'welcome_tour' }); } catch (e) {}
+  });
+  function toggleTour() {
+    if (PLAY.playing) { aud.pause(); PLAY.playing = false; paintPlay(); return; }
+    if (aud.src && aud.currentTime > 0 && !aud.ended) aud.play().then(function () { PLAY.playing = true; paintPlay(); }).catch(function () {});
+    else playAt(PLAY.at);
+  }
+  playBtn.addEventListener('click', toggleTour);
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-wg-tour]'); if (t) { e.preventDefault(); toggleTour(); return; }
+    var c = e.target.closest('[data-wg-ch]'); if (c) { e.preventDefault(); playAt(+c.getAttribute('data-wg-ch')); }
+  });
   tourM.addEventListener('click', function (e) { if (e.target.closest('.dg-tnav')) setTimeout(function () { railEl.scrollIntoView({ block: 'start' }); }, 0); });
   function drawJoinbox() {
     var btn = document.querySelector('[data-wg-join]'), jin = document.getElementById('wgJbIn');
@@ -289,7 +323,9 @@
     curTab = k;
     if (k === 'overview') viewOverview(); else main.innerHTML = VIEWS[k]();
     if (window.VEExplorerCard) VEExplorerCard.wire(main);
-    tickCd(); drawLiz();
+    if (k !== 'overview' && PLAY.playing) { aud.pause(); PLAY.playing = false; }
+    tickCd(); drawLiz(); paintPlay();
+    if (k === 'overview' && PLAY.started) bubble.textContent = CHAPTERS[PLAY.at][1];
     main.scrollTop = 0; if (!document.documentElement.classList.contains('dg-fit') || window.innerWidth <= 900) window.scrollTo(0, 0);
   }
   window.addEventListener('hashchange', route);
