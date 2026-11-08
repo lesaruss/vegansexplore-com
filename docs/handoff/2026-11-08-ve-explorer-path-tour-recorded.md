@@ -18,3 +18,11 @@ Sean: "switching scenes every 3 seconds... not going to animate it... I'm sittin
 - The lookbook player (`admin/depot/guides.html`) zooms each frame. The header says "No lip sync: a new picture about every N s" when a tour has no on-camera shots.
 - Portrait scenes are cropped high (center 18%) so faces stay in frame.
 - Next: Sean approves the frames, then the edit (a slideshow video with Liz's voice and a music bed), then the paths page.
+
+## Vertical, and Sean's frame notes (same day)
+- Sean: the final video is vertical, so the lookbook is too. `ve_video_tours.aspect` (welcome-guide 4:5; holiday-guide and depot 16:9 until decided). The player sits on the left with Play, Back and Next under it; the line and the frame numbers are on the right. A picture never crops: one that does not fit sits over a blurred copy of itself (`.fit` in `admin/depot/guides.html`).
+- Page shots recaptured at 1080 x 1350 (phone layout): `vegan-media/media/tours/welcome-guide/v45/`.
+- Sean's notes applied (migration `20261108_welcome_guide_tour_vertical_pictures.sql`). Every wide picture was redrawn as a native 4:5 scene: 2, 6 (now Theo and Maya), 7 (River), 8 and 23 (Kai), 10, 17 (Liz in her pink tee), 20, 30, 35 (Dani, redrawn), 39 (Nori), 44, and 45 (Liz in pink, no longer a repeat of 36). These came from Higgsfield nano_banana_pro; the jobs reported nano_banana_2. The Atlanta and South Florida art (4 and 32) was outpainted to fill the frame. Frame 16 is a real listing (Dina's) in place of the Sample page. Frames 18 and 19 were recaptured without the Sample stamp. Frame 43 now shows the countdown, so it no longer repeats 37. All 45 frames have their own picture, every one Waiting for Sean again.
+- Sean likes Liz in the pink tee; use it more.
+- Voice: "Let's go" at the end of chapter 1 sounds off. Two samples are waiting for Sean: `liz/welcome-guide/sample-letsgo-a.mp3` ("Let's go!") and `-b.mp3` ("Let's get started."). After his pick, record `tour-1-v2.mp3`, check it with stt, and point chapter 1 and `welcome-guide.js` at it.
+- Search question "vegan ice skating rink" (from a capture) still to delete: the connector held the delete.
