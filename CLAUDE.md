@@ -1203,6 +1203,24 @@ judge whether food is safe by how a place looks online; businesses want marketin
   pages (built 2026-10-31); visit bounties, the monthly check-in and report, and the rotation (built 2026-10-31); the social add-on, phase 1 (built 2026-10-31); the website launch (built 2026-10-31, the
   domain step waiting on its live proof). Then the two handshake builds, social phase 2 and the ad console.
 
+## The demo showroom: Green Leaf Kitchen's site (Sean, 2026-11-08, playbook `ve-demo-showroom`)
+
+"I feel like doing a little bit of extra work to customize it is going to help enroll people." Every demo is deep enough that a business
+clicks around and wants in; Green Leaf Kitchen's website (`/business/sample/site`, the frame `business/site.html`, data
+`business/sample/cartridge.js`) is first, then the sample group, Kai's Gig Board and the sample pitch. Live on `main` 2026-11-08: the leaf
+mark in the header; favorites and News from the kitchen as 3-across rails with votes; a narrated photo video in Our story (Liz, `story-v2.mp4`);
+News on About in a window; each dish its own page (`#/menu/<key>`: allergens, nutrition estimate, ingredients and where each comes from in
+`menu.ingredients`, real Directory brands linked, made-up farms and makers; a 3-photo row; section breadcrumb); a sample login
+(demo@vegansexplore.com / explore11, or the visitor's own Vegans Explore session) with daily votes, Save (Favorite pill) and an As a member /
+As the owner switch (the owner edits a dish's ingredients from the Directory's brands); a compact order page with a − n + stepper, Vegans Explore
+Delivery coming soon and a tracker; Sign in with Vegans Explore and a Vegans Explore circle in the footer. Frame features read optional Cartridge
+keys (`story.video`, `posts`, `menu.ingredients`, item `ing`, `nutrition`, `gallery`, `votes`) and stay off on live client sites
+(`window.VE_SITE`), where votes, saves and sign-in need the one-time-code handoff (not built). **BrandDesk pricing relocked the same day**
+(canon `canon-ve-front-of-house` v9 `pricing_v9`): BrandDesk Site $500 a quarter, no setup; photos $250, video $250; Managed $500 a month as the
+step up; not yet changed in Stripe, `/business/managed`, the pitch page, `/business` or the agreement. Next: Sean's answers on the Community page
+idea (points at checkout capped by the owner, a $20 a month club with rolling credit), then a tour button (Liz, guided view), then the owner's
+BrandDesk view. Handoff `docs/handoff/2026-11-08-ve-demo-showroom-green-leaf-site.md`.
+
 ## Content index (Sean, 2026-10-10: "go ahead and start on the content index")
 
 Ten years of our episodes and interviews searchable by topic with timestamps, so a Guide can play the exact moment: "dairy"
