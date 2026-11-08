@@ -57,7 +57,7 @@
   };
   // Theo's lines, text drafts for Sean (no recordings yet). `say` for visitors, `sayMember` for members.
   var TABS = [
-    { k: 'overview', label: 'Overview', say: 'Welcome to the Holiday Guide. I\'m Theo. You\'re the one setting the table this year, and I\'m here to help you do it your way.',
+    { k: 'overview', label: 'Overview', pic: '/public/guides/holiday/theo-overview.jpg', say: 'Welcome to the Holiday Guide. I\'m Theo. You\'re the one setting the table this year, and I\'m here to help you do it your way.',
       sayMember: 'Welcome back. Start with ThanksLiving, find a holiday menu near you, and save the places you want to order from.' },
     { k: 'thanksliving', label: 'ThanksLiving', pic: '/public/guides/holiday/theo-thanksliving.jpg', say: 'ThanksLiving is Thanksgiving with a fully plant-based table. Same family, same gratitude, nobody harmed. On this page you\'ll find a few easy ideas to make it yours, whether you host or bring one dish.' },
     { k: 'recipes', parent: 'thanksliving', pic: '/public/guides/holiday/theo-recipes.jpg', label: 'Recipes', say: 'Cooking this year? Here is a full ThanksLiving table you can make at home: a savory loaf, gravy, mashed potatoes, stuffing, cranberry sauce, green beans and pumpkin pie.' },
@@ -74,8 +74,8 @@
     { k: 'xm-store', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'At the Store', say: 'Short on time? Here are the plant-based roasts, nogs, butters and treats you can pick up this season. Stock changes by store, so check before you go.' },
     { k: 'xm-menus', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Holiday Menus', say: 'Don\'t want to cook Christmas dinner? Pick your chapter and see which Vegan places are cooking for the holiday and when to order by.' },
     { k: 'xm-events', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Events', say: 'Vegan Christmas festivals, cookie swaps and holiday lights. Here is what is on our calendar. Hosting one? Add it, so people can find you.' },
-    { k: 'giveback', label: 'Give Back', say: 'Giving is part of the season. Here are the nonprofits, rescues and sanctuaries doing the work, in your city and beyond. Giving Tuesday is December first.' },
-    { k: 'business', label: 'For Businesses', say: 'Run a Vegan business? Send us your holiday menu and we\'ll feature it here, free for members. ThanksLiving menus close at the end of November eighteenth.' }
+    { k: 'giveback', label: 'Give Back', pic: '/public/guides/holiday/theo-giveback.jpg', say: 'Giving is part of the season. Here are the nonprofits, rescues and sanctuaries doing the work, in your city and beyond. Giving Tuesday is December first.' },
+    { k: 'business', label: 'For Businesses', pic: '/public/guides/holiday/theo-business.jpg', say: 'Run a Vegan business? Send us your holiday menu and we\'ll feature it here, free for members. ThanksLiving menus close at the end of November eighteenth.' }
   ];
   // Theo's recordings (Sean approved the script v2, 2026-11-08): one per video chapter, roster voice aFyw0oiXW7dzKF4o7woX, each checked with stt.
   // The Overview plays the whole tour back to back; every other tab plays its own chapter (canon-ve-guide-tour-standard: Summarize this page).
@@ -85,7 +85,9 @@
   // Each ThanksLiving page has its own summary video in Theo's frame (Sean, 2026-11-08): his voice for that page, b-roll of what is on it,
   // music under it, 4:5. Play plays the video in place of the voice alone; captions are on. A new video is a row here.
   var VIDEO_BASE = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/guides/holiday/video/theo-';
-  var VIDEO = { thanksliving: 'v1', recipes: 'v2', store: 'v2', menus: 'v2', events: 'v2', listen: 'v2' };
+  // The Overview's is the whole tour (chapters 1 to 8) and replaced the video card in the page (Sean, 2026-11-08); Give Back and For
+  // Businesses follow the same rules (chapters 6 and 7).
+  var VIDEO = { overview: 'v1', thanksliving: 'v1', recipes: 'v2', store: 'v2', menus: 'v2', events: 'v2', listen: 'v2', giveback: 'v1', business: 'v1' };
   var RULE_ICON = [
     '<path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.1 4.3 2.4.7-1.3 2.2-2.4 4.3-2.4 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/>',
     '<path d="M3 11h18M5 11a7 5 0 0114 0M12 4v2M4 15h16l-1.5 4h-13z"/>',
@@ -251,7 +253,8 @@
       change: 'you will have a plan for ' + t.name + ', a place to order from if you want one, and a way to give back.',
       how: member() ? 'pick a section below. Save the places you want to order from and find them in My Saves.' : 'watch the video, then pick a section below. Everything is free to read; join free to save places.',
       pic: PIC + 'start.jpg' }) : '';
-    main.innerHTML = head('Free for everyone', 'Welcome to the Holiday Guide', '') + videoCard() + start +
+    // The tour video now plays in Theo's frame (Sean, 2026-11-08), so the Overview no longer carries its own video card.
+    main.innerHTML = head('Free for everyone', 'Welcome to the Holiday Guide', '') + start +
       '<div class="dg-start" style="margin:18px 0 6px"><a class="dg-btn" href="#/menus">Find a holiday menu</a><p>' +
       (d ? d + ' days to ThanksLiving.' : 'Happy ThanksLiving.') + (c ? ' Businesses can send a menu for ' + c + ' more days.' : '') + '</p></div>' +
       groupRows();
@@ -1001,6 +1004,30 @@
     if (aud.src && PLAY.tab === curTab && aud.currentTime > 0 && !aud.ended) aud.play().then(function () { PLAY.playing = true; paintPlay(); }).catch(function () {});
     else playAt();
   });
+  // Expand (phones): the page's video, or Theo's picture, big in a lightbox; it picks up where the frame's video was.
+  function expand() {
+    var lb = document.getElementById('hgLb');
+    if (!lb) {
+      lb = document.createElement('div'); lb.id = 'hgLb'; lb.className = 'hg-lb'; lb.setAttribute('role', 'dialog'); lb.setAttribute('aria-modal', 'true'); lb.setAttribute('aria-label', 'Theo, bigger');
+      document.body.appendChild(lb);
+      lb.addEventListener('click', function (e) { if (e.target === lb || e.target.closest('.hg-lb-x')) closeExpand(); });
+    }
+    var v = VIDEO[curTab], at = vid && !isNaN(vid.currentTime) ? vid.currentTime : 0;
+    stopTheo(); paintPlay();
+    lb.innerHTML = '<div class="hg-lb-in"><button type="button" class="hg-lb-x">Close</button>' + (v
+      ? '<video controls playsinline autoplay poster="' + esc(tab(curTab).pic || '') + '" src="' + VIDEO_BASE + curTab + '-' + v + '.mp4"><track kind="captions" srclang="en" label="English" default src="/public/guides/holiday/video/theo-' + curTab + '-' + v + '.vtt"></video>'
+      : '<img alt="Theo" src="' + esc(tab(curTab).pic || (window.VEGuideArt ? VEGuideArt('theo', 'square') : '')) + '">') + '</div>';
+    lb.hidden = false; document.documentElement.style.overflow = 'hidden';
+    var lv = lb.querySelector('video');
+    if (lv) { try { lv.currentTime = at; lv.textTracks[0].mode = 'showing'; } catch (e) {} lv.play().catch(function () {}); try { gtag('event', 'video_expand', { video: 'holiday_' + curTab }); } catch (e) {} }
+    lb.querySelector('.hg-lb-x').focus();
+  }
+  function closeExpand() {
+    var lb = document.getElementById('hgLb'); if (!lb || lb.hidden) return;
+    var lv = lb.querySelector('video'); if (lv) lv.pause();
+    lb.hidden = true; lb.innerHTML = ''; document.documentElement.style.overflow = '';
+  }
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeExpand(); });
   function drawTheo() {
     var t = tab(curTab), i = 0;
     TABS.forEach(function (x, n) { if (x.k === curTab) i = n; });
@@ -1013,6 +1040,10 @@
     var box = document.getElementById('dgMaya'), art = t.pic || (window.VEGuideArt ? VEGuideArt('theo', 'square') : '');
     if (art && box.getAttribute('data-art') !== art) { box.style.backgroundImage = "url('" + art + "')"; box.setAttribute('data-art', art); }
     setVideo(box);
+    if (!box.querySelector('.hg-expand')) {
+      box.insertAdjacentHTML('beforeend', '<button type="button" class="hg-expand" aria-label="Expand Theo">Expand</button>');
+      box.querySelector('.hg-expand').addEventListener('click', function (e) { e.stopPropagation(); expand(); });
+    }
     tourEl.innerHTML = tourM.innerHTML = '<a class="dg-tnav" href="' + href(TABS[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Back</a><span>' + (i + 1) + ' of ' + TABS.length + '</span>' +
       '<a class="dg-tnav next" href="' + href(TABS[Math.min(TABS.length - 1, i + 1)].k) + '"' + (i < TABS.length - 1 ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Next</a>';
   }

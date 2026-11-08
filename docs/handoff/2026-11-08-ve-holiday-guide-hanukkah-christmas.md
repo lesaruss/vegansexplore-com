@@ -28,3 +28,20 @@ branch brings both. Not on `main`; Sean merges.
 ## Next
 - Re-cut the Holiday Menus video as `theo-menus-v3` once the first menus are approved (none yet).
 - Kwanzaa (Sean, 2026-11-08: Hanukkah and Christmas only for now).
+
+## Round 2, same day (Sean: the Overview video in Theo's frame, Play and Talk on one row, Expand on phones, Give Back and For Businesses videos)
+- **Overview video**: `theo-overview-v1.mp4` (93 s, the whole recorded tour, chapters 1 to 8) plays in Theo's frame like the ThanksLiving pages;
+  the "How to Use the Holiday Guide" card left the page (`videoCard()` is no longer called).
+- **Give Back and For Businesses videos**: `theo-giveback-v1.mp4` (chapter 6, 11 s) and `theo-business-v1.mp4` (chapter 7, 11 s).
+- All three follow the ThanksLiving rules: 1080 x 1350, Theo's still opening and closing on a slow push, phone captures and the Guide's
+  illustrations cut on his words, voice 0.5 s in, bed `story-dining-v2` 19 dB under him, -15 LUFS. The events capture leaves out one
+  organizer's event titled with Friendsgiving. Captions `public/guides/holiday/video/theo-<page>-v1.vtt` are timed to his pauses (sentence
+  level, not word level). Uploaded through `ve-once-holiday-video` (back to the 410 stub).
+- New Theo stills: `theo-overview.jpg` (welcoming), `theo-giveback.jpg` (at a sanctuary with a goat), `theo-business.jpg` (restaurant counter).
+- **Play Theo and Talk to Theo** are equal halves of one row on desktop (CSS grid on `.dg-rail`, `grid-auto-rows:max-content` keeps the
+  frame 320 x 400); with nothing to play, Talk takes the row. Phones already had them on one row (`ve-guide-corner.js`).
+- **Expand** (phones): a pill like Hide me, in the top-right corner of Theo's picture (both pills do not fit side by side under 400 px),
+  opens the page's video, or his picture, big in a lightbox, picking up where the frame's video was; Close or Escape. GA `video_expand`.
+- Checked at 1440, 1366, 430, 390 and 360 px locally against live data: no script errors, the lightbox opens, plays and closes.
+- **Template**: Sean (2026-11-08) wants this Guide to become the official Guide template once the Holiday Guide is finished and locked.
+  Not locked yet.
