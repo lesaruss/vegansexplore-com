@@ -6988,7 +6988,7 @@ for the Guide and `claim.html` for the menu form (template gate).
   (`link_path`, `ve_outreach_campaign_members.link_code`), start 2026-11-10, pace 60; **draft until Sean approves each in BrandDesk** (migration
   `20261108_thanksliving_campaigns.sql`). Found the same night: `ve-outreach` v28 had been deployed from `main`, wiping the campaign sender
   (`campaignTick`, only on unmerged `claude/gifted-rubin-ek818o`); v29 put it back on top of main's file and v30 added sender and link per campaign
-  (branch `claude/lucid-pascal-zxvmu4`). **Never deploy `ve-outreach` from `main` until that branch is merged.**
+  (branch `claude/lucid-pascal-zxvmu4`, merged to `main` 2026-11-08 as 374ae292; main's file equals live v30, sha256 788ff16f). Deploying `ve-outreach` from `main` is safe again; before any deploy, check the file still has `campaignTick`.
 
 ## The Vegans Explore app (LOCKED by Sean 2026-11-07, playbook `ve-mobile-app`, canon `canon-ve-mobile-app`)
 
