@@ -1527,13 +1527,15 @@ planning, after the last news slot; scripted and approved in BrandDesk > Podcast
 Proven live 2026-11-08 on a [TEST] idea (the draft written, held out of a real Pulse and taken in once live in a rolled-back transaction, the podcast draft placed
 on a [TEST] episode), then every test row removed through the one-time `ve-once-idea-test-cleanup` (now 410).
 
-**Ideas live only in Depot > Ideas** (2026-11-08, Logan's default on Sean's 2026-11-07 call; on branches, not merged). Sorting moved from HQ's
+**Ideas live only in Depot > Ideas** (2026-11-08, Logan's default on Sean's 2026-11-07 call; merged to both mains by Sean the same day, VE bd098e1, HQ 4333630). Sorting moved from HQ's
 BrandDesk > Blueprint > Ideas into `ve-ideas` (v12, live: `sort_options`, `sort_send`, `sort_own`, `sort_park`, `sort_decline`, `sort_reopen`; a super
 admin's token only, never ops) and Depot > Ideas has **Sort it**, **Where I looked** and the idea's **History**. HQ branch `claude/bold-feynman-esaemy`
 (dd5e30c) takes the Ideas tab out of BrandDesk (an old `?b=ideas` link shows a pointer) and deletes its route and helpers; this repo's branch of the same
 name carries the page. `sort_own` refuses a slug any page, `ve_playbook_index` row or record already uses: the first version checked pages only and, in
 its test, overwrote the `branddesk-production-wing` index row (restored from the seed and the handoff; its exact earlier stage and next action are lost).
-HQ main's old route has the same hole until the HQ branch merges.
+HQ's old route is deleted (HQ main 4333630).
+
+**The Outreach Roster's Who filter** (2026-11-08, playbook `branddesk-production-wing`; Sean's "2": work the queue): BrandDesk > Vegans Explore > Outreach > Roster has a **Who** dropdown: Businesses (the Roster as before) or ten people groups (members, Founding Members, Ambassadors, Community Managers, leads, invited, Nonprofit and Group Partners, role applications, referral claims), each with a count, search and a list; read only, and every person has **Open in the Depot** to the page that still does the work. One function, `ve_people_who(p_who, p_q, p_limit, p_offset)` (migration `20261108_people_who.sql`, applied live, service role only), read by HQ `readWho` in `lib/veOutreachRead.ts` through `/api/branddesk/people?p=who`. **On branches, not merged**: HQ `claude/bold-feynman-esaemy` 493e100, VE same name c569e12 (the migration file). Checked with mocked data at 1440 and 390 px; not yet seen signed in. Next in the queue: a BrandDesk Clients room in HQ, then a read-only member list in the Depot. Handoff `docs/handoff/2026-11-08-branddesk-production-wing-who-filter.md`.
 
 **R, the max_tokens rule.** On the 5.x models thinking counts against max_tokens, so every 5.x Claude call gets 16000 and treats any end but `end_turn` as an
 error (cut_off), never half an answer. Done 2026-11-08 in `ve-discover`, `ve-invites`, `branddesk-insights`, `ve-listing-intake`, `ve-books`, `ve-brand-kit`,
