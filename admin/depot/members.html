@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Members | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);--ve-red:#8a1c12;}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:13px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:14px;}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;}
+    .tabs a{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-text);text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(360px,100%),1fr));gap:14px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
+    .card .body{padding:14px 16px;display:flex;flex-direction:column;gap:8px;flex:1;}
+    .who{display:flex;gap:12px;align-items:center;}
+    .av{width:44px;height:44px;border-radius:8px;flex:none;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:15px;background:var(--ve-green-deep);object-fit:cover;}
+    .who b{font-size:15px;font-weight:800;line-height:1.25;display:block;}
+    .meta{font-size:12.5px;color:var(--ve-text-75);}
+    .excerpt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13.5px;}
+    .chips{display:flex;gap:6px;flex-wrap:wrap;}
+    .chip{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:6px;background:#f1f3f1;color:#333;}
+    .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;align-items:center;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;}
+    .btn:disabled{opacity:.5;cursor:default;}
+    .btn-quiet{background:#fff;color:var(--ve-green-deep);border:1px solid var(--ve-green-deep);}
+    .btn-stop{background:var(--ve-red);}
+    .btn-ghost{background:#fff;color:var(--ve-red);border:1px solid rgba(0,0,0,0.25);}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);}
+    .msg.err{color:var(--ve-red);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .tools{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px;}
+    .tools input{font-family:inherit;font-size:13px;min-height:40px;padding:8px 12px;border:1px solid var(--ve-border);border-radius:6px;background:#fff;color:var(--ve-text);flex:1;min-width:200px;}
+    .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:#eef1ee;color:#333;}
+    .tag.watching{background:#fff1dc;color:#8a5200;}.tag.suspended{background:#e3eefc;color:#0f4a91;}.tag.banned,.tag.voided{background:#fde7e5;color:var(--ve-red);}.tag.cleared,.tag.good{background:var(--ve-green-light);color:var(--ve-green-deep);}
+    .mode{background:#fff;border:1px solid var(--ve-border);border-left:4px solid var(--ve-orange);border-radius:10px;padding:12px 16px;margin:0 0 16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-size:13.5px;}
+    .mode.on{border-left-color:var(--ve-green);}
+    .mode p{flex:1;min-width:240px;}
+    .crumb{font-size:12.5px;margin-bottom:12px;}.crumb a{color:var(--ve-green-deep);font-weight:700;}
+    .cols{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:16px;align-items:start;}
+    @media (max-width:1000px){.cols{grid-template-columns:1fr;}}
+    .box{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:18px 20px;margin-bottom:16px;}
+    .box dl{display:grid;grid-template-columns:150px 1fr;gap:6px 14px;font-size:13.5px;}.box dt{font-weight:800;color:var(--ve-text-75);}.box dd{word-break:break-word;}
+    @media (max-width:600px){.box dl{grid-template-columns:1fr;}.box dt{margin-top:6px;}}
+    .scroll{max-height:300px;overflow:auto;border:1px solid var(--ve-border);border-radius:8px;}
+    table{width:100%;border-collapse:collapse;font-size:12.5px;}th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--ve-border);vertical-align:top;}th{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);position:sticky;top:0;background:#f7faf7;}
+    .row{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--ve-border);font-size:13.5px;flex-wrap:wrap;}.row:last-child{border-bottom:0;}.row a{color:var(--ve-green-deep);font-weight:700;}
+    .log{list-style:none;display:grid;gap:10px;font-size:13.5px;}.log li{border-left:3px solid var(--ve-green);padding:2px 0 2px 12px;}
+    textarea{font-family:inherit;font-size:14px;width:100%;min-height:96px;padding:10px 12px;border:1px solid var(--ve-border);border-radius:6px;margin:6px 0 10px;}
+    .judge{border:2px solid var(--ve-green-deep);}
+    .neg{color:var(--ve-red);font-weight:700;}.pos{color:var(--ve-green-deep);font-weight:700;}
+    .pick{display:grid;gap:8px;margin-bottom:12px;}
+    .tag.member{background:var(--ve-green-light);color:var(--ve-green-deep);}.tag.agent{background:#e3eefc;color:#0f4a91;}.tag.internal{background:#f1f3f1;color:#333;}.tag.quarantined{background:#fde7e5;color:var(--ve-red);}
+    .tools select{font-family:inherit;font-size:13px;min-height:40px;padding:8px 44px 8px 12px;border:1px solid var(--ve-border);border-radius:6px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23525252' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 16px center;appearance:none;-webkit-appearance:none;color:var(--ve-text);}
+    .facts{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;font-size:12.5px;}.facts span:nth-child(odd){color:var(--ve-text-75);font-weight:700;}
+    .pager{display:flex;gap:10px;align-items:center;justify-content:center;margin:18px 0 0;font-size:13px;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Members</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Everyone with a Vegans Explore account, read only. Search, sort and open anyone's page in Depot &gt; People for their whole history. Working people (campaigns, groups, follow-ups) happens in BrandDesk &gt; Vegans Explore &gt; Outreach &gt; Roster, under Who.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden>
+      <div id="view"></div>
+    </main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    // Depot > Members (branddesk-production-wing, 2026-11-08; Sean, 2026-11-07: "The Depot keeps a read-only member list"). Copied from
+    // the Watchlist page. Reads ve-members-admin list_all_members, the same roster /dashboard/members shows, Vegans Explore accounts only,
+    // and changes nothing: no class moves, no points, no messages. A person opens in Depot > People (by email), people work is in
+    // BrandDesk > Outreach > Roster > Who. The address carries the view: #<class>/<sort>/<page>?q=.
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-members-admin?action=list_all_members';
+      var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+      var HQ_WHO = 'https://hq.lesaruss.ai/branddesk/brands/vegans-explore?view=people&p=roster&who=members';
+      var $ = function (id) { return document.getElementById(id); };
+      var CLASSES = [['member', 'Members'], ['internal', 'Team and clients'], ['agent', 'Guides'], ['quarantined', 'Quarantined'], ['all', 'All']];
+      var CLASS_WORD = { member: 'Member', internal: 'Team or client', agent: 'Guide account', quarantined: 'Quarantined' };
+      var SORTS = [['newest', 'Newest first'], ['oldest', 'Oldest first'], ['active', 'Last active'], ['points', 'Most points'], ['name', 'A to Z']];
+      var PAGE = 48, ALL = null, q = '';
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function day(t) { return t ? new Date(t).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', year: 'numeric' }) : 'Never'; }
+      function words(s) { s = String(s || ''); return s ? s.replace(/-/g, ' ').replace(/\b\w/g, function (c) { return c.toUpperCase(); }).replace(/\bDc\b/, 'D.C.') : ''; }
+      function num(n) { return Number(n || 0).toLocaleString('en-US'); }
+      function route() {
+        var raw = location.hash.replace(/^#/, ''), parts = raw.split('?'), h = parts[0].split('/');
+        var sp = new URLSearchParams(parts[1] || '');
+        var c = CLASSES.some(function (x) { return x[0] === h[0]; }) ? h[0] : 'member';
+        var s = SORTS.some(function (x) { return x[0] === h[1]; }) ? h[1] : 'newest';
+        return { cls: c, sort: s, page: Math.max(0, parseInt(h[2], 10) - 1 || 0), q: sp.get('q') || '' };
+      }
+      function go(r) { var h = r.cls + '/' + r.sort + '/' + (r.page + 1) + (r.q ? '?q=' + encodeURIComponent(r.q) : ''); if (location.hash.replace(/^#/, '') !== h) location.hash = h; else draw(); }
+      function ve() { return ALL.filter(function (m) { return m.brand === 'vegans-explore'; }); }
+      function card(m) {
+        var name = m.display_name || 'No name given', init = name.replace(/[^A-Za-z ]/g, '').split(' ').filter(Boolean).map(function (w) { return w[0]; }).join('').slice(0, 2).toUpperCase() || '?';
+        var tier = m.is_staff ? 'Staff' : (m.tier && m.tier !== 'free' ? words(m.tier) : 'Free');
+        return '<div class="card"><div class="body"><div class="who"><span class="av">' + esc(init) + '</span><div><b>' + esc(name) + '</b><span class="meta">' + esc(m.email || '') + '</span></div></div>' +
+          '<div><span class="tag ' + esc(m.member_class) + '">' + esc(CLASS_WORD[m.member_class] || m.member_class) + '</span></div>' +
+          '<div class="facts"><span>Joined</span><span>' + esc(day(m.joined_at)) + '</span><span>Last active</span><span>' + esc(day(m.last_activity_at)) + '</span><span>Points</span><span>' + num(m.available_points) + '</span><span>Chapter</span><span>' + esc(words(m.home_community) || 'None') + '</span><span>Plan</span><span>' + esc(tier) + '</span></div>' +
+          '<div class="acts">' + (m.email ? '<a class="btn" href="/admin/depot/people#person/' + encodeURIComponent(String(m.email).toLowerCase()) + '">Open their page</a>' : '') + '</div></div></div>';
+      }
+      function draw() {
+        var r = route(), rows = ve(), cnt = {};
+        rows.forEach(function (m) { cnt[m.member_class] = (cnt[m.member_class] || 0) + 1; }); cnt.all = rows.length;
+        var s = r.q.trim().toLowerCase();
+        var list = rows.filter(function (m) { return (r.cls === 'all' || m.member_class === r.cls) && (!s || [m.display_name, m.email, m.home_community].some(function (x) { return String(x || '').toLowerCase().indexOf(s) > -1; })); });
+        list.sort(function (a, b) {
+          if (r.sort === 'points') return (b.available_points || 0) - (a.available_points || 0);
+          if (r.sort === 'name') return String(a.display_name || a.email || '').localeCompare(String(b.display_name || b.email || ''));
+          if (r.sort === 'active') return new Date(b.last_activity_at || 0) - new Date(a.last_activity_at || 0);
+          var da = new Date(a.joined_at || 0), db = new Date(b.joined_at || 0); return r.sort === 'oldest' ? da - db : db - da;
+        });
+        var pages = Math.max(1, Math.ceil(list.length / PAGE)), page = Math.min(r.page, pages - 1);
+        var week = rows.filter(function (m) { return m.member_class === 'member' && m.joined_at && Date.now() - new Date(m.joined_at) < 7 * 864e5; }).length;
+        var html = '<nav class="tabs" aria-label="Who">' + CLASSES.map(function (c) { return '<a href="#' + c[0] + '/' + r.sort + '/1' + (r.q ? '?q=' + encodeURIComponent(r.q) : '') + '" class="' + (c[0] === r.cls ? 'on' : '') + '">' + c[1] + ' (' + (cnt[c[0]] || 0) + ')</a>'; }).join('') + '</nav>' +
+          '<div class="tools"><input id="q" type="search" placeholder="Search by name, email or chapter" value="' + esc(r.q) + '" data-dictate="off" aria-label="Search members">' +
+          '<select id="sort" aria-label="Sort">' + SORTS.map(function (x) { return '<option value="' + x[0] + '"' + (x[0] === r.sort ? ' selected' : '') + '>' + x[1] + '</option>'; }).join('') + '</select></div>' +
+          '<p class="meta" style="margin-bottom:12px"><b>' + num(list.length) + '</b> shown. ' + num(cnt.member || 0) + ' members, ' + week + ' joined in the last 7 days. <a href="' + HQ_WHO + '" target="_blank" rel="noopener" style="color:var(--ve-green-deep);font-weight:700">Work them in BrandDesk Outreach &#8599;</a></p>';
+        html += list.length ? '<div class="grid">' + list.slice(page * PAGE, (page + 1) * PAGE).map(card).join('') + '</div>' : '<p class="sub">Nobody matches.</p>';
+        if (pages > 1) html += '<div class="pager">' + (page > 0 ? '<a class="btn btn-quiet" href="#' + r.cls + '/' + r.sort + '/' + page + (r.q ? '?q=' + encodeURIComponent(r.q) : '') + '">Back</a>' : '') + '<span>Page ' + (page + 1) + ' of ' + pages + '</span>' + (page < pages - 1 ? '<a class="btn btn-quiet" href="#' + r.cls + '/' + r.sort + '/' + (page + 2) + (r.q ? '?q=' + encodeURIComponent(r.q) : '') + '">Next</a>' : '') + '</div>';
+        $('view').innerHTML = html;
+        var t; $('q').oninput = function () { var v = this.value; clearTimeout(t); t = setTimeout(function () { var rr = route(); rr.q = v; rr.page = 0; go(rr); setTimeout(function () { var i = $('q'); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } }, 0); }, 300); };
+        $('sort').onchange = function () { var rr = route(); rr.sort = this.value; rr.page = 0; go(rr); };
+      }
+      function load() {
+        $('view').innerHTML = '<p class="sub">Loading...</p>';
+        fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON }, body: JSON.stringify({ token: VEAuth.getToken() }) })
+          .then(function (r) { return r.json(); }).then(function (d) {
+            if (!d || !d.ok) { $('view').innerHTML = '<p class="sub">' + (d && d.error === 'forbidden' ? 'This list is for super admins.' : 'That did not load. Refresh to try again.') + '</p>'; return; }
+            ALL = d.members || []; draw();
+          }).catch(function () { $('view').innerHTML = '<p class="sub">Could not reach the server. Refresh to try again.</p>'; });
+      }
+      window.addEventListener('hashchange', function () { if (ALL) draw(); });
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="si">Sign in</button>'; $('si').onclick = function () { VEAuth.showAuthModal('Sign in to open Members.', function () { location.reload(); }); }; return; }
+        if (!m || !m.is_superadmin) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+        $('app').hidden = false; load();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

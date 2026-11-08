@@ -109,7 +109,9 @@
     { group: 'Moving to BrandDesk', href: '/admin/depot/invites', label: 'Invites' },
     { group: 'Moving to BrandDesk', href: '/admin/depot/referral-claims', label: 'Referral claims' },
     { group: 'Moving to BrandDesk', href: '/admin/depot/links', label: 'Links' },
-    { group: 'Moving to BrandDesk', href: '/dashboard/members', label: 'Members', kind: 'dash' },
+    // Members is a read-only Depot page (2026-11-08; Sean, 2026-11-07: "The Depot keeps a read-only member list"). The old roster with its
+    // class moves, /dashboard/members, still opens by its address.
+    { group: 'Moving to BrandDesk', href: '/admin/depot/members', label: 'Members' },
     { group: 'Moving to BrandDesk', href: '/dashboard/leads', label: 'Leads', kind: 'dash' },
     { group: 'Moving to BrandDesk', href: '/dashboard/applications', label: 'Role applications', kind: 'dash' },
     { group: 'Moving to BrandDesk', href: '/admin/depot/branddesk', label: 'BrandDesk clients' }
