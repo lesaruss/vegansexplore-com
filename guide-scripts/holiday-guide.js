@@ -41,11 +41,11 @@
     { k: 'overview', label: 'Overview', say: 'Welcome to the Holiday Guide. I\'m Theo. You\'re the one setting the table this year, and I\'m here to help you do it your way.',
       sayMember: 'Welcome back. Start with ThanksLiving, find a holiday menu near you, and save the places you want to order from.' },
     { k: 'thanksliving', label: 'ThanksLiving', pic: '/public/guides/holiday/theo-thanksliving.jpg', say: 'ThanksLiving is Thanksgiving with a fully plant-based table. Same family, same gratitude, nobody harmed. On this page you\'ll find a few easy ideas to make it yours, whether you host or bring one dish.' },
-    { k: 'recipes', parent: 'thanksliving', label: 'Recipes', say: 'Cooking this year? Here is a full ThanksLiving table you can make at home: a savory loaf, gravy, mashed potatoes, stuffing, cranberry sauce, green beans and pumpkin pie.' },
-    { k: 'store', parent: 'thanksliving', label: 'At the Store', say: 'Short on time? These are the plant-based roasts, gravies, butters, creams and desserts you can find at the store this season. Read the label, and check your store before you go.' },
-    { k: 'menus', parent: 'thanksliving', label: 'Holiday Menus', say: 'Don\'t want to cook it all? Pick your chapter and see which Vegan places are cooking for the holiday, what they\'re offering, and when to order by. Our team checks every menu before it shows. Save one to find it again. Know a place we missed? Tell us, and we\'ll check it.' },
-    { k: 'events', parent: 'thanksliving', label: 'Events', say: 'Rather be at someone else\'s table? Find sanctuary dinners, potlucks and Thanksgiving events on our calendar. Hosting one? Add it, so people can find you.' },
-    { k: 'listen', parent: 'thanksliving', label: 'Listen', say: 'Going home for the holidays? Listen to Victoria Moran, Renee King-Sonnen and Susan Hargreaves on talking with family, and more from our shows and others.' },
+    { k: 'recipes', parent: 'thanksliving', pic: '/public/guides/holiday/theo-recipes.jpg', label: 'Recipes', say: 'Cooking this year? Here is a full ThanksLiving table you can make at home: a savory loaf, gravy, mashed potatoes, stuffing, cranberry sauce, green beans and pumpkin pie.' },
+    { k: 'store', parent: 'thanksliving', pic: '/public/guides/holiday/theo-store.jpg', label: 'At the Store', say: 'Short on time? These are the plant-based roasts, gravies, butters, creams and desserts you can find at the store this season. Read the label, and check your store before you go.' },
+    { k: 'menus', parent: 'thanksliving', pic: '/public/guides/holiday/theo-menus.jpg', label: 'Holiday Menus', say: 'Don\'t want to cook it all? Pick your chapter and see which Vegan places are cooking for the holiday, what they\'re offering, and when to order by. Our team checks every menu before it shows. Save one to find it again. Know a place we missed? Tell us, and we\'ll check it.' },
+    { k: 'events', parent: 'thanksliving', pic: '/public/guides/holiday/theo-events.jpg', label: 'Events', say: 'Rather be at someone else\'s table? Find sanctuary dinners, potlucks and Thanksgiving events on our calendar. Hosting one? Add it, so people can find you.' },
+    { k: 'listen', parent: 'thanksliving', pic: '/public/guides/holiday/theo-listen.jpg', label: 'Listen', say: 'Going home for the holidays? Listen to Victoria Moran, Renee King-Sonnen and Susan Hargreaves on talking with family, and more from our shows and others.' },
     { k: 'giveback', label: 'Give Back', say: 'Giving is part of the season. Here are the nonprofits, rescues and sanctuaries doing the work, in your city and beyond. Giving Tuesday is December first.' },
     { k: 'business', label: 'For Businesses', say: 'Run a Vegan business? Send us your holiday menu and we\'ll feature it here, free for members. ThanksLiving menus close at the end of November eighteenth.' }
   ];
@@ -57,7 +57,7 @@
   // Each ThanksLiving page has its own summary video in Theo's frame (Sean, 2026-11-08): his voice for that page, b-roll of what is on it,
   // music under it, 4:5. Play plays the video in place of the voice alone; captions are on. A new video is a row here.
   var VIDEO_BASE = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/guides/holiday/video/theo-';
-  var VIDEO = { thanksliving: 'v1', recipes: 'v1', store: 'v1', menus: 'v1', events: 'v1', listen: 'v1' };
+  var VIDEO = { thanksliving: 'v1', recipes: 'v2', store: 'v2', menus: 'v2', events: 'v2', listen: 'v2' };
   var RULE_ICON = [
     '<path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.1 4.3 2.4.7-1.3 2.2-2.4 4.3-2.4 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/>',
     '<path d="M3 11h18M5 11a7 5 0 0114 0M12 4v2M4 15h16l-1.5 4h-13z"/>',
@@ -796,12 +796,12 @@
   // The page's video sits in Theo's frame; his still picture is its poster until Play.
   function setVideo(box) {
     var v = VIDEO[curTab];
-    if (!v) { if (vid) { vid.pause(); vid.remove(); vid = null; box.removeAttribute('data-vid'); } return; }
+    if (!v) { if (vid) { vid.pause(); vid.remove(); vid = null; box.removeAttribute('data-vid'); } var o0 = box.querySelector('.hg-rplay'); if (o0) o0.hidden = true; return; }
     if (box.getAttribute('data-vid') === curTab && vid) return;
     if (vid) { vid.pause(); vid.remove(); }
     vid = document.createElement('video');
     vid.playsInline = true; vid.preload = 'none'; vid.setAttribute('playsinline', '');
-    vid.poster = '/public/guides/holiday/theo-thanksliving.jpg';
+    vid.poster = tab(curTab).pic || '/public/guides/holiday/theo-thanksliving.jpg';
     vid.src = VIDEO_BASE + curTab + '-' + v + '.mp4';
     vid.setAttribute('aria-label', 'Theo summarizes the ' + tab(curTab).label + ' page');
     vid.innerHTML = '<track kind="captions" srclang="en" label="English" default src="/public/guides/holiday/video/theo-' + curTab + '-' + v + '.vtt">';
@@ -812,6 +812,13 @@
     // On phones the card is small and Theo's words already show beside it, so captions show from tablet width up.
     try { vid.textTracks[0].mode = window.innerWidth > 900 ? 'showing' : 'hidden'; } catch (e) {}
     box.appendChild(vid); box.setAttribute('data-vid', curTab);
+    // A play button on the frame itself, so Play is in sight even when the rail's own button is below the fold.
+    var ov = box.querySelector('.hg-rplay');
+    if (!ov) { ov = document.createElement('button'); ov.type = 'button'; ov.className = 'hg-rplay'; ov.setAttribute('aria-label', 'Play Theo'); ov.innerHTML = '&#9654;'; box.appendChild(ov);
+      ov.addEventListener('click', function () { if (vid) { PLAY.started = true; vid.play().catch(function () {}); } }); }
+    ov.hidden = false;
+    vid.addEventListener('play', function () { ov.hidden = true; });
+    var me = vid; vid.addEventListener('pause', function () { if (vid === me) ov.hidden = false; });
   }
   function paintPlay() {
     var list = TAB_CH[curTab] || (VIDEO[curTab] ? [0] : null);

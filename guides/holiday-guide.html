@@ -63,6 +63,10 @@
     .dg-maya{position:relative;border-radius:14px;overflow:hidden;background:#f3f6f3 center 18%/cover no-repeat;aspect-ratio:4/5;}
     /* One frame on every tab (Sean, 2026-11-08): Theo's picture and each page's summary video share the same 4:5 box. */
     .dg-maya video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 18%;display:block;cursor:pointer;background:transparent;}
+    .hg-rplay{position:absolute;left:14px;bottom:14px;width:56px;height:56px;border-radius:50%;border:0;background:rgba(15,31,20,.72);color:#fff;font-size:24px;padding-left:5px;cursor:pointer;z-index:2;box-shadow:0 4px 18px rgba(0,0,0,.25)}
+    .hg-rplay:hover{background:#2D5C27}
+    .hg-rplay[hidden]{display:none}
+    @media (max-width:900px){.hg-rplay{display:none}}
     .dg-maya video::cue{font-size:12.5px;line-height:1.35;background:rgba(0,0,0,0.72);}
     .dg-maya.dg-shift video{animation:dgShift .55s ease-out;}
     @keyframes dgShift{from{transform:scale(1.04) translateX(6px);opacity:.75}to{transform:none;opacity:1}}
@@ -351,7 +355,7 @@
       html.dg-fit .dg-app{flex:1 1 auto;min-height:0;}
       html.dg-fit .dg-main{overflow-y:auto;scrollbar-width:thin;padding-right:6px;}
       html.dg-fit .dg-rail{overflow-y:auto;scrollbar-width:thin;}
-      html.dg-fit .dg-maya{aspect-ratio:4/5;flex:0 0 auto;height:300px;width:auto;max-width:100%;align-self:center;}
+      html.dg-fit .dg-maya{aspect-ratio:4/5;flex:0 0 auto;width:100%;height:auto;align-self:stretch;}
       html.dg-fit .dg-bubble{max-height:136px;overflow-y:auto;flex:0 0 auto;}
       html.dg-fit .ve-footer-inner{padding-top:14px !important;padding-bottom:14px !important;}
     }
@@ -706,7 +710,7 @@
 <script src="/public/ve-region-directory.js"></script>
 <script src="/public/ve-guide-intro.js"></script>
 <script src="/public/ve-episodes.js"></script>
-<script src="/guide-scripts/holiday-guide.js?v=11"></script>
+<script src="/guide-scripts/holiday-guide.js?v=12"></script>
 <script src="/public/ve-guide-min.js"></script>
 </body>
 </html>
