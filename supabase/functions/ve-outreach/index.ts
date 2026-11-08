@@ -301,9 +301,19 @@ async function buildCampaign(mem: Member, step: number, opts: { test?: boolean; 
   const c = await contactFor(mem.listing_id, String(m.to_email));
   if (!c) throw new Error('could not make an outreach contact');
   const { data: l } = await db.from('listings').select('name,slug,category').eq('id', mem.listing_id).single();
+  const { data: cp } = await db.from('ve_outreach_campaigns').select('link_path,sender_brand').eq('slug', mem.campaign_slug).maybeSingle();
   const name = String(l?.name || m.listing_name || '');
   let body = String(m.body), code: string | null = null;
-  if (m.page_url && body.includes(String(m.page_url))) {
+  const brand = String(cp?.sender_brand || '') || BRAND;
+  if (cp?.link_path && m.page_url && body.includes(String(m.page_url))) {
+    // A campaign with its own destination (the ThanksLiving note's menu form): one tracked link per member, made at the first real send.
+    const dest = String(cp.link_path).split('{slug}').join(encodeURIComponent(String(l?.slug || '')));
+    let link: string;
+    if (opts.preview) link = `${SITE}/go/(their own link, made when it sends)`;
+    else if (opts.test) link = `${SITE}${dest}`;
+    else { code = await memberLink(mem, c, name, dest); link = `${SITE}/go/${code}`; }
+    body = body.split(String(m.page_url)).join(link);
+  } else if (m.page_url && body.includes(String(m.page_url))) {
     const toGuide = FOOD_CATS.has(String(l?.category || '')) && c.segment !== 'brand';
     const dest = (k: string) => (toGuide ? `${GUIDE_PATH}?b=${k}` : '/directory/' + l?.slug);
     let link: string;
@@ -312,7 +322,21 @@ async function buildCampaign(mem: Member, step: number, opts: { test?: boolean; 
     else { code = await ensureLink(c, name, dest); link = `${SITE}/go/${code}`; }
     body = body.split(String(m.page_url)).join(link);
   }
-  return { subject: String(m.subject), body, html: toHtml(body, name), text: toText(body, name), name, code, contact: c, to: String(m.to_email) };
+  return { subject: String(m.subject), body, html: toHtml(body, name), text: toText(body, name), name, code, contact: c, to: String(m.to_email), brand };
+}
+async function memberLink(mem: Member, c: Contact, name: string, dest: string): Promise<string> {
+  const { data: row } = await db.from('ve_outreach_campaign_members').select('link_code').eq('id', mem.id).single();
+  if (row?.link_code) return String(row.link_code);
+  for (let i = 0; i < 4; i++) {
+    const code = linkCode();
+    const { error } = await db.from('ve_links').insert({
+      code, label: (mem.campaign_slug + ': ' + name).slice(0, 120), destination: dest, initiative_slug: mem.campaign_slug,
+      tags: [mem.campaign_slug, c.community_slug, c.segment], channel: 'email', recipient_email: c.email.slice(0, 200),
+      recipient_name: (c.contact_name || name).slice(0, 120), active: true,
+    });
+    if (!error) { await db.from('ve_outreach_campaign_members').update({ link_code: code }).eq('id', mem.id); return code; }
+  }
+  throw new Error('could not make a tracked link');
 }
 async function campaignTick(room: number) {
   const out: Record<string, unknown>[] = [];
@@ -345,7 +369,7 @@ async function campaignTick(room: number) {
     try {
       const m = await buildCampaign(mem as Member, step);
       const first = (m.contact.contact_name || '').trim().split(/\s+/)[0] || undefined;
-      const res = await emailSend({ brand: BRAND, campaign_ref: memberRef(m.contact.id, mem.id, step), list_ref: `ve-outreach-campaign:${mem.campaign_slug}`,
+      const res = await emailSend({ brand: m.brand, campaign_ref: memberRef(m.contact.id, mem.id, step), list_ref: `ve-outreach-campaign:${mem.campaign_slug}`,
         subject: m.subject, html: m.html, text: m.text, recipients: [{ email: m.to, first_name: first, name: m.contact.contact_name || undefined }] });
       const result = res?.results?.[0]?.result || (res?.ok ? 'unknown' : 'failed');
       const now = new Date().toISOString();
@@ -677,7 +701,7 @@ Deno.serve(async (req) => {
       if (!to) { const { data: me2 } = await db.from('members').select('email').eq('id', me).single(); to = String(me2?.email || '').toLowerCase(); }
       if (!isEmail(to)) return json({ error: 'bad_email' }, 400);
       const m = await buildCampaign(mem as Member, step, { test: true });
-      const res = await emailSend({ brand: BRAND, campaign_ref: `ve-outreach-test-c${mem.id.replace(/-/g, '').slice(0, 8)}-${step}`, subject: '[Test] ' + m.subject, html: m.html, text: m.text,
+      const res = await emailSend({ brand: m.brand, campaign_ref: `ve-outreach-test-c${mem.id.replace(/-/g, '').slice(0, 8)}-${step}`, subject: '[Test] ' + m.subject, html: m.html, text: m.text,
         test_to: [to], recipients: [{ email: to }] });
       return json({ ok: !!res?.ok, to, result: res?.results?.[0]?.result || res?.error || res?.errors });
     }
