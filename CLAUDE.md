@@ -7090,8 +7090,9 @@ giving platforms, and Claude (Opus 5.5, 16000, end_turn only) writes 400 to 550 
 their site only, never a tax claim, never calling them Vegan unless they say so; the donation link is picked only from the links found. A failed
 try leaves `details.support_try` {at, why}. We never handle money. Pilot 2026-11-08: 20 Florida organizations, 19 written (218 to 466 words), 17
 with a donation link (Piper's Pals and Nathans Family Farm show none on their sites), Little Bear Sanctuary's site did not open from the server.
-Facebook, Instagram and link-in-bio "websites" are skipped (`social_only`). 673 open organizations in all on 2026-11-08; the rest wait on Sean's
-read of the pilot.
+Facebook, Instagram and link-in-bio "websites" are skipped (`social_only`). 673 open organizations in all on 2026-11-08. **Sean approved the pilot
+the same day** ("I love it... I'm just approving it"); the rest (about 653) run next in batches of 25, before Giving Tuesday. Handoff
+`docs/handoff/2026-11-08-ve-holiday-guide-give-back-pilot-approved.md`.
 
 ## The Vegans Explore app (LOCKED by Sean 2026-11-07, playbook `ve-mobile-app`, canon `canon-ve-mobile-app`)
 
