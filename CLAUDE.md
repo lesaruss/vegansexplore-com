@@ -227,6 +227,8 @@ this list follows the rule above. A new exception goes on this list first.
   everything in `ads/` (Sean, 2026-10-04).
 - **The podcast frame**, a render target for the show's pictures, not a page: `business/podcast-frame.html` (`?kind=episode|youtube|
   story|carousel`, from the podcast's brand kit; 2026-10-31).
+- **The offline page**, `offline.html`, shown by the service worker (`/sw.js`) when there is no connection, so it cannot count on
+  nav.js or the footer loading; it is self-contained (2026-11-07, playbook `ve-mobile-app`).
 - **BrandDesk client websites** (the frame), the client's own site, not a Vegans Explore page: `business/site.html`
   (`/business/sample/site`, Green Leaf Kitchen's; every real client's site, served by `branddesk-sites/`). It carries only a small "Managed by Vegans Explore BrandDesk" line (Sean, 2026-10-31).
 
@@ -6909,6 +6911,50 @@ for the Guide and `claim.html` for the menu form (template gate).
   (now 410) with a drawn test menu: the photo uploaded and public, a photo from elsewhere dropped, a GIF and another member's file refused,
   the photo and the PDF both read as the 4 (V) dishes with prices and the 3 others left out by name; told a business was 100% Vegan, the
   reader still left out turkey and cheese dishes on that menu (the safer answer). Every test row and file removed.
+
+## The Vegans Explore app (LOCKED by Sean 2026-11-07, playbook `ve-mobile-app`, canon `canon-ve-mobile-app`)
+
+"Most people would be expecting Vegans Explore to be an app... I want it available as soon as it's available." Name **Vegans Explore**, made by
+**LESARUSS Inc.**, in the stores as soon as it passes review (no held date). A **native app written fresh** in React Native (Expo) in
+`lesaruss/vegansexplore-app`, not the website in a container; the June prototype (code name Sapphire, Supabase Auth, made-up stats) is retired.
+Version 1 tabs: Home, Explore (search, Directory, place pages, map), Events, Saves, Profile; join through the Explorer survey with the same
+account as the website (ve-auth, never Supabase Auth); Guides, Pulse articles and the board, policies and the business dashboard open as web
+pages inside the app, signed in. One back end: the app calls the same edge functions as the site. iOS keeps bundle `com.lesaruss.sapphire`
+(the existing App Store record VEGANS EXPLORE, app 6776554626; Apple never lets it change); Android is `com.lesaruss.vegansexplore`. Store keys
+are in Key Room (`hq.lesaruss.ai/keys`: `ASC_API_KEY_P8` saved without its BEGIN/END lines, `ASC_KEY_ID`, `ASC_ISSUER_ID`,
+`GOOGLE_PLAY_SERVICE_JSON`, `EXPO_TOKEN` for Expo user `lesaruss`), all checked live 2026-11-07. The A to Z is in the playbook and
+`docs/handoff/2026-11-07-ve-mobile-app-a-to-z-locked.md`; next are D (installable website: `manifest.json` icons 404 today), E (icon to Sean)
+and F (a clickable phone mock approved before any app code). Store rules to build: delete account inside the app, block a member, nothing
+sold inside the app in v1. The old SoFlo Vegans iOS app (`com.lmg.soflo`, live since 2021) comes off sale on launch day unless Sean says otherwise.
+
+**D, the installable website, built 2026-11-07** (Logan; playbook `ve-mobile-app`): `manifest.json` (green `#2D5C27`, name Vegans Explore,
+`start_url` `/?source=homescreen`, shortcuts Directory, Events, Daily Pulse) with real icons in `public/app/` (`icon-192.png`, `icon-512.png`,
+`icon-maskable-512.png`, `apple-touch-icon.png`, `favicon-32.png`; and `/favicon.ico`), all drawn from `public/ve-logo-mark.svg`, never redrawn.
+`nav.js` adds the manifest, theme color, Apple and icon tags to every page (our hosts only, never under `VE_BRAND`), registers `/sw.js` and on
+phones loads `/public/ve-install.js`. **`sw.js`** (replacing a June shell that only the archived homepage registered): page loads go to the network
+first; offline it shows the last copy of that page it kept (30 pages) or `/offline.html`; never /admin/, /api/, /go/, /auth/, POSTs or other
+sites; bump `VERSION` on a change. `vercel.json` serves `/sw.js` uncached. **Add to home screen** (`ve-install.js`): from the 3rd page a visitor
+opens, not again for 30 days after Not now, never once installed, in a frame, an in-app browser or on a form or checkout; Android's own install
+window, iPhone Safari's two Share steps, otherwise the browser menu steps; `?install=1` shows it on any page; GA events `install_prompt_shown`,
+`install_prompt_accepted`, `install_prompt_dismissed`, `app_installed`. Checked locally in Chromium as a Pixel 7 and an iPhone 14 (manifest and
+icons 200, the worker active, a visited page served offline and an unvisited one showing the offline page, no script errors). The website icon is
+the plain suitcase mark; the app's own icon is step E and may replace it once Sean picks.
+**E and F sent to Sean 2026-11-07** on one canvas, https://claude.ai/artifact/D52VjPJvNiWXafBXZbvhCp: icon A (white suitcase on our
+green, recommended), B (green on white), C (the leaf mosaic); opening screen 1 (green with the white mark, recommended) or 2 (the logo on
+white); and one clickable phone with every v1 screen, using real listings and events. No app code until Sean picks and approves.
+**E decided by Sean 2026-11-07**: the app icon is **A**, the white suitcase mark on our green (B, green on white, stays on file; **the leaf
+mosaic suitcase `public/ve-mark.png` is the old logo and is retired**: never use it again). The website's icons in `public/app/` are A since the
+same day. The opening screen is **the stacked (portrait) logo on white**: `public/logo-ve-portrait-v1.svg` (Sean's file; the suitcase over
+VEGANS in black and EXPLORE in green), with `public/logo-ve-portrait-v1-inverted.svg` (all white, the leaf green, no background) kept on file
+for green or dark backgrounds. **F approved by Sean 2026-11-07** ("I approved the look. We can always make adjustments later"), after six rounds on the canvas: tabs
+**Home, Explore, Menu (raised center button: every feature, built-in or the website's page inside the app), Saves, Profile**; Bounties and
+Events live in the Menu; Profile is the profile survey (every question we want answered, % complete, points per answer) with collectible
+badge stamps and a + that lists the Guides that earn each badge; an Admin group in the Menu for super admins (the Depot signed in; BrandDesk
+on HQ asks for the HQ sign-in the first time); fixed headers with only the list scrolling; anything opened fills the screen with a back button
+naming where you came from. **The app reuses the website's Directory card and listing page design, never a new style.** First visit: the
+opening screen, a short welcome, pick your chapter or use location, then Home with no account (Apple forbids forced sign-up); voting, saving,
+checking in, Saves and Profile ask to join free through the Explorer survey. **One Expo build serves the stores and vegansexplore.com on
+phones** (the homepage and the home-screen icon; pages people land on from search keep their own page; computers keep the website). Next: G.
 
 ## Image conventions
 
