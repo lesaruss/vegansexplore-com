@@ -270,7 +270,7 @@
           '<div class="prog" id="lbBar"><span id="lbFill"></span></div></div>' +
           '<div class="pside"><div class="cap"><span class="fn" id="lbN"></span><div><p class="q" id="lbQ"></p><p class="meta" id="lbM"></p></div></div>' +
           '<div class="fbtns">' + fr.map(function (f) { return '<button type="button" data-go="' + f.n + '" class="' + esc(f.s.status) + '">' + pad(f.n) + '</button>'; }).join('') + '</div></div>' +
-          '<audio id="lbAu" preload="none"></audio></section>' +
+          '<audio id="lbAu" preload="none"></audio>' + (data.tour.music_url ? '<audio id="lbMu" preload="none" loop src="' + esc(data.tour.music_url) + '"></audio>' : '') + '</section>' +
           '<div class="legend"><b>' + fr.length + ' frames · ' + ap + ' of ' + all + ' decisions approved</b>' +
           Object.keys(RD).map(function (k) { return '<span><span class="tag rd ' + k + '">' + RD[k][0] + '</span> ' + RD[k][1] + '</span>'; }).join('') +
           '<span><span class="flag-dot"></span> Orange: the script says something that is not built yet.</span></div>' +
@@ -324,6 +324,13 @@
           if (!playing) au.pause();
         };
         au.addEventListener('timeupdate', tick);
+        // the music bed under the voice, low and looping, playing only while the tour plays (Sean, 2026-11-08)
+        var mu = $('lbMu');
+        if (mu) {
+          mu.volume = 0.16;
+          au.addEventListener('play', function () { mu.play().catch(function () {}); });
+          au.addEventListener('pause', function () { setTimeout(function () { if (!playing) mu.pause(); }, 120); });
+        }
         au.addEventListener('ended', function () {
           var next = data.chapters.filter(function (c) { return c.n > chap; })[0];
           if (next && playing) load(next.n, 0, true); else { playing = false; $('lbPlay').textContent = '▶ Play the tour'; }
