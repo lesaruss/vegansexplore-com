@@ -96,7 +96,7 @@
     { slug: 'welcome', shelf: 'everyday', label: 'Getting Started', title: 'Welcome Guide', banner: '/public/guides/welcome-guide.jpg?v=3', interests: ['starting'], href: '/passport?guide=welcome',
       desc: 'Start here: what Vegans Explore is, your community, the Directory, the Guides and how points work. Free and open to everyone.',
       chips: [{ text: 'Free', cls: 'free' }], cta: 'Start the Welcome Guide' },
-    { slug: 'holiday-guide', shelf: 'everyday', label: 'Holidays', tag: 'New', title: 'The Holiday Guide', icon: 'heart', interests: ['food', 'events'], href: '/guides/holiday-guide',
+    { slug: 'holiday-guide', shelf: 'everyday', banner: '/public/guides/holiday-guide.jpg?v=1', label: 'Holidays', tag: 'New', title: 'The Holiday Guide', icon: 'heart', interests: ['food', 'events'], href: '/guides/holiday-guide',
       desc: 'ThanksLiving first: five simple ways to celebrate, holiday menus from Vegan places near you, events and where to give back, with Theo walking you through it. Free for everyone.',
       chips: [{ text: 'Walked through by Theo' }, { text: 'Free', cls: 'free' }], cta: 'Open the Guide' },
     { slug: 'vegan-dairy-guide', shelf: 'everyday', label: 'Food', tag: 'New', title: 'The Vegan Dairy Guide', banner: '/public/guides/vegan-dairy-guide.jpg?v=3', interests: ['food', 'starting'], href: '/guides/vegan-dairy-guide',
