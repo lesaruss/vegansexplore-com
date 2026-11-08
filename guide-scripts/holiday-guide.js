@@ -41,11 +41,11 @@
     { k: 'overview', label: 'Overview', say: 'Welcome to the Holiday Guide. I\'m Theo. You\'re the one setting the table this year, and I\'m here to help you do it your way.',
       sayMember: 'Welcome back. Start with ThanksLiving, find a holiday menu near you, and save the places you want to order from.' },
     { k: 'thanksliving', label: 'ThanksLiving', pic: '/public/guides/holiday/theo-thanksliving.jpg', say: 'ThanksLiving is Thanksgiving with a fully plant-based table. Same family, same gratitude, nobody harmed. On this page you\'ll find a few easy ideas to make it yours, whether you host or bring one dish.' },
-    { k: 'recipes', label: 'Recipes', say: 'Cooking this year? Here is a full ThanksLiving table you can make at home: a savory loaf, gravy, mashed potatoes, stuffing, cranberry sauce, green beans and pumpkin pie.' },
-    { k: 'store', label: 'At the store', say: 'Short on time? These are the plant-based roasts, gravies, butters, creams and desserts you can find at the store this season. Read the label, and check your store before you go.' },
-    { k: 'menus', label: 'Holiday menus', say: 'Don\'t want to cook it all? Pick your chapter and see which Vegan places are cooking for the holiday, what they\'re offering, and when to order by. Our team checks every menu before it shows. Save one to find it again. Know a place we missed? Tell us, and we\'ll check it.' },
-    { k: 'events', label: 'Events', say: 'Rather be at someone else\'s table? Find sanctuary dinners, potlucks and Thanksgiving events on our calendar. Hosting one? Add it, so people can find you.' },
-    { k: 'listen', label: 'Listen', say: 'Going home for the holidays? Listen to Victoria Moran, Renee King-Sonnen and Susan Hargreaves on talking with family, and more from our shows and others.' },
+    { k: 'recipes', parent: 'thanksliving', label: 'Recipes', say: 'Cooking this year? Here is a full ThanksLiving table you can make at home: a savory loaf, gravy, mashed potatoes, stuffing, cranberry sauce, green beans and pumpkin pie.' },
+    { k: 'store', parent: 'thanksliving', label: 'At the store', say: 'Short on time? These are the plant-based roasts, gravies, butters, creams and desserts you can find at the store this season. Read the label, and check your store before you go.' },
+    { k: 'menus', parent: 'thanksliving', label: 'Holiday menus', say: 'Don\'t want to cook it all? Pick your chapter and see which Vegan places are cooking for the holiday, what they\'re offering, and when to order by. Our team checks every menu before it shows. Save one to find it again. Know a place we missed? Tell us, and we\'ll check it.' },
+    { k: 'events', parent: 'thanksliving', label: 'Events', say: 'Rather be at someone else\'s table? Find sanctuary dinners, potlucks and Thanksgiving events on our calendar. Hosting one? Add it, so people can find you.' },
+    { k: 'listen', parent: 'thanksliving', label: 'Listen', say: 'Going home for the holidays? Listen to Victoria Moran, Renee King-Sonnen and Susan Hargreaves on talking with family, and more from our shows and others.' },
     { k: 'giveback', label: 'Give back', say: 'Giving is part of the season. Here are the nonprofits, rescues and sanctuaries doing the work, in your city and beyond. Giving Tuesday is December first.' },
     { k: 'business', label: 'For businesses', say: 'Run a Vegan business? Send us your holiday menu and we\'ll feature it here, free for members. ThanksLiving menus close at the end of November eighteenth.' }
   ];
@@ -108,12 +108,24 @@
   function lastDay(close) { return dayFmt(new Date(new Date(close).getTime() - 60000), { month: 'long', day: 'numeric' }); }
 
   // ---------- tabs ----------
+  // Every tab about one holiday sits under it (Sean, 2026-11-08: "most of the items in the navigation belong under Thanksgiving"):
+  // the top row shows the holidays and the Guide-wide tabs; a holiday's own sections open from its page, the phone menu groups them.
+  function topOf(k) { return tab(k).parent || k; }
   function drawMenu(cur) {
-    menuEl.innerHTML = TABS.map(function (t) { return '<a href="' + href(t.k) + '"' + (t.k === cur ? ' aria-current="page"' : '') + '>' + esc(t.label) + '</a>'; }).join('');
-    menuSel.innerHTML = TABS.map(function (t) { return '<option value="' + t.k + '"' + (t.k === cur ? ' selected' : '') + '>' + esc(t.label) + '</option>'; }).join('');
+    var top = topOf(cur);
+    menuEl.innerHTML = TABS.filter(function (t) { return !t.parent; }).map(function (t) { return '<a href="' + href(t.k) + '"' + (t.k === top ? ' aria-current="page"' : '') + '>' + esc(t.label) + '</a>'; }).join('');
+    menuSel.innerHTML = TABS.filter(function (t) { return !t.parent; }).map(function (t) {
+      var kids = TABS.filter(function (c) { return c.parent === t.k; });
+      function opt(o, label) { return '<option value="' + o.k + '"' + (o.k === cur ? ' selected' : '') + '>' + esc(label || o.label) + '</option>'; }
+      if (!kids.length) return opt(t);
+      return '<optgroup label="' + esc(t.label) + '">' + opt(t, t.label + ' ideas') + kids.map(function (c) { return opt(c); }).join('') + '</optgroup>';
+    }).join('');
   }
   menuSel.addEventListener('change', function () { location.hash = href(menuSel.value); });
+  var curView = 'overview';
   function crumb(parts) {
+    var par = tab(curView).parent;
+    if (par && curView !== par && !(parts[0] && parts[0][0] === tab(par).label)) parts = [[tab(par).label, href(par)]].concat(parts);
     return '<div class="dg-crumb"><a href="#/">Holiday Guide</a>' + parts.map(function (p) { return ' &rsaquo; ' + (p[1] ? '<a href="' + p[1] + '">' + esc(p[0]) + '</a>' : esc(p[0])); }).join('') + '</div>';
   }
   function head(k, h, lede, right) {
@@ -157,8 +169,7 @@
   // button with a short note, then the Guide's sections as headings with a line and picture pills.
   var PIC = '/public/guides/holiday/';
   var GROUPS = [
-    { label: 'Celebrate', line: 'Easy ideas for a ThanksLiving table, what to listen to on the way, and where people are gathering.', kids: ['thanksliving', 'listen', 'events'] },
-    { label: 'Make or buy your table', line: 'Cook it from our recipes, pick it up at the store, or order from a Vegan place near you.', kids: ['recipes', 'store', 'menus'] },
+    { label: 'ThanksLiving · November 26', line: 'Easy ideas for the table, recipes, what to pick up at the store, a Vegan place to order from, events, and what to listen to on the way.', kids: ['thanksliving', 'recipes', 'store', 'menus', 'events', 'listen'] },
     { label: 'Give back', line: 'The nonprofits, rescues and sanctuaries doing the work. Giving Tuesday is December 1.', kids: ['giveback'] },
     { label: 'Run a business?', line: 'Send your holiday menu and we feature it here, free for members.', kids: ['business'] }
   ];
@@ -166,7 +177,7 @@
   function groupRows() {
     return GROUPS.map(function (g) {
       return '<section class="rg-grow"><h3>' + esc(g.label) + '</h3><p>' + esc(g.line) + '</p><div class="rg-pills">' + g.kids.map(function (k) {
-        return '<a class="rg-pill" href="' + href(k) + '"><span class="rg-pill-pic"><img src="' + PIC + PILL_PIC[k] + '" alt="" loading="lazy" width="60" height="60"></span><span>' + esc(tab(k).label) + '</span></a>';
+        return '<a class="rg-pill" href="' + href(k) + '"><span class="rg-pill-pic"><img src="' + PIC + PILL_PIC[k] + '" alt="" loading="lazy" width="60" height="60"></span><span>' + esc(k === 'thanksliving' ? 'Ideas for the table' : tab(k).label) + '</span></a>';
       }).join('') + '</div></section>';
     }).join('');
   }
@@ -199,10 +210,12 @@
   // ---------- ThanksLiving ----------
   function viewThanksLiving() {
     var t = thanks();
-    main.innerHTML = head('November 26', 'ThanksLiving', 'Thanksgiving with a full plant-based table, on ' + esc(dayFmt(onDay(t.holiday_on))) + '. Host it, bring a dish, or order from a Vegan place near you. A few easy ideas for your table:') +
+    main.innerHTML = head('November 26', 'ThanksLiving', 'Thanksgiving with a full plant-based table, on ' + esc(dayFmt(onDay(t.holiday_on))) + '. Host it, bring a dish, or order from a Vegan place near you. Everything for the day is here:') +
+      '<div class="rg-pills" style="margin:4px 0 22px">' + TABS.filter(function (c) { return c.parent === 'thanksliving'; }).map(function (c) {
+        return '<a class="rg-pill" href="' + href(c.k) + '"><span class="rg-pill-pic"><img src="' + PIC + PILL_PIC[c.k] + '" alt="" loading="lazy" width="60" height="60"></span><span>' + esc(c.label) + '</span></a>';
+      }).join('') + '</div><h3 class="hg-sh" style="margin:0 0 10px">A few easy ideas for your table</h3>' +
       '<div class="hg-rules">' + RULES.map(function (r, i) { return '<div class="hg-rule hg-pic"><div class="hg-rpic"><img src="' + PIC + RULE_PIC[i] + '" alt="" loading="lazy" width="320" height="320"><span class="n">' + (i + 1) + '</span></div><div class="hg-rb"><h3>' + esc(r[0]) + '</h3><p>' + esc(r[1]) + '</p></div></div>'; }).join('') + '</div>' +
-      '<div class="dg-btns" style="margin-top:16px"><a class="dg-btn" href="#/recipes">Cook the table</a><a class="dg-btn dg-ghost" href="#/menus">Find a holiday menu</a><a class="dg-btn dg-ghost" href="#/events">See events</a></div>' +
-      '<div class="hg-note"><b>A shared word.</b> Sanctuaries and Vegan groups have called it ThanksLiving for years, and many hold ThanksLiving dinners for the animals. We are glad to be one more place people find it.</div>' +
+            '<div class="hg-note"><b>A shared word.</b> Sanctuaries and Vegan groups have called it ThanksLiving for years, and many hold ThanksLiving dinners for the animals. We are glad to be one more place people find it.</div>' +
       '<div class="hg-note" style="background:#f6f4ef"><b>The same day is the National Day of Mourning.</b> Since 1970, United American Indians of New England have gathered in Plymouth on this day. To learn more, start with Indigenous-led voices like <a href="https://www.uaine.org/" target="_blank" rel="noopener">uaine.org</a>.</div>';
   }
 
@@ -692,7 +705,9 @@
     document.body.classList.toggle('dg-member', member());
     drawJoinbox(); drawMenu(view);
     var bar = document.getElementById('vep-player');
+    curView = view;
     V[view]();
+    if (tab(view).parent && !main.querySelector('.dg-crumb')) main.insertAdjacentHTML('afterbegin', crumb([[tab(view).label]]));
     keepPlayer(bar);
     curTab = view; drawTheo();
     main.scrollTop = 0; if (!document.documentElement.classList.contains('dg-fit') || window.innerWidth <= 900) window.scrollTo(0, 0);
