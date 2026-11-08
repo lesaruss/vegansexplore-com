@@ -32,6 +32,6 @@ begin
     'docs/handoff/2026-11-08-ve-explorer-path-tour-recorded.md');
 
   insert into stream_events (owner, station, summary, keywords, status)
-  values ('logan', 'cloud', 've-explorer-path: Welcome Guide tour lookbook approved by Sean (48 vertical frames, new takes for chapters 1 and 4, music bed)',
-    array['ve-explorer-path','welcome-guide','tour','lookbook'], 'done');
+  values ('logan', 'vegans-explore', 've-explorer-path: Welcome Guide tour lookbook approved by Sean (48 vertical frames, new takes for chapters 1 and 4, music bed)',
+    array['ve-explorer-path','welcome-guide','tour','lookbook'], 'completed');
 end $$;
