@@ -128,6 +128,17 @@
     if (par && curView !== par && !(parts[0] && parts[0][0] === tab(par).label)) parts = [[tab(par).label, href(par)]].concat(parts);
     return '<div class="dg-crumb"><a href="#/">Holiday Guide</a>' + parts.map(function (p) { return ' &rsaquo; ' + (p[1] ? '<a href="' + p[1] + '">' + esc(p[0]) + '</a>' : esc(p[0])); }).join('') + '</div>';
   }
+  // ThanksLiving's own row (Sean, 2026-11-08: "keep the recipes, at the store, holiday menus, events, and listen button visible... so people
+  // can easily navigate between the ThanksLiving pages"): on the holiday's page and each of its sections, under the crumb.
+  function subnav(cur) {
+    var par = tab(cur).parent || cur, kids = TABS.filter(function (c) { return c.parent === par; });
+    if (!kids.length) return '';
+    var items = [tab(par)].concat(kids);
+    return '<nav class="hg-sub" aria-label="' + esc(tab(par).label) + '">' + items.map(function (c) {
+      var pic = c.k === par ? 'p-thanks.jpg' : PILL_PIC[c.k];
+      return '<a class="rg-pill" href="' + href(c.k) + '"' + (c.k === cur ? ' aria-current="page"' : '') + '><span class="rg-pill-pic"><img src="' + PIC + pic + '" alt="" loading="lazy" width="60" height="60"></span><span>' + esc(c.k === par ? 'Ideas' : c.label) + '</span></a>';
+    }).join('') + '</nav>';
+  }
   function head(k, h, lede, right) {
     return '<div class="dg-head"><div><div class="dg-k">' + esc(k) + '</div><h2 class="dg-h1">' + h + '</h2></div>' + (right || '') + '</div>' + (lede ? '<p class="dg-lede">' + lede + '</p>' : '');
   }
@@ -210,10 +221,8 @@
   // ---------- ThanksLiving ----------
   function viewThanksLiving() {
     var t = thanks();
-    main.innerHTML = head('November 26', 'ThanksLiving', 'Thanksgiving with a full plant-based table, on ' + esc(dayFmt(onDay(t.holiday_on))) + '. Host it, bring a dish, or order from a Vegan place near you. Everything for the day is here:') +
-      '<div class="rg-pills" style="margin:4px 0 22px">' + TABS.filter(function (c) { return c.parent === 'thanksliving'; }).map(function (c) {
-        return '<a class="rg-pill" href="' + href(c.k) + '"><span class="rg-pill-pic"><img src="' + PIC + PILL_PIC[c.k] + '" alt="" loading="lazy" width="60" height="60"></span><span>' + esc(c.label) + '</span></a>';
-      }).join('') + '</div><h3 class="hg-sh" style="margin:0 0 10px">A few easy ideas for your table</h3>' +
+    main.innerHTML = head('November 26', 'ThanksLiving', 'Thanksgiving with a full plant-based table, on ' + esc(dayFmt(onDay(t.holiday_on))) + '. Host it, bring a dish, or order from a Vegan place near you. Everything for the day is here.') +
+      '<h3 class="hg-sh" style="margin:4px 0 10px">A few easy ideas for your table</h3>' +
       '<div class="hg-rules">' + RULES.map(function (r, i) { return '<div class="hg-rule hg-pic"><div class="hg-rpic"><img src="' + PIC + RULE_PIC[i] + '" alt="" loading="lazy" width="320" height="320"><span class="n">' + (i + 1) + '</span></div><div class="hg-rb"><h3>' + esc(r[0]) + '</h3><p>' + esc(r[1]) + '</p></div></div>'; }).join('') + '</div>' +
             '<div class="hg-note"><b>A shared word.</b> Sanctuaries and Vegan groups have called it ThanksLiving for years, and many hold ThanksLiving dinners for the animals. We are glad to be one more place people find it.</div>' +
       '<div class="hg-note" style="background:#f6f4ef"><b>The same day is the National Day of Mourning.</b> Since 1970, United American Indians of New England have gathered in Plymouth on this day. To learn more, start with Indigenous-led voices like <a href="https://www.uaine.org/" target="_blank" rel="noopener">uaine.org</a>.</div>';
@@ -708,6 +717,8 @@
     curView = view;
     V[view]();
     if (tab(view).parent && !main.querySelector('.dg-crumb')) main.insertAdjacentHTML('afterbegin', crumb([[tab(view).label]]));
+    var sub = subnav(view);
+    if (sub) { var cr = main.querySelector('.dg-crumb'); if (cr && cr.parentNode === main) cr.insertAdjacentHTML('afterend', sub); else main.insertAdjacentHTML('afterbegin', sub); }
     keepPlayer(bar);
     curTab = view; drawTheo();
     main.scrollTop = 0; if (!document.documentElement.classList.contains('dg-fit') || window.innerWidth <= 900) window.scrollTo(0, 0);
