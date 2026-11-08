@@ -178,6 +178,13 @@
     .lb .x{position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;border:0;background:var(--c-soft);color:var(--c-text);font-size:22px;cursor:pointer;}
     .lb img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:12px;margin:16px 0 20px;}
     .lb p{font-size:17px;margin:0 0 14px;}
+    /* Sign in with Vegans Explore: members of Vegans Explore use the same account on every site we manage */
+    .vesign{display:inline-flex;align-items:center;gap:8px;font-weight:700;text-decoration:none;border:0!important;padding:4px 0;}
+    .vesign .vc{width:30px;height:30px;border-radius:50%;background:#fff;border:1.5px solid color-mix(in srgb,var(--c-text) 18%,transparent);display:flex;align-items:center;justify-content:center;flex:none;}
+    .vesign .vc img{width:18px;height:18px;}
+    .vesign .who{display:flex;flex-direction:column;line-height:1.1;}
+    .vesign .who small{font-size:11px;font-weight:600;opacity:.7;}
+    .social a.ve img{width:20px;height:20px;filter:brightness(0) invert(1);}
     .gallery.g3{grid-template-columns:repeat(3,minmax(0,1fr));}
     /* The space */
     .sets{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
@@ -238,6 +245,11 @@
     var VS = window.VE_SITE || null;
     // ?pitch=<code>: a business's own home page on the frame, built from its Directory page for its pitch (ve-branddesk pitch_site).
     var VE_MARK = 'https://vegansexplore.com/public/ve-logo-mark.svg';
+    // A Vegans Explore member already signed in on vegansexplore.com is signed in here too. The sample shares that site's
+    // storage; a client's own domain needs the one-time-code handoff (Sign in with Vegans Explore, like Continue with LESARUSS).
+    var VE_MEMBER = null;
+    if (!window.VE_SITE) try { var vm = JSON.parse(localStorage.getItem('ve_member') || 'null'); if (localStorage.getItem('ve_token') && vm && vm.membership_status !== 'pending_payment') VE_MEMBER = vm; } catch (e) {}
+    function veFirst(m) { return String((m && (m.first_name || m.name || m.username)) || 'Member').trim().split(/\s+/)[0]; }
     var PITCH = new URLSearchParams(location.search).get('pitch');
     if (VS) run(VS.cartridge);
     else if (PITCH) {
@@ -399,7 +411,7 @@
           '<div class="btns"><a class="btn" href="' + href('menu') + '">See the menu</a><a class="btn ghost" href="' + esc(orderHref()) + '">Order</a><a class="btn ghost" href="' + esc(maps) + '" target="_blank" rel="noopener">Directions</a></div></div></div>' +
           '<div class="today"><div class="wrap"><span>Today: ' + esc(I.hours[today]) + '</span><span>' + esc(addr) + '</span><a href="' + esc(tel) + '">' + esc(I.phone) + '</a>' + (biz.vegan ? '<span class="badge">' + esc(biz.vegan) + '</span>' : '') + '</div></div>' +
           (picks.length ? '<section class="s"><div class="wrap"><div class="eyebrow">Favorites</div><div class="rhead"><h2>What people come back for</h2>' + arrows('favRail') + '</div>' +
-          (CAN_VOTE ? '<p class="vnote">Ranked by votes from Vegans Explore members. Tap the heart on your favorite.</p>' : '') +
+          (CAN_VOTE ? '<p class="vnote">' + (VE_MEMBER ? 'Signed in as ' + esc(veFirst(VE_MEMBER)) + ' with Vegans Explore. Tap the heart on your favorite.' : 'Ranked by votes from Vegans Explore members. Tap the heart on your favorite.') + '</p>' : '') +
           rail('favRail', picks.map(function (i, n) { return dish(i, false, CAN_VOTE ? n + 1 : 0); })) +
           '<p style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap"><a class="btn" href="' + href('menu') + '">See the whole menu</a><a class="btn ghost" href="' + esc(orderHref()) + '">Order for pickup</a></p></div></section>' : '') +
           '<section class="s dark"><div class="wrap split"><div><div class="eyebrow">Our story</div><h2>' + esc(C.story.tagline) + '</h2><p>' + esc(C.story.long[0] || '') + '</p><p><a class="btn ghost" href="' + href('about') + '" style="color:inherit">Read our story</a></p></div>' +
@@ -445,6 +457,12 @@
     };
     var NAV = [['home', 'Home', href('home')], ['menu', 'Menu', href('menu')], ['about', 'About', href('about')], ['visit', 'Visit', href('visit')]];
 
+    function signLink() {
+      if (PC) return '';
+      if (VE_MEMBER) return '<a class="vesign" href="https://vegansexplore.com/dashboard" title="Signed in with your Vegans Explore account"><span class="vc"><img src="' + VE_MARK + '" alt=""></span><span class="who">Hi, ' + esc(veFirst(VE_MEMBER)) + '<small>Vegans Explore member</small></span></a>';
+      var back = VS ? location.href : location.pathname + location.hash;
+      return '<a class="vesign" href="' + (VS ? 'https://vegansexplore.com' : '') + '/login?next=' + encodeURIComponent(back) + '"><span class="vc"><img src="' + VE_MARK + '" alt=""></span>Sign in</a>';
+    }
     function cartLines() { return Object.keys(CART).filter(function (k) { return byKey[k] && CART[k] > 0; }); }
     function cartTotal() { return cartLines().reduce(function (a, k) { return a + price(byKey[k].price) * CART[k]; }, 0); }
     var placed = null;
@@ -483,13 +501,13 @@
         '<span class="seg" role="group" aria-label="Ordering"><button type="button" data-mode="pos" class="' + (MODE === 'pos' ? 'on' : '') + '">Ordering connected to Square</button><button type="button" data-mode="link" class="' + (MODE === 'link' ? 'on' : '') + '">Ordering by link</button></span>';
       var top = '<header class="top"><div class="wrap"><a class="brand" href="' + href('home') + '">' + (mark ? '<img class="mark" src="' + esc(DARK_PAGE && markRev ? markRev : mark) + '" alt="">' : logo ? (DARK_PAGE && rev ? '<img class="rev" src="' + esc(rev) + '" alt="">' : '<img src="' + esc(logo) + '" alt="">') : '') + '<span>' + esc(biz.name) + '</span></a>' +
         '<button class="burger" type="button" aria-label="Menu" data-burger><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>' +
-        '<nav class="links" id="links">' + NAV.map(function (n) { return '<a href="' + n[2] + '" class="' + (n[0] === page ? 'on' : '') + '">' + n[1] + '</a>'; }).join('') + '<a class="btn obtn" href="' + esc(orderHref()) + '">' + BAG + 'Order online</a></nav></div></header>';
+        '<nav class="links" id="links">' + NAV.map(function (n) { return '<a href="' + n[2] + '" class="' + (n[0] === page ? 'on' : '') + '">' + n[1] + '</a>'; }).join('') + '<a class="btn obtn" href="' + esc(orderHref()) + '">' + BAG + 'Order online</a>' + signLink() + '</nav></div></header>';
       var L = I.links || {}, social = ['instagram', 'tiktok', 'facebook'].filter(function (k) { return L[k]; });
       var foot = '<footer class="site"><div class="wrap">' + (rev ? '<img class="flogo" src="' + esc(rev) + '" alt="' + esc(biz.name) + '">' : '<div class="f-h" style="font-size:24px">' + esc(biz.name) + '</div>') +
         '<div><nav>' + NAV.concat([['order', 'Order', orderHref()]]).map(function (n) { return '<a href="' + esc(n[2]) + '">' + n[1] + '</a>'; }).join('') + '</nav>' +
         '<p style="margin:16px 0 0">' + esc(addr) + ' · <a href="' + esc(tel) + '">' + esc(I.phone) + '</a></p><p style="margin:4px 0 0">Today ' + esc(I.hours[today]) + '</p>' +
         '<div class="managed">Managed by <a href="https://vegansexplore.com/business">Vegans Explore BrandDesk</a> · <a href="https://vegansexplore.com' + esc(L.directory || '/directory') + '">Find us on Vegans Explore</a></div></div>' +
-        '<div class="social">' + social.map(function (k) { return '<a href="' + esc(L[k]) + '" target="_blank" rel="noopener" aria-label="' + biz.name + ' on ' + k.charAt(0).toUpperCase() + k.slice(1) + '">' + ICON[k] + '</a>'; }).join('') + '</div></div></footer>';
+        '<div class="social">' + '<a class="ve" href="https://vegansexplore.com' + esc(L.directory || '/directory') + '" target="_blank" rel="noopener" aria-label="' + esc(biz.name) + ' on Vegans Explore"><img src="' + VE_MARK + '" alt=""></a>' + social.map(function (k) { return '<a href="' + esc(L[k]) + '" target="_blank" rel="noopener" aria-label="' + biz.name + ' on ' + k.charAt(0).toUpperCase() + k.slice(1) + '">' + ICON[k] + '</a>'; }).join('') + '</div></div></footer>';
       var bar = '<nav class="bar" aria-label="Quick actions"><a href="' + esc(tel) + '">Call</a><a href="' + esc(maps) + '" target="_blank" rel="noopener">Directions</a><a href="' + esc(orderHref()) + '">Order</a></nav>';
       document.getElementById('site').innerHTML = top + '<main>' + PAGES[page]() + '</main>' + foot + bar;
       if (!VS) document.title = (page === 'home' ? biz.name + ' · ' + (C.story.tagline || biz.city) : ({ menu: 'Menu', order: 'Order', about: 'About', visit: 'Visit', news: 'News' })[page] + ' · ' + biz.name);
