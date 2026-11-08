@@ -160,6 +160,7 @@
   .dash-save-row:first-child{border-top:0}
   .dash-save-img{width:48px;height:48px;border-radius:8px;background:var(--ve-green-light) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:16px}
   .dash-save-t{font-size:13.5px;font-weight:800;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;background:none;border:0;padding:0;text-align:left;font-family:inherit;color:var(--ve-text);cursor:pointer}
+  a.dash-save-t{text-decoration:none}
   .dash-save-t:hover{color:var(--ve-green-dark);text-decoration:underline}
   .dash-save-s{font-size:11.5px;font-weight:700;color:var(--ve-text-50);margin-top:2px}.dash-save-s button{background:none;border:0;padding:0;font:inherit;color:var(--ve-green-dark);cursor:pointer}
   .dash-save-acts{display:flex;gap:6px}
@@ -1209,6 +1210,8 @@
       <div class="dash-saves">
         <section class="dash-saves-box" aria-labelledby="dash-saves-ep-t"><h3 id="dash-saves-ep-t">Podcast episodes</h3><div id="dash-saves-eps" class="dash-saves-list"></div></section>
         <section class="dash-saves-box" aria-labelledby="dash-saves-l-t"><h3 id="dash-saves-l-t">Places and brands</h3><div id="dash-saves-listings" class="dash-saves-list"></div></section>
+        <!-- Communities (2026-11-08, from Brion Hurley's feedback: saving a chapter joins it, and My Saves showed nothing). -->
+        <section class="dash-saves-box" aria-labelledby="dash-saves-c-t"><h3 id="dash-saves-c-t">Communities</h3><div id="dash-saves-chapters" class="dash-saves-list"></div></section>
       </div>
     </div>
 
@@ -2547,6 +2550,25 @@
         else { b.disabled = true; VEAuth.unsaveListing(l.id).then(function () { renderSavesTab(); }); }
       };
     }).catch(function () { lb.innerHTML = '<div class="dash-saves-empty">Your saves did not load. Try again in a moment.</div>'; });
+    // Saved communities: a chapter's Save joins it (ve-chapters.js), kept on the session member as `communities`.
+    var cb = document.getElementById('dash-saves-chapters');
+    if (cb && window.VEAuth && window.VE_HUBS) {
+      var mine = ((VEAuth.getMember() || {}).communities || []).map(function (s) { return VE_HUBS.filter(function (h) { return h.slug === s; })[0]; }).filter(Boolean);
+      if (!mine.length) cb.innerHTML = '<div class="dash-saves-empty">No communities saved yet. Open Communities and tap Save on a chapter.</div>';
+      else {
+        cb.innerHTML = mine.map(function (h, i) {
+          var art = (h.page && h.page.banner) || '';
+          return '<div class="dash-save-row"><div class="dash-save-img" style="' + (art ? 'background-image:url(\'' + e(art) + '\')' : 'background-color:#2d7d31') + '"></div>' +
+            '<div style="min-width:0"><a class="dash-save-t" href="/communities/' + e(h.slug) + '">' + e(h.name) + '</a>' +
+            '<div class="dash-save-s">Community</div></div>' +
+            '<div class="dash-save-acts"><button type="button" data-i="' + i + '" aria-label="Remove ' + e(h.name) + ' from your communities">' + X + '</button></div></div>';
+        }).join('');
+        cb.onclick = function (ev) {
+          var b = ev.target.closest('button[data-i]'); if (!b) return;
+          b.disabled = true; VEAuth.leaveCommunity(mine[+b.getAttribute('data-i')].slug).then(function () { renderSavesTab(); }, function () { b.disabled = false; });
+        };
+      }
+    }
   }
   window.renderSavesTab = renderSavesTab;
 
