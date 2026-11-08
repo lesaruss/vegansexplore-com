@@ -19,5 +19,6 @@ starting with what is in our content, then sweep other shows.
 - A mention in show notes can be passing; those are labeled Mentioned and listed after Featured.
 
 ## Next
+- Final build: 834 listings, 74 with our episodes, 70 with other shows (582 episodes), 14 with people. One-time function stubbed.
 - Sean merges this branch to main (the page part waits on that; the data is live).
 - Logan: brands and food places on other shows (needs a stricter name rule; restaurant names are often generic).
