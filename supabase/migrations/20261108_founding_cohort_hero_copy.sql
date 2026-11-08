@@ -21,3 +21,7 @@ Start here: {link}
 Thank you,
 Sean$b$, locked_at = null
 where campaign_slug = 'founding-cohort-1-2026-11' and step = 1;
+
+-- Sean, 2026-11-08: "let's make this the official cohort email". Locked (by Sean's account); approving the campaign stays his button.
+update ve_outreach_campaign_emails set locked_at = now(), locked_by = '72712a4a-ea0e-4ef4-a29e-d382496ef8da'
+where campaign_slug = 'founding-cohort-1-2026-11' and step = 1 and locked_at is null;
