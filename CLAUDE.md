@@ -1234,7 +1234,7 @@ owner, Work with us); each opens the sample in the state it needs (`site.html` r
 canon-ve-guide-tour-standard v2) in her scene picture (`business/sample/img/v-tour.jpg`), her 2:12 tour video in the frame (`vegan-media/media/business/sample/
 v-tour-v1.mp4`, captions `business/sample/v-tour-v1.vtt`; nothing plays until Play; Expand on phones), Play the tour and Talk to our team (`VEManaged`, from
 `sample-tour`); a hidden `[data-vepg-talk]` stops `ve-page-guide.js` adding "Talk to Liz", since V is not one of its chat Guides. The sample site's bar has a
-green **Take the tour** button. Script and recording notes: `docs/proposals/green-leaf-tour-script.md`. Next: the owner's BrandDesk view, then the pricing build. Handoff `docs/handoff/2026-11-08-ve-demo-showroom-green-leaf-site.md`.
+green **Take the tour** button. Script and recording notes: `docs/proposals/green-leaf-tour-script.md`. **Sean rejected the video the same day** ("a choppy scroll... I want to see every 3 seconds a different shot"): v1 panned full-page captures; re-cut as `v-tour-v2.mp4` from viewport stills with slow zooms, a new shot about every 3 s, same voice files (canon `canon-video-shot-pace`; handoff `docs/handoff/2026-11-08-ve-demo-showroom-tour-video-redo.md`). Then the owner's BrandDesk view, then the pricing build. Handoff `docs/handoff/2026-11-08-ve-demo-showroom-green-leaf-site.md`.
 
 ## Content index (Sean, 2026-10-10: "go ahead and start on the content index")
 
@@ -6437,6 +6437,13 @@ sample Gig Board (`/gigs/sample`, Kai Monroe) and the sample pitch (`/business/p
 stamp (a corner tag on the frame), never cropped out, so no demo reads as a real listing or a real result. A real business appears only as
 itself, with what it really has. First: the Holiday Guide's Holiday Menus video (`theo-menus-v3`) shows Green Leaf Kitchen's holiday menu,
 stamped Sample, instead of waiting for real menus.
+
+## Video pace: a new shot every 3 seconds (Sean, 2026-11-08, canon `canon-video-shot-pace`)
+
+"People's attention spans are way too short to be sitting there watching a page scroll choppily for 6 seconds." In every narrated video we
+make (tours, Guide and page videos, social, ads, the podcast's video), the shot changes about every 3 seconds (never more than about 3.5), each
+shot a still with a slow, smooth zoom or gentle pan, never a scrolling page. Capture pages as viewport-sized stills, cut on the words with stt
+timings, render the zoom smoothly (no stair-stepping), and send Sean a short sample before the full render.
 
 ## Time is Sean's: Eastern (Sean, 2026-11-01)
 
