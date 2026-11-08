@@ -252,7 +252,7 @@
         var h = (list || []).filter(function (x) { return x.open; })[0], c = $('countdown');
         if (!h) { c.hidden = false; c.className = 'countdown shut'; c.innerHTML = 'Holiday menus are closed right now. The next holiday opens soon.'; return; }
         c.hidden = false; c.className = 'countdown';
-        c.innerHTML = '<span>' + esc(h.name) + ' menus close at 11:59 PM Eastern on ' + esc(closeText(h.submit_close)) + '.</span><b>' + (h.days_left <= 1 ? 'Last day' : h.days_left + ' days left') + '</b>';
+        c.innerHTML = '<span>Send it early: your menu goes up as soon as our team checks it. ' + esc(h.name) + ' menus close at 11:59 PM Eastern on ' + esc(closeText(h.submit_close)) + '.</span><b>' + (h.days_left <= 1 ? 'Last day' : h.days_left + ' days left') + '</b>';
       }
 
       // ---- Not signed in / not a member / no page ----
@@ -449,7 +449,7 @@
           var l = listing() || {}, h = holiday() || {};
           $('form').hidden = true; $('stepper').hidden = true; $('lede').hidden = true;
           $('done').hidden = false;
-          $('done').innerHTML = '<h2>Your ' + esc(h.name) + ' menu is in</h2><p class="lede">Our team checks every menu by hand, usually within a day. We email you when it is approved, and it shows in the Holiday Guide when the Guide opens for ' + esc(h.name) + '.</p>' +
+          $('done').innerHTML = '<h2>Your ' + esc(h.name) + ' menu is in</h2><p class="lede">Our team gives it a quick check, usually within a day. It goes up in the Holiday Guide as soon as it is approved, and we email you when it is live. Most people order early, so the sooner it is up, the more orders it can bring.</p>' +
             '<div class="nx-grid"><a class="nx" href="/business/holiday-menu"><small>Change it</small><b>Edit your menu</b><span>Any change before menus close goes back for a quick look.</span></a>' +
             '<a class="nx" href="/directory/' + esc(l.slug) + '?tab=brand&edit=hours"><small>While you are here</small><b>Update your hours</b><span>Make sure your regular hours are right for the season.</span></a>' +
             '<a class="nx" href="/dashboard"><small>Your dashboard</small><b>Back to your dashboard</b><span>See your page, your numbers and what is coming next.</span></a></div>';
