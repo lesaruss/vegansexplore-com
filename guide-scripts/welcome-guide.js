@@ -274,6 +274,8 @@
   }
   // Liz's eight recorded chapters (2026-11-08, her roster-profile voice, each checked word for word with stt), back to back on the Overview.
   var AUDIO_BASE = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/tour-';
+  // A re-recorded chapter names its take (chapter 1: "Let's go" said again, 2026-11-08, stt word for word).
+  var TAKE = { 1: 'v2b' };
   var playBtn = document.getElementById('dgPlay'), aud = new Audio(), PLAY = { at: 0, playing: false, started: false };
   aud.preload = 'none';
   function nowText() { return PLAY.started ? 'Chapter ' + (PLAY.at + 1) + ' of ' + CHAPTERS.length + ': ' + esc(CHAPTERS[PLAY.at][0]) : ''; }
@@ -286,7 +288,7 @@
   }
   function playAt(n) {
     PLAY.at = n; PLAY.started = true;
-    aud.src = AUDIO_BASE + (n + 1) + '-v1.mp3';
+    aud.src = AUDIO_BASE + (n + 1) + '-' + (TAKE[n + 1] || 'v1') + '.mp3';
     if (curTab === 'overview') bubble.textContent = CHAPTERS[n][1];
     aud.play().then(function () { PLAY.playing = true; paintPlay(); if (!n) try { gtag('event', 'audio_start', { audio: 'welcome_tour' }); } catch (e) {} }).catch(function () { PLAY.playing = false; paintPlay(); });
     paintPlay();
