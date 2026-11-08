@@ -35,6 +35,9 @@
     .top .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;height:68px;}
     .brand{display:flex;align-items:center;gap:12px;text-decoration:none;}
     .brand img{width:44px;height:44px;border-radius:8px;object-fit:cover;}
+    .brand img.mark{width:54px;height:54px;border-radius:0;object-fit:contain;}
+    .btn.obtn{min-height:42px;padding:9px 30px;border-radius:999px;letter-spacing:.01em;}
+    .btn.obtn svg{width:18px;height:18px;flex:none;}
     .brand span{font-family:var(--f-head);font-weight:var(--f-head-w);font-size:20px;}
     .links{display:flex;align-items:center;gap:24px;font-weight:600;font-size:15px;}
     .links a{text-decoration:none;padding:4px 0;border-bottom:2px solid transparent;}
@@ -64,6 +67,7 @@
     .lede{font-size:18px;max-width:760px;margin:0 0 30px;opacity:.88;}
     .pagehead{padding-top:56px;padding-bottom:20px;}
     .pagehead h1{font-size:clamp(36px,4.6vw,60px);margin-bottom:10px;}
+    .dishes.six{grid-template-columns:repeat(3,minmax(0,1fr));}
     .dishes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:24px;}
     .dish{background:color-mix(in srgb,var(--c-soft) 55%,var(--c-page));border-radius:14px;overflow:hidden;display:flex;flex-direction:column;}
     .dish img{width:100%;aspect-ratio:4/5;object-fit:cover;}
@@ -101,6 +105,46 @@
     .done h3{font-size:26px;margin-bottom:8px;}
     .linkorder{border:1.5px solid color-mix(in srgb,var(--c-text) 15%,transparent);border-radius:14px;padding:28px;display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between;margin-bottom:30px;background:var(--c-soft);}
     .cartbar{display:none;}
+    .dlv{border:1.5px dashed color-mix(in srgb,var(--c-text) 25%,transparent);border-radius:10px;padding:12px;margin-bottom:14px;}
+    .dlv .h{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:700;margin-bottom:8px;}
+    .dlv .h img{width:22px;height:22px;}
+    .dlv .h .soon{margin-left:auto;background:var(--c-highlight);color:var(--c-ink);border-radius:6px;padding:2px 8px;font-size:11px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;}
+    .dlv select{opacity:.7;cursor:not-allowed;}
+    /* The order tracker: a demo, so it rests on Preparing and pulses there. */
+    .track{text-align:left;padding:6px 0 4px;}
+    .track .no{font-size:13px;opacity:.75;margin:0 0 4px;}
+    .track h3{font-size:24px;margin-bottom:4px;}
+    .track .eta{font-size:15px;margin:0 0 16px;}
+    .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px;}
+    .steps i{display:block;height:6px;border-radius:6px;background:color-mix(in srgb,var(--c-text) 14%,transparent);}
+    .steps i.st-done{background:var(--c-accent);}
+    .steps i.st-now{background:var(--c-accent);animation:pulse 1.4s ease-in-out infinite;}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+    .tlist{list-style:none;padding:0;margin:0 0 14px;display:grid;gap:10px;font-size:14px;}
+    .tlist li{display:flex;align-items:center;gap:10px;opacity:.5;}
+    .tlist li.st-done,.tlist li.st-now{opacity:1;}
+    .tlist b{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;border:2px solid currentColor;font-size:12px;flex:none;}
+    .tlist li.st-done b{background:var(--c-accent);border-color:var(--c-accent);color:var(--c-page);}
+    .tlist li.st-now b{border-color:var(--c-accent);color:var(--c-accent);animation:pulse 1.4s ease-in-out infinite;}
+    @media (prefers-reduced-motion:reduce){.steps i.st-now,.tlist li.st-now b{animation:none;}}
+    /* Our story video */
+    .vid{position:relative;border-radius:14px;overflow:hidden;background:#000;aspect-ratio:4/3;}
+    .vid video{width:100%;height:100%;object-fit:cover;display:block;}
+    .vid .play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;background:linear-gradient(to top,rgba(0,0,0,.55),rgba(0,0,0,.1));border:0;color:#fff;cursor:pointer;font:700 16px/1.2 inherit;}
+    .vid .play span.c{width:76px;height:76px;border-radius:50%;background:var(--c-accent);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 30px rgba(0,0,0,.35);}
+    .vid .play svg{width:30px;height:30px;margin-left:4px;fill:var(--c-page);}
+    /* Latest news */
+    .posts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;}
+    .post{background:var(--c-page);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;text-decoration:none;}
+    .post img{width:100%;aspect-ratio:4/3;object-fit:cover;}
+    .post .body{padding:18px 20px 22px;display:flex;flex-direction:column;gap:8px;flex:1;}
+    .post .k{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--c-accent);}
+    .post h3{font-size:22px;}
+    .post p{margin:0;font-size:15px;opacity:.88;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .post .d{font-size:13px;opacity:.65;margin-top:auto;}
+    .article{max-width:820px;}
+    .article img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:14px;margin:20px 0 26px;}
+    .article p{font-size:18px;margin:0 0 16px;}
     /* The space */
     .sets{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
     .sets button{border:1.5px solid color-mix(in srgb,var(--c-text) 25%,transparent);background:none;color:inherit;border-radius:6px;padding:9px 16px;font:700 14px/1 inherit;cursor:pointer;}
@@ -124,6 +168,7 @@
     .social svg{width:20px;height:20px;fill:currentColor;}
     .managed{opacity:.7;font-size:12.5px;margin-top:12px;}
     .bar{display:none;}
+    @media (max-width:1180px) and (min-width:901px){.dishes.six,.posts{grid-template-columns:repeat(2,minmax(0,1fr));}}
     @media (max-width:900px){
       .wrap,.sample{padding-left:16px;padding-right:16px;}
       .links{display:none;position:absolute;top:68px;left:0;right:0;background:var(--c-page);flex-direction:column;align-items:stretch;gap:0;padding:8px 16px 16px;border-bottom:1px solid color-mix(in srgb,var(--c-text) 12%,transparent);}
@@ -131,6 +176,7 @@
       .links a{padding:12px 0;}
       .burger{display:block;}
       .split,.visit,.order{grid-template-columns:minmax(0,1fr);gap:26px;}
+      .dishes.six,.posts{grid-template-columns:minmax(0,1fr);}
       .cart{position:static;}
       footer.site .wrap{grid-template-columns:minmax(0,1fr);gap:24px;}
       section.s{padding:52px 0;}
@@ -155,6 +201,7 @@
     // preview, base, page, origin, dashboard}. Each page is its own address there (/menu, /visit...), drawn on the server for search.
     var VS = window.VE_SITE || null;
     // ?pitch=<code>: a business's own home page on the frame, built from its Directory page for its pitch (ve-branddesk pitch_site).
+    var VE_MARK = 'https://vegansexplore.com/public/ve-logo-mark.svg';
     var PITCH = new URLSearchParams(location.search).get('pitch');
     if (VS) run(VS.cartridge);
     else if (PITCH) {
@@ -214,7 +261,7 @@
     var items = [], byKey = {};
     C.menu.sections.forEach(function (s, si) { s.items.forEach(function (it, ii) { var k = si + '-' + ii; var o = Object.assign({ section: s.name, key: k }, it); items.push(o); byKey[k] = o; }); });
     var withPhoto = items.filter(function (i) { return i.photo && i.photo.src; });
-    var picks = withPhoto.filter(function (i) { return (i.tags || []).indexOf('Favorite') >= 0; }).concat(withPhoto.filter(function (i) { return (i.tags || []).indexOf('Favorite') < 0; })).slice(0, 4);
+    var picks = withPhoto.filter(function (i) { return (i.tags || []).indexOf('Favorite') >= 0; }).concat(withPhoto.filter(function (i) { return (i.tags || []).indexOf('Favorite') < 0; })).slice(0, 6);
     var space = C.photos.space.filter(function (s) { return s.src; });
     function spaceOf(set) { return space.filter(function (s) { return s.set === set; }); }
     var heroImg = (spaceOf('outside')[0] || spaceOf('inside')[0] || space[0] || {}).src || '';
@@ -223,7 +270,14 @@
     var mapEmbed = 'https://www.google.com/maps?q=' + encodeURIComponent(I.map_query || (I.address.city + ', ' + I.address.state + ' ' + I.address.zip)) + '&output=embed';
     var tel = 'tel:' + I.phone.replace(/[^\d+]/g, '');
     var files = B.logo.files || [], logo = B.logo.primary && B.logo.primary.src;
-    var rev = (files.filter(function (f) { return /Reversed/.test(f.name) && f.src; })[0] || {}).src;
+    var rev = (files.filter(function (f) { return /^Reversed/.test(f.name) && f.src; })[0] || {}).src;
+    // The mark alone (the leaf and fork) beside the name in the header; the stacked logo would repeat the name, smaller.
+    var mark = (files.filter(function (f) { return /mark alone/i.test(f.name) && !/reversed/i.test(f.name) && f.src; })[0] || {}).src;
+    var markRev = (files.filter(function (f) { return /mark alone/i.test(f.name) && /reversed/i.test(f.name) && f.src; })[0] || {}).src;
+    var POSTS = (C.posts || []).map(function (p, n) { var d = new Date(nowNY); d.setDate(d.getDate() - (p.days_ago || 0)); var o = Object.assign({ n: n, date: d }, p);
+      if (p.when_in_days != null) { var w = new Date(nowNY); w.setDate(w.getDate() + p.when_in_days); o.when = w; } return o; });
+    function fdate(d, wd) { return d.toLocaleDateString('en-US', wd ? { weekday: 'long', month: 'long', day: 'numeric' } : { month: 'long', day: 'numeric', year: 'numeric' }); }
+    var BAG = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 7h12l1 13H5L6 7z"/><path d="M9 7a3 3 0 016 0"/></svg>';
     var price = function (p) { return parseFloat(String(p).replace(/[^\d.]/g, '')) || 0; };
     var money = function (n) { return '$' + n.toFixed(2); };
     function orderHref() { return MODE === 'link' && I.ordering && I.ordering.order_url ? I.ordering.order_url : VS && !I.ordering.order_url ? tel : href('order'); }
@@ -264,18 +318,30 @@
         '<div><div class="eyebrow">Hours</div><div class="hours">' + DAYS.slice(1).concat(DAYS[0]).map(function (d) { var n = d === today ? 'now' : ''; return '<span class="' + n + '">' + d + '</span><span class="' + n + '">' + esc(I.hours[d] || 'Closed') + '</span>'; }).join('') + '</div></div></div>';
     }
 
+    function storyVideo() {
+      var v = C.story.video;
+      return '<div class="vid" data-vid><video preload="none" playsinline controls' + (v.poster ? ' poster="' + esc(v.poster) + '"' : '') + ' src="' + esc(v.src) + '">' +
+        (v.captions ? '<track kind="captions" srclang="en" label="English" src="' + esc(v.captions) + '" default>' : '') + '</video>' +
+        '<button class="play" type="button" data-playvid><span class="c"><svg viewBox="0 0 24 24"><path d="M7 4l13 8-13 8z"/></svg></span>' + esc(v.title || 'Watch our story') + '</button></div>';
+    }
+    function postHref(p) { return VS ? '#' : href('news') + '/' + p.n; }
+    function postCard(p) {
+      return '<a class="post" href="' + postHref(p) + '">' + (p.photo ? '<img src="' + esc(p.photo) + '" alt="" loading="lazy">' : '') + '<div class="body"><span class="k">' + esc(p.kind || 'News') + '</span><h3>' + esc(p.title) + '</h3>' +
+        '<p>' + esc((p.body || [])[0] || '') + '</p><span class="d">' + esc(fdate(p.date)) + '</span></div></a>';
+    }
     var PAGES = {
       home: function () {
         return '<div class="hero" style="background-image:url(\'' + esc(heroImg) + '\')"><div class="wrap"><span class="open' + (isOpen ? '' : ' closed') + '"><i></i>' + esc(openLine) + '</span>' +
           '<h1>' + esc(V.samples && V.samples.hero ? V.samples.hero : C.story.tagline) + '</h1><p>' + esc(C.story.short || C.story.tagline) + '</p>' +
           '<div class="btns"><a class="btn" href="' + href('menu') + '">See the menu</a><a class="btn ghost" href="' + esc(orderHref()) + '">Order</a><a class="btn ghost" href="' + esc(maps) + '" target="_blank" rel="noopener">Directions</a></div></div></div>' +
           '<div class="today"><div class="wrap"><span>Today: ' + esc(I.hours[today]) + '</span><span>' + esc(addr) + '</span><a href="' + esc(tel) + '">' + esc(I.phone) + '</a>' + (biz.vegan ? '<span class="badge">' + esc(biz.vegan) + '</span>' : '') + '</div></div>' +
-          (picks.length ? '<section class="s"><div class="wrap"><div class="eyebrow">Favorites</div><h2>What people come back for</h2><div class="dishes">' + picks.map(function (i) { return dish(i, false); }).join('') + '</div>' +
+          (picks.length ? '<section class="s"><div class="wrap"><div class="eyebrow">Favorites</div><h2>What people come back for</h2><div class="dishes' + (picks.length === 6 ? ' six' : '') + '">' + picks.map(function (i) { return dish(i, false); }).join('') + '</div>' +
           '<p style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap"><a class="btn" href="' + href('menu') + '">See the whole menu</a><a class="btn ghost" href="' + esc(orderHref()) + '">Order for pickup</a></p></div></section>' : '') +
           '<section class="s dark"><div class="wrap split"><div><div class="eyebrow">Our story</div><h2>' + esc(C.story.tagline) + '</h2><p>' + esc(C.story.long[0] || '') + '</p><p><a class="btn ghost" href="' + href('about') + '" style="color:inherit">Read our story</a></p></div>' +
-          ((spaceOf('team')[0] || spaceOf('inside')[0] || {}).src ? '<img src="' + esc((spaceOf('team')[0] || spaceOf('inside')[0]).src) + '" alt="' + esc(biz.name) + '" loading="lazy">' : '') + '</div></section>' +
+          (C.story.video && C.story.video.src ? storyVideo() : (spaceOf('team')[0] || spaceOf('inside')[0] || {}).src ? '<img src="' + esc((spaceOf('team')[0] || spaceOf('inside')[0]).src) + '" alt="' + esc(biz.name) + '" loading="lazy">' : '') + '</div></section>' +
           (space.length ? '<section class="s"><div class="wrap"><div class="eyebrow">The space</div><h2>Come sit with us</h2><div data-gallery>' + gallery() + '</div></div></section>' : '') +
-          (V.samples && V.samples.instagram ? '<section class="s" style="background:var(--c-soft)"><div class="wrap"><div class="eyebrow">Right now</div><p class="quote">' + esc(V.samples.instagram) + '</p></div></section>' : '') +
+          (POSTS.length ? '<section class="s" style="background:var(--c-soft)"><div class="wrap"><div class="eyebrow">Latest</div><h2>News from the kitchen</h2><div class="posts">' + POSTS.slice(0, 3).map(postCard).join('') + '</div></div></section>' :
+          V.samples && V.samples.instagram ? '<section class="s" style="background:var(--c-soft)"><div class="wrap"><div class="eyebrow">Right now</div><p class="quote">' + esc(V.samples.instagram) + '</p></div></section>' : '') +
           '<section class="s"><div class="wrap">' + visitBlock() + '</div></section>';
       },
       menu: function () {
@@ -298,6 +364,16 @@
           ((spaceOf('team')[0] || {}).src ? '<img src="' + esc(spaceOf('team')[0].src) + '" alt="The owner" loading="lazy">' : '') + '</div></section>' +
           '<section class="s" style="padding-top:0"><div class="wrap"><div class="eyebrow">The space</div><h2>Come sit with us</h2><div data-gallery>' + gallery() + '</div></div></section>';
       },
+      news: function () {
+        var n = +(location.hash.split('/')[2] || 0), p = POSTS[n] || POSTS[0];
+        if (!p) return PAGES.home();
+        return '<div class="wrap pagehead"><div class="eyebrow">' + esc(p.kind || 'News') + ' · ' + esc(fdate(p.date)) + '</div><h1>' + esc(p.title) + '</h1></div>' +
+          '<section class="s" style="padding-top:0"><div class="wrap"><div class="article">' + (p.photo ? '<img src="' + esc(p.photo) + '" alt="">' : '') +
+          (p.when ? '<p><b>When: ' + esc(fdate(p.when, true)) + ', 6 to 9 PM</b></p>' : '') + (p.body || []).map(function (x) { return '<p>' + esc(x) + '</p>'; }).join('') +
+          (p.link ? '<p><a class="btn" href="' + esc(p.link.href) + '" target="_blank" rel="noopener">' + esc(p.link.label) + '</a></p>' : '') +
+          '<p style="margin-top:30px"><a class="btn ghost" href="' + href('home') + '">Back home</a></p></div>' +
+          (POSTS.length > 1 ? '<div class="eyebrow" style="margin-top:50px">More news</div><div class="posts">' + POSTS.filter(function (q) { return q !== p; }).slice(0, 3).map(postCard).join('') + '</div>' : '') + '</div></section>';
+      },
       visit: function () {
         return '<div class="wrap pagehead"><div class="eyebrow">Visit</div><h1>Come see us</h1></div><section class="s" style="padding-top:20px"><div class="wrap">' + visitBlock() + '</div></section>';
       }
@@ -308,7 +384,10 @@
     function cartTotal() { return cartLines().reduce(function (a, k) { return a + price(byKey[k].price) * CART[k]; }, 0); }
     var placed = null;
     function cartHtml() {
-      if (placed) return '<div class="done"><h3>Order sent</h3><p>Order <b>' + esc(placed.no) + '</b> went straight to our kitchen. It will be ready ' + esc(placed.when) + '.</p><p class="note">Sample: nothing was charged or sent.</p><button class="btn ghost sm" type="button" data-neworder>Start a new order</button></div>';
+      if (placed) return '<div class="track" role="status"><p class="no">Order ' + esc(placed.no) + (placed.name ? ' · for ' + esc(placed.name) : '') + '</p><h3>Preparing your order</h3><p class="eta">Ready for pickup ' + esc(placed.when) + '.</p>' +
+        '<div class="steps" aria-hidden="true"><i class="st-done"></i><i class="st-now"></i><i></i><i></i></div>' +
+        '<ol class="tlist"><li class="st-done"><b>✓</b>Order sent to our kitchen</li><li class="st-now"><b>2</b>Preparing</li><li><b>3</b>Ready for pickup</li><li><b>4</b>Picked up</li></ol>' +
+        '<p class="note" style="margin:0 0 12px">Come to the counter and give your name. ' + esc(addr) + '</p><p class="note">Sample: nothing was charged or sent.</p><button class="btn ghost sm" type="button" data-neworder>Start a new order</button></div>';
       var ls = cartLines();
       if (!ls.length) return '<h3>Your order</h3><p class="note" style="margin:0">Nothing yet. Tap Add on anything on the menu.</p>';
       var sub = cartTotal(), taxv = sub * 0.07;
@@ -316,6 +395,9 @@
         '<div class="total"><span>Subtotal</span><span>' + money(sub) + '</span></div><p class="note" style="margin:-8px 0 14px">Tax ' + money(taxv) + ' added at checkout.</p>' +
         '<label class="f">Name for the order<input data-oname autocomplete="name" placeholder="Your name"></label>' +
         '<label class="f">Pickup<select data-owhen><option>As soon as it is ready (about ' + (I.ordering.pickup_minutes || 20) + ' minutes)</option><option>In 45 minutes</option><option>In an hour</option></select></label>' +
+        '<div class="dlv"><div class="h">' + (VE_MARK ? '<img src="' + VE_MARK + '" alt="">' : '') + 'Delivery<span class="soon">Coming soon</span></div>' +
+        '<label class="f" style="margin:0">Vegans Explore Delivery<select disabled aria-disabled="true"><option>Coming soon to ' + esc(I.address.city || 'your city') + '</option></select></label>' +
+        '<p class="note">Delivered by our neighbors at Vegans Explore. Pickup only for now.</p></div>' +
         '<label class="f">Anything we should know<textarea data-onote rows="2" placeholder="No onions, extra napkins..."></textarea></label>' +
         '<button class="btn" type="button" data-place style="width:100%">Pay and place order · ' + money(sub + taxv) + '</button>' +
         '<p class="note">You pay on ' + esc(I.ordering.pos || 'our') + '\'s secure checkout. Your order shows up on our ' + esc(I.ordering.pos || '') + ' screen in the kitchen.</p>';
@@ -334,9 +416,9 @@
       else if (PC) document.getElementById('sampleBar').style.display = 'none'; else document.getElementById('sampleBar').innerHTML = '<b>Sample</b><span>Green Leaf Kitchen\'s website on our BrandDesk frame, a made-up restaurant. Everything comes from its <a href="/business/sample/brand">brand kit</a>.</span>' +
         '<span class="seg push" role="group" aria-label="Make it yours: the look">' + LOOKS.map(function (l) { return '<button type="button" data-look="' + l.key + '" class="' + (l.key === LOOK ? 'on' : '') + '">' + esc(l.name) + '</button>'; }).join('') + '</span>' +
         '<span class="seg" role="group" aria-label="Ordering"><button type="button" data-mode="pos" class="' + (MODE === 'pos' ? 'on' : '') + '">Ordering connected to Square</button><button type="button" data-mode="link" class="' + (MODE === 'link' ? 'on' : '') + '">Ordering by link</button></span>';
-      var top = '<header class="top"><div class="wrap"><a class="brand" href="' + href('home') + '">' + (logo ? (DARK_PAGE && rev ? '<img class="rev" src="' + esc(rev) + '" alt="">' : '<img src="' + esc(logo) + '" alt="">') : '') + '<span>' + esc(biz.name) + '</span></a>' +
+      var top = '<header class="top"><div class="wrap"><a class="brand" href="' + href('home') + '">' + (mark ? '<img class="mark" src="' + esc(DARK_PAGE && markRev ? markRev : mark) + '" alt="">' : logo ? (DARK_PAGE && rev ? '<img class="rev" src="' + esc(rev) + '" alt="">' : '<img src="' + esc(logo) + '" alt="">') : '') + '<span>' + esc(biz.name) + '</span></a>' +
         '<button class="burger" type="button" aria-label="Menu" data-burger><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>' +
-        '<nav class="links" id="links">' + NAV.map(function (n) { return '<a href="' + n[2] + '" class="' + (n[0] === page ? 'on' : '') + '">' + n[1] + '</a>'; }).join('') + '<a class="btn" href="' + esc(orderHref()) + '">Order</a></nav></div></header>';
+        '<nav class="links" id="links">' + NAV.map(function (n) { return '<a href="' + n[2] + '" class="' + (n[0] === page ? 'on' : '') + '">' + n[1] + '</a>'; }).join('') + '<a class="btn obtn" href="' + esc(orderHref()) + '">' + BAG + 'Order online</a></nav></div></header>';
       var L = I.links || {}, social = ['instagram', 'tiktok', 'facebook'].filter(function (k) { return L[k]; });
       var foot = '<footer class="site"><div class="wrap">' + (rev ? '<img class="flogo" src="' + esc(rev) + '" alt="' + esc(biz.name) + '">' : '<div class="f-h" style="font-size:24px">' + esc(biz.name) + '</div>') +
         '<div><nav>' + NAV.concat([['order', 'Order', orderHref()]]).map(function (n) { return '<a href="' + esc(n[2]) + '">' + n[1] + '</a>'; }).join('') + '</nav>' +
@@ -345,7 +427,7 @@
         '<div class="social">' + social.map(function (k) { return '<a href="' + esc(L[k]) + '" target="_blank" rel="noopener" aria-label="' + biz.name + ' on ' + k.charAt(0).toUpperCase() + k.slice(1) + '">' + ICON[k] + '</a>'; }).join('') + '</div></div></footer>';
       var bar = '<nav class="bar" aria-label="Quick actions"><a href="' + esc(tel) + '">Call</a><a href="' + esc(maps) + '" target="_blank" rel="noopener">Directions</a><a href="' + esc(orderHref()) + '">Order</a></nav>';
       document.getElementById('site').innerHTML = top + '<main>' + PAGES[page]() + '</main>' + foot + bar;
-      if (!VS) document.title = (page === 'home' ? biz.name + ' · ' + (C.story.tagline || biz.city) : ({ menu: 'Menu', order: 'Order', about: 'About', visit: 'Visit' })[page] + ' · ' + biz.name);
+      if (!VS) document.title = (page === 'home' ? biz.name + ' · ' + (C.story.tagline || biz.city) : ({ menu: 'Menu', order: 'Order', about: 'About', visit: 'Visit', news: 'News' })[page] + ' · ' + biz.name);
       drawCart();
     }
     if (!VS) window.addEventListener('hashchange', function () { placed = null; draw(); window.scrollTo(0, 0); });
@@ -365,9 +447,10 @@
       if ((t = e.target.closest('[data-place]'))) {
         var nm = document.querySelector('[data-oname]'); if (!nm.value.trim()) { nm.focus(); nm.placeholder = 'We need a name for the order'; return; }
         var w = document.querySelector('[data-owhen]').value;
-        placed = { no: 'GL-' + (1000 + Math.floor(Math.random() * 9000)), when: /soon/.test(w) ? 'in about ' + (I.ordering.pickup_minutes || 20) + ' minutes' : w.replace(/^In /, 'in ') };
-        CART = {}; saveCart(); drawCart(); document.querySelectorAll('[data-add]').forEach(function (b) { b.outerHTML = '<button class="btn sm add" type="button" data-add="' + b.dataset.add + '">Add</button>'; }); return; }
+        placed = { name: nm.value.trim().split(/\s+/)[0], no: 'GL-' + (1000 + Math.floor(Math.random() * 9000)), when: /soon/.test(w) ? 'in about ' + (I.ordering.pickup_minutes || 20) + ' minutes' : w.replace(/^In /, 'in ') };
+        CART = {}; saveCart(); drawCart(); var ce = document.getElementById('cart'); if (ce && ce.getBoundingClientRect().top < 0 || ce && ce.getBoundingClientRect().top > innerHeight) ce.scrollIntoView({ behavior: 'smooth', block: 'start' }); document.querySelectorAll('[data-add]').forEach(function (b) { b.outerHTML = '<button class="btn sm add" type="button" data-add="' + b.dataset.add + '">Add</button>'; }); return; }
       if (e.target.closest('[data-neworder]')) { placed = null; drawCart(); }
+      if ((t = e.target.closest('[data-playvid]'))) { var vv = t.parentNode.querySelector('video'); t.remove(); vv.play(); try { gtag('event', 'video_start', { video: 'site_story' }); } catch (x) {} }
     });
     draw();
 
