@@ -48,7 +48,7 @@
 <body>
 <script src="/public/nav.js"></script>
 <main>
-  <p class="k">Dashboard</p>
+  <p class="k" id="kick">Dashboard</p>
   <h1 id="h1">Your profile</h1>
   <p class="lede" id="lede">Tell us about yourself, one question at a time, in any order. Every answer goes on your profile, shapes your dashboard around you, and earns points the moment you give it: 250 in all, and the ones in your own words are worth the most.</p>
   <div class="why" id="why"><span>Up to 250 points</span><span>Any order</span><span>Saved as you go</span><span>Change answers any time</span></div>
@@ -72,19 +72,22 @@
   // A Guide's own survey (/survey?s=<slug>, rows in ve_surveys): free, earns its points, and finishing it opens that Guide and a membership.
   function guideSurvey(slug) {
     var rm = VEAuth.getRealMember && VEAuth.getRealMember();
-    if (!VEAuth.getToken() || !rm) {
+    // Survey first, account last (Sean, 2026-11-07; playbook ve-mobile-app H): a survey that admits is answered with no account and saved at the
+    // end. Only a survey that does not admit asks for an account first (onNeedAccount below).
+    function needAccount() {
       var about = { 'vegan-events-guide': 'your events', 'vegan-restaurant-guide': 'your restaurant', 'creator-guide': 'you and what you make' }[slug];
-      $('lede').textContent = about ? 'Make your free account first, then answer a few questions about ' + about + '. It takes about ten minutes and nothing is charged.'
+      $('host').hidden = true;
+      $('lede').textContent = about ? 'Make your free account first, then answer a few questions about ' + about + '. Nothing is charged.'
         : 'Make your free account first, then answer a few questions. Nothing is charged.';
       $('why').innerHTML = '<span>Free</span><span>Earns points</span><span>Saved as you go</span>';
       $('gate').hidden = false;
       $('gate').innerHTML = '<p>Make your free account to start.</p><p><button class="btn" id="gsStart" type="button">Start</button></p>';
       $('gsStart').onclick = function () { try { sessionStorage.setItem('ve_survey_for', slug); } catch (e) {} VEAuth.showAuthModal('Make your account, then take the survey. It is free.', function () { location.reload(); }, 'signup'); };
-      return;
     }
+    if (!VEAuth.getToken()) rm = null;
     $('host').hidden = false;
     // The Explorer survey on the Welcome. Since Explorer v7 step 3 (canon-ve-door-guides v7, 2026-11-06) it admits on finishing; the abuse watch is the guard.
-    var explorer = slug === 'explorer', pendingAcct = rm.membership_status === 'pending_payment';
+    var explorer = slug === 'explorer', pendingAcct = !rm || rm.membership_status === 'pending_payment';
     var GUIDE_FOR = { restaurant: ['vegan-restaurant-guide', 'The Vegan Restaurant Guide'], events: ['vegan-events-guide', 'The Vegan Events Guide'], nonprofit: ['nonprofit-guide', 'The Nonprofit Guide'], creator: ['creator-guide', 'The Creator Guide'] };
     // Sent here from a free media claim (claim.html, ve_claim_after_survey): finishing takes them back to it.
     function claimBack() { try { var v = sessionStorage.getItem('ve_claim_after_survey') || ''; return /^[a-z0-9_-]{1,120}$/.test(v) ? v : ''; } catch (e) { return ''; } }
@@ -98,6 +101,7 @@
     }
     VEGuideSurvey.mount($('host'), {
       survey: slug,
+      onNeedAccount: needAccount,
       doneHtml: explorer ? function (A) { return explorerDone(A.x_run); } : null,
       onLoaded: function (S) { window.__vgsGuide = S.guide_slug || null; $('lede').textContent = S.intro || ''; $('why').innerHTML = '<span>Free</span>' + (S.total ? '<span>Up to ' + S.total + ' points</span>' : '<span>Private</span>') + '<span>Saved as you go</span>'; },
       onChange: function () { var q = /^#q\//.test(location.hash); $('lede').hidden = q; $('why').hidden = q; try { window.scrollTo(0, 0); } catch (e) {} tellParent(); },
@@ -117,7 +121,7 @@
   function start() {
     if (!window.VEAuth || !window.VEMissionSurvey || !window.VEGuideSurvey) return setTimeout(start, 200);
     var gs = /[?&]s=([a-z0-9-]{1,60})/.exec(location.search);
-    if (gs) { $('h1').textContent = 'Free with a short survey'; return guideSurvey(gs[1]); }
+    if (gs) { $('kick').textContent = 'Join free'; $('h1').textContent = 'Free with a short survey'; return guideSurvey(gs[1]); }
     if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<p>Sign in to build your profile.</p><p><a class="btn" href="/login?next=/dashboard/survey">Sign in</a></p>'; return; }
     var m = VEAuth.getMember();
     if (m && m.membership_status !== 'active') { $('gate').hidden = false; $('gate').textContent = 'Your profile opens once your Passport is active.'; return; }
