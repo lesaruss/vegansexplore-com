@@ -7108,7 +7108,7 @@ on the page, an Inbox row for a new answer (it emails contact@lesaruss.com).
   `social-2026-11-08`): Instagram through Apify's profile scraper (885 handles, $2.04, misses run twice): 34 accounts that no longer exist
   (Honest Cuban's `@vegancubancuisine` among them; `@honestcuban` exists with 9 posts but is not confirmed theirs), 15 `@rsrc.php` and one
   `@accounts`, all cleared; `fish_defender,` fixed. Facebook: 25 system pages (16 `facebook.com/docs`, 5 `/login`, `/help`, `/2008`, `/external-redirect`...)
-  cleared (26), Blue Moon Cafe's trailing text trimmed. Every removed value is kept in `listings.details.social_removed` and logged in
+  cleared (27 listings), Blue Moon Cafe's trailing text trimmed. Every removed value is kept in `listings.details.social_removed` and logged in
   `ve_listing_edits` (`meta.playbook` ve-feedback). Migration note `20261108_social_links_cleanup.sql`.
 - **Where the junk came from**: the home-page readers (`ve-restaurant-audit` essentials, `ve-discover`, `ve-logo-hunt`) matched
   `instagram.com/` anywhere in a link, so `static.cdninstagram.com/rsrc.php/...` read as `@rsrc.php`, and took Facebook's own pages from site
