@@ -26,3 +26,9 @@ begin
     ) as v(id, f, b)
    where s.id = v.id;
 end $$;
+
+-- Then (same day): frames 18 and 19 recaptured with the Sample stamp out of the shot (Sean: the warning is not what people
+-- want to see), and frame 43 shows the countdown so it no longer repeats frame 37.
+update ve_video_shots set image_url = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/tours/welcome-guide/v45/s18-dashboard.jpg', status = 'proposed' where id = '403c0815-036f-4556-bc29-5a2fc7c11449';
+update ve_video_shots set image_url = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/tours/welcome-guide/v45/s19-points.jpg', status = 'proposed' where id = 'dc2b6006-f691-4b79-abfc-431b85a90449';
+update ve_video_shots set image_url = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/tours/welcome-guide/v45/s43-countdown.jpg', status = 'proposed' where id = '20a61aec-19bd-4996-87e1-1cdc31a94935';
