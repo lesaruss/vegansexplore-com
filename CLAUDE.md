@@ -7418,3 +7418,16 @@ a demo first and edit the video after. **Clothes (Sean, same day):** the Vegans 
 colors (black, white, cream, pink...) and as a long sleeve, with different pants and a jacket over it as the scene needs, as long as the mark can be seen.
 No other brand's logo. This loosens "only clothes from our store" (2026-11-01). **A sample member** (approved): an invented member like Kai, so the member
 side can be shown fully built.
+
+## People campaigns in BrandDesk, and founding cohort 1 (Sean, 2026-11-08, playbook `ve-outreach-buckets`)
+
+"It was always our intention to send to people who aren't business owners... built into the outreach, and so we can track it the way we track
+everything else." A BrandDesk campaign with `audience` `people` holds members by email (`ve_outreach_campaign_members.person_key`, plus
+`person_name`, `person_id`), no listing, and sends through the same `campaignTick` with the same rules and the same per-member tracked `/go/` link
+and `email_sends` rows (migration `20261108_people_campaigns.sql`; `ve-outreach` from 3ec1db0, sha256 bb430bd9; it still has `campaignTick`). Each
+person's outreach contact is segment `person` on the list `people-campaigns`, which is never switched on. A campaign's `footer_reason` words the
+footer. HQ (branch `claude/focused-fermi-o89hgt`, not on HQ main): a People tile, person rows, preview and test by `member_id`, and Opened / Clicked
+on every campaign row. **Cohort 1** `founding-cohort-1-2026-11`: 151 from Suggested for Vegans Explore (list `docs/proposals/founding-cohort-1-list.md`),
+from Sean, to the Welcome Guide, start Mon Nov 9, a draft until Sean locks and approves; three Wednesday Holiday Guide follow-ups by engagement
+(`founding-cohort-1-wed-clicked|opened|quiet`), drafts with no people until Wednesday morning. Handoff
+`docs/handoff/2026-11-08-ve-outreach-buckets-founding-cohort-email.md`. Not built: adding people to a people campaign from HQ.
