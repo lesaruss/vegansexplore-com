@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Comments | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:14px;}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;}
+    .tabs a{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-text);text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:14px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
+    .card img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#eee;cursor:zoom-in;}
+    .card .body{padding:14px 16px;display:flex;flex-direction:column;gap:6px;flex:1;}
+    .kind{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .card h3{font-size:15px;font-weight:800;line-height:1.3;}
+    .card h3 a{color:inherit;}
+    .meta{font-size:12.5px;color:var(--ve-text-75);}
+    .quote{font-size:14px;background:#f7faf7;border-left:3px solid var(--ve-green);padding:8px 12px;border-radius:6px;}
+    .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;}
+    .btn:disabled{opacity:.5;cursor:default;}
+    .btn-ghost{background:#fff;color:#8a1c12;border:1px solid rgba(0,0,0,0.25);}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .lb{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;cursor:zoom-out;}
+    .lb img{max-width:100%;max-height:100%;border-radius:8px;}
+    .tools{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px;}
+    .tools select,.tools input{font-family:inherit;font-size:13px;min-height:40px;padding:8px 12px;border:1px solid var(--ve-border);border-radius:6px;background:#fff;color:var(--ve-text);}
+    .tools select{appearance:none;-webkit-appearance:none;padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;}
+    .tools input{flex:1;min-width:200px;}
+    .btn-quiet{background:#fff;color:var(--ve-green-deep);border:1px solid var(--ve-green-deep);}
+    @media (max-width:600px){.tools select{flex:1 1 100%;}}
+    .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:#eef1ee;color:#333;}
+    .tag.new{background:#fff1dc;color:#8a5200;}.tag.working{background:#e3eefc;color:#0f4a91;}.tag.fixed{background:var(--ve-green-light);color:var(--ve-green-deep);}.tag.spam{background:#fde7e5;color:#8a1c12;}
+    .card .excerpt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:14px;}
+    .crumb{font-size:12.5px;margin-bottom:12px;}.crumb a{color:var(--ve-green-deep);font-weight:700;}
+    .item{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:20px 22px;display:grid;gap:14px;}
+    .item .full{white-space:pre-wrap;font-size:15px;background:#f7faf7;border-left:3px solid var(--ve-green);padding:12px 14px;border-radius:6px;}
+    .item dl{display:grid;grid-template-columns:140px 1fr;gap:6px 14px;font-size:13.5px;}.item dt{font-weight:800;color:var(--ve-text-75);}.item dd{word-break:break-word;}
+    .item textarea{font-family:inherit;font-size:14px;width:100%;min-height:90px;padding:10px 12px;border:1px solid var(--ve-border);border-radius:6px;}
+    @media (max-width:600px){.item dl{grid-template-columns:1fr;}.item dt{margin-top:6px;}}
+    .card .body audio,.item audio{width:100%}
+    .tag.open{background:#fff1dc;color:#8a5200;}.tag.answered,.tag.approved,.tag.used{background:var(--ve-green-light);color:var(--ve-green-deep);}.tag.closed,.tag.declined{background:#eef1ee;color:#555;}
+    .form{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:20px 22px;display:grid;gap:12px;}
+    .form label{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ve-green-deep);display:block;margin-bottom:4px;}
+    .form input[type=text],.form input[type=email],.form input[type=number],.form textarea,.form select{width:100%;font-family:inherit;font-size:14px;padding:10px 12px;border:1px solid rgba(0,0,0,.22);border-radius:6px;background:#fff;}
+    .form textarea{min-height:90px;}
+    .form .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:12px;}
+    .form .checks{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;}
+    .resp{border:1px solid var(--ve-border);border-radius:10px;padding:14px 16px;display:grid;gap:8px;}
+    .linkbox{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:14px;}.linkbox code{background:#f3f5f3;padding:6px 10px;border-radius:6px;word-break:break-all;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Comments</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Ask a business, a person, an organization or the whole community for a comment, by voice or in writing (Sean, 2026-11-08, playbook ve-community-voices). Each request has its own link, /comment/&lt;code&gt;, to put in an email, a message or a Pulse post. A voice answer can be played in the article or on the show; every answer comes with the release.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden><div id="view"></div></main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-comments';
+      var SITE = 'https://vegansexplore.com';
+      var $ = function (id) { return document.getElementById(id); };
+      var ST = [['open', 'Open'], ['answered', 'Answered'], ['closed', 'Closed'], ['all', 'All']];
+      var KIND = { business: 'A business', person: 'A person', organization: 'An organization', community: 'The community' };
+      var PURPOSE = { pulse: 'Daily Pulse', spotlight: 'Spotlight on a listing', podcast: 'Podcast', article: 'Article', other: 'Something else' };
+      var RS = { new: 'New', approved: 'Approved', used: 'Used', declined: 'Not using' };
+      var rows = [], loaded = false;
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function when(t) { return t ? new Date(t).toLocaleString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' ET' : ''; }
+      function secs(s) { s = Math.round(s || 0); return Math.floor(s / 60) + ':' + ('0' + s % 60).slice(-2); }
+      // #list/<status>  #new  #r/<id>
+      function route() { var h = location.hash.replace(/^#/, '').split('/'); if (h[0] === 'new') return { v: 'new' }; if (h[0] === 'r') return { v: 'r', id: h[1] }; return { v: 'list', st: ST.some(function (s) { return s[0] === h[1]; }) ? h[1] : 'open' }; }
+      function drawList(r) {
+        var counts = {}; rows.forEach(function (x) { counts[x.status] = (counts[x.status] || 0) + 1; });
+        var tabs = ST.map(function (s) { return '<a href="#list/' + s[0] + '" class="' + (s[0] === r.st ? 'on' : '') + '">' + s[1] + ' (' + (s[0] === 'all' ? rows.length : counts[s[0]] || 0) + ')</a>'; }).join('');
+        $('view').innerHTML = '<nav class="tabs">' + tabs + '</nav><div class="tools"><input id="q" type="search" placeholder="Search requests" data-dictate="off"><a class="btn" href="#new">New request</a></div><div class="grid" id="grid"></div>';
+        function fill() {
+          var q = $('q').value.toLowerCase();
+          var list = rows.filter(function (x) { return (r.st === 'all' || x.status === r.st) && (!q || (x.title + ' ' + (x.to_name || '') + ' ' + (x.listing ? x.listing.name : '')).toLowerCase().indexOf(q) >= 0); });
+          $('grid').innerHTML = list.length ? list.map(function (x) {
+            return '<div class="card"><div class="body"><span class="kind">' + esc(KIND[x.kind]) + ' &middot; ' + esc(PURPOSE[x.purpose]) + '</span><div><span class="tag ' + x.status + '">' + esc(x.status) + '</span>' + (x.new_responses ? ' <span class="tag open">' + x.new_responses + ' new</span>' : '') + '</div>' +
+              '<h3>' + esc(x.title) + '</h3><span class="meta">' + esc(x.listing ? x.listing.name : (x.to_name || 'Anyone with the link')) + ' &middot; ' + x.responses + ' answer' + (x.responses === 1 ? '' : 's') + ' &middot; opened ' + x.open_count + ' time' + (x.open_count === 1 ? '' : 's') + '</span><span class="meta">' + esc(when(x.created_at)) + '</span>' +
+              '<div class="acts"><a class="btn" href="#r/' + x.id + '">Open</a></div></div></div>';
+          }).join('') : '<p class="sub">None here.</p>';
+        }
+        $('q').oninput = fill; fill();
+      }
+      function drawNew() {
+        $('view').innerHTML = '<p class="crumb"><a href="#list/open">Comments</a> / New request</p><div class="form">' +
+          '<div class="row"><div><label for="kind">Who we are asking</label><select id="kind">' + Object.keys(KIND).map(function (k) { return '<option value="' + k + '">' + KIND[k] + '</option>'; }).join('') + '</select></div>' +
+          '<div><label for="purpose">What it is for</label><select id="purpose">' + Object.keys(PURPOSE).map(function (k) { return '<option value="' + k + '">' + PURPOSE[k] + '</option>'; }).join('') + '</select></div></div>' +
+          '<div><label for="slug">Their Directory listing (slug, optional)</label><input type="text" id="slug" placeholder="vegan-cuban-cuisine" data-dictate="off"></div>' +
+          '<div class="row"><div><label for="to_name">Their name (optional)</label><input type="text" id="to_name" data-dictate="off"></div><div><label for="to_email">Their email (optional, for our records)</label><input type="email" id="to_email"></div></div>' +
+          '<div><label for="title">Heading on their page</label><input type="text" id="title" placeholder="Your new name"></div>' +
+          '<div><label for="prompt">The question</label><textarea id="prompt"></textarea></div>' +
+          '<div><label for="context">Background (optional)</label><textarea id="context"></textarea></div>' +
+          '<div class="checks"><label><input type="checkbox" id="voice" checked> By voice</label><label><input type="checkbox" id="written" checked> In writing</label><label><input type="checkbox" id="multi"> Anyone with the link can answer</label></div>' +
+          '<div class="row"><div><label for="max">Longest recording (seconds)</label><input type="number" id="max" value="120" min="15" max="600"></div><div><label for="closes">Closes (optional)</label><input type="text" id="closes" placeholder="2026-11-30" data-dictate="off"></div></div>' +
+          '<div class="acts"><button type="button" class="btn" id="mk">Make the link</button><span class="msg" id="msg"></span></div></div>';
+        $('mk').onclick = function () {
+          var slug = $('slug').value.trim();
+          var body = { action: 'create', kind: $('kind').value, purpose: $('purpose').value, to_name: $('to_name').value, to_email: $('to_email').value, title: $('title').value, prompt: $('prompt').value, context: $('context').value,
+            allow_voice: $('voice').checked, allow_written: $('written').checked, multi: $('multi').checked, voice_max_seconds: Number($('max').value) || 120, closes_at: $('closes').value.trim() || null };
+          $('msg').textContent = 'Making it...';
+          if (slug) body.listing_slug = slug;
+          api(body).then(function (d) { if (d && d.ok) { loaded = false; location.hash = 'r/' + d.id; } else $('msg').textContent = (d && (d.message || d.error)) || 'That did not save.'; });
+        };
+      }
+      function drawOne(id) {
+        $('view').innerHTML = '<p class="sub">Loading...</p>';
+        api({ action: 'get_admin', id: id }).then(function (d) {
+          if (!d || !d.ok) { $('view').innerHTML = '<p class="sub">That one did not load.</p>'; return; }
+          var r = d.request;
+          var resp = d.responses.length ? d.responses.map(function (x) {
+            return '<div class="resp" data-id="' + x.id + '"><div><b>' + esc(x.name) + '</b>' + (x.role ? ', ' + esc(x.role) : '') + ' <span class="tag ' + x.status + '">' + esc(RS[x.status]) + '</span>' + (x.credit_ok ? '' : ' <span class="tag closed">Do not name them</span>') + '</div>' +
+              '<span class="meta">' + esc(when(x.created_at)) + (x.email ? ' &middot; <a href="mailto:' + esc(x.email) + '">' + esc(x.email) + '</a>' : '') + ' &middot; release ticked</span>' +
+              (x.audio_url ? '<audio controls preload="none" src="' + esc(x.audio_url) + '"></audio><span class="meta">' + secs(x.audio_seconds) + ' &middot; <a href="' + esc(x.audio_url) + '" download>Download the recording</a> (link good for an hour)</span>' : '') +
+              (x.written ? '<div class="full">' + esc(x.written) + '</div>' : '') +
+              '<input type="text" class="used" placeholder="Where it ran (a link)" value="' + esc(x.used_in || '') + '" data-dictate="off"><textarea class="tnote" placeholder="Team note" data-dictate="off">' + esc(x.team_note || '') + '</textarea>' +
+              '<div class="acts">' + ['approved', 'used', 'declined', 'new'].filter(function (s) { return s !== x.status; }).map(function (s) { return '<button type="button" class="btn' + (s === 'declined' ? ' btn-ghost' : '') + '" data-rs="' + s + '">' + RS[s] + '</button>'; }).join('') + '<button type="button" class="btn btn-quiet" data-rs="">Save note</button><span class="msg"></span></div></div>';
+          }).join('') : '<p class="sub">No answers yet.</p>';
+          var url = d.url;
+          $('view').innerHTML = '<p class="crumb"><a href="#list/open">Comments</a> / ' + esc(r.title) + '</p><div class="item">' +
+            '<div><span class="kind">' + esc(KIND[r.kind]) + ' &middot; ' + esc(PURPOSE[r.purpose]) + '</span> <span class="tag ' + r.status + '">' + esc(r.status) + '</span></div>' +
+            '<h3 style="font-size:20px">' + esc(r.title) + '</h3><div class="full">' + esc(r.prompt) + '</div>' + (r.context ? '<p class="meta">' + esc(r.context) + '</p>' : '') +
+            '<div class="linkbox"><code>' + esc(url) + '</code><button type="button" class="btn btn-quiet" id="cp">Copy the link</button><a class="btn btn-quiet" href="' + esc(url) + '?preview=1" target="_blank" rel="noopener">See their page</a></div>' +
+            '<dl><dt>Asking</dt><dd>' + esc(d.listing ? d.listing.name : (r.to_name || 'Anyone with the link')) + (r.to_email ? ' &middot; ' + esc(r.to_email) : '') + '</dd><dt>Answers by</dt><dd>' + [r.allow_voice ? 'voice, up to ' + secs(r.voice_max_seconds) : '', r.allow_written ? 'writing' : ''].filter(Boolean).join(' or ') + (r.multi ? '; anyone with the link' : '; one answer closes it') + '</dd><dt>Opened</dt><dd>' + r.open_count + ' time' + (r.open_count === 1 ? '' : 's') + (r.opened_at ? ', last ' + esc(when(r.opened_at)) : '') + '</dd><dt>Made</dt><dd>' + esc(when(r.created_at)) + '</dd></dl>' +
+            '<div class="acts">' + (r.status !== 'open' ? '<button type="button" class="btn" data-st="open">Open it again</button>' : '<button type="button" class="btn btn-ghost" data-st="closed">Close it</button>') + '<span class="msg" id="msg"></span></div>' +
+            '<h3>Answers</h3>' + resp + '</div>';
+          $('cp').onclick = function () { navigator.clipboard && navigator.clipboard.writeText(url); this.textContent = 'Copied'; };
+          [].forEach.call(document.querySelectorAll('[data-st]'), function (b) { b.onclick = function () { api({ action: 'update', id: id, status: b.getAttribute('data-st') }).then(function () { loaded = false; drawOne(id); }); }; });
+          [].forEach.call(document.querySelectorAll('.resp'), function (el) {
+            [].forEach.call(el.querySelectorAll('[data-rs]'), function (b) { b.onclick = function () {
+              var p = { action: 'response_set', id: el.getAttribute('data-id'), used_in: el.querySelector('.used').value, team_note: el.querySelector('.tnote').value };
+              if (b.getAttribute('data-rs')) p.status = b.getAttribute('data-rs');
+              el.querySelector('.msg').textContent = 'Saving...';
+              api(p).then(function (x) { if (x && x.ok) drawOne(id); else el.querySelector('.msg').textContent = 'That did not save.'; });
+            }; });
+          });
+        });
+      }
+      function render() {
+        var r = route();
+        if (r.v === 'new') return drawNew();
+        if (r.v === 'r') return drawOne(r.id);
+        if (loaded) return drawList(r);
+        $('view').innerHTML = '<p class="sub">Loading...</p>';
+        api({ action: 'list' }).then(function (d) { if (!d || !d.ok) { $('view').innerHTML = '<p class="sub">That did not load. Refresh to try again.</p>'; return; } rows = d.requests; loaded = true; drawList(route()); });
+      }
+      window.addEventListener('hashchange', render);
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="si">Sign in</button>'; $('si').onclick = function () { VEAuth.showAuthModal('Sign in to see comments.', function () { location.reload(); }); }; return; }
+        if (!m || !m.is_superadmin) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+        $('app').hidden = false; render();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
