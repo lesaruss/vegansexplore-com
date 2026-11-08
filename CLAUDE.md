@@ -6758,10 +6758,11 @@ included for every client; a one-on-one Hot Lab $250 ($150 to the Community Mana
 no added features, and Sean is her Community Manager for now. Next: new website people join her client list automatically, Show me how pages (video plus steps,
 I'm stuck adds it to her next Hot Lab), then B3 Insights. Nothing sent to her; email draft 4fbbd9f4 held.
 
-**B3, Insights, built 2026-11-08, not merged** (HQ branch `claude/brooke-insights` on top of Show me how; handoff `docs/handoff/2026-11-08-brooke-sellers-b3-insights.md`):
-BrandDesk > Meatless Muscle > Insights (`?view=insights&r=7|30|90|365`): her business from Coach OS (leads with bots left out, new clients, check-ins, sales), her website
-(GA4 433904174, data only from Oct 30), Vegans Who Lift downloads (`branddesk-insights` `PODCAST_SHOWS['meatless-muscle']`, deployed), and Search and Social waiting on
-her Show me how steps. `lib/clientInsights.ts` reads on the server for the seat's own brand only. Proven signed in as a throwaway example.com client at 1440 and 390 px.
+**B3, Insights (2026-11-08; handoff `docs/handoff/2026-11-08-brooke-sellers-b3-insights.md`). LOCKED by Sean: a client's analytics are the Vegans Explore
+Insights room, no freestyling** (canon `canon-template-gate` v5). BrandDesk > Meatless Muscle > Insights mounts HQ `components/branddesk/InsightsRoom.tsx` with
+client mode: Web (GA4 433904174, data from Oct 30), Clients (Coach OS: leads with bots left out, new clients, check-ins, sales), Social and SEO waiting on her Show me
+how steps, Podcast (Vegans Who Lift via `branddesk-insights` `PODCAST_SHOWS['meatless-muscle']`, no Uploads), Analysis; never Ads, Campaigns, platform tables.
+`/api/branddesk/insights` admits a client for their own brand's read-only parts (middleware lets that path through). Proven signed in as a throwaway example.com client.
 
 ## Revenue on the dashboard (Sean, 2026-11-02)
 
