@@ -94,6 +94,15 @@ async function researchOne(r: any, cronSecret: string) {
     const { data } = await q;
     dup = (data || []).find((x: any) => norm(x.name) === norm(name) && (!city || !x.address_city || norm(x.address_city) === norm(city))) || null;
   }
+  if (!dup && f.website) {
+    const host = String(f.website).replace(/^https?:\/\/(www\.)?/i, '').replace(/\/.*$/, '').toLowerCase();
+    if (host.length > 4) { const { data } = await db.from('listings').select('id, slug, name').eq('status', 'approved').ilike('website', `%${host}%`).limit(1); dup = (data || [])[0] || null; }
+  }
+  // Already listed: no second draft; For you shows the listing we have, and Sean closes the request (or fixes the listing).
+  if (dup) {
+    await db.from('ve_listing_requests').update({ status: 'drafted', found: f, read: out.read, researched_at: new Date().toISOString(), duplicate_of: dup.id, listing_id: null, error: null }).eq('id', r.id);
+    return { id: r.id, duplicate: dup.slug };
+  }
   const hours: Record<string, string> = {};
   for (const d of DAYS) { const t = clean(f.hours?.[d], 60); if (t) hours[d] = t; }
   const online = f.online_only === true;
@@ -114,7 +123,13 @@ async function researchOne(r: any, cronSecret: string) {
   if (row.communities === null) delete row.communities;
   const ins = await db.from('listings').insert(row).select('id, slug').single();
   if (ins.error) {
-    await db.from('ve_listing_requests').update({ error: ins.error.message.slice(0, 200), found: f, read: out.read }).eq('id', r.id);
+    // The same name in the same city and state is already live or waiting (listings_name_city_state_unique_live).
+    if (/name_city_state/.test(ins.error.message)) {
+      const { data } = await db.from('listings').select('id').in('status', ['approved', 'pending']).ilike('name', name.replace(/[%_]/g, ' ')).limit(1);
+      await db.from('ve_listing_requests').update({ status: 'drafted', found: f, read: out.read, researched_at: new Date().toISOString(), duplicate_of: (data || [])[0]?.id || null, error: 'Already on the Directory or waiting in New places under this name and city.' }).eq('id', r.id);
+      return { id: r.id, duplicate: 'name_city' };
+    }
+    await db.from('ve_listing_requests').update({ error: ins.error.message.slice(0, 200), found: f, read: out.read, ...((r.attempts || 0) + 1 >= 3 ? { status: 'failed' } : {}) }).eq('id', r.id);
     return { id: r.id, error: ins.error.message };
   }
   await db.from('ve_listing_requests').update({ status: 'drafted', found: f, read: out.read, researched_at: at, listing_id: ins.data.id, duplicate_of: dup?.id || null, error: null }).eq('id', r.id);
@@ -190,7 +205,13 @@ Deno.serve(async (req) => {
     if (!['publish', 'vetting', 'remove'].includes(decision)) return json({ error: 'bad_decision' }, 400);
     const { data: r } = await db.from('ve_listing_requests').select('*').eq('id', b.id).maybeSingle();
     if (!r) return json({ error: 'not_found' }, 404);
-    if (r.status !== 'drafted' || !r.listing_id) return json({ error: 'not_drafted', status: r.status }, 409);
+    if (r.status !== 'drafted') return json({ error: 'not_drafted', status: r.status }, 409);
+    if (!r.listing_id) {
+      // Already on the Directory: only closing the request makes sense.
+      if (decision !== 'remove') return json({ error: 'already_listed', message: 'This place is already on the Directory; close the request, or fix the listing we have.' }, 409);
+      await db.from('ve_listing_requests').update({ status: 'removed', decided_at: new Date().toISOString(), decided_by: me!.id, decision_note: clean(b.note, 500) || 'Already listed' }).eq('id', r.id);
+      return json({ ok: true, status: 'removed', where: 'Closed (already listed)' });
+    }
     const { data: l } = await db.from('listings').select('id, slug, status, category, vegan_status, details').eq('id', r.listing_id).maybeSingle();
     if (!l || l.status !== 'quarantined') return json({ error: 'draft_moved', listing_status: l?.status || null }, 409);
     const note = clean(b.note, 500), at = new Date().toISOString(), by = String(me?.name || 'Sean').split(/\s+/)[0];

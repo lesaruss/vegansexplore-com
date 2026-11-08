@@ -247,6 +247,7 @@
   .dash-biz-letter{display:grid;place-items:center;font-weight:900;font-size:22px;color:var(--ve-green-dark,#1f5f22);background:var(--ve-green-light,#e8f5e9);}
   .dash-biz-body{flex:1 1 220px;min-width:0;}.dash-biz-body b{display:block;font-size:16px;}.dash-biz-body small{display:block;margin-top:3px;font-size:13px;color:rgba(0,0,0,.62);}
   .dash-biz-acts{display:flex;gap:8px;flex-wrap:wrap;}
+  button.dash-biz-btn{cursor:pointer;font-family:inherit;}button.dash-biz-btn:not(.o){border:0;}
   .dash-biz-btn{display:inline-block;background:var(--ve-green-dark,#2D5C27);color:#fff;border-radius:6px;padding:10px 14px;font-weight:800;font-size:13px;text-decoration:none;}
   .dash-biz-btn.o{background:#fff;color:var(--ve-green-dark,#2D5C27);border:1.5px solid var(--ve-green-dark,#2D5C27);padding:8.5px 12.5px;}
   @media (max-width:600px){.dash-biz-acts{width:100%;flex-direction:column;}.dash-biz-btn{text-align:center;}}
@@ -4317,6 +4318,58 @@
     var sub = document.getElementById('dash-welcome-sub');
     if (sub && !member.is_superadmin && member.ve_role !== 'community_manager' && /Founding Member|Thank you for being a member|Get your Passport/.test(sub.textContent || '')) sub.textContent = dashFoundingWords(member);
   }
+  // Listing requests (ve-community-directory T3; Sean, 2026-11-06: "Everyone else goes into a queue that shows on my dashboard... Work
+  // first so I can decide if it goes on the directory or in the vetting section or removed"). Super admins only: each request someone
+  // else sent, already researched and drafted by ve-listing-requests, as a For you tile with Publish, Send to vetting and Remove. One more
+  // tile, Request a listing, is Sean's own door (straight to work).
+  function lrCall(body) {
+    return fetch(SUPABASE_URL + '/functions/v1/ve-listing-requests', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json(); }).catch(function () { return null; });
+  }
+  var LR_VEGAN = { fully_vegan: '100% Vegan', vegan_options: 'Vegan options', vegan_friendly: 'Vegan friendly' };
+  function lrLoad(cb) {
+    if (window.VEListingRequest) return cb();
+    var s = document.createElement('script'); s.src = '/public/ve-listing-request.js'; s.onload = cb; document.head.appendChild(s);
+  }
+  function renderListingRequests(list) {
+    Array.prototype.forEach.call(list.querySelectorAll('.lr-tile'), function (t) { t.remove(); });
+    var empty = document.getElementById('dash-action-empty');
+    var add = document.createElement('button'); add.type = 'button'; add.className = 'dash-tour-prompt dv-tile lr-tile';
+    add.innerHTML = '<div class="dash-tour-prompt-icon ve-ficon">' + FICON('store') + '</div><div class="dash-tour-prompt-body"><div class="dash-tour-prompt-title">Request a listing</div>' +
+      '<div class="dash-tour-prompt-desc">A place you found: its name, where, a link. It goes straight into the Directory queue and Logan works it.</div></div><div class="dash-tour-prompt-arrow" aria-hidden="true">&rarr;</div>';
+    add.onclick = function () { lrLoad(function () { VEListingRequest.open({ page: location.href }); }); };
+    list.insertBefore(add, empty);
+    lrCall({ action: 'queue' }).then(function (d) {
+      if (!d || !d.ok || !d.items.length) return;
+      d.items.forEach(function (r) {
+        var f = r.found || {}, dr = r.draft, dup = r.duplicate;
+        var who = r.contact_name || r.contact_email || (r.source === 'feedback' ? 'Feedback' : 'A visitor');
+        var facts = dup ? 'Already on the Directory as <a href="/directory/' + dvEsc(dup.slug) + '" target="_blank" rel="noopener">' + dvEsc(dup.name) + '</a>.'
+          : dr ? [dr.category, LR_VEGAN[dr.vegan_status] || 'How Vegan not known', dr.location].filter(Boolean).map(dvEsc).join(' &middot; ') + (dr ? ' &middot; <a href="/directory/' + dvEsc(dr.slug) + '" target="_blank" rel="noopener">See the draft</a>' : '') : '';
+        var tile = document.createElement('div'); tile.className = 'dash-tour-prompt dv-tile lr-tile'; tile.style.flexWrap = 'wrap';
+        tile.innerHTML = '<div class="dash-tour-prompt-icon ve-ficon">' + FICON('pin') + '</div><div class="dash-tour-prompt-body" style="flex:1 1 220px">' +
+          '<div class="dash-tour-prompt-title">' + dvEsc((dr && dr.name) || f.name || r.name || r.link || 'A listing request') + ' <span class="dv-tag">Listing request</span></div>' +
+          '<div class="dash-tour-prompt-desc">From ' + dvEsc(who) + (r.where_text ? ' &middot; ' + dvEsc(r.where_text) : '') + '</div>' +
+          '<div class="dash-tour-prompt-desc">' + facts + '</div>' + (f.note ? '<div class="dash-tour-prompt-desc">' + dvEsc(f.note) + '</div>' : '') + '</div>' +
+          '<div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">' +
+          (dup ? '<button type="button" class="dash-biz-btn o" data-lr="remove">Close it</button>' :
+            '<button type="button" class="dash-biz-btn" data-lr="publish">Publish</button><button type="button" class="dash-biz-btn o" data-lr="vetting">Send to vetting</button><button type="button" class="dash-biz-btn o" data-lr="remove">Remove</button>') + '</div>';
+        Array.prototype.forEach.call(tile.querySelectorAll('[data-lr]'), function (b) {
+          b.onclick = function () {
+            var dec = b.getAttribute('data-lr');
+            Array.prototype.forEach.call(tile.querySelectorAll('[data-lr]'), function (x) { x.disabled = true; });
+            lrCall({ action: 'decide', id: r.id, decision: dec }).then(function (res) {
+              var desc = tile.querySelector('.dash-tour-prompt-body');
+              if (!res || !res.ok) { desc.insertAdjacentHTML('beforeend', '<div class="dash-tour-prompt-desc" style="color:#b42318">' + dvEsc((res && (res.message || res.error)) || 'That did not save.') + '</div>');
+                Array.prototype.forEach.call(tile.querySelectorAll('[data-lr]'), function (x) { x.disabled = false; }); return; }
+              tile.style.opacity = '.6'; tile.querySelector('[data-lr]').parentNode.innerHTML = '<span class="dv-tag">' + dvEsc(res.where || res.status) + '</span>';
+            });
+          };
+        });
+        list.insertBefore(tile, list.firstChild);
+      });
+    });
+  }
   function renderVersion(member) {
     var list = document.getElementById('dash-action-list'); if (!list) return;
     dvCall({ action: 'home' }).then(function (d) {
@@ -4345,6 +4398,7 @@
       var svTile = list.querySelector('[data-survey]');
       if (svTile) { list.insertBefore(svTile, list.firstChild); svTile.onclick = function (e) { e.preventDefault(); openSurvey(); }; }
       if (window.ResizeObserver && list._ro) Array.prototype.forEach.call(list.querySelectorAll('.dv-tile'), function (t) { list._ro.observe(t); });
+      if (member.is_superadmin) renderListingRequests(list);
       if (!member.is_superadmin) renderDashboardPreviews(member);
     });
   }
