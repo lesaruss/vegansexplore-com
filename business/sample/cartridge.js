@@ -60,7 +60,8 @@
           { name: 'Primary, stacked, on cream', state: 'have' },
           { name: 'Primary, vector (SVG and PDF)', state: 'to_make' },
           { name: 'Reversed, cream on forest', state: 'have', src: IMG + 'logo-reverse.png' },
-          { name: 'The mark alone (the leaf and fork)', state: 'to_make' },
+          { name: 'The mark alone (the leaf and fork)', state: 'have', src: IMG + 'mark.png' },
+          { name: 'The mark alone, reversed (cream)', state: 'have', src: IMG + 'mark-reverse.png' },
           { name: 'Wordmark on one line', state: 'to_make' },
           { name: 'Social sizes (profile, cover, story)', state: 'to_make' },
           { name: 'Delivery app sizes (logo, banner)', state: 'to_make' }
@@ -110,8 +111,29 @@
         'Green Leaf Kitchen started with twelve tables, a patio and a counter that opens at eight. It still is that: a place you can come in your running shoes for a latte or bring your whole family for brunch.',
         'We cook breakfast all day, build big bowls with a little Caribbean in them, and pile sandwiches on sourdough from the bakery down the street. Everything on the menu is Vegan, and most of it can be made gluten-free.',
         'And yes, the Key lime cheesecake is worth the drive.'
-      ]
+      ],
+      // A short narrated photo video of how the place came about (Sean, 2026-11-08). Liz narrates; captions are its words.
+      video: { src: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/business/sample/story-v1.mp4',
+        poster: IMG + 'story-poster.jpg', captions: '/business/sample/story-v1.vtt', title: 'How Green Leaf Kitchen came to be' }
     },
+
+    // News from the restaurant: the site's Latest section (newest first). Dates are days before today, so the sample stays current.
+    // A post may point at an event on the Vegans Explore calendar.
+    posts: [
+      { days_ago: 4, kind: 'New on the menu', title: 'Meet the Coconut Mango Pudding',
+        photo: IMG + 'm-pudding.webp',
+        body: ['Creamy coconut chia pudding, layered with fresh mango and finished with toasted coconut. Cold, bright and just sweet enough.',
+          'It started as a staff snack on hot afternoons. Then the staff would not stop talking about it. Now it is in the pastry case every day.'] },
+      { days_ago: 11, kind: 'See us there', title: 'Find us at the Vegans Explore Community Night', when_in_days: 9,
+        photo: IMG + 'photo-3.jpg',
+        body: ['We are a vendor at the next Vegans Explore Community Night in Fort Lauderdale. Come find our table for Jerk Jackfruit Bowl bites, Key lime cheesecake cups and cold hibiscus lemonade.',
+          'Bring a friend who has never had Vegan food. That is the whole point of the night.'],
+        link: { label: 'See it on the Vegans Explore calendar', href: 'https://vegansexplore.com/events?city=south-florida' } },
+      { days_ago: 183, kind: 'Big news', title: 'We are partnering with Vegans Explore',
+        photo: IMG + 's-owner.webp',
+        body: ['Opening a restaurant is a lot. The cooking is the part we love. Everything else, the website, the photos, the social posts and the numbers, can swallow you whole.',
+          'So we are partnering with Vegans Explore and LESARUSS.ai. They run the back end and show us everything, and we get to put our time into the food and the people who come through the door. See you soon, Fort Lauderdale.'] }
+    ],
 
     menu: {
       sections: [
@@ -193,7 +215,7 @@
           { name: 'Banana Bread', price: '$5', tags: [], photo: { state: 'shot', src: IMG + 'm-bananabread.webp' },
             was: 'Banana bread with walnuts.',
             copy: 'A thick slice of banana bread with walnuts and a caramelized top. Ask us to warm it.' },
-          { name: 'Coconut Mango Pudding', price: '$7', tags: ['Gluten-free'], photo: { state: 'shot', src: IMG + 'm-pudding.webp' },
+          { name: 'Coconut Mango Pudding', price: '$7', tags: ['New', 'Gluten-free'], photo: { state: 'shot', src: IMG + 'm-pudding.webp' },
             was: 'Coconut chia pudding with mango.',
             copy: 'Creamy coconut chia pudding layered with fresh mango and toasted coconut.' }
         ] }
@@ -211,7 +233,7 @@
       // Each shot has a set, so the website can show Outside, At night, Inside and The team as toggles.
       space: [
         { shot: 'Outside by day, the whole front and the sign', set: 'outside', state: 'shot', src: IMG + 's-outside-day.webp' },
-        { shot: 'Outside at dusk, lights on', set: 'night', state: 'shot', src: IMG + 's-outside-dusk.webp' },
+        { shot: 'Outside at dusk, lights on, the same corner', set: 'night', state: 'shot', src: IMG + 's-outside-night.webp' },
         { shot: 'The room wide, from the front corner', set: 'inside', state: 'shot', src: IMG + 'photo-4.jpg' },
         { shot: 'The room wide, from the back corner', set: 'inside', state: 'shot', src: IMG + 's-room-back.webp' },
         { shot: 'The counter and the pastry case', set: 'inside', state: 'shot', src: IMG + 's-counter.webp' },
