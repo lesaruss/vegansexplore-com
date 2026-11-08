@@ -9,7 +9,8 @@
  *   ThanksLiving   the five ways to celebrate (canon), the word is shared, the National Day of Mourning
  *   Menus          live holiday menus from ve-holiday `live`, by chapter, 100% Vegan first; Save keeps the place in My Saves
  *   Events         ThanksLiving and Thanksgiving events, sanctuary dinners and potlucks on our calendar; Submit an event
- *                  (never the word Friendsgiving: Sean, 2026-11-08)
+ *                  (organizers' own event titles show as written, Friendsgiving included; our own copy,
+ *                   lines, emails and video never use the word: Sean, 2026-11-08)
  *   Give back      Nonprofit Partners first, then the Directory's nonprofits, rescues and sanctuaries (Giving Tuesday, December 1)
  *   Businesses     how a business sends its holiday menu (/business/holiday-menu), with the deadline
  *
@@ -27,7 +28,7 @@
   var GIVE_URL = SB + '/rest/v1/listings?select=' + FIELDS + '&status=eq.approved&or=(category.in.(' + GIVE_CATS.join(',') + '),extra_categories.ov.{' + GIVE_CATS.join(',') + '})&order=vote_count.desc.nullslast,name.asc&limit=600';
   var EVENTS_URL = SB + '/rest/v1/events?select=id,title,starts_at,timezone,location_name,city,state,country,event_type,time_set&status=eq.approved&tenant_id=eq.' + VE_TENANT +
     '&starts_at=gte.' + new Date(Date.now() - 864e5).toISOString() + '&starts_at=lte.2026-12-02T05:00:00Z' +
-    '&or=(title.ilike.*thanksliving*,title.ilike.*thanksgiving*,title.ilike.*turkeys*,description.ilike.*thanksliving*)&order=starts_at.asc&limit=200';
+    '&or=(title.ilike.*thanksliving*,title.ilike.*thanksgiving*,title.ilike.*turkeys*,title.ilike.*friendsgiving*,description.ilike.*thanksliving*)&order=starts_at.asc&limit=200';
   var LR_TAGS = ['lesaruss-ai-directory', 'lesaruss-ai-directory-candidate', 'lesaruss-ai-business-member'];
   function ours(list) { return (Array.isArray(list) ? list : []).filter(function (l) { return !(l.tags || []).some(function (t) { return LR_TAGS.indexOf(t) >= 0; }); }); }
 
