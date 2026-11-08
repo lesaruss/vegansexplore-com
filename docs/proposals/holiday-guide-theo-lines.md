@@ -35,3 +35,31 @@ xm-recipes, xm-store, xm-menus, xm-events). Each plays as its page's video, `gui
 | Christmas, At the Store | Short on time? Here are the plant-based roasts, nogs, butters and treats you can pick up this season. Stock changes by store, so check before you go. |
 | Christmas, Holiday Menus | Don't want to cook Christmas dinner? Pick your chapter and see which Vegan places are cooking for the holiday and when to order by. |
 | Christmas, Events | Vegan Christmas festivals, cookie swaps and holiday lights. Here is what is on our calendar. Hosting one? Add it, so people can find you. |
+
+## Kwanzaa (drafts for Sean, 2026-11-08; nothing recorded)
+
+Kwanzaa runs December 26 to January 1: seven days, one principle each (the Nguzo Saba), and the Karamu feast on December 31. Same four
+pages as Hanukkah (Ideas, Recipes, Holiday Menus, Events). The meaning of Kwanzaa is pointed to its own voices, never explained by us:
+the Official Kwanzaa Website (officialkwanzaawebsite.org, from its founder, Dr. Maulana Karenga). Theo wears store clothes in a warm
+scene, never a costume or kente as dress-up. Kwanzaa menus close December 14.
+
+| Page | Line |
+|---|---|
+| Kwanzaa, Ideas | Kwanzaa starts December twenty-sixth: seven days, seven principles, and a feast on the last night of the year. On this page are a few easy ideas for a plant-based Karamu and the people around the table. |
+| Kwanzaa, Recipes | Here is a plant-based Karamu you can make at home: black-eyed peas, collard greens, jollof rice, a peanut stew and sweet potato pie. |
+| Kwanzaa, Holiday Menus | Rather order in? Pick your chapter and see which Vegan places are cooking for Kwanzaa. Our team checks every menu before it shows. |
+| Kwanzaa, Events | Looking for a Karamu or a community celebration near you? Here are the Kwanzaa events on our calendar. Hosting one? Add it, so people can find you. |
+
+### The Ideas page cards (drafts)
+
+| Card | Line |
+|---|---|
+| Share the Karamu | The feast on December 31 is for family and community. Make it a fully plant-based table, and ask each guest to bring one dish. |
+| Buy from Black-owned Vegan businesses | Cooperative economics is one of the seven principles. Order your feast or your gifts from a Black-owned Vegan place in our Directory. |
+| Give with purpose | Gifts at Kwanzaa are often handmade or meant to teach. A book, something you made, or a gift in someone's name to a sanctuary. |
+| Light the candles together | Gather each night for the candle of the day and talk about what that principle means to you. |
+| Share the table | Invite a friend who has never tried a plant-based Karamu. Good food opens more doors than a speech. |
+
+Note under the cards: "From the community. For the meaning of Kwanzaa and its seven principles, start with the Official Kwanzaa Website."
+Open question for Sean: the "Black-owned" card needs a way to find those places. We have no Black-owned filter in the Directory, so as
+written it would link to the whole Directory. Keep it with that link, or drop it.
