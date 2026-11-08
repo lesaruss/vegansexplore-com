@@ -15,7 +15,7 @@ on conflict (slug) do update set guide_slug = excluded.guide_slug, title = exclu
 -- Explorer's questions, same ids and wording, re-weighted.
 insert into ve_survey_questions (survey_slug, id, pos, kind, prompt, help, options, points, required, shared_key, show_if)
 select 'pre-vegan', q.id,
-       case q.id when 'x_journey' then 1 when 'x_chapter' then 2 when 'x_brings' then 3 when 'x_run' then 14 else q.pos + 10 end,
+       case q.id when 'x_journey' then 1 when 'x_chapter' then 2 when 'x_brings' then 3 when 'x_run' then 20 else q.pos + 10 end,
        q.kind, q.prompt, q.help, q.options,
        case q.id when 'x_journey' then 15 when 'x_chapter' then 15 when 'x_run' then 10 when 'x_brings' then 20 when 'x_more' then 20
                  when 'x_hear' then 10 when 'x_worth' then 25 when 'x_tough' then 25 when 'x_add' then 25 else q.points end,
