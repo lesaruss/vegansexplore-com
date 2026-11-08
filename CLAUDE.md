@@ -7312,4 +7312,7 @@ we reach you with founder news?" (the founder list). Not done: the Overview vide
 Let's mix it up and make it look like a scene because they're videos, and we want the video to really lay out what's on that page." Each page of a
 Guide gets its own picture of its Guide in a scene about that page (the Holiday Guide's Theo per page is the model), never the same plain shot on every
 tab. A page's video lays out what is on that page, and where a feature needs something fully built to show (a member's view, a business's view), we build
-a demo first and edit the video after. Open with Sean: how this sits with "only clothes from our store" (2026-11-01).
+a demo first and edit the video after. **Clothes (Sean, same day):** the Vegans Explore mark is the one branded item and always shows; the shirt comes in
+colors (black, white, cream, pink...) and as a long sleeve, with different pants and a jacket over it as the scene needs, as long as the mark can be seen.
+No other brand's logo. This loosens "only clothes from our store" (2026-11-01). **A sample member** (approved): an invented member like Kai, so the member
+side can be shown fully built.
