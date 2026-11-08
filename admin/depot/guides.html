@@ -79,15 +79,23 @@
     .lb img{max-width:100%;max-height:100%;border-radius:8px;background:#fff;}
     @media (max-width:700px){table,thead,tbody,tr,td{display:block;}thead{display:none;}tr{border-bottom:1px solid var(--ve-border);padding:8px 0;}td{border:0;padding:4px 12px;}}
     .player{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:16px;margin:0 0 14px;}
-    .stage{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px;align-items:center;}
-    .st-img{aspect-ratio:16/9;border-radius:10px;background:#f1f3f1 center 18%/cover no-repeat;border:1px solid var(--ve-border);}
+    /* video on the left with its controls under it; the line, the facts and the frame numbers on the right (Sean, 2026-11-08) */
+    .player{display:grid;grid-template-columns:var(--pvw,minmax(0,1.6fr)) minmax(0,1fr);gap:20px;align-items:start;}
+    .player.tall{--pvw:clamp(280px,32vw,460px);}
+    .pside{display:flex;flex-direction:column;gap:14px;min-width:0;}
+    .pside .fbtns{padding-top:12px;border-top:1px solid var(--ve-border);}
+    .st-img{aspect-ratio:var(--ar,16/9);border-radius:10px;background:#f1f3f1 center 18%/cover no-repeat;border:1px solid var(--ve-border);}
     .st-img.square{background-size:contain;background-color:#fff;}
     .st-img.empty{background:repeating-linear-gradient(45deg,#f7f8f7,#f7f8f7 10px,#f1f3f1 10px,#f1f3f1 20px);}
+    /* every picture shown whole in the tour's shape: a wide one sits over a blurred copy of itself, never cropped (Sean, 2026-11-08) */
+    .fit{position:relative;overflow:hidden;background:#0f1f14 !important;}
+    .fit::before{content:'';position:absolute;inset:-24px;background:var(--img) center/cover no-repeat;filter:blur(20px) brightness(.72);}
+    .fit::after{content:'';position:absolute;inset:0;background:var(--img) center/contain no-repeat;}
+    .fit .fn{z-index:2;}
     /* a slight slow zoom on each frame in the player, as the edit does (Sean, 2026-11-08: image to image, about every 3 s) */
-    #lbImg.zoom{position:relative;overflow:hidden;background-image:none!important;}
-    #lbImg.zoom::before{content:'';position:absolute;inset:0;background:var(--img) center 18%/cover no-repeat;transform-origin:50% 30%;animation:lbz 4.5s ease-out forwards;}
+    #lbImg.zoom::after{transform-origin:50% 40%;animation:lbz 4.5s ease-out forwards;}
     @keyframes lbz{from{transform:scale(1);}to{transform:scale(1.07);}}
-    @media (prefers-reduced-motion:reduce){#lbImg.zoom::before{animation:none;}}
+    @media (prefers-reduced-motion:reduce){#lbImg.zoom::after{animation:none;}}
     .cap{display:flex;gap:12px;align-items:flex-start;}
     .cap .fn{flex:none;font-weight:900;font-size:22px;color:var(--ve-green-deep);}
     .q{font-size:15px;font-weight:700;line-height:1.45;}
@@ -105,9 +113,10 @@
     .tag.rd.ready{background:#e8f0fb;color:#1d4f91;}.tag.rd.recapture{background:#fff1dc;color:#8a5200;}.tag.rd.mock{background:#f1e8fb;color:#5b2d91;}.tag.rd.broll{background:#e6f6f4;color:#0f6158;}
     .flag-dot{display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--ve-orange);vertical-align:middle;}
     .frames{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:14px;}
+    .frames.tall{grid-template-columns:repeat(auto-fill,minmax(min(270px,100%),1fr));}
     .frame{background:#fff;border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
     .frame.approved{border-color:var(--ve-green);}.frame.redo{border-color:#e59a92;}
-    .frame .pic,.brcard .pic{position:relative;aspect-ratio:16/9;background:#f1f3f1 center/cover no-repeat;cursor:zoom-in;}
+    .frame .pic,.brcard .pic{position:relative;aspect-ratio:var(--ar,16/9);background:#f1f3f1 center/cover no-repeat;cursor:zoom-in;}
     .frame .pic.square{background-size:contain;background-color:#fff;}
     .frame .pic.empty{cursor:default;display:grid;place-items:center;color:#888;font-size:12.5px;font-weight:700;background:repeating-linear-gradient(45deg,#f7f8f7,#f7f8f7 10px,#f1f3f1 10px,#f1f3f1 20px);}
     .frame .fn{position:absolute;left:10px;top:10px;background:#fff;color:var(--ve-green-deep);font-weight:900;font-size:13px;padding:2px 8px;border-radius:6px;box-shadow:0 1px 3px rgba(0,0,0,.15);}
@@ -121,7 +130,7 @@
     .dec{display:flex;flex-direction:column;gap:8px;}
     .brcard{border:1px dashed #9fd3cc;border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:8px;background:#fbfefd;margin-top:4px;}
     .brcard.approved{border-style:solid;border-color:var(--ve-green);}
-    @media (max-width:800px){.stage{grid-template-columns:1fr;}.ctl .meta{margin-left:0;width:100%;}}
+    @media (max-width:800px){.player,.player.tall{grid-template-columns:1fr;}.player.tall .pv{max-width:420px;width:100%;margin:0 auto;}.ctl .meta{margin-left:0;width:100%;}}
     [hidden]{display:none !important;}
   </style>
 </head>
@@ -232,12 +241,12 @@
       }
       function frameCard(f) {
         var s = f.s, sq = s.kind === 'on_camera';
-        var pic = s.image_url ? '<div class="pic' + (sq ? ' square' : '') + '" data-big="' + esc(s.image_url) + '" style="background-image:url(\'' + esc(s.image_url) + '\')" role="img" aria-label="Frame ' + f.n + '"><span class="fn">' + pad(f.n) + '</span></div>'
+        var pic = s.image_url ? '<div class="pic fit" data-big="' + esc(s.image_url) + '" style="--img:url(\'' + esc(s.image_url) + '\')" role="img" aria-label="Frame ' + f.n + '"><span class="fn">' + pad(f.n) + '</span></div>'
           : '<div class="pic empty"><span class="fn">' + pad(f.n) + '</span>No picture yet.</div>';
         var rd = RD[s.readiness] || RD.ready;
         var br = f.broll.map(function (b) {
           return '<div class="brcard ' + esc(b.status) + '"><div class="br-h"><span class="tag rd broll">B-roll</span> <span class="tag ' + esc(b.status) + '">' + esc(ST[b.status]) + '</span></div>' +
-            (b.image_url ? '<div class="pic" data-big="' + esc(b.image_url) + '" style="background-image:url(\'' + esc(b.image_url) + '\')"></div>' : '') +
+            (b.image_url ? '<div class="pic fit" data-big="' + esc(b.image_url) + '" style="--img:url(\'' + esc(b.image_url) + '\')"></div>' : '') +
             '<p class="brief">' + esc(b.brief) + '</p>' + decide(b) + '</div>';
         }).join('');
         return '<article class="frame ' + esc(s.status) + '" id="f' + f.n + '">' + pic + '<div class="body">' +
@@ -252,17 +261,20 @@
       var LB = null;
       function lookbook() {
         LB = frames();
+        var ar = String(data.tour.aspect || '16:9'), tall = /^(4:5|9:16|1:1)$/.test(ar);
+        $('pane').style.setProperty('--ar', ar.replace(':', '/'));
         var fr = LB.list, all = data.shots.length, ap = data.shots.filter(function (s) { return s.status === 'approved'; }).length;
         var html = '<p class="sub">The tour frame by frame, the way it will play. Press Play to watch it with ' + esc(NARR[data.tour.narrator] || data.tour.narrator) + '\'s voice, or go frame by frame. Approve what works; Redo what doesn\'t with a note (type it or tap the mic and say it). Nothing is animated or drawn until its frame is approved.</p>' +
-          '<section class="player" aria-label="The tour"><div class="stage"><div class="st-img" id="lbImg"></div><div class="cap"><span class="fn" id="lbN"></span><div><p class="q" id="lbQ"></p><p class="meta" id="lbM"></p></div></div></div>' +
+          '<section class="player' + (tall ? ' tall' : '') + '" aria-label="The tour"><div class="pv"><div class="st-img" id="lbImg"></div>' +
           '<div class="ctl"><button type="button" class="btn" id="lbPlay">▶ Play the tour</button><button type="button" class="btn btn-quiet" id="lbPrev" aria-label="Back">Back</button><button type="button" class="btn btn-quiet" id="lbNext" aria-label="Next">Next</button><span class="meta" id="lbT">0:00 / ' + secs(LB.total) + '</span></div>' +
-          '<div class="prog" id="lbBar"><span id="lbFill"></span></div>' +
-          '<div class="fbtns">' + fr.map(function (f) { return '<button type="button" data-go="' + f.n + '" class="' + esc(f.s.status) + '">' + pad(f.n) + '</button>'; }).join('') + '</div>' +
+          '<div class="prog" id="lbBar"><span id="lbFill"></span></div></div>' +
+          '<div class="pside"><div class="cap"><span class="fn" id="lbN"></span><div><p class="q" id="lbQ"></p><p class="meta" id="lbM"></p></div></div>' +
+          '<div class="fbtns">' + fr.map(function (f) { return '<button type="button" data-go="' + f.n + '" class="' + esc(f.s.status) + '">' + pad(f.n) + '</button>'; }).join('') + '</div></div>' +
           '<audio id="lbAu" preload="none"></audio></section>' +
           '<div class="legend"><b>' + fr.length + ' frames · ' + ap + ' of ' + all + ' decisions approved</b>' +
           Object.keys(RD).map(function (k) { return '<span><span class="tag rd ' + k + '">' + RD[k][0] + '</span> ' + RD[k][1] + '</span>'; }).join('') +
           '<span><span class="flag-dot"></span> Orange: the script says something that is not built yet.</span></div>' +
-          '<div class="frames" id="lbGrid">' + fr.map(frameCard).join('') + '</div>';
+          '<div class="frames' + (tall ? ' tall' : '') + '" id="lbGrid">' + fr.map(frameCard).join('') + '</div>';
         $('pane').innerHTML = html;
         wireGrid();
         wirePlayer();
@@ -282,10 +294,9 @@
           var f = fr[n - 1]; if (!f) return; cur = n;
           var img = f.s.image_url || (f.broll[0] && f.broll[0].image_url) || '';
           var el = $('lbImg'), zoom = img && f.s.kind !== 'on_camera';
-          el.style.backgroundImage = img ? 'url(\'' + img + '\')' : 'none';
           el.style.setProperty('--img', img ? 'url(\'' + img + '\')' : 'none');
           el.className = 'st-img'; void el.offsetWidth;
-          el.className = 'st-img' + (f.s.kind === 'on_camera' ? ' square' : '') + (img ? '' : ' empty') + (zoom ? ' zoom' : '');
+          el.className = 'st-img' + (img ? ' fit' : ' empty') + (zoom ? ' zoom' : '');
           $('lbN').textContent = pad(n);
           $('lbQ').textContent = '“' + (f.s.line || f.c.line) + '”';
           $('lbM').textContent = secs(f.g0) + ' to ' + secs(f.g1) + ' · ' + f.c.n + '. ' + f.c.title + ' · ' + KIND[f.s.kind] + ' · ' + ST[f.s.status];
