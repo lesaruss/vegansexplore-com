@@ -185,6 +185,62 @@
     .vesign .who{display:flex;flex-direction:column;line-height:1.1;}
     .vesign .who small{font-size:11px;font-weight:600;opacity:.7;}
     .social a.ve img{width:20px;height:20px;filter:brightness(0) invert(1);}
+    /* Dish cards: Favorite pill (this member saved it), then votes · Save · Add on one row */
+    .dish .ph{display:block;position:relative;}
+    .favpill{position:absolute;top:12px;right:12px;background:var(--c-highlight);color:var(--c-ink);font-weight:800;font-size:12px;border-radius:6px;padding:3px 9px;display:inline-flex;align-items:center;gap:5px;}
+    .favpill svg{width:12px;height:12px;fill:currentColor;}
+    .drow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:4px;}
+    .drow .add{margin-left:auto;}
+    .save{display:inline-flex;align-items:center;gap:6px;border:1.5px solid color-mix(in srgb,var(--c-text) 22%,transparent);background:var(--c-page);color:var(--c-text);border-radius:6px;padding:5px 10px;font:700 13px/1 var(--f-body),system-ui,sans-serif;cursor:pointer;}
+    .save svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2;}
+    .save.on{background:var(--c-text);border-color:var(--c-text);color:var(--c-page);}
+    .save.on svg{fill:currentColor;}
+    .dish h3 a{text-decoration:none;}
+    .allg{display:flex;flex-wrap:wrap;gap:6px;}
+    .allg span{font-size:12px;font-weight:700;border-radius:6px;padding:3px 8px;background:color-mix(in srgb,var(--c-highlight) 30%,var(--c-page));}
+    /* One dish */
+    .crumb{font-size:14px;margin-bottom:14px;opacity:.85;}
+    .crumb a{text-decoration:none;font-weight:700;}
+    .dd{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:44px;align-items:start;}
+    .dd .pic{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:16px;}
+    .dd h1{font-size:clamp(34px,4vw,54px);margin-bottom:8px;}
+    .dd .price{font-size:22px;font-weight:800;margin-bottom:12px;}
+    .dd .lead{font-size:18px;margin:0 0 18px;}
+    .dd h2{font-size:24px;margin:30px 0 12px;}
+    .nut{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
+    .nut div{background:var(--c-soft);border-radius:12px;padding:12px;text-align:center;}
+    .nut b{display:block;font-size:24px;font-family:var(--f-head);}
+    .nut span{font-size:13px;opacity:.8;}
+    .ingl{list-style:none;padding:0;margin:0;display:grid;gap:10px;}
+    .ingl li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;border:1.5px solid color-mix(in srgb,var(--c-text) 12%,transparent);border-radius:12px;padding:12px 14px;}
+    .ingl .n{font-weight:700;}
+    .ingl .s{font-size:14px;opacity:.85;}
+    .ingl .s a{font-weight:700;}
+    .src{font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border-radius:6px;padding:3px 8px;white-space:nowrap;}
+    .src.farm{background:#DCEFD6;color:#1E4D2B;} .src.brand{background:#E6EEF9;color:#1E3A6B;} .src.made{background:var(--c-soft);color:var(--c-text);} .src.maker{background:#F6E7D2;color:#5A3A12;} .src.market{background:#EEE;color:#333;}
+    .org{font-size:11px;font-weight:800;color:#2E7D32;margin-left:6px;}
+    .owner{border:2px dashed var(--c-accent);border-radius:14px;padding:16px;margin-top:22px;background:color-mix(in srgb,var(--c-soft) 50%,var(--c-page));}
+    .owner h3{font-size:19px;margin-bottom:6px;}
+    .owner input{width:100%;min-height:42px;border:1px solid color-mix(in srgb,var(--c-text) 25%,transparent);border-radius:6px;padding:9px 12px;font:inherit;background:var(--c-page);color:var(--c-text);}
+    .hits{display:grid;gap:6px;margin-top:8px;}
+    .hits button{display:flex;align-items:center;gap:10px;text-align:left;border:1px solid color-mix(in srgb,var(--c-text) 15%,transparent);background:var(--c-page);border-radius:8px;padding:8px 10px;cursor:pointer;font:inherit;color:inherit;}
+    .hits img{width:32px;height:32px;border-radius:6px;object-fit:cover;background:#fff;}
+    .rm{border:0;background:none;color:inherit;cursor:pointer;font-size:18px;opacity:.6;}
+    .ownerbar{background:var(--c-highlight);color:var(--c-ink);font-weight:700;font-size:14px;}
+    .ownerbar .wrap{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;padding-top:10px;padding-bottom:10px;}
+    .ownerbar a{color:inherit;}
+    /* Sign in (the sample login) */
+    .signbox{max-width:460px;margin:0 auto;border:1.5px solid color-mix(in srgb,var(--c-text) 15%,transparent);border-radius:16px;padding:28px;background:var(--c-page);}
+    .signbox .vehead{display:flex;align-items:center;gap:10px;font-weight:800;margin-bottom:14px;}
+    .signbox .vehead img{width:34px;height:34px;}
+    .vesign button{border:0;background:none;color:inherit;font:600 11px/1 inherit;opacity:.7;cursor:pointer;padding:0;text-decoration:underline;}
+    /* The order page: one compact row per dish, Add on the right */
+    .olist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+    .orow{display:grid;grid-template-columns:76px minmax(0,1fr) auto;gap:14px;align-items:center;background:color-mix(in srgb,var(--c-soft) 55%,var(--c-page));border-radius:12px;padding:10px;}
+    .orow img{width:76px;height:76px;object-fit:cover;border-radius:10px;}
+    .orow b{display:block;font-size:16px;}
+    .orow p{margin:2px 0 0;font-size:13.5px;opacity:.8;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .orow .r{display:flex;flex-direction:column;align-items:flex-end;gap:6px;font-weight:800;}
     .gallery.g3{grid-template-columns:repeat(3,minmax(0,1fr));}
     /* The space */
     .sets{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;}
@@ -209,6 +265,7 @@
     .social svg{width:20px;height:20px;fill:currentColor;}
     .managed{opacity:.7;font-size:12.5px;margin-top:12px;}
     .bar{display:none;}
+    @media (max-width:1280px){.olist{grid-template-columns:minmax(0,1fr);}}
     @media (max-width:1180px) and (min-width:901px){.rail{grid-auto-columns:calc((100% - 24px) / 2);}}
     @media (max-width:1180px) and (min-width:901px){.dishes.six,.posts{grid-template-columns:repeat(2,minmax(0,1fr));}}
     @media (max-width:900px){
@@ -219,6 +276,7 @@
       .burger{display:block;}
       .split,.visit,.order{grid-template-columns:minmax(0,1fr);gap:26px;}
       .dishes.six,.posts{grid-template-columns:minmax(0,1fr);}
+      .dd{grid-template-columns:minmax(0,1fr);gap:22px;} .dd .pic{aspect-ratio:4/3;} .nut{grid-template-columns:repeat(2,minmax(0,1fr));}
       .rail{grid-auto-columns:86%;gap:14px;} .rctl .arr{display:none;} .gallery.g3{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
       .cart{position:static;}
       footer.site .wrap{grid-template-columns:minmax(0,1fr);gap:24px;}
@@ -310,10 +368,21 @@
     C.menu.sections.forEach(function (s, si) { s.items.forEach(function (it, ii) { var k = si + '-' + ii; var o = Object.assign({ section: s.name, key: k }, it); items.push(o); byKey[k] = o; }); });
     var withPhoto = items.filter(function (i) { return i.photo && i.photo.src; });
     // Votes: on a live site Vegans Explore members sign in to vote; the sample keeps a visitor's votes in this browser.
-    var CAN_VOTE = !VS && !PC, MYV = {}; try { MYV = JSON.parse(localStorage.getItem('ve_site_votes') || '{}'); } catch (e) {}
+    // The sample's sign in: a Vegans Explore member already signed in on vegansexplore.com comes in as themselves; anyone else uses
+    // the sample login. Signed in, the sample bar switches between a member and the owner. Nothing here is saved anywhere but this browser.
+    var CAN_VOTE = !VS && !PC, SESS = null; try { SESS = JSON.parse(sessionStorage.getItem('ve_site_session') || 'null'); } catch (e) {}
+    function setSess(v) { SESS = v; try { if (v) sessionStorage.setItem('ve_site_session', JSON.stringify(v)); else sessionStorage.removeItem('ve_site_session'); } catch (e) {} }
+    var OWNER = function () { return !!(SESS && SESS.role === 'owner'); };
+    // Votes are daily (one a day for each dish or post, like the Directory's); saves keep a dish as their Favorite.
+    var TODAY = nowNY.getFullYear() + '-' + (nowNY.getMonth() + 1) + '-' + nowNY.getDate();
+    var MYV = {}, MYS = {}; try { MYV = JSON.parse(localStorage.getItem('ve_site_votes2') || '{}'); MYS = JSON.parse(localStorage.getItem('ve_site_saves') || '{}'); } catch (e) {}
     function vcount(key, base) { return (base || 0) + (MYV[key] ? 1 : 0); }
+    function votedToday(key) { return MYV[key] === TODAY; }
+    var BOOK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg>';
+    function saveBtn(k, label) { if (!CAN_VOTE) return ''; var on = !!MYS[k]; return '<button type="button" class="save' + (on ? ' on' : '') + '" data-save="' + k + '" aria-pressed="' + on + '" aria-label="Save ' + esc(label) + '">' + BOOK + (on ? 'Saved' : 'Save') + '</button>'; }
+    function needSign() { try { sessionStorage.setItem('ve_site_next', location.hash || '#/'); } catch (e) {} location.hash = '#/signin'; }
     var HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.8 4.5c2.2 0 3.6 1.2 4.2 2.4h2c.6-1.2 2-2.4 4.2-2.4 3.8 0 5.9 3.9 4.4 7.3C19.5 16.4 12 21 12 21z"/></svg>';
-    function voteBtn(key, base, label) { if (!CAN_VOTE) return ''; return '<button type="button" class="vote' + (MYV[key] ? ' on' : '') + '" data-vote="' + key + '" data-base="' + (base || 0) + '" aria-pressed="' + (MYV[key] ? 'true' : 'false') + '" aria-label="Vote for ' + esc(label) + '">' + HEART + '<span>' + vcount(key, base) + '</span></button>'; }
+    function voteBtn(key, base, label) { if (!CAN_VOTE) return ''; var on = votedToday(key); return '<button type="button" class="vote' + (on ? ' on' : '') + '" data-vote="' + key + '" data-base="' + (base || 0) + '" aria-pressed="' + on + '" title="One vote a day" aria-label="Vote for ' + esc(label) + '">' + HEART + '<span>' + vcount(key, base) + '</span></button>'; }
     function arrows(id) { return '<div class="rctl"><button type="button" class="arr" data-rail="' + id + '" data-dir="-1" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 5l-7 7 7 7"/></svg></button><button type="button" class="arr" data-rail="' + id + '" data-dir="1" aria-label="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 5l7 7-7 7"/></svg></button></div>'; }
     function rail(id, cards) { return '<div class="rail" id="' + id + '">' + cards.join('') + '</div><div class="rdots" data-dots="' + id + '"></div>'; }
     var picks = withPhoto.slice().sort(function (a, b) { return vcount('d:' + b.key, b.votes) - vcount('d:' + a.key, a.votes); }).slice(0, 9);
@@ -343,13 +412,40 @@
       facebook: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8.2h2.8l.4-3.2h-3.2V8.5c0-.9.3-1.6 1.6-1.6h1.7V4.1c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2.4H7.3v3.2h2.8V22h3.4z"/></svg>'
     };
 
+    // What's in a dish: its ingredients from the Cartridge's library, plus anything the owner added or took out this visit.
+    var ING = (C.menu && C.menu.ingredients) || {}, EDITS = {}; try { EDITS = JSON.parse(sessionStorage.getItem('ve_site_ing_edits') || '{}'); } catch (e) {}
+    function ingOf(i) { var e = EDITS[i.key]; if (e) return e; return (i.ing || []).map(function (id) { return ING[id]; }).filter(Boolean); }
+    function allergensOf(i) { var a = {}; ingOf(i).forEach(function (g) { (g.allergens || []).forEach(function (x) { a[x] = 1; }); }); return Object.keys(a); }
+    var ALL_ALLG = ['Soy', 'Wheat', 'Tree nuts', 'Peanuts', 'Sesame', 'Coconut'];
+    var SRCW = { farm: 'Local farm', brand: 'Brand', made: 'Made here', maker: 'Local maker', market: 'Sourced' };
+    function dishHref(k) { return VS ? href('menu') : '#/menu/' + k; }
+    function addBtn(k) { var n = CART[k]; return '<button class="btn sm add' + (n ? ' added' : '') + '" type="button" data-add="' + k + '">' + (n ? 'Added · ' + n : 'Add') + '</button>'; }
     function dish(i, add, rank) {
-      var k = i.key, inCart = CART[k];
-      return '<article class="dish">' + (rank ? '<span class="rank">#' + rank + '</span>' : '') + (i.photo && i.photo.src ? '<img src="' + esc(i.photo.src) + '" alt="' + esc(i.name) + '" loading="lazy">' : '') +
-        '<div class="body"><h3><span>' + esc(i.name) + '</span><span class="pr">' + esc(i.price) + '</span></h3><p>' + esc(i.copy || i.was) + '</p>' +
-        (CAN_VOTE ? '<div>' + voteBtn('d:' + k, i.votes, i.name) + '</div>' : '') +
+      var k = i.key, link = !VS && !PC;
+      var img = i.photo && i.photo.src ? '<img src="' + esc(i.photo.src) + '" alt="' + esc(i.name) + '" loading="lazy">' : '';
+      return '<article class="dish">' + (rank ? '<span class="rank">#' + rank + '</span>' : '') + (MYS[k] && CAN_VOTE ? '<span class="favpill">' + BOOK + 'Favorite</span>' : '') +
+        (link ? '<a class="ph" href="' + dishHref(k) + '">' + img + '</a>' : img) +
+        '<div class="body"><h3>' + (link ? '<a href="' + dishHref(k) + '">' + esc(i.name) + '</a>' : '<span>' + esc(i.name) + '</span>') + '<span class="pr">' + esc(i.price) + '</span></h3><p>' + esc(i.copy || i.was) + '</p>' +
         ((i.tags || []).length ? '<div class="tags">' + i.tags.map(function (t) { return '<span class="tag">' + esc(t) + '</span>'; }).join('') + '</div>' : '') +
-        (add && MODE === 'pos' ? '<button class="btn sm add' + (inCart ? ' added' : '') + '" type="button" data-add="' + k + '">' + (inCart ? 'Added · ' + inCart : 'Add') + '</button>' : '') + '</div></article>';
+        (CAN_VOTE || (add && MODE === 'pos') ? '<div class="drow">' + voteBtn('d:' + k, i.votes, i.name) + saveBtn(k, i.name) + (add && MODE === 'pos' ? addBtn(k) : '') + '</div>' : '') + '</div></article>';
+    }
+    function orow(i) {
+      return '<div class="orow">' + (i.photo && i.photo.src ? '<img src="' + esc(i.photo.src) + '" alt="" loading="lazy">' : '<span></span>') +
+        '<div><b>' + esc(i.name) + '</b><p>' + esc(i.copy || i.was) + '</p></div><div class="r">' + esc(i.price) + addBtn(i.key) + '</div></div>';
+    }
+    function orderBlock() {
+      return '<div class="mtabs" role="tablist">' + C.menu.sections.map(function (s, si) { return '<button type="button" role="tab" data-sec="' + si + '" class="' + (si === activeSec ? 'on' : '') + '">' + esc(s.name) + '</button>'; }).join('') + '</div>' +
+        '<select class="msel" data-secsel aria-label="Menu section">' + C.menu.sections.map(function (s, si) { return '<option value="' + si + '"' + (si === activeSec ? ' selected' : '') + '>' + esc(s.name) + '</option>'; }).join('') + '</select>' +
+        '<div class="olist">' + items.filter(function (i) { return i.section === C.menu.sections[activeSec].name; }).map(orow).join('') + '</div>';
+    }
+    function ingList(i) {
+      var list = ingOf(i);
+      if (!list.length) return '<p class="note">Ask us what goes into this one.</p>';
+      return '<ul class="ingl">' + list.map(function (g, n) {
+        var by = esc(g.source || '') + (g.listing ? ' · <a href="https://vegansexplore.com/directory/' + esc(g.listing) + '" target="_blank" rel="noopener">See ' + esc(g.brand || g.name) + ' on Vegans Explore</a>' : '');
+        return '<li><div><div class="n">' + esc(g.name) + (g.organic ? '<span class="org">ORGANIC</span>' : '') + '</div><div class="s">' + by + ((g.allergens || []).length ? ' · Contains ' + esc(g.allergens.join(', ').toLowerCase()) : '') + '</div></div>' +
+          '<div><span class="src ' + esc(g.from || 'market') + '">' + esc(SRCW[g.from] || 'Sourced') + '</span>' + (OWNER() ? ' <button type="button" class="rm" data-ingrm="' + n + '" aria-label="Take ' + esc(g.name) + ' out">×</button>' : '') + '</div></li>';
+      }).join('') + '</ul>';
     }
     var activeSec = 0;
     function menuBlock(add) {
@@ -357,6 +453,21 @@
       return '<div class="mtabs" role="tablist">' + C.menu.sections.map(function (s, si) { return '<button type="button" role="tab" data-sec="' + si + '" class="' + (si === activeSec ? 'on' : '') + '">' + esc(s.name) + '</button>'; }).join('') + '</div>' +
         '<select class="msel" data-secsel aria-label="Menu section">' + C.menu.sections.map(function (s, si) { return '<option value="' + si + '"' + (si === activeSec ? ' selected' : '') + '>' + esc(s.name) + '</option>'; }).join('') + '</select>' +
         '<div class="mgrid">' + items.filter(function (i) { return i.section === C.menu.sections[activeSec].name; }).map(function (i) { return dish(i, add); }).join('') + '</div>';
+    }
+    function dishPage(k) {
+      var i = byKey[k]; if (!i) return PAGES.menu();
+      var al = allergensOf(i), nu = i.nutrition;
+      return '<div class="wrap pagehead" style="padding-bottom:0"><div class="crumb"><a href="' + href('menu') + '">Menu</a> › ' + esc(i.section) + ' › ' + esc(i.name) + '</div></div>' +
+        '<section class="s" style="padding-top:10px"><div class="wrap dd"><div style="position:relative">' + (MYS[k] && CAN_VOTE ? '<span class="favpill">' + BOOK + 'Favorite</span>' : '') + (i.photo && i.photo.src ? '<img class="pic" src="' + esc(i.photo.src) + '" alt="' + esc(i.name) + '">' : '') + '</div>' +
+        '<div><div class="eyebrow">' + esc(i.section) + '</div><h1>' + esc(i.name) + '</h1><div class="price">' + esc(i.price) + '</div><p class="lead">' + esc(i.copy || i.was) + '</p>' +
+        '<div class="drow">' + voteBtn('d:' + k, i.votes, i.name) + saveBtn(k, i.name) + (MODE === 'pos' ? addBtn(k) : '<a class="btn sm" href="' + esc(orderHref()) + '" style="margin-left:auto">Order</a>') + '</div>' +
+        '<h2>Allergens</h2>' + (al.length ? '<div class="allg">' + al.map(function (x) { return '<span>Contains ' + esc(x.toLowerCase()) + '</span>'; }).join('') + '</div>' : '<p class="note" style="margin:0">None of the common allergens.</p>') +
+        '<p class="note">Free of ' + ALL_ALLG.filter(function (x) { return al.indexOf(x) < 0; }).map(function (x) { return x.toLowerCase(); }).join(', ') + '. Everything here is Vegan: no dairy, eggs, fish or shellfish. Made in a kitchen that also handles nuts, soy and wheat.</p>' +
+        (nu ? '<h2>Nutrition, per serving</h2><div class="nut"><div><b>' + nu.cal + '</b><span>calories</span></div><div><b>' + nu.protein + 'g</b><span>protein</span></div><div><b>' + nu.carbs + 'g</b><span>carbs</span></div><div><b>' + nu.fat + 'g</b><span>fat</span></div></div><p class="note">Estimated from the recipe.</p>' : '') +
+        '<h2>What\'s in it, and where it comes from</h2>' + '<div data-ing>' + ingList(i) + '</div>' +
+        (OWNER() ? '<div class="owner"><h3>Add an ingredient</h3><p class="note" style="margin:0 0 10px">Search the brands on Vegans Explore, or type your own. On a live site this saves to your brand kit; here it is kept for this visit.</p>' +
+          '<input data-ingq placeholder="Search brands: tofu, cheese, oat milk..." autocomplete="off"><div class="hits" data-hits></div></div>' : '') +
+        '</div></div></section>';
     }
     var activeSet = 'outside';
     var SETS = [['outside', 'Outside'], ['night', 'At night'], ['inside', 'Inside'], ['team', 'The team']];
@@ -421,8 +532,9 @@
           '<section class="s"><div class="wrap">' + visitBlock() + '</div></section>';
       },
       menu: function () {
-        return '<div class="wrap pagehead"><div class="eyebrow">Menu</div><h1>The menu</h1><p class="lede" style="margin-bottom:0">' + (biz.vegan === '100% Vegan' ? 'Everything here is Vegan. ' : '') + 'Ask us about gluten-free.</p></div>' +
-          '<section class="s" style="padding-top:20px"><div class="wrap" data-menu>' + menuBlock(false) + '<p style="margin-top:30px"><a class="btn" href="' + esc(orderHref()) + '">Order for pickup</a></p></div></section>';
+        var sub = !VS && location.hash.split('/')[2]; if (sub) return dishPage(sub);
+        return '<div class="wrap pagehead"><div class="eyebrow">Menu</div><h1>The menu</h1><p class="lede" style="margin-bottom:0">' + (biz.vegan === '100% Vegan' ? 'Everything here is Vegan. ' : '') + 'Tap any dish to see what\'s in it, where it comes from and its allergens.</p></div>' +
+          '<section class="s" style="padding-top:20px"><div class="wrap" data-menu>' + menuBlock(true) + '<p style="margin-top:30px"><a class="btn" href="' + esc(orderHref()) + '">Order for pickup</a></p></div></section>';
       },
       order: function () {
         if (MODE !== 'pos') return '<div class="wrap pagehead"><div class="eyebrow">Order</div><h1>Order for pickup</h1></div><section class="s" style="padding-top:20px"><div class="wrap">' +
@@ -431,7 +543,7 @@
           '<div class="linkorder"><div><h3 style="font-size:24px;margin-bottom:6px">Order on our ordering page</h3><p style="margin:0">Pick it up hot, about ' + (I.ordering.pickup_minutes || 20) + ' minutes after you order.</p></div>' +
           '<a class="btn" href="' + esc(I.ordering.order_url || 'https://squareup.com') + '" target="_blank" rel="noopener">Order now</a></div>') + '<div data-menu>' + menuBlock(false) + '</div></div></section>';
         return '<div class="wrap pagehead"><div class="eyebrow">Order</div><h1>Order for pickup</h1><p class="lede" style="margin-bottom:0">Add what you want. It goes straight to our kitchen, ready about ' + (I.ordering.pickup_minutes || 20) + ' minutes after you order.</p></div>' +
-          '<section class="s" style="padding-top:20px"><div class="wrap order"><div data-menu>' + menuBlock(true) + '</div><aside class="cart" id="cart">' + cartHtml() + '</aside></div></section>' +
+          '<section class="s" style="padding-top:20px"><div class="wrap order"><div data-menu data-order>' + orderBlock() + '</div><aside class="cart" id="cart">' + cartHtml() + '</aside></div></section>' +
           '<div class="cartbar" id="cartbar"></div>';
       },
       about: function () {
@@ -451,6 +563,16 @@
           '<p style="margin-top:30px"><a class="btn ghost" href="' + href('home') + '">Back home</a></p></div>' +
           (POSTS.length > 1 ? '<div class="eyebrow" style="margin-top:50px">More news</div><div class="posts">' + POSTS.filter(function (q) { return q !== p; }).slice(0, 3).map(postCard).join('') + '</div>' : '') + '</div></section>';
       },
+      signin: function () {
+        var who = VE_MEMBER ? veFirst(VE_MEMBER) : '';
+        if (SESS) return '<section class="s"><div class="wrap"><div class="signbox"><div class="vehead"><img src="' + VE_MARK + '" alt="">Vegans Explore</div><h2 style="font-size:28px;margin-bottom:8px">You are signed in, ' + esc(SESS.name) + '</h2><p class="note">Use the switch in the bar at the top to see the site as a member or as the owner.</p><p style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap"><a class="btn" href="' + href('menu') + '">Go to the menu</a><button class="btn ghost" type="button" data-signout>Sign out</button></p></div></div></section>';
+        return '<section class="s"><div class="wrap"><div class="signbox"><div class="vehead"><img src="' + VE_MARK + '" alt="">Sign in with Vegans Explore</div>' +
+          '<p style="margin:0 0 16px">One Vegans Explore account works on every restaurant site we manage: vote for dishes every day, save your favorites, and order faster.</p>' +
+          (who ? '<p class="note" style="margin:0 0 12px">You are signed in on Vegans Explore as ' + esc(who) + '.</p><button class="btn" type="button" data-signin="real" style="width:100%">Continue as ' + esc(who) + '</button><p class="note" style="text-align:center;margin:12px 0">or use the sample login</p>' : '') +
+          '<label class="f">Email<input value="demo@vegansexplore.com" readonly></label><label class="f">Password<input type="password" value="explore11" readonly></label>' +
+          '<button class="btn' + (who ? ' ghost' : '') + '" type="button" data-signin="sample" style="width:100%">Sign in to the sample</button>' +
+          '<p class="note">This is the sample login, so anyone can try it. Nothing is saved to an account.</p></div></div></section>';
+      },
       visit: function () {
         return '<div class="wrap pagehead"><div class="eyebrow">Visit</div><h1>Come see us</h1></div><section class="s" style="padding-top:20px"><div class="wrap">' + visitBlock() + '</div></section>';
       }
@@ -459,6 +581,8 @@
 
     function signLink() {
       if (PC) return '';
+      if (!VS) return SESS ? '<span class="vesign"><span class="vc"><img src="' + VE_MARK + '" alt=""></span><span class="who">Hi, ' + esc(SESS.name) + '<small>' + (OWNER() ? 'Owner · ' : 'Vegans Explore member · ') + '<button type="button" data-signout>Sign out</button></small></span></span>' :
+        '<a class="vesign" href="#/signin"><span class="vc"><img src="' + VE_MARK + '" alt=""></span>Sign in</a>';
       if (VE_MEMBER) return '<a class="vesign" href="https://vegansexplore.com/dashboard" title="Signed in with your Vegans Explore account"><span class="vc"><img src="' + VE_MARK + '" alt=""></span><span class="who">Hi, ' + esc(veFirst(VE_MEMBER)) + '<small>Vegans Explore member</small></span></a>';
       var back = VS ? location.href : location.pathname + location.hash;
       return '<a class="vesign" href="' + (VS ? 'https://vegansexplore.com' : '') + '/login?next=' + encodeURIComponent(back) + '"><span class="vc"><img src="' + VE_MARK + '" alt=""></span>Sign in</a>';
@@ -491,13 +615,16 @@
       if (b) b.innerHTML = n && !placed ? '<a class="btn" href="#cart">View your order (' + n + ') <span>' + money(cartTotal()) + '</span></a>' : '';
     }
 
+    function goNext() { var n = '#/'; try { n = sessionStorage.getItem('ve_site_next') || '#/'; sessionStorage.removeItem('ve_site_next'); } catch (e) {} if (location.hash === n) draw(); else location.hash = n; }
     function route() { if (VS) return PAGES[VS.page] ? VS.page : 'home'; var h = location.hash.replace(/^#\/?/, '').split('/')[0]; return PAGES[h] ? h : 'home'; }
     function draw() {
       var page = route();
+      if (page === 'signin' && !SESS && VE_MEMBER && !sessionStorage.getItem('ve_site_signedout')) { setSess({ name: veFirst(VE_MEMBER), real: true, role: 'member' }); goNext(); return; }
       if (VS && VS.mode === 'preview') document.getElementById('sampleBar').innerHTML = '<b>Preview</b><span>' + esc(biz.name) + '\'s new website. Not live yet: only you and our team can see this address.</span>' +
         (VS.dashboard ? '<a class="push" href="' + esc(VS.dashboard) + '">Approve it or ask for changes</a>' : '');
       else if (PC) document.getElementById('sampleBar').style.display = 'none'; else document.getElementById('sampleBar').innerHTML = '<b>Sample</b><span>Green Leaf Kitchen\'s website on our BrandDesk frame, a made-up restaurant. Everything comes from its <a href="/business/sample/brand">brand kit</a>.</span>' +
         '<span class="seg push" role="group" aria-label="Make it yours: the look">' + LOOKS.map(function (l) { return '<button type="button" data-look="' + l.key + '" class="' + (l.key === LOOK ? 'on' : '') + '">' + esc(l.name) + '</button>'; }).join('') + '</span>' +
+        (SESS ? '<span class="seg" role="group" aria-label="Signed in as"><button type="button" data-role="member" class="' + (OWNER() ? '' : 'on') + '">As a member</button><button type="button" data-role="owner" class="' + (OWNER() ? 'on' : '') + '">As the owner</button></span>' : '<span class="seg"><button type="button" data-gosign>Try the sample login</button></span>') +
         '<span class="seg" role="group" aria-label="Ordering"><button type="button" data-mode="pos" class="' + (MODE === 'pos' ? 'on' : '') + '">Ordering connected to Square</button><button type="button" data-mode="link" class="' + (MODE === 'link' ? 'on' : '') + '">Ordering by link</button></span>';
       var top = '<header class="top"><div class="wrap"><a class="brand" href="' + href('home') + '">' + (mark ? '<img class="mark" src="' + esc(DARK_PAGE && markRev ? markRev : mark) + '" alt="">' : logo ? (DARK_PAGE && rev ? '<img class="rev" src="' + esc(rev) + '" alt="">' : '<img src="' + esc(logo) + '" alt="">') : '') + '<span>' + esc(biz.name) + '</span></a>' +
         '<button class="burger" type="button" aria-label="Menu" data-burger><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>' +
@@ -509,8 +636,9 @@
         '<div class="managed">Managed by <a href="https://vegansexplore.com/business">Vegans Explore BrandDesk</a> · <a href="https://vegansexplore.com' + esc(L.directory || '/directory') + '">Find us on Vegans Explore</a></div></div>' +
         '<div class="social">' + '<a class="ve" href="https://vegansexplore.com' + esc(L.directory || '/directory') + '" target="_blank" rel="noopener" aria-label="' + esc(biz.name) + ' on Vegans Explore"><img src="' + VE_MARK + '" alt=""></a>' + social.map(function (k) { return '<a href="' + esc(L[k]) + '" target="_blank" rel="noopener" aria-label="' + biz.name + ' on ' + k.charAt(0).toUpperCase() + k.slice(1) + '">' + ICON[k] + '</a>'; }).join('') + '</div></div></footer>';
       var bar = '<nav class="bar" aria-label="Quick actions"><a href="' + esc(tel) + '">Call</a><a href="' + esc(maps) + '" target="_blank" rel="noopener">Directions</a><a href="' + esc(orderHref()) + '">Order</a></nav>';
-      document.getElementById('site').innerHTML = top + '<main>' + PAGES[page]() + '</main>' + foot + bar;
-      if (!VS) document.title = (page === 'home' ? biz.name + ' · ' + (C.story.tagline || biz.city) : ({ menu: 'Menu', order: 'Order', about: 'About', visit: 'Visit', news: 'News' })[page] + ' · ' + biz.name);
+      var ob = OWNER() && !VS ? '<div class="ownerbar"><div class="wrap"><span>You are viewing your site as the owner. Open any dish to change what is in it.</span><a href="/business/sample?tab=brand">Open your dashboard</a></div></div>' : '';
+      document.getElementById('site').innerHTML = top + ob + '<main>' + PAGES[page]() + '</main>' + foot + bar;
+      if (!VS) document.title = (page === 'home' ? biz.name + ' · ' + (C.story.tagline || biz.city) : ({ menu: 'Menu', order: 'Order', about: 'About', visit: 'Visit', news: 'News', signin: 'Sign in' })[page] + ' · ' + biz.name);
       drawCart(); wireRails();
     }
     // Each rail: the arrows turn off at the ends, and the dots show which set of three is in view.
@@ -527,27 +655,51 @@
       });
     }
     if (!VS) window.addEventListener('hashchange', function () { placed = null; draw(); window.scrollTo(0, 0); });
+    // The owner's ingredient search: the Food Brands and Nutrition & Supplements in the Vegans Explore Directory (public read).
+    var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA', qT;
+    document.addEventListener('input', function (e) {
+      if (!e.target.matches('[data-ingq]')) return;
+      var q = e.target.value.trim(), box = document.querySelector('[data-hits]'); clearTimeout(qT);
+      if (q.length < 2) { box.innerHTML = ''; return; }
+      qT = setTimeout(function () {
+        var own = { name: q.charAt(0).toUpperCase() + q.slice(1), from: 'made', source: 'Added by the owner' };
+        fetch('https://fwbhwfxpncrsfhttimna.supabase.co/rest/v1/listings?select=name,slug,logo_url&status=eq.approved&category=in.(%22Food%20Brands%22,%22Nutrition%20%26%20Supplements%22)&name=ilike.*' + encodeURIComponent(q.replace(/[*,()]/g, '')) + '*&limit=6', { headers: { apikey: ANON, Authorization: 'Bearer ' + ANON } })
+          .then(function (r) { return r.json(); }).catch(function () { return []; }).then(function (rows) {
+            rows = Array.isArray(rows) ? rows : [];
+            box.innerHTML = rows.map(function (r) { var g = { name: r.name, from: 'brand', brand: r.name, listing: r.slug, source: r.name }; return '<button type="button" data-pick=\'' + esc(JSON.stringify(g)).replace(/'/g, '&#39;') + '\'>' + (r.logo_url ? '<img src="' + esc(r.logo_url) + '" alt="">' : '') + '<span><b>' + esc(r.name) + '</b><br><small>On Vegans Explore</small></span></button>'; }).join('') +
+              '<button type="button" data-pick=\'' + esc(JSON.stringify(own)).replace(/'/g, '&#39;') + '\'><span><b>Add "' + esc(own.name) + '"</b><br><small>Your own, made here</small></span></button>';
+          });
+      }, 220);
+    });
     document.addEventListener('change', function (e) {
-      if (e.target.matches('[data-secsel]')) { activeSec = +e.target.value; e.target.closest('[data-menu]').innerHTML = menuBlock(route() === 'order'); }
+      if (e.target.matches('[data-secsel]')) { activeSec = +e.target.value; var mb = e.target.closest('[data-menu]'); mb.innerHTML = mb.hasAttribute('data-order') ? orderBlock() : menuBlock(true); }
     });
     document.addEventListener('click', function (e) {
       var t;
       if ((t = e.target.closest('[data-burger]'))) { document.getElementById('links').classList.toggle('openm'); return; }
       if ((t = e.target.closest('[data-look]'))) { LOOK = t.dataset.look; try { sessionStorage.setItem('ve_site_look', LOOK); } catch (x) {} applyLook(); draw(); return; }
       if ((t = e.target.closest('[data-mode]'))) { MODE = t.dataset.mode; try { sessionStorage.setItem('ve_site_order_mode', MODE); } catch (x) {} draw(); return; }
-      if ((t = e.target.closest('[data-sec]'))) { activeSec = +t.dataset.sec; t.closest('[data-menu]').innerHTML = menuBlock(route() === 'order'); return; }
+      if ((t = e.target.closest('[data-sec]'))) { activeSec = +t.dataset.sec; var mb2 = t.closest('[data-menu]'); mb2.innerHTML = mb2.hasAttribute('data-order') ? orderBlock() : menuBlock(true); return; }
       if ((t = e.target.closest('[data-set]'))) { activeSet = t.dataset.set; document.querySelectorAll('[data-gallery]').forEach(function (g) { g.innerHTML = gallery(); }); return; }
-      if ((t = e.target.closest('[data-add]'))) { CART[t.dataset.add] = (CART[t.dataset.add] || 0) + 1; saveCart(); placed = null; t.outerHTML = dish(byKey[t.dataset.add], true).match(/<button[^>]*data-add[^>]*>[^<]*<\/button>/)[0]; drawCart(); return; }
+      if ((t = e.target.closest('[data-add]'))) { var ak = t.dataset.add; CART[ak] = (CART[ak] || 0) + 1; saveCart(); placed = null; document.querySelectorAll('[data-add="' + ak + '"]').forEach(function (b) { b.outerHTML = addBtn(ak); }); drawCart(); return; }
       if ((t = e.target.closest('[data-qty]'))) { var k = t.dataset.qty; CART[k] = Math.max(0, (CART[k] || 0) + +t.dataset.d); if (!CART[k]) delete CART[k]; saveCart(); drawCart();
-        var b = document.querySelector('[data-add="' + k + '"]'); if (b) b.outerHTML = dish(byKey[k], true).match(/<button[^>]*data-add[^>]*>[^<]*<\/button>/)[0]; return; }
+        document.querySelectorAll('[data-add="' + k + '"]').forEach(function (b) { b.outerHTML = addBtn(k); }); return; }
       if ((t = e.target.closest('[data-place]'))) {
         var nm = document.querySelector('[data-oname]'); if (!nm.value.trim()) { nm.focus(); nm.placeholder = 'We need a name for the order'; return; }
         var w = document.querySelector('[data-owhen]').value;
         placed = { name: nm.value.trim().split(/\s+/)[0], no: 'GL-' + (1000 + Math.floor(Math.random() * 9000)), when: /soon/.test(w) ? 'in about ' + (I.ordering.pickup_minutes || 20) + ' minutes' : w.replace(/^In /, 'in ') };
         CART = {}; saveCart(); drawCart(); var ce = document.getElementById('cart'); if (ce && ce.getBoundingClientRect().top < 0 || ce && ce.getBoundingClientRect().top > innerHeight) ce.scrollIntoView({ behavior: 'smooth', block: 'start' }); document.querySelectorAll('[data-add]').forEach(function (b) { b.outerHTML = '<button class="btn sm add" type="button" data-add="' + b.dataset.add + '">Add</button>'; }); return; }
       if (e.target.closest('[data-neworder]')) { placed = null; drawCart(); }
-      if ((t = e.target.closest('[data-vote]'))) { var vk = t.dataset.vote; if (MYV[vk]) delete MYV[vk]; else MYV[vk] = 1; try { localStorage.setItem('ve_site_votes', JSON.stringify(MYV)); } catch (x) {}
-        document.querySelectorAll('[data-vote="' + vk + '"]').forEach(function (b) { b.classList.toggle('on', !!MYV[vk]); b.setAttribute('aria-pressed', MYV[vk] ? 'true' : 'false'); b.querySelector('span').textContent = vcount(vk, +b.dataset.base); }); return; }
+      if ((t = e.target.closest('[data-vote]'))) { if (!SESS) { needSign(); return; } var vk = t.dataset.vote; if (votedToday(vk)) delete MYV[vk]; else MYV[vk] = TODAY; try { localStorage.setItem('ve_site_votes2', JSON.stringify(MYV)); } catch (x) {}
+        document.querySelectorAll('[data-vote="' + vk + '"]').forEach(function (b) { var on = votedToday(vk); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); b.querySelector('span').textContent = vcount(vk, +b.dataset.base); }); return; }
+      if ((t = e.target.closest('[data-save]'))) { if (!SESS) { needSign(); return; } var sk = t.dataset.save; if (MYS[sk]) delete MYS[sk]; else MYS[sk] = 1; try { localStorage.setItem('ve_site_saves', JSON.stringify(MYS)); } catch (x) {} draw(); return; }
+      if ((t = e.target.closest('[data-signin]'))) { try { sessionStorage.removeItem('ve_site_signedout'); } catch (x) {} setSess(t.dataset.signin === 'real' && VE_MEMBER ? { name: veFirst(VE_MEMBER), real: true, role: 'member' } : { name: 'Sam', real: false, role: 'member' }); goNext(); return; }
+      if (e.target.closest('[data-signout]')) { setSess(null); try { sessionStorage.setItem('ve_site_signedout', '1'); } catch (x) {} draw(); return; }
+      if (e.target.closest('[data-gosign]')) { needSign(); return; }
+      if ((t = e.target.closest('[data-role]'))) { SESS.role = t.dataset.role; setSess(SESS); draw(); return; }
+      if ((t = e.target.closest('[data-ingrm]'))) { var dk = location.hash.split('/')[2], cur = ingOf(byKey[dk]).slice(); cur.splice(+t.dataset.ingrm, 1); EDITS[dk] = cur; try { sessionStorage.setItem('ve_site_ing_edits', JSON.stringify(EDITS)); } catch (x) {} document.querySelector('[data-ing]').innerHTML = ingList(byKey[dk]); return; }
+      if ((t = e.target.closest('[data-pick]'))) { var pk = location.hash.split('/')[2], g = JSON.parse(t.dataset.pick), cur2 = ingOf(byKey[pk]).slice(); cur2.push(g); EDITS[pk] = cur2; try { sessionStorage.setItem('ve_site_ing_edits', JSON.stringify(EDITS)); } catch (x) {}
+        document.querySelector('[data-ing]').innerHTML = ingList(byKey[pk]); var qi = document.querySelector('[data-ingq]'); if (qi) qi.value = ''; document.querySelector('[data-hits]').innerHTML = ''; return; }
       if ((t = e.target.closest('[data-post]'))) { openPost(+t.dataset.post); return; }
       if ((t = e.target.closest('[data-psort]'))) { postSort = t.dataset.psort; var nb = document.querySelector('[data-news]'); if (nb) { nb.innerHTML = newsBlock(); wireRails(); } return; }
       if ((t = e.target.closest('[data-rail]'))) { var rl = document.getElementById(t.dataset.rail); if (rl) rl.scrollBy({ left: +t.dataset.dir * rl.clientWidth, behavior: 'smooth' }); return; }
