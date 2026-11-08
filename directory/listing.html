@@ -247,6 +247,14 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .platform-sub{font-size:10px;font-weight:600;color:var(--ve-text-50);margin-top:1px}
 
 /* SIDEBAR CARDS */
+.give-cta{display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--vb-soft,#E8F5E9);border:1px solid var(--vb-line,#C8E6C9);border-radius:10px;padding:16px 18px;margin:0 0 24px}
+.give-cta-t b{display:block;font-size:16px;font-weight:800;color:var(--ve-text,#1A1A1A)}
+.give-cta-t span{display:block;font-size:13px;color:var(--ve-text-75,rgba(0,0,0,.75));margin-top:3px;line-height:1.45}
+.give-btn{display:inline-flex;align-items:center;justify-content:center;background:var(--vb-go,#2D5C27);color:#fff;font-weight:800;font-size:15px;padding:12px 26px;border-radius:6px;text-decoration:none;white-space:nowrap;flex-shrink:0}
+.give-btn:hover{background:var(--vb-go-hover,#234a1f)}
+.give-why .about-text{margin:0 0 14px}
+.give-why .give-src{font-size:12px;color:var(--ve-text-50,rgba(0,0,0,.6));margin:4px 0 14px}
+@media(max-width:600px){.give-cta{flex-direction:column;align-items:stretch}.give-btn{width:100%}}
 .side-card{background:#fff;border:1px solid var(--ve-border);border-radius:10px;padding:18px;margin-bottom:14px}
 .side-card-title{font-size:10px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-text-50);margin-bottom:12px}
 .contact-row{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;font-size:12px;font-weight:600;color:var(--ve-text-75)}
@@ -2423,6 +2431,28 @@ function renderAtAGlance(l){
   return '<div class="section"><h2 class="section-title">At a Glance</h2>'+html+footer+'</div>';
 }
 
+var GIVE_CATS = ['Nonprofits', 'Rescues', 'Sanctuaries'];
+function giveHref(l){
+  var d = l.details || {};
+  if(d.donation_link_code) return '/go/' + encodeURIComponent(d.donation_link_code);
+  return /^https?:\/\//i.test(d.donation_url || '') ? d.donation_url : '';
+}
+function giveCta(l){
+  var href = giveHref(l);
+  if(!href) return '';
+  return '<div class="give-cta"><div class="give-cta-t"><b>Support ' + esc(l.name) + '</b><span>Give on their own site. Your gift goes straight to them; Vegans Explore never handles donations.</span></div>' +
+    '<a class="give-btn" href="' + esc(href) + '" target="_blank" rel="noopener" data-act="donate">Donate</a></div>';
+}
+function giveWhy(l){
+  var s = (l.details || {}).support;
+  if(!s || !s.text) return '';
+  var host = ''; try { host = new URL((s.sources || [])[0] || l.website || '').host.replace(/^www\./, ''); } catch(e){}
+  var href = giveHref(l);
+  return '<div class="section give-why"><h2 class="section-title">Why support ' + esc(l.name) + '</h2>' +
+    String(s.text).split(/\n\s*\n/).map(function(p){ return '<p class="about-text">' + esc(p) + '</p>'; }).join('') +
+    '<p class="give-src">Written from ' + (host ? esc(host) : 'their own website') + '. Something out of date? Tell us with the Feedback button.</p>' +
+    (href ? '<a class="give-btn" href="' + esc(href) + '" target="_blank" rel="noopener" data-act="donate">Donate to ' + esc(l.name) + '</a>' : '') + '</div>';
+}
 function renderSidebar(l){
   var contact = '';
   if(l.phone) contact += '<div class="contact-row"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg><a href="tel:'+esc(l.phone)+'">'+esc(l.phone)+'</a></div>';
@@ -4522,6 +4552,9 @@ function renderListing(l){
   else if(!l._brandSite && (l.description || l.tagline)) {
     overviewContent += '<div class="section"><h2 class="section-title">About</h2><p class="about-text">'+esc(l.description || l.tagline)+'</p>'+renderOwnership(l)+'</div>';
   }
+  // Give back (Sean, 2026-11-08, playbook ve-holiday-guide): a nonprofit, rescue or sanctuary shows a Donate button that is easy to see,
+  // at the top, and "Why support" written from its own website (details.support, ve-giveback). Gifts go to them; we never handle money.
+  if(GIVE_CATS.indexOf(l.category) >= 0 && !DEMO && !l._brandSite) overviewContent = giveCta(l) + overviewContent + giveWhy(l);
   if(l.category === 'News Outlets' && !isYouTubeL(l) && !DEMO) overviewContent += newsStoriesHtml();
 
   // Signature dishes (playbook ve-signature-dishes): a claimed food place's featured dishes, right under About. Filled by loadSigDishes.

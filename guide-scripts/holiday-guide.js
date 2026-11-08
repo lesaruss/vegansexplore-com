@@ -29,7 +29,7 @@
   var HOLIDAY = 'thanksliving';
   var FIELDS = window.VERegionDirectory ? VERegionDirectory.FIELDS : 'id,slug,name,category,logo_url,vote_count,address_city,address_state,color,vegan_status,communities,tags,extra_categories';
   var GIVE_CATS = ['Nonprofits', 'Rescues', 'Sanctuaries'];
-  var GIVE_URL = SB + '/rest/v1/listings?select=' + FIELDS + '&status=eq.approved&or=(category.in.(' + GIVE_CATS.join(',') + '),extra_categories.ov.{' + GIVE_CATS.join(',') + '})&order=vote_count.desc.nullslast,name.asc&limit=600';
+  var GIVE_URL = SB + '/rest/v1/listings?select=' + FIELDS + ',give_url:details->>donation_url&status=eq.approved&or=(category.in.(' + GIVE_CATS.join(',') + '),extra_categories.ov.{' + GIVE_CATS.join(',') + '})&order=vote_count.desc.nullslast,name.asc&limit=600';
   // Each holiday reads its own events from our calendar: words in the title, up to a day after the holiday (organizers' own titles show as written).
   function eventsUrl(h) {
     var cfg = HOLX[h] || HOLX.thanksliving;
@@ -895,6 +895,8 @@
     var list = GIVE.filter(function (l) { return inChapter(l, ch); });
     var partners = list.filter(function (l) { return (l.tags || []).indexOf('ve-nonprofit-partner') >= 0; });
     var rest2 = list.filter(function (l) { return partners.indexOf(l) < 0; });
+    // Places with a donation link come first (Sean, 2026-11-08): each card opens its Directory page, where the Donate button is.
+    rest2 = rest2.filter(function (l) { return l.give_url; }).concat(rest2.filter(function (l) { return !l.give_url; }));
     main.innerHTML = head('Give back', 'Give where it counts', lede) + tools +
       (partners.length ? '<h3 style="margin:6px 0 10px;font-size:16px">Our Nonprofit Partners</h3>' + cards(partners, 'hgGiveP') : '') +
       (rest2.length ? '<h3 style="margin:18px 0 10px;font-size:16px">In Our Directory</h3>' + cards(rest2.slice(0, 60), 'hgGive') : '<div class="hg-empty"><h3>None ' + (ch === 'all' ? '' : 'in ' + esc(chapterName(ch)) + ' ') + 'Yet</h3></div>') +
@@ -902,7 +904,8 @@
     wireChapter('giveback'); wireCards('hgGiveP'); wireCards('hgGive');
   }
   function cards(list, id) { return '<div class="vrd-root"><div class="rank-grid" id="' + id + '">' + list.map(function (l, i) { return window.VERegionDirectory ? VERegionDirectory.card(l, i) : ''; }).join('') + '</div></div>'; }
-  function wireCards(id) { var g = document.getElementById(id); if (g && window.VERegionDirectory) VERegionDirectory.wire(g, function (slug) { location.hash = '#/giveback/listing/' + encodeURIComponent(slug); }); }
+  // Give Back sends people to the organization's Directory page, where its Donate button and Why support are (Sean, 2026-11-08).
+  function wireCards(id) { var g = document.getElementById(id); if (g && window.VERegionDirectory) VERegionDirectory.wire(g, function (slug) { location.href = '/directory/' + encodeURIComponent(slug); }); }
 
   // A Directory page inside the Guide, framed and sized to fit (the Nutrition Guide's way).
   function viewListing(slug, back) {
