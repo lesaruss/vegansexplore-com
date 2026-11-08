@@ -62,6 +62,34 @@
     '.vep-book:hover b{text-decoration:underline}.vep-bnote{font-size:11px;color:rgba(26,26,26,.75);margin:12px 0 0}' +
     '@media(max-width:640px){.vep-row{grid-template-columns:56px 1fr}.vep-img{width:56px;height:56px}.vep-row .vep-acts{grid-column:1/-1;flex-direction:row}.vep-row .vep-acts .vep-btn{flex:1}' +
       '.vep-one{grid-template-columns:1fr}.vep-one .vep-img{width:140px;height:140px}}' +
+    // The episode as a discovery engine (rich(), drawn only when the episode has structured notes).
+    '.vepn-top .vepn-head h2{font-size:24px;font-weight:900;line-height:1.2;margin:0 0 6px}.vepn-top .vep-acts{margin:12px 0}' +
+    '.vepn-sum{font-size:14.5px;line-height:1.6;margin:0 0 12px;color:rgba(26,26,26,.85)}' +
+    '.vepn-jump{display:flex;flex-wrap:wrap;gap:6px}.vepn-jump button{font:inherit;font-size:11.5px;font-weight:800;border:1px solid rgba(0,0,0,.15);border-radius:6px;padding:6px 10px;color:#1f5f22;background:#fff;cursor:pointer}' +
+    '.vepn-body{margin-top:22px}.vepn-sec{display:grid;grid-template-columns:200px minmax(0,1fr);gap:24px;padding:20px 0;border-top:1px solid rgba(0,0,0,.08);scroll-margin-top:calc(var(--ve-nav-h,72px) + 16px)}' +
+    '.vepn-guide{display:flex;gap:12px;align-items:flex-start}.vepn-gp{flex:0 0 56px;height:56px;border-radius:10px;background:#EAF7EA center/cover no-repeat}' +
+    '.vepn-gt{font-size:15px;font-weight:900;line-height:1.25}.vepn-gn{font-size:12px;font-weight:700;margin:3px 0}.vepn-gn span{color:rgba(26,26,26,.6);font-weight:600}' +
+    '.vepn-story{padding:0 0 16px}.vepn-story+.vepn-story{border-top:1px dashed rgba(0,0,0,.1);padding-top:16px}' +
+    '.vepn-st{font-size:15px;font-weight:800;line-height:1.4}.vepn-src{display:inline-block;font-size:12px;color:#1f5f22;font-weight:700;margin:3px 0 10px;text-decoration:none}.vepn-src:hover{text-decoration:underline}' +
+    '.vepn-body .vepn-tiles.rank-grid,.vepn-body .vepn-all.rank-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.vepn-body .vepn-all.rank-grid{grid-template-columns:repeat(3,minmax(0,1fr))}' +
+    '.vepn-body .rank-grid>*{min-width:0}.vepn-body .vch-bar{display:none}.vepn-body .vch-grid{grid-template-columns:1fr!important}.vepn-body [hidden]{display:none!important}' +
+    '.vepn-more{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:center;margin-top:10px;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}' +
+    '.vepn-more a{color:#1f5f22;text-decoration:none}.vepn-more a:hover{text-decoration:underline}.vepn-more .held{color:#a35a00;letter-spacing:.02em;text-transform:none;font-weight:700;font-size:12px}' +
+    '.vepn-p{font-size:14px;line-height:1.65;margin:0 0 12px;color:rgba(26,26,26,.85)}' +
+    '.vepn-held{display:flex;gap:12px;align-items:center;border:1px dashed #d9a35a;background:#FFFBF5;border-radius:12px;padding:12px 14px;height:100%;box-sizing:border-box}' +
+    '.vepn-hl{flex:0 0 56px;height:56px;border-radius:10px;background:#2d7d31;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:22px}' +
+    '.vepn-held b{display:block;font-size:14px;line-height:1.3}.vepn-held small{display:block;font-size:12px;color:rgba(26,26,26,.65)}.vepn-held em{display:block;font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#a35a00;margin-top:4px}' +
+    '.vepn-h{font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;margin:28px 0 12px;padding-bottom:10px;border-bottom:1px solid rgba(0,0,0,.1)}' +
+    '.vepn-pills{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap}.vepn-pills button{font:inherit;font-size:12px;font-weight:800;border:1px solid rgba(0,0,0,.15);border-radius:6px;padding:6px 12px;background:#fff;cursor:pointer;color:#1a1a1a}' +
+    '.vepn-pills button[aria-pressed=true]{background:#1f5f22;color:#fff;border-color:#1f5f22}' +
+    '.vepn-heldp{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}.vepn-heldp div{border:1px dashed #d9a35a;background:#FFFBF5;border-radius:12px;padding:12px 14px}' +
+    '.vepn-heldp b{display:block;font-size:14px}.vepn-heldp small{font-size:11.5px;font-weight:700;color:#a35a00}' +
+    '@media(max-width:700px){.vepn-sec{grid-template-columns:1fr;gap:12px}' +
+      '.vep-one.vepn-top{grid-template-columns:180px 1fr;grid-template-areas:"art acts" "title title" "meta meta" "sum sum" "jump jump";gap:0 14px}' +
+      '.vepn-top>.vepn-head{display:contents}.vepn-top>.vep-img{grid-area:art;width:180px;height:180px}' +
+      '.vepn-top .vep-acts{grid-area:acts;flex-direction:column;flex-wrap:nowrap;gap:8px;margin:0;height:180px}.vepn-top .vep-acts .vep-btn{width:100%;flex:1;min-height:0;font-size:10.5px;padding:0 8px}' +
+      '.vepn-top h2{grid-area:title;font-size:20px;margin:16px 0 4px!important}.vepn-top .vep-meta{grid-area:meta}.vepn-sum{grid-area:sum;margin-top:10px}.vepn-jump{grid-area:jump}' +
+      '.vepn-body .vepn-tiles.rank-grid,.vepn-body .vepn-all.rank-grid,.vepn-heldp{grid-template-columns:1fr}}' +
     // The player bar, at the foot of the window.
     '#vep-player{position:fixed;left:0;right:0;bottom:0;z-index:9990;background:#fff;border-top:1px solid rgba(0,0,0,.14);box-shadow:0 -8px 24px rgba(0,0,0,.08);font-family:Montserrat,sans-serif;padding:10px 16px;display:grid;grid-template-columns:48px minmax(0,1fr) minmax(0,2fr) auto;gap:14px;align-items:center}' +
     '#vep-player .vep-img{width:48px;height:48px;border-radius:6px}#vep-player .pt{font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#vep-player .ps{font-size:11.5px;font-weight:700;color:rgba(26,26,26,.68);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
@@ -277,7 +305,7 @@
         root.querySelector('.vep-crumb button').onclick = back;
         wire(root);
         toTop();
-        if (ours) { books(ep.guid); notes(ep.guid); }
+        if (ours) { books(ep.guid); notes(ep.guid); rich(ep, d); }
       });
     }
     // The way back to the Pulse (Sean, 2026-11-01: "build the show page back-link too"): one of our shows' episodes links to its
@@ -298,6 +326,125 @@
         var play = acts.querySelector('[data-vep-play]'); acts.insertBefore(a, play ? play.nextSibling : acts.firstChild);
       }).catch(function () {});
     }
+    // The episode as a discovery engine (Sean, 2026-11-08: "anybody mentioned, any organizations... when people go on these pages, it's
+    // a discovery engine for other things"; mocked and approved the same day). When an episode has structured notes
+    // (ve_episode_notes, read through ve_episode_notes_get), the view becomes: the art beside a short title, summary, Play / Save / Share
+    // and the section links; then each segment with its Guide on the left and its stories on the right, every story with the Directory's
+    // own cards, the chapter cards (VEChapters) and a See more line; In this episode (every card, filtered by kind); the places (chapter
+    // cards, plus places held for the chapter rankings); and Keep listening (this file's own episode rows, with Save). Mentions not in the
+    // Directory yet come from notes.held_listings and show as held, not linked. Episodes with no notes keep the plain view.
+    var GTYPE = { people: ['Activists', 'Athletes', 'Content Creators', 'Physicians', 'Health Experts', 'Chefs', 'Founders', 'Promoters'],
+      media: ['News Outlets', 'Podcasts', 'YouTube', 'Books', 'Documentaries & Films'],
+      orgs: ['Nonprofits', 'Rescues', 'Sanctuaries', 'Groups', 'Events', 'Food Brands', 'Nutrition & Supplements'] };
+    function kindOfRow(r) { var c = r.category; for (var k in GTYPE) if (GTYPE[k].indexOf(c) >= 0) return k; return 'places'; }
+    function loadScript(src, test) {
+      if (test()) return Promise.resolve();
+      return new Promise(function (res) { var s = document.createElement('script'); s.src = src; s.onload = res; s.onerror = res; document.head.appendChild(s); });
+    }
+    function rich(ep, d) {
+      if (opts.call) return;
+      var guid = ep.guid, H = { apikey: ANON, Authorization: 'Bearer ' + ANON, 'Content-Type': 'application/json' };
+      var REST = FN.replace('/functions/v1/ve-podcast', '/rest/v1');
+      fetch(REST + '/rpc/ve_episode_notes_get', { method: 'POST', headers: H, body: JSON.stringify({ p_listing: L.id, p_guid: guid }) })
+        .then(function (r) { return r.ok ? r.json() : null; }).then(function (n) {
+          if (!n || !n.sections || epParam() !== guid) return;
+          var slugs = {};
+          (n.mentions || []).forEach(function (s) { slugs[s] = 1; });
+          n.sections.forEach(function (s) { (s.listings || []).forEach(function (x) { slugs[x] = 1; }); (s.stories || []).forEach(function (t) { (t.listings || []).forEach(function (x) { slugs[x] = 1; }); }); });
+          var want = Object.keys(slugs).filter(function (s) { return !(n.held_listings || {})[s]; });
+          return Promise.all([
+            loadScript('/public/ve-region-directory.js', function () { return !!window.VERegionDirectory; }),
+            loadScript('/public/ve-hubs.js', function () { return !!window.VE_HUBS; })
+          ]).then(function () { return loadScript('/public/ve-chapters.js', function () { return !!window.VEChapters; }); }).then(function () {
+            if (!window.VERegionDirectory || !want.length) return [];
+            return fetch(REST + '/listings?status=eq.approved&slug=in.(' + want.map(encodeURIComponent).join(',') + ')&select=' + encodeURIComponent(VERegionDirectory.FIELDS), { headers: H })
+              .then(function (r) { return r.ok ? r.json() : []; });
+          }).then(function (rows) { if (epParam() === guid) drawRich(ep, d, n, rows || []); });
+        }).catch(function () {});
+    }
+    function drawRich(ep, d, n, rows) {
+      var by = {}; rows.forEach(function (r) { by[r.slug] = r; });
+      var held = n.held_listings || {}, ci = 0;
+      if (window.VERegionDirectory) VERegionDirectory.css();
+      function card(s) {
+        if (held[s]) { var h = held[s]; return '<div class="vepn-held"><span class="vepn-hl">' + esc((h.name || '?').replace(/^The /, '').charAt(0)) + '</span><span><b>' + esc(h.name) + '</b><small>' + esc(h.line || '') + '</small><em>Held for ' + esc(h.place || 'later') + '</em></span></div>'; }
+        return by[s] && window.VERegionDirectory ? VERegionDirectory.card(by[s], ci++) : '';
+      }
+      function chap(s) { return window.VEChapters ? '<div class="vepn-ch" data-vepn-ch="' + esc(s) + '"></div>' : ''; }
+      function tiles(list, chs) { var h = (list || []).map(card).join('') + (chs || []).map(chap).join(''); return h ? '<div class="vepn-tiles rank-grid">' + h + '</div>' : ''; }
+      function more(m, heldPlaces) {
+        return '<div class="vepn-more"><a href="' + esc((m && m.href) || '/directory') + '">' + esc((m && m.label) || 'See more in the Directory') + ' &rsaquo;</a>' +
+          (heldPlaces || []).map(function (p) { return '<span class="held">' + esc(p) + ' is logged for our chapter rankings</span>'; }).join('') + '</div>';
+      }
+      function art(g) { try { return window.VEGuideArt ? VEGuideArt(g, 'square') : ''; } catch (e) { return ''; } }
+      var top = root.querySelector('.vep-one');
+      var key = keyOf(ep, show);
+      var meta = [when(ep.date), len(ep.duration), n.number ? 'Episode ' + n.number : (ep.episode ? 'Episode ' + ep.episode : '')].filter(Boolean).join(' · ');
+      top.className = 'vep-one vepn-top';
+      top.innerHTML = img(ep.image || show.image || '', 480) + '<div class="vepn-head">' +
+        '<h2>' + esc(ep.title) + '</h2><div class="vep-meta">' + esc(meta) + '</div>' +
+        '<div class="vep-acts"><button type="button" class="vep-btn go" data-vep-play="' + esc(key) + '" data-title="' + esc(ep.title) + '">' + I.play + 'Play</button>' +
+          '<button type="button" class="vep-btn" data-vep-save="' + esc(show.id + '|' + ep.guid) + '" aria-pressed="' + !!(d && d.saved) + '">' + (d && d.saved ? I.saved + 'Saved' : I.save + 'Save') + '</button>' +
+          '<button type="button" class="vep-btn" data-ve-share>Share</button></div>' +
+        (n.summary ? '<p class="vepn-sum">' + esc(n.summary) + '</p>' : '') +
+        '<div class="vepn-jump">' + n.sections.map(function (s) { return '<button type="button" data-vepn-jump="' + esc(s.key) + '">' + esc(s.title) + '</button>'; }).join('') + '</div></div>';
+      var body = document.createElement('div'); body.className = 'vepn-body vrd-root';
+      var h = n.sections.map(function (s) {
+        var inner = '';
+        if (s.body) inner += '<p class="vepn-p">' + esc(s.body) + '</p>';
+        if (s.listings) inner += tiles(s.listings, s.chapters) + more(s.more);
+        (s.stories || []).forEach(function (t) {
+          inner += '<div class="vepn-story"><div class="vepn-st">' + esc(t.title) + '</div>' +
+            (t.url ? '<a class="vepn-src" href="' + esc(t.url) + '" target="_blank" rel="noopener">Read it on ' + esc(t.source || 'the source') + ' &rsaquo;</a>' : '') +
+            tiles(t.listings, t.chapters) + more(null, t.held) + '</div>';
+        });
+        if (s.button) inner += '<a class="vep-btn go" href="' + esc(s.button.href) + '">' + esc(s.button.label) + '</a>';
+        var g = s.guide ? s.guide.charAt(0).toUpperCase() + s.guide.slice(1) : '';
+        return '<section class="vepn-sec" id="vepn-' + esc(s.key) + '"><div class="vepn-guide">' +
+          (s.guide ? '<span class="vepn-gp" style="background-image:url(\'' + esc(art(s.guide)) + '\')"></span>' : '') +
+          '<div><div class="vepn-gt">' + esc(s.title) + '</div>' + (g ? '<div class="vepn-gn">with ' + esc(g) + (s.role ? ' <span>· ' + esc(s.role) + '</span>' : '') + '</div>' : '') + '</div></div>' +
+          '<div class="vepn-main">' + inner + '</div></section>';
+      }).join('');
+      var all = (n.mentions || []).filter(function (s) { return by[s] || held[s]; });
+      if (all.length) {
+        var kinds = { all: all.length }; all.forEach(function (s) { var k = by[s] ? kindOfRow(by[s]) : (held[s].category === 'Nonprofits' ? 'orgs' : 'orgs'); kinds[k] = (kinds[k] || 0) + 1; });
+        var LAB = { all: 'All', people: 'People', orgs: 'Organizations', places: 'Places', media: 'Media' };
+        h += '<h3 class="vepn-h">In this episode</h3><div class="vepn-pills">' + ['all', 'people', 'orgs', 'places', 'media'].filter(function (k) { return kinds[k]; })
+          .map(function (k) { return '<button type="button" data-vepn-kind="' + k + '"' + (k === 'all' ? ' aria-pressed="true"' : '') + '>' + LAB[k] + ' ' + kinds[k] + '</button>'; }).join('') + '</div>' +
+          '<div class="vepn-all rank-grid">' + all.map(function (s) { var k = by[s] ? kindOfRow(by[s]) : 'orgs'; return '<div data-vepn-k="' + k + '">' + card(s) + '</div>'; }).join('') + '</div>';
+      }
+      if ((n.chapters || []).length || (n.held || []).length) {
+        h += '<h3 class="vepn-h">Places on this episode</h3>' + ((n.chapters || []).length ? '<div class="vepn-all rank-grid">' + n.chapters.map(chap).join('') + '</div>' : '') +
+          ((n.held || []).length ? '<div class="vepn-heldp">' + n.held.map(function (p) { return '<div><b>' + esc(p) + '</b><small>Not a chapter yet · logged for our chapter rankings</small></div>'; }).join('') + '</div>' : '');
+      }
+      if ((n.listen || []).length) h += '<h3 class="vepn-h">Keep listening</h3><div class="vep-list vepn-listen"></div>';
+      body.innerHTML = h;
+      top.parentNode.insertBefore(body, top.nextSibling);
+      wire(root);
+      if (window.VERegionDirectory) VERegionDirectory.wire(body);
+      body.querySelectorAll('[data-vepn-ch]').forEach(function (el) { VEChapters.mount(el, { only: [el.getAttribute('data-vepn-ch')], bar: false, url: false }); });
+      top.querySelectorAll('[data-vepn-jump]').forEach(function (b) { b.onclick = function () { var t = document.getElementById('vepn-' + b.getAttribute('data-vepn-jump')); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); }; });
+      body.querySelectorAll('[data-vepn-kind]').forEach(function (b) {
+        b.onclick = function () {
+          var k = b.getAttribute('data-vepn-kind');
+          body.querySelectorAll('[data-vepn-kind]').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
+          b.parentNode.nextElementSibling.querySelectorAll('[data-vepn-k]').forEach(function (c) { c.hidden = k !== 'all' && c.getAttribute('data-vepn-k') !== k; });
+        };
+      });
+      var lst = body.querySelector('.vepn-listen');
+      if (lst) Promise.all(n.listen.map(function (x) {
+        return ask({ action: 'episode', listing_id: x.listing_id || L.id, guid: x.guid }).then(function (r) { return r && r.episode ? [x, r] : null; }).catch(function () { return null; });
+      })).then(function (got) {
+        var html = got.filter(Boolean).map(function (p) {
+          var x = p[0], r = p[1], sh = { id: x.listing_id || L.id, slug: x.show || L.slug, name: (r.show && r.show.name) || L.name, image: (r.show && r.show.image) || show.image };
+          var e = Object.assign({}, r.episode, { summary: x.why || r.episode.summary });
+          if ((x.listing_id || L.id) === L.id) cache[e.guid] = r.episode;
+          return row(e, sh, { saved: !!r.saved, showName: true });
+        }).join('');
+        if (html) { lst.innerHTML = html; wire(lst); } else { lst.previousElementSibling.remove(); lst.remove(); }
+      });
+      notes(ep.guid);
+    }
     // Referenced books (Sean, 2026-10-29): the books named in this episode, read from its transcript (ve-books). One that is in the
     // Directory opens its page; any other opens Amazon through our tracked link.
     function books(guid) {
@@ -313,7 +460,7 @@
             '<b>' + esc(b.title) + '</b>' + (b.author ? '<small>' + esc(b.author) + '</small>' : '') +
             '<em>' + esc([WHY[b.context] || 'Mentioned', b.speaker && !/^(host|guest)$/i.test(b.speaker) ? 'by ' + b.speaker : ''].filter(Boolean).join(' ')) + (out ? ' · Amazon' : '') + '</em></a>';
         }).join('') + '</div>' + (list.some(function (b) { return !b.page; }) ? '<p class="vep-bnote">As an Amazon Associate we earn from qualifying purchases.</p>' : '');
-        var art = root.querySelector('.vep-one'); if (art) art.parentNode.insertBefore(sec, art.nextSibling);
+        var art = root.querySelector('.vepn-body') || root.querySelector('.vep-one'); if (art) art.parentNode.insertBefore(sec, art.nextSibling);
       }).catch(function () {});
     }
     function back() { setEp('', true); drawList(); if (!eps.length) load((page - 1) * PER); }
