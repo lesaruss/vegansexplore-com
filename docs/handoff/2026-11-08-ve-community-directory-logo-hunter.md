@@ -44,3 +44,8 @@ Branch `claude/charming-volta-033by5` (not merged to `main`; the edge function i
 2. Merge the branch to `main` when Sean says so.
 3. Open from earlier: 44 Ready to list rows for Sean; Pacific Point Preserve (a SeaWorld exhibit, likely Remove) and
    Humane Association of Ga (Google shows Atlanta Humane Society) for Sean; the held-listings automated check (proposed, not built).
+
+### Doubtful picks, Sean's calls (2026-11-08)
+- Happiness Horse Farm and Will's Way: black side bars cropped off, logo enlarged on white, saved (32 saved from batch-1108).
+- Animal Acres: the pick was Farm Sanctuary's "40 Years" logo, a different organization. Left on the letter; a real Animal Acres logo is welcome if found later.
+- Sanctuary Farm, Travellers Rest Farm Sanctuary, WarAngel Farms: waiting on Sean's yes or no.
