@@ -6725,6 +6725,20 @@ tables `branddesk_client_tasks`/`_events`): BrandDesk > Meatless Muscle > Get se
 stuck (a "For your next Hot Lab" card), staff Confirm access; video scripts `docs/proposals/brooke-show-me-how-scripts.md`. Next: Sean's feedback, merge, then B3
 Insights. Handoff `docs/handoff/2026-11-08-brooke-sellers-contacts-auto-show-me-how.md`.
 
+**Show me how, Sean's round 1 (2026-11-08, HQ branch `claude/brooke-show-me-how` at 045f277, not merged; handoff
+`docs/handoff/2026-11-08-brooke-sellers-show-me-how-round-1.md`)**: every web address in a step is a link (new tab; `linkify` in `ShowMeHow.tsx`, never an
+address after @); Get set up says "Add your payment information" (not card); **the client desk header for every client** is the logo on the left with the
+status pill to its right, centered on its height, no slogan, tabs left-aligned under it (first tab's text in line with the logo), and on phones the pill stays
+beside the logo in one row (checked at 360, 390, 1440) with 16px under the section dropdown. **A gift logo**: Meatless Muscle's desk header shows the double M
+beside MEATLESS over MUSCLE (`DESK_LOGO` in `ClientDesk.tsx`, `public/branddesk/desk-logos/meatless-muscle.png`); her locked kit and Brand kit tab keep her
+original (her kit says never stretched); if she likes it we give it to her in proper files (redrawn as vector) and change the kit with her yes. Files kept in
+`vegan-media/media/brandkit/meatless-muscle/gift-logo/` (side-by-side.png, stacked.png, source-original.jpg). **Throwaway logins for the client desk must not be
+lesaruss.com** (any lesaruss.com email is staff and lands on the staff BrandDesk); use example.com. **Metricool can make a client connect link**
+(`POST /v2/settings/brands/connections/anonymous-link`, the one in Brand settings > Connections; whoever holds it connects Instagram, Facebook, TikTok, YouTube to
+our brand with no Metricool account; one link at a time, it expires; Advanced plan or higher; read from Metricool's own swagger through pg_net). Recommended to
+replace the Instagram, YouTube and TikTok pages with one "Connect your social accounts" step; waits on Sean's go (needs a Meatless Muscle brand in Metricool and the
+plan checked). Videos: worth it only for Instagram, and only if that page stays.
+
 ## Revenue on the dashboard (Sean, 2026-11-02)
 
 "I just want to be able to see that revenue coming in through Vegans Explore in real time... just some little module... Eventually
