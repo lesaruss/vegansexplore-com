@@ -35,17 +35,17 @@
 
   // Liz's line on each tab (text drafts for the section pages; the Overview's is chapter 1). `lead` is the Guide for that area.
   var TABS = [
-    { k: 'overview', label: 'Overview', say: CHAPTERS[0][1], sayMember: 'Welcome back. Everything is open to you now. Pick a section below whenever you want to go deeper.' },
-    { k: 'directory', label: 'Search and the Directory', pic: 'thumb-directory.jpg', lead: 'pascal', say: 'Everything starts with search. Here is how to find any place, person or group, and what your vote does.' },
-    { k: 'city', label: 'Your City', pic: 'thumb-community.jpg', lead: 'river', say: 'Every chapter has its own home. Here is how to keep up with yours, every morning.' },
-    { k: 'events', label: 'Events', pic: 'vegan-events-guide.jpg', lead: 'river', say: 'Find something to do this week, near you or anywhere.' },
-    { k: 'media', label: 'Media', pic: 'holiday/p-listen.jpg', lead: 'kai', say: 'Our shows and the community\'s favorites, playing right on the page.' },
-    { k: 'guides', label: 'Guides', pic: 'welcome-guide.jpg', lead: 'maya', say: 'Every Guide in one place. Some are free with a short survey, and the rest are yours with points.' },
-    { k: 'points', label: 'Points and Levels', pic: 'thumb-bounties.jpg', lead: 'theo', say: 'Here is how points work: how you earn them, what they are for, and how you level up.' },
-    { k: 'paths', label: 'Your Path and Badges', pic: 'thumb-passport.jpg', lead: 'kai', say: 'Everyone starts as an Explorer. If you run something, your path takes you further.' },
-    { k: 'better', label: 'Make It Better', pic: 'restaurant-guide/t-next.jpg', lead: 'liz', say: 'This is the part that matters most. Here is every way to tell us what is working and what is not.' },
-    { k: 'animals', label: 'For the Animals', pic: 'nonprofit-guide.jpg', lead: 'dani', say: 'Here is where it is all going, and how you can show up for the animals today.' },
-    { k: 'founder', label: 'Become a Founder', pic: 'welcome-ensemble.jpg', lead: 'liz', say: 'You are early. Answer a few quick questions and you are in.', sayMember: 'You are in. Here are your first steps.' }
+    { k: 'overview', scene: 'welcome/liz-overview.jpg', label: 'Overview', say: CHAPTERS[0][1], sayMember: 'Welcome back. Everything is open to you now. Pick a section below whenever you want to go deeper.' },
+    { k: 'directory', scene: 'welcome/liz-directory.jpg', label: 'Search and the Directory', pic: 'thumb-directory.jpg', lead: 'pascal', say: 'Everything starts with search. Here is how to find any place, person or group, and what your vote does.' },
+    { k: 'city', scene: 'welcome/liz-city.jpg', label: 'Your City', pic: 'thumb-community.jpg', lead: 'river', say: 'Every chapter has its own home. Here is how to keep up with yours, every morning.' },
+    { k: 'events', scene: 'welcome/liz-events.jpg', label: 'Events', pic: 'vegan-events-guide.jpg', lead: 'river', say: 'Find something to do this week, near you or anywhere.' },
+    { k: 'media', scene: 'welcome/liz-media.jpg', label: 'Media', pic: 'holiday/p-listen.jpg', lead: 'kai', say: 'Our shows and the community\'s favorites, playing right on the page.' },
+    { k: 'guides', scene: 'welcome/liz-guides.jpg', label: 'Guides', pic: 'welcome-guide.jpg', lead: 'maya', say: 'Every Guide in one place. Some are free with a short survey, and the rest are yours with points.' },
+    { k: 'points', scene: 'welcome/liz-points.jpg', label: 'Points and Levels', pic: 'thumb-bounties.jpg', lead: 'theo', say: 'Here is how points work: how you earn them, what they are for, and how you level up.' },
+    { k: 'paths', scene: 'welcome/liz-paths.jpg', label: 'Your Path and Badges', pic: 'thumb-passport.jpg', lead: 'kai', say: 'Everyone starts as an Explorer. If you run something, your path takes you further.' },
+    { k: 'better', scene: 'welcome/liz-better.jpg', label: 'Make It Better', pic: 'restaurant-guide/t-next.jpg', lead: 'liz', say: 'This is the part that matters most. Here is every way to tell us what is working and what is not.' },
+    { k: 'animals', scene: 'welcome/liz-animals.jpg', label: 'For the Animals', pic: 'nonprofit-guide.jpg', lead: 'dani', say: 'Here is where it is all going, and how you can show up for the animals today.' },
+    { k: 'founder', scene: 'welcome/liz-founder.jpg', label: 'Become a Founder', pic: 'welcome-ensemble.jpg', lead: 'liz', say: 'You are early. Answer a few quick questions and you are in.', sayMember: 'You are in. Here are your first steps.' }
   ];
   var LEADS = {
     pascal: ['Pascal', 'our cook, making the Meat Alternatives and Meal Prep Guides'],
@@ -265,7 +265,8 @@
   function drawLiz() {
     var t = tab(curTab), i = TABS.indexOf(t);
     bubble.textContent = member() && t.sayMember ? t.sayMember : t.say;
-    var box = document.getElementById('dgMaya'), a = art('liz');
+    // Liz in a scene for each page (Sean, 2026-11-08: "a different look on every page"); her square art is the fallback.
+    var box = document.getElementById('dgMaya'), a = t.scene ? pic(t.scene) : art('liz');
     if (a && box.getAttribute('data-art') !== a) { box.style.backgroundImage = "url('" + a + "')"; box.setAttribute('data-art', a); }
     tourEl.innerHTML = tourM.innerHTML = '<a class="dg-tnav" href="' + href(TABS[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Back</a><span>' + (i + 1) + ' of ' + TABS.length + '</span>' +
       '<a class="dg-tnav next" href="' + href(TABS[Math.min(TABS.length - 1, i + 1)].k) + '"' + (i < TABS.length - 1 ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Next</a>';
@@ -310,8 +311,6 @@
 
   function init() {
     document.documentElement.classList.add('dg-fit');
-    var box = document.getElementById('dgMaya'), a = art('liz');
-    if (a) box.style.backgroundImage = "url('" + a + "')";
     route();
   }
   if (window.VEAuth) init(); else window.addEventListener('load', init);

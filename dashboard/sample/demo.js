@@ -24,7 +24,7 @@
   // ---- the member -------------------------------------------------------------------------------------------------
   var MEMBER = {
     id: '00000000-5a3e-4e3b-9000-00000000a11e', name: 'Jordan Ellis', initials: 'JE', username: 'jordaneatsmiami', email: 'jordan@example.com',
-    avatar_url: null, membership_status: 'active', membership_tier: 'member', ve_tier: 'passport', ve_role: null, is_superadmin: false,
+    avatar_url: '/dashboard/sample/img/jordan.jpg', membership_status: 'active', membership_tier: 'member', ve_tier: 'passport', ve_role: null, is_superadmin: false,
     founding_member: true, entry_via: 'passport', entry_paid_at: null, created_at: ago(18), member_since: ago(18),
     home_community: 'south-florida', communities: ['south-florida', 'central-florida'], lesars_balance: 1420, total_points: 3180,
     level: 2, level_override: null, guide_slug: 'liz', guide_setup_at: ago(17), referral_code: 'JORDAN-E', mission_survey_completed_at: ago(18),
