@@ -7337,7 +7337,7 @@ first steps. `/business` moved to `business-guide.html` (rewrite in `vercel.json
 `/passport`. Old hashes (`#/join`, `#/places`...) land on their new page; `?from=vote|save|...` notes kept. The Explorer question `x_hear` now reads "How should
 we reach you with founder news?" (the founder list). Not done: the Overview video and section videos, Liz's recordings, the paths page.
 
-**The sample member, built 2026-11-08 (playbook `ve-explorer-path`; branch `claude/wonderful-hawking-tcz6ic`, not on `main`).** `/dashboard/sample` (a rewrite
+**The sample member, built 2026-11-08 (playbook `ve-explorer-path`; merged to `main` 2026-11-08, cee2b62).** `/dashboard/sample` (a rewrite
 to `dashboard/center-console.html`, `X-Robots-Tag: noindex`) is the real member dashboard run as **Jordan Ellis**, an invented South Florida Founding Member at
 Level 2. `dashboard/sample/demo.js` loads before `ve-auth.js` (a `document.write` gate at the top of the dashboard; `guide.html` and `levels.html` load it when
 `window.top.VE_SAMPLE_MEMBER` is set): it swaps the session keys (`ve_token`, `ve_member`, `ve_view_as`, `ve_switch_from`) for Jordan's **in memory only** (never
@@ -7346,9 +7346,16 @@ written or removed, proven: a real visitor's session is unchanged after the samp
 `/dashboard/sample`, and stamps the page **Sample** (bottom left). Jordan's points are worked out from his history (`H`), so lifetime, balance and level always
 agree. Shows: the Explorer and Registered event host badges, Level 2, For you, the leaderboard (invented names), My Saves with real Directory places and real
 episodes, Points and levels with **Your points**, and Liz's earlier conversation (`VE_SAMPLE.conversation`). **Your points** is a real feature: `ve-affiliate` `me`
-now returns `history` (the member's latest 60 `points_ledger` rows) and `levels.html` shows the tab only when it is sent; **not deployed** (deploy from `main` after
-the merge). A new call the dashboard makes needs a `SAMPLE` entry, else it reads as a failed load. Not done: Jordan's picture (initials until Higgsfield is topped up),
-check-ins on the Bounties page (bounties.html has no loader; check-ins show in Your points), Preview journeys entry.
+now returns `history` (the member's latest 60 `points_ledger` rows) and `levels.html` shows the tab only when it is sent; `ve-affiliate` v5 deployed from main
+86648e3 (source sha256 37e50d7e matched), proven for a real member (the Logan test account, 7 rows, through the one-time `ve-once-levels-proof`, now 410). A new call
+the dashboard makes needs a `SAMPLE` entry, else it reads as a failed load. Jordan's picture is `dashboard/sample/img/jordan.jpg` (Higgsfield, approved by Sean
+2026-11-08). Checked live 2026-11-08 at 1440 and 390 px: stamp, Dashboard, My Saves, Points and levels > Your points, Talk to Liz, no errors, no sideways scroll,
+a real session unchanged. Not done: check-ins on the Bounties page (bounties.html has no loader; check-ins show in Your points), Preview journeys entry.
+
+**Liz's scenes on the Welcome Guide, live 2026-11-08** (approved by Sean; main 9082b75): eleven Higgsfield pictures, one per page, in
+`public/guides/welcome/liz-<tab>.jpg` (960 x 1192, 4:5), set as each tab's `scene` in `TABS` (`guide-scripts/welcome-guide.js`); `drawLiz` puts the open tab's scene
+in her rail picture, her square art the fallback. A tab's `pic` is still its section pill picture. Shirts change page to page (black, white, cream, pink, a long sleeve,
+jackets), the mark always showing. Known flaw: the Points scene's menu board reads "VENU" (a redo is 2 credits).
 
 **Guides in scenes, a different look on every page (Sean, 2026-11-08, every Guide).** "I don't want to see them in the same uniforms from each photo.
 Let's mix it up and make it look like a scene because they're videos, and we want the video to really lay out what's on that page." Each page of a
