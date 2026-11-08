@@ -279,7 +279,17 @@ function easternMidnightIso(): string {
   return new Date(`${day}T05:00:00Z`).toISOString();
 }
 const memberRef = (contactId: string, memberId: string, step: number) => `ve-outreach-${contactId}-c${memberId.replace(/-/g, '').slice(0, 8)}-${step}`;
-type Member = { id: string; campaign_slug: string; listing_id: string; step: number };
+type Member = { id: string; campaign_slug: string; listing_id: string | null; person_key?: string | null; person_name?: string | null; step: number };
+// A person in a people campaign (no listing): their contact sits on the never-switched-on 'people-campaigns' list, keyed by email.
+async function personContact(email: string, name: string | null): Promise<Contact | null> {
+  const sel = 'id,listing_id,community_slug,email,contact_name,segment,step,link_code';
+  const key = email.toLowerCase();
+  const { data: c } = await db.from('ve_outreach_contacts').select(sel).is('listing_id', null).eq('community_slug', 'people-campaigns').ilike('email', key).maybeSingle();
+  if (c) return c as Contact;
+  const { data: made } = await db.from('ve_outreach_contacts').insert({ listing_id: null, community_slug: 'people-campaigns', email: key, contact_name: name,
+    segment: 'person', status: 'not_sent', email_source: 'people-campaign' }).select(sel).single();
+  return (made as Contact) ?? null;
+}
 async function contactFor(listingId: string, email: string): Promise<Contact | null> {
   const sel = 'id,listing_id,community_slug,email,contact_name,segment,step,link_code';
   const { data: c } = await db.from('ve_outreach_contacts').select(sel).eq('listing_id', listingId).maybeSingle();
@@ -298,13 +308,32 @@ async function buildCampaign(mem: Member, step: number, opts: { test?: boolean; 
   const { data: r } = await db.rpc('ve_outreach_campaign_render', { p_member: mem.id, p_step: step });
   const m = r?.[0];
   if (!m?.to_email) throw new Error('no email for this person');
+  const { data: cp } = await db.from('ve_outreach_campaigns').select('link_path,sender_brand,footer_reason').eq('slug', mem.campaign_slug).maybeSingle();
+  const brand = String(cp?.sender_brand || '') || BRAND;
+  if (!mem.listing_id) {
+    // A person (Sean, 2026-11-08: people who are not business owners): their own tracked link to the campaign's page, the campaign's footer.
+    const { data: pm } = await db.from('ve_outreach_campaign_members').select('person_name').eq('id', mem.id).single();
+    const pname = String(pm?.person_name || '') || null;
+    const c = await personContact(String(m.to_email), pname);
+    if (!c) throw new Error('could not make an outreach contact');
+    const name = pname || String(m.to_email);
+    const dest = String(cp?.link_path || '/passport');
+    let body = String(m.body), code: string | null = null;
+    if (m.page_url && body.includes(String(m.page_url))) {
+      let link: string;
+      if (opts.preview) link = `${SITE}/go/(their own link, made when it sends)`;
+      else if (opts.test) link = `${SITE}${dest}`;
+      else { code = await memberLink(mem, c, name, dest); link = `${SITE}/go/${code}`; }
+      body = body.split(String(m.page_url)).join(link);
+    }
+    const reason = String(cp?.footer_reason || '') || 'we have been in touch about the Vegan community';
+    return { subject: String(m.subject), body, html: toHtml(body, name, reason), text: toText(body, name, reason), name, code, contact: c, to: String(m.to_email), brand };
+  }
   const c = await contactFor(mem.listing_id, String(m.to_email));
   if (!c) throw new Error('could not make an outreach contact');
   const { data: l } = await db.from('listings').select('name,slug,category').eq('id', mem.listing_id).single();
-  const { data: cp } = await db.from('ve_outreach_campaigns').select('link_path,sender_brand').eq('slug', mem.campaign_slug).maybeSingle();
   const name = String(l?.name || m.listing_name || '');
   let body = String(m.body), code: string | null = null;
-  const brand = String(cp?.sender_brand || '') || BRAND;
   if (cp?.link_path && m.page_url && body.includes(String(m.page_url))) {
     // A campaign with its own destination (the ThanksLiving note's menu form): one tracked link per member, made at the first real send.
     const dest = String(cp.link_path).split('{slug}').join(encodeURIComponent(String(l?.slug || '')));
@@ -331,7 +360,7 @@ async function memberLink(mem: Member, c: Contact, name: string, dest: string): 
     const code = linkCode();
     const { error } = await db.from('ve_links').insert({
       code, label: (mem.campaign_slug + ': ' + name).slice(0, 120), destination: dest, initiative_slug: mem.campaign_slug,
-      tags: [mem.campaign_slug, c.community_slug, c.segment], channel: 'email', recipient_email: c.email.slice(0, 200),
+      tags: [mem.campaign_slug, c.community_slug, c.segment].filter(Boolean), channel: 'email', recipient_email: c.email.slice(0, 200),
       recipient_name: (c.contact_name || name).slice(0, 120), active: true,
     });
     if (!error) { await db.from('ve_outreach_campaign_members').update({ link_code: code }).eq('id', mem.id); return code; }
@@ -363,7 +392,7 @@ async function campaignTick(room: number) {
     const { count: already } = await db.from('email_sends').select('id', { count: 'exact', head: true }).ilike('to_email', addr)
       .like('campaign_ref', 've-outreach-%').not('campaign_ref', 'like', 've-outreach-test-%').gte('created_at', since);
     if ((already || 0) > 0) continue;
-    const { data: mem } = await db.from('ve_outreach_campaign_members').select('id,campaign_slug,listing_id,step,send_status,removed_at').eq('id', d.member_id).single();
+    const { data: mem } = await db.from('ve_outreach_campaign_members').select('id,campaign_slug,listing_id,person_key,step,send_status,removed_at').eq('id', d.member_id).single();
     if (!mem || mem.removed_at || mem.step + 1 !== d.next_step || !['waiting', 'in_sequence'].includes(mem.send_status)) continue;
     const step = d.next_step;
     try {
@@ -683,8 +712,10 @@ Deno.serve(async (req) => {
       // One person's campaign emails exactly as they go (the preview never makes their link); a test goes to the signed-in owner only.
       if (!me) return json({ error: 'admins_only' }, 403);
       const slug = clean(body.campaign, 60);
-      if (!/^[a-z0-9-]{1,60}$/.test(slug) || !isId(body.listing_id)) return json({ error: 'campaign_and_listing' }, 400);
-      const { data: mem } = await db.from('ve_outreach_campaign_members').select('id,campaign_slug,listing_id,step').eq('campaign_slug', slug).eq('listing_id', body.listing_id).is('removed_at', null).maybeSingle();
+      // A business is found by its listing; a person in a people campaign by their member id.
+      if (!/^[a-z0-9-]{1,60}$/.test(slug) || !(isId(body.listing_id) || isId(body.member_id))) return json({ error: 'campaign_and_listing' }, 400);
+      const q = db.from('ve_outreach_campaign_members').select('id,campaign_slug,listing_id,person_key,step').eq('campaign_slug', slug).is('removed_at', null);
+      const { data: mem } = await (isId(body.listing_id) ? q.eq('listing_id', body.listing_id) : q.eq('id', body.member_id)).maybeSingle();
       if (!mem) return json({ error: 'not_in_campaign' }, 404);
       const { data: cp } = await db.from('ve_outreach_campaigns').select('email_count').eq('slug', slug).single();
       if (action === 'campaign_preview') {
