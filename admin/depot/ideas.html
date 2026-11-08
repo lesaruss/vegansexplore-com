@@ -233,7 +233,8 @@
           var readHtml = rd ? '<div class="read"><h3>What I think you are asking</h3><p>' + esc(rd.ask) + '</p>' +
             '<h3>Where it belongs</h3><p>' + esc(SIZE[rd.size] || rd.size) + ' &middot; ' + (rd.playbook ? 'playbook <b>' + esc(rd.playbook) + '</b>' : rd.new_playbook ? 'a new playbook, <b>' + esc(rd.new_playbook) + '</b>' : 'no playbook yet') + '</p>' +
             (rd.plan && rd.plan.length ? '<h3>How I would do it</h3><ol>' + rd.plan.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ol>' : '') +
-            (rd.questions && rd.questions.length ? '<h3>What I need from you</h3><ul>' + rd.questions.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>' : '') + '</div>'
+            (rd.questions && rd.questions.length ? '<h3>What I need from you</h3><ul>' + rd.questions.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>' : '') +
+            (rd.sources && rd.sources.length ? '<h3>Where I looked</h3><ul>' + rd.sources.map(function (x) { return /^https?:\/\//i.test(x.url) ? '<li><a href="' + esc(x.url) + '" target="_blank" rel="noopener noreferrer">' + esc(x.title || x.url) + '</a></li>' : ''; }).join('') + '</ul>' : '') + '</div>'
             : '<div class="read"><p>Logan has not read this one yet.</p></div>';
           var turns = (x.thread || []).slice(1).filter(function (t, i, a) { return !(t.role === 'logan' && i === a.length - 1); });
           var canAct = x.status === 'new';
