@@ -237,7 +237,7 @@
         }).join('');
         return '<article class="frame ' + esc(s.status) + '" id="f' + f.n + '">' + pic + '<div class="body">' +
           '<div class="fh"><span class="time">' + secs(f.g0) + ' to ' + secs(f.g1) + '</span><span class="tag rd ' + esc(s.readiness || 'ready') + '" title="' + esc(rd[1]) + '">' + rd[0] + '</span> <span class="tag ' + esc(s.status) + '">' + esc(ST[s.status]) + '</span></div>' +
-          '<p class="sec">' + f.c.n + '. ' + esc(f.c.title) + (sq ? ' · V on camera' : '') + '</p>' +
+          '<p class="sec">' + f.c.n + '. ' + esc(f.c.title) + (sq ? ' · ' + esc(NARR[data.tour.narrator] || data.tour.narrator) + ' on camera' : '') + '</p>' +
           '<p class="q">“' + esc(s.line || f.c.line) + '”</p>' +
           '<p class="brief"><b>On screen:</b> ' + esc(s.brief) + '</p>' +
           (s.flag ? '<p class="flag">' + esc(s.flag) + '</p>' : '') +
@@ -248,7 +248,7 @@
       function lookbook() {
         LB = frames();
         var fr = LB.list, all = data.shots.length, ap = data.shots.filter(function (s) { return s.status === 'approved'; }).length;
-        var html = '<p class="sub">The tour frame by frame, the way it will play. Press Play to watch it with V\'s voice, or go frame by frame. Approve what works; Redo what doesn\'t with a note (type it or tap the mic and say it). Nothing is animated or drawn until its frame is approved.</p>' +
+        var html = '<p class="sub">The tour frame by frame, the way it will play. Press Play to watch it with ' + esc(NARR[data.tour.narrator] || data.tour.narrator) + '\'s voice, or go frame by frame. Approve what works; Redo what doesn\'t with a note (type it or tap the mic and say it). Nothing is animated or drawn until its frame is approved.</p>' +
           '<section class="player" aria-label="The tour"><div class="stage"><div class="st-img" id="lbImg"></div><div class="cap"><span class="fn" id="lbN"></span><div><p class="q" id="lbQ"></p><p class="meta" id="lbM"></p></div></div></div>' +
           '<div class="ctl"><button type="button" class="btn" id="lbPlay">▶ Play the tour</button><button type="button" class="btn btn-quiet" id="lbPrev" aria-label="Back">Back</button><button type="button" class="btn btn-quiet" id="lbNext" aria-label="Next">Next</button><span class="meta" id="lbT">0:00 / ' + secs(LB.total) + '</span></div>' +
           '<div class="prog" id="lbBar"><span id="lbFill"></span></div>' +
