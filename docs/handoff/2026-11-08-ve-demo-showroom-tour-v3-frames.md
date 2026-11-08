@@ -20,8 +20,8 @@ gentle sideways pan, never a zoom-in; screens shown whole in a phone frame with 
 
 ## Where his phone recordings would beat captures
 The four moments that are motion: the heart vote on a favorite (frame 5), the order stepper adding to the cart (14), switching the three looks (17)
-and unlocking a reward to its code (22). A 4 to 6 s screen recording of each, in the sample, Sample bar hidden is not possible from his phone, so
-start with the bar collapsed or crop it.
+and unlocking a reward to its code (22). A 4 to 6 s screen recording of each on /business/sample/site; the Sample bar shows on his phone, so we crop it out and put the
+Sample stamp on in the edit.
 
 ## Next
 1. Sean approves or redoes frames in the lookbook. 2. A 20 s sample (frames 1 to 4). 3. The full v3, uploaded as `media/business/sample/v-tour-v3.mp4`
