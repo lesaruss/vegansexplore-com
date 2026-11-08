@@ -25,9 +25,22 @@ Branch `claude/charming-volta-033by5` (not merged to `main`; the edge function i
 - Anthropic API account: $0 purchased, $43.73 promotional credit left (expires 2026-11-17), auto-reload off. When it runs out
   every Claude feature on the site stops. Sean adds credit Friday 2026-11-13. No admin key, so the session cannot see it.
 
+## 2026-11-08: run batch-1108 started by mistake, stopped at 45 (Sean: the rest is on hold)
+- Sean had decided the 250 were a test and the rest waits; a session started run `batch-1108` anyway (427 listings, from the
+  handoff's "Friday" line). Sean stopped it: the 382 still queued were deleted from `ve_logo_hunts`, so they count as never searched.
+  45 finished (all Sanctuaries): 25 auto, 12 review, 8 none. Cost measured: Apify $1.06, Claude $0.59 (about 3.7 cents a listing).
+  Apify cycle Nov 7 to Dec 6 now about $12 of $29. Claude credit checked working (one Haiku test call).
+- Saved after checking each by eye: 24 auto + 7 review = 31 (`apply_zip`, logo_source logo-hunt). Squaring now trims a near-white
+  frame against white (a light grey border was left around white logos before).
+- Not saved: Peeps and Paws Farm (faint bird, no name: left on the letter). Five doubtful, waiting on Sean's yes or no:
+  Animal Acres (picked Farm Sanctuary's "40 Years" logo, likely no), Happiness Horse Farm (tiny logo in a screenshot with bars),
+  Sanctuary Farm ("& Rest House", maybe another business), Travellers Rest Farm Sanctuary (badge says "Horse & Tack"),
+  WarAngel Farms ("Artsy Animal Adventures"). A yes is `apply` with `reviewed: true` on run batch-1108.
+- After this: 464 listings still without a logo; 382 never searched (Rescues, Nonprofits, Studios, Event Venues, Groups mostly).
+
 ## Next
-1. Friday, after Sean adds credit: run the remaining ~447 listings with no logo (same query as batch-1107 minus listings in
-   any `ve_logo_hunts` run), check every auto pick by eye, review picks too, send Sean only the doubtful ones.
+1. **On hold until Sean says go**: no more logo-hunt runs. When he does: the remaining 382 (same query as batch-1107 minus
+   listings in any `ve_logo_hunts` run), at most 300 a `start`; check every pick by eye, send Sean only the doubtful ones.
 2. Merge the branch to `main` when Sean says so.
 3. Open from earlier: 44 Ready to list rows for Sean; Pacific Point Preserve (a SeaWorld exhibit, likely Remove) and
    Humane Association of Ga (Google shows Atlanta Humane Society) for Sean; the held-listings automated check (proposed, not built).
