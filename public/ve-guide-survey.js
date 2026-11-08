@@ -1,7 +1,10 @@
 /* A Guide's own survey (Sean, 2026-11-03: "they have to complete the survey that's tied to that guide").
  * VEGuideSurvey.mount(el, { survey: 'vegan-events-guide', onDone(res), onChange() }) draws one question per view (#q/<n>), Back / Question N of M / Next,
  * saving and paying each answer as it is given (ve-mission-survey survey_get / survey_answer, rows in ve_surveys and ve_survey_questions).
- * A new Guide's survey is rows, never code here. Needs a token (an active member, or an account waiting on its Passport for a survey that admits). */
+ * A new Guide's survey is rows, never code here.
+ * Survey first, account last (Sean, 2026-11-07; playbook ve-mobile-app H): with no account, a survey that admits is answered on this device
+ * (localStorage ve_survey_draft_<slug>), a points pill adds up in the top right, and the last step is Save your answers: making the account
+ * (email or Google, the site's own window) sends every answer at once (survey_submit_all), which admits them. */
 (function () {
   var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-mission-survey?action=';
   var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
@@ -13,6 +16,8 @@
     'textarea.vgs-in{min-height:140px;resize:vertical}.vgs-nav{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.vgs-c{font-size:12px;font-weight:800;color:#595959}' +
     '.vgs-b{min-height:44px;padding:12px 22px;border-radius:6px;border:0;background:#22C55E;color:#03170a;font:800 12px Montserrat,sans-serif;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;text-decoration:none;display:inline-block}' +
     '.vgs-badge{border:1.5px solid #1f5f22;background:#f4fbf4;border-radius:6px;padding:18px 20px;margin:0 0 18px}.vgs-badge b.n{display:inline-block;background:#1f5f22;color:#fff;border-radius:6px;padding:6px 12px;font-size:14px;font-weight:900;margin:0 0 10px}' +
+    '.vgs-top{position:sticky;top:calc(var(--ve-nav-h,64px) + 8px);z-index:5;display:flex;justify-content:flex-end;margin:0 0 10px;pointer-events:none}.vgs-pill{background:#1f5f22;color:#fff;border-radius:6px;padding:7px 11px;font:900 12px Montserrat,sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.15)}.vgs-pill.bump{transform:scale(1.08);transition:transform .2s}' +
+    '.vgs-save{border:1.5px solid #1f5f22;border-radius:8px;padding:22px 20px;background:#f4fbf4;margin:0 0 18px}' +
     '.vgs-b.g{background:#fff;border:1.5px solid rgba(0,0,0,.2);color:#1a1a1a}.vgs-b[disabled]{opacity:.5;cursor:default}.vgs-err{color:#b42318;font-size:13px;font-weight:700;min-height:18px;margin:0 0 10px}.vgs-pts{font-size:12px;font-weight:800;background:#e8f5e9;color:#1f5f22;border-radius:6px;padding:4px 8px;display:inline-block;margin-left:8px}';
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function tok() { try { return localStorage.getItem('ve_token'); } catch (e) { return null; } }
@@ -37,7 +42,12 @@
   var T = { filled: 'Filled in from what you told us before. Change it if it is different now.', list: 'You answered these before, so we filled them in:', change: 'Change' };
   function mount(el, opts) {
     if (!document.getElementById('vgs-css')) { var st = document.createElement('style'); st.id = 'vgs-css'; st.textContent = CSS; document.head.appendChild(st); }
-    var S = null, A = {}, C = {}, n = 1, busy = false;
+    var S = null, A = {}, C = {}, n = 1, busy = false, anon = !tok();
+    var DRAFT = 've_survey_draft_' + opts.survey;
+    function keepDraft() { try { localStorage.setItem(DRAFT, JSON.stringify(A)); } catch (e) {} }
+    function readDraft() { try { var d = JSON.parse(localStorage.getItem(DRAFT) || '{}'); return d && typeof d === 'object' ? d : {}; } catch (e) { return {}; } }
+    function earned() { return S.questions.reduce(function (t, q) { return t + (visible(q) && !empty(A[q.id]) ? (q.points || 0) : 0); }, 0); }
+    function pill() { return S && S.total ? '<div class="vgs-top"><span class="vgs-pill" id="vgsPill" aria-live="polite">' + earned() + ' of ' + S.total + ' points</span></div>' : ''; }
     // Shared answers given in another intake (canon-ve-door-guides v6, shared_answers): filled in and skipped on the way through;
     // the server writes them into this intake with the next answer saved, and lists them at the end to change.
     function carried(q) { return q && Object.prototype.hasOwnProperty.call(C, q.id); }
@@ -50,7 +60,7 @@
     }
     function step(from, dir) { var Q = S.questions; for (var i = from + dir; i >= 0 && i < Q.length; i += dir) if (!carried(Q[i]) && visible(Q[i])) return i; return -1; }
     function shownList() { return S.questions.filter(visible); }
-    function say(h) { el.innerHTML = '<div class="vgs">' + h + '</div>'; if (opts.onChange) opts.onChange(); }
+    function say(h, noPill) { el.innerHTML = '<div class="vgs">' + (noPill ? '' : pill()) + h + '</div>'; if (opts.onChange) opts.onChange(); }
     function fromHash() { var m = /^#q\/(\d+)/.exec(location.hash); return m ? parseInt(m[1], 10) : 1; }
     function draw() {
       var Q = S.questions, q = Q[n - 1];
@@ -72,6 +82,7 @@
     function summary() {
       var left = S.questions.filter(function (q) { return q.required && visible(q) && empty(A[q.id]); });
       if (S.completed) return finished();
+      if (anon && !left.length) return saveView();
       say('<h2 class="vgs-q">Almost there</h2><p class="vgs-h">' + (left.length ? 'A few questions still need an answer.' : 'Every question is answered.') + '</p>' +
         (left.length ? left.map(function (q) { return '<p><a class="vgs-b g" href="#q/' + (S.questions.indexOf(q) + 1) + '">' + esc(q.prompt) + '</a></p>'; }).join('') : ''));
     }
@@ -80,6 +91,34 @@
       say('<p class="vgs-k">' + esc(S.title) + '</p><h2 class="vgs-q">Your badge</h2>' + badgeHtml(S.badge) +
         '<div class="vgs-nav"><a class="vgs-b g" href="#q/' + (first + 1) + '">Change my answers</a><button type="button" class="vgs-b" id="vgsGo">Continue</button></div>');
       document.getElementById('vgsGo').onclick = go;
+    }
+    // The account step: every answer is on this device until now.
+    function saveView(errMsg) {
+      say('<p class="vgs-k">' + esc(S.title) + '</p><h2 class="vgs-q">Save your answers</h2><div class="vgs-save"><p class="vgs-h" style="margin:0 0 12px">You earned <b>' + earned() + ' points</b>. ' +
+        'Make your free account to keep them' + (S.admits ? ': your membership opens the moment you save.' : '.') + ' Nothing is charged.</p>' +
+        '<p style="margin:0"><button type="button" class="vgs-b" id="vgsSave">Save with Google or email</button></p>' +
+        '<p class="vgs-h" style="margin:12px 0 0">Already have an account? <a href="#" id="vgsSignin" style="color:#1f5f22;font-weight:800">Sign in</a> and your answers save to it.</p></div>' +
+        '<p class="vgs-err" role="alert">' + esc(errMsg || '') + '</p>');
+      function open(mode) {
+        if (!window.VEAuth) return;
+        // A new account waits on the survey: the site's own window would offer the survey again, so this page finishes the join itself.
+        window.VE_ACTIVATE_HANDLER = function () { submitAll(); };
+        VEAuth.showAuthModal('Save your answers: make your free account.', submitAll, mode);
+      }
+      document.getElementById('vgsSave').onclick = function () { open('signup'); };
+      document.getElementById('vgsSignin').onclick = function (e) { e.preventDefault(); open('login'); };
+    }
+    function submitAll() {
+      if (!tok()) return;
+      say('<p class="vgs-h">Saving your answers...</p>', true);
+      api('survey_submit_all', { survey: S.slug, answers: A }).then(function (d) {
+        if (d.error) { anon = true; return saveView(d.error === 'not_eligible' ? 'This account cannot take this survey. Try another account, or write to contact@lesaruss.com.' : 'That did not save. Try again.'); }
+        anon = false; try { localStorage.removeItem(DRAFT); } catch (e) {} window.VE_ACTIVATE_HANDLER = null;
+        if (d.badge) S.badge = d.badge;
+        if (d.completed) { S.completed = true; return finished(d); }
+        // Signed in to an account that already had other answers: carry on from where the server says.
+        location.reload();
+      }).catch(function () { saveView('That did not go through. Try again.'); });
     }
     function empty(v) { return v == null || v === '' || (Array.isArray(v) && !v.length); }
     function sharedList() {
@@ -95,6 +134,12 @@
       var q = S.questions[n - 1], v = A[q.id], err = document.getElementById('vgsErr');
       if (q.required && empty(v)) { err.textContent = 'Pick or write an answer to go on.'; return; }
       if (q.kind === 'multi' && q.help && /up to three/i.test(q.help) && (v || []).length > 3) { err.textContent = 'Pick up to three.'; return; }
+      if (anon) {
+        keepDraft(); var nx0 = step(n - 1, 1);
+        var p = document.getElementById('vgsPill'); if (p) { p.textContent = earned() + ' of ' + S.total + ' points'; p.classList.add('bump'); }
+        if (nx0 >= 0) location.hash = '#q/' + (nx0 + 1); else summary();
+        return;
+      }
       if (busy) return; busy = true; var b = document.getElementById('vgsNext'); b.disabled = true;
       api('survey_answer', { survey: S.slug, id: q.id, value: empty(v) ? null : v }).then(function (d) {
         busy = false;
@@ -122,8 +167,12 @@
     window.addEventListener('hashchange', function () { if (S) { n = fromHash(); draw(); } });
     say('<p class="vgs-h">Loading the questions...</p>');
     api('survey_get', { survey: opts.survey }).then(function (d) {
-      if (d.error || !d.survey) { say('<p class="vgs-h">We could not open this survey. Sign in and try again.</p>'); return; }
+      if (d.error || !d.survey) { say('<p class="vgs-h">We could not open this survey. Sign in and try again.</p>', true); return; }
       S = d.survey; A = S.answers || {}; C = S.carried || {}; if (opts.onLoaded) opts.onLoaded(S);
+      if (anon) {
+        if (!S.admits && opts.onNeedAccount) return opts.onNeedAccount(S);
+        A = readDraft();
+      }
       Object.keys(C).forEach(function (id) { A[id] = C[id].value; });
       if (S.completed) { if (opts.onAlreadyDone) { opts.onAlreadyDone(S); } return finished(); }
       // Resume at the first unanswered required question.

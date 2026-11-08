@@ -114,10 +114,18 @@ Deno.serve(async (req) => {
     let action = url.searchParams.get('action') || 'submit';
     if (action === 'draft') action = 'profile';
     if (action === 'draft_save') action = 'save';
-    if (!['profile', 'answer', 'save', 'submit', 'shown', 'door_start', 'survey_get', 'survey_answer', 'admin_list', 'admin_get', 'finalize', 'review_list', 'review_decide', 'place_search', 'place_lead', 'preveg_readiness'].includes(action)) return json({ error: 'unknown_action' }, 400);
+    if (!['profile', 'answer', 'save', 'submit', 'shown', 'door_start', 'survey_get', 'survey_answer', 'admin_list', 'admin_get', 'finalize', 'review_list', 'review_decide', 'place_search', 'place_lead', 'preveg_readiness', 'survey_submit_all'].includes(action)) return json({ error: 'unknown_action' }, 400);
 
     const body = await req.json().catch(() => ({}));
     const token = body.token;
+    // Survey first, account last (Sean, 2026-11-07: "they do the guide and then they get the account"; playbook ve-mobile-app H): anyone may
+    // read an active survey's questions with no account. The answers stay on their device until the account is made, then survey_submit_all.
+    if (!token && action === 'survey_get') {
+      const { data, error } = await supabase.rpc('ve_survey_get', { p_survey: String(body.survey ?? ''), p_member: null });
+      if (error) throw new Error('survey_get: ' + error.message);
+      if (!data) return json({ error: 'unknown_survey' }, 404);
+      return json({ ok: true, survey: data });
+    }
     if (!token) return json({ error: 'No token' }, 401);
     const decoded = await verifyToken(token);
     if (!decoded) return json({ error: 'Invalid or expired token' }, 401);
@@ -158,6 +166,32 @@ Deno.serve(async (req) => {
         await notifyTeam(`Explorer survey waiting for review: ${m?.name || m?.email || 'a new member'}`, `${m?.name || ''} (${m?.email || ''}) finished the Explorer survey. Review it in Depot > Profiles > Waiting for review: https://vegansexplore.com/admin/depot/profiles#review`);
       }
       return json(data);
+    }
+    // Every answer given before the account existed, saved in one call (the app and /survey?s=<slug>). Each goes through ve_survey_answer in
+    // the survey's order, so points, shared answers, the badge and admission work exactly as one at a time; a value the survey refuses is
+    // listed and skipped, never fatal. Returns the last answer's result (completed, admitted) plus what was saved and skipped.
+    if (action === 'survey_submit_all') {
+      const slug = String(body.survey ?? '');
+      const answers = body.answers && typeof body.answers === 'object' && !Array.isArray(body.answers) ? body.answers as Record<string, unknown> : null;
+      if (!answers) return json({ error: 'answers_required' }, 400);
+      const { data: qs } = await supabase.from('ve_survey_questions').select('id, pos').eq('survey_slug', slug).order('pos');
+      if (!qs?.length) return json({ error: 'unknown_survey' }, 404);
+      const saved: string[] = [], skipped: Array<{ id: string; error: string }> = [];
+      let last: any = null;
+      for (const q of qs) {
+        if (!Object.prototype.hasOwnProperty.call(answers, q.id)) continue;
+        const v = answers[q.id];
+        if (v == null || v === '' || (Array.isArray(v) && !v.length)) continue;
+        const { data, error } = await supabase.rpc('ve_survey_answer', { p_member: memberId, p_survey: slug, p_question: q.id, p_value: v });
+        if (error) { skipped.push({ id: q.id, error: error.message.slice(0, 120) }); continue; }
+        if (data?.error) { skipped.push({ id: q.id, error: String(data.error) }); if (data.error === 'not_eligible') return json({ ...data, saved, skipped }, 403); continue; }
+        saved.push(q.id); last = data;
+      }
+      if (last?.review === 'pending') {
+        const { data: m } = await supabase.from('members').select('name, email').eq('id', memberId).maybeSingle();
+        await notifyTeam(`Explorer survey waiting for review: ${m?.name || m?.email || 'a new member'}`, `${m?.name || ''} (${m?.email || ''}) finished the Explorer survey. Review it in Depot > Profiles > Waiting for review: https://vegansexplore.com/admin/depot/profiles#review`);
+      }
+      return json({ ok: true, ...(last || {}), saved, skipped });
     }
     if (action === 'shown') {
       const id = String(body.id ?? '');
