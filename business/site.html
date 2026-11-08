@@ -202,7 +202,15 @@
     .crumb{font-size:14px;margin-bottom:14px;opacity:.85;}
     .crumb a{text-decoration:none;font-weight:700;}
     .dd{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:44px;align-items:start;}
-    .dd .pic{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:16px;}
+    .dd .pic{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:16px;display:block;}
+    .thumbs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px;}
+    .thumbs button{border:0;padding:0;background:none;cursor:pointer;border-radius:12px;overflow:hidden;}
+    .thumbs img{width:100%;aspect-ratio:4/5;object-fit:cover;display:block;transition:opacity .15s;}
+    .thumbs button:hover img{opacity:.85;}
+    .step{display:inline-flex;align-items:center;gap:0;border:1.5px solid var(--c-accent);border-radius:6px;overflow:hidden;margin-left:auto;}
+    .orow .step{margin-left:0;}
+    .step button{border:0;background:var(--c-page);color:var(--c-accent);width:32px;height:32px;font:800 18px/1 var(--f-body),system-ui,sans-serif;cursor:pointer;}
+    .step span{min-width:30px;text-align:center;font-weight:800;font-size:14px;background:var(--c-accent);color:var(--c-page);align-self:stretch;display:flex;align-items:center;justify-content:center;}
     .dd h1{font-size:clamp(34px,4vw,54px);margin-bottom:8px;}
     .dd .price{font-size:22px;font-weight:800;margin-bottom:12px;}
     .dd .lead{font-size:18px;margin:0 0 18px;}
@@ -419,7 +427,10 @@
     var ALL_ALLG = ['Soy', 'Wheat', 'Tree nuts', 'Peanuts', 'Sesame', 'Coconut'];
     var SRCW = { farm: 'Local farm', brand: 'Brand', made: 'Made here', maker: 'Local maker', market: 'Sourced' };
     function dishHref(k) { return VS ? href('menu') : '#/menu/' + k; }
-    function addBtn(k) { var n = CART[k]; return '<button class="btn sm add' + (n ? ' added' : '') + '" type="button" data-add="' + k + '">' + (n ? 'Added · ' + n : 'Add') + '</button>'; }
+    function addBtn(k) { var n = CART[k];
+      return n ? '<span class="step add" data-add-wrap="' + k + '"><button type="button" data-qty="' + k + '" data-d="-1" aria-label="One less">−</button><span aria-label="In your order">' + n + '</span><button type="button" data-qty="' + k + '" data-d="1" aria-label="One more">+</button></span>'
+        : '<button class="btn sm add" type="button" data-add="' + k + '">Add</button>'; }
+    function refreshAdd(k) { document.querySelectorAll('[data-add="' + k + '"],[data-add-wrap="' + k + '"]').forEach(function (b) { b.outerHTML = addBtn(k); }); }
     function dish(i, add, rank) {
       var k = i.key, link = !VS && !PC;
       var img = i.photo && i.photo.src ? '<img src="' + esc(i.photo.src) + '" alt="' + esc(i.name) + '" loading="lazy">' : '';
@@ -457,8 +468,9 @@
     function dishPage(k) {
       var i = byKey[k]; if (!i) return PAGES.menu();
       var al = allergensOf(i), nu = i.nutrition;
-      return '<div class="wrap pagehead" style="padding-bottom:0"><div class="crumb"><a href="' + href('menu') + '">Menu</a> › ' + esc(i.section) + ' › ' + esc(i.name) + '</div></div>' +
-        '<section class="s" style="padding-top:10px"><div class="wrap dd"><div style="position:relative">' + (MYS[k] && CAN_VOTE ? '<span class="favpill">' + BOOK + 'Favorite</span>' : '') + (i.photo && i.photo.src ? '<img class="pic" src="' + esc(i.photo.src) + '" alt="' + esc(i.name) + '">' : '') + '</div>' +
+      return '<div class="wrap pagehead" style="padding-bottom:0"><div class="crumb"><a href="' + href('menu') + '">Menu</a> › <a href="#/menu/sec-' + C.menu.sections.map(function (x) { return x.name; }).indexOf(i.section) + '">' + esc(i.section) + '</a> › ' + esc(i.name) + '</div></div>' +
+        '<section class="s" style="padding-top:10px"><div class="wrap dd"><div style="position:relative">' + (MYS[k] && CAN_VOTE ? '<span class="favpill">' + BOOK + 'Favorite</span>' : '') + (i.photo && i.photo.src ? '<img class="pic" data-main src="' + esc(i.photo.src) + '" alt="' + esc(i.name) + '">' : '') +
+        ((i.gallery || []).length ? '<div class="thumbs">' + i.gallery.slice(0, 3).map(function (g, n) { return '<button type="button" data-thumb aria-label="Show photo ' + (n + 2) + ' of ' + esc(i.name) + '"><img src="' + esc(g) + '" alt="" loading="lazy"></button>'; }).join('') + '</div>' : '') + '</div>' +
         '<div><div class="eyebrow">' + esc(i.section) + '</div><h1>' + esc(i.name) + '</h1><div class="price">' + esc(i.price) + '</div><p class="lead">' + esc(i.copy || i.was) + '</p>' +
         '<div class="drow">' + voteBtn('d:' + k, i.votes, i.name) + saveBtn(k, i.name) + (MODE === 'pos' ? addBtn(k) : '<a class="btn sm" href="' + esc(orderHref()) + '" style="margin-left:auto">Order</a>') + '</div>' +
         '<h2>Allergens</h2>' + (al.length ? '<div class="allg">' + al.map(function (x) { return '<span>Contains ' + esc(x.toLowerCase()) + '</span>'; }).join('') + '</div>' : '<p class="note" style="margin:0">None of the common allergens.</p>') +
@@ -532,7 +544,8 @@
           '<section class="s"><div class="wrap">' + visitBlock() + '</div></section>';
       },
       menu: function () {
-        var sub = !VS && location.hash.split('/')[2]; if (sub) return dishPage(sub);
+        var sub = !VS && location.hash.split('/')[2];
+        if (sub && /^sec-\d+$/.test(sub)) activeSec = Math.min(+sub.slice(4), C.menu.sections.length - 1); else if (sub) return dishPage(sub);
         return '<div class="wrap pagehead"><div class="eyebrow">Menu</div><h1>The menu</h1><p class="lede" style="margin-bottom:0">' + (biz.vegan === '100% Vegan' ? 'Everything here is Vegan. ' : '') + 'Tap any dish to see what\'s in it, where it comes from and its allergens.</p></div>' +
           '<section class="s" style="padding-top:20px"><div class="wrap" data-menu>' + menuBlock(true) + '<p style="margin-top:30px"><a class="btn" href="' + esc(orderHref()) + '">Order for pickup</a></p></div></section>';
       },
@@ -681,9 +694,9 @@
       if ((t = e.target.closest('[data-mode]'))) { MODE = t.dataset.mode; try { sessionStorage.setItem('ve_site_order_mode', MODE); } catch (x) {} draw(); return; }
       if ((t = e.target.closest('[data-sec]'))) { activeSec = +t.dataset.sec; var mb2 = t.closest('[data-menu]'); mb2.innerHTML = mb2.hasAttribute('data-order') ? orderBlock() : menuBlock(true); return; }
       if ((t = e.target.closest('[data-set]'))) { activeSet = t.dataset.set; document.querySelectorAll('[data-gallery]').forEach(function (g) { g.innerHTML = gallery(); }); return; }
-      if ((t = e.target.closest('[data-add]'))) { var ak = t.dataset.add; CART[ak] = (CART[ak] || 0) + 1; saveCart(); placed = null; document.querySelectorAll('[data-add="' + ak + '"]').forEach(function (b) { b.outerHTML = addBtn(ak); }); drawCart(); return; }
+      if ((t = e.target.closest('[data-add]'))) { var ak = t.dataset.add; CART[ak] = (CART[ak] || 0) + 1; saveCart(); placed = null; refreshAdd(ak); drawCart(); return; }
       if ((t = e.target.closest('[data-qty]'))) { var k = t.dataset.qty; CART[k] = Math.max(0, (CART[k] || 0) + +t.dataset.d); if (!CART[k]) delete CART[k]; saveCart(); drawCart();
-        document.querySelectorAll('[data-add="' + k + '"]').forEach(function (b) { b.outerHTML = addBtn(k); }); return; }
+        refreshAdd(k); return; }
       if ((t = e.target.closest('[data-place]'))) {
         var nm = document.querySelector('[data-oname]'); if (!nm.value.trim()) { nm.focus(); nm.placeholder = 'We need a name for the order'; return; }
         var w = document.querySelector('[data-owhen]').value;
@@ -702,6 +715,7 @@
         document.querySelector('[data-ing]').innerHTML = ingList(byKey[pk]); var qi = document.querySelector('[data-ingq]'); if (qi) qi.value = ''; document.querySelector('[data-hits]').innerHTML = ''; return; }
       if ((t = e.target.closest('[data-post]'))) { openPost(+t.dataset.post); return; }
       if ((t = e.target.closest('[data-psort]'))) { postSort = t.dataset.psort; var nb = document.querySelector('[data-news]'); if (nb) { nb.innerHTML = newsBlock(); wireRails(); } return; }
+      if ((t = e.target.closest('[data-thumb]'))) { var mi = document.querySelector('[data-main]'), ti = t.querySelector('img'), a1 = mi.src; mi.src = ti.src; ti.src = a1; return; }
       if ((t = e.target.closest('[data-rail]'))) { var rl = document.getElementById(t.dataset.rail); if (rl) rl.scrollBy({ left: +t.dataset.dir * rl.clientWidth, behavior: 'smooth' }); return; }
       if ((t = e.target.closest('[data-playvid]'))) { var vv = t.parentNode.querySelector('video'); t.remove(); vv.play(); try { gtag('event', 'video_start', { video: 'site_story' }); } catch (x) {} }
     });
