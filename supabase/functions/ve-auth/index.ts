@@ -98,13 +98,61 @@ async function verifyPassword(password: string, stored: string): Promise<boolean
   } catch { return false; }
 }
 
+// Google sign-in (website button, and the app's native sign-in since 2026-11-08, playbook ve-mobile-app H). The website's ID token is
+// issued to the web client; the app's native sign-in asks for the same web client as its server client, so its token carries the same
+// audience. GOOGLE_NATIVE_CLIENT_IDS (comma separated) adds the iOS and Android OAuth clients in case a token names them directly.
+const GOOGLE_AUDIENCES = [GOOGLE_CLIENT_ID, ...(Deno.env.get('GOOGLE_NATIVE_CLIENT_IDS') ?? '').split(',').map((s) => s.trim()).filter(Boolean)];
 async function verifyGoogleToken(idToken: string): Promise<{ sub: string; email: string; name: string; picture?: string } | null> {
   try {
-    const res = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${idToken}`);
+    const res = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(idToken)}`);
     if (!res.ok) return null;
     const data = await res.json();
-    if (data.aud !== GOOGLE_CLIENT_ID && !data.aud?.includes(GOOGLE_CLIENT_ID)) return null;
-    return { sub: data.sub, email: data.email, name: data.name, picture: data.picture };
+    if (!GOOGLE_AUDIENCES.includes(String(data.aud ?? ''))) return null;
+    if (data.iss !== 'accounts.google.com' && data.iss !== 'https://accounts.google.com') return null;
+    if (!data.email || String(data.email_verified) !== 'true') return null;
+    return { sub: data.sub, email: data.email, name: data.name || String(data.email).split('@')[0], picture: data.picture };
+  } catch { return null; }
+}
+
+// Sign in with Apple (the app, playbook ve-mobile-app H, 2026-11-08). The app sends Apple's identity token; we check its RS256 signature
+// against Apple's published keys, the issuer, the audience (the iOS bundle com.lesaruss.sapphire, plus APPLE_AUDIENCES for a later web
+// Services ID) and the expiry, and, when the app sent the raw nonce, that the token carries its SHA-256. Apple gives the email only on the
+// first sign-in (and may give a private relay address); the name never comes in the token, so the app sends it from that first answer.
+const APPLE_AUDIENCES = ['com.lesaruss.sapphire', ...(Deno.env.get('APPLE_AUDIENCES') ?? '').split(',').map((s) => s.trim()).filter(Boolean)];
+let appleKeys: { at: number; keys: Array<Record<string, string>> } | null = null;
+function b64urlBytes(s: string): Uint8Array {
+  const b = atob(s.replace(/-/g, '+').replace(/_/g, '/') + '==='.slice((s.length + 3) % 4));
+  return Uint8Array.from(b, (c) => c.charCodeAt(0));
+}
+async function sha256Hex(s: string): Promise<string> {
+  const d = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(d)).map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+async function verifyAppleToken(idToken: string, rawNonce?: string): Promise<{ sub: string; email: string | null } | null> {
+  try {
+    const [h, p, sig] = String(idToken).split('.');
+    if (!h || !p || !sig) return null;
+    const header = JSON.parse(new TextDecoder().decode(b64urlBytes(h)));
+    const claims = JSON.parse(new TextDecoder().decode(b64urlBytes(p)));
+    if (header.alg !== 'RS256') return null;
+    if (!appleKeys || Date.now() - appleKeys.at > 6 * 3600 * 1000 || !appleKeys.keys.some((k) => k.kid === header.kid)) {
+      const r = await fetch('https://appleid.apple.com/auth/keys');
+      if (!r.ok) return null;
+      appleKeys = { at: Date.now(), keys: (await r.json()).keys ?? [] };
+    }
+    const jwk = appleKeys.keys.find((k) => k.kid === header.kid);
+    if (!jwk) return null;
+    const key = await crypto.subtle.importKey('jwk', { kty: 'RSA', n: jwk.n, e: jwk.e, alg: 'RS256', ext: true }, { name: 'RSASSA-PKCS1-v1_5', hash: 'SHA-256' }, false, ['verify']);
+    const ok = await crypto.subtle.verify('RSASSA-PKCS1-v1_5', key, b64urlBytes(sig), new TextEncoder().encode(`${h}.${p}`));
+    if (!ok) return null;
+    if (claims.iss !== 'https://appleid.apple.com') return null;
+    const aud = Array.isArray(claims.aud) ? claims.aud : [claims.aud];
+    if (!aud.some((a: string) => APPLE_AUDIENCES.includes(a))) return null;
+    if (!claims.exp || claims.exp * 1000 < Date.now()) return null;
+    if (rawNonce && claims.nonce && claims.nonce !== await sha256Hex(rawNonce)) return null;
+    if (!claims.sub) return null;
+    const verified = claims.email_verified === true || claims.email_verified === 'true';
+    return { sub: String(claims.sub), email: claims.email && verified ? String(claims.email).toLowerCase() : null };
   } catch { return null; }
 }
 
@@ -825,15 +873,25 @@ serve(async (req: Request) => {
       return new Response(JSON.stringify({ ok: true, message: 'Email verified. Thanks!' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
-    if (action === 'google') {
-      const { id_token } = body;
+    if (action === 'google' || action === 'apple') {
       const home_community = sanitizeCommunity(body.home_community);
+      const id_token = action === 'apple' ? (body.identity_token ?? body.id_token) : body.id_token;
       if (!id_token) return new Response(JSON.stringify({ error: 'id_token required' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      let who: { sub: string; email: string | null; name: string; picture?: string } | null = null;
+      if (action === 'google') {
+        const g = await verifyGoogleToken(id_token);
+        if (g) who = g;
+      } else {
+        const a = await verifyAppleToken(id_token, typeof body.nonce === 'string' ? body.nonce : undefined);
+        if (a) {
+          const given = typeof body.name === 'string' ? body.name.trim().slice(0, 80) : '';
+          who = { sub: a.sub, email: a.email, name: given };
+        }
+      }
+      if (!who) return new Response(JSON.stringify({ error: action === 'apple' ? 'Invalid Apple token' : 'Invalid Google token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      const idCol = action === 'apple' ? 'apple_id' : 'google_id';
 
-      const gUser = await verifyGoogleToken(id_token);
-      if (!gUser) return new Response(JSON.stringify({ error: 'Invalid Google token' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
-
-      const { data: existing } = await supabase.from('members').select(MEMBER_FIELDS + ', membership_status, standing, tenant_id').eq('google_id', gUser.sub).maybeSingle();
+      const { data: existing } = await supabase.from('members').select(MEMBER_FIELDS + ', membership_status, standing, tenant_id').eq(idCol, who.sub).maybeSingle();
 
       if (existing) {
         // 'pending_payment' is allowed through -- browsing, the Guide chat, and
@@ -853,11 +911,17 @@ serve(async (req: Request) => {
         return new Response(JSON.stringify({ token, member: { ...existingOut, communities, hidden_modules } }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
 
-      const byEmail = await findMemberByEmail(gUser.email.toLowerCase());
+      // Apple sends the email only the first time; without it there is nothing to link or create.
+      if (!who.email) return new Response(JSON.stringify({ error: 'apple_email_missing', message: 'Apple did not share an email. In Settings, open your Apple ID, Sign in with Apple, remove Vegans Explore, then try again.' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      if (!who.name) who.name = who.email.split('@')[0];
+
+      const byEmail = await findMemberByEmail(who.email.toLowerCase());
       if (byEmail) {
-        await supabase.from('members').update({ google_id: gUser.sub, avatar_url: gUser.picture, email_verified: true }).eq('id', byEmail.id);
+        const link: Record<string, unknown> = { [idCol]: who.sub, email_verified: true };
+        if (who.picture) link.avatar_url = who.picture;
+        await supabase.from('members').update(link).eq('id', byEmail.id);
         const { data: linkedRow } = await supabase.from('members').select(MEMBER_FIELDS + ', membership_status, standing, tenant_id').eq('id', byEmail.id).single();
-        if (!linkedRow) throw new Error('Failed to load linked member after google_id update');
+        if (!linkedRow) throw new Error(`Failed to load linked member after ${idCol} update`);
         { const blocked = standingBlock(linkedRow.standing); if (blocked) return blocked; }
         if (await foreignNotEntitled(linkedRow)) return await passportNeeded(linkedRow);
         const { tenant_id: _lt, ...linked } = linkedRow;
@@ -868,9 +932,9 @@ serve(async (req: Request) => {
         return new Response(JSON.stringify({ token, member: { ...linked, communities, hidden_modules } }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
 
-      const initials = gUser.name.split(' ').map((w: string) => w[0]).join('').toUpperCase().slice(0, 2);
+      const initials = who.name.split(' ').filter(Boolean).map((w: string) => w[0]).join('').toUpperCase().slice(0, 2);
       const ref_code = `VE-${Math.random().toString(36).slice(2,8).toUpperCase()}`;
-      // A share link (?ref=) counts for Google sign-ups too (Sean, 2026-10-27: Ambassadors bring people in).
+      // A share link (?ref=) counts for Google and Apple sign-ups too (Sean, 2026-10-27: Ambassadors bring people in).
       let referred_by: string | null = null;
       let referred_by_partner: string | null = null;
       let referred_by_group: string | null = null;
@@ -881,20 +945,20 @@ serve(async (req: Request) => {
         if (!referrer && !referred_by_partner) referred_by_group = await groupFromCode(body.referral_code);
       }
       const { data: member, error: insertErr } = await supabase.from('members').insert({
-        email: gUser.email.toLowerCase(), name: gUser.name, google_id: gUser.sub,
-        avatar_url: gUser.picture, initials, color: '#22C55E', referral_code: ref_code, referred_by, referred_by_partner, referred_by_group,
+        email: who.email.toLowerCase(), name: who.name, [idCol]: who.sub,
+        avatar_url: who.picture ?? null, initials, color: '#22C55E', referral_code: ref_code, referred_by, referred_by_partner, referred_by_group,
         membership_tier: 'free', membership_status: 'pending_payment', ve_role: 'member', ve_tier: 'free',
-        auth_methods: ['google'], home_community, email_verified: true,
+        auth_methods: [action], home_community, email_verified: true,
         tenant_id: VE_TENANT_ID,
       }).select(MEMBER_FIELDS + ', avatar_url, membership_status').single();
 
-      if (insertErr) throw new Error(`google insert failed: ${insertErr.message}`);
-      await recordMemberDevice(req, body, member.id, 'google');
+      if (insertErr) throw new Error(`${action} insert failed: ${insertErr.message}`);
+      await recordMemberDevice(req, body, member.id, action);
       if (home_community) {
         await supabase.from('member_communities').insert({ member_id: member.id, community_slug: home_community }).select().maybeSingle();
       }
       await ensureMemberPointsRow(member.id);
-      if (member.membership_status === 'active') await sendWelcomeEmail(gUser.email.toLowerCase(), gUser.name);
+      if (member.membership_status === 'active') await sendWelcomeEmail(who.email.toLowerCase(), who.name);
       const token = await signJWT({ sub: member.id, email: member.email, tier: 'free', brand: 'vegans-explore' });
       return new Response(JSON.stringify({ token, member: { ...member, communities: home_community ? [home_community] : [], hidden_modules: [] } }), { status: 201, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
