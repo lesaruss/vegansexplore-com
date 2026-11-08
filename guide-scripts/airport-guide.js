@@ -485,7 +485,7 @@
     var gate = !token() ? '<div class="dg-door"><p>Sign in to send a report. Reports are for members.</p><div class="dg-btns"><button type="button" class="dg-btn" data-signin>Sign in</button><a href="/survey?s=explorer" style="font-weight:800;color:var(--g)">Join free</a></div></div>'
       : !ME.active ? '<div class="dg-door"><p>Reports are for members. Membership is free with a short survey.</p><a class="dg-btn" href="/survey?s=explorer">Take the survey</a></div>'
       // Bounties unlock with the Guide (Sean, 2026-10-29: "once you purchase a guide, you have a new set of bounties that unlock").
-      : !owner() ? '<div class="dg-door"><p>Bounties unlock with the Guide. Once it is yours, every report you send from inside earns points, and the first to confirm an item earns the bounty.</p><a class="dg-btn" href="#/join">Get the Guide</a></div>' : '';
+      : !owner() && !v.free ? '<div class="dg-door"><p>Bounties unlock with the Guide. Once it is yours, every report you send from inside earns points, and the first to confirm an item earns the bounty.</p><a class="dg-btn" href="#/join">Get the Guide</a></div>' : '';
     if (!v.can_report) gate = '<div class="dg-door"><p>Reports for ' + esc(v.name) + ' open soon.</p></div>';
     var what = item ? '<p class="dg-sharenote"><b>' + esc(item.it.name) + '</b> &middot; ' + esc(item.spot.name) + ', ' + esc(item.spot.where || '') + '</p>' : '';
     if (item && item.it.gtin && (kind === 'confirm' || kind === 'wrong')) kind = 'shop_confirm';
@@ -588,7 +588,7 @@
     if (!v.can_report) return '<div class="dg-door"><p>Reports for ' + esc(v.name) + ' open soon.</p></div>';
     return !token() ? '<div class="dg-door"><p>Sign in to scan. Reports are for members.</p><div class="dg-btns"><button type="button" class="dg-btn" data-signin>Sign in</button><a href="/survey?s=explorer" style="font-weight:800;color:var(--g)">Join free</a></div></div>'
       : !ME.active ? '<div class="dg-door"><p>Reports are for members. Membership is free with a short survey.</p><a class="dg-btn" href="/survey?s=explorer">Take the survey</a></div>'
-      : !owner() ? '<div class="dg-door"><p>Bounties unlock with the Guide. Once it is yours, every item you scan earns points.</p><a class="dg-btn" href="#/join">Get the Guide</a></div>' : '';
+      : !owner() && !v.free ? '<div class="dg-door"><p>Bounties unlock with the Guide. Once it is yours, every item you scan earns points.</p><a class="dg-btn" href="#/join">Get the Guide</a></div>' : '';
   }
   var SCAN = null;
   function viewScan(slug, spotId) {

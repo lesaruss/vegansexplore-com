@@ -692,7 +692,7 @@
     if (!REPORT[kind]) kind = 'missing';
     var gate = !token() ? '<div class="dg-door"><p>Sign in to send a report. Reports are for members.</p><div class="dg-btns"><button type="button" class="dg-btn" data-signin>Sign in</button><a href="/survey?s=explorer" style="font-weight:800;color:var(--g)">Join free</a></div></div>'
       : !ME.active ? '<div class="dg-door"><p>Reports are for members. Membership is free with a short survey.</p><a class="dg-btn" href="/survey?s=explorer">Take the survey</a></div>'
-      : !owner() ? '<div class="dg-door"><p>Bounties unlock with the Guide. Once it is yours, every report you send from the store earns points, and the first to map a section earns the bounty.</p><a class="dg-btn" href="#/join">Get the Guide</a></div>' : '';
+      : !owner() && !v.free ? '<div class="dg-door"><p>Bounties unlock with the Guide. Once it is yours, every report you send from the store earns points, and the first to map a section earns the bounty.</p><a class="dg-btn" href="#/join">Get the Guide</a></div>' : '';
     if (!v.can_report) gate = '<div class="dg-door"><p>Reports for ' + esc(v.name) + ' open soon.</p></div>';
     var what = item ? '<p class="dg-sharenote"><b>' + esc(item.it.name) + '</b> &middot; ' + esc(item.spot.name) + '</p>' : '';
     var kinds = item ? '<div class="sa-kinds">' + ['wrong', 'confirm', 'gone', 'comment'].map(function (k) {

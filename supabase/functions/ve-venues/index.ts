@@ -347,10 +347,11 @@ Deno.serve(async (req) => {
       if (r === 'bad') return json({ error: 'bad_photo' }, 400);
       if (r === 'missing') return json({ error: 'bad_photo', message: 'A photo did not finish uploading. Try again.' }, 400);
     }
-    const { data: v } = await db.from('ve_venues').select('id, kind').eq('slug', str(body.venue, 80)).maybeSingle();
+    const { data: v } = await db.from('ve_venues').select('id, kind, free_example').eq('slug', str(body.venue, 80)).maybeSingle();
     if (!v) return json({ error: 'not_found' }, 404);
-    // Bounties unlock with the Guide (Sean, 2026-10-29): only its owners (and super admins) report, the free venue included.
-    if (!admin) {
+    // Bounties unlock with the Guide (Sean, 2026-10-29): only its owners (and super admins) report. The free venue is the
+    // exception (Sean, 2026-11-08, Brion Hurley at FLL): any active member may report there without buying the Guide.
+    if (!admin && !v.free_example) {
       const g = guideOfKind(v.kind);
       const { data: gr } = await db.from('ve_guides').select('access_rule, published').eq('slug', g).maybeSingle();
       const { data: has } = await db.rpc('ve_owns_guide', { p_member: viewer!.id, p_guide: g });
