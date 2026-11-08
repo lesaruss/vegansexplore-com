@@ -26,3 +26,20 @@ check-ins 167, sales $91.96, each equal to SQL; website 141 visitors; Vegans Who
 - Her GA4 has data only from Oct 30, 2026, so the template's compare reads "+31200%" for now (left as the template shows it).
 - 24 of 69 leads in 30 days are bots; the `leads` table is not filtered at intake. One Coach OS check-in is dated Dec 12, 2026.
 - Chromium's tunnel to some `*.vercel.app` hosts is refused while curl works: route the browser's requests (GET and POST) through curl. A new share link can take ~40 s to work.
+
+## Wrap, 2026-11-08 (brooke-sellers)
+
+**Metricool decided (Sean):** no build now. Brooke's Metricool brand is created live with her during her walkthrough (her setup Hot Lab), since she is treated at the managed level, where we set things up with the client in real time. Until then, Insights > Social keeps showing "waiting on one step from you".
+
+**State at wrap**
+- HQ `claude/brooke-insights` (1f6e498): B3 rebuilt on the Vegans Explore Insights room in client mode, plus Show me how underneath. Checked signed in on the preview with a throwaway example.com client at 1440 and 390 px; throwaway deleted, `ve-once-desk-proof` back to the 410 stub. **Not on HQ main**: the push to main was blocked by the permission system as a production deploy. Needs Sean's explicit "merge both" (or he merges it).
+- vegansexplore-com `claude/brooke-insights` (21bfafa): `branddesk-insights` change (Vegans Who Lift for meatless-muscle, already deployed live) plus this handoff and the CLAUDE.md B3 note. Not on main.
+- Canon `canon-template-gate` v5: client analytics are the VE Insights room, locked.
+
+**Next, in order**
+1. On Sean's "merge both": merge HQ `claude/brooke-insights` to HQ main, then vegansexplore-com `claude/brooke-insights` to main. Confirm live at hq.lesaruss.ai signed in as a new example.com throwaway (redeploy `ve-once-desk-proof` with a fresh key; remove the throwaway and stub it after), 1440 and 390 px.
+2. The walkthrough Hot Lab with Brooke: create her Metricool brand together, connect Instagram, YouTube, TikTok and Search Console, then wire the blog id into Insights > Social and SEO.
+
+**Still waiting on Sean:** the video scripts, V's lines and outreach draft 4fbbd9f4 (nothing goes to Brooke without his approval); merge HQ 085 (`claude/funny-goldberg-yghwuu`); delete `claude/brooke-show-me-how-scripts`; merge `claude/nifty-lovelace-86xs90`.
+
+**Findings for Sean:** GA4 data starts Oct 30 (huge % vs prior period); 24 of 69 leads in 30 days are bots, not filtered at intake; one Coach OS check-in is dated Dec 12, 2026.
