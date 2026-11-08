@@ -68,6 +68,12 @@
       line: 'B12, protein, iron and the rest on a Vegan plate, how much and where to get it, with Theo.',
       frames: [[SITE + '/public/guides/nutrition-guide.jpg', 'Eat Vegan, get it all'], [SITE + '/public/guides/nutrition/scene-plate.webp', 'Build your plate', 'background-position:50% 50%'],
         [SITE + '/public/guides/nutrition/scene-market.webp', 'Where to find iron and calcium', 'background-position:50% 30%'], [SITE + '/public/guides/nutrition/scene-podcast.webp', 'Hear from our physicians', 'background-position:30% 40%']] },
+    // The Holiday Guide (Sean, 2026-11-08: it replaces the Nonprofit Guide in the ad slots, which is a door for direct outreach; free and public,
+    // and its Give Back section is the public face of the cause). Portrait pictures, so the tall slot is never a blown-up crop.
+    'holiday-guide': { kicker: 'The Holiday Guide', cta: 'Open the Holiday Guide', free: true, href: '/guides/holiday-guide',
+      line: 'ThanksLiving ideas, recipes, holiday menus near you and ways to give back, with Theo.',
+      frames: [[SITE + '/public/guides/holiday/theo-thanksliving.jpg', 'Your ThanksLiving table', 'background-position:50% 30%'], [SITE + '/public/guides/holiday/theo-menus.jpg', 'Holiday menus near you', 'background-position:50% 25%'],
+        [SITE + '/public/guides/holiday/r-loaf.jpg', 'Recipes for the table', 'background-position:50% 50%'], [SITE + '/public/guides/holiday/theo-giveback.jpg', 'Give back this season', 'background-position:50% 25%']] },
     'creator-guide': { kicker: 'The Creator Guide', cta: 'Get the Creator Guide', href: '/guides/creator-guide',
       line: 'Ten tips for Vegan creators, and the way into paid work with Vegans Explore, with Kai.',
       frames: [[SITE + '/public/guides/creator-guide.jpg?v=3', 'Create Vegan content?'], [SITE + '/gigs/sample/img/post-kitchen.webp', 'Cook for the camera'],
@@ -84,7 +90,7 @@
   a.innerHTML = g.frames.map(function (f) { return '<span class="f" style="background-image:url(\'' + esc(f[0]) + '\')' + (f[2] ? ';' + f[2] : '') + '" aria-hidden="true"></span>'; }).join('') +
     '<span class="c"><small>' + esc(g.kicker) + '</small><span class="h" aria-hidden="true">' +
     g.frames.map(function (f) { return '<b>' + esc(f[1]) + '</b>'; }).join('') + '</span>' +
-    '<p>' + esc(g.line) + '</p><em>' + esc(g.cta) + ' &middot; $11</em></span>';
+    '<p>' + esc(g.line) + '</p><em>' + esc(g.cta) + (g.free ? ' &middot; Free' : ' &middot; $11') + '</em></span>';
   a.addEventListener('click', function (e) {
     e.preventDefault();
     try { parent.postMessage({ veAd: 'click' }, '*'); } catch (err) {}

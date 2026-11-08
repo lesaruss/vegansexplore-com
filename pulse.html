@@ -370,7 +370,7 @@
   <script src="/public/ve-city-banner.js"></script>
   <script src="/public/ve-auth.js"></script>
   <script src="/public/ve-votes.js"></script>
-  <script src="/public/ve-pulse-topics.js"></script>
+  <script src="/public/ve-pulse-topics.js?v=2"></script>
   <script>
   (function () {
     var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-board';
@@ -762,6 +762,7 @@
       $('detail').classList.toggle('is-topic', topic);
       $('d-back').setAttribute('href', lanePath(lane) + (state.city ? (LR ? '?topic=' + state.city.slice(3) : '?city=' + state.city) : ''));
       $('d-briefing').innerHTML = topic && window.VEPulse ? VEPulse.briefing(post) : '';
+      if (topic && window.VEPulse && VEPulse.hydrate) VEPulse.hydrate($('d-briefing'));
       var src = $('d-source');
       if (topic && post.source_url && !(post.briefing && post.briefing.stories && post.briefing.stories.length)) {
         src.innerHTML = 'Source: <a href="' + esc(post.source_url) + '" target="_blank" rel="noopener noreferrer">' + esc(post.source_name || 'Read the original story') + '</a> (opens the original story)';
