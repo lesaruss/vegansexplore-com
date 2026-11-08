@@ -26,3 +26,15 @@ Sean: "switching scenes every 3 seconds... not going to animate it... I'm sittin
 - Sean likes Liz in the pink tee; use it more.
 - Voice: "Let's go" at the end of chapter 1 sounds off. Two samples are waiting for Sean: `liz/welcome-guide/sample-letsgo-a.mp3` ("Let's go!") and `-b.mp3` ("Let's get started."). After his pick, record `tour-1-v2.mp3`, check it with stt, and point chapter 1 and `welcome-guide.js` at it.
 - Search question "vegan ice skating rink" (from a capture) still to delete: the connector held the delete.
+
+## Approved (Sean, 2026-11-08: "We have a winner. I approve what I see.")
+- Frames 2 and 44 redrawn with natural adult proportions (b02-welcome: the Guides on cafe steps; b44-rooftop: fireworks). Frame 8 was drawn new, not stretched.
+- Chapter 1: `tour-1-v3.mp3` (the v2b take, said in one go, plus a 1 s beat after "Let's go"). Chapter 4: `tour-4-v2a.mp3` adds "And points keep getting more valuable:
+  giveaways, special opportunities and discounts are on the way, and the local businesses and nonprofits you give them to will be able to use them for promotion
+  through us." (worded as coming: the Vault has no cards yet, points as discounts is an idea, businesses spending points on our services is locked but not built).
+  Three frames under it: b20a-liz-gift, s20b-vault, b20c-promotion. `welcome-guide.js` `TAKE` picks each chapter's take. 48 frames, all approved.
+- Music: `ve_video_tours.music_url` (the homepage launch bed), looped low under the lookbook.
+- Image recipe locked in CLAUDE.md (Guide scenes).
+- Next: render the final video in 4:5 (the 48 frames with the slight zoom, Liz's 8 chapters back to back, the bed about 19 dB under her), check it, put it on the
+  Welcome Guide's Overview (`/public/ve-video.js`, nothing plays until pressed, captions); then step 4, the paths page (wording in
+  `docs/handoff/2026-11-07-ve-explorer-path-steps-2-3-live-step-4-approved.md`).
