@@ -33,7 +33,7 @@ Sean: "the Explorer survey could live on its own on other guides as that bridge 
   - one narrator
   - Play and Talk on one row
 
-**Narrator: Liz hosts**, since she is already the first Guide every new member meets. The other Guides each appear on the page about their area, in the video and as pictures. This changes the locked "whole cast, one Guide a tab" setup from 2026-11-01, so it needs your OK. If you don't say otherwise, Liz is the default.
+**Narrator: Liz hosts (approved by Sean 2026-11-08).** The other Guides each appear on the page about their area, in the video and as pictures. This replaces the "whole cast, one Guide a tab" setup from 2026-11-01.
 
 ## Structure
 
