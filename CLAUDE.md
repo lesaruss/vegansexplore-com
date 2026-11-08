@@ -1511,8 +1511,8 @@ to HQ needs a one-time code exchange (the reverse of `ve-lesaruss-sso`); not bui
 
 **N, one idea store** (migration `20261108_one_idea_store.sql`; vegansexplore-com main 1bd9617, lesaruss-hq main 17c2f33). `ve_ideas` holds every idea, Depot >
 Ideas and HQ's BrandDesk > Blueprint > Ideas alike; there is no sync. The 30 `blueprint_ideas` rows moved in with their ids (`blueprint_idea_events`, the history,
-points at `ve_ideas` now); the old table is kept as `blueprint_ideas_retired_20261108`, and `blueprint_ideas` is a view over `ve_ideas` (`detail` = `body`) for
-anything still on the old name. New columns: `brand_slug` (default vegans-explore), `title` (filled from the first sentence by `trg_ve_ideas_title`), `source`
+points at `ve_ideas` now); the old table is kept as `blueprint_ideas_retired_20261108`. The `blueprint_ideas` view over `ve_ideas` was
+retired 2026-11-08 once nothing read it (migration `20261108_retire_blueprint_ideas_view.sql`); write to `ve_ideas`, never the old name. New columns: `brand_slug` (default vegans-explore), `title` (filled from the first sentence by `trg_ve_ideas_title`), `source`
 (depot, blueprint, feedback, playbook, fieldy) and the Blueprint's sorting fields. **One status list**: new, approved, building, done (the Depot's build path) and
 sent, own_playbook, parked, declined (the Blueprint's sorting). No `read` status: a read idea stays new (the Depot shows it as Read back); Set aside is parked.
 HQ shows approved, building and done under a **Building** chip. `ve-ideas` v10 reads and writes `ve_ideas` for both (the Depot's read is the Blueprint's read).
