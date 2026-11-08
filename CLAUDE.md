@@ -6704,6 +6704,20 @@ voice and story drafts), the first client desk duplicated from Vegans Explore. H
 person**: `/guides/creator-guide?p=<token>` adds a For <first name> tab (`ve_guide_previews`, `ve_guide_preview(token, guide)`; `viewYou` in
 `guide-scripts/creator-guide.js`), merged to `main` 2026-11-06 (7dc75a0, checked live; its "Not shared yet" badge comes off before she gets it). **The Creator Guide is free with the creator survey** (2026-11-06, Sean): `ve_surveys` `creator-guide`, 16 questions, 6 required, 250 points, `ve_guides` door true (migration `20261106_creator_guide_door_survey.sql`, applied); the page wording is live on `main` since 2026-11-06 (merge 687b0c2: Free with the creator survey, the comment fixed for v6, "It makes you a member" only for someone not yet a member). Handoffs: `docs/handoff/2026-11-05-brooke-sellers.md`, `docs/handoff/2026-11-06-brooke-sellers.md`.
 
+**Her BrandDesk, B1 and B2 live (2026-11-08, playbook `brooke-sellers`; handoff `docs/handoff/2026-11-08-brooke-sellers-b1-b2-live.md`).** **B1, client sign-in**
+(HQ main 63f04eb): a live row in `branddesk_client_people` (HQ migration 084; Brooke's is the only one) lets a signed-in viewer who is not staff open BrandDesk >
+<brand> at the address staff use, `/branddesk/brands/<slug>`; `middleware.ts` Part 6 rewrites it to `app/client-desk/[brand]` (outside the LOCKED shell layout),
+sends every other staff page to their desk, and staff APIs answer them 403. Staff open `/client-desk/<slug>` as a labelled read-only preview. Tabs: Get set up (real
+state: Done by us, Your turn, We are on it), Brand kit, Clients, and the rest marked Being built; V's lines are text drafts. **B2, Clients** (HQ main af2f2ad,
+`lib/coachOs.ts`, `components/branddesk/client/ClientsRoom.tsx`): her Coach OS read live from the `coach_os_*` tables (nothing moved; her old `dashboard.html`
+keeps working): tiles, Clients, Check-ins (by date, by client), Purchases, Leads, one client (profile save, log a check-in), one check-in. The client reads and
+writes with her own session, so Coach OS's own row rules decide (`coach_os_has_access`; purchases need role admin). Her Gmail was made a Coach OS admin (Sean).
+**GoHighLevel is closed** (around 2026-09-05); her intake is only her own website; the daily order pull (cron job 20) is paused. **Prices locked**
+(`canon-ve-front-of-house` v14, `hot_labs_v12`): do it yourself $500 a quarter; managed $500 a month plus a $250 setup done on one Hot Lab call; a group Hot Lab
+included for every client; a one-on-one Hot Lab $250 ($150 to the Community Manager); managed split $250/$250. Brooke stays at $200 (we absorb $50), her plan gets
+no added features, and Sean is her Community Manager for now. Next: new website people join her client list automatically, Show me how pages (video plus steps,
+I'm stuck adds it to her next Hot Lab), then B3 Insights. Nothing sent to her; email draft 4fbbd9f4 held.
+
 ## Revenue on the dashboard (Sean, 2026-11-02)
 
 "I just want to be able to see that revenue coming in through Vegans Explore in real time... just some little module... Eventually
