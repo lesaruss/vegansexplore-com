@@ -284,11 +284,13 @@ type Member = { id: string; campaign_slug: string; listing_id: string | null; pe
 async function personContact(email: string, name: string | null): Promise<Contact | null> {
   const sel = 'id,listing_id,community_slug,email,contact_name,segment,step,link_code';
   const key = email.toLowerCase();
-  const { data: c } = await db.from('ve_outreach_contacts').select(sel).is('listing_id', null).eq('community_slug', 'people-campaigns').ilike('email', key).maybeSingle();
-  if (c) return c as Contact;
+  const find = async () => (await db.from('ve_outreach_contacts').select(sel).is('listing_id', null).eq('community_slug', 'people-campaigns').eq('email', key).maybeSingle()).data as Contact | null;
+  const c = await find();
+  if (c) return c;
   const { data: made } = await db.from('ve_outreach_contacts').insert({ listing_id: null, community_slug: 'people-campaigns', email: key, contact_name: name,
     segment: 'person', status: 'not_sent', email_source: 'people-campaign' }).select(sel).single();
-  return (made as Contact) ?? null;
+  // Two calls at once (a preview and a test) can both try to make it: the second finds the first's row.
+  return (made as Contact) ?? (await find());
 }
 async function contactFor(listingId: string, email: string): Promise<Contact | null> {
   const sel = 'id,listing_id,community_slug,email,contact_name,segment,step,link_code';
