@@ -7307,3 +7307,9 @@ Make It Better, For the Animals, Become a Founder), each What it is / How to use
 first steps. `/business` moved to `business-guide.html` (rewrite in `vercel.json`, `BIZ` always true). The footer's ABOUT, `/about` and `/welcome` open
 `/passport`. Old hashes (`#/join`, `#/places`...) land on their new page; `?from=vote|save|...` notes kept. The Explorer question `x_hear` now reads "How should
 we reach you with founder news?" (the founder list). Not done: the Overview video and section videos, Liz's recordings, the paths page.
+
+**Guides in scenes, a different look on every page (Sean, 2026-11-08, every Guide).** "I don't want to see them in the same uniforms from each photo.
+Let's mix it up and make it look like a scene because they're videos, and we want the video to really lay out what's on that page." Each page of a
+Guide gets its own picture of its Guide in a scene about that page (the Holiday Guide's Theo per page is the model), never the same plain shot on every
+tab. A page's video lays out what is on that page, and where a feature needs something fully built to show (a member's view, a business's view), we build
+a demo first and edit the video after. Open with Sean: how this sits with "only clothes from our store" (2026-11-01).
