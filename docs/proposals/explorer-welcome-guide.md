@@ -18,10 +18,14 @@ What is missing or wrong:
 - **None of the Guides' lines are recorded.** They are text only, so the "A Guide speaks on every page" standard is not met.
 - **Founders have no channel yet.** "We'll announce it to founders" needs a list. Today we only have the survey's "How do you want to hear from us?" answer. Pulse subscribe is built but switched off.
 
-## Recommendation
+## Recommendation (revised after Sean, 2026-11-08)
 
-**One Guide, called the Explorer Guide.** The Welcome becomes its tour, the survey becomes its last step, and you come out with the Explorer badge.
-- It stays at `/passport`, with `/explorer` sending people there. Every "Join" button keeps working.
+Sean: "the Explorer survey could live on its own on other guides as that bridge between them getting the information and becoming a member... the welcome guide also serves as our about us page... all these guides serve as a doorway, either a paid or free doorway into our community."
+
+- **The Explorer survey stands on its own.** It is the bridge at the end of any Guide: you get the information, then you take Explorer and you're a member. The Welcome Guide is the first Guide to end on it. Each path Guide offers it inline (step 5), and so can any other Guide as its free doorway. One survey, one component, no copies.
+- **The Welcome Guide is our About us.** It is the "about" section of a normal website, packaged as a mini website. It keeps the name Welcome Guide and stays at `/passport`.
+  - Today there is a third piece: the footer's ABOUT, `/about` and Start Your Journey's sibling `/welcome` open the old guided tour (`welcome.html`). They should all open the Welcome Guide, and `welcome.html` becomes a redirect (kept in git history).
+- **Guides are the doorway system.** A Guide is a section of a website packaged as a mini website. There can be any number of them, and every one is a doorway into the community: free (through a survey) or paid ($11 or points). The Welcome Guide is the front door, and it is the free one.
 - It is built on the **Holiday Guide template**:
   - an Overview video tour, chaptered, where each chapter is also that page's "Summarize this page"
   - Start here
@@ -67,8 +71,13 @@ This is the video tour, one chapter per page. Liz speaks, in your voice. It is a
 6. **For the animals.** "Here's where it's all going. With a network of businesses, people and nonprofits that actually show up, we can run campaigns that move the needle for the animals, the reason we're all here."
 7. **Become a Founder.** "Right now you're early, and that's rare. Answer a few quick questions, about two minutes, and you're in, free, with 250 points. Join before midnight on January first and you're a Founding Member for good. Founders unlock some really cool things in 2027, and you'll hear about them first."
 
+## The Explorer bridge as a shared piece
+
+Today the survey only runs on its own page. I'd make it one shared component (`public/ve-guide-survey.js` already draws it), so any Guide can end on the same card: **Become a member, free: Take Explorer (about 2 minutes, 250 points)**. Someone who is already an Explorer sees "You're an Explorer" and that Guide's next step instead. The Welcome Guide uses it first and the path Guides use it next (step 5).
+
 ## Build order (after you approve)
 
+0. Point the footer's ABOUT, `/about` and `/welcome` at the Welcome Guide.
 1. Rebuild `/passport` on the Holiday Guide shell with these pages and Liz's lines as text. Screenshot it beside the Holiday Guide at 1440 and 390 px before it ships.
 2. Build the paths page (step 4, already approved) as the survey's landing.
 3. Record Liz's seven chapters in her profile voice and check each one word for word with stt.
