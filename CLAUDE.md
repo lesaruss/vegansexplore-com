@@ -7131,7 +7131,7 @@ their site only, never a tax claim, never calling them Vegan unless they say so;
 try leaves `details.support_try` {at, why}. We never handle money. Pilot 2026-11-08: 20 Florida organizations, 19 written (218 to 466 words), 17
 with a donation link (Piper's Pals and Nathans Family Farm show none on their sites), Little Bear Sanctuary's site did not open from the server.
 Facebook, Instagram and link-in-bio "websites" are skipped (`social_only`). 673 open organizations in all on 2026-11-08. **Sean approved the pilot
-the same day** ("I love it... I'm just approving it"); the rest (about 653) run next in batches of 25, before Giving Tuesday. Handoff
+the same day** ("I love it... I'm just approving it"). **The full run, 2026-11-08** (3:40 to 6:45 PM Eastern, a temporary wave job of 12 batches of 4 every 6 minutes, then one retry; dropped after): 558 of 673 have Why support, 480 with a tracked Donate link; 47 not written after a retry (sites that refuse, are gone or say too little; `support_try`), 68 with no website or a social one left alone. Batches of 4 or fewer finish inside the background limit; 25 do not. Handoff `docs/handoff/2026-11-08-ve-holiday-guide-give-back-full-run.md`. Handoff
 `docs/handoff/2026-11-08-ve-holiday-guide-give-back-pilot-approved.md`.
 
 ## The Vegans Explore app (LOCKED by Sean 2026-11-07, playbook `ve-mobile-app`, canon `canon-ve-mobile-app`)
