@@ -1507,6 +1507,33 @@ tool's own waiting count, and the Guide banners on the Guides section. To check 
 to HQ needs a one-time code exchange (the reverse of `ve-lesaruss-sso`); not built. **Next: the two tours** (Depot, V; BrandDesk, V, on the existing
 `lib/branddeskTours.ts` in lesaruss-hq, which has only the People tour so far), each as a video per `canon-ve-guide-tour-standard` v3.
 
+## One idea store, Send to, and the max_tokens rule (2026-11-08, playbook `branddesk-production-wing`, N, M, R; merged to main by Sean)
+
+**N, one idea store** (migration `20261108_one_idea_store.sql`; vegansexplore-com main 1bd9617, lesaruss-hq main 17c2f33). `ve_ideas` holds every idea, Depot >
+Ideas and HQ's BrandDesk > Blueprint > Ideas alike; there is no sync. The 30 `blueprint_ideas` rows moved in with their ids (`blueprint_idea_events`, the history,
+points at `ve_ideas` now); the old table is kept as `blueprint_ideas_retired_20261108`, and `blueprint_ideas` is a view over `ve_ideas` (`detail` = `body`) for
+anything still on the old name. New columns: `brand_slug` (default vegans-explore), `title` (filled from the first sentence by `trg_ve_ideas_title`), `source`
+(depot, blueprint, feedback, playbook, fieldy) and the Blueprint's sorting fields. **One status list**: new, approved, building, done (the Depot's build path) and
+sent, own_playbook, parked, declined (the Blueprint's sorting). No `read` status: a read idea stays new (the Depot shows it as Read back); Set aside is parked.
+HQ shows approved, building and done under a **Building** chip. `ve-ideas` v10 reads and writes `ve_ideas` for both (the Depot's read is the Blueprint's read).
+Checked signed in (QA login) on the HQ preview at 1440 and 390 px: 31 ideas, chips right, no errors.
+
+**M, Send to, drafts only** (migration `20261108_idea_send_to_drafts.sql`; `ve-ideas` `sends`, `pulse_draft`, `pulse_save`, `pulse_approve`, `pulse_discard`,
+`podcast_draft`). An idea's page in Depot > Ideas has **Send it to**. **A chapter's Daily Pulse**: Logan writes a story (title, take) from the idea's words only,
+a `ve_pulse_features` row with `status` draft and `idea_id`, for one chapter or every chapter on one Eastern date (default tomorrow); Sean edits it and **Approve
+for the Pulse** (live) or **Don't use it** (discarded). `ve_pulse_features_apply` takes only `status = 'live'` (every older row is live). Approving is Sean's
+token only (the ops token is refused). **The podcast's news**: a proposed Top stories segment for Kai (`ve_pod_segments.idea_id`) on the next episode still in
+planning, after the last news slot; scripted and approved in BrandDesk > Podcast. An episode already Ready (Episode 145 on Nov 8) takes nothing: `no_episode`.
+Proven live 2026-11-08 on a [TEST] idea (the draft written, held out of a real Pulse and taken in once live in a rolled-back transaction, the podcast draft placed
+on a [TEST] episode), then every test row removed through the one-time `ve-once-idea-test-cleanup` (now 410).
+
+**R, the max_tokens rule.** On the 5.x models thinking counts against max_tokens, so every 5.x Claude call gets 16000 and treats any end but `end_turn` as an
+error (cut_off), never half an answer. Done 2026-11-08 in `ve-discover`, `ve-invites`, `branddesk-insights`, `ve-listing-intake`, `ve-books`, `ve-brand-kit`,
+`ve-listing-about`, `ve-page-guide`, `ve-event-check`, `ve-plan`, `ve-people` (all redeployed, source sha256 matched) and in HQ `app/api/branddesk/v`,
+`app/api/pulse-studio/guide`, `lib/branddeskProposal.ts`, `lib/houseMeetings.ts` and the functions `fieldy-digest` (v11), `people-email-harvest` (v9). The 4.x
+calls do not think unless asked and were left alone. Only `ve-ideas` uses web search (already 16000). A new Claude call follows the same rule.
+`ve-function-deploy` reads only this repo: an HQ function was deployed by a temporary copy in a commit on the session branch, then reverted.
+
 ## One Blueprint, and Signal (Sean, 2026-11-06, playbooks `branddesk-production-wing`, `signal`)
 
 The three Blueprint chats are one: `branddesk-production-wing` is the Blueprint playbook (ve-idea-intake parked and folded in), and **`ve-feedback` is the Blueprint's small-fixes queue**.
@@ -2949,6 +2976,8 @@ stays: `directory/listing.html` asks `ve_listing_merged_to(slug)` (migration `20
 when a slug has no approved listing, keeping the address's tab and hash.
 
 **Ready to list worked 2026-11-07** (Logan, playbook `ve-community-directory`; handoff `docs/handoff/2026-11-07-ve-community-directory-ready-to-list-events.md`): 279 of the 330 listed after a light check (open on Google, website answers or 5+ reviews, no Google calls), 8 set aside, 44 left for Sean; the 15 waiting events cleared (12 approved, 3 turned down); Port Richey and Orange Springs are in Central Florida (`ve-claims` HUBS waits for a deploy from `main`); the Vegan Squad Retreat page carries the $250-off code line.
+
+**The logo hunter, 2026-11-07** (Sean: "if a logo exists, you should be able to pull it"; playbook `ve-community-directory`; edge function `ve-logo-hunt`, table `ve_logo_hunts`, migrations `20261107_ve_logo_hunts*.sql`). Replaces the old logo sweep (cron `ve-logo-sweep` paused 2026-11-07: it sent full-size pictures to Claude for 282 listings a day while the Anthropic API account had $43.73 of a $260 promotional credit left, expiring 2026-11-17, auto-reload off). Per listing: their website (read in a real browser, Apify `rag-web-browser`, when it refuses us or draws with scripts), Google Images (`hooli~google-images-scraper`), their Facebook and Instagram pictures; each candidate stored in `vegan-media/media/logo-hunt/<run>/<slug>/`, Claude (Opus 5.5) sees 512 px copies (Supabase `render/image`) and picks; `auto` only when two sources agree and confidence is high, else `review`. `start` queues a run and works it three groups of five at a time (each group its own call, `nextGroup`); `export` writes `report.json`; `apply` / `apply_zip` save squared JPEGs (squared outside, `stage` gives signed upload links) the way `logo_set` does, `details.logo_source = 'logo-hunt'`, a `ve_listing_edits` row each. Facebook name search exists but is off (`fb_search: true`): it rarely found the right page. Cost measured: about 2 cents Apify and 1.3 cents Claude a listing (`cost_usd`, `claude_usd`). Apify's Starter plan has a hard $29 a month cap (cycle from the 7th). Results 2026-11-07: 10 from the 30-listing sample, then 250 listings (100% Vegan first): 111 confirmed, 97 to check, 42 none; 202 saved after Logan checked every pick by eye and Sean approved the 14 doubtful ones (La Charrita shrunk on white); 6 wrong picks left on the letter. **On hold** (Sean, 2026-11-08: the 250 were a test, the rest waits until he says go). A run started by mistake on 2026-11-08 (`batch-1108`) was stopped at 45 ($1.06 Apify, $0.59 Claude); 35 saved (31 after a check by eye, 4 doubtful ones Sean approved; Animal Acres left on the letter), 382 never searched. Never start a run without Sean's go in that chat.
 
 ## Events, the menu and the city banner (Sean, 2026-10-26)
 
@@ -6936,6 +6965,14 @@ for the Guide and `claim.html` for the menu form (template gate).
   Guide). Pictures are Higgsfield illustrations in the Restaurant Guide's style, `public/guides/holiday/p-*.jpg`; a table picture that came back with a turkey was
   thrown out (ask for the plant-based dish by name and say no bird or meat, or the model draws a turkey).
   **Merged to `main` 2026-11-08** (aec8689, Sean: "merge it to main"); handoff `docs/handoff/2026-11-08-ve-holiday-guide-page-live.md`.
+  **Sean's notes, 2026-11-08 (branch `claude/funny-fermat-88emzg`, not on `main` until Sean merges; canon v2)**: the Events tab asked for the wrong tenant id
+  (`00000000-0000-0000-...` instead of `00000000-0000-4000-a000-000000000002`) and was always empty, fixed; never the word Friendsgiving (copy, lines, emails,
+  and the Guide no longer matches it); holidays open as they get close, the closest on top and the rest in a menu. **Tell us about a menu**: a member sends a
+  place and a link to its own holiday menu (`#/menus/tell`, a join window first), `ve-holiday` v5 `tip` (10 a day, the team's go live at once), `tips` and
+  `tip_review` for super admins, `live` returns them as Spotted by members (linked out, never copied); table `ve_holiday_menu_tips` (migration
+  `20261108_holiday_menu_tips.sql`); Depot > Holiday menus has Sent by businesses, Spotted by members and Add a menu we know. Proven 15 of 15
+  (`scripts/supabase-once/holiday-tip-proof.ts`, now 410). Four sanctuary events added (`20261108_holiday_sanctuary_events.sql`). Video script v2 approved and recorded 2026-11-08
+  (`theo-tour-1..8-v1.mp3` in `vegan-media/media/voices/holiday-guide/`, stt-checked; Overview Play runs the tour, each tab plays its chapter; `TAB_CH`); the restaurant note's words are approved, its send day waits on his go.
 
 ## The Vegans Explore app (LOCKED by Sean 2026-11-07, playbook `ve-mobile-app`, canon `canon-ve-mobile-app`)
 

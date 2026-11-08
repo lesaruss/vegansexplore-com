@@ -1,4 +1,6 @@
-# ve-holiday-guide: Theo's lines for the Holiday Guide (DRAFT for Sean)
+# ve-holiday-guide: Theo's lines for the Holiday Guide (v2, approved and recorded 2026-11-08)
+
+**v2, 2026-11-08 (Sean's notes)**: the tab lines are the video chapters (`holiday-guide-tour-script.md`), one set for both. Already on the page.
 
 They show as text on the page now (`TABS` in `guide-scripts/holiday-guide.js`). Once Sean approves, each is recorded in Theo's
 roster-profile voice (`aFyw0oiXW7dzKF4o7woX`), checked word for word with stt, and the page plays it on Play. Change a line and it is
@@ -8,10 +10,10 @@ recorded again (`-v2`).
 |---|---|
 | Overview (visitor) | I'm Theo. The holidays are about the people at the table. This Guide helps you find Vegan holiday menus near you, celebrate in a way that feels good, and give back. It's free, and it grows with every holiday. |
 | Overview (member) | Welcome back. Start with ThanksLiving, find a holiday menu near you, and save the places you want to order from. |
-| ThanksLiving | ThanksLiving is Thanksgiving with a full plant-based table. Five simple ways to make it yours, whether you host or you're a guest. |
-| Holiday menus | Vegan places near you are cooking for the holiday. Pick your chapter, see what they're offering and when to order by. Save one to find it again. |
-| Events | Sanctuary dinners, potlucks and Friendsgivings. If you're hosting one, add it to our calendar so people can find it. |
+| ThanksLiving | ThanksLiving is Thanksgiving with a fully plant-based table. Same family, same gratitude, nobody harmed. Here are a few easy ideas for your table, whether you host or bring one dish. |
+| Holiday menus | Don't want to cook it all? Pick your chapter and see which Vegan places are cooking for the holiday, what they're offering, and when to order by. Know a place we missed? Tell us, and our team checks it. |
+| Events | Rather be at someone else's table? Find sanctuary dinners, potlucks and Thanksgiving events on our calendar. Hosting one? Add it, so people can find you. |
 | Give back | Giving is part of the season. Here are the nonprofits, rescues and sanctuaries in our Directory. Giving Tuesday is December first. |
 | For businesses | Cooking for the holidays? Send us your menu and we feature it here, free for members. ThanksLiving menus close November eighteenth. |
 
-The five ways (page text, from canon-ve-holiday-guide): Three thanks, The Gratitude Table, Say it out loud, Give back, Start your reflection.
+The five ideas stay on the ThanksLiving page as written cards, each with a sentence that explains it; Theo never lists them by name (Sean, 2026-11-08).

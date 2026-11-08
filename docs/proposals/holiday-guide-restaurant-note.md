@@ -1,4 +1,13 @@
-# ve-holiday-guide: the one-time ThanksLiving note to restaurants (DRAFT for Sean)
+# ve-holiday-guide: the one-time ThanksLiving note to restaurants
+
+**Sean, 2026-11-08: the words look good** (both versions). Sending still waits on his go for the day and a read of the list by eye.
+- **The email says ThanksLiving alone**, never "ThanksLiving (Thanksgiving)": "Let's own it. People aren't stupid." The parenthetical is
+  only for search on the Guide page.
+- **It is a warm way in**, better than cold outreach: a free, useful ask (feature your menu) that brings them in as members.
+- **Follow-ups later, light**: one or two other things for them to do after, never much ("people are busy").
+- **We can also add menus for places we know** (Depot > Holiday menus > Add a menu we know), then invite them to send their full menu.
+- **Idea, not started**: ask the bigger brands whose products are in our Guides to sponsor the Holiday Guide (queued in the playbook).
+
 
 Nothing sends until Sean approves the words, the sender and the list.
 
