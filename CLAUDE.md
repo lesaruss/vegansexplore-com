@@ -6690,7 +6690,7 @@ for social access: `CREATOR_STEPS`, `stepsFor` in `ve-branddesk`), **`kit_brand`
 sheet; the client sees no kit link, since only super admins open a brand kit) and **`plan_line`** (the plan in words, shown in place of the standard setup and
 $500 a month on her Managed by us page, Depot > BrandDesk and HQ's Clients room). With no subscription, Pause and End it answer 409 `billed_outside`. Her site
 meatlessmuscle.com is archived into her Library. `ve-branddesk` v22 from fb3569a (source sha256 6b87a630 matched) is live ahead of `main` until the branch is merged.
-Handoff `docs/handoff/2026-11-08-brooke-sellers-branddesk-client.md`.
+Her setup fee is waived and her rate is discounted ($200 a month) for being with Sean since 2024; in return we get her feedback as she uses it, to work out bugs and the process with a real person (Sean, 2026-11-08; her plan_line, note and resend draft say so, migration `20261108_brooke_founding_terms.sql`). Handoff `docs/handoff/2026-11-08-brooke-sellers-branddesk-client.md`.
 
 ## Client billing links (Sean, 2026-11-05, playbook `brooke-sellers`)
 
