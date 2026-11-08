@@ -15,6 +15,13 @@ Branch `claude/eloquent-tesla-v5xk0l` (not on `main`; Sean merges).
 - Checked the branch at 1440 and 390 px (served locally, live data and storage; this sandbox cannot open `*.vercel.app`): both videos load and
   play, captions attached, no script errors, no sideways scroll.
 
+## Then, same session (Sean)
+- Green Leaf Kitchen's card shows its leaf mark, not the full logo; both videos re-cut and re-uploaded (served md5 matches).
+- Menus post as soon as they are approved, never on the close date. The server already worked that way; the form's thank-you said a menu shows
+  "when the Guide opens", now fixed, plus the form's countdown and the For Businesses line. `ve_holidays.promo_from` set to 2026-11-07
+  (migration `20261108_holiday_menus_post_on_approval.sql`). The two ThanksLiving campaign emails only name Nov 18 as the last day to send,
+  so they were left as approved. Guide script `?v=16`.
+
 ## Open
 - Merge, then a quick live look at `/guides/holiday-guide#/menus` and `#/business`.
 - Theo's 9 Hanukkah and Christmas lines (`docs/proposals/holiday-guide-theo-lines.md`) are still drafts: nothing recorded until Sean approves.

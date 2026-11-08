@@ -924,7 +924,7 @@
     var t = thanks(), open = daysUntil(t.submit_close) > 0;
     var others = (HOLS || []).filter(function (h) { return h.slug !== HOLIDAY && daysUntil(h.submit_close) > 0; });
     main.innerHTML = head('For businesses', 'Feature your holiday menu',
-      'Cooking for the holidays? Send us your menu, your order-by date and your holiday hours, and we feature it in this Guide, free for members. Our team checks every menu before it shows.') +
+      'Cooking for the holidays? Send us your menu, your order-by date and your holiday hours, and we feature it in this Guide, free for members. After a quick check by our team, usually within a day, it goes up right away. Most people order early, so send it as soon as it is set.') +
       '<div class="dg-srows">' +
       row({ title: '1. Join free', body: '<p class="dg-srow-p">A short survey makes you a member. No charge.</p>' }) +
       row({ title: '2. Claim your page', body: '<p class="dg-srow-p">Claiming your Directory page is free for members. Not listed yet? Add it free.</p>' }) +
