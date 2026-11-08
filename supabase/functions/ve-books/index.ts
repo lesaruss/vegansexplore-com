@@ -14,6 +14,7 @@
 // POST { action: 'book', listing_id }                  public: the episodes that talked about a Books listing
 // POST { action: 'admin_list', status } | 'admin_get', id | 'admin_set', id, to: set_aside|retry|list   Depot > Books
 // verify_jwt is false.
+// R (branddesk-production-wing, 2026-11-08): on the 5.x models thinking counts against max_tokens, so every call gets 16000 and a cut-off read is an error, never half an answer.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 
@@ -73,7 +74,7 @@ async function allowed(req: Request): Promise<boolean> {
 }
 
 // ---- Claude, structured output ----
-async function ask(system: string, user: string, schema: unknown, effort: 'low' | 'medium' = 'low', max = 4000): Promise<any> {
+async function ask(system: string, user: string, schema: unknown, effort: 'low' | 'medium' = 'low', max = 16000): Promise<any> {
   const key = await secret('ANTHROPIC_API_KEY');
   const client = new Anthropic(key ? { apiKey: key } : {});
   const msg: any = await client.beta.messages.create({
@@ -82,6 +83,7 @@ async function ask(system: string, user: string, schema: unknown, effort: 'low' 
     system, messages: [{ role: 'user', content: user }],
   } as any);
   if (msg.stop_reason === 'refusal') throw new Error('refused');
+  if (msg.stop_reason === 'max_tokens') throw new Error('cut_off');
   return JSON.parse((msg.content || []).find((c: any) => c.type === 'text')?.text || '{}');
 }
 
@@ -240,7 +242,7 @@ async function scanOne(contentId: string) {
   if (cur) parts.push(cur);
   const found: any[] = [];
   for (const part of parts) {
-    const out = await ask(SCAN_SYSTEM, `Episode: ${c.title} (${c.podcast_show || 'podcast'}${c.guest_name ? ', guest ' + c.guest_name : ''})\nTranscript lines:\n${part}`, SCAN_SCHEMA, 'medium', 6000);
+    const out = await ask(SCAN_SYSTEM, `Episode: ${c.title} (${c.podcast_show || 'podcast'}${c.guest_name ? ', guest ' + c.guest_name : ''})\nTranscript lines:\n${part}`, SCAN_SCHEMA, 'medium', 16000);
     for (const b of out.books || []) found.push(b);
   }
   const { data: ep } = await db.rpc('ve_content_feed_episode', { p_content: contentId });

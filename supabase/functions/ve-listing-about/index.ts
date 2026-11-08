@@ -12,6 +12,7 @@
 // POST { action: 'one', listing_id | slug, save?: false }   -> { ok, about, cuisines, saved }
 // POST { action: 'sweep', limit?: 1..12 }                   -> { ok, started }  (queued listings, restaurant-search ones first)
 // Callers: a super admin (VE token), the LESARUSS_ADMIN_TOKEN, or the cron's x-cron-secret. verify_jwt is false.
+// R (branddesk-production-wing, 2026-11-08): on the 5.x models thinking counts against max_tokens, so every call gets 16000 and a cut-off read is an error, never half an answer.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 
@@ -168,12 +169,13 @@ async function runOne(id: string, save = true) {
   let out: any;
   try {
     const msg: any = await client.beta.messages.create({
-      model: MODEL, max_tokens: 1500, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
+      model: MODEL, max_tokens: 16000, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
       output_config: { effort: 'low', format: { type: 'json_schema', schema: SCHEMA } },
       system: SYSTEM,
       messages: [{ role: 'user', content: 'The sources, as JSON:\n' + JSON.stringify(sources) }],
     } as any);
     if (msg.stop_reason === 'refusal') return { ok: false, why: 'refused' };
+    if (msg.stop_reason === 'max_tokens') return { ok: false, why: 'cut_off' };
     const t = (msg.content || []).find((c: any) => c.type === 'text')?.text || '{}';
     out = JSON.parse(t);
   } catch (e) {

@@ -45,6 +45,7 @@
 // Sources: Google Places API (New) text search (GOOGLE_PLACES_API_KEY) and Apify's Instagram profile scraper
 // (APIFY_API_TOKEN). Ops is the LESARUSS_ADMIN_TOKEN or the cron's x-cron-secret. verify_jwt is false: the VE app token is
 // HMAC-checked here the same way ve-cookbook checks it.
+// R (branddesk-production-wing, 2026-11-08): on the 5.x models thinking counts against max_tokens, so every call gets 16000 and a cut-off read is an error, never half an answer.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 
@@ -524,7 +525,7 @@ async function judgeLogos(name: string, kind: string, city: string, pics: { from
   content.push({ type: 'text', text: `The business: ${name}${kind ? ', ' + kind : ''}${city ? ', ' + city : ''}. Which picture is its own clean logo?` });
   try {
     const response: any = await client.beta.messages.create({
-      model: LOGO_MODEL, max_tokens: 4000,
+      model: LOGO_MODEL, max_tokens: 16000,
       betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
       output_config: { effort: 'low', format: { type: 'json_schema', schema: LOGO_SCHEMA } },
       system: `You pick logos for the Vegans Explore Directory. Each listing shows a small square logo on its card.
@@ -541,6 +542,7 @@ async function judgeLogos(name: string, kind: string, city: string, pics: { from
       messages: [{ role: 'user', content }],
     } as any);
     if (response.stop_reason === 'refusal') return { error: 'refused' };
+    if (response.stop_reason === 'max_tokens') return { error: 'cut_off' };
     const text = (response.content || []).filter((b: any) => b.type === 'text').map((b: any) => b.text).join('');
     return { result: JSON.parse(text) as { pick: number; background: string; why: string } };
   } catch (e) {

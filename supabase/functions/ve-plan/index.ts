@@ -33,6 +33,7 @@
 //   piece_skip {id, undo?}
 //   step_done {id, done}
 //   note_add {id, body}
+// R (branddesk-production-wing, 2026-11-08): on the 5.x models thinking counts against max_tokens, so every call gets 16000 and a cut-off read is an error, never half an answer.
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 
@@ -586,7 +587,7 @@ async function act(b: any, who: Who): Promise<any> {
     try {
       const client = new Anthropic({ apiKey });
       const res: any = await client.beta.messages.create({
-        model: MODEL, max_tokens: 4000, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
+        model: MODEL, max_tokens: 16000, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
         output_config: { effort: 'medium', format: { type: 'json_schema', schema: {
           type: 'object', additionalProperties: false, required: ['title', 'draft', 'notes'],
           properties: { title: { type: 'string', description: 'A short working title for the piece, under 80 characters' },
@@ -597,6 +598,7 @@ async function act(b: any, who: Who): Promise<any> {
         messages: [{ role: 'user', content: prompt }],
       } as any);
       if (res.stop_reason === 'refusal') return { error: 'refused' };
+      if (res.stop_reason === 'max_tokens') return { error: 'cut_off' };
       const out = JSON.parse((res.content || []).filter((x: any) => x.type === 'text').map((x: any) => x.text).join(''));
       const fix = (s: string) => String(s || '').replace(/\s*[—–]\s*/g, ', ').replace(/\bvegan\b/g, 'Vegan').trim();
       const draft = fix(out.draft).slice(0, 20000);
