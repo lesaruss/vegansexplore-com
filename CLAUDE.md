@@ -7056,6 +7056,13 @@ issuer, expired, wrong nonce, unknown key, tampered: only the valid ones pass), 
 value skipped) then admitted on the last (205 points, Founding, entry via survey; removed), the website and the app web build at phone size against the live
 questions. **Not proven**: a real Apple or Google token end to end (needs a device build; Google on iOS and Android also needs OAuth clients made in the Google
 Cloud project and their IDs in the app and `GOOGLE_NATIVE_CLIENT_IDS`), Check in in the app (step J).
+**I and J built 2026-11-08** (app branch `claude/great-rubin-yc6ey5`, e15db33; handoff `docs/handoff/2026-11-08-ve-mobile-app-i-j-home-place-checkin.md`): Home with a
+chapter picker and live content (most voted 100% Vegan food places, coming events, join or profile card, a Guide, the Pulse; chapters generated from
+`public/ve-hubs.js` by the app's `scripts/gen-chapters.mjs`, so a chapter change here means running it again there), and the place page copied from
+`directory/listing.html` with Vote, Save and **Check in** against the phone's position through `ve-checkin`, then the check-in menu (photos, post,
+shout-out, bounties). Proven live at phone size; a real check-in as the Vegans Explore Logan test account (8 m, +10, shout-out and photo) was made and
+removed through `ve-once-app-checkin` (now 410). **V** is `.github/workflows/eas-build.yml` in the app repo; GitHub runs it only from the default branch,
+so it waits on Sean merging the app branch and adding its six secrets from Key Room.
 
 ## Image conventions
 
