@@ -7456,3 +7456,8 @@ on every campaign row. **Cohort 1** `founding-cohort-1-2026-11`: 151 from Sugges
 from Sean, to the Welcome Guide, start Mon Nov 9, a draft until Sean locks and approves; three Wednesday Holiday Guide follow-ups by engagement
 (`founding-cohort-1-wed-clicked|opened|quiet`), drafts with no people until Wednesday morning. Handoff
 `docs/handoff/2026-11-08-ve-outreach-buckets-founding-cohort-email.md`. Not built: adding people to a people campaign from HQ.
+
+**The 36 hidden Facebook pages are a bounty (2026-11-08, playbook `ve-community-directory`)**: no Community Manager exists, so campaign `confirm-facebook` (6 remote bundle
+jobs, 60 points each, due Nov 22, South Florida board) asks members to find each page signed in to Facebook, with a link and screenshot or "No page found". A checked page is
+restored with one `ve_listing_edits` row (meta.playbook ve-community-directory, source the submission); the SQL is in `docs/handoff/2026-11-08-ve-community-directory-facebook-bounty.md`.
+Nothing restored yet. Migration `20261108_bounty_confirm_facebook.sql`.
