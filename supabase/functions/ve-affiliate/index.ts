@@ -3,7 +3,7 @@
 // their choosing... we would help facilitate that on the back end. So they get the credit for the donation.")
 // Migration 20261028_affiliate_levels.sql: the ladder (ve_affiliate_levels), the commissions (ve_affiliate_commissions, written by
 // ve_affiliate_earn from ve-stripe-webhook's Passport and ve_guide_purchase_paid), where they go (members.affiliate_route).
-//   POST { action: 'me' }                                  the member's level, the ladder, their link, earnings and where they go
+//   POST { action: 'me' }                                  the member's level, the ladder, their link, earnings, where they go, and their latest points (history)
 //   POST { action: 'route', route: 'self'|'nonprofit', listing_id? }   keep them, or give them to a nonprofit, rescue or sanctuary
 //   POST { action: 'orgs', q }                             Directory organizations to give to
 // Super admins (Depot > People > Ambassadors > Commissions):
@@ -66,7 +66,10 @@ Deno.serve(async (req: Request) => {
       const { data, error } = await db.rpc('ve_affiliate_me', { p_member: me.id });
       if (error || !data) { console.error('me:', error); return json({ error: 'load_failed' }, 500); }
       const live = !!data.program?.live;
-      return json({ ok: true, live, can_see: live || admin, member: me.membership_status === 'active', ...data,
+      // Your points (2026-11-08, playbook ve-explorer-path): the member's own latest ledger rows, newest first, for Points and levels.
+      const { data: hist } = await db.from('points_ledger').select('delta, reason, ref_id, created_at').eq('member_id', me.id)
+        .order('created_at', { ascending: false }).limit(60);
+      return json({ ok: true, live, can_see: live || admin, member: me.membership_status === 'active', ...data, history: hist ?? [],
         link: data.referral_code ? `${SITE}/r/${data.referral_code}` : null });
     }
 

@@ -107,6 +107,7 @@
   <div id="gate" class="gate" hidden></div>
   <div id="app" hidden></div>
 </main>
+<script>try{if(window.top!==window&&window.top.VE_SAMPLE_MEMBER)document.write('<script src="/dashboard/sample/demo.js"><\/script>');}catch(e){}</script>
 <script src="/public/ve-auth.js"></script>
 <script>
 (function () {
@@ -135,13 +136,36 @@
     else window.prompt('Copy this', text);
   }
   function views() {
-    var v = [['levels', 'Your level'], ['points', 'How points come']];
+    var v = [['levels', 'Your level']].concat(Array.isArray(D.history) ? [['history', 'Your points']] : [], [['points', 'How points come']]);
     if (D.can_see) v.push(['earnings', 'What your link earned'], ['give', 'Where it goes']);
     var cur = route();
     return '<nav class="tabs" aria-label="Points and levels">' + v.map(function (x) { return '<a href="#' + x[0] + '" class="' + (x[0] === cur ? 'on' : '') + '">' + x[1] + '</a>'; }).join('') + '</nav>' +
       (D.can_see && !D.live ? '<p class="preview">Preview: the earnings part is not launched. Members see Your level and How points come, without the commissions, until it goes live in Depot &gt; Ambassadors &gt; Commissions. Commissions are already being recorded.</p>' : '');
   }
-  function route() { var h = location.hash.replace(/^#/, ''); return ['levels', 'points', 'earnings', 'give'].indexOf(h) >= 0 && (D.can_see || ['levels', 'points'].indexOf(h) >= 0) ? h : 'levels'; }
+  function route() { var h = location.hash.replace(/^#/, ''); if (h === 'history') return Array.isArray(D.history) ? h : 'levels'; return ['levels', 'points', 'earnings', 'give'].indexOf(h) >= 0 && (D.can_see || ['levels', 'points'].indexOf(h) >= 0) ? h : 'levels'; }
+
+  // Your points (2026-11-08): the latest rows of the member's own points ledger (ve-affiliate me, history), newest first, by month.
+  var REASON = { welcome: 'Welcome points', checkin: 'Checked in', profile_answer: 'Answered a profile question', survey_answer: 'Answered a survey question',
+    referral_signup: 'A friend joined with your link', purchase_thanks: 'Thank you for a purchase', recipe_approved: 'Recipe approved', guide_unlock: 'Opened a Guide',
+    guide_chat_spend: 'Talked to your Guide', points_contribution: 'Gave points', partner_optin: 'Said yes to hear from a business', bounty: 'Bounty paid',
+    challenge: 'Challenge finished', venue_report: 'Venue report accepted', host_story: 'Host story approved', admin_adjust: 'From the team', daily_login: 'Daily visit',
+    redemption: 'Spent points', listing_submit: 'Submitted a listing', dish_slot: 'Signature dish slot', comp_membership: 'Membership on us', vote_given: 'Voted', vote_received: 'A vote on your page' };
+  function drawHistory() {
+    var H = D.history || [], got = 0, spent = 0, months = {}, order = [];
+    H.forEach(function (r) { var d = Number(r.delta) || 0; if (d > 0) got += d; else spent -= d;
+      var k = new Date(r.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }); if (!months[k]) { months[k] = []; order.push(k); } months[k].push(r); });
+    app.innerHTML = views() +
+      '<div class="totals" style="grid-template-columns:repeat(auto-fit,minmax(160px,1fr))"><div class="tot"><b>' + n(D.level && D.level.lifetime) + '</b><span>Lifetime points</span></div><div class="tot"><b>+' + n(got) + '</b><span>Earned, shown below</span></div>' +
+        '<div class="tot"><b>' + n(spent) + '</b><span>Spent or given, shown below</span></div></div>' +
+      (H.length ? order.map(function (k) {
+        return '<h2>' + esc(k) + '</h2><div class="rows">' + months[k].map(function (r) {
+          var d = Number(r.delta) || 0, note = r.note || '';
+          return '<div class="r"><div><b>' + esc(r.label || REASON[r.reason] || String(r.reason || 'Points').replace(/_/g, ' ')) + '</b><small>' + esc(day(r.created_at)) + (note ? ' &middot; ' + esc(note) : '') + '</small></div>' +
+            '<span></span><b style="color:' + (d < 0 ? '#9a3412' : '#1f5f22') + '">' + (d > 0 ? '+' : '') + n(d) + '</b></div>';
+        }).join('') + '</div>';
+      }).join('') : '<section class="card"><p class="lede" style="margin:0">No points yet. Check in where you go, answer your profile questions, or take on a bounty: each one shows here.</p></section>') +
+      '<p style="font-size:12.5px;color:var(--ink55);margin:14px 0 0">Your latest 60. Spending points never lowers your level.</p>';
+  }
 
   function ladderStep(l, mine) {
     var earns = D.can_see && Number(l.rate_pct) > 0;
@@ -264,7 +288,7 @@
 
   function draw() {
     var r = route();
-    if (r === 'points') drawPoints(); else if (r === 'earnings') drawEarnings(); else if (r === 'give') drawGive(); else drawLevels();
+    if (r === 'history') drawHistory(); else if (r === 'points') drawPoints(); else if (r === 'earnings') drawEarnings(); else if (r === 'give') drawGive(); else drawLevels();
     tellParent();
   }
 

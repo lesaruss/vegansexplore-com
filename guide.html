@@ -151,6 +151,7 @@
 <body>
   <div class="page-frame">
 
+  <script>try{if(window.top!==window&&window.top.VE_SAMPLE_MEMBER)document.write('<script src="/dashboard/sample/demo.js"><\/script>');}catch(e){}</script>
   <script src="/public/nav.js"></script>
 
   <div class="guide-frame">
@@ -418,6 +419,8 @@
         '</div>';
       thread = document.getElementById('thread');
       addMsg('guide', 'Hi' + (firstName() ? ' ' + firstName() : '') + ', what can I help you find today?');
+      // The sample member (/dashboard/sample): Jordan's earlier conversation with Liz, drawn here; nothing is stored.
+      if (window.VE_SAMPLE && VE_SAMPLE.conversation) VE_SAMPLE.conversation.forEach(function (m) { addMsg(m[0], m[1]); });
       var chips = document.getElementById('chips');
       function fillChips(list){
         if (!chips.isConnected) return;
