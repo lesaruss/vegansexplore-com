@@ -18,9 +18,11 @@ recorded again (`-v2`).
 
 The five ideas stay on the ThanksLiving page as written cards, each with a sentence that explains it; Theo never lists them by name (Sean, 2026-11-08).
 
-## Hanukkah and Christmas (drafts, 2026-11-08, not recorded)
+## Hanukkah and Christmas (approved by Sean and recorded 2026-11-08)
 
-Text only until Sean approves; then recorded in Theo's roster voice (aFyw0oiXW7dzKF4o7woX) and checked with stt. Until then Play does not show on these pages.
+Recorded in Theo's roster voice (aFyw0oiXW7dzKF4o7woX, eleven_multilingual_v2, Vegan spoken as Veegan, tzimmes spoken as "tsimmis"),
+each checked word for word with stt: `voices/holiday-guide/theo-<page>-v1.mp3` (hanukkah, hk-recipes, hk-menus, hk-events, christmas,
+xm-recipes, xm-store, xm-menus, xm-events). Each plays as its page's video, `guides/holiday/video/theo-<page>-v1.mp4`.
 
 | Page | Line |
 |---|---|

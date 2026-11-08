@@ -22,8 +22,14 @@ Branch `claude/eloquent-tesla-v5xk0l` (not on `main`; Sean merges).
   (migration `20261108_holiday_menus_post_on_approval.sql`). The two ThanksLiving campaign emails only name Nov 18 as the last day to send,
   so they were left as approved. Guide script `?v=16`.
 
+## Hanukkah and Christmas, same session (Sean: "I approve Theo's lines")
+- 9 lines recorded in Theo's roster voice, all matched with stt (hk-recipes and xm-store retaken). 9 page videos cut and uploaded (served md5
+  matches), captions in the repo, `VIDEO` wired, Play shows on every Hanukkah and Christmas page; checked at 1440 and 390 px, no errors.
+- Sample tag only on the two Holiday Menus videos (the demo); real pages, events and illustrations carry none.
+- Left behind: the temp table `tmp_theo_rec` and functions `tmp_theo_rec_next`, `tmp_theo_stt` (RLS on, no policies). The drop was held by
+  the connector's approval box; drop them when the box can be answered.
+
 ## Open
 - Merge, then a quick live look at `/guides/holiday-guide#/menus` and `#/business`.
-- Theo's 9 Hanukkah and Christmas lines (`docs/proposals/holiday-guide-theo-lines.md`) are still drafts: nothing recorded until Sean approves.
 - Re-cut Holiday Menus with real menus once some are approved (ThanksLiving closes Nov 18).
 - Kwanzaa waits; locking the Guide as the template is Sean's call.
