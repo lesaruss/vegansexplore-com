@@ -73,6 +73,17 @@ Thank you for making room at the table.
 
 The Vegans Explore team
 
+## Finishing it (2026-11-08)
+
+- **List read by eye**: 96 addresses (38 for 100% Vegan places). Six are not the business's own and come off before sending:
+  `accessibility@dylish.com` (H.O.P.E., a web vendor's mailbox), `deliverysupport@doordash.com` (Sitar of India), `info@mysite.com`
+  (Kava Garden, a website template placeholder), `help@waterboyz.com` (Cafe Single Fin, another business), `staugustine@themodernrose.com`
+  (Mestizo, another business), `platepass@urbanplates.com` (a loyalty program inbox). **90 left.** Veggie Grill's three listings share
+  one address and get one email.
+- **Tests sent** to contact@lesaruss.com: version A as Dina's Vegan Deli & Desserts, version B as Garden Butcher (subjects start [Test]).
+- **Not loaded into Depot > Outreach yet**: every Outreach draft needs a day, and the day is picked last. Loading the 90 takes a few
+  minutes once Sean picks it; nothing sends until he approves them there.
+
 ## Checked against what is true today
 
 - The form takes typed dishes, a photo per dish, and a scan of up to 3 photos or one PDF (live 2026-11-07).
