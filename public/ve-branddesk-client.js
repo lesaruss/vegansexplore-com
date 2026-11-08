@@ -108,7 +108,7 @@
     var st = S.story || {}, v = S.voice, b = S.brand || {};
     var out = '<section class="vebd-card"><h4>The business</h4>' + kv([['Name', esc(S.name)], ['Kind', esc(S.kind)], ['How Vegan', esc(S.vegan)], ['Food', esc((S.cuisines || []).join(', '))],
       ['Address', esc(S.address)], ['Phone', esc(S.phone)], ['Email', esc(S.email)], ['Google', a(S.google)]]) + '</section>';
-    out += '<section class="vebd-card"><h4>Hours</h4>' + kv(DAYS.map(function (d) { return [d, esc(S.hours[d] || '')]; })) +
+    if (DAYS.some(function (d) { return S.hours[d]; }) || S.details.length) out += '<section class="vebd-card"><h4>Hours</h4>' + kv(DAYS.map(function (d) { return [d, esc(S.hours[d] || '')]; })) +
       (S.details.length ? '<p class="vebd-muted" style="margin-top:8px">' + S.details.map(esc).join(' &middot; ') + '</p>' : '') + '</section>';
     out += '<section class="vebd-card"><h4>Links</h4>' + kv([['Website', a(S.links.website)], ['Instagram', a(S.links.instagram)], ['Facebook', a(S.links.facebook)], ['TikTok', a(S.links.tiktok)], ['YouTube', a(S.links.youtube)],
       ['Ordering', S.ordering ? esc((S.ordering.pos ? S.ordering.pos + (S.ordering.state === 'connected' ? ', connected' : '') : '') + (S.ordering.order_url ? ' ' + S.ordering.order_url : '')) : '']]) + '</section>';
@@ -194,12 +194,12 @@
           (s.done_at ? 'Done ' + esc(day(s.done_at)) + (s.by && D.admin ? ' by ' + esc(s.by) : '') + (s.auto && D.admin ? ' (on its own)' : '') + (s.note ? ' &middot; ' + esc(s.note) : '') : (s.how === 'auto' ? 'Happens on its own' : 'Coming up')) + '</small></div>' + tick + '</div>';
       }).join('');
       var arc = (D.archives || [])[0];
-      var plan = '<section class="vebd-card"><h4>' + (D.admin ? 'Their plan' : 'Your plan') + '</h4><p>' + esc(PLAN[A.setup_plan] || '') + ', then $500 a month' + (A.social ? ', plus $500 a month for social media' : '') + '. Since ' + esc(day(A.activated_at)) + '.' +
+      var plan = '<section class="vebd-card"><h4>' + (D.admin ? 'Their plan' : 'Your plan') + '</h4><p>' + (A.plan_line ? esc(A.plan_line) : esc(PLAN[A.setup_plan] || '') + ', then $500 a month' + (A.social ? ', plus $500 a month for social media' : '')) + '. Since ' + esc(day(A.activated_at)) + '.' +
         (A.pause_from ? ' Paused from ' + esc(day(A.pause_from)) + ' to ' + esc(day(A.pause_until)) + '.' : '') + '</p>' +
         '<p class="vebd-muted">' + (D.unlocked ? 'Your setup is paid in full, so every file in your Library downloads at full size.' : 'Full-size downloads of what we make open once your setup is paid in full. Your old website is always yours to download.') + '</p>' +
         (D.sample ? '<p><a class="vebd-btn o sm" href="/business/agreement" target="_blank" rel="noopener">The agreement</a> <a class="vebd-btn o sm" href="/business/sample/brand" target="_blank" rel="noopener">Their brand kit</a> <a class="vebd-btn o sm" href="/business/sample/site" target="_blank" rel="noopener">Their website</a></p>' :
-          D.listing ? '<p><a class="vebd-btn o sm" href="/business/managed?listing=' + esc(D.listing.slug) + '">Your plan and pause</a> <a class="vebd-btn o sm" href="/business/agreement" target="_blank" rel="noopener">Your agreement</a>' +
-          ' <a class="vebd-btn o sm" href="/business/brand?listing=' + esc(D.listing.slug) + '">Your brand kit</a></p>' : '') + '</section>';
+          D.listing ? '<p>' + (A.billed_outside ? '' : '<a class="vebd-btn o sm" href="/business/managed?listing=' + esc(D.listing.slug) + '">Your plan and pause</a> <a class="vebd-btn o sm" href="/business/agreement" target="_blank" rel="noopener">Your agreement</a> ') +
+          (A.kit_url !== null ? '<a class="vebd-btn o sm" href="' + esc(A.kit_url || ('/business/brand?listing=' + D.listing.slug)) + '">' + (D.admin ? 'Their' : 'Your') + ' brand kit</a>' : '') + '</p>' : '') + '</section>';
       var admin = '';
       if (D.admin) {
         admin = '<section class="vebd-card"><h4>Their website archive</h4>' + (arc ? '<p>' + (arc.status === 'running' ? '<span class="vebd-pill wait">Running</span> Started ' + esc(day(arc.created_at)) + '. Refresh in a minute.' :

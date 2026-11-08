@@ -296,6 +296,7 @@ async function ownedAccount(b: any, m: any) {
 async function pause(b: any, m: any) {
   const a = await ownedAccount(b, m);
   if (!a || a.status !== 'active') return json({ error: 'not_found' }, 404);
+  if (!a.stripe_subscription) return OUTSIDE();
   const months = Math.round(Number(b.months));
   if (!(months >= 1 && months <= 3)) return json({ error: 'months' }, 400);
   if (a.stripe_schedule) {
@@ -336,6 +337,7 @@ async function cancel(b: any, m: any) {
   if (!m?.is_superadmin) return json({ error: 'admin_only' }, 403);
   const a = await ownedAccount(b, m);
   if (!a || !LIVE_STATES.includes(a.status)) return json({ error: 'not_found' }, 404);
+  if (!a.stripe_subscription) return OUTSIDE();
   let owed = 0;
   if (a.stripe_schedule) {
     const sch = await stripe(a.test, 'GET', `subscription_schedules/${a.stripe_schedule}`);
@@ -396,6 +398,25 @@ const STEPS: [string, string, string, string][] = [
   ['website', 'Their website live on their domain (final check passed)', 'Your new website, live on your domain', 'auto'],
   ['library', 'First files in their Library', 'Your Library', 'auto'],
 ];
+// A creator or person (kind 'creator', 2026-11-08, Brooke Sellers first): no menu shoot or Google profile; their social platforms always.
+const CREATOR_STEPS: [string, string, string, string][] = [
+  ['welcome', 'Welcome call booked and held (within 2 days)', 'Your welcome call', 'team'],
+  ['owner', 'Confirmed the accounts and website are theirs', 'We confirm your accounts and website are yours', 'team'],
+  ['archive', 'Their current website archived', 'A copy of your current website, kept for you', 'auto'],
+  ['brand_kit', 'Brand kit started', 'Your brand kit', 'auto'],
+  ['domain', 'Manager access to their domain settings', 'Access to your domain settings (you keep the domain)', 'team'],
+  ['socials', 'Manager access to their social platforms', 'Access to your social platforms', 'team'],
+  ['website', 'Their website live on their domain (final check passed)', 'Your new website, live on your domain', 'auto'],
+  ['library', 'First files in their Library', 'Your Library', 'auto'],
+];
+function stepsFor(a: any) { return a?.kind === 'creator' ? CREATOR_STEPS : STEPS.filter((s) => s[0] !== 'socials' || a?.social); }
+// The brand kit: a listing's ve_cartridges row, or a brand kit (ve_brand_cartridges) named on the account.
+async function kitFor(a: any, cols = 'status, updated_at') {
+  if (a.kit_brand) return (await db.from('ve_brand_cartridges').select(cols).eq('brand_slug', a.kit_brand).maybeSingle()).data;
+  return (await db.from('ve_cartridges').select(cols).eq('listing_id', a.listing_id).maybeSingle()).data;
+}
+// Billed outside BrandDesk (no BrandDesk Stripe subscription): Pause and End it do not apply here.
+const OUTSIDE = () => json({ error: 'billed_outside', message: 'This client is billed outside BrandDesk (HQ client billing). Change their billing there.' }, 409);
 const GATED_KINDS = ['photo', 'video', 'logo', 'brand', 'graphic', 'menu_board'];
 const FILE_KINDS = ['photo', 'video', 'logo', 'brand', 'graphic', 'menu_board', 'document', 'archive'];
 const safeName = (s: string) => clean(s, 120).replace(/[^A-Za-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 90) || 'file';
@@ -435,7 +456,7 @@ async function setupPaid(a: any): Promise<boolean> {
 async function stepState(a: any) {
   const o = a.onboarding || {};
   const [{ data: kit }, { data: arc }, { count: files }, { data: site }] = await Promise.all([
-    db.from('ve_cartridges').select('status, updated_at').eq('listing_id', a.listing_id).maybeSingle(),
+    kitFor(a).then((data: any) => ({ data })),
     db.from('ve_branddesk_archives').select('status, finished_at').eq('account_id', a.id).eq('status', 'done').order('created_at', { ascending: false }).limit(1),
     db.from('ve_branddesk_files').select('id', { count: 'exact', head: true }).eq('account_id', a.id).is('removed_at', null).neq('kind', 'archive'),
     db.from('ve_branddesk_sites').select('launched_at').eq('account_id', a.id).maybeSingle(),
@@ -446,7 +467,7 @@ async function stepState(a: any) {
     brand_kit: kit ? (kit.updated_at || a.activated_at) : null,
     library: files ? a.activated_at : null,
   };
-  return STEPS.filter((s) => s[0] !== 'socials' || a.social).map(([key, team, client, how]) => {
+  return stepsFor(a).map(([key, team, client, how]) => {
     const st = o[key] || {};
     const done = st.done_at || auto[key] || null;
     return { key, team, client, how, done_at: done, by: st.by || null, note: st.note || null, auto: !st.done_at && !!auto[key] };
@@ -482,13 +503,15 @@ async function client(b: any, m: any) {
   const [{ data: files }, { data: archives }, { data: kit }, steps] = await Promise.all([
     db.from('ve_branddesk_files').select('*').eq('account_id', a.id).is('removed_at', null).order('created_at', { ascending: false }).limit(500),
     db.from('ve_branddesk_archives').select('id, url, status, platform, pages, assets, bytes, note, created_at, finished_at').eq('account_id', a.id).order('created_at', { ascending: false }).limit(10),
-    db.from('ve_cartridges').select('data, status, updated_at').eq('listing_id', a.listing_id).maybeSingle(),
+    kitFor(a, 'data, status, updated_at').then((data: any) => ({ data })),
     stepState(a),
   ]);
   const { data: owner } = admin ? await db.from('members').select('name, email').eq('id', a.member_id).maybeSingle() : { data: null };
   return json({ ok: true, admin,
     account: { id: a.id, status: a.status, test: a.test, setup_plan: a.setup_plan, social: a.social, activated_at: a.activated_at, setup_paid_at: a.setup_paid_at,
-      pause_from: a.pause_from, pause_until: a.pause_until, website_url: a.website_url || l?.website || null, agreement_version: a.agreement_version,
+      pause_from: a.pause_from, pause_until: a.pause_until, kind: a.kind || 'restaurant', plan_line: a.plan_line || null,
+      billed_outside: !a.stripe_subscription, kit_url: a.kit_brand ? (admin ? `/business/brand?brand=${encodeURIComponent(a.kit_brand)}` : null) : `/business/brand?listing=${encodeURIComponent(l?.slug || '')}`,
+      website_url: a.website_url || l?.website || null, agreement_version: a.agreement_version,
       agreed_name: admin ? a.agreed_name : undefined, note: admin ? a.note : undefined, owner },
     listing: l, unlocked, steps, files: await signFiles(files || [], unlocked, admin), archives: archives || [],
     cartridge: kit ? { status: kit.status, updated_at: kit.updated_at, data: kit.data } : null,
@@ -502,7 +525,7 @@ async function stepSet(b: any, m: any) {
   const a = await accountFor(b, m, true);
   if (!a) return json({ error: 'not_found' }, 404);
   const key = String(b.step || '');
-  if (!STEPS.some((s) => s[0] === key)) return json({ error: 'step' }, 400);
+  if (!stepsFor(a).some((s) => s[0] === key)) return json({ error: 'step' }, 400);
   const o = { ...(a.onboarding || {}) };
   if (b.done === false) delete o[key];
   else o[key] = { done_at: new Date().toISOString(), by: m.name || m.email, note: clean(b.note, 300) || null };
