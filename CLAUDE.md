@@ -7025,6 +7025,21 @@ submissions (V, X) run from GitHub Actions in the app repo with `EXPO_TOKEN`. **
 then they get the account"): the Explorer survey, a points pill adding up in the corner, then save with Apple, Google or email, which makes the
 account; the website changes to match in step H (today `/survey` needs an account first). Next: H.
 **Wrapped 2026-11-08 before H started** (handoff `docs/handoff/2026-11-08-ve-mobile-app-d-live-g-built-h-next.md`): H is next, starting with ve-auth taking native Apple and Google sign-in.
+**H built 2026-11-08 (join and sign in; handoff `docs/handoff/2026-11-08-ve-mobile-app-h-join-sign-in.md`)**. **ve-auth** (from e4eece1, sha256 391f409a matched) takes
+`action: 'apple'` (`identity_token`, raw `nonce`, `name`): RS256 checked against Apple's published keys, issuer, audience `com.lesaruss.sapphire` (plus env
+`APPLE_AUDIENCES`), expiry and the nonce's SHA-256; `members.apple_id`; Apple sends the email only the first time (`apple_email_missing` otherwise). Google now
+checks an audience list (the website's client plus env `GOOGLE_NATIVE_CLIENT_IDS`), the issuer and `email_verified`. Both share one branch (find by id, link by
+email, else a new account waiting on its survey). **ve-mission-survey** (same commit, sha256 72fc6f0b) answers `survey_get` with no token, and `survey_submit_all`
+{survey, answers} saves every answer through `ve_survey_answer` in order (a refused value is listed in `skipped`, never fatal; the last result says completed,
+admitted). **The website**: `/survey?s=<slug>` for a survey that admits works before an account (`public/ve-guide-survey.js`: answers in `localStorage`
+`ve_survey_draft_<slug>`, a points pill, then **Save your answers**, which opens the site's sign-up window with `VE_ACTIVATE_HANDLER` set so the new account
+saves the answers instead of seeing the join window again); a survey that does not admit still asks for the account first; the eyebrow reads Join free.
+**The app** (branch `claude/great-rubin-yc6ey5`, f7104d3): `/join` (the survey, the pill, Save your answers with Apple, Google or email), `/signin`, Vote, Save,
+Check in, Saves and Profile ask a visitor to join. Proven: Apple's check on 8 cases with the function's own code and a local key (valid, no email, wrong audience,
+issuer, expired, wrong nonce, unknown key, tampered: only the valid ones pass), the live survey read with no token, a live [TEST] account saving 8 answers (a bad
+value skipped) then admitted on the last (205 points, Founding, entry via survey; removed), the website and the app web build at phone size against the live
+questions. **Not proven**: a real Apple or Google token end to end (needs a device build; Google on iOS and Android also needs OAuth clients made in the Google
+Cloud project and their IDs in the app and `GOOGLE_NATIVE_CLIENT_IDS`), Check in in the app (step J).
 
 ## Image conventions
 
