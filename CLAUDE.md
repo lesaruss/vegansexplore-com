@@ -7140,6 +7140,9 @@ on the page, an Inbox row for a new answer (it emails contact@lesaruss.com).
   `2EK5TxNjA4UPYRzSv` finished ($3.79); of 580 Facebook links, 527 live, 44 not available, 9 came back empty. The 48 that are not
   people are listed in the handoff for Sean (8 broken addresses, 32 not available, 8 empty); **nothing removed** until he says.
   `ve_social_check_tick()`, `ve_social_link_checks` and `ve_social_scan_ig` are dropped (migration `20261108_social_scan_tables_drop.sql`).
+  **Sean's decision, 2026-11-08: clear the 8 broken addresses** (done: Good Kitchen + Market, HAAM, OverGreens, PGH Green & Grains, Renegade
+  Vegan, Seoul Food D.C., Soulicious, Vegan Squad; old values in `details.social_removed`, 8 `ve_listing_edits` rows; migration note
+  `20261108_facebook_broken_cleared.sql`). The 32 not available and 8 empty stay until a signed-in look on Facebook.
 
 ## Image conventions
 
