@@ -53,7 +53,7 @@
     .item dl{display:grid;grid-template-columns:140px 1fr;gap:6px 14px;font-size:13.5px;}.item dt{font-weight:800;color:var(--ve-text-75);}.item dd{word-break:break-word;}
     .item textarea{font-family:inherit;font-size:14px;width:100%;min-height:90px;padding:10px 12px;border:1px solid var(--ve-border);border-radius:6px;}
     @media (max-width:600px){.item dl{grid-template-columns:1fr;}.item dt{margin-top:6px;}}
-    .tag.read{background:#e3eefc;color:#0f4a91;}.tag.approved{background:#fff1dc;color:#8a5200;}.tag.building{background:#efe4fb;color:#5b2a91;}.tag.done{background:var(--ve-green-light);color:var(--ve-green-deep);}.tag.set_aside{background:#eef1ee;color:#555;}
+    .tag.read{background:#e3eefc;color:#0f4a91;}.tag.approved{background:#fff1dc;color:#8a5200;}.tag.building{background:#efe4fb;color:#5b2a91;}.tag.done{background:var(--ve-green-light);color:var(--ve-green-deep);}.tag.parked,.tag.declined{background:#eef1ee;color:#555;}.tag.sent,.tag.own_playbook{background:var(--ve-green-light);color:var(--ve-green-deep);}
     .newbtn{margin:0 0 16px;}
     .form{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:20px 22px;display:grid;gap:14px;max-width:860px;}
     .form label{font-size:12.5px;font-weight:800;color:var(--ve-text-75);display:block;margin-bottom:6px;}
@@ -109,18 +109,21 @@
     (function () {
       var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-ideas';
       var $ = function (id) { return document.getElementById(id); };
-      var ST = [['open', 'Open'], ['new', 'New'], ['read', 'Read back'], ['approved', 'Approved'], ['building', 'Building'], ['done', 'Done'], ['set_aside', 'Set aside'], ['all', 'All']];
-      var OPEN = { 'new': 1, read: 1, approved: 1, building: 1 };
+      // One idea store with BrandDesk > Blueprint > Ideas (ve_ideas, 2026-11-08): sent, own_playbook, parked and declined are the Blueprint's
+      // sorting; Read back is a new idea Logan has read (no status of its own).
+      var ST = [['open', 'Open'], ['new', 'New'], ['read', 'Read back'], ['approved', 'Approved'], ['building', 'Building'], ['done', 'Done'], ['sent', 'Sent to a playbook'], ['own_playbook', 'Own playbook'], ['parked', 'Set aside'], ['declined', 'Declined'], ['all', 'All']];
+      var OPEN = { 'new': 1, approved: 1, building: 1 };
+      var LABEL = { 'new': 'New', approved: 'Approved', building: 'Building', done: 'Done', sent: 'Sent to a playbook', own_playbook: 'Own playbook', parked: 'Set aside', declined: 'Declined' };
       var SIZE = { tweak: 'A tweak', build: 'A build', big: 'A big one, its own playbook' };
       var rows = [], loaded = false, picked = [];
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
       function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }).catch(function () { return { error: 'network' }; }); }
       function when(t) { return new Date(t).toLocaleString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' ET'; }
-      function stLabel(s) { for (var i = 0; i < ST.length; i++) if (ST[i][0] === s) return ST[i][1]; return s; }
+      function stLabel(s, x) { if (s === 'new' && x && x.read) return 'Read back'; return LABEL[s] || s; }
       function waitHtml(t) { return '<div class="wait"><span class="spin"></span>' + esc(t) + '</div>'; }
       // #list/<status>, #new, #idea/<id>
       function route() { var h = location.hash.replace(/^#/, '').split('/'); if (h[0] === 'new') return { v: 'new' }; if (h[0] === 'idea') return { v: 'idea', id: h[1] }; return { v: 'list', st: ST.some(function (s) { return s[0] === h[1]; }) ? h[1] : 'open' }; }
-      function inSt(x, st) { return st === 'all' || (st === 'open' ? OPEN[x.status] : x.status === st); }
+      function inSt(x, st) { if (st === 'all') return true; if (st === 'open') return !!OPEN[x.status]; if (st === 'new') return x.status === 'new' && !x.read; if (st === 'read') return x.status === 'new' && !!x.read; return x.status === st; }
 
       function drawList(r) {
         var tabs = ST.map(function (s) { var n = rows.filter(function (x) { return inSt(x, s[0]); }).length; return '<a href="#list/' + s[0] + '" class="' + (s[0] === r.st ? 'on' : '') + '">' + s[1] + ' (' + n + ')</a>'; }).join('');
@@ -131,11 +134,11 @@
       }
       function fill(r) {
         var q = $('q').value.toLowerCase();
-        var list = rows.filter(function (x) { return inSt(x, r.st) && (!q || ((x.body || '') + ' ' + ((x.read && x.read.ask) || '') + ' ' + (x.playbook_slug || '')).toLowerCase().indexOf(q) >= 0); });
+        var list = rows.filter(function (x) { return inSt(x, r.st) && (!q || ((x.title || '') + ' ' + (x.body || '') + ' ' + ((x.read && x.read.ask) || '') + ' ' + (x.playbook_slug || '') + ' ' + (x.target_playbook || '')).toLowerCase().indexOf(q) >= 0); });
         $('grid').innerHTML = list.length ? list.map(function (x) {
-          var title = (x.read && x.read.ask) || x.body || (x.links || [])[0] || ((x.files || []).length + ' attachment' + ((x.files || []).length === 1 ? '' : 's'));
-          return '<div class="card"><div class="body"><span class="kind">' + esc(x.playbook_slug || 'No playbook yet') + '</span><div><span class="tag ' + esc(x.status) + '">' + esc(stLabel(x.status)) + '</span></div>' +
-            '<div class="excerpt">' + esc(title) + '</div><span class="meta">' + esc(when(x.created_at)) + ((x.files || []).length ? ' &middot; ' + x.files.length + ' file' + (x.files.length === 1 ? '' : 's') : '') + ((x.links || []).length ? ' &middot; ' + x.links.length + ' link' + (x.links.length === 1 ? '' : 's') : '') + '</span>' +
+          var title = x.title || (x.read && x.read.ask) || x.body || (x.links || [])[0] || ((x.files || []).length + ' attachment' + ((x.files || []).length === 1 ? '' : 's'));
+          return '<div class="card"><div class="body"><span class="kind">' + esc(x.target_playbook || x.playbook_slug || 'No playbook yet') + (x.source && x.source !== 'depot' ? ' &middot; from the Blueprint' : '') + '</span><div><span class="tag ' + esc(x.status) + '">' + esc(stLabel(x.status, x)) + '</span></div>' +
+            '<div class="excerpt">' + esc(title) + '</div><span class="meta">' + (x.submitted_by ? esc(x.submitted_by) + ' &middot; ' : '') + esc(when(x.created_at)) + ((x.files || []).length ? ' &middot; ' + x.files.length + ' file' + (x.files.length === 1 ? '' : 's') : '') + ((x.links || []).length ? ' &middot; ' + x.links.length + ' link' + (x.links.length === 1 ? '' : 's') : '') + '</span>' +
             '<div class="acts"><a class="btn" href="#idea/' + x.id + '">Open</a>' + (x.result_url ? '<a class="btn btn-quiet" href="' + esc(x.result_url) + '" target="_blank" rel="noopener">See it</a>' : '') + '</div></div></div>';
         }).join('') : '<p class="sub">' + (r.st === 'open' ? 'Nothing open. Tap New idea to drop one.' : 'None here.') + '</p>';
       }
@@ -221,9 +224,9 @@
             (rd.questions && rd.questions.length ? '<h3>What I need from you</h3><ul>' + rd.questions.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>' : '') + '</div>'
             : '<div class="read"><p>Logan has not read this one yet.</p></div>';
           var turns = (x.thread || []).slice(1).filter(function (t, i, a) { return !(t.role === 'logan' && i === a.length - 1); });
-          var canAct = x.status === 'new' || x.status === 'read';
+          var canAct = x.status === 'new';
           $('view').innerHTML = '<p class="crumb"><a href="#list/open">Ideas</a> / ' + esc(when(x.created_at)) + '</p><div class="item">' +
-            '<div><span class="tag ' + esc(x.status) + '">' + esc(stLabel(x.status)) + '</span>' + (x.playbook_slug ? ' <span class="kind">' + esc(x.playbook_slug) + '</span>' : '') + '</div>' +
+            (x.title ? '<h2 style="font-size:22px;font-weight:800">' + esc(x.title) + '</h2>' : '') + '<div><span class="tag ' + esc(x.status) + '">' + esc(stLabel(x.status, x)) + '</span>' + (x.target_playbook ? ' <span class="kind">Sent to ' + esc(x.target_playbook) + '</span>' : '') + (x.playbook_slug && x.playbook_slug !== x.target_playbook ? ' <span class="kind">' + esc(x.playbook_slug) + '</span>' : '') + '</div>' +
             (x.body ? '<div class="full">' + esc(x.body) + '</div>' : '') +
             (pics.length ? '<div class="thumbs">' + pics.map(function (f) { return '<a href="' + esc(f.url) + '" data-lb="' + esc(f.url) + '"><img src="' + esc(f.url) + '" alt="' + esc(f.name) + '"></a>'; }).join('') + '</div>' : '') +
             (other.length ? '<p class="meta">' + other.map(function (f) { return f.url ? '<a href="' + esc(f.url) + '" target="_blank" rel="noopener">' + esc(f.name) + '</a>' : esc(f.name); }).join(' &middot; ') + '</p>' : '') +
@@ -232,12 +235,13 @@
             readHtml +
             (turns.length ? '<div class="thread">' + turns.map(function (t) { return '<div class="turn ' + esc(t.role) + '"><b>' + (t.role === 'logan' ? 'Logan' : 'You') + ' &middot; ' + esc(when(t.at)) + '</b>' + esc(t.text) + '</div>'; }).join('') + '</div>' : '') +
             (canAct ? '<div><label class="meta" for="reply"><b>Correct me or answer my questions</b></label><textarea id="reply" placeholder="No, I meant... (tap the mic to speak)"></textarea></div>' +
-              '<div class="acts"><button type="button" class="btn" id="ok">Approve, go build it</button><button type="button" class="btn btn-quiet" id="re">Send and read it again</button><button type="button" class="btn btn-ghost" data-st="set_aside">Set aside</button></div>' : '') +
+              '<div class="acts"><button type="button" class="btn" id="ok">Approve, go build it</button><button type="button" class="btn btn-quiet" id="re">Send and read it again</button><button type="button" class="btn btn-ghost" data-st="parked">Set aside</button></div>' : '') +
             (x.status === 'approved' ? '<p class="sub"><b>Approved ' + esc(when(x.approved_at)) + '.</b> Logan picks it up in his next build session and puts the link here when it is done.</p>' : '') +
             (x.session_url ? '<p class="meta">Build session: <a href="' + esc(x.session_url) + '" target="_blank" rel="noopener">open it</a></p>' : '') +
             (x.result_url ? '<div class="acts"><a class="btn" href="' + esc(x.result_url) + '" target="_blank" rel="noopener">See what was done</a></div>' : '') +
             (x.note ? '<p class="meta"><b>Note:</b> ' + esc(x.note) + '</p>' : '') +
-            (!canAct ? '<div class="acts">' + (x.status === 'set_aside' || x.status === 'done' ? '<button type="button" class="btn btn-quiet" data-st="read">Open it again</button>' : '') + (x.status !== 'set_aside' && x.status !== 'done' ? '<button type="button" class="btn btn-ghost" data-st="set_aside">Set aside</button>' : '') + '</div>' : '') +
+            (x.reason ? '<p class="meta"><b>Why:</b> ' + esc(x.reason) + '</p>' : '') +
+            (!canAct ? '<div class="acts">' + (x.status !== 'approved' && x.status !== 'building' ? '<button type="button" class="btn btn-quiet" data-st="new">Open it again</button>' : '') + (x.status === 'approved' || x.status === 'building' ? '<button type="button" class="btn btn-ghost" data-st="parked">Set aside</button>' : '') + '</div>' : '') +
             '<div id="msg" class="msg"></div></div>';
           [].forEach.call(document.querySelectorAll('[data-lb]'), function (a) { a.onclick = function (e) { e.preventDefault(); var lb = document.createElement('div'); lb.className = 'lb'; lb.innerHTML = '<img src="' + esc(a.getAttribute('data-lb')) + '" alt="">'; lb.onclick = function () { lb.remove(); }; document.body.appendChild(lb); }; });
           function after(r) { if (r && r.ok) { loaded = false; drawIdea(id); } else $('msg').textContent = 'That did not go through. ' + ((r && r.error) || ''); }
