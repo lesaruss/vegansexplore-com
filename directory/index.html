@@ -54,6 +54,9 @@
 
     @media (max-width: 700px) {
       main { padding: 28px 16px 64px; }
+      /* Sean, 2026-11-08: on phones the gap under the page bar matches the gap above the first card (16px, the list's own
+         top padding), so nav.js's 24px pagebar padding is dropped here. Directory page only. */
+      html.ve-has-pagebar main#main-content { padding-top: 0 !important; }
       .vote-box, .biz-strip { padding: 24px 20px; }
     }
   </style>
