@@ -60,7 +60,8 @@
     .dg-app{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:28px;padding:20px 40px 20px;align-items:stretch;}
     .dg-main{min-width:0;}
     .dg-rail{display:flex;flex-direction:column;gap:10px;min-height:0;}
-    .dg-maya{position:relative;border-radius:14px;overflow:hidden;background:#f3f6f3 center 18%/cover no-repeat;aspect-ratio:1/1;}
+    .dg-maya{position:relative;border-radius:14px;overflow:hidden;background:#f3f6f3 center 18%/cover no-repeat;aspect-ratio:4/5;}
+    /* One frame on every tab (Sean, 2026-11-08): Theo's picture and each page's summary video share the same 4:5 box. */
     .dg-maya video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 18%;display:block;cursor:pointer;background:transparent;}
     .dg-maya video::cue{font-size:12.5px;line-height:1.35;background:rgba(0,0,0,0.72);}
     .dg-maya.dg-shift video{animation:dgShift .55s ease-out;}
@@ -349,8 +350,9 @@
       html.dg-fit .page-frame{display:flex;flex-direction:column;height:100vh;}
       html.dg-fit .dg-app{flex:1 1 auto;min-height:0;}
       html.dg-fit .dg-main{overflow-y:auto;scrollbar-width:thin;padding-right:6px;}
-      html.dg-fit .dg-rail{overflow:hidden;}
-      html.dg-fit .dg-maya{aspect-ratio:auto;flex:1 1 auto;min-height:150px;max-height:320px;}
+      html.dg-fit .dg-rail{overflow-y:auto;scrollbar-width:thin;}
+      html.dg-fit .dg-maya{aspect-ratio:4/5;flex:0 0 auto;height:300px;width:auto;max-width:100%;align-self:center;}
+      html.dg-fit .dg-bubble{max-height:136px;overflow-y:auto;flex:0 0 auto;}
       html.dg-fit .ve-footer-inner{padding-top:14px !important;padding-bottom:14px !important;}
     }
     @media (max-width:1180px){.dg-app{grid-template-columns:minmax(0,1fr) 280px;}.dg-swappv,.dg-cookpv,.dg-access{grid-template-columns:minmax(0,1fr);}}
@@ -369,7 +371,7 @@
       /* Phones (Sean, 2026-10-10): Maya full width on top with her words under her, a Hide / Show switch so she never
          takes over the screen, and Back / N of M / Next at the bottom of the content; Next goes back up to her. */
       .dg-rail{order:-1;display:flex;flex-direction:column;gap:10px;}
-      .dg-maya{aspect-ratio:1/1;width:100%;}
+      .dg-maya{aspect-ratio:4/5;width:100%;}
       .dg-rail .dg-tour{display:none;}
       .dg-tour.dg-tour-m{display:flex;order:2;border-top:1px solid var(--line);padding-top:14px;}
       .dg-fold{display:inline-flex;}
@@ -699,7 +701,7 @@
 <script src="/public/ve-region-directory.js"></script>
 <script src="/public/ve-guide-intro.js"></script>
 <script src="/public/ve-episodes.js"></script>
-<script src="/guide-scripts/holiday-guide.js?v=9"></script>
+<script src="/guide-scripts/holiday-guide.js?v=10"></script>
 <script src="/public/ve-guide-min.js"></script>
 </body>
 </html>
