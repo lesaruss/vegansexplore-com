@@ -34,3 +34,8 @@ Then approve and pay the job.
 - The board lists jobs by chapter, so these show only on South Florida's board (as Map the venues does); a remote job's own page opens for a
   member in any city. Link: `/bounties?community=south-florida&campaign=confirm-facebook`.
 - Not seen in a browser this session (the list needs a member token).
+
+
+## Update: every chapter (2026-11-08)
+
+Sean: put it on every chapter so a member can take it without us watching. `ve-bounties` `list` now adds every open `remote` bounty to whichever chapter is shown (v17, commit 8940496, source sha256 6528824b, deployed over v16 after checking v16 equalled main). Only these six jobs are remote. Proven live as the Logan test account: the campaign and six jobs list on Atlanta, London and New York beside each chapter's own bounties; a claim and a release on "Los Angeles and London" both answered ok. One released submission row (3010c9ac) remains because the connector held its delete; released rows are not counted as taken. Not yet seen: a real member's claim, submission and our review end to end; that is the test Sean wants.
