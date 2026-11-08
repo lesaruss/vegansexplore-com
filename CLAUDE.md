@@ -7077,6 +7077,12 @@ shout-out, bounties). Proven live at phone size; a real check-in as the Vegans E
 removed through `ve-once-app-checkin` (now 410). **V** is `.github/workflows/eas-build.yml` in the app repo; GitHub runs it only from the default branch,
 so it waits on Sean merging the app branch and adding its six secrets from Key Room.
 **Merged 2026-11-08** (Sean: "merge"): app main 2268abe carries the new app and the workflow (the branch had its own history, so main keeps Sapphire's history and its tree is the branch). V now waits only on the six Actions secrets.
+**Delete my account and the store path, 2026-11-08** (Sean: stores before design; handoff `docs/handoff/2026-11-08-ve-mobile-app-delete-account-store-listing.md`). Account
+deletion is live: `ve_member_delete` (migration `20261108_member_delete.sql`: a Vegans Explore account is scrubbed, quarantined and closed, its email
+suppressed; a login shared with another LESARUSS brand loses only its Vegans Explore side; never super admins or Guide accounts) behind ve-auth
+`delete_account {confirm: 'DELETE'}` (v76) and the app's Profile > Delete my account. Builds are read from the stores with the workflow's read-only
+`store_status` input. iOS 13 and Android 5 carry it. The review account is appreview@lesaruss.com (password in Key Room `VE_APP_REVIEW_PASSWORD`). The
+listing, screenshots and feature graphic are in the app repo `store/`, waiting on Sean; then the consoles are filled and both builds go to review.
 **V running 2026-11-08** (handoff `docs/handoff/2026-11-08-ve-mobile-app-device-builds.md`): the six secrets are set (copied server side; GITHUB_TOKEN reinstated as a fine-grained token, vegansexplore-app Secrets only), iOS reached TestFlight (Sean installed build 10; 12 sent), Android 4 building. Submit by build id, never `--latest`; `reset_ios_profile` when a capability changes. App branch `claude/elegant-mayer-r6z3p0` (b95d391, not on app main): Menu is the website's phone menu, Explore is the website's Directory (`src/lib/directory.ts` copies its rules). Next: device proofs (Apple, email, Explorer join, Check in), then Google client IDs.
 
 ## Image conventions
