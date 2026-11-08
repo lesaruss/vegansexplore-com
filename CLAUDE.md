@@ -6935,6 +6935,7 @@ for the Guide and `claim.html` for the menu form (template gate).
   with a line and picture pills (`GROUPS`, `PILL_PIC`: Celebrate, Order your table, Give back, Run a business?; `.rg-grow`, `.rg-pill` copied from the Restaurant
   Guide). Pictures are Higgsfield illustrations in the Restaurant Guide's style, `public/guides/holiday/p-*.jpg`; a table picture that came back with a turkey was
   thrown out (ask for the plant-based dish by name and say no bird or meat, or the model draws a turkey).
+  **Merged to `main` 2026-11-08** (aec8689, Sean: "merge it to main"); handoff `docs/handoff/2026-11-08-ve-holiday-guide-page-live.md`.
 
 ## The Vegans Explore app (LOCKED by Sean 2026-11-07, playbook `ve-mobile-app`, canon `canon-ve-mobile-app`)
 
