@@ -189,7 +189,7 @@ Deno.serve(async (req: Request) => {
       const { data: f } = await db.storage.from(BUCKET).list(r.code, { search: path.split('/')[1] });
       if (!f || !f.length) return json({ error: 'missing_audio', message: 'Your recording did not finish uploading. Try sending again.' }, 400);
       const secs = Math.round(Number(body.audio.seconds) || 0);
-      if (secs > r.voice_max_seconds + 10) return json({ error: 'too_long', message: `Recordings can be up to ${Math.round(r.voice_max_seconds / 60 * 10) / 10} minutes.` }, 400);
+      if (secs > r.voice_max_seconds + 10) return json({ error: 'too_long', message: `Recordings can be up to ${Math.floor(r.voice_max_seconds / 60)}:${String(r.voice_max_seconds % 60).padStart(2, '0')}. Record a shorter one.` }, 400);
       audio_path = path; audio_seconds = Math.max(0, secs);
     }
     if (!written && !audio_path) return json({ error: 'empty', message: 'Record your comment or write it out.' }, 400);

@@ -7080,6 +7080,20 @@ removed through `ve-once-app-checkin` (now 410). **V** is `.github/workflows/eas
 so it waits on Sean merging the app branch and adding its six secrets from Key Room.
 **Merged 2026-11-08** (Sean: "merge"): app main 2268abe carries the new app and the workflow (the branch had its own history, so main keeps Sapphire's history and its tree is the branch). V now waits only on the six Actions secrets.
 
+## Comment requests: by voice or in writing (Sean, 2026-11-08, playbook `ve-community-voices`)
+
+"Send out an email to them for a comment... the option to complete using a voice recording or writing it out. If they use the voice, we may use it
+in our article... ready so we can use it in the future as well for comments from our community on different items... a way to spotlight people
+and organizations in our listings." **`/comment/<code>`** (`comment.html`, parent `claim.html`, `noindex`): the ask, then Your comment (record in
+the browser up to the request's limit, or attach a voice memo, or write it), About you, Review and send (the release: we may quote it, play it and
+edit it for length in the Pulse, our shows, social and Directory pages; 18+), then Thank you with Claim <listing> and Join free. `?preview=1` is
+a sample. Edge function **`ve-comments`** (verify_jwt off; public `get`, `upload`, `submit`; team `list`, `create` (takes `listing_slug`),
+`update`, `get_admin`, `response_set`), tables `ve_comment_requests` and `ve_comment_responses`, private bucket `community-comments` (migration
+`20261108_comment_requests.sql`). One answer closes a request unless `multi` (anyone with the link). **Depot > Comments**
+(`/admin/depot/comments`, Content). First: `honest-cuban`, for Honest Cuban by VCC (formerly Vegan Cuban Cuisine, renamed in the Directory and
+led the South Florida Pulse on 2026-11-08). Handoff `docs/handoff/2026-11-08-ve-community-voices-honest-cuban.md`. Not built: a Guide voice
+on the page, an Inbox row for a new answer (it emails contact@lesaruss.com).
+
 ## Image conventions
 
 - Mobile hero images: stored in the same folder as the page's desktop banner.
