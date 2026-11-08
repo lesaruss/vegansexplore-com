@@ -7227,6 +7227,7 @@ on the page, an Inbox row for a new answer (it emails contact@lesaruss.com).
   footers. Both now require `instagram.com` as the host and skip Facebook's and Instagram's system paths (`TEMPLATE_HANDLES`). Deployed from
   2abef85 (ve-restaurant-audit v22, ve-discover, ve-logo-hunt v11; source sha256 matched). ve-discover's live copy had been behind main
   (no Google meter, max_tokens 4000, no Event Venues or Promoters); v23 brought it level.
+- **The rest of the Facebook review, 2026-11-08**: Sean found 4 by search (Coconutz, Darbster, Divine Leaf, Bar Bombón; replaced). The other 36 are hidden until confirmed (`social_removed.facebook.why` starts "Hidden until confirmed"); a Community Manager confirms them by search, queued in `ve-community-directory` with Honest Cuban's new handles. Handoff `docs/handoff/2026-11-08-ve-feedback-facebook-hidden-queued.md`.
 - **Checking a Facebook page from the server is not reliable**: logged out, Facebook answers a search-crawler request for a real page with
   its title and a missing one with the login wall, but after about 60 requests it sends everything to login. Apify's pages scraper says
   "not available" for real people whose profiles hide from logged-out visitors (Tabitha Brown, Isa Chandra). Never remove a Facebook link on
