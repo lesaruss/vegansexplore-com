@@ -99,3 +99,18 @@ story, and your ThanksLiving menu". Locked, draft until Sean approves in BrandDe
   removal are null. Use the contact@ row for `as_member`.
 - Test clicks on the Holiday Guide and menu links are real /go/ clicks (the comment link in a test goes straight to the page).
 - Sean sends it once he is happy with the Holiday Guide (playbook ve-holiday-guide); approval in BrandDesk, weekdays 9 to 5 ET.
+
+## Wrap (2026-11-08, 7:40 AM ET) and two Directory issues Sean found (playbook `ve-feedback`)
+- Honest Cuban campaign `honest-cuban-comment-2026-11`: draft, locked, test sent to srussell@. Sean sends it once he is happy with the
+  Holiday Guide (approve in BrandDesk > Vegans Explore > Outreach > Campaigns; weekdays 9 to 5 ET). Sean updated the listing's logo himself.
+- **"$2" on listings, diagnosed, not fixed**: the info bar shows `l.google_price_level || l.pricing_range` raw with a dollar-sign icon
+  (`directory/listing.html` ~line 4487). Google's price level is stored as a number (1, 2, 3), so level 2 (moderate, "$$") reads as "$ 2".
+  Approved listings: 29 at "2", 7 at "1", 6 at "3", 2 already "$$", 19 hand-entered ranges ("$10–20"...). Honest Cuban and Sen Saigon are "2".
+  Fix: map 1..4 to $..$$$$ in the page (and the Directory card if it shows it), and normalize the stored values; check whether the essentials
+  pass (`ve-restaurant-audit` `essentials`) writes the raw number and fix it there too.
+- **Instagram and Facebook buttons, not yet diagnosed**: Sean says Facebook opens the plain Facebook page and Instagram a broken page on many
+  listings. Stored values look valid (Honest Cuban: https://instagram.com/vegancubancuisine, https://www.facebook.com/vegancubancuisine;
+  approved: 894 bare handles, 163 full Instagram URLs, 642 Facebook URLs). Two builders exist: `ytSocial(...)` (~line 2209) and `normSocial`
+  (~line 2414; Facebook prefix is '' so a bare Facebook handle becomes a relative link). Check the rendered hrefs on a live listing, the sidebar
+  Follow icons, handles with spaces, trailing text or "instagram.com/x" without https, and whether Instagram's logged-out page is the "broken" one.
+  Then scan every listing and fix the data.
