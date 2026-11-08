@@ -181,14 +181,11 @@
   var VIDEO_CHAPTERS = ['Welcome, I\'m Theo', 'Why this Guide, and what it does for you', 'ThanksLiving', 'Holiday menus near you', 'Events',
     'Give back', 'For businesses', 'A living Guide: what is new, and share it'];
   function videoCard() {
-    var art = window.VEGuideArt ? VEGuideArt('theo', 'square') : '';
+    var art = '/public/guides/holiday/theo-thanksliving.jpg';
     return '<div class="hg-video"><div class="hg-vframe"' + (art ? ' style="background-image:url(\'' + esc(art) + '\')"' : '') + '>' +
+      '<div class="hg-vtitle"><div class="dg-k">Watch first</div><h3>How to use the Holiday Guide</h3><p>Theo, about a minute and a half</p></div>' +
       '<button type="button" class="hg-vplay" data-hg-video aria-label="Play the overview video"><svg width="30" height="30" viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg></button>' +
-      '<span class="hg-vbadge">Video in production</span></div>' +
-      '<div class="hg-vside"><div class="dg-k">Watch first</div><h3>How to use the Holiday Guide</h3>' +
-      '<p>Theo walks you through it in about two minutes. Until the video is ready, everything below works.</p>' +
-      '<ol class="hg-vch">' + VIDEO_CHAPTERS.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('') + '</ol>' +
-      '<button type="button" class="dg-btn dg-ghost" data-ve-share>Share this Guide</button></div></div>';
+      '<span class="hg-vbadge">Video in production</span><span class="hg-vnow" aria-live="polite"></span></div></div>';
   }
 
   // ---------- ThanksLiving ----------
@@ -454,6 +451,8 @@
     var n = PLAY.list[PLAY.at];
     aud.src = AUDIO_BASE + n + '-v1.mp3';
     bubble.textContent = CHAPTER_LINES[n - 1];
+    var now = document.querySelector('.hg-vnow');
+    if (now) now.textContent = curTab === 'overview' ? 'Chapter ' + n + ' of 8: ' + VIDEO_CHAPTERS[n - 1] : '';
     aud.play().then(function () { PLAY.playing = true; paintPlay(); }).catch(function () { PLAY.playing = false; paintPlay(); });
   }
   aud.addEventListener('ended', function () {
