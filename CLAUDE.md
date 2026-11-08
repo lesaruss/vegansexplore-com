@@ -2995,6 +2995,7 @@ read (8 listed, 106 set aside); **the listing-request queue**: `ve_listing_reque
 `ve-listing-requests`. Sean's own requests (Request a listing on his For you) go straight to work; everyone else's are drafted by the worker through `ve-listing-intake`
 (which now takes the cron secret) as quarantined `listing-request` listings, then show on Sean's For you with Publish, Send to vetting (Being vetted for a food place
 with Vegan options, else On hold for review), Remove; a place already listed is never drafted twice. Visitors: search's empty state, `/public/ve-listing-request.js`. **Merged to `main` 2026-11-08 (eb15f89).** Not proven: decide pressed as a signed-in super admin, the For you tiles in a browser.
+**Feedback feeds the queue (2026-11-08)**: a Feedback item of kind Something is missing on `/directory`, `/search`, `/dashboard/directory` or a chapter hub's Directory (`?tab=directory` or `?dir=`) also makes a `ve_listing_requests` row (source `feedback`, `feedback_id`; the message's first link or @handle is its link, else its words stand in for the name; inside the queue's `per_day`), and the feedback item's note says so. `ve-feedback` v4 from 50070fd (sha256 ac3e2ad8 matched), on branch `claude/festive-gauss-f54a8q`: **until it is on `main`, never deploy ve-feedback from main** (it would drop this). Proven live with [TEST] rows (a Directory page queued, the Events page not), removed.
 
 ## Events, the menu and the city banner (Sean, 2026-10-26)
 
