@@ -114,7 +114,7 @@
     },
     {
       "source": "/business",
-      "destination": "/passport"
+      "destination": "/business-guide"
     },
     {
       "source": "/sitemap.xml",
@@ -1352,7 +1352,7 @@
     },
     {
       "source": "/vegans-explore-mission-statement",
-      "destination": "/welcome",
+      "destination": "/passport",
       "permanent": false
     },
     {
@@ -1412,7 +1412,7 @@
     },
     {
       "source": "/about",
-      "destination": "/welcome",
+      "destination": "/passport",
       "permanent": false
     },
     {

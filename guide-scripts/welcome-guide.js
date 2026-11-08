@@ -1,0 +1,318 @@
+/* The Welcome Guide (playbook ve-explorer-path; proposal docs/proposals/explorer-welcome-guide.md, approved by Sean 2026-11-08).
+ * Built on the Holiday Guide's files (the template gate: guides/holiday-guide.html, guide-scripts/holiday-guide.js).
+ *
+ * It is our About us: the "about" section of a website, packaged as a mini website, and the free front door. The Overview
+ * is enough on its own (Sean: "by the time they go through it, they should know everything they need to know"); every
+ * section goes deeper and is optional. Liz hosts (approved 2026-11-08); the Guide for each area appears on its page.
+ * Every page ends on the Explorer card (/public/ve-explorer-card.js), the bridge from reading to joining.
+ *
+ *   #/              Overview: the tour (Liz's eight chapters, approved script v3), Start here, the sections as pills
+ *   #/directory     Search and the Directory        #/points    Points and levels
+ *   #/city          Your city                       #/paths     Your path and badges
+ *   #/events        Events                          #/better    Make it better
+ *   #/media         Media                           #/animals   For the animals
+ *   #/guides        Guides                          #/founder   Become a Founder (the survey; members: your first steps)
+ *
+ * Liz's lines are text until recorded (the video is in production), so Play stays hidden. Every claim on these pages is
+ * checked against what is live (CLAUDE.md); nothing promises an unbuilt feature.
+ */
+(function () {
+  var DEADLINE = Date.parse('2027-01-01T05:00:00Z');
+  var OPEN = Date.now() < DEADLINE;
+  var PIC = '/public/guides/';
+
+  // The Overview video's script, approved by Sean 2026-11-08 (v3). Each chapter is also its section's "Summarize this page".
+  var CHAPTERS = [
+    ['Welcome', 'Hi, I\'m Liz. Maybe you want to eat out without guessing, find your people, or do more for the animals than you are right now. Wherever you\'re starting from, this Guide is how you get there. You\'ll start out just looking around, and you\'ll finish knowing your city, your community, and exactly where you fit in. Let\'s go.'],
+    ['Why listen to us', 'Why listen to us? We\'ve spent more than ten years inside this community: activism, events, content, running businesses, and hundreds of long conversations about what people needed. Now we can finally build it, and we can\'t get it right without you.'],
+    ['Find your way', 'Search for anything and it shows up. The Directory has places to eat and shop, people, groups and nonprofits, city by city. Your city has its own Daily Pulse, its boards and its events. And our Guides each walk you through one topic.'],
+    ['Take part', 'Vote for the places you love. Your favorites tell us who to spotlight next. Check in when you visit and take on bounties to earn points. Spend them to open Guides and ask your Guide anything, or give them to the places and causes you care about.'],
+    ['Your path', 'Everyone starts as an Explorer. Run a restaurant, host events, make content or work with a nonprofit? Each one has its own path, its own Guide and its own badge.'],
+    ['Make it better', 'This is the part that matters most. Use it in your day to day, and tell us what\'s working, what isn\'t, and what you wish you could do. Every page has a Feedback button. Ask your Guide, or ask a person on our team. Search for something we don\'t have yet, and it goes to our team. We read all of it, and we build from it every day. We\'re real people, supported by technology that finally lets us carry out a vision we\'ve been working on since 2016.'],
+    ['For the animals', 'Here\'s where it\'s all going. With a network of businesses, people and nonprofits that actually show up, we can run campaigns that move the needle for the animals, the reason we\'re all here.'],
+    ['Become a Founder', 'Right now you\'re early, and that\'s rare. If you feel you know enough, take the survey and get started right away. It\'s a few quick questions, about two minutes, and you\'re in, free, with 250 points to use across the platform. Want to take your time? Each section of this Guide breaks down exactly how to use it today. Either way, join before midnight on January first and you\'re a Founding Member for good. Founders unlock some really cool things in 2027, and the only way to hear about them, and lock them in for yourself, is to join today.']
+  ];
+
+  // Liz's line on each tab (text drafts for the section pages; the Overview's is chapter 1). `lead` is the Guide for that area.
+  var TABS = [
+    { k: 'overview', label: 'Overview', say: CHAPTERS[0][1], sayMember: 'Welcome back. Everything is open to you now. Pick a section below whenever you want to go deeper.' },
+    { k: 'directory', label: 'Search and the Directory', pic: 'thumb-directory.jpg', lead: 'pascal', say: 'Everything starts with search. Here is how to find any place, person or group, and what your vote does.' },
+    { k: 'city', label: 'Your City', pic: 'thumb-community.jpg', lead: 'river', say: 'Every chapter has its own home. Here is how to keep up with yours, every morning.' },
+    { k: 'events', label: 'Events', pic: 'vegan-events-guide.jpg', lead: 'river', say: 'Find something to do this week, near you or anywhere.' },
+    { k: 'media', label: 'Media', pic: 'holiday/p-listen.jpg', lead: 'kai', say: 'Our shows and the community\'s favorites, playing right on the page.' },
+    { k: 'guides', label: 'Guides', pic: 'welcome-guide.jpg', lead: 'maya', say: 'Every Guide in one place. Some are free with a short survey, and the rest are yours with points.' },
+    { k: 'points', label: 'Points and Levels', pic: 'thumb-bounties.jpg', lead: 'theo', say: 'Here is how points work: how you earn them, what they are for, and how you level up.' },
+    { k: 'paths', label: 'Your Path and Badges', pic: 'thumb-passport.jpg', lead: 'kai', say: 'Everyone starts as an Explorer. If you run something, your path takes you further.' },
+    { k: 'better', label: 'Make It Better', pic: 'restaurant-guide/t-next.jpg', lead: 'liz', say: 'This is the part that matters most. Here is every way to tell us what is working and what is not.' },
+    { k: 'animals', label: 'For the Animals', pic: 'nonprofit-guide.jpg', lead: 'dani', say: 'Here is where it is all going, and how you can show up for the animals today.' },
+    { k: 'founder', label: 'Become a Founder', pic: 'welcome-ensemble.jpg', lead: 'liz', say: 'You are early. Answer a few quick questions and you are in.', sayMember: 'You are in. Here are your first steps.' }
+  ];
+  var LEADS = {
+    pascal: ['Pascal', 'our cook, making the Meat Alternatives and Meal Prep Guides'],
+    river: ['River', 'leads the Vegan Events and Stadium & Arena Guides'],
+    kai: ['Kai', 'leads the Creator Guide'],
+    maya: ['Maya', 'leads the Dairy and Pre-Vegan Business Guides'],
+    theo: ['Theo', 'leads the Nutrition and Holiday Guides'],
+    dani: ['Dani', 'leads the Nonprofit Guide'],
+    liz: ['Liz', 'your host, and the Vegan Restaurant Guide']
+  };
+  var GROUPS = [
+    { label: 'Find Your Way', line: 'Search, the Directory, your city, events, our shows and the Guides.', kids: ['directory', 'city', 'events', 'media', 'guides'] },
+    { label: 'Take Part', line: 'How points work, and the path that fits what you do.', kids: ['points', 'paths'] },
+    { label: 'Make It Better', line: 'Every way to tell us what is working, what is not, and what you wish you could do.', kids: ['better'] },
+    { label: 'For the Animals', line: 'The reason we are all here, and how to show up today.', kids: ['animals'] },
+    { label: 'Become a Founder', line: 'A few quick questions, free, with 250 points.' + (OPEN ? ' Founding Membership closes at midnight Eastern on January 1, 2027.' : ''), kids: ['founder'] }
+  ];
+  // Old addresses: the nine-tab Welcome (2026-11-03) and the four Founding Member pages (2026-11-01) land on the page that holds them now.
+  var OLD = { places: 'directory', community: 'city', supports: 'animals', bring: 'points', business: 'paths', join: 'founder', can: 'directory', now: 'founder' };
+
+  var main = document.getElementById('dgMain');
+  var menuEl = document.getElementById('dgMenu'), menuSel = document.getElementById('dgMenuSelect');
+  var bubble = document.getElementById('dgBubble'), tourEl = document.getElementById('dgTour'), tourM = document.getElementById('dgTourM');
+  var foldBtn = document.getElementById('dgFold'), railEl = document.getElementById('dgRail');
+  var params = new URLSearchParams(location.search);
+  var from = params.get('from') || '';
+  var back = params.get('back') || '';
+  if (!/^\/(?!\/)/.test(back)) back = '';
+  var curTab = 'overview';
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function auth() { return window.VEAuth || null; }
+  function me() { var a = auth(); return a && a.isLoggedIn && a.isLoggedIn() ? a.getMember() : null; }
+  function member() { var m = me(); return !!(m && m.membership_status === 'active'); }
+  function tab(k) { for (var i = 0; i < TABS.length; i++) if (TABS[i].k === k) return TABS[i]; return TABS[0]; }
+  function href(k) { return '#/' + (k === 'overview' ? '' : k); }
+  function pic(p) { return PIC + p; }
+  function art(slug) { return window.VEGuideArt ? VEGuideArt(slug, 'square') : ''; }
+  function head(k, h, lede) {
+    return '<div class="dg-head"><div><div class="dg-k">' + esc(k) + '</div><h2 class="dg-h1">' + esc(h) + '</h2></div></div>' + (lede ? '<p class="dg-lede">' + lede + '</p>' : '');
+  }
+  function crumb(label) { return '<div class="dg-crumb"><a href="#/">Welcome Guide</a> &rsaquo; ' + esc(label) + '</div>'; }
+  function lead(k) {
+    var t = tab(k), l = LEADS[t.lead]; if (!l) return '';
+    return '<div class="wg-lead"><span class="wg-lead-pic" style="background-image:url(\'' + esc(art(t.lead)) + '\')"></span><span><b>' + esc(l[0]) + '</b>, ' + esc(l[1]) + '</span></div>';
+  }
+  // A section page: what it is, how to use it today, what members get, and links.
+  function section(k, kicker, lede, what, how, members, links) {
+    return crumb(tab(k).label) + head(kicker, tab(k).label, lede) + lead(k) +
+      '<div class="wg-cols"><div class="wg-box"><h3>What It Is</h3><p>' + what + '</p></div>' +
+      '<div class="wg-box"><h3>How to Use It Today</h3><ol class="wg-steps">' + how.map(function (s) { return '<li>' + s + '</li>'; }).join('') + '</ol></div>' +
+      '<div class="wg-box wg-mem"><h3>What Members Get</h3><ul class="wg-list">' + members.map(function (s) { return '<li>' + s + '</li>'; }).join('') + '</ul></div></div>' +
+      (links && links.length ? '<div class="dg-btns" style="margin:16px 0 0">' + links.map(function (x, i) { return '<a class="dg-btn' + (i ? ' dg-ghost' : '') + '" href="' + x[1] + '">' + esc(x[0]) + '</a>'; }).join('') + '</div>' : '');
+  }
+  function explorerCard() {
+    return window.VEExplorerCard ? VEExplorerCard.html({ back: '/passport#/founder', member: member(), next: { label: 'See your first steps', href: '#/founder' } }) : '';
+  }
+
+  // A members-only prompt (vote, save, check in...) lands on the Overview with its note (Sean, 2026-11-01), and an old link says it moved.
+  function gateNote() {
+    var w = { vote: ['Voting is for members.', 'vote every day for the places you love'], save: ['Saving is for members.', 'keep the places you love in My Saves'],
+      checkin: ['Check-ins are for members.', 'earn 10 points every time you visit a place'], give: ['Giving points is for members.', 'give your points to the places you love'],
+      tickets: ['This is a members-only event.', 'we take you straight to the tickets'], board: ['Posting and comments are for members.', 'join the conversation on the Daily Pulse in every city'] }[from];
+    if (from === 'old-link' && !w) return '<p class="dg-note"><b>That page has moved.</b> Vegans Explore has a new home, and this is the best place to start.</p>';
+    if (!w || member()) return '';
+    return '<p class="dg-note"><b>' + w[0] + '</b> Join free with a short survey, and ' + w[1] + '. <a href="#/founder" style="color:var(--g);font-weight:800">See how</a>.' + (me() ? '' : ' Already a member? <a href="#" data-signin style="color:var(--g);font-weight:800">Sign in</a> and you go right back.') + '</p>';
+  }
+
+  // ---------- views ----------
+  function countdown() {
+    if (!OPEN) return '';
+    return '<div class="wg-cd" id="wgCd" role="timer"><div class="wg-cd-l">Founding Membership closes in</div><div class="wg-cd-r">' +
+      ['Days', 'Hours', 'Min', 'Sec'].map(function (u, n) { return '<div><b data-cd="' + n + '">--</b><span>' + u + '</span></div>'; }).join('') + '</div></div>';
+  }
+  function tickCd() {
+    var el = document.getElementById('wgCd'); if (!el) return;
+    var ms = DEADLINE - Date.now(); if (ms <= 0) { el.hidden = true; return; }
+    var s = Math.floor(ms / 1000), v = [Math.floor(s / 86400), Math.floor(s % 86400 / 3600), Math.floor(s % 3600 / 60), s % 60];
+    el.querySelectorAll('[data-cd]').forEach(function (b) { var n = +b.getAttribute('data-cd'); b.textContent = n ? String(v[n]).padStart(2, '0') : v[n]; });
+  }
+  setInterval(tickCd, 1000);
+
+  function tourCard() {
+    return '<div class="wg-tour"><div class="wg-tour-h"><div><div class="dg-k">Watch first</div><h3>Welcome to Vegans Explore</h3><p>Liz, about three minutes. The video is in production: read the tour below in the meantime.</p></div>' +
+      '<span class="hg-vbadge" style="position:static">Video in production</span></div>' +
+      '<details class="wg-chs"><summary>Read the tour: ' + CHAPTERS.map(function (c) { return esc(c[0]); }).join(' &middot; ') + '</summary><ol>' +
+      CHAPTERS.map(function (c) { return '<li><b>' + esc(c[0]) + '.</b> ' + esc(c[1]) + '</li>'; }).join('') + '</ol></details></div>';
+  }
+  function groupRows() {
+    return GROUPS.map(function (g) {
+      return '<section class="rg-grow"><h3>' + esc(g.label) + '</h3><p>' + esc(g.line) + '</p><div class="rg-pills">' + g.kids.map(function (k) {
+        return '<a class="rg-pill" href="' + href(k) + '"><span class="rg-pill-pic"><img src="' + pic(tab(k).pic) + '" alt="" loading="lazy" width="60" height="60"></span><span>' + esc(tab(k).label) + '</span></a>';
+      }).join('') + '</div></section>';
+    }).join('');
+  }
+  function viewOverview() {
+    var start = window.VEGuideIntro ? VEGuideIntro.html({
+      place: 'This Guide is for anyone who wants to eat out without guessing, find their people, or do more for the animals, whether you are Vegan, getting there, or just curious.',
+      why: ['Vegans Explore comes from more than ten years inside this community, and it is built with the people who use it.', 'You get the places, the people and the causes in one spot, city by city, and a say in what comes next.'],
+      change: 'you will know your city, your community, where to find anything, how to ask a question, and exactly where you fit in.',
+      how: member() ? 'pick a section below whenever you want to go deeper. Each one shows how to use it today.' : 'read the tour, then take the survey whenever you feel ready. Want more first? Each section below goes deeper, and none of them are required.',
+      pic: pic('welcome-ensemble.jpg') }) : '';
+    main.innerHTML = gateNote() + head('Free for everyone', member() ? 'Welcome Back to Vegans Explore' : 'Welcome to Vegans Explore', '') + start +
+      (member() ? '' : '<div class="dg-start" style="margin:18px 0 6px"><a class="dg-btn" href="#/founder">Become a Founder, free</a><p>About two minutes, with 250 points.' + (OPEN ? ' Founding Membership closes at midnight Eastern on January 1, 2027.' : '') + '</p></div>') +
+      '<div style="margin-top:18px">' + tourCard() + '</div>' + groupRows();
+  }
+
+  var VIEWS = {
+    directory: function () {
+      return section('directory', 'Find your way', 'One search box finds anything, and the Directory is every place, person and group we know, city by city.',
+        'The search box at the top of every page finds a place, a kind of food, a person or an answer: try &ldquo;Vegan restaurants in Atlanta&rdquo;. The Directory holds local food, products, services, media, community groups, nonprofits and people, and every list sorts by member votes.',
+        ['Type what you want in the search box at the top of any page, or open the Directory.', 'Pick your chapter and a section, then narrow it with Filters.', 'Open a listing for its hours, menu, links and directions.', 'Tap Share to send any view, just as you see it, to a friend.'],
+        ['<b>Vote</b> for each place you love, once every 24 hours. Votes decide what rises to the top and who we spotlight next.', '<b>Save</b> places to find them again in My Saves.', '<b>Check in</b> when you visit, for 10 points a visit.', '<b>Being vetted</b>: see the places waiting on member votes.'],
+        [['Open the Directory', '/directory']]) + explorerCard();
+    },
+    city: function () {
+      return section('city', 'Find your way', 'Every chapter, from South Florida to London, has its own home.',
+        'Your chapter\'s hub brings your city together: its Daily Pulse (a short briefing every morning with the local and national news that matters), the boards (Jobs, Classifieds, Fosters, Rescues and Suggest a Topic), its events and its most voted places.',
+        ['Pick your city on the Communities page.', 'Read today\'s Daily Pulse.', 'Browse the boards for jobs, things for sale, fosters and rescues.', 'Got a tip for your city? Suggest a topic.'],
+        ['<b>Comment</b> on the Daily Pulse and <b>post</b> on the boards.', '<b>Join any chapter</b> by saving it, wherever you are.', '<b>Vote</b> for your chapter.'],
+        [['Find your city', '/communities'], ['Open the Daily Pulse', '/pulse']]) + explorerCard();
+    },
+    events: function () {
+      return section('events', 'Find your way', 'Vegan events in your city and around the world.',
+        'Festivals, potlucks, meetups, sanctuary days and more, in our chapters and beyond. Our team checks every event before it shows.',
+        ['Open Events and pick a place: a continent, a country or a chapter.', 'Choose the kinds of events you want.', 'Open an event for the details and its official page.', 'Hosting one? Submit it, from a flyer, a link, or typed in.'],
+        ['<b>RSVP</b> with I\'m going.', '<b>Members-only tickets</b> for some events, like our group link for the Plant-Based Showcase.', '<b>Submit an event</b> and follow it from waiting to live.'],
+        [['See events', '/events']]) + explorerCard();
+    },
+    media: function () {
+      return section('media', 'Find your way', 'Our shows, and the podcasts, documentaries and books the community votes to the top.',
+        'Media holds our own shows, like the Vegans Explore Podcast, and the top 12 podcasts, documentaries and books, as voted by members. You listen right on the page.',
+        ['Open Media and pick Podcasts, Documentaries or Books.', 'Press Play on any episode; it keeps playing while you look around.', 'Open a show to see every episode.'],
+        ['<b>Vote</b> for the shows, films and books you love.', '<b>Save</b> episodes to My Saves.'],
+        [['Open Media', '/media']]) + explorerCard();
+    },
+    guides: function () {
+      return section('guides', 'Find your way', 'A Guide is a mini website about one topic, walked through by one of our Guides. This one is the first.',
+        'Every Guide in one place, sorted by what you are interested in: food and cooking, health and nutrition, travel, game day, business, the animals and more. Guides for your work, like the Vegan Restaurant Guide and the Vegan Events Guide, are free with a short survey. Topic Guides, like the Vegan Dairy Guide, are $11 or 1,100 points, yours to keep.',
+        ['Open Guides and pick an interest.', 'Open any Guide: every one has a free part to try.', 'Follow its Guide tab by tab, or jump to what you need.'],
+        ['<b>Open a topic Guide</b> with your points or $11.', '<b>Talk to the Guide</b> on its page: saved answers are free, and asking directly is 4 points a message.', '<b>Free work Guides</b>, each opened by its own short survey.'],
+        [['See every Guide', '/guides']]) + explorerCard();
+    },
+    points: function () {
+      return section('points', 'Take part', 'Points come from taking part, never from buying them.',
+        'You earn points by doing things on Vegans Explore, spend them on what you want, and give them to the places and causes you care about. Your level comes from everything you have ever earned, so spending never lowers it.',
+        ['<b>Earn</b>: 250 for the survey, 10 for each check-in, bounties, 111 when a friend joins with your link, and more for each answer in your profile.', '<b>Use</b>: open a topic Guide (1,100), ask your Guide directly (4 a message), or bid on gift cards in the Vault where it is open (South Florida first).', '<b>Give</b>: boost a business or nonprofit you believe in from its page.', '<b>Level up</b>: Level 2 at 2,500 lifetime points, Level 3 at 10,000, Level 4 at 25,000.'],
+        ['<b>250 points</b> the day you join.', '<b>Your own link</b> to share: Share on any page adds it for you.', '<b>Bounties</b> in your city, paid in points.'],
+        [['See bounties', '/bounties']]) + explorerCard();
+    },
+    paths: function () {
+      var P = [
+        ['Restaurant', 'Vegan Restaurant Guide', 'liz', '/guides/vegan-restaurant-guide', 'You feed the movement. Get your free check, claim your page and get found.'],
+        ['Event host', 'Vegan Events Guide', 'river', '/guides/vegan-events-guide', 'You bring people together. Plan it, fill it and run it, with us behind you.'],
+        ['Creator', 'Creator Guide', 'kai', '/guides/creator-guide', 'You tell the stories. Get seen, get booked and work with Vegan brands.'],
+        ['Nonprofit', 'Nonprofit Guide', 'dani', '/guides/nonprofit-guide', 'You stand up for the animals. Get found, get help and share the load.'],
+        ['Business', 'Pre-Vegan Business Guide', 'maya', '/guides/pre-vegan-business-guide', 'You are adding plant-based options. Learn what to serve, where to buy it and how to say it.']
+      ];
+      return crumb(tab('paths').label) + head('Take part', tab('paths').label, 'Everyone starts as an Explorer: that is the badge the survey gives you. If you run something, your path takes you further, with its own Guide, its own short survey and its own badge. Take as many as fit.') + lead('paths') +
+        '<div class="wg-paths">' + P.map(function (p) {
+          return '<a class="wg-path" href="' + p[3] + '"><span class="wg-path-pic" style="background-image:url(\'' + esc(art(p[2])) + '\')"></span><span><span class="dg-k">' + esc(p[0]) + '</span><b>' + esc(p[1]) + '</b><small>' + esc(p[4]) + '</small><em>Free with its survey</em></span></a>';
+        }).join('') + '</div>' +
+        '<p class="dg-lede" style="margin-top:14px">Run a group or community? That path is on its way. Ambassadors are invited by our team.</p>' + explorerCard();
+    },
+    better: function () {
+      return crumb(tab('better').label) + head('Make it better', tab('better').label, 'Use Vegans Explore in your day to day, and tell us what is working, what is not, and what you wish you could do. We read all of it, and we build from it every day.') + lead('better') +
+        '<div class="wg-ways">' + [
+          ['The Feedback button', 'It is on every page, in the top bar (a small tab at the bottom right on phones). It starts with the page you are on: something broken, out of date, confusing or missing, or an idea.'],
+          ['Talk to your Guide', 'On a Guide\'s page, ask it anything. Saved answers are free; asking directly is 4 points a message.'],
+          ['Ask a person', 'Not sure, or the Guide did not know? Members can ask a person on our team, free, and we write back.'],
+          ['Search for what is missing', 'Search for something we do not have yet, and it goes into our team\'s queue. We work it every day, and it tells us what to add next.'],
+          ['Tell us a place to add', 'Know a place, a person or a group we should list? Tell us from search or in your survey, and we check it.'],
+          ['Suggest a topic', 'Every city\'s board has Suggest a Topic, with hot tips for the Daily Pulse.']
+        ].map(function (w) { return '<div class="wg-box"><h3>' + esc(w[0]) + '</h3><p>' + esc(w[1]) + '</p></div>'; }).join('') + '</div>' +
+        '<p class="dg-lede" style="margin-top:14px">Your votes count too: if a place gets a lot of votes, we may reach out to spotlight it. We are real people, supported by technology that finally lets us carry out a vision we have been working on since 2016.</p>' +
+        '<div class="dg-btns"><button type="button" class="dg-btn" data-ve-feedback>Send feedback now</button></div>' + explorerCard();
+    },
+    animals: function () {
+      return section('animals', 'The reason we are all here', 'With a network of businesses, people and nonprofits that actually show up, we can run campaigns that move the needle for the animals.',
+        'The Directory\'s Community section lists nonprofits, rescues and sanctuaries in every chapter. Every city has Fosters and Rescues boards. The campaigns we run together for the animals are what all of this is building toward.',
+        ['Open the Directory\'s Community section and find the groups near you.', 'Check your city\'s Fosters and Rescues boards.', 'Go to a sanctuary day or a fundraiser from Events.'],
+        ['<b>Give your points</b> to a nonprofit, rescue or sanctuary from its page.', '<b>Post</b> on the Fosters and Rescues boards.', '<b>Be first to hear</b> about the campaigns we run together.'],
+        [['Find nonprofits and rescues', '/directory?tab=community']]) + explorerCard();
+    },
+    founder: function () {
+      if (member()) {
+        var m = me() || {};
+        return crumb(tab('founder').label) + head('You are in', m.founding_member ? 'Welcome, Founding Member' : 'Welcome, Explorer', 'You are a member. Here is what to do first.') +
+          '<div class="wg-ways">' + [
+            ['1. Vote for three places you love', 'Open the Directory, find three places, and vote. Come back tomorrow and vote again.', '/directory'],
+            ['2. Check in this week', 'Visiting a Vegan place? Tap Check in on its page for 10 points.', '/directory'],
+            ['3. Tell us one thing', 'Something working, missing or confusing? Send it with the Feedback button. We read every one.', '']
+          ].map(function (w) { return '<div class="wg-box"><h3>' + esc(w[0]) + '</h3><p>' + esc(w[1]) + '</p>' + (w[2] ? '<a href="' + w[2] + '">Open it</a>' : '<button type="button" class="dg-link" data-ve-feedback>Send feedback</button>') + '</div>'; }).join('') + '</div>' +
+          '<h3 class="hg-sh">Your Path</h3><p class="dg-lede">Run a restaurant, host events, make content or work with a nonprofit? <a href="#/paths" style="color:var(--g);font-weight:800">Pick your path</a>, each free with its own survey.</p>' +
+          '<h3 class="hg-sh">Where to Ask</h3><p class="dg-lede">Talk to the Guide on any Guide\'s page, ask a person on our team, or use the Feedback button on every page.</p>' +
+          '<div class="dg-btns"><a class="dg-btn" href="' + esc(back || '/dashboard') + '">' + (back ? 'Go back' : 'Open your dashboard') + '</a></div>';
+      }
+      return crumb(tab('founder').label) + head('Become a Founder', 'You Are Early, and That Is Rare', 'A few quick questions, about two minutes, and you are in, free, with 250 points to use across the platform.' + (OPEN ? ' Join before midnight Eastern on January 1, 2027 and you are a Founding Member for good. Founders unlock some really cool things in 2027, and the only way to hear about them, and lock them in for yourself, is to join today.' : '')) +
+        countdown() + explorerCard() +
+        '<p class="dg-lede" style="margin-top:14px">Want to take your time? Every section of this Guide breaks down exactly how to use it today. <a href="#/" style="color:var(--g);font-weight:800">Back to the Overview</a>.</p>';
+    }
+  };
+
+  // ---------- menu and Liz ----------
+  function drawMenu(cur) {
+    menuEl.innerHTML = TABS.map(function (t) { return '<a href="' + href(t.k) + '"' + (t.k === 'founder' ? ' class="dg-join-tab"' : '') + (t.k === cur ? ' aria-current="page"' : '') + '>' + esc(t.k === 'directory' ? 'Directory' : t.k === 'paths' ? 'Your Path' : t.label) + '</a>'; }).join('');
+    menuSel.innerHTML = TABS.map(function (t) { return '<option value="' + t.k + '"' + (t.k === cur ? ' selected' : '') + '>' + esc(t.label) + '</option>'; }).join('');
+  }
+  menuSel.addEventListener('change', function () { location.hash = href(menuSel.value); });
+  function setFold(folded) {
+    railEl.classList.toggle('dg-folded', folded);
+    foldBtn.textContent = folded ? 'Show Liz' : 'Hide Liz'; foldBtn.setAttribute('aria-expanded', String(!folded));
+    try { sessionStorage.setItem('wg_liz_folded', folded ? '1' : ''); } catch (e) {}
+  }
+  foldBtn.addEventListener('click', function () { setFold(!railEl.classList.contains('dg-folded')); });
+  try { if (sessionStorage.getItem('wg_liz_folded')) setFold(true); } catch (e) {}
+  function drawLiz() {
+    var t = tab(curTab), i = TABS.indexOf(t);
+    bubble.textContent = member() && t.sayMember ? t.sayMember : t.say;
+    var box = document.getElementById('dgMaya'), a = art('liz');
+    if (a && box.getAttribute('data-art') !== a) { box.style.backgroundImage = "url('" + a + "')"; box.setAttribute('data-art', a); }
+    tourEl.innerHTML = tourM.innerHTML = '<a class="dg-tnav" href="' + href(TABS[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Back</a><span>' + (i + 1) + ' of ' + TABS.length + '</span>' +
+      '<a class="dg-tnav next" href="' + href(TABS[Math.min(TABS.length - 1, i + 1)].k) + '"' + (i < TABS.length - 1 ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Next</a>';
+  }
+  tourM.addEventListener('click', function (e) { if (e.target.closest('.dg-tnav')) setTimeout(function () { railEl.scrollIntoView({ block: 'start' }); }, 0); });
+  function drawJoinbox() {
+    var btn = document.querySelector('[data-wg-join]'), jin = document.getElementById('wgJbIn');
+    if (member()) { btn.textContent = 'Your dashboard'; jin.innerHTML = 'You\'re<br>a member'; }
+    else { btn.textContent = 'Become a Founder'; jin.innerHTML = me() ? 'One step<br>left' : 'Member?<br><a href="#" data-signin>Sign in</a>'; }
+  }
+
+  function route() {
+    var k = (location.hash || '').replace(/^#\/?/, '').split('/')[0] || 'overview';
+    if (OLD[k]) { k = OLD[k]; history.replaceState(null, '', location.pathname + location.search + href(k)); }
+    // A members-only prompt that pointed at the join step opens the Overview with its note.
+    if (k === 'founder' && from && from !== 'old-link' && !member() && !/#\/founder/.test(location.hash)) k = 'overview';
+    if (k !== 'overview' && !VIEWS[k]) k = 'overview';
+    document.body.classList.toggle('dg-member', member());
+    drawJoinbox(); drawMenu(k);
+    curTab = k;
+    if (k === 'overview') viewOverview(); else main.innerHTML = VIEWS[k]();
+    if (window.VEExplorerCard) VEExplorerCard.wire(main);
+    tickCd(); drawLiz();
+    main.scrollTop = 0; if (!document.documentElement.classList.contains('dg-fit') || window.innerWidth <= 900) window.scrollTo(0, 0);
+  }
+  window.addEventListener('hashchange', route);
+
+  document.addEventListener('click', function (e) {
+    var a = auth();
+    if (e.target.closest('[data-signin]')) {
+      e.preventDefault(); if (!a) return;
+      a.showAuthModal('Sign in to Vegans Explore.', function () { if (back) location.href = back; else location.reload(); }, 'login');
+      return;
+    }
+    if (e.target.closest('[data-wg-join]')) {
+      if (member()) { location.href = back || '/dashboard'; return; }
+      location.hash = '#/founder';
+      return;
+    }
+    if (e.target.closest('[data-ve-feedback]') && window.VEFeedback && VEFeedback.open) { e.preventDefault(); VEFeedback.open(); }
+  });
+
+  function init() {
+    document.documentElement.classList.add('dg-fit');
+    var box = document.getElementById('dgMaya'), a = art('liz');
+    if (a) box.style.backgroundImage = "url('" + a + "')";
+    route();
+  }
+  if (window.VEAuth) init(); else window.addEventListener('load', init);
+})();

@@ -32,7 +32,7 @@
         '<img class="footer-logo" src="/public/logo-ve-landscape-v1-inverted.svg" alt="Vegans Explore">' +
       '</a>' +
       '<nav class="footer-links" aria-label="Footer navigation">' +
-        '<a href="/welcome">ABOUT</a>' +
+        '<a href="/passport">ABOUT</a>' +
         '<a href="/passport">JOIN US</a>' +
         '<a href="/policies">POLICIES</a>' +
         '<a href="/contact">CONTACT</a>' +
