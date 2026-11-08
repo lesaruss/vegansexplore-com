@@ -126,7 +126,7 @@
                 (p.tags.length ? '<div class="tagrow">' + p.tags.map(chip).join('') + '</div>' : '') +
                 '<div class="meta">' + p.sent + ' sent of ' + p.messages + (p.last ? ' &middot; last ' + esc(day(p.last)) : '') + (p.campaigns.length ? ' &middot; ' + esc(p.campaigns.slice(0, 2).join(', ')) : '') + '</div>' +
                 '<div class="acts"><a class="btn" href="#person/' + encodeURIComponent(p.key) + '">Open</a></div></div></div>';
-            }).join('') + '</div>' : '<p class="sub">' + (r.tag || $('q').value ? 'Nobody matches.' : 'Nobody yet. A person appears here once we write to them in Depot > Outreach or give them a tag.') + '</p>';
+            }).join('') + '</div>' : '<p class="sub">' + (r.tag || $('q').value ? 'Nobody matches.' : 'Nobody yet. A person appears here once we write to them through BrandDesk Outreach or give them a tag.') + '</p>';
           });
         }
         $('q').oninput = function () { clearTimeout(t); t = setTimeout(load, 250); };

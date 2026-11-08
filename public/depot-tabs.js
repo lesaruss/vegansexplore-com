@@ -40,7 +40,7 @@
     { k: 'ideas', label: 'Ideas', line: 'Every idea you drop in, and feedback from the site' },
     { k: 'demos', label: 'Demos', line: 'The sample restaurant, sample group, Gig Board, Campaign Engine, pitch decks' },
     { k: 'branddesk', label: 'BrandDesk', line: 'Social, outreach campaigns and send days, playbooks, the podcast, Insights. Opens in HQ.' },
-    { k: 'moving', label: 'Moving to BrandDesk', line: 'People, personal outreach, partners and invites, members, Analytics. Here until BrandDesk does all of it.' }
+    { k: 'moving', label: 'Moving to BrandDesk', line: 'People, partners and invites, members, Analytics. Here until BrandDesk does all of it.' }
   ];
   var TABS = [
     { group: 'Directory', href: '/admin/depot/directory-review', label: 'Directory review' },
@@ -100,7 +100,6 @@
     { group: 'BrandDesk', href: 'https://hq.lesaruss.ai/branddesk/brands/vegans-explore?view=podcast', label: 'Podcast', kind: 'hq' },
     { group: 'BrandDesk', href: 'https://hq.lesaruss.ai/branddesk/brands/vegans-explore?view=insights', label: 'Insights', kind: 'hq' },
     { group: 'Moving to BrandDesk', href: '/admin/depot/people', label: 'People' },
-    { group: 'Moving to BrandDesk', href: '/admin/depot/outreach', label: 'Outreach' },
     { group: 'Moving to BrandDesk', href: '/admin/depot/ambassadors', label: 'Ambassadors' },
     { group: 'Moving to BrandDesk', href: '/admin/depot/founding', label: 'Founding Members' },
     { group: 'Moving to BrandDesk', href: '/admin/depot/nonprofit-partners', label: 'Nonprofit Partners' },

@@ -228,6 +228,7 @@ this list follows the rule above. A new exception goes on this list first.
   everything in `ads/` (Sean, 2026-10-04).
 - **The podcast frame**, a render target for the show's pictures, not a page: `business/podcast-frame.html` (`?kind=episode|youtube|
   story|carousel`, from the podcast's brand kit; 2026-10-31).
+- **Depot > Outreach**, `admin/depot/outreach.html`, removed 2026-11-08: a redirect stub to BrandDesk Outreach campaigns.
 - **The offline page**, `offline.html`, shown by the service worker (`/sw.js`) when there is no connection, so it cannot count on
   nav.js or the footer loading; it is self-contained (2026-11-07, playbook `ve-mobile-app`).
 - **BrandDesk client websites** (the frame), the client's own site, not a Vegans Explore page: `business/site.html`
@@ -6626,6 +6627,13 @@ refused with `not_skipped` for anything not skipped): the row goes, its notes an
 from it keeps its own slot. Proven 2026-11-01 on a [TEST] slot (refused while waiting, skipped, deleted, its history gone).
 
 ## Depot > Outreach: everyone to reach each day (Sean, 2026-11-01, playbook `ve-outreach-buckets`)
+
+**REMOVED 2026-11-08 (Sean: "This is the third time we've done this. I don't want to use the depot outreach. We need to remove that as an
+option so that way we never do this again").** Never write, queue or send an email through Depot > Outreach or `ve_people_outreach`,
+including one-to-one notes Sean dictates in chat. **Every email goes through BrandDesk > Vegans Explore > Outreach campaigns in HQ**
+(`ve_outreach_campaigns`, sent by `ve-outreach` `campaignTick`, each member its own tracked link). `/admin/depot/outreach` is a redirect stub
+to BrandDesk, it left the Go to menu, and the sender cron `ve-people-outreach` is unscheduled; 78 drafts stay in the table, unsent. The
+table is kept for history (Depot > People reads its notes). The text below is history.
 
 "Each day... see all the people I need to communicate with in all the different ways... when I click on it, it tells me exactly what
 to do. It gives me the language. If it's an email... I approve it. It puts it on a schedule to go out... I have up until when it goes
