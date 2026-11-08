@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Green Leaf Kitchen tour — Vegans Explore</title>
+  <meta name="robots" content="noindex">
+  <meta name="description" content="Liz walks you through Green Leaf Kitchen, our sample restaurant website on the BrandDesk frame.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <!--
+    ve-demo-showroom: the Green Leaf Kitchen tour (Sean, 2026-11-08: "build the tour page"). Template: /partners with /public/ve-guided.js,
+    on the white stage. Each slide is one stop in docs/proposals/green-leaf-tour-script.md: Liz's line (recorded, checked with stt), and the real
+    sample site in a phone frame, opened on that part (STOPS: the address, the state it needs, what to scroll to), stamped Sample. Nothing plays
+    until Play; after that each slide plays its line until Pause. A line's text here must match its recording; change one and record -v2.
+  -->
+  <style>
+    body{margin:0;font-family:"Montserrat",sans-serif;background:#fff;}
+    .gt-wrap{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:48px;align-items:start;max-width:1180px;}
+    .gt-liz{display:flex;gap:16px;align-items:center;margin:4px 0 18px;}
+    .gt-liz img{width:84px;height:84px;border-radius:12px;object-fit:cover;object-position:top;background:#E8F5E9;flex:0 0 auto;}
+    .gt-liz b{display:block;font-size:15px;color:#1a1a1a;}
+    .gt-liz span{font-size:13px;color:#555;}
+    .gt-play{display:inline-flex;align-items:center;gap:8px;margin-top:8px;min-height:40px;padding:8px 16px;border-radius:6px;border:1.5px solid #2D5C27;background:#2D5C27;color:#fff;font:inherit;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;}
+    .gt-play.on{background:#fff;color:#2D5C27;}
+    .gt-play svg{width:14px;height:14px;fill:currentColor;}
+    .gt-say{font-size:17px;line-height:1.65;color:#1a1a1a;max-width:640px;margin:0 0 16px;}
+    .gt-shows{font-size:13px;color:#555;margin:0 0 14px;}
+    .gt-shows b{color:#2D5C27;}
+    .gt-phone{position:relative;margin-top:14px;overflow:visible !important;width:390px;max-width:100%;height:min(720px,calc(100vh - 280px));min-height:440px;border:10px solid #1a1a1a;border-radius:34px;background:#fff;box-shadow:0 18px 40px rgba(0,0,0,.12);}
+    .gt-phone iframe{width:100%;height:100%;border:0;display:block;border-radius:24px;}
+    .gt-stamp{position:absolute;top:-21px;left:50%;transform:translateX(-50%);z-index:3;padding:4px 10px;border-radius:6px;background:#F69820;color:#1a1a1a;font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;pointer-events:none;box-shadow:0 2px 6px rgba(0,0,0,.2);}
+    .gt-load{position:absolute;inset:0;border-radius:24px;display:flex;align-items:center;justify-content:center;background:#fff;color:#555;font-size:13px;z-index:2;}
+    .gt-end{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;}
+    .gt-fine{font-size:13px;color:#555;margin-top:18px;max-width:640px;}
+    @media (max-width:900px){
+      .gt-wrap{grid-template-columns:minmax(0,1fr);gap:20px;}
+      .gt-phone{width:100%;height:70vh;border-width:8px;border-radius:26px;}
+      .gt-say{font-size:16px;}
+    }
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script src="/public/nav.js"></script>
+
+  <main class="vg-stage vg-light" aria-label="Green Leaf Kitchen tour" id="gtStage"></main>
+
+  <script src="/public/footer.js"></script>
+  </div>
+
+  <script>
+  (function () {
+    var AUDIO = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/green-leaf-tour/';
+    var SITE = '/business/sample/site';
+    // One stop per slide. state: who is signed in (null, 'member', 'owner'), the look, how ordering works. at: what to scroll to inside the site.
+    var STOPS = [
+      { id: 'start', t: 'Start', h: 'Meet Green Leaf Kitchen', file: 'tour-1-v1.mp3', hash: '#/', state: { who: null },
+        say: "Hi, I'm Liz. This is Green Leaf Kitchen. It's not a real restaurant. It's our sample, built to show you what a Vegan restaurant's website can look like when we build it with you. Tap around as we go. Nothing you do here is saved.",
+        shows: 'The home page' },
+      { id: 'home', t: 'The home page', h: 'Open, good, ordered', file: 'tour-2-v1.mp3', hash: '#/', at: '#favRail', state: { who: null },
+        say: "The first screen answers what people want to know: are you open, what's good, and how do I order. The favorites row is ranked by what members vote for, so it stays current on its own.",
+        shows: 'What people come back for, ranked by votes' },
+      { id: 'story', t: 'Story and space', h: 'The people behind it', file: 'tour-3-v1.mp3', hash: '#/', at: '.s.dark', state: { who: null },
+        say: 'People choose a restaurant for the people behind it. Your story plays right on the page, and your space shows by day, at night, inside, and with your team.',
+        shows: 'Our story and The space' },
+      { id: 'menu', t: 'The menu', h: 'Every dish, its own page', file: 'tour-4-v1.mp3', hash: '#/menu/1-1', state: { who: null },
+        say: "Every dish has its own page. Allergens, a nutrition estimate, and what's in it, with where each ingredient comes from. When it's a brand in our Directory, it links to that brand's page.",
+        shows: 'The Jerk Jackfruit Bowl' },
+      { id: 'members', t: 'Members', h: 'Vote and save', file: 'tour-5-v3.mp3', hash: '#/', at: '#favRail', state: { who: 'member' },
+        say: 'Members of Vegans Explore can sign in here with the account they already have. They vote for their favorite dishes once a day and save the ones they want to come back for.',
+        shows: 'Signed in as Sam, a sample member' },
+      { id: 'owner', t: "The owner's view", h: 'Yours to update', file: 'tour-6-v1.mp3', hash: '#/menu/1-1', at: '[data-ing]', state: { who: 'owner' },
+        say: 'Switch to the owner, and the same page becomes yours to update. Change an ingredient, add a brand from our Directory, and the dish page shows it.',
+        shows: 'Signed in as the owner, on a dish' },
+      { id: 'order', t: 'Ordering', h: 'Short and simple', file: 'tour-7-v1.mp3', hash: '#/order', state: { who: null, mode: 'pos' },
+        say: 'Ordering is short. Add what you want, choose pickup, and pay. When your point of sale is connected, orders go straight to your kitchen. Vegans Explore Delivery is coming.',
+        shows: 'The Order page' },
+      { id: 'looks', t: 'Make it yours', h: 'One site, three looks', file: 'tour-8-v1.mp3', hash: '#/', state: { who: null, look: 'island' },
+        say: 'This is one site in three looks. Same menu, same story, different colors and type. Yours is built from your own brand kit.',
+        shows: 'Island bright. Try the other looks in the bar at the top' },
+      { id: 'connected', t: 'Part of something bigger', h: 'Connected to Vegans Explore', file: 'tour-9-v1.mp3', hash: '#/', at: 'footer.site', state: { who: null },
+        say: 'Your site connects to your Vegans Explore page, where members find you, vote for you, and check in when they visit.',
+        shows: 'The footer: Find us on Vegans Explore' },
+      { id: 'community', t: 'Your community', h: 'Rewards and your club', file: 'tour-10-v1.mp3', hash: '#/community', state: { who: 'member' },
+        say: "Your regulars become your community. Members unlock rewards you choose, like a free drink or a seat at your chef's table, with the points they earn on Vegans Explore. There are only so many, first come, first served. And your club is a Guide on Vegans Explore, so it brings people in and sends them out to the rest of the community.",
+        shows: 'The Community page, signed in as Sam' },
+      { id: 'next', t: 'Next step', h: 'Want one like this?', file: 'tour-11-v1.mp3', hash: '#/', state: { who: null }, end: true,
+        say: 'Want one like this for your restaurant? Tap Talk to our team, and a real person will walk you through it.',
+        shows: 'Green Leaf Kitchen' }
+    ];
+    var LIZ = (window.VEGuideArt && VEGuideArt('liz', 'square')) || '';
+    var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+    var PLAY = '<svg viewBox="0 0 24 24"><path d="M7 4v16l13-8z"/></svg>', PAUSE = '<svg viewBox="0 0 24 24"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>';
+
+    document.getElementById('gtStage').innerHTML = STOPS.map(function (s, n) {
+      return '<section class="vg-slide" id="' + s.id + '" data-title="' + esc(s.t) + '"><div class="gt-wrap"><div>' +
+        '<div class="vg-eyebrow">Green Leaf Kitchen · ' + (n + 1) + ' of ' + STOPS.length + '</div><h1 class="vg-h">' + esc(s.h) + '</h1>' +
+        '<div class="gt-liz">' + (LIZ ? '<img src="' + esc(LIZ) + '" alt="Liz">' : '') + '<div><b>Liz</b><span>Your Guide</span><br>' +
+        '<button type="button" class="gt-play" data-gt-play>' + PLAY + 'Play</button></div></div>' +
+        '<p class="gt-say">' + esc(s.say) + '</p><p class="gt-shows">On the phone: <b>' + esc(s.shows) + '</b></p>' +
+        (s.end ? '<div class="gt-end"><button type="button" class="vg-btn" data-managed>Talk to our team</button><a class="vg-btn vg-btn-ghost" href="/business#/managed">See how BrandDesk works</a><a class="vg-btn vg-btn-ghost" href="' + SITE + '" target="_blank" rel="noopener">Open the sample site</a></div>' +
+          '<p class="gt-fine">Green Leaf Kitchen, its owner and its farms are made up. The brands on its dish pages are real listings in our Directory.</p>' : '') +
+        '</div><div class="gt-phone"><span class="gt-stamp">Sample</span><div class="gt-load">Loading the sample site...</div><iframe title="Green Leaf Kitchen sample site: ' + esc(s.shows) + '" loading="lazy"></iframe></div></div></section>';
+    }).join('');
+
+    // The site reads its state from sessionStorage, which a same-origin frame shares with this page.
+    function setState(st) {
+      try {
+        if (st.who) sessionStorage.setItem('ve_site_session', JSON.stringify({ name: st.who === 'owner' ? 'Alex' : 'Sam', real: false, role: st.who }));
+        else sessionStorage.removeItem('ve_site_session');
+        if (st.who) sessionStorage.removeItem('ve_site_signedout'); else sessionStorage.setItem('ve_site_signedout', '1');
+        sessionStorage.setItem('ve_site_look', st.look || 'theirs');
+        sessionStorage.setItem('ve_site_order_mode', st.mode || 'pos');
+      } catch (e) {}
+    }
+    function show(id) {
+      var s = STOPS.filter(function (x) { return x.id === id; })[0]; if (!s) return;
+      var sec = document.getElementById(id), fr = sec.querySelector('iframe'), ld = sec.querySelector('.gt-load');
+      setState(s.state);
+      ld.style.display = 'flex';
+      fr.onload = function () {
+        ld.style.display = 'none';
+        if (!s.at) return;
+        var tries = 0;
+        (function go() {
+          try { var el = fr.contentDocument.querySelector(s.at); if (el) { var w = fr.contentWindow; w.scrollTo(0, Math.max(0, el.getBoundingClientRect().top + w.scrollY - 150)); return; } } catch (e) { return; }
+          if (++tries < 20) setTimeout(go, 150);
+        })();
+      };
+      fr.src = SITE + '?tour=' + id + s.hash;
+      play(s);
+    }
+
+    // Liz: nothing plays until Play; then each slide plays its line until Pause (kept for the visit).
+    var au = new Audio(), ON = false; try { ON = sessionStorage.getItem('gt_liz') === '1'; } catch (e) {}
+    function paintBtns() { document.querySelectorAll('[data-gt-play]').forEach(function (b) { b.classList.toggle('on', ON); b.innerHTML = ON ? PAUSE + 'Pause' : PLAY + 'Play'; }); }
+    function play(s) { au.pause(); au.src = AUDIO + s.file; if (ON) au.play().catch(function () { ON = false; paintBtns(); }); paintBtns(); }
+    au.addEventListener('ended', paintBtns);
+    document.addEventListener('click', function (e) {
+      if (e.target.closest('[data-gt-play]')) {
+        ON = !ON; try { sessionStorage.setItem('gt_liz', ON ? '1' : '0'); } catch (x) {}
+        if (ON) { if (!au.src || au.ended) { var cur = (location.hash || '#start').slice(1); var s = STOPS.filter(function (x) { return x.id === cur; })[0] || STOPS[0]; au.src = AUDIO + s.file; } au.play().catch(function () {}); try { gtag('event', 'video_start', { video: 'glk_tour' }); } catch (x) {} }
+        else au.pause();
+        paintBtns(); return;
+      }
+      if (e.target.closest('[data-managed]')) {
+        var go = function () { window.VEManaged && VEManaged.open({ from: 'sample-tour', business: '' }); };
+        if (window.VEManaged) go(); else { var sc = document.createElement('script'); sc.src = '/public/ve-managed.js'; sc.onload = go; document.head.appendChild(sc); }
+      }
+    });
+    var shown = null;
+    document.addEventListener('vg:change', function (e) { if (e.detail.id !== shown) { shown = e.detail.id; show(shown); } });
+    window.addEventListener('load', function () { if (shown) return; shown = (document.querySelector('.vg-slide.vg-active') || {}).id || 'start'; show(shown); });
+  })();
+  </script>
+  <script src="/public/ve-guided.js"></script>
+</body>
+</html>

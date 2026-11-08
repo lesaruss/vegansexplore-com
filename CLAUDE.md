@@ -1226,8 +1226,15 @@ first come first served; a signed-in member sees a sample balance (`points_demo`
 sees Take it down and Add a reward with our suggestions (`community.suggestions`); kept in `sessionStorage` (`ve_site_rewards`,
 `ve_site_unlocked`, `ve_site_spent`). Never cash, never money off at checkout. **The club** is a Guide on Vegans Explore (no paid club, no
 rolling credit). Check-ins every two weeks is unanswered. Live rewards (a table, redemption, the owner's dashboard) are not built.
-**The Community Manager onboarding fee on Site is $150 per client** (Sean, 2026-11-08). Tour script: `docs/proposals/green-leaf-tour-script.md`,
-waiting on Sean's approval before Liz records. Next: the tour, the owner's BrandDesk view, the pricing build. Handoff `docs/handoff/2026-11-08-ve-demo-showroom-green-leaf-site.md`.
+**The Community Manager onboarding fee on Site is $150 per client** (Sean, 2026-11-08). **The tour, live 2026-11-08** (Sean: "build the tour page"): `/business/sample/tour` (`business/tour.html`, rewrite in `vercel.json`,
+`noindex`), the `/partners` guided view on the white stage, 11 slides (`STOPS`), each Liz's line from `docs/proposals/green-leaf-tour-script.md`
+and the real sample site in a phone frame stamped Sample, opened on that part in the state it needs (signed out, Sam the member, Alex the owner,
+the Island look, ordering connected), set through the site's own `sessionStorage` keys before the frame loads (`?tour=<slide>` hides the site's
+Take the tour link); a part below the fold is scrolled to inside the frame (never `scrollIntoView`, which scrolls the slide too). Liz's
+recordings: `vegan-media/media/liz/green-leaf-tour/tour-<n>-v1.mp3` (slide 5 `tour-5-v3.mp3`), checked with stt; nothing plays until Play,
+then each slide plays until Pause (`sessionStorage` `gt_liz`). The last slide opens Talk to our team (`VEManaged`, from `sample-tour`). The sample
+site's bar links to it. Liz paused about a second after a line that opens with "Vegans Explore": start such a line another way. Next: the
+owner's BrandDesk view, then the pricing build. Handoff `docs/handoff/2026-11-08-ve-demo-showroom-green-leaf-site.md`.
 
 ## Content index (Sean, 2026-10-10: "go ahead and start on the content index")
 

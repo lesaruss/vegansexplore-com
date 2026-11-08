@@ -101,6 +101,10 @@
       "destination": "/business/site"
     },
     {
+      "source": "/business/sample/tour",
+      "destination": "/business/tour"
+    },
+    {
       "source": "/business/sample/shoot",
       "destination": "/business/shoot"
     },
