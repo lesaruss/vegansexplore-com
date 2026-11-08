@@ -5,6 +5,13 @@ Static HTML site. No build pipeline. Vercel serves the repo root directly
 (`outputDirectory: "."`). All pages are `.html` files. Styling is inline CSS
 in `<style>` blocks. No separate CSS files. No framework.
 
+## Every ask carries its link (Sean, 2026-11-08, canon `canon-ask-carries-the-link`)
+
+"Super annoying you're not giving me links when you want me to do things. I've said this so many times." Any message that asks Sean
+to do something (click, sign in, approve, fill a console, grant a permission, read a page) gives the direct clickable link for each
+step, the deepest page that exists. If no deep link exists, say so and give the closest link plus the menu path. This covers asks,
+not only shipped work. Before sending, check every step that tells Sean to act has a URL. Error registry `COMM-ASK-WITHOUT-LINKS`.
+
 ## The template gate (Sean, 2026-11-02): never build from a blank file
 
 "It's like you just made something up. Not following any templates, not using any previous examples... We need a system. That's why
