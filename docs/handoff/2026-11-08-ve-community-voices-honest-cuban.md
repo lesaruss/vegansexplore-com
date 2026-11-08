@@ -91,3 +91,11 @@ The thank-you follow-up above is replaced. The campaign `honest-cuban-comment-20
 menu") now asks for 1. their story ({link}, their own tracked link to /comment/honest-cuban) and 2. their ThanksLiving menu (`/go/hc-thanksliving`
 to /business/holiday-menu?listing=vegan-cuban-cuisine; menus close end of Wed Nov 18), then the claim line. Subject "Honest Cuban by VCC: your
 story, and your ThanksLiving menu". Locked, draft until Sean approves in BrandDesk; sends Monday from 9 AM ET. No Nov 12 check needed.
+
+## Update: Holiday Guide link and the test
+- Point 2 now opens with "Take a look:" and `/go/hc-holiday-guide` (to /guides/holiday-guide), then the menu ask and `/go/hc-thanksliving`.
+- [Test] sent to srussell@lesaruss.com (ve-outreach `campaign_test`, result sent). Sean's super admin row is **contact@lesaruss.com**
+  (72712a4a-ea0e-4ef4-a29e-d382496ef8da); srussell@ is not a super admin, so `member_id` on the three rename edits and `p_by` on the ThanksLiving
+  removal are null. Use the contact@ row for `as_member`.
+- Test clicks on the Holiday Guide and menu links are real /go/ clicks (the comment link in a test goes straight to the page).
+- Sean sends it once he is happy with the Holiday Guide (playbook ve-holiday-guide); approval in BrandDesk, weekdays 9 to 5 ET.
