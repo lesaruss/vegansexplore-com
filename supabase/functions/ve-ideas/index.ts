@@ -1,4 +1,7 @@
 // ve-ideas: Sean's idea inbox (Sean, 2026-11-06, playbook ve-idea-intake, folded into branddesk-production-wing). verify_jwt off.
+// One idea store (branddesk-production-wing N, 2026-11-08): ve_ideas holds every idea, Depot > Ideas and HQ's BrandDesk > Blueprint >
+// Ideas alike (migration 20261108_one_idea_store.sql). Statuses: new, approved, building, done (the build path) and sent, own_playbook,
+// parked, declined (the Blueprint's sorting). An idea Logan has read stays new; its read is on the row. Set aside is parked.
 // "Drop ideas... voice dictation, upload assets... links... give you context... you confirm what I'm asking, and then I approve, and
 // then you start working on it... provide me with the link to see what you've done."
 //
@@ -40,7 +43,7 @@ const WEB_TOOLS = [
   { type: 'web_fetch_20260209', name: 'web_fetch', max_uses: 3, max_content_tokens: 20000 },
 ];
 const BUCKET = 'idea-files';
-const STATUSES = ['new', 'read', 'approved', 'building', 'done', 'set_aside'];
+const STATUSES = ['new', 'approved', 'building', 'done', 'sent', 'own_playbook', 'parked', 'declined'];
 const UPLOAD_TYPES = /^(image\/|application\/pdf$|video\/|audio\/|text\/(plain|markdown|csv)$|application\/vnd\.openxmlformats-officedocument\.wordprocessingml\.document$)/;
 const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type', 'Access-Control-Allow-Methods': 'POST, OPTIONS' };
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
@@ -66,6 +69,7 @@ async function secret(key: string) {
   const { data } = await db.from('lesaruss_secrets').select('value').eq('key', key).maybeSingle();
   return data?.value && data.value !== 'pending' ? String(data.value) : null;
 }
+const logEv = (idea: string, by: string, action: string, detail: Record<string, unknown> = {}) => db.from('blueprint_idea_events').insert({ idea_id: idea, by, action, detail });
 function toB64(u8: Uint8Array) { let s = ''; for (let i = 0; i < u8.length; i += 0x8000) s += String.fromCharCode(...u8.subarray(i, i + 0x8000)); return btoa(s); }
 
 const SCHEMA = {
@@ -209,35 +213,31 @@ async function readCore(src: Src, maxTokens = MAX_TOKENS): Promise<{ read?: any;
   return { read, files };
 }
 
+// The Depot's read is the same read as the Blueprint's: one table now. The playbook it names is kept on playbook_slug too.
 async function readIdea(id: string) {
-  const { data: idea } = await db.from('ve_ideas').select('*').eq('id', id).maybeSingle();
-  if (!idea) return { error: 'not_found' };
-  const r = await readCore({ body: idea.body, links: idea.links || [], files: idea.files || [], page_url: idea.page_url, thread: idea.thread || [] });
-  if (r.error) return { error: r.error };
-  const read = r.read;
-  const thr = [...(idea.thread || []), { role: 'logan', text: read.ask, at: read.at }];
-  const { data: row } = await db.from('ve_ideas').update({
-    read, thread: thr, files: r.files, status: idea.status === 'new' || idea.status === 'read' ? 'read' : idea.status,
-    playbook_slug: read.playbook || read.new_playbook || idea.playbook_slug, updated_at: read.at,
-  }).eq('id', id).select('*').single();
-  return { idea: row };
+  const r: any = await readBlueprint(id, '');
+  if (r.error) return r;
+  const pb = r.idea?.read?.playbook || r.idea?.read?.new_playbook;
+  if (pb && !r.idea.playbook_slug) { const { data } = await db.from('ve_ideas').update({ playbook_slug: pb }).eq('id', id).select('*').single(); return { idea: data }; }
+  return r;
 }
 
 async function readBlueprint(id: string, reply: string, maxTokens = MAX_TOKENS) {
-  const { data: idea } = await db.from('blueprint_ideas').select('*').eq('id', id).maybeSingle();
+  const { data: idea } = await db.from('ve_ideas').select('*').eq('id', id).maybeSingle();
   if (!idea) return { error: 'not_found' };
   const now = new Date().toISOString();
   let thread = idea.thread || [];
   if (reply) {
     thread = [...thread, { role: 'sean', text: reply, at: now }];
-    await db.from('blueprint_ideas').update({ thread, updated_at: now }).eq('id', id);
+    await db.from('ve_ideas').update({ thread, updated_at: now }).eq('id', id);
   }
-  const body = [idea.title, idea.detail].filter(Boolean).join('\n\n');
-  const r = await readCore({ body, links: idea.links || [], files: idea.files || [], thread }, maxTokens);
+  // A title made from the first sentence is not said twice.
+  const body = [idea.body && String(idea.body).startsWith(String(idea.title || '').replace(/\.$/, '')) ? '' : idea.title, idea.body].filter(Boolean).join('\n\n');
+  const r = await readCore({ body, links: idea.links || [], files: idea.files || [], page_url: idea.page_url, thread }, maxTokens);
   if (r.error) {
     // The failed try stays in the conversation too, so the scroll shows what happened (never a half read: only the error line).
     const failNote = { role: 'logan', text: r.error === 'cut_off' ? 'My read was cut off before it finished, so I saved nothing. Read it again.' : 'My read did not finish, so I saved nothing. Read it again.', error: r.error, at: now };
-    await db.from('blueprint_ideas').update({ read_error: r.detail ? `${r.error}: ${r.detail}` : r.error, read_at: now, files: r.files, thread: [...thread, failNote], updated_at: now }).eq('id', id);
+    await db.from('ve_ideas').update({ read_error: r.detail ? `${r.error}: ${r.detail}` : r.error, read_at: now, files: r.files, thread: [...thread, failNote], updated_at: now }).eq('id', id);
     await db.from('blueprint_idea_events').insert({ idea_id: id, by: 'Logan', action: 'read_failed', detail: { error: r.error } });
     return { error: r.error, detail: r.detail || null };
   }
@@ -249,7 +249,7 @@ async function readBlueprint(id: string, reply: string, maxTokens = MAX_TOKENS) 
     patch.suggested_at = read.at;
     patch.suggested_by_read = true;
   }
-  const { data: row } = await db.from('blueprint_ideas').update(patch).eq('id', id).select('*').single();
+  const { data: row } = await db.from('ve_ideas').update(patch).eq('id', id).select('*').single();
   await db.from('blueprint_idea_events').insert({ idea_id: id, by: 'Logan', action: 'read', detail: { playbook: read.playbook || read.new_playbook || null, unread: read.unread.length } });
   return { idea: row };
 }
@@ -308,14 +308,15 @@ Deno.serve(async (req) => {
   }
 
   if (b.action === 'list') {
-    const { data } = await db.from('ve_ideas').select('id,body,links,files,status,read,playbook_slug,result_url,session_url,done_at,created_at,updated_at').order('created_at', { ascending: false }).limit(300);
+    const { data } = await db.from('ve_ideas').select('id,brand_slug,title,body,source,submitted_by,links,files,status,read,read_error,playbook_slug,target_playbook,suggested_playbook,reason,revisit_on,result_url,session_url,done_at,created_at,updated_at').order('created_at', { ascending: false }).limit(300);
     return json({ ok: true, rows: data || [] });
   }
   if (b.action === 'get') {
     if (!isId(b.id)) return json({ error: 'id' }, 400);
     const { data } = await db.from('ve_ideas').select('*').eq('id', b.id).maybeSingle();
     if (!data) return json({ error: 'not_found' }, 404);
-    return json({ ok: true, idea: await withLinks(data) });
+    const { data: ev } = await db.from('blueprint_idea_events').select('at,by,action,detail').eq('idea_id', b.id).order('at');
+    return json({ ok: true, idea: { ...(await withLinks(data)), events: ev || [] } });
   }
   if (b.action === 'upload_start') {
     const type = clean(b.type, 100), size = Number(b.size) || 0;
@@ -342,8 +343,10 @@ Deno.serve(async (req) => {
       .filter((f: any) => PATH_OK(f.path));
     if (!body && !links.length && !files.length) return json({ error: 'empty' }, 400);
     const now = new Date().toISOString();
-    const { data: row, error } = await db.from('ve_ideas').insert({ created_by: me, body, links, files, page_url: clean(b.page_url, 500) || null, thread: body ? [{ role: 'sean', text: body, at: now }] : [] }).select('id').single();
+    const { data: mm } = me ? await db.from('members').select('name').eq('id', me).maybeSingle() : { data: null };
+    const { data: row, error } = await db.from('ve_ideas').insert({ created_by: me, submitted_by: mm?.name || null, source: 'depot', title: clean(b.title, 200) || null, body, links, files, page_url: clean(b.page_url, 500) || null, thread: body ? [{ role: 'sean', text: body, at: now }] : [] }).select('id').single();
     if (error || !row) return json({ error: error?.message || 'save' }, 500);
+    await logEv(row.id, mm?.name || 'Sean', 'added', { from: 'depot', files: files.length, links: links.length });
     const r: any = await readIdea(row.id);
     const { data: idea } = await db.from('ve_ideas').select('*').eq('id', row.id).single();
     return json({ ok: true, idea: await withLinks(idea), read_error: r.error || null });
@@ -363,14 +366,17 @@ Deno.serve(async (req) => {
   if (b.action === 'approve') {
     if (!isId(b.id)) return json({ error: 'id' }, 400);
     const now = new Date().toISOString();
-    const { data } = await db.from('ve_ideas').update({ status: 'approved', approved_at: now, updated_at: now }).eq('id', b.id).in('status', ['new', 'read']).select('*').maybeSingle();
+    const { data } = await db.from('ve_ideas').update({ status: 'approved', approved_at: now, updated_at: now }).eq('id', b.id).in('status', ['new', 'parked']).select('*').maybeSingle();
     if (!data) return json({ error: 'not_open' }, 409);
+    await logEv(b.id, 'Sean', 'approved');
     return json({ ok: true, idea: await withLinks(data) });
   }
   if (b.action === 'set') {
     if (!isId(b.id)) return json({ error: 'id' }, 400);
     const patch: Record<string, unknown> = { updated_at: new Date().toISOString() };
-    if (b.status !== undefined) { if (!STATUSES.includes(b.status)) return json({ error: 'status' }, 400); patch.status = b.status; if (b.status === 'done') patch.done_at = patch.updated_at; }
+    if (b.status === 'set_aside') b.status = 'parked';
+    if (b.status !== undefined) { if (!STATUSES.includes(b.status)) return json({ error: 'status' }, 400); patch.status = b.status; if (b.status === 'done') patch.done_at = patch.updated_at; if (b.status === 'parked' || b.status === 'declined') { patch.sorted_at = patch.updated_at; patch.sorted_by = ops ? 'Logan' : 'Sean'; } }
+    if (b.reason !== undefined) patch.reason = clean(b.reason, 1000) || null;
     if (b.note !== undefined) patch.note = clean(b.note, 4000) || null;
     for (const k of ['session_url', 'result_url']) if (b[k] !== undefined) { const v = clean(b[k], 1000); if (v && !/^https?:\/\//i.test(v)) return json({ error: k }, 400); patch[k] = v || null; }
     if (b.playbook_slug !== undefined) patch.playbook_slug = clean(b.playbook_slug, 80) || null;
@@ -382,6 +388,7 @@ Deno.serve(async (req) => {
     }
     const { data } = await db.from('ve_ideas').update(patch).eq('id', b.id).select('*').maybeSingle();
     if (!data) return json({ error: 'not_found' }, 404);
+    if (b.status && ['building', 'done', 'parked', 'declined', 'new'].includes(b.status)) await logEv(b.id, ops ? 'Logan' : 'Sean', b.status === 'new' ? 'reopened' : b.status, patch.reason ? { reason: patch.reason } : {});
     return json({ ok: true, idea: await withLinks(data) });
   }
   return json({ error: 'unknown_action' }, 400);
