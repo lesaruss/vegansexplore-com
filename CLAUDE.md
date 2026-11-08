@@ -1507,6 +1507,33 @@ tool's own waiting count, and the Guide banners on the Guides section. To check 
 to HQ needs a one-time code exchange (the reverse of `ve-lesaruss-sso`); not built. **Next: the two tours** (Depot, V; BrandDesk, V, on the existing
 `lib/branddeskTours.ts` in lesaruss-hq, which has only the People tour so far), each as a video per `canon-ve-guide-tour-standard` v3.
 
+## One idea store, Send to, and the max_tokens rule (2026-11-08, playbook `branddesk-production-wing`, N, M, R; merged to main by Sean)
+
+**N, one idea store** (migration `20261108_one_idea_store.sql`; vegansexplore-com main 1bd9617, lesaruss-hq main 17c2f33). `ve_ideas` holds every idea, Depot >
+Ideas and HQ's BrandDesk > Blueprint > Ideas alike; there is no sync. The 30 `blueprint_ideas` rows moved in with their ids (`blueprint_idea_events`, the history,
+points at `ve_ideas` now); the old table is kept as `blueprint_ideas_retired_20261108`, and `blueprint_ideas` is a view over `ve_ideas` (`detail` = `body`) for
+anything still on the old name. New columns: `brand_slug` (default vegans-explore), `title` (filled from the first sentence by `trg_ve_ideas_title`), `source`
+(depot, blueprint, feedback, playbook, fieldy) and the Blueprint's sorting fields. **One status list**: new, approved, building, done (the Depot's build path) and
+sent, own_playbook, parked, declined (the Blueprint's sorting). No `read` status: a read idea stays new (the Depot shows it as Read back); Set aside is parked.
+HQ shows approved, building and done under a **Building** chip. `ve-ideas` v10 reads and writes `ve_ideas` for both (the Depot's read is the Blueprint's read).
+Checked signed in (QA login) on the HQ preview at 1440 and 390 px: 31 ideas, chips right, no errors.
+
+**M, Send to, drafts only** (migration `20261108_idea_send_to_drafts.sql`; `ve-ideas` `sends`, `pulse_draft`, `pulse_save`, `pulse_approve`, `pulse_discard`,
+`podcast_draft`). An idea's page in Depot > Ideas has **Send it to**. **A chapter's Daily Pulse**: Logan writes a story (title, take) from the idea's words only,
+a `ve_pulse_features` row with `status` draft and `idea_id`, for one chapter or every chapter on one Eastern date (default tomorrow); Sean edits it and **Approve
+for the Pulse** (live) or **Don't use it** (discarded). `ve_pulse_features_apply` takes only `status = 'live'` (every older row is live). Approving is Sean's
+token only (the ops token is refused). **The podcast's news**: a proposed Top stories segment for Kai (`ve_pod_segments.idea_id`) on the next episode still in
+planning, after the last news slot; scripted and approved in BrandDesk > Podcast. An episode already Ready (Episode 145 on Nov 8) takes nothing: `no_episode`.
+Proven live 2026-11-08 on a [TEST] idea (the draft written, held out of a real Pulse and taken in once live in a rolled-back transaction, the podcast draft placed
+on a [TEST] episode), then every test row removed through the one-time `ve-once-idea-test-cleanup` (now 410).
+
+**R, the max_tokens rule.** On the 5.x models thinking counts against max_tokens, so every 5.x Claude call gets 16000 and treats any end but `end_turn` as an
+error (cut_off), never half an answer. Done 2026-11-08 in `ve-discover`, `ve-invites`, `branddesk-insights`, `ve-listing-intake`, `ve-books`, `ve-brand-kit`,
+`ve-listing-about`, `ve-page-guide`, `ve-event-check`, `ve-plan`, `ve-people` (all redeployed, source sha256 matched) and in HQ `app/api/branddesk/v`,
+`app/api/pulse-studio/guide`, `lib/branddeskProposal.ts`, `lib/houseMeetings.ts` and the functions `fieldy-digest` (v11), `people-email-harvest` (v9). The 4.x
+calls do not think unless asked and were left alone. Only `ve-ideas` uses web search (already 16000). A new Claude call follows the same rule.
+`ve-function-deploy` reads only this repo: an HQ function was deployed by a temporary copy in a commit on the session branch, then reverted.
+
 ## One Blueprint, and Signal (Sean, 2026-11-06, playbooks `branddesk-production-wing`, `signal`)
 
 The three Blueprint chats are one: `branddesk-production-wing` is the Blueprint playbook (ve-idea-intake parked and folded in), and **`ve-feedback` is the Blueprint's small-fixes queue**.
