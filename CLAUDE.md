@@ -7077,6 +7077,7 @@ shout-out, bounties). Proven live at phone size; a real check-in as the Vegans E
 removed through `ve-once-app-checkin` (now 410). **V** is `.github/workflows/eas-build.yml` in the app repo; GitHub runs it only from the default branch,
 so it waits on Sean merging the app branch and adding its six secrets from Key Room.
 **Merged 2026-11-08** (Sean: "merge"): app main 2268abe carries the new app and the workflow (the branch had its own history, so main keeps Sapphire's history and its tree is the branch). V now waits only on the six Actions secrets.
+**V running 2026-11-08** (handoff `docs/handoff/2026-11-08-ve-mobile-app-device-builds.md`): the six secrets are set (copied server side; GITHUB_TOKEN reinstated as a fine-grained token, vegansexplore-app Secrets only), iOS reached TestFlight (Sean installed build 10; 12 sent), Android 4 building. Submit by build id, never `--latest`; `reset_ios_profile` when a capability changes. App branch `claude/elegant-mayer-r6z3p0` (b95d391, not on app main): Menu is the website's phone menu, Explore is the website's Directory (`src/lib/directory.ts` copies its rules). Next: device proofs (Apple, email, Explorer join, Check in), then Google client IDs.
 
 ## Image conventions
 
