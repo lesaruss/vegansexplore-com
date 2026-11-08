@@ -597,6 +597,11 @@
     .hg-feat h3{margin:2px 0 6px;font-size:20px;font-weight:800}
     .hg-feat p{margin:0;font-size:14.5px;line-height:1.55;color:var(--ink75)}
     .hg-evs{display:grid;gap:10px}
+    .hg-evbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 16px}
+    .hg-evtop{display:flex;flex-wrap:wrap;gap:8px}
+    .dg-btn.hg-sm{min-height:34px;padding:7px 14px;font-size:11px}
+    .hg-evsel{min-width:240px}
+    @media (max-width:640px){.hg-evsel{width:100%;min-width:0;font-size:16px}.hg-evtop{width:100%}.hg-evtop .dg-btn{flex:1}}
     .hg-ev{display:flex;align-items:stretch;border:1.5px solid rgba(0,0,0,.09);border-radius:10px;overflow:hidden;background:#fff;color:inherit;text-decoration:none;transition:border-color .15s}
     .hg-ev:hover{border-color:var(--g)}
     .hg-evd{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:76px;padding:14px 18px;background:var(--gl);text-align:center;flex-shrink:0}
@@ -701,7 +706,7 @@
 <script src="/public/ve-region-directory.js"></script>
 <script src="/public/ve-guide-intro.js"></script>
 <script src="/public/ve-episodes.js"></script>
-<script src="/guide-scripts/holiday-guide.js?v=10"></script>
+<script src="/guide-scripts/holiday-guide.js?v=11"></script>
 <script src="/public/ve-guide-min.js"></script>
 </body>
 </html>

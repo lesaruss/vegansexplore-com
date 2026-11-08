@@ -679,18 +679,40 @@
     try { return [d.toLocaleString('en-US', { day: 'numeric', timeZone: tz }), d.toLocaleString('en-US', { month: 'short', timeZone: tz })]; }
     catch (x) { return [d.getDate(), d.toLocaleString('en-US', { month: 'short' })]; }
   }
-  function viewEvents() {
+  // Events are every Vegan event we know of, chapter or not (Sean, 2026-11-08), so the region list is built from the events
+  // themselves: a US state, else the country, else Online. Only regions with an event show. The pick is in the address (#/events/<region>).
+  var US_STATES = { AL: 'Alabama', AK: 'Alaska', AZ: 'Arizona', AR: 'Arkansas', CA: 'California', CO: 'Colorado', CT: 'Connecticut', DE: 'Delaware', DC: 'Washington, D.C.', FL: 'Florida', GA: 'Georgia', HI: 'Hawaii', ID: 'Idaho', IL: 'Illinois', IN: 'Indiana', IA: 'Iowa', KS: 'Kansas', KY: 'Kentucky', LA: 'Louisiana', ME: 'Maine', MD: 'Maryland', MA: 'Massachusetts', MI: 'Michigan', MN: 'Minnesota', MS: 'Mississippi', MO: 'Missouri', MT: 'Montana', NE: 'Nebraska', NV: 'Nevada', NH: 'New Hampshire', NJ: 'New Jersey', NM: 'New Mexico', NY: 'New York', NC: 'North Carolina', ND: 'North Dakota', OH: 'Ohio', OK: 'Oklahoma', OR: 'Oregon', PA: 'Pennsylvania', RI: 'Rhode Island', SC: 'South Carolina', SD: 'South Dakota', TN: 'Tennessee', TX: 'Texas', UT: 'Utah', VT: 'Vermont', VA: 'Virginia', WA: 'Washington', WV: 'West Virginia', WI: 'Wisconsin', WY: 'Wyoming' };
+  function evRegion(e) {
+    if (e.event_type === 'virtual' && !e.city) return 'Online';
+    var c = (e.country || '').trim(), st = (e.state || '').trim();
+    var us = !c || /^(us|usa|u\.s\.a?\.?|united states( of america)?)$/i.test(c);
+    if (us && st) return US_STATES[st.toUpperCase()] || st;
+    if (c && !us) return c === 'GB' || /^uk$/i.test(c) ? 'United Kingdom' : c;
+    return e.event_type === 'virtual' ? 'Online' : 'Other places';
+  }
+  function slugify(t) { return String(t).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+  function viewEvents(sub) {
     var lede = 'Sanctuary dinners, Vegan potlucks and Thanksgiving events on our calendar.';
-    if (EVENTS === null) { main.innerHTML = head('Events', 'Holiday Events', lede) + '<div class="dg-loading">Loading events...</div>'; return; }
+    var btns = '<div class="hg-evtop"><a class="dg-btn hg-sm" href="/events#submit/1">Add your event</a><a class="dg-btn dg-ghost hg-sm" href="/events">The whole calendar</a></div>';
+    if (EVENTS === null) { main.innerHTML = head('Events', 'Holiday Events', lede) + btns + '<div class="dg-loading">Loading events...</div>'; return; }
+    var counts = {};
+    EVENTS.forEach(function (e) { var r = evRegion(e); counts[r] = (counts[r] || 0) + 1; });
+    var regions = Object.keys(counts).sort(function (x, y) { var o = function (r) { return r === 'Online' || r === 'Other places' ? 1 : 0; }; return o(x) - o(y) || x.localeCompare(y); });
+    var cur = sub && regions.filter(function (r) { return slugify(r) === sub; })[0] || '';
+    var list = cur ? EVENTS.filter(function (e) { return evRegion(e) === cur; }) : EVENTS;
+    var pick = regions.length > 1 ? '<select class="dg-sort hg-evsel" id="hgEvRegion" aria-label="Region"><option value="">Everywhere (' + EVENTS.length + ')</option>' +
+      regions.map(function (r) { return '<option value="' + slugify(r) + '"' + (r === cur ? ' selected' : '') + '>' + esc(r) + ' (' + counts[r] + ')</option>'; }).join('') + '</select>' : '';
     main.innerHTML = head('Events', 'Holiday Events', lede) +
-      (EVENTS.length ? '<div class="hg-evs">' + EVENTS.map(function (e) {
+      '<div class="hg-evbar">' + pick + btns + '</div>' +
+      (list.length ? '<div class="hg-evs">' + list.map(function (e) {
         var when = e.time_set === false ? dayFmt(e.starts_at, { weekday: 'short', month: 'long', day: 'numeric' }) + ', time to be announced'
           : new Date(e.starts_at).toLocaleString('en-US', { timeZone: e.timezone || 'America/New_York', weekday: 'short', month: 'long', day: 'numeric', hour: 'numeric', minute: '2-digit' });
         var where = e.event_type === 'virtual' ? 'Online' : [e.location_name, e.city, e.state].filter(Boolean).join(', '), dm = dayMonth(e), url = '/events?event=' + e.id;
         return '<a class="hg-ev" href="' + url + '"><span class="hg-evd" aria-hidden="true"><b>' + esc(dm[0]) + '</b><small>' + esc(dm[1]) + '</small></span>' +
           '<span class="hg-evb"><b>' + esc(e.title) + '</b><span>' + esc(when) + (where ? ' &middot; ' + esc(where) : '') + '</span></span></a>';
-      }).join('') + '</div>' : '<div class="hg-empty"><h3>No Holiday Events on the Calendar Yet</h3><p>Hosting a ThanksLiving dinner or a potluck? Add it to our calendar and people near you can find it.</p></div>') +
-      '<div class="dg-btns" style="margin-top:16px"><a class="dg-btn" href="/events#submit/1">Add your event</a><a class="dg-btn dg-ghost" href="/events">The whole calendar</a></div>';
+      }).join('') + '</div>' : '<div class="hg-empty"><h3>No Holiday Events on the Calendar Yet</h3><p>Hosting a ThanksLiving dinner or a potluck? Add it to our calendar and people near you can find it.</p></div>');
+    var sel = document.getElementById('hgEvRegion');
+    if (sel) sel.addEventListener('change', function () { location.hash = '#/events' + (sel.value ? '/' + sel.value : ''); });
   }
 
   // ---------- Give back ----------
@@ -833,7 +855,7 @@
   function route() {
     var parts = (location.hash || '').replace(/^#\/?/, '').split('/');
     var view = parts[0] || 'overview', sub = parts.slice(1).join('/');
-    var V = { overview: viewOverview, thanksliving: viewThanksLiving, recipes: function () { viewRecipes(sub); }, store: viewStore, listen: viewListen, menus: function () { viewMenus(sub); }, events: viewEvents, giveback: function () { viewGiveBack(sub); }, business: viewBusiness };
+    var V = { overview: viewOverview, thanksliving: viewThanksLiving, recipes: function () { viewRecipes(sub); }, store: viewStore, listen: viewListen, menus: function () { viewMenus(sub); }, events: function () { viewEvents(sub); }, giveback: function () { viewGiveBack(sub); }, business: viewBusiness };
     if (!V[view]) view = 'overview';
     document.body.classList.toggle('dg-member', member());
     drawJoinbox(); drawMenu(view);
