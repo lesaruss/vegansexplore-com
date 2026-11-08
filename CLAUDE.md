@@ -216,7 +216,8 @@ this list follows the rule above. A new exception goes on this list first.
   (a meta refresh or `location.replace`, or a `vercel.json` redirect that
   catches the URL before the file is served): `partner.html` (`/partner` goes to
   `/partners`), `tour.html` (`/tour` starts the tour on the dashboard),
-  `guides/ve-discuss.html`, `onboarding.html`, `apply.html` (`/apply` goes to `/claim?add=1`, Join the Directory).
+  `guides/ve-discuss.html`, `onboarding.html`, `apply.html` (`/apply` goes to `/claim?add=1`, Join the Directory), `welcome.html` (`/welcome` goes to
+  `/passport`, the Welcome Guide, since 2026-11-08).
 - **Partner pitch decks**, standalone sales documents with their own footer,
   some marked Confidential: `partners/community-partner.html` and everything
   in `partners/pitches/`. The member nav and its Passport CTA do not belong
@@ -7294,3 +7295,15 @@ Removed, never deleted; only for concealment or misleading diners). On branch `c
   (`#adoption/30|90|all`, `ve-certification` `adoption`, v4 from 990950d, sha256 matched): counts only, never a restaurant's score. Proven in a rolled-back transaction
   (no snapshot before finishing, the first kept with its blocker, same-day changes folded into one row, ticks counted); the card checked at 1440 and 390 px against
   sample answers. `ve-certification`'s admin-token route answers 401 (its `LESARUSS_ADMIN_TOKEN` env is not set; it was so before this change), so test it signed in.
+
+## The Welcome Guide is our About us and the free front door (Sean, 2026-11-08, playbook `ve-explorer-path`)
+
+Proposal `docs/proposals/explorer-welcome-guide.md` (approved). `/passport` (`passport.html`, `guide-scripts/welcome-guide.js`) is the Welcome Guide, copied
+from the Holiday Guide (template gate). Liz hosts. The Overview is enough on its own (Start here, Become a Founder, the tour: Liz's eight chapters, approved
+script v3, text until the video is made); ten optional section pages go deeper (Directory, Your City, Events, Media, Guides, Points and Levels, Your Path,
+Make It Better, For the Animals, Become a Founder), each What it is / How to use it today / What members get, Liz's line a text draft. Every page ends on the
+**Explorer card** (`public/ve-explorer-card.js`, `VEExplorerCard.html({back, member, next})` and `wire(root)`): the bridge any Guide can end on; it sets
+`sessionStorage` `ve_after_survey` (survey.html's `pageBack` now takes a `#/` hash) and opens `/survey?s=explorer`. A member on Become a Founder sees their
+first steps. `/business` moved to `business-guide.html` (rewrite in `vercel.json`, `BIZ` always true). The footer's ABOUT, `/about` and `/welcome` open
+`/passport`. Old hashes (`#/join`, `#/places`...) land on their new page; `?from=vote|save|...` notes kept. The Explorer question `x_hear` now reads "How should
+we reach you with founder news?" (the founder list). Not done: the Overview video and section videos, Liz's recordings, the paths page.

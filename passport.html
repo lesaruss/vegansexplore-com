@@ -1,103 +1,230 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <script src="/analytics.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Welcome to Vegans Explore</title>
-  <meta name="description" content="How Vegans Explore works, free to read: the Directory, your city's Daily Pulse, Guides and points. Then come in free with a short survey and 250 points.">
-  <!-- Search and share previews in the HTML the server sends (Signal, 2026-11-07). -->
-  <meta property="og:image" content="https://vegansexplore.com/public/og-default.jpg">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="https://vegansexplore.com/public/og-default.jpg">
+  <title>Welcome to Vegans Explore - The Welcome Guide</title>
+  <meta name="description" content="What Vegans Explore is and how to use it: search, the Directory, your city, events, Guides, points and how to make it better. Then join free with a short survey and 250 points.">
   <link rel="canonical" href="https://vegansexplore.com/passport">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Vegans Explore">
   <meta property="og:title" content="Welcome to Vegans Explore">
-  <meta property="og:description" content="How Vegans Explore works, then come in free with a short survey.">
+  <meta property="og:description" content="Find your places, your people and your causes, city by city. Learn how it works, then join free with a short survey.">
   <meta property="og:url" content="https://vegansexplore.com/passport">
+  <meta property="og:image" content="https://vegansexplore.com/public/guides/welcome-guide.jpg">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    /* The Passport Guide (Sean locked 2026-10-25, playbook ve-pricing-points-passport): "a Passport squeeze page built
-       like the Dairy Guide with Guide pictures and no talking avatars". The Dairy Guide's layout: the tabs are the tour,
-       a Guide stays on the right of every tab with their words in a bubble, the content sits to the left on a clean white
-       page, Back / N of M / Next, and on desktop the nav, the Guide and the footer share one screen. No clips: each tab
-       shows a Guide's picture (VEGuideArt square). A signed-out Vote, Save, Check in or Give anywhere on the site lands here (?from=vote|save|checkin|give|board|tickets&back=).
-       Since 2026-11-07 (canon-ve-door-guides v12) the survey is the only way in; the $11 is an optional contribution once in.
-       Since 2026-11-03 this page is the Welcome (Sean: "the welcome should just be the passport too... we're merging the passport, the
-       welcome, and the taster all together"): free and public, how to use Vegans Explore, ending on the two ways in (the survey at
-       /survey?s=explorer, the Explorer survey since 2026-11-06, or the $11). canon-ve-people-campaigns-doors; docs/proposals/people-campaigns-doors.md section 2. */
+    /* The Holiday Guide (canon-ve-holiday-guide, Sean 2026-11-07, playbook ve-holiday-guide), copied from the Nutrition Guide, which
+       is the Dairy Guide family (the template gate). Free and public; Theo stays on the right of every tab (his lines are text drafts
+       until Sean approves and they are recorded). Code: /guide-scripts/holiday-guide.js. */
+
+    
     :root{--g:#1f5f22;--g2:#16a34a;--gl:#e8f5e9;--gm:#b8ddb9;--ink:#1a1a1a;--ink75:rgba(26,26,26,0.78);--ink55:rgba(26,26,26,0.6);--line:rgba(0,0,0,0.1);--warm:#fff7e8;--warmline:#f2d7a6;}
     body{margin:0;background:#fff;color:var(--ink);font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;}
     *,*::before,*::after{box-sizing:border-box;}
 
+    /* Header: the Guide's name, then the $11 box for visitors or search for members, then the tabs. */
     .dg-top{background:linear-gradient(120deg,rgba(10,18,12,0.92) 0%,rgba(16,40,22,0.8) 50%,rgba(31,95,34,0.55) 100%),url('/communities/new-york/banner.jpg') center 32%/cover no-repeat;background-color:#14301c;color:#fff;padding:16px 40px 0;}
     .dg-top-row{display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
     .dg-brand-mark{flex:1 1 280px;min-width:0;}
     .dg-eyebrow{font-size:10.5px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;color:#c5f2c7;}
     .dg-title{font-size:clamp(22px,2.6vw,32px);font-weight:900;line-height:1.05;letter-spacing:-0.01em;margin:4px 0 0;text-transform:uppercase;}
+    .dg-searchbox{flex:0 1 480px;position:relative;}
+    .dg-searchbox input{width:100%;font-family:inherit;font-size:14px;padding:11px 16px 11px 42px;border-radius:6px;border:2px solid transparent;background:#fff;color:var(--ink);}
+    .dg-searchbox input:focus{outline:none;border-color:#22C55E;}
+    .dg-searchbox svg{position:absolute;left:15px;top:50%;transform:translateY(-50%);}
+    .dg-for-member{display:none !important;}
+    body.dg-member .dg-for-member{display:block !important;}
+    body.dg-member .dg-for-guest{display:none !important;}
     .dg-joinbox{flex:0 0 auto;display:flex;align-items:center;gap:14px;background:rgba(6,14,8,0.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(197,242,199,0.28);border-radius:12px;padding:9px 10px 9px 16px;}
+    /* The price is as tall as the button beside it: $11, then "one time / purchase" on two rows (Sean, 2026-10-10) */
     .dg-jb-price{display:flex;align-items:center;gap:8px;white-space:nowrap;height:42px;}
     .dg-jb-price b{font-size:38px;font-weight:900;line-height:42px;letter-spacing:-0.01em;}
     .dg-jb-price small{display:block;font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:#c5f2c7;line-height:16px;}
+    .dg-joinbox .dg-btn{min-height:42px;}
     .dg-jb-in{font-size:12px;line-height:1.35;color:#e6f4e7;}
     .dg-jb-in a{color:#c5f2c7;font-weight:800;white-space:nowrap;}
+    .dg-status{font-size:12.5px;font-weight:700;color:#ffd79a;}
+    .dg-status:empty{display:none;}
     .dg-menu{display:flex;gap:2px;margin-top:12px;overflow:hidden;}
-    .dg-menu a{display:flex;align-items:center;gap:6px;padding:11px 14px 12px;color:#e6f4e7;text-decoration:none;font-size:11px;font-weight:800;letter-spacing:0.07em;text-transform:uppercase;border-radius:6px 6px 0 0;white-space:nowrap;}
+    .dg-menu a{display:flex;align-items:center;gap:6px;padding:11px 15px 12px;color:#e6f4e7;text-decoration:none;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;border-radius:8px 8px 0 0;white-space:nowrap;}
     .dg-menu a:hover{background:rgba(255,255,255,0.08);color:#fff;}
     .dg-menu a[aria-current="page"]{background:#fff;color:var(--g);}
+    .dg-menu .dg-lk{opacity:0.7;}
     .dg-menu .dg-join-tab{margin-left:auto;color:#c5f2c7;}
     .dg-menu-select{display:none;}
 
+    /* The Guide: content left, Maya right. */
     .dg-app{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:28px;padding:20px 40px 20px;align-items:stretch;}
     .dg-main{min-width:0;}
     .dg-rail{display:flex;flex-direction:column;gap:10px;min-height:0;}
-    .dg-guide{position:relative;border-radius:14px;overflow:hidden;background:#f3f6f3 center 18%/cover no-repeat;aspect-ratio:1/1;}
-    .dg-guide.dg-shift{animation:dgShift .55s ease-out;}
-    @keyframes dgShift{from{transform:scale(1.03) translateX(6px);opacity:.75}to{transform:none;opacity:1}}
-    @media (prefers-reduced-motion:reduce){.dg-guide.dg-shift{animation:none;}}
-    .dg-guide-name{font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink55);}
-    .dg-guide-name b{color:var(--ink);}
+    .dg-maya{position:relative;border-radius:14px;overflow:hidden;background:#f3f6f3 center 18%/cover no-repeat;aspect-ratio:4/5;}
+    /* One frame on every tab (Sean, 2026-11-08): Theo's picture and each page's summary video share the same 4:5 box. */
+    .dg-maya video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 18%;display:block;cursor:pointer;background:transparent;}
+    .hg-rplay{position:absolute;left:14px;bottom:14px;width:56px;height:56px;border-radius:50%;border:0;background:rgba(15,31,20,.72);color:#fff;font-size:24px;padding-left:5px;cursor:pointer;z-index:2;box-shadow:0 4px 18px rgba(0,0,0,.25)}
+    .hg-rplay:hover{background:#2D5C27}
+    .hg-rplay[hidden]{display:none}
+    @media (max-width:900px){.hg-rplay{display:none}}
+    /* Play Theo and Talk to Theo share one row, equal halves (Sean, 2026-11-08). When there is nothing to play, Talk takes the row. */
+    @media (min-width:901px){
+      .dg-rail{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-auto-rows:max-content;align-content:start;column-gap:10px;}
+      .dg-rail>*{grid-column:1 / -1;}
+      .dg-rail>#dgPlay:not([hidden]){grid-column:1;}
+      .dg-rail>#dgPlay:not([hidden])~.vepg-talk{grid-column:2;}
+      .dg-rail>#dgPlay,.dg-rail>.vepg-talk{margin:0 !important;height:44px;justify-content:center;align-self:stretch !important;width:100%;box-sizing:border-box;font-size:12.5px;letter-spacing:.02em;white-space:nowrap;padding-left:6px !important;padding-right:6px !important;overflow:hidden;text-overflow:ellipsis;}
+    }
+    /* Expand (Sean, 2026-11-08): on phones a pill like Hide me (top right of the picture, since the picture is too narrow for both side
+       by side under 400 px) opens the page's video, or Theo's picture, big in a lightbox. */
+    .hg-expand{display:none;position:absolute;right:5px;top:6px;z-index:3;border:0;border-radius:6px;background:rgba(26,26,26,.82);color:#fff;font:700 9px/1 Montserrat,system-ui,sans-serif;letter-spacing:.02em;text-transform:uppercase;padding:5px 6px;cursor:pointer;}
+    @media (max-width:900px){
+      .hg-expand{display:inline-flex;align-items:center;gap:4px;}
+    }
+    .hg-lb{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:16px;}
+    .hg-lb[hidden]{display:none;}
+    .hg-lb-in{position:relative;width:min(100%,calc((100vh - 96px) * 0.8),720px);}
+    .hg-lb-in video,.hg-lb-in img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:12px;background:#000;}
+    .hg-lb-x{position:absolute;top:-44px;right:0;border:0;background:rgba(255,255,255,.14);color:#fff;font:800 13px/1 Montserrat,system-ui,sans-serif;padding:10px 14px;border-radius:6px;cursor:pointer;}
+    .dg-maya video::cue{font-size:12.5px;line-height:1.35;background:rgba(0,0,0,0.72);}
+    .dg-maya.dg-shift video{animation:dgShift .55s ease-out;}
+    @keyframes dgShift{from{transform:scale(1.04) translateX(6px);opacity:.75}to{transform:none;opacity:1}}
+    @media (prefers-reduced-motion:reduce){.dg-maya.dg-shift video{animation:none;}}
+    .dg-maya-name{font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--ink55);}
+    .dg-maya-name b{color:var(--ink);}
     .dg-bubble{background:var(--gl);border:1px solid var(--gm);border-radius:12px;padding:12px 14px;font-size:14px;line-height:1.55;color:#123d18;}
-    .dg-tour{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;font-weight:800;color:var(--ink55);}
+    .dg-play{font-family:inherit;width:100%;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:11px 14px;border-radius:6px;border:1.5px solid var(--g);background:var(--g);color:#fff;cursor:pointer;}
+    .dg-play.go{background:#22C55E;border-color:#22C55E;color:#03170a;}
+    .dg-play[hidden]{display:none;}
     .dg-tour.dg-tour-m{display:none;}
+    .dg-namebar{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+    .dg-fold{display:none;align-items:center;gap:6px;font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:7px 10px;border-radius:6px;border:1.5px solid var(--line);background:#fff;color:var(--ink75);cursor:pointer;}
+    .dg-tour{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;font-weight:800;color:var(--ink55);}
     .dg-tnav{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1.5px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;text-decoration:none;}
     .dg-tnav.next{border-color:var(--g);background:var(--g);color:#fff;}
-    .dg-tnav[aria-disabled="true"]{opacity:0.35;pointer-events:none;}
+    .dg-tnav[disabled]{opacity:0.35;cursor:default;}
 
+    /* Section pieces */
+    .dg-crumb{font-size:12px;font-weight:700;color:var(--ink55);margin-bottom:8px;}
+    .dg-crumb a{color:var(--g);text-decoration:none;}
     .dg-k{font-size:11px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--g);}
     .dg-h1{font-size:clamp(22px,2.2vw,30px);font-weight:900;margin:4px 0 6px;letter-spacing:-0.01em;line-height:1.15;}
     .dg-lede{font-size:15px;line-height:1.6;color:var(--ink75);margin:0 0 16px;max-width:860px;}
+    .dg-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px 20px;margin-bottom:8px;}
+    .dg-head .dg-h1{margin-bottom:0;}
+    .dg-head + .dg-lede{margin-bottom:14px;}
+    .dg-toggles{display:inline-flex;flex-wrap:wrap;gap:4px;padding:4px;border-radius:8px;background:#f2f4f2;margin:0;}
+    .dg-toggles a,.dg-toggles button{font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.05em;text-transform:uppercase;padding:8px 14px;border:0;background:transparent;color:var(--ink75);cursor:pointer;text-decoration:none;white-space:nowrap;border-radius:6px;}
+    .dg-toggles [aria-pressed="true"]{background:#fff;color:var(--g);box-shadow:0 1px 4px rgba(0,0,0,0.12);}
+    .dg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:14px;}
+    .dg-card{border:1px solid var(--line);border-radius:12px;background:#fff;padding:16px 18px;}
+    .dg-card h3{font-size:15px;font-weight:800;margin:0 0 6px;}
+    .dg-card p{font-size:13.5px;line-height:1.6;color:var(--ink75);margin:0;}
+    .dg-src{display:block;margin-top:10px;font-size:11.5px;font-weight:700;}
+    .dg-src a{color:var(--g);margin-right:12px;}
+    .dg-chips{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;}
+    .dg-chip{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;padding:8px 13px;border-radius:6px;border:1.5px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;text-decoration:none;}
+    .dg-chip[aria-pressed="true"]{background:var(--g);border-color:var(--g);color:#fff;}
+    .dg-tools{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:12px;}
+    .dg-tools input{flex:0 1 340px;font-family:inherit;font-size:14px;padding:10px 14px;border-radius:6px;border:1.5px solid var(--line);}
+    .dg-tools input:focus{outline:none;border-color:var(--g2);}
+    .dg-count{font-size:12.5px;font-weight:700;color:var(--ink55);}
+    .dg-bcat{font-size:11px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--g);}
+    .dg-note{font-size:12px;line-height:1.45;color:#8a5a00;background:var(--warm);border-radius:6px;padding:5px 8px;margin-top:6px;}
+    .dg-swap{border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:#fff;}
+    .dg-swap h3{font-size:15px;font-weight:900;margin:0 0 8px;}
+    .dg-swap dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:13px;line-height:1.5;}
+    .dg-swap dt{font-weight:800;color:var(--g);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;padding-top:2px;}
+    .dg-swap dd{margin:0;color:var(--ink75);}
+    .dg-swap .dg-tip{margin-top:8px;font-size:12.5px;color:#8a5a00;background:var(--warm);border-radius:6px;padding:6px 9px;}
+    .dg-recipe ol{margin:8px 0 0 18px;padding:0;}
+    .dg-recipe li{font-size:13.5px;line-height:1.6;color:var(--ink75);margin-bottom:4px;}
+    .dg-facts{margin:0;padding-left:20px;columns:2 380px;column-gap:32px;}
+    .dg-facts li{font-size:14px;line-height:1.6;margin-bottom:12px;break-inside:avoid;color:var(--ink75);}
+    .dg-facts li strong{color:var(--ink);}
+    .dg-door{border:1px solid var(--warmline);background:var(--warm);border-radius:14px;padding:22px 24px;max-width:860px;}
+    .dg-door p{font-size:15px;line-height:1.65;margin:0 0 16px;}
     .dg-btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:11px 20px;border-radius:6px;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;background:#22C55E;color:#03170a;white-space:nowrap;}
     .dg-btn:hover{background:#4ade80;}
-    .dg-btn[disabled]{opacity:.6;cursor:default;}
     .dg-btn.dg-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line);}
-    .dg-btns{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:16px;}
-    .dg-note{border:1px solid var(--warmline);background:var(--warm);border-radius:12px;padding:12px 16px;font-size:14px;line-height:1.5;margin:0 0 16px;}
-    .dg-note b{font-weight:900;}
-    .dg-status{display:block;font-size:13px;font-weight:700;color:#8a5a00;margin-top:10px;}
-    .dg-status:empty{display:none;}
+    .dg-btns{display:flex;flex-wrap:wrap;gap:12px;align-items:center;}
+    .dg-empty{font-size:14px;color:var(--ink55);padding:12px 0;}
+    .dg-loading{padding:30px 0;font-size:14px;font-weight:700;color:var(--ink55);}
+    .vrd-root a.subcat-pill{text-decoration:none;display:inline-block;}
 
+    /* Overview: what is in each tab */
     .dg-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr));gap:12px;}
     .dg-tile{display:flex;gap:14px;align-items:center;padding:16px;border-radius:14px;text-decoration:none;color:var(--ink);background:var(--gl);border:1px solid var(--gm);transition:transform .12s,box-shadow .12s;}
     .dg-tile:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(0,0,0,0.08);}
-    .dg-tile .dg-ic{flex:0 0 48px;height:48px;border-radius:12px;background:#fff center/cover no-repeat;}
+    .dg-tile .dg-ic{flex:0 0 48px;height:48px;border-radius:12px;background:#1f5f22;display:flex;align-items:center;justify-content:center;}
     .dg-tile b{display:block;font-size:14.5px;font-weight:900;}
     .dg-tile span{display:block;font-size:12.5px;color:var(--ink75);line-height:1.45;margin-top:2px;}
-    .dg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:14px;}
-    .dg-card{border:1px solid var(--line);border-radius:12px;background:#fff;padding:16px 18px;}
-    .dg-card b{display:block;font-size:15px;font-weight:900;margin-bottom:4px;}
-    .dg-card p{font-size:13.5px;line-height:1.55;color:var(--ink75);margin:0;}
-    .dg-card .dg-tag{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:var(--gl);color:var(--g);margin-bottom:8px;}
-    .dg-card .dg-tag.soon{background:#f2f4f2;color:var(--ink55);}
-    .dg-card a{color:var(--g);font-weight:800;}
-    .dg-levels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:16px;}
-    .dg-level{border:1px solid var(--gm);background:var(--gl);border-radius:12px;padding:16px;text-align:center;}
-    .dg-level b{display:block;font-size:13px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--g);}
-    .dg-level strong{display:block;font-size:28px;font-weight:900;margin:4px 0 2px;}
-    .dg-level span{font-size:12.5px;color:var(--ink75);}
+    .dg-tile.dg-warm{background:var(--warm);border-color:var(--warmline);}
+    .dg-mlock{display:inline-flex !important;align-items:center;gap:4px;font-size:10.5px !important;font-weight:800;color:#8a5a00 !important;letter-spacing:0.06em;text-transform:uppercase;margin-top:5px !important;}
+    .dg-start{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:center;margin:18px 0 0;}
+    .dg-start p{margin:0;font-size:13.5px;color:var(--ink55);}
 
+    /* A locked section: the real thing, blurred, with the note on top (Sean, 2026-10-09). */
+    .dg-gated{position:relative;border-radius:14px;overflow:hidden;min-height:280px;max-height:340px;}
+    /* The research, one fact at a time */
+    .dg-facts2{display:grid;grid-template-columns:minmax(220px,0.8fr) minmax(0,1.6fr);gap:20px;align-items:start;}
+    .dg-fact-list{display:flex;flex-direction:column;gap:6px;}
+    .dg-fact-list a{display:flex;align-items:center;gap:10px;padding:9px 14px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--ink);text-decoration:none;font-size:13.5px;font-weight:700;line-height:1.35;}
+    .dg-fact-list a span{flex:0 0 24px;height:24px;border-radius:50%;background:var(--gl);color:var(--g);font-size:11.5px;font-weight:900;display:flex;align-items:center;justify-content:center;}
+    .dg-fact-list a svg{margin-left:auto;flex:0 0 auto;color:#8a5a00;}
+    .dg-fact-list a[aria-current="true"]{border-color:var(--g);background:var(--gl);}
+    .dg-fact-list a[aria-current="true"] span{background:var(--g);color:#fff;}
+    .dg-fact{border:1px solid var(--line);border-radius:14px;padding:22px 24px;background:#fff;min-height:280px;}
+    .dg-fact h3{font-size:20px;font-weight:900;margin:0 0 10px;line-height:1.25;}
+    .dg-fact p{font-size:15px;line-height:1.7;color:var(--ink75);margin:0;max-width:760px;}
+    .dg-fact .dg-src{margin-top:14px;font-size:12.5px;}
+    .dg-fact-next{display:inline-block;margin-top:16px;font-size:12px;font-weight:800;letter-spacing:0.06em;text-transform:uppercase;color:var(--g);text-decoration:none;}
+    .dg-fact .dg-gated{margin:-22px -24px;border-radius:14px;}
+    .dg-blur{filter:blur(5px);opacity:0.75;pointer-events:none;user-select:none;}
+    .dg-gate{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(440px,calc(100% - 32px));background:#fff;border:1px solid var(--gm);border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,0.16);padding:20px 22px;text-align:center;}
+    .dg-gate .dg-lockic{display:inline-flex;width:36px;height:36px;border-radius:50%;background:var(--gl);align-items:center;justify-content:center;margin-bottom:8px;}
+    .dg-gate b{display:block;font-size:17px;font-weight:900;margin-bottom:6px;}
+    .dg-gate p{font-size:13.5px;line-height:1.55;color:var(--ink75);margin:0 0 14px;}
+    .dg-gate .dg-btns{justify-content:center;}
+    .dg-gate a{font-size:12.5px;font-weight:800;color:var(--g);}
+    .dg-skel{border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:#fff;}
+    .dg-skel i{display:block;height:10px;border-radius:5px;background:#e3e8e3;margin:8px 0;}
+    .dg-skel i:first-child{height:14px;width:60%;background:#cfd8cf;margin-top:0;}
+    .dg-skel h3{font-size:15px;font-weight:800;margin:0 0 8px;}
+
+    /* Swaps preview: one free swap, then the rest by category */
+    .dg-swappv{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:22px;align-items:start;}
+    .dg-free{display:inline-block;font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;background:#22C55E;color:#03170a;border-radius:4px;padding:3px 10px;margin-bottom:8px;}
+    .dg-more h4{font-size:11px;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;color:var(--g);margin:0 0 8px;}
+    .dg-more-g{margin-bottom:12px;}
+    .dg-more-g b{display:block;font-size:12.5px;font-weight:800;margin-bottom:6px;}
+    .dg-more-g span{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:6px 10px;border-radius:6px;background:#f2f4f2;color:var(--ink75);margin:0 6px 6px 0;}
+
+    /* Cookbook preview */
+    .dg-books{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;max-width:520px;}
+    .dg-books img{width:100%;aspect-ratio:2/3;object-fit:cover;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,0.18);display:block;background:var(--gl);}
+    .dg-cookpv{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:22px;align-items:start;}
+
+    /* The Pulse: research and our podcasts */
+
+    /* A Directory listing or product inside the Guide */
+    .dg-inguide{border:1px solid var(--gm);background:var(--gl);border-radius:12px;padding:14px 18px;margin:0 0 14px;}
+    .dg-inguide-k{font-size:10.5px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--g);margin-bottom:8px;}
+    .dg-inguide-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:10px 22px;}
+    .dg-inguide-i{font-size:13px;line-height:1.5;color:var(--ink75);}
+    .dg-inguide-i b{display:block;font-size:12px;font-weight:800;letter-spacing:0.04em;text-transform:uppercase;color:var(--ink);}
+    .dg-inguide-i a.dg-store{color:var(--g);font-weight:700;text-decoration:underline;text-underline-offset:2px;}
+    .dg-inguide-i em{display:block;font-style:normal;font-size:12px;color:#8a5a00;margin-top:2px;}
+    .dg-lframe iframe{display:block;width:100%;height:1400px;border:1px solid var(--line);border-radius:14px;background:#fff;}
+    .dg-res h2{font-size:13px;font-weight:900;letter-spacing:0.16em;text-transform:uppercase;color:var(--g);margin:22px 0 10px;}
+    .dg-res h2:first-child{margin-top:0;}
+    .dg-hit{display:block;text-decoration:none;color:inherit;}
+    .dg-hit:hover{border-color:var(--g2);}
+    .dg-chef-empty{display:flex;gap:24px;align-items:center;justify-content:space-between;flex-wrap:wrap;border:1px dashed var(--gm);background:var(--gl);border-radius:16px;padding:24px 26px;}
+    .dg-chef-empty h3{font-size:18px;font-weight:900;margin:0 0 6px;}
+    .dg-chef-empty p{font-size:14px;line-height:1.6;color:var(--ink75);margin:0;max-width:640px;}
+
+    /* Get access */
     .dg-access{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:24px;align-items:start;}
     .dg-access ul{margin:0 0 6px;padding:0;list-style:none;}
     .dg-access li{font-size:14.5px;line-height:1.5;color:var(--ink75);padding:9px 0 9px 26px;position:relative;border-bottom:1px solid var(--line);}
@@ -108,71 +235,492 @@
     .dg-pricebox .dg-big small{font-size:13px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--g);margin-left:6px;}
     .dg-pricebox p{font-size:13.5px;line-height:1.55;color:var(--ink75);margin:10px 0 16px;}
     .dg-pricebox .dg-btn{width:100%;}
+    .dg-pricebox .dg-ghost{width:100%;}
+    .dg-pp{font-size:13px !important;margin:12px 0 0 !important;}
+    .dg-pp a{color:var(--g);font-weight:800;}
     .dg-pricebox a{color:var(--g);font-weight:800;}
 
+    /* The Cookbook (Phase 1, 2026-10-10): recipe tiles, one recipe, Share a recipe, My recipes */
+    .dg-rcp{display:flex;flex-direction:column;gap:8px;border:1px solid var(--line);border-radius:12px;background:#fff;padding:14px 16px;text-decoration:none;color:inherit;transition:border-color .15s;}
+    .dg-rcp:hover{border-color:var(--g2);}
+    .dg-rcp h3{font-size:15px;font-weight:800;margin:0;line-height:1.3;}
+    .dg-rcp-top{display:flex;justify-content:space-between;align-items:center;gap:8px;}
+    .dg-rcp-meta{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--ink55);}
+    .dg-votes{margin-left:auto;display:inline-flex;align-items:center;gap:4px;color:var(--ink55);}
+    .dg-votes.on{color:#c2410c;}
+    .dg-by{display:inline-flex;align-items:center;gap:7px;font-size:12px;}
+    .dg-by i{width:24px;height:24px;border-radius:50%;background:var(--gl) center 18%/cover no-repeat;flex:0 0 24px;}
+    .dg-by b{font-weight:800;}
+    .dg-badge{font-size:9.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;background:var(--g);color:#fff;border-radius:4px;padding:2px 6px;}
+    .dg-badge-m{background:#eef0ee;color:var(--ink75);}
+    .dg-tag{display:inline-block;font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;border-radius:4px;padding:3px 8px;white-space:nowrap;}
+    .dg-tag-live{background:var(--gl);color:var(--g);}
+    .dg-tag-wait{background:#fff4e2;color:#6b3f00;}
+    .dg-tag-retest{background:#fff4e2;color:#8a5a00;}
+    .dg-tag-change{background:#fbeeec;color:#8a1c12;}
+    .dg-tag-off{background:#eef0ee;color:#4a4f4a;}
+    .dg-recipe-h{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:14px;}
+    .dg-recipe-h .dg-h1{margin-top:8px;}
+    .dg-recipe-acts{display:flex;align-items:center;gap:10px;}
+    .dg-vote{display:inline-flex;align-items:center;gap:8px;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:10px 14px;border-radius:6px;border:1.5px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;}
+    .dg-vote b{font-size:13px;color:var(--ink55);}
+    .dg-vote.on{border-color:#f5c6a8;background:#fff6f0;color:#c2410c;}
+    .dg-recipe-b{display:grid;grid-template-columns:minmax(220px,0.8fr) minmax(0,1.6fr);gap:24px;align-items:start;}
+    .dg-ing,.dg-steps{margin:8px 0 0;padding-left:20px;}
+    .dg-ing li,.dg-steps li{font-size:14.5px;line-height:1.6;color:var(--ink75);margin-bottom:6px;}
+    .dg-report{margin-top:18px;padding-top:14px;border-top:1px solid var(--line);font-size:13.5px;color:var(--ink75);}
+    .dg-report p{margin:0;}
+    .dg-report label{display:block;margin-bottom:6px;}
+    .dg-report textarea,.dg-field input,.dg-field textarea{width:100%;font-family:inherit;font-size:14px;padding:10px 12px;border:1.5px solid var(--line);border-radius:6px;margin-bottom:10px;}
+    .dg-report textarea:focus,.dg-field input:focus,.dg-field textarea:focus{outline:none;border-color:var(--g2);}
+    .dg-link{font-family:inherit;font-size:13px;font-weight:800;color:var(--g);background:none;border:0;padding:6px 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px;}
+    .dg-rows{display:flex;flex-direction:column;gap:8px;}
+    .dg-row{display:grid;grid-template-columns:minmax(0,1fr) auto 110px;gap:14px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:12px 14px;background:#fff;}
+    .dg-row-main b{display:block;font-size:14.5px;font-weight:800;}
+    .dg-row-main span{font-size:12.5px;color:var(--ink55);}
+    .dg-row .dg-btn{min-height:36px;padding:8px 12px;}
+    .dg-stepnames{display:flex;gap:6px;list-style:none;margin:6px 0 18px;padding:0;flex-wrap:wrap;}
+    .dg-stepnames li{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink55);padding:8px 12px;border-radius:6px;background:#f2f4f2;}
+    .dg-stepnames li span{width:20px;height:20px;border-radius:50%;background:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:11px;}
+    .dg-stepnames li[aria-current="step"]{background:var(--g);color:#fff;}
+    .dg-stepnames li[aria-current="step"] span{color:var(--g);}
+    .dg-stepnames li.done{color:var(--g);}
+    .dg-form{max-width:860px;}
+    .dg-field{display:block;}
+    .dg-field>span{display:block;font-size:13px;font-weight:800;margin-bottom:6px;}
+    .dg-field>span i{font-style:normal;font-weight:600;color:var(--ink55);}
+    .dg-field small{display:block;font-size:12px;color:var(--ink55);margin:-2px 0 6px;}
+    .dg-two{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+    .dg-formnav{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:8px;font-size:12px;font-weight:800;color:var(--ink55);}
+    .dg-sharenote{font-size:13px;line-height:1.55;color:var(--ink75);background:var(--gl);border-radius:8px;padding:10px 12px;margin:0 0 10px;}
+    .dg-form .dg-status,.dg-report .dg-status{display:block;color:#8a1c12;font-size:13px;margin-bottom:6px;}
+    .dg-done{border:1px solid var(--gm);background:var(--gl);border-radius:14px;padding:24px 26px;max-width:860px;}
+    /* v2 (Sean, 2026-10-10): a picture left of everything, rows, votes, the shopping list and Made it? photos */
+    .dg-th{flex:0 0 auto;width:96px;height:96px;border-radius:12px;background:var(--gl) center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:var(--g2);}
+    .dg-th-none{background:var(--gl);border:1px solid var(--gm);}
+    .dg-srows{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(460px,100%),1fr));gap:12px;}
+    .dg-srow{display:flex;gap:16px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff;}
+    .dg-srow-b{flex:1 1 auto;min-width:0;}
+    .dg-srow-b h3{font-size:15.5px;font-weight:900;margin:2px 0 8px;}
+    .dg-srow-b dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:13px;line-height:1.5;}
+    .dg-srow-b dt{font-weight:800;color:var(--g);font-size:11px;letter-spacing:0.06em;text-transform:uppercase;padding-top:2px;}
+    .dg-srow-b dd{margin:0;color:var(--ink75);}
+    .dg-srow-b .dg-tip{margin-top:8px;font-size:12.5px;color:#8a5a00;background:var(--warm);border-radius:6px;padding:6px 9px;}
+    .dg-vote-s{flex:0 0 auto;padding:7px 10px;gap:5px;align-self:flex-start;}
+    .dg-sort{font-family:inherit;font-size:13px;font-weight:700;color:var(--ink);padding:10px 44px 10px 14px;border-radius:6px;border:1.5px solid var(--line);background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 16px center;-webkit-appearance:none;appearance:none;cursor:pointer;}
+    .dg-rrows{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(460px,100%),1fr));gap:12px;}
+    .dg-rrow{display:flex;gap:16px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:12px;background:#fff;text-decoration:none;color:inherit;transition:border-color .15s;}
+    .dg-rrow:hover{border-color:var(--g2);}
+    .dg-rrow-b{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;gap:6px;}
+    .dg-rrow-b h3{font-size:15.5px;font-weight:800;margin:0;line-height:1.3;}
+    .dg-rrow-b .dg-votes{margin-left:0;}
+    .dg-recipe-top{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(240px,1fr);gap:28px;align-items:start;margin-bottom:18px;}
+    .dg-recipe-pic{margin:0;}
+    .dg-recipe-pic .dg-th{width:100%;height:auto;aspect-ratio:1/1;border-radius:16px;}
+    .dg-recipe-pic .dg-th svg{width:48px;height:48px;}
+    .dg-recipe-pic figcaption{font-size:12px;color:var(--ink55);margin-top:8px;}
+    .dg-shoplist{list-style:none;margin:8px 0 0;padding:0;border-top:1px solid var(--line);}
+    .dg-shoplist li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);}
+    .dg-shoplist label{display:flex;align-items:center;gap:10px;font-size:14.5px;color:var(--ink);cursor:pointer;min-width:0;}
+    .dg-shoplist input{width:18px;height:18px;accent-color:#22C55E;flex:0 0 auto;}
+    .dg-shoplist input:checked+span{text-decoration:line-through;color:var(--ink55);}
+    .dg-shop{flex:0 0 auto;font-size:11.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--g);text-decoration:none;border:1.5px solid var(--gm);border-radius:6px;padding:6px 10px;white-space:nowrap;}
+    .dg-shop:hover{background:var(--gl);}
+    .dg-made{margin-top:24px;border:1px solid var(--line);border-radius:14px;padding:18px;background:#fff;}
+    .dg-made-h{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:12px;}
+    .dg-made-h p{font-size:13.5px;color:var(--ink75);margin:4px 0 0;}
+    .dg-upload{cursor:pointer;}
+    .dg-made .dg-status{display:block;color:#1f5f22;font-size:13px;margin-bottom:8px;}
+    .dg-gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;}
+    .dg-gallery .dg-empty,.dg-gallery .dg-loading{grid-column:1/-1;padding:6px 0;font-size:13.5px;}
+    .dg-gp{margin:0;}
+    .dg-gp span{display:block;aspect-ratio:1/1;border-radius:10px;background:var(--gl) center/cover no-repeat;}
+    .dg-gp figcaption{font-size:12px;font-weight:700;color:var(--ink55);margin-top:5px;}
+    .dg-gp-wait span{opacity:.55;}
+    /* One tile (Sean, 2026-10-10): vote and save sit together at the top right of every swap, recipe and episode */
+    /* Stacked, vote on top of Save (Sean, 2026-10-10: side by side squeezed the words on a phone) */
+    .dg-acts{flex:0 0 auto;display:flex;flex-direction:column;gap:6px;align-items:stretch;align-self:flex-start;}
+    .dg-acts .dg-vote,.dg-acts .dg-save{justify-content:center;align-self:stretch;}
+    /* Pulse interviews are their podcast episodes, the row a person's page uses (/public/ve-episodes.js), two across (Sean, 2026-10-29:
+       "have them in two columns, so that way it doesn't take up too much space"); one on a phone */
+    .rg-eps .vep-list{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .rg-eps .vep-acts .dg-vote,.rg-eps .vep-acts .dg-save{justify-content:center;}
+    @media (max-width:760px){.rg-eps .vep-list{grid-template-columns:minmax(0,1fr);}}
+    .dg-save{display:inline-flex;align-items:center;gap:5px;font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:7px 10px;border-radius:6px;border:1.5px solid var(--line);background:#fff;color:var(--ink55);cursor:pointer;}
+    .dg-save:hover{border-color:var(--g2);color:var(--g);}
+    .dg-save.on{border-color:var(--gm);background:var(--gl);color:var(--g);}
+    .dg-srow[data-href]{cursor:pointer;transition:border-color .15s;}
+    .dg-srow[data-href]:hover{border-color:var(--g2);}
+    .dg-srow-b h3 a{color:inherit;text-decoration:none;}
+    .dg-srow-b .dg-rcp-meta{margin-bottom:6px;}
+    .dg-srow-p{font-size:13px;line-height:1.5;color:var(--ink75);margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    #dgMain .vrd-root .rank-right{height:auto;min-height:60px;}
+    #dgMain .vrd-root .rank-right .dg-save{padding:5px 9px;font-size:10px;}
+    @media (max-width:480px){.dg-save span{display:none;}.dg-save{padding:7px 8px;}}
+    .dg-look{border:1px solid var(--line);border-radius:16px;padding:22px 24px;background:#fff;}
+    .dg-look-stat{display:flex;gap:16px;align-items:center;background:var(--gl);border-radius:12px;padding:16px 18px;margin-bottom:16px;color:var(--g);}
+    .dg-look-stat b{display:block;font-size:40px;font-weight:900;line-height:1;color:var(--ink);}
+    .dg-look-stat span{display:block;font-size:13px;font-weight:700;color:var(--ink75);margin-top:4px;}
+    .dg-look h3{font-size:19px;font-weight:900;margin:0 0 8px;}
+    .dg-look p{font-size:15px;line-height:1.65;color:var(--ink75);margin:0;}
+    .dg-look-nav{display:flex;justify-content:space-between;gap:10px;margin-top:18px;}
+    @media (max-width:900px){.dg-recipe-top{grid-template-columns:minmax(0,1fr);}.dg-recipe-pic{order:-1;max-width:260px;}.dg-facts2{grid-template-columns:minmax(0,1fr);}}
+    @media (max-width:480px){.dg-th{width:72px;height:72px;}.dg-srow,.dg-rrow{gap:12px;padding:10px;}.dg-look-stat b{font-size:32px;}.dg-shop{padding:5px 8px;font-size:10.5px;}}
+    @media (max-width:900px){.dg-recipe-b{grid-template-columns:minmax(0,1fr);}.dg-row{grid-template-columns:minmax(0,1fr) auto;}.dg-row .dg-btn{grid-column:1/-1;}.dg-two{grid-template-columns:minmax(0,1fr);}}
+    /* Desktop: the nav, the Guide and the footer share one screen; the content scrolls inside its own box if it must. */
     @media (min-width:901px) and (min-height:600px){
       html.dg-fit,html.dg-fit body{overflow:hidden;height:100%;}
       html.dg-fit .page-frame{display:flex;flex-direction:column;height:100vh;}
       html.dg-fit .dg-app{flex:1 1 auto;min-height:0;}
       html.dg-fit .dg-main{overflow-y:auto;scrollbar-width:thin;padding-right:6px;}
-      html.dg-fit .dg-rail{overflow:hidden;}
-      html.dg-fit .dg-guide{aspect-ratio:auto;flex:1 1 auto;min-height:150px;max-height:320px;}
+      html.dg-fit .dg-rail{overflow-y:auto;scrollbar-width:thin;}
+      html.dg-fit .dg-maya{aspect-ratio:4/5;flex:0 0 auto;width:100%;height:auto;align-self:stretch;}
+      html.dg-fit .dg-bubble{max-height:136px;overflow-y:auto;flex:0 0 auto;}
       html.dg-fit .ve-footer-inner{padding-top:14px !important;padding-bottom:14px !important;}
     }
-    @media (max-width:1280px){.dg-menu a{padding:10px 10px 11px;font-size:10.5px;letter-spacing:.05em;}}
-    @media (max-width:1180px){.dg-app{grid-template-columns:minmax(0,1fr) 280px;}.dg-access{grid-template-columns:minmax(0,1fr);}.dg-menu{display:none;}
-      .dg-menu-select{display:block;margin:12px 0 14px;width:100%;font-family:inherit;font-size:14px;font-weight:800;padding:12px 44px 12px 14px;border-radius:6px;border:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23525252' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center/10px 6px;-webkit-appearance:none;appearance:none;color:var(--ink);}}
+    @media (max-width:1180px){.dg-app{grid-template-columns:minmax(0,1fr) 280px;}.dg-swappv,.dg-cookpv,.dg-access{grid-template-columns:minmax(0,1fr);}}
     @media (max-width:900px){
-      .dg-top{padding:16px 16px 2px;}
+      .dg-top{padding:16px 16px 14px;}
+      .dg-menu{display:none;}
+      .dg-menu-select{display:block;margin-top:12px;width:100%;font-family:inherit;font-size:14px;font-weight:800;padding:12px 44px 12px 14px;border-radius:6px;border:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23525252' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center/10px 6px;-webkit-appearance:none;appearance:none;color:var(--ink);}
+      /* Phones: price and button on one row, the button filling it; Already a member? Sign in on one line under them */
       .dg-joinbox{width:100%;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:10px 14px;padding:12px 12px 12px 14px;}
       .dg-joinbox .dg-btn{width:100%;}
       .dg-joinbox .dg-jb-in{grid-column:1 / -1;text-align:center;border-top:1px solid rgba(197,242,199,0.2);padding-top:9px;}
       .dg-joinbox .dg-jb-in br{display:none;}
       .dg-joinbox .dg-jb-in a{margin-left:4px;}
+      .dg-joinbox .dg-status{grid-column:1 / -1;}
       .dg-app{grid-template-columns:minmax(0,1fr);padding:16px 16px 40px;gap:18px;}
-      .dg-rail{order:-1;}
-      .dg-guide{aspect-ratio:1/1;width:100%;max-width:280px;margin:0 auto;}
+      /* Phones (Sean, 2026-10-10): Maya full width on top with her words under her, a Hide / Show switch so she never
+         takes over the screen, and Back / N of M / Next at the bottom of the content; Next goes back up to her. */
+      .dg-rail{order:-1;display:flex;flex-direction:column;gap:10px;}
+      .dg-maya{aspect-ratio:4/5;width:100%;}
       .dg-rail .dg-tour{display:none;}
       .dg-tour.dg-tour-m{display:flex;order:2;border-top:1px solid var(--line);padding-top:14px;}
-      .dg-levels{grid-template-columns:minmax(0,1fr);}
+      .dg-fold{display:inline-flex;}
+      .dg-rail.dg-folded .dg-maya,.dg-rail.dg-folded .dg-bubble,.dg-rail.dg-folded .dg-play{display:none;}
+      .dg-books{grid-template-columns:repeat(4,minmax(0,1fr));}
+      .dg-facts2{grid-template-columns:minmax(0,1fr);}
+      .dg-gated{max-height:none;}
     }
     @media (max-width:480px){.dg-bubble{font-size:13.5px;padding:11px 13px;}}
+
+    /* The Restaurant Guide's own pieces (2026-10-10): the audit, one fix at a time, the quiz, promotions. */
+    .rg-find{display:flex;gap:10px;flex-wrap:wrap;max-width:860px;margin-bottom:10px;}
+    .rg-find input{flex:1 1 320px;font-family:inherit;font-size:15px;padding:12px 14px;border-radius:6px;border:1.5px solid var(--line);}
+    .rg-find input:focus{outline:none;border-color:var(--g2);}
+    .rg-hits{display:flex;flex-direction:column;gap:6px;max-width:860px;margin-bottom:12px;}
+    .rg-hit{display:flex;justify-content:space-between;align-items:center;gap:12px;width:100%;text-align:left;font-family:inherit;font-size:14.5px;font-weight:800;padding:12px 14px;border-radius:10px;border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;}
+    .rg-hit span{font-size:12.5px;font-weight:600;color:var(--ink55);}
+    .rg-hit:hover{border-color:var(--g2);}
+    .rg-manual summary{cursor:pointer;font-size:13.5px;font-weight:800;color:var(--g);margin:6px 0 10px;}
+    .rg-manual .dg-two{max-width:860px;}
+    .rg-waiting{display:flex;align-items:center;gap:14px;border:1px solid var(--gm);background:var(--gl);border-radius:14px;padding:20px 22px;max-width:860px;font-size:15px;font-weight:700;color:#123d18;}
+    .rg-spin{width:22px;height:22px;border-radius:50%;border:3px solid var(--gm);border-top-color:var(--g);animation:rgSpin 1s linear infinite;flex:0 0 auto;}
+    @keyframes rgSpin{to{transform:rotate(360deg)}}
+    .rg-todo{display:flex;flex-direction:column;gap:8px;margin:0 0 14px;}
+    .rg-item{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 14px;align-items:start;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff;}
+    .rg-item b{font-size:14.5px;font-weight:800;}
+    .rg-item p{grid-column:2;margin:0;font-size:13.5px;line-height:1.55;color:var(--ink75);}
+    .rg-item p.rg-how{color:#123d18;}
+    .rg-item a{grid-column:2;font-size:12px;font-weight:800;color:var(--g);}
+    .rg-st{font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;border-radius:4px;padding:3px 8px;white-space:nowrap;margin-top:2px;}
+    .rg-st-fix{background:#fbeeec;color:#8a1c12;}
+    .rg-st-good{background:var(--gl);color:var(--g);}
+    .rg-st-review{background:#fff4e2;color:#6b3f00;}
+    .rg-st-skip{background:#eef0ee;color:#4a4f4a;}
+    .rg-area{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink55);}
+    .rg-score{display:flex;flex-wrap:wrap;gap:12px;margin:0 0 16px;}
+    .rg-score div{flex:1 1 140px;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff;}
+    .rg-score b{display:block;font-size:30px;font-weight:900;line-height:1.05;}
+    .rg-score span{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ink55);}
+    .rg-score .rg-main{background:var(--gl);border-color:var(--gm);}
+    .rg-score7{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));}
+    .rg-offer{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:14px;margin-top:6px;}
+    .rg-plan{border:1px solid var(--line);border-radius:16px;padding:20px 22px;background:#1f5f22;display:flex;flex-direction:column;gap:10px;}
+    .rg-plan.rg-hot{border-color:var(--gm);background:var(--gl);}
+    .rg-plan h3{margin:0;font-size:17px;font-weight:900;}
+    .rg-plan .rg-price{font-size:40px;font-weight:900;line-height:1;}
+    .rg-plan .rg-price small{font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--g);margin-left:6px;}
+    .rg-plan ul{margin:0;padding-left:18px;}
+    .rg-plan li{font-size:13.5px;line-height:1.55;color:var(--ink75);margin-bottom:4px;}
+    .rg-plan .dg-btn{margin-top:auto;}
+    .rg-fine{font-size:12.5px;line-height:1.55;color:var(--ink55);margin:12px 0 0;max-width:860px;}
+    .rg-fix h3{font-size:12px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--g);margin:18px 0 8px;}
+    .rg-fix p.rg-problem{font-size:16px;line-height:1.65;color:var(--ink);margin:0;max-width:860px;}
+    .rg-fix ul{margin:0;padding-left:20px;max-width:860px;}
+    .rg-fix li{font-size:14.5px;line-height:1.6;color:var(--ink75);margin-bottom:6px;}
+    .rg-week{border:1px solid var(--warmline);background:var(--warm);border-radius:12px;padding:14px 16px;font-size:14.5px;line-height:1.6;max-width:860px;}
+    .rg-week b{display:block;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#8a5a00;margin-bottom:4px;}
+    .rg-fixnav{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:18px;max-width:860px;}
+    .rg-flag{display:inline-block;font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;background:#fbeeec;color:#8a1c12;border-radius:4px;padding:3px 8px;margin-bottom:6px;}
+    .rg-done{display:inline-block;font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;background:var(--gl);color:var(--g);border-radius:4px;padding:3px 8px;margin:0 0 6px 6px;}
+    .rg-ic{display:flex;align-items:center;justify-content:center;}
+    .rg-q{max-width:860px;}
+    .rg-q h3{font-size:19px;font-weight:900;margin:6px 0 14px;line-height:1.35;}
+    .rg-opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;font-family:inherit;font-size:15px;padding:13px 16px;border-radius:10px;border:1.5px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;margin-bottom:8px;}
+    .rg-opt[aria-pressed="true"]{border-color:var(--g);background:var(--gl);font-weight:700;}
+    .rg-opt i{flex:0 0 18px;height:18px;border-radius:50%;border:2px solid var(--gm);}
+    .rg-opt[aria-pressed="true"] i{border-color:var(--g);background:radial-gradient(circle,var(--g) 45%,transparent 50%);}
+    .rg-badge{display:flex;gap:18px;align-items:center;border:1px solid var(--gm);background:var(--gl);border-radius:16px;padding:20px 22px;max-width:860px;}
+    .rg-badge i{flex:0 0 64px;height:64px;border-radius:50%;background:var(--g);display:flex;align-items:center;justify-content:center;}
+    .rg-badge b{display:block;font-size:20px;font-weight:900;}
+    .rg-badge span{font-size:14px;color:var(--ink75);}
+    .rg-promo-tag{display:inline-block;font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;border-radius:4px;padding:3px 8px;margin-bottom:6px;}
+    .rg-live{background:var(--gl);color:var(--g);}
+    .rg-soon{background:#eef0ee;color:#4a4f4a;}
+    .rg-steps{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(240px,100%),1fr));gap:12px;margin:0 0 18px;}
+    .rg-step{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:#fff;}
+    .rg-step em{display:inline-flex;width:26px;height:26px;border-radius:50%;background:var(--g);color:#fff;font-style:normal;font-size:12px;font-weight:900;align-items:center;justify-content:center;margin-bottom:8px;}
+    .rg-step b{display:block;font-size:15px;font-weight:900;margin-bottom:4px;}
+    .rg-step p{margin:0 0 10px;font-size:13.5px;line-height:1.55;color:var(--ink75);}
+    .rg-step a{font-size:12.5px;font-weight:800;color:var(--g);}
+    .dg-th.rg-th{background:var(--gl);color:var(--g);}
+    /* The Nonprofit Guide's own pieces (2026-10-29): a tip's case or pro tip, its This week checklist, On Vegans Explore, the kit. */
+    .ng-extra{border-left:4px solid var(--g2);background:#f6faf6;border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0 0;font-size:14.5px;line-height:1.6;color:var(--ink75);max-width:860px;}
+    .ng-extra b,.ng-ours b{display:block;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--g);margin-bottom:4px;}
+    .ng-ours{border:1px solid var(--gm);background:var(--gl);border-radius:12px;padding:12px 16px;margin:16px 0 0;font-size:14.5px;line-height:1.6;max-width:860px;}
+    .ng-ours a{color:var(--g);font-weight:800;white-space:nowrap;}
+    .ng-week{display:flex;flex-direction:column;gap:6px;max-width:860px;}
+    .ng-week label{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--warmline);background:var(--warm);border-radius:10px;padding:11px 14px;font-size:14.5px;line-height:1.5;cursor:pointer;}
+    .ng-week input{width:18px;height:18px;margin-top:2px;accent-color:#22C55E;flex:0 0 auto;}
+    .ng-week input:checked+span{text-decoration:line-through;color:var(--ink55);}
+    .ng-one .vep-list{grid-template-columns:minmax(0,1fr) !important;max-width:760px;}
+    .ng-pick{min-width:200px;}
+    .ng-kit{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(380px,100%),1fr));gap:14px;}
+    .ng-copy pre{white-space:pre-wrap;font-family:inherit;font-size:13.5px;line-height:1.55;background:#f6f7f6;border:1px solid var(--line);border-radius:8px;padding:12px 14px;margin:0 0 8px;color:var(--ink);}
+    .ng-q{border:0;padding:0;margin:0 0 14px;}
+    .ng-q legend{font-size:13px;font-weight:800;margin-bottom:8px;padding:0;}
+    .ng-q legend i{font-style:normal;font-weight:600;color:var(--ink55);}
+    .ng-q label{display:inline-flex;align-items:center;gap:8px;font-size:14px;padding:8px 12px;border:1.5px solid var(--line);border-radius:6px;margin:0 8px 8px 0;cursor:pointer;background:#fff;}
+    .ng-q input{accent-color:#22C55E;}
+    .ng-q label:has(input:checked){border-color:var(--g);background:var(--gl);}
+    /* The Nutrition Guide's own pieces: how much, by who; the plate; the not-medical-advice line. */
+    .nt-amt{width:100%;max-width:560px;border-collapse:collapse;margin:4px 0 0;font-size:14.5px;}
+    .nt-amt td{padding:8px 10px;border-bottom:1px solid var(--line);color:var(--ink75);}
+    .nt-amt td:last-child{font-weight:800;color:var(--ink);text-align:right;white-space:nowrap;}
+    .nt-foods{display:flex;flex-wrap:wrap;gap:8px;max-width:860px;}
+    .nt-foods span{font-size:13px;font-weight:700;padding:7px 11px;border-radius:6px;background:var(--gl);color:#123d18;}
+    .nt-note{font-size:12.5px;line-height:1.55;color:var(--ink55);border-top:1px solid var(--line);padding-top:10px;margin:18px 0 0;max-width:860px;}
+    .nt-plate{display:grid;grid-template-columns:minmax(220px,320px) minmax(0,1fr);gap:24px;align-items:start;}
+    .nt-plate svg{width:100%;height:auto;display:block;}
+    .nt-key{display:flex;flex-direction:column;gap:10px;}
+    .nt-key>div{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff;}
+    .nt-key>div>i{flex:0 0 18px;height:18px;border-radius:4px;margin-top:2px;}
+    .nt-key b{display:block;font-size:14.5px;font-weight:900;}
+    .nt-key p{margin:2px 0 0;font-size:13.5px;line-height:1.55;color:var(--ink75);}
+    @media (max-width:900px){.nt-plate{grid-template-columns:minmax(0,1fr);}.nt-plate svg{max-width:280px;}}
+  
+    /* The Restaurant Guide's Overview look (Sean, 2026-11-07: "that's the look I want"): Start here, one button, then sections as headings with pills. */
+    .rg-grow{margin:20px 0 0;}.rg-grow h3{margin:0;font-size:16px;font-weight:900;}.rg-grow>p{margin:2px 0 8px;font-size:13px;color:var(--ink75);}
+    .rg-pills{display:flex;flex-wrap:wrap;gap:8px;}
+    /* ThanksLiving's section row (Sean, 2026-11-08): rectangles with 6px corners, square icons, one row that slides sideways, never a dropdown. */
+    .hg-sub{display:flex;align-items:center;gap:12px;margin:0 0 18px;padding-bottom:14px;border-bottom:1px solid var(--line);}
+    .hg-sub-l{font-size:13px;font-weight:800;color:var(--ink,#1A1A1A);white-space:nowrap}
+    .hg-subsel{min-width:240px}
+    @media (max-width:640px){.hg-sub{flex-wrap:wrap;gap:6px}.hg-subsel{width:100%;min-width:0;font-size:16px}}
+    .rg-pill{display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);text-decoration:none;font-size:14px;font-weight:700;transition:border-color .12s,background .12s;}
+    a.rg-pill:hover{border-color:var(--g);background:var(--gl);}
+    .rg-pill-pic{width:30px;height:30px;border-radius:6px;overflow:hidden;flex:0 0 30px;background:var(--gl);}
+    .rg-pill-pic img{display:block;width:100%;height:100%;object-fit:cover;}
+    /* Holiday pieces */
+    .hg-rules{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:14px;margin:14px 0 6px}
+    .hg-rule{border:1px solid var(--line);border-radius:12px;padding:18px 18px 16px;background:#fff}
+    .hg-rule .n{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;background:var(--gl);color:var(--g);font-weight:900;font-size:14px;margin-bottom:8px}
+    .hg-rule h3{margin:0 0 6px;font-size:17px;font-weight:800}
+    .hg-rule p{margin:0;font-size:14.5px;line-height:1.55;color:var(--ink75)}
+    .hg-count{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0 4px}
+    .hg-count div{background:var(--warm);border:1px solid var(--warmline);border-radius:10px;padding:10px 14px;min-width:96px}
+    .hg-count b{display:block;font-size:24px;font-weight:900;color:var(--ink)}
+    .hg-count small{font-size:12px;font-weight:700;color:var(--ink55);text-transform:uppercase;letter-spacing:.04em}
+    .hg-note{background:var(--gl);border-radius:10px;padding:14px 16px;font-size:14.5px;line-height:1.55;margin:16px 0}
+    .hg-tools{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:12px 0 14px}
+    .hg-menus{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(380px,100%),1fr));gap:14px}
+    .hg-menu{border:1px solid var(--line);border-radius:12px;background:#fff;padding:16px;display:flex;flex-direction:column;gap:10px}
+    .hg-mh{display:flex;gap:12px;align-items:center}
+    .hg-logo{width:52px;height:52px;border-radius:10px;flex:none;background:var(--gl) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--g);font-size:20px}
+    .hg-mh h3{margin:0;font-size:17px;font-weight:800;line-height:1.25}
+    .hg-mh h3 a{color:inherit;text-decoration:none}
+    .hg-mh small{display:block;font-size:13px;color:var(--ink55);margin-top:2px}
+    .hg-tag{display:inline-block;font-size:11.5px;font-weight:800;border-radius:6px;padding:3px 8px;background:var(--gl);color:var(--g)}
+    .hg-tag.pv{background:#fff3df;color:#8a5a00}
+    .hg-sum{margin:0;font-size:14.5px;line-height:1.5;color:var(--ink75);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+    .hg-items{display:flex;flex-direction:column;gap:8px;max-height:260px;overflow:auto}
+    .hg-item{display:flex;gap:10px;align-items:center;font-size:14px}
+    .hg-item img{width:46px;height:46px;border-radius:8px;object-fit:cover;flex:none}
+    .hg-item b{font-weight:700}
+    .hg-item span{margin-left:auto;font-weight:700;white-space:nowrap}
+    .hg-facts{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--ink75)}
+    .hg-facts b{color:var(--ink)}
+    .hg-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}
+    .hg-tell{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:22px 0 4px;padding:16px 18px;border:1px solid var(--line);border-radius:12px;background:#fbfdfb}
+    .hg-tell b{font-size:16px}.hg-tell p{margin:4px 0 0;font-size:14.5px;color:var(--ink75);line-height:1.5;max-width:620px}
+    .hg-form{display:flex;flex-direction:column;gap:14px;max-width:720px}
+    .hg-form label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700}
+    .hg-form label small{font-weight:500;color:var(--ink55)}
+    .hg-form input,.hg-form textarea{font:inherit;font-size:16px;font-weight:500;padding:11px 12px;border:1px solid var(--line);border-radius:6px;background:#fff}
+    .hg-f2{display:grid;grid-template-columns:2fr 1fr;gap:12px}
+    .hg-fmsg{margin:0;font-size:14px;color:#9a3412;min-height:1em}
+    @media(max-width:560px){.hg-f2{grid-template-columns:1fr}.hg-tell .dg-btn{width:100%;text-align:center}}
+    .hg-empty{border:1px dashed var(--gm);border-radius:12px;padding:22px;text-align:center;background:#fbfdfb}
+    .hg-empty h3{margin:0 0 6px;font-size:17px}
+    .hg-empty p{margin:0 auto 12px;max-width:560px;font-size:14.5px;color:var(--ink75);line-height:1.5}
+    .hg-rule .hg-ric{position:relative;width:58px;height:58px;border-radius:14px;background:var(--gl);border:1px solid var(--gm);display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+    .hg-rule .hg-ric .n{position:absolute;top:-8px;right:-8px;width:24px;height:24px;margin:0;font-size:12px;background:var(--g);color:#fff}
+    .hg-video{margin:6px 0 16px}
+    .hg-vframe{position:relative;width:100%;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#fff right bottom/auto 100% no-repeat;border:1px solid var(--line)}
+    .hg-vframe::before{content:"";position:absolute;inset:0;background:linear-gradient(to right,#fff 30%,rgba(255,255,255,0) 58%)}
+    .hg-vtitle{position:absolute;left:5%;top:9%;max-width:42%}
+    .hg-vtitle h3{margin:2px 0 6px;font-size:clamp(18px,2.2vw,30px);font-weight:800;line-height:1.15}
+    .hg-vtitle p{margin:0;font-size:14px;color:var(--ink75)}
+    .hg-vplay{position:absolute;left:5%;top:55%;transform:translateY(-50%);width:76px;height:76px;border-radius:50%;border:0;background:#1f5f22;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+    .hg-vbadge{position:absolute;left:14px;bottom:12px;background:#fff;color:var(--g);border:1px solid var(--gm);font-size:12px;font-weight:800;letter-spacing:.04em;padding:6px 10px;border-radius:6px}
+    .hg-vnow{position:absolute;left:14px;right:14px;bottom:50px;font-size:14px;font-weight:700;color:var(--ink)}
+    .hg-vnow:empty{display:none}
+    @media (max-width:600px){.hg-vtitle{max-width:55%;top:7%}.hg-vtitle p{display:none}.hg-vplay{width:54px;height:54px;top:62%}.hg-vnow{bottom:44px;font-size:12px}}
+    /* Pictures on the five ideas, recipes, the store shelves and Listen (Sean, 2026-11-08: "update the graphics... it's very bland") */
+    .hg-rule.hg-pic{padding:0;overflow:hidden;display:flex;flex-direction:column}
+    .hg-rpic{position:relative;aspect-ratio:16/10;overflow:hidden;background:var(--gl)}
+    .hg-rpic img{width:100%;height:100%;object-fit:cover;display:block}
+    .hg-rpic .n{position:absolute;top:10px;left:10px;margin:0;background:var(--g);color:#fff;width:30px;height:30px}
+    .hg-rb{padding:14px 16px 16px}
+    .hg-rcps{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:14px;margin:14px 0}
+    .hg-rcp{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;text-decoration:none;color:inherit;transition:border-color .15s,transform .15s}
+    .hg-rcp:hover{border-color:var(--g2);transform:translateY(-2px)}
+    .hg-rcp-pic{aspect-ratio:16/10;overflow:hidden;background:var(--gl)}
+    .hg-rcp-pic img{width:100%;height:100%;object-fit:cover;display:block}
+    .hg-rcp-b{display:flex;flex-direction:column;gap:4px;padding:12px 16px 16px}
+    .hg-rcp-b b{font-size:17px;font-weight:800}
+    .hg-rcp-b span:not(.dg-k){font-size:14px;color:var(--ink75);line-height:1.45}
+    .hg-rcp-b small{font-size:12.5px;font-weight:700;color:var(--ink55);margin-top:4px}
+    .hg-rcp1{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:24px;align-items:start}
+    .hg-rcp1-p{position:sticky;top:12px}
+    .hg-rcp1-p img{width:100%;height:auto;border-radius:14px;display:block;border:1px solid var(--line)}
+    .hg-rcp1-p small{display:block;margin-top:6px;font-size:12px;color:var(--ink55)}
+    .hg-sh{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--g);margin:20px 0 8px}
+    .hg-ing{margin:0;padding:0;list-style:none;columns:2;column-gap:24px}
+    .hg-ing li{break-inside:avoid;font-size:14.5px;line-height:1.5;padding:6px 0 6px 18px;position:relative;border-bottom:1px solid var(--line)}
+    .hg-ing li::before{content:"";position:absolute;left:2px;top:14px;width:7px;height:7px;border-radius:50%;background:var(--g2)}
+    .hg-steps{margin:0;padding-left:22px}
+    .hg-steps li{font-size:15px;line-height:1.6;margin:0 0 10px;color:var(--ink)}
+    @media (max-width:760px){.hg-rcp1{grid-template-columns:1fr}.hg-rcp1-p{position:static;order:-1;max-width:420px}.hg-ing{columns:1}}
+    .hg-shelf{margin:18px 0}
+    .hg-shelf-h{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+    .hg-shelf-h img{width:56px;height:56px;border-radius:12px;object-fit:cover}
+    .hg-shelf-h h3{margin:0;font-size:18px;font-weight:800}
+    .hg-prods{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:12px}
+    .hg-prod{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;background:#fff;padding:14px}
+    .hg-prod small{display:block;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--ink55)}
+    .hg-prod b{display:block;font-size:15.5px;font-weight:800;margin:2px 0 4px}
+    .hg-prod p{margin:0 0 6px;font-size:14px;line-height:1.45;color:var(--ink75)}
+    .hg-prod a{font-size:13px;font-weight:700;color:var(--g)}
+    .hg-blogo{width:52px;height:52px;flex:none;border-radius:10px;border:1px solid var(--line);background:#fff center/contain no-repeat;display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--g);font-size:20px}
+    .hg-feat{display:grid;grid-template-columns:160px minmax(0,1fr);gap:18px;align-items:center;border:1px solid var(--warmline);background:var(--warm);border-radius:14px;padding:14px;margin:6px 0 14px}
+    .hg-feat-pic img{width:100%;height:auto;border-radius:10px;display:block}
+    .hg-feat h3{margin:2px 0 6px;font-size:20px;font-weight:800}
+    .hg-feat p{margin:0;font-size:14.5px;line-height:1.55;color:var(--ink75)}
+    .hg-evs{display:grid;gap:10px}
+    .hg-evbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 16px}
+    .hg-evtop{display:flex;flex-wrap:wrap;gap:8px}
+    .dg-btn.hg-sm{min-height:34px;padding:7px 14px;font-size:11px}
+    .hg-evsel{min-width:240px}
+    @media (max-width:640px){.hg-evsel{width:100%;min-width:0;font-size:16px}.hg-evtop{width:100%}.hg-evtop .dg-btn{flex:1}}
+    .hg-ev{display:flex;align-items:stretch;border:1.5px solid rgba(0,0,0,.09);border-radius:10px;overflow:hidden;background:#fff;color:inherit;text-decoration:none;transition:border-color .15s}
+    .hg-ev:hover{border-color:var(--g)}
+    .hg-evd{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:76px;padding:14px 18px;background:var(--gl);text-align:center;flex-shrink:0}
+    .hg-evd b{font-size:26px;font-weight:900;letter-spacing:-.03em;line-height:1;color:var(--g)}
+    .hg-evd small{font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--g);margin-top:3px}
+    .hg-evb{flex:1;min-width:0;padding:14px 18px;display:flex;flex-direction:column;justify-content:center;gap:4px}
+    .hg-evb b{font-size:15px;font-weight:800;line-height:1.3}
+    .hg-evb span{font-size:13px;color:var(--ink75);line-height:1.45}
+    @media (max-width:560px){.hg-evd{min-width:64px;padding:12px}.hg-evb{padding:12px 14px}}
+    .hg-chips{display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 0 6px;padding-bottom:2px}
+    .hg-chips::-webkit-scrollbar{display:none}
+    .hg-chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 14px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap}
+    .hg-chip img{width:30px;height:30px;border-radius:6px;object-fit:cover;margin-left:-8px}
+    .hg-chip[aria-pressed="true"]{border-color:var(--g);background:var(--g);color:#fff}
+    .hg-sug{border:1px solid var(--line);border-radius:12px;padding:16px;margin:18px 0;background:#fff}
+    .hg-sug h3{margin:0 0 6px;font-size:18px;font-weight:800}
+    .hg-sug>p{margin:0 0 12px;font-size:14px;line-height:1.5;color:var(--ink75)}
+    .hg-sugf{display:grid;gap:10px;max-width:640px}
+    .hg-sugf label{font-size:13px;font-weight:700;color:var(--ink75)}
+    .hg-sugf input{display:block;width:100%;box-sizing:border-box;padding:10px;border:1.5px solid rgba(0,0,0,.18);border-radius:6px;font:inherit;font-size:16px;margin-top:4px}
+    .hg-admin{border:1.5px dashed var(--gm);border-radius:12px;background:#fbfdfb;padding:12px 16px;margin:0 0 14px}
+    .hg-admin summary{cursor:pointer;font-weight:800;font-size:15px}
+    .hg-admin summary span{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--g);background:var(--gl);border-radius:6px;padding:3px 7px;margin-left:8px}
+    .hg-admin p{font-size:14px;line-height:1.5;color:var(--ink75);margin:10px 0}
+    .hg-ares{display:grid;gap:6px;margin-top:8px}
+    .hg-ares-r{display:flex;gap:10px;align-items:center;flex-wrap:wrap;border:1px solid var(--line);border-radius:6px;padding:10px 12px;background:#fff;color:inherit;text-decoration:none}
+    .hg-ares-r:hover{border-color:var(--g)}
+    .hg-ares-r span{font-size:13px;color:var(--ink55)}
+    .hg-ares-r em{margin-left:auto;font-style:normal;font-size:12px;font-weight:800;color:var(--g)}
+    .hg-lhead{display:grid;grid-template-columns:minmax(0,1fr) 180px;gap:22px;align-items:center;margin:0 0 14px}
+    .hg-lhead .dg-lede{margin-bottom:0}
+    .hg-lhead img{width:100%;height:auto;border-radius:12px;display:block}
+    @media (max-width:560px){.hg-lhead{grid-template-columns:minmax(0,1fr) 96px;gap:14px}.hg-lhead .dg-h1{font-size:24px}}
+    @media (max-width:560px){.hg-feat{grid-template-columns:1fr}.hg-feat-pic{max-width:200px}}
+    .dg-eps .vep-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .dg-eps-h{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--g);margin:18px 0 10px}
+    .dg-eps-sub{font-size:13px;color:var(--ink75);margin:-4px 0 12px}
+    @media (max-width:760px){.dg-eps .vep-list{grid-template-columns:minmax(0,1fr)}}
+    .hg-tools2{position:relative;display:flex;gap:12px;align-items:center;margin:12px 0 10px}
+    .hg-search{flex:1 1 auto;min-width:160px;display:flex;align-items:center;gap:8px;height:46px;padding:0 14px;border:1.5px solid rgba(0,0,0,.14);border-radius:6px;background:#fff}
+    .hg-search input{flex:1;border:0;outline:0;font:inherit;font-size:15px;background:transparent;min-width:0}
+    .hg-fbtn{flex:0 0 auto;min-width:132px;height:46px;padding:0 18px;display:flex;align-items:center;justify-content:center;gap:8px;border:1.5px solid rgba(0,0,0,.14);border-radius:6px;background:#fff;color:#1a1a1a;cursor:pointer;font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+    .hg-fbtn[aria-expanded="true"],.hg-fbtn:hover{border-color:var(--g);color:var(--g)}
+    .hg-fcount{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--g);color:#fff;font-size:10px;line-height:18px;letter-spacing:0;text-align:center}
+    .hg-fcount[hidden]{display:none}
+    .hg-pop{position:absolute;top:calc(100% + 8px);right:0;z-index:40;width:min(760px,100%);background:#fff;border:1px solid #e3e3e3;border-radius:10px;box-shadow:0 14px 36px rgba(0,0,0,.16);padding:18px 20px}
+    .hg-pop[hidden]{display:none}
+    .hg-pgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+    .hg-pf{display:flex;flex-direction:column;gap:6px;min-width:0}
+    .hg-pf span{font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#666}
+    .hg-pf select{width:100%}
+    .hg-pfoot{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
+    .hg-pills{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+    .hg-pills:empty{display:none}
+    .hg-pill{height:32px;padding:0 12px;border-radius:6px;border:1px solid var(--gm);background:var(--gl);color:var(--g);font-family:inherit;font-size:12px;font-weight:800;cursor:pointer}
+    @media (max-width:560px){.hg-pgrid{grid-template-columns:1fr}.hg-fbtn{min-width:0;padding:0 14px}}
+  
+    /* The Welcome Guide (playbook ve-explorer-path, Sean 2026-11-08): copied from the Holiday Guide (the template gate). Our About us and the free
+       front door. Liz hosts. Code: /guide-scripts/welcome-guide.js; the Explorer card is /public/ve-explorer-card.js. */
+    .wg-tour{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:#fff;margin:6px 0 16px}
+    .wg-tour-h{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+    .wg-tour-h h3{margin:2px 0 4px;font-size:20px;font-weight:900}
+    .wg-tour-h p{margin:0;font-size:13.5px;color:var(--ink75)}
+    .wg-chs{margin-top:12px}
+    .wg-chs summary{cursor:pointer;font-size:13px;font-weight:800;color:var(--g)}
+    .wg-chs ol{margin:10px 0 0;padding-left:20px}
+    .wg-chs li{font-size:14.5px;line-height:1.6;color:var(--ink75);margin-bottom:8px}
+    .wg-chs li b{color:var(--ink)}
+    .wg-lead{display:flex;align-items:center;gap:10px;margin:0 0 14px;font-size:13.5px;color:var(--ink75)}
+    .wg-lead b{color:var(--ink)}
+    .wg-lead-pic{flex:0 0 44px;height:44px;border-radius:10px;background:var(--gl) center 18%/cover no-repeat}
+    .wg-cols{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:14px}
+    .wg-ways{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:14px}
+    .wg-box{border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:#fff}
+    .wg-box.wg-mem{background:var(--gl);border-color:var(--gm)}
+    .wg-box h3{margin:0 0 8px;font-size:15px;font-weight:900}
+    .wg-box p{margin:0;font-size:14px;line-height:1.6;color:var(--ink75)}
+    .wg-box a{display:inline-block;margin-top:8px;font-size:13px;font-weight:800;color:var(--g)}
+    .wg-steps,.wg-list{margin:0;padding-left:20px}
+    .wg-steps li,.wg-list li{font-size:14px;line-height:1.55;color:var(--ink75);margin-bottom:6px}
+    .wg-steps b,.wg-list b{color:var(--ink)}
+    .wg-paths{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:12px}
+    .wg-path{display:flex;gap:14px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff;color:inherit;text-decoration:none;transition:border-color .15s}
+    .wg-path:hover{border-color:var(--g2)}
+    .wg-path-pic{flex:0 0 72px;height:72px;border-radius:12px;background:var(--gl) center 18%/cover no-repeat}
+    .wg-path b{display:block;font-size:16px;font-weight:900;margin:2px 0 4px}
+    .wg-path small{display:block;font-size:13.5px;line-height:1.5;color:var(--ink75)}
+    .wg-path em{display:inline-block;margin-top:6px;font-style:normal;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--g);background:var(--gl);border-radius:6px;padding:3px 8px}
+    .wg-cd{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:6px 0 4px;padding:12px 16px;border:1px solid var(--warmline);background:var(--warm);border-radius:12px}
+    .wg-cd-l{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8a5a00}
+    .wg-cd-r{display:flex;gap:12px}
+    .wg-cd-r div{text-align:center;min-width:52px}
+    .wg-cd-r b{display:block;font-size:24px;font-weight:900;color:var(--ink)}
+    .wg-cd-r span{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink55)}
   </style>
-  <style>
-    /* Founding Member flow (Sean, 2026-11-01): a Get your Passport link under the Guide's words on every page, the countdown,
-       and topic pictures on the overview's tiles in place of the Guides. */
-    .dg-cta{display:flex;align-items:center;justify-content:center;gap:8px;min-height:40px;padding:10px 14px;border-radius:6px;background:#F69820;color:#fff;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;border:0;cursor:pointer;text-align:center;}
-    .dg-cta:hover{background:#d4800f;}
-    .dg-cta[hidden]{display:none;}
-    .dg-cd{margin:4px 0 18px;}
-    .dg-cd-l{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--ink55);margin-bottom:8px;}
-    .dg-cd-r{display:flex;gap:8px;max-width:420px;}
-    .dg-cd-c{flex:1 1 0;text-align:center;background:var(--gl);border:1px solid var(--gm);border-radius:8px;padding:9px 4px 7px;}
-    .dg-cd-c b{display:block;font-size:26px;font-weight:900;line-height:1;color:#123d18;font-variant-numeric:tabular-nums;}
-    .dg-cd-c span{display:block;margin-top:5px;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--ink55);}
-    .dg-tile .dg-ic.dg-topic{flex-basis:84px;width:84px;height:56px;border-radius:10px;background-position:center;}
-    .dg-shot{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:14px 0 0;}
-    .dg-shot img{display:block;width:100%;height:auto;}
-    .dg-taste{display:block;text-align:center;font-size:12.5px;font-weight:800;color:var(--g);text-decoration:underline;text-underline-offset:3px;}
-    .dg-taste[hidden]{display:none;}
-    .dg-taste-btn{display:flex;align-items:center;justify-content:center;width:100%;min-height:42px;margin-top:10px;border:1.5px solid var(--g);border-radius:6px;color:var(--g);background:#fff;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;text-decoration:none;}
-    @media (max-width:900px){#dgRail>.dg-cta{grid-column:2 / -1;}html.pg-welcome .dg-joinbox{display:none !important;}}
-    /* The two ways in (Sean, 2026-11-03: the survey, or the $11): two equal cards, one on phones. */
-    .dg-paths{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:14px;margin:0 0 16px;}
-    .dg-path{display:flex;flex-direction:column;border:1px solid var(--gm);background:var(--gl);border-radius:12px;padding:20px;}
-    .dg-path .dg-tag{align-self:flex-start;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:#fff;color:var(--g);margin-bottom:8px;}
-    .dg-path .dg-big{font-size:44px;font-weight:900;line-height:1;margin-bottom:6px;}
-    .dg-path .dg-big small{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--g);margin-left:6px;}
-    .dg-path > b{font-size:16px;font-weight:900;}
-    .dg-path p{font-size:13.5px;line-height:1.55;color:var(--ink75);margin:6px 0 4px;}
-    .dg-path p a{color:var(--g);font-weight:800;}
-    .dg-path ul{margin:8px 0 16px;padding:0;list-style:none;}
-    .dg-path li{font-size:13.5px;line-height:1.45;color:var(--ink75);padding:7px 0 7px 24px;position:relative;border-bottom:1px solid var(--line);}
-    .dg-path li::before{content:'';position:absolute;left:3px;top:13px;width:9px;height:9px;border-radius:50%;background:#22C55E;}
-    .dg-path li b{color:var(--ink);}
-    .dg-path .dg-btn{margin-top:auto;width:100%;}
-  </style>
-  <script src="/public/ve-guide-corner.js"></script>
+<script src="/public/ve-guide-corner.js"></script>
 </head>
 <body>
 <div class="page-frame">
@@ -182,396 +730,42 @@
   <div class="dg-top-row">
     <div class="dg-brand-mark">
       <div class="dg-eyebrow">Vegans Explore Guides</div>
-      <h1 class="dg-title">Welcome</h1>
+      <h1 class="dg-title">The Welcome Guide</h1>
     </div>
-    <div class="dg-joinbox" id="pgJoinbox">
-      <div class="dg-jb-price"><b>Free</b><small>with a short<br>survey</small></div>
-      <button type="button" class="dg-btn" data-join>Join free</button>
-      <div class="dg-jb-in" id="pgSignin">Already a member?<br><a href="#" data-signin>Sign in</a></div>
+    <!-- Free for everyone. Not a member: Become a Founder (the Explorer survey). A member: their dashboard. -->
+    <div class="dg-joinbox">
+      <div class="dg-jb-price"><b>Free</b><small>for<br>everyone</small></div>
+      <button type="button" class="dg-btn" data-wg-join>Become a Founder</button>
+      <div class="dg-jb-in" id="wgJbIn">Member?<br><a href="#" data-signin>Sign in</a></div>
+      <span class="dg-status" role="status"></span>
     </div>
   </div>
-  <nav class="dg-menu" id="dgMenu" aria-label="Passport Guide tabs"></nav>
-  <select class="dg-menu-select" id="dgMenuSelect" aria-label="Passport Guide tabs"></select>
+  <nav class="dg-menu" id="dgMenu" aria-label="Welcome Guide tabs"></nav>
+  <select class="dg-menu-select" id="dgMenuSelect" aria-label="Welcome Guide tabs"></select>
 </header>
 
-<div class="dg-app">
-  <main class="dg-main" id="dgMain" aria-live="polite"></main>
+<div class="dg-app" id="dgApp">
+  <main class="dg-main" id="dgMain" aria-live="polite"><div class="dg-loading">Loading the Guide...</div></main>
   <div class="dg-tour dg-tour-m" id="dgTourM" aria-label="Guide tour"></div>
-  <aside class="dg-rail" id="dgRail" aria-label="Your Guide">
-    <div class="dg-guide" id="dgGuide" role="img"></div>
-    <div class="dg-guide-name" id="dgGuideName"></div>
+
+  <!-- Liz hosts every tab (Sean, 2026-11-08). Her lines are text until recorded, so Play stays hidden. -->
+  <aside class="dg-rail" id="dgRail" data-guide="liz" aria-label="Liz, your Guide">
+    <div class="dg-maya" id="dgMaya"></div>
+    <div class="dg-namebar"><div class="dg-maya-name"><b>Liz</b> &middot; Your Guide to Vegans Explore</div>
+      <button type="button" class="dg-fold" id="dgFold" aria-expanded="true">Hide Liz</button></div>
     <div class="dg-bubble" id="dgBubble"></div>
-    <a class="dg-cta" id="dgCta" href="#/join" hidden>Enter the room</a>
+    <button type="button" class="dg-play go" id="dgPlay" hidden>&#9654; Play Liz</button>
     <div class="dg-tour" id="dgTour"></div>
   </aside>
 </div>
 
 <script src="/public/footer.js"></script>
 </div>
+<script src="/public/ve-hubs.js"></script>
 <script src="/public/ve-auth.js"></script>
-<script src="/public/ve-video.js"></script>
-<script src="/public/ve-managed.js" defer></script>
-<script>
-(function () {
-  // Each tab: who shows it (a Guide from VE_GUIDE_ART, footer.js), what they say, and what the page holds. Every fact here
-  // is the live site's (CLAUDE.md): prices, points and levels are Sean's lock of 2026-10-25; change them only with canon.
-  var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
-  // The Welcome Guide is the whole cast (Sean, 2026-11-01: "an ensemble Guide. It can introduce all of the Guides throughout"):
-  // the ensemble opens it ('all'), then each tab is a different Guide saying who they are and which Guide they lead, all eight once.
-  var GUIDES = { all: 'Your Guides', liz: 'Liz', maya: 'Maya', river: 'River', nori: 'Nori', theo: 'Theo', dani: 'Dani', kai: 'Kai', pascal: 'Pascal' };
-  var ENSEMBLE = '/public/guides/welcome-ensemble.jpg';
-  // The Welcome (Sean, 2026-11-03: "the welcome should just be the passport too... we're merging the passport, the welcome, and the taster
-  // all together"): one free, public guide on how to use Vegans Explore. Visitors choose what they want to know, in any order, and the last
-  // tab is the two ways in: the survey (time) or the $11 (money). Each tab is a different Guide, all eight once; their lines are text drafts.
-  var TABS = [
-    { k: 'overview', label: 'Overview', g: 'all', say: 'Hi, we\'re your Guides. Each of us walks you through our own Guides, and you\'ll meet every one of us on the way. Look around in any order, and when you\'re ready, come in.' },
-    { k: 'places', label: 'Find your places', g: 'pascal', say: 'I\'m Pascal, the cook of the crew. I\'m making the Meat Alternatives and Meal Prep Guides. The Directory is every place we know, city by city. Anyone can look, and members decide what rises to the top.' },
-    { k: 'community', label: 'Your city', g: 'river', say: 'I\'m River. I take you to game day in the Stadium and Arena Guide. Every city has its own hub too: the Daily Pulse and its boards, events and the members who make it happen.' },
-    { k: 'guides', label: 'Guides', g: 'maya', say: 'I\'m Maya, from the Dairy Guide, and I\'ll walk you through the Pre-Vegan Guide too. Guides are small apps that put our tools together around one topic. You can try a piece of each one free, right here.' },
-    { k: 'points', label: 'Points and levels', g: 'theo', say: 'I\'m Theo, from the Nutrition Guide. Points come from taking part. Spend them on Guides or give them to the places you love. Your level comes from everything you have earned.' },
-    { k: 'supports', label: 'What it supports', g: 'dani', say: 'I\'m Dani, from the Nonprofit Guide. What you give, your time or eleven dollars, keeps the community growing, city by city, and it reaches the animals too.' },
-    { k: 'bring', label: 'Bring people in', g: 'kai', say: 'I\'m Kai, from the Creator Guide. The more people who join, the more there is to find. Bring a friend in and you earn points when they join.' },
-    { k: 'business', label: 'For businesses', g: 'liz', say: 'I\'m Liz, from the Vegan Restaurant Guide. Businesses are members too, and get what we offer only to members. Start with a free check of your page.' },
-    { k: 'join', label: 'Enter the room', g: 'nori', say: 'I\'m Nori, from the Airport Guide. One way in, and it is free: a short survey. Finish it and the whole room is open. Come join us!' }
-  ];
-  // For businesses (Sean, 2026-10-27: "a page specifically for businesses... anytime we're asking them to become a member or
-  // do something, they could take them to that version of the passport page"). /business is this page (rewrite in vercel.json)
-  // with its own tabs, ending on Get started; the sample business (/business/sample) shows the page and the dashboard.
-  var BIZ = /^\/business\/?$/.test(location.pathname);
-  if (BIZ) TABS = [
-    { k: 'overview', label: 'Overview', g: 'liz', say: 'Hi, I\'m Liz. This is Vegans Explore for businesses. Your page, your numbers and the members who find you, one tab at a time.' },
-    { k: 'page', label: 'Your page', g: 'river', say: 'Your page in the Directory is where members find you, vote for you, save you and check in when they visit.' },
-    { k: 'dash', label: 'Your dashboard', g: 'liz', say: 'Your dashboard sits on your own page: your numbers, who comes back, your menu, ads and what you can take part in.' },
-    { k: 'found', label: 'Get found', g: 'nori', say: 'Members find you in the Directory, the Guides, the Daily Pulse and at our events. Here is what is live and what is coming.' },
-    { k: 'partner', label: 'Partner plan', g: 'maya', say: 'When you want the full experience, the Partner plan puts you in the front row of every campaign.' },
-    { k: 'managed', label: 'Managed by us', g: 'dani', say: 'Running a restaurant is a lot. If you would rather we handled your website, Google, photos and brand, this is how that works.' },
-    { k: 'start', label: 'Get started', g: 'liz', say: 'Take a short survey and you are in, free. Then claim your page. Come join us!' }
-  ];
-  // The Welcome is the default. /business (BIZ) keeps its own tabs. ?guide=welcome, the old Welcome Guide's address, lands here too.
-  var WELCOME = !BIZ;
-  if (WELCOME) document.documentElement.classList.add('pg-welcome');
-  var main = document.getElementById('dgMain'), menu = document.getElementById('dgMenu'), sel = document.getElementById('dgMenuSelect');
-  var guideEl = document.getElementById('dgGuide'), nameEl = document.getElementById('dgGuideName'), bubble = document.getElementById('dgBubble');
-  var tourEl = document.getElementById('dgTour'), tourM = document.getElementById('dgTourM');
-  var params = new URLSearchParams(location.search);
-  var fromVote = params.get('from') === 'vote', fromSave = params.get('from') === 'save', fromCheckin = params.get('from') === 'checkin', fromGive = params.get('from') === 'give', fromBoard = params.get('from') === 'board', fromTickets = params.get('from') === 'tickets';
-  var fromOld = params.get('from') === 'old-link'; // signal: an old address with no new home lands here (api/gone.js)
-  var back = params.get('back') || '';
-  if (!/^\/(?!\/)/.test(back)) back = ''; // only a path on this site
-  var activated = params.get('activate');
-  var cur = 'overview', lastGuide = null;
-
-  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
-  function art(slug) { return slug === 'all' ? ENSEMBLE : window.VEGuideArt ? VEGuideArt(slug, 'square') : null; }
-  function auth() { return window.VEAuth || null; }
-  function me() { var a = auth(); return a && a.isLoggedIn() ? a.getMember() : null; }
-  function isMember() { var m = me(); return !!(m && m.membership_status === 'active'); }
-  function href(k) { return '#/' + k; }
-  function tab(k) { for (var i = 0; i < TABS.length; i++) if (TABS[i].k === k) return TABS[i]; return TABS[0]; }
-  function head(kicker, h, lede) { return '<div class="dg-k">' + esc(kicker) + '</div><h2 class="dg-h1">' + esc(h) + '</h2>' + (lede ? '<p class="dg-lede">' + lede + '</p>' : ''); }
-  function card(title, body, tag, soon) { return '<div class="dg-card">' + (tag ? '<span class="dg-tag' + (soon ? ' soon' : '') + '">' + esc(tag) + '</span>' : '') + '<b>' + esc(title) + '</b><p>' + body + '</p></div>'; }
-  function joinBtns() {
-    if (isMember()) return '<div class="dg-btns"><a class="dg-btn" href="' + esc(back || '/dashboard') + '">' + (back ? 'Go back' : 'Open your dashboard') + '</a></div>';
-    return '<div class="dg-btns"><a class="dg-btn" href="' + href('join') + '">Enter the room</a>' +
-      (me() ? '' : '<a href="#" data-signin style="font-size:13px;font-weight:800;color:var(--g)">Already a member? Sign in</a>') + '</div>';
-  }
-
-  // Founding Membership closes at midnight Eastern on January 1, 2027 (Sean, 2026-11-01), and since 2026-11-03 either door before then makes
-  // a Founding Member ("anyone who becomes a member before January is a founding member"); the line goes away by itself after.
-  var FOUNDING_LINE = Date.now() < Date.parse('2027-01-01T05:00:00Z') ? '<p class="dg-note"><b>Founding Membership closes at midnight Eastern on January 1, 2027.</b> Join before then and Founding Member stays on your profile for good.</p>' : '';
-  var TRY = [
-    ['The Buttermilk swap', 'Maya, Dairy Guide: milk, butter and cheese swaps, and what to use instead.', '/guides/vegan-dairy-guide#/swaps'],
-    ['Vitamin B12', 'Theo, Nutrition Guide: how much, and where to get it.', '/guides/nutrition-guide#/nutrients/b12'],
-    ['Hard Rock Stadium', 'River, Stadium & Arena Guide: every Vegan stand, with a map.', '/guides/stadium-arena-guide#/venue/hard-rock-stadium'],
-    ['Fort Lauderdale airport', 'Nori, Airport Guide: Vegan food gate by gate.', '/guides/airport-guide#/airport/fll'],
-    ['A free check of a restaurant', 'Liz, Vegan Restaurant Guide: how a place shows up online, and what to fix.', '/guides/vegan-restaurant-guide#/audit'],
-    ['Creator tip 1', 'Kai, Creator Guide: know who you make content for, and why.', '/guides/creator-guide#/tips/purpose'],
-    ['Nonprofit tip 1', 'Dani, Nonprofit Guide: telling your story.', '/guides/nonprofit-guide#/tips/story']
-  ];
-  var VIEWS = {
-    overview: function () {
-      var BL = { places: 'The Directory, search, votes and saves.', community: 'The Daily Pulse, boards, events and bounties.', guides: 'Mini apps, and a free piece of each.', points: 'Earn them, spend them, give them. Four levels.',
-        supports: 'What your time builds.', bring: 'Your link, and what it earns.', business: 'Members too, with services of their own.', join: 'One way in: a short survey, free.' };
-      var tiles = TABS.filter(function (t) { return t.k !== 'overview'; }).map(function (t) {
-        return '<a class="dg-tile" href="' + href(t.k) + '"><div class="dg-ic" style="background-image:url(\'' + esc(art(t.g) || '') + '\')"></div><div><b>' + esc(t.label) + '</b><span>' + esc(BL[t.k]) + '</span></div></a>';
-      }).join('');
-      var cd = OPEN ? '<div class="dg-cd" id="pgCd" role="timer"><div class="dg-cd-l">Founding Membership closes in</div><div class="dg-cd-r">' +
-        ['Days', 'Hours', 'Min', 'Sec'].map(function (u, n) { return '<div class="dg-cd-c"><b data-cd="' + n + '">--</b><span>' + u + '</span></div>'; }).join('') + '</div></div>' : '';
-      return gateNote() + head('Welcome to Vegans Explore', 'How it works, in a few minutes',
-        'Vegans Explore is where the Vegan community finds places to eat, shop and go, city by city, from South Florida to London. Looking around is free for everyone: pick what you want to know, in any order. When you are ready, <b>enter the room</b>.' + (OPEN ? ' We launch officially on <b>January 1, 2027</b>.' : '')) +
-        cd + '<div class="dg-tiles">' + tiles + '</div>' + joinBtns();
-    },
-    places: function () {
-      return gateNote() + head('Find your places', 'The Directory, voted on by members', 'Local food, products, services, media, community groups and people, in every city we cover. Anyone can browse and search it. Members decide what rises to the top.') +
-        '<div class="dg-grid">' +
-        card('Search from anywhere', 'The box at the top of every page finds a place, a kind of food or an answer. Try &ldquo;Vegan restaurants in Atlanta&rdquo;.', 'Everyone') +
-        card('The Directory', 'Browse by section and city, and open any page. <a href="/directory">Open the Directory</a>.', 'Everyone') +
-        card('Media', 'Podcasts, documentaries and books, ranked by member votes. <a href="/media">See Media</a>.', 'Everyone') +
-        card('Share any page', 'The Share button in the top bar copies the page you are on, just as you see it, so a friend lands in the same place.', 'Everyone') +
-        card('Vote every day', 'Vote for each place you love once every 24 hours. The votes are real, and every Directory sorts by them.', 'Members') +
-        card('Save and check in', 'Save the places you want to try. Check in when you are there for 10 points a visit. You can also give some of your points to a business or nonprofit you believe in.', 'Members') +
-        '</div>' + joinBtns();
-    },
-    community: function () {
-      return gateNote() + head('Your city', 'A hub for your city', 'Every chapter, from South Florida to London, has its own community hub.') +
-        '<div class="dg-grid">' +
-        card('The Daily Pulse', 'A topic every morning for your city, to read and talk about. Anyone can read it. <a href="/pulse">Open the Pulse</a>.', 'Every day') +
-        card('The boards', 'Jobs, classifieds, fosters and rescues for your city, and Suggest a Topic. Members post and reply.', 'Members post') +
-        card('Events', 'Vegan events in your city and around the world, open to everyone, and you can submit one. <a href="/events">See events</a>.', 'Everyone') +
-        card('Bounties', 'Small jobs from the campaigns in your city, paid in points.', 'Earn points') +
-        card('Your chapter', 'Every city has its own page. Vote for it and save it to join it. <a href="/communities">Find your city</a>.', 'Everyone') +
-        '</div>' + joinBtns();
-    },
-    guides: function () {
-      var tries = TRY.map(function (t) { return card(t[0], esc(t[1]) + ' <a href="' + t[2] + '">Open it</a>.', 'Free to try'); }).join('');
-      return gateNote() + head('Guides', 'Mini apps, one topic each', 'A Guide brings our tools together around one topic, walked through by one of our Guides. Guides for your work, like the Vegan Restaurant Guide and the Vegan Events Guide, are free with a short survey. Topic Guides are <b>$11 or 1,100 points</b>, yours to keep.') +
-        '<div class="dg-k" style="margin:4px 0 10px">Try a piece of each, free</div><div class="dg-grid">' + tries + '</div>' +
-        '<div class="dg-btns"><a class="dg-btn dg-ghost" href="/guides">See every Guide</a></div>' + joinBtns();
-    },
-    points: function () {
-      return gateNote() + head('Points and levels', 'Points come from what you do', 'Points are never bought. You earn them by taking part: bounties, check-ins, campaigns, the Daily Pulse and the boards. The survey starts you with <b>250</b>. Every purchase earns a <b>25-point thank-you</b>.') +
-        '<div class="dg-levels">' +
-        '<div class="dg-level"><b>Level 1</b><strong>Start</strong><span>Every member</span></div>' +
-        '<div class="dg-level"><b>Level 2</b><strong>2,500</strong><span>points earned</span></div>' +
-        '<div class="dg-level"><b>Level 3</b><strong>10,000</strong><span>points earned</span></div>' +
-        '<div class="dg-level"><b>Level 4</b><strong>25,000</strong><span>points earned</span></div></div>' +
-        '<div class="dg-grid">' +
-        card('Unlock Guides', 'Any topic Guide for 1,100 points, earned by taking part. Guides for your work are free with their survey.', 'Spend') +
-        card('Boost the places you love', 'Give points to a business or nonprofit. Points are a boost, never money.', 'Give') +
-        card('Talk with your Guide', 'Ask your Guide anything Vegan, a few points a message.', 'Spend') +
-        card('Your level never drops', 'Your level comes from every point you have ever earned, so spending or giving points never lowers it.', 'Levels') +
-        '</div>' + joinBtns();
-    },
-    supports: function () {
-      return gateNote() + head('What it supports', 'What you give keeps it growing', 'Give your time with the survey and you are helping build the Vegan community\'s home base. Members who want to give more can contribute from $11 any time, a membership contribution, never a tax-deductible donation.') +
-        '<div class="dg-grid">' +
-        card('Events', 'Community nights and gatherings in our cities, where members meet in person.', 'In person') +
-        card('Community Managers', 'Local people in each city who welcome members and businesses and keep the hub alive. It is gig work, paid as the community grows.', 'People') +
-        card('The tools', 'The Directory, the hubs, the Guides and your dashboard, built and kept up for members.', 'Apps') +
-        card('The animals', 'Rescues and sanctuaries are listed in every city, the Fosters and Rescues boards help animals find homes, and you can give your points to the organizations you believe in. <a href="/directory?tab=community">See them</a>.', 'Animals') +
-        card('Your answers', 'The survey helps us build the right things for your city. We never sell your answers, and you choose which parts others can see.', 'Your time') +
-        '</div>' + joinBtns();
-    },
-    bring: function () {
-      return gateNote() + head('Bring people in', 'More people, more to find', 'Every member makes the Directory sharper and the hubs busier. Bring in the people who would love it.') +
-        '<div class="dg-grid">' +
-        card('Your link', 'Every member gets one. A friend who joins with it earns you 111 points, and from Level 2 your link earns a share of what they buy, 20%, rising with your level. Keep it, or give it to an organization you care about.', 'Earn') +
-        card('The Share button', 'When you are signed in, it copies any page with your own link on it, so anyone who joins from it is credited to you.', 'Earn') +
-        card('Vote together', 'Every vote moves a place up the list for the whole city. The more members vote, the truer the list.', 'Your city') +
-        card('Share what you love', 'Send a friend a listing, a Daily Pulse topic or a Guide.', 'Share') +
-        '</div>' + joinBtns();
-    },
-    business: function () {
-      return gateNote() + head('For businesses', 'Members too, with services of their own', 'Businesses come in the same ways as everyone. Then they get the advertising, sponsorships and marketing services we offer only to members.') +
-        '<div class="dg-grid">' +
-        card('Your page, yours to update', 'Find your business in the Directory and claim it, or add it. Free for members. <a href="/claim">Join the Directory</a>.', 'Claim it') +
-        card('Your business dashboard', 'Your numbers, your page and menu, ads and the campaigns open to you, on your own page.', 'Members') +
-        card('Advertising and sponsorships', 'Ad spots across the site, and sponsorships of our campaigns and events, only for members.', 'Members') +
-        card('Marketing services', 'Help with your Google listing, website and social, starting with a free check in the Restaurant Guide.', 'Members') +
-        '</div>' + '<div class="dg-btns"><a class="dg-btn" href="/business">See Vegans Explore for businesses</a><a href="/business/sample" style="font-size:13px;font-weight:800;color:var(--g)">See a sample business</a></div>';
-    },
-    join: function () {
-      var status = '<span class="dg-status" id="pgStatus" role="status"></span>';
-      if (isMember()) {
-        return head('Enter the room', 'You are in', 'You are a member, and every door is open. Thank you for being here.') +
-          '<div class="dg-btns"><a class="dg-btn" href="' + esc(back || '/dashboard') + '">' + (back ? 'Go back' : 'Open your dashboard') + '</a></div>' + status;
-      }
-      var vid = window.VEVideo ? VEVideo.markup({ src: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/home/next-v1.mp4', vtt: '/public/home/next-v1.vtt', poster: '/public/home/next-poster.jpg?v=1', title: 'Watch the video', sub: 'What you can do on Vegans Explore, in 40 seconds', label: 'What you can do on Vegans Explore, narrated by Liz', ga: 'passport_next_v1' }) : '';
-      return gateNote() + head('Enter the room', 'One way in, and it is free', 'Take a short survey and you are a member with everything open: vote, post, join your city, take on bounties, earn points and open Guides.') + FOUNDING_LINE +
-        '<div class="dg-paths" style="grid-template-columns:1fr">' +
-        '<div class="dg-path"><span class="dg-tag">Free</span><div class="dg-big">Free</div><b>Take the survey</b>' +
-        '<p>The Explorer survey: a few quick questions about you and where you live, about two minutes. Finish it and your membership opens right away.' + (me() ? '' : ' Already a member? <a href="#" data-signin>Sign in</a>.') + '</p><ul>' +
-        '<li><b>250 points</b>, earned by the survey itself</li><li><b>Everything open</b>, with more points from bounties and check-ins</li><li><b>Want to give more?</b> Once you are in, you can contribute from $11 any time. It is optional.</li></ul>' +
-        '<a class="dg-btn" href="/survey?s=explorer">' + (OPEN ? 'Become a Founding Member, free' : 'Start the survey') + '</a></div></div>' + status +
-        '<p class="dg-lede" style="margin-top:6px">Not sure yet? Nothing here needs an account: <a href="' + href('overview') + '" style="color:var(--g);font-weight:800">look around first</a>.</p>' + (vid ? '<div style="max-width:520px">' + vid + '</div>' : '');
-    }
-  };
-  var SAMPLE = '/business/sample', SAMPLE_DASH = '/business/sample?tab=brand';
-  // From a listing's claim box (?listing=<slug>), Find your business claims that listing.
-  var LISTING = /^[a-z0-9-]{1,120}$/.test(params.get('listing') || '') ? params.get('listing') : '';
-  var CLAIM = LISTING ? '/claim?listing=' + LISTING : '/claim';
-  function sampleBtns() {
-    return '<div class="dg-btns"><a class="dg-btn" href="' + SAMPLE + '">See a sample page</a><a class="dg-btn" style="background:#fff;color:var(--g);border:1px solid var(--line)" href="' + SAMPLE_DASH + '">See a sample dashboard</a></div>';
-  }
-  function startBtns() {
-    return '<div class="dg-btns"><a class="dg-btn" href="' + href('start') + '">Get started</a><a href="' + SAMPLE + '" style="font-size:13px;font-weight:800;color:var(--g)">See a sample business</a></div>';
-  }
-  if (BIZ) VIEWS = {
-    overview: function () {
-      var tiles = TABS.filter(function (t) { return t.k !== 'overview'; }).map(function (t) {
-        return '<a class="dg-tile" href="' + href(t.k) + '"><div class="dg-ic" style="background-image:url(\'' + esc(art(t.g) || '') + '\')"></div><div><b>' + esc(t.label) + '</b><span>' + esc(BIZ_BLURB[t.k]) + '</span></div></a>';
-      }).join('');
-      return head('Vegans Explore for businesses', 'Be found by the people looking for you', 'Vegans Explore is where Vegans and the Vegan-curious look for places to eat, shop and go, city by city. Businesses come in the same way as everyone: a short survey, <b>free</b>. Then claiming your page is free too.') +
-        '<div class="dg-tiles">' + tiles + '</div>' + sampleBtns();
-    },
-    page: function () {
-      return head('Your page', 'Your page in the Directory', 'Every business in the Directory has a page. Claim yours, or add it if it is not there yet, and it is yours to keep up to date.') +
-        '<div class="dg-grid">' +
-        card('Your story, your way', 'Your about, hours, links, menu, logo and photos, changed by you and live right away.', 'Yours') +
-        card('Votes', 'Members vote for the places they love once a day. The Directory sorts by those votes.', 'Members') +
-        card('Saves and check-ins', 'Members save you for later and check in when they visit, 10 points a visit. You see who comes back.', 'Members') +
-        card('Reviewed by our team', 'Before anything is approved, our team carefully reviews each claim to make sure it is accurate.', 'Trust') +
-        '</div>' + sampleBtns();
-    },
-    dash: function () {
-      return head('Your dashboard', 'Everything about your page, in one place', 'Your dashboard opens on your own page once your claim is approved. One thing at a time, with your numbers on top.') +
-        '<div class="dg-grid">' +
-        card('Your numbers', 'Views, visitors, calls, directions, orders and clicks, against the period before. 7 days to a year.', 'Insights') +
-        card('Who comes back', 'How many members check in, and how many come back, by week and by city. Never names: the members who say yes hear about your next deal during your campaigns.', 'Check-ins') +
-        card('Your menu', 'Add, change and hide items. Mark your favorites as Featured.', 'Menu') +
-        card('Ads and opportunities', 'Ask about an ad spot, and tell us which campaigns you want in on.', 'Grow') +
-        '</div>' + '<p class="dg-lede" style="margin-top:16px">The sample dashboard runs on made-up numbers, so you can click through every part of it.</p>' +
-        '<div class="dg-btns"><a class="dg-btn" href="' + SAMPLE_DASH + '">See a sample dashboard</a></div>';
-    },
-    found: function () {
-      return head('Get found', 'Where members find you', 'Your page is in the Directory from day one. Here is everything else, marked Live or Coming.') +
-        '<div class="dg-grid">' +
-        card('The Directory', 'Search, sections and every city\'s hub, sorted by member votes. <a href="/directory">Open it</a>.', 'Live') +
-        card('Events', 'Submit your event to the calendar every city sees. <a href="/events">See events</a>.', 'Live') +
-        card('Ads', 'Ad spots on the Daily Pulse, the Directory, Events and the city hubs. Ask about one from your dashboard.', 'Live') +
-        card('The Restaurant Guide', 'A free check of your Google listing, website and social, then the fixes in order. <a href="/guides/vegan-restaurant-guide">Take a look</a>.', 'Live') +
-        card('A featured spot in a Guide', 'Where people are choosing where to eat and what to buy.', 'Coming', true) +
-        card('Our campaigns', 'The Plant-Based Showcase, community nights in each city and our Q1 2027 campaigns.', 'Coming', true) +
-        '</div>' + startBtns();
-    },
-    partner: function () {
-      var front = Date.now() < Date.parse('2027-01-01T05:00:00Z');
-      return head('Partner plan', 'The full experience', front ? '<b>Front Row Start:</b> become a Partner now and every day until January 1 is on us. Your <b>$111</b> covers Period 1 (January 1 to April 21, 2027), then <b>$111 every 111 days</b>, renewing with every Partner.' : 'The Partner plan is <b>$111 a period</b> (111 days, on one calendar with every Partner), on top of your page and dashboard. Join mid-period and you pay only for the days left.') +
-        '<div class="dg-grid">' +
-        card('A front-row seat', 'First in line for every campaign we run, in your city and beyond.', 'Partner') +
-        card('Ads placed for you', 'We place your ads where your customers are looking.', 'Partner') +
-        card('A campaign manager', 'One person on our team who knows your business.', 'Partner') +
-        card('Start with the basics', 'Not ready? Your page and dashboard come free with your membership. Add the Partner plan any time.', 'Members') +
-        '</div>' + startBtns();
-    },
-    // Managed by us (BrandDesk, canon canon-ve-front-of-house; 2026-10-31). The name BrandDesk stays off this public page until its
-    // trademark check; the request goes to ve-brand-kit managed_interest and lands in the dashboard's Inbox (/public/ve-managed.js).
-    managed: function () {
-      return head('Managed by us', 'A marketing team for your restaurant', 'This is a lot to carry, and you do not have to carry it alone. A real person on our team does the hard parts, and you keep your brand kit up to date. <b>From $500 a month.</b>') +
-        '<div class="dg-grid">' +
-        card('Your website, built for you', 'On our restaurant template, fed by your page here, with your menu, photos, hours and online ordering. <a href="/business/sample/site" target="_blank" rel="noopener">See a sample</a>.', 'Included') +
-        card('Google, handled', 'Your Google profile claimed and complete: hours, photos, posts and replies to reviews.', 'Included') +
-        card('Every dish photographed', 'A starter shoot of up to 15 menu items, all on one surface and angle, so your menu looks like one place.', 'Included') +
-        card('Your logo and brand kit', 'Colors, type, your voice and your story in one place you can edit. <a href="/business/sample/brand" target="_blank" rel="noopener">See a sample</a>.', 'Included') +
-        card('A person who knows you', 'A monthly check-in with your Community Manager, a campaign every month, and your results on your dashboard.', 'Included') +
-        card('Yours to keep', 'Your domain, your photos and your brand kit are yours. Download everything any time. If you ever leave, you keep the pieces.', 'Always') +
-        '</div>' +
-        '<div class="dg-card" style="margin-top:14px"><b>What it costs</b><p><strong style="display:inline;font-weight:800">$1,500 to set up</strong>, at once or over 3 or 6 months. Then <strong style="display:inline;font-weight:800">$500 a month</strong>. Social media is <strong style="display:inline;font-weight:800">$500 a month more</strong> for two platforms. ' +
-        '12 months, then month to month. Need a break? Pause up to 3 months a year for $99 a month and your site stays up.</p>' +
-        '<p>We are starting with a small group of restaurants, city by city, where we have a Community Manager. Tell us about yours.</p></div>' +
-        '<div class="dg-btns"><button type="button" class="dg-btn" data-managed="business">Talk to our team</button><a href="/business/sample/site" target="_blank" rel="noopener" style="font-size:13px;font-weight:800;color:var(--g)">See a sample website</a></div>';
-    },
-    start: function () {
-      var status = '<span class="dg-status" id="pgStatus" role="status"></span>';
-      var steps = '<div class="dg-access"><ul>' +
-        '<li><b>1. Join free</b> with a short survey, about two minutes, with 250 points.</li>' +
-        (LISTING ? '<li><b>2. Claim your page.</b>' : '<li><b>2. Find your business</b> in the Directory and claim it, or add it.') + ' Claiming is free for members.</li>' +
-        '<li><b>3. We review it.</b> Before anything is approved, our team carefully reviews each claim to make sure it is accurate.</li>' +
-        '<li><b>4. Your dashboard opens</b> on your page.</li></ul>';
-      var box = isMember()
-        ? '<div class="dg-big">&#10003;<small>you\'re in</small></div><p>You are a member. ' + (LISTING ? 'Claim your page next.' : 'Find your business next.') + '</p><a class="dg-btn" href="' + CLAIM + '">' + (LISTING ? 'Claim your page' : 'Find your business') + '</a>' + status
-        : '<div class="dg-big">Free<small>a short survey</small></div><p>' + (me() ? 'Your account is not a member yet.' : 'Take the survey and you are in. Already a member? <a href="#" data-signin>Sign in</a>.') +
-          '</p><button type="button" class="dg-btn" data-join>Take the survey</button><p style="margin-top:10px"><a href="' + CLAIM + '">' + (LISTING ? 'Or claim your page first' : 'Or find your business first') + '</a></p>' + status;
-      return head('Get started', 'Your page, in four steps', 'Membership is free with a short survey. After that, you buy only what you want.') + steps + '<div class="dg-pricebox">' + box + '</div></div>';
-    }
-  };
-  var BIZ_BLURB = { page: 'Claim it or add it. Yours to keep up to date.', dash: 'Your numbers, check-ins, menu and ads.', found: 'The Directory, Events, ads and Guides.',
-    partner: '$111 a period of 111 days. Join now and until January is bonus.', managed: 'We do your website, Google, photos and brand.', start: 'A short survey, free. Then claim your page, free.' };
-
-  // Old links: the four Founding Member pages (2026-11-01) and the nine-tab Welcome Guide's tabs land on the page that holds them now.
-  var OLD = { can: 'places', now: 'supports' };
-  var OPEN = Date.now() < Date.parse('2027-01-01T05:00:00Z');
-  // A members-only prompt (vote, save, check in...) lands on the overview with its note, not the join step (Sean, 2026-11-01).
-  function gateNote() {
-    var w = fromVote ? ['Voting is for members.', 'vote every day for the places you love'] : fromSave ? ['Saving is for members.', 'keep the places you love on My list'] :
-      fromCheckin ? ['Check-ins are for members.', 'earn 10 points every time you visit a place'] : fromGive ? ['Giving points is for members.', 'give your points to the places you love'] :
-      fromTickets ? ['This is a members-only event.', 'we take you straight to the tickets'] : fromBoard ? ['Posting and comments are for members.', 'join the conversation on the Daily Pulse in every city'] : null;
-    if (fromOld && !w) return '<p class="dg-note"><b>That page has moved.</b> Vegans Explore has a new home, and this is the best place to start: see how it works, then come in free with a short survey. ' + (isMember() ? '<a href="/dashboard" style="color:var(--g);font-weight:800">Open your dashboard</a>.' : '<a href="' + href('join') + '" style="color:var(--g);font-weight:800">See how to join</a>.') + '</p>';
-    if (!w || isMember()) return '';
-    return '<p class="dg-note"><b>' + w[0] + '</b> Enter the room with a short survey, free, and ' + w[1] + '.' + (me() ? '' : ' Already a member? <a href="#" data-signin style="color:var(--g);font-weight:800">Sign in</a> and you go right back.') + ' <a href="' + href('join') + '" style="color:var(--g);font-weight:800">See how to join</a>.</p>';
-  }
-  if (WELCOME && /^#\/join/.test(location.hash) && (fromVote || fromSave || fromCheckin || fromGive || fromBoard || fromTickets)) history.replaceState(null, '', location.pathname + location.search + '#/overview');
-  function tickCd() {
-    var el = document.getElementById('pgCd'); if (!el) return;
-    var ms = Date.parse('2027-01-01T05:00:00Z') - Date.now(); if (ms <= 0) { el.hidden = true; return; }
-    var sec = Math.floor(ms / 1000), v = [Math.floor(sec / 86400), Math.floor(sec % 86400 / 3600), Math.floor(sec % 3600 / 60), sec % 60];
-    el.querySelectorAll('[data-cd]').forEach(function (b) { var n = +b.getAttribute('data-cd'); b.textContent = n ? String(v[n]).padStart(2, '0') : v[n]; });
-  }
-  setInterval(tickCd, 1000);
-
-  function draw() {
-    var k = (location.hash.match(/^#\/([a-z]+)/) || [])[1];
-    if (OLD[k]) k = OLD[k];
-    cur = VIEWS[k] ? k : 'overview';
-    var t = tab(cur), i = TABS.indexOf(t);
-    main.innerHTML = VIEWS[cur]();
-    main.scrollTop = 0;
-    menu.innerHTML = TABS.map(function (x) { return '<a href="' + href(x.k) + '"' + (x.k === 'join' || x.k === 'start' ? ' class="dg-join-tab"' : '') + (x.k === cur ? ' aria-current="page"' : '') + '>' + esc(x.label) + '</a>'; }).join('');
-    sel.innerHTML = TABS.map(function (x) { return '<option value="' + x.k + '"' + (x.k === cur ? ' selected' : '') + '>' + esc(x.label) + '</option>'; }).join('');
-    var pic = art(t.g);
-    guideEl.style.backgroundImage = pic ? "url('" + pic + "')" : '';
-    guideEl.setAttribute('aria-label', t.g === 'all' ? 'All eight of our Guides together' : GUIDES[t.g] + ', one of our Guides');
-    if (lastGuide !== t.g) { guideEl.classList.remove('dg-shift'); void guideEl.offsetWidth; guideEl.classList.add('dg-shift'); lastGuide = t.g; }
-    nameEl.innerHTML = t.g === 'all' ? '<b>Your Guides</b> &middot; all eight of us' : '<b>' + esc(GUIDES[t.g]) + '</b> &middot; Your Guide';
-    bubble.textContent = t.say;
-    var cta = document.getElementById('dgCta');
-    if (cta) cta.hidden = BIZ || isMember() || cur === 'join';
-    tickCd();
-    var nav = '<a class="dg-tnav" href="' + href(TABS[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true"') + '>Back</a><span>' + (i + 1) + ' of ' + TABS.length + '</span>' +
-      '<a class="dg-tnav next" href="' + href(TABS[Math.min(TABS.length - 1, i + 1)].k) + '"' + (i < TABS.length - 1 ? '' : ' aria-disabled="true"') + '>Next</a>';
-    tourEl.innerHTML = tourM.innerHTML = nav;
-    document.getElementById('pgJoinbox').style.display = isMember() ? 'none' : '';
-    document.getElementById('pgSignin').style.display = me() ? 'none' : '';
-    if (activated === 'success' && (cur === 'join' || cur === 'start')) setStatus(isMember() ? '' : 'Your payment went through. It can take a minute to show here: refresh this page shortly.');
-  }
-  function setStatus(t) { var s = document.getElementById('pgStatus'); if (s) s.textContent = t; }
-
-  sel.addEventListener('change', function () { location.hash = href(sel.value); });
-  // On a phone, Next goes back up to the Guide.
-  tourM.addEventListener('click', function (e) { if (e.target.closest('.dg-tnav')) setTimeout(function () { var r = document.querySelector('.dg-rail'); if (r) r.scrollIntoView({ block: 'start' }); }, 0); });
-  document.addEventListener('click', function (e) {
-    var a = auth();
-    if (e.target.closest('[data-signin]')) {
-      e.preventDefault(); if (!a) return;
-      a.showAuthModal('Sign in to Vegans Explore.', function () { if (back) location.href = back; else location.reload(); }, 'login');
-      return;
-    }
-    var jb = e.target.closest('[data-join]');
-    if (!jb || !a) return;
-    if (isMember()) { location.href = back || '/dashboard'; return; }
-    // Sean, 2026-11-07 (canon-ve-door-guides v12): the survey is the only way in; /survey makes the free account first.
-    location.href = '/survey?s=explorer';
-  });
-  window.addEventListener('hashchange', draw);
-  if (activated === 'success') { if (!location.hash) location.hash = BIZ ? '#/start' : '#/join'; }
-  if (activated) { params.delete('activate'); history.replaceState(null, '', location.pathname + (params.toString() ? '?' + params : '') + location.hash); }
-  if (BIZ) {
-    document.title = 'For businesses — Vegans Explore';
-    var h1 = document.querySelector('.dg-title'); if (h1) h1.textContent = 'For businesses';
-    var cn = document.querySelector('link[rel="canonical"]'); if (cn) cn.href = 'https://vegansexplore.com/business';
-  }
-  if (!BIZ) {
-    // The Welcome's header: free to look around, and one way in (the Enter the room tab); /business keeps its $11 box.
-    document.getElementById('pgJoinbox').innerHTML = '<div class="dg-jb-price"><b>Free</b><small>to look<br>around</small></div><a class="dg-btn" href="#/join">Enter the room</a><div class="dg-jb-in" id="pgSignin">Already a member?<br><a href="#" data-signin>Sign in</a></div>';
-  }
-  document.documentElement.classList.add('dg-fit');
-  draw();
-  if (activated === 'success') {
-    // The webhook marks the member active; ve-auth's me refreshes the stored member.
-    setStatus('Thank you! Your contribution is being confirmed.');
-    var tries = 0, a0 = auth();
-    (function poll() {
-      if (!a0 || !a0.getToken()) return;
-      // The same refresh as partner-guide.js: ve-auth ?action=me with the token in the body.
-      fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth?action=me', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON_KEY }, body: JSON.stringify({ action: 'me', token: a0.getToken() }) })
-        .then(function (r) { return r.json(); }).then(function (d) {
-          if (d && d.member) { try { var old = JSON.parse(localStorage.getItem('ve_member') || '{}') || {}; localStorage.setItem('ve_member', JSON.stringify(Object.assign(old, d.member))); } catch (e) {} }
-          if (d && d.member && d.member.membership_status === 'active') { draw(); setStatus('Thank you! You are in.'); return; }
-          if (++tries < 6) setTimeout(poll, 2500);
-        }).catch(function () { if (++tries < 6) setTimeout(poll, 2500); });
-    })();
-  }
-})();
-</script>
+<script src="/public/ve-guide-intro.js"></script>
+<script src="/public/ve-explorer-card.js"></script>
+<script src="/guide-scripts/welcome-guide.js?v=1"></script>
+<script src="/public/ve-guide-min.js"></script>
 </body>
 </html>
