@@ -2,7 +2,7 @@
 // the name, where it's located, maybe add a field for the URL... and then also, I would like to upload an image, like a
 // screenshot... you can then look up the information based off of that"). Depot > Directory review > Add a listing, step 1.
 //
-// POST { action: 'read', name?, where?, url?, images?: [{ type, data (base64) }] }   a super admin ->
+// POST { action: 'read', name?, where?, url?, images?: [{ type, data (base64) }] }   a super admin, or the cron secret (ve-listing-requests) ->
 //   { ok, found: { name, kind, vegan, organization, online_only, street, city, state, zip, country, phone, website, instagram,
 //     facebook, tiktok, hours {Day: text}, about, search, note }, read: [what was read], pictures: [{ url, from }] }
 // The link is read server side: an Instagram profile through Apify's profile scraper (APIFY_API_TOKEN; its bio, link, category,
@@ -23,7 +23,7 @@ const MODEL = 'claude-opus-5-5';
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36';
 const cors = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-cron-secret',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
 };
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
@@ -139,11 +139,15 @@ You get what the team has: a name and place they typed, screenshots (often of an
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ error: 'method' }, 405);
-  const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
-  const id = token ? await verifyToken(token) : null;
-  if (!id) return json({ error: 'sign_in' }, 401);
-  const { data: m } = await db.from('members').select('id, is_superadmin').eq('id', id).maybeSingle();
-  if (!m?.is_superadmin) return json({ error: 'admins_only' }, 403);
+  // The listing-request worker (ve-listing-requests research) calls with the cron secret (ve-community-directory T3, 2026-11-08).
+  const cron = req.headers.get('x-cron-secret'), cronSecret = cron ? await secret('CRON_SECRET') : null;
+  if (!(cronSecret && cron === cronSecret)) {
+    const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
+    const id = token ? await verifyToken(token) : null;
+    if (!id) return json({ error: 'sign_in' }, 401);
+    const { data: m } = await db.from('members').select('id, is_superadmin').eq('id', id).maybeSingle();
+    if (!m?.is_superadmin) return json({ error: 'admins_only' }, 403);
+  }
   let body: any = {};
   try { body = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
   if (body.action !== 'read') return json({ error: 'unknown_action' }, 400);
