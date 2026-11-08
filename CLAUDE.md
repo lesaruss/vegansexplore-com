@@ -6758,6 +6758,11 @@ included for every client; a one-on-one Hot Lab $250 ($150 to the Community Mana
 no added features, and Sean is her Community Manager for now. Next: new website people join her client list automatically, Show me how pages (video plus steps,
 I'm stuck adds it to her next Hot Lab), then B3 Insights. Nothing sent to her; email draft 4fbbd9f4 held.
 
+**B3, Insights, built 2026-11-08, not merged** (HQ branch `claude/brooke-insights` on top of Show me how; handoff `docs/handoff/2026-11-08-brooke-sellers-b3-insights.md`):
+BrandDesk > Meatless Muscle > Insights (`?view=insights&r=7|30|90|365`): her business from Coach OS (leads with bots left out, new clients, check-ins, sales), her website
+(GA4 433904174, data only from Oct 30), Vegans Who Lift downloads (`branddesk-insights` `PODCAST_SHOWS['meatless-muscle']`, deployed), and Search and Social waiting on
+her Show me how steps. `lib/clientInsights.ts` reads on the server for the seat's own brand only. Proven signed in as a throwaway example.com client at 1440 and 390 px.
+
 ## Revenue on the dashboard (Sean, 2026-11-02)
 
 "I just want to be able to see that revenue coming in through Vegans Explore in real time... just some little module... Eventually
