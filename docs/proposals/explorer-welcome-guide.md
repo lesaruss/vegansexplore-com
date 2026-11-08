@@ -59,21 +59,17 @@ The last page is **Become a Founder**:
 
 I'd keep it as it is: nine questions, 250 points, three required. "What would make it worth it for you?" and "What's one of the toughest things?" already fit "tell us what's working". One change: rename "How do you want to hear from us?" to **"How should we reach you with founder news?"** That makes it the founder list.
 
-## Draft script
+## Draft script (v2, Sean's notes 2026-11-08)
 
-This is the video tour, one chapter per page. Liz speaks, in your voice. It is a text draft and nothing gets recorded until you approve it.
+This is the video tour, one chapter per page, and Liz speaks it. It opens on them and their journey, then qualifies us once, and everything after that comes back to them. It is a text draft, and nothing gets recorded until Sean approves it.
 
-1. **Welcome.** "Hi, I'm Liz. Welcome to Vegans Explore. In the next few minutes I'll show you around, and by the end you'll know exactly where everything is, what to do first, and how to reach us."
-2. **Why you're here.** "Vegans Explore comes from more than ten years inside this community: activism, events, content, running a business, and hundreds of long conversations with business owners about what they needed. Now we can finally build it. But we can't get it right without you."
+1. **Welcome.** "Hi, I'm Liz. Maybe you want to eat out without guessing, find your people, or do more for the animals than you are right now. Wherever you're starting from, this Guide is how you get there. You'll start out just looking around, and you'll finish knowing your city, your community, and exactly where you fit in. Let's go."
+2. **Why you're here.** "Why listen to us? We've spent more than ten years inside this community: activism, events, content, running businesses, and hundreds of long conversations about what people needed. Now we can finally build it, and we can't get it right without you."
 3. **Find your way.** "Search for anything and it shows up. The Directory has places to eat and shop, people, groups and nonprofits, city by city. Your city has its own Daily Pulse, its boards and its events. And our Guides each walk you through one topic."
-4. **Take part.** "Vote for the places you love. Your votes tell us who to spotlight next. Check in when you visit, take on bounties, earn points and give them to the places and causes you care about."
-5. **Make it better.** "This is the part that matters most. Use it in your day to day, and tell us what's working, what isn't, and what you wish you could do. Every page has a Feedback button. Ask your Guide, or ask a person on our team. Search for something we don't have yet, and it goes to our team. We read all of it, and we build from it every day."
+4. **Take part.** "Vote for the places you love. Your favorites tell us who to spotlight next. Check in when you visit, take on bounties, earn points and give them to the places and causes you care about."
+5. **Make it better.** "This is the part that matters most. Use it in your day to day, and tell us what's working, what isn't, and what you wish you could do. Every page has a Feedback button. Ask your Guide, or ask a person on our team. Search for something we don't have yet, and it goes to our team. We read all of it, and we build from it every day. We're real people, supported by technology that finally lets us carry out a vision we've been working on since 2016."
 6. **For the animals.** "Here's where it's all going. With a network of businesses, people and nonprofits that actually show up, we can run campaigns that move the needle for the animals, the reason we're all here."
-7. **Become a Founder.** "Right now you're early, and that's rare. Answer a few quick questions, about two minutes, and you're in, free, with 250 points. Join before midnight on January first and you're a Founding Member for good. Founders unlock some really cool things in 2027, and you'll hear about them first."
-
-## The Explorer bridge as a shared piece
-
-Today the survey only runs on its own page. I'd make it one shared component (`public/ve-guide-survey.js` already draws it), so any Guide can end on the same card: **Become a member, free: Take Explorer (about 2 minutes, 250 points)**. Someone who is already an Explorer sees "You're an Explorer" and that Guide's next step instead. The Welcome Guide uses it first and the path Guides use it next (step 5).
+7. **Become a Founder.** "Right now you're early, and that's rare. Answer a few quick questions, about two minutes, and you're in, free, with 250 points to use across the platform. Join before midnight on January first and you're a Founding Member for good. Founders unlock some really cool things in 2027, and the only way to hear about them, and lock them in for yourself, is to join today."
 
 ## Build order (after you approve)
 
