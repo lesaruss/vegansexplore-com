@@ -7455,3 +7455,15 @@ on every campaign row. **Cohort 1** `founding-cohort-1-2026-11`: 151 from Sugges
 from Sean, to the Welcome Guide, start Mon Nov 9, a draft until Sean locks and approves; three Wednesday Holiday Guide follow-ups by engagement
 (`founding-cohort-1-wed-clicked|opened|quiet`), drafts with no people until Wednesday morning. Handoff
 `docs/handoff/2026-11-08-ve-outreach-buckets-founding-cohort-email.md`. Not built: adding people to a people campaign from HQ.
+
+## Orientation by path (Sean, 2026-11-08, playbook `ve-outreach-buckets`)
+
+"We need an orientation for people who completed the Explorer program... if they happen to complete get a badge... unsubscribe them from
+that and then subscribe them into that automation." Six BrandDesk people campaigns, three notes a week apart from the team, first the day
+after: `orientation-explorer` (finished the Explorer survey, no path badge), `orientation-restaurant`, `-events`, `-creator`, `-nonprofit`,
+`-business` (the path surveys). `ve_orientation_sync()` (cron `ve-orientation-sync`, every 15 minutes) enrolls people and, on a path badge,
+stops them on the Explorer one (`stop_reason` "moved to <slug>") and starts the path's; one path at a time; a path not approved leaves them on
+Explorer; only completions after the later of start day and approval count. Each has a stopped sample person (contact@lesaruss.com) for
+previews and tests, never sent. All draft until Sean locks and approves each in HQ (Outreach > Campaigns > Orientation). Migration
+`20261108_orientation_explorer_paths.sql`; proven in a rolled-back transaction. Once `orientation-events` is approved, turn off ve-nurture's
+Events Guide Day 3 and 7 notes (`nurture.door_on`) so hosts are not mailed twice.
