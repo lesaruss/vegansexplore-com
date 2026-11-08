@@ -127,7 +127,7 @@ const FOOD_TYPE_RE = /restaurant|cafe|bakery|food|meal_|juice|grocery|supermarke
 const FOOD_WORD_RE = /restaurant|caf[eé]|bakery|food|juice|grocer|market|kitchen|catering|caterer|chef|meal|dessert|ice cream|donut|pizza|deli|coffee|tea|smoothie|bistro|eatery|taco|burger|vegan (restaurant|bakery|cafe)|food truck|personal chef/i;
 const handleOf = (v: string) => {
   let s = String(v || '').trim();
-  const m = s.match(/instagram\.com\/([A-Za-z0-9._]+)/i);
+  const m = s.match(/(?<![a-z0-9-])instagram\.com\/([A-Za-z0-9._]+)/i);
   s = (m ? m[1] : s).replace(/^@+/, '').split(/[\s,—–\/|]+/)[0].replace(/[^A-Za-z0-9._]+$/g, '').replace(/^[^A-Za-z0-9._]+/, '');
   return /^[A-Za-z0-9._]{1,30}$/.test(s) ? s.toLowerCase() : '';
 };
@@ -399,10 +399,12 @@ const VEGAN_STATUS = ['fully_vegan', 'vegan_options', 'vegan_friendly'];
 // ---- Their website: socials and logo pictures ----
 // Website builders ship their own social links in templates (facebook.com/wix, instagram.com/squarespace); a site that never
 // replaced them does not have those accounts. The same rules as ve-restaurant-audit's essentials pass.
-const TEMPLATE_HANDLES = new Set(['wix', 'wixcom', 'squarespace', 'godaddy', 'shopify', 'wordpress', 'wordpressdotcom', 'weebly', 'webflow', 'toasttab', 'facebook', 'instagram', 'tiktok', 'meta', 'business', 'yourbusiness', 'username']);
+const TEMPLATE_HANDLES = new Set(['wix', 'wixcom', 'squarespace', 'godaddy', 'shopify', 'wordpress', 'wordpressdotcom', 'weebly', 'webflow', 'toasttab', 'facebook', 'instagram', 'tiktok', 'meta', 'business', 'yourbusiness', 'username',
+  // Facebook's and Instagram's own pages (Sean, 2026-11-08: 16 listings held facebook.com/docs from a site's footer, 5 facebook.com/login).
+  'docs', 'login', 'help', 'policies', 'privacy', 'legal', 'terms', 'accounts', 'developer', 'developers', 'direct', 'facebookcom', 'wwwfacebookcom', 'instagramcom', 'wwwinstagramcom', '2008', 'rsrcphp', 'static', 'embed', 'plugins']);
 function socialOf(u: string, kind: 'ig' | 'fb' | 'tt') {
   let h = '';
-  if (kind === 'ig') { const m = u.match(/instagram\.com\/([A-Za-z0-9._]+)/i); h = m && !['p', 'reel', 'reels', 'explore', 'stories'].includes(m[1].toLowerCase()) ? m[1].toLowerCase() : ''; }
+  if (kind === 'ig') { const m = u.match(/(?<![a-z0-9-])instagram\.com\/([A-Za-z0-9._]+)/i); h = m && !['p', 'reel', 'reels', 'explore', 'stories'].includes(m[1].toLowerCase()) ? m[1].toLowerCase() : ''; }
   else if (kind === 'tt') { const m = u.match(/tiktok\.com\/@([A-Za-z0-9._]+)/i); h = m ? m[1].toLowerCase() : ''; }
   else {
     const parts = u.replace(/^https?:\/\/(?:[a-z]+\.)?facebook\.com\//i, '').split(/[/?#]/).filter(Boolean);

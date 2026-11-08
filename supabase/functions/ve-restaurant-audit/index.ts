@@ -156,7 +156,7 @@ const normUrl = (u: string) => {
 const igHandle = (v: string) => {
   const s = String(v || '').trim();
   if (!s) return '';
-  const m = s.match(/instagram\.com\/([A-Za-z0-9._]+)/i);
+  const m = s.match(/(?<![a-z0-9-])instagram\.com\/([A-Za-z0-9._]+)/i);
   const h = (m ? m[1] : s.replace(/^@/, '')).replace(/\/.*$/, '');
   return /^[A-Za-z0-9._]{1,30}$/.test(h) && !['p', 'reel', 'explore', 'stories'].includes(h.toLowerCase()) ? h.toLowerCase() : '';
 };
@@ -167,7 +167,9 @@ const pathHandle = (v: string, host: RegExp) => {
 };
 // Website builders ship their own social links in templates (facebook.com/wix, instagram.com/squarespace); a site that never
 // replaced them does not have those accounts. facebook.com/pages/<name>/<id> and profile.php links carry no handle.
-const TEMPLATE_HANDLES = new Set(['wix', 'wixcom', 'squarespace', 'godaddy', 'shopify', 'wordpress', 'wordpressdotcom', 'weebly', 'webflow', 'toasttab', 'facebook', 'instagram', 'tiktok', 'meta', 'business', 'yourbusiness', 'username']);
+const TEMPLATE_HANDLES = new Set(['wix', 'wixcom', 'squarespace', 'godaddy', 'shopify', 'wordpress', 'wordpressdotcom', 'weebly', 'webflow', 'toasttab', 'facebook', 'instagram', 'tiktok', 'meta', 'business', 'yourbusiness', 'username',
+  // Facebook's and Instagram's own pages (Sean, 2026-11-08: 16 listings held facebook.com/docs from a site's footer, 5 facebook.com/login).
+  'docs', 'login', 'help', 'policies', 'privacy', 'legal', 'terms', 'accounts', 'developer', 'developers', 'direct', 'facebookcom', 'wwwfacebookcom', 'instagramcom', 'wwwinstagramcom', '2008', 'rsrcphp', 'static', 'embed', 'plugins']);
 function fbHandle(u: string) {
   const parts = String(u || '').replace(/^https?:\/\/(?:[a-z]+\.)?facebook\.com\//i, '').split(/[/?#]/).filter(Boolean);
   if (!parts.length) return '';
