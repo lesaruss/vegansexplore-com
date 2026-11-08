@@ -7490,3 +7490,17 @@ Explorer; only completions after the later of start day and approval count. Each
 previews and tests, never sent. All draft until Sean locks and approves each in HQ (Outreach > Campaigns > Orientation). Migration
 `20261108_orientation_explorer_paths.sql`; proven in a rolled-back transaction. Once `orientation-events` is approved, turn off ve-nurture's
 Events Guide Day 3 and 7 notes (`nurture.door_on`) so hosts are not mailed twice.
+
+## The Pre-Vegan Guide and 111 Days (LOCKED by Sean 2026-11-08, playbook `ve-pre-vegan-guide`)
+
+Concept session with V, "lock it" (canon `canon-ve-pre-vegan-guide` v1, the full decisions and Days 1 to 7; migration
+`20261108_pre_vegan_guide_canon.sql`; handoff `docs/handoff/2026-11-08-ve-pre-vegan-guide-locked.md`). **Not built yet.** A free door Guide
+for people ready to go Vegan who do not know where to start, Maya narrating, copied from the Vegan Dairy Guide; the Pre-Vegan survey is
+Explorer plus 5 Pre-Vegan questions (250 points, admits). Inside, the members-only **111 Days to Going and Staying Vegan**: 9 phases ending on
+capstones, one drop a day at 5 AM local only after yesterday was opened (no backlog, no bingeing, no streak shaming, a 14-day pause per phase),
+challenges at 5/10/25/50 points (photos and voice paid only after approval; about 2,500 in all), unlocks on days 7 (Pre-Vegan badge), 14, 21,
+35, 49, 63, 77, 104 and 111 (the Library and the 111 Days badge). **Never a Vegan badge**: Day 111 they declare it themselves. A question map
+gathers about 22 Build your profile answers on purpose. After Day 111 Maya sends a two-line check-in (1 week, 1 month, 3 months, 6 months,
+then every 6 months), replies to the team Inbox. The engine is brand-neutral (the prototype for 111 Day Theory). Build order: engine data
+model, the Guide shell, the daily drop and notifications, Days 8+ in batches to Sean, the after-111 check-ins with replies routed into the Inbox.
+Maya's lines are text drafts until Sean approves them.
