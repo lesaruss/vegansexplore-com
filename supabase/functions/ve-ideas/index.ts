@@ -523,8 +523,15 @@ Deno.serve(async (req) => {
       const status = b.status === 'building' ? 'building' : 'parked';
       if (!slugOk(slug)) return json({ error: 'bad_slug' }, 400);
       if (!ptitle) return json({ error: 'title_needed' }, 400);
-      const { data: taken } = await db.from('briefings').select('slug').eq('slug', slug).maybeSingle();
-      if (taken) return json({ error: 'slug_taken' }, 409);
+      // Taken means any page, index row or record already uses the slug (a playbook can have an index row and records but no page;
+      // the first version checked pages only and overwrote branddesk-production-wing's index row in its test, 2026-11-08).
+      const [tb, ti, tr] = await Promise.all([
+        db.from('briefings').select('slug').eq('slug', slug).limit(1),
+        db.from('ve_playbook_index').select('slug').eq('slug', slug).limit(1),
+        db.from('playbook_records').select('id').eq('slug', slug).limit(1),
+      ]);
+      if (tb.error || ti.error || tr.error) return json({ error: 'check_failed' }, 500);
+      if ((tb.data || []).length || (ti.data || []).length || (tr.data || []).length) return json({ error: 'slug_taken' }, 409);
       const [tpl, sib] = await Promise.all([
         db.from('templates').select('parameters').eq('subtype', 'playbook').eq('status', 'active').maybeSingle(),
         db.from('briefings').select('tenant_id').eq('type', 'playbook').eq('brand_slug', brand).limit(1).maybeSingle(),
