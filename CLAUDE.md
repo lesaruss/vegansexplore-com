@@ -6965,6 +6965,14 @@ for the Guide and `claim.html` for the menu form (template gate).
   Guide). Pictures are Higgsfield illustrations in the Restaurant Guide's style, `public/guides/holiday/p-*.jpg`; a table picture that came back with a turkey was
   thrown out (ask for the plant-based dish by name and say no bird or meat, or the model draws a turkey).
   **Merged to `main` 2026-11-08** (aec8689, Sean: "merge it to main"); handoff `docs/handoff/2026-11-08-ve-holiday-guide-page-live.md`.
+  **Sean's notes, 2026-11-08 (branch `claude/funny-fermat-88emzg`, not on `main` until Sean merges; canon v2)**: the Events tab asked for the wrong tenant id
+  (`00000000-0000-0000-...` instead of `00000000-0000-4000-a000-000000000002`) and was always empty, fixed; never the word Friendsgiving (copy, lines, emails,
+  and the Guide no longer matches it); holidays open as they get close, the closest on top and the rest in a menu. **Tell us about a menu**: a member sends a
+  place and a link to its own holiday menu (`#/menus/tell`, a join window first), `ve-holiday` v5 `tip` (10 a day, the team's go live at once), `tips` and
+  `tip_review` for super admins, `live` returns them as Spotted by members (linked out, never copied); table `ve_holiday_menu_tips` (migration
+  `20261108_holiday_menu_tips.sql`); Depot > Holiday menus has Sent by businesses, Spotted by members and Add a menu we know. Proven 15 of 15
+  (`scripts/supabase-once/holiday-tip-proof.ts`, now 410). Four sanctuary events added (`20261108_holiday_sanctuary_events.sql`). Video script v2 approved and recorded 2026-11-08
+  (`theo-tour-1..8-v1.mp3` in `vegan-media/media/voices/holiday-guide/`, stt-checked; Overview Play runs the tour, each tab plays its chapter; `TAB_CH`); the restaurant note's words are approved, its send day waits on his go.
 
 ## The Vegans Explore app (LOCKED by Sean 2026-11-07, playbook `ve-mobile-app`, canon `canon-ve-mobile-app`)
 
