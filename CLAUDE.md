@@ -7120,6 +7120,10 @@ on the page, an Inbox row for a new answer (it emails contact@lesaruss.com).
   "not available" for real people whose profiles hide from logged-out visitors (Tabitha Brown, Isa Chandra). Never remove a Facebook link on
   "not available" alone; list it for a person to look at. Instagram's own API returns 404 or 429 to our server, so Instagram checks go
   through Apify.
+- **The Facebook review, 2026-11-08** (handoff `docs/handoff/2026-11-08-ve-feedback-facebook-review-list.md`): Apify run
+  `2EK5TxNjA4UPYRzSv` finished ($3.79); of 580 Facebook links, 527 live, 44 not available, 9 came back empty. The 48 that are not
+  people are listed in the handoff for Sean (8 broken addresses, 32 not available, 8 empty); **nothing removed** until he says.
+  `ve_social_check_tick()`, `ve_social_link_checks` and `ve_social_scan_ig` are dropped (migration `20261108_social_scan_tables_drop.sql`).
 
 ## Image conventions
 
