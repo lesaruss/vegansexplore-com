@@ -6367,6 +6367,8 @@ of picture memory. The homepage was 8.2 MB, mostly city banners. Rules from that
 
 ## No chapter counts in copy or videos (Sean, 2026-11-02)
 
+**The homepage video is `launch-v4.mp4`** (2026-11-08, Sean: "it still says the way to become a member is paying $11"; captions `public/home/launch-v4.vtt`). Only the membership beat changed: Liz's line 15 is now "Becoming a Founding Member is free. Take a short survey, and you get 250 points." (el-media tts in her profile voice, `media/home/launch-line15-v4.mp3`, checked with stt), dropped into the same gap at the original mix's levels, and the Richmond card reads **Free / with a short survey** and **250 / points** in place of $11 and 1,100 (Montserrat ExtraBold 56 and Bold 26, #64C368, the same frosted boxes). The old text was taken out frame by frame (inpaint at full strength; on the fades a background rebuilt from the clean frames before and after, warped to the camera move). Every other frame and word is v3's. v3 stays in storage.
+
 "Why are we saying 13? I might decide to have North Carolina be a chapter tomorrow, and then we got to do all these videos over again."
 Never write how many chapters or cities we have ("13 chapters", "thirteen") in page copy, a Guide's lines, a recording or a video.
 Say "city by city", "every chapter" or "from South Florida to London". A live count drawn from the data is fine. The homepage video
