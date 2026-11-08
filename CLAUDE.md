@@ -1586,6 +1586,12 @@ outside scripts. Rescan 2026-11-07: 3,325 pages, about 7,000 flags to 7. Waiting
 playbook (`playbook_records`, the brand's slug, one decision row per topic), canon (`knowledge_records`), the repo (CLAUDE.md, a migration file for
 every DB change, `docs/handoff/<date>-<topic>.md`, pushed to main), a `brief_checkpoints` row (handed_off) and a `stream_events` row; checks each
 landed; then gives Sean one self-contained paste prompt for a new chat (no "continue" needed, no skills needed). Never call it done before the check.
+**v2, locked down (Sean, 2026-11-08: "There's been times where things were missing. So we need to lock that system and process down"; error registry
+`WRAP-ITEM-MISSING`)**: record as you go (every decision, approval, idea, answered ask and thing built or proven gets its `playbook_records` row in the turn
+it happens; an idea said out loud goes into `ve_ideas` at once); at wrap-up a numbered **ledger** of every item in the whole session (the full transcript,
+including what came before a context summary), each with where it is stored (record, idea id, canon slug, file and commit); the check is a query of this
+session's records compared to the ledger line by line; the ledger goes in the handoff doc and in the reply to Sean, so he can spot a gap before the chat
+closes; what waits on Sean is its own list, every item with its link.
 
 ## Playbooks: open here first (Sean, 2026-11-03)
 
@@ -7090,6 +7096,7 @@ suppressed; a login shared with another LESARUSS brand loses only its Vegans Exp
 `delete_account {confirm: 'DELETE'}` (v76) and the app's Profile > Delete my account. Builds are read from the stores with the workflow's read-only
 `store_status` input. iOS 13 and Android 5 carry it. The review account is appreview@lesaruss.com (password in Key Room `VE_APP_REVIEW_PASSWORD`). The
 listing, screenshots and feature graphic are in the app repo `store/`, waiting on Sean; then the consoles are filled and both builds go to review.
+**Store fill and listing v3, 2026-11-08** (handoff `docs/handoff/2026-11-08-ve-mobile-app-listing-v3-wrap.md`): App Store Connect filled by API except the review contact, App Privacy, price, availability and content rights; Play's listing uploaded but its save refused until Sean grants the service account permission; listing v3 on the app branch (c0fe2b3) waits on Sean's approval; his checklist is https://claude.ai/artifact/J3sWNRENCjTBDCtzSkxZrb. Nothing submitted.
 **V running 2026-11-08** (handoff `docs/handoff/2026-11-08-ve-mobile-app-device-builds.md`): the six secrets are set (copied server side; GITHUB_TOKEN reinstated as a fine-grained token, vegansexplore-app Secrets only), iOS reached TestFlight (Sean installed build 10; 12 sent), Android 4 building. Submit by build id, never `--latest`; `reset_ios_profile` when a capability changes. App branch `claude/elegant-mayer-r6z3p0` (b95d391, not on app main): Menu is the website's phone menu, Explore is the website's Directory (`src/lib/directory.ts` copies its rules). Next: device proofs (Apple, email, Explorer join, Check in), then Google client IDs.
 
 ## Image conventions
