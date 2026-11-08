@@ -1,4 +1,4 @@
-# ve-demo-showroom: Green Leaf Kitchen tour script (approved and recorded)
+# ve-demo-showroom: Green Leaf Kitchen tour script (V, recorded as a video)
 
 2026-11-08. Liz narrates. Built as the guided view (`/public/ve-guided.js`, white stage, the `/partners` format), one slide per stop,
 Back / N of M / Next, each slide showing that part of the real sample site (`/business/sample/site`) in a phone or browser frame,
@@ -67,3 +67,12 @@ Files: `vegan-media/media/liz/green-leaf-tour/tour-<n>-v1.mp3` for 1 to 4 and 6 
 Lengths: 12.5, 11.1, 9.6, 11.8, 10.1, 9.2, 10.9, 8.3, 6.1, 21.8, 5.9 s (about 1 minute 57 seconds in all).
 Slide 5 was reworded to "Members of Vegans Explore can sign in here..." because the voice stopped for about a second after "Vegans" when a line
 opened with "Vegans Explore" (v1 0.86 s, v2 1.3 s; both kept in storage, not used). Every other pause falls at a sentence or comma break.
+
+## Rebuilt as V's video on a Guide Overview (2026-11-08, Sean: "the overview page of the holiday guide... what's going to be said from V... in the video section")
+The slideshow was replaced. `/business/sample/tour` (`business/tour.html`) is now copied from `guides/holiday-guide.html` with only its Overview,
+and V narrates BrandDesk (canon-ve-guide-tour-standard v2), so the same 11 lines were recorded in V's voice (`Nhs7eitvQWFTQBsf0yiT`) and checked with stt:
+`vegan-media/media/v/green-leaf-tour/tour-<n>-v1.mp3` (line 7 is `tour-7-v2.mp3`). Changed for V: line 1 reads "Hi, I'm V..." and "Watch the tour, then tap
+around." (a video cannot be tapped mid-play); line 7 ends "Delivery is coming soon." (v1 said "Veegance"). The video: `media/business/sample/v-tour-v1.mp4`,
+4:5, 2:12, V's scene picture opening and closing (`business/sample/img/v-tour.jpg`, Higgsfield), phone captures of the sample site panning on her words, a
+Sample stamp on every capture, the podcast bed story-dining-v2 at -19 dB, -15.7 LUFS; captions `business/sample/v-tour-v1.vtt` (split by sentence, timed by
+length). Liz's recordings stay in storage, unused.

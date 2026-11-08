@@ -1226,15 +1226,15 @@ first come first served; a signed-in member sees a sample balance (`points_demo`
 sees Take it down and Add a reward with our suggestions (`community.suggestions`); kept in `sessionStorage` (`ve_site_rewards`,
 `ve_site_unlocked`, `ve_site_spent`). Never cash, never money off at checkout. **The club** is a Guide on Vegans Explore (no paid club, no
 rolling credit). Check-ins every two weeks is unanswered. Live rewards (a table, redemption, the owner's dashboard) are not built.
-**The Community Manager onboarding fee on Site is $150 per client** (Sean, 2026-11-08). **The tour, live 2026-11-08** (Sean: "build the tour page"): `/business/sample/tour` (`business/tour.html`, rewrite in `vercel.json`,
-`noindex`), the `/partners` guided view on the white stage, 11 slides (`STOPS`), each Liz's line from `docs/proposals/green-leaf-tour-script.md`
-and the real sample site in a phone frame stamped Sample, opened on that part in the state it needs (signed out, Sam the member, Alex the owner,
-the Island look, ordering connected), set through the site's own `sessionStorage` keys before the frame loads (`?tour=<slide>` hides the site's
-Take the tour link); a part below the fold is scrolled to inside the frame (never `scrollIntoView`, which scrolls the slide too). Liz's
-recordings: `vegan-media/media/liz/green-leaf-tour/tour-<n>-v1.mp3` (slide 5 `tour-5-v3.mp3`), checked with stt; nothing plays until Play,
-then each slide plays until Pause (`sessionStorage` `gt_liz`). The last slide opens Talk to our team (`VEManaged`, from `sample-tour`). The sample
-site's bar links to it. Liz paused about a second after a line that opens with "Vegans Explore": start such a line another way. Next: the
-owner's BrandDesk view, then the pricing build. Handoff `docs/handoff/2026-11-08-ve-demo-showroom-green-leaf-site.md`.
+**The Community Manager onboarding fee on Site is $150 per client** (Sean, 2026-11-08). **The tour is a Guide Overview with V's video** (Sean, 2026-11-08: "a tour button... a similar vibe as our guides... the overview page of the
+holiday guide... what's going to be said from V... is going to be in the video section. The rest is going to be on the left-hand side"; it replaced a
+slideshow built the same day): `/business/sample/tour` (`business/tour.html`, rewrite in `vercel.json`, `noindex`), copied from `guides/holiday-guide.html`
+with its styles, one tab (Overview). Left: Start here, Try it, and the demo's parts as picture pills in four groups (See it as a customer, as a member, as the
+owner, Work with us); each opens the sample in the state it needs (`site.html` reads `?as=member|owner` and `?look=<key>`). Right: V (she narrates BrandDesk,
+canon-ve-guide-tour-standard v2) in her scene picture (`business/sample/img/v-tour.jpg`), her 2:12 tour video in the frame (`vegan-media/media/business/sample/
+v-tour-v1.mp4`, captions `business/sample/v-tour-v1.vtt`; nothing plays until Play; Expand on phones), Play the tour and Talk to our team (`VEManaged`, from
+`sample-tour`); a hidden `[data-vepg-talk]` stops `ve-page-guide.js` adding "Talk to Liz", since V is not one of its chat Guides. The sample site's bar has a
+green **Take the tour** button. Script and recording notes: `docs/proposals/green-leaf-tour-script.md`. Next: the owner's BrandDesk view, then the pricing build. Handoff `docs/handoff/2026-11-08-ve-demo-showroom-green-leaf-site.md`.
 
 ## Content index (Sean, 2026-10-10: "go ahead and start on the content index")
 

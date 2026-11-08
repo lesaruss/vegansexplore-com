@@ -31,6 +31,8 @@
     .brand img.rev{object-fit:contain;padding:3px;}
     .sample .seg button{background:none;border:0;color:#ffd79a;font:700 11.5px/1 system-ui,sans-serif;padding:7px 10px;cursor:pointer;}
     .sample .seg button.on{background:#ffd79a;color:#2b1d06;}
+    .sample .tourbtn{display:inline-flex;align-items:center;gap:6px;background:#22C55E;color:#03170a;border-radius:6px;padding:7px 12px;font:800 12px/1 system-ui,sans-serif;text-decoration:none;white-space:nowrap;}
+    .sample .tourbtn:hover{background:#4ade80;}
     .top{position:sticky;top:0;z-index:20;background:var(--c-page);border-bottom:1px solid color-mix(in srgb,var(--c-text) 12%,transparent);}
     .top .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;height:68px;}
     .brand{display:flex;align-items:center;gap:12px;text-decoration:none;}
@@ -351,6 +353,11 @@
     if (!PC) try { var s = JSON.parse(sessionStorage.getItem('ve_cartridge_sample_done') || 'null'); if (s) C = s; } catch (e) {}
     var B = C.brand, I = C.info, V = C.voice, biz = C.business;
     // The sample shows both ordering setups: connected to their point of sale, or a link to where they order today.
+    // The tour's pills open the sample as a member or the owner, or in a look: ?as=member|owner, ?look=<key> (the sample only).
+    try { var QP = new URLSearchParams(location.search);
+      if (!VS && !PC && /^(member|owner)$/.test(QP.get('as') || '')) { sessionStorage.setItem('ve_site_session', JSON.stringify({ name: QP.get('as') === 'owner' ? 'Alex' : 'Sam', real: false, role: QP.get('as') })); sessionStorage.removeItem('ve_site_signedout'); }
+      if (!VS && !PC && QP.get('look')) sessionStorage.setItem('ve_site_look', QP.get('look'));
+    } catch (e) {}
     var MODE = 'pos'; try { MODE = sessionStorage.getItem('ve_site_order_mode') || (I.ordering && I.ordering.state === 'connected' ? 'pos' : 'link'); } catch (e) {}
     // A live site orders on the client's own ordering page (the cart that sends to their point of sale is not connected yet).
     if (VS) MODE = 'link';
@@ -693,7 +700,8 @@
       if (page === 'signin' && !SESS && VE_MEMBER && !sessionStorage.getItem('ve_site_signedout')) { setSess({ name: veFirst(VE_MEMBER), real: true, role: 'member' }); goNext(); return; }
       if (VS && VS.mode === 'preview') document.getElementById('sampleBar').innerHTML = '<b>Preview</b><span>' + esc(biz.name) + '\'s new website. Not live yet: only you and our team can see this address.</span>' +
         (VS.dashboard ? '<a class="push" href="' + esc(VS.dashboard) + '">Approve it or ask for changes</a>' : '');
-      else if (PC) document.getElementById('sampleBar').style.display = 'none'; else document.getElementById('sampleBar').innerHTML = '<b>Sample</b><span>Green Leaf Kitchen\'s website on our BrandDesk frame, a made-up restaurant. Everything comes from its <a href="/business/sample/brand">brand kit</a>.' + (/[?&]tour=/.test(location.search) ? '' : ' <a href="/business/sample/tour" target="_top">Take the tour with Liz</a>') + '</span>' +
+      else if (PC) document.getElementById('sampleBar').style.display = 'none'; else document.getElementById('sampleBar').innerHTML = '<b>Sample</b><span>Green Leaf Kitchen\'s website on our BrandDesk frame, a made-up restaurant. Everything comes from its <a href="/business/sample/brand">brand kit</a>.' + '' + '</span>' +
+        (/[?&]tour=/.test(location.search) ? '' : '<a class="tourbtn" href="/business/sample/tour" target="_top">&#9654; Take the tour</a>') +
         '<span class="seg push" role="group" aria-label="Make it yours: the look">' + LOOKS.map(function (l) { return '<button type="button" data-look="' + l.key + '" class="' + (l.key === LOOK ? 'on' : '') + '">' + esc(l.name) + '</button>'; }).join('') + '</span>' +
         (SESS ? '<span class="seg" role="group" aria-label="Signed in as"><button type="button" data-role="member" class="' + (OWNER() ? '' : 'on') + '">As a member</button><button type="button" data-role="owner" class="' + (OWNER() ? 'on' : '') + '">As the owner</button></span>' : '<span class="seg"><button type="button" data-gosign>Try the sample login</button></span>') +
         '<span class="seg" role="group" aria-label="Ordering"><button type="button" data-mode="pos" class="' + (MODE === 'pos' ? 'on' : '') + '">Ordering connected to Square</button><button type="button" data-mode="link" class="' + (MODE === 'link' ? 'on' : '') + '">Ordering by link</button></span>';
