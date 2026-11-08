@@ -58,6 +58,12 @@
     '.vep-seeall b{font-size:30px;line-height:1;}',
     '.vep-house .vep-epbox{background:#fff;border-radius:12px;}',
     '@media (max-width:560px){.vep-house .vep-strip{grid-auto-columns:82%;}.vep-house .vep-cards1 .rank-grid{grid-template-columns:minmax(0,1fr)!important;}}',
+    '.vep-brief li.vep-pic{display:grid;grid-template-columns:132px minmax(0,1fr);gap:14px;align-items:start;border-left:0;padding:0;}',
+    '.vep-pic .vep-img{display:block;width:132px;aspect-ratio:4/3;border-radius:10px;background:#eef3ee center/cover no-repeat;}',
+    '.vep-brief li.vep-pic.lead{grid-template-columns:minmax(0,1fr);gap:10px;}',
+    '.vep-pic.lead .vep-img{width:100%;aspect-ratio:16/9;border-radius:12px;}',
+    '.vep-pic.lead a{font-size:19px;line-height:1.3;}',
+    '@media (max-width:560px){.vep-brief li.vep-pic{grid-template-columns:96px minmax(0,1fr);gap:12px;}.vep-pic .vep-img{width:96px;}.vep-brief li.vep-pic.lead{grid-template-columns:minmax(0,1fr);}.vep-pic.lead .vep-img{width:100%;}}',
     '.vep-move{background:#1f5f22;color:#fff;border-radius:12px;padding:16px 18px;}',
     '.vep-move h4{color:#cfe8d0;}',
     '.vep-move strong{display:block;font-size:17px;line-height:1.3;}',
@@ -156,8 +162,18 @@
     var out = '<div class="vep-brief">';
     // Since 2026-10-31 a city's briefing carries the national news after its own (Sean: "feature the Philadelphia
     // news first, then the national, so it's all in one pulse"): stories marked national get their own heading.
-    var story = function (x) {
-      var u = safe(x.url);
+    // Story pictures (Sean, 2026-11-08), shown only on a preview link (?pics=1) until Sean approves the look. ve-pulse-pics copies each
+    // story's own preview picture into our storage as x.image. The first story with a picture in each list leads, big.
+    var pics = /[?&]pics=1(&|$)/.test(location.search), led = {};
+    var story = function (x, i, arr) {
+      var u = safe(x.url), im = pics && /^https:\/\/fwbhwfxpncrsfhttimna\.supabase\.co\/storage\/v1\/object\/public\/vegan-media\/media\/pulse\/stories\//.test(String(x.image || '')) ? x.image : '';
+      if (im) {
+        var key = arr === local ? 'l' : 'w', lead = !led[key]; led[key] = 1;
+        var pic = '<span class="vep-img" role="img" aria-label="" style="background-image:url(&quot;' + esc(im) + '&quot;)"></span>';
+        return '<li class="vep-pic' + (lead ? ' lead' : '') + '">' + (u ? '<a href="' + esc(u) + '" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">' + pic + '</a>' : pic) + '<div>' +
+          (u ? '<a href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">' + esc(x.title) + '</a>' : '<strong>' + esc(x.title) + '</strong>') +
+          (x.take ? '<span class="vep-take">' + esc(x.take) + '</span>' : '') + (x.source ? '<span class="vep-src">' + esc(x.source) + '</span>' : '') + '</div></li>';
+      }
       return '<li>' + (u ? '<a href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">' + esc(x.title) + '</a>' : '<strong>' + esc(x.title) + '</strong>') +
         (x.take ? '<span class="vep-take">' + esc(x.take) + '</span>' : '') + (x.source ? '<span class="vep-src">' + esc(x.source) + '</span>' : '') + '</li>';
     };

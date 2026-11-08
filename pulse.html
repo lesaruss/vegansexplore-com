@@ -252,7 +252,7 @@
         </div>
         <div class="join-note" id="join-note" role="note">
           <span id="join-note-text">You're welcome to look around. Become a member to post, comment, and see contact details.</span>
-          <button type="button" class="btn btn-ghost" id="join-note-btn">Explore the Passport</button>
+          <button type="button" class="btn btn-ghost" id="join-note-btn">Join free</button>
         </div>
       </div>
     </header>
@@ -370,7 +370,7 @@
   <script src="/public/ve-city-banner.js"></script>
   <script src="/public/ve-auth.js"></script>
   <script src="/public/ve-votes.js"></script>
-  <script src="/public/ve-pulse-topics.js?v=2"></script>
+  <script src="/public/ve-pulse-topics.js?v=3"></script>
   <script>
   (function () {
     var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-board';
@@ -866,7 +866,13 @@
       $('p-title-hint').textContent = L.titleHint; $('p-body-hint').textContent = L.bodyHint;
       $('post-msg').textContent = ''; openDialog('composer');
     });
-    $('join-note-btn').addEventListener('click', function () { gate('post'); });
+    // Joining is free with the survey (Sean, 2026-11-08: "Explore the Passport banner should say join free"); LESARUSS.ai keeps its own window.
+    if (LR) $('join-note-btn').textContent = 'Explore the Passport';
+    $('join-note-btn').addEventListener('click', function () {
+      if (LR) { gate('post'); return; }
+      try { sessionStorage.setItem('ve_after_survey', location.pathname + location.search); } catch (e) {}
+      location.href = '/survey?s=explorer';
+    });
     $('post-form').addEventListener('submit', function (e) {
       e.preventDefault();
       var L = LANES[state.lane], type = (document.querySelector('input[name="ptype"]:checked') || {}).value || L.types[0][0];
