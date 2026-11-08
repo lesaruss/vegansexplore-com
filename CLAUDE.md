@@ -4091,6 +4091,14 @@ approved), **Listen** (one of our four shows' episodes on `/listen`, not used th
 since the last Pulse) and, on Mondays, **Who should we interview?** (Nominate someone, `/pulse/suggest?city=`). `ve_pulse_house_log`
 rotates them. A featured item is never added twice (not when the writer already wrote its link as a story).
 
+**A real newsletter, Bounty of the day, story pictures (Sean, 2026-11-08, playbook `ve-daily-pulse-discussion`)**: From Vegans Explore draws the
+Directory's own cards (`VEPulse.hydrate` in `public/ve-pulse-topics.js`: Spotlight with Vote, New in the Directory as a strip with See all, the
+episode as the show's row). Never "Friendsgiving" in our Pulse copy (writer rule in `pulse_topic_write`). **Bounty of the day**: `ve_pulse_house`
+adds `bounty_day`, one open bounty per city per day, least recently shown first (`ve_pulse_house_log` kind `bounty_day`), skipped while a live
+`ve_pulse_features` story links to it. **Story pictures are a preview only** (`?pics=1`, pictures copied by edge function `ve-pulse-pics` into
+`vegan-media/media/pulse/stories/`); once Sean approves, remove the gate and run `ve-pulse-pics` on every published Pulse. The non-member note reads
+Join free (Explorer survey). Handoff `docs/handoff/2026-11-08-ve-daily-pulse-discussion-visual-pulse-bounty-day.md`.
+
 ## The Daily Pulse is the Community Board (Sean, 2026-10-26)
 
 "I would like to see the pulse to really be the community board... the same kind of header that the other pages have... navigate
