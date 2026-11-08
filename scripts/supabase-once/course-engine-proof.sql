@@ -1,0 +1,72 @@
+-- ve-pre-vegan-guide: the rolled-back proof of 20261108_course_engine.sql. Run after the migration in ONE transaction; it ends by raising RESULTS, so nothing is kept.
+do $t$
+declare L uuid := '459ced0a-4756-47d7-bdd3-a78865c3a141'; S uuid := '72712a4a-ea0e-4ef4-a29e-d382496ef8da';
+  P text := 'pre-vegan-111'; out text[] := '{}'; r jsonb; e course_enrollments; eid uuid; pid uuid; lst uuid := '26468513-01a2-4971-bd01-51b70f33ad14';
+  ck uuid; ac uuid; bal0 int; n int; other uuid;
+  procedure_ok boolean;
+begin
+  select coalesce(lesars_balance,0) into bal0 from members where id = L;
+  select id into other from members where member_class='member' and membership_status='active' and coalesce(is_superadmin,false)=false limit 1;
+  out := out || ('01 other on draft: ' || coalesce(course_enroll(other, P) ->> 'error','(none)'));
+  r := course_enroll(L, P, 'America/New_York'); eid := (r->>'enrollment')::uuid; out := out || ('02 enroll: ' || r::text);
+  out := out || ('03 again: ' || (course_enroll(L,P)->>'already'));
+  out := out || ('04 open d2: ' || (course_open_day(L,P,2)->>'error'));
+  r := course_open_day(L,P,1); out := out || ('05 open d1: ' || r::text);
+  out := out || ('06 ledger open: ' || (select coalesce(sum(delta),0) from points_ledger where member_id=L and reason='course'));
+  r := course_open_day(L,P,1); out := out || ('07 reopen first_open=' || (r->>'first_open') || ' ledger ' || (select sum(delta) from points_ledger where member_id=L and reason='course'));
+  select * into e from course_enrollments where id=eid; out := out || ('08 next unlock future: ' || (e.next_unlock_at > now()) || ' ' || e.next_unlock_at);
+  update course_enrollments set next_unlock_at = now() - interval '1 minute' where id=eid;
+  e := course_refresh(eid); out := out || ('09 advanced to ' || e.current_day);
+  update course_enrollments set next_unlock_at = now() - interval '1 minute' where id=eid;
+  e := course_refresh(eid); out := out || ('10 no binge (d2 unopened) stays ' || e.current_day);
+  r := course_proof_submit(L,P,1,'why','{"body":"For the animals."}'); out := out || ('11 tick: ' || r::text);
+  out := out || ('12 answer why: ' || course_answer(L,P,1,'why','"For the animals."')::text || ' empty: ' || (course_answer(L,P,1,'why','""')->>'error'));
+  r := course_open_day(L,P,2); out := out || ('13 open d2 same day: points paid=' || (select points from course_proofs where enrollment_id=eid and day=2 and kind='open') || ' note=' || coalesce((select paid_note from course_proofs where enrollment_id=eid and day=2 and kind='open'),'-'));
+  out := out || ('14 photo empty: ' || (course_proof_submit(L,P,2,'milk_photo','{}')->>'error') || ' / bad path: ' || (course_proof_submit(L,P,2,'milk_photo','{"file_path":"elsewhere/x.jpg"}')->>'error'));
+  r := course_proof_submit(L,P,2,'milk_photo', jsonb_build_object('file_path','course-proofs/'||L||'/d2.jpg')); pid := (r->>'proof')::uuid; out := out || ('15 photo: ' || r::text);
+  out := out || ('16 again: ' || (course_proof_submit(L,P,2,'milk_photo', jsonb_build_object('file_path','course-proofs/'||L||'/d2b.jpg'))->>'error'));
+  out := out || ('17 review by member: ' || (course_proof_review(pid, L, 'approve')->>'error') || ' / decline no note: ' || (course_proof_review(pid,S,'decline')->>'error'));
+  out := out || ('18 approve: ' || course_proof_review(pid,S,'approve')::text || ' twice: ' || (course_proof_review(pid,S,'approve')->>'error'));
+  -- jump to day 4: scans from the log
+  insert into course_progress (enrollment_id, day, unlocked_at, opened_at) values (eid,3,now(),now()),(eid,4,now(),now());
+  update course_enrollments set current_day=4, next_unlock_at=null where id=eid;
+  insert into ve_product_scans (member_id, gtin, found) values (L,'00000000000011',true),(L,'00000000000012',true);
+  out := out || ('19 two scans paid: ' || course_auto_check(eid));
+  insert into ve_product_scans (member_id, gtin, found) values (L,'00000000000013',true);
+  out := out || ('20 three scans paid: ' || course_auto_check(eid) || ' again: ' || course_auto_check(eid));
+  -- day 5: check-in from the log, meal photo through Depot > Check-ins
+  insert into course_progress (enrollment_id, day, unlocked_at, opened_at) values (eid,5,now(),now());
+  update course_enrollments set current_day=5 where id=eid;
+  insert into ve_checkins (member_id, listing_id, local_day) values (L,lst,current_date) returning id into ck;
+  out := out || ('21 checkin paid: ' || course_auto_check(eid));
+  out := out || ('22 meal no action: ' || (course_proof_submit(L,P,5,'meal_photo','{}')->>'error'));
+  insert into ve_checkin_actions (checkin_id, member_id, listing_id, kind, photo_path) values (ck,L,lst,'meal','checkin-photos/x.jpg') returning id into ac;
+  r := course_proof_submit(L,P,5,'meal_photo', jsonb_build_object('checkin_action_id',ac)); pid := (r->>'proof')::uuid; out := out || ('23 meal via action: ' || r::text);
+  out := out || ('24 course review refused: ' || (course_proof_review(pid,S,'approve')->>'error'));
+  update ve_checkin_actions set status='approved', reviewed_by=S, reviewed_at=now() where id=ac;
+  out := out || ('25 mirrored: ' || (select status||' pts='||points||' note='||coalesce(paid_note,'-') from course_proofs where id=pid));
+  -- day 7 capstone gate
+  insert into course_progress (enrollment_id, day, unlocked_at, opened_at) values (eid,6,now(),now()),(eid,7,now(),now());
+  update course_enrollments set current_day=7, next_unlock_at=now()-interval '1 minute' where id=eid;
+  e := course_refresh(eid); out := out || ('26 no day 8 row, stays ' || e.current_day);
+  insert into course_days (program_slug, day, phase_n, title, ready) values (P,8,2,'[TEST] day 8',true);
+  e := course_refresh(eid); out := out || ('27 capstone not sent, stays ' || e.current_day);
+  r := course_proof_submit(L,P,7,'say_it','{"body":"Told my sister."}'); pid := (r->>'proof')::uuid;
+  select * into e from course_enrollments where id=eid; out := out || ('28 capstone sent -> day ' || e.current_day);
+  out := out || ('29 badges before approve: ' || ve_member_badges(L)::text);
+  out := out || ('30 approve capstone: ' || course_proof_review(pid,S,'approve')::text);
+  out := out || ('31 badges: ' || ve_member_badges(L)::text);
+  out := out || ('32 state: ' || (select jsonb_build_object('day',x->'current_day','up',x->'days_shown_up','pts',x->'points','unlocks',x->'unlocks') from course_state(L,P) x)::text);
+  out := out || ('33 pause 20: ' || (course_pause(L,P,20)->>'error') || ' / pause 5: ' || (course_pause(L,P,5) ? 'ok') || ' / resume: ' || (course_pause(L,P,0) ? 'ok') || ' / again same phase: ' || (course_pause(L,P,3)->>'error'));
+  out := out || ('34 finish early: ' || (course_finish(L,P,'vegan')->>'error'));
+  insert into course_progress (enrollment_id, day, unlocked_at, opened_at) values (eid,111,now(),now());
+  update course_enrollments set current_day=111 where id=eid;
+  out := out || ('35 finish: ' || course_finish(L,P,'vegan')::text || ' journey=' || coalesce((select value::text||' '||survey_slug from ve_member_shared_answers where member_id=L and key='journey'),'-'));
+  out := out || ('36 badges: ' || (select string_agg(b->>'badge',', ') from jsonb_array_elements(ve_member_badges(L)) b));
+  update members set standing='suspended' where id=L;
+  out := out || ('37 frozen submit: ' || (course_proof_submit(L,P,6,'what_stuck','{"body":"x"}')->>'error'));
+  update members set standing='good' where id=L;
+  out := out || ('38 ledger course total: ' || (select sum(delta) from points_ledger where member_id=L and reason='course') || ' balance delta ' || ((select lesars_balance from members where id=L) - bal0));
+  out := out || ('39 next_unlock fn: ' || course_next_unlock('America/New_York',5,'2026-11-08 23:00-05','2026-11-08 23:30-05') || ' / opened 3 days later 9pm: ' || course_next_unlock('America/New_York',5,'2026-11-08 05:00-05','2026-11-11 21:00-05') || ' / opened 2am next: ' || course_next_unlock('America/New_York',5,'2026-11-08 05:00-05','2026-11-09 02:00-05'));
+  raise exception 'RESULTS%', E'\n' || array_to_string(out, E'\n');
+end $t$;
