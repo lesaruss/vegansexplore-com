@@ -29,7 +29,7 @@
       '<label for="vlr-n">Its name</label><input id="vlr-n" maxlength="140" value="' + esc(o.name || '') + '">' +
       '<label for="vlr-w">Where it is</label><input id="vlr-w" maxlength="140" placeholder="City and state, or online" value="' + esc(o.where || '') + '">' +
       '<label for="vlr-l">A link (optional)</label><input id="vlr-l" maxlength="600" placeholder="https:// or @instagram" data-dictate="off">' +
-      '<label for="vlr-t">Anything else (optional)</label><textarea id="vlr-t" maxlength="1500"></textarea>' +
+      '<label for="vlr-t">What do you get there? (optional)</label><textarea id="vlr-t" maxlength="1500" placeholder="All Vegan, or a few Vegan options? What do you order?"></textarea>' +
       (signed ? '' : '<label for="vlr-e">Your email, so we can tell you when it is listed</label><input id="vlr-e" type="email" maxlength="200">') +
       '<div class="vlr-msg" id="vlr-m" role="alert"></div><div class="vlr-row"><button type="button" class="no" data-x>Cancel</button><button type="button" class="go" data-s>Send it</button></div></div>';
     document.body.appendChild(bg);

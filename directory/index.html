@@ -69,6 +69,7 @@
   <script src="/public/ve-ad-rail.js"></script>
 
   <script src="/public/ve-city-banner.js"></script>
+  <script src="/public/ve-listing-request.js"></script>
   <section id="dir-hero"><h1 class="vcb-ssr" style="margin:0;padding:28px 16px;font:900 26px Montserrat,sans-serif">Vegan Directory</h1></section>
 
   <main id="main-content">
@@ -91,6 +92,17 @@
         <p>Claim it free once you are a member (joining is free with a short survey): tell your story, keep your details right, see how many people find your page, and be first to hear about sponsorships and ads. Not listed yet? Add it the same way.</p>
       </div>
       <a class="btn-claim" href="/claim">Claim your business</a>
+    </section>
+
+    <!-- Suggest a place (2026-11-08, from Brion Hurley's feedback): for someone who knows a Vegan spot but does not run it. A name
+         and where is enough; a website or Instagram helps. Our team looks it up before it is listed (ve-listing-requests).
+         /directory?suggest=1 opens it straight away, for links in emails. -->
+    <section class="biz-strip" aria-label="Suggest a place">
+      <div class="vote-box-copy">
+        <strong>Know a place <span>we are missing?</span></strong>
+        <p>Tell us its name and where it is. A website or Instagram helps, but it is not required. Our team looks it up and checks it before it goes on the Directory, and a place with Vegan options waits for member votes like every other.</p>
+      </div>
+      <button type="button" class="btn-claim" data-ve-listing-request style="border:0;cursor:pointer;font:inherit">Suggest a place</button>
     </section>
   </main>
 
@@ -116,7 +128,9 @@
       // Directory home: the Directory as the menu's Directory opens it (Sean, 2026-10-27, in place of View community).
       home: { label: 'Directory home', href: '/directory' },
       // Submit your listing (Sean, 2026-10-27): Join the Directory's Add it, $11 or 1,100 points a listing.
-      actions: [{ label: 'Submit listing', href: '/claim?add=1', go: true }]
+      actions: [{ label: 'Submit listing', href: '/claim?add=1', go: true },
+        // Suggest a place (2026-11-08, Brion Hurley: a member who knows a spot but does not own it): the listing-request window.
+        { label: 'Suggest a place', short: 'Suggest', onClick: function () { VEListingRequest.open({ page: location.href }); } }]
     });
     var rail = document.getElementById('dir-ad-rail');
     // The section on show: the banner lists the sections with it picked, names it with its location, wears the chapter's art,
@@ -137,6 +151,7 @@
     });
     // Arriving on a section (?tab=, a listing's breadcrumb) is not the landing: start folded.
     if (new URLSearchParams(location.search).get('tab')) banner.autoFold();
+    if (q0.get('suggest') === '1' && window.VEListingRequest) VEListingRequest.open({ page: location.href });
 
     // Members already vote; the box is for everyone else.
     var m = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null;
