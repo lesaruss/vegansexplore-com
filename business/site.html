@@ -175,6 +175,29 @@
     .post .foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;}
     .lb{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.6);display:flex;align-items:flex-start;justify-content:center;overflow:auto;padding:40px 16px;}
     .lb .box{background:var(--c-page);color:var(--c-text);border-radius:14px;max-width:760px;width:100%;padding:26px 28px 30px;position:relative;}
+    .rwgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px;}
+    .rw{background:color-mix(in srgb,var(--c-soft) 55%,var(--c-page));border-radius:14px;overflow:hidden;display:flex;flex-direction:column;}
+    .rw .pic{aspect-ratio:16/10;background:var(--c-soft) center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:var(--c-accent);}
+    .rw .pic svg{width:54px;height:54px;}
+    .rw .bd{padding:18px 20px 20px;display:flex;flex-direction:column;gap:8px;flex:1;}
+    .rw h3{font-size:21px;margin:0;}
+    .rw p{margin:0;opacity:.85;}
+    .rw .pts{font-weight:800;color:var(--c-accent);}
+    .rw .meter{height:6px;border-radius:6px;background:color-mix(in srgb,var(--c-text) 12%,transparent);overflow:hidden;}
+    .rw .meter i{display:block;height:100%;background:var(--c-highlight);}
+    .rw .left{font-size:13px;font-weight:700;opacity:.8;}
+    .rw .act{margin-top:auto;padding-top:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+    .rw.out{opacity:.6;}
+    .code{display:inline-block;padding:8px 12px;border-radius:6px;border:2px dashed var(--c-accent);font-weight:800;letter-spacing:.08em;}
+    .ptsbar{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;justify-content:space-between;padding:16px 20px;border-radius:14px;background:var(--c-soft);margin-bottom:26px;}
+    .rwform{display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:12px;align-items:end;padding:18px 20px;border-radius:14px;border:1.5px dashed color-mix(in srgb,var(--c-text) 25%,transparent);margin-top:26px;}
+    .rwform .f{margin:0;}
+    .sugg{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;}
+    .sugg button{border:1.5px solid color-mix(in srgb,var(--c-text) 20%,transparent);background:var(--c-page);color:var(--c-text);border-radius:6px;padding:6px 12px;font:inherit;font-size:14px;cursor:pointer;}
+    .club{display:grid;grid-template-columns:1.2fr 1fr;gap:30px;align-items:center;}
+    .club ul{margin:12px 0 20px;padding-left:20px;}
+    @media (max-width:1100px){.rwgrid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    @media (max-width:700px){.rwgrid,.club{grid-template-columns:minmax(0,1fr);}.rwform{grid-template-columns:1fr 1fr;}.rwform .f:first-child{grid-column:1/-1;}}
     .lb .x{position:absolute;top:12px;right:12px;width:40px;height:40px;border-radius:50%;border:0;background:var(--c-soft);color:var(--c-text);font-size:22px;cursor:pointer;}
     .lb img{width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:12px;margin:16px 0 20px;}
     .lb p{font-size:17px;margin:0 0 14px;}
@@ -527,7 +550,42 @@
       document.body.appendChild(d); d.querySelector('[data-lbx]').focus();
     }
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') { var l = document.querySelector('.lb'); if (l) l.remove(); } });
+    // The Community page (sample only): rewards members unlock with points, set by the owner, limited and first come first served.
+    var CM = !VS && !PC && C.community && C.community.rewards ? C.community : null;
+    var REW = CM ? CM.rewards.slice() : [], MYR = {}, SPENT = 0;
+    try { var rs = JSON.parse(sessionStorage.getItem('ve_site_rewards') || 'null'); if (rs) REW = rs; MYR = JSON.parse(sessionStorage.getItem('ve_site_unlocked') || '{}'); SPENT = +(sessionStorage.getItem('ve_site_spent') || 0); } catch (e) {}
+    function saveRew() { try { sessionStorage.setItem('ve_site_rewards', JSON.stringify(REW)); sessionStorage.setItem('ve_site_unlocked', JSON.stringify(MYR)); sessionStorage.setItem('ve_site_spent', String(SPENT)); } catch (e) {} }
+    function ptsLeft() { return (CM ? CM.points_demo : 0) - SPENT; }
+    var GIFT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="8" width="18" height="13" rx="2"/><path d="M3 12h18M12 8v13M12 8s-1.5-5-5-4c-2 .6-1.4 4 1 4h4zm0 0s1.5-5 5-4c2 .6 1.4 4-1 4h-4z"/></svg>';
+    function rewardCard(r) {
+      var d = r.dish && byKey[r.dish], pic = d && d.photo && d.photo.src, out = r.left <= 0, mine = MYR[r.id], act;
+      if (OWNER()) act = '<button class="btn ghost sm" type="button" data-rwrm="' + esc(r.id) + '">Take it down</button>';
+      else if (mine) act = '<span class="code">' + esc(mine) + '</span><span class="note" style="margin:0">Show this at the counter.</span>';
+      else if (out) act = '<button class="btn sm" type="button" disabled>All claimed</button>';
+      else act = '<button class="btn sm" type="button" data-unlock="' + esc(r.id) + '">' + (SESS ? 'Unlock for ' + r.points.toLocaleString() + ' points' : 'Sign in to unlock') + '</button>';
+      return '<div class="rw' + (out && !mine ? ' out' : '') + '"><div class="pic"' + (pic ? ' style="background-image:url(\'' + esc(pic) + '\')"' : '') + '>' + (pic ? '' : GIFT) + '</div><div class="bd">' +
+        '<span><span class="tag">' + esc(r.kind || 'Reward') + '</span></span><h3>' + esc(r.title) + '</h3><p>' + esc(r.line || '') + '</p>' +
+        '<span class="pts">' + r.points.toLocaleString() + ' points</span>' +
+        (r.of ? '<div class="meter" aria-hidden="true"><i style="width:' + Math.round(100 * Math.max(0, r.left) / r.of) + '%"></i></div><span class="left">' + (out ? 'All claimed' : 'First come, first served · ' + r.left + ' of ' + r.of + ' left') + '</span>' : '') +
+        '<div class="act">' + act + '</div></div></div>';
+    }
+    function communityPage() {
+      var cl = CM.club || {}, live = REW.filter(function (r) { return !r.down; });
+      var head = '<div class="wrap pagehead"><div class="eyebrow">Community</div><h1>Be part of ' + esc(biz.name) + '</h1><p class="lede" style="margin-bottom:0">' +
+        (OWNER() ? 'You choose the rewards. Members unlock them with their Vegans Explore points, first come, first served. Points are never cash.' :
+          'Vegans Explore members unlock rewards here with their points, first come, first served. Points come from taking part on Vegans Explore: voting, checking in, bounties. They are never cash.') + '</p></div>';
+      var bar = SESS && !OWNER() ? '<div class="ptsbar"><span><b>You have ' + ptsLeft().toLocaleString() + ' points</b> · sample points, nothing is spent</span><a href="https://vegansexplore.com/bounties" target="_blank" rel="noopener">Ways to earn more</a></div>' :
+        OWNER() ? '<div class="ptsbar"><span><b>Your rewards</b> · ' + live.length + ' up now, ' + live.reduce(function (a, r) { return a + (r.of - Math.max(0, r.left)); }, 0) + ' claimed</span><span class="note" style="margin:0">Members see these with an Unlock button.</span></div>' : '';
+      var form = OWNER() ? '<div class="rwform"><label class="f">Add a reward<input data-rwtitle placeholder="A free drink"></label><label class="f">Points<input data-rwpts type="number" min="50" step="50" value="300"></label><label class="f">How many<input data-rwqty type="number" min="1" value="20"></label><button class="btn" type="button" data-rwnew>Add</button>' +
+        '<div style="grid-column:1/-1"><span class="note" style="margin:0">Ideas that work:</span><div class="sugg">' + (CM.suggestions || []).map(function (x) { return '<button type="button" data-rwsug="' + esc(x) + '">' + esc(x) + '</button>'; }).join('') + '</div></div></div>' : '';
+      return head + '<section class="s" style="padding-top:24px"><div class="wrap"><div class="eyebrow">Rewards</div>' + bar +
+        (live.length ? '<div class="rwgrid">' + live.map(rewardCard).join('') + '</div>' : '<p>No rewards up right now.</p>') + form + '</div></section>' +
+        '<section class="s dark"><div class="wrap club"><div><div class="eyebrow">' + esc(cl.guide || 'A Guide on Vegans Explore') + '</div><h2>' + esc(cl.name || 'Our club') + '</h2><p>' + esc(cl.line || '') + '</p>' +
+        '<ul>' + (cl.points || []).map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul><a class="btn" href="' + esc(cl.href || '/passport') + '" target="_blank" rel="noopener" style="background:var(--c-highlight);border-color:var(--c-highlight);color:var(--c-ink)">Join free on Vegans Explore</a></div>' +
+        ((spaceOf('team')[0] || spaceOf('inside')[0] || {}).src ? '<img src="' + esc((spaceOf('team')[0] || spaceOf('inside')[0]).src) + '" alt="" loading="lazy" style="width:100%;border-radius:14px">' : '') + '</div></section>';
+    }
     var PAGES = {
+      community: function () { return CM ? communityPage() : PAGES.home(); },
       home: function () {
         return '<div class="hero" style="background-image:url(\'' + esc(heroImg) + '\')"><div class="wrap"><span class="open' + (isOpen ? '' : ' closed') + '"><i></i>' + esc(openLine) + '</span>' +
           '<h1>' + esc(V.samples && V.samples.hero ? V.samples.hero : C.story.tagline) + '</h1><p>' + esc(C.story.short || C.story.tagline) + '</p>' +
@@ -590,7 +648,7 @@
         return '<div class="wrap pagehead"><div class="eyebrow">Visit</div><h1>Come see us</h1></div><section class="s" style="padding-top:20px"><div class="wrap">' + visitBlock() + '</div></section>';
       }
     };
-    var NAV = [['home', 'Home', href('home')], ['menu', 'Menu', href('menu')], ['about', 'About', href('about')], ['visit', 'Visit', href('visit')]];
+    var NAV = [['home', 'Home', href('home')], ['menu', 'Menu', href('menu')], ['about', 'About', href('about')]].concat(CM ? [['community', 'Community', href('community')]] : []).concat([['visit', 'Visit', href('visit')]]);
 
     function signLink() {
       if (PC) return '';
@@ -651,7 +709,7 @@
       var bar = '<nav class="bar" aria-label="Quick actions"><a href="' + esc(tel) + '">Call</a><a href="' + esc(maps) + '" target="_blank" rel="noopener">Directions</a><a href="' + esc(orderHref()) + '">Order</a></nav>';
       var ob = OWNER() && !VS ? '<div class="ownerbar"><div class="wrap"><span>You are viewing your site as the owner. Open any dish to change what is in it.</span><a href="/business/sample?tab=brand">Open your dashboard</a></div></div>' : '';
       document.getElementById('site').innerHTML = top + ob + '<main>' + PAGES[page]() + '</main>' + foot + bar;
-      if (!VS) document.title = (page === 'home' ? biz.name + ' · ' + (C.story.tagline || biz.city) : ({ menu: 'Menu', order: 'Order', about: 'About', visit: 'Visit', news: 'News', signin: 'Sign in' })[page] + ' · ' + biz.name);
+      if (!VS) document.title = (page === 'home' ? biz.name + ' · ' + (C.story.tagline || biz.city) : ({ menu: 'Menu', order: 'Order', about: 'About', visit: 'Visit', news: 'News', signin: 'Sign in', community: 'Community' })[page] + ' · ' + biz.name);
       drawCart(); wireRails();
     }
     // Each rail: the arrows turn off at the ends, and the dots show which set of three is in view.
@@ -713,6 +771,14 @@
       if ((t = e.target.closest('[data-ingrm]'))) { var dk = location.hash.split('/')[2], cur = ingOf(byKey[dk]).slice(); cur.splice(+t.dataset.ingrm, 1); EDITS[dk] = cur; try { sessionStorage.setItem('ve_site_ing_edits', JSON.stringify(EDITS)); } catch (x) {} document.querySelector('[data-ing]').innerHTML = ingList(byKey[dk]); return; }
       if ((t = e.target.closest('[data-pick]'))) { var pk = location.hash.split('/')[2], g = JSON.parse(t.dataset.pick), cur2 = ingOf(byKey[pk]).slice(); cur2.push(g); EDITS[pk] = cur2; try { sessionStorage.setItem('ve_site_ing_edits', JSON.stringify(EDITS)); } catch (x) {}
         document.querySelector('[data-ing]').innerHTML = ingList(byKey[pk]); var qi = document.querySelector('[data-ingq]'); if (qi) qi.value = ''; document.querySelector('[data-hits]').innerHTML = ''; return; }
+      if ((t = e.target.closest('[data-unlock]'))) { if (!SESS) { needSign(); return; } var ur = REW.filter(function (r) { return r.id === t.dataset.unlock; })[0]; if (!ur || ur.left <= 0 || MYR[ur.id]) return;
+        if (ptsLeft() < ur.points) { t.textContent = 'You need ' + (ur.points - ptsLeft()).toLocaleString() + ' more points'; t.disabled = true; return; }
+        ur.left -= 1; SPENT += ur.points; MYR[ur.id] = 'GL-' + ur.id.toUpperCase() + '-' + (100 + Math.floor(Math.random() * 900)); saveRew(); draw(); return; }
+      if ((t = e.target.closest('[data-rwrm]'))) { REW.forEach(function (r) { if (r.id === t.dataset.rwrm) r.down = true; }); saveRew(); draw(); return; }
+      if ((t = e.target.closest('[data-rwsug]'))) { var ti2 = document.querySelector('[data-rwtitle]'); ti2.value = t.dataset.rwsug; ti2.focus(); return; }
+      if (e.target.closest('[data-rwnew]')) { var nt = document.querySelector('[data-rwtitle]'), np = +document.querySelector('[data-rwpts]').value, nq = +document.querySelector('[data-rwqty]').value;
+        if (!nt.value.trim()) { nt.focus(); nt.placeholder = 'Name the reward first'; return; }
+        REW.push({ id: 'n' + Date.now().toString(36), kind: 'Reward', title: nt.value.trim(), line: 'Added by the owner.', points: Math.max(50, np || 300), left: Math.max(1, nq || 1), of: Math.max(1, nq || 1) }); saveRew(); draw(); return; }
       if ((t = e.target.closest('[data-post]'))) { openPost(+t.dataset.post); return; }
       if ((t = e.target.closest('[data-psort]'))) { postSort = t.dataset.psort; var nb = document.querySelector('[data-news]'); if (nb) { nb.innerHTML = newsBlock(); wireRails(); } return; }
       if ((t = e.target.closest('[data-thumb]'))) { var mi = document.querySelector('[data-main]'), ti = t.querySelector('img'), a1 = mi.src; mi.src = ti.src; ti.src = a1; return; }
