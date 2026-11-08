@@ -30,12 +30,31 @@
   var FIELDS = window.VERegionDirectory ? VERegionDirectory.FIELDS : 'id,slug,name,category,logo_url,vote_count,address_city,address_state,color,vegan_status,communities,tags,extra_categories';
   var GIVE_CATS = ['Nonprofits', 'Rescues', 'Sanctuaries'];
   var GIVE_URL = SB + '/rest/v1/listings?select=' + FIELDS + '&status=eq.approved&or=(category.in.(' + GIVE_CATS.join(',') + '),extra_categories.ov.{' + GIVE_CATS.join(',') + '})&order=vote_count.desc.nullslast,name.asc&limit=600';
-  var EVENTS_URL = SB + '/rest/v1/events?select=id,title,starts_at,timezone,location_name,city,state,country,event_type,time_set&status=eq.approved&tenant_id=eq.' + VE_TENANT +
-    '&starts_at=gte.' + new Date(Date.now() - 864e5).toISOString() + '&starts_at=lte.2026-12-02T05:00:00Z' +
-    '&or=(title.ilike.*thanksliving*,title.ilike.*thanksgiving*,title.ilike.*turkeys*,title.ilike.*friendsgiving*,description.ilike.*thanksliving*)&order=starts_at.asc&limit=200';
+  // Each holiday reads its own events from our calendar: words in the title, up to a day after the holiday (organizers' own titles show as written).
+  function eventsUrl(h) {
+    var cfg = HOLX[h] || HOLX.thanksliving;
+    return SB + '/rest/v1/events?select=id,title,starts_at,timezone,location_name,city,state,country,event_type,time_set&status=eq.approved&tenant_id=eq.' + VE_TENANT +
+      '&starts_at=gte.' + new Date(Date.now() - 864e5).toISOString() + '&starts_at=lte.' + cfg.evTo + '&or=(' + cfg.evOr + ')&order=starts_at.asc&limit=200';
+  }
   var LR_TAGS = ['lesaruss-ai-directory', 'lesaruss-ai-directory-candidate', 'lesaruss-ai-business-member'];
   function ours(list) { return (Array.isArray(list) ? list : []).filter(function (l) { return !(l.tags || []).some(function (t) { return LR_TAGS.indexOf(t) >= 0; }); }); }
 
+  // One section per holiday (Sean, 2026-11-08: "Hanukkah and Christmas"). Each holiday names its own pages; the views below read the
+  // holiday of the page they are drawing (curHol), so a new holiday is a row here, its TABS and its content, never a copy of the views.
+  var HOLX = {
+    thanksliving: { page: 'thanksliving', recipes: 'recipes', store: 'store', menus: 'menus', events: 'events', label: 'ThanksLiving',
+      fallback: { slug: 'thanksliving', name: 'ThanksLiving (Thanksgiving)', holiday_on: '2026-11-26', submit_close: '2026-11-19T05:00:00Z' },
+      evTo: '2026-11-27T05:00:00Z', evOr: 'title.ilike.*thanksliving*,title.ilike.*thanksgiving*,title.ilike.*turkeys*,title.ilike.*friendsgiving*,description.ilike.*thanksliving*',
+      evLede: 'Sanctuary dinners, Vegan potlucks and Thanksgiving events on our calendar.', evEmpty: 'Hosting a ThanksLiving dinner or a potluck?' },
+    hanukkah: { page: 'hanukkah', recipes: 'hk-recipes', menus: 'hk-menus', events: 'hk-events', label: 'Hanukkah',
+      fallback: { slug: 'hanukkah', name: 'Hanukkah', holiday_on: '2026-12-04', submit_close: '2026-12-01T05:00:00Z' },
+      evTo: '2026-12-13T05:00:00Z', evOr: 'title.ilike.*hanukkah*,title.ilike.*chanukah*,title.ilike.*hanukah*,title.ilike.*menorah*,title.ilike.*latke*,description.ilike.*hanukkah*',
+      evLede: 'Plant-based Hanukkah parties, latke nights and menorah lightings on our calendar.', evEmpty: 'Hosting a latke night or a Hanukkah party?' },
+    christmas: { page: 'christmas', recipes: 'xm-recipes', store: 'xm-store', menus: 'xm-menus', events: 'xm-events', label: 'Christmas',
+      fallback: { slug: 'christmas', name: 'Christmas', holiday_on: '2026-12-25', submit_close: '2026-12-15T05:00:00Z' },
+      evTo: '2026-12-26T05:00:00Z', evOr: 'title.ilike.*christmas*,title.ilike.*xmas*,title.ilike.*holiday*,title.ilike.*cookie swap*,title.ilike.*cookie exchange*,title.ilike.*sweater*,title.ilike.*winter*',
+      evLede: 'Vegan Christmas festivals, cookie swaps, holiday lights and parties on our calendar.', evEmpty: 'Hosting a cookie swap or a holiday party?' }
+  };
   // Theo's lines, text drafts for Sean (no recordings yet). `say` for visitors, `sayMember` for members.
   var TABS = [
     { k: 'overview', label: 'Overview', say: 'Welcome to the Holiday Guide. I\'m Theo. You\'re the one setting the table this year, and I\'m here to help you do it your way.',
@@ -46,6 +65,15 @@
     { k: 'menus', parent: 'thanksliving', pic: '/public/guides/holiday/theo-menus.jpg', label: 'Holiday Menus', say: 'Don\'t want to cook it all? Pick your chapter and see which Vegan places are cooking for the holiday, what they\'re offering, and when to order by. Our team checks every menu before it shows. Save one to find it again. Know a place we missed? Tell us, and we\'ll check it.' },
     { k: 'events', parent: 'thanksliving', pic: '/public/guides/holiday/theo-events.jpg', label: 'Events', say: 'Rather be at someone else\'s table? Find sanctuary dinners, potlucks and Thanksgiving events on our calendar. Hosting one? Add it, so people can find you.' },
     { k: 'listen', parent: 'thanksliving', pic: '/public/guides/holiday/theo-listen.jpg', label: 'Listen', say: 'Going home for the holidays? Listen to Victoria Moran, Renee King-Sonnen and Susan Hargreaves on talking with family, and more from our shows and others.' },
+    { k: 'hanukkah', label: 'Hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hanukkah.jpg', say: 'Hanukkah starts at sundown on December fourth, eight nights of light. On this page are a few easy ideas for a plant-based Hanukkah: latkes, sufganiyot and the people around the menorah.' },
+    { k: 'hk-recipes', parent: 'hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hanukkah.jpg', label: 'Recipes', say: 'Here is a plant-based Hanukkah table you can make at home: crispy latkes with a cashew sour cream, applesauce, carrot tzimmes and jelly doughnuts.' },
+    { k: 'hk-menus', parent: 'hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hanukkah.jpg', label: 'Holiday Menus', say: 'Rather order in? Pick your chapter and see which Vegan places are cooking for Hanukkah. Our team checks every menu before it shows.' },
+    { k: 'hk-events', parent: 'hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hanukkah.jpg', label: 'Events', say: 'Looking for a latke night or a party near you? Here are the Hanukkah events on our calendar. Hosting one? Add it, so people can find you.' },
+    { k: 'christmas', label: 'Christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', say: 'Christmas, the plant-based way. On this page are a few easy ideas: a centerpiece for the table, cookies to share, and gifts that do no harm.' },
+    { k: 'xm-recipes', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Recipes', say: 'Cooking Christmas dinner? Here is a mushroom Wellington for the middle of the table, maple Brussels sprouts, a creamy nog and gingerbread cookies.' },
+    { k: 'xm-store', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'At the Store', say: 'Short on time? Here are the plant-based roasts, nogs, butters and treats you can pick up this season. Stock changes by store, so check before you go.' },
+    { k: 'xm-menus', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Holiday Menus', say: 'Don\'t want to cook Christmas dinner? Pick your chapter and see which Vegan places are cooking for the holiday and when to order by.' },
+    { k: 'xm-events', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Events', say: 'Vegan Christmas festivals, cookie swaps and holiday lights. Here is what is on our calendar. Hosting one? Add it, so people can find you.' },
     { k: 'giveback', label: 'Give Back', say: 'Giving is part of the season. Here are the nonprofits, rescues and sanctuaries doing the work, in your city and beyond. Giving Tuesday is December first.' },
     { k: 'business', label: 'For Businesses', say: 'Run a Vegan business? Send us your holiday menu and we\'ll feature it here, free for members. ThanksLiving menus close at the end of November eighteenth.' }
   ];
@@ -86,7 +114,7 @@
 
   var main = document.getElementById('dgMain');
   var menuEl = document.getElementById('dgMenu'), menuSel = document.getElementById('dgMenuSelect');
-  var HOLS = null, MENUS = null, TIPS = null, EVENTS = null, GIVE = null, SAVED = {};
+  var HOLS = null, MENUS = null, TIPS = null, EVENTS = null, GIVE = null, SAVED = {}, LIVE = {}, EVS = {};
   var curTab = 'overview';
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -105,7 +133,15 @@
   // ---------- dates (Eastern) ----------
   function dayFmt(d, o) { return new Date(d).toLocaleDateString('en-US', Object.assign({ timeZone: 'America/New_York' }, o || { weekday: 'long', month: 'long', day: 'numeric' })); }
   function daysUntil(iso) { var ms = new Date(iso).getTime() - Date.now(); return ms <= 0 ? 0 : Math.ceil(ms / 864e5); }
-  function thanks() { return (HOLS || []).filter(function (h) { return h.slug === HOLIDAY; })[0] || { slug: HOLIDAY, name: 'ThanksLiving (Thanksgiving)', holiday_on: '2026-11-26', submit_close: '2026-11-19T05:00:00Z' }; }
+  function holRow(slug) { return (HOLS || []).filter(function (h) { return h.slug === slug; })[0] || (HOLX[slug] || HOLX.thanksliving).fallback; }
+  function thanks() { return holRow(HOLIDAY); }
+  // The holiday the page being drawn belongs to (ThanksLiving for every tab that is not under another holiday).
+  function holOf(k) { var t = tab(k); return t.hol || (t.parent && tab(t.parent).hol) || HOLIDAY; }
+  function curHol() { return holOf(curView); }
+  function hx() { return HOLX[curHol()] || HOLX.thanksliving; }
+  function hrow() { return holRow(curHol()); }
+  // A holiday is over the day after it (Eastern); its tab leaves the top row but its pages still open by link.
+  function holPast(slug) { return Date.now() > new Date(onDay(holRow(slug).holiday_on)).getTime() + 864e5; }
   // A date-only value (holiday_on) is a day in Eastern time; noon keeps it on the right day.
   function onDay(d) { return d.length === 10 ? d + 'T17:00:00Z' : d; }
   // submit_close is the moment menus are refused; the last day to send is the day before, in Eastern time.
@@ -117,7 +153,7 @@
   function topOf(k) { return tab(k).parent || k; }
   function drawMenu(cur) {
     var top = topOf(cur);
-    menuEl.innerHTML = TABS.filter(function (t) { return !t.parent; }).map(function (t) { return '<a href="' + href(t.k) + '"' + (t.k === top ? ' aria-current="page"' : '') + '>' + esc(t.label) + '</a>'; }).join('');
+    menuEl.innerHTML = TABS.filter(function (t) { return !t.parent && !(t.hol && holPast(t.hol) && t.k !== top); }).map(function (t) { return '<a href="' + href(t.k) + '"' + (t.k === top ? ' aria-current="page"' : '') + '>' + esc(t.label) + '</a>'; }).join('');
     menuSel.innerHTML = TABS.filter(function (t) { return !t.parent; }).map(function (t) {
       var kids = TABS.filter(function (c) { return c.parent === t.k; });
       function opt(o, label) { return '<option value="' + o.k + '"' + (o.k === cur ? ' selected' : '') + '>' + esc(label || o.label) + '</option>'; }
@@ -193,14 +229,17 @@
   var PIC = '/public/guides/holiday/';
   var GROUPS = [
     { label: 'ThanksLiving · November 26', line: 'Easy ideas for the table, recipes, what to pick up at the store, a Vegan place to order from, events, and what to listen to on the way.', kids: ['thanksliving', 'recipes', 'store', 'menus', 'events', 'listen'] },
+    { label: 'Hanukkah · Begins December 4', hol: 'hanukkah', line: 'Latkes, sufganiyot and the people around the menorah: ideas, recipes, a Vegan place to order from, and events.', kids: ['hanukkah', 'hk-recipes', 'hk-menus', 'hk-events'] },
+    { label: 'Christmas · December 25', hol: 'christmas', line: 'A centerpiece, cookies to share, nog, and gifts that do no harm: ideas, recipes, the store, menus and events.', kids: ['christmas', 'xm-recipes', 'xm-store', 'xm-menus', 'xm-events'] },
     { label: 'Give Back', line: 'The nonprofits, rescues and sanctuaries doing the work. Giving Tuesday is December 1.', kids: ['giveback'] },
     { label: 'Run a Business?', line: 'Send your holiday menu and we feature it here, free for members.', kids: ['business'] }
   ];
-  var PILL_PIC = { recipes: 'r-loaf.jpg', store: 'p-store.jpg', listen: 'p-listen.jpg', thanksliving: 'p-thanks.jpg', events: 'p-events.jpg', menus: 'p-menus.jpg', giveback: 'p-giveback.jpg', business: 'p-business.jpg' };
+  var PILL_PIC = { hanukkah: 'theo-hanukkah.jpg', 'hk-recipes': 'r-latkes.jpg', 'hk-menus': 'p-menus.jpg', 'hk-events': 'p-events.jpg',
+    christmas: 'theo-christmas.jpg', 'xm-recipes': 'r-wellington.jpg', 'xm-store': 'r-nog.jpg', 'xm-menus': 'p-menus.jpg', 'xm-events': 'p-events.jpg', recipes: 'r-loaf.jpg', store: 'p-store.jpg', listen: 'p-listen.jpg', thanksliving: 'p-thanks.jpg', events: 'p-events.jpg', menus: 'p-menus.jpg', giveback: 'p-giveback.jpg', business: 'p-business.jpg' };
   function groupRows() {
-    return GROUPS.map(function (g) {
+    return GROUPS.filter(function (g) { return !g.hol || !holPast(g.hol); }).map(function (g) {
       return '<section class="rg-grow"><h3>' + esc(g.label) + '</h3><p>' + esc(g.line) + '</p><div class="rg-pills">' + g.kids.map(function (k) {
-        return '<a class="rg-pill" href="' + href(k) + '"><span class="rg-pill-pic"><img src="' + PIC + PILL_PIC[k] + '" alt="" loading="lazy" width="60" height="60"></span><span>' + esc(k === 'thanksliving' ? 'Ideas for the Table' : tab(k).label) + '</span></a>';
+        return '<a class="rg-pill" href="' + href(k) + '"><span class="rg-pill-pic"><img src="' + PIC + PILL_PIC[k] + '" alt="" loading="lazy" width="60" height="60"></span><span>' + esc(k === 'thanksliving' ? 'Ideas for the Table' : k === 'hanukkah' || k === 'christmas' ? 'Ideas' : tab(k).label) + '</span></a>';
       }).join('') + '</div></section>';
     }).join('');
   }
@@ -240,6 +279,36 @@
       '<div class="hg-note" style="background:#f6f4ef"><b>The same day is the National Day of Mourning.</b> Since 1970, United American Indians of New England have gathered in Plymouth on this day. To learn more, start with Indigenous-led voices like <a href="https://www.uaine.org/" target="_blank" rel="noopener">uaine.org</a>.</div>';
   }
 
+
+  // ---------- Hanukkah and Christmas ----------
+  // Each holiday's own page: a few easy ideas (flat icons, the ThanksLiving page's way) and notes. Sean, 2026-11-08: respectful, never a
+  // costume of a culture, and for a holiday that is not ours to explain, we point to the community's own voices.
+  var IDEAS = {
+    hanukkah: { k: 'Begins December 4', lede: 'Eight nights, from sundown on Friday, December 4 to nightfall on Saturday, December 12. Fry the latkes, light the candles, and keep the table plant-based.', ideas: [
+      ['Fry something', 'Latkes and jelly doughnuts are fried in oil to remember the oil that lasted eight nights. Both are easy to make plant-based.', '<path d="M12 3c3 4 5 6.5 5 10a5 5 0 01-10 0c0-3.5 2-6 5-10z"/><path d="M12 13c1 1.2 1.6 2 1.6 3a1.6 1.6 0 01-3.2 0c0-1 .6-1.8 1.6-3z"/>'],
+      ['Light the candles together', 'Gather around the menorah each night with the people you love, and share a plant-based meal after.', '<path d="M4 20h16M12 20v-6M6 20v-6M18 20v-6M9 20v-6M15 20v-6"/><path d="M12 11c.9-1 1.3-1.8 1.3-2.5a1.3 1.3 0 00-2.6 0c0 .7.4 1.5 1.3 2.5z"/>'],
+      ['Eight nights of kindness', 'One small kindness each night: a gift to a sanctuary, an hour of volunteering, a call to someone who needs it.', '<path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.1 4.3 2.4.7-1.3 2.2-2.4 4.3-2.4 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/>'],
+      ['Gifts that do no harm', 'Many chocolate coins are milk chocolate. Look for dark chocolate gelt marked dairy-free, or give something from a Vegan brand.', '<rect x="3" y="8" width="18" height="5" rx="1"/><path d="M12 8v13M5 13v8h14v-8M12 8c-2-4-6-4-6-1s6 1 6 1zm0 0c2-4 6-4 6-1s-6 1-6 1z"/>'],
+      ['Share the table', 'Invite a friend to try a plant-based latke. Good food opens more doors than a speech.', '<path d="M3 11h18M5 11a7 5 0 0114 0M12 4v2M4 15h16l-1.5 4h-13z"/>']],
+      notes: ['<b>From the community.</b> For the meaning of Hanukkah and its blessings, start with Jewish voices, like <a href="https://www.myjewishlearning.com/" target="_blank" rel="noopener">My Jewish Learning</a>, and <a href="https://www.jewishveg.org/" target="_blank" rel="noopener">Jewish Veg</a> for plant-based Jewish holidays.',
+        '<b>Gifts from Vegan brands.</b> Clothing, beauty and food are in <a href="/directory?tab=products">our Directory</a>.'] },
+    christmas: { k: 'December 25', lede: 'Friday, December 25. A plant-based centerpiece, cookies to share and gifts that do no harm, whether you host or bring one dish.', ideas: [
+      ['A centerpiece for the table', 'A Wellington or a roast in the middle of the table, and everyone gets a slice.', '<path d="M3 11h18M5 11a7 5 0 0114 0M12 4v2M4 15h16l-1.5 4h-13z"/>'],
+      ['Bake and share', 'Make a batch of cookies for a neighbor, the office or a cookie swap. Nobody misses the butter.', '<circle cx="12" cy="12" r="8"/><circle cx="9.5" cy="10" r="1"/><circle cx="14" cy="9.5" r="1"/><circle cx="13" cy="14" r="1"/><circle cx="9" cy="14.5" r="1"/>'],
+      ['Gifts that do no harm', 'Clothing, beauty and food from Vegan brands, or a gift in someone\'s name to a sanctuary.', '<rect x="3" y="8" width="18" height="5" rx="1"/><path d="M12 8v13M5 13v8h14v-8M12 8c-2-4-6-4-6-1s6 1 6 1zm0 0c2-4 6-4 6-1s-6 1-6 1z"/>'],
+      ['Make room at the table', 'Someone you know may be alone this season. Invite them, or bring them a plate.', '<path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.1 4.3 2.4.7-1.3 2.2-2.4 4.3-2.4 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/>'],
+      ['Write it down', 'Before the year ends, write what it taught you and what you want next year to hold.', '<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h5"/>']],
+      notes: ['<b>Gifts from Vegan brands.</b> Clothing, beauty and food are in <a href="/directory?tab=products">our Directory</a>. A gift in someone\'s name to a sanctuary is on <a href="#/giveback">Give Back</a>.'] }
+  };
+  function viewHoliday(slug) {
+    var d = IDEAS[slug], t = holRow(slug), left = daysUntil(onDay(t.holiday_on));
+    main.innerHTML = head(d.k, t.name, d.lede) +
+      (left ? '<div class="hg-count"><div><b>' + left + '</b><small>days to ' + esc(t.name) + '</small></div>' + (daysUntil(t.submit_close) ? '<div><b>' + daysUntil(t.submit_close) + '</b><small>days to send a menu</small></div>' : '') + '</div>' : '') +
+      '<h3 class="hg-sh" style="margin:22px 0 10px">A Few Easy Ideas</h3>' +
+      '<div class="hg-rules">' + d.ideas.map(function (r, i) { return '<div class="hg-rule"><div class="hg-ric">' + ic(r[2]) + '<span class="n">' + (i + 1) + '</span></div><h3>' + esc(tc(r[0])) + '</h3><p>' + esc(r[1]) + '</p></div>'; }).join('') + '</div>' +
+      d.notes.map(function (n) { return '<div class="hg-note">' + n + '</div>'; }).join('');
+  }
+
   // ---------- Holiday menus ----------
   function money(s) { return s ? esc(s) : ''; }
   function menuCard(m) {
@@ -249,7 +318,7 @@
     var saved = !!SAVED[l.id];
     return '<div class="hg-menu">' +
       '<div class="hg-mh"><div class="hg-logo"' + (l.logo_url ? ' style="background-image:url(\'' + esc(l.logo_url) + '\')"' : '') + '>' + (l.logo_url ? '' : esc((l.name || '?').charAt(0))) + '</div>' +
-      '<div><h3><a href="#/menus/listing/' + encodeURIComponent(l.slug) + '">' + esc(l.name) + '</a></h3><small>' + esc(where || 'Online') + '</small></div></div>' +
+      '<div><h3><a href="#/' + hx().menus + '/listing/' + encodeURIComponent(l.slug) + '">' + esc(l.name) + '</a></h3><small>' + esc(where || 'Online') + '</small></div></div>' +
       '<div><span class="hg-tag' + (vegan ? '' : ' pv') + '">' + (vegan ? '100% Vegan' : 'Plant-based (Pre-Vegan) menu') + '</span></div>' +
       (m.summary ? '<p class="hg-sum">' + esc(m.summary) + '</p>' : '') +
       (items.length ? '<div class="hg-items">' + items.map(function (it) {
@@ -294,9 +363,13 @@
     return out;
   }
   function viewMenus(sub) {
-    if (/^listing\//.test(sub)) return viewListing(decodeURIComponent(sub.slice(8)), ['Holiday menus', '#/menus']);
+    var mk = hx().menus, hk = curHol();
+    // Each holiday keeps its own menus; they load the first time its page opens.
+    MENUS = LIVE[hk] ? LIVE[hk].menus : null; TIPS = LIVE[hk] ? LIVE[hk].tips : null;
+    if (!LIVE[hk]) loadLive(hk);
+    if (/^listing\//.test(sub)) return viewListing(decodeURIComponent(sub.slice(8)), ['Holiday menus', '#/' + mk]);
     if (sub === 'tell') return viewTell();
-    var ch = chapter(sub), t = thanks(), n = pills(ch).length;
+    var ch = chapter(sub), t = hrow(), n = pills(ch).length;
     main.innerHTML = head(t.name, 'Holiday menus near you', 'What Vegan places are cooking for ' + esc(t.name) + '. Every menu is checked by our team before it shows.') +
       '<div class="hg-tools2"><div class="hg-search"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#525252" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
       '<input type="search" id="hgQ" placeholder="Search places, dishes, cities..." aria-label="Search holiday menus" value="' + esc(MF.q) + '" autocomplete="off" data-dictate="off"></div>' +
@@ -332,7 +405,7 @@
         rest(SB + '/rest/v1/listings?select=slug,name,address_city,address_state,logo_url&status=eq.approved&name=ilike.*' + encodeURIComponent(v) + '*&order=voter_count.desc.nullslast&limit=8')
           .then(function (rows) {
             out.innerHTML = (Array.isArray(rows) && rows.length ? rows : []).map(function (l) {
-              return '<a class="hg-ares-r" href="/business/holiday-menu?listing=' + encodeURIComponent(l.slug) + '&holiday=' + HOLIDAY + '&step=menu"><b>' + esc(l.name) + '</b><span>' + esc([l.address_city, l.address_state].filter(Boolean).join(', ') || 'Online') + '</span><em>Upload its menu</em></a>';
+              return '<a class="hg-ares-r" href="/business/holiday-menu?listing=' + encodeURIComponent(l.slug) + '&holiday=' + curHol() + '&step=menu"><b>' + esc(l.name) + '</b><span>' + esc([l.address_city, l.address_state].filter(Boolean).join(', ') || 'Online') + '</span><em>Upload its menu</em></a>';
             }).join('') || '<p class="dg-srow-p">Nothing by that name. Add the place in Directory review first.</p>';
           }).catch(function () { out.innerHTML = '<p class="dg-srow-p">That did not load. Try again.</p>'; });
       }, 200);
@@ -341,13 +414,13 @@
   function drawMenuList(ch) {
     var box = document.getElementById('hgMenuList'); if (!box) return;
     if (MENUS === null) { box.innerHTML = '<div class="dg-loading">Loading the menus...</div>'; return; }
-    var t = thanks(), open = daysUntil(t.submit_close) > 0, list = filtered(ch), any = MF.q || pills(ch).length, tips = tipsFiltered(ch);
+    var t = hrow(), open = daysUntil(t.submit_close) > 0, list = filtered(ch), any = MF.q || pills(ch).length, tips = tipsFiltered(ch);
     box.innerHTML = (list.length ? '<div class="hg-menus">' + list.map(menuCard).join('') + '</div>' :
       (MENUS.length && any ? '<div class="hg-empty"><h3>Nothing Matches</h3><p>Try fewer words or reset the filters.</p><button type="button" class="dg-btn dg-ghost" data-hg-reset>Reset filters</button></div>' :
       '<div class="hg-empty"><h3>No Holiday Menus ' + (ch === 'all' ? '' : 'in ' + esc(chapterName(ch)) + ' ') + 'Yet</h3><p>' + (open ? 'Menus are coming in now, and each one shows here once our team has checked it.' : 'Menus for this holiday are closed.') + '</p>' +
         (open ? '<a class="dg-btn dg-ghost" href="#/business">Run a business? Send your menu</a>' : '') + '</div>')) +
       (tips.length ? '<h3 style="margin:22px 0 4px;font-size:17px">Spotted by Members</h3><p class="dg-srow-p" style="margin:0 0 10px">Holiday menus our members found. Our team checked each link; order from the place directly.</p><div class="hg-menus">' + tips.map(tipCard).join('') + '</div>' : '') +
-      (daysUntil(onDay(t.holiday_on)) ? '<div class="hg-tell"><div><b>Know a place cooking for ' + esc(t.name) + '?</b><p>Send us the link to its holiday menu. Our team checks it, then it shows here for everyone.</p></div><a class="dg-btn dg-ghost" href="#/menus/tell" data-hg-tell>Tell us about a menu</a></div>' : '');
+      (daysUntil(onDay(t.holiday_on)) ? '<div class="hg-tell"><div><b>Know a place cooking for ' + esc(t.name) + '?</b><p>Send us the link to its holiday menu. Our team checks it, then it shows here for everyone.</p></div><a class="dg-btn dg-ghost" href="#/' + hx().menus + '/tell" data-hg-tell>Tell us about a menu</a></div>' : '');
   }
   // Menus members spotted (Sean, 2026-11-08): a place and a link to its own holiday menu, checked by our team, never copied.
   function tipPlace(x) { return x.listing || { address_city: x.city, address_state: x.state, communities: [] }; }
@@ -362,7 +435,7 @@
   }
   function tipCard(x) {
     var l = x.listing, where = [x.city || (l && l.address_city), x.state || (l && l.address_state)].filter(Boolean).join(', ');
-    var name = l ? '<a href="#/menus/listing/' + encodeURIComponent(l.slug) + '">' + esc(l.name) + '</a>' : esc(x.place_name);
+    var name = l ? '<a href="#/' + hx().menus + '/listing/' + encodeURIComponent(l.slug) + '">' + esc(l.name) + '</a>' : esc(x.place_name);
     return '<div class="hg-menu"><div class="hg-mh"><div class="hg-logo"' + (l && l.logo_url ? ' style="background-image:url(\'' + esc(l.logo_url) + '\')"' : '') + '>' + (l && l.logo_url ? '' : esc(String(x.place_name || '?').charAt(0))) + '</div>' +
       '<div><h3>' + name + '</h3><small>' + esc(where || 'Online') + '</small></div></div>' +
       '<div><span class="hg-tag pv">Spotted by a member</span></div>' + (x.note ? '<p class="hg-sum">' + esc(x.note) + '</p>' : '') +
@@ -371,8 +444,8 @@
   }
   // Tell us about a menu: members only (a join window first), checked by our team before it shows.
   function viewTell() {
-    var t = thanks();
-    main.innerHTML = crumb([['Holiday menus', '#/menus'], ['Tell us about a menu']]) + head(t.name, 'Tell us about a holiday menu',
+    var t = hrow(), mk = hx().menus;
+    main.innerHTML = crumb([['Holiday menus', '#/' + mk], ['Tell us about a menu']]) + head(t.name, 'Tell us about a holiday menu',
       'Found a place near you cooking for ' + esc(t.name) + '? Send us where to see its menu. Our team checks the link, and then it shows on Holiday menus for everyone.');
     if (!member()) {
       main.innerHTML += '<div class="hg-empty"><h3>Members Tell Us About Menus</h3><p>Join free with a short survey, then send it. It comes back here when you are done.</p><button type="button" class="dg-btn" data-hg-tell>Join free</button></div>';
@@ -383,7 +456,7 @@
       '<div class="hg-f2"><label><span>City</span><input id="tCity" maxlength="80" autocomplete="off"></label><label><span>State</span><input id="tState" maxlength="40" autocomplete="off"></label></div>' +
       '<label><span>Link to the holiday menu</span><input id="tLink" type="url" inputmode="url" maxlength="500" required placeholder="https://"><small>Their website, an order page or the post where they shared it.</small></label>' +
       '<label><span>Anything we should know? (optional)</span><textarea id="tNote" maxlength="400" rows="3" placeholder="Order by date, pickup only, 100% Vegan..."></textarea></label>' +
-      '<div class="dg-btns"><button type="submit" class="dg-btn" id="tSend">Send it to our team</button><a class="dg-btn dg-ghost" href="#/menus">Back to menus</a></div><p class="hg-fmsg" id="tMsg" role="status"></p></form>';
+      '<div class="dg-btns"><button type="submit" class="dg-btn" id="tSend">Send it to our team</button><a class="dg-btn dg-ghost" href="#/' + mk + '">Back to menus</a></div><p class="hg-fmsg" id="tMsg" role="status"></p></form>';
     wireTell(t);
   }
   var TELL_PLACES = {};
@@ -408,13 +481,14 @@
       btn.disabled = true; msg.textContent = 'Sending...';
       var a = auth();
       fetch(HOLIDAY_FN, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: ANON_KEY, Authorization: 'Bearer ' + (a && a.getToken ? a.getToken() : '') },
-        body: JSON.stringify({ action: 'tip', holiday: HOLIDAY, place_name: place.value.trim(), city: document.getElementById('tCity').value.trim(), state: document.getElementById('tState').value.trim(),
+        body: JSON.stringify({ action: 'tip', holiday: curHol(), place_name: place.value.trim(), city: document.getElementById('tCity').value.trim(), state: document.getElementById('tState').value.trim(),
           link: link, note: document.getElementById('tNote').value.trim(), listing_id: l ? l.id : null }) })
         .then(function (r) { return r.json(); }).then(function (d) {
           if (d && d.ok) {
-            main.innerHTML = crumb([['Holiday menus', '#/menus'], ['Tell us about a menu']]) + '<div class="hg-empty"><h3>' + (d.already ? 'We Already Have That One' : d.status === 'live' ? 'It Is on Holiday Menus Now' : 'Thank You. Our Team Will Check It') + '</h3><p>' +
-              (d.already ? 'Someone sent that menu already, so it is in our team\'s hands.' : d.status === 'live' ? 'You are on the team, so it went live at once.' : 'Once it is checked it shows on Holiday menus for everyone.') + '</p><div class="dg-btns" style="justify-content:center"><a class="dg-btn" href="#/menus/tell" onclick="setTimeout(function(){window.dispatchEvent(new HashChangeEvent(\'hashchange\'))},0)">Tell us about another</a><a class="dg-btn dg-ghost" href="#/menus">Back to menus</a></div></div>';
-            if (d.status === 'live') hol('live', { holiday: HOLIDAY }).then(function (x) { MENUS = (x && x.menus) || MENUS; TIPS = (x && x.tips) || TIPS; });
+            var mk = hx().menus;
+            main.innerHTML = crumb([['Holiday menus', '#/' + mk], ['Tell us about a menu']]) + '<div class="hg-empty"><h3>' + (d.already ? 'We Already Have That One' : d.status === 'live' ? 'It Is on Holiday Menus Now' : 'Thank You. Our Team Will Check It') + '</h3><p>' +
+              (d.already ? 'Someone sent that menu already, so it is in our team\'s hands.' : d.status === 'live' ? 'You are on the team, so it went live at once.' : 'Once it is checked it shows on Holiday menus for everyone.') + '</p><div class="dg-btns" style="justify-content:center"><a class="dg-btn" href="#/' + mk + '/tell" onclick="setTimeout(function(){window.dispatchEvent(new HashChangeEvent(\'hashchange\'))},0)">Tell us about another</a><a class="dg-btn dg-ghost" href="#/' + mk + '">Back to menus</a></div></div>';
+            if (d.status === 'live') loadLive(curHol());
             return;
           }
           var E = { rate_limited: 'That is plenty for today. Thank you! Try again tomorrow.', link_needed: 'That link did not work. Check it and try again.', place_needed: 'Add the name of the place.', member_needed: 'Join free first, then send it.', closed: 'This holiday has passed.', not_authenticated: 'Sign in again, then send it.' };
@@ -427,7 +501,7 @@
     var tq; q.addEventListener('input', function () { MF.q = q.value; clearTimeout(tq); tq = setTimeout(function () { drawMenuList(ch); }, 120); });
     function show(on) { pop.hidden = !on; btn.setAttribute('aria-expanded', String(on)); }
     btn.addEventListener('click', function () { show(pop.hidden); });
-    document.getElementById('hgChapter').addEventListener('change', function (e) { store('hg_chapter', e.target.value); location.hash = '#/menus/' + e.target.value; });
+    document.getElementById('hgChapter').addEventListener('change', function (e) { store('hg_chapter', e.target.value); location.hash = '#/' + hx().menus + '/' + e.target.value; });
     [['hgType', 'type'], ['hgOrder', 'order'], ['hgSort', 'sort']].forEach(function (x) {
       document.getElementById(x[0]).addEventListener('change', function (e) { MF[x[1]] = e.target.value; viewMenus(ch); var p2 = document.getElementById('hgPop'), b2 = document.getElementById('hgFbtn'); p2.hidden = false; b2.setAttribute('aria-expanded', 'true'); });
     });
@@ -470,25 +544,76 @@
       ing: ['1 plant-based 9 inch pie crust (many store crusts use lard or butter; check the label)', '15 oz can pumpkin purée', '12 oz firm silken tofu, drained', '2/3 cup brown sugar or maple syrup', '2 tbsp cornstarch', '2 tsp pumpkin pie spice', '1 tsp vanilla', '1/4 tsp salt', 'Dairy-free whipped topping, to serve'],
       steps: ['Heat the oven to 350°F.', 'Blend everything but the crust until completely smooth.', 'Pour into the crust and bake 55 to 65 minutes, until the edges are set and the center still wobbles a little. Cover the crust edge with foil if it browns too fast.', 'Cool completely, then chill at least 4 hours. Serve with whipped topping.'] }
   ];
+  // Hanukkah and Christmas tables (Sean, 2026-11-08). Drafts written for this Guide, not yet kitchen-tested by our team; pictures are
+  // illustrations (public/guides/holiday/r-*.jpg).
+  var RECIPES_HK = [
+    { k: 'latkes', name: 'Crispy potato latkes with cashew sour cream', course: 'The main', pic: 'r-latkes.jpg', serves: 'About 16 latkes', time: '45 minutes',
+      line: 'Golden and crisp at the edges, held together with flax instead of eggs.',
+      ing: ['2 lb russet potatoes, peeled', '1 onion', '2 tbsp ground flaxseed and 6 tbsp water', '1/3 cup all-purpose flour or matzo meal', '1 tsp salt, plus more to finish', '1/2 tsp baking powder', 'Black pepper', 'Neutral oil for frying', 'Cashew sour cream: 1 cup raw cashews, 1/2 cup water, 2 tbsp lemon juice, 1 tsp apple cider vinegar, 1/2 tsp salt'],
+      steps: ['For the sour cream, cover the cashews with boiling water for 15 minutes, drain, then blend with the water, lemon, vinegar and salt until smooth. Chill.', 'Stir the flaxseed into the water and let it sit 10 minutes to thicken.', 'Grate the potatoes and onion. Wrap them in a clean towel and squeeze out as much liquid as you can.', 'Mix the potatoes and onion with the flax, flour, salt, baking powder and pepper.', 'Heat a quarter inch of oil in a heavy pan over medium-high heat. Drop in a quarter cup of the mix and flatten it.', 'Fry 3 to 4 minutes a side, until deep golden. Drain on a rack, salt them, and keep them warm in a 200°F oven while you fry the rest.', 'Serve with the sour cream and applesauce.'] },
+    { k: 'applesauce', name: 'Chunky cinnamon applesauce', course: 'Side', pic: 'r-applesauce.jpg', serves: 'About 4 cups', time: '30 minutes',
+      line: 'Warm or cold, the other half of every latke.',
+      ing: ['3 lb apples (a mix of sweet and tart), peeled and chopped', '1/2 cup water', '1 cinnamon stick', '1 tbsp lemon juice', '1 to 2 tbsp maple syrup, to taste'],
+      steps: ['Put everything but the maple syrup in a pot and bring it to a simmer.', 'Cover and cook about 20 minutes, stirring now and then, until the apples are soft.', 'Take out the cinnamon stick and mash to the texture you like. Sweeten with maple syrup if it needs it.'] },
+    { k: 'tzimmes', name: 'Carrot and sweet potato tzimmes', course: 'Side', pic: 'r-tzimmes.jpg', serves: 'Serves 6', time: '1 hour',
+      line: 'Sweet, glossy and already plant-based at heart.',
+      ing: ['2 lb carrots, sliced into coins', '1 lb sweet potatoes, cut in cubes', '1 cup pitted prunes or dried apricots', '1/2 cup orange juice', '1/4 cup maple syrup', '2 tbsp olive oil or plant butter', '1/2 tsp cinnamon', '1/2 tsp salt'],
+      steps: ['Heat the oven to 375°F.', 'Toss everything together in a baking dish.', 'Cover with foil and bake 40 minutes.', 'Uncover, stir, and bake 15 to 20 minutes more, until the carrots are tender and glazed.'] },
+    { k: 'sufganiyot', name: 'Jelly doughnuts (sufganiyot)', course: 'Dessert', pic: 'r-sufganiyot.jpg', serves: 'About 14 doughnuts', time: '2 hours 30 minutes, with rising',
+      line: 'Soft, jam-filled and dusted with sugar, made without eggs or dairy.',
+      ing: ['2 1/4 tsp instant yeast', '3/4 cup unsweetened plant milk, warmed', '1/4 cup sugar (organic or beet sugar is never filtered with bone char)', '1 tbsp ground flaxseed and 3 tbsp water', '3 tbsp plant butter, melted', '2 1/2 cups all-purpose flour', '1/2 tsp salt', 'Neutral oil for frying', '1/2 cup strawberry jam', 'Powdered sugar'],
+      steps: ['Stir the yeast and a pinch of the sugar into the warm milk and let it sit 5 minutes. Stir the flaxseed into the water.', 'Mix in the rest of the sugar, the flax and the butter, then the flour and salt. Knead 6 to 8 minutes, until smooth.', 'Cover and let it rise in a warm spot for about an hour, until doubled.', 'Roll it half an inch thick and cut 2 1/2 inch rounds. Let them rise 30 minutes.', 'Heat 2 inches of oil to 350°F. Fry a few at a time, 1 to 1 1/2 minutes a side, until golden. Drain.', 'Poke a hole in each side, pipe in the jam, and dust with powdered sugar.'] }
+  ];
+  var RECIPES_XM = [
+    { k: 'wellington', name: 'Mushroom and walnut Wellington', course: 'The main', pic: 'r-wellington.jpg', serves: 'Serves 6', time: '1 hour 45 minutes',
+      line: 'A golden pastry centerpiece with a rich, savory filling.',
+      ing: ['2 tbsp olive oil', '1 onion, finely diced', '1 1/2 lb cremini mushrooms, finely chopped', '3 garlic cloves, minced', '1 tsp dried thyme', '1 tsp chopped fresh rosemary', '2 tbsp soy sauce or tamari', '1 cup walnuts, toasted and chopped', '1 cup cooked lentils', '1/2 cup breadcrumbs', '1 tbsp Dijon mustard', '1 sheet plant-based puff pastry (many are made with oil; check the label for butter)', '2 tbsp plant milk and 1 tbsp maple syrup, for brushing'],
+      steps: ['Cook the onion in the oil for 5 minutes. Add the mushrooms and cook until their liquid is gone, 12 to 15 minutes. Add the garlic, herbs and soy sauce for 1 minute. Let it cool.', 'Mix in the walnuts, lentils, breadcrumbs and mustard. Season to taste.', 'Heat the oven to 400°F and line a baking sheet with parchment.', 'Roll the pastry a little larger. Shape the filling into a log down the middle, fold the pastry over and seal it, seam side down.', 'Score the top, brush with the milk and maple, and bake 35 to 40 minutes, until deep golden.', 'Rest 10 minutes before slicing.'] },
+    { k: 'sprouts', name: 'Maple roasted Brussels sprouts with pecans', course: 'Side', pic: 'r-sprouts.jpg', serves: 'Serves 6', time: '35 minutes',
+      line: 'Crisp, sweet and tangy, with cranberries for color.',
+      ing: ['2 lb Brussels sprouts, trimmed and halved', '3 tbsp olive oil', 'Salt and pepper', '2 tbsp maple syrup', '1 tbsp balsamic vinegar', '1/2 cup pecans', '1/3 cup dried cranberries'],
+      steps: ['Heat the oven to 425°F.', 'Toss the sprouts with the oil, salt and pepper and spread them cut side down on a sheet pan.', 'Roast 20 to 25 minutes, adding the pecans for the last 5, until the sprouts are browned and tender.', 'Toss with the maple, balsamic and cranberries and serve warm.'] },
+    { k: 'nog', name: 'Creamy cashew nog', course: 'Drink', pic: 'r-nog.jpg', serves: 'About 5 cups', time: '10 minutes, plus chilling',
+      line: 'Rich, spiced and made in a blender.',
+      ing: ['1 cup raw cashews, soaked 15 minutes in boiling water and drained', '3 cups unsweetened oat or almond milk', '1/3 cup maple syrup', '1 tsp vanilla', '1/2 tsp ground nutmeg, plus more to top', '1/4 tsp cinnamon', 'A pinch of salt'],
+      steps: ['Blend everything until completely smooth.', 'Chill at least an hour. It thickens as it chills; add a splash of milk if you like it thinner.', 'Pour and top with a little nutmeg.'] },
+    { k: 'gingerbread', name: 'Gingerbread cookies', course: 'Dessert', pic: 'r-gingerbread.jpg', serves: 'About 24 cookies', time: '1 hour 30 minutes, with chilling',
+      line: 'Soft, spiced and made for decorating.',
+      ing: ['3 cups all-purpose flour', '1 tbsp ground ginger', '1 1/2 tsp cinnamon', '1/4 tsp ground cloves', '1 tsp baking soda', '1/2 tsp salt', '1/2 cup plant butter, softened', '1/2 cup brown sugar (organic or beet sugar)', '1/2 cup molasses', '1 tbsp ground flaxseed and 3 tbsp water', '1 tsp vanilla', 'Icing: 1 cup powdered sugar and 1 to 2 tbsp plant milk'],
+      steps: ['Stir the flaxseed into the water and let it sit 10 minutes.', 'Whisk the flour, spices, baking soda and salt.', 'Beat the butter and sugar until fluffy, then the molasses, flax and vanilla. Mix in the dry ingredients.', 'Divide the dough in two, wrap and chill 1 hour.', 'Heat the oven to 350°F. Roll a quarter inch thick, cut your shapes and bake 8 to 10 minutes.', 'Cool, then decorate with the icing.'] }
+  ];
+  var RECIPE_SETS = { thanksliving: RECIPES, hanukkah: RECIPES_HK, christmas: RECIPES_XM };
+  // [title, line under it, the note at the foot of the list]
+  var RECIPE_HEAD = {
+    thanksliving: ['A ThanksLiving table to make at home', 'A main, gravy, four sides and a pie. Every one is plant-based, and most can be made a day ahead.',
+      '<b>Short on time?</b> Pick up a roast, a gravy or a pie <a href="#/store">at the store</a>, or <a href="#/menus">order from a Vegan place near you</a>.'],
+    hanukkah: ['A plant-based Hanukkah table', 'Latkes with cashew sour cream, applesauce, carrot tzimmes and jelly doughnuts. Every one is plant-based.',
+      '<b>Rather not fry?</b> <a href="#/hk-menus">Order from a Vegan place near you</a>, or find <a href="#/hk-events">a latke night on our calendar</a>.'],
+    christmas: ['A plant-based Christmas table', 'A Wellington for the middle of the table, a side, a nog and cookies to share. Every one is plant-based.',
+      '<b>Mashed potatoes and gravy?</b> Use <a href="#/recipes/mash">our ThanksLiving ones</a>. Short on time? <a href="#/xm-store">Pick it up at the store</a> or <a href="#/xm-menus">order from a Vegan place</a>.']
+  };
+
   function viewRecipes(sub) {
+    var RECIPES = RECIPE_SETS[curHol()] || RECIPE_SETS.thanksliving, rk = hx().recipes, rh = RECIPE_HEAD[curHol()] || RECIPE_HEAD.thanksliving;
+    var buy = hx().store ? ['Buy it instead', '#/' + hx().store] : ['Order it instead', '#/' + hx().menus];
     var r = RECIPES.filter(function (x) { return x.k === sub; })[0];
     if (r) {
       var i = RECIPES.indexOf(r), next = RECIPES[(i + 1) % RECIPES.length];
-      main.innerHTML = crumb([['Recipes', '#/recipes'], [r.name]]) +
+      main.innerHTML = crumb([['Recipes', '#/' + rk], [r.name]]) +
         '<div class="hg-rcp1"><div class="hg-rcp1-b"><div class="dg-k">' + esc(r.course) + '</div><h2 class="dg-h1">' + esc(tc(r.name)) + '</h2>' +
         '<p class="dg-lede">' + esc(r.line) + '</p><div class="hg-facts"><span><b>' + esc(r.serves) + '</b></span><span><b>Time</b> ' + esc(r.time) + '</span></div>' +
         '<h3 class="hg-sh">What You Need</h3><ul class="hg-ing">' + r.ing.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' +
         '<h3 class="hg-sh">How to Make It</h3><ol class="hg-steps">' + r.steps.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ol></div>' +
         '<div class="hg-rcp1-p"><img src="' + PIC + r.pic + '" alt="" width="640" height="640"><small>Illustration</small></div></div>' +
-        '<div class="dg-btns" style="margin-top:18px"><a class="dg-btn" href="#/recipes/' + next.k + '">Next: ' + esc(next.name) + '</a><a class="dg-btn dg-ghost" href="#/recipes">Every recipe</a><a class="dg-btn dg-ghost" href="#/store">Buy it instead</a></div>';
+        '<div class="dg-btns" style="margin-top:18px"><a class="dg-btn" href="#/' + rk + '/' + next.k + '">Next: ' + esc(next.name) + '</a><a class="dg-btn dg-ghost" href="#/' + rk + '">Every recipe</a><a class="dg-btn dg-ghost" href="' + buy[1] + '">' + buy[0] + '</a></div>';
       return;
     }
-    main.innerHTML = head('Cook it yourself', 'A ThanksLiving table to make at home', 'A main, gravy, four sides and a pie. Every one is plant-based, and most can be made a day ahead.') +
+    main.innerHTML = head('Cook it yourself', rh[0], rh[1]) +
       '<div class="hg-rcps">' + RECIPES.map(function (x) {
-        return '<a class="hg-rcp" href="#/recipes/' + x.k + '"><span class="hg-rcp-pic"><img src="' + PIC + x.pic + '" alt="" loading="lazy" width="320" height="320"></span>' +
+        return '<a class="hg-rcp" href="#/' + rk + '/' + x.k + '"><span class="hg-rcp-pic"><img src="' + PIC + x.pic + '" alt="" loading="lazy" width="320" height="320"></span>' +
           '<span class="hg-rcp-b"><span class="dg-k">' + esc(x.course) + '</span><b>' + esc(tc(x.name)) + '</b><span>' + esc(x.line) + '</span><small>' + esc(x.serves) + ' &middot; ' + esc(x.time) + '</small></span></a>';
       }).join('') + '</div>' +
-      '<div class="hg-note"><b>Short on time?</b> Pick up a roast, a gravy or a pie <a href="#/store">at the store</a>, or <a href="#/menus">order from a Vegan place near you</a>.</div>';
+      '<div class="hg-note">' + rh[2] + '</div>';
   }
 
   // ---------- At the store ----------
@@ -498,7 +623,7 @@
   var BRAND_SLUGS = ['tofurky', 'fieldroast', 'gardein', 'country-crock-plant-butter', 'miyokos', 'earth-balance', 'silk', 'so-delicious', 'whole-foods-market'];
   var BRAND_URL = SB + '/rest/v1/listings?select=slug,name,logo_url&status=eq.approved&slug=in.(' + BRAND_SLUGS.join(',') + ')';
   var BRANDS = {};
-  var STORE = [
+  var STORE_TL = [
     { h: 'The Main', pic: 'r-loaf.jpg', items: [
       ['Tofurky', 'Plant-Based Roast & Gravy', 'tofurky', 'The most widely stocked roast, with gravy in the box.'],
       ['Field Roast', 'Celebration Roast', 'fieldroast', 'A stuffed roast that slices like a holiday centerpiece.'],
@@ -520,6 +645,41 @@
       ['Wholly Wholesome', 'Dairy-free pumpkin pie', '', 'In some stores\' freezers.'],
       ['Whole Foods Market', 'Bakery pies marked vegan', 'whole-foods-market', 'Look for the pies marked vegan in the bakery.']] }
   ];
+
+  // Christmas at the store (Sean, 2026-11-08), read from 2025 and 2026 guides (VegNews's holiday roast guide, Go Dairy Free's nog list, store
+  // and brand pages). Nogs are seasonal; stock varies by store, so the page says check before you go.
+  var STORE_XM = [
+    { h: 'The Main', pic: 'r-wellington.jpg', items: [
+      ['Field Roast', 'Celebration Roast', 'fieldroast', 'A stuffed roast that slices like a holiday centerpiece.'],
+      ['Field Roast', 'Hazelnut & Cranberry Roast en Croûte', 'fieldroast', 'Wrapped in puff pastry, ready for the middle of the table.'],
+      ['Gardein', 'Turk\'y Roast', 'gardein', 'Stuffed with brown and wild rice, cranberries and kale, with gravy.'],
+      ['Tofurky', 'Plant-Based Roast & Gravy', 'tofurky', 'The most widely stocked roast, with gravy in the box.'],
+      ['Whole Foods Market', '365 Meatless Plant-Based Roast with Gravy', 'whole-foods-market', 'The store brand\'s own roast, sold through the holiday season.']] },
+    { h: 'Nog', pic: 'r-nog.jpg', items: [
+      ['So Delicious', 'Dairy Free Holiday Nog', 'so-delicious', 'Coconut milk nog in the refrigerated case.'],
+      ['Silk', 'Nog', 'silk', 'A soy nog, out from fall into the new year.'],
+      ['Califia Farms', 'Holiday Nog', '', 'An almond milk nog in a bottle.'],
+      ['Almond Breeze', 'Almondmilk Nog', '', 'Look for it beside the almond milk.'],
+      ['Planet Oat', 'Holiday Nog', '', 'An oat milk nog.']] },
+    { h: 'Butter and Cream', pic: 'r-mash.jpg', items: [
+      ['Country Crock', 'Plant Butter', 'country-crock-plant-butter', 'Sticks and tubs for baking and the table.'],
+      ['Miyoko\'s', 'Cultured Vegan Butter', 'miyokos', 'A rich cultured butter for the table.'],
+      ['Earth Balance', 'Buttery Sticks', 'earth-balance', 'A classic for cookies and pastry.'],
+      ['Country Crock', 'Dairy Free Heavy Whipping Cream', 'country-crock-plant-butter', 'Swaps one for one; it whips best very cold.']] },
+    { h: 'Baking and Treats', pic: 'r-gingerbread.jpg', items: [
+      ['Puff pastry', 'Frozen puff pastry sheets', '', 'Many are made with oil, not butter. Read the label before you buy it for a Wellington.'],
+      ['So Delicious', 'CocoWhip', 'so-delicious', 'A coconut whipped topping.'],
+      ['Reddi-wip', 'Dairy-free whipped topping', '', 'The can, made with almond or coconut. Check that the can says dairy-free.']] }
+  ];
+  var STORE = STORE_TL;
+  var STORE_SETS = { thanksliving: STORE_TL, christmas: STORE_XM };
+  // [title, line under it, a note under the list]
+  var STORE_HEAD = {
+    thanksliving: ['Plant-based at the supermarket', 'Roasts, gravy, butter, cream and dessert you can pick up this season. Stock changes by store and by week, so check before you go and read the label.',
+      '<b>Not back this year:</b> Trader Joe\'s Breaded Turkey-less Stuffed Roast. The chain told VegNews in October 2026 that it has no plans to bring it back.'],
+    christmas: ['Plant-based Christmas at the supermarket', 'Roasts, nog, butter and baking you can pick up this season. Stock changes by store and by week, so check before you go and read the label.',
+      '<b>Nog goes fast.</b> It is seasonal, and many stores sell out before Christmas. Or make <a href="#/xm-recipes/nog">our cashew nog</a> in a blender.']
+  };
   function brandLogo(slug, name) {
     // Field Roast's Directory logo is a Chao cheese picture (set 2026-11-01), so it shows its letter here until the logo is fixed.
     var l = slug && slug !== 'fieldroast' && BRANDS[slug];
@@ -529,16 +689,20 @@
   // suggest items as feedback"): a search, the shelves as chips (any number on, none means every shelf), and Suggest an item, sent to
   // ve-feedback as kind "missing" (Depot > Feedback and the Inbox), the Events Guide's Gear way.
   var SF = { q: '', cats: {} };
+  var STORE_AT = null;
   function viewStore() {
-    main.innerHTML = head('At the store', 'Plant-based at the supermarket', 'Roasts, gravy, butter, cream and dessert you can pick up this season. Stock changes by store and by week, so check before you go and read the label.') +
+    var h = curHol(), sh = STORE_HEAD[h] || STORE_HEAD.thanksliving;
+    if (STORE_AT !== h) { SF = { q: '', cats: {} }; STORE_AT = h; }
+    STORE = STORE_SETS[h] || STORE_SETS.thanksliving;
+    main.innerHTML = head('At the store', sh[0], sh[1]) +
       '<div class="hg-tools2"><div class="hg-search"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#525252" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
       '<input type="search" id="hgSq" placeholder="Search brands and items..." aria-label="Search the store list" value="' + esc(SF.q) + '" autocomplete="off" data-dictate="off"></div></div>' +
       '<div class="hg-chips" role="group" aria-label="Shelves"><button type="button" class="hg-chip" data-hg-cat=""' + (Object.keys(SF.cats).length ? '' : ' aria-pressed="true"') + '>All</button>' +
       STORE.map(function (g) { return '<button type="button" class="hg-chip" data-hg-cat="' + esc(g.h) + '" aria-pressed="' + (SF.cats[g.h] ? 'true' : 'false') + '"><img src="' + PIC + g.pic + '" alt="" width="40" height="40">' + esc(g.h) + '</button>'; }).join('') + '</div>' +
       '<div id="hgStoreList"></div>' +
-      '<div class="hg-note"><b>Not back this year:</b> Trader Joe\'s Breaded Turkey-less Stuffed Roast. The chain told VegNews in October 2026 that it has no plans to bring it back.</div>' +
+      (sh[2] ? '<div class="hg-note">' + sh[2] + '</div>' : '') +
       storeSuggest() +
-      '<div class="dg-btns"><a class="dg-btn" href="#/recipes">Or cook it yourself</a><a class="dg-btn dg-ghost" href="#/menus">Order from a Vegan place</a></div>';
+      '<div class="dg-btns"><a class="dg-btn" href="#/' + hx().recipes + '">Or cook it yourself</a><a class="dg-btn dg-ghost" href="#/' + hx().menus + '">Order from a Vegan place</a></div>';
     drawStoreList();
     var q = document.getElementById('hgSq'), tq;
     q.addEventListener('input', function () { SF.q = q.value; clearTimeout(tq); tq = setTimeout(drawStoreList, 120); });
@@ -580,11 +744,11 @@
       e.preventDefault();
       var item = f.item.value.trim(), msg = f.querySelector('[data-smsg]'), btn = f.querySelector('button');
       if (!item) { msg.textContent = 'Tell us the brand and the item.'; return; }
-      var text = '[Holiday Guide store suggestion] ' + item + (f.where.value.trim() ? '\nWhere: ' + f.where.value.trim() : '');
+      var text = '[Holiday Guide store suggestion, ' + hx().label + '] ' + item + (f.where.value.trim() ? '\nWhere: ' + f.where.value.trim() : '');
       var vid = ''; try { vid = localStorage.getItem('ve_visitor') || ''; } catch (x) {}
       btn.disabled = true; msg.textContent = 'Sending...';
       fetch(SB + '/functions/v1/ve-feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ page_url: location.origin + '/guides/holiday-guide#/store', page_label: 'Holiday Guide: At the Store', kind: 'missing', message: text, email: f.email.value.trim(), visitor: vid, viewport: innerWidth + 'x' + innerHeight }) })
+        body: JSON.stringify({ page_url: location.origin + '/guides/holiday-guide#/' + (hx().store || 'store'), page_label: 'Holiday Guide: At the Store (' + hx().label + ')', kind: 'missing', message: text, email: f.email.value.trim(), visitor: vid, viewport: innerWidth + 'x' + innerHeight }) })
         .then(function (r) { return r.json(); }).then(function (d) {
           if (!d || !d.ok) throw d;
           f.reset(); msg.textContent = 'Thank you. It is with our team.';
@@ -692,9 +856,11 @@
   }
   function slugify(t) { return String(t).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
   function viewEvents(sub) {
-    var lede = 'Sanctuary dinners, Vegan potlucks and Thanksgiving events on our calendar.';
+    var h = curHol(), ek = hx().events, lede = hx().evLede;
+    EVENTS = EVS[h] === undefined ? null : EVS[h];
+    if (EVS[h] === undefined) { EVS[h] = null; rest(eventsUrl(h)).then(function (d) { EVS[h] = Array.isArray(d) ? d : []; }).catch(function () { EVS[h] = []; }).then(function () { if (curView === ek) route(); }); }
     var btns = '<div class="hg-evtop"><a class="dg-btn hg-sm" href="/events#submit/1">Add your event</a><a class="dg-btn dg-ghost hg-sm" href="/events">The whole calendar</a></div>';
-    if (EVENTS === null) { main.innerHTML = head('Events', 'Holiday Events', lede) + btns + '<div class="dg-loading">Loading events...</div>'; return; }
+    if (!EVENTS) { main.innerHTML = head('Events', 'Holiday Events', lede) + btns + '<div class="dg-loading">Loading events...</div>'; return; }
     var counts = {};
     EVENTS.forEach(function (e) { var r = evRegion(e); counts[r] = (counts[r] || 0) + 1; });
     var regions = Object.keys(counts).sort(function (x, y) { var o = function (r) { return r === 'Online' || r === 'Other places' ? 1 : 0; }; return o(x) - o(y) || x.localeCompare(y); });
@@ -710,9 +876,9 @@
         var where = e.event_type === 'virtual' ? 'Online' : [e.location_name, e.city, e.state].filter(Boolean).join(', '), dm = dayMonth(e), url = '/events?event=' + e.id;
         return '<a class="hg-ev" href="' + url + '"><span class="hg-evd" aria-hidden="true"><b>' + esc(dm[0]) + '</b><small>' + esc(dm[1]) + '</small></span>' +
           '<span class="hg-evb"><b>' + esc(e.title) + '</b><span>' + esc(when) + (where ? ' &middot; ' + esc(where) : '') + '</span></span></a>';
-      }).join('') + '</div>' : '<div class="hg-empty"><h3>No Holiday Events on the Calendar Yet</h3><p>Hosting a ThanksLiving dinner or a potluck? Add it to our calendar and people near you can find it.</p></div>');
+      }).join('') + '</div>' : '<div class="hg-empty"><h3>No ' + esc(hx().label) + ' Events on the Calendar Yet</h3><p>' + esc(hx().evEmpty) + ' Add it to our calendar and people near you can find it.</p></div>');
     var sel = document.getElementById('hgEvRegion');
-    if (sel) sel.addEventListener('change', function () { location.hash = '#/events' + (sel.value ? '/' + sel.value : ''); });
+    if (sel) sel.addEventListener('change', function () { location.hash = '#/' + ek + (sel.value ? '/' + sel.value : ''); });
   }
 
   // ---------- Give back ----------
@@ -862,7 +1028,10 @@
   function route() {
     var parts = (location.hash || '').replace(/^#\/?/, '').split('/');
     var view = parts[0] || 'overview', sub = parts.slice(1).join('/');
-    var V = { overview: viewOverview, thanksliving: viewThanksLiving, recipes: function () { viewRecipes(sub); }, store: viewStore, listen: viewListen, menus: function () { viewMenus(sub); }, events: function () { viewEvents(sub); }, giveback: function () { viewGiveBack(sub); }, business: viewBusiness };
+    var V = { overview: viewOverview, thanksliving: viewThanksLiving, recipes: function () { viewRecipes(sub); }, store: viewStore, listen: viewListen, menus: function () { viewMenus(sub); }, events: function () { viewEvents(sub); },
+      hanukkah: function () { viewHoliday('hanukkah'); }, christmas: function () { viewHoliday('christmas'); },
+      'hk-recipes': function () { viewRecipes(sub); }, 'hk-menus': function () { viewMenus(sub); }, 'hk-events': function () { viewEvents(sub); },
+      'xm-recipes': function () { viewRecipes(sub); }, 'xm-store': viewStore, 'xm-menus': function () { viewMenus(sub); }, 'xm-events': function () { viewEvents(sub); }, giveback: function () { viewGiveBack(sub); }, business: viewBusiness };
     if (!V[view]) view = 'overview';
     document.body.classList.toggle('dg-member', member());
     drawJoinbox(); drawMenu(view);
@@ -881,7 +1050,7 @@
   // ---------- joining at a moment of intent ----------
   function goSurvey() {
     var p = null; try { p = JSON.parse(recall('hg_pending') || 'null'); } catch (e) {}
-    try { sessionStorage.setItem('ve_after_survey', '/guides/holiday-guide' + (p && p.tell ? '#/menus/tell' : '')); } catch (e) {}
+    try { sessionStorage.setItem('ve_after_survey', '/guides/holiday-guide' + (p && p.tell ? '#/' + (typeof p.tell === 'string' ? p.tell : 'menus') + '/tell' : '')); } catch (e) {}
     location.href = '/survey?s=explorer';
   }
   function joinWindow(title, text) {
@@ -916,17 +1085,17 @@
     if (e.target.closest('[data-hg-survey]')) { goSurvey(); return; }
     if (e.target.closest('[data-hg-tell]') && !member()) {
       e.preventDefault();
-      store('hg_pending', JSON.stringify({ tell: 1, at: Date.now() }));
+      store('hg_pending', JSON.stringify({ tell: hx().menus, at: Date.now() }));
       joinWindow('Tell us about a menu', 'Join free with a short survey, then send us the menu. You come right back here.');
       return;
     }
     // Until the video is made, its Play runs Theo's recorded tour (the same chapters) from the rail.
     if (e.target.closest('[data-hg-video]')) { var vb = document.querySelector('.hg-vbadge'); if (vb) vb.textContent = 'Video coming. Theo is reading it to you now.'; if (!PLAY.playing) playBtn.click(); return; }
     if (e.target.closest('[data-hg-done]')) { var pp = document.getElementById('hgPop'); if (pp) { pp.hidden = true; document.getElementById('hgFbtn').setAttribute('aria-expanded', 'false'); } return; }
-    if (e.target.closest('[data-hg-reset]')) { MF = { q: '', type: 'all', order: 'all', sort: 'vegan' }; store('hg_chapter', 'all'); if (location.hash === '#/menus/all') viewMenus('all'); else location.hash = '#/menus/all'; return; }
+    if (e.target.closest('[data-hg-reset]')) { MF = { q: '', type: 'all', order: 'all', sort: 'vegan' }; store('hg_chapter', 'all'); if (location.hash === '#/' + hx().menus + '/all') viewMenus('all'); else location.hash = '#/' + hx().menus + '/all'; return; }
     if ((el = e.target.closest('[data-hg-unpill]'))) {
       var k = el.getAttribute('data-hg-unpill');
-      if (k === 'ch') { store('hg_chapter', 'all'); location.hash = '#/menus/all'; return; }
+      if (k === 'ch') { store('hg_chapter', 'all'); location.hash = '#/' + hx().menus + '/all'; return; }
       MF[k] = k === 'sort' ? 'vegan' : 'all'; viewMenus(chapter(null)); return;
     }
     if ((el = e.target.closest('[data-hg-save]'))) {
@@ -953,11 +1122,16 @@
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeJoin(); });
 
   // ---------- data ----------
+  // One holiday's live menus and member tips (ve-holiday `live`), kept per holiday.
+  function loadLive(h) {
+    return hol('live', { holiday: h }).then(function (d) { LIVE[h] = { menus: (d && d.menus) || [], tips: (d && d.tips) || [] }; })
+      .catch(function () { LIVE[h] = { menus: [], tips: [] }; })
+      .then(function () { if (curHol() === h && /menus$/.test(curView)) { MENUS = LIVE[h].menus; TIPS = LIVE[h].tips; drawMenuList(chapter(null)); } });
+  }
   function loadAll() {
     var again = function (re) { return function () { if (re.test(curTab)) route(); }; };
     hol('holidays').then(function (d) { HOLS = (d && d.holidays) || []; }).catch(function () { HOLS = []; }).then(function () { route(); });
-    hol('live', { holiday: HOLIDAY }).then(function (d) { MENUS = (d && d.menus) || []; TIPS = (d && d.tips) || []; }).catch(function () { MENUS = []; TIPS = []; }).then(function () { if (curTab === 'menus') drawMenuList(chapter(null)); });
-    rest(EVENTS_URL).then(function (d) { EVENTS = Array.isArray(d) ? d : []; }).catch(function () { EVENTS = []; }).then(again(/^events$/));
+    loadLive(HOLIDAY);
     rest(GIVE_URL).then(function (d) { GIVE = ours(d); }).catch(function () { GIVE = []; }).then(again(/^giveback$/));
     rest(BRAND_URL).then(function (d) { (Array.isArray(d) ? d : []).forEach(function (l) { BRANDS[l.slug] = l; }); }).catch(function () {}).then(again(/^store$/));
     loadListen(again(/^listen$/));
@@ -969,7 +1143,7 @@
         var p = null; try { p = JSON.parse(recall('hg_pending') || 'null'); } catch (e) {}
         store('hg_pending', null);
         if (p && p.save && !SAVED[p.save] && Date.now() - (p.at || 0) < 864e5) saveListing(p.save, null);
-        if (curTab === 'menus') drawMenuList(chapter(null));
+        if (/menus$/.test(curTab)) drawMenuList(chapter(null));
       }).catch(function () {});
     }
   }

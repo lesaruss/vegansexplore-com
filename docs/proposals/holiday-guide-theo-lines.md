@@ -17,3 +17,19 @@ recorded again (`-v2`).
 | For businesses | Cooking for the holidays? Send us your menu and we feature it here, free for members. ThanksLiving menus close November eighteenth. |
 
 The five ideas stay on the ThanksLiving page as written cards, each with a sentence that explains it; Theo never lists them by name (Sean, 2026-11-08).
+
+## Hanukkah and Christmas (drafts, 2026-11-08, not recorded)
+
+Text only until Sean approves; then recorded in Theo's roster voice (aFyw0oiXW7dzKF4o7woX) and checked with stt. Until then Play does not show on these pages.
+
+| Page | Line |
+|---|---|
+| Hanukkah, Ideas | Hanukkah starts at sundown on December fourth, eight nights of light. On this page are a few easy ideas for a plant-based Hanukkah: latkes, sufganiyot and the people around the menorah. |
+| Hanukkah, Recipes | Here is a plant-based Hanukkah table you can make at home: crispy latkes with a cashew sour cream, applesauce, carrot tzimmes and jelly doughnuts. |
+| Hanukkah, Holiday Menus | Rather order in? Pick your chapter and see which Vegan places are cooking for Hanukkah. Our team checks every menu before it shows. |
+| Hanukkah, Events | Looking for a latke night or a party near you? Here are the Hanukkah events on our calendar. Hosting one? Add it, so people can find you. |
+| Christmas, Ideas | Christmas, the plant-based way. On this page are a few easy ideas: a centerpiece for the table, cookies to share, and gifts that do no harm. |
+| Christmas, Recipes | Cooking Christmas dinner? Here is a mushroom Wellington for the middle of the table, maple Brussels sprouts, a creamy nog and gingerbread cookies. |
+| Christmas, At the Store | Short on time? Here are the plant-based roasts, nogs, butters and treats you can pick up this season. Stock changes by store, so check before you go. |
+| Christmas, Holiday Menus | Don't want to cook Christmas dinner? Pick your chapter and see which Vegan places are cooking for the holiday and when to order by. |
+| Christmas, Events | Vegan Christmas festivals, cookie swaps and holiday lights. Here is what is on our calendar. Hosting one? Add it, so people can find you. |
