@@ -28,3 +28,18 @@ Date: 2026-11-08 (Eastern). Playbooks: `brooke-sellers`, `branddesk-production-w
 
 ## Founding terms (Sean, 2026-11-08)
 Brooke's setup fee is waived and her monthly rate is discounted ($200), because she has been with Sean since 2024. What we get: her feedback as she uses it, so we work out the bugs and the process with a real person. Recorded in `ve_branddesk_accounts.plan_line` and `note` (migration `20261108_brooke_founding_terms.sql`). Her resend email in Depot > Outreach (draft 4fbbd9f4) now tells her this before the card link. It is still a draft and waits for Sean's approval.
+
+## Set-up plan and mocks (wrap-up, 2026-11-08)
+
+- Plan: `docs/proposals/brooke-branddesk-onboarding.md`.
+  - Part 1, her BrandDesk, steps B1 to B7. B1 is client sign-in to HQ, limited to BrandDesk > Meatless Muscle; BrandDesk is staff-only today.
+  - Part 2, Vegans Explore: the Explorer survey, then the paths page. Creator is offered first, but a no is respected.
+- Mocks: `docs/mocks/brooke-branddesk/`, four screens (Get set up, one step, Clients, Insights), each at 1440 and 390 px. Sent to Sean; waiting on his lock.
+- Wrap rows:
+  - playbook record eb85c7fa
+  - ve_playbook_index brooke-sellers set to waiting_on_sean
+  - brief_checkpoints 893
+  - stream_events e87d3cb2
+- Next: Sean locks the mocks, then Logan builds B1.
+- Brooke's email (draft 4fbbd9f4) is held until Part 1 is ready.
+- Nothing is merged yet.
