@@ -169,7 +169,7 @@ const pathHandle = (v: string, host: RegExp) => {
 // replaced them does not have those accounts. facebook.com/pages/<name>/<id> and profile.php links carry no handle.
 const TEMPLATE_HANDLES = new Set(['wix', 'wixcom', 'squarespace', 'godaddy', 'shopify', 'wordpress', 'wordpressdotcom', 'weebly', 'webflow', 'toasttab', 'facebook', 'instagram', 'tiktok', 'meta', 'business', 'yourbusiness', 'username',
   // Facebook's and Instagram's own pages (Sean, 2026-11-08: 16 listings held facebook.com/docs from a site's footer, 5 facebook.com/login).
-  'docs', 'login', 'help', 'policies', 'privacy', 'legal', 'terms', 'accounts', 'developer', 'developers', 'direct', 'facebookcom', 'wwwfacebookcom', 'instagramcom', 'wwwinstagramcom', '2008', 'rsrcphp', 'static', 'embed', 'plugins']);
+  'docs', 'login', 'help', 'policies', 'privacy', 'legal', 'terms', 'accounts', 'developer', 'developers', 'direct', 'facebookcom', 'wwwfacebookcom', 'instagramcom', 'wwwinstagramcom', '2008', 'rsrcphp', 'static', 'embed', 'plugins', 'externalredirect']);
 function fbHandle(u: string) {
   const parts = String(u || '').replace(/^https?:\/\/(?:[a-z]+\.)?facebook\.com\//i, '').split(/[/?#]/).filter(Boolean);
   if (!parts.length) return '';

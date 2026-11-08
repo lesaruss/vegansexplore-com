@@ -81,7 +81,7 @@ const baseName = (n: string) => String(n || '').split(/\s+[-|@–]\s+|\s*\(/)[0]
 // ---- Socials from a website (the same rules as ve-discover) ----
 const TEMPLATE_HANDLES = new Set(['wix', 'wixcom', 'squarespace', 'godaddy', 'shopify', 'wordpress', 'wordpressdotcom', 'weebly', 'webflow', 'toasttab', 'facebook', 'instagram', 'tiktok', 'meta', 'business', 'yourbusiness', 'username',
   // Facebook's and Instagram's own pages (Sean, 2026-11-08: 16 listings held facebook.com/docs from a site's footer, 5 facebook.com/login).
-  'docs', 'login', 'help', 'policies', 'privacy', 'legal', 'terms', 'accounts', 'developer', 'developers', 'direct', 'facebookcom', 'wwwfacebookcom', 'instagramcom', 'wwwinstagramcom', '2008', 'rsrcphp', 'static', 'embed', 'plugins', 'sharer']);
+  'docs', 'login', 'help', 'policies', 'privacy', 'legal', 'terms', 'accounts', 'developer', 'developers', 'direct', 'facebookcom', 'wwwfacebookcom', 'instagramcom', 'wwwinstagramcom', '2008', 'rsrcphp', 'static', 'embed', 'plugins', 'externalredirect', 'sharer']);
 function socialOf(u: string, kind: 'ig' | 'fb') {
   let h = '';
   if (kind === 'ig') { const m = u.match(/(?<![a-z0-9-])instagram\.com\/([A-Za-z0-9._]+)/i); h = m && !['p', 'reel', 'reels', 'explore', 'stories'].includes(m[1].toLowerCase()) ? m[1].toLowerCase() : ''; }

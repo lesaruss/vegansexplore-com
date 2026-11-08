@@ -7094,6 +7094,33 @@ a sample. Edge function **`ve-comments`** (verify_jwt off; public `get`, `upload
 led the South Florida Pulse on 2026-11-08). Its email is the BrandDesk campaign `honest-cuban-comment-2026-11` (one business, from Sean, `link_path` `/comment/honest-cuban`), never Depot > Outreach: outreach goes through BrandDesk campaigns. Handoff `docs/handoff/2026-11-08-ve-community-voices-honest-cuban.md`. Not built: a Guide voice
 on the page, an Inbox row for a new answer (it emails contact@lesaruss.com).
 
+## Social links and price on listings (Sean, 2026-11-08, playbook `ve-feedback`)
+
+"$2" on listings and "Facebook opens the plain Facebook page, Instagram a broken page". Fixed and live on `main` (ec8f871).
+- **Price**: `listings.google_price_level` held Google's raw level (1 to 4) from an old import. It is stored and shown as `$` to `$$$$`
+  (migration `20261108_price_level_dollars.sql`: `ve_price_level_dollars()`, trigger `trg_ve_listings_price_level` turns any raw number or
+  `PRICE_LEVEL_*` name written later into dollar signs; 48 rows changed, each a `ve_listing_edits` row). Hand-entered ranges ("$10–20") stay.
+  The listing page maps 1 to 4 too. No function writes the column today.
+- **One link builder**: `socialUrl(net, value)` in `directory/listing.html` builds every social link (the sidebar Follow buttons, the
+  "Find them on" icons, schema.org `sameAs`). It takes a full link, `@handle`, `handle` or `site.com/handle`, drops trailing text and a link
+  to the wrong network. Before, a bare Facebook handle became a link relative to our own site. `esc()` now escapes quotes.
+- **The stored values were the real problem.** Scan of every approved listing (tables `ve_social_link_checks`, `ve_social_scan_ig`, run
+  `social-2026-11-08`): Instagram through Apify's profile scraper (885 handles, $2.04, misses run twice): 34 accounts that no longer exist
+  (Honest Cuban's `@vegancubancuisine` among them; `@honestcuban` exists with 9 posts but is not confirmed theirs), 15 `@rsrc.php` and one
+  `@accounts`, all cleared; `fish_defender,` fixed. Facebook: 25 system pages (16 `facebook.com/docs`, 5 `/login`, `/help`, `/2008`, `/external-redirect`...)
+  cleared (26), Blue Moon Cafe's trailing text trimmed. Every removed value is kept in `listings.details.social_removed` and logged in
+  `ve_listing_edits` (`meta.playbook` ve-feedback). Migration note `20261108_social_links_cleanup.sql`.
+- **Where the junk came from**: the home-page readers (`ve-restaurant-audit` essentials, `ve-discover`, `ve-logo-hunt`) matched
+  `instagram.com/` anywhere in a link, so `static.cdninstagram.com/rsrc.php/...` read as `@rsrc.php`, and took Facebook's own pages from site
+  footers. Both now require `instagram.com` as the host and skip Facebook's and Instagram's system paths (`TEMPLATE_HANDLES`). Deployed from
+  ec8f871 (ve-restaurant-audit v21, ve-discover v23, ve-logo-hunt v10, source sha256 matched). ve-discover's live copy had been behind main
+  (no Google meter, max_tokens 4000, no Event Venues or Promoters); v23 brought it level.
+- **Checking a Facebook page from the server is not reliable**: logged out, Facebook answers a search-crawler request for a real page with
+  its title and a missing one with the login wall, but after about 60 requests it sends everything to login. Apify's pages scraper says
+  "not available" for real people whose profiles hide from logged-out visitors (Tabitha Brown, Isa Chandra). Never remove a Facebook link on
+  "not available" alone; list it for a person to look at. Instagram's own API returns 404 or 429 to our server, so Instagram checks go
+  through Apify.
+
 ## Image conventions
 
 - Mobile hero images: stored in the same folder as the page's desktop banner.
