@@ -7504,3 +7504,13 @@ gathers about 22 Build your profile answers on purpose. After Day 111 Maya sends
 then every 6 months), replies to the team Inbox. The engine is brand-neutral (the prototype for 111 Day Theory). Build order: engine data
 model, the Guide shell, the daily drop and notifications, Days 8+ in batches to Sean, the after-111 check-ins with replies routed into the Inbox.
 Maya's lines are text drafts until Sean approves them.
+**Steps 1 and 2 built 2026-11-08** (Logan; handoff `docs/handoff/2026-11-08-ve-pre-vegan-guide-engine-and-shell.md`; branch `claude/admiring-pasteur-zxx8tz`, not on
+`main`). **The course engine** (migration `20261108_course_engine.sql`, live; program `pre-vegan-111` draft, 0 enrollments): `course_*` tables (programs, phases,
+days, challenges, unlocks, the question map, enrollments, progress, proofs, member unlocks, answers; RLS on, no policies) and functions (`course_enroll`,
+`course_open_day`, `course_refresh` the lazy day clock, `course_auto_check` reading the Scan, Saves and check-in logs, `course_proof_submit`,
+`course_proof_review` the bounty rule, `course_answer` to Build your profile or course answers, `course_pause`, `course_finish`, `course_state`); ledger reason
+`course`; a check-in photo is decided in Depot > Check-ins and mirrored (`trg_course_checkin_action`); `ve_member_badges` returns course badges. Proven in a
+rolled-back transaction (40 checks, `scripts/supabase-once/course-engine-proof.sql`). Defaults to confirm: the next phase opens once the capstone is sent.
+**The Guide**: `/guides/pre-vegan-guide` (copied from the Dairy Guide, `noindex`, Maya's lines text): Start here, 111 Days (Day 1 free; Days 2 to 7 for members
+in `ve_guides.content_html`), Is it Vegan?, Near me, Swap of the week, Get in; the `pre-vegan` survey (Explorer + 5, 250 points, admits; migration
+`20261108_pre_vegan_guide_survey.sql`). Next: the `ve-course` edge function, the proofs review tab and the daily drop (step 3).
