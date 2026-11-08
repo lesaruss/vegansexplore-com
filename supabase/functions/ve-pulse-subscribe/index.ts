@@ -85,7 +85,7 @@ function eastern(d = new Date()) {
 }
 async function settings() {
   const { data } = await db.from('ve_site_settings').select('value').eq('key', 'pulse_subscribe').maybeSingle();
-  return { on: false, send_hour: 9, per_tick: 40, membership_line_every: 5, ...((data as any)?.value || {}) };
+  return { on: false, send_hour: 9, per_tick: 40, membership_line_every: 1, ...((data as any)?.value || {}) };
 }
 
 // ---------- The emails ----------
@@ -135,13 +135,13 @@ function issueEmail(t: any, token: string, byCity: Record<string, any[]>, dateSt
   if (!blocks.length) return null;
   const first = esc(String(t.name || '').trim().split(/\s+/)[0] || '');
   const ours = blocks.map((b) => b.ours).join('');
-  const everyN = Number(t._membership_every) || 5;
+  const everyN = Number(t._membership_every) || 1;  // every issue invites them to join free (Sean, 2026-11-08)
   const showMembership = (Number(t.pulse_issue_count) || 0) % everyN === everyN - 1;
   const names = cities.map((c) => CITY[c] || c);
   const body = (first && !/subscriber/i.test(first) ? `<p>Hi ${first}, here is your ${weekly ? 'week' : 'day'} in Vegan ${esc(names.join(' and '))}.</p>` : `<p>Here is your ${weekly ? 'week' : 'day'} in Vegan ${esc(names.join(' and '))}.</p>`) +
     blocks.map((b) => b.html).join('') +
     (ours ? `<h2 style="font-size:18px;margin:30px 0 12px;color:#1f5f22">From Vegans Explore</h2>${ours}` : '') +
-    (showMembership ? `<p style="margin-top:26px;padding:14px 16px;background:#e8f5e9;border-radius:8px">Members vote for their favorite Vegan places, check in, and earn points as they take part. <a href="${esc(SITE + '/passport?' + utm)}" style="color:#1f5f22;font-weight:800">See how the Passport works</a>.</p>` : '');
+    (showMembership ? `<p style="margin-top:26px;padding:14px 16px;background:#e8f5e9;border-radius:8px">Members vote for their favorite Vegan places, check in, and earn points as they take part. Joining is free with a short survey. <a href="${esc(SITE + '/survey?s=explorer&' + utm)}" style="color:#1f5f22;font-weight:800">Join free</a>.</p>` : '');
   const foot = `You are getting this because you subscribed to the Daily Pulse for ${esc(names.join(', '))}. <a href="${prefsUrl(token)}" style="color:#777">Change cities or how often</a> or <a href="${prefsUrl(token, '&unsub=1')}" style="color:#777">stop these emails</a>.`;
   const subject = weekly ? `Your week in Vegan ${names.join(' and ')}` : clip(`${names[0]}: ${byCity[cities[0]][0]?.title || 'the Daily Pulse'}`, 90);
   return { subject, html: shell(body, foot) };
@@ -299,7 +299,7 @@ Deno.serve(async (req) => {
     const weekly = body.frequency === 'weekly';
     const byCity = await citiesFor([city], weekly ? 7 : 3);
     const e = eastern();
-    const sample = { name: 'Sam Rivera', pulse_issue_count: 4, _membership_every: 5 };
+    const sample = { name: 'Sam Rivera', pulse_issue_count: 4, _membership_every: 1 };
     const m = issueEmail(sample, await signTaster('00000000-0000-4000-8000-000000000001'), byCity, e.date, weekly);
     if (!m) return json({ error: 'nothing_published', message: `No Daily Pulse has been published for ${CITY[city]} lately.` }, 404);
     if (action === 'preview') return json({ ok: true, subject: m.subject, html: m.html });
