@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- The sample member (2026-11-08): /dashboard/sample loads its demo first, so the session and every call stay in memory. -->
+  <script>if(/^\/dashboard\/sample/.test(location.pathname))document.write('<script src="/dashboard/sample/demo.js"><\/script>');</script>
   <script src="/analytics.js"></script>
 <meta charset="UTF-8">
 <script>

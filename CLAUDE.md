@@ -7319,6 +7319,19 @@ first steps. `/business` moved to `business-guide.html` (rewrite in `vercel.json
 `/passport`. Old hashes (`#/join`, `#/places`...) land on their new page; `?from=vote|save|...` notes kept. The Explorer question `x_hear` now reads "How should
 we reach you with founder news?" (the founder list). Not done: the Overview video and section videos, Liz's recordings, the paths page.
 
+**The sample member, built 2026-11-08 (playbook `ve-explorer-path`; branch `claude/wonderful-hawking-tcz6ic`, not on `main`).** `/dashboard/sample` (a rewrite
+to `dashboard/center-console.html`, `X-Robots-Tag: noindex`) is the real member dashboard run as **Jordan Ellis**, an invented South Florida Founding Member at
+Level 2. `dashboard/sample/demo.js` loads before `ve-auth.js` (a `document.write` gate at the top of the dashboard; `guide.html` and `levels.html` load it when
+`window.top.VE_SAMPLE_MEMBER` is set): it swaps the session keys (`ve_token`, `ve_member`, `ve_view_as`, `ve_switch_from`) for Jordan's **in memory only** (never
+written or removed, proven: a real visitor's session is unchanged after the sample), answers every edge function call from `SAMPLE` (public reads such as
+`ve-votes chapter_stats` and `ve-events list` go to the live site with no token), toasts "nothing is saved" on anything that would save, keeps the address on
+`/dashboard/sample`, and stamps the page **Sample** (bottom left). Jordan's points are worked out from his history (`H`), so lifetime, balance and level always
+agree. Shows: the Explorer and Registered event host badges, Level 2, For you, the leaderboard (invented names), My Saves with real Directory places and real
+episodes, Points and levels with **Your points**, and Liz's earlier conversation (`VE_SAMPLE.conversation`). **Your points** is a real feature: `ve-affiliate` `me`
+now returns `history` (the member's latest 60 `points_ledger` rows) and `levels.html` shows the tab only when it is sent; **not deployed** (deploy from `main` after
+the merge). A new call the dashboard makes needs a `SAMPLE` entry, else it reads as a failed load. Not done: Jordan's picture (initials until Higgsfield is topped up),
+check-ins on the Bounties page (bounties.html has no loader; check-ins show in Your points), Preview journeys entry.
+
 **Guides in scenes, a different look on every page (Sean, 2026-11-08, every Guide).** "I don't want to see them in the same uniforms from each photo.
 Let's mix it up and make it look like a scene because they're videos, and we want the video to really lay out what's on that page." Each page of a
 Guide gets its own picture of its Guide in a scene about that page (the Holiday Guide's Theo per page is the model), never the same plain shot on every

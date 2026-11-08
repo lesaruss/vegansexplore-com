@@ -38,6 +38,10 @@
   },
   "headers": [
     {
+      "source": "/dashboard/sample",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
       "source": "/sw.js",
       "headers": [
         { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
@@ -143,6 +147,10 @@
     {
       "source": "/go/:code",
       "destination": "/api/go?code=:code"
+    },
+    {
+      "source": "/dashboard/sample",
+      "destination": "/dashboard/center-console"
     },
     {
       "source": "/dashboard",
