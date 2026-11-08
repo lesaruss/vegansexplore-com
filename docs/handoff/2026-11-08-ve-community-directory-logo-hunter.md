@@ -48,4 +48,4 @@ Branch `claude/charming-volta-033by5` (not merged to `main`; the edge function i
 ### Doubtful picks, Sean's calls (2026-11-08)
 - Happiness Horse Farm and Will's Way: black side bars cropped off, logo enlarged on white, saved (32 saved from batch-1108).
 - Animal Acres: the pick was Farm Sanctuary's "40 Years" logo, a different organization. Left on the letter; a real Animal Acres logo is welcome if found later.
-- Sanctuary Farm, Travellers Rest Farm Sanctuary, WarAngel Farms: waiting on Sean's yes or no.
+- Sanctuary Farm, Travellers Rest Farm Sanctuary (cut to its round seal, the Horse & Tack sale line left off), WarAngel Farms: Sean said yes, saved. 35 saved from batch-1108; only Animal Acres and Peeps and Paws stay on the letter.
