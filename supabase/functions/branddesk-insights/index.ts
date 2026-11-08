@@ -475,6 +475,10 @@ const PODCAST_SHOWS: Record<string, { key: string; id: string; name: string }[]>
     { key: 'vegans-who-lift', id: 'aa00615c-803d-49f0-96f3-abefd0aae76d', name: 'Vegans Who Lift Podcast' },
     { key: 'pre-vegans', id: 'a491b80c-1d83-411d-b2b8-e63325194915', name: 'Pre-Vegans Podcast' },
   ],
+  // Brooke Sellers co-hosts Vegans Who Lift, so her BrandDesk Insights shows it too (brooke-sellers B3, 2026-11-08). The same Captivate show.
+  'meatless-muscle': [
+    { key: 'vegans-who-lift', id: 'aa00615c-803d-49f0-96f3-abefd0aae76d', name: 'Vegans Who Lift Podcast' },
+  ],
 };
 const showOf = (brand: string, key?: unknown) => { const l = PODCAST_SHOWS[brand]; return l ? (l.find((x) => x.key === String(key || '')) || (key ? null : l[0])) : null; };
 const plusDays = (d: string, n: number) => day(Date.parse(d) + n * 864e5);
