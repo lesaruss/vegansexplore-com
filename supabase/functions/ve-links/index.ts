@@ -6,7 +6,9 @@
 //   POST { action: 'click', code, ua, referrer, method }   from /api/go (vegansexplore.com/go/<code>)
 //        -> { destination }  logs the click; a real click by a known person records interest
 //   POST { action: 'claim', click_id }  Bearer <ve_token>   from nav.js: a signed-in member who
-//        arrived through a link (now, or up to 30 days ago before signing in) is named on it
+//        arrived through a link (now, or up to 30 days ago before signing in) is named on it; a super admin on
+//        someone else's personal link is taken back off it (never counts as theirs)
+//   /go/<code>?preview=1  logged as a preview, never counted (for links shown inside our own tools)
 // Superadmin (Bearer <ve_token>)
 //   POST { action: 'list' }        links, campaigns and tags in use
 //   POST { action: 'create', label, destination, initiative_slug, tags, channel, code?, people? }
@@ -175,7 +177,9 @@ Deno.serve(async (req) => {
       if (!link) return json(fallback);
       if (!link.active) return json({ destination: await withAffiliate(absolute(link.destination)) });
       const ua = clean(body.ua, 400);
-      const bot = !ua || BOT_UA.test(ua) || String(body.method || 'GET').toUpperCase() === 'HEAD';
+      // ?preview=1 on a /go/ link (how our own tools show a person's link): logged, never counted, like a link preview.
+      const preview = body.preview === true;
+      const bot = preview || !ua || BOT_UA.test(ua) || String(body.method || 'GET').toUpperCase() === 'HEAD';
       const at = new Date().toISOString();
       const { data: click } = await db.from('ve_link_clicks').insert({
         link_id: link.id, initiative_slug: link.initiative_slug, member_id: link.recipient_member_id, email: link.recipient_email,
@@ -196,6 +200,22 @@ Deno.serve(async (req) => {
       const { data: c } = await db.from('ve_link_clicks').select('id, link_id, member_id, claimed_at, clicked_at, is_bot').eq('id', body.click_id).maybeSingle();
       if (!c || c.is_bot || c.claimed_at) return json({ ok: true, claimed: false });
       if (Date.now() - new Date(c.clicked_at).getTime() > CLAIM_DAYS * 86400000) return json({ ok: true, claimed: false });
+      // A super admin opening someone else's personal link (Sean, 2026-11-08: "if I'm clicking on the links, it doesn't count"):
+      // the click is marked the team's and taken back off the link's count and the person's interest, so it never reads as theirs.
+      const { data: lk } = await db.from('ve_links').select('id, clicks, initiative_slug, recipient_member_id, recipient_email').eq('id', c.link_id).maybeSingle();
+      if (lk && (lk.recipient_member_id || lk.recipient_email) && lk.recipient_member_id !== me && (await isAdmin(me))) {
+        await db.from('ve_link_clicks').update({ is_bot: true, claimed_at: new Date().toISOString() }).eq('id', c.id);
+        await db.from('ve_links').update({ clicks: Math.max(0, (lk.clicks || 0) - 1) }).eq('id', lk.id);
+        let q = db.from('ve_initiative_interest').select('id, clicks').eq('initiative_slug', lk.initiative_slug).eq('action_type', 'link_click');
+        q = lk.recipient_member_id ? q.eq('member_id', lk.recipient_member_id) : q.ilike('email', lk.recipient_email!);
+        const { data: rows } = await q.limit(1);
+        const row = rows && rows[0];
+        if (row) {
+          if ((row.clicks || 0) <= 1) await db.from('ve_initiative_interest').delete().eq('id', row.id).eq('status', 'new');
+          else await db.from('ve_initiative_interest').update({ clicks: row.clicks - 1 }).eq('id', row.id);
+        }
+        return json({ ok: true, claimed: false, team: true });
+      }
       if (c.member_id && c.member_id !== me) return json({ ok: true, claimed: false }); // a personal link, someone else's
       const { data: link } = await db.from('ve_links').select('id, initiative_slug, tags, label').eq('id', c.link_id).maybeSingle();
       await db.from('ve_link_clicks').update({ member_id: me, claimed_at: new Date().toISOString() }).eq('id', c.id);

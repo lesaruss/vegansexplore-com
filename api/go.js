@@ -18,7 +18,7 @@ module.exports = async (req, res) => {
       const r = await fetch(FN, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + SUPABASE_ANON_KEY },
-        body: JSON.stringify({ action: 'click', code, ua: String(req.headers['user-agent'] || ''), referrer: String(req.headers.referer || ''), method: req.method }),
+        body: JSON.stringify({ action: 'click', code, preview: String((req.query && req.query.preview) || '') === '1', ua: String(req.headers['user-agent'] || ''), referrer: String(req.headers.referer || ''), method: req.method }),
         signal: ctrl.signal
       });
       clearTimeout(timer);
