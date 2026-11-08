@@ -204,7 +204,7 @@ Deno.serve(async (req) => {
       // the click is marked the team's and taken back off the link's count and the person's interest, so it never reads as theirs.
       const { data: lk } = await db.from('ve_links').select('id, clicks, initiative_slug, recipient_member_id, recipient_email').eq('id', c.link_id).maybeSingle();
       if (lk && (lk.recipient_member_id || lk.recipient_email) && lk.recipient_member_id !== me && (await isAdmin(me))) {
-        await db.from('ve_link_clicks').update({ is_bot: true, source: 'team', claimed_at: new Date().toISOString() }).eq('id', c.id);
+        await db.from('ve_link_clicks').update({ is_bot: true, claimed_at: new Date().toISOString() }).eq('id', c.id);
         await db.from('ve_links').update({ clicks: Math.max(0, (lk.clicks || 0) - 1) }).eq('id', lk.id);
         let q = db.from('ve_initiative_interest').select('id, clicks').eq('initiative_slug', lk.initiative_slug).eq('action_type', 'link_click');
         q = lk.recipient_member_id ? q.eq('member_id', lk.recipient_member_id) : q.ilike('email', lk.recipient_email!);
