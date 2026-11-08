@@ -64,3 +64,24 @@ Sean
 - `ve_playbook_index` row `ve-community-voices` (waiting_on_sean) and its first decision record are in.
 - Honest Cuban is also in `thanksliving-2026-vegan` (from the team, Tuesday). Two emails two days apart unless Sean takes them out of one.
 - Lesson: outreach goes through BrandDesk campaigns, never Depot > Outreach.
+
+## Update: out of ThanksLiving, thank-you follow-up (Sean, same morning)
+- Honest Cuban removed from `thanksliving-2026-vegan` (`ve_outreach_campaign_remove`, the BrandDesk Remove).
+- When their statement lands in Depot > Comments: build a one-business BrandDesk campaign from Sean, a thank you, then the ThanksLiving Holiday
+  Guide invite with their own link to `/business/holiday-menu?listing=vegan-cuban-cuisine` (menus close end of Wed Nov 18). Draft words below,
+  for Sean to approve in BrandDesk. If no answer by Thu Nov 12, bring Sean the choice of sending the ThanksLiving invite on its own.
+
+Draft: Subject "Thank you, Liz and Steven"
+Hi Liz and Steven,
+
+Thank you for sharing the story behind Honest Cuban by VCC. We will let you know as soon as it runs.
+
+One more thing while we have you: our free Holiday Guide puts Vegan ThanksLiving menus in front of people in South Florida who would rather
+order their table than cook it all. If Honest Cuban is doing a holiday menu, send it to us (what you're making, your order-by date and your
+holiday hours) and we will feature it, 100% Vegan places first. You can type it in or drop a photo or PDF of your menu:
+{link}
+
+Menus close at the end of Wednesday, November 18.
+
+Thank you again,
+Sean
