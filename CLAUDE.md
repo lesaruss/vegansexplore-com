@@ -6976,13 +6976,19 @@ for the Guide and `claim.html` for the menu form (template gate).
   thrown out (ask for the plant-based dish by name and say no bird or meat, or the model draws a turkey).
   **Merged to `main` 2026-11-08** (aec8689, Sean: "merge it to main"); handoff `docs/handoff/2026-11-08-ve-holiday-guide-page-live.md`.
   **Sean's notes, 2026-11-08 (branch `claude/funny-fermat-88emzg`, not on `main` until Sean merges; canon v2)**: the Events tab asked for the wrong tenant id
-  (`00000000-0000-0000-...` instead of `00000000-0000-4000-a000-000000000002`) and was always empty, fixed; never the word Friendsgiving (copy, lines, emails,
-  and the Guide no longer matches it); holidays open as they get close, the closest on top and the rest in a menu. **Tell us about a menu**: a member sends a
+  (`00000000-0000-0000-...` instead of `00000000-0000-4000-a000-000000000002`) and was always empty, fixed; never the word Friendsgiving in our own copy, lines, emails or video (an organizer's own event title shows as written and the Events tab lists it; Sean: "we can feature them"); holidays open as they get close, the closest on top and the rest in a menu. **Tell us about a menu**: a member sends a
   place and a link to its own holiday menu (`#/menus/tell`, a join window first), `ve-holiday` v5 `tip` (10 a day, the team's go live at once), `tips` and
   `tip_review` for super admins, `live` returns them as Spotted by members (linked out, never copied); table `ve_holiday_menu_tips` (migration
   `20261108_holiday_menu_tips.sql`); Depot > Holiday menus has Sent by businesses, Spotted by members and Add a menu we know. Proven 15 of 15
   (`scripts/supabase-once/holiday-tip-proof.ts`, now 410). Four sanctuary events added (`20261108_holiday_sanctuary_events.sql`). Video script v2 approved and recorded 2026-11-08
   (`theo-tour-1..8-v1.mp3` in `vegan-media/media/voices/holiday-guide/`, stt-checked; Overview Play runs the tour, each tab plays its chapter; `TAB_CH`); the restaurant note's words are approved; finish it (list read, drafts, a test) before any send day is set.
+  **The note goes through BrandDesk, not Depot > Outreach** (Sean, 2026-11-08: "We are using the BrandDesk for Outreach... I want to retire those
+  features"; send day Tue Nov 10). Two campaigns on the restaurant door, `thanksliving-2026-vegan` (34) and `thanksliving-2026-plant` (56), one email
+  each, locked, from the team (`ve_outreach_campaigns.sender_brand` vegans-explore), each member its own tracked link to `/business/holiday-menu?listing=`
+  (`link_path`, `ve_outreach_campaign_members.link_code`), start 2026-11-10, pace 60; **draft until Sean approves each in BrandDesk** (migration
+  `20261108_thanksliving_campaigns.sql`). Found the same night: `ve-outreach` v28 had been deployed from `main`, wiping the campaign sender
+  (`campaignTick`, only on unmerged `claude/gifted-rubin-ek818o`); v29 put it back on top of main's file and v30 added sender and link per campaign
+  (branch `claude/lucid-pascal-zxvmu4`). **Never deploy `ve-outreach` from `main` until that branch is merged.**
 
 ## The Vegans Explore app (LOCKED by Sean 2026-11-07, playbook `ve-mobile-app`, canon `canon-ve-mobile-app`)
 

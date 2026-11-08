@@ -269,6 +269,136 @@ async function build(c: Contact, step: number, test = false) {
   const body = link ? String(m.body).split(m.page_url).join(link) : String(m.body);
   return { subject: String(m.subject), html: toHtml(body, l.name), text: toText(body, l.name), name: l.name, code };
 }
+// ---- Sending governed per campaign (Sean, 2026-11-05: "cities are a filter inside a campaign, never what defines it") ----
+// A campaign sends only once approved, from its start day, at its own daily pace, unless paused (ve_outreach_campaign_due). The rules
+// for every send stay here: weekdays 9 to 5 Eastern, the domain's warm-up, the do-not-email list (email-send), one outreach email per
+// address per day. The send ref is ve-outreach-<contact>-c<member>-<step>, so one person can be in several campaigns.
+function easternMidnightIso(): string {
+  const day = eastern().date;
+  for (const off of ['-04:00', '-05:00']) { const d = new Date(`${day}T00:00:00${off}`); const e = eastern(d); if (e.date === day && e.hour === 0) return d.toISOString(); }
+  return new Date(`${day}T05:00:00Z`).toISOString();
+}
+const memberRef = (contactId: string, memberId: string, step: number) => `ve-outreach-${contactId}-c${memberId.replace(/-/g, '').slice(0, 8)}-${step}`;
+type Member = { id: string; campaign_slug: string; listing_id: string; step: number };
+async function contactFor(listingId: string, email: string): Promise<Contact | null> {
+  const sel = 'id,listing_id,community_slug,email,contact_name,segment,step,link_code';
+  const { data: c } = await db.from('ve_outreach_contacts').select(sel).eq('listing_id', listingId).maybeSingle();
+  if (c) return c as Contact;
+  // A listing with an email but no outreach contact yet: make one, filed under its chapter's list (else brands), so it has a tracked link.
+  const { data: l } = await db.from('listings').select('address_city,address_state,category').eq('id', listingId).single();
+  const { data: ch } = await db.rpc('ve_chapter_of', { p_city: l?.address_city || null, p_state: l?.address_state || null });
+  const { data: list } = await db.from('ve_outreach_cities').select('community_slug').eq('community_slug', ch || 'brands').maybeSingle();
+  const brand = ['Food Brands', 'Nutrition & Supplements', 'Brands'].includes(String(l?.category || ''));
+  const { data: made } = await db.from('ve_outreach_contacts').insert({ listing_id: listingId, community_slug: list?.community_slug || 'brands', email,
+    segment: brand ? 'brand' : 'business', status: 'not_sent', email_source: 'listing' }).select(sel).single();
+  return (made as Contact) ?? null;
+}
+// One campaign email for one person. A test (or a preview) never makes their link count: a test links straight to the page.
+async function buildCampaign(mem: Member, step: number, opts: { test?: boolean; preview?: boolean } = {}) {
+  const { data: r } = await db.rpc('ve_outreach_campaign_render', { p_member: mem.id, p_step: step });
+  const m = r?.[0];
+  if (!m?.to_email) throw new Error('no email for this person');
+  const c = await contactFor(mem.listing_id, String(m.to_email));
+  if (!c) throw new Error('could not make an outreach contact');
+  const { data: l } = await db.from('listings').select('name,slug,category').eq('id', mem.listing_id).single();
+  const { data: cp } = await db.from('ve_outreach_campaigns').select('link_path,sender_brand').eq('slug', mem.campaign_slug).maybeSingle();
+  const name = String(l?.name || m.listing_name || '');
+  let body = String(m.body), code: string | null = null;
+  const brand = String(cp?.sender_brand || '') || BRAND;
+  if (cp?.link_path && m.page_url && body.includes(String(m.page_url))) {
+    // A campaign with its own destination (the ThanksLiving note's menu form): one tracked link per member, made at the first real send.
+    const dest = String(cp.link_path).split('{slug}').join(encodeURIComponent(String(l?.slug || '')));
+    let link: string;
+    if (opts.preview) link = `${SITE}/go/(their own link, made when it sends)`;
+    else if (opts.test) link = `${SITE}${dest}`;
+    else { code = await memberLink(mem, c, name, dest); link = `${SITE}/go/${code}`; }
+    body = body.split(String(m.page_url)).join(link);
+  } else if (m.page_url && body.includes(String(m.page_url))) {
+    const toGuide = FOOD_CATS.has(String(l?.category || '')) && c.segment !== 'brand';
+    const dest = (k: string) => (toGuide ? `${GUIDE_PATH}?b=${k}` : '/directory/' + l?.slug);
+    let link: string;
+    if (opts.preview) link = c.link_code ? `${SITE}/go/${c.link_code}` : `${SITE}/go/(their own link, made at the first email)`;
+    else if (opts.test) { code = toGuide ? await ensureLink(c, name, dest) : null; link = code ? `${SITE}${dest(code)}` : String(m.page_url); }
+    else { code = await ensureLink(c, name, dest); link = `${SITE}/go/${code}`; }
+    body = body.split(String(m.page_url)).join(link);
+  }
+  return { subject: String(m.subject), body, html: toHtml(body, name), text: toText(body, name), name, code, contact: c, to: String(m.to_email), brand };
+}
+async function memberLink(mem: Member, c: Contact, name: string, dest: string): Promise<string> {
+  const { data: row } = await db.from('ve_outreach_campaign_members').select('link_code').eq('id', mem.id).single();
+  if (row?.link_code) return String(row.link_code);
+  for (let i = 0; i < 4; i++) {
+    const code = linkCode();
+    const { error } = await db.from('ve_links').insert({
+      code, label: (mem.campaign_slug + ': ' + name).slice(0, 120), destination: dest, initiative_slug: mem.campaign_slug,
+      tags: [mem.campaign_slug, c.community_slug, c.segment], channel: 'email', recipient_email: c.email.slice(0, 200),
+      recipient_name: (c.contact_name || name).slice(0, 120), active: true,
+    });
+    if (!error) { await db.from('ve_outreach_campaign_members').update({ link_code: code }).eq('id', mem.id); return code; }
+  }
+  throw new Error('could not make a tracked link');
+}
+async function campaignTick(room: number) {
+  const out: Record<string, unknown>[] = [];
+  if (room <= 0) return out;
+  const { data: due } = await db.rpc('ve_outreach_campaign_due', { p_limit: 200 });
+  if (!due?.length) return out;
+  const since = easternMidnightIso();
+  const slugs = [...new Set((due as { campaign_slug: string }[]).map((d) => d.campaign_slug))];
+  const [{ data: camps }, { data: emails }, { data: sentToday }] = await Promise.all([
+    db.from('ve_outreach_campaigns').select('slug,daily_pace,email_count').in('slug', slugs),
+    db.from('ve_outreach_campaign_emails').select('campaign_slug,step,day_offset').in('campaign_slug', slugs),
+    db.from('ve_outreach_events').select('detail').eq('kind', 'sent').gte('created_at', since),
+  ]);
+  const paceLeft = new Map((camps || []).map((c) => [c.slug, c.daily_pace - (sentToday || []).filter((e) => (e.detail as Record<string, unknown>)?.campaign === c.slug).length]));
+  const countOf = new Map((camps || []).map((c) => [c.slug, c.email_count]));
+  const dayOf = (slug: string, step: number) => (emails || []).find((e) => e.campaign_slug === slug && e.step === step)?.day_offset ?? 0;
+  const mailedNow = new Set<string>();
+  for (const d of due as { member_id: string; campaign_slug: string; listing_id: string; email: string; next_step: number }[]) {
+    if (out.filter((o) => o.result === 'sent').length >= room) break;
+    if ((paceLeft.get(d.campaign_slug) ?? 0) <= 0) continue;
+    const addr = String(d.email).toLowerCase();
+    if (mailedNow.has(addr)) continue;
+    // One outreach email per address per day, across every campaign: the second waits for the next day the sender runs.
+    const { count: already } = await db.from('email_sends').select('id', { count: 'exact', head: true }).ilike('to_email', addr)
+      .like('campaign_ref', 've-outreach-%').not('campaign_ref', 'like', 've-outreach-test-%').gte('created_at', since);
+    if ((already || 0) > 0) continue;
+    const { data: mem } = await db.from('ve_outreach_campaign_members').select('id,campaign_slug,listing_id,step,send_status,removed_at').eq('id', d.member_id).single();
+    if (!mem || mem.removed_at || mem.step + 1 !== d.next_step || !['waiting', 'in_sequence'].includes(mem.send_status)) continue;
+    const step = d.next_step;
+    try {
+      const m = await buildCampaign(mem as Member, step);
+      const first = (m.contact.contact_name || '').trim().split(/\s+/)[0] || undefined;
+      const res = await emailSend({ brand: m.brand, campaign_ref: memberRef(m.contact.id, mem.id, step), list_ref: `ve-outreach-campaign:${mem.campaign_slug}`,
+        subject: m.subject, html: m.html, text: m.text, recipients: [{ email: m.to, first_name: first, name: m.contact.contact_name || undefined }] });
+      const result = res?.results?.[0]?.result || (res?.ok ? 'unknown' : 'failed');
+      const now = new Date().toISOString();
+      if (result === 'sent' || result === 'already_sent') {
+        const last = step >= (countOf.get(mem.campaign_slug) ?? 3);
+        await db.from('ve_outreach_campaign_members').update({ step, send_status: last ? 'finished' : 'in_sequence', last_sent_at: now,
+          next_send_at: last ? null : nextSendAt(Math.max(1, dayOf(mem.campaign_slug, step + 1) - dayOf(mem.campaign_slug, step))) }).eq('id', mem.id);
+        await db.from('ve_outreach_contacts').update({ last_sent_at: now }).eq('id', m.contact.id);
+        await db.from('ve_outreach_contacts').update({ status: 'in_sequence' }).eq('id', m.contact.id).eq('status', 'not_sent');
+        await db.from('ve_outreach_events').insert({ contact_id: m.contact.id, kind: 'sent', step, detail: { campaign: mem.campaign_slug, member: mem.id, resend_id: res.results?.[0]?.id || null, link: m.code } });
+        paceLeft.set(mem.campaign_slug, (paceLeft.get(mem.campaign_slug) ?? 1) - 1);
+        mailedNow.add(addr);
+      } else if (result === 'suppressed') {
+        await db.from('ve_outreach_campaign_members').update({ send_status: 'stopped', stop_reason: 'on the do-not-email list' }).eq('id', mem.id);
+        await db.from('ve_outreach_contacts').update({ status: 'opted_out', stop_reason: 'on the do-not-email list' }).eq('id', m.contact.id);
+      } else if (result === 'invalid') {
+        await db.from('ve_outreach_campaign_members').update({ send_status: 'stopped', stop_reason: 'the email address is not valid' }).eq('id', mem.id);
+      } else {
+        await db.from('ve_outreach_events').insert({ contact_id: m.contact.id, kind: 'note', step, detail: { campaign: mem.campaign_slug, member: mem.id, send_failed: res?.results?.[0]?.error || res?.error || res?.errors || 'unknown' } });
+        const { count } = await db.from('ve_outreach_events').select('id', { count: 'exact', head: true }).eq('kind', 'note').eq('detail->>member', mem.id);
+        if ((count || 0) >= 3) await db.from('ve_outreach_campaign_members').update({ send_status: 'stopped', stop_reason: 'sending failed three times' }).eq('id', mem.id);
+      }
+      out.push({ campaign: mem.campaign_slug, business: m.name, step, result });
+    } catch (e) {
+      out.push({ campaign: mem.campaign_slug, member: mem.id, step, result: 'error', error: String((e as Error).message || e) });
+    }
+  }
+  return out;
+}
 async function tick() {
   const synced = (await db.rpc('ve_outreach_sync')).data;
   if (!sendingHours()) return { synced, sent: 0, note: 'outside sending hours (weekdays 9 AM to 5 PM Eastern)' };
@@ -279,7 +409,10 @@ async function tick() {
   let room = warm?.enabled ? Math.max(0, warm.allowance - warm.sent_today) : PER_TICK;
   room = Math.min(room, PER_TICK);
   if (room <= 0) return { synced, sent: 0, note: 'warm-up allowance used for today' };
-  const { data: due } = await db.rpc('ve_outreach_due', { p_limit: 50 });
+  const campaigns = await campaignTick(room);
+  room -= campaigns.filter((o) => o.result === 'sent').length;
+  // The old path below now serves people lists only (ve_outreach_due): businesses are emailed through campaigns.
+  const { data: due } = room > 0 ? await db.rpc('ve_outreach_due', { p_limit: 50 }) : { data: [] };
   const { data: today } = await db.rpc('ve_outreach_sent_today');
   const { data: cities } = await db.from('ve_outreach_cities').select('community_slug,daily_cap,program,sender_brand');
   const brandOf = new Map((cities || []).map((c) => [c.community_slug, c.sender_brand || BRAND]));
@@ -321,8 +454,8 @@ async function tick() {
       out.push({ contact: c.id, step, result: 'error', error: String((e as Error).message || e) });
     }
   }
-  if (out.length) await db.rpc('ve_outreach_sync');
-  return { synced, sent: out.filter((o) => (o as { result: string }).result === 'sent').length, results: out };
+  if (out.length || campaigns.length) await db.rpc('ve_outreach_sync');
+  return { synced, sent: out.filter((o) => (o as { result: string }).result === 'sent').length + campaigns.filter((o) => o.result === 'sent').length, results: out, campaigns };
 }
 
 // ---- Partner onboarding ----
@@ -384,6 +517,7 @@ async function onboardingTick() {
 // The city-list actions HQ may run for a signed-in super admin (as_member): plan send days, approve or cancel one, take a business out or fix
 // its email, switch a city, and send a test (to the owner's own address only). Never add a way to send to a business from here.
 const HQ_CITY_ACTIONS = new Set(['plan', 'approve', 'cancel', 'remove', 'contact', 'city', 'test']);
+const CAMPAIGN_ACTIONS = new Set(['campaign_preview', 'campaign_test']);
 // Which list an action works on, so HQ's as_member is honored only for the lists above.
 async function targetList(action: string, body: Record<string, unknown>): Promise<string | null> {
   if (['approve', 'cancel'].includes(action) && isId(body.batch_id)) {
@@ -434,7 +568,7 @@ Deno.serve(async (req) => {
         // BrandDesk > Vegans Explore > People in HQ works the city lists too (Sean, 2026-11-04: "it's not going to be in the depot... it's in
         // the people section in the brand desk... I'm going to slowly retire the depot"): the same actions the Depot runs, for a super admin
         // only. Nothing changes about when an email goes out: a day still has to be approved and its city switched on.
-        if (m?.is_superadmin && (list?.kind === 'people' || (list?.kind === 'city' && HQ_CITY_ACTIONS.has(action)))) { me = body.as_member; viaHq = true; }
+        if (m?.is_superadmin && (CAMPAIGN_ACTIONS.has(action) || list?.kind === 'people' || (list?.kind === 'city' && HQ_CITY_ACTIONS.has(action)))) { me = body.as_member; viaHq = true; }
       }
     }
     if (!me) {
@@ -545,6 +679,32 @@ Deno.serve(async (req) => {
       return json({ ok: true });
     }
 
+    if (action === 'campaign_preview' || action === 'campaign_test') {
+      // One person's campaign emails exactly as they go (the preview never makes their link); a test goes to the signed-in owner only.
+      if (!me) return json({ error: 'admins_only' }, 403);
+      const slug = clean(body.campaign, 60);
+      if (!/^[a-z0-9-]{1,60}$/.test(slug) || !isId(body.listing_id)) return json({ error: 'campaign_and_listing' }, 400);
+      const { data: mem } = await db.from('ve_outreach_campaign_members').select('id,campaign_slug,listing_id,step').eq('campaign_slug', slug).eq('listing_id', body.listing_id).is('removed_at', null).maybeSingle();
+      if (!mem) return json({ error: 'not_in_campaign' }, 404);
+      const { data: cp } = await db.from('ve_outreach_campaigns').select('email_count').eq('slug', slug).single();
+      if (action === 'campaign_preview') {
+        const emails = [];
+        for (let st = 1; st <= (cp?.email_count || 3); st++) {
+          try { const m = await buildCampaign(mem as Member, st, { preview: true }); emails.push({ step: st, subject: m.subject, html: m.html, text: m.text, to: m.to }); }
+          catch (e) { emails.push({ step: st, error: String((e as Error).message || e) }); }
+        }
+        return json({ ok: true, emails });
+      }
+      const step = Math.min(Math.max(1, Number(body.step) || 1), cp?.email_count || 3);
+      let to = clean(body.to, 200).toLowerCase();
+      if (viaHq && to && !/@(mail\.)?lesaruss\.(com|ai)$/.test(to)) return json({ error: 'test_to_own_address' }, 400);
+      if (!to) { const { data: me2 } = await db.from('members').select('email').eq('id', me).single(); to = String(me2?.email || '').toLowerCase(); }
+      if (!isEmail(to)) return json({ error: 'bad_email' }, 400);
+      const m = await buildCampaign(mem as Member, step, { test: true });
+      const res = await emailSend({ brand: m.brand, campaign_ref: `ve-outreach-test-c${mem.id.replace(/-/g, '').slice(0, 8)}-${step}`, subject: '[Test] ' + m.subject, html: m.html, text: m.text,
+        test_to: [to], recipients: [{ email: to }] });
+      return json({ ok: !!res?.ok, to, result: res?.results?.[0]?.result || res?.error || res?.errors });
+    }
     if (action === 'test') {
       // Signed-in admins send a real test; the ops token may only dry-run (render and pass email-send's checks, send nothing).
       const dry = body.dry_run === true;
