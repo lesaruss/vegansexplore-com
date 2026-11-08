@@ -6911,6 +6911,31 @@ for the Guide and `claim.html` for the menu form (template gate).
   (now 410) with a drawn test menu: the photo uploaded and public, a photo from elsewhere dropped, a GIF and another member's file refused,
   the photo and the PDF both read as the 4 (V) dishes with prices and the 3 others left out by name; told a business was 100% Vegan, the
   reader still left out turkey and cheese dishes on that menu (the safer answer). Every test row and file removed.
+- **Step 3, the Holiday Guide page, built 2026-11-07 on branch `claude/busy-goodall-709pe8`, not on `main`** (Sean: "start F"): `/guides/holiday-guide`
+  (`guides/holiday-guide.html`, `guide-scripts/holiday-guide.js`, copied from the Nutrition Guide, the Dairy Guide family), free and public, Theo on the
+  right (his lines are text drafts, `docs/proposals/holiday-guide-theo-lines.md`). Tabs: Overview (countdowns), ThanksLiving (the five ways, the shared
+  word, the National Day of Mourning with uaine.org), Holiday menus (`ve-holiday` `live`, chapter picker `hg_chapter`, 100% Vegan first, Save keeps the
+  listing in My Saves through `VEAuth.saveListing`), Events (ThanksLiving, Thanksgiving and Friendsgiving events on our calendar, none on 2026-11-07),
+  Give back (Nonprofit Partners first, then the Directory's nonprofits, rescues and sanctuaries by chapter), For businesses (the steps and every
+  holiday's close date). Signed out, Save or Join free opens one window; what they tapped is kept (`localStorage` `hg_pending`) and saved when the
+  Explorer survey brings them back (`ve_after_survey`). It replaced the Coming soon Vegan Holidays card in the catalog (a heart icon, since the old
+  banner is a Christmas scene with Theo out of store clothing) and is in the sitemap. Checked at 1440 and 390 px beside the Nutrition Guide against
+  live data, and a menu card and the join window against a mocked menu. **The restaurant note (step H)** is a draft for Sean,
+  `docs/proposals/holiday-guide-restaurant-note.md` (96 published addresses, two versions, from the team, Tuesday Nov 10 by default). Not yet: a
+  ThanksLiving banner, sanctuary ThanksLiving events on the calendar, Theo's recordings, donation links (Give back step 4).
+  **Round 2 (Sean, 2026-11-07)**: the Overview opens with the **video placeholder** (`videoCard`: a 16:9 frame with Theo, Play, "Video in production", the
+  eight planned chapters and Share this Guide); the video follows canon-ve-guide-tour-standard v3 and the Depot tour's framework (script, recordings, lookbook in
+  Depot > Guides and tours, animation, edit). ThanksLiving's five ways each have a flat icon thumbnail. Holiday menus has **search with Filters to its right**
+  (chapter, menu 100% Vegan or Plant-based (Pre-Vegan), ordering still open or online, sort), each set filter a pill with an x (`MF`, `filtered`). **Theo
+  dresses for each holiday tab** (a tab's `pic`; ThanksLiving is `public/guides/holiday/theo-thanksliving.jpg`, Higgsfield nano_banana, the store tee and an apron,
+  a plant-based roast); Hanukkah, Christmas and Kwanzaa get theirs when their tabs are built, respectful and never stereotypical (no costume of a culture,
+  checked against how each tradition presents itself).
+  **Round 3 (Sean, 2026-11-07: the Restaurant Guide's Overview look "is the look I want... under the video")**: under the video the Overview is Start here
+  (`ve-guide-intro.js`, picture `public/guides/holiday/start.jpg`), one button (Find a holiday menu) with the countdown as its note, then the sections as headings
+  with a line and picture pills (`GROUPS`, `PILL_PIC`: Celebrate, Order your table, Give back, Run a business?; `.rg-grow`, `.rg-pill` copied from the Restaurant
+  Guide). Pictures are Higgsfield illustrations in the Restaurant Guide's style, `public/guides/holiday/p-*.jpg`; a table picture that came back with a turkey was
+  thrown out (ask for the plant-based dish by name and say no bird or meat, or the model draws a turkey).
+  **Merged to `main` 2026-11-08** (aec8689, Sean: "merge it to main"); handoff `docs/handoff/2026-11-08-ve-holiday-guide-page-live.md`.
 
 ## The Vegans Explore app (LOCKED by Sean 2026-11-07, playbook `ve-mobile-app`, canon `canon-ve-mobile-app`)
 
