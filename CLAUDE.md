@@ -1218,9 +1218,16 @@ Delivery coming soon and a tracker; Sign in with Vegans Explore and a Vegans Exp
 keys (`story.video`, `posts`, `menu.ingredients`, item `ing`, `nutrition`, `gallery`, `votes`) and stay off on live client sites
 (`window.VE_SITE`), where votes, saves and sign-in need the one-time-code handoff (not built). **BrandDesk pricing relocked the same day**
 (canon `canon-ve-front-of-house` v9 `pricing_v9`): BrandDesk Site $500 a quarter, no setup; photos $250, video $250; Managed $500 a month as the
-step up; not yet changed in Stripe, `/business/managed`, the pitch page, `/business` or the agreement. Next: Sean's answers on the Community page
-idea (points at checkout capped by the owner, a $20 a month club with rolling credit), then a tour button (Liz, guided view), then the owner's
-BrandDesk view. Handoff `docs/handoff/2026-11-08-ve-demo-showroom-green-leaf-site.md`.
+step up; not yet changed in Stripe, `/business/managed`, the pitch page, `/business` or the agreement. **The Community page, built on the sample 2026-11-08** (Sean: points unlock "a coupon or a giveaway... the owner can set
+what that is... take it out of the checkout... first come, first serve or limited quantity. The club is essentially just another guide";
+canon `canon-ve-front-of-house` v10 `community_page_v10`, migration `20261108_community_page_rewards_cm_fee.sql`): `#/community`, shown only
+when the Cartridge has `community.rewards` and never on live client sites. **Rewards**: owner-set items with a points price and a quantity,
+first come first served; a signed-in member sees a sample balance (`points_demo`), Unlock gives a code to show at the counter; the owner
+sees Take it down and Add a reward with our suggestions (`community.suggestions`); kept in `sessionStorage` (`ve_site_rewards`,
+`ve_site_unlocked`, `ve_site_spent`). Never cash, never money off at checkout. **The club** is a Guide on Vegans Explore (no paid club, no
+rolling credit). Check-ins every two weeks is unanswered. Live rewards (a table, redemption, the owner's dashboard) are not built.
+**The Community Manager onboarding fee on Site is $150 per client** (Sean, 2026-11-08). Tour script: `docs/proposals/green-leaf-tour-script.md`,
+waiting on Sean's approval before Liz records. Next: the tour, the owner's BrandDesk view, the pricing build. Handoff `docs/handoff/2026-11-08-ve-demo-showroom-green-leaf-site.md`.
 
 ## Content index (Sean, 2026-10-10: "go ahead and start on the content index")
 

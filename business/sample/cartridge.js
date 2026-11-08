@@ -16,6 +16,7 @@
  *   menu      sections, each item: name, was (their words), copy (ours), price, tags, photo {state, src}
  *   photos    the shot list for the space and the team, each with its state
  *   info      address, phone, hours, links, ordering (point of sale)
+ *   community optional: rewards members unlock with points (owner-set, limited), suggestions, the club (a Guide)
  * Approval states: approved, in_review (sent to them), revising (they asked for changes), to_make (ours to produce).
  */
 (function () {
@@ -115,6 +116,25 @@
       // A short narrated photo video of how the place came about (Sean, 2026-11-08). Liz narrates; captions are its words.
       video: { src: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/business/sample/story-v2.mp4',
         poster: IMG + 'story-poster.jpg', captions: '/business/sample/story-v2.vtt', title: 'How Green Leaf Kitchen came to be' }
+    },
+
+    // The Community page (Sean, 2026-11-08, canon canon-ve-front-of-house v10 community_page_v10): Vegans Explore members spend points to
+    // unlock rewards the owner sets, each with a points price and a quantity, first come first served; never cash, never at checkout.
+    // dish: a menu key (section-item) for the picture. The club is a Guide on Vegans Explore. Optional: a frame with no rewards draws no page.
+    community: {
+      points_demo: 1850,
+      rewards: [
+        { id: 'r1', kind: 'Free item', title: 'A free cold brew', line: 'Any size, any day we are open.', points: 300, left: 18, of: 40, dish: '3-2' },
+        { id: 'r2', kind: 'Free item', title: 'A free cookie with any bowl', line: 'Our chocolate chip, warm from the oven.', points: 250, left: 4, of: 30, dish: '4-1' },
+        { id: 'r3', kind: 'Coupon', title: '$5 off your next order', line: 'One per visit, in the restaurant or for pickup.', points: 500, left: 25, of: 25 },
+        { id: 'r4', kind: 'Event', title: 'A seat at the chef\'s table', line: 'Six courses, a Thursday night, made by the owner.', points: 1500, left: 2, of: 8, dish: '1-1' },
+        { id: 'r5', kind: 'Giveaway', title: 'Green Leaf Kitchen tote bag', line: 'Canvas, our leaf on the front. While they last.', points: 400, left: 0, of: 20 }
+      ],
+      // What we suggest to an owner setting up their rewards (the owner can write their own).
+      suggestions: ['A free drink', 'A free dessert with any meal', 'Dollars off an order', 'A seat at a tasting or chef\'s table', 'A spot in a cooking class',
+        'First taste of a new dish', 'Merchandise (a tote, a tee, a sticker)', 'A free meal on your birthday'],
+      club: { name: 'The Green Leaf Club', guide: 'A Guide on Vegans Explore', line: 'Our club is a Guide on Vegans Explore. Join free, and it walks you through our kitchen, our rewards and our nights, then out into the Vegan community in your city.',
+        points: ['How we cook and where our food comes from', 'Rewards and nights for members first', 'The Vegan places, events and people near you'], href: '/passport' }
     },
 
     // News from the restaurant: the site's Latest section (newest first). Dates are days before today, so the sample stays current.
