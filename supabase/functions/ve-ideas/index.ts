@@ -27,6 +27,16 @@
 //   pulse_discard { feature_id }          the draft is not used (kept, status discarded)
 //   podcast_draft { id }                  a proposed news segment (Kai, Top stories) on the next episode still in planning, written from
 //                                         the idea; approved in BrandDesk > Podcast like every segment. No episode in planning: no_episode.
+// Sorting (branddesk-production-wing, 2026-11-08; Sean: ideas live only in Depot > Ideas). Moved here from HQ's BrandDesk > Blueprint >
+// Ideas (app/api/branddesk/blueprint/ideas), the same rules, so that screen can come out. A super admin's VE token only (never ops):
+//   sort_options                          the brand's open playbooks to send an idea to
+//   sort_send    { id, playbook, note? }  a decision record on that playbook and a pending item on its page under "From the Blueprint
+//                                         ideas" (no model edits the page; a page whose markup is not found gets the record only)
+//   sort_own     { id, slug, title, status }   a new playbook page from the active template, an index row and a record; parked | building
+//   sort_park    { id, revisit_on?, reason? }
+//   sort_decline { id, reason }           a reason required
+//   sort_reopen  { id }                   back to New
+// Only a New or Parked idea can be sent, parked, declined or made its own playbook (already_sorted).
 //
 // Who: a super admin's VE token, or ops: Bearer LESARUSS_ADMIN_TOKEN, optionally with as_member (a super admin). Ops reads and moves
 // ideas through the build (list, get, next, claim, set) and serves HQ's Blueprint > Ideas (upload_start, read_blueprint).
@@ -285,6 +295,49 @@ async function readBlueprint(id: string, reply: string, maxTokens = MAX_TOKENS) 
   return { idea: row };
 }
 
+// Sorting helpers (copied from lesaruss-hq lib/blueprintIdeas.ts; change both together until HQ's copy is retired).
+const IDEA_GROUP = 'FROM THE BLUEPRINT IDEAS';
+const escH = (v: string) => v.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const PENDING_OPEN = '<div class="tabpanel" id="panel-pending" role="tabpanel">';
+const COUNT_RE = /(data-tab="pending">Pending <span class="count">)(\d+)(<\/span>)/;
+const BRAND_NAMES: Record<string, string> = { 'vegans-explore': 'Vegans Explore', 'geekfon-society': 'GeekFon Society', 'sean-a-russell': 'Sean A. Russell', 'lesaruss-ai': 'LESARUSS.ai', 'lesaruss-hq': 'LESARUSS HQ', 'meatless-muscle': 'Meatless Muscle' };
+const slugOk = (v: string) => /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(v) && v.length >= 3 && v.length <= 80;
+const eastern = (o: Intl.DateTimeFormatOptions) => new Date().toLocaleDateString('en-US', { timeZone: 'America/New_York', ...o });
+function ideaItem(title: string, detail: string, dateLabel: string): string {
+  const more = detail.trim() ? ` ${escH(detail.trim())}` : '';
+  return `<li class="chk-item pending"><span class="chk-box"></span><span><strong>${escH(title.trim())}.</strong>${more} <em>(Idea sent from the Blueprint, ${escH(dateLabel)})</em></span></li>`;
+}
+function addIdeaToPending(html: string, item: string): { html: string; placed: boolean } {
+  const at = html.indexOf(PENDING_OPEN);
+  if (at < 0 || !COUNT_RE.test(html)) return { html, placed: false };
+  let out = html;
+  const groupHead = `<summary><span>${IDEA_GROUP}</span>`;
+  const g = out.indexOf(groupHead);
+  if (g >= 0) {
+    const ulEnd = out.indexOf('</ul>', g);
+    if (ulEnd < 0) return { html, placed: false };
+    out = out.slice(0, ulEnd) + `  ${item}\n      ` + out.slice(ulEnd);
+    out = out.replace(new RegExp(`(${groupHead.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}<span class="grp-count">)(\\d+)( pending</span>)`), (_m, a, n, b) => `${a}${Number(n) + 1}${b}`);
+  } else {
+    const start = at + PENDING_OPEN.length;
+    const rest = out.slice(start).replace(/^\s*<p class="empty-state">Nothing pending\.<\/p>/, '');
+    const block = `\n    <details class="held" open>\n      <summary><span>${IDEA_GROUP}</span><span class="grp-count">1 pending</span></summary>\n      <div class="body"><ul class="chk-list">\n        ${item}\n      </ul></div>\n    </details>\n`;
+    out = out.slice(0, start) + block + rest;
+  }
+  out = out.replace(COUNT_RE, (_m, a, n, b) => `${a}${Number(n) + 1}${b}`);
+  return { html: out, placed: true };
+}
+function newPlaybookPage(shell: string, v: { title: string; brand: string; date: string; stage: string; status: string; overview: string; firstItem: string; history: string }): string {
+  const pending = `    <details class="held" open>\n      <summary><span>${IDEA_GROUP}</span><span class="grp-count">1 pending</span></summary>\n      <div class="body"><ul class="chk-list">\n        ${v.firstItem}\n      </ul></div>\n    </details>`;
+  const map: Record<string, string> = {
+    TITLE: escH(v.title), TYPE_LABEL: 'Playbook', BRAND: escH(v.brand), DATE: escH(v.date), PREPARED_BY: 'Logan Russell',
+    STAGE: escH(v.stage), STATUS_SUMMARY: escH(v.status), OVERVIEW_SECTIONS_HTML: v.overview,
+    PENDING_COUNT: '1', DONE_COUNT: '0', PENDING_HTML: pending, DONE_HTML: '<p class="empty-state">Nothing completed yet.</p>',
+    LINKS_HTML: '', DECISION_HISTORY_HTML: v.history,
+  };
+  return shell.replace(/\{\{([A-Z_]+)\}\}/g, (m, k: string) => (k in map ? map[k] : m));
+}
+
 async function withLinks(idea: any) {
   const files = [];
   for (const f of idea.files || []) {
@@ -409,6 +462,91 @@ Deno.serve(async (req) => {
     if (error) return json({ error: error.message }, 500);
     await logEv(b.id, ops ? 'Logan' : 'Sean', 'sent_to_podcast', { draft: true, episode: ep.number, air_date: ep.air_date });
     return json({ ok: true, segment_id: data.id, episode: ep });
+  }
+
+  if (typeof b.action === 'string' && b.action.startsWith('sort_')) {
+    if (ops || !me) return json({ error: 'sean_sorts' }, 403);
+    const { data: mm } = await db.from('members').select('name').eq('id', me).maybeSingle();
+    const by = mm?.name || 'Sean A. Russell';
+    const now = new Date().toISOString();
+    if (b.action === 'sort_options') {
+      const brand = clean(b.brand, 80) || 'vegans-explore';
+      const { data } = await db.from('briefings').select('slug, title').eq('type', 'playbook').eq('brand_slug', brand).neq('status', 'archived').order('title');
+      return json({ ok: true, playbooks: data || [] });
+    }
+    if (!isId(b.id)) return json({ error: 'id' }, 400);
+    const { data: cur } = await db.from('ve_ideas').select('*').eq('id', b.id).maybeSingle();
+    if (!cur) return json({ error: 'not_found' }, 404);
+    const brand = cur.brand_slug || 'vegans-explore';
+    const title = String(cur.title || String(cur.body || '').split(/(?<=[.!?])\s/)[0] || 'Untitled idea').slice(0, 200);
+    const detail = String(cur.body || '');
+    if (b.action === 'sort_reopen') {
+      if (cur.status === 'new') return json({ error: 'already_new' }, 409);
+      await db.from('ve_ideas').update({ status: 'new', updated_at: now }).eq('id', b.id);
+      await logEv(b.id, by, 'reopened', { from: cur.status });
+      return json({ ok: true });
+    }
+    if (cur.status !== 'new' && cur.status !== 'parked') return json({ error: 'already_sorted', status: cur.status }, 409);
+    if (b.action === 'sort_park') {
+      const revisit = clean(b.revisit_on, 10);
+      if (revisit && !/^\d{4}-\d{2}-\d{2}$/.test(revisit)) return json({ error: 'bad_date' }, 400);
+      const reason = clean(b.reason, 1000);
+      await db.from('ve_ideas').update({ status: 'parked', revisit_on: revisit || null, reason: reason || null, sorted_by: by, sorted_at: now, updated_at: now }).eq('id', b.id);
+      await logEv(b.id, by, 'parked', { revisit_on: revisit || null, reason });
+      return json({ ok: true });
+    }
+    if (b.action === 'sort_decline') {
+      const reason = clean(b.reason, 1000);
+      if (!reason) return json({ error: 'reason_needed' }, 400);
+      await db.from('ve_ideas').update({ status: 'declined', reason, sorted_by: by, sorted_at: now, updated_at: now }).eq('id', b.id);
+      await logEv(b.id, by, 'declined', { reason });
+      return json({ ok: true });
+    }
+    const dateLabel = eastern({ month: 'short', day: 'numeric', year: 'numeric' });
+    if (b.action === 'sort_send') {
+      const target = clean(b.playbook, 80);
+      const { data: pb } = await db.from('briefings').select('slug, title, content').eq('type', 'playbook').eq('brand_slug', brand).eq('slug', target).neq('status', 'archived').maybeSingle();
+      if (!pb) return json({ error: 'unknown_playbook' }, 404);
+      const note = clean(b.note, 1000);
+      const rec = await db.from('playbook_records').insert({ slug: target, brand_slug: brand, author: by, source: 'text', kind: 'decision',
+        body: `${target}: idea from the Blueprint, "${title}". ${detail ? detail + ' ' : ''}${note ? 'Note: ' + note + ' ' : ''}(Sent by ${by}, ${dateLabel}.)` });
+      if (rec.error) return json({ error: 'record_failed' }, 500);
+      const placed = addIdeaToPending(String(pb.content || ''), ideaItem(title, [detail, note].filter(Boolean).join(' '), dateLabel));
+      if (placed.placed) await db.from('briefings').update({ content: placed.html, updated_at: now }).eq('slug', target).eq('type', 'playbook').eq('content', pb.content);
+      await db.from('ve_ideas').update({ status: 'sent', target_playbook: target, placed_on_page: placed.placed, reason: note || null, sorted_by: by, sorted_at: now, updated_at: now }).eq('id', b.id);
+      await logEv(b.id, by, 'sent', { playbook: target, placed: placed.placed, note });
+      return json({ ok: true, placed: placed.placed });
+    }
+    if (b.action === 'sort_own') {
+      const slug = clean(b.slug, 80).toLowerCase();
+      const ptitle = clean(b.title, 120);
+      const status = b.status === 'building' ? 'building' : 'parked';
+      if (!slugOk(slug)) return json({ error: 'bad_slug' }, 400);
+      if (!ptitle) return json({ error: 'title_needed' }, 400);
+      const { data: taken } = await db.from('briefings').select('slug').eq('slug', slug).maybeSingle();
+      if (taken) return json({ error: 'slug_taken' }, 409);
+      const [tpl, sib] = await Promise.all([
+        db.from('templates').select('parameters').eq('subtype', 'playbook').eq('status', 'active').maybeSingle(),
+        db.from('briefings').select('tenant_id').eq('type', 'playbook').eq('brand_slug', brand).limit(1).maybeSingle(),
+      ]);
+      const shell = (tpl.data?.parameters as any)?.html_shell;
+      if (!shell) return json({ error: 'no_template' }, 500);
+      if (!sib.data?.tenant_id) return json({ error: 'no_tenant' }, 500);
+      const why = `${slug}: opened from a Blueprint idea, "${title}". ${detail ? detail + ' ' : ''}(${by}, ${dateLabel}, status ${status === 'building' ? 'Building' : 'Parked'}.)`;
+      const rec = await db.from('playbook_records').insert({ slug, brand_slug: brand, author: by, source: 'text', kind: 'decision', body: why });
+      if (rec.error) return json({ error: 'record_failed' }, 500);
+      const hist = await db.rpc('ve_pb_history', { slugs: [slug] });
+      const statusLine = status === 'building' ? 'Building. Opened from a Blueprint idea.' : 'Parked. Opened from a Blueprint idea; nothing is built until it moves to Building.';
+      const html = newPlaybookPage(shell, { title: ptitle, brand: BRAND_NAMES[brand] || brand, date: eastern({ month: 'long', day: 'numeric', year: 'numeric' }), stage: 'Idea', status: statusLine,
+        overview: `<h2>Where it came from</h2>\n<p>${escH(title)}${detail ? '. ' + escH(detail) : ''}</p>`, firstItem: ideaItem(title, detail, dateLabel), history: typeof hist.data === 'string' ? hist.data : '' });
+      const ins = await db.from('briefings').insert({ tenant_id: sib.data.tenant_id, slug, title: ptitle, content: html, type: 'playbook', brand_slug: brand, author: 'Logan Russell', status: 'published', status_summary: statusLine });
+      if (ins.error) return json({ error: 'page_failed', detail: ins.error.message }, 500);
+      await db.from('ve_playbook_index').upsert({ slug, brand_slug: brand, title: ptitle, status, stage: 'Idea', next_action: status === 'building' ? 'Logan writes the plan for Sean' : '', owner: 'Logan', updated_at: now }, { onConflict: 'slug' });
+      await db.from('ve_ideas').update({ status: 'own_playbook', target_playbook: slug, placed_on_page: true, sorted_by: by, sorted_at: now, updated_at: now }).eq('id', b.id);
+      await logEv(b.id, by, 'own_playbook', { playbook: slug, title: ptitle, status });
+      return json({ ok: true, playbook: slug });
+    }
+    return json({ error: 'unknown_action' }, 400);
   }
 
   if (b.action === 'list') {
