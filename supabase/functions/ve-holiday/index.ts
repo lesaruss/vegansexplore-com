@@ -2,7 +2,7 @@
 // A member business with a claimed listing (or an open claim on it) sends its holiday menu; a person checks it before it shows.
 // POST { action, ... }. verify_jwt off; the Vegans Explore token is checked here.
 // Public:  holidays, live {holiday}
-// Member:  mine, save {holiday, listing_id, summary, items, order_url, order_by, pickup, price_range, holiday_hours, contact_note}, withdraw {id},
+// Member:  mine {listing? (a super admin: any place, to upload its menu)}, save {holiday, listing_id, summary, items, order_url, order_by, pickup, price_range, holiday_hours, contact_note}, withdraw {id},
 //          photo_url {listing_id} (a dish photo, squared in the browser, into vegan-media), scan_start {listing_id, type},
 //          scan_read {listing_id, holiday, paths[]} (up to 3 photos or a PDF of their menu, read by Claude into dishes; 10 reads a day)
 //          tip {holiday, place_name, city, state, link, note, listing_id?} (a menu a member found; a person checks it; the team's go live at once)
@@ -171,7 +171,14 @@ Deno.serve(async (req) => {
   const member = admin || mm.membership_status === 'active';
 
   if (action === 'mine') {
-    const ls = member ? await myListings(me) : [];
+    const ls: any[] = member ? await myListings(me) : [];
+    // A super admin uploads any place's menu (Sean, 2026-11-08: "a way for superadmins to upload menus directly"): the place asked for
+    // joins their list, and the menu is read and waits for a check like any other.
+    const want = String(b.listing || '');
+    if (admin && /^[a-z0-9][a-z0-9-]{0,120}$/.test(want) && !ls.some((l) => l.slug === want)) {
+      const { data: one } = await db.from('listings').select('id, slug, name, category, address_city, address_state, logo_url, color, vegan_status, google_hours_json').eq('slug', want).eq('status', 'approved').maybeSingle();
+      if (one) ls.unshift({ ...one, claim: 'admin' });
+    }
     const ids = ls.map((l) => l.id);
     const { data: menus } = ids.length ? await db.from('ve_holiday_menus').select('*').in('listing_id', ids) : { data: [] as any[] };
     return json({ ok: true, member, listings: ls, menus: menus || [], holidays: await holidays() });
@@ -185,8 +192,9 @@ Deno.serve(async (req) => {
     if (!h || !h.active) return json({ error: 'bad_holiday' }, 400);
     if (Date.parse(h.submit_close) <= Date.now() && !admin) return json({ error: 'closed' }, 409);
     const mine = await myListings(me);
-    const listing = mine.find((l) => l.id === lid);
+    let listing: any = mine.find((l) => l.id === lid);
     if (!listing && !admin) return json({ error: 'not_your_listing' }, 403);
+    if (!listing) listing = (await db.from('listings').select('id, name').eq('id', lid).maybeSingle()).data;
 
     const summary = clean(b.summary, 400);
     const items = (Array.isArray(b.items) ? b.items : []).slice(0, 20)
@@ -407,12 +415,14 @@ Deno.serve(async (req) => {
     if (note && d === 'approve') upd.team_note = note;
     await db.from('ve_holiday_menus').update(upd).eq('id', id);
     const [{ data: who }, { data: l }, { data: h }] = await Promise.all([
-      db.from('members').select('name, email').eq('id', m.member_id).maybeSingle(),
-      db.from('listings').select('slug, name').eq('id', m.listing_id).maybeSingle(),
+      db.from('members').select('name, email, is_superadmin').eq('id', m.member_id).maybeSingle(),
+      db.from('listings').select('slug, name, owner_member_id').eq('id', m.listing_id).maybeSingle(),
       db.from('ve_holidays').select('name').eq('slug', m.holiday_slug).maybeSingle(),
     ]);
     let email = 'no_email';
-    if (who?.email && !String(l?.name || '').startsWith('[TEST]')) {
+    // A menu the team uploaded for a place it does not own sends no "your menu" email to the team member.
+    const teamUpload = !!who?.is_superadmin && l?.owner_member_id !== m.member_id;
+    if (who?.email && !teamUpload && !String(l?.name || '').startsWith('[TEST]')) {
       const first = String(who.name || '').trim().split(/\s+/)[0];
       const hi = `<p>${first ? 'Hi ' + escH(first) + ',' : 'Hi there,'}</p>`;
       const body = d === 'approve'
