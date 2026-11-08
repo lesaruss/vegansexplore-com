@@ -1436,6 +1436,49 @@ function loadGroupLive(l){
   });
   refresh();
 }
+// What connects to this listing (Sean, 2026-11-08: "the directory listing is designed for discovery. So anytime we can have something
+// that's related or connected, it needs to be there"; playbook ve-community-directory). ve_listing_related(listing), a cache rebuilt
+// daily: ours (our shows' episodes that name it, matched to the feed so they play here), people (People listings whose title or bio
+// names it), elsewhere (other Directory podcasts that name it, Featured when the title names it or one of its people, else Mentioned),
+// and, on a person, orgs (the organizations their title or bio names). Episodes play in the docked player (ppEpRow), lists scroll inside
+// their box. Anything already shown by details.linked or the family is left out. Then In the Pulse draws the articles that are not
+// episodes shown here.
+function loadRelated(l){
+  if(window.VE_BRAND) return;
+  var H = { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY };
+  fetch(SUPABASE_URL + '/rest/v1/rpc/ve_listing_related', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, H), body: JSON.stringify({ p_listing: l.id }) })
+    .then(function(r){ return r.ok ? r.json() : {}; }).catch(function(){ return {}; }).then(function(d){
+      d = d || {};
+      var host = document.querySelector('#tab-overview > div');
+      var shown = {}; ((l.details || {}).linked || []).forEach(function(g){ (g.items || []).forEach(function(x){ if(x && x.slug) shown[x.slug] = 1; }); });
+      var person = isPersonL(l);
+      var cards = (person ? d.orgs : d.people) || [];
+      cards = cards.filter(function(x){ return x && x.slug && !shown[x.slug] && x.slug !== l.slug; });
+      if(cards.length) cardSections(l, [{ title: person ? 'Organizations' : 'People',
+        sub: person ? 'Organizations in our Directory that ' + l.name + ' is part of or supports.' : 'People in our Directory connected to ' + l.name + '.',
+        items: cards }], 'rel');
+      // Films and books already list our episodes in their own sections (loadFilmPods, loadBookTalks).
+      var ownPods = l.category === 'Books' || ((l.details || {}).film_podcasts || []).length;
+      var ours = person || ownPods ? [] : (d.ours || []), other = person ? [] : (d.elsewhere || []);
+      l._relSlugs = {}; ours.forEach(function(ep){ if(ep.pulse_slug) l._relSlugs[ep.pulse_slug] = 1; });
+      if(host && (ours.length || other.length) && window.VEEpisodes){
+        VEEpisodes.css();
+        var sec = document.createElement('div'); sec.className = 'section'; sec.id = 'rel-pods';
+        sec.innerHTML = '<div class="vep-dock" data-vep-always></div>' +
+          (ours.length ? '<h2 class="section-title">On our podcast</h2><p class="pp-sub">Episodes of our shows that talk about ' + esc(l.name) + '.</p>' +
+            '<div class="pp-scroll"><div class="vep-list">' + ours.map(function(ep){ return ppEpRow(ep, ''); }).join('') + '</div></div>' : '') +
+          (other.length ? '<h2 class="section-title"' + (ours.length ? ' style="margin-top:28px"' : '') + '>On other podcasts</h2><p class="pp-sub">Episodes of other shows in our Directory that feature or mention ' + esc(l.name) + '.</p>' +
+            '<div class="pp-scroll"><div class="vep-list">' + other.map(function(ep){ return ppEpRow(ep, ep.how === 'featured' ? 'Featured' : 'Mentioned'); }).join('') + '</div></div>' : '');
+        // Right after About and any People section, so it is seen without scrolling to the foot of the page.
+        var after = null;
+        Array.prototype.forEach.call(host.querySelectorAll(':scope > .section'), function(s2){
+          var t = s2.querySelector('.section-title'); if(t && /^(About|Their work)$/.test(t.textContent.trim())) after = s2; });
+        var rel = host.querySelector(':scope > .lk-rel'); if(rel) after = rel;
+        if(after) after.parentNode.insertBefore(sec, after.nextSibling); else host.appendChild(sec);
+      }
+      loadInPulse(l);
+    });
+}
 // In the Pulse (Sean, 2026-11-02): the Daily Pulse stories that name this listing (ve_content_mentions, shown rows only), each
 // linking to its article. The article's own "In this story" links back here. Not on LESARUSS.ai's own pages (VE_BRAND).
 // The excerpt is a card summary, so it clamps to two rows (CLAUDE.md, Summary two-row cap).
@@ -1443,7 +1486,8 @@ function loadInPulse(l){
   var box = document.getElementById('in-pulse'); if(!box || window.VE_BRAND) return;
   var url = SUPABASE_URL + '/rest/v1/ve_content_mentions?select=source,ve_pulse_content(slug,title,summary,thumbnail_url,published_at)&listing_id=eq.' + l.id + '&status=eq.shown&limit=200';
   fetch(url, { headers:{ apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.ok ? r.json() : []; }).then(function(rows){
-    var items = (rows || []).map(function(x){ return x.ve_pulse_content; }).filter(Boolean)
+    var skip = l._relSlugs || {};
+    var items = (rows || []).map(function(x){ return x.ve_pulse_content; }).filter(function(p){ return p && !skip[p.slug]; })
       .sort(function(a, b){ return String(b.published_at).localeCompare(String(a.published_at)); });
     if(!items.length) return;
     if(!document.getElementById('in-pulse-css')){
@@ -5670,6 +5714,7 @@ if(!slug || slug === 'listing'){
       if(isPersonL(l)){ loadPerson(l); ppPromo(l); var ovt = document.querySelector('.listing-tabs [data-tab="overview"]'); if(ovt) ovt.textContent = 'About'; }
       else if(!l._brandSite) loadPartnerHome(l);
       if(!DEMO) linkedSections(l);
+      if(!DEMO) loadRelated(l);
       // Always fetch menu items — show tab for any listing that has them
       loadLocations(l);
       if(!DEMO || DEMO.events) loadHostedEvents(l);

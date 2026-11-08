@@ -7223,6 +7223,23 @@ a sample. Edge function **`ve-comments`** (verify_jwt off; public `get`, `upload
 led the South Florida Pulse on 2026-11-08). Its email is the BrandDesk campaign `honest-cuban-comment-2026-11` (one business, from Sean, `link_path` `/comment/honest-cuban`), never Depot > Outreach: outreach goes through BrandDesk campaigns. Handoff `docs/handoff/2026-11-08-ve-community-voices-honest-cuban.md`. Not built: a Guide voice
 on the page, an Inbox row for a new answer (it emails contact@lesaruss.com).
 
+## What connects to a listing: our episodes, other shows, people (Sean, 2026-11-08, playbook `ve-community-directory`)
+
+"The directory listing is designed for discovery. So anytime we can have something that's related or connected, it needs to be there."
+`ve_listing_related(listing)` (public RPC) reads `ve_listing_related_cache`, built by `ve_listing_related_build` and refreshed by cron
+`ve-listing-related` (every 2 hours at :17, 25 listings, each rebuilt after a day; migration `20261108_listing_related.sql`): **ours** (our four
+shows' episodes that name the listing, from `ve_content_mentions`, matched to the feed through `ve_pulse_episode_map` so they play), **elsewhere**
+(other Directory podcasts' episodes whose title or show notes name it, 40 at most, `how` featured when the title names it or one of its people,
+else mentioned; organizations and groups only), **people** (People listings whose title or bio names it, those whose title names it first) and,
+on a person, **orgs** (the reverse). Names (`ve_listing_related_names`): the name without "The" or a parenthesis, the same without a trailing
+Sanctuary / Rescue / Inc / Foundation / Society, and `details.aka`; two words and 9 letters or more, or a name that is wholly capitals (PETA); a
+name of only generic words ("animal advocates") counts only as a full name of three words or more or one that goes by "The"; any other listing's
+longer name that contains it is blanked first, so Farm Sanctuary does not match Woodstock Farm Sanctuary. A wrong match is fixed by `details.aka`
+or the listing's name. **The page** (`loadRelated` in `directory/listing.html`): People (or Organizations on a person) as Directory cards, then On our
+podcast and On other podcasts as episode rows with Play in a docked player, right after About; then **In the Pulse**, which had no caller on real
+listings until now, draws the articles that are not episodes shown above. Films and books keep their own episode sections. First built 2026-11-08:
+834 listings, 73 with our episodes, 77 with other shows, 14 with people.
+
 ## Social links and price on listings (Sean, 2026-11-08, playbook `ve-feedback`)
 
 "$2" on listings and "Facebook opens the plain Facebook page, Instagram a broken page". Fixed and live on `main` (ec8f871).
