@@ -6987,6 +6987,7 @@ A and the stacked-logo opening screen; its own CLAUDE.md has the rules. This bui
 submissions (V, X) run from GitHub Actions in the app repo with `EXPO_TOKEN`. **Joining is survey first** (Sean, 2026-11-07: "they do the guide and
 then they get the account"): the Explorer survey, a points pill adding up in the corner, then save with Apple, Google or email, which makes the
 account; the website changes to match in step H (today `/survey` needs an account first). Next: H.
+**Wrapped 2026-11-08 before H started** (handoff `docs/handoff/2026-11-08-ve-mobile-app-d-live-g-built-h-next.md`): H is next, starting with ve-auth taking native Apple and Google sign-in.
 
 ## Image conventions
 
