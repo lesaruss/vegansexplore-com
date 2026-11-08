@@ -6979,7 +6979,14 @@ on HQ asks for the HQ sign-in the first time); fixed headers with only the list 
 naming where you came from. **The app reuses the website's Directory card and listing page design, never a new style.** First visit: the
 opening screen, a short welcome, pick your chapter or use location, then Home with no account (Apple forbids forced sign-up); voting, saving,
 checking in, Saves and Profile ask to join free through the Explorer survey. **One Expo build serves the stores and vegansexplore.com on
-phones** (the homepage and the home-screen icon; pages people land on from search keep their own page; computers keep the website). Next: G.
+phones** (the homepage and the home-screen icon; pages people land on from search keep their own page; computers keep the website).
+**D merged and live 2026-11-08** (main 1663862; the worker keeps `/offline`, since the site's clean addresses redirect `/offline.html` and a worker
+cannot serve a redirected page: `sw.js` v2). **G built 2026-11-08** on `lesaruss/vegansexplore-app` branch `claude/great-rubin-yc6ey5` (not on its
+main): Sapphire removed, a fresh Expo SDK 58 app (Expo Router, tabs Home, Explore, Menu, Saves, Profile), live listings, ve-auth session storage, icon
+A and the stacked-logo opening screen; its own CLAUDE.md has the rules. This build session cannot reach docs.expo.dev or api.expo.dev, so builds and
+submissions (V, X) run from GitHub Actions in the app repo with `EXPO_TOKEN`. **Joining is survey first** (Sean, 2026-11-07: "they do the guide and
+then they get the account"): the Explorer survey, a points pill adding up in the corner, then save with Apple, Google or email, which makes the
+account; the website changes to match in step H (today `/survey` needs an account first). Next: H.
 
 ## Image conventions
 
