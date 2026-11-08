@@ -2,6 +2,7 @@
 // Public, verify_jwt off. Saved in ve_feedback (RLS on) and emailed to the team at once, or, while ve_site_settings feedback.digest is on,
 // gathered into one daily digest ({action:'digest'}, cron with x-cron-secret; Sean 2026-11-05). 5 a visitor an hour, 15 a day.
 // Super admins: admin_settings {digest?: bool} reads or sets the switch.
+// Kind missing on a Directory, search or chapter-Directory page also makes a ve_listing_requests row (source feedback, feedback_id).
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
 const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-cron-secret', 'Access-Control-Allow-Methods': 'POST, OPTIONS' };
@@ -56,6 +57,30 @@ async function digest() {
     `<p style="margin:0 0 14px;color:#555">Suggestions and feedback from the site. They are also in Depot &gt; Feedback and your Inbox.</p>${items}</div>`;
   const sent = await sendMail(`[Feedback] Daily digest: ${rows.length} new`, html, TEAM);
   return { ok: true, sent, n: rows.length };
+}
+// Pages where "Something is missing" means a place we do not list: the Directory, a listing, search, a chapter hub's Directory.
+function isDirectoryPage(u: string) {
+  try {
+    const x = new URL(u); const p = x.pathname;
+    return /^\/(directory|search|dashboard\/directory)(\/|$)/.test(p) || (/^\/communities\/[^/]+/.test(p) && (x.searchParams.get('tab') === 'directory' || x.searchParams.has('dir')));
+  } catch { return false; }
+}
+// One ve_listing_requests row (source feedback). The message's first link or @handle is the link; with none, its words stand in for the name.
+async function toListingQueue(fid: string, row: any, message: string, page: string) {
+  const { data: st } = await db.from('ve_site_settings').select('value').eq('key', 'listing_requests').maybeSingle();
+  const perDay = +((st?.value as any)?.per_day) || 100;
+  const day = new Date(Date.now() - 864e5).toISOString();
+  const { count } = await db.from('ve_listing_requests').select('id', { count: 'exact', head: true }).gte('created_at', day);
+  if ((count ?? 0) >= perDay) return false;
+  const url = (message.match(/https?:\/\/[^\s<>"')]+/i) || [])[0] || (message.match(/(^|\s)(@[A-Za-z0-9._]{2,30})/) || [])[2] || '';
+  const one = message.replace(/\s+/g, ' ').trim();
+  const { error } = await db.from('ve_listing_requests').insert({
+    source: 'feedback', feedback_id: fid, contact_email: row.email, contact_name: row.name, visitor: row.visitor,
+    name: url ? null : one.slice(0, 120), link: url ? url.slice(0, 600) : null, note: one.slice(0, 1500), page_url: page,
+  });
+  if (error) { console.error('listing request insert:', error.message); return false; }
+  await db.from('ve_feedback').update({ note: 'Also sent to the listing-request queue (Sean\'s For you once Logan drafts it).' }).eq('id', fid);
+  return true;
 }
 const clean = (v: unknown, n: number) => String(v ?? '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '').trim().slice(0, n);
 
@@ -121,6 +146,10 @@ Deno.serve(async (req) => {
     member_signed_in: b.signed_in === true, user_agent: clean(req.headers.get('user-agent'), 300) || null, viewport: clean(b.viewport, 20) || null };
   const ins = await db.from('ve_feedback').insert(row).select('id').single();
   if (ins.error) return json({ error: 'save_failed' }, 500);
+  // "Something is missing" on a Directory, search or chapter page also goes to the listing-request queue (ve-community-directory, 2026-11-08):
+  // the worker reads it like any request and Sean decides on For you. Never blocks the feedback itself.
+  let queued = false;
+  if (kind === 'missing' && isDirectoryPage(page)) { try { queued = await toListingQueue(ins.data.id, row, message, page); } catch (e) { console.error('queue failed:', e); } }
   if (!(await settings()).digest) {
     const html = `<div style="font-family:Arial,sans-serif;font-size:15px;line-height:1.5;color:#14261a"><h2 style="margin:0 0 8px">${esc(KINDS[kind])}</h2>` +
       `<p style="margin:0 0 4px"><b>Page:</b> <a href="${esc(page)}">${esc(row.page_label || page)}</a><br><span style="color:#666;font-size:13px">${esc(page)}</span></p>` +
@@ -129,5 +158,5 @@ Deno.serve(async (req) => {
       `<p style="margin:12px 0 0"><a href="https://vegansexplore.com/admin/depot/feedback#item/${ins.data.id}">Open it in the Depot</a></p></div>`;
     await sendMail(`[Feedback] ${KINDS[kind]}: ${(row.page_label || pathOf(page)).slice(0, 60)}`, html, row.email || TEAM);
   }
-  return json({ ok: true, id: ins.data.id });
+  return json({ ok: true, id: ins.data.id, listing_request: queued });
 });
