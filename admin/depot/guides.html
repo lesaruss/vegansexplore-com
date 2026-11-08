@@ -80,9 +80,14 @@
     @media (max-width:700px){table,thead,tbody,tr,td{display:block;}thead{display:none;}tr{border-bottom:1px solid var(--ve-border);padding:8px 0;}td{border:0;padding:4px 12px;}}
     .player{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:16px;margin:0 0 14px;}
     .stage{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:16px;align-items:center;}
-    .st-img{aspect-ratio:16/9;border-radius:10px;background:#f1f3f1 center/cover no-repeat;border:1px solid var(--ve-border);}
+    .st-img{aspect-ratio:16/9;border-radius:10px;background:#f1f3f1 center 18%/cover no-repeat;border:1px solid var(--ve-border);}
     .st-img.square{background-size:contain;background-color:#fff;}
     .st-img.empty{background:repeating-linear-gradient(45deg,#f7f8f7,#f7f8f7 10px,#f1f3f1 10px,#f1f3f1 20px);}
+    /* a slight slow zoom on each frame in the player, as the edit does (Sean, 2026-11-08: image to image, about every 3 s) */
+    #lbImg.zoom{position:relative;overflow:hidden;background-image:none!important;}
+    #lbImg.zoom::before{content:'';position:absolute;inset:0;background:var(--img) center 18%/cover no-repeat;transform-origin:50% 30%;animation:lbz 4.5s ease-out forwards;}
+    @keyframes lbz{from{transform:scale(1);}to{transform:scale(1.07);}}
+    @media (prefers-reduced-motion:reduce){#lbImg.zoom::before{animation:none;}}
     .cap{display:flex;gap:12px;align-items:flex-start;}
     .cap .fn{flex:none;font-weight:900;font-size:22px;color:var(--ve-green-deep);}
     .q{font-size:15px;font-weight:700;line-height:1.45;}
@@ -187,7 +192,7 @@
           '<div class="steps">' + STEPS.map(function (s, i) { return '<span class="' + (i < si ? 'done' : i === si ? 'now' : '') + '">' + (i + 1) + '. ' + s[1] + '</span>'; }).join('') + '</div>' +
           '<div class="bar"><span>Narrated by <b>' + esc(NARR[t.narrator] || t.narrator) + '</b></span><span><b>' + data.chapters.length + '</b> chapters, <b>' + secs(total) + '</b></span>' +
           '<span><b>' + ap + '</b> of ' + data.shots.length + ' shots approved' + (rd ? ', <b>' + rd + '</b> to redo' : '') + '</span>' +
-          '<span><b>' + cam.length + '</b> on-camera moments, about <b>' + Math.round(camSecs) + ' s</b> to animate</span>' +
+          (cam.length ? '<span><b>' + cam.length + '</b> on-camera moments, about <b>' + Math.round(camSecs) + ' s</b> to animate</span>' : '<span>No lip sync: a new picture about every <b>' + (data.shots.length ? (total / data.shots.length).toFixed(1) : 0) + ' s</b>, each with a slight zoom</span>') +
           (t.page_url ? '<a class="btn btn-quiet" href="' + esc(t.page_url) + '">Open the page</a>' : '') + '</div>' +
           '<div class="tabs">' + [['lookbook', 'Lookbook'], ['script', 'Script and recordings'], ['video', 'Video']].map(function (x) {
             return '<a href="#t/' + esc(t.slug) + '/' + x[0] + '" class="' + (r.tab === x[0] ? 'on' : '') + '">' + x[1] + '</a>';
@@ -276,8 +281,11 @@
         function show(n) {
           var f = fr[n - 1]; if (!f) return; cur = n;
           var img = f.s.image_url || (f.broll[0] && f.broll[0].image_url) || '';
-          $('lbImg').style.backgroundImage = img ? 'url(\'' + img + '\')' : 'none';
-          $('lbImg').className = 'st-img' + (f.s.kind === 'on_camera' ? ' square' : '') + (img ? '' : ' empty');
+          var el = $('lbImg'), zoom = img && f.s.kind !== 'on_camera';
+          el.style.backgroundImage = img ? 'url(\'' + img + '\')' : 'none';
+          el.style.setProperty('--img', img ? 'url(\'' + img + '\')' : 'none');
+          el.className = 'st-img'; void el.offsetWidth;
+          el.className = 'st-img' + (f.s.kind === 'on_camera' ? ' square' : '') + (img ? '' : ' empty') + (zoom ? ' zoom' : '');
           $('lbN').textContent = pad(n);
           $('lbQ').textContent = '“' + (f.s.line || f.c.line) + '”';
           $('lbM').textContent = secs(f.g0) + ' to ' + secs(f.g1) + ' · ' + f.c.n + '. ' + f.c.title + ' · ' + KIND[f.s.kind] + ' · ' + ST[f.s.status];
