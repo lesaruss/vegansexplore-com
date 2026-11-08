@@ -2989,6 +2989,13 @@ when a slug has no approved listing, keeping the address's tab and hash.
 
 **N to R worked, 2026-11-08** (playbook `ve-community-directory`; handoff `docs/handoff/2026-11-08-ve-community-directory-n-to-r-worked.md`): Needs support 6 done; On hold 123 down to 98 on purpose (4 back live, 22 Removed); event leads 186 cleared (9 linked, 15 added); backlog "check" 595 cleared (20 listed, 575 set aside with reasons); weekly event searches added for North Florida, Delaware, West Virginia, Maryland, Virginia; `ve-claims` v52 from main (Port Richey and Orange Springs in Central Florida). Left for Sean: K (44 Ready to list), L (Pacific Point Preserve, Humane Association of Ga), M (the logo hunt on the 382, on hold), then S, T, U.
 
+**T1 to T3 worked, 2026-11-08** (playbook `ve-community-directory`; handoff `docs/handoff/2026-11-08-ve-community-directory-t1-t3-listing-queue.md`): Juices For Life listed
+(Castle Hill main, Throggs Neck and Juice 2 Heal White Plains as locations, Vegan options, vetted); a cold hello to @juice2heal waits as a draft in Depot > Outreach; the 114
+read (8 listed, 106 set aside); **the listing-request queue**: `ve_listing_requests`, edge function `ve-listing-requests` (submit, research, queue, decide), cron
+`ve-listing-requests`. Sean's own requests (Request a listing on his For you) go straight to work; everyone else's are drafted by the worker through `ve-listing-intake`
+(which now takes the cron secret) as quarantined `listing-request` listings, then show on Sean's For you with Publish, Send to vetting (Being vetted for a food place
+with Vegan options, else On hold for review), Remove; a place already listed is never drafted twice. Visitors: search's empty state, `/public/ve-listing-request.js`.
+
 ## Events, the menu and the city banner (Sean, 2026-10-26)
 
 "When you're not logged in... the events page needs to be there... select by city... search... It operates almost like our
