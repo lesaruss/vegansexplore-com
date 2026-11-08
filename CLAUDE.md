@@ -7063,6 +7063,7 @@ chapter picker and live content (most voted 100% Vegan food places, coming event
 shout-out, bounties). Proven live at phone size; a real check-in as the Vegans Explore Logan test account (8 m, +10, shout-out and photo) was made and
 removed through `ve-once-app-checkin` (now 410). **V** is `.github/workflows/eas-build.yml` in the app repo; GitHub runs it only from the default branch,
 so it waits on Sean merging the app branch and adding its six secrets from Key Room.
+**Merged 2026-11-08** (Sean: "merge"): app main 2268abe carries the new app and the workflow (the branch had its own history, so main keeps Sapphire's history and its tree is the branch). V now waits only on the six Actions secrets.
 
 ## Image conventions
 
