@@ -7,6 +7,10 @@
  *
  *   Overview       what the Guide is, the holidays coming up with their countdowns, what each tab holds
  *   ThanksLiving   the five ways to celebrate (canon), the word is shared, the National Day of Mourning
+ *   Recipes        a full ThanksLiving table to cook at home (#/recipes/<key>), drafts for Sean
+ *   At the store   plant-based roasts, gravy, butter, cream and desserts on shelves this season, by brand (Directory links)
+ *   Listen         the family panel (Victoria Moran, Renee King-Sonnen, Susan Hargreaves), our holiday episodes, then
+ *                  other shows' holiday episodes from their feeds (ve_topic_episodes 'holiday')
  *   Menus          live holiday menus from ve-holiday `live`, by chapter, 100% Vegan first; Save keeps the place in My Saves
  *   Events         ThanksLiving and Thanksgiving events, sanctuary dinners and potlucks on our calendar; Submit an event
  *                  (organizers' own event titles show as written, Friendsgiving included; our own copy,
@@ -37,8 +41,11 @@
     { k: 'overview', label: 'Overview', say: 'Welcome to the Holiday Guide. I\'m Theo. You\'re the one setting the table this year, and I\'m here to help you do it your way.',
       sayMember: 'Welcome back. Start with ThanksLiving, find a holiday menu near you, and save the places you want to order from.' },
     { k: 'thanksliving', label: 'ThanksLiving', pic: '/public/guides/holiday/theo-thanksliving.jpg', say: 'ThanksLiving is Thanksgiving with a fully plant-based table. Same family, same gratitude, nobody harmed. On this page you\'ll find a few easy ideas to make it yours, whether you host or bring one dish.' },
+    { k: 'recipes', label: 'Recipes', say: 'Cooking this year? Here is a full ThanksLiving table you can make at home: a savory loaf, gravy, mashed potatoes, stuffing, cranberry sauce, green beans and pumpkin pie.' },
+    { k: 'store', label: 'At the store', say: 'Short on time? These are the plant-based roasts, gravies, butters, creams and desserts you can find at the store this season. Read the label, and check your store before you go.' },
     { k: 'menus', label: 'Holiday menus', say: 'Don\'t want to cook it all? Pick your chapter and see which Vegan places are cooking for the holiday, what they\'re offering, and when to order by. Our team checks every menu before it shows. Save one to find it again. Know a place we missed? Tell us, and we\'ll check it.' },
     { k: 'events', label: 'Events', say: 'Rather be at someone else\'s table? Find sanctuary dinners, potlucks and Thanksgiving events on our calendar. Hosting one? Add it, so people can find you.' },
+    { k: 'listen', label: 'Listen', say: 'Going home for the holidays? Listen to Victoria Moran, Renee King-Sonnen and Susan Hargreaves on talking with family, and more from our shows and others.' },
     { k: 'giveback', label: 'Give back', say: 'Giving is part of the season. Here are the nonprofits, rescues and sanctuaries doing the work, in your city and beyond. Giving Tuesday is December first.' },
     { k: 'business', label: 'For businesses', say: 'Run a Vegan business? Send us your holiday menu and we\'ll feature it here, free for members. ThanksLiving menus close at the end of November eighteenth.' }
   ];
@@ -54,6 +61,7 @@
     '<rect x="3" y="8" width="18" height="5" rx="1"/><path d="M12 8v13M5 13v8h14v-8M12 8c-2-4-6-4-6-1s6 1 6 1zm0 0c2-4 6-4 6-1s-6 1-6 1z"/>',
     '<path d="M6 3h9l4 4v14H6z"/><path d="M15 3v4h4M9 12h7M9 16h5"/>'
   ];
+  var RULE_PIC = ['w-thanks.jpg', 'w-table.jpg', 'w-say.jpg', 'w-give.jpg', 'w-reflect.jpg'];
   var RULES = [
     ['Three thanks', 'Before you eat, everyone names three things they are thankful for: a person, a place, and a thing on the table.'],
     ['The Gratitude Table', 'Share a plant-based meal with the people you love. Hosting or bringing one dish, every plate on the table is kind to the animals.'],
@@ -149,12 +157,12 @@
   // button with a short note, then the Guide's sections as headings with a line and picture pills.
   var PIC = '/public/guides/holiday/';
   var GROUPS = [
-    { label: 'Celebrate', line: 'Easy ideas for a ThanksLiving table, and where people are gathering.', kids: ['thanksliving', 'events'] },
-    { label: 'Order your table', line: 'What Vegan places near you are cooking, and when to order by.', kids: ['menus'] },
+    { label: 'Celebrate', line: 'Easy ideas for a ThanksLiving table, what to listen to on the way, and where people are gathering.', kids: ['thanksliving', 'listen', 'events'] },
+    { label: 'Make or buy your table', line: 'Cook it from our recipes, pick it up at the store, or order from a Vegan place near you.', kids: ['recipes', 'store', 'menus'] },
     { label: 'Give back', line: 'The nonprofits, rescues and sanctuaries doing the work. Giving Tuesday is December 1.', kids: ['giveback'] },
     { label: 'Run a business?', line: 'Send your holiday menu and we feature it here, free for members.', kids: ['business'] }
   ];
-  var PILL_PIC = { thanksliving: 'p-thanks.jpg', events: 'p-events.jpg', menus: 'p-menus.jpg', giveback: 'p-giveback.jpg', business: 'p-business.jpg' };
+  var PILL_PIC = { recipes: 'r-loaf.jpg', store: 'p-store.jpg', listen: 'p-listen.jpg', thanksliving: 'p-thanks.jpg', events: 'p-events.jpg', menus: 'p-menus.jpg', giveback: 'p-giveback.jpg', business: 'p-business.jpg' };
   function groupRows() {
     return GROUPS.map(function (g) {
       return '<section class="rg-grow"><h3>' + esc(g.label) + '</h3><p>' + esc(g.line) + '</p><div class="rg-pills">' + g.kids.map(function (k) {
@@ -192,8 +200,8 @@
   function viewThanksLiving() {
     var t = thanks();
     main.innerHTML = head('November 26', 'ThanksLiving', 'Thanksgiving with a full plant-based table, on ' + esc(dayFmt(onDay(t.holiday_on))) + '. Host it, bring a dish, or order from a Vegan place near you. A few easy ideas for your table:') +
-      '<div class="hg-rules">' + RULES.map(function (r, i) { return '<div class="hg-rule"><div class="hg-ric">' + ic(RULE_ICON[i]).replace('width="26" height="26"', 'width="30" height="30"') + '<span class="n">' + (i + 1) + '</span></div><h3>' + esc(r[0]) + '</h3><p>' + esc(r[1]) + '</p></div>'; }).join('') + '</div>' +
-      '<div class="dg-btns" style="margin-top:16px"><a class="dg-btn" href="#/menus">Find a holiday menu</a><a class="dg-btn dg-ghost" href="#/events">See events</a></div>' +
+      '<div class="hg-rules">' + RULES.map(function (r, i) { return '<div class="hg-rule hg-pic"><div class="hg-rpic"><img src="' + PIC + RULE_PIC[i] + '" alt="" loading="lazy" width="320" height="320"><span class="n">' + (i + 1) + '</span></div><div class="hg-rb"><h3>' + esc(r[0]) + '</h3><p>' + esc(r[1]) + '</p></div></div>'; }).join('') + '</div>' +
+      '<div class="dg-btns" style="margin-top:16px"><a class="dg-btn" href="#/recipes">Cook the table</a><a class="dg-btn dg-ghost" href="#/menus">Find a holiday menu</a><a class="dg-btn dg-ghost" href="#/events">See events</a></div>' +
       '<div class="hg-note"><b>A shared word.</b> Sanctuaries and Vegan groups have called it ThanksLiving for years, and many hold ThanksLiving dinners for the animals. We are glad to be one more place people find it.</div>' +
       '<div class="hg-note" style="background:#f6f4ef"><b>The same day is the National Day of Mourning.</b> Since 1970, United American Indians of New England have gathered in Plymouth on this day. To learn more, start with Indigenous-led voices like <a href="https://www.uaine.org/" target="_blank" rel="noopener">uaine.org</a>.</div>';
   }
@@ -369,6 +377,185 @@
     if (s) s.addEventListener('change', function () { store('hg_chapter', s.value); location.hash = '#/' + view + '/' + s.value; });
   }
 
+  // ---------- Recipes ----------
+  // A full ThanksLiving table to cook at home (Sean, 2026-11-08: "come up with some recipes"). Drafts written for this Guide, not yet
+  // kitchen-tested by our team; Sean reads them before the branch goes to main. Pictures are illustrations (public/guides/holiday/r-*.jpg).
+  var RECIPES = [
+    { k: 'loaf', name: 'Lentil and mushroom loaf', course: 'The main', pic: 'r-loaf.jpg', serves: 'Serves 6', time: '1 hour 30 minutes',
+      line: 'A savory centerpiece you can slice at the table, with a sweet and tangy glaze.',
+      ing: ['1 cup dry brown or green lentils (or 2 1/2 cups cooked)', '2 tbsp ground flaxseed and 5 tbsp water', '2 tbsp olive oil', '1 onion, diced', '2 carrots, diced', '2 celery stalks, diced', '8 oz cremini mushrooms, chopped', '3 garlic cloves, minced', '1 tsp dried thyme', '1 tsp dried sage', '2 tbsp soy sauce or tamari', '1 cup rolled oats', '1/2 cup breadcrumbs', 'Salt and pepper', 'Glaze: 1/3 cup ketchup, 1 tbsp maple syrup, 1 tbsp balsamic vinegar'],
+      steps: ['Simmer the lentils in 3 cups of water for 20 to 25 minutes, until tender. Drain.', 'Stir the flaxseed into the water and let it sit 10 minutes to thicken.', 'Heat the oven to 375°F and line a 9 by 5 inch loaf pan with parchment.', 'Cook the onion, carrots and celery in the oil for 6 to 8 minutes. Add the mushrooms and cook until their liquid is gone, about 8 minutes. Add the garlic, thyme and sage for 1 minute, then the soy sauce.', 'Pulse half the lentils with the oats in a food processor until coarse. Mix with the vegetables, the rest of the lentils, the flax and the breadcrumbs. Season to taste.', 'Press firmly into the pan. Stir the glaze together and spread it on top.', 'Bake 45 to 50 minutes, until firm. Rest 15 minutes before lifting it out and slicing.'] },
+    { k: 'gravy', name: 'Mushroom gravy', course: 'Gravy', pic: 'r-gravy.jpg', serves: 'About 3 cups', time: '25 minutes',
+      line: 'Rich and savory, for the loaf, the potatoes and everything else.',
+      ing: ['3 tbsp plant butter or olive oil', '1 small onion, minced', '8 oz mushrooms, finely chopped', '2 garlic cloves, minced', '1/4 cup all-purpose flour', '2 1/2 cups vegetable broth', '2 tbsp soy sauce or tamari', '1 tsp fresh thyme (or 1/2 tsp dried)', 'Black pepper'],
+      steps: ['Melt the butter and cook the onion for 4 minutes.', 'Add the mushrooms and cook until browned, 6 to 8 minutes. Add the garlic for 1 minute.', 'Stir in the flour and cook 1 to 2 minutes.', 'Whisk in the broth a little at a time, then the soy sauce and thyme.', 'Simmer 5 to 8 minutes, stirring, until thick. Add pepper. Blend some or all of it if you like it smooth.'] },
+    { k: 'mash', name: 'Garlic mashed potatoes', course: 'Side', pic: 'r-mash.jpg', serves: 'Serves 6', time: '30 minutes',
+      line: 'Creamy and buttery, with no dairy in sight.',
+      ing: ['3 lb Yukon Gold potatoes, peeled and cubed', '4 garlic cloves, peeled', '4 tbsp plant butter', '3/4 to 1 cup unsweetened plain oat or soy milk, warmed', 'Salt', 'Chopped chives'],
+      steps: ['Cover the potatoes and garlic with cold salted water and bring to a boil.', 'Simmer 15 to 20 minutes, until a fork slides in easily. Drain.', 'Mash with the garlic, butter and warm milk, adding milk until it is as creamy as you like.', 'Season with salt and top with chives.'] },
+    { k: 'stuffing', name: 'Herb bread stuffing', course: 'Side', pic: 'r-stuffing.jpg', serves: 'Serves 8', time: '1 hour',
+      line: 'Crisp on top, soft underneath, full of sage and thyme.',
+      ing: ['1 lb day-old bread, cut in cubes (about 12 cups; check the label for milk, eggs or honey)', '6 tbsp plant butter', '1 large onion, diced', '3 celery stalks, diced', '2 tbsp fresh sage, chopped (or 2 tsp dried)', '1 tbsp fresh thyme (or 1 tsp dried)', '1/4 cup parsley, chopped', '2 to 2 1/2 cups vegetable broth', 'Salt and pepper'],
+      steps: ['If the bread is fresh, dry the cubes in a 300°F oven for 15 to 20 minutes.', 'Heat the oven to 375°F and grease a 9 by 13 inch dish.', 'Melt the butter and cook the onion and celery 8 to 10 minutes. Add the herbs for 1 minute.', 'Toss with the bread. Pour in broth until moist but not soggy. Season.', 'Bake covered for 20 minutes, then uncovered 20 to 25 minutes, until golden.'] },
+    { k: 'cranberry', name: 'Orange cranberry sauce', course: 'Side', pic: 'r-cranberry.jpg', serves: 'About 2 cups', time: '15 minutes, plus cooling',
+      line: 'Bright and tart. Make it a day ahead.',
+      ing: ['12 oz fresh or frozen cranberries', '3/4 cup sugar or maple syrup (organic or beet sugar is never filtered with bone char)', '1/2 cup orange juice', '1/4 cup water', 'Zest of 1 orange', 'A pinch of salt'],
+      steps: ['Bring the juice, water and sugar to a boil.', 'Add the cranberries and simmer about 10 minutes, until most have burst.', 'Stir in the zest and salt. It thickens as it cools.'] },
+    { k: 'beans', name: 'Green beans with crispy onions', course: 'Side', pic: 'r-beans.jpg', serves: 'Serves 6', time: '25 minutes',
+      line: 'All the crunch of the casserole, fresher and faster.',
+      ing: ['1 1/2 lb green beans, trimmed', '2 tbsp olive oil', '3 garlic cloves, sliced', '1 tbsp lemon juice', '1/3 cup sliced almonds, toasted', '1 cup crispy fried onions (many are plant-based; check the label)', 'Salt and pepper'],
+      steps: ['Boil the beans 3 to 4 minutes, then cool them in ice water and drain.', 'Warm the oil and cook the garlic for 1 minute. Add the beans and toss 3 to 4 minutes.', 'Add the lemon juice, salt and pepper.', 'Top with the almonds and crispy onions just before serving.'] },
+    { k: 'pie', name: 'Pumpkin pie', course: 'Dessert', pic: 'r-pie.jpg', serves: 'One 9 inch pie', time: '1 hour 15 minutes, plus 4 hours to chill',
+      line: 'Silky and spiced, set with silken tofu instead of eggs.',
+      ing: ['1 plant-based 9 inch pie crust (many store crusts use lard or butter; check the label)', '15 oz can pumpkin purée', '12 oz firm silken tofu, drained', '2/3 cup brown sugar or maple syrup', '2 tbsp cornstarch', '2 tsp pumpkin pie spice', '1 tsp vanilla', '1/4 tsp salt', 'Dairy-free whipped topping, to serve'],
+      steps: ['Heat the oven to 350°F.', 'Blend everything but the crust until completely smooth.', 'Pour into the crust and bake 55 to 65 minutes, until the edges are set and the center still wobbles a little. Cover the crust edge with foil if it browns too fast.', 'Cool completely, then chill at least 4 hours. Serve with whipped topping.'] }
+  ];
+  function viewRecipes(sub) {
+    var r = RECIPES.filter(function (x) { return x.k === sub; })[0];
+    if (r) {
+      var i = RECIPES.indexOf(r), next = RECIPES[(i + 1) % RECIPES.length];
+      main.innerHTML = crumb([['Recipes', '#/recipes'], [r.name]]) +
+        '<div class="hg-rcp1"><div class="hg-rcp1-b"><div class="dg-k">' + esc(r.course) + '</div><h2 class="dg-h1">' + esc(r.name) + '</h2>' +
+        '<p class="dg-lede">' + esc(r.line) + '</p><div class="hg-facts"><span><b>' + esc(r.serves) + '</b></span><span><b>Time</b> ' + esc(r.time) + '</span></div>' +
+        '<h3 class="hg-sh">What you need</h3><ul class="hg-ing">' + r.ing.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>' +
+        '<h3 class="hg-sh">How to make it</h3><ol class="hg-steps">' + r.steps.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ol></div>' +
+        '<div class="hg-rcp1-p"><img src="' + PIC + r.pic + '" alt="" width="640" height="640"><small>Illustration</small></div></div>' +
+        '<div class="dg-btns" style="margin-top:18px"><a class="dg-btn" href="#/recipes/' + next.k + '">Next: ' + esc(next.name) + '</a><a class="dg-btn dg-ghost" href="#/recipes">Every recipe</a><a class="dg-btn dg-ghost" href="#/store">Buy it instead</a></div>';
+      return;
+    }
+    main.innerHTML = head('Cook it yourself', 'A ThanksLiving table to make at home', 'A main, gravy, four sides and a pie. Every one is plant-based, and most can be made a day ahead.') +
+      '<div class="hg-rcps">' + RECIPES.map(function (x) {
+        return '<a class="hg-rcp" href="#/recipes/' + x.k + '"><span class="hg-rcp-pic"><img src="' + PIC + x.pic + '" alt="" loading="lazy" width="320" height="320"></span>' +
+          '<span class="hg-rcp-b"><span class="dg-k">' + esc(x.course) + '</span><b>' + esc(x.name) + '</b><span>' + esc(x.line) + '</span><small>' + esc(x.serves) + ' &middot; ' + esc(x.time) + '</small></span></a>';
+      }).join('') + '</div>' +
+      '<div class="hg-note"><b>Short on time?</b> Pick up a roast, a gravy or a pie <a href="#/store">at the store</a>, or <a href="#/menus">order from a Vegan place near you</a>.</div>';
+  }
+
+  // ---------- At the store ----------
+  // What is on supermarket shelves this season, by brand (Sean, 2026-11-08: "do a scan of... Thanksgiving options for vegans in the
+  // supermarkets"). Read from 2026 reviews and guides (VegNews, PETA's 2026 roast list, Big Box Vegan, store and brand pages); stock
+  // varies by store, so the page says check before you go. `slug` is the brand's Directory listing when we have one.
+  var BRAND_SLUGS = ['tofurky', 'fieldroast', 'gardein', 'country-crock-plant-butter', 'miyokos', 'earth-balance', 'silk', 'so-delicious', 'whole-foods-market'];
+  var BRAND_URL = SB + '/rest/v1/listings?select=slug,name,logo_url&status=eq.approved&slug=in.(' + BRAND_SLUGS.join(',') + ')';
+  var BRANDS = {};
+  var STORE = [
+    { h: 'The main', pic: 'r-loaf.jpg', items: [
+      ['Tofurky', 'Plant-Based Roast & Gravy', 'tofurky', 'The most widely stocked roast, with gravy in the box.'],
+      ['Field Roast', 'Celebration Roast', 'fieldroast', 'A stuffed roast that slices like a holiday centerpiece.'],
+      ['Field Roast', 'Hazelnut & Cranberry Roast en Croûte', 'fieldroast', 'Wrapped in puff pastry. No gravy in the box.'],
+      ['Gardein', 'Turk\'y Roast', 'gardein', 'Stuffed with brown and wild rice, cranberries and kale, with gravy.']] },
+    { h: 'Gravy and stuffing', pic: 'r-gravy.jpg', items: [
+      ['Imagine', 'Organic Vegan Wild Mushroom Gravy', '', 'A carton gravy, in the soup and broth aisle.'],
+      ['Primal Kitchen', 'No Dairy Mushroom Gravy', '', 'Look for it at Whole Foods and other stores.'],
+      ['Stuffing mixes', 'Boxed and bagged stuffing', '', 'Many are plant-based once made with plant butter and vegetable broth. Read the label for milk, butter or chicken fat.']] },
+    { h: 'Butter and cream', pic: 'r-mash.jpg', items: [
+      ['Country Crock', 'Plant Butter', 'country-crock-plant-butter', 'Sticks and tubs for mashing and baking.'],
+      ['Miyoko\'s', 'Cultured Vegan Butter', 'miyokos', 'A rich cultured butter for the table.'],
+      ['Earth Balance', 'Buttery Sticks', 'earth-balance', 'A classic for pie crusts and stuffing.'],
+      ['Country Crock', 'Dairy Free Heavy Whipping Cream', 'country-crock-plant-butter', 'Swaps one for one; it whips best very cold.'],
+      ['Silk', 'Dairy-Free Heavy Whipping Cream Alternative', 'silk', 'For cooking, baking and whipping.']] },
+    { h: 'Dessert', pic: 'r-pie.jpg', items: [
+      ['So Delicious', 'CocoWhip', 'so-delicious', 'A coconut whipped topping for the pie.'],
+      ['Reddi-wip', 'Dairy-free whipped topping', '', 'The can, made with almond or coconut. Check that the can says dairy-free.'],
+      ['Wholly Wholesome', 'Dairy-free pumpkin pie', '', 'In some stores\' freezers.'],
+      ['Whole Foods Market', 'Bakery pies marked vegan', 'whole-foods-market', 'Look for the pies marked vegan in the bakery.']] }
+  ];
+  function brandLogo(slug, name) {
+    // Field Roast's Directory logo is a Chao cheese picture (set 2026-11-01), so it shows its letter here until the logo is fixed.
+    var l = slug && slug !== 'fieldroast' && BRANDS[slug];
+    return '<span class="hg-blogo"' + (l && l.logo_url ? ' style="background-image:url(\'' + esc(l.logo_url) + '\')"' : '') + '>' + (l && l.logo_url ? '' : esc(name.charAt(0))) + '</span>';
+  }
+  function viewStore() {
+    main.innerHTML = head('At the store', 'Plant-based at the supermarket', 'Roasts, gravy, butter, cream and dessert you can pick up this season. Stock changes by store and by week, so check before you go and read the label.') +
+      STORE.map(function (g) {
+        return '<section class="hg-shelf"><div class="hg-shelf-h"><img src="' + PIC + g.pic + '" alt="" loading="lazy" width="64" height="64"><h3>' + esc(g.h) + '</h3></div><div class="hg-prods">' +
+          g.items.map(function (it) {
+            var link = it[2] && BRANDS[it[2]] ? '<a href="/directory/' + encodeURIComponent(it[2]) + '">Their page</a>' : '';
+            return '<div class="hg-prod">' + brandLogo(it[2], it[0]) + '<div><small>' + esc(it[0]) + '</small><b>' + esc(it[1]) + '</b><p>' + esc(it[3]) + '</p>' + link + '</div></div>';
+          }).join('') + '</div></section>';
+      }).join('') +
+      '<div class="hg-note"><b>Not back this year:</b> Trader Joe\'s Breaded Turkey-less Stuffed Roast. The chain told VegNews in October 2026 that it has no plans to bring it back.</div>' +
+      '<div class="dg-btns"><a class="dg-btn" href="#/recipes">Or cook it yourself</a><a class="dg-btn dg-ghost" href="#/menus">Order from a Vegan place</a></div>';
+  }
+
+  // ---------- Listen ----------
+  // Our episodes on family and the holidays, played in place (the Dairy and Restaurant Guides' way: VEEpisodes.row, the player docked
+  // above the list), then the newest holiday episodes from other podcasts in our Directory (ve_topic_episodes 'holiday',
+  // migration 20261108_topic_episodes_holiday.sql). [show's Directory slug, the episode's guid in that show's feed, why it is here]
+  var FAMILY = [
+    ['vegans-explore-podcast', 'a0952840-5a66-40ac-9906-086eb987b91b', 'Victoria Moran, Renee King-Sonnen and Susan Hargreaves on family pressure, patience and confidence.'],
+    ['soflo-vegans-podcast', '9a20c9c7-ca50-4119-ba17-02435718c5a8', 'The same three on talking with family and friends after going Vegan.']
+  ];
+  var MORE = [
+    ['vegans-who-lift-podcast', '6dc3bdeb-9afb-4fe0-add5-1d6fb789a9dc'],
+    ['vegans-who-lift-podcast', '31b055d0-6254-439d-ba87-e983c39a57d4'],
+    ['vegans-explore-podcast', '779f25d1-b411-4985-bde4-6a59deba0589'],
+    ['vegans-who-lift-podcast', 'a5abef33-bf9e-401e-bb4a-4f83d95df330'],
+    ['soflo-vegans-podcast', 'tag:soundcloud,2010:tracks/748790878'],
+    ['vegans-explore-podcast', '0fd66432-82e8-4afc-9f1f-3cabaa3ecaff']
+  ];
+  // Matched on a title word, so a few are not about the holidays (a guest named Holiday, a show's break notice); those stay out.
+  var OTHER_SKIP = /ryan holiday|holiday pause|podcast break|gaz oakley/i;
+  var PODCAST_FN = SB + '/functions/v1/ve-podcast';
+  var SHOWS_URL = SB + '/rest/v1/listings?select=id,slug,name,logo_url&status=eq.approved&slug=in.(vegans-explore-podcast,soflo-vegans-podcast,vegans-who-lift-podcast)';
+  var LISTEN = null, OTHERS = null;
+  function feedEp(show, guid) {
+    return fetch(PODCAST_FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'episode', slug: show, guid: guid }) })
+      .then(function (r) { return r.json(); }).then(function (d) { return d && d.episode; }).catch(function () { return null; });
+  }
+  function loadListen(then) {
+    var picks = FAMILY.concat(MORE);
+    Promise.all([rest(SHOWS_URL).catch(function () { return []; }), Promise.all(picks.map(function (x) { return feedEp(x[0], x[1]); })),
+      fetch(SB + '/rest/v1/rpc/ve_topic_episodes', { method: 'POST', headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_topic: 'holiday', p_limit: 24 }) })
+        .then(function (r) { return r.json(); }).catch(function () { return []; })]).then(function (r) {
+      var shows = Array.isArray(r[0]) ? r[0] : [];
+      LISTEN = picks.map(function (x, i) {
+        var show = shows.filter(function (y) { return y.slug === x[0]; })[0], ep = r[1][i];
+        return show && ep && ep.audio ? { show: show, ep: ep, why: x[2] || '', family: i < FAMILY.length } : null;
+      }).filter(Boolean);
+      OTHERS = (Array.isArray(r[2]) ? r[2] : []).filter(function (o) { return o && o.show && o.episode && o.episode.audio && !OTHER_SKIP.test(o.episode.title || ''); });
+      then();
+    });
+  }
+  function epRow(p) {
+    if (!window.VEEpisodes) return '';
+    var show = { name: p.show.name, slug: p.show.slug, image: p.show.logo_url || '' };
+    return VEEpisodes.row(Object.assign({}, p.ep, { summary: '', image: show.image || p.ep.image || '' }), show, { showName: true });
+  }
+  function otherRow(o) {
+    if (!window.VEEpisodes) return '';
+    var show = { name: o.show.name, slug: o.show.slug, image: o.show.image || '' };
+    return VEEpisodes.row(Object.assign({}, o.episode, { summary: '', image: show.image || o.episode.image || '' }), show,
+      { showName: true, acts: '<a class="vep-btn" href="/directory/' + encodeURIComponent(o.show.slug) + '" target="_blank" rel="noopener">The show</a>' });
+  }
+  function playEp(key) {
+    var g = String(key).split('|').slice(1).join('|');
+    var p = (LISTEN || []).filter(function (x) { return x.ep.guid === g; })[0];
+    if (p) { VEEpisodes.play(Object.assign({}, p.ep, { image: p.show.logo_url || p.ep.image || '' }), { name: p.show.name, image: p.show.logo_url || '' }); return; }
+    var o = (OTHERS || []).filter(function (x) { return x.episode.guid === g; })[0];
+    if (o) VEEpisodes.play(Object.assign({}, o.episode, { image: o.show.image || o.episode.image || '' }), { name: o.show.name, image: o.show.image || '' });
+  }
+  // A redraw would drop a playing episode: the player moves into the new dock, or to the foot of the window (the Dairy Guide's way).
+  function keepPlayer(bar) {
+    if (!bar) return;
+    var cur = document.getElementById('vep-player');
+    if (cur && cur !== bar) { var old = bar.querySelector('audio'); if (old) old.pause(); return; }
+    var dock = main.querySelector('.vep-dock[data-vep-always]');
+    if (dock) { bar.classList.add('docked'); document.body.classList.remove('vep-on'); dock.appendChild(bar); }
+    else { bar.classList.remove('docked'); document.body.classList.add('vep-on'); document.body.appendChild(bar); }
+  }
+  function viewListen() {
+    var lede = 'Going home for the holidays? Our conversations on family, the table and the season, played right here.';
+    if (LISTEN === null) { main.innerHTML = head('Listen', 'Holiday listening', lede) + '<div class="dg-loading">Loading episodes...</div>'; return; }
+    var fam = LISTEN.filter(function (x) { return x.family; }), more = LISTEN.filter(function (x) { return !x.family; });
+    main.innerHTML = head('Listen', 'Holiday listening', lede) + '<div class="vep-dock" data-vep-always></div>' +
+      (fam.length ? '<section class="hg-feat"><div class="hg-feat-pic"><img src="' + PIC + 'p-listen.jpg" alt="" width="320" height="320"></div><div class="hg-feat-b"><div class="dg-k">Start here</div>' +
+        '<h3>Talking with family</h3><p>Victoria Moran of Main Street Vegan, Renee King-Sonnen of Rowdy Girl Sanctuary and Susan Hargreaves of Animal Hero Kids share how they handled family, friends and the holiday table.</p></div></section>' +
+        '<div class="dg-eps"><div class="vep-list">' + fam.map(epRow).join('') + '</div></div>' : '') +
+      (more.length ? '<h3 class="dg-eps-h">More from our shows</h3><div class="dg-eps"><div class="vep-list">' + more.map(epRow).join('') + '</div></div>' : '') +
+      (OTHERS && OTHERS.length ? '<h3 class="dg-eps-h">From other shows</h3><p class="dg-eps-sub">The newest holiday episodes from the podcasts in our Directory.</p><div class="dg-eps"><div class="vep-list">' + OTHERS.map(otherRow).join('') + '</div></div>' : '');
+  }
+
   // ---------- Events ----------
   function viewEvents() {
     var lede = 'Sanctuary dinners, Vegan potlucks and Thanksgiving events on our calendar.';
@@ -500,11 +687,13 @@
   function route() {
     var parts = (location.hash || '').replace(/^#\/?/, '').split('/');
     var view = parts[0] || 'overview', sub = parts.slice(1).join('/');
-    var V = { overview: viewOverview, thanksliving: viewThanksLiving, menus: function () { viewMenus(sub); }, events: viewEvents, giveback: function () { viewGiveBack(sub); }, business: viewBusiness };
+    var V = { overview: viewOverview, thanksliving: viewThanksLiving, recipes: function () { viewRecipes(sub); }, store: viewStore, listen: viewListen, menus: function () { viewMenus(sub); }, events: viewEvents, giveback: function () { viewGiveBack(sub); }, business: viewBusiness };
     if (!V[view]) view = 'overview';
     document.body.classList.toggle('dg-member', member());
     drawJoinbox(); drawMenu(view);
+    var bar = document.getElementById('vep-player');
     V[view]();
+    keepPlayer(bar);
     curTab = view; drawTheo();
     main.scrollTop = 0; if (!document.documentElement.classList.contains('dg-fit') || window.innerWidth <= 900) window.scrollTo(0, 0);
   }
@@ -579,6 +768,7 @@
       if (a) a.showAuthModal('Sign in to save holiday menus.', function () { location.reload(); }, 'login');
       return;
     }
+    if ((el = e.target.closest('[data-vep-play]')) && el.closest('#dgMain')) { e.preventDefault(); e.stopPropagation(); playEp(el.getAttribute('data-vep-play')); return; }
     if ((el = e.target.closest('.dg-srow[data-href]')) && !e.target.closest('a,button')) { location.href = el.getAttribute('data-href'); }
   });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeJoin(); });
@@ -590,6 +780,8 @@
     hol('live', { holiday: HOLIDAY }).then(function (d) { MENUS = (d && d.menus) || []; TIPS = (d && d.tips) || []; }).catch(function () { MENUS = []; TIPS = []; }).then(function () { if (curTab === 'menus') drawMenuList(chapter(null)); });
     rest(EVENTS_URL).then(function (d) { EVENTS = Array.isArray(d) ? d : []; }).catch(function () { EVENTS = []; }).then(again(/^events$/));
     rest(GIVE_URL).then(function (d) { GIVE = ours(d); }).catch(function () { GIVE = []; }).then(again(/^giveback$/));
+    rest(BRAND_URL).then(function (d) { (Array.isArray(d) ? d : []).forEach(function (l) { BRANDS[l.slug] = l; }); }).catch(function () {}).then(again(/^store$/));
+    loadListen(again(/^listen$/));
     var a = auth();
     if (member() && a.listSavedListings) {
       a.listSavedListings().then(function (d) {
@@ -605,6 +797,7 @@
 
   function init() {
     if (window.VERegionDirectory) VERegionDirectory.css();
+    if (window.VEEpisodes) VEEpisodes.css();
     document.documentElement.classList.add('dg-fit');
     var box = document.getElementById('dgMaya');
     if (window.VEGuideArt) { var art = VEGuideArt('theo', 'square'); if (art) box.style.backgroundImage = "url('" + art + "')"; }
