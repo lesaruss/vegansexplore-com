@@ -369,10 +369,12 @@ async function memberLink(mem: Member, c: Contact, name: string, dest: string): 
   }
   throw new Error('could not make a tracked link');
 }
-async function campaignTick(room: number) {
+async function campaignTick(room: number, only?: string) {
   const out: Record<string, unknown>[] = [];
   if (room <= 0) return out;
-  const { data: due } = await db.rpc('ve_outreach_campaign_due', { p_limit: 200 });
+  const { data: dueAll } = await db.rpc('ve_outreach_campaign_due', { p_limit: 200 });
+  // only: one campaign sent now, outside the window (Sean, 2026-11-08: a reply to someone who wrote to us today should not wait).
+  const due = only ? (dueAll || []).filter((d: { campaign_slug: string }) => d.campaign_slug === only) : dueAll;
   if (!due?.length) return out;
   const since = easternMidnightIso();
   const slugs = [...new Set((due as { campaign_slug: string }[]).map((d) => d.campaign_slug))];
@@ -579,6 +581,17 @@ Deno.serve(async (req) => {
       const given = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
       const [cs, at] = await Promise.all([secretValue('CRON_SECRET'), secretValue('LESARUSS_ADMIN_TOKEN')]);
       if (!((cron && cs && cron === cs) || (given && at && given === at))) return json({ error: 'unauthorized' }, 401);
+      // send_now: one approved campaign, now, outside sending hours. The admin token only (never the cron), every other rule kept:
+      // approval, start day, pace, one email per address a day, suppressions, the tracked link (Sean, 2026-11-08, Brion Hurley's reply).
+      if (body.send_now) {
+        if (!(given && at && given === at)) return json({ error: 'admin_token_only' }, 403);
+        const slug = clean(body.send_now, 60);
+        const { data: cp } = await db.from('ve_outreach_campaigns').select('slug,status,approved_at').eq('slug', slug).maybeSingle();
+        if (!cp) return json({ error: 'no_campaign' }, 404);
+        if (!cp.approved_at || cp.status !== 'active') return json({ error: 'not_approved' }, 409);
+        const sent = await campaignTick(Math.min(PER_TICK, Math.max(1, Number(body.limit) || 1)), slug);
+        return json({ ok: true, campaign: slug, sent });
+      }
       const r = await tick() as Record<string, unknown>;
       r.onboarding = await onboardingTick();
       await db.from('email_heartbeats').upsert({ name: 've-outreach', last_ok_at: new Date().toISOString(), detail: r, updated_at: new Date().toISOString() });
