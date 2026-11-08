@@ -15,9 +15,8 @@ begin
   out := out || ('06 ledger open: ' || (select coalesce(sum(delta),0) from points_ledger where member_id=L and reason='course'));
   r := course_open_day(L,P,1); out := out || ('07 reopen first_open=' || (r->>'first_open') || ' ledger ' || (select sum(delta) from points_ledger where member_id=L and reason='course'));
   select * into e from course_enrollments where id=eid; out := out || ('08 next unlock future: ' || (e.next_unlock_at > now()) || ' ' || e.next_unlock_at);
-  update course_enrollments set next_unlock_at = now() - interval '1 minute' where id=eid;
+  update course_progress set unlocked_at = now() - interval '2 days', opened_at = now() - interval '2 days' where enrollment_id=eid and day=1;
   e := course_refresh(eid); out := out || ('09 advanced to ' || e.current_day);
-  update course_enrollments set next_unlock_at = now() - interval '1 minute' where id=eid;
   e := course_refresh(eid); out := out || ('10 no binge (d2 unopened) stays ' || e.current_day);
   r := course_proof_submit(L,P,1,'why','{"body":"For the animals."}'); out := out || ('11 tick: ' || r::text);
   out := out || ('12 answer why: ' || course_answer(L,P,1,'why','"For the animals."')::text || ' empty: ' || (course_answer(L,P,1,'why','""')->>'error'));
@@ -46,8 +45,8 @@ begin
   update ve_checkin_actions set status='approved', reviewed_by=S, reviewed_at=now() where id=ac;
   out := out || ('25 mirrored: ' || (select status||' pts='||points||' note='||coalesce(paid_note,'-') from course_proofs where id=pid));
   -- day 7 capstone gate
-  insert into course_progress (enrollment_id, day, unlocked_at, opened_at) values (eid,6,now(),now()),(eid,7,now(),now());
-  update course_enrollments set current_day=7, next_unlock_at=now()-interval '1 minute' where id=eid;
+  insert into course_progress (enrollment_id, day, unlocked_at, opened_at) values (eid,6,now(),now()),(eid,7,now()-interval '2 days',now()-interval '2 days');
+  update course_enrollments set current_day=7 where id=eid;
   e := course_refresh(eid); out := out || ('26 no day 8 row, stays ' || e.current_day);
   insert into course_days (program_slug, day, phase_n, title, ready) values (P,8,2,'[TEST] day 8',true);
   e := course_refresh(eid); out := out || ('27 capstone not sent, stays ' || e.current_day);

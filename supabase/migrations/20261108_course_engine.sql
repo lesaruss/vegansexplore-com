@@ -261,7 +261,8 @@ begin
   if e.status <> 'active' then return e; end if;
   select * into cur from course_progress where enrollment_id = e.id and day = e.current_day;
   if cur.opened_at is null or e.current_day >= pg.days then return e; end if;
-  if e.next_unlock_at is null then
+  -- always worked out from when the day unlocked and was opened, never trusted from a stored value
+  if e.next_unlock_at is distinct from course_next_unlock(e.tz, pg.unlock_hour, cur.unlocked_at, cur.opened_at) then
     update course_enrollments set next_unlock_at = course_next_unlock(e.tz, pg.unlock_hour, cur.unlocked_at, cur.opened_at)
       where id = e.id returning * into e;
   end if;
@@ -346,8 +347,7 @@ begin
   select d.phase_n into ph from course_days d where d.program_slug = p_program and d.day = e.current_day;
   if ph = any (e.pause_phases) then return jsonb_build_object('error','already_paused_this_phase'); end if;
   update course_enrollments set status = 'paused', paused_until = now() + make_interval(days => p_days),
-         pause_phases = pause_phases || ph,
-         next_unlock_at = case when next_unlock_at is not null then greatest(next_unlock_at, now() + make_interval(days => p_days)) end
+         pause_phases = pause_phases || ph
    where id = e.id;
   return jsonb_build_object('ok', true, 'paused_until', now() + make_interval(days => p_days));
 end $$;
