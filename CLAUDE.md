@@ -6312,6 +6312,22 @@ and a tee reference, both shapes for each Guide. Dani uses a manual wheelchair a
 a warm wave, head to waist, white background. Pascal (the Cultural Bridge) is in the map too, though
 not in the member Guide picker.
 
+## Guide scenes: the locked image recipe (Sean, 2026-11-08)
+
+Sean on the Welcome Guide tour's Liz scenes ("36 is fire... lock that in for the styles... it might have drifted in the last couple of weeks"):
+every new Guide scene uses this recipe.
+- **Model**: request `nano_banana_pro` in Higgsfield. The jobs come back labeled `nano_banana_2`; that is the run Sean approved. Aspect 4:5 for
+  vertical video and scene cards (1856 x 2304 out), saved at 1080 x 1350 JPEG quality about 84.
+- **Two references**: the Guide's own picture first (Liz: Higgsfield media `85023ca7-491a-4d75-ac6d-f99b72245ed8`), then the style scene
+  (the Theo store scene, media `6c80cc2c-765e-4739-a93b-b9643ce543b8`). For a group, the first reference is the group shot Sean approved
+  (frame 10, `vegan-media/media/tours/welcome-guide/v45/b10-market-walk.jpg`).
+- **Prompt shape**: "<Guide>, the same character as the first reference (same face, hair, skin tone), drawn in the illustrated style of the second
+  reference scene, mid shot, <the scene>. She wears <store clothes, the Vegans Explore suitcase mark clearly visible>. Hands fully drawn. No other
+  logos, no readable words." For groups add: realistic adult proportions, about seven and a half heads tall, never short, squat or chibi, everyone
+  head to shoes in frame (the old ensemble reference made the Guides look short).
+- **Never stretch or outpaint a character scene** to change its shape; draw it new in the target shape. Outpainting is only for city art.
+- Liz's pink Vegans Explore tee is a favorite: use it often.
+
 ## Guide voices: one place, the roster profile (Sean, 2026-10-31)
 
 "So that way there's never a question as to what we're using, because that's happened a few times where we had to pick new
