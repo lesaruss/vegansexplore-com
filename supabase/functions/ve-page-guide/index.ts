@@ -18,6 +18,7 @@
 // pascal): the Guide rail on a Guide page, the Resources tab's Guide, or Liz on the Partner Dashboard tour. On a page it cannot
 // edit (a Guide page, any page that is not a Directory listing) the Guide files a Note for Logan instead (target "logan"): a
 // ve_feedback row, kind suggestion, named "Sean (via <Guide>)", which Logan works from Depot > Feedback.
+// R (branddesk-production-wing, 2026-11-08): on the 5.x models thinking counts against max_tokens, so every call gets 16000 and a cut-off read is an error, never half an answer.
 import Anthropic from 'npm:@anthropic-ai/sdk';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
@@ -270,11 +271,12 @@ Deno.serve(async (req) => {
     try {
       const client = new Anthropic({ apiKey });
       const res: any = await client.beta.messages.create({
-        model: MODEL, max_tokens: 3000, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
+        model: MODEL, max_tokens: 16000, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
         output_config: { effort: 'low', format: { type: 'json_schema', schema: SCHEMA } },
         system: systemFor(guide), messages: turns,
       } as any);
       if (res.stop_reason === 'refusal') return json({ error: 'refused' }, 422);
+      if (res.stop_reason === 'max_tokens') return json({ error: 'cut_off' }, 502);
       out = JSON.parse((res.content || []).filter((x: any) => x.type === 'text').map((x: any) => x.text).join(''));
     } catch (e) {
       if (e instanceof Anthropic.RateLimitError) return json({ error: 'busy' }, 503);

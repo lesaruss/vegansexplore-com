@@ -21,6 +21,7 @@
 // Each change to a listing is a ve_listing_edits row with the value it replaced.
 //
 // verify_jwt is false: the VE app token is HMAC-checked here the same way ve-auth checks it.
+// R (branddesk-production-wing, 2026-11-08): on the 5.x models thinking counts against max_tokens, so every call gets 16000 and a cut-off read is an error, never half an answer.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 
@@ -251,12 +252,13 @@ Deno.serve(async (req) => {
     try {
       const client = new Anthropic({ apiKey });
       const res: any = await client.beta.messages.create({
-        model: MODEL, max_tokens: 2000, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
+        model: MODEL, max_tokens: 16000, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
         output_config: { effort: 'low', format: { type: 'json_schema', schema: BIO_SCHEMA } },
         system: BIO_SYSTEM,
         messages: [{ role: 'user', content: `The person: ${l.name}.\n\nSOURCES:\n\n${src.text}\n\nWrite their profile.` }],
       } as any);
       if (res.stop_reason === 'refusal') return json({ error: 'refused' }, 422);
+      if (res.stop_reason === 'max_tokens') return json({ error: 'cut_off' }, 502);
       out = JSON.parse((res.content || []).filter((b: any) => b.type === 'text').map((b: any) => b.text).join(''));
     } catch (e) {
       if (e instanceof Anthropic.RateLimitError) return json({ error: 'busy' }, 503);

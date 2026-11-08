@@ -1,4 +1,5 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+// R (branddesk-production-wing, 2026-11-08): on the 5.x models thinking counts against max_tokens, so every call gets 16000 and a cut-off read is an error, never half an answer.
 import { createClient } from 'jsr:@supabase/supabase-js@2';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 
@@ -369,12 +370,13 @@ async function draftOpening(inv: Invite): Promise<{ opening?: string; note?: str
   try {
     const client = new Anthropic(key ? { apiKey: key } : {});
     const msg: any = await client.beta.messages.create({
-      model: MODEL, max_tokens: 800, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
+      model: MODEL, max_tokens: 16000, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
       output_config: { effort: 'medium', format: { type: 'json_schema', schema: OPENING_SCHEMA } },
       system: OPENING_SYSTEM,
       messages: [{ role: 'user', content: 'The sources, as JSON:\n' + JSON.stringify(sources) }],
     } as any);
     if (msg.stop_reason === 'refusal') return { error: 'refused' };
+    if (msg.stop_reason === 'max_tokens') return { error: 'cut_off' };
     const out = JSON.parse((msg.content || []).find((c: any) => c.type === 'text')?.text || '{}');
     const opening = String(out.opening || '').replace(/\s*[–—]\s*/g, ', ').replace(/\s+-\s+/g, ', ').replace(/!/g, '.').replace(/\bvegan\b/g, 'Vegan').replace(/[ \t]+/g, ' ').trim().slice(0, 900);
     return opening ? { opening, note: String(out.note || '').slice(0, 300) } : { error: 'empty' };

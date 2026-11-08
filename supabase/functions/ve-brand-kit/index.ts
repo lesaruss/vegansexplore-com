@@ -45,6 +45,7 @@
 //   tags branddesk and where it came from), which the Inbox reads as a Managed marketing request; an email to the team (reply-to them)
 //   and a short confirmation to them from Vegans Explore. Nothing is sold here: the setup checkout is not built yet.
 // verify_jwt is false: the member token is checked here.
+// R (branddesk-production-wing, 2026-11-08): on the 5.x models thinking counts against max_tokens, so every call gets 16000 and a cut-off read is an error, never half an answer.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 
@@ -358,10 +359,11 @@ async function foundation(b: any, k: Kit): Promise<Response | null> {
     });
     try {
       const client = new Anthropic({ apiKey });
-      const res: any = await client.beta.messages.create({ model: MODEL, max_tokens: 1500, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
+      const res: any = await client.beta.messages.create({ model: MODEL, max_tokens: 16000, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
         output_config: { effort: 'low', format: { type: 'json_schema', schema: MOOD_SCHEMA } },
         system: 'You read mood boards for small businesses building a brand kit on Vegans Explore BrandDesk. ' + RULES, messages: [{ role: 'user', content }] } as any);
       if (res.stop_reason === 'refusal') return json({ error: 'refused' }, 422);
+      if (res.stop_reason === 'max_tokens') return json({ error: 'cut_off' }, 502);
       const out = JSON.parse((res.content || []).filter((x: any) => x.type === 'text').map((x: any) => x.text).join(''));
       const fix = (s: string) => String(s).replace(/\s*[—–]\s*/g, ', ').replace(/\bvegan\b/g, 'Vegan');
       const palette = ROLES.map((r) => (out.palette || []).find((c: any) => c.role === r)).filter(Boolean)
@@ -690,12 +692,13 @@ Deno.serve(async (req) => {
   try {
     const client = new Anthropic({ apiKey });
     const res: any = await client.beta.messages.create({
-      model: MODEL, max_tokens: 1500, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
+      model: MODEL, max_tokens: 16000, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
       output_config: { effort: 'low', format: { type: 'json_schema', schema: SCHEMAS[kind] } },
       system: 'You write brand copy for small Vegan businesses on Vegans Explore. ' + RULES,
       messages: [{ role: 'user', content: prompt(kind, b) }],
     } as any);
     if (res.stop_reason === 'refusal') return json({ error: 'refused' }, 422);
+      if (res.stop_reason === 'max_tokens') return json({ error: 'cut_off' }, 502);
     const out = JSON.parse((res.content || []).filter((x: any) => x.type === 'text').map((x: any) => x.text).join(''));
     const strip = (s: string) => String(s).replace(/\s*[—–]\s*/g, ', ').replace(/\bvegan\b/g, 'Vegan');
     const tidy = (o: any): any => typeof o === 'string' ? strip(o) : Array.isArray(o) ? o.map(tidy) : o && typeof o === 'object' ? Object.fromEntries(Object.entries(o).map(([k, v]) => [k, tidy(v)])) : o;

@@ -21,6 +21,7 @@
 // Each read fills an empty organizer and an empty place from the page. Every read is a ve_event_checks row.
 // Logan's defaults (2026-11-02), Sean's to change: once every 7 days a event, a gone page asked again the next day, a date moved
 // only when the page differs by more than 30 minutes and no other event of ours shares the link (a weekly series on one page).
+// R (branddesk-production-wing, 2026-11-08): on the 5.x models thinking counts against max_tokens, so every call gets 16000 and a cut-off read is an error, never half an answer.
 import Anthropic from 'npm:@anthropic-ai/sdk';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
@@ -143,13 +144,14 @@ async function askClaude(ev: any, html: string): Promise<Found | null> {
   try {
     const client = new Anthropic({ apiKey: key });
     const r: any = await client.beta.messages.create({
-      model: MODEL, max_tokens: 4000, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
+      model: MODEL, max_tokens: 16000, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
       output_config: { effort: 'low', format: { type: 'json_schema', schema: READ_SCHEMA } },
       system: 'You check an event against its own official page for the Vegans Explore calendar. Copy only what the page says, never guess. ' +
         'start and end are ISO 8601 with the event\'s UTC offset, empty when the page gives none. cancelled or postponed only when the page says so about this event. ' +
         'is_event_page is false when the page does not describe this event at all (a home page, a list of other events, an error). organizer is who the page names as organizer or host.',
       messages: [{ role: 'user', content: `Our event: ${JSON.stringify({ title: ev.title, starts_at: ev.starts_at, timezone: ev.timezone, place: ev.location_name, city: ev.city })}\nThe page (${ev.ticket_url}):\n${text}` }],
     } as any);
+    if (r.stop_reason !== 'end_turn') return null; // cut off or refused: could not read, never half a read
     const out = JSON.parse((r.content || []).filter((b: any) => b.type === 'text').map((b: any) => b.text).join(''));
     if (!out.is_event_page) return { status: 'NotFound' };
     return { start: out.start, end: out.end, status: out.cancelled ? 'EventCancelled' : out.postponed ? 'EventPostponed' : '', venue: out.venue,

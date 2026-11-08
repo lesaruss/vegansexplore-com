@@ -12,6 +12,7 @@
 // Google with found.search (ve-discover add_search) and Sean checks every field before Add it.
 //
 // verify_jwt is false: the VE app token is HMAC-checked here the same way ve-auth checks it.
+// R (branddesk-production-wing, 2026-11-08): on the 5.x models thinking counts against max_tokens, so every call gets 16000 and a cut-off read is an error, never half an answer.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 import Anthropic from 'npm:@anthropic-ai/sdk';
 
@@ -186,11 +187,12 @@ Deno.serve(async (req) => {
   try {
     const client = new Anthropic({ apiKey });
     const res: any = await client.beta.messages.create({
-      model: MODEL, max_tokens: 4000, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
+      model: MODEL, max_tokens: 16000, betas: ['server-side-fallback-2026-07-01'], fallbacks: 'default',
       output_config: { effort: 'low', format: { type: 'json_schema', schema: SCHEMA } },
       system: SYSTEM, messages: [{ role: 'user', content }],
     } as any);
     if (res.stop_reason === 'refusal') return json({ error: 'refused' }, 422);
+    if (res.stop_reason === 'max_tokens') return json({ error: 'cut_off' }, 502);
     const found = JSON.parse((res.content || []).filter((b: any) => b.type === 'text').map((b: any) => b.text).join(''));
     if (handle && !found.instagram) found.instagram = '@' + handle;
     return json({ ok: true, found, read, pictures });
