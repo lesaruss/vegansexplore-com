@@ -1,4 +1,4 @@
-# ve-demo-showroom: Green Leaf Kitchen tour script (draft for Sean)
+# ve-demo-showroom: Green Leaf Kitchen tour script (approved and recorded)
 
 2026-11-08. Liz narrates. Built as the guided view (`/public/ve-guided.js`, white stage, the `/partners` format), one slide per stop,
 Back / N of M / Next, each slide showing that part of the real sample site (`/business/sample/site`) in a phone or browser frame,
@@ -6,7 +6,7 @@ stamped **Sample**. Nothing plays until Play. Lines are text until you approve t
 voice and checked word for word with stt. No prices on the tour (the product still shows the old BrandDesk prices; pricing_v9 is not
 built yet). Green Leaf Kitchen, its owner and its farms are made up; the brands on dish pages are real Directory listings.
 
-Running time at Liz's pace: about 2 minutes 45 seconds.
+Running time: about 1 minute 57 seconds of Liz, plus the time on each slide.
 
 ---
 
@@ -27,7 +27,7 @@ Running time at Liz's pace: about 2 minutes 45 seconds.
 > brand in our Directory, it links to that brand's page.
 
 **5. Members** (signed in as the sample member: a heart vote, Save, the Favorite pill)
-> Vegans Explore members can sign in here with the account they already have. They vote for their favorite dishes once a day and
+> Members of Vegans Explore can sign in here with the account they already have. They vote for their favorite dishes once a day and
 > save the ones they want to come back for.
 
 **6. The owner's view** (the sample bar on As the owner, the yellow bar, editing ingredients on a dish)
@@ -60,3 +60,10 @@ Running time at Liz's pace: about 2 minutes 45 seconds.
 - Slide 10 follows your 2026-11-08 answers (canon-ve-front-of-house v10): rewards the owner sets, never cash; the club is a Guide.
   Check-ins every two weeks is not in it (you have not answered that one).
 - Slide 11 links to Managed by us, which still shows the old prices until the pricing_v9 build.
+
+## Recorded (2026-11-08, Sean: "record Liz")
+Liz's roster-profile voice `IUMUPi350HfIhyzUBJB3`, el-media tts from the database, Vegan sent as Veegan, each checked word for word with stt.
+Files: `vegan-media/media/liz/green-leaf-tour/tour-<n>-v1.mp3` for 1 to 4 and 6 to 11, and `tour-5-v3.mp3` for slide 5.
+Lengths: 12.5, 11.1, 9.6, 11.8, 10.1, 9.2, 10.9, 8.3, 6.1, 21.8, 5.9 s (about 1 minute 57 seconds in all).
+Slide 5 was reworded to "Members of Vegans Explore can sign in here..." because the voice stopped for about a second after "Vegans" when a line
+opened with "Vegans Explore" (v1 0.86 s, v2 1.3 s; both kept in storage, not used). Every other pause falls at a sentence or comma break.
