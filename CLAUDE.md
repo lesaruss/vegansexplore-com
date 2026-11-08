@@ -1527,6 +1527,14 @@ planning, after the last news slot; scripted and approved in BrandDesk > Podcast
 Proven live 2026-11-08 on a [TEST] idea (the draft written, held out of a real Pulse and taken in once live in a rolled-back transaction, the podcast draft placed
 on a [TEST] episode), then every test row removed through the one-time `ve-once-idea-test-cleanup` (now 410).
 
+**Ideas live only in Depot > Ideas** (2026-11-08, Logan's default on Sean's 2026-11-07 call; on branches, not merged). Sorting moved from HQ's
+BrandDesk > Blueprint > Ideas into `ve-ideas` (v12, live: `sort_options`, `sort_send`, `sort_own`, `sort_park`, `sort_decline`, `sort_reopen`; a super
+admin's token only, never ops) and Depot > Ideas has **Sort it**, **Where I looked** and the idea's **History**. HQ branch `claude/bold-feynman-esaemy`
+(dd5e30c) takes the Ideas tab out of BrandDesk (an old `?b=ideas` link shows a pointer) and deletes its route and helpers; this repo's branch of the same
+name carries the page. `sort_own` refuses a slug any page, `ve_playbook_index` row or record already uses: the first version checked pages only and, in
+its test, overwrote the `branddesk-production-wing` index row (restored from the seed and the handoff; its exact earlier stage and next action are lost).
+HQ main's old route has the same hole until the HQ branch merges.
+
 **R, the max_tokens rule.** On the 5.x models thinking counts against max_tokens, so every 5.x Claude call gets 16000 and treats any end but `end_turn` as an
 error (cut_off), never half an answer. Done 2026-11-08 in `ve-discover`, `ve-invites`, `branddesk-insights`, `ve-listing-intake`, `ve-books`, `ve-brand-kit`,
 `ve-listing-about`, `ve-page-guide`, `ve-event-check`, `ve-plan`, `ve-people` (all redeployed, source sha256 matched) and in HQ `app/api/branddesk/v`,

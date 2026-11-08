@@ -47,6 +47,7 @@
     /* Send to (M): drafts for the Daily Pulse and the podcast */
     .send{border-top:1px solid var(--ve-border);padding-top:16px;display:grid;gap:12px;}
     .send h3{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .hist{font-size:13px;margin-top:8px;}.hist summary{cursor:pointer;font-weight:800;}.hist ul{margin:8px 0 0 18px;}
     .draft{border:1px solid var(--ve-border);border-radius:6px;padding:14px;display:grid;gap:8px;background:#fff;}
     .draft input,.draft textarea,.draft select{font-family:inherit;font-size:16px;padding:8px 12px;border:1px solid var(--ve-border);border-radius:6px;width:100%;box-sizing:border-box;}
     .draft textarea{min-height:80px;}
@@ -232,7 +233,8 @@
           var readHtml = rd ? '<div class="read"><h3>What I think you are asking</h3><p>' + esc(rd.ask) + '</p>' +
             '<h3>Where it belongs</h3><p>' + esc(SIZE[rd.size] || rd.size) + ' &middot; ' + (rd.playbook ? 'playbook <b>' + esc(rd.playbook) + '</b>' : rd.new_playbook ? 'a new playbook, <b>' + esc(rd.new_playbook) + '</b>' : 'no playbook yet') + '</p>' +
             (rd.plan && rd.plan.length ? '<h3>How I would do it</h3><ol>' + rd.plan.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ol>' : '') +
-            (rd.questions && rd.questions.length ? '<h3>What I need from you</h3><ul>' + rd.questions.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>' : '') + '</div>'
+            (rd.questions && rd.questions.length ? '<h3>What I need from you</h3><ul>' + rd.questions.map(function (s) { return '<li>' + esc(s) + '</li>'; }).join('') + '</ul>' : '') +
+            (rd.sources && rd.sources.length ? '<h3>Where I looked</h3><ul>' + rd.sources.map(function (x) { return /^https?:\/\//i.test(x.url) ? '<li><a href="' + esc(x.url) + '" target="_blank" rel="noopener noreferrer">' + esc(x.title || x.url) + '</a></li>' : ''; }).join('') + '</ul>' : '') + '</div>'
             : '<div class="read"><p>Logan has not read this one yet.</p></div>';
           var turns = (x.thread || []).slice(1).filter(function (t, i, a) { return !(t.role === 'logan' && i === a.length - 1); });
           var canAct = x.status === 'new';
@@ -253,14 +255,47 @@
             (x.note ? '<p class="meta"><b>Note:</b> ' + esc(x.note) + '</p>' : '') +
             (x.reason ? '<p class="meta"><b>Why:</b> ' + esc(x.reason) + '</p>' : '') +
             (!canAct ? '<div class="acts">' + (x.status !== 'approved' && x.status !== 'building' ? '<button type="button" class="btn btn-quiet" data-st="new">Open it again</button>' : '') + (x.status === 'approved' || x.status === 'building' ? '<button type="button" class="btn btn-ghost" data-st="parked">Set aside</button>' : '') + '</div>' : '') +
-            '<div id="msg" class="msg"></div><div class="send" id="send"></div></div>';
+            '<div id="msg" class="msg"></div>' + ((x.status === 'new' || x.status === 'parked') ? '<div class="send" id="sort"></div>' : '') + '<div class="send" id="send"></div>' +
+            ((x.events || []).length ? '<details class="hist"><summary>History (' + x.events.length + ')</summary><ul>' + x.events.map(function (e) { return '<li><b>' + esc(EV[e.action] || e.action) + '</b> &middot; ' + esc(e.by || '') + ' &middot; ' + esc(when(e.at)) + (e.detail && (e.detail.playbook || e.detail.reason) ? ' &middot; ' + esc(e.detail.playbook || e.detail.reason) : '') + '</li>'; }).join('') + '</ul></details>' : '') + '</div>';
           [].forEach.call(document.querySelectorAll('[data-lb]'), function (a) { a.onclick = function (e) { e.preventDefault(); var lb = document.createElement('div'); lb.className = 'lb'; lb.innerHTML = '<img src="' + esc(a.getAttribute('data-lb')) + '" alt="">'; lb.onclick = function () { lb.remove(); }; document.body.appendChild(lb); }; });
           function after(r) { if (r && r.ok) { loaded = false; drawIdea(id); } else $('msg').textContent = 'That did not go through. ' + ((r && r.error) || ''); }
           if ($('ok')) $('ok').onclick = function () { this.disabled = true; $('msg').innerHTML = waitHtml('Approving...'); api({ action: 'approve', id: id }).then(after); };
-          drawSend(id);
+          drawSend(id); drawSort(x, after);
           if ($('re')) $('re').onclick = function () { this.disabled = true; $('msg').innerHTML = waitHtml('Logan is reading it again...'); api({ action: 'read', id: id, reply: $('reply').value }).then(after); };
           [].forEach.call(document.querySelectorAll('[data-st]'), function (b) { b.onclick = function () { api({ action: 'set', id: id, status: b.getAttribute('data-st') }).then(after); }; });
         });
+      }
+
+      // Sort it (branddesk-production-wing, 2026-11-08; Sean: ideas live only here). Moved from BrandDesk > Vegans Explore > Blueprint >
+      // Ideas, the same four ways: Send to a playbook, Its own playbook, Park it (a date to look again), Decline (a reason). ve-ideas sort_*.
+      var EV = { added: 'Added', read: 'Logan read it', corrected: 'Corrected', approved: 'Approved', building: 'Building', done: 'Done', sent: 'Sent to a playbook', own_playbook: 'Its own playbook', parked: 'Parked', declined: 'Declined', reopened: 'Opened again', sent_to_pulse: 'Pulse draft', sent_to_podcast: 'Podcast draft' };
+      var SORT = [['send', 'Send to a playbook'], ['own', 'Its own playbook'], ['park', 'Park it'], ['decline', 'Decline']];
+      var pbList = null;
+      function slugify(t) { return String(t || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60); }
+      function drawSort(x, after) {
+        var box = $('sort'); if (!box) return;
+        var pick = 'send';
+        var sug = (x.read && x.read.playbook) || x.suggested_playbook || '';
+        function paint() {
+          var f = pick === 'send' ? '<label class="meta" for="sp"><b>Playbook</b></label><select id="sp">' + (pbList || []).map(function (p) { return '<option value="' + esc(p.slug) + '"' + (p.slug === sug ? ' selected' : '') + '>' + esc(p.title || p.slug) + '</option>'; }).join('') + '</select><label class="meta" for="sn"><b>A note to go with it (optional)</b></label><textarea id="sn"></textarea><div class="acts"><button type="button" class="btn" id="sgo">Send it there</button></div><p class="meta">It goes on that playbook\'s page as a pending item under From the Blueprint ideas, with a decision record.</p>'
+            : pick === 'own' ? '<label class="meta" for="ot"><b>Playbook name</b></label><input id="ot" value="' + esc(x.title || '') + '"><label class="meta" for="os"><b>Its address (slug)</b></label><input id="os" value="' + esc((x.read && x.read.new_playbook) || slugify(x.title)) + '"><label class="meta" for="ost"><b>Start it as</b></label><select id="ost"><option value="parked">Parked, nothing built yet</option><option value="building">Building</option></select><div class="acts"><button type="button" class="btn" id="sgo">Make the playbook</button></div>'
+            : pick === 'park' ? '<label class="meta" for="pd2"><b>Look at it again on (optional)</b></label><input type="date" id="pd2" value="' + esc(x.revisit_on || '') + '"><label class="meta" for="pr"><b>Why (optional)</b></label><textarea id="pr"></textarea><div class="acts"><button type="button" class="btn" id="sgo">Park it</button></div>'
+            : '<label class="meta" for="dr"><b>Why not (needed)</b></label><textarea id="dr"></textarea><div class="acts"><button type="button" class="btn" id="sgo">Decline it</button></div>';
+          box.innerHTML = '<h3>Sort it</h3><p class="meta">Where this idea goes. Nothing is deleted.' + (sug ? ' Logan suggests <b>' + esc(sug) + '</b>.' : '') + '</p><div class="tabs" role="tablist">' + SORT.map(function (o) { return '<a href="#" role="tab" data-sk="' + o[0] + '" class="' + (o[0] === pick ? 'on' : '') + '">' + o[1] + '</a>'; }).join('') + '</div><div class="draft">' + f + '</div><div id="sortmsg" class="msg"></div>';
+          [].forEach.call(box.querySelectorAll('[data-sk]'), function (a) { a.onclick = function (e) { e.preventDefault(); pick = a.getAttribute('data-sk'); paint(); }; });
+          $('sgo').onclick = function () {
+            var b = { id: x.id };
+            if (pick === 'send') { b.action = 'sort_send'; b.playbook = $('sp').value; b.note = $('sn').value; if (!b.playbook) return; }
+            else if (pick === 'own') { b.action = 'sort_own'; b.title = $('ot').value.trim(); b.slug = $('os').value.trim(); b.status = $('ost').value; if (!b.title || !b.slug) { $('sortmsg').textContent = 'A name and an address are needed.'; return; } }
+            else if (pick === 'park') { b.action = 'sort_park'; b.revisit_on = $('pd2').value; b.reason = $('pr').value; }
+            else { b.action = 'sort_decline'; b.reason = $('dr').value.trim(); if (!b.reason) { $('sortmsg').textContent = 'Say why, so it reads right later.'; return; } }
+            this.disabled = true; $('sortmsg').innerHTML = waitHtml('Sorting it...');
+            api(b).then(function (r) { if (r && r.ok) return after(r); $('sgo').disabled = false; $('sortmsg').textContent = 'That did not go through. ' + ({ slug_taken: 'That address is taken.', bad_slug: 'Use lower-case letters, numbers and dashes.', already_sorted: 'It was already sorted.' }[r && r.error] || (r && r.error) || ''); });
+          };
+        }
+        if (pbList) return paint();
+        box.innerHTML = waitHtml('Loading the playbooks...');
+        api({ action: 'sort_options', brand: x.brand_slug || 'vegans-explore' }).then(function (d) { pbList = (d && d.playbooks) || []; paint(); });
       }
 
       // Send to (branddesk-production-wing M, 2026-11-08): drafts only, Sean approves each one.
