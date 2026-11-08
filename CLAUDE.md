@@ -7133,6 +7133,10 @@ with a donation link (Piper's Pals and Nathans Family Farm show none on their si
 Facebook, Instagram and link-in-bio "websites" are skipped (`social_only`). 673 open organizations in all on 2026-11-08. **Sean approved the pilot
 the same day** ("I love it... I'm just approving it"); the rest (about 653) run next in batches of 25, before Giving Tuesday. Handoff
 `docs/handoff/2026-11-08-ve-holiday-guide-give-back-pilot-approved.md`.
+**The full run finished 2026-11-08 4:43 PM Eastern** (a temporary 6-minute job, since removed, plus one retry pass): 558 of 673 have Why support
+(median 425 words), 480 a tracked Donate link, 47 failed after the retry (21 not usable, 26 sites that refused or did not open, PETA, Animal Place,
+AWI and Compassion in World Farming among them), 60 have no website or only a social page; 0 tax claims, 0 dashes. Handoff
+`docs/handoff/2026-11-08-ve-holiday-guide-give-back-full-run.md`.
 
 ## The Vegans Explore app (LOCKED by Sean 2026-11-07, playbook `ve-mobile-app`, canon `canon-ve-mobile-app`)
 
