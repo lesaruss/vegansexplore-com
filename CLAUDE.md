@@ -6942,8 +6942,8 @@ for the Guide and `claim.html` for the menu form (template gate).
   place and a link to its own holiday menu (`#/menus/tell`, a join window first), `ve-holiday` v5 `tip` (10 a day, the team's go live at once), `tips` and
   `tip_review` for super admins, `live` returns them as Spotted by members (linked out, never copied); table `ve_holiday_menu_tips` (migration
   `20261108_holiday_menu_tips.sql`); Depot > Holiday menus has Sent by businesses, Spotted by members and Add a menu we know. Proven 15 of 15
-  (`scripts/supabase-once/holiday-tip-proof.ts`, now 410). Four sanctuary events added (`20261108_holiday_sanctuary_events.sql`). Video script v2 and Theo's
-  lines (one set) wait for Sean; the restaurant note's words are approved, its send day waits on his go.
+  (`scripts/supabase-once/holiday-tip-proof.ts`, now 410). Four sanctuary events added (`20261108_holiday_sanctuary_events.sql`). Video script v2 approved and recorded 2026-11-08
+  (`theo-tour-1..8-v1.mp3` in `vegan-media/media/voices/holiday-guide/`, stt-checked; Overview Play runs the tour, each tab plays its chapter; `TAB_CH`); the restaurant note's words are approved, its send day waits on his go.
 
 ## The Vegans Explore app (LOCKED by Sean 2026-11-07, playbook `ve-mobile-app`, canon `canon-ve-mobile-app`)
 

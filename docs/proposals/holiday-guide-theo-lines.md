@@ -1,4 +1,4 @@
-# ve-holiday-guide: Theo's lines for the Holiday Guide (DRAFT v2 for Sean)
+# ve-holiday-guide: Theo's lines for the Holiday Guide (v2, approved and recorded 2026-11-08)
 
 **v2, 2026-11-08 (Sean's notes)**: the tab lines are the video chapters (`holiday-guide-tour-script.md`), one set for both. Already on the page.
 

@@ -593,12 +593,13 @@
   <main class="dg-main" id="dgMain" aria-live="polite"><div class="dg-loading">Loading the Guide...</div></main>
   <div class="dg-tour dg-tour-m" id="dgTourM" aria-label="Guide tour"></div>
 
-  <!-- Theo stays here on every tab. His lines show as text until Sean approves them and they are recorded. -->
+  <!-- Theo stays here on every tab. His lines are recorded (theo-tour-<n>-v1.mp3, Sean approved 2026-11-08); Play starts them. -->
   <aside class="dg-rail" id="dgRail" data-guide="theo" aria-label="Theo, your Guide">
     <div class="dg-maya" id="dgMaya"></div>
     <div class="dg-namebar"><div class="dg-maya-name"><b>Theo</b> &middot; Your Guide for the holidays</div>
       <button type="button" class="dg-fold" id="dgFold" aria-expanded="true">Hide Theo</button></div>
     <div class="dg-bubble" id="dgBubble"></div>
+    <button type="button" class="dg-play go" id="dgPlay" hidden>&#9654; Play Theo</button>
     <div class="dg-tour" id="dgTour"></div>
   </aside>
 </div>
@@ -610,7 +611,7 @@
 <script src="/public/ve-votes.js"></script>
 <script src="/public/ve-region-directory.js"></script>
 <script src="/public/ve-guide-intro.js"></script>
-<script src="/guide-scripts/holiday-guide.js?v=3"></script>
+<script src="/guide-scripts/holiday-guide.js?v=4"></script>
 <script src="/public/ve-guide-min.js"></script>
 </body>
 </html>

@@ -33,14 +33,19 @@
 
   // Theo's lines, text drafts for Sean (no recordings yet). `say` for visitors, `sayMember` for members.
   var TABS = [
-    { k: 'overview', label: 'Overview', say: 'I\'m Theo. The holidays are about the people at the table. This Guide helps you find Vegan holiday menus near you, celebrate in a way that feels good, and give back. It\'s free, and it grows with every holiday.',
+    { k: 'overview', label: 'Overview', say: 'Welcome to the Holiday Guide. I\'m Theo. You\'re the one setting the table this year, and I\'m here to help you do it your way.',
       sayMember: 'Welcome back. Start with ThanksLiving, find a holiday menu near you, and save the places you want to order from.' },
-    { k: 'thanksliving', label: 'ThanksLiving', pic: '/public/guides/holiday/theo-thanksliving.jpg', say: 'ThanksLiving is Thanksgiving with a fully plant-based table. Same family, same gratitude, nobody harmed. Here are a few easy ideas for your table, whether you host or bring one dish.' },
-    { k: 'menus', label: 'Holiday menus', say: 'Don\'t want to cook it all? Pick your chapter and see which Vegan places are cooking for the holiday, what they\'re offering, and when to order by. Know a place we missed? Tell us, and our team checks it.' },
+    { k: 'thanksliving', label: 'ThanksLiving', pic: '/public/guides/holiday/theo-thanksliving.jpg', say: 'ThanksLiving is Thanksgiving with a fully plant-based table. Same family, same gratitude, nobody harmed. On this page you\'ll find a few easy ideas to make it yours, whether you host or bring one dish.' },
+    { k: 'menus', label: 'Holiday menus', say: 'Don\'t want to cook it all? Pick your chapter and see which Vegan places are cooking for the holiday, what they\'re offering, and when to order by. Our team checks every menu before it shows. Save one to find it again. Know a place we missed? Tell us, and we\'ll check it.' },
     { k: 'events', label: 'Events', say: 'Rather be at someone else\'s table? Find sanctuary dinners, potlucks and Thanksgiving events on our calendar. Hosting one? Add it, so people can find you.' },
-    { k: 'giveback', label: 'Give back', say: 'Giving is part of the season. Here are the nonprofits, rescues and sanctuaries in our Directory. Giving Tuesday is December first.' },
-    { k: 'business', label: 'For businesses', say: 'Cooking for the holidays? Send us your menu and we feature it here, free for members. ThanksLiving menus close November eighteenth.' }
+    { k: 'giveback', label: 'Give back', say: 'Giving is part of the season. Here are the nonprofits, rescues and sanctuaries doing the work, in your city and beyond. Giving Tuesday is December first.' },
+    { k: 'business', label: 'For businesses', say: 'Run a Vegan business? Send us your holiday menu and we\'ll feature it here, free for members. ThanksLiving menus close at the end of November eighteenth.' }
   ];
+  // Theo's recordings (Sean approved the script v2, 2026-11-08): one per video chapter, roster voice aFyw0oiXW7dzKF4o7woX, each checked with stt.
+  // The Overview plays the whole tour back to back; every other tab plays its own chapter (canon-ve-guide-tour-standard: Summarize this page).
+  var AUDIO_BASE = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/holiday-guide/theo-tour-';
+  var CHAPTER_LINES = ["Welcome to the Holiday Guide. I'm Theo. You're the one setting the table this year, and I'm here to help you do it your way.", "Vegans Explore has been bringing the Vegan community together since 2016, city by city. We know the places cooking near you and the groups doing good. This Guide puts all of it in one spot for the holidays, free.", "ThanksLiving is Thanksgiving with a fully plant-based table. Same family, same gratitude, nobody harmed. On this page you'll find a few easy ideas to make it yours, whether you host or bring one dish.", "Don't want to cook it all? Pick your chapter and see which Vegan places are cooking for the holiday, what they're offering, and when to order by. Our team checks every menu before it shows. Save one to find it again. Know a place we missed? Tell us, and we'll check it.", "Rather be at someone else's table? Find sanctuary dinners, potlucks and Thanksgiving events on our calendar. Hosting one? Add it, so people can find you.", "Giving is part of the season. Here are the nonprofits, rescues and sanctuaries doing the work, in your city and beyond. Giving Tuesday is December first.", "Run a Vegan business? Send us your holiday menu and we'll feature it here, free for members. ThanksLiving menus close at the end of November eighteenth.", "This Guide keeps growing. Each holiday opens here as it gets close, so be on the lookout for the next one. Come back often, and share it with whoever's at your table this year. Happy holidays."];
+  var TAB_CH = { overview: [1, 2, 3, 4, 5, 6, 7, 8], thanksliving: [3], menus: [4], events: [5], giveback: [6], business: [7] };
   var RULE_ICON = [
     '<path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.1 4.3 2.4.7-1.3 2.2-2.4 4.3-2.4 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/>',
     '<path d="M3 11h18M5 11a7 5 0 0114 0M12 4v2M4 15h16l-1.5 4h-13z"/>',
@@ -442,9 +447,40 @@
   foldBtn.addEventListener('click', function () { setFold(!railEl.classList.contains('dg-folded')); });
   try { if (sessionStorage.getItem('hg_theo_folded')) setFold(true); } catch (e) {}
   var bubble = document.getElementById('dgBubble'), tourEl = document.getElementById('dgTour');
+  var playBtn = document.getElementById('dgPlay'), aud = new Audio(), PLAY = { tab: null, list: [], at: 0, playing: false, started: false };
+  aud.preload = 'none';
+  function playAt() {
+    var n = PLAY.list[PLAY.at];
+    aud.src = AUDIO_BASE + n + '-v1.mp3';
+    bubble.textContent = CHAPTER_LINES[n - 1];
+    aud.play().then(function () { PLAY.playing = true; paintPlay(); }).catch(function () { PLAY.playing = false; paintPlay(); });
+  }
+  aud.addEventListener('ended', function () {
+    if (PLAY.at < PLAY.list.length - 1) { PLAY.at++; playAt(); return; }
+    PLAY.playing = false; PLAY.at = 0; paintPlay();
+  });
+  function stopTheo() { try { aud.pause(); } catch (e) {} PLAY.playing = false; }
+  function paintPlay() {
+    var list = TAB_CH[curTab];
+    playBtn.hidden = !list;
+    playBtn.classList.toggle('go', !PLAY.started);
+    playBtn.innerHTML = PLAY.playing ? 'Pause Theo' : '&#9654; ' + (curTab === 'overview' ? 'Play the tour' : 'Play Theo');
+  }
+  playBtn.addEventListener('click', function () {
+    if (PLAY.playing) { stopTheo(); paintPlay(); return; }
+    PLAY.started = true;
+    if (PLAY.tab !== curTab || !PLAY.list.length) { PLAY.tab = curTab; PLAY.list = TAB_CH[curTab] || []; PLAY.at = 0; }
+    if (!PLAY.list.length) return;
+    if (aud.src && PLAY.tab === curTab && aud.currentTime > 0 && !aud.ended) aud.play().then(function () { PLAY.playing = true; paintPlay(); }).catch(function () {});
+    else playAt();
+  });
   function drawTheo() {
     var t = tab(curTab), i = 0;
     TABS.forEach(function (x, n) { if (x.k === curTab) i = n; });
+    // Nothing plays on its own; a new tab stops what was playing, and Play starts that tab's chapter.
+    if (PLAY.tab !== curTab) { stopTheo(); PLAY.tab = null; PLAY.list = []; PLAY.at = 0; aud.removeAttribute('src'); }
+    paintPlay();
+    if (PLAY.playing && PLAY.tab === curTab) return;
     bubble.textContent = member() && t.sayMember ? t.sayMember : t.say;
     // Theo dresses for the page he is on (Sean, 2026-11-07): a holiday tab carries its own picture, every other tab his usual one.
     var box = document.getElementById('dgMaya'), art = t.pic || (window.VEGuideArt ? VEGuideArt('theo', 'square') : '');
@@ -516,7 +552,8 @@
       joinWindow('Tell us about a menu', 'Join free with a short survey, then send us the menu. You come right back here.');
       return;
     }
-    if (e.target.closest('[data-hg-video]')) { var vb = document.querySelector('.hg-vbadge'); if (vb) vb.textContent = 'The video is being made. Start below for now.'; return; }
+    // Until the video is made, its Play runs Theo's recorded tour (the same chapters) from the rail.
+    if (e.target.closest('[data-hg-video]')) { var vb = document.querySelector('.hg-vbadge'); if (vb) vb.textContent = 'Video coming. Theo is reading it to you now.'; if (!PLAY.playing) playBtn.click(); return; }
     if (e.target.closest('[data-hg-done]')) { var pp = document.getElementById('hgPop'); if (pp) { pp.hidden = true; document.getElementById('hgFbtn').setAttribute('aria-expanded', 'false'); } return; }
     if (e.target.closest('[data-hg-reset]')) { MF = { q: '', type: 'all', order: 'all', sort: 'vegan' }; store('hg_chapter', 'all'); if (location.hash === '#/menus/all') viewMenus('all'); else location.hash = '#/menus/all'; return; }
     if ((el = e.target.closest('[data-hg-unpill]'))) {

@@ -1,4 +1,6 @@
-# ve-holiday-guide: the Overview video script, Theo (DRAFT v2 for Sean)
+# ve-holiday-guide: the Overview video script, Theo (v2, approved and recorded)
+
+**Approved by Sean 2026-11-08 ("Approved, record it") and recorded the same day**: `vegan-media/media/voices/holiday-guide/theo-tour-<n>-v1.mp3`, n 1 to 8, roster voice `aFyw0oiXW7dzKF4o7woX`, eleven_multilingual_v2, Vegan sent as Veegan, chapter 2's year sent as "twenty sixteen" (the first take read "two thousand and sixteen"). All eight checked word for word with stt (capitals, commas and number style only). About 1 minute 25 seconds. On the page: the Overview's Play the tour (and the video placeholder's Play) runs all eight; every other tab's Play is its chapter. Next per the standard: the lookbook in Depot > Guides and tours, then animation and the edit.
 
 **v2, 2026-11-08, from Sean's notes**: chapter 3 no longer lists the five ideas by name ("you're going to have more questions than answers"); chapter 4 says members can tell us about a menu we missed (built the same day); chapter 5 has no Friendsgiving (never in our copy); chapter 8 says the next holiday is coming, so people come back. Chapters 1, 2, 6 and 7 Sean approved as written. **One set of lines**: each tab's Theo line is now its chapter (below), so Theo's tab lines and the video never say two different things.
 
