@@ -6950,7 +6950,7 @@ for the Guide and `claim.html` for the menu form (template gate).
   Explorer survey brings them back (`ve_after_survey`). It replaced the Coming soon Vegan Holidays card in the catalog (a heart icon, since the old
   banner is a Christmas scene with Theo out of store clothing) and is in the sitemap. Checked at 1440 and 390 px beside the Nutrition Guide against
   live data, and a menu card and the join window against a mocked menu. **The restaurant note (step H)** is a draft for Sean,
-  `docs/proposals/holiday-guide-restaurant-note.md` (96 published addresses, two versions, from the team, Tuesday Nov 10 by default). Not yet: a
+  `docs/proposals/holiday-guide-restaurant-note.md` (96 published addresses, two versions, from the team; the send day is picked last, once it is finished: Sean, 2026-11-08). Not yet: a
   ThanksLiving banner, sanctuary ThanksLiving events on the calendar, Theo's recordings, donation links (Give back step 4).
   **Round 2 (Sean, 2026-11-07)**: the Overview opens with the **video placeholder** (`videoCard`: a 16:9 frame with Theo, Play, "Video in production", the
   eight planned chapters and Share this Guide); the video follows canon-ve-guide-tour-standard v3 and the Depot tour's framework (script, recordings, lookbook in
@@ -6972,7 +6972,7 @@ for the Guide and `claim.html` for the menu form (template gate).
   `tip_review` for super admins, `live` returns them as Spotted by members (linked out, never copied); table `ve_holiday_menu_tips` (migration
   `20261108_holiday_menu_tips.sql`); Depot > Holiday menus has Sent by businesses, Spotted by members and Add a menu we know. Proven 15 of 15
   (`scripts/supabase-once/holiday-tip-proof.ts`, now 410). Four sanctuary events added (`20261108_holiday_sanctuary_events.sql`). Video script v2 approved and recorded 2026-11-08
-  (`theo-tour-1..8-v1.mp3` in `vegan-media/media/voices/holiday-guide/`, stt-checked; Overview Play runs the tour, each tab plays its chapter; `TAB_CH`); the restaurant note's words are approved, its send day waits on his go.
+  (`theo-tour-1..8-v1.mp3` in `vegan-media/media/voices/holiday-guide/`, stt-checked; Overview Play runs the tour, each tab plays its chapter; `TAB_CH`); the restaurant note's words are approved; finish it (list read, drafts, a test) before any send day is set.
 
 ## The Vegans Explore app (LOCKED by Sean 2026-11-07, playbook `ve-mobile-app`, canon `canon-ve-mobile-app`)
 

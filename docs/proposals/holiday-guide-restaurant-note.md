@@ -25,7 +25,7 @@ vendor's mailbox, one chain inbox on several listings). Those come off.
   `/business/holiday-menu`, so a click names the business. Sean approves the day; it goes out at 10 AM Eastern through `email-send`.
 - **From**: the Vegans Explore team (brand `vegans-explore`), signed "The Vegans Explore team". Not Sean's name, since the heads-up
   and the Restaurant Guide notes go out the same way. Sean can say "from me" and it switches to brand `lesaruss`.
-- **When**: Tuesday, November 10, so they get a full week before menus close at the end of November 18.
+- **When**: not set. **Scheduling is the last step** (Sean, 2026-11-08: "I don't like to commit to things until I know it's good to go... focus on finishing it, and then we can easily schedule it once it's ready"). Finish first: the address list read by eye, the drafts loaded, a test to Sean; then he picks the day. Menus close at the end of November 18, so it is worth sending a week before that.
 - **One email, no follow-up.** No prices.
 
 ## Version A: 100% Vegan places (36)
@@ -84,6 +84,6 @@ The Vegans Explore team
 
 ## Open for Sean
 
-1. Approve the words, or change them.
+1. ~~Approve the words~~ Approved 2026-11-08.
 2. From the team (default) or from you.
-3. Send Tuesday, November 10, at 10 AM Eastern (default)?
+3. The send day: chosen last, once everything above is finished.
