@@ -5,7 +5,9 @@
 // Member:  mine, save {holiday, listing_id, summary, items, order_url, order_by, pickup, price_range, holiday_hours, contact_note}, withdraw {id},
 //          photo_url {listing_id} (a dish photo, squared in the browser, into vegan-media), scan_start {listing_id, type},
 //          scan_read {listing_id, holiday, paths[]} (up to 3 photos or a PDF of their menu, read by Claude into dishes; 10 reads a day)
-// Admin:   queue {holiday?, status?}, get {id}, review {id, decision: approve | decline | note, note}
+//          tip {holiday, place_name, city, state, link, note, listing_id?} (a menu a member found; a person checks it; the team's go live at once)
+// Admin:   queue {holiday?, status?}, get {id}, review {id, decision: approve | decline | note, note},
+//          tips {holiday?}, tip_review {id, decision: approve | decline | note, note, listing_id?}
 import Anthropic from 'npm:@anthropic-ai/sdk';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
@@ -21,6 +23,8 @@ const PHOTO_PREFIX = 'media/holiday-menus/';
 const SCAN_BUCKET = 'holiday-menu-scans';
 const SCAN_TYPES: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'application/pdf': 'pdf' };
 const SCAN_READS_A_DAY = 10;
+const TIPS_A_DAY = 10;
+const TIP_LISTING = 'id, slug, name, category, address_city, address_state, logo_url, color, vegan_status, communities';
 const MODEL = 'claude-opus-5-5';
 // A dish photo must be one we hold, uploaded through photo_url.
 const okPhoto = (u: string) => u.startsWith(PUBLIC_BASE + PHOTO_PREFIX) && /^[A-Za-z0-9/_.-]+$/.test(u.slice(PUBLIC_BASE.length));
@@ -146,7 +150,14 @@ Deno.serve(async (req) => {
     const L = Object.fromEntries((ls || []).map((l) => [l.id, l]));
     const rows = (data || []).filter((m) => L[m.listing_id]).map((m) => ({ ...m, listing: L[m.listing_id] }))
       .sort((x, y) => (x.listing.vegan_status === 'fully_vegan' ? 0 : 1) - (y.listing.vegan_status === 'fully_vegan' ? 0 : 1) || String(x.listing.name).localeCompare(String(y.listing.name)));
-    return json({ ok: true, menus: rows });
+    // Menus our members spotted (Sean, 2026-11-08): a place and a link to its own holiday menu, checked by our team; we never copy it.
+    const { data: tp } = await db.from('ve_holiday_menu_tips').select('id, listing_id, place_name, city, state, link, note, reviewed_at').eq('holiday_slug', hs).eq('status', 'live').order('reviewed_at', { ascending: false }).limit(300);
+    const tids = [...new Set((tp || []).map((t) => t.listing_id).filter(Boolean))];
+    const { data: tl } = tids.length ? await db.from('listings').select(TIP_LISTING).in('id', tids).eq('status', 'approved') : { data: [] as any[] };
+    const TL = Object.fromEntries((tl || []).map((l) => [l.id, l]));
+    const shown = new Set(rows.map((r) => r.listing_id));
+    const tips = (tp || []).filter((t) => !t.listing_id || !shown.has(t.listing_id)).map((t) => ({ ...t, listing: t.listing_id ? TL[t.listing_id] || null : null }));
+    return json({ ok: true, menus: rows, tips });
   }
 
   // ---- Signed in ----
@@ -275,8 +286,80 @@ Deno.serve(async (req) => {
     return json({ ok: true, status: 'withdrawn' });
   }
 
+  if (action === 'tip') {
+    if (!member) return json({ error: 'member_needed' }, 403);
+    const hs = String(b.holiday || '');
+    if (!SLUG.test(hs)) return json({ error: 'bad_holiday' }, 400);
+    const { data: h } = await db.from('ve_holidays').select('slug, name, holiday_on, active').eq('slug', hs).maybeSingle();
+    if (!h || !h.active) return json({ error: 'bad_holiday' }, 400);
+    if (Date.parse(h.holiday_on + 'T23:59:00-05:00') < Date.now() && !admin) return json({ error: 'closed' }, 409);
+    const place = clean(b.place_name, 120);
+    if (place.length < 2) return json({ error: 'place_needed' }, 400);
+    const link = cleanUrl(b.link);
+    if (!link) return json({ error: 'link_needed' }, 400);
+    let lid: string | null = String(b.listing_id || '') || null;
+    if (lid && (!UUID.test(lid) || !(await db.from('listings').select('id').eq('id', lid).eq('status', 'approved').maybeSingle()).data)) lid = null;
+    if (!admin) {
+      const since = new Date(Date.now() - 86400000).toISOString();
+      const { count } = await db.from('ve_holiday_menu_tips').select('id', { count: 'exact', head: true }).eq('member_id', me).gte('created_at', since);
+      if ((count || 0) >= TIPS_A_DAY) return json({ error: 'rate_limited' }, 429);
+    }
+    const { data: dup } = await db.from('ve_holiday_menu_tips').select('id, status').eq('holiday_slug', hs).eq('link', link).neq('status', 'declined').limit(1).maybeSingle();
+    if (dup) return json({ ok: true, id: dup.id, status: dup.status, already: true });
+    const now = new Date().toISOString();
+    const row: any = { holiday_slug: hs, member_id: me, listing_id: lid, place_name: place, city: clean(b.city, 80) || null, state: clean(b.state, 40) || null, link,
+      note: clean(b.note, 400) || null, status: admin ? 'live' : 'pending', by_team: admin, reviewed_by: admin ? me : null, reviewed_at: admin ? now : null };
+    const { data: saved, error } = await db.from('ve_holiday_menu_tips').insert(row).select('id, status').single();
+    if (error || !saved) return json({ error: 'save_failed' }, 500);
+    if (!admin && !place.startsWith('[TEST]')) {
+      const body = `<p><b>${escH(mm.name || 'A member')}</b> spotted a ${escH(h.name)} menu: <b>${escH(place)}</b>${row.city ? ', ' + escH(row.city) : ''}.</p>` +
+        `<p><a href="${escH(link)}" style="color:#2D5C27">${escH(link)}</a></p>${row.note ? `<p>${escH(row.note)}</p>` : ''}` +
+        `<p><a href="https://vegansexplore.com/admin/depot/holiday-menus#tips/pending" style="color:#2D5C27">Check it in the Depot</a></p>`;
+      sendEmail({ email: 'contact@lesaruss.com', name: 'Vegans Explore team' }, `ve-holiday-tip-team-${saved.id}`, `[Holiday menu spotted] ${place}`, body).catch(() => {});
+    }
+    return json({ ok: true, id: saved.id, status: saved.status });
+  }
+
   // ---- The team ----
   if (!admin) return json({ error: 'no_access' }, 403);
+
+  if (action === 'tips') {
+    let q = db.from('ve_holiday_menu_tips').select('*').order('created_at', { ascending: false }).limit(1000);
+    if (SLUG.test(String(b.holiday || ''))) q = q.eq('holiday_slug', String(b.holiday));
+    const { data, error } = await q;
+    if (error) return json({ error: 'load_failed' }, 500);
+    const lids = [...new Set((data || []).map((t) => t.listing_id).filter(Boolean))];
+    const mids = [...new Set((data || []).map((t) => t.member_id))];
+    const [{ data: ls }, { data: ms }] = await Promise.all([
+      lids.length ? db.from('listings').select(TIP_LISTING).in('id', lids) : Promise.resolve({ data: [] as any[] }),
+      mids.length ? db.from('members').select('id, name, email').in('id', mids) : Promise.resolve({ data: [] as any[] }),
+    ]);
+    const L = Object.fromEntries((ls || []).map((l: any) => [l.id, l])), M = Object.fromEntries((ms || []).map((m: any) => [m.id, m]));
+    const counts: Record<string, number> = { pending: 0, live: 0, declined: 0, all: (data || []).length };
+    for (const t of data || []) counts[t.status] = (counts[t.status] || 0) + 1;
+    return json({ ok: true, counts, holidays: await holidays(), rows: (data || []).map((t) => ({ ...t, listing: t.listing_id ? L[t.listing_id] || null : null, member: M[t.member_id] || null })) });
+  }
+
+  if (action === 'tip_review') {
+    const id = String(b.id || ''), d = String(b.decision || ''), note = clean(b.note, 1000);
+    if (!UUID.test(id)) return json({ error: 'bad_id' }, 400);
+    if (!['approve', 'decline', 'note'].includes(d)) return json({ error: 'bad_decision' }, 400);
+    const { data: t } = await db.from('ve_holiday_menu_tips').select('id').eq('id', id).maybeSingle();
+    if (!t) return json({ error: 'not_found' }, 404);
+    if (d !== 'approve' && note.length < 3) return json({ error: 'note_needed' }, 400);
+    const now = new Date().toISOString();
+    const upd: any = { updated_at: now };
+    if (note) upd.team_note = note;
+    if (b.listing_id !== undefined) {
+      const lid = String(b.listing_id || '');
+      if (!lid) upd.listing_id = null;
+      else if (UUID.test(lid) && (await db.from('listings').select('id').eq('id', lid).maybeSingle()).data) upd.listing_id = lid;
+      else return json({ error: 'bad_listing' }, 400);
+    }
+    if (d !== 'note') { upd.status = d === 'approve' ? 'live' : 'declined'; upd.reviewed_by = me; upd.reviewed_at = now; }
+    await db.from('ve_holiday_menu_tips').update(upd).eq('id', id);
+    return json({ ok: true, status: upd.status || null });
+  }
 
   if (action === 'queue') {
     let q = db.from('ve_holiday_menus').select('id, holiday_slug, listing_id, member_id, status, summary, items, submitted_at, reviewed_at').order('submitted_at', { ascending: true }).limit(1000);

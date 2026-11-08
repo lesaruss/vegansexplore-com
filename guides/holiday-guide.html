@@ -523,6 +523,15 @@
     .hg-facts{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--ink75)}
     .hg-facts b{color:var(--ink)}
     .hg-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}
+    .hg-tell{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:22px 0 4px;padding:16px 18px;border:1px solid var(--line);border-radius:12px;background:#fbfdfb}
+    .hg-tell b{font-size:16px}.hg-tell p{margin:4px 0 0;font-size:14.5px;color:var(--ink75);line-height:1.5;max-width:620px}
+    .hg-form{display:flex;flex-direction:column;gap:14px;max-width:720px}
+    .hg-form label{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700}
+    .hg-form label small{font-weight:500;color:var(--ink55)}
+    .hg-form input,.hg-form textarea{font:inherit;font-size:16px;font-weight:500;padding:11px 12px;border:1px solid var(--line);border-radius:6px;background:#fff}
+    .hg-f2{display:grid;grid-template-columns:2fr 1fr;gap:12px}
+    .hg-fmsg{margin:0;font-size:14px;color:#9a3412;min-height:1em}
+    @media(max-width:560px){.hg-f2{grid-template-columns:1fr}.hg-tell .dg-btn{width:100%;text-align:center}}
     .hg-empty{border:1px dashed var(--gm);border-radius:12px;padding:22px;text-align:center;background:#fbfdfb}
     .hg-empty h3{margin:0 0 6px;font-size:17px}
     .hg-empty p{margin:0 auto 12px;max-width:560px;font-size:14.5px;color:var(--ink75);line-height:1.5}
@@ -601,7 +610,7 @@
 <script src="/public/ve-votes.js"></script>
 <script src="/public/ve-region-directory.js"></script>
 <script src="/public/ve-guide-intro.js"></script>
-<script src="/guide-scripts/holiday-guide.js?v=2"></script>
+<script src="/guide-scripts/holiday-guide.js?v=3"></script>
 <script src="/public/ve-guide-min.js"></script>
 </body>
 </html>

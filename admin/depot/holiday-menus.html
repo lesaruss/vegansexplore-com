@@ -87,6 +87,7 @@
   <script>
     (function () {
       var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-holiday';
+      var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
       var $ = function (id) { return document.getElementById(id); };
       var TABS = [['pending', 'Waiting for a check'], ['live', 'Approved'], ['declined', 'Asked for a change'], ['withdrawn', 'Withdrawn'], ['all', 'All']];
       var STATUS = { pending: 'Waiting for a check', live: 'Approved', declined: 'Asked for a change', withdrawn: 'Withdrawn' };
@@ -98,7 +99,74 @@
       function tag(s) { return '<span class="tag ' + esc(s) + '">' + esc(STATUS[s] || s) + '</span>'; }
       function hname(slug) { var h = ((data && data.holidays) || []).filter(function (x) { return x.slug === slug; })[0]; return h ? h.name : slug; }
       function vegan(l) { return l && l.vegan_status === 'fully_vegan' ? '100% Vegan' : 'Plant-based (Pre-Vegan)'; }
-      function route() { var h = location.hash.replace(/^#/, '').split('/'); if (h[0] === 'm') return { v: 'item', id: h[1] }; var t = h[1]; return { v: 'list', tab: TABS.some(function (x) { return x[0] === t; }) ? t : 'pending' }; }
+      function route() {
+        var h = location.hash.replace(/^#/, '').split('/');
+        if (h[0] === 'm') return { v: 'item', id: h[1] };
+        if (h[0] === 'tips') return { v: 'tips', tab: TIP_TABS.some(function (x) { return x[0] === h[1]; }) ? h[1] : 'pending' };
+        if (h[0] === 'add') return { v: 'add' };
+        var t = h[1]; return { v: 'list', tab: TABS.some(function (x) { return x[0] === t; }) ? t : 'pending' };
+      }
+      // Two kinds (Sean, 2026-11-08): menus a business sent, and menus a member spotted (a place and a link, checked by us, never copied).
+      var TIP_TABS = [['pending', 'Waiting for a check'], ['live', 'Showing'], ['declined', 'Not used'], ['all', 'All']];
+      var TIP_STATUS = { pending: 'Waiting for a check', live: 'Showing', declined: 'Not used' };
+      var tips = null;
+      function kinds(on) {
+        return '<nav class="tabs" aria-label="Kind" style="margin-bottom:6px"><a href="#list/pending" class="' + (on === 'menus' ? 'on' : '') + '">Sent by businesses</a><a href="#tips/pending" class="' + (on === 'tips' ? 'on' : '') + '">Spotted by members</a><a href="#add" class="' + (on === 'add' ? 'on' : '') + '">Add a menu we know</a></nav>';
+      }
+      function tipCard(t) {
+        var l = t.listing || { name: t.place_name }, who = t.member || {};
+        var where = [t.city || l.address_city, t.state || l.address_state].filter(Boolean).join(', ');
+        return '<div class="card" id="t-' + t.id + '"><div class="body"><div class="who">' + logo(l) + '<div><b>' + esc(t.place_name) + '</b><span class="meta">' + esc(where || 'No city given') + ' &middot; ' + esc(hname(t.holiday_slug)) + '</span></div></div>' +
+          '<div><span class="tag ' + esc(t.status) + '">' + esc(TIP_STATUS[t.status] || t.status) + '</span> <span class="meta">' + (t.by_team ? 'Added by the team' : 'From ' + esc(who.name || 'a member')) + (t.listing ? ' &middot; <a href="/directory/' + esc(t.listing.slug) + '" target="_blank" rel="noopener">In the Directory</a>' : ' &middot; Not linked to a listing') + '</span></div>' +
+          '<div class="excerpt"><a href="' + esc(t.link) + '" target="_blank" rel="noopener">' + esc(t.link) + '</a>' + (t.note ? '<br>' + esc(t.note) : '') + (t.team_note ? '<br><i>Team: ' + esc(t.team_note) + '</i>' : '') + '</div>' +
+          '<label class="meta" style="display:block;margin-top:6px">Directory listing (slug, optional) <input data-tl="' + t.id + '" value="' + esc(t.listing ? t.listing.slug : '') + '" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font:inherit"></label>' +
+          '<label class="meta" style="display:block;margin-top:6px">Note (needed to not use it) <input data-tn="' + t.id + '" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font:inherit"></label>' +
+          '<div class="acts">' + (t.status !== 'live' ? '<button type="button" class="btn" data-tip="approve" data-id="' + t.id + '">Show it</button>' : '') + (t.status !== 'declined' ? '<button type="button" class="btn btn-ghost" data-tip="decline" data-id="' + t.id + '">Don\'t use it</button>' : '') +
+          '<span class="meta">Sent ' + esc(when(t.created_at)) + '</span><span class="msg" data-tm="' + t.id + '"></span></div></div></div>';
+      }
+      function drawTips(r) {
+        if (!tips) { $('view').innerHTML = kinds('tips') + '<p class="sub">Loading...</p>'; return api({ action: 'tips' }).then(function (d) { if (!d || !d.ok) { $('view').innerHTML = kinds('tips') + '<p class="sub">That did not load.</p>'; return; } tips = d; if (!data) data = { holidays: d.holidays }; drawTips(route()); }); }
+        var c = tips.counts || {};
+        var list = tips.rows.filter(function (x) { return r.tab === 'all' || x.status === r.tab; });
+        $('view').innerHTML = kinds('tips') + '<nav class="tabs" aria-label="Filter">' + TIP_TABS.map(function (t) { return '<a href="#tips/' + t[0] + '" class="' + (t[0] === r.tab ? 'on' : '') + '">' + t[1] + ' (' + (c[t[0]] || 0) + ')</a>'; }).join('') + '</nav>' +
+          '<p class="sub" style="margin:4px 0 12px">Open the link and check it is this place\'s own holiday menu, the food is Vegan or plant-based, and it is for this holiday. Showing it puts it on the Holiday Guide\'s menus under Spotted by members, linking out.</p>' +
+          (list.length ? '<div class="grid">' + list.map(tipCard).join('') + '</div>' : '<p class="sub">' + (r.tab === 'pending' ? 'Nothing is waiting for a check.' : 'None here.') + '</p>');
+        [].forEach.call(document.querySelectorAll('[data-tip]'), function (b) { b.onclick = function () {
+          var id = b.getAttribute('data-id'), d = b.getAttribute('data-tip'), note = (document.querySelector('[data-tn="' + id + '"]') || {}).value || '', slug = ((document.querySelector('[data-tl="' + id + '"]') || {}).value || '').trim(), msg = document.querySelector('[data-tm="' + id + '"]');
+          if (d === 'decline' && note.trim().length < 3) { msg.className = 'msg err'; msg.textContent = 'Write a note first.'; return; }
+          b.disabled = true; msg.className = 'msg'; msg.textContent = 'Saving...';
+          lookup(slug).then(function (lid) {
+            if (slug && !lid) throw { error: 'bad_listing' };
+            return api({ action: 'tip_review', id: id, decision: d, note: note, listing_id: lid || '' });
+          }).then(function (x) { if (x && x.ok) { tips = null; drawTips(route()); } else throw x; })
+            .catch(function (x) { b.disabled = false; msg.className = 'msg err'; msg.textContent = (x && x.error === 'bad_listing') ? 'No listing with that slug.' : 'That did not go through.'; });
+        }; });
+      }
+      function lookup(slug) {
+        if (!slug) return Promise.resolve(null);
+        return fetch('https://fwbhwfxpncrsfhttimna.supabase.co/rest/v1/listings?select=id&slug=eq.' + encodeURIComponent(slug) + '&status=eq.approved&limit=1', { headers: { apikey: ANON, Authorization: 'Bearer ' + ANON } })
+          .then(function (r) { return r.json(); }).then(function (d) { return d && d[0] ? d[0].id : null; });
+      }
+      function drawAdd() {
+        var hs = ((data && data.holidays) || []).filter(function (h) { return true; });
+        $('view').innerHTML = kinds('add') + '<div class="box" style="max-width:720px"><h2>Add a menu we know</h2><p class="meta" style="margin-bottom:10px">A place we know is cooking for the holiday. It shows on Holiday menus at once, under Spotted by members, linking to their own menu. Then reach out and invite them to send their full menu.</p>' +
+          '<label class="meta">Holiday <select id="aH" style="width:100%;padding:8px;margin:4px 0 10px">' + (hs.length ? hs.map(function (h) { return '<option value="' + esc(h.slug) + '">' + esc(h.name) + '</option>'; }).join('') : '<option value="thanksliving">ThanksLiving (Thanksgiving)</option>') + '</select></label>' +
+          '<label class="meta">Place <input id="aP" maxlength="120" style="width:100%;padding:8px;margin:4px 0 10px"></label>' +
+          '<label class="meta">Directory listing (slug, optional) <input id="aS" style="width:100%;padding:8px;margin:4px 0 10px"></label>' +
+          '<label class="meta">City <input id="aC" maxlength="80" style="width:100%;padding:8px;margin:4px 0 10px"></label>' +
+          '<label class="meta">State <input id="aSt" maxlength="40" style="width:100%;padding:8px;margin:4px 0 10px"></label>' +
+          '<label class="meta">Link to their holiday menu <input id="aL" maxlength="500" style="width:100%;padding:8px;margin:4px 0 10px"></label>' +
+          '<label class="meta">Line shown under it (optional) <textarea id="aN" maxlength="400"></textarea></label>' +
+          '<div class="acts"><button type="button" class="btn" id="aGo">Add it</button><span class="msg" id="aM"></span></div></div>';
+        $('aGo').onclick = function () {
+          var m = $('aM'); m.className = 'msg'; m.textContent = 'Saving...'; $('aGo').disabled = true;
+          lookup($('aS').value.trim()).then(function (lid) {
+            if ($('aS').value.trim() && !lid) throw { error: 'bad_listing' };
+            return api({ action: 'tip', holiday: $('aH').value, place_name: $('aP').value, listing_id: lid, city: $('aC').value, state: $('aSt').value, link: $('aL').value, note: $('aN').value });
+          }).then(function (x) { if (x && x.ok) { tips = null; location.hash = '#tips/live'; } else throw x; })
+            .catch(function (x) { $('aGo').disabled = false; m.className = 'msg err'; m.textContent = ({ bad_listing: 'No listing with that slug.', link_needed: 'Add a working link.', place_needed: 'Add the place.' })[x && x.error] || 'That did not go through.'; });
+        };
+      }
       function card(r) {
         var l = r.listing || {};
         return '<div class="card"><div class="body"><div class="who">' + logo(l) + '<div><b>' + esc(l.name || 'Unknown') + '</b><span class="meta">' + esc([l.address_city, l.address_state].filter(Boolean).join(', ')) + ' &middot; ' + esc(hname(r.holiday_slug)) + '</span></div></div>' +
@@ -108,7 +176,7 @@
       }
       function drawList(r) {
         var c = data.counts || {};
-        var html = '<nav class="tabs" aria-label="Filter">' + TABS.map(function (t) { return '<a href="#list/' + t[0] + '" class="' + (t[0] === r.tab ? 'on' : '') + '">' + t[1] + ' (' + (c[t[0]] || 0) + ')</a>'; }).join('') + '</nav>';
+        var html = kinds('menus') + '<nav class="tabs" aria-label="Filter">' + TABS.map(function (t) { return '<a href="#list/' + t[0] + '" class="' + (t[0] === r.tab ? 'on' : '') + '">' + t[1] + ' (' + (c[t[0]] || 0) + ')</a>'; }).join('') + '</nav>';
         var list = data.rows.filter(function (x) { return r.tab === 'all' || x.status === r.tab; });
         html += list.length ? '<div class="grid">' + list.map(card).join('') + '</div>' : '<p class="sub">' + (r.tab === 'pending' ? 'Nothing is waiting for a check.' : 'None here.') + '</p>';
         $('view').innerHTML = html;
@@ -152,6 +220,8 @@
       }
       function render() {
         var r = route();
+        if (r.v === 'tips') return drawTips(r);
+        if (r.v === 'add') { if (!data) return api({ action: 'queue' }).then(function (d) { data = (d && d.ok) ? d : { holidays: [] }; drawAdd(); }); return drawAdd(); }
         if (r.v === 'item') { if (!data) api({ action: 'queue' }).then(function (d) { if (d && d.ok) data = d; }); return drawItem(r); }
         if (data) return drawList(r);
         $('view').innerHTML = '<p class="sub">Loading...</p>';
