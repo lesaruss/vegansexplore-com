@@ -580,7 +580,8 @@ Deno.serve(async (req) => {
       if (!viewer) return json({ error: 'not_authenticated', message: 'Sign in to see bounties.' }, 401);
       const community = clean(body.community, 40);
       if (!cityOk(viewer, community)) return json({ error: 'bad_community' }, 400);
-      const { data } = await db.from('ve_bounties').select(BOUNTY_COLS).eq('community_slug', community).in('status', ['open', 'closed']).order('sort');
+      const { data } = await db.from('ve_bounties').select(BOUNTY_COLS).or(`community_slug.eq.${community},remote.eq.true`).in('status', ['open', 'closed']).order('sort');
+      // A remote job (done online, from anywhere) shows on every chapter's board (Sean, 2026-11-08).
       let mine: Record<string, any> = {};
       if (viewer && (data || []).length) {
         const { data: subs } = await db.from('ve_bounty_submissions').select('bounty_id, status, points_awarded').eq('member_id', viewer.id).in('bounty_id', (data || []).map((b) => b.id));

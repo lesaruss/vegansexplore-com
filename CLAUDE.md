@@ -7244,6 +7244,7 @@ on the page, an Inbox row for a new answer (it emails contact@lesaruss.com).
   footers. Both now require `instagram.com` as the host and skip Facebook's and Instagram's system paths (`TEMPLATE_HANDLES`). Deployed from
   2abef85 (ve-restaurant-audit v22, ve-discover, ve-logo-hunt v11; source sha256 matched). ve-discover's live copy had been behind main
   (no Google meter, max_tokens 4000, no Event Venues or Promoters); v23 brought it level.
+- **The rest of the Facebook review, 2026-11-08**: Sean found 4 by search (Coconutz, Darbster, Divine Leaf, Bar Bombón; replaced). The other 36 are hidden until confirmed (`social_removed.facebook.why` starts "Hidden until confirmed"); a Community Manager confirms them by search, queued in `ve-community-directory` with Honest Cuban's new handles. Handoff `docs/handoff/2026-11-08-ve-feedback-facebook-hidden-queued.md`.
 - **Checking a Facebook page from the server is not reliable**: logged out, Facebook answers a search-crawler request for a real page with
   its title and a missing one with the login wall, but after about 60 requests it sends everything to login. Apify's pages scraper says
   "not available" for real people whose profiles hide from logged-out visitors (Tabitha Brown, Isa Chandra). Never remove a Facebook link on
@@ -7472,3 +7473,8 @@ on every campaign row. **Cohort 1** `founding-cohort-1-2026-11`: 151 from Sugges
 from Sean, to the Welcome Guide, start Mon Nov 9, a draft until Sean locks and approves; three Wednesday Holiday Guide follow-ups by engagement
 (`founding-cohort-1-wed-clicked|opened|quiet`), drafts with no people until Wednesday morning. Handoff
 `docs/handoff/2026-11-08-ve-outreach-buckets-founding-cohort-email.md`. Not built: adding people to a people campaign from HQ.
+
+**The 36 hidden Facebook pages are a bounty (2026-11-08, playbook `ve-community-directory`)**: no Community Manager exists, so campaign `confirm-facebook` (6 remote bundle
+jobs, 60 points each, due Nov 22, South Florida board) asks members to find each page signed in to Facebook, with a link and screenshot or "No page found". A checked page is
+restored with one `ve_listing_edits` row (meta.playbook ve-community-directory, source the submission); the SQL is in `docs/handoff/2026-11-08-ve-community-directory-facebook-bounty.md`.
+Nothing restored yet. Migration `20261108_bounty_confirm_facebook.sql`. **A remote bounty shows on every chapter's board** (Sean, 2026-11-08: "a bounty that goes to all chapters"; `ve-bounties` v17 from 8940496, sha256 6528824b matched): `list` returns the chapter's bounties plus every open `remote` one, so the six Facebook jobs (the only remote bounties) appear in all 13 chapters; claim and submit already accepted any chapter. Proven live as the Logan test account: listed on Atlanta, London and New York, claimed and released (the released row is left; it counts for nothing).
