@@ -59,11 +59,18 @@
     '.vep-house .vep-epbox{background:#fff;border-radius:12px;}',
     '@media (max-width:560px){.vep-house .vep-strip{grid-auto-columns:82%;}.vep-house .vep-cards1 .rank-grid{grid-template-columns:minmax(0,1fr)!important;}}',
     '.vep-brief li.vep-pic{display:grid;grid-template-columns:132px minmax(0,1fr);gap:14px;align-items:start;border-left:0;padding:0;}',
+    '.vep-pic>a{display:block;}',
     '.vep-pic .vep-img{display:block;width:132px;aspect-ratio:4/3;border-radius:10px;background:#eef3ee center/cover no-repeat;}',
     '.vep-brief li.vep-pic.lead{grid-template-columns:minmax(0,1fr);gap:10px;}',
-    '.vep-pic.lead .vep-img{width:100%;aspect-ratio:16/9;border-radius:12px;}',
+    '.vep-pic.lead .vep-img{width:100%;max-width:680px;aspect-ratio:16/9;border-radius:12px;}',
     '.vep-pic.lead a{font-size:19px;line-height:1.3;}',
     '@media (max-width:560px){.vep-brief li.vep-pic{grid-template-columns:96px minmax(0,1fr);gap:12px;}.vep-pic .vep-img{width:96px;}.vep-brief li.vep-pic.lead{grid-template-columns:minmax(0,1fr);}.vep-pic.lead .vep-img{width:100%;}}',
+    '.vep-bday{display:grid;grid-template-columns:52px minmax(0,1fr);gap:14px;align-items:center;background:#fff;border:1.5px solid #F69820;border-radius:12px;padding:14px 16px;}',
+    '.vep-bday .vep-bico{width:52px;height:52px;border-radius:10px;background:#fff3e3;display:flex;align-items:center;justify-content:center;color:#b25f00;}',
+    '.vep-bday b{display:block;font-size:16px;line-height:1.3;color:#1a1a1a;}',
+    '.vep-bday .vep-src{margin-top:2px;}',
+    '.vep-bday .vep-bacts{display:flex;flex-wrap:wrap;gap:8px 16px;margin-top:10px;align-items:center;}',
+    '.vep-bday .vep-bgo{display:inline-flex;align-items:center;min-height:40px;padding:8px 16px;border-radius:6px;background:#1f5f22;color:#fff;font-weight:800;text-decoration:none;font-size:14px;}',
     '.vep-move{background:#1f5f22;color:#fff;border-radius:12px;padding:16px 18px;}',
     '.vep-move h4{color:#cfe8d0;}',
     '.vep-move strong{display:block;font-size:17px;line-height:1.3;}',
@@ -200,6 +207,13 @@
       // playable row. briefing() writes the text version with data-vep-* markers; hydrate(root) swaps in the cards once they load.
       if (h.spotlight) parts.push('<div><h5>Spotlight</h5>' + (h.spotlight.line ? '<p class="vep-take" style="margin:0 0 10px">' + esc(cut(h.spotlight.line)) + '</p>' : '') +
         '<div class="vep-cards1" data-vep-cards="' + esc(slugOf(h.spotlight.url)) + '"><ul><li>' + our(h.spotlight.url, h.spotlight.name) + '<span class="vep-src">' + esc([h.spotlight.kind, h.spotlight.city].filter(Boolean).join(' \u00b7 ')) + '</span></li></ul></div></div>');
+      // Bounty of the day (Sean, 2026-11-08): a different open bounty each day, picked by ve_pulse_house, with See all bounties.
+      if (h.bounty_day && h.bounty_day.title) {
+        var bd = h.bounty_day, bdu = safe(bd.url), bda = safe(bd.all_url);
+        parts.push('<div><h5>Bounty of the day</h5><div class="vep-bday"><span class="vep-bico" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg></span><div>' +
+          '<b>' + esc(bd.title) + '</b><span class="vep-src">' + esc([bd.count > 1 ? bd.count + ' jobs open' : '1 job open', bd.points ? 'up to ' + Number(bd.points).toLocaleString() + ' points each' : '', bd.remote ? 'do it from home' : ''].filter(Boolean).join(' \u00b7 ')) + '</span>' +
+          '<div class="vep-bacts">' + (bdu ? '<a class="vep-bgo" href="' + esc(bdu) + '" target="_top">See the jobs</a>' : '') + (bda ? '<a class="vep-more" href="' + esc(bda) + '" target="_top">See all bounties</a>' : '') + '</div></div></div></div>');
+      }
       if ((h.new_listings || []).length) parts.push('<div><h5>New in the Directory' + (h.new_count > 1 ? ' \u00b7 ' + h.new_count + ' places' : '') + '</h5>' +
         '<div class="vep-strip-wrap" data-vep-cards="' + esc(h.new_listings.map(function (x) { return slugOf(x.url); }).filter(Boolean).join(',')) + '" data-vep-strip="1" data-more-n="' + Number(h.new_count || 0) + '" data-more-url="' + esc(safe(h.new_url)) + '"><ul>' + h.new_listings.map(function (x) {
         return '<li>' + our(x.url, x.name) + '<span class="vep-src">' + esc([x.kind, x.city].filter(Boolean).join(' \u00b7 ')) + '</span></li>'; }).join('') + '</ul></div>' +

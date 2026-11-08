@@ -1,0 +1,8 @@
+-- ve-daily-pulse: Bounty of the day, and story pictures (Sean, 2026-11-08). Applied live through the connector.
+-- 1. ve_pulse_house adds `bounty_day` (applied as a text replace of the function body, before the Monday "ask" block):
+--    one open bounty campaign the chapter can do (its own or a remote one), least recently shown in the chapter first
+--    (ve_pulse_house_log kind 'bounty_day'), then most points; skipped while a live ve_pulse_features story links to it that day.
+--    Output: {title, count, points, remote, url: /bounties?community=<c>&campaign=<slug>, all_url: /bounties?community=<c>}.
+-- 2. Today's (2026-11-08) published city Pulses got briefing.house.bounty_day set and 13 'bounty_day' log rows, so tomorrow rotates.
+-- 3. Story pictures: edge function ve-pulse-pics copies each story's own preview picture to vegan-media/media/pulse/stories/ as
+--    briefing.stories[n].image. Run on the South Florida Pulse fc4d32fe-... only; shown only with ?pics=1 until Sean approves.
