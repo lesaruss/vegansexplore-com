@@ -6680,6 +6680,18 @@ how to tell Brooke), and the CPA's answers. Proven live
 2026-11-02 as Sean through a one-time function (`ve-once-rev-proof`, now the 410 stub): $12,916.02 all time from 97 payments, $2,358
 this year, $11 today; cached 0.3 s; a member who is not a super admin refused (403).
 
+## Brooke, the first BrandDesk client (Sean, 2026-11-08, playbooks `brooke-sellers`, `branddesk-production-wing`)
+
+"Brooke is our first BrandDesk client. We just need to get her set up." Her BrandDesk account (`ve_branddesk_accounts` 26572b91) sits on her People listing
+`brooke-sellers`, owned by her Vegans Explore account (bsellersotss@gmail.com, waiting on her creator survey; not a comp; her People page names it in
+`details.person.member_id`). She is billed by HQ client billing, not BrandDesk Stripe, so the account has no subscription. Three columns came with her (migration
+`20261108_branddesk_client_kind.sql`): **`kind`** restaurant | creator (a creator's Getting started checklist has no menu shoot or Google profile and always asks
+for social access: `CREATOR_STEPS`, `stepsFor` in `ve-branddesk`), **`kit_brand`** (a brand kit in `ve_brand_cartridges`, read for the brand kit step and her asset
+sheet; the client sees no kit link, since only super admins open a brand kit) and **`plan_line`** (the plan in words, shown in place of the standard setup and
+$500 a month on her Managed by us page, Depot > BrandDesk and HQ's Clients room). With no subscription, Pause and End it answer 409 `billed_outside`. Her site
+meatlessmuscle.com is archived into her Library. `ve-branddesk` v22 from fb3569a (source sha256 6b87a630 matched) is live ahead of `main` until the branch is merged.
+Handoff `docs/handoff/2026-11-08-brooke-sellers-branddesk-client.md`.
+
 ## Client billing links (Sean, 2026-11-05, playbook `brooke-sellers`)
 
 A monthly subscription for one client on the **LESARUSS** Stripe account, with the card taken now and the first charge on a date we set. Built in HQ

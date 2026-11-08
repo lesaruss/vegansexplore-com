@@ -15,10 +15,12 @@ Date: 2026-11-08 (Eastern). Playbooks: `brooke-sellers`, `branddesk-production-w
 - Migration record: `supabase/migrations/20261108_brooke_branddesk_client.sql`.
 
 ## Gaps found (not fixed)
-- Pause and End it in Depot > BrandDesk call Stripe with her empty subscription and will fail; her billing is HQ client billing.
-- The onboarding checklist is the restaurant one (starter shoot of menu items, Google profile); some steps do not fit a creator.
-- Her brand kit is a brand kit, so the client view's asset sheet reads her listing, not the kit.
 - Her live billing link (client_billing_plans fb28f444) is still `pending`: she has not added her card.
+
+## Done after Sean's "go"
+- Creator checklist (`kind` creator), her brand kit read for the checklist and asset sheet (`kit_brand`), her plan in words (`plan_line`) on the client page,
+  Depot > BrandDesk and HQ Clients; Pause and End it refused with `billed_outside`. `ve-branddesk` v22 from fb3569a live (sha256 matched), checked: pause and
+  cancel 409, client shows creator steps and the meatless-muscle kit, list shows her plan line. Branches: VE and HQ `claude/determined-cannon-c6qjm0`, not on main.
 
 ## Waiting on Sean
 - Send her the Creator Guide link email (Depot > Outreach draft `brooke-resend`) and the billing link.
