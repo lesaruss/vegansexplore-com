@@ -85,3 +85,9 @@ Menus close at the end of Wednesday, November 18.
 
 Thank you again,
 Sean
+
+## Update: one email, two asks (Sean, same morning)
+The thank-you follow-up above is replaced. The campaign `honest-cuban-comment-2026-11` ("Honest Cuban by VCC: their story and their ThanksLiving
+menu") now asks for 1. their story ({link}, their own tracked link to /comment/honest-cuban) and 2. their ThanksLiving menu (`/go/hc-thanksliving`
+to /business/holiday-menu?listing=vegan-cuban-cuisine; menus close end of Wed Nov 18), then the claim line. Subject "Honest Cuban by VCC: your
+story, and your ThanksLiving menu". Locked, draft until Sean approves in BrandDesk; sends Monday from 9 AM ET. No Nov 12 check needed.
