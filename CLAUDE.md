@@ -6974,6 +6974,13 @@ for the Guide and `claim.html` for the menu form (template gate).
   `20261108_holiday_menu_tips.sql`); Depot > Holiday menus has Sent by businesses, Spotted by members and Add a menu we know. Proven 15 of 15
   (`scripts/supabase-once/holiday-tip-proof.ts`, now 410). Four sanctuary events added (`20261108_holiday_sanctuary_events.sql`). Video script v2 approved and recorded 2026-11-08
   (`theo-tour-1..8-v1.mp3` in `vegan-media/media/voices/holiday-guide/`, stt-checked; Overview Play runs the tour, each tab plays its chapter; `TAB_CH`); the restaurant note's words are approved; finish it (list read, drafts, a test) before any send day is set.
+  **The note goes through BrandDesk, not Depot > Outreach** (Sean, 2026-11-08: "We are using the BrandDesk for Outreach... I want to retire those
+  features"; send day Tue Nov 10). Two campaigns on the restaurant door, `thanksliving-2026-vegan` (34) and `thanksliving-2026-plant` (56), one email
+  each, locked, from the team (`ve_outreach_campaigns.sender_brand` vegans-explore), each member its own tracked link to `/business/holiday-menu?listing=`
+  (`link_path`, `ve_outreach_campaign_members.link_code`), start 2026-11-10, pace 60; **draft until Sean approves each in BrandDesk** (migration
+  `20261108_thanksliving_campaigns.sql`). Found the same night: `ve-outreach` v28 had been deployed from `main`, wiping the campaign sender
+  (`campaignTick`, only on unmerged `claude/gifted-rubin-ek818o`); v29 put it back on top of main's file and v30 added sender and link per campaign
+  (branch `claude/lucid-pascal-zxvmu4`). **Never deploy `ve-outreach` from `main` until that branch is merged.**
 
 ## The Vegans Explore app (LOCKED by Sean 2026-11-07, playbook `ve-mobile-app`, canon `canon-ve-mobile-app`)
 
