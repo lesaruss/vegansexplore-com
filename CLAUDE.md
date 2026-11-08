@@ -2994,7 +2994,7 @@ when a slug has no approved listing, keeping the address's tab and hash.
 read (8 listed, 106 set aside); **the listing-request queue**: `ve_listing_requests`, edge function `ve-listing-requests` (submit, research, queue, decide), cron
 `ve-listing-requests`. Sean's own requests (Request a listing on his For you) go straight to work; everyone else's are drafted by the worker through `ve-listing-intake`
 (which now takes the cron secret) as quarantined `listing-request` listings, then show on Sean's For you with Publish, Send to vetting (Being vetted for a food place
-with Vegan options, else On hold for review), Remove; a place already listed is never drafted twice. Visitors: search's empty state, `/public/ve-listing-request.js`.
+with Vegan options, else On hold for review), Remove; a place already listed is never drafted twice. Visitors: search's empty state, `/public/ve-listing-request.js`. **Merged to `main` 2026-11-08 (eb15f89).** Not proven: decide pressed as a signed-in super admin, the For you tiles in a browser.
 
 ## Events, the menu and the city banner (Sean, 2026-10-26)
 
