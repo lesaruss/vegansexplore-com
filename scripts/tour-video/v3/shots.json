@@ -1,0 +1,227 @@
+[
+[
+1,
+0,
+6.0,
+"scene",
+"V",
+"V in the caf\u00e9 with the tablet, her tour picture. Held still.",
+"Hi, I'm V. This is Green Leaf Kitchen. It's not a real restaurant. It's our sample,"
+],
+[
+1,
+6.0,
+11.06,
+"desktop",
+"d_hero",
+"The home page on a computer: the headline, the buttons and the Today strip.",
+"built to show you what a Vegan restaurant's website can look like when we build it with you."
+],
+[
+1,
+11.06,
+15.4645,
+"desktop",
+"d_tour",
+"The tour page on a computer: V, Start here, Open the demo.",
+"Watch the tour, then tap around. Nothing you do here is saved"
+],
+[
+2,
+0,
+6.36,
+"phone",
+"today",
+"The first screen's buttons and the Today strip: hours and address.",
+"The first screen answers what people want to know. Are you open? What's good? And how do I order?"
+],
+[
+2,
+6.36,
+11.7029,
+"phone",
+"fav",
+"Favorites, ranked by member votes, the heart pressed on the first card.",
+"The favorites row is ranked by what members vote for, so it stays current on its own."
+],
+[
+3,
+0,
+5.47,
+"phone",
+"story",
+"Our story, with the story video on the page.",
+"People choose a restaurant for the people behind it. Your story plays right on the page,"
+],
+[
+3,
+5.47,
+9.8743,
+"scene",
+"grid4",
+"The space in four photos: by day, at night (the current night photo), inside, the team.",
+"and your space shows by day, at night, inside, and with your team."
+],
+[
+4,
+0,
+5.55,
+"desktop",
+"d_dish",
+"A dish page on a computer: Sunrise Plate, allergens, nutrition.",
+"Every dish has its own page, allergens, a nutrition estimate, and what's in it"
+],
+[
+4,
+5.55,
+11.9641,
+"desktop",
+"d_ing",
+"What's in it, and where it comes from, on a computer.",
+"with where each ingredient comes from. When it's a brand in our Directory, it links to that brand's page."
+],
+[
+5,
+0,
+4.98,
+"phone",
+"signin",
+"Sign in with Vegans Explore.",
+"Members of Vegans Explore can sign in here with the account they already have."
+],
+[
+5,
+4.98,
+10.3967,
+"phone",
+"msaved",
+"The dish as a signed-in member: vote and Save.",
+"They vote for their favorite dishes once a day and save the ones they want to come back for."
+],
+[
+6,
+0,
+4.11,
+"phone",
+"obar",
+"The owner's view: the bar that says you are viewing your site as the owner.",
+"Switch to the owner and the same page becomes yours to update."
+],
+[
+6,
+4.11,
+9.3257,
+"phone",
+"osearch",
+"The owner editing what is in the dish.",
+"Change an ingredient, add a brand from our Directory, and the dish page shows it"
+],
+[
+7,
+0,
+4.93,
+"phone",
+"order",
+"Order for pickup: items added with the stepper.",
+"Ordering is short. Add what you want, choose pickup, and pay."
+],
+[
+7,
+4.93,
+9.53,
+"scene",
+"s-counter",
+"Scene: the kitchen counter (the sample's own photo).",
+"When your point of sale is connected, orders go straight to your kitchen."
+],
+[
+7,
+9.53,
+12.4865,
+"phone",
+"cart",
+"Your order: the cart, pickup, delivery coming soon.",
+"Vegans Explore Delivery is coming soon"
+],
+[
+8,
+0,
+4.5,
+"scene",
+"three",
+"Three phones side by side: Their brand, Island bright, Night lounge.",
+"This is one site in three looks. Same menu, same story,"
+],
+[
+8,
+4.5,
+8.96,
+"desktop",
+"d_brand",
+"The brand kit on a computer: six colors, each with a job.",
+"different colors and type. Yours is built from your own brand kit"
+],
+[
+9,
+0,
+7.1053,
+"desktop",
+"d_listing",
+"Green Leaf Kitchen's Vegans Explore page on a computer: Vote, Save, About.",
+"Your site connects to your Vegans Explore page, where members find you, vote for you, and check in when they visit."
+],
+[
+10,
+0,
+5.1,
+"phone",
+"ctop",
+"The Community page: Be part of Green Leaf Kitchen, your points.",
+"Your regulars become your community. Members unlock rewards you choose,"
+],
+[
+10,
+5.1,
+11.04,
+"phone",
+"chef",
+"A reward: a seat at the chef's table, points and how many are left.",
+"like a free drink or a seat at your chef's table with the points they earn on Vegans Explore."
+],
+[
+10,
+11.04,
+15.18,
+"phone",
+"code",
+"An unlocked reward with its code.",
+"There are only so many, first come, first served,"
+],
+[
+10,
+15.18,
+22.1518,
+"phone",
+"club",
+"The Green Leaf Club, a Guide on Vegans Explore, Join free.",
+"and your club is a Guide on Vegans Explore, so it brings people in and sends them out to the rest of the community"
+],
+[
+11,
+0,
+4.72,
+"scene",
+"s-owner",
+"Scene: the owner in her restaurant (the sample's own photo).",
+"Want one like this for your restaurant? Tap Talk to our team and a real person"
+],
+[
+11,
+4.72,
+6.3478,
+"scene",
+"V",
+"V in the caf\u00e9, held to the end.",
+"will walk you through it"
+]
+]

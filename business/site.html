@@ -33,6 +33,13 @@
     .sample .seg button.on{background:#ffd79a;color:#2b1d06;}
     .sample .tourbtn{display:inline-flex;align-items:center;gap:6px;background:#22C55E;color:#03170a;border-radius:6px;padding:7px 12px;font:800 12px/1 system-ui,sans-serif;text-decoration:none;white-space:nowrap;}
     .sample .tourbtn:hover{background:#4ade80;}
+    .sample .s-narrow{display:none;}
+    .sample .s-tog{margin-left:auto;background:none;border:1px solid rgba(255,215,154,.45);color:#ffd79a;border-radius:6px;padding:5px 10px;font:800 11px/1 system-ui,sans-serif;cursor:pointer;}
+    .sample:not(.closed) .s-short{display:none;}
+    .sample:not(.closed) .s-tog{order:2;}
+    .sample.closed > :not(b):not(.s-short):not(.s-tog):not(.tourbtn){display:none;}
+    .sample.closed .s-short{flex:1;min-width:0;}
+    @media (max-width:600px){ .sample.closed .s-wide{display:none;} .sample.closed .s-narrow{display:inline;} .sample.closed{flex-wrap:nowrap;} .sample.closed .s-tog{margin-left:auto;} }
     .top{position:sticky;top:0;z-index:20;background:var(--c-page);border-bottom:1px solid color-mix(in srgb,var(--c-text) 12%,transparent);}
     .top .wrap{display:flex;align-items:center;justify-content:space-between;gap:20px;height:68px;}
     .brand{display:flex;align-items:center;gap:12px;text-decoration:none;}
@@ -365,6 +372,8 @@
     C.story = C.story || {}; C.story.long = [].concat(C.story.long || []); C.photos = C.photos || { space: [] }; C.photos.space = C.photos.space || []; V = V || {};
     // Where a page lives: its own address on a real site, #/page in the sample and a pitch's still.
     function href(page) { return VS ? VS.base + (page === 'home' ? '' : page) : (page === 'home' ? '#/' : '#/' + page); }
+    // The Sample bar is one quiet row until opened (Sean, 2026-11-08), so screenshots and first looks stay clean.
+    var SBOPEN = false; try { SBOPEN = sessionStorage.getItem('ve_site_bar_open') === '1'; } catch (e) {}
     var CART = {}; try { CART = JSON.parse(sessionStorage.getItem('ve_site_cart') || '{}'); } catch (e) {}
     function saveCart() { try { sessionStorage.setItem('ve_site_cart', JSON.stringify(CART)); } catch (e) {} }
     function esc(x) { return String(x == null ? '' : x).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
@@ -700,11 +709,12 @@
       if (page === 'signin' && !SESS && VE_MEMBER && !sessionStorage.getItem('ve_site_signedout')) { setSess({ name: veFirst(VE_MEMBER), real: true, role: 'member' }); goNext(); return; }
       if (VS && VS.mode === 'preview') document.getElementById('sampleBar').innerHTML = '<b>Preview</b><span>' + esc(biz.name) + '\'s new website. Not live yet: only you and our team can see this address.</span>' +
         (VS.dashboard ? '<a class="push" href="' + esc(VS.dashboard) + '">Approve it or ask for changes</a>' : '');
-      else if (PC) document.getElementById('sampleBar').style.display = 'none'; else document.getElementById('sampleBar').innerHTML = '<b>Sample</b><span>Green Leaf Kitchen\'s website on our BrandDesk frame, a made-up restaurant. Everything comes from its <a href="/business/sample/brand">brand kit</a>.' + '' + '</span>' +
-        (/[?&]tour=/.test(location.search) ? '' : '<a class="tourbtn" href="/business/sample/tour" target="_top">&#9654; Take the tour</a>') +
+      else if (PC) document.getElementById('sampleBar').style.display = 'none'; else document.getElementById('sampleBar').innerHTML = '<b>Sample</b><span class="s-short">A made-up restaurant<span class="s-wide">, here to show what your site can be</span>.</span><button type="button" class="s-tog" data-sampletog aria-expanded="' + (SBOPEN ? 'true' : 'false') + '">' + (SBOPEN ? 'Less &#9652;' : 'More &#9662;') + '</button><span class="s-long">Green Leaf Kitchen\'s website on our BrandDesk frame, a made-up restaurant. Everything comes from its <a href="/business/sample/brand">brand kit</a>.' + '' + '</span>' +
+        (/[?&]tour=/.test(location.search) ? '' : '<a class="tourbtn" href="/business/sample/tour" target="_top">&#9654; <span class="s-wide">Take the tour</span><span class="s-narrow">Tour</span></a>') +
         '<span class="seg push" role="group" aria-label="Make it yours: the look">' + LOOKS.map(function (l) { return '<button type="button" data-look="' + l.key + '" class="' + (l.key === LOOK ? 'on' : '') + '">' + esc(l.name) + '</button>'; }).join('') + '</span>' +
         (SESS ? '<span class="seg" role="group" aria-label="Signed in as"><button type="button" data-role="member" class="' + (OWNER() ? '' : 'on') + '">As a member</button><button type="button" data-role="owner" class="' + (OWNER() ? 'on' : '') + '">As the owner</button></span>' : '<span class="seg"><button type="button" data-gosign>Try the sample login</button></span>') +
         '<span class="seg" role="group" aria-label="Ordering"><button type="button" data-mode="pos" class="' + (MODE === 'pos' ? 'on' : '') + '">Ordering connected to Square</button><button type="button" data-mode="link" class="' + (MODE === 'link' ? 'on' : '') + '">Ordering by link</button></span>';
+      var sbEl = document.getElementById('sampleBar'); if (sbEl) sbEl.classList.toggle('closed', !VS && !PC && !SBOPEN);
       var top = '<header class="top"><div class="wrap"><a class="brand" href="' + href('home') + '">' + (mark ? '<img class="mark" src="' + esc(DARK_PAGE && markRev ? markRev : mark) + '" alt="">' : logo ? (DARK_PAGE && rev ? '<img class="rev" src="' + esc(rev) + '" alt="">' : '<img src="' + esc(logo) + '" alt="">') : '') + '<span>' + esc(biz.name) + '</span></a>' +
         '<button class="burger" type="button" aria-label="Menu" data-burger><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>' +
         '<nav class="links" id="links">' + NAV.map(function (n) { return '<a href="' + n[2] + '" class="' + (n[0] === page ? 'on' : '') + '">' + n[1] + '</a>'; }).join('') + '<a class="btn obtn" href="' + esc(orderHref()) + '">' + BAG + 'Order online</a>' + signLink() + '</nav></div></header>';
@@ -756,6 +766,7 @@
     document.addEventListener('click', function (e) {
       var t;
       if ((t = e.target.closest('[data-burger]'))) { document.getElementById('links').classList.toggle('openm'); return; }
+      if ((t = e.target.closest('[data-sampletog]'))) { SBOPEN = !SBOPEN; try { sessionStorage.setItem('ve_site_bar_open', SBOPEN ? '1' : '0'); } catch (x) {} draw(); return; }
       if ((t = e.target.closest('[data-look]'))) { LOOK = t.dataset.look; try { sessionStorage.setItem('ve_site_look', LOOK); } catch (x) {} applyLook(); draw(); return; }
       if ((t = e.target.closest('[data-mode]'))) { MODE = t.dataset.mode; try { sessionStorage.setItem('ve_site_order_mode', MODE); } catch (x) {} draw(); return; }
       if ((t = e.target.closest('[data-sec]'))) { activeSec = +t.dataset.sec; var mb2 = t.closest('[data-menu]'); mb2.innerHTML = mb2.hasAttribute('data-order') ? orderBlock() : menuBlock(true); return; }
