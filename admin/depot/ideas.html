@@ -44,6 +44,17 @@
     .tools input{flex:1;min-width:200px;}
     .btn-quiet{background:#fff;color:var(--ve-green-deep);border:1px solid var(--ve-green-deep);}
     @media (max-width:600px){.tools select{flex:1 1 100%;}}
+    /* Send to (M): drafts for the Daily Pulse and the podcast */
+    .send{border-top:1px solid var(--ve-border);padding-top:16px;display:grid;gap:12px;}
+    .send h3{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .draft{border:1px solid var(--ve-border);border-radius:6px;padding:14px;display:grid;gap:8px;background:#fff;}
+    .draft input,.draft textarea,.draft select{font-family:inherit;font-size:16px;padding:8px 12px;border:1px solid var(--ve-border);border-radius:6px;width:100%;box-sizing:border-box;}
+    .draft textarea{min-height:80px;}
+    .draft select,.send select{appearance:none;-webkit-appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 16px center;}
+    .send .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+    .send .row select,.send .row input{font-family:inherit;font-size:14px;min-height:40px;padding:8px 12px;border:1px solid var(--ve-border);border-radius:6px;}
+    .send .row select{padding-right:44px;}
+    @media (max-width:600px){.send .row > *{flex:1 1 100%;}}
     .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:#eef1ee;color:#333;}
     .tag.new{background:#fff1dc;color:#8a5200;}.tag.working{background:#e3eefc;color:#0f4a91;}.tag.fixed{background:var(--ve-green-light);color:var(--ve-green-deep);}.tag.spam{background:#fde7e5;color:#8a1c12;}
     .card .excerpt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:14px;}
@@ -242,12 +253,58 @@
             (x.note ? '<p class="meta"><b>Note:</b> ' + esc(x.note) + '</p>' : '') +
             (x.reason ? '<p class="meta"><b>Why:</b> ' + esc(x.reason) + '</p>' : '') +
             (!canAct ? '<div class="acts">' + (x.status !== 'approved' && x.status !== 'building' ? '<button type="button" class="btn btn-quiet" data-st="new">Open it again</button>' : '') + (x.status === 'approved' || x.status === 'building' ? '<button type="button" class="btn btn-ghost" data-st="parked">Set aside</button>' : '') + '</div>' : '') +
-            '<div id="msg" class="msg"></div></div>';
+            '<div id="msg" class="msg"></div><div class="send" id="send"></div></div>';
           [].forEach.call(document.querySelectorAll('[data-lb]'), function (a) { a.onclick = function (e) { e.preventDefault(); var lb = document.createElement('div'); lb.className = 'lb'; lb.innerHTML = '<img src="' + esc(a.getAttribute('data-lb')) + '" alt="">'; lb.onclick = function () { lb.remove(); }; document.body.appendChild(lb); }; });
           function after(r) { if (r && r.ok) { loaded = false; drawIdea(id); } else $('msg').textContent = 'That did not go through. ' + ((r && r.error) || ''); }
           if ($('ok')) $('ok').onclick = function () { this.disabled = true; $('msg').innerHTML = waitHtml('Approving...'); api({ action: 'approve', id: id }).then(after); };
+          drawSend(id);
           if ($('re')) $('re').onclick = function () { this.disabled = true; $('msg').innerHTML = waitHtml('Logan is reading it again...'); api({ action: 'read', id: id, reply: $('reply').value }).then(after); };
           [].forEach.call(document.querySelectorAll('[data-st]'), function (b) { b.onclick = function () { api({ action: 'set', id: id, status: b.getAttribute('data-st') }).then(after); }; });
+        });
+      }
+
+      // Send to (branddesk-production-wing M, 2026-11-08): drafts only, Sean approves each one.
+      var CH_NAMES = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', atlanta: 'Atlanta', 'washington-dc': 'Washington, D.C.', delaware: 'Delaware', maryland: 'Maryland', virginia: 'Virginia', 'west-virginia': 'West Virginia', 'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', london: 'London' };
+      function chName(c) { return c === 'all' ? 'Every chapter' : (CH_NAMES[c] || c); }
+      function dayName(d) { return new Date(d + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }); }
+      function chSel(id, cur, list) { return '<select id="' + id + '" aria-label="Chapter">' + ['all'].concat(list).map(function (c) { return '<option value="' + c + '"' + (c === cur ? ' selected' : '') + '>' + esc(chName(c)) + '</option>'; }).join('') + '</select>'; }
+      function drawSend(id) {
+        var box = $('send'); if (!box) return;
+        box.innerHTML = waitHtml('Loading where it can go...');
+        api({ action: 'sends', id: id }).then(function (d) {
+          if (!d || !d.ok) { box.innerHTML = ''; return; }
+          var PST = { draft: 'Draft, waiting for your OK', live: 'Approved, it goes in that Pulse', discarded: 'Not used' };
+          var pulse = d.pulse.map(function (f) {
+            var c = f.communities && f.communities.length ? f.communities[0] : 'all', st = f.story || {};
+            if (f.status !== 'draft') return '<div class="draft"><span class="meta"><b>' + esc(PST[f.status]) + '</b> &middot; ' + esc(chName(c)) + ' &middot; ' + esc(dayName(f.starts_on)) + '</span><b>' + esc(st.title) + '</b><span>' + esc(st.take) + '</span></div>';
+            return '<div class="draft" data-f="' + f.id + '"><span class="meta"><b>' + esc(PST.draft) + '</b></span>' +
+              '<label class="meta" for="ft-' + f.id + '">Headline</label><input id="ft-' + f.id + '" value="' + esc(st.title) + '">' +
+              '<label class="meta" for="fk-' + f.id + '">What members read</label><textarea id="fk-' + f.id + '">' + esc(st.take) + '</textarea>' +
+              '<label class="meta" for="fu-' + f.id + '">Link (optional, https)</label><input id="fu-' + f.id + '" value="' + esc(st.url || '') + '" data-dictate="off">' +
+              '<div class="row">' + chSel('fc-' + f.id, c, d.chapters) + '<input type="date" id="fd-' + f.id + '" value="' + esc(f.starts_on) + '" min="' + esc(d.tomorrow) + '" aria-label="Date"></div>' +
+              '<div class="acts"><button type="button" class="btn" data-fa="approve">Approve for the Pulse</button><button type="button" class="btn btn-quiet" data-fa="save">Save changes</button><button type="button" class="btn btn-ghost" data-fa="discard">Don\'t use it</button></div></div>';
+          }).join('');
+          var pod = d.podcast.map(function (g) { var e = g.ve_pod_episodes || {}; return '<div class="draft"><span class="meta"><b>On Episode ' + esc(e.number) + ' (' + esc(dayName(e.air_date)) + ')</b> &middot; ' + esc(g.status === 'approved' ? 'Approved' : g.status === 'proposed' ? 'Draft, no script yet' : 'Script written, waiting for your OK') + '</span><b>' + esc(g.title) + '</b><span class="meta">Write the script and approve it in BrandDesk &gt; Vegans Explore &gt; Podcast.</span><div class="acts"><a class="btn btn-quiet" href="https://hq.lesaruss.ai/branddesk/brands/vegans-explore?view=podcast" target="_blank" rel="noopener">Open the Podcast room</a></div></div>'; }).join('');
+          var ne = d.next_episode;
+          box.innerHTML = '<h3>Send it to</h3><p class="meta">Drafts only. Nothing reaches members until you approve it.</p>' +
+            '<div><b>A chapter\'s Daily Pulse</b><p class="meta">Logan writes a short story from the idea for that morning\'s Pulse. You change it and approve it here.</p>' +
+            '<div class="row">' + chSel('pc', 'all', d.chapters) + '<input type="date" id="pd" value="' + esc(d.tomorrow) + '" min="' + esc(d.tomorrow) + '" aria-label="Date"><button type="button" class="btn btn-quiet" id="pgo">Write a Pulse draft</button></div></div>' + pulse +
+            '<div><b>The podcast\'s news</b><p class="meta">' + (ne ? 'A Top stories segment, read by Kai, on Episode ' + esc(ne.number) + ' (' + esc(dayName(ne.air_date)) + ').' : 'No episode is in planning right now (this week\'s is ready). Make the next one in BrandDesk &gt; Podcast, then send it.') + '</p>' +
+            (ne && !d.podcast.some(function (g) { return g.episode_id === ne.id; }) ? '<div class="acts"><button type="button" class="btn btn-quiet" id="podgo">Add a podcast draft</button></div>' : '') + '</div>' + pod +
+            '<div id="smsg" class="msg"></div>';
+          function done(r) { if (r && r.ok) drawSend(id); else $('smsg').textContent = 'That did not go through. ' + ((r && r.error) || ''); }
+          $('pgo').onclick = function () { this.disabled = true; $('smsg').innerHTML = waitHtml('Logan is writing the Pulse story...'); api({ action: 'pulse_draft', id: id, community: $('pc').value, date: $('pd').value }).then(done); };
+          if ($('podgo')) $('podgo').onclick = function () { this.disabled = true; api({ action: 'podcast_draft', id: id }).then(done); };
+          [].forEach.call(box.querySelectorAll('[data-f]'), function (el) {
+            var fid = el.getAttribute('data-f');
+            [].forEach.call(el.querySelectorAll('[data-fa]'), function (b) { b.onclick = function () {
+              var a = b.getAttribute('data-fa');
+              if (a === 'discard') return api({ action: 'pulse_discard', feature_id: fid }).then(done);
+              var save = { action: 'pulse_save', feature_id: fid, title: $('ft-' + fid).value, take: $('fk-' + fid).value, url: $('fu-' + fid).value.trim(), community: $('fc-' + fid).value, date: $('fd-' + fid).value };
+              b.disabled = true;
+              api(save).then(function (r) { if (!r || !r.ok || a === 'save') return done(r); api({ action: 'pulse_approve', feature_id: fid }).then(done); });
+            }; });
+          });
         });
       }
 

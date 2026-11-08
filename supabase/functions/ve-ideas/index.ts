@@ -18,6 +18,15 @@
 //   set          { id, status?, note?, session_url?, result_url?, playbook_slug? }   done needs a result_url
 //   next                                  the oldest approved idea (id, a short excerpt) and whether a build is already running
 //   claim        { session_url, id? }     takes the oldest approved idea (or that one) and makes it building with the session's link
+// Send to (branddesk-production-wing M, 2026-11-08; Sean: "Drafts only; I approve each one"):
+//   sends        { id }                   the idea's Pulse drafts and podcast drafts, the next episode in planning, the chapters
+//   pulse_draft  { id, community, date }  Logan writes a Daily Pulse story (title, take) from the idea: a ve_pulse_features row,
+//                                         status draft, for one chapter (or 'all') on one Eastern date. Nothing goes in a Pulse yet.
+//   pulse_save   { feature_id, title, take, url, community, date }   change a draft
+//   pulse_approve { feature_id }          Sean's OK: live, so that date's Pulse carries it (waiting drafts get it at once)
+//   pulse_discard { feature_id }          the draft is not used (kept, status discarded)
+//   podcast_draft { id }                  a proposed news segment (Kai, Top stories) on the next episode still in planning, written from
+//                                         the idea; approved in BrandDesk > Podcast like every segment. No episode in planning: no_episode.
 //
 // Who: a super admin's VE token, or ops: Bearer LESARUSS_ADMIN_TOKEN, optionally with as_member (a super admin). Ops reads and moves
 // ideas through the build (list, get, next, claim, set) and serves HQ's Blueprint > Ideas (upload_start, read_blueprint).
@@ -48,7 +57,9 @@ const UPLOAD_TYPES = /^(image\/|application\/pdf$|video\/|audio\/|text\/(plain|m
 const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type', 'Access-Control-Allow-Methods': 'POST, OPTIONS' };
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
 const clean = (v: unknown, n: number) => String(v ?? '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '').trim().slice(0, n);
-const OPS_ACTIONS = new Set(['list', 'get', 'next', 'claim', 'set', 'upload_start', 'read_blueprint']);
+const CHAPTERS = ['south-florida', 'central-florida', 'north-florida', 'atlanta', 'washington-dc', 'delaware', 'maryland', 'virginia', 'west-virginia', 'new-york', 'philadelphia', 'los-angeles', 'london'];
+const easternDay = (offset = 0) => new Date(Date.now() + offset * 864e5).toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+const OPS_ACTIONS = new Set(['sends', 'pulse_draft', 'pulse_save', 'podcast_draft', 'list', 'get', 'next', 'claim', 'set', 'upload_start', 'read_blueprint']);
 const BUSY_HOURS = 6;
 const isId = (v: unknown) => typeof v === 'string' && /^[0-9a-f-]{36}$/i.test(v);
 const PATH_OK = (p: string) => /^\d{4}-\d{2}-\d{2}\/[0-9a-f-]{36}-/.test(p);
@@ -214,6 +225,26 @@ async function readCore(src: Src, maxTokens = MAX_TOKENS): Promise<{ read?: any;
 }
 
 // The Depot's read is the same read as the Blueprint's: one table now. The playbook it names is kept on playbook_slug too.
+// The Daily Pulse story for an idea (M). Only from the idea's own words; never a fact it does not hold.
+const PULSE_SCHEMA = { type: 'object', additionalProperties: false, properties: {
+  title: { type: 'string', description: 'A plain headline, at most 70 characters.' },
+  take: { type: 'string', description: 'One or two sentences a member reads in the Daily Pulse, at most 280 characters.' } }, required: ['title', 'take'] };
+async function writePulse(idea: any): Promise<{ title?: string; take?: string; error?: string }> {
+  const apiKey = await secret('ANTHROPIC_API_KEY');
+  if (!apiKey) return { error: 'no_model_key' };
+  try {
+    const client = new Anthropic({ apiKey });
+    const res: any = await client.messages.create({
+      model: MODEL, max_tokens: MAX_TOKENS, output_config: { effort: 'low', format: { type: 'json_schema', schema: PULSE_SCHEMA } },
+      system: 'You write one story for the Vegans Explore Daily Pulse, the morning briefing members read in their city. Write only from the idea and notes given: never add a fact, name, number, date or link that is not in them. Speak to members, warm and plain, short sentences, no dashes, no hype. Capitalize Vegan. Never state a price. If the idea is an internal plan, write what members will see or can do, and nothing that is not built yet.',
+      messages: [{ role: 'user', content: `The idea: ${idea.title || ''}\n\n${idea.body || ''}\n\n${idea.read?.ask ? 'Logan read it as: ' + idea.read.ask : ''}\n\n${(idea.links || []).length ? 'Links: ' + idea.links.join(' ') : ''}` }],
+    } as any);
+    if (res.stop_reason !== 'end_turn') return { error: res.stop_reason === 'max_tokens' ? 'cut_off' : `stopped_${res.stop_reason}` };
+    const out = JSON.parse((res.content || []).filter((x: any) => x.type === 'text').map((x: any) => x.text).join(''));
+    return { title: clean(out.title, 120), take: clean(out.take, 600) };
+  } catch (e) { return { error: 'model_error' }; }
+}
+
 async function readIdea(id: string) {
   const r: any = await readBlueprint(id, '');
   if (r.error) return r;
@@ -305,6 +336,79 @@ Deno.serve(async (req) => {
       .eq('id', id).eq('status', 'approved').select('*').maybeSingle();
     if (!data) return json({ error: 'not_approved' }, 409);
     return json({ ok: true, idea: await withLinks(data) });
+  }
+
+  if (b.action === 'sends') {
+    if (!isId(b.id)) return json({ error: 'id' }, 400);
+    const [f, sg, ep] = await Promise.all([
+      db.from('ve_pulse_features').select('id,status,starts_on,ends_on,communities,story,created_at,approved_at').eq('idea_id', b.id).order('created_at'),
+      db.from('ve_pod_segments').select('id,episode_id,title,status,script,updated_at,ve_pod_episodes(number,air_date,status,title)').eq('idea_id', b.id),
+      db.from('ve_pod_episodes').select('id,number,air_date,title,status').eq('show_slug', 'vegans-explore-podcast').eq('status', 'planning').gte('air_date', easternDay()).order('air_date').limit(1).maybeSingle(),
+    ]);
+    return json({ ok: true, pulse: f.data || [], podcast: sg.data || [], next_episode: ep.data || null, chapters: CHAPTERS, tomorrow: easternDay(1) });
+  }
+  if (b.action === 'pulse_draft' || b.action === 'pulse_save') {
+    const community = clean(b.community, 40) || 'all', date = clean(b.date, 10) || easternDay(1);
+    if (community !== 'all' && !CHAPTERS.includes(community)) return json({ error: 'community' }, 400);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || date < easternDay()) return json({ error: 'date' }, 400);
+    const url = clean(b.url, 600);
+    if (url && !/^https:\/\//i.test(url)) return json({ error: 'url' }, 400);
+    if (b.action === 'pulse_save') {
+      if (!isId(b.feature_id)) return json({ error: 'id' }, 400);
+      const title = clean(b.title, 120), take = clean(b.take, 600);
+      if (!title || !take) return json({ error: 'empty' }, 400);
+      const { data } = await db.from('ve_pulse_features').update({ starts_on: date, ends_on: date, communities: community === 'all' ? null : [community],
+        story: { title, take, ...(url ? { url } : {}), source: 'Vegans Explore', ours: true } }).eq('id', b.feature_id).eq('status', 'draft').select('id').maybeSingle();
+      if (!data) return json({ error: 'not_draft' }, 409);
+      return json({ ok: true });
+    }
+    if (!isId(b.id)) return json({ error: 'id' }, 400);
+    const { data: idea } = await db.from('ve_ideas').select('*').eq('id', b.id).maybeSingle();
+    if (!idea) return json({ error: 'not_found' }, 404);
+    const w = await writePulse(idea);
+    if (w.error) return json({ error: w.error }, 502);
+    const link = url || (idea.links || []).find((l: string) => /^https:\/\//i.test(l)) || null;
+    const { data, error } = await db.from('ve_pulse_features').insert({ idea_id: b.id, status: 'draft', starts_on: date, ends_on: date,
+      communities: community === 'all' ? null : [community], note: `Draft from idea: ${String(idea.title || '').slice(0, 120)}`,
+      story: { title: w.title, take: w.take, ...(link ? { url: link } : {}), source: 'Vegans Explore', ours: true } }).select('*').single();
+    if (error) return json({ error: error.message }, 500);
+    await logEv(b.id, ops ? 'Logan' : 'Sean', 'sent_to_pulse', { draft: true, community, date });
+    return json({ ok: true, feature: data });
+  }
+  if (b.action === 'pulse_approve' || b.action === 'pulse_discard') {
+    if (!isId(b.feature_id)) return json({ error: 'id' }, 400);
+    if (b.action === 'pulse_approve' && ops) return json({ error: 'sean_approves' }, 403);
+    const now = new Date().toISOString();
+    const { data } = await db.from('ve_pulse_features').update(b.action === 'pulse_approve' ? { status: 'live', approved_at: now } : { status: 'discarded' })
+      .eq('id', b.feature_id).eq('status', 'draft').select('id,idea_id,starts_on,communities').maybeSingle();
+    if (!data) return json({ error: 'not_draft' }, 409);
+    if (b.action === 'pulse_approve') {
+      await db.rpc('ve_pulse_features_apply');
+      if (data.idea_id) await logEv(data.idea_id, 'Sean', 'sent_to_pulse', { approved: true, date: data.starts_on, communities: data.communities });
+    }
+    return json({ ok: true });
+  }
+  if (b.action === 'podcast_draft') {
+    if (!isId(b.id)) return json({ error: 'id' }, 400);
+    const { data: idea } = await db.from('ve_ideas').select('*').eq('id', b.id).maybeSingle();
+    if (!idea) return json({ error: 'not_found' }, 404);
+    const { data: ep } = await db.from('ve_pod_episodes').select('id,number,air_date,title').eq('show_slug', 'vegans-explore-podcast').eq('status', 'planning').gte('air_date', easternDay()).order('air_date').limit(1).maybeSingle();
+    if (!ep) return json({ error: 'no_episode' }, 409);
+    const { data: had } = await db.from('ve_pod_segments').select('id').eq('episode_id', ep.id).eq('idea_id', b.id).maybeSingle();
+    if (had) return json({ error: 'already_on_episode' }, 409);
+    const { data: segs } = await db.from('ve_pod_segments').select('id,kind,position').eq('episode_id', ep.id).order('position');
+    const NEWSY = ['news', 'community', 'directory', 'world'];
+    const lastNews = [...(segs || [])].reverse().find((x: any) => NEWSY.includes(x.kind));
+    const firstCom = (segs || []).find((x: any) => x.kind === 'commercial');
+    const pos = lastNews ? lastNews.position + 1 : firstCom ? firstCom.position : ((segs || []).length ? segs![segs!.length - 1].position + 1 : 0);
+    for (const x of [...(segs || [])].reverse()) if (x.position >= pos) await db.from('ve_pod_segments').update({ position: x.position + 1 }).eq('id', x.id);
+    const t = String(idea.title || 'An idea');
+    const { data, error } = await db.from('ve_pod_segments').insert({ episode_id: ep.id, idea_id: b.id, kind: 'news', speaker: 'kai', position: pos, status: 'proposed',
+      title: `Top stories: ${t.length > 60 ? t.slice(0, 57) + '…' : t}`, note: 'Draft from an idea in Depot > Ideas. Write the script, then approve it here.',
+      sources: [{ title: t, url: (idea.links || [])[0] || null, source: "Sean's idea", city: null, summary: String(idea.body || idea.read?.ask || '').slice(0, 600) }] }).select('id').single();
+    if (error) return json({ error: error.message }, 500);
+    await logEv(b.id, ops ? 'Logan' : 'Sean', 'sent_to_podcast', { draft: true, episode: ep.number, air_date: ep.air_date });
+    return json({ ok: true, segment_id: data.id, episode: ep });
   }
 
   if (b.action === 'list') {
