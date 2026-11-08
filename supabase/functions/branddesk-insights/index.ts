@@ -257,9 +257,31 @@ async function ads(brand: string, from: string, to: string) {
     const v = byCamp[k] ??= { id: sp?.id ?? c?.id ?? null, kind: sp ? 'sponsor' : 'ad', name: sp?.name ?? c?.campaign_name ?? 'Unknown', sponsor: sp?.sponsor_name ?? c?.sponsor_name ?? '', status: sp?.status ?? c?.status ?? '', impressions: 0, clicks: 0 };
     v.impressions += i.impressions; v.clicks += i.clicks;
   }
+  // By banner (Sean, 2026-11-08: "running campaigns on specific types of banners so we can track their total impressions and clicks"): one row per
+  // banner, every campaign that runs it rolled together. A campaign's banner is its name before the trailing "(...)", so "The Vegan Dairy Guide
+  // (ad rails)" and "(house banner)" are one banner, and each page's Humble Cabbage tee is one. Formats are what the parentheses said.
+  const bannerOf = (c: any) => String(c?.campaign_name ?? 'Unknown').replace(/\s*\([^)]*\)\s*$/, '').trim() || 'Unknown';
+  const fmtOf = (c: any) => { const m = String(c?.campaign_name ?? '').match(/\(([^)]*)\)\s*$/); const f = m ? m[1] : ''; return /^(ad rails|house banner)$/i.test(f) ? f : f ? 'page slots' : ''; };
+  const byBan: Record<string, any> = {};
+  const ban = (c: any) => {
+    const k = bannerOf(c), sp: any = c ? S.get(c.sponsor_campaign_id) : null;
+    return byBan[k] ??= { name: k, sponsor: sp?.sponsor_name ?? c?.sponsor_name ?? '', creative: c?.creative_url ?? '', formats: new Set<string>(), slots: new Set<string>(), running: false, campaigns: new Set<string>(), impressions: 0, clicks: 0, impressions_prev: 0, clicks_prev: 0 };
+  };
+  for (const i of (imps ?? []) as any[]) {
+    const c: any = C.get(i.campaign_id); if (!c) continue;
+    const v = ban(c); v.campaigns.add(c.id); const f = fmtOf(c); if (f) v.formats.add(f);
+    if (i.log_date >= from) { v.impressions += i.impressions; v.clicks += i.clicks; v.slots.add(i.placement_id); }
+    else if (i.log_date <= pt) { v.impressions_prev += i.impressions; v.clicks_prev += i.clicks; }
+  }
+  for (const l of (links ?? []) as any[]) {
+    const c: any = C.get(l.campaign_id); if (!live(c)) continue;
+    const v = ban(c); v.running = true; v.slots.add(l.placement_id); v.campaigns.add(c.id); const f = fmtOf(c); if (f) v.formats.add(f);
+  }
+  const banners = Object.values(byBan).map((v: any) => ({ ...v, formats: [...v.formats], slots: v.slots.size, campaigns: v.campaigns.size }))
+    .filter((v: any) => v.running || v.impressions || v.clicks).sort((a: any, b: any) => (b.impressions - a.impressions) || a.name.localeCompare(b.name));
   const sum = (k: 'impressions' | 'clicks' | 'impressions_prev' | 'clicks_prev') => slots.reduce((n, s) => n + s[k], 0);
   return {
-    from, to, prev_from: pf, prev_to: pt, slots,
+    from, to, prev_from: pf, prev_to: pt, slots, banners,
     campaigns: Object.values(byCamp).sort((a: any, b: any) => b.impressions - a.impressions),
     totals: { impressions: sum('impressions'), clicks: sum('clicks'), impressions_prev: sum('impressions_prev'), clicks_prev: sum('clicks_prev'), slots: slots.length, filled: slots.filter((s) => s.filled_by).length },
   };
@@ -474,6 +496,10 @@ const PODCAST_SHOWS: Record<string, { key: string; id: string; name: string }[]>
     { key: 'soflo-vegans', id: '7769096f-5501-4afc-999a-32dbc14acd64', name: 'SoFlo Vegans Podcast' },
     { key: 'vegans-who-lift', id: 'aa00615c-803d-49f0-96f3-abefd0aae76d', name: 'Vegans Who Lift Podcast' },
     { key: 'pre-vegans', id: 'a491b80c-1d83-411d-b2b8-e63325194915', name: 'Pre-Vegans Podcast' },
+  ],
+  // Brooke Sellers co-hosts Vegans Who Lift, so her BrandDesk Insights shows it too (brooke-sellers B3, 2026-11-08). The same Captivate show.
+  'meatless-muscle': [
+    { key: 'vegans-who-lift', id: 'aa00615c-803d-49f0-96f3-abefd0aae76d', name: 'Vegans Who Lift Podcast' },
   ],
 };
 const showOf = (brand: string, key?: unknown) => { const l = PODCAST_SHOWS[brand]; return l ? (l.find((x) => x.key === String(key || '')) || (key ? null : l[0])) : null; };
