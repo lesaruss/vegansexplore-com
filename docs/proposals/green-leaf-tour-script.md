@@ -46,7 +46,7 @@ Running time at Liz's pace: about 2 minutes 45 seconds.
 
 **10. Your community** (the Community page: Rewards with a points balance, one unlocked with its code; then the Green Leaf Club)
 > Your regulars become your community. Members unlock rewards you choose, like a free drink or a seat at your chef's table, with
-> the points they earn on Vegans Explore. There's only so many, first come, first served. And your club is a Guide on Vegans
+> the points they earn on Vegans Explore. There are only so many, first come, first served. And your club is a Guide on Vegans
 > Explore, so it brings people in and sends them out to the rest of the community.
 
 **11. Next step** (buttons: See how BrandDesk works, `/business#/managed`; Talk to our team, opens `VEManaged`)
