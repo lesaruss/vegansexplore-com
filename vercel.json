@@ -129,6 +129,10 @@
       "destination": "/directory/product"
     },
     {
+      "source": "/comment/:code([a-z0-9-]{4,40})",
+      "destination": "/comment"
+    },
+    {
       "source": "/pulse/:lane(jobs|classifieds|fosters|rescues|suggest)",
       "destination": "/pulse"
     },

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Share your comment — Vegans Explore</title>
+  <meta name="robots" content="noindex">
+  <meta name="description" content="Tell us in your own words, by voice or in writing. Vegans Explore shares what our community says in the Daily Pulse, on our shows and on Directory pages.">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- ve-community-voices (Sean, 2026-11-08). Parent template: claim.html (a form of more than one section, ?step=). Server: ve-comments. -->
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.1);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.78);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0 auto;padding:40px 24px 64px;}
+    @media (max-width:600px){.wrap{padding:28px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:8px;}
+    h1{font-size:clamp(26px,4vw,36px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:12px;}
+    h2{font-size:13px;font-weight:900;letter-spacing:0.14em;text-transform:uppercase;color:var(--ve-green-deep);margin:0 0 12px;}
+    .lede{font-size:15px;color:var(--ve-text-75);margin-bottom:24px;max-width:860px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:22px 22px 24px;margin-bottom:16px;}
+    .biz{display:flex;gap:16px;align-items:center;}
+    .biz-logo{width:64px;height:64px;min-width:64px;border-radius:10px;object-fit:cover;display:flex;align-items:center;justify-content:center;color:#fff;font-size:26px;font-weight:900;background:var(--ve-green);}
+    .biz b{display:block;font-size:17px;font-weight:800;line-height:1.25;}
+    .biz span{font-size:13px;color:var(--ve-text-75);}
+    .ask{font-size:17px;font-weight:700;line-height:1.5;border-left:4px solid var(--ve-green);padding:4px 0 4px 14px;margin:4px 0 0;}
+    .ctx{font-size:14px;color:var(--ve-text-75);margin-top:12px;}
+    label.f{display:block;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-green-deep);margin:14px 0 6px;}
+    label.f small{font-weight:600;letter-spacing:0;text-transform:none;color:var(--ve-text-75);}
+    input[type=text],input[type=email],textarea{width:100%;font:inherit;font-size:16px;padding:11px 13px;border:1px solid rgba(0,0,0,0.25);border-radius:6px;background:#fff;color:var(--ve-text);}
+    textarea{min-height:160px;resize:vertical;}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px;}
+    @media (max-width:600px){.row2{grid-template-columns:1fr;}}
+    .modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:12px;margin-bottom:6px;}
+    .mode{display:flex;gap:12px;align-items:flex-start;text-align:left;font:inherit;padding:16px;border:1.5px solid var(--ve-border);border-radius:10px;background:#fff;cursor:pointer;}
+    .mode[aria-pressed="true"]{border-color:var(--ve-green-dark);background:var(--ve-green-light);}
+    .mode svg{flex:0 0 auto;width:28px;height:28px;color:var(--ve-green-deep);}
+    .mode b{display:block;font-size:15px;font-weight:900;}
+    .mode span{font-size:13px;color:var(--ve-text-75);}
+    .rec{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:14px;}
+    .recbtn{display:inline-flex;align-items:center;gap:10px;min-height:52px;padding:12px 22px;border-radius:6px;font:inherit;font-size:14px;font-weight:800;border:0;cursor:pointer;background:var(--ve-green-deep);color:#fff;}
+    .recbtn.live{background:#b3261e;}
+    .recbtn .dot{width:12px;height:12px;border-radius:50%;background:#fff;}
+    .recbtn.live .dot{animation:pulse 1s infinite;}
+    @keyframes pulse{50%{opacity:.3}}
+    .timer{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;}
+    audio{width:100%;max-width:520px;margin-top:12px;}
+    .choice{display:flex;flex-direction:column;gap:8px;margin-top:14px;}
+    .choice label{display:flex;gap:10px;align-items:flex-start;padding:11px 13px;border:1px solid var(--ve-border);border-radius:10px;cursor:pointer;background:#fff;font-size:14px;}
+    .choice label:has(input:checked){border-color:var(--ve-green-dark);background:var(--ve-green-light);}
+    .choice input{margin-top:4px;width:18px;height:18px;min-width:18px;accent-color:var(--ve-green-deep);}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:12px 22px;border-radius:6px;font-family:inherit;font-size:13px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;}
+    .btn:hover{background:#174a1a;}
+    .btn:disabled{opacity:0.55;cursor:default;}
+    .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(0,0,0,0.25);}
+    .linkbtn{font:inherit;font-size:13px;font-weight:700;color:var(--ve-green-deep);background:none;border:0;text-decoration:underline;cursor:pointer;padding:4px 0;}
+    .msg{font-size:14px;font-weight:700;color:var(--ve-green-deep);margin-top:12px;min-height:20px;}
+    .msg.bad{color:#8a1c12;}
+    .note{font-size:13px;color:var(--ve-text-75);}
+    .stepper{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px;padding:0;counter-reset:st;}
+    .stepper li{counter-increment:st;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ve-text-75);background:#fff;border:1px solid var(--ve-border);border-radius:6px;padding:7px 12px;}
+    .stepper li::before{content:counter(st);display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#e7ece8;color:#4a5a4d;font-size:11px;}
+    .stepper li.on{border-color:var(--ve-green-deep);color:var(--ve-green-deep);}.stepper li.on::before{background:var(--ve-green-deep);color:#fff;}
+    .stepper li.done::before{background:var(--ve-green);color:#fff;content:'\2713';}
+    .step-nav{display:flex;align-items:center;gap:12px;margin-top:4px;}
+    .step-nav .step-count{flex:1;text-align:center;font-size:13px;font-weight:800;color:var(--ve-text-75);}
+    .review dt{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-green-deep);margin-top:12px;}
+    .review dd{font-size:15px;white-space:pre-wrap;}
+    .done{text-align:center;padding:34px 22px;}
+    .done h2{font-size:18px;margin-bottom:8px;}
+    .nx-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:12px;margin-top:16px;text-align:left;}
+    .nx{display:block;border:1px solid var(--ve-border);border-radius:12px;padding:16px;background:#fff;color:inherit;text-decoration:none;}
+    a.nx:hover{border-color:var(--ve-green-dark);}
+    .nx small{display:block;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--ve-green);margin-bottom:4px;}
+    .nx b{display:block;font-size:16px;font-weight:900;line-height:1.25;margin-bottom:4px;}
+    .nx span{font-size:13.5px;line-height:1.5;color:var(--ve-text-75);}
+    .sample{display:inline-block;font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#2b1d00;background:#f3c86b;border-radius:4px;padding:2px 8px;margin-left:8px;vertical-align:4px;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+
+  <script src="/public/nav.js"></script>
+
+  <main class="wrap">
+    <p class="eyebrow" id="eyebrow">Share your comment</p>
+    <h1 id="title">Loading...</h1>
+    <p class="lede" id="lede"></p>
+
+    <ol class="stepper" id="stepper" hidden></ol>
+
+    <section class="card" id="about" hidden>
+      <div class="biz" id="biz" hidden></div>
+      <p class="ask" id="ask"></p>
+      <p class="ctx" id="ctx" hidden></p>
+    </section>
+
+    <!-- 1. Your comment -->
+    <section class="card" id="s-comment" hidden>
+      <h2>How would you like to answer?</h2>
+      <div class="modes" id="modes"></div>
+      <div id="voice" hidden>
+        <p class="note" id="voiceNote"></p>
+        <div class="rec">
+          <button type="button" class="recbtn" id="recBtn"><span class="dot"></span><span id="recLabel">Start recording</span></button>
+          <span class="timer" id="timer" aria-live="polite"></span>
+        </div>
+        <audio id="player" controls hidden></audio>
+        <p class="note" style="margin-top:12px">No microphone handy? <label class="linkbtn" for="file" style="cursor:pointer">Attach a voice memo</label> instead.</p>
+        <input type="file" id="file" accept="audio/*" hidden>
+      </div>
+      <div id="written" hidden>
+        <label class="f" for="text">Your words <small id="textCount"></small></label>
+        <textarea id="text" maxlength="4000" placeholder="Write it the way you would say it."></textarea>
+      </div>
+    </section>
+
+    <!-- 2. About you -->
+    <section class="card" id="s-you" hidden>
+      <h2>About you</h2>
+      <div class="row2">
+        <div><label class="f" for="name">Your name</label><input type="text" id="name" autocomplete="name" data-dictate="off"></div>
+        <div><label class="f" for="role">How should we credit you? <small>(optional)</small></label><input type="text" id="role" placeholder="Co-founder, Honest Cuban by VCC" data-dictate="off"></div>
+      </div>
+      <label class="f" for="email">Your email <small>(optional, so we can tell you where it runs)</small></label>
+      <input type="email" id="email" autocomplete="email">
+      <div class="choice">
+        <label><input type="checkbox" id="credit" checked> <span>You may use my name with my comment.</span></label>
+      </div>
+    </section>
+
+    <!-- 3. Review and send -->
+    <section class="card" id="s-send" hidden>
+      <h2>Review and send</h2>
+      <dl class="review" id="review"></dl>
+      <div class="choice">
+        <label><input type="checkbox" id="release"> <span><b>You may use my comment.</b> Vegans Explore may quote it, play my recording and edit it for length, in the Daily Pulse, on our shows and social channels, and on Directory pages. I can ask for it to come down at any time at contact@lesaruss.com.</span></label>
+        <label><input type="checkbox" id="adult"> <span>I am 18 or over.</span></label>
+      </div>
+    </section>
+
+    <div class="step-nav" id="stepNav" hidden>
+      <button type="button" class="btn btn-ghost" id="back">Back</button>
+      <span class="step-count" id="stepCount"></span>
+      <button type="button" class="btn" id="next">Next</button>
+    </div>
+    <p class="msg" id="msg" role="status"></p>
+
+    <section class="card done" id="done" hidden></section>
+    <section class="card" id="closed" hidden></section>
+  </main>
+
+  <script>
+  (function () {
+    var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-comments';
+    var STEPS = [['comment', 'Your comment'], ['you', 'About you'], ['send', 'Review and send']];
+    var qs = new URLSearchParams(location.search);
+    var parts = location.pathname.split('/').filter(Boolean);
+    var CODE = (parts[0] === 'comment' && parts[1] ? parts[1] : (qs.get('c') || '')).toLowerCase();
+    var PREVIEW = qs.get('preview') === '1' || CODE === 'sample';
+    var R = null, L = null, S = { mode: '', blob: null, type: '', seconds: 0, url: '' };
+    var rec = null, chunks = [], t0 = 0, tick = null;
+    var $ = function (id) { return document.getElementById(id); };
+    function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+    function tok() { try { return localStorage.getItem('ve_token') || ''; } catch (e) { return ''; } }
+    function api(body) {
+      var h = { 'Content-Type': 'application/json' }, t = tok(); if (t) h.Authorization = 'Bearer ' + t;
+      return fetch(FN, { method: 'POST', headers: h, body: JSON.stringify(body) }).then(function (r) { return r.json(); });
+    }
+    function say(t, bad) { var m = $('msg'); m.textContent = t || ''; m.className = 'msg' + (bad ? ' bad' : ''); }
+    function fmt(s) { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2); }
+    function draftKey() { return 've_comment_' + CODE; }
+    function saveDraft() { try { sessionStorage.setItem(draftKey(), JSON.stringify({ mode: S.mode, text: $('text').value, name: $('name').value, role: $('role').value, email: $('email').value, credit: $('credit').checked })); } catch (e) {} }
+    function loadDraft() { try { var d = JSON.parse(sessionStorage.getItem(draftKey()) || 'null'); if (!d) return; S.mode = d.mode || ''; $('text').value = d.text || ''; $('name').value = d.name || ''; $('role').value = d.role || ''; $('email').value = d.email || ''; $('credit').checked = d.credit !== false; } catch (e) {} }
+
+    var SAMPLE = { request: { code: 'sample', kind: 'business', purpose: 'pulse', title: 'Your new name', first_name: 'Alex',
+      prompt: 'Green Leaf Kitchen has a new name. In a minute or two, tell our community why you made the change, and what stays the same.',
+      context: 'We are writing about it in the South Florida Daily Pulse. If you answer by voice, we may play your recording in the story.',
+      allow_voice: true, allow_written: true, voice_max_seconds: 120, open: true },
+      listing: { slug: 'green-leaf-kitchen', name: 'Green Leaf Kitchen', city: 'Miami, FL', claimed: false, logo_url: '/business/sample/img/logo.jpg' } };
+
+    function load() {
+      if (!CODE) { closed('This link is missing its code. Ask whoever sent it for a new one.'); return; }
+      (PREVIEW ? Promise.resolve(SAMPLE) : api({ action: 'get', code: CODE })).then(function (d) {
+        if (!d || !d.request) { closed((d && d.message) || 'This link is not right. Ask whoever sent it for a new one.'); return; }
+        R = d.request; L = d.listing;
+        document.title = R.title + ' — Vegans Explore';
+        $('title').innerHTML = esc(R.title) + (PREVIEW ? '<span class="sample">Sample</span>' : '');
+        $('lede').textContent = (R.first_name ? 'Hi ' + R.first_name + '. ' : '') + 'Answer by voice or in writing, whichever is easier. It takes a couple of minutes.';
+        if (L) {
+          $('biz').hidden = false;
+          $('biz').innerHTML = (L.logo_url ? '<img class="biz-logo" src="' + esc(L.logo_url) + '" alt="">' : '<span class="biz-logo">' + esc((L.name || '?')[0]) + '</span>') +
+            '<div><b>' + esc(L.name) + '</b><span>' + esc(L.city || '') + '</span></div>';
+        }
+        $('ask').textContent = R.prompt;
+        if (R.context) { $('ctx').hidden = false; $('ctx').textContent = R.context; }
+        $('about').hidden = false;
+        if (!R.open) { closed('This request has closed. Thank you all the same.'); return; }
+        var m = [];
+        if (R.allow_voice) m.push(['voice', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>', 'Record your voice', 'Up to ' + fmt(R.voice_max_seconds) + '. We may play it in the story.']);
+        if (R.allow_written) m.push(['written', '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M14 6l4 4"/></svg>', 'Write it out', 'Type it, or tap the mic on your keyboard.']);
+        $('modes').innerHTML = m.map(function (x) { return '<button type="button" class="mode" data-mode="' + x[0] + '" aria-pressed="false">' + x[1] + '<span><b>' + x[2] + '</b><span>' + x[3] + '</span></span></button>'; }).join('');
+        $('voiceNote').textContent = 'Find a quiet spot, press Start, and talk like you would to a friend. You can listen back and record again before you send.';
+        loadDraft();
+        if (!S.mode) S.mode = m.length === 1 ? m[0][0] : '';
+        setMode(S.mode);
+        show(stepFromUrl());
+      }).catch(function () { closed('We could not load this page. Check your connection and try again.'); });
+    }
+    function closed(t) { $('title').textContent = 'Thank you'; $('closed').hidden = false; $('closed').innerHTML = '<p>' + esc(t) + '</p>'; }
+
+    function setMode(m) {
+      S.mode = m;
+      [].forEach.call(document.querySelectorAll('.mode'), function (b) { b.setAttribute('aria-pressed', b.getAttribute('data-mode') === m ? 'true' : 'false'); });
+      $('voice').hidden = m !== 'voice'; $('written').hidden = m !== 'written';
+    }
+    function stepFromUrl() { var s = qs.get('step'); for (var i = 0; i < STEPS.length; i++) if (STEPS[i][0] === s) return i; return 0; }
+    var CUR = 0;
+    function show(n) {
+      CUR = n; say('');
+      $('stepper').hidden = false;
+      $('stepper').innerHTML = STEPS.map(function (s, i) { return '<li class="' + (i === n ? 'on' : i < n ? 'done' : '') + '">' + s[1] + '</li>'; }).join('');
+      STEPS.forEach(function (s, i) { $('s-' + s[0]).hidden = i !== n; });
+      $('stepNav').hidden = false; $('back').hidden = n === 0;
+      $('stepCount').textContent = 'Step ' + (n + 1) + ' of ' + STEPS.length;
+      $('next').textContent = n === STEPS.length - 1 ? (PREVIEW ? 'Send (sample)' : 'Send my comment') : 'Next';
+      if (n === 2) review();
+      var u = new URL(location.href); if (n) u.searchParams.set('step', STEPS[n][0]); else u.searchParams.delete('step');
+      history.replaceState(null, '', u.pathname + u.search);
+      window.scrollTo(0, Math.max(0, $('stepper').getBoundingClientRect().top + window.scrollY - 90));
+    }
+    function check(n) {
+      if (n === 0) {
+        if (!S.mode) return 'Pick how you would like to answer.';
+        if (S.mode === 'voice' && rec) return 'Stop the recording first.';
+        if (S.mode === 'voice' && !S.blob) return 'Record your comment, or switch to Write it out.';
+        if (S.mode === 'written' && $('text').value.trim().length < 3) return 'Write your comment, or switch to Record your voice.';
+      }
+      if (n === 1) {
+        if (!$('name').value.trim()) return 'Your name, please.';
+        var e = $('email').value.trim(); if (e && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)) return 'That email does not look right.';
+      }
+      return '';
+    }
+    function review() {
+      var rows = [['Your comment', S.mode === 'voice' ? 'A ' + fmt(S.seconds) + ' voice recording' : $('text').value.trim()],
+        ['Name', $('name').value.trim() + ($('credit').checked ? '' : ' (not to be named)')]];
+      if ($('role').value.trim()) rows.push(['Credit', $('role').value.trim()]);
+      if ($('email').value.trim()) rows.push(['Email', $('email').value.trim()]);
+      $('review').innerHTML = rows.map(function (r) { return '<dt>' + esc(r[0]) + '</dt><dd>' + esc(r[1]) + '</dd>'; }).join('');
+    }
+
+    // ---------- recording ----------
+    function startRec() {
+      if (!(window.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) { say('This browser cannot record here. Attach a voice memo, or write it out.', true); return; }
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+        var type = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg'].filter(function (t) { return MediaRecorder.isTypeSupported && MediaRecorder.isTypeSupported(t); })[0];
+        rec = new MediaRecorder(stream, type ? { mimeType: type } : undefined); chunks = []; t0 = Date.now();
+        rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+        rec.onstop = function () {
+          stream.getTracks().forEach(function (t) { t.stop(); });
+          var blob = new Blob(chunks, { type: (rec.mimeType || 'audio/webm').split(';')[0] });
+          setAudio(blob, (Date.now() - t0) / 1000);
+          rec = null; clearInterval(tick); paintRec();
+        };
+        rec.start(1000); paintRec();
+        tick = setInterval(function () { var s = (Date.now() - t0) / 1000; $('timer').textContent = 'Recording ' + fmt(s) + ' of ' + fmt(R.voice_max_seconds); if (s >= R.voice_max_seconds) stopRec(); }, 300);
+      }).catch(function () { say('We could not use your microphone. Allow it in your browser, or attach a voice memo instead.', true); });
+    }
+    function stopRec() { if (rec && rec.state !== 'inactive') rec.stop(); }
+    function setAudio(blob, secs) {
+      if (S.url) URL.revokeObjectURL(S.url);
+      S.blob = blob; S.type = blob.type || 'audio/webm'; S.seconds = secs; S.url = URL.createObjectURL(blob);
+      $('player').src = S.url; $('player').hidden = false; say('');
+    }
+    function paintRec() {
+      $('recBtn').classList.toggle('live', !!rec);
+      $('recLabel').textContent = rec ? 'Stop' : S.blob ? 'Record again' : 'Start recording';
+      if (!rec) $('timer').textContent = S.blob ? 'Your recording: ' + fmt(S.seconds) : '';
+    }
+    $('recBtn').addEventListener('click', function () { if (rec) stopRec(); else startRec(); });
+    $('file').addEventListener('change', function () {
+      var f = this.files && this.files[0]; if (!f) return;
+      if (!/^audio\//.test(f.type)) { say('That file is not a recording.', true); return; }
+      if (f.size > 25 * 1024 * 1024) { say('That recording is over 25 MB. Try a shorter one.', true); return; }
+      var a = new Audio(); a.preload = 'metadata';
+      a.onloadedmetadata = function () { var d = isFinite(a.duration) ? a.duration : 0; if (d > R.voice_max_seconds + 10) { say('That one runs ' + fmt(d) + '. Keep it under ' + fmt(R.voice_max_seconds) + '.', true); return; } setAudio(f, d); paintRec(); };
+      a.onerror = function () { setAudio(f, 0); paintRec(); };
+      a.src = URL.createObjectURL(f);
+    });
+
+    document.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('.mode'); if (b) { setMode(b.getAttribute('data-mode')); saveDraft(); } });
+    ['text', 'name', 'role', 'email', 'credit'].forEach(function (id) { $(id).addEventListener('input', function () { if (id === 'text') $('textCount').textContent = '(' + $('text').value.length + ' of 4,000)'; saveDraft(); }); });
+    $('back').addEventListener('click', function () { if (CUR > 0) show(CUR - 1); });
+    $('next').addEventListener('click', function () {
+      var err = check(CUR); if (err) { say(err, true); return; }
+      if (CUR < STEPS.length - 1) { show(CUR + 1); return; }
+      send();
+    });
+
+    function send() {
+      if (!$('release').checked) { say('Tick the box to let us use your comment.', true); return; }
+      if (!$('adult').checked) { say('Tick the box to say you are 18 or over.', true); return; }
+      var btn = $('next'); btn.disabled = true; btn.textContent = 'Sending...'; say('');
+      var base = { action: 'submit', code: CODE, name: $('name').value.trim(), role: $('role').value.trim(), email: $('email').value.trim(),
+        written: S.mode === 'written' ? $('text').value.trim() : '', release: true, adult: true, credit_ok: $('credit').checked };
+      if (PREVIEW) { setTimeout(function () { thanks(); }, 400); return; }
+      var up = S.mode === 'voice' && S.blob ? api({ action: 'upload', code: CODE, type: S.type, size: S.blob.size }).then(function (d) {
+        if (!d || !d.ok) throw d || {};
+        return fetch(d.url, { method: 'PUT', headers: { 'Content-Type': S.type, 'x-upsert': 'true' }, body: S.blob }).then(function (r) {
+          if (!r.ok) throw { message: 'Your recording did not upload. Try again.' };
+          base.audio = { path: d.path, key: d.key, seconds: Math.round(S.seconds) };
+        });
+      }) : Promise.resolve();
+      up.then(function () { return api(base); }).then(function (d) {
+        if (!d || !d.ok) throw d || {};
+        try { sessionStorage.removeItem(draftKey()); } catch (e) {}
+        thanks();
+      }).catch(function (e) { btn.disabled = false; btn.textContent = 'Send my comment'; say((e && e.message) || 'That did not send. Try again in a minute.', true); });
+    }
+
+    function thanks() {
+      ['stepper', 'stepNav', 's-comment', 's-you', 's-send', 'about'].forEach(function (id) { $(id).hidden = true; });
+      $('title').textContent = 'Thank you'; $('lede').textContent = ''; say('');
+      var cards = [];
+      if (L && !L.claimed && (R.kind === 'business' || R.kind === 'organization')) {
+        cards.push('<a class="nx" href="/business?listing=' + encodeURIComponent(L.slug) + '"><small>Next</small><b>Claim ' + esc(L.name) + '</b><span>Your Directory page, yours to keep current: hours, photos, menu and links. Free for members.</span></a>');
+      }
+      if (!tok()) cards.push('<a class="nx" href="/survey?s=explorer"><small>Join free</small><b>Become a member</b><span>A short survey makes you a member, with 250 points. Before January 1, 2027, that makes you a Founding Member.</span></a>');
+      if (L) cards.push('<a class="nx" href="/directory/' + encodeURIComponent(L.slug) + '"><small>See it</small><b>' + esc(L.name) + ' on Vegans Explore</b><span>The page our community votes on, saves and shares.</span></a>');
+      $('done').hidden = false;
+      $('done').innerHTML = '<h2>We have your comment</h2><p class="note">Our team reads and listens to every one. If you left an email, we will tell you where it runs.</p>' +
+        (cards.length ? '<div class="nx-grid">' + cards.join('') + '</div>' : '');
+      window.scrollTo(0, 0);
+    }
+
+    load();
+  })();
+  </script>
+
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
