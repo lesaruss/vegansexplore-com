@@ -6626,6 +6626,22 @@ shows only them (`inFilt` in `admin/depot/social.html`). A skipped slot has **De
 refused with `not_skipped` for anything not skipped): the row goes, its notes and history with it (`ON DELETE CASCADE`), and a story made
 from it keeps its own slot. Proven 2026-11-01 on a [TEST] slot (refused while waiting, skipped, deleted, its history gone).
 
+## Moving to BrandDesk: the Depot's people tools go into BrandDesk Outreach (Sean, 2026-11-08, playbook `branddesk-production-wing`)
+
+"We need to figure out how we can put all that into the outreach... I don't need those to sit idle." **Agents: never use a Depot page that
+says it moved to BrandDesk, never restore one, and never send email from the Depot.** Every email goes through BrandDesk > Vegans Explore >
+Outreach campaigns. **Redirected (live 2026-11-08)**: Outreach, Social, Playbooks, Analytics, Members, and Business outreach's outreach
+views (it keeps New places, Check-ups and New partners until BrandDesk has them); each stub tells agents why. **The bridge**: edge function
+`ve-hq-bridge` (admin token + `as_member`, super admins in good standing only, never agents; a 15-minute session with `hq_bridge: true`, each
+issue logged to `stream_events`), so BrandDesk runs the same functions the Depot ran, with their own checks. HQ: `lib/veDepot.ts` (`ALLOW`:
+the functions and actions BrandDesk may run; a tool moving in adds its actions) and `/api/branddesk/depot`. **Built on HQ branch
+`claude/amazing-hamilton-zpeq6o` (7e882a9), not on HQ main until Sean merges**: the Who list opens a person page in BrandDesk (timeline, tags,
+notes, give and take back points) with the group's work on it (Ambassadors: link, level, profile; Invited: status, the email, copy the link,
+cancel; Referral claims: decide), and a **Links** tab (make and manage tracked links). Once merged, Depot People, Links and Referral claims
+redirect. **Still in the Depot, next**: new invitations (Founding Member, Ambassador, Nonprofit and Group Partner) as a BrandDesk campaign type,
+Ambassador commissions, creators and paid work, Nonprofit and Group Partners (0 partners on 2026-11-08), Community Managers (0), Profiles review
+(0 waiting), Role applications, Leads, BrandDesk clients billing; each redirects the day its BrandDesk version works.
+
 ## Depot > Outreach: everyone to reach each day (Sean, 2026-11-01, playbook `ve-outreach-buckets`)
 
 **REMOVED 2026-11-08 (Sean: "This is the third time we've done this. I don't want to use the depot outreach. We need to remove that as an
