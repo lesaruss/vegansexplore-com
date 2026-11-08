@@ -7091,7 +7091,7 @@ a sample. Edge function **`ve-comments`** (verify_jwt off; public `get`, `upload
 `update`, `get_admin`, `response_set`), tables `ve_comment_requests` and `ve_comment_responses`, private bucket `community-comments` (migration
 `20261108_comment_requests.sql`). One answer closes a request unless `multi` (anyone with the link). **Depot > Comments**
 (`/admin/depot/comments`, Content). First: `honest-cuban`, for Honest Cuban by VCC (formerly Vegan Cuban Cuisine, renamed in the Directory and
-led the South Florida Pulse on 2026-11-08). Handoff `docs/handoff/2026-11-08-ve-community-voices-honest-cuban.md`. Not built: a Guide voice
+led the South Florida Pulse on 2026-11-08). Its email is the BrandDesk campaign `honest-cuban-comment-2026-11` (one business, from Sean, `link_path` `/comment/honest-cuban`), never Depot > Outreach: outreach goes through BrandDesk campaigns. Handoff `docs/handoff/2026-11-08-ve-community-voices-honest-cuban.md`. Not built: a Guide voice
 on the page, an Inbox row for a new answer (it emails contact@lesaruss.com).
 
 ## Image conventions

@@ -52,3 +52,15 @@ January 1 that makes you a Founding Member), and then the hours, photos, menu an
 Thank you for everything you've built for our community.
 
 Sean
+
+## Update, same morning (Sean: "approved", then "move it")
+- Branch merged to main (7ca7893); `/comment/honest-cuban` and Depot > Comments are live; `ve-comments` v3 (source sha256 29245b6c matched).
+- The email first went into Depot > Outreach for 10 AM; Sean wanted to review it in BrandDesk, so it was pulled back (status skipped, its link
+  `hc-comment` turned off) and rebuilt as the **BrandDesk campaign `honest-cuban-comment-2026-11`**: one business (Honest Cuban by VCC), from Sean
+  (`sender_brand` lesaruss), the approved words with "This morning's" changed to "Sunday's", its own tracked link to `/comment/honest-cuban`
+  (`link_path`), email locked, campaign **draft**, start Mon 2026-11-09. BrandDesk campaigns send weekdays 9 AM to 5 PM Eastern only, so nothing
+  could go on Sunday. It sends once Sean approves it in BrandDesk > Outreach > Campaigns. Written through the one-time `ve-once-honest-cuban`
+  (now the 410 stub). The [TEST] request is deleted (its 32 KB test WAV stays in the bucket; Storage refuses SQL deletes).
+- `ve_playbook_index` row `ve-community-voices` (waiting_on_sean) and its first decision record are in.
+- Honest Cuban is also in `thanksliving-2026-vegan` (from the team, Tuesday). Two emails two days apart unless Sean takes them out of one.
+- Lesson: outreach goes through BrandDesk campaigns, never Depot > Outreach.
