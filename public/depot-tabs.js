@@ -111,7 +111,6 @@
     { group: 'Moving to BrandDesk', href: '/admin/depot/links', label: 'Links' },
     // Members is a read-only Depot page (2026-11-08; Sean, 2026-11-07: "The Depot keeps a read-only member list"). The old roster with its
     // class moves, /dashboard/members, still opens by its address.
-    { group: 'Moving to BrandDesk', href: '/admin/depot/members', label: 'Members' },
     { group: 'Moving to BrandDesk', href: '/dashboard/leads', label: 'Leads', kind: 'dash' },
     { group: 'Moving to BrandDesk', href: '/dashboard/applications', label: 'Role applications', kind: 'dash' },
     { group: 'Moving to BrandDesk', href: '/admin/depot/branddesk', label: 'BrandDesk clients' }
@@ -132,12 +131,8 @@
     { href: '/admin/depot/services', label: 'Services', group: 'Directory', why: 'The old one-thing services. The shop is BrandDesk\'s now. No order was ever made.' },
     { href: '/admin/depot/dinners', label: 'Dinner guests', group: 'Moving to BrandDesk', why: 'Dinner seats on us ended with comps. One dinner, October 4.' },
     { href: '/admin/depot/narration', label: 'Import narration', group: 'Guides', why: 'Part of Onboarding.' },
-    { href: '/admin/depot/analytics', label: 'Analytics', group: 'Moving to BrandDesk', why: 'Moved to BrandDesk > Vegans Explore > Insights on November 7, 2026 (Web, Chapters, Site sections, Costs).' },
     { href: '/dashboard/insights', label: 'Community Insights', group: 'Moving to BrandDesk', kind: 'dash', why: 'Moved to BrandDesk > Vegans Explore > Insights > Members on November 7, 2026.' },
     { href: '/dashboard/health', label: 'Platform health', group: 'Moving to BrandDesk', kind: 'dash', why: 'Moved to BrandDesk > Vegans Explore > Insights > Health on November 7, 2026.' },
-    { href: '/admin/depot/social', label: 'Social (Depot copy)', group: 'Moving to BrandDesk', why: 'BrandDesk > Social is the same studio and does more. Use BrandDesk.' },
-    { href: '/admin/depot/playbooks', label: 'Playbooks (Depot copy)', group: 'Moving to BrandDesk', why: 'BrandDesk > Blueprint > Playbooks replaced it. Use BrandDesk.' },
-    { href: '/admin/depot/business-outreach', label: 'Business outreach (Depot copy)', group: 'Moving to BrandDesk', why: 'BrandDesk > People (Roster, Campaigns, Cities, Send days) replaced it. Use BrandDesk.' },
     { href: '/dashboard/guest-reviews', label: 'Guest reviews', group: 'Moving to BrandDesk', kind: 'dash', why: 'The old free Guest Passport queue. Nobody has been in it since free accounts ended.' }
   ];
   // A restored tool goes back to its section. The home saves the list in this browser (ve_depot_restored) after reading it.
