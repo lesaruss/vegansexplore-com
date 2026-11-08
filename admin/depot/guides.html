@@ -94,6 +94,7 @@
     .fit .fn{z-index:2;}
     /* a slight slow zoom on each frame in the player, as the edit does (Sean, 2026-11-08: image to image, about every 3 s) */
     #lbImg.zoom::after{transform-origin:50% 40%;animation:lbz 4.5s ease-out forwards;}
+    #lbImg.paused::after{animation-play-state:paused;}
     @keyframes lbz{from{transform:scale(1);}to{transform:scale(1.07);}}
     @media (prefers-reduced-motion:reduce){#lbImg.zoom::after{animation:none;}}
     .cap{display:flex;gap:12px;align-items:flex-start;}
@@ -163,6 +164,8 @@
       var KIND = { on_camera: 'On camera', screen: 'Page capture', illustration: 'Illustration' };
       var ST = { proposed: 'Waiting for you', approved: 'Approved', redo: 'Redo' };
       var data = null;
+      // tours cut with no zoom-in, so the player does not zoom them either (Sean, 2026-11-08, Green Leaf v3)
+      var NOZOOM = { 'green-leaf-tour': 1 };
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
       function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
       function secs(n) { n = Math.round(Number(n) || 0); return Math.floor(n / 60) + ':' + String(n % 60).padStart(2, '0'); }
@@ -293,10 +296,10 @@
         function show(n) {
           var f = fr[n - 1]; if (!f) return; cur = n;
           var img = f.s.image_url || (f.broll[0] && f.broll[0].image_url) || '';
-          var el = $('lbImg'), zoom = img && f.s.kind !== 'on_camera';
+          var el = $('lbImg'), zoom = img && f.s.kind !== 'on_camera' && !NOZOOM[data.tour.slug];
           el.style.setProperty('--img', img ? 'url(\'' + img + '\')' : 'none');
           el.className = 'st-img'; void el.offsetWidth;
-          el.className = 'st-img' + (img ? ' fit' : ' empty') + (zoom ? ' zoom' : '');
+          el.className = 'st-img' + (img ? ' fit' : ' empty') + (zoom ? ' zoom' : '') + (playing ? '' : ' paused');
           $('lbN').textContent = pad(n);
           $('lbQ').textContent = '“' + (f.s.line || f.c.line) + '”';
           $('lbM').textContent = secs(f.g0) + ' to ' + secs(f.g1) + ' · ' + f.c.n + '. ' + f.c.title + ' · ' + KIND[f.s.kind] + ' · ' + ST[f.s.status];
@@ -314,7 +317,7 @@
           var c = data.chapters.filter(function (x) { return x.n === n; })[0];
           if (!c || !c.audio_url) { playing = false; $('lbPlay').textContent = '▶ Play the tour'; return; }
           if (chap !== n) { au.src = c.audio_url; chap = n; }
-          var seek = function () { try { au.currentTime = at || 0; } catch (e) {} if (play) au.play().catch(function () {}); tick(); };
+          var seek = function () { try { au.currentTime = at || 0; } catch (e) {} if (play && playing) au.play().catch(function () {}); tick(); };
           if (au.readyState >= 1) seek(); else { au.addEventListener('loadedmetadata', seek, { once: true }); au.load(); }
         }
         LB.go = function (n, play) {
@@ -324,14 +327,16 @@
           if (!playing) au.pause();
         };
         au.addEventListener('timeupdate', tick);
+        // a play() that lands after Pause was pressed is stopped at once (Sean, 2026-11-08: pause did not stop right away)
+        au.addEventListener('playing', function () { if (!playing) au.pause(); });
         au.addEventListener('ended', function () {
           var next = data.chapters.filter(function (c) { return c.n > chap; })[0];
           if (next && playing) load(next.n, 0, true); else { playing = false; $('lbPlay').textContent = '▶ Play the tour'; }
         });
         $('lbPlay').onclick = function () {
-          if (playing) { au.pause(); playing = false; $('lbPlay').textContent = '▶ Play the tour'; return; }
+          if (playing) { playing = false; au.pause(); $('lbImg').classList.add('paused'); $('lbPlay').textContent = '▶ Play the tour'; return; }
           if (chap == null) { LB.go(cur, true); return; }
-          playing = true; $('lbPlay').textContent = '❚❚ Pause'; au.play().catch(function () {});
+          playing = true; $('lbImg').classList.remove('paused'); $('lbPlay').textContent = '❚❚ Pause'; au.play().catch(function () {});
         };
         $('lbPrev').onclick = function () { LB.go(Math.max(1, cur - 1), playing); };
         $('lbNext').onclick = function () { LB.go(Math.min(fr.length, cur + 1), playing); };

@@ -973,6 +973,14 @@ button.pp-play{background:none;border:0;padding:0;font:inherit;font-weight:800;c
 .demo-bar button,.demo-bar a{font-family:Montserrat,sans-serif;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:8px 12px;border-radius:6px;border:1px solid rgba(255,215,154,.45);background:transparent;color:#ffd79a;cursor:pointer;text-decoration:none;white-space:nowrap}
 .demo-bar button[aria-pressed="true"]{background:#F69820;border-color:#F69820;color:#1a1004}
 .demo-bar .db-links{display:flex;gap:6px;flex-wrap:wrap}
+.demo-bar .db-text{display:flex;align-items:center;gap:8px 12px;flex-wrap:wrap}
+.demo-bar .db-short{flex:1;min-width:0}
+.demo-bar .db-long{flex-basis:100%;order:3}
+.demo-bar .db-tog{margin-left:auto;padding:6px 10px}
+.demo-bar:not(.db-closed) .db-short{display:none}
+.demo-bar:not(.db-closed) .db-text .db-long{order:0;flex:1 1 260px}
+.demo-bar.db-closed{padding-top:7px;padding-bottom:7px}
+.demo-bar.db-closed .db-long,.demo-bar.db-closed > :not(.db-text){display:none}
 .camp-banner{display:flex;align-items:center;gap:18px 28px;flex-wrap:wrap;padding:16px 40px;background:linear-gradient(90deg,#14240f 0%,#1d3a17 60%,#2d5a22 100%);color:#fff;border-bottom:1px solid var(--vb-deep-line,#2d5a3a)}
 .cb-left{display:flex;flex-direction:column;gap:3px;min-width:220px}
 .cb-live{display:inline-flex;align-items:center;gap:7px;font-size:10px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:#8ff0ac}
@@ -5943,6 +5951,16 @@ function renderDemo(){
   document.title = l.name + (DEMO.nonprofit ? ' (Sample organization)' : DEMO.group ? ' (Sample group)' : DEMO.business ? ' (Sample business)' : ' (Illustrative)') + ' — VEGANS EXPLORE';
   var rb = document.createElement('meta'); rb.name = 'robots'; rb.content = 'noindex, nofollow'; document.head.appendChild(rb);
   document.getElementById('listing-root').insertAdjacentHTML('afterbegin', demoBar());
+  // The demo bar is one quiet row until opened (Sean, 2026-11-08: "not so obtrusive... click the arrow for more"), so screenshots stay clean.
+  (function(){ var bar=document.getElementById('demo-bar'); if(!bar) return; var tx=bar.querySelector('.db-text'); if(!tx) return;
+    var tag=tx.querySelector('strong'), full=tx.innerHTML;
+    var kind=DEMO.nonprofit?'organization':DEMO.group?'group':DEMO.business?'business':'campaign';
+    tx.innerHTML='<span class="db-short">'+(tag?tag.outerHTML:'')+'A made-up '+kind+', here to show what a page can do.</span><span class="db-long">'+full+'</span>'+
+      '<button type="button" class="db-tog" aria-expanded="false">More <span aria-hidden="true">&#9662;</span></button>';
+    var open=false; try{ open=sessionStorage.getItem('ve_demo_bar_open')==='1'; }catch(e){}
+    function set(o){ open=o; bar.classList.toggle('db-closed',!o); var t=bar.querySelector('.db-tog'); t.setAttribute('aria-expanded',o?'true':'false'); t.innerHTML=(o?'Less':'More')+' <span aria-hidden="true">'+(o?'&#9652;':'&#9662;')+'</span>'; try{ sessionStorage.setItem('ve_demo_bar_open',o?'1':'0'); }catch(e){} }
+    bar.querySelector('.db-tog').addEventListener('click',function(){ set(!open); }); set(open);
+  })();
   if(DEMO.menu && DEMO.menu.length){
     var panel = document.getElementById('tab-menu'); if(panel) panel.innerHTML = menuTabContent(DEMO.menu);
     var mb = document.getElementById('tab-btn-menu'); if(mb) mb.style.display = '';

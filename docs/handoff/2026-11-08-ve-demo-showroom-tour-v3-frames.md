@@ -14,6 +14,17 @@
 - Build: `scripts/tour-video/v3/cap.js` (captures; `node cap.js [shot ...]`), `compose.py` (frames), `shots.json` (chapter, from, to, kind, source,
   brief, words). The v2 renderer `scripts/tour-video/build.py` is the starting point for the v3 render (drop the zoom, 0.4 s crossfades, still frames).
 
+## Round 2 (Sean's notes, same day)
+- The phone frame stays ("it kind of grew on me"), and desktop now shows too, mostly mobile: frames 2-3, 8-9 and 18-19 are the site at 1280 px in
+  a laptop frame; every screen frame is labeled On a phone / On a computer. Frame 7 uses the current night photo (`s-outside-night.webp`).
+- **Sample bars collapse to one row** (Sean on frame 19): the listing demo bar (`directory/listing.html`, every demo: business, group, campaign)
+  reads "Sample · A made-up business, here to show what a page can do. More ▾" and opens to the full controls; the sample site's bar
+  (`business/site.html`) reads "Sample · A made-up restaurant. More ▾ ▶ Take the tour" (Tour on phones). Open state kept for the visit
+  (`ve_demo_bar_open`, `ve_site_bar_open`). Checked locally at 390 and 1440 px, closed and open.
+- **Lookbook pause** (`admin/depot/guides.html`): Pause now holds even when the audio was still loading or a chapter was starting (the old seek
+  played regardless), the frame stops moving when paused, and tours in `NOZOOM` (green-leaf-tour) play with no zoom.
+- These three page changes are on this branch, not live until merged.
+
 ## Pace rule: recommendation to Sean (canon `canon-video-shot-pace` not changed)
 A new shot about every 4 to 6 seconds (5 on average), never under about 3.5 s or over about 7.5 s; cut at the end of a phrase; a still frame or a
 gentle sideways pan, never a zoom-in; screens shown whole in a phone frame with headroom. Change the canon only on Sean's yes.

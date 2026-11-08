@@ -24,14 +24,18 @@ const SH={
  code:{u:S+'?as=member#/community',f:async p=>{await at(p,'A free cookie with any bowl',260);await p.getByRole('button',{name:/Unlock for 250/}).first().click();await p.waitForTimeout(800);await at(p,'A free cookie with any bowl',260);}},
  club:{u:S+'?as=member#/community',f:async p=>at(p,'A Guide on Vegans Explore',96)},
  tour:{u:W+'/business/sample/tour'},
+ d_hero:{u:S+'#/',d:1}, d_tour:{u:W+'/business/sample/tour',d:1},
+ d_dish:{u:S+'#/menu/0-0',d:1,f:async p=>p.evaluate(()=>scrollTo(0,80))},
+ d_ing:{u:S+'#/menu/0-0',d:1,f:async p=>at(p,'Allergens',110)},
+ d_brand:{u:W+'/business/sample/brand#colors',d:1}, d_listing:{u:W+'/business/sample',d:1},
  hero_island:{u:S+'?look=island#/'}, hero_night:{u:S+'?look=night#/'},
 };
 (async()=>{const b=await chromium.launch();const only=process.argv.slice(2);
 for(const [n,s] of Object.entries(SH)){ if(only.length&&!only.includes(n))continue;
- const c=await b.newContext({viewport:{width:390,height:703},deviceScaleFactor:3,isMobile:true,hasTouch:true});const p=await c.newPage();
+ const c=await b.newContext(s.d?{viewport:{width:1280,height:800},deviceScaleFactor:2}:{viewport:{width:390,height:703},deviceScaleFactor:3,isMobile:true,hasTouch:true});const p=await c.newPage();
  await p.clock.setFixedTime(new Date('2026-11-10T17:30:00Z'));
  p.on('pageerror',e=>console.log(n,'ERR',e.message));
- try{await p.goto(s.u,{waitUntil:'networkidle'});await p.addStyleTag({content:'#sampleBar{display:none!important}'});await p.waitForTimeout(900);
+ try{await p.goto(s.u,{waitUntil:'networkidle'});await p.addStyleTag({content:'#sampleBar,#demo-bar{display:none!important}'});await p.waitForTimeout(900);
  if(s.f)await s.f(p);
  await p.waitForTimeout(700);await p.evaluate(async()=>{for(const i of document.images){i.loading='eager';}await Promise.all([...document.images].filter(i=>!i.complete).map(i=>new Promise(r=>{i.onload=i.onerror=r;setTimeout(r,4000)})))});
  await p.waitForTimeout(1200);await p.screenshot({path:'cap/'+n+'.png'});console.log('ok',n);}catch(e){console.log('FAIL',n,e.message.split('\n')[0]);}

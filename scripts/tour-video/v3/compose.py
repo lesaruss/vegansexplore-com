@@ -45,13 +45,23 @@ def three():
     ph=phone(c,sw=316); x=20+i*(ph.width+10); on_stage(ph,top=150,x=x,im=im)
     tw=d.textlength(l,font=f); d.text((x+(ph.width-tw)/2,150+ph.height+30),l,font=f,fill=(29,77,46))
   return stamp(im)
+def laptop(cap, sw=1000):
+  sc=Image.open(cap).convert('RGB'); sh=round(sc.height*sw/sc.width); body=sc.resize((sw,sh),Image.LANCZOS)
+  bz=16; top=22; lid=Image.new('RGBA',(sw+2*bz,sh+bz+top),(0,0,0,0)); d=ImageDraw.Draw(lid)
+  d.rounded_rectangle([0,0,lid.width-1,lid.height+30],radius=26,fill=(24,24,26)); d.ellipse([lid.width//2-4,8,lid.width//2+4,16],fill=(60,60,64))
+  lid.paste(body,(bz,top)); base_w=lid.width+90; base=Image.new('RGBA',(base_w,30),(0,0,0,0)); bd=ImageDraw.Draw(base)
+  bd.rounded_rectangle([0,0,base_w-1,22],radius=10,fill=(200,202,206)); bd.rounded_rectangle([base_w//2-80,0,base_w//2+80,8],radius=4,fill=(168,170,174))
+  out=Image.new('RGBA',(base_w,lid.height+22),(0,0,0,0)); out.paste(lid,(45,0),lid); out.paste(base,(0,lid.height-2),base); return out
+def label(im,t):
+  d=ImageDraw.Draw(im); f=font(FS,30); w=d.textlength(t,font=f); d.text(((CW-w)/2,56),t,font=f,fill=(110,118,112)); return im
 # (chapter, from, to, kind, source, brief, words)
 SHOTS=json.load(open('shots.json'))
 for i,s in enumerate(SHOTS,1):
   ch,a,b,kind,src,brief,words=s
-  if kind=='phone': im=stamp(on_stage(phone('cap/'+src+'.png')))
+  if kind=='phone': im=label(stamp(on_stage(phone('cap/'+src+'.png'))),'On a phone')
+  elif kind=='desktop': lp=laptop('cap/'+src+'.png'); im=label(stamp(on_stage(lp,top=(CH-lp.height)//2)),'On a computer')
   elif src=='V': im=cover('src/v.jpg',ay=0.3)
-  elif src=='grid4': im=grid4(['src/s-outside-day.png','src/s-outside-dusk.png','src/s-room-back.png','src/s-team.png'],['By day','At night','Inside','Your team'])
+  elif src=='grid4': im=grid4(['src/s-outside-day.png','src/s-outside-night.webp','src/s-room-back.png','src/s-team.png'],['By day','At night','Inside','Your team'])
   elif src=='three': im=three()
   else: im=stamp(cover('src/'+src+'.png',ax=0.5,ay=0.4))
   im.save(f'out/v3-{i:02d}.jpg',quality=90)
