@@ -342,7 +342,7 @@
     if (window.VEExplorerCard) VEExplorerCard.wire(main);
     tickCd(); drawLiz(); paintPlay();
     if (k === 'overview' && PLAY.started) bubble.textContent = CHAPTERS[PLAY.at][1];
-    main.scrollTop = 0; if (!document.documentElement.classList.contains('dg-fit') || window.innerWidth <= 900) window.scrollTo(0, 0);
+    window.scrollTo(0, 0);
   }
   window.addEventListener('hashchange', route);
 
