@@ -367,13 +367,9 @@
     @media (max-width:900px){.dg-recipe-top{grid-template-columns:minmax(0,1fr);}.dg-recipe-pic{order:-1;max-width:260px;}.dg-facts2{grid-template-columns:minmax(0,1fr);}}
     @media (max-width:480px){.dg-th{width:72px;height:72px;}.dg-srow,.dg-rrow{gap:12px;padding:10px;}.dg-look-stat b{font-size:32px;}.dg-shop{padding:5px 8px;font-size:10.5px;}}
     @media (max-width:900px){.dg-recipe-b{grid-template-columns:minmax(0,1fr);}.dg-row{grid-template-columns:minmax(0,1fr) auto;}.dg-row .dg-btn{grid-column:1/-1;}.dg-two{grid-template-columns:minmax(0,1fr);}}
-    /* Desktop: the nav, the Guide and the footer share one screen; the content scrolls inside its own box if it must. */
+    /* Desktop: one page scroll (Sean, 2026-11-09: "make it one scroll... it brings Liz and the middle section down at the same time").
+       The middle and Liz's column no longer scroll on their own; only Liz's words, Start here's text and the tour list scroll inside their boxes. */
     @media (min-width:901px) and (min-height:600px){
-      html.dg-fit,html.dg-fit body{overflow:hidden;height:100%;}
-      html.dg-fit .page-frame{display:flex;flex-direction:column;height:100vh;}
-      html.dg-fit .dg-app{flex:1 1 auto;min-height:0;}
-      html.dg-fit .dg-main{overflow-y:auto;scrollbar-width:thin;padding-right:6px;}
-      html.dg-fit .dg-rail{overflow-y:auto;scrollbar-width:thin;}
       html.dg-fit .dg-maya{aspect-ratio:4/5;flex:0 0 auto;width:100%;height:auto;align-self:stretch;}
       html.dg-fit .dg-bubble{max-height:136px;overflow-y:auto;flex:0 0 auto;}
       html.dg-fit .ve-footer-inner{padding-top:14px !important;padding-bottom:14px !important;}
@@ -784,7 +780,7 @@
 <script src="/public/ve-guide-intro.js"></script>
 <script src="/public/ve-explorer-card.js"></script>
 <script src="/public/ve-video.js?v=2"></script>
-<script src="/guide-scripts/welcome-guide.js?v=3"></script>
+<script src="/guide-scripts/welcome-guide.js?v=4"></script>
 <script src="/public/ve-guide-min.js"></script>
 </body>
 </html>
