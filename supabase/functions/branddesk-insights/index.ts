@@ -1112,13 +1112,40 @@ function socialIn(maps: any, ms: PMatch[]) {
   return nets;
 }
 
+// News for a coming-next place (Sean, 2026-11-09: "do the news feeds"): a Google News search for Vegan stories naming the place (its
+// listen_match mentions), read live and kept 6 hours. Free and read only; the stories go to Insights only, never the Pulse or the Inbox.
+const decodeXml = (t: string) => t.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim();
+async function googleNews(slug: string, names: string[]) {
+  return cached(`ins:placenews3:${slug}`, 6 * H, false, async () => {
+    const terms = [...new Set(names.map((n) => n.trim()).filter(Boolean))].slice(0, 6).map((n) => /\s/.test(n) ? `"${n}"` : n);
+    if (!terms.length) return { connected: true, stories: [] };
+    const q = `vegan (${terms.join(' OR ')}) when:180d`;
+    const r = await fetch(`https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=en-US&gl=US&ceid=US:en`, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; VegansExploreInsights/1.0)' }, signal: AbortSignal.timeout(15000) });
+    if (!r.ok) throw new Error('Google News ' + r.status);
+    const xml = await r.text();
+    const stories = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)].slice(0, 40).map((m, i) => {
+      const it = m[1], tag = (t: string) => decodeXml((new RegExp(`<${t}[^>]*>([\\s\\S]*?)<\\/${t}>`).exec(it) || [])[1] || '');
+      const source = tag('source');
+      let title = tag('title'); if (source && title.endsWith(' - ' + source)) title = title.slice(0, -(source.length + 3));
+      const pub = tag('pubDate');
+      return { id: `gn-${i}`, title, url: tag('link'), source_name: source || null, image_url: null, published_at: pub ? new Date(pub).toISOString() : null };
+    // Only stories whose headline is about it (Japan's search also found missing-person stories and BrooklynVegan, a music site), newest first.
+    }).filter((x) => x.title && x.url && /\b(vegan|vegans|veganism|plant[- ]based|vegetarian)\b/i.test(x.title) && !/brooklynvegan/i.test(x.source_name || ''))
+      .map((x) => ({ ...x, in_headline: names.some((n) => n && x.title.toLowerCase().includes(n.trim().toLowerCase())) }))
+      // Headlines that name the place first; the rest only name it in the story (Google matched the article text).
+      .sort((a, b) => Number(b.in_headline) - Number(a.in_headline) || String(b.published_at || '').localeCompare(String(a.published_at || '')));
+    return { connected: true, query: q, stories };
+  });
+}
+
 async function placeNews(kind: string, slug: string, names: string[]) {
+  let feed: any = null;
   const leads = kind === 'chapter'
     ? (await db.from('ve_news_leads').select('id, title, url, source_name, summary, image_url, published_at, status').eq('city_slug', slug).order('published_at', { ascending: false, nullsFirst: false }).limit(40)).data ?? []
-    : [];
+    : ((feed = await googleNews(slug, names)).stories || []);
   const want = new Set(names.map(lcs));
   const pm = ((await db.from('ve_place_mentions').select('place, country, kind, source, ref, note, created_at').order('created_at', { ascending: false }).limit(2000)).data ?? []).filter((r: any) => want.has(lcs(r.place))).slice(0, 40);
-  return { stories: leads, mentions: pm };
+  return { stories: leads, mentions: pm, source: kind === 'chapter' ? 'feeds' : 'google_news', query: feed?.query ?? null };
 }
 
 // YouTube Analytics for a place (2026-11-09): the channel's views and watch time from there, now and the period before. Read only; the channel
@@ -1144,10 +1171,16 @@ async function ytReport(tok: string, q: Record<string, string>) {
 async function ytPeriod(tok: string, ms: PMatch[], from: string, to: string) {
   const met = 'views,estimatedMinutesWatched';
   const all = await ytReport(tok, { startDate: from, endDate: to, metrics: met });
-  let views = 0, minutes = 0; const cities = new Map<string, number>();
+  let views = 0, minutes = 0, region = 0; const cities = new Map<string, number>(), regionNames: string[] = [];
   for (const m of ms) {
     const code = String(m.country);
     const abbr = m.province ? ABBR_OF[lcs(m.province)] : null;
+    // A city list inside a US state: the whole state too, since YouTube names few cities (2026-11-09: all time, Florida 1,621 views, Miami 69).
+    if (m.cities?.length && code === 'US' && abbr) {
+      const pr = await ytReport(tok, { startDate: from, endDate: to, metrics: 'views', dimensions: 'province', filters: 'country==US' });
+      for (const r of pr) if (r.province === 'US-' + abbr) region += Number(r.views) || 0;
+      regionNames.push(m.province!);
+    }
     if (m.cities?.length) {
       const filters = code === 'US' && abbr ? `country==US;province==US-${abbr}` : `country==${code}`;
       const rows = await ytReport(tok, { startDate: from, endDate: to, metrics: met, dimensions: 'city', filters, sort: '-views', maxResults: '250' });
@@ -1163,16 +1196,18 @@ async function ytPeriod(tok: string, ms: PMatch[], from: string, to: string) {
       for (const r of rows) if (r.country === code) { views += Number(r.views) || 0; minutes += Number(r.estimatedMinutesWatched) || 0; cities.set(regionName(code), (cities.get(regionName(code)) || 0) + (Number(r.views) || 0)); }
     }
   }
-  return { views, minutes, channel_views: Number(all[0]?.views) || 0, cities: [...cities.entries()].sort((a, b) => b[1] - a[1]).slice(0, 25).map(([name, views]) => ({ name, views })) };
+  return { views, minutes, region_views: regionNames.length ? region : null, region_name: regionNames.join(', ') || null, channel_views: Number(all[0]?.views) || 0, cities: [...cities.entries()].sort((a, b) => b[1] - a[1]).slice(0, 25).map(([name, views]) => ({ name, views })) };
 }
 async function placeYouTube(ms: PMatch[], from: string, to: string) {
   const tok = await ytToken();
   if (!tok) return { connected: false };
   const { pf, pt } = prevOf(from, to);
-  const [cur, prev] = await Promise.all([ytPeriod(tok, ms, from, to), ytPeriod(tok, ms, pf, pt)]);
+  const yest = plusDays(etDay(Date.now()), -1);
+  const [cur, prev, ever] = await Promise.all([ytPeriod(tok, ms, from, to), ytPeriod(tok, ms, pf, pt), ytPeriod(tok, ms, '2015-01-01', yest)]);
   const { data: s } = await db.from('lesaruss_secrets').select('description').eq('key', 'YOUTUBE_ANALYTICS_REFRESH_TOKEN').maybeSingle();
-  return { connected: true, channel: /for (.+?) \(/.exec(s?.description || '')?.[1] || null, from, to, prev_from: pf, prev_to: pt, ...cur, prev_views: prev.views, prev_minutes: prev.minutes,
-    note: 'YouTube places a view by the viewer\'s location; its numbers arrive a day or two late, and cities are only its top 250 in each state or country.' };
+  return { connected: true, channel: /for (.+?) \(/.exec(s?.description || '')?.[1] || null, from, to, prev_from: pf, prev_to: pt, ...cur, prev_views: prev.views, prev_minutes: prev.minutes, prev_region_views: prev.region_views,
+    all_time: { views: ever.views, minutes: ever.minutes, region_views: ever.region_views, channel_views: ever.channel_views, cities: ever.cities },
+    note: 'YouTube places a view by the viewer\'s location, a day or two late. It hides places with few views, so a short period can read 0 while all time shows them, and it names only a few cities.' };
 }
 
 async function placeInsights(kind: string, slug: string, from: string, to: string, refresh: boolean) {
