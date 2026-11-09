@@ -1306,6 +1306,19 @@ returns every moment across every show, who said it, a quote, and a play button 
   actions `topics`, `search`, `moment` (super admin or the admin token). Not yet: members' search and the Guides' Pulse tabs
   playing moments; episodes not on YouTube cannot play.
 
+## Where should we go next? (Sean, 2026-11-09, playbook `ve-chapter-rankings`)
+
+"A column that has 10 slots... chapters that are in the works... members can go in there and vote for what's the next chapter that we should
+open... suggest another location... It's more of a suggestion. It's not a guarantee." `/public/ve-next-chapters.js` (`VENextChapters.beside(listEl)`)
+puts the board beside the chapter cards on `/communities` and the dashboard's Communities tab: three-fourths chapters, one-fourth board on desktop;
+first on phones with the top 3 and **See all**. Top 10 numbered, then **Rising**; **Suggest another place** (members). Places are `ve_next_chapters`
+rows (a new place is a row; `status` open, opened, hidden), Sean's 12 seeded: Oregon, Las Vegas, Phoenix, Houston, North Carolina, Austin, Dublin,
+the Caribbean, New Zealand, Japan, Seattle, San Francisco. Votes `ve_next_chapter_votes`, once every 24 hours per member per place (like a chapter);
+suggestions `ve_next_chapter_suggestions` (3 a day, emailed to contact@lesaruss.com, added by hand). `ve-votes` actions `next_list` (public),
+`next_today`, `next_vote`, `next_suggest` (standing checked); v9 from a2b4b98 (sha256 06e16784 matched). Migration `20261109_next_chapters.sql`.
+Proven live 2026-11-09 through the one-time `ve-once-next-proof` (now 410); test rows removed. Not built: Show me (a sample hub per place, banners
+are Higgsfield credits), a Depot page for suggestions, the podcast listener places on each card. Mock `/mocks/next-chapters/`.
+
 ## Universal search (Sean, 2026-11-02, BOSS run, playbook `ve-universal-search`)
 
 "I should be able to search what I'm looking for, and then it just shows up, no matter what the category is... Who needs a filter when you

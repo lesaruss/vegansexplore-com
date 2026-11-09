@@ -193,6 +193,8 @@
        members-only window (Brion Hurley, 2026-11-08). -->
   <script src="/public/ve-auth.js"></script>
   <script src="/public/ve-chapters.js"></script>
+  <!-- Where should we go next? beside the chapters, first on phones (Sean, 2026-11-09, playbook ve-chapter-rankings). -->
+  <script src="/public/ve-next-chapters.js"></script>
 
   <!-- BOTTOM CTA -->
   <div class="bottom-cta" role="complementary" aria-label="Get involved">
@@ -223,6 +225,7 @@
     banner.el.querySelector('select').setAttribute('autocomplete', 'off');
     window.addEventListener('pageshow', function () { setTimeout(function () { banner.setQuiet(''); }, 0); });
     VEChapters.mount('vch-list');
+    if (window.VENextChapters) VENextChapters.beside(document.getElementById('vch-list'));
     document.getElementById('vch-list').addEventListener('click', function () { banner.autoFold(); });
   })();
 </script>
