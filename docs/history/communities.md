@@ -23,7 +23,7 @@ over), Thank you. `?city=<chapter>` picks the area, `?source=hub|pulse|show|list
 contact@lesaruss.com ([TEST] names do not). **Depot > Nominations** (`/admin/depot/nominations`, Content; copied from Depot > Comments):
 Waiting for review, Approved, Not now, All; search, area and sort; one nomination on its own page (`#n/<id>`) with the recording, the
 email, how many other times they were nominated, the nominator (and whether we may name them), a team note, Approve (ready to invite) or
-Not now. Approving sends nothing yet. Next (step 2): the invitation (a BrandDesk Outreach campaign Sean approves) and Kai's interview for
+Not now. Approving sends nothing yet. **Live 2026-11-09** (Sean: "merge"; main 3b38054 and 43acf97): proven on vegansexplore.com at 1440 and 390 px (no sideways scroll, no script errors), a full submit with a browser recording proven on the preview against the live function, the team actions proven from the database, the Depot screen with mocked data (not yet under a real super admin sign-in). **The doors now open it**: the SoFlo Vegans Podcast's Nominate someone (`details.show_line.nominate_url`, read by `showLine` in `directory/listing.html`; the old `soflo-nominate` comment code is the fallback) and the Daily Pulse's Monday Who should we interview? (`ve_pulse_house`: `/nominate?city=<chapter>&source=pulse`), migration `20261109_nominate_links.sql`, applied through `ve-once-nominate-links` (now the 410 stub) because the connector held the write; the proof's [TEST] rows and recordings removed. Next (step 2): the invitation (a BrandDesk Outreach campaign Sean approves) and Kai's interview for
 real; then account setup; then the featured kit.
 
 ## Where should we go next? (Sean, 2026-11-09, playbook `ve-chapter-rankings`)
