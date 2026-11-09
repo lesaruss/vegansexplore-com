@@ -64,3 +64,21 @@ ask for an updated photo of them that we could use for future publication."
 - **Delivered** in the featured email and on You've Been Featured: Use as my profile picture (sets their member picture), Download, and
   "Not quite you? Tell us and we redraw it." It also goes on their share graphics in place of the photo.
 - **Watch**: if enough people object, Sean changes course. Requests to redraw or remove are counted in the Depot queue so that is visible.
+
+## The questions, after Sean's notes (2026-11-09; Kai's lines are drafts until approved and recorded)
+
+| # | On the page | Kai says (question plus a little help) | Answer |
+|---|---|---|---|
+| 1 | Tell me who you are and what you do in your community. | Let's start easy. Tell me who you are, and what you do in your community. Your work, your passions, what people know you for. | Record, speak or write |
+| 2 | Where do you live, and how long have you lived there? | Where do you live? South Florida, Central Florida, wherever home is. And how long have you lived there? | Two picks: area, years |
+| 3 | What's your Vegan origin story? Take me back to the moment it started. | What's your Vegan origin story? Take me back to the moment it started. Maybe a documentary, a friend, a meal, or an animal you met. | Record, speak or write |
+| 4 | What are you building or working on right now for the Vegan movement? | What are you building or working on right now for the Vegan movement? A business, an event, a page, a project. Big or small. | Record, speak or write |
+| 5 | Who in your community has your back? Give them a shout-out. | Nobody does it alone. Who in your community has your back? Give them a shout-out. | Record, speak or write |
+| 6 | Your favorite Vegan spots nearby, and why. Up to three. | What are your favorite Vegan spots nearby? Pick up to three, and tell me why you love each one. | Up to 3 places from the Directory, one recording each, locked after the third |
+| 7 | What would you tell someone just starting out? | Someone listening is right where you once were. What would you tell someone just starting out? | Record, speak or write |
+| 8 | What's next for you, and how can people support it? | Last one. What's next for you, and how can people support it? | Record, speak or write |
+
+Recordings cap at 2 minutes and show the time left while recording. **Kai asks each question** from one picture of her hosting (the same
+outfit on every question) with Play on it. Pressing Play is consent: after Save and next, the next question plays on its own; Pause takes
+that back. Each line becomes a lip-synced clip (Kai's voice `cgSgspJ2msm6clMCkdW9`, Higgsfield `wan2_7`, one take each, about 30 credits a
+clip, so about 240 for eight) once Sean approves the words. Talk to Kai stays in the rail for questions.

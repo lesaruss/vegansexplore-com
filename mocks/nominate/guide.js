@@ -35,7 +35,7 @@
     '.nm-dot{width:44px;height:44px;border-radius:50%;background:#dc2626;display:grid;place-items:center;flex:none;box-shadow:0 0 0 6px rgba(220,38,38,.12);border:0;cursor:pointer;}',
     '.nm-dot i{width:14px;height:14px;border-radius:3px;background:#fff;}',
     '.nm-wave{flex:1 1 140px;height:26px;border-radius:4px;background:repeating-linear-gradient(90deg,var(--g) 0 3px,transparent 3px 7px);-webkit-mask:linear-gradient(90deg,#000 0 58%,rgba(0,0,0,.18) 58%);mask:linear-gradient(90deg,#000 0 58%,rgba(0,0,0,.18) 58%);}',
-    '.nm-rec small{font-size:12.5px;font-weight:700;color:var(--ink75);}',
+    '.nm-rec small{flex:1 1 260px;font-size:12.5px;font-weight:700;color:var(--ink75);}',
     '.nm-check{display:flex;gap:10px;align-items:flex-start;font-size:13.5px;line-height:1.5;margin:10px 0;color:var(--ink75);}',
     '.nm-check input{margin-top:4px;accent-color:var(--g);}',
     '.nm-check b{color:var(--ink);}',
@@ -61,6 +61,22 @@
     '.nm-stamp{position:absolute;top:10px;right:10px;z-index:2;font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#b45309;background:#fff;border:2px solid #b45309;border-radius:6px;padding:1px 7px;}',
     '.nm-me{position:relative;width:min(260px,100%);aspect-ratio:1;border-radius:12px;overflow:hidden;border:1px solid var(--line);}.nm-me img{width:100%;height:100%;object-fit:cover;display:block;}',
     '.nm-me-b{flex:1 1 280px;min-width:0;font-size:15px;line-height:1.55;color:var(--ink75);}.nm-me-b b{display:block;font-size:20px;font-weight:900;color:var(--ink);margin-bottom:4px;}',
+    '.nm-q .wg-gs-pic{position:relative;}',
+    '.nm-kq-btn{position:absolute;left:10px;bottom:16px;display:inline-flex;align-items:center;gap:8px;border:0;border-radius:6px;background:rgba(0,0,0,.78);color:#fff;font:800 12px Montserrat,sans-serif;letter-spacing:.04em;padding:9px 12px;cursor:pointer;}',
+    '.nm-kq-ic{width:0;height:0;border-left:9px solid #fff;border-top:6px solid transparent;border-bottom:6px solid transparent;}',
+    '.nm-kq.on .nm-kq-ic{width:10px;height:12px;border:0;border-left:3px solid #fff;border-right:3px solid #fff;}',
+    '.nm-kq-bar{position:absolute;left:0;right:0;bottom:0;height:6px;background:rgba(0,0,0,.25);}',
+    '.nm-kq-bar b{display:block;height:100%;width:0;background:#22C55E;}',
+    '.nm-kq.on .nm-kq-bar b{width:100%;transition:width 7s linear;}',
+    '.nm-hint{font-size:12.5px;color:var(--ink55);margin:8px 0 0;}',
+    '.nm-sel{appearance:none;-webkit-appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%278%27%3E%3Cpath d=%27M1 1l5 5 5-5%27 stroke=%27%231a1a1a%27 stroke-width=%272%27 fill=%27none%27/%3E%3C/svg%3E") no-repeat right 16px center;}',
+    '.nm-spots{list-style:none;padding:0;margin:0;display:grid;gap:8px;}',
+    '.nm-spots li{border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;}',
+    '.nm-spots li>b{font-size:14px;}',
+    '.nm-spots li.done{background:var(--gl);border-color:var(--gm);}',
+    '.nm-spots li.done a{margin-left:auto;font-size:12px;font-weight:800;color:var(--g);}',
+    '.nm-spots li.now{display:block;}.nm-spots li.now>b{display:block;margin-bottom:6px;}.nm-spots li.now .dg-btn{margin-top:8px;}',
+    '@media (max-width:900px){.nm-form.nm-q .wg-gs-pic{display:block;width:100%;height:auto;aspect-ratio:1;max-width:240px;flex:none;}}',
     '.nm-or{text-align:center;font-size:12px;font-weight:700;color:var(--ink55);margin:12px 0 2px;}',
     '@media (max-width:900px){.nm-mock{padding:8px 16px;}.nm-form .wg-gs-pic{display:none;}.nm-grid,.nm-modes{grid-template-columns:1fr;}.nm-rv{grid-template-columns:1fr;gap:2px;}.nm-rv dd{margin-bottom:8px;}}'
   ].join('');
@@ -71,15 +87,17 @@
   function art(slug) { return window.VEGuideArt ? VEGuideArt(slug, 'square') : ''; }
 
   // ---------- content ----------
+  // Kai's questions (Sean, 2026-11-09 notes). [key, short name, the question on the page, Kai's spoken line (a draft: the question plus a
+  // little help or an example), answer kind]. Kai's lines become her recorded clips once Sean approves them.
   var Q = [
-    ['q1', 'Who You Are', 'Tell me who you are and what you do in your community.', 'Let\'s start easy. Who are you, and what do you do where you live? Talk to me like a friend.', 'thumb-community.jpg'],
-    ['q2', 'Where You Are', 'Where are you, and how long have you been part of it?', 'Where do you call home, and how long have you been part of the Vegan community there?', 'vegan-abroad.jpg'],
-    ['q3', 'Your Vegan Story', 'What\'s your Vegan story? Take me back to the moment it started.', 'This is the one I love most. Take me back to the moment it started for you.', 'prevegan.jpg'],
-    ['q4', 'What You\'re Building', 'What are you building or working on right now?', 'What are you working on right now? Big or small, I want to hear it.', 'entrepreneur.jpg'],
-    ['q5', 'Your Shout-Out', 'Who in your community has your back? Give them a shout-out.', 'Nobody does it alone. Who has your back? Give them their flowers too.', 'partner-group-partner.jpg'],
-    ['q6', 'Your Favorite Spot', 'Your favorite Vegan spot nearby, and why.', 'Where do you love to eat? Start typing and pick it from the Directory.', 'eating-out.jpg'],
-    ['q7', 'Your Advice', 'What would you tell someone just starting out?', 'Someone is listening who is right where you once were. What would you tell them?', 'kids-and-family.jpg'],
-    ['q8', 'What\'s Next', 'What\'s next for you, and how can people support it?', 'Last one. What\'s next for you, and how can people show up for it?', 'partner-official-creator.jpg']
+    ['q1', 'Who You Are', 'Tell me who you are and what you do in your community.', 'Let\'s start easy. Tell me who you are, and what you do in your community. Your work, your passions, what people know you for.', 'rec'],
+    ['q2', 'Where You Live', 'Where do you live, and how long have you lived there?', 'Where do you live? South Florida, Central Florida, wherever home is. And how long have you lived there?', 'place'],
+    ['q3', 'Your Vegan Origin Story', 'What\'s your Vegan origin story? Take me back to the moment it started.', 'What\'s your Vegan origin story? Take me back to the moment it started. Maybe a documentary, a friend, a meal, or an animal you met.', 'rec'],
+    ['q4', 'What You\'re Building', 'What are you building or working on right now for the Vegan movement?', 'What are you building or working on right now for the Vegan movement? A business, an event, a page, a project. Big or small.', 'rec'],
+    ['q5', 'Your Shout-Out', 'Who in your community has your back? Give them a shout-out.', 'Nobody does it alone. Who in your community has your back? Give them a shout-out.', 'rec'],
+    ['q6', 'Your Favorite Spots', 'Your favorite Vegan spots nearby, and why. Up to three.', 'What are your favorite Vegan spots nearby? Pick up to three, and tell me why you love each one.', 'spots'],
+    ['q7', 'Your Advice', 'What would you tell someone just starting out?', 'Someone listening is right where you once were. What would you tell someone just starting out?', 'rec'],
+    ['q8', 'What\'s Next', 'What\'s next for you, and how can people support it?', 'Last one. What\'s next for you, and how can people support it?', 'rec']
   ];
 
   var CONF = {
@@ -144,10 +162,28 @@
     }).join('') + '</div><div class="nm-ans">' + answer(sel) + '</div>';
   }
   function answer(sel) {
-    if (sel === 'rec') return '<div class="nm-rec"><button type="button" class="nm-dot" aria-label="Stop recording"><i></i></button><span class="nm-wave"></span><small>Recording 1:08 of 2:00 &middot; Listen back &middot; Record again</small></div>';
+    if (sel === 'rec') return '<div class="nm-rec"><button type="button" class="nm-dot" aria-label="Stop recording"><i></i></button><span class="nm-wave"></span><small><b>0:52</b> recorded &middot; <b>1:08 left</b> of 2:00 &middot; Listen back &middot; Record again</small></div>';
     return '<textarea class="nm-in" rows="5" placeholder="' + (sel === 'say' ? 'Tap the mic and talk; your words appear here.' : 'Write it in your own words.') + '"></textarea>';
   }
 
+  // Kai asks each question on the picture to the left (Sean, 2026-11-09): Play once and the next questions play on their own after Save and
+  // next; Pause stops that. In the mock a bar stands in for her clip (nothing is recorded yet).
+  function kaiAsk(s) {
+    return '<span class="wg-gs-pic nm-kq" data-kq="' + s + '"><img src="/mocks/nominate/img/kai-ask.jpg" alt="Kai, your interviewer" width="640" height="640">' +
+      '<button type="button" class="nm-kq-btn" aria-label="Play Kai asking this question"><span class="nm-kq-ic"></span><span class="nm-kq-l">Play Kai</span></button><i class="nm-kq-bar"><b></b></i></span>';
+  }
+  function placeAns() {
+    return '<div class="nm-grid"><div><label class="nm-f">Where you live</label><select class="nm-in nm-sel"><option>South Florida</option><option>Central Florida</option><option>Tampa Bay</option><option>Somewhere else</option></select></div>' +
+      '<div><label class="nm-f">How long you have lived there</label><select class="nm-in nm-sel"><option>Less than a year</option><option>1 to 5 years</option><option>5 to 10 years</option><option selected>10 years or more</option></select></div></div>' +
+      '<p class="nm-hint">Two quick picks, no recording needed.</p>';
+  }
+  function spotsAns() {
+    return '<ol class="nm-spots">' +
+      '<li class="done"><b>1. Sample: Green Leaf Kitchen</b><span class="nm-play"><i></i>Your 0:41 recording</span><a href="#/interview/6">Redo</a></li>' +
+      '<li class="done"><b>2. Sample: Sunflower Cafe</b><span class="nm-play"><i></i>Your 0:33 recording</span><a href="#/interview/6">Redo</a></li>' +
+      '<li class="now"><b>3. Your third spot</b><input class="nm-in" placeholder="Start typing a place name" data-dictate="off">' + modes('rec') + '<a class="dg-btn" href="#/interview/6">Save this spot</a></li></ol>' +
+      '<p class="nm-hint">Up to three, each with its own recording. After your third, they lock in; Redo one to change it.</p>';
+  }
   // ---------- the nomination ----------
   var NOM = {
     overview: function () {
@@ -245,16 +281,16 @@
         return crumb('The Interview') + head('All eight answered', 'Send Your Interview', '') +
           '<div class="nm-prog" aria-hidden="true"><i style="width:100%"></i></div>' +
           card('Your answers', 'Read them over, then send', pic('holiday/w-say.jpg'),
-            '<dl class="nm-rv">' + Q.map(function (q, i) { return '<dt>' + (i + 1) + '. ' + esc(q[1]) + '</dt><dd>' + (i === 1 ? 'South Florida, eleven years' : '<span class="nm-play"><i></i>Your recording</span>') + ' <a href="#/interview/' + (i + 1) + '" style="color:var(--g);font-weight:800;font-size:12px">Edit</a></dd>'; }).join('') + '</dl>' +
+            '<dl class="nm-rv">' + Q.map(function (q, i) { return '<dt>' + (i + 1) + '. ' + esc(q[1]) + '</dt><dd>' + (i === 1 ? 'South Florida, 10 years or more' : i === 5 ? 'Green Leaf Kitchen, Sunflower Cafe (two recordings)' : '<span class="nm-play"><i></i>Your recording</span>') + ' <a href="#/interview/' + (i + 1) + '" style="color:var(--g);font-weight:800;font-size:12px">Edit</a></dd>'; }).join('') + '</dl>' +
             '<label class="nm-check"><input type="checkbox" checked> <span><b>You may use my interview.</b> Vegans Explore may play or quote my answers on the podcast, in the Daily Pulse, on social and on my city\'s page.</span></label>',
             '<a class="dg-btn dg-ghost" href="#/interview/8">Back</a><a class="dg-btn" href="#/nominate/1">Send my interview</a>', 'nm-form');
       }
       var q = Q[s - 1];
+      var body = q[4] === 'place' ? placeAns() : q[4] === 'spots' ? spotsAns() : modes('rec');
       return crumb('The Interview') + head('Question ' + s + ' of 8', q[2], '') +
         '<div class="nm-prog" aria-hidden="true"><i style="width:' + Math.round(s / 8 * 100) + '%"></i></div>' +
-        card('Your answer', 'Answer however is easiest', pic(q[4]),
-          (s === 6 ? '<label class="nm-f">Find the place</label><input class="nm-in" value="Sample: Green Leaf Kitchen" data-dictate="off"><label class="nm-f">And why</label>' : '') + modes(s === 2 ? 'write' : 'rec'),
-          '<a class="dg-btn dg-ghost" href="' + (s === 1 ? '#/' : '#/interview/' + (s - 1)) + '">Back</a><a class="dg-btn" href="#/interview/' + (s + 1) + '">' + (s === 8 ? 'Save and review' : 'Save and next') + '</a><a class="dg-btn dg-ghost" href="#/">Save and exit</a>', 'nm-form');
+        '<section class="wg-gs nm-form nm-q">' + kaiAsk(s) + '<div class="wg-gs-b"><div class="vgi-k">Your answer</div><h3 class="wg-gs-t">' + esc(q[1]) + '</h3>' + body +
+          '<div class="wg-gs-btns"><a class="dg-btn dg-ghost" href="' + (s === 1 ? '#/' : '#/interview/' + (s - 1)) + '">Back</a><a class="dg-btn" href="#/interview/' + (s + 1) + '">' + (s === 8 ? 'Save and review' : 'Save and next') + '</a><a class="dg-btn dg-ghost" href="#/">Save and exit</a></div></div></section>';
     },
     nominate: function () {
       var s = stepOf() === 2 ? 2 : 1, skip = '<a class="dg-btn dg-ghost" href="#/member">Skip this</a>';
@@ -368,6 +404,24 @@
     if (e.target.closest('[data-sent]')) location.hash = '#/sent';
   });
   window.addEventListener('hashchange', route);
+  // Play gives consent for the next questions to play on their own; Pause takes it back (Sean, 2026-11-09).
+  function kaiPlay(el, on) {
+    if (!el) return;
+    el.classList.toggle('on', on);
+    el.querySelector('.nm-kq-l').textContent = on ? 'Pause' : 'Play Kai';
+    try { sessionStorage.setItem('nm_kai_auto', on ? '1' : '0'); } catch (e) {}
+    clearTimeout(kaiPlay.t);
+    if (on) kaiPlay.t = setTimeout(function () { el.classList.remove('on'); el.querySelector('.nm-kq-l').textContent = 'Play again'; }, 7100);
+  }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('.nm-kq-btn'); if (!b) return;
+    var el = b.closest('.nm-kq'); kaiPlay(el, !el.classList.contains('on'));
+  });
+  window.addEventListener('hashchange', function () {
+    setTimeout(function () { var el = document.querySelector('.nm-kq'); var auto = ''; try { auto = sessionStorage.getItem('nm_kai_auto'); } catch (e) {}
+      if (el && auto === '1') { el.offsetWidth; kaiPlay(el, true); } }, 60);
+  });
+
   tourM.addEventListener('click', function (e) { if (e.target.closest('.dg-tnav')) setTimeout(function () { railEl.scrollIntoView({ block: 'start' }); }, 0); });
   function start() { if (!window.VEGuideArt) return setTimeout(start, 60); route(); }
   start();
