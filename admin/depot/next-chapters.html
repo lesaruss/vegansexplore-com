@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Next Chapter Suggestions | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:14px;}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;}
+    .tabs a{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-text);text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:14px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
+    .card img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#eee;cursor:zoom-in;}
+    .card .body{padding:14px 16px;display:flex;flex-direction:column;gap:6px;flex:1;}
+    .kind{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .card h3{font-size:15px;font-weight:800;line-height:1.3;}
+    .card h3 a{color:inherit;}
+    .meta{font-size:12.5px;color:var(--ve-text-75);}
+    .quote{font-size:14px;background:#f7faf7;border-left:3px solid var(--ve-green);padding:8px 12px;border-radius:6px;}
+    .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;}
+    .btn:disabled{opacity:.5;cursor:default;}
+    .btn-ghost{background:#fff;color:#8a1c12;border:1px solid rgba(0,0,0,0.25);}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .lb{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;cursor:zoom-out;}
+    .lb img{max-width:100%;max-height:100%;border-radius:8px;}
+    .tools{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px;}
+    .tools select,.tools input{font-family:inherit;font-size:13px;min-height:40px;padding:8px 12px;border:1px solid var(--ve-border);border-radius:6px;background:#fff;color:var(--ve-text);}
+    .tools select{appearance:none;-webkit-appearance:none;padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;}
+    .tools input{flex:1;min-width:200px;}
+    .btn-quiet{background:#fff;color:var(--ve-green-deep);border:1px solid var(--ve-green-deep);}
+    @media (max-width:600px){.tools select{flex:1 1 100%;}}
+    .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:#eef1ee;color:#333;}
+    .tag.new{background:#fff1dc;color:#8a5200;}.tag.working{background:#e3eefc;color:#0f4a91;}.tag.fixed{background:var(--ve-green-light);color:var(--ve-green-deep);}.tag.spam{background:#fde7e5;color:#8a1c12;}
+    .card .excerpt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:14px;}
+    .crumb{font-size:12.5px;margin-bottom:12px;}.crumb a{color:var(--ve-green-deep);font-weight:700;}
+    .item{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:20px 22px;display:grid;gap:14px;}
+    .item .full{white-space:pre-wrap;font-size:15px;background:#f7faf7;border-left:3px solid var(--ve-green);padding:12px 14px;border-radius:6px;}
+    .item dl{display:grid;grid-template-columns:140px 1fr;gap:6px 14px;font-size:13.5px;}.item dt{font-weight:800;color:var(--ve-text-75);}.item dd{word-break:break-word;}
+    .item textarea{font-family:inherit;font-size:14px;width:100%;min-height:90px;padding:10px 12px;border:1px solid var(--ve-border);border-radius:6px;}
+    @media (max-width:600px){.item dl{grid-template-columns:1fr;}.item dt{margin-top:6px;}}
+    .tag.added,.tag.open{background:var(--ve-green-light);color:var(--ve-green-deep);}.tag.set_aside,.tag.hidden{background:#eef1ee;color:#555;}.tag.opened{background:#e3eefc;color:#0f4a91;}
+    .item input[type=text],.item select{font-family:inherit;font-size:14px;width:100%;min-height:40px;padding:8px 12px;border:1px solid var(--ve-border);border-radius:6px;background:#fff;}
+    .item select{appearance:none;-webkit-appearance:none;padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;}
+    .box{border:1px solid var(--ve-border);border-radius:10px;padding:14px 16px;display:grid;gap:10px;}.box h3{font-size:14px;font-weight:800;}
+    .card img.thumb{width:56px;height:56px;aspect-ratio:auto;border-radius:8px;object-fit:cover;background:#eef1ee;flex:0 0 auto;cursor:default;}.item dd a{color:var(--ve-green-deep);font-weight:700;}.prow{display:flex;gap:12px;align-items:center;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Next Chapter Suggestions</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Places members suggest on the "Where should we go next?" board (Sean, 2026-11-09). Each one arrives as New and sits in the Inbox until you decide. Add it to the board so members can vote for it, or set it aside with a note. The Board tab holds the places themselves: hide one, or mark it opened once it becomes a chapter. A suggestion, never a promise.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden><div id="view"></div></main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script src="/public/ve-hubs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-votes';
+      var $ = function (id) { return document.getElementById(id); };
+      var ST = [['new', 'New'], ['added', 'Added'], ['set_aside', 'Set aside'], ['all', 'All']];
+      var PST = { open: 'On the board', opened: 'Opened', hidden: 'Hidden' };
+      var sug = [], places = [], loaded = false;
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function when(t) { return new Date(t).toLocaleString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' ET'; }
+      function stLabel(s) { for (var i = 0; i < ST.length; i++) if (ST[i][0] === s) return ST[i][1]; return s; }
+      function hubName(slug) { var h = (window.VE_HUBS || []).filter(function (x) { return x.slug === slug; })[0]; return h ? (h.name || h.title || slug) : (slug || ''); }
+      function who(x) { var m = x.member; return m ? (m.name || 'A member') : 'A member (account gone)'; }
+      // #list/<status>  #s/<id>  #board
+      function route() { var h = location.hash.replace(/^#/, '').split('/'); if (h[0] === 's') return { v: 's', id: h[1] }; if (h[0] === 'board') return { v: 'board' }; return { v: 'list', st: ST.some(function (s) { return s[0] === h[1]; }) ? h[1] : 'new' }; }
+      function tabsHtml(on) {
+        var counts = {}; sug.forEach(function (x) { counts[x.status] = (counts[x.status] || 0) + 1; });
+        return '<nav class="tabs" aria-label="Filter">' + ST.map(function (s) { var n = s[0] === 'all' ? sug.length : (counts[s[0]] || 0); return '<a href="#list/' + s[0] + '" class="' + (s[0] === on ? 'on' : '') + '">' + s[1] + ' (' + n + ')</a>'; }).join('') +
+          '<a href="#board" class="' + (on === 'board' ? 'on' : '') + '">The board (' + places.length + ')</a></nav>';
+      }
+      function drawList(r) {
+        $('view').innerHTML = tabsHtml(r.st) + '<div class="tools"><input id="q" type="search" placeholder="Search places, reasons and names" data-dictate="off"></div><div class="grid" id="grid"></div>';
+        $('q').oninput = function () { fill(r); };
+        fill(r);
+      }
+      function fill(r) {
+        var q = $('q').value.toLowerCase();
+        var list = sug.filter(function (x) { return (r.st === 'all' || x.status === r.st) && (!q || (x.place + ' ' + (x.why || '') + ' ' + who(x) + ' ' + ((x.member && x.member.email) || '')).toLowerCase().indexOf(q) >= 0); });
+        $('grid').innerHTML = list.length ? list.map(function (x) {
+          return '<div class="card"><div class="body"><span class="kind">Suggested place</span><h3>' + esc(x.place) + '</h3><div><span class="tag ' + esc(x.status) + '">' + esc(stLabel(x.status)) + '</span>' + (x.added_slug ? ' <span class="meta">on the board as ' + esc(x.added_slug) + '</span>' : '') + '</div>' +
+            (x.why ? '<div class="excerpt">' + esc(x.why) + '</div>' : '<div class="meta">No reason given.</div>') +
+            '<span class="meta">' + esc(who(x)) + ' &middot; ' + esc(when(x.created_at)) + '</span>' +
+            '<div class="acts"><a class="btn" href="#s/' + x.id + '">Open</a></div></div></div>';
+        }).join('') : '<p class="sub">' + (r.st === 'new' ? 'Nothing new. Members suggest places from the board on Communities.' : 'None here.') + '</p>';
+      }
+      function drawOne(id) {
+        var x = sug.filter(function (s) { return s.id === id; })[0];
+        if (!x) { $('view').innerHTML = '<p class="crumb"><a href="#list/new">Suggestions</a></p><p class="sub">That suggestion is not here.</p>'; return; }
+        var m = x.member || {};
+        var actions = '';
+        if (x.status !== 'added') actions += '<div class="box"><h3>Add to the board</h3><p class="meta">Members can vote for it as soon as it is added. If the place is already on the board, the suggestion is linked to it.</p>' +
+          '<label class="meta" for="nm"><b>Name on the board</b></label><input type="text" id="nm" value="' + esc(x.place) + '" maxlength="80">' +
+          '<label class="meta" for="sb"><b>Line under it</b> (state, country or cities, optional)</label><input type="text" id="sb" maxlength="120" placeholder="Texas">' +
+          '<div class="acts"><button type="button" class="btn" id="add">Add to the board</button></div></div>';
+        if (x.status !== 'set_aside') actions += '<div class="box"><h3>Set aside</h3><label class="meta" for="nt"><b>Why</b> (needed, for the team)</label><textarea id="nt" data-dictate="off">' + esc(x.status === 'new' ? '' : (x.note || '')) + '</textarea>' +
+          '<div class="acts"><button type="button" class="btn btn-ghost" id="aside">Set aside</button></div></div>';
+        if (x.status !== 'new') actions += '<div class="acts"><button type="button" class="btn btn-quiet" id="reopen">Back to New</button></div>';
+        $('view').innerHTML = '<p class="crumb"><a href="#list/' + (x.status === 'new' ? 'new' : x.status) + '">Suggestions</a> / ' + esc(x.place) + '</p><div class="item">' +
+          '<div><span class="kind">Suggested place</span> <span class="tag ' + esc(x.status) + '">' + esc(stLabel(x.status)) + '</span></div>' +
+          '<h2 style="font-size:22px;font-weight:900">' + esc(x.place) + '</h2>' +
+          '<div class="full">' + (x.why ? esc(x.why) : 'No reason given.') + '</div>' +
+          '<dl><dt>Who</dt><dd>' + esc(who(x)) + (m.email ? ' &middot; <a href="mailto:' + esc(m.email) + '">' + esc(m.email) + '</a> &middot; <a href="/admin/depot/people#person/' + encodeURIComponent(String(m.email).toLowerCase()) + '">Their profile</a>' : '') + '</dd>' +
+          '<dt>Their chapter</dt><dd>' + esc(m.home_community ? hubName(m.home_community) : 'Not set') + '</dd>' +
+          '<dt>When</dt><dd>' + esc(when(x.created_at)) + '</dd>' +
+          (x.added_slug ? '<dt>On the board</dt><dd><a href="#board">' + esc(x.added_slug) + '</a></dd>' : '') +
+          (x.note ? '<dt>Note</dt><dd>' + esc(x.note) + '</dd>' : '') + '</dl>' + actions + '<span class="msg" id="msg"></span></div>';
+        function decide(p) { $('msg').textContent = 'Saving...'; return api(Object.assign({ action: 'next_admin_decide', id: id }, p)).then(function (r) {
+          if (r && r.ok) { loaded = false; location.hash = 'list/' + (p.decision === 'add' ? 'added' : p.decision === 'set_aside' ? 'set_aside' : 'new'); return; }
+          if (r && r.error === 'already_on_board') { if (confirm('"' + r.slug + '" is already on the board (' + (PST[r.status] || r.status) + '). Link this suggestion to it?')) decide(Object.assign({}, p, { link_existing: true })); else $('msg').textContent = ''; return; }
+          $('msg').textContent = (r && r.message) || 'That did not go through.'; }); }
+        if ($('add')) $('add').onclick = function () { decide({ decision: 'add', name: $('nm').value, sub: $('sb').value }); };
+        if ($('aside')) $('aside').onclick = function () { if ($('nt').value.trim().length < 2) { $('msg').textContent = 'Write why it is set aside.'; $('nt').focus(); return; } decide({ decision: 'set_aside', note: $('nt').value }); };
+        if ($('reopen')) $('reopen').onclick = function () { decide({ decision: 'reopen' }); };
+      }
+      function drawBoard() {
+        var list = places.slice().sort(function (a, b) { var o = { open: 0, opened: 1, hidden: 2 }; return (o[a.status] - o[b.status]) || (b.votes - a.votes) || (a.sort - b.sort); });
+        $('view').innerHTML = tabsHtml('board') + '<p class="sub">Open places show on the board, most votes first. Hidden places leave the board (their votes are kept). Opened means it became a chapter; it leaves the board too.</p><div class="grid">' + list.map(function (p) {
+          var art = p.art && (p.art.thumb || p.art.square);
+          var btns = [];
+          if (p.status !== 'open') btns.push('<button type="button" class="btn" data-ps="open" data-slug="' + esc(p.slug) + '">Back on the board</button>');
+          if (p.status !== 'hidden') btns.push('<button type="button" class="btn btn-ghost" data-ps="hidden" data-slug="' + esc(p.slug) + '">Hide</button>');
+          if (p.status !== 'opened') btns.push('<button type="button" class="btn btn-quiet" data-ps="opened" data-slug="' + esc(p.slug) + '">Mark opened</button>');
+          return '<div class="card"><div class="body"><div class="prow">' + (art ? '<img class="thumb" src="/' + esc(String(art).replace(/^\//, '')) + '" alt="">' : '') + '<div><h3>' + esc(p.name) + '</h3><span class="meta">' + esc(p.sub || '') + '</span></div></div>' +
+            '<div><span class="tag ' + esc(p.status) + '">' + esc(PST[p.status] || p.status) + '</span>' + (p.status === 'opened' && p.opened_hub ? ' <span class="meta">as ' + esc(hubName(p.opened_hub)) + '</span>' : '') + '</div>' +
+            '<span class="meta">' + p.votes + ' vote' + (p.votes === 1 ? '' : 's') + ' from ' + p.voters + ' member' + (p.voters === 1 ? '' : 's') + '</span>' +
+            '<div class="acts">' + btns.join('') + '</div>' +
+            '<div class="tools" data-open="' + esc(p.slug) + '" hidden style="margin:0"><select aria-label="Which chapter it became"><option value="">Which chapter did it become? (optional)</option>' + (window.VE_HUBS || []).map(function (h) { return '<option value="' + esc(h.slug) + '">' + esc(h.name) + '</option>'; }).join('') + '</select><span class="meta" style="align-self:center">Then press Mark opened again.</span></div>' +
+            '<span class="msg" data-msg="' + esc(p.slug) + '"></span></div></div>';
+        }).join('') + '</div>';
+        [].forEach.call(document.querySelectorAll('[data-ps]'), function (b) { b.onclick = function () {
+          var slug = b.getAttribute('data-slug'), st = b.getAttribute('data-ps'), patch = { action: 'next_admin_place_save', slug: slug, status: st };
+          if (st === 'opened') {
+            var box = document.querySelector('[data-open="' + slug + '"]');
+            if (box.hidden) { box.hidden = false; return; }
+            patch.opened_hub = box.querySelector('select').value;
+          }
+          if (st === 'hidden' && !confirm('Hide this place from the board? Its votes are kept.')) return;
+          var msg = document.querySelector('[data-msg="' + slug + '"]'); msg.textContent = 'Saving...';
+          api(patch).then(function (r) { if (r && r.ok) { loaded = false; render(); } else msg.textContent = (r && r.error === 'bad_hub') ? 'That is not a chapter slug.' : 'That did not go through.'; });
+        }; });
+      }
+      function render() {
+        var r = route();
+        if (!loaded) {
+          $('view').innerHTML = '<p class="sub">Loading...</p>';
+          api({ action: 'next_admin_list' }).then(function (d) { if (!d || !d.ok) { $('view').innerHTML = '<p class="sub">That did not load. Refresh to try again.</p>'; return; } sug = d.suggestions; places = d.places; loaded = true; render(); });
+          return;
+        }
+        if (r.v === 's') return drawOne(r.id);
+        if (r.v === 'board') return drawBoard();
+        drawList(r);
+      }
+      window.addEventListener('hashchange', render);
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="si">Sign in</button>'; $('si').onclick = function () { VEAuth.showAuthModal('Sign in to see suggestions.', function () { location.reload(); }); }; return; }
+        if (!m || !m.is_superadmin) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+        $('app').hidden = false; render();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

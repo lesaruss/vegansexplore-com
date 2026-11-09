@@ -77,6 +77,7 @@
     { group: 'Guides', href: '/admin/depot/dashboard-checklist', label: 'Dashboard checklist' },
     { group: 'Ideas', href: '/admin/depot/ideas', label: 'Ideas' },
     { group: 'Ideas', href: '/admin/depot/feedback', label: 'Feedback' },
+    { group: 'Ideas', href: '/admin/depot/next-chapters', label: 'Next chapter suggestions' },
     // Demos (Sean, 2026-10-30): the samples and walkthroughs we show people, kind 'demo', each opening in a new tab as the public sees it.
     { group: 'Demos', href: '/business/sample', label: 'Sample business', kind: 'demo' },
     { group: 'Demos', href: '/groups/sample', label: 'Sample group', kind: 'demo' },

@@ -21,6 +21,11 @@
 // POST { action: 'next_today' }           Authorization     -> { next: { place: next_vote_at } }
 // POST { action: 'next_vote', place }     Authorization     -> { ok, votes, next_vote_at } | 409 already_voted | 402
 // POST { action: 'next_suggest', place, why? } Authorization -> { ok }  members, 3 a day; emailed to the team
+// Depot > Next chapter suggestions (/admin/depot/next-chapters, 2026-11-09), super admins only:
+// POST { action: 'next_admin_list' }  -> { suggestions: [...with member name and email], places: [...every status, with votes] }
+// POST { action: 'next_admin_decide', id, decision: 'add'|'set_aside'|'reopen', note?, name?, sub? }
+//   add makes an open ve_next_chapters row (slug from the name) and marks the suggestion added; set_aside needs a note.
+// POST { action: 'next_admin_place_save', slug, status?: 'open'|'opened'|'hidden', name?, sub?, sort?, opened_hub?, note? }
 //   Where should we go next? (Sean, 2026-11-09, playbook ve-chapter-rankings): places we may open as chapters, voted once every 24
 //   hours per member (ve_next_chapter_votes, migration 20261109_next_chapters.sql). Votes guide us, they do not decide.
 //   Communities as cards (Sean, 2026-11-01: "set up like they're in a directory listing... vote for them... save them"); a chapter
@@ -178,10 +183,88 @@ Deno.serve(async (req) => {
           body: JSON.stringify({ from: 'VEGANS EXPLORE <hello@vegansexplore.com>', to: ['contact@lesaruss.com'], reply_to: m?.email || undefined,
             subject: `[Next chapter] ${place}`,
             html: `<p><b>${esc(String(m?.name || 'A member'))}</b> suggests a chapter in <b>${esc(place)}</b>.</p>` + (why ? `<p>${esc(why)}</p>` : '') +
-              `<p>Saved in ve_next_chapter_suggestions. Add it to the board with a ve_next_chapters row.</p>` }) });
+              `<p>Add it to the board or set it aside in <a href="https://vegansexplore.com/admin/depot/next-chapters">Depot &gt; Next chapter suggestions</a>.</p>` }) });
       } catch (_) { /* the row is saved either way */ }
     }
     return json({ ok: true });
+  }
+
+  if (typeof body.action === 'string' && body.action.startsWith('next_admin_')) {
+    if (lesaruss) return json({ error: 'not_available' }, 403);
+    const { data: me } = await db.from('members').select('is_superadmin, standing, member_class, name').eq('id', memberId).maybeSingle();
+    if (!me || !me.is_superadmin || (me.standing && me.standing !== 'good')) return json({ error: 'forbidden' }, 403);
+    const slugify = (x: string) => x.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60);
+
+    if (body.action === 'next_admin_list') {
+      const [{ data: sug, error: e1 }, { data: places, error: e2 }, { data: votes }] = await Promise.all([
+        db.from('ve_next_chapter_suggestions').select('id, member_id, place, why, status, added_slug, note, created_at').order('created_at', { ascending: false }).limit(1000),
+        db.from('ve_next_chapters').select('slug, name, sub, status, sort, opened_hub, art, created_at').order('sort'),
+        db.from('ve_next_chapter_votes').select('place, member_id'),
+      ]);
+      if (e1 || e2) return json({ error: 'list_failed' }, 500);
+      const ids = [...new Set((sug || []).map((x: any) => x.member_id).filter(Boolean))];
+      const who: Record<string, any> = {};
+      if (ids.length) {
+        const { data: ms } = await db.from('members').select('id, name, email, home_community, membership_status').in('id', ids);
+        for (const x of ms || []) who[x.id] = x;
+      }
+      const v: Record<string, { votes: number; voters: Set<string> }> = {};
+      for (const r of votes || []) { (v[r.place] ||= { votes: 0, voters: new Set() }).votes++; v[r.place].voters.add(r.member_id); }
+      return json({ ok: true,
+        suggestions: (sug || []).map((x: any) => ({ ...x, member: x.member_id ? who[x.member_id] || null : null })),
+        places: (places || []).map((p: any) => ({ ...p, votes: v[p.slug]?.votes || 0, voters: v[p.slug]?.voters.size || 0 })) });
+    }
+
+    if (body.action === 'next_admin_decide') {
+      const id = String(body.id || ''), decision = String(body.decision || ''), note = String(body.note || '').trim().slice(0, 1000);
+      if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: 'bad_id' }, 400);
+      const { data: s } = await db.from('ve_next_chapter_suggestions').select('id, place, status').eq('id', id).maybeSingle();
+      if (!s) return json({ error: 'not_found' }, 404);
+      if (decision === 'set_aside') {
+        if (note.length < 2) return json({ error: 'note_needed', message: 'Say why it is set aside.' }, 400);
+        const { error } = await db.from('ve_next_chapter_suggestions').update({ status: 'set_aside', note }).eq('id', id);
+        return error ? json({ error: 'save_failed' }, 500) : json({ ok: true });
+      }
+      if (decision === 'reopen') {
+        const { error } = await db.from('ve_next_chapter_suggestions').update({ status: 'new', note: note || null }).eq('id', id);
+        return error ? json({ error: 'save_failed' }, 500) : json({ ok: true });
+      }
+      if (decision === 'add') {
+        if (s.status === 'added') return json({ error: 'already_added' }, 409);
+        const name = String(body.name || s.place).trim().slice(0, 80), sub = String(body.sub || '').trim().slice(0, 120);
+        if (name.length < 2) return json({ error: 'name_needed' }, 400);
+        let slug = slugify(name);
+        if (!slug) return json({ error: 'name_needed' }, 400);
+        const { data: same } = await db.from('ve_next_chapters').select('slug, status').eq('slug', slug).maybeSingle();
+        if (same) {
+          // The place is already on the board (or was): link the suggestion to it rather than making a second row.
+          if (body.link_existing !== true) return json({ error: 'already_on_board', slug, status: same.status, message: 'That place is already on the board.' }, 409);
+        } else {
+          const { data: mx } = await db.from('ve_next_chapters').select('sort').order('sort', { ascending: false }).limit(1).maybeSingle();
+          const { error } = await db.from('ve_next_chapters').insert({ slug, name, sub: sub || null, status: 'open', sort: (mx?.sort || 100) + 10 });
+          if (error) return json({ error: 'save_failed', message: error.message }, 500);
+        }
+        const { error } = await db.from('ve_next_chapter_suggestions').update({ status: 'added', added_slug: slug, note: note || null }).eq('id', id);
+        return error ? json({ error: 'save_failed' }, 500) : json({ ok: true, slug });
+      }
+      return json({ error: 'bad_decision' }, 400);
+    }
+
+    if (body.action === 'next_admin_place_save') {
+      const slug = String(body.slug || '');
+      const { data: p } = await db.from('ve_next_chapters').select('slug').eq('slug', slug).maybeSingle();
+      if (!p) return json({ error: 'not_found' }, 404);
+      const patch: Record<string, unknown> = {};
+      if (body.status !== undefined) { if (!['open', 'opened', 'hidden'].includes(body.status)) return json({ error: 'bad_status' }, 400); patch.status = body.status; }
+      if (body.name !== undefined) { const n = String(body.name).trim().slice(0, 80); if (n.length < 2) return json({ error: 'name_needed' }, 400); patch.name = n; }
+      if (body.sub !== undefined) patch.sub = String(body.sub).trim().slice(0, 120) || null;
+      if (body.sort !== undefined) { const n = Math.round(Number(body.sort)); if (!Number.isFinite(n)) return json({ error: 'bad_sort' }, 400); patch.sort = n; }
+      if (body.opened_hub !== undefined) { const h = String(body.opened_hub || ''); if (h && !CHAPTERS.includes(h)) return json({ error: 'bad_hub' }, 400); patch.opened_hub = h || null; }
+      if (!Object.keys(patch).length) return json({ error: 'nothing_to_save' }, 400);
+      const { error } = await db.from('ve_next_chapters').update(patch).eq('slug', slug);
+      return error ? json({ error: 'save_failed' }, 500) : json({ ok: true });
+    }
+    return json({ error: 'unknown_action' }, 400);
   }
 
   if (body.action === 'contribute') {
