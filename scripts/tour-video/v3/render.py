@@ -1,5 +1,5 @@
-# Full v3 render: 25 still frames, 0.4 s crossfades, no zoom, V's lines on the chapter timeline, bed at -19 dB, loudnorm -15.
-# usage: python3 render.py <frames dir> <audio dir> <out.mp4>   (audio dir: t1..t11.mp3, bed.mp3)
+# Full v3 render: 25 still frames, 0.4 s crossfades, no zoom, V's lines on the chapter timeline, beds at -15 dB, loudnorm -15.
+# usage: python3 render.py <frames dir> <audio dir> <out.mp4>   (audio dir: t1..t11.mp3, bed.mp3 = story-dining-v2, bed2.mp3 = story-playful-v2)
 import json, subprocess, sys
 F, A, OUT = sys.argv[1], sys.argv[2], sys.argv[3]
 D = [15.4645, 11.7029, 9.8743, 11.9641, 10.3967, 9.3257, 12.4865, 8.96, 7.1053, 22.1518, 6.3478]
@@ -23,10 +23,14 @@ n = len(durs)
 for k in range(11):
   inp += ['-i', f'{A}/t{k+1}.mp3']
   ms = round(O[k]*1000); fl.append(f'[{n+k}:a]aresample=48000,adelay={ms}|{ms}[l{k}]')
-inp += ['-i', f'{A}/bed.mp3', '-i', f'{A}/bed.mp3']
+# Bed: story-dining for the first half, a 4 s crossfade at chapter 6 into story-playful (steady to the end), both under V at -15 dB.
+SW = O[5] - 2.0
+inp += ['-i', f'{A}/bed.mp3', '-i', f'{A}/bed2.mp3']
 b = n + 11
-fl.append(f'[{b}:a][{b+1}:a]acrossfade=d=3[bb]')
-fl.append(f'[bb]aresample=48000,atrim=0:{END:.3f},volume=-19dB,afade=t=in:d=1.5,afade=t=out:st={END-3:.3f}:d=3[bed]')
+fl.append(f'[{b}:a]aresample=48000,atrim=4:{SW+6:.3f},asetpts=PTS-STARTPTS[b1]')
+fl.append(f'[{b+1}:a]aresample=48000,volume=1dB,atrim=0:{END-SW+2:.3f}[b2]')
+fl.append(f'[b1][b2]acrossfade=d=4[bb]')
+fl.append(f'[bb]atrim=0:{END:.3f},volume=-15dB,afade=t=in:d=0.4,afade=t=out:st={END-2.5:.3f}:d=2.5[bed]')
 fl.append(''.join(f'[l{k}]' for k in range(11)) + f'[bed]amix=inputs=12:normalize=0:duration=longest,atrim=0:{END:.3f},loudnorm=I=-15:TP=-1.5:LRA=11[a]')
 cmd = ['ffmpeg', '-y', *inp, '-filter_complex', ';'.join(fl), '-map', '[v]', '-map', '[a]', '-t', f'{END:.3f}',
        '-c:v', 'libx264', '-preset', 'slow', '-crf', '20', '-pix_fmt', 'yuv420p', '-r', '30',

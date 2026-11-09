@@ -63,6 +63,7 @@ for i,s in enumerate(SHOTS,1):
   elif src=='V': im=cover('src/v.jpg',ay=0.3)
   elif src=='grid4': im=grid4(['src/s-outside-day.png','src/s-outside-night.webp','src/s-room-back.png','src/s-team.png'],['By day','At night','Inside','Your team'])
   elif src=='three': im=three()
+  elif src=='s-counter': im=stamp(cover('src/s-counter-pos.png',ax=0.5,ay=0.4))  # counter with a POS terminal (Sean, 2026-11-09)
   else: im=stamp(cover('src/'+src+'.png',ax=0.5,ay=0.4))
   im.save(f'out/v3-{i:02d}.jpg',quality=90)
 print(len(SHOTS))
