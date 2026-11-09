@@ -30,11 +30,17 @@ def layer(name):
     im=c.phone(f'cap/{name}.png',sw=1200)
   im=im.resize((im.width//2,im.height//2),Image.LANCZOS)
   L=Image.new('RGBA',(W,H),(0,0,0,0)); top=(H-im.height)//2 if im.height<H else 70; L.alpha_composite(im,((W-im.width)//2,top)); return L
-k=0;imgs=[]
+GROUP=[None,'home','pulse','pulse','boards','boards','week','week',None,'shape1','shape1','shape1','shape2','shape2','shape2','notyet','notyet',
+  'free',None,'worth','bring1','bring1','bring2','bring2','bring2',None,'points','points','points','find',None]
+assert len(GROUP)==len(S),(len(GROUP),len(S))
+k=0;imgs=[];gcity={}
 for _,n in S:
   n=n.rstrip('?')
   if n.startswith('L:'): imgs.append(('zoom',big(REPO+n[2:]),None))
-  else: imgs.append(('layer',big(CITIES[k%len(CITIES)]),layer(n))); k+=1
+  else:
+    g=GROUP[len(imgs)]
+    if g not in gcity: gcity[g]=big(CITIES[k%len(CITIES)]); k+=1
+    imgs.append(('layer',gcity[g],layer(n)))
 def zoomed(im,t,a,b,yb=0.35):
   k2=min(max((t-a)/max(b-a,0.1),0),1); k2=k2*k2*(3-2*k2)*0.5+k2*0.5; z=1.0+0.07*k2
   bw,bh=im.size; cw,ch=2*W/z,2*H/z; x0=(bw-cw)/2; y0=(bh-ch)*yb
@@ -42,6 +48,9 @@ def zoomed(im,t,a,b,yb=0.35):
 def frame(i,t):
   kind,im,L=imgs[i]
   a,b=starts[i],(starts[i+1] if i+1<len(S) else TOTAL)
+  g=GROUP[i]
+  if kind=='layer':  # the zoom runs over the whole subject, so the city keeps moving while the phones change
+    ids=[j for j in range(len(S)) if GROUP[j]==g]; a=starts[ids[0]]; b=starts[ids[-1]+1] if ids[-1]+1<len(S) else TOTAL
   b=b+XF
   if kind=='zoom': return zoomed(im,t,a,b)
   bg=zoomed(im,t,a,b,0.5).convert('RGBA'); bg=Image.blend(bg,Image.new('RGBA',(W,H),(10,20,14,255)),0.15); bg.alpha_composite(L); return bg.convert('RGB')
