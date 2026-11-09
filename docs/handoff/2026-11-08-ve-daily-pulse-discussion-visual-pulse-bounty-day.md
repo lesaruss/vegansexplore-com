@@ -19,3 +19,9 @@ Also touches `ve-ads-studio` (one campaign per banner, Holiday Guide ad).
 ## Open
 - Sean looks at By banner signed in.
 - Facebook bounty: verify submissions, restore pages (SQL in `docs/handoff/2026-11-08-ve-community-directory-facebook-bounty.md`), pay.
+
+## Update 2026-11-09 (Logan)
+- **Story pictures fill themselves**: `ve_pulse_pics_tick()` and cron `ve-pulse-pics` (every 15 minutes at :06) call `ve-pulse-pics` for each Vegans Explore Pulse published in the last 36 hours with no `briefing.pics_at` (stamped first, tried once; `lr-*` left out). Switch: `ve_site_settings` `pulse_pics.auto`. Migration `20261109_pulse_pics_auto.sql`. Nov 8: 13 cities, 68 of 74 stories with a picture.
+- **The `?pics=1` gate is still on** (Sean's approval answer came through blank). On yes: delete the `pics` test in `public/ve-pulse-topics.js` (always true), bump `?v=` in `pulse.html`. Nothing else needed.
+- By banner: `branddesk-insights` `ads` returns 11 banners correctly; the page itself not yet seen signed in.
+- Facebook bounty: no submissions yet.

@@ -255,6 +255,9 @@
     + '.vrd-root .vote-count{font-size:16px;font-weight:900;color:#1a1a1a;line-height:1}'
     + '.vrd-root .vote-label{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:#666}'
     + '.vrd-root .vote-btn{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:6px 10px;border-radius:6px;background:var(--vb-soft,#f0faf4);color:var(--vb-accent-ink,#2d7a4f);border:1px solid var(--vb-line,#b6e5c8);cursor:pointer;font-family:Montserrat,sans-serif;white-space:nowrap}'
+    + '.vrd-root .vrd-save{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;border-radius:6px;background:#fff;color:#555;border:1px solid #d9d9d9;cursor:pointer;font-family:Montserrat,sans-serif;white-space:nowrap}'
+    + '.vrd-root .vrd-save:hover{border-color:#555;color:#1a1a1a}.vrd-root .vrd-save.on{background:#1a1a1a;color:#fff;border-color:#1a1a1a}'
+    + '.vrd-root .rank-right:has(.vrd-save){height:auto}'
     + '.vrd-root .vote-btn:hover{background:var(--vb-accent,#5EC47A);color:#000;border-color:var(--vb-accent,#5EC47A)}'
     // The category and its badges wrap together, so a badge on a second line starts at the edge (2026-10-25).
     + '.vrd-root .rank-subcat{display:flex;flex-wrap:wrap;align-items:center;gap:3px 6px}'
@@ -559,6 +562,38 @@
   });
   // Admins: Edit opens the listing editor; Review opens it in Depot > Directory review to fix what is missing (Sean, 2026-10-25),
   // in the Being vetted list when it is still waiting on member votes.
+  // Save on every card (Sean, 2026-11-09: "We should also have the save buttons on there... keep it looking exactly the same as it is in
+  // the directory listing"). The same save as the listing page's (ve-auth save_listing); signed out it opens the members window. Not on
+  // another brand's Directory (LESARUSS.ai has no Vegans Explore saves).
+  function saveBtn(l) {
+    if (window.VE_BRAND) return '';
+    return '<button type="button" class="vrd-save" data-save-id="' + esc(l.id) + '" aria-pressed="false" title="Save to My Saves">Save</button>';
+  }
+  var savedIds = null;
+  function bindSave(root) {
+    var btns = Array.prototype.slice.call((root || document).querySelectorAll('.vrd-save[data-save-id]')).filter(function (b) { return !b.dataset.bound; });
+    if (!btns.length) return;
+    var paintS = function (b, on) { b.classList.toggle('on', !!on); b.setAttribute('aria-pressed', on ? 'true' : 'false'); b.textContent = on ? 'Saved' : 'Save'; };
+    var signed = window.VEAuth && VEAuth.isLoggedIn && VEAuth.isLoggedIn();
+    if (signed) {
+      if (!savedIds) savedIds = VEAuth.listSavedListings().then(function (d) { var m = {}; ((d && d.items) || []).forEach(function (i) { m[i.id] = 1; }); return m; }).catch(function () { return {}; });
+      savedIds.then(function (m) { btns.forEach(function (b) { if (m[b.getAttribute('data-save-id')]) paintS(b, true); }); });
+    }
+    btns.forEach(function (b) {
+      b.dataset.bound = '1';
+      b.addEventListener('click', function (e) {
+        e.preventDefault(); e.stopPropagation();
+        if (!(window.VEAuth && VEAuth.isLoggedIn())) { if (window.VEVotes && VEVotes.savePrompt) VEVotes.savePrompt(); else location.href = '/passport?from=save'; return; }
+        var id = b.getAttribute('data-save-id'), on = b.classList.contains('on');
+        b.disabled = true;
+        (on ? VEAuth.unsaveListing(id) : VEAuth.saveListing(id)).then(function (d) {
+          b.disabled = false; if (d && d.error) return;
+          document.querySelectorAll('.vrd-save[data-save-id="' + id + '"]').forEach(function (x) { paintS(x, !on); });
+          if (savedIds) savedIds.then(function (m) { if (on) delete m[id]; else m[id] = 1; });
+        }).catch(function () { b.disabled = false; });
+      });
+    });
+  }
   function adminBtn(l) {
     if (!ADMIN) return '';
     var list = TRUST && window.VETrust && window.VETrust.pending(l, TRUST) ? 'vetting' : 'flagged';
@@ -631,7 +666,7 @@
         : isMedia(l) ? '<div class="rank-meta">' + mediaMeta(l) + '</div>'
         : (anywhere ? (temp ? '<div class="rank-meta">' + temp + '</div>' : '') : '<div class="rank-meta">' + cardMeta(l) + temp + '</div>') +
           '<div class="rank-subcat">' + esc(anywhere ? shelfOf(l, cfg) : subLabel(l.category || '')) + veganTag(l) + vendsTag(l) + partnerTag(l) + bizBadgeTag(l) + '</div>') + vettingNote(l) + '</div>' +
-      '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><button class="vote-btn" data-listing-id="' + esc(l.id) + '" title="Vote for this one">' + (votes === 1 ? 'Vote' : 'Votes') + '</button>' + adminBtn(l) + '</div>' +
+      '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><button class="vote-btn" data-listing-id="' + esc(l.id) + '" title="Vote for this one">' + (votes === 1 ? 'Vote' : 'Votes') + '</button>' + saveBtn(l) + adminBtn(l) + '</div>' +
       '</div>';
   }
 
@@ -830,7 +865,7 @@
       var slug = card.dataset.slug;
       if (!slug) return;
       card.addEventListener('click', function (e) {
-        if (e.target.closest('.vote-btn') || e.target.closest('.vla-edit')) return;
+        if (e.target.closest('.vote-btn') || e.target.closest('.vrd-save') || e.target.closest('.vla-edit') || e.target.closest('.vla-more')) return;
         if (config && typeof config.onOpenListing === 'function') { config.onOpenListing(slug, card.dataset.name || ''); return; }
         window.location = (BRAND.listingBase || '/directory/') + slug;
       });
@@ -841,6 +876,7 @@
   // one per member per listing per day. Loaded on first use so no hub page needs a new tag.
   var votesLoading = null;
   function bindVoteButtons(root) {
+    bindSave(root);
     if (window.VEVotes) return window.VEVotes.wire(root);
     if (!votesLoading) votesLoading = new Promise(function (res) {
       var sc = document.createElement('script'); sc.src = '/public/ve-votes.js'; sc.onload = res; sc.onerror = res; document.head.appendChild(sc);
@@ -1576,7 +1612,7 @@
       });
   }
 
-  var ADMIN = false, adminLoading = null;
+  var ADMIN = false, adminLoading = null, CARD_ROWS = {};
   function adminReady(cb) {
     var m = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null;
     if (!(m && m.is_superadmin)) return cb(false);
@@ -1606,7 +1642,8 @@
       b.addEventListener('click', function (e) {
         e.preventDefault(); e.stopPropagation();
         var id = b.getAttribute('data-vla'), l = null;
-        LAST.approved.concat(LAST.closed).forEach(function (x) { if (x.id === id) l = x; });
+        if (LAST) LAST.approved.concat(LAST.closed).forEach(function (x) { if (x.id === id) l = x; });
+        if (!l && CARD_ROWS[id]) { l = CARD_ROWS[id]; return window.VEListingAdmin.edit(l, function () { location.reload(); }); }
         if (l) window.VEListingAdmin.edit(l, function () { redraw(); });
       });
     });
@@ -1688,8 +1725,11 @@
     // A brand's cards outside init (2026-10-30: a LESARUSS.ai Guide's Directory tab): the same config.brand init takes, so the
     // card reads like that brand's Directory (no How Vegan, its avatar color, its listing addresses).
     brand: function (b) { useBrand(b); },
-    card: function (l, idx) { return makeBrowseCard(l, idx || 0, isOnline(l) ? 'online' : 'regular'); },
-    wire: function (root, onOpen) { bindVoteButtons(root); bindCardClicks(root, onOpen ? { onOpenListing: onOpen } : null); },
+    card: function (l, idx) { if (l && l.id) CARD_ROWS[l.id] = l; return makeBrowseCard(l, idx || 0, isOnline(l) ? 'online' : 'regular'); },
+    wire: function (root, onOpen) { bindVoteButtons(root); bindCardClicks(root, onOpen ? { onOpenListing: onOpen } : null); bindAdmin(root); },
+    // A super admin's More menu (Edit, Review) on cards drawn outside init (the Daily Pulse, Guides; Sean, 2026-11-09: "I should be able
+    // to go in here and edit this directory listing from here"). Call before card(), then wire().
+    admin: function (cb) { adminReady(function (a) { ADMIN = a; if (cb) cb(a); }); },
     FIELDS: 'id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds,cuisines,vetted_at,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type'
   };
 })();

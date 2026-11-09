@@ -52,19 +52,30 @@
     '.vep-house .vep-more{font-size:13px;font-weight:800;color:#1f5f22;text-decoration:none;}',
     '.vep-house .vep-cards1 .rank-grid{grid-template-columns:minmax(0,420px)!important;}',
     '.vep-house>div,.vep-strip-wrap{min-width:0;}',
-    '.vep-house .vep-strip{display:grid!important;grid-auto-flow:column;grid-template-columns:none!important;grid-auto-columns:minmax(300px,330px);overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;gap:12px;}',
+    '.vep-house .vep-strip{display:grid!important;grid-auto-flow:column;grid-template-columns:none!important;grid-auto-columns:320px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:8px;gap:12px;justify-content:start;}',
+    '.vep-house .vep-strip>.rank-card,.vep-house .vep-strip>.vep-seeall{height:132px;min-height:0;box-sizing:border-box;}',
+    '.vep-house .vep-strip .rank-name{-webkit-line-clamp:2;}',
     '.vep-house .vep-strip>*{scroll-snap-align:start;}',
     '.vep-seeall{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:6px;border:1.5px dashed #9fd3a2;border-radius:12px;background:#fff;color:#1f5f22;font-weight:800;text-decoration:none;padding:18px;text-align:center;min-height:120px;}',
     '.vep-seeall b{font-size:30px;line-height:1;}',
     '.vep-house .vep-epbox{background:#fff;border-radius:12px;}',
-    '@media (max-width:560px){.vep-house .vep-strip{grid-auto-columns:82%;}.vep-house .vep-cards1 .rank-grid{grid-template-columns:minmax(0,1fr)!important;}}',
+    '@media (max-width:560px){.vep-house .vep-strip{grid-auto-columns:84%;}.vep-house .vep-cards1 .rank-grid{grid-template-columns:minmax(0,1fr)!important;}}',
     '.vep-brief li.vep-pic{display:grid;grid-template-columns:132px minmax(0,1fr);gap:14px;align-items:start;border-left:0;padding:0;}',
     '.vep-pic>a{display:block;}',
     '.vep-pic .vep-img{display:block;width:132px;height:99px;border-radius:10px;background:#eef3ee center/cover no-repeat;}',
-    '.vep-brief li.vep-pic.lead{grid-template-columns:minmax(0,1fr);gap:10px;}',
-    '.vep-pic.lead .vep-img{width:100%;max-width:680px;height:clamp(190px,32vw,382px);border-radius:12px;}',
-    '.vep-pic.lead a{font-size:19px;line-height:1.3;}',
-    '@media (max-width:560px){.vep-brief li.vep-pic{grid-template-columns:96px minmax(0,1fr);gap:12px;}.vep-pic .vep-img{width:96px;height:72px;}.vep-brief li.vep-pic.lead{grid-template-columns:minmax(0,1fr);}.vep-pic.lead .vep-img{width:100%;height:52vw;}}',
+    '.vep-pic .vep-noimg{background:#eef3ee url("/public/ve-logo-mark.svg") center/38% no-repeat;opacity:.55;}',
+    '@media (max-width:560px){.vep-brief li.vep-pic{grid-template-columns:96px minmax(0,1fr);gap:12px;}.vep-pic .vep-img{width:96px;height:72px;}}',
+    '.vep-news{display:grid;gap:18px;}',
+    '.vep-grp h5,.vep-brief .vep-news h5{font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:#1f5f22;margin:0 0 10px;padding-bottom:6px;border-bottom:1px solid #e3efe3;}',
+    '.vep-brief .vep-ev li{display:flex;gap:14px;align-items:stretch;border-left:0;padding:0;}',
+    '.vep-date{display:flex;flex-direction:column;align-items:center;justify-content:center;min-width:64px;padding:8px 10px;border-radius:10px;background:var(--vb-soft,#e8f5e9);flex-shrink:0;text-align:center;}',
+    '.vep-day{font-size:24px;font-weight:900;letter-spacing:-.03em;line-height:1;color:var(--vb-go,#2d7d31);}',
+    '.vep-mon{font-size:10px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--vb-go-hover,#1f5f22);margin-top:3px;}',
+    '.vep-house .vep-tile{text-decoration:none;color:inherit;}',
+    '.vep-house .vep-bav{width:60px;height:60px;min-width:60px;border-radius:10px;background:#fff3e3;color:#b25f00;display:flex;align-items:center;justify-content:center;}',
+    '.vep-house .vep-tmeta{line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}',
+    '.vep-house .vep-tile .vote-btn{display:inline-block;}',
+    '.vep-house .vep-play{display:inline-flex;align-items:center;gap:4px;}',
     '.vep-bday{display:grid;grid-template-columns:52px minmax(0,1fr);gap:14px;align-items:center;background:#fff;border:1.5px solid #F69820;border-radius:12px;padding:14px 16px;}',
     '.vep-bday .vep-bico{width:52px;height:52px;border-radius:10px;background:#fff3e3;display:flex;align-items:center;justify-content:center;color:#b25f00;}',
     '.vep-bday b{display:block;font-size:16px;line-height:1.3;color:#1a1a1a;}',
@@ -106,6 +117,9 @@
     if (boxes.length) loadScript('/public/ve-region-directory.js', function () { return !!window.VERegionDirectory; }).then(function () {
       if (!window.VERegionDirectory) return;
       VERegionDirectory.css();
+      return new Promise(function (res) { VERegionDirectory.admin ? VERegionDirectory.admin(res) : res(); });
+    }).then(function () {
+      if (!window.VERegionDirectory) return;
       var all = [];
       Array.prototype.forEach.call(boxes, function (b) { b.getAttribute('data-vep-cards').split(',').forEach(function (x) { if (x && all.indexOf(x) < 0) all.push(x); }); });
       if (!all.length) return;
@@ -143,12 +157,19 @@
           var show = { id: l.id, name: l.name, slug: l.slug, image: l.logo_url || (d.show && d.show.image) || '' };
           var ep = Object.assign({}, d.episode, { image: show.image || d.episode.image || '' });
           VEEpisodes.css();
-          eb.innerHTML = VEEpisodes.row(ep, show, { showName: true, saved: !!d.saved });
+          // The episode in the Directory card's frame (Sean, 2026-11-09: the same tile size for everything): the show's picture, the episode,
+          // the show, and on the right Play over Save (the episode's own save, ve-podcast).
+          var img = show.image ? '<img class="vrd-logo" src="' + esc(show.image) + '" alt="" style="width:60px;height:60px;min-width:60px;object-fit:cover;border-radius:10px">' : '<div class="av vep-bav">' + TARGET + '</div>';
+          var epHref = '/directory/' + encodeURIComponent(show.slug) + '?ep=' + encodeURIComponent(ep.guid);
+          eb.innerHTML = '<div class="vrd-root"><div class="rank-grid vep-strip"><a class="rank-card vep-tile" href="' + esc(epHref) + '" target="_top">' + img +
+            '<div class="rank-info"><div class="rank-name">' + esc(ep.title) + '</div><div class="rank-meta vep-tmeta">' + esc(show.name) + '</div><div class="rank-subcat">Episode</div></div>' +
+            '<div class="rank-right">' + (ep.audio ? '<button type="button" class="vote-btn" data-vep-play>Play</button>' : '') +
+            '<button type="button" class="vrd-save' + (d.saved ? ' on' : '') + '" data-vep-save="' + esc(l.id + '|' + ep.guid) + '">' + (d.saved ? 'Saved' : 'Save') + '</button></div></a></div></div>';
           eb.addEventListener('click', function (e) {
             var b = e.target.closest('[data-vep-play]');
-            if (b) { e.preventDefault(); VEEpisodes.play(ep, show); return; }
+            if (b) { e.preventDefault(); e.stopPropagation(); VEEpisodes.play(ep, show); return; }
             var s2 = e.target.closest('[data-vep-save]');
-            if (s2) { e.preventDefault(); VEEpisodes.save(l.id, ep.guid, s2); }
+            if (s2) { e.preventDefault(); e.stopPropagation(); VEEpisodes.save(l.id, ep.guid, s2).then(function (on) { if (on == null) return; s2.classList.toggle('on', !!on); s2.textContent = on ? 'Saved' : 'Save'; }); }
           });
         });
       }).catch(function () {});
@@ -162,65 +183,89 @@
     if (b.action && b.action.title) bits.push('Today\'s move: ' + b.action.title);
     return bits.join(' \u00b7 ');
   }
+  // Story topics, in the order the Pulse shows them (the writer's briefing.stories[n].topic; keep in step with pulse_topic_write).
+  var TOPICS = [['food', 'Food and drink'], ['animals', 'For the animals'], ['health', 'Health'], ['community', 'Community'], ['business', 'Business'], ['culture', 'Film, books and media']];
+  var TOPIC_NAMES = {}; TOPICS.forEach(function (x) { TOPIC_NAMES[x[0]] = x[1]; });
+  var MONS = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec'];
+  // "Sun, Nov 8, 1 pm" -> {day: 8, mon: 'Nov', full: 'Sun, Nov 8', raw}
+  function dateParts(w) {
+    var m = String(w || '').match(/^((?:[A-Za-z]{3,9},?\s+)?)([A-Za-z]{3,9})\.?\s+(\d{1,2})\b/);
+    if (!m || MONS.indexOf(m[2].slice(0, 3).toLowerCase()) < 0) return null;
+    var mon = m[2].slice(0, 1).toUpperCase() + m[2].slice(1, 3).toLowerCase();
+    return { day: m[3], mon: mon, full: (m[1] ? m[1].trim().replace(/,$/, '') + ', ' : '') + mon + ' ' + m[3], raw: m[0] };
+  }
+  var TARGET = '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg>';
+  // A bounty in the Directory card's frame: the picture square, the name, what it is, and on the right its points over the button.
+  function bountyTile(x) {
+    var u = safe(x.url);
+    var meta = x.line ? esc(x.line) : esc([x.count > 1 ? x.count + ' jobs open' : '1 job open', x.remote ? 'do it from home' : ''].filter(Boolean).join(' · '));
+    return '<a class="rank-card vep-tile" href="' + esc(u) + '" target="_top">' +
+      '<div class="av vep-bav">' + TARGET + '</div>' +
+      '<div class="rank-info"><div class="rank-name">' + esc(x.title) + '</div><div class="rank-meta vep-tmeta">' + meta + '</div><div class="rank-subcat">Bounty</div></div>' +
+      '<div class="rank-right">' + (x.points ? '<span class="vote-count">' + Number(x.points).toLocaleString() + '</span><span class="vote-label">points</span>' : '') + '<span class="vote-btn">See jobs</span></div></a>';
+  }
+  // The briefing's lists
   // The full briefing, for the conversation view. Story and event links open the original; the
   // action can point inside the site.
   function briefing(t) {
     var b = t.briefing; if (!b) return '';
     var out = '<div class="vep-brief">';
-    // Since 2026-10-31 a city's briefing carries the national news after its own (Sean: "feature the Philadelphia
-    // news first, then the national, so it's all in one pulse"): stories marked national get their own heading.
-    // Story pictures (Sean, 2026-11-08), shown only on a preview link (?pics=1) until Sean approves the look. ve-pulse-pics copies each
-    // story's own preview picture into our storage as x.image. The first story with a picture in each list leads, big.
-    var pics = /[?&]pics=1(&|$)/.test(location.search), led = {};
-    var story = function (x, i, arr) {
-      var u = safe(x.url), im = pics && /^https:\/\/fwbhwfxpncrsfhttimna\.supabase\.co\/storage\/v1\/object\/public\/vegan-media\/media\/pulse\/stories\//.test(String(x.image || '')) ? x.image : '';
-      if (im) {
-        var key = arr === local ? 'l' : 'w', lead = !led[key]; led[key] = 1;
-        var pic = '<span class="vep-img" role="img" aria-label="" style="background-image:url(&quot;' + esc(im) + '&quot;)"></span>';
-        return '<li class="vep-pic' + (lead ? ' lead' : '') + '">' + (u ? '<a href="' + esc(u) + '" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">' + pic + '</a>' : pic) + '<div>' +
-          (u ? '<a href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">' + esc(x.title) + '</a>' : '<strong>' + esc(x.title) + '</strong>') +
-          (x.take ? '<span class="vep-take">' + esc(x.take) + '</span>' : '') + (x.source ? '<span class="vep-src">' + esc(x.source) + '</span>' : '') + '</div></li>';
-      }
-      return '<li>' + (u ? '<a href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">' + esc(x.title) + '</a>' : '<strong>' + esc(x.title) + '</strong>') +
-        (x.take ? '<span class="vep-take">' + esc(x.take) + '</span>' : '') + (x.source ? '<span class="vep-src">' + esc(x.source) + '</span>' : '') + '</li>';
+    // Stories (Sean, 2026-11-09): every story is the same small row with its picture on the left (no big lead), grouped under plain eyebrows:
+    // the city's own first ("In South Florida"), then by topic (briefing.stories[n].topic, written by the Pulse writer). Never "national" or
+    // "international": Vegans Explore serves the Vegan community everywhere. A story that links to our bounties shows as a bounty tile below.
+    var isPic = function (x) { return /^https:\/\/fwbhwfxpncrsfhttimna\.supabase\.co\/storage\/v1\/object\/public\/vegan-media\/media\/pulse\/stories\//.test(String(x.image || '')); };
+    var story = function (x) {
+      var u = safe(x.url), im = isPic(x) ? x.image : '';
+      var head = (u ? '<a href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">' + esc(x.title) + '</a>' : '<strong>' + esc(x.title) + '</strong>') +
+        (x.take ? '<span class="vep-take">' + esc(x.take) + '</span>' : '') + (x.source ? '<span class="vep-src">' + esc(x.source) + '</span>' : '');
+      var pic = im ? '<span class="vep-img" role="img" aria-label="" style="background-image:url(&quot;' + esc(im) + '&quot;)"></span>' : '<span class="vep-img vep-noimg" aria-hidden="true"></span>';
+      return '<li class="vep-pic">' + (u ? '<a href="' + esc(u) + '" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">' + pic + '</a>' : pic) + '<div>' + head + '</div></li>';
     };
-    var local = (b.stories || []).filter(function (x) { return !x.national; });
-    var wide = (b.stories || []).filter(function (x) { return x.national; });
-    if (local.length) out += '<section><h4>What people are talking about</h4><ol>' + local.map(story).join('') + '</ol></section>';
-    if (wide.length) out += '<section><h4>Across the country</h4><ol>' + wide.map(story).join('') + '</ol></section>';
+    var isBounty = function (x) { return /^\/bounties(\?|$)/.test(String(x.url || '')); };
+    var all = (b.stories || []), bountyStories = all.filter(isBounty), rest = all.filter(function (x) { return !isBounty(x); });
+    var groups = [['local', 'In ' + placeName(t.community)]].concat(TOPICS), byKey = {};
+    rest.forEach(function (x) {
+      var k = !x.national ? 'local' : (TOPIC_NAMES[x.topic] ? x.topic : 'more');
+      (byKey[k] = byKey[k] || []).push(x);
+    });
+    var sec = groups.concat([['more', 'More news']]).filter(function (g) { return (byKey[g[0]] || []).length; }).map(function (g) {
+      return '<div class="vep-grp"><h5>' + esc(g[1]) + '</h5><ol>' + byKey[g[0]].map(story).join('') + '</ol></div>';
+    }).join('');
+    if (sec) out += '<section class="vep-news"><h4>Top news</h4>' + sec + '</section>';
+    // Heads up (Sean, 2026-11-09): events wear the calendar's date tile on the left of the line.
     if ((b.events || []).length) {
       out += '<section><h4>Heads up</h4><ul class="vep-ev">' + b.events.map(function (x) {
-        var u = safe(x.url);
-        return '<li>' + (u ? '<a href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">' + esc(x.title) + '</a>' : '<strong>' + esc(x.title) + '</strong>') +
-          '<span class="vep-take">' + esc([x.when, x.where].filter(Boolean).join(' \u00b7 ')) + '</span></li>';
+        var u = safe(x.url), d = dateParts(x.when), rest2 = d ? String(x.when).replace(d.raw, '').replace(/^[\s,·-]+|[\s,·-]+$/g, '') : x.when;
+        return '<li>' + (d ? '<span class="vep-date" aria-hidden="true"><span class="vep-day">' + esc(d.day) + '</span><span class="vep-mon">' + esc(d.mon) + '</span></span>' : '<span class="vep-date" aria-hidden="true"><span class="vep-mon">Soon</span></span>') +
+          '<div>' + (u ? '<a href="' + esc(u) + '" target="_blank" rel="noopener noreferrer">' + esc(x.title) + '</a>' : '<strong>' + esc(x.title) + '</strong>') +
+          '<span class="vep-take">' + esc([d ? d.full + (rest2 ? ', ' + rest2 : '') : rest2, x.where].filter(Boolean).join(' · ')) + '</span></div></li>';
       }).join('') + '</ul></section>';
     }
-    // From Vegans Explore (Sean, 2026-11-01: "intermix some of our content"): new places in the chapter since the last Pulse, new bounties,
-    // a spotlight, one of our episodes and, on Mondays, who should we interview. Built from our data at publish (ve_pulse_house).
+    // From Vegans Explore (Sean, 2026-11-01: "intermix some of our content"). Since 2026-11-09 (Sean: "We have these tiles that are all different
+    // sizes. Let's keep them the same size for everything... keep it looking exactly the same as it is in the directory listing") every item is the
+    // Directory's own card, in a row that slides sideways, one width for all: Spotlight, Bounties of the day, New in the Directory, Listen.
+    // briefing() writes text with data-vep-* markers; hydrate(root) swaps in the cards.
     var h = b.house;
-    if (h) {
+    if (h || bountyStories.length) {
+      h = h || {};
       var our = function (u, label) { u = safe(u); return u ? '<a href="' + esc(u) + '" target="_top">' + esc(label) + '</a>' : '<strong>' + esc(label) + '</strong>'; };
       var cut = function (x) { x = String(x || ''); return x.length > 210 ? x.slice(0, 210).replace(/\s+\S*$/, '') + '...' : x; };
       var parts = [];
-      // Since 2026-11-08 (Sean: "Why not have C4EAT's tile where people can vote directly for them... It's just a bunch of text... People need to feel
-      // like this is an actual newsletter") the spotlight and the new places carry the Directory's own card with its vote, and the episode its
-      // playable row. briefing() writes the text version with data-vep-* markers; hydrate(root) swaps in the cards once they load.
       if (h.spotlight) parts.push('<div><h5>Spotlight</h5>' + (h.spotlight.line ? '<p class="vep-take" style="margin:0 0 10px">' + esc(cut(h.spotlight.line)) + '</p>' : '') +
-        '<div class="vep-cards1" data-vep-cards="' + esc(slugOf(h.spotlight.url)) + '"><ul><li>' + our(h.spotlight.url, h.spotlight.name) + '<span class="vep-src">' + esc([h.spotlight.kind, h.spotlight.city].filter(Boolean).join(' \u00b7 ')) + '</span></li></ul></div></div>');
-      // Bounty of the day (Sean, 2026-11-08): a different open bounty each day, picked by ve_pulse_house, with See all bounties.
-      if (h.bounty_day && h.bounty_day.title) {
-        var bd = h.bounty_day, bdu = safe(bd.url), bda = safe(bd.all_url);
-        parts.push('<div><h5>Bounty of the day</h5><div class="vep-bday"><span class="vep-bico" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/></svg></span><div>' +
-          '<b>' + esc(bd.title) + '</b><span class="vep-src">' + esc([bd.count > 1 ? bd.count + ' jobs open' : '1 job open', bd.points ? 'up to ' + Number(bd.points).toLocaleString() + ' points each' : '', bd.remote ? 'do it from home' : ''].filter(Boolean).join(' \u00b7 ')) + '</span>' +
-          '<div class="vep-bacts">' + (bdu ? '<a class="vep-bgo" href="' + esc(bdu) + '" target="_top">See the jobs</a>' : '') + (bda ? '<a class="vep-more" href="' + esc(bda) + '" target="_top">See all bounties</a>' : '') + '</div></div></div></div>');
+        '<div class="vep-strip-wrap" data-vep-cards="' + esc(slugOf(h.spotlight.url)) + '" data-vep-strip="1"><ul><li>' + our(h.spotlight.url, h.spotlight.name) + '<span class="vep-src">' + esc([h.spotlight.kind, h.spotlight.city].filter(Boolean).join(' · ')) + '</span></li></ul></div></div>');
+      var bl = bountyStories.map(function (x) { return { title: x.title, line: x.take, url: x.url, feature: true }; })
+        .concat((h.bounties_day || (h.bounty_day ? [h.bounty_day] : [])).filter(function (x) { return x && x.title; }));
+      if (bl.length) {
+        var ball = safe(h.bounties_all_url || (h.bounty_day && h.bounty_day.all_url) || '/bounties?community=' + t.community);
+        parts.push('<div><h5>Bounties of the day</h5><div class="vrd-root"><div class="rank-grid vep-strip">' + bl.map(bountyTile).join('') +
+          (ball ? '<a class="vep-seeall" href="' + esc(ball) + '" target="_top"><b>+</b>See all bounties</a>' : '') + '</div></div></div>');
       }
-      if ((h.new_listings || []).length) parts.push('<div><h5>New in the Directory' + (h.new_count > 1 ? ' \u00b7 ' + h.new_count + ' places' : '') + '</h5>' +
+      if ((h.new_listings || []).length) parts.push('<div><h5>New in the Directory' + (h.new_count > 1 ? ' · ' + h.new_count + ' places' : '') + '</h5>' +
         '<div class="vep-strip-wrap" data-vep-cards="' + esc(h.new_listings.map(function (x) { return slugOf(x.url); }).filter(Boolean).join(',')) + '" data-vep-strip="1" data-more-n="' + Number(h.new_count || 0) + '" data-more-url="' + esc(safe(h.new_url)) + '"><ul>' + h.new_listings.map(function (x) {
-        return '<li>' + our(x.url, x.name) + '<span class="vep-src">' + esc([x.kind, x.city].filter(Boolean).join(' \u00b7 ')) + '</span></li>'; }).join('') + '</ul></div>' +
+        return '<li>' + our(x.url, x.name) + '<span class="vep-src">' + esc([x.kind, x.city].filter(Boolean).join(' · ')) + '</span></li>'; }).join('') + '</ul></div>' +
         (h.new_count > h.new_listings.length ? '<p style="margin:8px 0 0"><a class="vep-more" href="' + esc(safe(h.new_url)) + '" target="_top">See all ' + h.new_count + ' new places</a></p>' : '') + '</div>');
-      if (h.episode) parts.push('<div><h5>Listen</h5><div class="vep-dock" data-vep-always></div><div class="vep-epbox" data-vep-ep="' + esc(safe(h.episode.url)) + '"><ul><li>' + our(h.episode.url, h.episode.title) + '<span class="vep-take">' + esc(cut(h.episode.summary)) + '</span><span class="vep-src">' + esc(h.episode.show) + '</span></li></ul></div></div>');
-      if ((h.bounties || []).length) parts.push('<div><h5>New bounties</h5><ul>' + h.bounties.map(function (x) {
-        return '<li>' + our(h.bounties_url, x.title) + (x.points ? '<span class="vep-src">' + Number(x.points).toLocaleString() + ' points</span>' : '') + '</li>'; }).join('') + '</ul></div>');
+      if (h.episode) parts.push('<div><h5>Listen</h5><div class="vep-dock" data-vep-always></div>' + (h.episode.summary ? '<p class="vep-take" style="margin:0 0 10px">' + esc(cut(h.episode.summary)) + '</p>' : '') +
+        '<div class="vep-epbox" data-vep-ep="' + esc(safe(h.episode.url)) + '"><ul><li>' + our(h.episode.url, h.episode.title) + '<span class="vep-src">' + esc(h.episode.show) + '</span></li></ul></div></div>');
       if (h.ask && h.ask.title) parts.push('<div><h5>' + esc(h.ask.title) + '</h5><p style="font-size:14px;line-height:1.55;margin:0 0 6px">' + esc(h.ask.text) + '</p><a class="vep-more" href="' + esc(safe(h.ask.url)) + '" target="_top">' + esc(h.ask.label || 'Tell us') + '</a></div>');
       if (parts.length) out += '<section class="vep-house"><h4>From Vegans Explore</h4>' + parts.join('') + '</section>';
     }
