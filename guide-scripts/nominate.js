@@ -105,10 +105,15 @@
   ];
   var qs = new URLSearchParams(location.search);
   var SOURCE = /^(hub|pulse|show|listing)$/.test(qs.get('source') || '') ? qs.get('source') : 'direct';
+  // ?preview=1 walks every page with sample answers filled in; nothing is sent (Sean, 2026-11-09: "I need the preview journey so I don't have to enter the information").
+  var PREVIEW = qs.get('preview') === '1';
   var CHAPTERS = [], ME = null;
   var S = { name: '', email: '', city: (qs.get('city') || '').toLowerCase(), other: '', roles: [], self: false, mode: 'rec', written: '',
             blob: null, type: '', seconds: 0, url: '', you: '', youEmail: '', credit: true, release: false, adult: false, sent: false };
   var rec = null, chunks = [], t0 = 0, tick = null;
+  if (PREVIEW) S = { name: 'Sample: Maria Rodriguez', email: 'maria@example.com', city: 'south-florida', other: '', roles: ['business_owner', 'activist'], self: false, mode: 'write',
+    written: 'She feeds the whole block every Thursday and never asks for anything back. Half of us tried Vegan food for the first time at her table.',
+    blob: null, type: '', seconds: 0, url: '', you: 'Sample: Dana P.', youEmail: 'dana@example.com', credit: true, release: true, adult: true, sent: false };
 
   var main = document.getElementById('dgMain');
   var menuEl = document.getElementById('dgMenu'), menuSel = document.getElementById('dgMenuSelect');
@@ -193,10 +198,9 @@
   var VIEWS = {
     overview: function () {
       return head('Free for everyone', 'Give Someone Their Flowers', '') +
+        // One short paragraph, 250 characters or less, so the card never scrolls (Sean, 2026-11-09).
         card('Getting started', 'How to nominate someone', pic('thumb-community.jpg'), lines([
-          '<b>Think of someone.</b> A person, business, nonprofit or activist who makes Vegan life better near you.',
-          '<b>Tell us why.</b> Record it if you can; it may play on the podcast. Typing works too.',
-          '<b>We take it from there.</b> If we agree, Kai invites them to an interview.']),
+          'Think of someone who makes Vegan life better near you: a business owner, a creator, someone at a nonprofit or an activist. Tell us why, by voice if you can. If we agree, Kai invites them to an interview.']),
           '<a class="dg-btn" href="#/who">Nominate someone</a>') +
         '<div class="wg-arts">' +
         group('Where their story could go', [
@@ -288,6 +292,7 @@
     if (!S.release) { say('Tick the box to let us use your nomination.', true); return; }
     if (!S.adult) { say('Tick the box to say you are 18 or over.', true); return; }
     btn.disabled = true; btn.textContent = 'Sending...'; say('');
+    if (PREVIEW) { S.sent = true; location.hash = '#/sent'; return; }
     var base = { action: 'submit', nominee_name: S.name.trim(), nominee_email: S.email.trim(), community_slug: S.city === 'other' ? '' : S.city,
       community_other: S.city === 'other' ? S.other.trim() : '', roles: S.roles, self_nominated: S.self, written: S.mode === 'rec' ? '' : S.written.trim(),
       nominator_name: S.you.trim(), nominator_email: S.youEmail.trim(), credit_ok: S.credit, release: true, adult: true, source: SOURCE };
@@ -336,7 +341,7 @@
     if (CHECKS[k] && CHECKS[k]()) { var bad = FIRST_BAD(); if (bad && idx(bad) < idx(k)) { location.replace('#/' + bad); return; } }
     if (rec && k !== 'why') stopRec();
     curTab = k === 'sent' ? 'send' : k;
-    main.innerHTML = VIEWS[k]();
+    main.innerHTML = (PREVIEW ? '<p class="dg-note"><b>Preview.</b> Sample answers are filled in so you can see every page. Nothing is sent.</p>' : '') + VIEWS[k]();
     drawMenu(curTab); drawKai(k === 'sent' ? 'Thank you! You just made someone\'s week, even if they don\'t know it yet.' : '');
     window.scrollTo(0, 0);
   }
@@ -375,7 +380,7 @@
     if (e.target.closest('#nmSend')) { send(e.target.closest('#nmSend')); return; }
     if (e.target.closest('#nmAgain')) { reset(); return; }
   });
-  window.addEventListener('beforeunload', function (e) { if ((S.blob || S.written) && !S.sent) { e.preventDefault(); e.returnValue = ''; } });
+  window.addEventListener('beforeunload', function (e) { if (!PREVIEW && (S.blob || S.written) && !S.sent) { e.preventDefault(); e.returnValue = ''; } });
   window.addEventListener('hashchange', route);
   tourM.addEventListener('click', function (e) { if (e.target.closest('.dg-tnav')) setTimeout(function () { railEl.scrollIntoView({ block: 'start' }); }, 0); });
 
