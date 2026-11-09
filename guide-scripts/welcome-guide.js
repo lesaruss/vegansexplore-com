@@ -133,8 +133,9 @@
       title: 'Watch the tour', sub: 'Liz, about three minutes', label: 'Welcome to Vegans Explore, the tour with Liz' }) : '';
     return '<div class="wg-tour"><div class="wg-tour-h"><div><div class="dg-k">Watch first</div><h3>Welcome to Vegans Explore</h3><p>Liz walks you through all of it in about three minutes.</p></div></div>' +
       '<div class="wg-tbody"><div class="wg-vid">' + vid + '<span class="wg-now" id="wgNow">' + nowText() + '</span></div>' +
-      '<details class="wg-chs"' + (window.innerWidth > 900 ? ' open' : '') + '><summary>Read the tour: ' + CHAPTERS.map(function (c) { return esc(c[0]); }).join(' &middot; ') + '</summary><ol>' +
-      CHAPTERS.map(function (c, n) { return '<li><b>' + esc(c[0]) + '.</b> ' + esc(c[1]) + ' <a href="#" class="wg-chplay" data-wg-ch="' + n + '">&#9654; Play</a></li>'; }).join('') + '</ol></details></div>';
+      // The text sits beside the video, as tall as it, and scrolls inside (Sean, 2026-11-09: "the formatting is clean").
+      '<div class="wg-chs"><div class="wg-chs-t">Read the tour</div><ol>' +
+      CHAPTERS.map(function (c, n) { return '<li><b>' + esc(c[0]) + '.</b> ' + esc(c[1]) + ' <a href="#" class="wg-chplay" data-wg-ch="' + n + '">&#9654; Play</a></li>'; }).join('') + '</ol></div></div>';
   }
   function groupRows() {
     return GROUPS.map(function (g) {
