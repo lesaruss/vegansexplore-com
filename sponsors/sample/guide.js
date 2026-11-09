@@ -13,7 +13,7 @@
  * lesaruss-hq docs/research/briefs/2026-visit-lauderdale-alignment.md); no real organization is named. Every number is a made-up sample
  * result for 2027, and every total on the page is added up from the rows below, so the numbers always agree. Prices are our rate card
  * (canon canon-ve-sponsor-rate-card v1); outside market rates are not shown (not confirmed yet). Real cities appear only as places.
- * V walks it (canon: V narrates BrandDesk). Her lines are TEXT DRAFTS for Sean: nothing is recorded and nothing plays.
+ * V walks it (canon: V narrates BrandDesk). Her lines were approved by Sean (2026-11-09) and recorded; nothing plays until Play V is pressed.
  */
 (function () {
   var PIC = '/public/guides/', IMG = '/sponsors/sample/img/', BIZ = '/business/sample/img/', V_PIC = '/business/sample/img/v-tour.jpg';
@@ -429,22 +429,25 @@
   function qMonths(q) { return [0, 1, 2].map(function (i) { return (q - 1) * 3 + i; }); }
 
   // ---------- tabs, and V's lines ----------
-  // V's lines below (say) are TEXT DRAFTS for Sean to approve. Nothing is recorded, nothing plays.
+  // V's lines below (say) were approved by Sean on 2026-11-09 and recorded in her voice (el-media tts, Nhs7eitvQWFTQBsf0yiT),
+  // each checked word for word with stt. A changed line is a new -v2. Nothing plays until the visitor presses Play V.
+  var VOICE = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/v/sponsor-report/';
+  var VOICED = { overview: 1, campaigns: 1, pulse: 1, podcast: 1, banners: 1, dashboard: 1, package: 1, goals: 1, 'ev-mb': 1, 'ev-feeder': 1, 'ev-vf': 1, 'ev-expo': 1, report: 1 };
   var TABS = [
-    { k: 'overview', label: 'Overview', say: 'Hi, I\'m V. It\'s the end of 2027, and this is the year Visit Marisol Bay took the full package with Vegans Explore. It hasn\'t happened yet: it\'s a simulation of what we\'re positioned to do. Let me show you how to read it.' }, // DRAFT line, not recorded
-    { k: 'campaigns', label: 'Campaigns', say: 'Here is the year by quarter. Pick All, or Q1 through Q4. Every card is a real kind of event we run, so you can see each sponsorship, not a list of bullets. Open one for its results.' }, // DRAFT line, not recorded
-    { k: 'pulse', label: 'Daily Pulse', say: 'Twenty-five posts in the Daily Pulse, the morning briefing in each city. Every one is listed with its reads and clicks.' }, // DRAFT line, not recorded
-    { k: 'podcast', label: 'SoFlo Vegans Podcast', say: 'Ten sponsor reads on SoFlo Vegans, each one tied to an event. Here is what the host said, and how many people downloaded each episode.' }, // DRAFT line, not recorded
-    { k: 'banners', label: 'Banner Advertising', say: 'A quarter of a million banner impressions across the South Florida, Central Florida and Atlanta hubs. Here is where they ran and who clicked.' }, // DRAFT line, not recorded
-    { k: 'dashboard', label: 'Marketing Dashboard', say: 'This is the dashboard the sponsor opens any day of the year: traffic by month, every channel, and a report for every month and quarter.' }, // DRAFT line, not recorded
-    { k: 'package', label: 'Your Package', say: 'Everything above is one package: forty-two thousand dollars for the year, or ten thousand five hundred a quarter. Bought one piece at a time, it comes to fifty-two thousand eight hundred fifty.' } , // DRAFT line, not recorded
-    { k: 'goals', label: 'What we can do for you', say: 'That was one sponsor\'s year. Yours starts with you. We read your plan and your reports, we sit down and talk about where you\'re going, and we build the year around your goals and your budget. Why us? We built these communities, a Directory of plant-based places and an events calendar without a big budget. A sponsor\'s budget scales what already works.' } // DRAFT line, not recorded
+    { k: 'overview', label: 'Overview', say: 'Hi, I\'m V. It\'s the end of 2027, and this is the year Visit Marisol Bay took the full package with Vegans Explore. It hasn\'t happened yet: it\'s a simulation of what we\'re positioned to do. Let me show you how to read it.' }, // approved by Sean 2026-11-09, recorded v1
+    { k: 'campaigns', label: 'Campaigns', say: 'Here is the year by quarter. Pick All, or Q1 through Q4. Every card is a real kind of event we run, so you can see each sponsorship, not a list of bullets. Open one for its results.' }, // approved by Sean 2026-11-09, recorded v1
+    { k: 'pulse', label: 'Daily Pulse', say: 'Twenty-five posts in the Daily Pulse, the morning briefing in each city. Every one is listed with its reads and clicks.' }, // approved by Sean 2026-11-09, recorded v1
+    { k: 'podcast', label: 'SoFlo Vegans Podcast', say: 'Ten sponsor reads on SoFlo Vegans, each one tied to an event. Here is what the host said, and how many people downloaded each episode.' }, // approved by Sean 2026-11-09, recorded v1
+    { k: 'banners', label: 'Banner Advertising', say: 'A quarter of a million banner impressions across the South Florida, Central Florida and Atlanta hubs. Here is where they ran and who clicked.' }, // approved by Sean 2026-11-09, recorded v1
+    { k: 'dashboard', label: 'Marketing Dashboard', say: 'This is the dashboard the sponsor opens any day of the year: traffic by month, every channel, and a report for every month and quarter.' }, // approved by Sean 2026-11-09, recorded v1
+    { k: 'package', label: 'Your Package', say: 'Everything above is one package: forty-two thousand dollars for the year, or ten thousand five hundred a quarter. Bought one piece at a time, it comes to fifty-two thousand eight hundred fifty.' } , // approved by Sean 2026-11-09, recorded v1
+    { k: 'goals', label: 'What we can do for you', say: 'That was one sponsor\'s year. Yours starts with you. We read your plan and your reports, we sit down and talk about where you\'re going, and we build the year around your goals and your budget. Why us? We built these communities, a Directory of plant-based places and an events calendar without a big budget. A sponsor\'s budget scales what already works.' } // approved by Sean 2026-11-09, recorded v1
   ];
   var EV_SAY = {
-    mb: 'This is a Vegans Explore community event in Marisol Bay, presented by Visit Marisol Bay. Use the dropdown in the corner to switch between the four, and the tabs for results, where people saw it, and where your name was.', // DRAFT line, not recorded
-    feeder: 'This event went to a city that sends Marisol Bay its visitors. Switch cities in the corner, and look at how many guests came to the bay afterward.', // DRAFT line, not recorded
-    vf: 'A Media Corner at VegFest: we interview the people there, and the clips keep working long after the tents come down. Switch between spring and fall in the corner.', // DRAFT line, not recorded
-    expo: 'Our biggest weekend, in Marisol Bay: the World Vegan Expo, and the Vegans Explore Gala on Friday night, both presented by Visit Marisol Bay.' // DRAFT line, not recorded
+    mb: 'This is a Vegans Explore community event in Marisol Bay, presented by Visit Marisol Bay. Use the dropdown in the corner to switch between the four, and the tabs for results, where people saw it, and where your name was.', // approved by Sean 2026-11-09, recorded v1
+    feeder: 'This event went to a city that sends Marisol Bay its visitors. Switch cities in the corner, and look at how many guests came to the bay afterward.', // approved by Sean 2026-11-09, recorded v1
+    vf: 'A Media Corner at VegFest: we interview the people there, and the clips keep working long after the tents come down. Switch between spring and fall in the corner.', // approved by Sean 2026-11-09, recorded v1
+    expo: 'Our biggest weekend, in Marisol Bay: the World Vegan Expo, and the Vegans Explore Gala on Friday night, both presented by Visit Marisol Bay.' // approved by Sean 2026-11-09, recorded v1
   };
   var ROOT = '2027 Report';
 
@@ -873,22 +876,37 @@
     foldBtn.textContent = folded ? 'Show V' : 'Hide V'; foldBtn.setAttribute('aria-expanded', String(!folded));
   }
   foldBtn.addEventListener('click', function () { setFold(!railEl.classList.contains('dg-folded')); });
-  function drawV(say) {
+  var playBtn = document.getElementById('dgPlay'), voice = null;
+  function stopV() { if (voice) { voice.pause(); voice = null; } if (playBtn) playBtn.textContent = 'Play V'; }
+  function drawV(say, ak) {
     var t = tab(curTab), i = TABS.indexOf(t);
     bubble.textContent = say || t.say;
+    stopV();
+    var key = ak || t.k;
+    if (playBtn) {
+      if (VOICED[key]) {
+        playBtn.disabled = false; playBtn.classList.remove('sr-coming'); playBtn.textContent = 'Play V';
+        playBtn.onclick = function () {
+          if (voice) { stopV(); return; }
+          voice = new Audio(VOICE + key + '-v1.mp3'); playBtn.textContent = 'Pause V';
+          voice.addEventListener('ended', stopV); voice.play().catch(stopV);
+        };
+      } else { playBtn.disabled = true; playBtn.classList.add('sr-coming'); playBtn.textContent = 'Play V: Coming'; playBtn.onclick = null; }
+    }
     tourEl.innerHTML = tourM.innerHTML = '<a class="dg-tnav" href="' + href(TABS[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Back</a><span>' + (i + 1) + ' of ' + TABS.length + '</span>' +
       '<a class="dg-tnav next" href="' + href(TABS[Math.min(TABS.length - 1, i + 1)].k) + '"' + (i < TABS.length - 1 ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Next</a>';
   }
   var lastEvent = '';
   function route() {
-    var parts = location.hash.replace(/^#\/?/, '').split(/[?\/]/), k = parts[0] || 'overview', html = null, say = '', keep = false;
+    var parts = location.hash.replace(/^#\/?/, '').split(/[?\/]/), k = parts[0] || 'overview', html = null, say = '', keep = false, ak = '';
     if (k === 'dashboard' && parts[1]) {
       html = report(parts[1]);
-      if (html) say = 'This is one report on its own page. Share its link, or step to the previous or next one with the buttons.'; // DRAFT line, not recorded
+      if (html) ak = 'report';
+      if (html) say = 'This is one report on its own page. Share its link, or step to the previous or next one with the buttons.'; // approved by Sean 2026-11-09, recorded v1
     }
     if (k === 'event' && parts[1]) {
       html = eventPage(parts[1], parts[2]);
-      if (html) { var e = ev(parts[1]); say = EV_SAY[e.s]; keep = lastEvent && ev(lastEvent) && ev(lastEvent).s === e.s; lastEvent = e.id; k = 'campaigns'; }
+      if (html) { var e = ev(parts[1]); say = EV_SAY[e.s]; ak = 'ev-' + e.s; keep = lastEvent && ev(lastEvent) && ev(lastEvent).s === e.s; lastEvent = e.id; k = 'campaigns'; }
     } else lastEvent = '';
     if (k === 'campaigns' && !html) html = campaigns(parts[1]);
     if (!html) { if (k !== 'overview' && !VIEWS[k]) k = 'overview'; html = k === 'overview' ? overview() : VIEWS[k](); }
@@ -896,7 +914,7 @@
     main.innerHTML = html;
     var pk = document.getElementById('srPick');
     if (pk) pk.addEventListener('change', function () { var cur = location.hash.split('/')[3] || 'results'; location.hash = '#/event/' + pk.value + '/' + cur; });
-    drawMenu(curTab); drawV(say);
+    drawMenu(curTab); drawV(say, ak);
     if (!keep) window.scrollTo(0, 0);
   }
   window.addEventListener('hashchange', route);
