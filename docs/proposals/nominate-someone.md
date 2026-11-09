@@ -70,7 +70,7 @@ ask for an updated photo of them that we could use for future publication."
 | # | On the page | Kai says (question plus a little help) | Answer |
 |---|---|---|---|
 | 1 | Tell me who you are and what you do in your community. | Let's start easy. Tell me who you are, and what you do in your community. Your work, your passions, what people know you for. | Record, speak or write |
-| 2 | Where do you live, and how long have you lived there? | Where do you live? South Florida, Central Florida, wherever home is. And how long have you lived there? | Two picks: area, years |
+| 2 | Where do you live, and how long have you lived there? | Where do you live? South Florida, Central Florida, wherever home is. And how long have you lived there? | Record, speak or write, plus two picks (area, years) for their city and Explorer answers |
 | 3 | What's your Vegan origin story? Take me back to the moment it started. | What's your Vegan origin story? Take me back to the moment it started. Maybe a documentary, a friend, a meal, or an animal you met. | Record, speak or write |
 | 4 | What are you building or working on right now for the Vegan movement? | What are you building or working on right now for the Vegan movement? A business, an event, a page, a project. Big or small. | Record, speak or write |
 | 5 | Who in your community has your back? Give them a shout-out. | Nobody does it alone. Who in your community has your back? Give them a shout-out. | Record, speak or write |
@@ -78,7 +78,7 @@ ask for an updated photo of them that we could use for future publication."
 | 7 | What would you tell someone just starting out? | Someone listening is right where you once were. What would you tell someone just starting out? | Record, speak or write |
 | 8 | What's next for you, and how can people support it? | Last one. What's next for you, and how can people support it? | Record, speak or write |
 
-Recordings cap at 2 minutes and show the time left while recording. **Kai asks each question** from one picture of her hosting (the same
+Every question is asked by Kai and answered out loud (Sean: "I want recordings for everything... it needs to feel like they're in a room with someone"). Recordings cap at 2 minutes and show the time left while recording. **Kai asks each question** from one picture of her hosting (the same
 outfit on every question) with Play on it. Pressing Play is consent: after Save and next, the next question plays on its own; Pause takes
 that back. Each line becomes a lip-synced clip (Kai's voice `cgSgspJ2msm6clMCkdW9`, Higgsfield `wan2_7`, one take each, about 30 credits a
 clip, so about 240 for eight) once Sean approves the words. Talk to Kai stays in the rail for questions.

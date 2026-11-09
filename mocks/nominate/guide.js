@@ -175,7 +175,7 @@
   function placeAns() {
     return '<div class="nm-grid"><div><label class="nm-f">Where you live</label><select class="nm-in nm-sel"><option>South Florida</option><option>Central Florida</option><option>Tampa Bay</option><option>Somewhere else</option></select></div>' +
       '<div><label class="nm-f">How long you have lived there</label><select class="nm-in nm-sel"><option>Less than a year</option><option>1 to 5 years</option><option>5 to 10 years</option><option selected>10 years or more</option></select></div></div>' +
-      '<p class="nm-hint">Two quick picks, no recording needed.</p>';
+      '<p class="nm-hint">Two quick picks for your city page, then tell Kai about home in your own words.</p>' + modes('rec');
   }
   function spotsAns() {
     return '<ol class="nm-spots">' +
@@ -281,7 +281,7 @@
         return crumb('The Interview') + head('All eight answered', 'Send Your Interview', '') +
           '<div class="nm-prog" aria-hidden="true"><i style="width:100%"></i></div>' +
           card('Your answers', 'Read them over, then send', pic('holiday/w-say.jpg'),
-            '<dl class="nm-rv">' + Q.map(function (q, i) { return '<dt>' + (i + 1) + '. ' + esc(q[1]) + '</dt><dd>' + (i === 1 ? 'South Florida, 10 years or more' : i === 5 ? 'Green Leaf Kitchen, Sunflower Cafe (two recordings)' : '<span class="nm-play"><i></i>Your recording</span>') + ' <a href="#/interview/' + (i + 1) + '" style="color:var(--g);font-weight:800;font-size:12px">Edit</a></dd>'; }).join('') + '</dl>' +
+            '<dl class="nm-rv">' + Q.map(function (q, i) { return '<dt>' + (i + 1) + '. ' + esc(q[1]) + '</dt><dd>' + (i === 1 ? 'South Florida, 10 years or more, and <span class="nm-play"><i></i>your recording</span>' : i === 5 ? 'Green Leaf Kitchen, Sunflower Cafe (two recordings)' : '<span class="nm-play"><i></i>Your recording</span>') + ' <a href="#/interview/' + (i + 1) + '" style="color:var(--g);font-weight:800;font-size:12px">Edit</a></dd>'; }).join('') + '</dl>' +
             '<label class="nm-check"><input type="checkbox" checked> <span><b>You may use my interview.</b> Vegans Explore may play or quote my answers on the podcast, in the Daily Pulse, on social and on my city\'s page.</span></label>',
             '<a class="dg-btn dg-ghost" href="#/interview/8">Back</a><a class="dg-btn" href="#/nominate/1">Send my interview</a>', 'nm-form');
       }
