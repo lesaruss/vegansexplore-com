@@ -369,8 +369,8 @@
   <script src="/public/ve-chapters.js"></script>
 
   <!-- The city's banner is the shared one (Sean, 2026-10-27: "the same look and feel as everywhere else"): open, the city, its
-       cities and the badge, Get your Passport (Dashboard when signed in) and Page tour; folded, the same bar as the Directory and
-       Events: Vegan Community over the city, the picker, Get your Passport and Expand. The Section menu under it is gone (Sean:
+       cities and the badge, Join free (Dashboard when signed in) and Page tour; folded, the same bar as the Directory and
+       Events: Vegan Community over the city, the picker, Join free and Expand. The Section menu under it is gone (Sean:
        "the navigation's at the top"); ?tab= still opens a section. public/ve-city-banner.js -->
   <script src="/public/ve-city-banner.js"></script>
   <section id="hero-section"></section>
@@ -384,10 +384,10 @@
         meta: '<div class="hero-meta" aria-label="Community details"><span class="hero-region" id="hub-regions">' + h.page.regions + '</span>' +
           '<div class="hero-divider-v" aria-hidden="true"></div><div class="hero-access" aria-label="Membership access"><span class="access-badge passport" id="hub-access">' +
           (me && me.membership_status === 'active' ? 'Member' : 'Preview') + '</span></div></div>',
-        // Signed out, the Passport; signed in, the dashboard. Page tour (ve-tour.js takes #hub-second) shows while it is open.
+        // Signed out, Join free (the Explorer survey, which brings them back here: 2026-11-09, the survey is the only way in); signed in, the dashboard. Page tour (ve-tour.js takes #hub-second) shows while it is open.
         actions: [
           me ? { label: 'Dashboard', href: '/dashboard', id: 'hub-join', go: true }
-             : { label: 'Get your Passport', href: '/passport?community=' + h.slug + '#/join', id: 'hub-join', go: true },
+             : { label: 'Join free', href: '/survey?s=explorer', id: 'hub-join', go: true },
           { label: 'Page tour', href: '/welcome', id: 'hub-second', open: true }
         ],
         // Another city opens its hub on the same section; All cities opens the Directory from the Directory, else every community.
@@ -539,10 +539,10 @@
       </div>
       <div class="preview-gate">
         <div class="locked-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div>
-        <span class="locked-badge">Passport Required</span>
+        <span class="locked-badge">Members only</span>
         <p class="locked-title">Community Members</p>
         <p class="locked-desc">See who else is part of this community. Connect with local Vegans and the members running businesses.</p>
-        <a href="/passport" class="locked-cta">Get Passport - Free</a>
+        <a href="/survey?s=explorer" class="locked-cta">Join free</a>
       </div>
     </div>
     <div id="hub-leaderboard-wrap" style="display:none;">
@@ -569,10 +569,10 @@
       </div>
       <div class="preview-gate">
         <div class="locked-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg></div>
-        <span class="locked-badge">Passport Required</span>
+        <span class="locked-badge">Members only</span>
         <p class="locked-title">Rewards</p>
-        <p class="locked-desc">Redeem points for real rewards, or donate them to a registered nonprofit. Free with your Passport.</p>
-        <a href="/passport" class="locked-cta">Get Passport - Free</a>
+        <p class="locked-desc">Redeem points for real rewards, or donate them to a registered nonprofit. Free for members.</p>
+        <a href="/survey?s=explorer" class="locked-cta">Join free</a>
       </div>
     </div>
   </section>
@@ -895,5 +895,12 @@
 </script>
 
 <script src="/public/ve-ad-rail.js"></script>
+<script>
+/* Join free goes to the Explorer survey; survey.html sends them back to this chapter (sessionStorage ve_after_survey). */
+document.addEventListener('click', function (e) {
+  var a = e.target.closest && e.target.closest('a[href^="/survey?s=explorer"]'); if (!a) return;
+  try { sessionStorage.setItem('ve_after_survey', location.pathname); } catch (x) {}
+}, true);
+</script>
 </body>
 </html>

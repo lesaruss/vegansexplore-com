@@ -1319,8 +1319,8 @@ suggestions `ve_next_chapter_suggestions` (3 a day, emailed to contact@lesaruss.
 Proven live 2026-11-09 through the one-time `ve-once-next-proof` (now 410); test rows removed. **Art for every place, made 2026-11-09** (Sean: "create them so
 that we're ready for when we do launch... one vertical, one horizontal, and... the square one from the vertical"; 54 Higgsfield credits, nano_banana_pro
 with the South Florida banner as the style reference): `communities/next/<slug>/vertical.jpg` (1440 x 1920), `wide.jpg` (1920 x 1080), `square.jpg`
-(1200 x 1200, cut from the vertical), full-size originals in `vegan-media/media/communities/next-<slug>/`; each place's paths in `ve_next_chapters.art`
-(migration `20261109_next_chapters_art.sql`). The Wynn logo was taken off both Las Vegas pictures. Not shown on the board yet. Not built: Show me (a sample hub per place), a Depot page for suggestions, the podcast listener places on each card. Mock `/mocks/next-chapters/`.
+(1200 x 1200, cut from the vertical), `thumb.jpg` (176 px, shown on the board since 2026-11-09), full-size originals in `vegan-media/media/communities/next-<slug>/`; each place's paths in `ve_next_chapters.art`
+(migration `20261109_next_chapters_art.sql`). The Wynn logo was taken off both Las Vegas pictures. Not built: Show me (a sample hub per place), a Depot page for suggestions, the podcast listener places on each card. Mock `/mocks/next-chapters/`.
 
 ## Universal search (Sean, 2026-11-02, BOSS run, playbook `ve-universal-search`)
 
@@ -7562,3 +7562,15 @@ Explorer; only completions after the later of start day and approval count. Each
 previews and tests, never sent. All draft until Sean locks and approves each in HQ (Outreach > Campaigns > Orientation). Migration
 `20261108_orientation_explorer_paths.sql`; proven in a rolled-back transaction. Once `orientation-events` is approved, turn off ve-nurture's
 Events Guide Day 3 and 7 notes (`nurture.door_on`) so hosts are not mailed twice.
+
+## Domains we own (Sean, 2026-11-09)
+
+"These tend to pop up out of nowhere and we're not ready for the charge." Every domain is a row in `lr_domains` (registrar, expiry,
+brand, what it is used for, an idea for it, renew / review / let lapse; RLS on, no policies; HQ migration
+`088_domains_catalog_renewals.sql`), from Sean's Namecheap list of 2026-11-08 (50 domains, the list's page size was 50, so check for a
+second page). Each has a reminder in HQ's Finance Hub (`finance_actions`, group Domain renewals, due 30 days before it expires; HQ >
+Revenue > Deadlines). A new domain is a row in both. Vegans Explore's: vegansexplore.com (expires 2027-01-26) and .org, the city domains
+nyvegans, lavegans, cflovegans, ukvegans, soflovegans (no Atlanta, Philadelphia or D.C. domain on the list), prevegans, seasonedvegans,
+soflocuisine, humblecabbage, relaxitsvegan, compassiondeck, compassionetarian, vegangameshow, vegnightout, vegantsunami, vhfexpo,
+worldveganexpo, veganswholiftacademy and veganswholiftpodcast (Vegans Who Lift ended; the podcast domain expires 2026-12-22, Sean decides).
+The ideas in the table are Logan's drafts until Sean picks a use; none points anywhere new yet.
