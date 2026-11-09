@@ -9,7 +9,7 @@
  * Views (every view is a link): #/ Overview, #/goals, #/campaigns(/all|q1..q4), #/event/<id>(/results|seen|presented|opportunity),
  * #/pulse, #/podcast, #/banners, #/dashboard(/year|q1..q4|m1..m12), #/package.
  * The sponsor is the made-up Visit Marisol Bay, the presenting sponsor of the sample hub (/communities/sample, public/ve-hubs.js
- * VE_SAMPLE_HUB). Its "reports" on the goals page are made up, mirroring what a real tourism bureau publishes (the brief
+ * VE_SAMPLE_HUB). The last section, "What we can do for you", speaks to the visitor, not the sample sponsor (the brief
  * lesaruss-hq docs/research/briefs/2026-visit-lauderdale-alignment.md); no real organization is named. Every number is a made-up sample
  * result for 2027, and every total on the page is added up from the rows below, so the numbers always agree. Prices are our rate card
  * (canon canon-ve-sponsor-rate-card v1); outside market rates are not shown (not confirmed yet). Real cities appear only as places.
@@ -432,13 +432,13 @@
   // V's lines below (say) are TEXT DRAFTS for Sean to approve. Nothing is recorded, nothing plays.
   var TABS = [
     { k: 'overview', label: 'Overview', say: 'Hi, I\'m V. It\'s the end of 2027, and this is the year Visit Marisol Bay took the full package with Vegans Explore. It hasn\'t happened yet: it\'s a simulation of what we\'re positioned to do. Let me show you how to read it.' }, // DRAFT line, not recorded
-    { k: 'goals', label: 'Built around your goals', say: 'We started with your own reports: four activations a year in your key markets, three content pieces a week, and a slow September. Every campaign here answers one of those goals. Why us? Communities and hubs city by city, a Directory of plant-based places, an events calendar and a Research Library. Sixty percent of US households bought plant-based foods in 2025, and fifty-nine percent of diners look for dietary information on menus. We built this audience without a big budget. A sponsor\'s budget scales it.' }, // DRAFT line, not recorded
     { k: 'campaigns', label: 'Campaigns', say: 'Here is the year by quarter. Pick All, or Q1 through Q4. Every card is a real kind of event we run, so you can see each sponsorship, not a list of bullets. Open one for its results.' }, // DRAFT line, not recorded
     { k: 'pulse', label: 'Daily Pulse', say: 'Twenty-five posts in the Daily Pulse, the morning briefing in each city. Every one is listed with its reads and clicks.' }, // DRAFT line, not recorded
     { k: 'podcast', label: 'SoFlo Vegans Podcast', say: 'Ten sponsor reads on SoFlo Vegans, each one tied to an event. Here is what the host said, and how many people downloaded each episode.' }, // DRAFT line, not recorded
     { k: 'banners', label: 'Banner Advertising', say: 'A quarter of a million banner impressions across the South Florida, Central Florida and Atlanta hubs. Here is where they ran and who clicked.' }, // DRAFT line, not recorded
     { k: 'dashboard', label: 'Marketing Dashboard', say: 'This is the dashboard the sponsor opens any day of the year: traffic by month, every channel, and a report for every month and quarter.' }, // DRAFT line, not recorded
-    { k: 'package', label: 'Your Package', say: 'Everything above is one package: forty-two thousand dollars for the year, or ten thousand five hundred a quarter. Bought one piece at a time, it comes to fifty-two thousand eight hundred fifty.' } // DRAFT line, not recorded
+    { k: 'package', label: 'Your Package', say: 'Everything above is one package: forty-two thousand dollars for the year, or ten thousand five hundred a quarter. Bought one piece at a time, it comes to fifty-two thousand eight hundred fifty.' } , // DRAFT line, not recorded
+    { k: 'goals', label: 'What we can do for you', say: 'That was one sponsor\'s year. Yours starts with you. We read your plan and your reports, we sit down and talk about where you\'re going, and we build the year around your goals and your budget. Why us? We built these communities, a Directory of plant-based places and an events calendar without a big budget. A sponsor\'s budget scales what already works.' } // DRAFT line, not recorded
   ];
   var EV_SAY = {
     mb: 'This is a Vegans Explore community event in Marisol Bay, presented by Visit Marisol Bay. Use the dropdown in the corner to switch between the four, and the tabs for results, where people saw it, and where your name was.', // DRAFT line, not recorded
@@ -457,8 +457,8 @@
   function href(k) { return '#/' + (k === 'overview' ? '' : k); }
 
   // ---------- shared pieces, from welcome-guide.js ----------
-  function head(k, h) {
-    return '<div class="dg-head"><div><div class="dg-k">' + esc(k) + '<span class="sr-tag">Sample results</span></div><h2 class="dg-h1">' + esc(h) + '</h2></div></div>';
+  function head(k, h, noTag) {
+    return '<div class="dg-head"><div><div class="dg-k">' + esc(k) + (noTag ? '' : '<span class="sr-tag">Sample results</span>') + '</div><h2 class="dg-h1">' + esc(h) + '</h2></div></div>';
   }
   function crumb(trail) {
     return '<div class="dg-crumb"><a href="#/">' + esc(ROOT) + '</a>' + trail.map(function (x) { return ' &rsaquo; ' + (x[1] ? '<a href="' + esc(x[1]) + '">' + esc(x[0]) + '</a>' : esc(x[0])); }).join('') + '</div>';
@@ -524,7 +524,6 @@
   function overview() {
     var qs = [1, 2, 3, 4].map(function (q) { var s = span(qMonths(q)); return s; });
     var rows = [
-      [PIC + 'restaurant-guide/t-audit.jpg', 'Built around your goals', 'What we learned from Visit Marisol Bay\'s own reports, and the campaign that answers each goal.', 'goals', 'See your goals'],
       [BIZ + 's-team.webp', 'Q1: January to March', qs[0].evs.map(evTitle).join(', ') + '. ' + n(qs[0].att) + ' people at events.', 'campaigns/q1', 'See Q1'],
       [EG + 'still-overview.jpg', 'Q2: April to June', qs[1].evs.map(evTitle).join(', ') + '. ' + n(qs[1].att) + ' people at events.', 'campaigns/q2', 'See Q2'],
       [BIZ + 's-outside-night.webp', 'Q3: July to September', qs[2].evs.map(evTitle).join(', ') + '. ' + n(qs[2].att) + ' people at events.', 'campaigns/q3', 'See Q3'],
@@ -532,14 +531,15 @@
       [PIC + 'restaurant-guide/t-pulse.jpg', 'Daily Pulse', n(PULSE.length) + ' sponsorship posts in the morning briefings: ' + n(T.pReads) + ' reads and ' + n(T.pClk) + ' clicks.', 'pulse', 'See the posts'],
       [PIC + 'holiday/p-listen.jpg', 'SoFlo Vegans Podcast', n(POD.length) + ' host reads: ' + n(T.podDl) + ' downloads and ' + n(T.podClk) + ' clicks from the show notes.', 'podcast', 'See the episodes'],
       [IMG + 'snap-billboard.jpg', 'Banner Advertising', n(T.banImp) + ' impressions on the South Florida, Central Florida and Atlanta hubs: ' + n(T.banClk) + ' clicks.', 'banners', 'See the banners'],
-      [PIC + 'restaurant-guide/t-dashboard.jpg', 'Marketing Dashboard', 'Traffic by month, every channel in one place, and a report for every month and quarter.', 'dashboard', 'Open the dashboard']
+      [PIC + 'restaurant-guide/t-dashboard.jpg', 'Marketing Dashboard', 'Traffic by month, every channel in one place, and a report for every month and quarter.', 'dashboard', 'Open the dashboard'],
+      [PIC + 'restaurant-guide/t-audit.jpg', 'What we can do for you', 'How we build your year: your plan, a conversation, your goals matched to campaigns, and your budget.', 'goals', 'See how']
     ];
     return head('The end of 2027, a simulation', 'Visit Marisol Bay, Your Year With Vegans Explore') +
       card('Getting started', 'How to use your report', V_PIC, [
-        '<b>Start with your goals,</b> then open the campaigns by quarter. Every card is an event, with its results, where people saw it and where your name was.',
+        '<b>Start with the campaigns,</b> by quarter. Every card is an event, with its results, where people saw it and where the sponsor\'s name was.',
         '<b>Every click is tracked.</b> Reads, downloads, check-ins and visitors are people.',
         '<b>It never happened.</b> It is the year Vegans Explore is positioned to run for a sponsor, with made-up results.'
-      ], '<a class="dg-btn" href="#/goals">Start the walk-through</a><a class="dg-btn dg-ghost" href="#/campaigns">See the campaigns</a>') +
+      ], '<a class="dg-btn" href="#/campaigns">Start the walk-through</a><a class="dg-btn dg-ghost" href="#/campaigns">See the campaigns</a>') +
       '<section class="sr-pkg" aria-label="Your package"><div><small>Your package</small><b>The full package, ' + money(PACKAGE) + ' for 2027</b><p>Every campaign on this report, in one sponsorship: ' + money(PACKAGE_Q) + ' a quarter. Bought one at a time from our rate card, it comes to ' + money(ALACARTE) + '; the package saves ' + money(SAVE) + ', about ' + Math.floor(SAVE / ALACARTE * 100) + '%.</p></div><a class="dg-btn" href="#/package">See what is in it</a></section>' +
       h5('2027 at a glance') +
       stats([
@@ -554,28 +554,20 @@
       ]) +
       '<p class="sr-note">Sample results: Visit Marisol Bay and every number on this report are made up to show what a year of sponsorship looks like. The campaigns are ones Vegans Explore runs or is set up to run.</p>' +
       group('Your year, one page at a time', rows.map(function (r) { return artRow(r[0], r[1], esc(r[2]), href(r[3]), r[4]); })) +
-      cta('Walk the year with V.', 'Start with what we learned about you, then the campaigns built around it.', ['Start with your goals', '#/goals']);
+      cta('Walk the year with V.', 'Start with the campaigns, then see what we can do for you.', ['Start with the campaigns', '#/campaigns']);
   }
 
-  // ---------- Built around your goals ----------
+  // ---------- What we can do for you (Sean, 2026-11-09: the last section, about the visitor, no Marisol Bay) ----------
   function goals() {
     var g = [
-      ['Four experiential activations a year in key markets', 'Your plan commits to at least four activations or events a year, in the markets and audience segments that matter most.',
-        'Four feeder-city community events: <a href="#/event/orlando">Orlando</a>, <a href="#/event/tampa">Tampa</a>, <a href="#/event/st-petersburg">St. Petersburg</a> and <a href="#/event/atlanta">Atlanta</a>. ' + n(sum(evS('feeder'), 'vis')) + ' guests visited Marisol Bay afterward.'],
-      ['Three values-aligned partners a year', 'You look for at least three brands or creators a year that share your values and your audience.',
-        'Vegans Explore as one of the three: a community that shares your welcome-everyone values, with ' + n(T.mem) + ' new members joining at your events. <a href="#/package">See the package</a>.'],
-      ['Three pieces of content a week', 'Your plan asks for at least three pieces of high-quality content a week, with real people and testimonials.',
-        n(T.content) + ' pieces in 2027, about ' + Math.round(T.content / 52) + ' a week: Daily Pulse posts, social posts, sponsor stories, podcast reads and ' + n(T.clips) + ' Media Corner clips of real residents and visitors. <a href="#/event/vegfest-spring/seen">See where people saw it</a>.'],
-      ['Fill the slow months, September most', 'Summer and September are the months you work hardest to fill.',
-        'Community events in <a href="#/event/marisol-bay-2">May</a>, <a href="#/event/marisol-bay-3">July</a> and <a href="#/event/marisol-bay-4">September</a>. September\'s was the biggest of the year: ' + n(ev('marisol-bay-4').att) + ' people and ' + n(ev('marisol-bay-4').chk) + ' check-ins.'],
-      ['Grow domestic travel from drive markets', 'International visits are down, so your plan leans on travelers who can drive in from nearby cities.',
-        'The feeder-city events, and banners on the <a href="#/banners">Central Florida and Atlanta hubs</a>: ' + n(T.banFeedV) + ' more visitors tracked from the banners alone.'],
-      ['Inclusion is the brand', 'Your brand says everyone is welcome, and you want partners whose communities show it.',
-        'Every community event is open to everyone, members or not, and our Guides include Dani, who uses a wheelchair. Accessibility details on listings: Coming.'],
-      ['A living travel profile of your target groups', 'You want a profile of the travelers you target that stays current: who they are and what they look for.',
-        'The plant-based traveler, from our Research Library and what members do on the site, in your <a href="#/dashboard">quarterly and year-end reports</a>. The full profile report: Coming.'],
-      ['Grow your food scene and your food festival', 'Your plan puts the local food scene and your own food festival in front of more visitors.',
-        'Media Corners at <a href="#/event/vegfest-spring">spring</a> and <a href="#/event/vegfest-fall">fall</a> VegFest, and the <a href="#/event/expo">World Vegan Expo in Marisol Bay</a>: ' + n(T.views) + ' clip views and ' + n(ev('expo').rooms) + ' hotel room nights.']
+      ['We read your plan and your reports', 'Your strategy, your visitor data and your results: where you are as an organization and where you are going.',
+        'You get back a short brief: your goals in your words, and where Vegans Explore fits.'],
+      ['We sit down and talk', 'A discovery conversation: which travelers are hard to reach, what a good year looks like, and what your board measures.',
+        'Nothing is priced before we listen.'],
+      ['We match your goals to campaigns', 'The goals destinations bring us are often things like new markets, slower months, steady content and partners who share their values.',
+        'Each goal gets the campaigns that answer it, from the ones in this report: community events, feeder-city events, Media Corners, the Expo, the Daily Pulse, the podcast and banners.'],
+      ['You set the budget, we build the year', 'A full year, one quarter, or one event: the package is shaped to your budget from our rate card.',
+        'The budget planner that builds it with you: Coming. Until then, we build it together.']
     ];
     var why = [
       ['/communities', 'Communities and hubs', 'A hub for each community, city by city, with its own calendar, Daily Pulse and sponsors.'],
@@ -587,20 +579,19 @@
       ['60%', 'of US households bought plant-based foods in 2025.', 'GFI'],
       ['59%', 'of diners look for dietary information on menus.', 'DoorDash and SevenRooms']
     ];
-    return crumb([['Built around your goals']]) + head('What we learned about you (Sample)', 'Built around your goals') +
-      card('How to use this page', 'Your goals first, then the campaigns', PIC + 'restaurant-guide/t-audit.jpg', [
-        '<b>We started with your reports:</b> your strategy, your results and where you are as an organization. Each card is one of your goals, in your words.',
-        '<b>Under each goal</b> is the campaign that answers it. Open it for the results.',
-        '<b>Sample:</b> Visit Marisol Bay and its reports are made up, modeled on what a tourism bureau publishes.'
-      ], '<a class="dg-btn" href="#/campaigns">See the campaigns</a>') +
-      h5('What we learned about you (Sample)') +
-      '<div class="sr-goals">' + g.map(function (x, i) { return '<div class="sr-goal"><small>Goal ' + (i + 1) + '</small><b>' + esc(x[0]) + '</b><p>' + esc(x[1]) + '</p><div class="ans"><i>How we answered it</i>' + x[2] + '</div></div>'; }).join('') + '</div>' +
+    return crumb([['What we can do for you']]) + head('After the walk-through', 'What we can do for you', true) +
+      card('How to use this page', 'Your year starts with you', PIC + 'restaurant-guide/t-audit.jpg', [
+        '<b>That was one sponsor\'s year,</b> made up to show the kind of campaigns we run.',
+        '<b>Yours is built around you:</b> your plan, a conversation, your goals and your budget. Here is how.'
+      ], '<a class="dg-btn" href="/contact">Talk to us</a><a class="dg-btn dg-ghost" href="#/package">See the full package</a>') +
+      h5('How we build your year') +
+      '<div class="sr-goals">' + g.map(function (x, i) { return '<div class="sr-goal"><small>Step ' + (i + 1) + '</small><b>' + esc(x[0]) + '</b><p>' + esc(x[1]) + '</p><div class="ans"><i>What you get</i>' + esc(x[2]) + '</div></div>'; }).join('') + '</div>' +
       h5('Why we are positioned to do this') +
       '<div class="sr-why">' + why.map(function (x) { return '<a href="' + x[0] + '"><b>' + esc(x[1]) + '</b><span>' + esc(x[2]) + '</span></a>'; }).join('') +
       '<div><b>The Research Library</b><span>The studies behind every number we quote, kept current for sponsors and partners.</span></div>' +
       facts.map(function (x) { return '<div><b class="big">' + x[0] + '</b><span>' + esc(x[1]) + '</span><cite>Source: ' + esc(x[2]) + '</cite></div>'; }).join('') +
       '<div><b>Built without a big budget</b><span>We grew this audience on our own. A sponsor\'s budget scales it: more events, more cities, more people.</span></div></div>' +
-      cta('See the campaigns, quarter by quarter.', 'Every goal above has its events on the calendar, with results.', ['See the campaigns', '#/campaigns']);
+      cta('Ready when you are.', 'Tell us where you are going, and we will build your year around it.', ['Talk to us', '/contact']);
   }
 
   // ---------- Campaigns, by quarter ----------
