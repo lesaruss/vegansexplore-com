@@ -39,8 +39,8 @@
     { k: 'directory', scene: 'welcome/liz-directory.jpg', label: 'Search and the Directory', pic: 'thumb-directory.jpg', lead: 'pascal', say: 'Press Play and I will walk you through the Directory. When you are ready, view it and pick your city.' },
     { k: 'city', scene: 'welcome/liz-city.jpg', label: 'Your City', pic: 'thumb-community.jpg', lead: 'river', say: 'Press Play and I will walk you through your city. Then find your chapter and say hello.' },
     { k: 'events', scene: 'welcome/liz-events.jpg', label: 'Events', pic: 'vegan-events-guide.jpg', lead: 'river', say: 'Press Play and I will walk you through Events. Then pick a place and find something to do this week.' },
-    { k: 'media', scene: 'welcome/liz-media.jpg', label: 'Media', pic: 'holiday/p-listen.jpg', lead: 'kai', say: 'Here is everything in Media. Press Play on something good today.' },
-    { k: 'guides', scene: 'welcome/liz-guides.jpg', label: 'Guides', pic: 'welcome-guide.jpg', lead: 'maya', say: 'Every Guide in one place. Some are free with a short survey, and the rest are yours with points.' },
+    { k: 'media', scene: 'welcome/liz-media.jpg', label: 'Media', pic: 'holiday/p-listen.jpg', lead: 'kai', say: 'Press Play and I will walk you through Media. Then press Play on something good today.' },
+    { k: 'guides', scene: 'welcome/liz-guides.jpg', label: 'Guides', pic: 'welcome-guide.jpg', lead: 'maya', say: 'Here is how the Guides work. Pick an interest and try the free part of any Guide.' },
     { k: 'points', scene: 'welcome/liz-points.jpg?v=2', label: 'Points and Levels', pic: 'thumb-bounties.jpg', lead: 'theo', say: 'Here is how points work: how you earn them, what they are for, and how you level up.' },
     { k: 'paths', scene: 'welcome/liz-paths.jpg', label: 'Your Path and Badges', pic: 'thumb-passport.jpg', lead: 'kai', say: 'Everyone starts as an Explorer. If you run something, your path takes you further.' },
     { k: 'better', scene: 'welcome/liz-better.jpg', label: 'Make It Better', pic: 'restaurant-guide/t-next.jpg', lead: 'liz', say: 'This is the part that matters most. Here is every way to tell us what is working and what is not.' },
@@ -233,11 +233,16 @@
         ] });
     },
     guides: function () {
-      return section('guides', 'Find your way', 'A Guide is a mini website about one topic, walked through by one of our Guides. This one is the first.',
-        'Every Guide in one place, sorted by what you are interested in: food and cooking, health and nutrition, travel, game day, business, the animals and more. Guides for your work, like the Vegan Restaurant Guide and the Vegan Events Guide, are free with a short survey. Topic Guides, like the Vegan Dairy Guide, are $11 or 1,100 points, yours to keep.',
-        ['Open Guides and pick an interest.', 'Open any Guide: every one has a free part to try.', 'Follow its Guide tab by tab, or jump to what you need.'],
-        ['<b>Open a topic Guide</b> with your points or $11.', '<b>Talk to the Guide</b> on its page: saved answers are free, and asking directly is 4 points a message.', '<b>Free work Guides</b>, each opened by its own short survey.'],
-        [['See every Guide', '/guides']]) + explorerCard();
+      return sectionPage('guides', { kicker: 'Find your way', title: 'One topic at a time, walked through', pic: 'vegan-dairy-guide.jpg', group: 'In the Guides',
+        how: ['<b>Read the parts below.</b> Each one is part of the Guides.', '<b>Pick an interest</b> on the Guides page, then open any Guide and try its free part.'],
+        go: ['See every Guide', '/guides'], ctaTitle: 'Go pick a Guide.', ctaText: 'Every Guide has a free part to try. Open to everyone.',
+        parts: [
+          ['welcome-guide.jpg', 'Find Your Guide', 'Every Guide in one place, sorted by what you care about: food, health, travel, game day, business, the animals and more.'],
+          ['vegan-restaurant-guide.jpg', 'Free With a Survey', 'Guides for your work, like the Vegan Restaurant Guide and the Vegan Events Guide, open free with a short survey.'],
+          ['airport-guide.jpg', 'Topic Guides', 'Topic Guides, like the Vegan Dairy Guide and the Airport Guide, are yours to keep with points, and each has a free part to try.'],
+          ['nutrition-guide.jpg', 'Ask Your Guide', 'Every Guide has its own Guide to ask. Saved answers are free, and asking directly costs a few points.'],
+          ['holiday-guide.jpg', 'What We Build Next', 'Members see the Guides we are making next and tap Notify me on the ones they want first.']
+        ] });
     },
     points: function () {
       return section('points', 'Take part', 'Points come from taking part, never from buying them.',
@@ -336,7 +341,7 @@
   // Each section page plays its own short video in Liz's frame once its script is approved and recorded.
   // Each section's own video (Sean, 2026-11-09: no borrowed tour parts): Liz's approved line over that page's shots, captions from her word timings.
   var MEDIA = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/';
-  var SEC = { directory: 'sec-directory-v2', city: 'sec-city-v2', events: 'sec-events-v2' };
+  var SEC = { directory: 'sec-directory-v2', city: 'sec-city-v2', events: 'sec-events-v2', media: 'sec-media-v2' };
   var CLIPS = { overview: [0, 1e9] };
   Object.keys(SEC).forEach(function (k) { CLIPS[k] = [0, 1e9]; });
   function cur() {

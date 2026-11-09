@@ -37,12 +37,20 @@ About 60 seconds.
 
 Subjects (one city each): the calendar; filters; checked events; tickets; I'm going and submit; fix and claim; free and the survey; bring people in; points.
 
-## 5. Media (v1, approved by Sean 2026-11-09; recorded `sec-media-v2` (take 1 said "wanna"), 63 s, stt matched; video `sec-media-v2` rendered with seven new Liz scenes, waiting on Sean's look)
+## 5. Media (v1, approved by Sean 2026-11-09; recorded `sec-media-v2` (take 1 said "wanna"), 63 s, stt matched; video `sec-media-v2` with seven new Liz scenes, approved and live)
 
 About 60 seconds.
 
 > This is Media. Our own shows, like the Vegans Explore Podcast, bring you years of conversations with the people building this movement. Next to them are the podcasts, documentaries and books the community votes to the top. Press Play and listen right on the page while you keep looking around. Documentaries show where to watch them, and books link to their own pages. We want to hear from you. As a member, you shape what rises here: vote for the shows, films and books you love, save episodes to My Saves, let us know if something needs to be fixed, and if you host a podcast, apply to join our network. Membership is free. We ask for a short survey so we know real people are joining, and that keeps this community worth your time. Bring people with you: invite your friends, your community, new Vegans and Pre-Vegans. And you earn points for everybody who joins using your link. That is the easiest way to grow your experience and open new doors in our community. Press Play on something good today.
 
-## 6 to 11
+## 6. Guides (draft v1 for Sean)
 
-Written one at a time after page 5 is approved.
+About 60 seconds.
+
+> These are our Guides. Each one is a mini website about one topic, walked through by one of our Guides, like me. Find them by what you care about: food, health, travel, game day, business and the animals. Guides for your work, like the Vegan Restaurant Guide, open free with a short survey. Topic Guides, like the Vegan Dairy Guide, are yours to keep with points, and every one has a free part to try. We want to hear from you. As a member, you shape what we build next: ask your Guide anything, tap Notify me on the Guides you want first, let us know if something needs to be fixed, and tell us what you wish we had a Guide for. Membership is free. We ask for a short survey so we know real people are joining, and that keeps this community worth your time. Bring people with you: invite your friends, your community, new Vegans and Pre-Vegans. And you earn points for everybody who joins using your link. That is the easiest way to grow your experience and open new doors in our community. Pick a Guide and start exploring.
+
+New scenes for this page's video: Liz with the cast of Guides (each Guide in its own topic), not earlier pages' pictures.
+
+## 7 to 11
+
+Written one at a time after page 6 is approved.
