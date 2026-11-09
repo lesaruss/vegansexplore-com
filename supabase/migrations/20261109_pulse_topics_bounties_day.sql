@@ -1,0 +1,15 @@
+-- ve-daily-pulse-discussion: Sean's notes on the Pulse (2026-11-09). Applied live through the connector.
+-- 1. The writer gives every story a topic (food, animals, health, business, culture, community) and never calls a story national,
+--    foreign or international: lesaruss_dispatch_sources pulse_topic_write, the stories line (replace of
+--    "national (true for a story from step 3d; leave it out for the city's own)." with the same plus the topic rule).
+-- 2. ve_pulse_house returns up to four bounties a day: house.bounties_day (array) and house.bounties_all_url; house.bounty_day stays the
+--    first for older readers. Each one shown is logged (ve_pulse_house_log kind bounty_day), so the rotation moves on. The bounty block was
+--    replaced in place (a DO block patching pg_get_functiondef, adding "bl jsonb := '[]'" to the declarations); the loop:
+--      for bq in <the same campaign query> limit 4 loop
+--        bl := bl || jsonb_build_array(jsonb_build_object('title','count','points','remote','url','all_url'));
+--        if p_record then insert into ve_pulse_house_log (...) values (p_city, 'bounty_day', bq.id::text, p_post); end if;
+--      end loop;
+--      if jsonb_array_length(bl) > 0 then out := out || jsonb_build_object('bounty_day', bl->0, 'bounties_day', bl, 'bounties_all_url', ...);
+-- 3. Backfill: Nov 8 posts and Nov 9 drafts (Vegans Explore cities) had each story tagged with a topic by hand from its title, and the
+--    Nov 8 posts got house.bounties_day from ve_pulse_house(city, null, false) (nothing logged).
+select 1;
