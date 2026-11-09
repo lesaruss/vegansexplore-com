@@ -1144,10 +1144,16 @@ async function ytReport(tok: string, q: Record<string, string>) {
 async function ytPeriod(tok: string, ms: PMatch[], from: string, to: string) {
   const met = 'views,estimatedMinutesWatched';
   const all = await ytReport(tok, { startDate: from, endDate: to, metrics: met });
-  let views = 0, minutes = 0; const cities = new Map<string, number>();
+  let views = 0, minutes = 0, region = 0; const cities = new Map<string, number>(), regionNames: string[] = [];
   for (const m of ms) {
     const code = String(m.country);
     const abbr = m.province ? ABBR_OF[lcs(m.province)] : null;
+    // A city list inside a US state: the whole state too, since YouTube names few cities (2026-11-09: all time, Florida 1,621 views, Miami 69).
+    if (m.cities?.length && code === 'US' && abbr) {
+      const pr = await ytReport(tok, { startDate: from, endDate: to, metrics: 'views', dimensions: 'province', filters: 'country==US' });
+      for (const r of pr) if (r.province === 'US-' + abbr) region += Number(r.views) || 0;
+      regionNames.push(m.province!);
+    }
     if (m.cities?.length) {
       const filters = code === 'US' && abbr ? `country==US;province==US-${abbr}` : `country==${code}`;
       const rows = await ytReport(tok, { startDate: from, endDate: to, metrics: met, dimensions: 'city', filters, sort: '-views', maxResults: '250' });
@@ -1163,16 +1169,18 @@ async function ytPeriod(tok: string, ms: PMatch[], from: string, to: string) {
       for (const r of rows) if (r.country === code) { views += Number(r.views) || 0; minutes += Number(r.estimatedMinutesWatched) || 0; cities.set(regionName(code), (cities.get(regionName(code)) || 0) + (Number(r.views) || 0)); }
     }
   }
-  return { views, minutes, channel_views: Number(all[0]?.views) || 0, cities: [...cities.entries()].sort((a, b) => b[1] - a[1]).slice(0, 25).map(([name, views]) => ({ name, views })) };
+  return { views, minutes, region_views: regionNames.length ? region : null, region_name: regionNames.join(', ') || null, channel_views: Number(all[0]?.views) || 0, cities: [...cities.entries()].sort((a, b) => b[1] - a[1]).slice(0, 25).map(([name, views]) => ({ name, views })) };
 }
 async function placeYouTube(ms: PMatch[], from: string, to: string) {
   const tok = await ytToken();
   if (!tok) return { connected: false };
   const { pf, pt } = prevOf(from, to);
-  const [cur, prev] = await Promise.all([ytPeriod(tok, ms, from, to), ytPeriod(tok, ms, pf, pt)]);
+  const yest = plusDays(etDay(Date.now()), -1);
+  const [cur, prev, ever] = await Promise.all([ytPeriod(tok, ms, from, to), ytPeriod(tok, ms, pf, pt), ytPeriod(tok, ms, '2015-01-01', yest)]);
   const { data: s } = await db.from('lesaruss_secrets').select('description').eq('key', 'YOUTUBE_ANALYTICS_REFRESH_TOKEN').maybeSingle();
-  return { connected: true, channel: /for (.+?) \(/.exec(s?.description || '')?.[1] || null, from, to, prev_from: pf, prev_to: pt, ...cur, prev_views: prev.views, prev_minutes: prev.minutes,
-    note: 'YouTube places a view by the viewer\'s location; its numbers arrive a day or two late, and cities are only its top 250 in each state or country.' };
+  return { connected: true, channel: /for (.+?) \(/.exec(s?.description || '')?.[1] || null, from, to, prev_from: pf, prev_to: pt, ...cur, prev_views: prev.views, prev_minutes: prev.minutes, prev_region_views: prev.region_views,
+    all_time: { views: ever.views, minutes: ever.minutes, region_views: ever.region_views, channel_views: ever.channel_views, cities: ever.cities },
+    note: 'YouTube places a view by the viewer\'s location, a day or two late. It hides places with few views, so a short period can read 0 while all time shows them, and it names only a few cities.' };
 }
 
 async function placeInsights(kind: string, slug: string, from: string, to: string, refresh: boolean) {
