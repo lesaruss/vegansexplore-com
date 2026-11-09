@@ -1116,7 +1116,7 @@ function socialIn(maps: any, ms: PMatch[]) {
 // listen_match mentions), read live and kept 6 hours. Free and read only; the stories go to Insights only, never the Pulse or the Inbox.
 const decodeXml = (t: string) => t.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim();
 async function googleNews(slug: string, names: string[]) {
-  return cached(`ins:placenews2:${slug}`, 6 * H, false, async () => {
+  return cached(`ins:placenews3:${slug}`, 6 * H, false, async () => {
     const terms = [...new Set(names.map((n) => n.trim()).filter(Boolean))].slice(0, 6).map((n) => /\s/.test(n) ? `"${n}"` : n);
     if (!terms.length) return { connected: true, stories: [] };
     const q = `vegan (${terms.join(' OR ')}) when:180d`;
@@ -1131,7 +1131,9 @@ async function googleNews(slug: string, names: string[]) {
       return { id: `gn-${i}`, title, url: tag('link'), source_name: source || null, image_url: null, published_at: pub ? new Date(pub).toISOString() : null };
     // Only stories whose headline is about it (Japan's search also found missing-person stories and BrooklynVegan, a music site), newest first.
     }).filter((x) => x.title && x.url && /\b(vegan|vegans|veganism|plant[- ]based|vegetarian)\b/i.test(x.title) && !/brooklynvegan/i.test(x.source_name || ''))
-      .sort((a, b) => String(b.published_at || '').localeCompare(String(a.published_at || '')));
+      .map((x) => ({ ...x, in_headline: names.some((n) => n && x.title.toLowerCase().includes(n.trim().toLowerCase())) }))
+      // Headlines that name the place first; the rest only name it in the story (Google matched the article text).
+      .sort((a, b) => Number(b.in_headline) - Number(a.in_headline) || String(b.published_at || '').localeCompare(String(a.published_at || '')));
     return { connected: true, query: q, stories };
   });
 }
