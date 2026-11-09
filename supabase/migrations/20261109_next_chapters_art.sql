@@ -13,3 +13,8 @@ update public.ve_next_chapters set art = jsonb_build_object(
   'wide_original',     'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/communities/next-' || slug || '/wide-original.png',
   'made', '2026-11-09')
 where slug in ('oregon','las-vegas','phoenix','houston','north-carolina','austin','dublin','caribbean','new-zealand','japan','seattle','san-francisco');
+
+-- Las Vegas's vertical had a sign painted out by hand, so its "original" is the cleaned 1440 x 1920 JPEG.
+update public.ve_next_chapters set art = jsonb_set(art, '{vertical_original}',
+  '"https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/communities/next-las-vegas/vertical-original.jpg"')
+where slug = 'las-vegas';
