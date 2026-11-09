@@ -617,7 +617,10 @@ members get layout until Sean approves this one. **Then, Sean's notes the same d
 Search Anything and Vote, Save and Check In dropped), plain rows with no link each, and one call to action at the bottom, Go see the Directory /
 View the Directory (the `.vxc` card's look; joining stays the header's button). No borrowed tour clip: each page 2 to 11 gets its own script and
 recording, one at a time (`docs/proposals/welcome-guide-section-scripts.md`); until a page's is recorded, Play Liz is hidden there (`CLIPS`). Sean: once
-page 11 is done, the Explorer Guide is locked and the front door is open.
+page 11 is done, the Explorer Guide is locked and the front door is open. **Page 2's video is live** (Sean approved 2026-11-09): `sec-directory-v1.mp4` (50 s) with captions `public/guides/welcome/sec-directory-v1.vtt`
+in Liz's frame; `SEC` and `cur()` in `guide-scripts/welcome-guide.js` pick each page's own video, a page joins `SEC` when its recording is approved;
+How to use this page adds Watch Liz only on a page with a video. **Page 3, Your City, is in the same shape** (The Daily Pulse, The Boards, Events in
+Your City, Most Voted Places, Where We Go Next; call to action Find your city) and its script waits on Sean.
 
 Proposal `docs/proposals/explorer-welcome-guide.md` (approved). `/passport` (`passport.html`, `guide-scripts/welcome-guide.js`) is the Welcome Guide, copied
 from the Holiday Guide (template gate). Liz hosts. The Overview is enough on its own (Start here, Become a Founder, the tour: Liz's eight chapters, approved

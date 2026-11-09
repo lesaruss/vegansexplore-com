@@ -36,8 +36,8 @@
   // Liz's line on each tab (text drafts for the section pages; the Overview's is chapter 1). `lead` is the Guide for that area.
   var TABS = [
     { k: 'overview', scene: 'welcome/liz-overview.jpg', label: 'Overview', say: 'Watch this video to get a full overview of Vegans Explore. Then click through each section to learn more about it.', sayMember: 'Welcome back. Watch this video any time for a full overview, then click through each section to go deeper.' },
-    { k: 'directory', scene: 'welcome/liz-directory.jpg', label: 'Search and the Directory', pic: 'thumb-directory.jpg', lead: 'pascal', say: 'Here is everything in the Directory. When you are ready, view the Directory and pick your city.' },
-    { k: 'city', scene: 'welcome/liz-city.jpg', label: 'Your City', pic: 'thumb-community.jpg', lead: 'river', say: 'Every chapter has its own home. Here is how to keep up with yours, every morning.' },
+    { k: 'directory', scene: 'welcome/liz-directory.jpg', label: 'Search and the Directory', pic: 'thumb-directory.jpg', lead: 'pascal', say: 'Press Play and I will walk you through the Directory. When you are ready, view it and pick your city.' },
+    { k: 'city', scene: 'welcome/liz-city.jpg', label: 'Your City', pic: 'thumb-community.jpg', lead: 'river', say: 'Every chapter has its own home. Here is what is in yours, and how to find it.' },
     { k: 'events', scene: 'welcome/liz-events.jpg', label: 'Events', pic: 'vegan-events-guide.jpg', lead: 'river', say: 'Find something to do this week, near you or anywhere.' },
     { k: 'media', scene: 'welcome/liz-media.jpg', label: 'Media', pic: 'holiday/p-listen.jpg', lead: 'kai', say: 'Our shows and the community\'s favorites, playing right on the page.' },
     { k: 'guides', scene: 'welcome/liz-guides.jpg', label: 'Guides', pic: 'welcome-guide.jpg', lead: 'maya', say: 'Every Guide in one place. Some are free with a short survey, and the rest are yours with points.' },
@@ -171,7 +171,7 @@
   function sectionPage(k, o) {
     var rec = !!CLIPS[k];
     var start = '<section class="wg-gs" aria-label="How to use this page"><span class="wg-gs-pic"><img src="' + pic(o.pic) + '" alt="" decoding="async" width="640" height="640"></span>' +
-      '<div class="wg-gs-b"><div class="vgi-k">How to use this page</div><h3 class="wg-gs-t">' + esc(o.title) + '</h3>' + o.how.map(function (x) { return '<p>' + x + '</p>'; }).join('') +
+      '<div class="wg-gs-b"><div class="vgi-k">How to use this page</div><h3 class="wg-gs-t">' + esc(o.title) + '</h3>' + (rec ? ['<b>Watch Liz.</b> Press Play Liz for a short walk-through.'] : []).concat(o.how).map(function (x) { return '<p>' + x + '</p>'; }).join('') +
       '<div class="wg-gs-btns">' + (rec ? '<button type="button" class="dg-btn" data-wg-tour>&#9654; Play Liz</button>' : '') + '<a class="dg-btn' + (rec ? ' dg-ghost' : '') + '" href="' + esc(o.go[1]) + '">' + esc(o.go[0]) + '</a></div></div></section>';
     if (window.VEExplorerCard) VEExplorerCard.html({}); // loads the card's styles, shared by the call to action below
     var cta = '<section class="vxc" aria-label="' + esc(o.go[0]) + '"><div class="vxc-b"><div class="vxc-k">See it for yourself</div><h3>' + esc(o.ctaTitle) + '</h3><p>' + esc(o.ctaText) + '</p></div>' +
@@ -186,7 +186,7 @@
   var VIEWS = {
     directory: function () {
       return sectionPage('directory', { kicker: 'Find your way', title: 'Every Vegan place, person and group', pic: 'thumb-directory.jpg', group: 'What is in the Directory',
-        how: ['<b>Read the parts below.</b> Each one is a section of the Directory.', '<b>Pick your city</b> in the Directory, then narrow any section with Filters.', '<b>Members vote</b> for the places they love, and that is how places rise to the top.'],
+        how: ['<b>Read the parts below.</b> Each one is a section of the Directory.', '<b>Members vote</b> for the places they love, and that is how places rise to the top.'],
         go: ['View the Directory', '/directory'], ctaTitle: 'Go see the Directory.', ctaText: 'Pick your city and start looking around. It is open to everyone.',
         parts: [
           ['eating-out.jpg', 'Local Food', 'Restaurants, bakeries, food trucks, markets, catering and meal prep in your chapter, sorted by member votes.'],
@@ -197,11 +197,16 @@
         ] });
     },
     city: function () {
-      return section('city', 'Find your way', 'Every chapter, from South Florida to London, has its own home.',
-        'Your chapter\'s hub brings your city together: its Daily Pulse (a short briefing every morning with the local and national news that matters), the boards (Jobs, Classifieds, Fosters, Rescues and Suggest a Topic), its events and its most voted places.',
-        ['Pick your city on the Communities page.', 'Read today\'s Daily Pulse.', 'Browse the boards for jobs, things for sale, fosters and rescues.', 'Got a tip for your city? Suggest a topic.'],
-        ['<b>Comment</b> on the Daily Pulse and <b>post</b> on the boards.', '<b>Join any chapter</b> by saving it, wherever you are.', '<b>Vote</b> for your chapter.'],
-        [['Find your city', '/communities'], ['Open the Daily Pulse', '/pulse']]) + explorerCard();
+      return sectionPage('city', { kicker: 'Find your way', title: 'Every chapter has its own home', pic: 'partner-community-manager.jpg', group: 'In your city',
+        how: ['<b>Read the parts below.</b> Each one is part of your chapter\'s home.', '<b>Find your city</b> on the Communities page and read today\'s Daily Pulse.'],
+        go: ['Find your city', '/communities'], ctaTitle: 'Go find your city.', ctaText: 'Pick your chapter and read today\'s Daily Pulse. It is open to everyone.',
+        parts: [
+          ['holiday/w-say.jpg', 'The Daily Pulse', 'A short briefing every morning: the news that matters in your city and beyond, what is on this week, and one thing to do today.'],
+          ['vegan-pets.jpg', 'The Boards', 'Jobs, classifieds, fosters and rescues, a board for each in your city. Post what you need, offer what you have, help an animal home.'],
+          ['partner-group-partner.jpg', 'Events in Your City', 'Potlucks, meetups, festivals and sanctuary days near you, on one calendar. Open one for the details and its official page.'],
+          ['restaurant-guide/t-promos.jpg', 'Most Voted Places', 'Every chapter shows the places its members vote to the top, so you always know where locals love to eat and shop.'],
+          ['vegan-abroad.jpg', 'Where We Go Next', 'Not seeing your city yet? Vote for the next chapter, or suggest one. Members tell us where to open next.']
+        ] });
     },
     events: function () {
       return section('events', 'Find your way', 'Vegan events in your city and around the world.',
@@ -319,25 +324,33 @@
   var playBtn = document.getElementById('dgPlay'), PLAY = { at: 0, playing: false, started: false };
   function vid() { return document.getElementById('wgVideo'); }
   // Each section page plays its own short video in Liz's frame once its script is approved and recorded.
-  var CLIPS = { overview: [0, 1e9] }; // a section joins once its own video is recorded (Sean: no borrowed tour parts)
+  // Each section's own video (Sean, 2026-11-09: no borrowed tour parts): Liz's approved line over that page's shots, captions from her word timings.
+  var MEDIA = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/';
+  var SEC = { directory: 'sec-directory-v1' };
+  var CLIPS = { overview: [0, 1e9] };
+  Object.keys(SEC).forEach(function (k) { CLIPS[k] = [0, 1e9]; });
+  function cur() {
+    if (curTab === 'overview' || !SEC[curTab]) return { src: VIDEO.src, vtt: VIDEO.vtt, poster: VIDEO.poster, ga: 'welcome_tour_v' + VIDEO.v };
+    return { src: MEDIA + SEC[curTab] + '.mp4', vtt: '/public/guides/welcome/' + SEC[curTab] + '.vtt', poster: pic(tab(curTab).scene), ga: 'welcome_' + SEC[curTab] };
+  }
   function clip() { return CLIPS[curTab] || null; }
   function chAt(t) { var n = 0; CH_AT.forEach(function (x, i) { if (t >= x - 0.05) n = i; }); return n; }
   // The tour plays in Liz's frame on the Overview (Sean, 2026-11-09: "the video plays on the right where you see Liz"), the Holiday Guide's way.
   function setVideo(box) {
     var v = vid(), ov = box.querySelector('.hg-rplay');
+    if (v && v.getAttribute('data-for') !== curTab) { v.pause(); v.remove(); v = null; PLAY.started = false; PLAY.ga = 0; }
     if (!clip()) { if (v) { v.pause(); v.remove(); } if (ov) ov.hidden = true; var ex0 = box.querySelector('.hg-expand'); if (ex0) ex0.hidden = true; return; }
     if (!v) {
       v = document.createElement('video'); v.id = 'wgVideo';
-      v.playsInline = true; v.preload = 'none'; v.setAttribute('playsinline', ''); v.poster = VIDEO.poster; v.src = VIDEO.src;
+      v.playsInline = true; v.preload = 'none'; v.setAttribute('playsinline', ''); var m = cur(); v.poster = m.poster; v.src = m.src; v.setAttribute('data-for', curTab);
       v.setAttribute('aria-label', 'Welcome to Vegans Explore, the tour with Liz');
-      v.innerHTML = '<track kind="captions" srclang="en" label="English" default src="' + VIDEO.vtt + '">';
+      v.innerHTML = '<track kind="captions" srclang="en" label="English" default src="' + m.vtt + '">';
       try { v.textTracks[0].mode = window.innerWidth > 900 ? 'showing' : 'hidden'; } catch (e) {}
       v.addEventListener('click', function () { if (v.paused) startVid(); else v.pause(); });
       box.insertBefore(v, box.firstChild);
     }
     if (!ov) { ov = document.createElement('button'); ov.type = 'button'; ov.className = 'hg-rplay'; ov.setAttribute('aria-label', 'Play the tour'); ov.innerHTML = '&#9654;'; box.appendChild(ov);
       ov.addEventListener('click', function () { toggleTour(); }); }
-    var pst = curTab === 'overview' ? VIDEO.poster : pic(tab(curTab).scene); if (v.getAttribute('poster') !== pst) v.poster = pst;
     ov.hidden = !v.paused;
     if (!box.querySelector('.hg-expand')) {
       box.insertAdjacentHTML('beforeend', '<button type="button" class="hg-expand" aria-label="Expand Liz">Expand</button>');
@@ -348,7 +361,7 @@
   function startVid() {
     var v = vid(); if (!v) return; PLAY.started = true;
     var p = v.play(); if (p && p.catch) p.catch(function () {});
-    if (!PLAY.ga) { PLAY.ga = 1; try { gtag('event', 'video_start', { video: 'welcome_tour_v' + VIDEO.v }); } catch (e) {} }
+    if (!PLAY.ga) { PLAY.ga = 1; try { gtag('event', 'video_start', { video: cur().ga }); } catch (e) {} }
   }
   function paintPlay() {
     var c = clip();
@@ -383,7 +396,7 @@
       var v = e.target;
       if (ev === 'play') { PLAY.playing = true; PLAY.started = true; }
       if (ev === 'pause' || ev === 'ended') PLAY.playing = false;
-      if (ev === 'ended') { try { gtag('event', 'video_complete', { video: 'welcome_tour_v' + VIDEO.v }); } catch (er) {} }
+      if (ev === 'ended') { try { gtag('event', 'video_complete', { video: cur().ga }); } catch (er) {} }
       var n = chAt(v.currentTime), c = clip();
       // A section's clip stops at its end and waits at its start for the next Play.
       if (c && curTab !== 'overview' && ev === 'timeupdate' && v.currentTime >= c[1]) { v.pause(); try { v.currentTime = c[0]; } catch (er) {} }
@@ -407,13 +420,13 @@
     }
     var v = vid(), c = clip() || [0, 1e9], at = v && v.currentTime > c[0] && v.currentTime < c[1] ? v.currentTime : (curTab === 'overview' ? CH_AT[PLAY.at] : c[0]);
     if (v) v.pause();
-    lb.innerHTML = '<div class="hg-lb-in"><button type="button" class="hg-lb-x">Close</button><video controls playsinline autoplay poster="' + esc(VIDEO.poster) + '" src="' + esc(VIDEO.src) + '"><track kind="captions" srclang="en" label="English" default src="' + esc(VIDEO.vtt) + '"></video></div>';
+    lb.innerHTML = '<div class="hg-lb-in"><button type="button" class="hg-lb-x">Close</button><video controls playsinline autoplay poster="' + esc(cur().poster) + '" src="' + esc(cur().src) + '"><track kind="captions" srclang="en" label="English" default src="' + esc(cur().vtt) + '"></video></div>';
     lb.hidden = false; document.documentElement.style.overflow = 'hidden';
     var lv = lb.querySelector('video');
     lv.addEventListener('loadedmetadata', function () { try { lv.currentTime = at; lv.textTracks[0].mode = 'showing'; } catch (e) {} }, { once: true });
     if (curTab !== 'overview') lv.addEventListener('timeupdate', function () { if (lv.currentTime >= c[1]) lv.pause(); });
     lv.play().catch(function () {});
-    try { gtag('event', 'video_expand', { video: 'welcome_tour_v' + VIDEO.v }); } catch (e) {}
+    try { gtag('event', 'video_expand', { video: cur().ga }); } catch (e) {}
     lb.querySelector('.hg-lb-x').focus();
   }
   function closeExpand() {
