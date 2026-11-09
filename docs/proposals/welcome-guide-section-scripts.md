@@ -7,7 +7,8 @@ about every 3 seconds (canon-video-shot-pace), 4:5, captions on. Nothing is reco
 ## The pattern for every page (Sean, 2026-11-09)
 
 "We're trying to get them to be members with this. So we always want to reiterate, as a member..." Every page's line names what is there, then
-"we want to hear from you", what a member can do to shape it, and ends with "Membership is free" before the last step.
+"we want to hear from you", what a member can do to shape it, and ends with "Membership is free", why we ask for the survey (real people joining keeps it worth their time) and an invitation to
+bring people in (friends, their community, new Vegans and Pre-Vegans) before the last step (Sean, 2026-11-09).
 
 ## 2. Search and the Directory (v3, approved by Sean 2026-11-09; recorded `sec-directory-v1`, 48 s, stt matched; video approved and live)
 
@@ -18,11 +19,11 @@ About 40 seconds.
 Shots (each about 3 s, Sample stamp on any demo shot): Liz's Directory scene; the Directory banner and city picker; Local Food cards; a listing page;
 Products; Services; Media; Community; People; Submit listing; the Feedback button; a card's Vote button; the city picker on South Florida; Liz's scene again.
 
-## 3. Your City (draft v1 for Sean)
+## 3. Your City (draft v2 for Sean)
 
-About 40 seconds.
+About 50 seconds.
 
-> This is your city. Every chapter has its own home. The Daily Pulse is a short briefing every morning with the news that matters. The boards are where people post jobs, things for sale, fosters and rescues. You will find what is happening this week, and the places members vote to the top. We want to hear from you. As a member, you shape your city: comment on the Pulse, post on the boards, send us a hot tip, let us know if something needs to be fixed, and vote for your chapter. Do not see your city yet? Vote for where we should go next. Membership is free. Find your city, and say hello.
+> This is your city. Every chapter has its own home. The Daily Pulse is a short briefing every morning with the news that matters. The boards are where people post jobs, things for sale, fosters and rescues. You will find what is happening this week, and the places members vote to the top. We want to hear from you. As a member, you shape your city: comment on the Pulse, post on the boards, send us a hot tip, let us know if something needs to be fixed, and vote for your chapter. Do not see your city yet? Vote for where we should go next. Membership is free. We ask for a short survey so we know real people are joining, and that keeps this community worth your time. And the best way to bring your city to life is to bring people in: invite your friends, your community, new Vegans and Pre-Vegans, so they can use these tools with you. Find your city, and say hello.
 
 Shots (each about 3 s): Liz's city scene; the Communities page; a chapter hub's banner; today's Daily Pulse; the boards (Jobs, Classifieds, Fosters,
 Rescues); the hub's Events; Most voted in the chapter; Liz's Make It Better scene; a Pulse comment box; Suggest a Topic with a hot tip; the Feedback
