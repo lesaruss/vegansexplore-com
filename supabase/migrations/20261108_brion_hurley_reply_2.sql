@@ -16,7 +16,7 @@ Thank you for all of this. It''s exactly the kind of feedback we need right now.
 
 Einstein Bros is in the Airport Guide: Terminal 3, Concourse E, after security, with the plain bagel and avocado. We credited you 50 points for it.
 
-You''re right that the report form wants you at the airport. That makes sense for confirming something is still there, but not for telling us about a place after the fact, from home. We''re changing that so members can send new places from wherever they are.
+You''re right that the report form wanted you at the airport. That makes sense for confirming something is still there, but not for telling us about a place after your trip. That''s fixed now: when you add something missing or leave a comment, pick "I am not there now." The team checks it like any report, and it earns half the points.
 
 My Saves: your save on South Florida did work. My Saves only showed places and podcast episodes, so it looked empty. It has a Communities section now.
 
@@ -30,3 +30,9 @@ on conflict (campaign_slug, step) do nothing;
 insert into ve_outreach_campaign_members (campaign_slug, person_key, person_name, person_id, step, send_status)
 select 'reply-brion-hurley-2026-11-b', 'brionhurley@gmail.com', 'Brion Hurley', null, 0, 'waiting'
 where not exists (select 1 from ve_outreach_campaign_members where campaign_slug = 'reply-brion-hurley-2026-11-b' and person_key = 'brionhurley@gmail.com' and removed_at is null);
+
+-- 2026-11-09: the off-site paragraph now says it is live (report from anywhere, 20261109_venue_reports_off_site.sql), not a promise.
+update ve_outreach_campaign_emails set body = replace(body,
+  'You''re right that the report form wants you at the airport. That makes sense for confirming something is still there, but not for telling us about a place after the fact, from home. We''re changing that so members can send new places from wherever they are.',
+  'You''re right that the report form wanted you at the airport. That makes sense for confirming something is still there, but not for telling us about a place after your trip. That''s fixed now: when you add something missing or leave a comment, pick "I am not there now." The team checks it like any report, and it earns half the points.')
+where campaign_slug = 'reply-brion-hurley-2026-11-b' and step = 1;
