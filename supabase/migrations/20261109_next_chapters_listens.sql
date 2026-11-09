@@ -19,7 +19,7 @@ update public.ve_next_chapters c set listen_match = m.v::jsonb from (values
  ('new-zealand', '{"places":[{"country":"NZ"}],"mentions":["new zealand","auckland","wellington","christchurch"]}'),
  ('japan', '{"places":[{"country":"JP"}],"mentions":["japan","tokyo","osaka","kyoto"]}'),
  ('seattle', '{"places":[{"country":"US","province":"Washington","cities":["Seattle","Bellevue","Redmond","Kirkland","Tacoma","Everett","Renton","Kent","Bothell","Lynnwood","Issaquah","Sammamish","Shoreline","Federal Way","Auburn","Burien","Tukwila","Mercer Island","Woodinville","Edmonds"]}],"mentions":["seattle","tacoma"]}'),
- ('san-francisco', '{"places":[{"country":"US","province":"California","cities":["San Francisco","Oakland","Berkeley","Daly City","South San Francisco","Alameda","San Mateo","Emeryville","Sausalito","Burlingame","San Bruno","Millbrae","Mill Valley","San Rafael","Richmond","El Cerrito","Albany","San Leandro","Pacifica","Redwood City","Palo Alto"]}],"mentions":["san francisco","bay area","oakland","berkeley"]}')
+ ('san-francisco', '{"places":[{"country":"US","province":"California","cities":["San Francisco","Oakland","Berkeley","Daly City","South San Francisco","Alameda","San Mateo","Emeryville","Sausalito","Burlingame","San Bruno","Millbrae","Mill Valley","San Rafael","Richmond","El Cerrito","Albany","San Leandro","Pacifica"]}],"mentions":["san francisco","bay area","oakland","berkeley"]}')
 ) as m(slug, v) where c.slug = m.slug and c.listen_match is null;
 
 -- Mentions: each episode (ref) once, a name matching the mention's place, and its country when the name says one.

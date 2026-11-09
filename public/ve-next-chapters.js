@@ -8,7 +8,10 @@
    VENextChapters.mount(el)       draws the board alone.
    Places are ve_next_chapters rows (a new place is a row); votes are ve-votes next_vote, once every 24 hours per member, like a
    chapter's; Suggest another place is ve-votes next_suggest (members, 3 a day, emailed to the team, added by hand). Signed out,
-   Vote and Suggest open the members window (VEVotes). Load after /public/ve-auth.js. */
+   Vote and Suggest open the members window (VEVotes). Load after /public/ve-auth.js.
+   Each place also shows its podcast listeners (2026-11-09): next_list returns downloads (all time, our four shows, from Captivate, added up
+   by branddesk-insights next_places for the place's listen_match, daily cron ve-next-places), listen_top and mentions (episodes that named
+   it, ve_place_mentions). With equal votes, more downloads ranks higher. */
 (function () {
   if (window.VENextChapters) return;
   var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-votes';
@@ -87,7 +90,7 @@
     // of our episodes talked about it (ve_place_mentions). Shown only when there is something to show.
     function pod(p) {
       var d = Number(p.downloads || 0), m = Number(p.mentions || 0), bits = [];
-      if (d > 0) bits.push(d.toLocaleString() + ' podcast download' + (d === 1 ? '' : 's'));
+      if (d > 0) bits.push(d.toLocaleString() + ' download' + (d === 1 ? '' : 's'));
       if (m > 0) bits.push('on ' + m + ' episode' + (m === 1 ? '' : 's'));
       if (!bits.length) return '';
       var top = (p.listen_top || []).map(function (t) { return t.name + ' ' + Number(t.n).toLocaleString(); }).join(', ');
@@ -102,7 +105,7 @@
         '<button type="button" class="nx-btn' + (voted ? ' on' : '') + '" data-nx-vote="' + esc(p.slug) + '" aria-label="Vote for ' + esc(p.name) + '">' + (voted ? 'Voted' : 'Vote') + '</button></span></li>';
     }
     function draw() {
-      var list = places.slice().sort(function (a, b) { return (b.votes - a.votes) || (b.voters - a.voters) || (a.sort - b.sort); });
+      var list = places.slice().sort(function (a, b) { return (b.votes - a.votes) || (b.voters - a.voters) || ((b.downloads || 0) - (a.downloads || 0)) || (a.sort - b.sort); });
       var top = list.slice(0, TOP), rise = list.slice(TOP);
       el.classList.toggle('short', !open);
       el.innerHTML = '<div class="nx-eye">Coming next</div><h2>Where should we go next?</h2>' +

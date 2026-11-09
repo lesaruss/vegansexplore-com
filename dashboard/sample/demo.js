@@ -64,7 +64,7 @@
   // Public reads that may go to the live site (no token, nothing written).
   var PUBLIC = {
     've-events': ['list', 'event', 'kinds'], 've-board': ['list', 'topic', 'post'], 've-podcast': ['episodes', 'episode'],
-    've-votes': ['stats', 'chapter_stats', 'points'], 've-search': ['search'], 've-guide-unlock': [], 've-media': true
+    've-votes': ['stats', 'chapter_stats', 'points', 'next_list'], 've-search': ['search'], 've-guide-unlock': [], 've-media': true
   };
 
   // ---- the sample's own data ----------------------------------------------------------------------------------------
@@ -155,7 +155,7 @@
       },
       list_my_campaigns: { campaigns: [] }, my_applications: { applications: [] }, '*': { ok: true, items: [], rewards: [], opportunities: [] }
     },
-    've-votes': { today: { ok: true, votes: [] }, chapter_today: { ok: true, voted: [] } },
+    've-votes': { today: { ok: true, votes: [] }, chapter_today: { ok: true, voted: [] }, next_today: { next: {} } },
     've-dashboard': {
       home: function () {
         return { ok: true, member_id: MEMBER.id, founding_member: true, survey_prompt: false, version: 'member', listings: [],
