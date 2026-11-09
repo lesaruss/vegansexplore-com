@@ -39,7 +39,7 @@
     { k: 'directory', scene: 'welcome/liz-directory.jpg', label: 'Search and the Directory', pic: 'thumb-directory.jpg', lead: 'pascal', say: 'Press Play and I will walk you through the Directory. When you are ready, view it and pick your city.' },
     { k: 'city', scene: 'welcome/liz-city.jpg', label: 'Your City', pic: 'thumb-community.jpg', lead: 'river', say: 'Press Play and I will walk you through your city. Then find your chapter and say hello.' },
     { k: 'events', scene: 'welcome/liz-events.jpg', label: 'Events', pic: 'vegan-events-guide.jpg', lead: 'river', say: 'Press Play and I will walk you through Events. Then pick a place and find something to do this week.' },
-    { k: 'media', scene: 'welcome/liz-media.jpg', label: 'Media', pic: 'holiday/p-listen.jpg', lead: 'kai', say: 'Our shows and the community\'s favorites, playing right on the page.' },
+    { k: 'media', scene: 'welcome/liz-media.jpg', label: 'Media', pic: 'holiday/p-listen.jpg', lead: 'kai', say: 'Here is everything in Media. Press Play on something good today.' },
     { k: 'guides', scene: 'welcome/liz-guides.jpg', label: 'Guides', pic: 'welcome-guide.jpg', lead: 'maya', say: 'Every Guide in one place. Some are free with a short survey, and the rest are yours with points.' },
     { k: 'points', scene: 'welcome/liz-points.jpg?v=2', label: 'Points and Levels', pic: 'thumb-bounties.jpg', lead: 'theo', say: 'Here is how points work: how you earn them, what they are for, and how you level up.' },
     { k: 'paths', scene: 'welcome/liz-paths.jpg', label: 'Your Path and Badges', pic: 'thumb-passport.jpg', lead: 'kai', say: 'Everyone starts as an Explorer. If you run something, your path takes you further.' },
@@ -221,11 +221,16 @@
         ] });
     },
     media: function () {
-      return section('media', 'Find your way', 'Our shows, and the podcasts, documentaries and books the community votes to the top.',
-        'Media holds our own shows, like the Vegans Explore Podcast, and the top 12 podcasts, documentaries and books, as voted by members. You listen right on the page.',
-        ['Open Media and pick Podcasts, Documentaries or Books.', 'Press Play on any episode; it keeps playing while you look around.', 'Open a show to see every episode.'],
-        ['<b>Vote</b> for the shows, films and books you love.', '<b>Save</b> episodes to My Saves.'],
-        [['Open Media', '/media']]) + explorerCard();
+      return sectionPage('media', { kicker: 'Find your way', title: 'Shows, films and books worth your time', pic: 'holiday/p-listen.jpg', group: 'In Media',
+        how: ['<b>Read the parts below.</b> Each one is part of Media.', '<b>Press Play</b> on any episode; it keeps playing while you look around.'],
+        go: ['Open Media', '/media'], ctaTitle: 'Go press Play.', ctaText: 'Our shows and the community\'s favorites, right on the page. Open to everyone.',
+        parts: [
+          ['restaurant-guide/t-pulse.jpg', 'Our Shows', 'The Vegans Explore Podcast, SoFlo Vegans and Pre-Vegans: years of conversations with the people building this movement.'],
+          ['holiday/p-listen.jpg', 'Top Podcasts', 'The podcasts the community votes to the top, every episode playable right on the page.'],
+          ['creator-guide.jpg', 'Documentaries', 'Films that changed how people see food and animals, with where to watch them and our talks with the people who made them.'],
+          ['restaurant-guide/t-mylist.jpg', 'Books', 'Cookbooks, memoirs and health books, including the ones our guests talk about on the shows.'],
+          ['partner-official-creator.jpg', 'Join Our Network', 'Host a podcast? Apply to join the Vegans Explore Podcast Network.']
+        ] });
     },
     guides: function () {
       return section('guides', 'Find your way', 'A Guide is a mini website about one topic, walked through by one of our Guides. This one is the first.',

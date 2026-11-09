@@ -29,7 +29,7 @@ Shots (each about 3 s): Liz's city scene; the Communities page; a chapter hub's 
 Rescues); the hub's Events; Most voted in the chapter; Liz's Make It Better scene; a Pulse comment box; Suggest a Topic with a hot tip; the Feedback
 window; a chapter's Vote; Where should we go next; the free survey; the Communities page; Liz's scene again.
 
-## 4. Events (v1, approved by Sean 2026-11-09; recorded `sec-events-v1`, 64 s, stt matched; video `sec-events-v1` rendered, waiting on Sean's look)
+## 4. Events (v1, approved by Sean 2026-11-09; recorded `sec-events-v1`, 64 s, stt matched; video `sec-events-v2` approved and live, with the ticket shot recaptured after the wording fix)
 
 About 60 seconds.
 
@@ -37,6 +37,12 @@ About 60 seconds.
 
 Subjects (one city each): the calendar; filters; checked events; tickets; I'm going and submit; fix and claim; free and the survey; bring people in; points.
 
-## 5 to 11
+## 5. Media (draft v1 for Sean)
 
-Written one at a time after page 4 is approved.
+About 60 seconds.
+
+> This is Media. Our own shows, like the Vegans Explore Podcast, bring you years of conversations with the people building this movement. Next to them are the podcasts, documentaries and books the community votes to the top. Press Play and listen right on the page while you keep looking around. Documentaries show where to watch them, and books link to their own pages. We want to hear from you. As a member, you shape what rises here: vote for the shows, films and books you love, save episodes to My Saves, let us know if something needs to be fixed, and if you host a podcast, apply to join our network. Membership is free. We ask for a short survey so we know real people are joining, and that keeps this community worth your time. Bring people with you: invite your friends, your community, new Vegans and Pre-Vegans. And you earn points for everybody who joins using your link. That is the easiest way to grow your experience and open new doors in our community. Press Play on something good today.
+
+## 6 to 11
+
+Written one at a time after page 5 is approved.
