@@ -860,6 +860,7 @@
 <script src="/public/ve-hubs.js"></script>
 <script src="/public/ve-city-banner.js"></script>
 <script src="/public/ve-chapters.js"></script>
+<script src="/public/ve-next-chapters.js"></script>
 <script src="/public/ve-events.js"></script>
 <script src="/public/ve-media.js"></script>
 <script src="/public/ve-episodes.js"></script>
@@ -1748,6 +1749,7 @@
     var row = document.getElementById('dash-community-row');
     if (!row || !window.VEChapters) return;
     if (dashChapters) { dashChapters.redraw(); return; }
+    if (window.VENextChapters) VENextChapters.beside(row);
     dashChapters = VEChapters.mount(row, { url: false, onSave: function (slug, on, list) {
       currentMember = Object.assign({}, currentMember, { communities: list || [] });
       try { renderModalGrid(); } catch (e) {}

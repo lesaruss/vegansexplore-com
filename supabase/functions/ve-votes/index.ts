@@ -17,6 +17,12 @@
 // POST { action: 'chapter_stats' }        no sign-in needed  -> { chapters: [{chapter, votes, voters, members, places, events}] }
 // POST { action: 'chapter_vote', chapter } Authorization   -> { ok, votes, next_vote_at } | 409 already_voted | 402
 // POST { action: 'chapter_today' }        Authorization     -> { next: { chapter: next_vote_at } }
+// POST { action: 'next_list' }            no sign-in needed  -> { places: [{slug, name, sub, sort, votes, voters}] }
+// POST { action: 'next_today' }           Authorization     -> { next: { place: next_vote_at } }
+// POST { action: 'next_vote', place }     Authorization     -> { ok, votes, next_vote_at } | 409 already_voted | 402
+// POST { action: 'next_suggest', place, why? } Authorization -> { ok }  members, 3 a day; emailed to the team
+//   Where should we go next? (Sean, 2026-11-09, playbook ve-chapter-rankings): places we may open as chapters, voted once every 24
+//   hours per member (ve_next_chapter_votes, migration 20261109_next_chapters.sql). Votes guide us, they do not decide.
 //   Communities as cards (Sean, 2026-11-01: "set up like they're in a directory listing... vote for them... save them"); a chapter
 //   vote is once every 24 hours per member like a listing's (ve_chapter_votes, migration 20261101_chapter_votes.sql). Saving a
 //   chapter is joining it (ve-auth join_community).
@@ -68,6 +74,14 @@ const todayEastern = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America
 const DAY_MS = 24 * 60 * 60 * 1000;
 const CHAPTERS = ['south-florida', 'central-florida', 'north-florida', 'atlanta', 'washington-dc', 'delaware', 'maryland',
   'virginia', 'west-virginia', 'new-york', 'philadelphia', 'los-angeles', 'london'];
+const RESEND_KEY = Deno.env.get('RESEND_API_KEY') ?? '';
+const esc = (x: string) => x.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] as string));
+async function memberOk(id: string) {
+  const { data: m } = await db.from('members').select('membership_status, standing, name, email, member_class').eq('id', id).maybeSingle();
+  if (m && m.standing && m.standing !== 'good') return { err: json({ error: 'account_not_in_good_standing', message: 'Your account is on hold. Write to contact@lesaruss.com and we will help.' }, 403) };
+  if (!m || m.membership_status !== 'active') return { err: json({ error: 'payment_required', message: 'Join free with a short survey to vote for where Vegans Explore opens next.' }, 402) };
+  return { m };
+}
 const nextAt = (createdAt: string) => new Date(new Date(createdAt).getTime() + DAY_MS).toISOString();
 
 Deno.serve(async (req) => {
@@ -88,6 +102,12 @@ Deno.serve(async (req) => {
     const { data, error } = await db.rpc('ve_chapter_stats');
     if (error) return json({ error: 'stats_failed' }, 500);
     return json({ chapters: data || [] });
+  }
+
+  if (body.action === 'next_list') {
+    const { data, error } = await db.rpc('ve_next_chapter_stats');
+    if (error) return json({ error: 'list_failed' }, 500);
+    return json({ places: data || [] });
   }
 
   const token = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
@@ -116,6 +136,52 @@ Deno.serve(async (req) => {
     if (error) return json({ error: error.code === '23505' ? 'already_voted' : 'vote_failed' }, error.code === '23505' ? 409 : 500);
     const { count } = await db.from('ve_chapter_votes').select('id', { count: 'exact', head: true }).eq('chapter', ch);
     return json({ ok: true, votes: count ?? null, next_vote_at: nextAt(row.created_at) });
+  }
+
+  if (body.action === 'next_today') {
+    const since = new Date(Date.now() - DAY_MS).toISOString();
+    const { data } = await db.from('ve_next_chapter_votes').select('place, created_at').eq('member_id', memberId).gt('created_at', since);
+    const next: Record<string, string> = {};
+    for (const r of data || []) next[r.place] = nextAt(r.created_at);
+    return json({ next });
+  }
+
+  if (body.action === 'next_vote') {
+    if (lesaruss) return json({ error: 'not_available' }, 403);
+    const place = String(body.place || '');
+    const { data: pl } = await db.from('ve_next_chapters').select('slug').eq('slug', place).eq('status', 'open').maybeSingle();
+    if (!pl) return json({ error: 'bad_place' }, 400);
+    const ok = await memberOk(memberId); if (ok.err) return ok.err;
+    const { data: last } = await db.from('ve_next_chapter_votes').select('created_at').eq('member_id', memberId).eq('place', place)
+      .order('created_at', { ascending: false }).limit(1).maybeSingle();
+    if (last && Date.now() - new Date(last.created_at).getTime() < DAY_MS) return json({ error: 'already_voted', next_vote_at: nextAt(last.created_at) }, 409);
+    const { data: row, error } = await db.from('ve_next_chapter_votes').insert({ member_id: memberId, place, vote_date: todayEastern() }).select('created_at').single();
+    if (error) return json({ error: error.code === '23505' ? 'already_voted' : 'vote_failed' }, error.code === '23505' ? 409 : 500);
+    const { count } = await db.from('ve_next_chapter_votes').select('id', { count: 'exact', head: true }).eq('place', place);
+    return json({ ok: true, votes: count ?? null, next_vote_at: nextAt(row.created_at) });
+  }
+
+  if (body.action === 'next_suggest') {
+    if (lesaruss) return json({ error: 'not_available' }, 403);
+    const place = String(body.place || '').trim().slice(0, 120), why = String(body.why || '').trim().slice(0, 600);
+    if (place.length < 2) return json({ error: 'place_needed' }, 400);
+    const ok = await memberOk(memberId); if (ok.err) return ok.err;
+    const since = new Date(Date.now() - DAY_MS).toISOString();
+    const { count } = await db.from('ve_next_chapter_suggestions').select('id', { count: 'exact', head: true }).eq('member_id', memberId).gt('created_at', since);
+    if ((count ?? 0) >= 3) return json({ error: 'too_many', message: 'Thanks. That is three today; send more tomorrow.' }, 429);
+    const { error } = await db.from('ve_next_chapter_suggestions').insert({ member_id: memberId, place, why: why || null });
+    if (error) return json({ error: 'save_failed' }, 500);
+    const m: any = ok.m;
+    if (RESEND_KEY && !/\[TEST\]/i.test(String(m?.name || ''))) {
+      try {
+        await fetch('https://api.resend.com/emails', { method: 'POST', headers: { Authorization: `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ from: 'VEGANS EXPLORE <hello@vegansexplore.com>', to: ['contact@lesaruss.com'], reply_to: m?.email || undefined,
+            subject: `[Next chapter] ${place}`,
+            html: `<p><b>${esc(String(m?.name || 'A member'))}</b> suggests a chapter in <b>${esc(place)}</b>.</p>` + (why ? `<p>${esc(why)}</p>` : '') +
+              `<p>Saved in ve_next_chapter_suggestions. Add it to the board with a ve_next_chapters row.</p>` }) });
+      } catch (_) { /* the row is saved either way */ }
+    }
+    return json({ ok: true });
   }
 
   if (body.action === 'contribute') {
