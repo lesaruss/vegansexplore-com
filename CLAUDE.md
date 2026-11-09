@@ -6763,6 +6763,14 @@ Insights room, no freestyling** (canon `canon-template-gate` v5). BrandDesk > Me
 client mode: Web (GA4 433904174, data from Oct 30), Clients (Coach OS: leads with bots left out, new clients, check-ins, sales), Social and SEO waiting on her Show me
 how steps, Podcast (Vegans Who Lift via `branddesk-insights` `PODCAST_SHOWS['meatless-muscle']`, no Uploads), Analysis; never Ads, Campaigns, platform tables.
 `/api/branddesk/insights` admits a client for their own brand's read-only parts (middleware lets that path through). Proven signed in as a throwaway example.com client.
+**Show me how: one set of steps, two drivers (Sean, 2026-11-09; handoff `docs/handoff/2026-11-09-brooke-sellers-show-me-how-two-drivers.md`).** Not built. Each
+connection step is its own short clip; V stops after each, then **Done** or **I have a question** (a chat with V on that step; the client desk has no V chat yet).
+**The client drives it** (self-serve) on Get set up > Show me how. **Sean drives it** (managed) on a staff-only **Run the Hot Lab** view: the same steps as his run
+sheet on the call (the line to say, a tick, what she should see, the fix if she is stuck) plus our own steps (create the Metricool brand, connect Instagram,
+YouTube and TikTok while she approves, Search Console, check Insights); ticks show Done on her Get set up. Brooke's setup is done live with Sean on her Hot Lab; she
+gets no videos. Self-serve clients never hand over passwords or keys (no key room): Connect buttons, likely Metricool's connect link (to verify) and Google's
+read-only analytics address with Restricted access (Show me how's contact@lesaruss.com Full is for managed clients only). Scripts:
+`docs/proposals/brooke-show-me-how-scripts.md` (to be split into steps).
 
 ## Revenue on the dashboard (Sean, 2026-11-02)
 
