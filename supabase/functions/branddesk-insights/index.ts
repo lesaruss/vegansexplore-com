@@ -1121,18 +1121,73 @@ async function placeNews(kind: string, slug: string, names: string[]) {
   return { stories: leads, mentions: pm };
 }
 
+// YouTube Analytics for a place (2026-11-09): the channel's views and watch time from there, now and the period before. Read only; the channel
+// owner connected it once in BrandDesk (HQ /api/branddesk/google/connect?kind=youtube), which keeps YOUTUBE_ANALYTICS_REFRESH_TOKEN.
+// US states read by province (US-XX); a city list reads the top cities in its state or country (YouTube gives at most 250).
+async function ytToken(): Promise<string | null> {
+  const [id, sec, refresh] = await Promise.all([secret('GOOGLE_OAUTH_CLIENT_ID'), secret('GOOGLE_OAUTH_CLIENT_SECRET'), secret('YOUTUBE_ANALYTICS_REFRESH_TOKEN')]);
+  if (!id || !sec || !refresh) return null;
+  const r = await fetch('https://oauth2.googleapis.com/token', { method: 'POST', headers: { 'Content-Type': 'application/x-www-form-urlencoded' }, body: new URLSearchParams({ client_id: id, client_secret: sec, refresh_token: refresh, grant_type: 'refresh_token' }) });
+  const t = await r.json().catch(() => ({}));
+  if (!t.access_token) throw new Error('YouTube connection refused (' + (t.error_description || t.error || r.status) + '). Connect YouTube again.');
+  return t.access_token;
+}
+async function ytReport(tok: string, q: Record<string, string>) {
+  const u = new URL('https://youtubeanalytics.googleapis.com/v2/reports');
+  for (const [k, v] of Object.entries({ ids: 'channel==MINE', ...q })) u.searchParams.set(k, v);
+  const r = await fetch(u, { headers: { Authorization: 'Bearer ' + tok } });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error('YouTube Analytics: ' + (j?.error?.message || r.status));
+  const cols = (j.columnHeaders || []).map((c: any) => c.name);
+  return (j.rows || []).map((row: any[]) => Object.fromEntries(cols.map((c: string, i: number) => [c, row[i]])));
+}
+async function ytPeriod(tok: string, ms: PMatch[], from: string, to: string) {
+  const met = 'views,estimatedMinutesWatched';
+  const all = await ytReport(tok, { startDate: from, endDate: to, metrics: met });
+  let views = 0, minutes = 0; const cities = new Map<string, number>();
+  for (const m of ms) {
+    const code = String(m.country);
+    const abbr = m.province ? ABBR_OF[lcs(m.province)] : null;
+    if (m.cities?.length) {
+      const filters = code === 'US' && abbr ? `country==US;province==US-${abbr}` : `country==${code}`;
+      const rows = await ytReport(tok, { startDate: from, endDate: to, metrics: met, dimensions: 'city', filters, sort: '-views', maxResults: '250' });
+      const want = new Set(m.cities.map(lcs));
+      for (const r of rows) if (want.has(lcs(r.city))) { views += Number(r.views) || 0; minutes += Number(r.estimatedMinutesWatched) || 0; cities.set(String(r.city), (cities.get(String(r.city)) || 0) + (Number(r.views) || 0)); }
+    } else if (code === 'US' && abbr) {
+      const rows = await ytReport(tok, { startDate: from, endDate: to, metrics: met, dimensions: 'province', filters: 'country==US' });
+      for (const r of rows) if (r.province === 'US-' + abbr) { views += Number(r.views) || 0; minutes += Number(r.estimatedMinutesWatched) || 0; }
+      const cr = await ytReport(tok, { startDate: from, endDate: to, metrics: 'views', dimensions: 'city', filters: `country==US;province==US-${abbr}`, sort: '-views', maxResults: '25' }).catch(() => []);
+      for (const r of cr) cities.set(String(r.city), (cities.get(String(r.city)) || 0) + (Number(r.views) || 0));
+    } else {
+      const rows = await ytReport(tok, { startDate: from, endDate: to, metrics: met, dimensions: 'country' });
+      for (const r of rows) if (r.country === code) { views += Number(r.views) || 0; minutes += Number(r.estimatedMinutesWatched) || 0; cities.set(regionName(code), (cities.get(regionName(code)) || 0) + (Number(r.views) || 0)); }
+    }
+  }
+  return { views, minutes, channel_views: Number(all[0]?.views) || 0, cities: [...cities.entries()].sort((a, b) => b[1] - a[1]).slice(0, 25).map(([name, views]) => ({ name, views })) };
+}
+async function placeYouTube(ms: PMatch[], from: string, to: string) {
+  const tok = await ytToken();
+  if (!tok) return { connected: false };
+  const { pf, pt } = prevOf(from, to);
+  const [cur, prev] = await Promise.all([ytPeriod(tok, ms, from, to), ytPeriod(tok, ms, pf, pt)]);
+  const { data: s } = await db.from('lesaruss_secrets').select('description').eq('key', 'YOUTUBE_ANALYTICS_REFRESH_TOKEN').maybeSingle();
+  return { connected: true, channel: /for (.+?) \(/.exec(s?.description || '')?.[1] || null, from, to, prev_from: pf, prev_to: pt, ...cur, prev_views: prev.views, prev_minutes: prev.minutes,
+    note: 'YouTube places a view by the viewer\'s location; its numbers arrive a day or two late, and cities are only its top 250 in each state or country.' };
+}
+
 async function placeInsights(kind: string, slug: string, from: string, to: string, refresh: boolean) {
   const p = await placeOf(kind, slug);
   if (!p) return { error: 'no_place' };
   return cached(`ins:place:${kind}:${slug}:${from}:${to}`, 3 * H, refresh, async () => {
     const errors: string[] = [];
-    const [podcast, web, maps, news] = await Promise.all([
+    const [podcast, web, maps, news, youtube] = await Promise.all([
       placePodcast(p.matches, from, to).catch((e) => { errors.push('podcast: ' + (e as Error).message); return null; }),
       placeWeb(p.matches, from, to).catch((e) => { errors.push('web: ' + (e as Error).message); return null; }),
       socialMaps().catch((e) => { errors.push('social: ' + (e as Error).message); return null; }),
       placeNews(kind, slug, p.mentions).catch((e) => { errors.push('news: ' + (e as Error).message); return null; }),
+      placeYouTube(p.matches, from, to).catch((e) => { errors.push('youtube: ' + (e as Error).message); return null; }),
     ]);
-    return { connected: true, place: { kind, slug, name: p.name, matches: p.matches }, from, to, podcast, web, social: maps && (maps as any).connected ? { networks: socialIn(maps, p.matches), fetched_at: (maps as any).fetched_at ?? null } : null, news, errors };
+    return { connected: true, place: { kind, slug, name: p.name, matches: p.matches }, from, to, podcast, web, youtube, social: maps && (maps as any).connected ? { networks: socialIn(maps, p.matches), fetched_at: (maps as any).fetched_at ?? null } : null, news, errors };
   });
 }
 
