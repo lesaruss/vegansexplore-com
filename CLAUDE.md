@@ -13,6 +13,11 @@ chat only when switching playbooks, after two compactions, or when the summary h
 (`canon-wrap-up-standard` v3), not at a context percentage. The new-chat prompt is lean: playbook slug and task, checkpoint id, the SQL
 to read it, the first task.
 
+**Logan steers the degradation check** (Sean: "if you're leaving it on me, it won't happen"). When Sean complains about performance,
+missing or wrong information, forgotten rules or repeated mistakes, first check whether context is the cause (a `docs/history` file not
+read, a compaction that dropped it, canon not loaded), say so in the reply, and log the incident in playbook `signal-context-efficiency`.
+Two incidents in a week, or Sean saying quality is worse, triggers the rollback written there (restore CLAUDE.md from 88f460e).
+
 ### Compact Instructions
 
 When summarizing this conversation, always keep: the playbook slug and task; the one next action; every branch with unmerged work and its
