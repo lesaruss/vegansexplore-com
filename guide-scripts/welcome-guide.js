@@ -41,7 +41,7 @@
     { k: 'events', scene: 'welcome/liz-events.jpg', label: 'Events', pic: 'vegan-events-guide.jpg', lead: 'river', say: 'Press Play and I will walk you through Events. Then pick a place and find something to do this week.' },
     { k: 'media', scene: 'welcome/liz-media.jpg', label: 'Media', pic: 'holiday/p-listen.jpg', lead: 'kai', say: 'Press Play and I will walk you through Media. Then press Play on something good today.' },
     { k: 'guides', scene: 'welcome/liz-guides.jpg', label: 'Guides', pic: 'welcome-guide.jpg', lead: 'maya', say: 'Press Play and I will walk you through the Guides. Then pick an interest and try the free part of any Guide.' },
-    { k: 'points', scene: 'welcome/liz-points.jpg?v=2', label: 'Points and Levels', pic: 'thumb-bounties.jpg', lead: 'theo', say: 'Here is how points work: how you earn them, what they are for, and how you level up.' },
+    { k: 'points', scene: 'welcome/liz-points.jpg?v=2', label: 'Points and Levels', pic: 'thumb-bounties.jpg', lead: 'theo', say: 'Here is how points work. Join free and start with 250 points.' },
     { k: 'paths', scene: 'welcome/liz-paths.jpg', label: 'Your Path and Badges', pic: 'thumb-passport.jpg', lead: 'kai', say: 'Everyone starts as an Explorer. If you run something, your path takes you further.' },
     { k: 'better', scene: 'welcome/liz-better.jpg', label: 'Make It Better', pic: 'restaurant-guide/t-next.jpg', lead: 'liz', say: 'This is the part that matters most. Here is every way to tell us what is working and what is not.' },
     { k: 'animals', scene: 'welcome/liz-animals.jpg', label: 'For the Animals', pic: 'nonprofit-guide.jpg', lead: 'dani', say: 'Here is where it is all going, and how you can show up for the animals today.' },
@@ -245,11 +245,16 @@
         ] });
     },
     points: function () {
-      return section('points', 'Take part', 'Points come from taking part, never from buying them.',
-        'You earn points by doing things on Vegans Explore, spend them on what you want, and give them to the places and causes you care about. Your level comes from everything you have ever earned, so spending never lowers it.',
-        ['<b>Earn</b>: 250 for the survey, 10 for each check-in, bounties, 111 when a friend joins with your link, and more for each answer in your profile.', '<b>Use</b>: open a topic Guide (1,100), ask your Guide directly (4 a message), or bid on gift cards in the Vault where it is open (South Florida first).', '<b>Give</b>: boost a business or nonprofit you believe in from its page.', '<b>Level up</b>: Level 2 at 2,500 lifetime points, Level 3 at 10,000, Level 4 at 25,000.'],
-        ['<b>250 points</b> the day you join.', '<b>Your own link</b> to share: Share on any page adds it for you.', '<b>Bounties</b> in your city, paid in points.'],
-        [['See bounties', '/bounties']]) + explorerCard();
+      return sectionPage('points', { kicker: 'Take part', title: 'Earn them by taking part', pic: 'thumb-bounties.jpg', group: 'How points work',
+        how: ['<b>Read the parts below.</b> Each one is part of how points work.', '<b>Points are never bought.</b> They come from what you do here.'],
+        go: ['Start earning, free', '/survey?s=explorer'], ctaTitle: 'Start with 250 points.', ctaText: 'Take the short survey, join free, and your points start today.',
+        parts: [
+          ['thumb-bounties.jpg', 'Earn Points', 'The survey, check-ins, bounties, your profile answers and friends who join with your link all add points.'],
+          ['airport-guide.jpg', 'Use Points', 'Open topic Guides, ask your Guide directly, or bid on gift cards in the Vault where it is open.'],
+          ['nonprofit-guide.jpg', 'Give Points', 'Boost a business or nonprofit you believe in, right from its page.'],
+          ['thumb-passport.jpg', 'Level Up', 'Your level comes from everything you have ever earned, so spending never lowers it. Level 2 starts at 2,500.'],
+          ['partner-ambassador.jpg', 'Your Link', 'Share any page and your own link comes with it. Every friend who joins with it earns you 111 points.']
+        ] });
     },
     paths: function () {
       var P = [
