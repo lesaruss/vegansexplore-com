@@ -848,6 +848,7 @@
 <body>
 <script src="/public/ve-auth.js"></script>
 <script src="/public/ve-account-menu.js"></script>
+<script src="/public/ve-badges.js"></script>
 <script src="/public/dashboard-sections.js"></script>
 <!-- The ONE LESARUSS universal bar, served by LESARUSS HQ (2026-09-27, Sean:
      "It should be the same selector, no matter which brand I'm on"). This site
@@ -3742,7 +3743,7 @@
       }).join('');
       var owned = (d.listings || []).map(function (l) { return '<li><a href="/directory/' + encodeURIComponent(l.slug) + '" data-mc-listing="' + e(l.slug) + '">' + e(l.name) + '</a><span>' + (l.owner ? 'Owner' : 'Their profile') + '</span></li>'; }).join('');
       box.innerHTML = '<button type="button" class="dash-mc-x" aria-label="Close">&times;</button>' +
-        '<div class="dash-mc-top"><div class="dash-mc-av"' + (m.color && !m.avatar_url ? ' style="background:' + e(m.color) + '"' : '') + '>' + av + '</div>' +
+        '<div class="dash-mc-top"><div style="position:relative;flex-shrink:0;line-height:0"><div class="dash-mc-av"' + (m.color && !m.avatar_url ? ' style="background:' + e(m.color) + '"' : '') + '>' + av + '</div>' + (window.VEBadges ? VEBadges.corner(d.badges, 28) : '') + '</div>' +
         '<div style="min-width:0"><div class="dash-mc-name">' + e(name) + '</div>' + (m.email ? '<div class="dash-mc-email">' + e(m.email) + '</div>' : '') + '<div class="dash-mc-tags">' + tags + '</div>' + veBadgesHtml(d.badges) + '</div></div>' +
         // A super admin earns no points, so level and points read infinity (Sean, 2026-10-30: "I don't want to make the illusion
         // that I'm earning points"). Votes received shows when they have pages: listings they own or a People profile naming them.
@@ -4309,6 +4310,8 @@
   // Registered badges, one per finished business intake, the member's role in small text under it (canon-ve-door-guides v6, Sean 2026-11-06).
   function veBadgesHtml(list) {
     if (!list || !list.length) return '';
+    // The stamp badges (ve-explorer-path step 6, canon-ve-door-guides v10): public/ve-badges.js. The plain pills below stay as the fallback.
+    if (window.VEBadges) return VEBadges.pills(list);
     if (!document.getElementById('ve-badge-css')) {
       var st = document.createElement('style'); st.id = 've-badge-css';
       st.textContent = '.ve-badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.ve-badge{display:inline-flex;flex-direction:column;gap:1px;padding:6px 10px;border-radius:6px;background:var(--ve-green-soft,#e8f5e9);border:1px solid rgba(45,92,39,.22);color:#1f3f1b;line-height:1.25;max-width:100%}.ve-badge b{font-size:12px;font-weight:800;display:flex;align-items:center;gap:5px}.ve-badge i{font-style:normal;font-size:11px;color:rgba(0,0,0,.62)}';
@@ -4321,8 +4324,23 @@
   function dashApplyBadges(list) {
     var host = document.getElementById('dash-badges-host'); if (!host) return;
     var h = veBadgesHtml(list);
-    host.innerHTML = h ? '<p style="margin:0;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-text-50,rgba(0,0,0,.6))">Registered</p>' + h : '';
+    // The member picks their main badge (shown on the corner of their picture; never Explorer). With one path badge there is nothing to pick.
+    var paths = (list || []).filter(function (b) { return b && b.color && !b.explorer; });
+    var esc = function (t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+    var pick = paths.length > 1 ? '<label style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;font-size:13px;font-weight:700">Main badge, on your picture' +
+      '<select id="dash-main-badge" style="appearance:none;-webkit-appearance:none;font:600 13px Montserrat,sans-serif;padding:8px 40px 8px 12px;border:1px solid rgba(0,0,0,.18);border-radius:6px;background:#fff url(&quot;data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%276%27%3E%3Cpath d=%27M1 1l4 4 4-4%27 fill=%27none%27 stroke=%27%231a1a1a%27 stroke-width=%271.6%27/%3E%3C/svg%3E&quot;) no-repeat right 16px center">' +
+      paths.map(function (b) { return '<option value="' + esc(b.key) + '"' + (b.main ? ' selected' : '') + '>' + esc(b.badge) + '</option>'; }).join('') + '</select>' +
+      '<span id="dash-main-badge-msg" style="font-weight:600;color:rgba(0,0,0,.6)"></span></label>' : '';
+    host.innerHTML = h ? '<p style="margin:0;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-text-50,rgba(0,0,0,.6))">Your badges</p>' + h + pick : '';
     host.style.display = h ? '' : 'none';
+    var sel = document.getElementById('dash-main-badge');
+    if (sel) sel.addEventListener('change', function () {
+      var msg = document.getElementById('dash-main-badge-msg'); msg.textContent = 'Saving...';
+      dvCall({ action: 'set_main_badge', key: sel.value }).then(function (d) {
+        if (d && d.ok) { dashApplyBadges(d.badges); var m2 = document.getElementById('dash-main-badge-msg'); if (m2) m2.textContent = 'Saved'; }
+        else msg.textContent = 'That did not save. Try again.';
+      });
+    });
   }
   // After the $11, a prompt to take a survey (not required; membership_rule_v6, wording approved by Sean 2026-11-06). Not now hides it on this browser.
   function dashSurveyPrompt(show) {

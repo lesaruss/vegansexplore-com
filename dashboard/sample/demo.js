@@ -159,7 +159,8 @@
     've-dashboard': {
       home: function () {
         return { ok: true, member_id: MEMBER.id, founding_member: true, survey_prompt: false, version: 'member', listings: [],
-          badges: [{ badge: 'Explorer', role: 'Finished the Explorer survey' }, { badge: 'Registered event host', role: 'Hosts a monthly potluck' }],
+          badges: [{ key: 'badge-event-host', badge: 'Registered event host', color: '#7C3AED', role: 'Hosts a monthly potluck', main: true, explorer: false },
+            { key: 'badge-explorer', badge: 'Explorer', color: '#2D5C27', role: 'Finished the Explorer survey', main: false, explorer: true }],
           survey: { active: true, completed: false, earned: 210, total: 250 },
           cards: [
             { kind: 'new', title: 'ThanksLiving is in the Holiday Guide', body: 'Menus, recipes and events for November 26, free with Theo.', cta_url: '/guides/holiday-guide' },
