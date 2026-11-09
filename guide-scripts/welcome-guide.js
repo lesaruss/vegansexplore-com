@@ -280,7 +280,8 @@
           ['partner-community-manager.jpg', 'Ask a person', 'Not sure, or the Guide did not know? Members can ask a person on our team, free, and we write back.'],
           ['thumb-directory.jpg', 'Search for what is missing', 'Search for something we do not have yet, and it goes into our team\'s queue. It tells us what to add next.'],
           ['thumb-community.jpg', 'Tell us a place to add', 'Know a place, a person or a group we should list? Tell us from search or in your survey, and we check it.'],
-          ['restaurant-guide/t-pulse.jpg', 'Suggest a topic', 'Every city\'s board has Suggest a Topic, with hot tips for the Daily Pulse. Your votes count too.']
+          ['restaurant-guide/t-pulse.jpg', 'Suggest a topic', 'Every city\'s board has Suggest a Topic, with hot tips for the Daily Pulse. Your votes count too.'],
+          ['partner-official-creator.jpg', 'Nominate someone', 'Know someone in your community who should be spotlighted? Nominate them for the Daily Pulse and our shows. You can nominate yourself too.']
         ] });
     },
     animals: function () {
