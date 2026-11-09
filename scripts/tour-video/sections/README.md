@@ -13,3 +13,7 @@ on top and never moves. Liz's scenes stay full bleed with their own slow zoom. R
 **v3 (Sean, 2026-11-09: "if she talks about a different subject, then the background now switches")**: `GROUP` names each shot's subject; shots
 that share a subject share one city and one continuous zoom, and only the phone or card changes on top (a 0.4 s fade). A new subject, a new city.
 A long subject (more than about 3 shots) splits into two.
+
+**Fresh pictures per page (Sean, 2026-11-09: "we're using the same images over and over... focused more on media")**: each page's video gets its own
+Guide scenes about that page, made with the locked recipe (CLAUDE.md, Guide scenes), never the same Liz shot or illustration cards from earlier pages.
+Page 5's are `public/guides/welcome/liz-media-*.jpg` (studio, sofa, film, books, network, share, party; 14 Higgsfield credits).

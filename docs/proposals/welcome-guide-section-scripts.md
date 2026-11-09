@@ -37,7 +37,7 @@ About 60 seconds.
 
 Subjects (one city each): the calendar; filters; checked events; tickets; I'm going and submit; fix and claim; free and the survey; bring people in; points.
 
-## 5. Media (draft v1 for Sean)
+## 5. Media (v1, approved by Sean 2026-11-09; recorded `sec-media-v2` (take 1 said "wanna"), 63 s, stt matched; video `sec-media-v2` rendered with seven new Liz scenes, waiting on Sean's look)
 
 About 60 seconds.
 
