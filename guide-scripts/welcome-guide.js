@@ -38,7 +38,7 @@
     { k: 'overview', scene: 'welcome/liz-overview.jpg', label: 'Overview', say: 'Watch this video to get a full overview of Vegans Explore. Then click through each section to learn more about it.', sayMember: 'Welcome back. Watch this video any time for a full overview, then click through each section to go deeper.' },
     { k: 'directory', scene: 'welcome/liz-directory.jpg', label: 'Search and the Directory', pic: 'thumb-directory.jpg', lead: 'pascal', say: 'Press Play and I will walk you through the Directory. When you are ready, view it and pick your city.' },
     { k: 'city', scene: 'welcome/liz-city.jpg', label: 'Your City', pic: 'thumb-community.jpg', lead: 'river', say: 'Press Play and I will walk you through your city. Then find your chapter and say hello.' },
-    { k: 'events', scene: 'welcome/liz-events.jpg', label: 'Events', pic: 'vegan-events-guide.jpg', lead: 'river', say: 'Find something to do this week, near you or anywhere.' },
+    { k: 'events', scene: 'welcome/liz-events.jpg', label: 'Events', pic: 'vegan-events-guide.jpg', lead: 'river', say: 'Here is everything on the calendar. Pick a place and find something to do this week.' },
     { k: 'media', scene: 'welcome/liz-media.jpg', label: 'Media', pic: 'holiday/p-listen.jpg', lead: 'kai', say: 'Our shows and the community\'s favorites, playing right on the page.' },
     { k: 'guides', scene: 'welcome/liz-guides.jpg', label: 'Guides', pic: 'welcome-guide.jpg', lead: 'maya', say: 'Every Guide in one place. Some are free with a short survey, and the rest are yours with points.' },
     { k: 'points', scene: 'welcome/liz-points.jpg?v=2', label: 'Points and Levels', pic: 'thumb-bounties.jpg', lead: 'theo', say: 'Here is how points work: how you earn them, what they are for, and how you level up.' },
@@ -209,11 +209,16 @@
         ] });
     },
     events: function () {
-      return section('events', 'Find your way', 'Vegan events in your city and around the world.',
-        'Festivals, potlucks, meetups, sanctuary days and more, in our chapters and beyond. Our team checks every event before it shows.',
-        ['Open Events and pick a place: a continent, a country or a chapter.', 'Choose the kinds of events you want.', 'Open an event for the details and its official page.', 'Hosting one? Submit it, from a flyer, a link, or typed in.'],
-        ['<b>RSVP</b> with I\'m going.', '<b>Members-only tickets</b> for some events, like our group link for the Plant-Based Showcase.', '<b>Submit an event</b> and follow it from waiting to live.'],
-        [['See events', '/events']]) + explorerCard();
+      return sectionPage('events', { kicker: 'Find your way', title: 'Something to do, near you or anywhere', pic: 'holiday/p-events.jpg', group: 'On the calendar',
+        how: ['<b>Read the parts below.</b> Each one is part of Events.', '<b>Pick a place</b> and the kinds of events you like, then open one for its details.'],
+        go: ['See events', '/events'], ctaTitle: 'Go find something to do.', ctaText: 'Pick a place and see what is on this week. It is open to everyone.',
+        parts: [
+          ['vegan-events-guide.jpg', 'Find Something to Do', 'Festivals, potlucks, meetups and sanctuary days, in your chapter and around the world. Filter by place and kind of event.'],
+          ['restaurant-guide/t-dashboard.jpg', 'Every Event Checked', 'Our team checks every event before it shows, and we read its official page every week so the dates and details stay right.'],
+          ['stadium-arena-guide.jpg', 'Going and Tickets', 'Members tap I\'m going, and some events have members-only tickets through our group link.'],
+          ['restaurant-guide/t-next.jpg', 'Submit an Event', 'Hosting one? Add it from a flyer, a link or typed in. Our team reviews it and tells you when it is live.'],
+          ['holiday/p-business.jpg', 'Run Events With Us', 'Running an event? Claim it, and the free Vegan Events Guide shows you how to plan it, fill it and run it.']
+        ] });
     },
     media: function () {
       return section('media', 'Find your way', 'Our shows, and the podcasts, documentaries and books the community votes to the top.',

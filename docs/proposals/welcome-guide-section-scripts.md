@@ -29,6 +29,14 @@ Shots (each about 3 s): Liz's city scene; the Communities page; a chapter hub's 
 Rescues); the hub's Events; Most voted in the chapter; Liz's Make It Better scene; a Pulse comment box; Suggest a Topic with a hot tip; the Feedback
 window; a chapter's Vote; Where should we go next; the free survey; the Communities page; Liz's scene again.
 
-## 4 to 11
+## 4. Events (draft v1 for Sean)
 
-Written one at a time after page 3 is approved.
+About 60 seconds.
+
+> These are events: festivals, potlucks, meetups and sanctuary days, in your chapter and around the world. Pick a place and the kinds of events you like. Our team checks every event before it shows, and we read its official page every week, so the details stay right. Some events even have members-only tickets through our group link. We want to hear from you. As a member, you shape what is on the calendar: tap I'm going, submit an event from a flyer or a link, let us know if something needs to be fixed, and if you run events, claim yours and open the free Vegan Events Guide. Membership is free. We ask for a short survey so we know real people are joining, and that keeps this community worth your time. Bring people with you: invite your friends, your community, new Vegans and Pre-Vegans. And you earn points for everybody who joins using your link. That is the easiest way to grow your experience and open new doors in our community. Go find something to do this week.
+
+Subjects (one city each): the calendar; filters; checked events; tickets; I'm going and submit; fix and claim; free and the survey; bring people in; points.
+
+## 5 to 11
+
+Written one at a time after page 4 is approved.
