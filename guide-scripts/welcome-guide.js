@@ -41,7 +41,7 @@
     { k: 'events', scene: 'welcome/liz-events.jpg', label: 'Events', pic: 'vegan-events-guide.jpg', lead: 'river', say: 'Press Play and I will walk you through Events. Then pick a place and find something to do this week.' },
     { k: 'media', scene: 'welcome/liz-media.jpg', label: 'Media', pic: 'holiday/p-listen.jpg', lead: 'kai', say: 'Press Play and I will walk you through Media. Then press Play on something good today.' },
     { k: 'guides', scene: 'welcome/liz-guides.jpg', label: 'Guides', pic: 'welcome-guide.jpg', lead: 'maya', say: 'Press Play and I will walk you through the Guides. Then pick an interest and try the free part of any Guide.' },
-    { k: 'points', scene: 'welcome/liz-points.jpg?v=2', label: 'Points and Levels', pic: 'thumb-bounties.jpg', lead: 'theo', say: 'Here is how points work. Join free and start with 250 points.' },
+    { k: 'points', scene: 'welcome/liz-points.jpg?v=2', label: 'Points and Levels', pic: 'thumb-bounties.jpg', lead: 'theo', say: 'Press Play and I will walk you through points. Then join free and start with 250 points.' },
     { k: 'paths', scene: 'welcome/liz-paths.jpg', label: 'Your Path and Badges', pic: 'thumb-passport.jpg', lead: 'kai', say: 'Everyone starts as an Explorer. If you run something, your path takes you further.' },
     { k: 'better', scene: 'welcome/liz-better.jpg', label: 'Make It Better', pic: 'restaurant-guide/t-next.jpg', lead: 'liz', say: 'This is the part that matters most. Here is every way to tell us what is working and what is not.' },
     { k: 'animals', scene: 'welcome/liz-animals.jpg', label: 'For the Animals', pic: 'nonprofit-guide.jpg', lead: 'dani', say: 'Here is where it is all going, and how you can show up for the animals today.' },
@@ -257,18 +257,18 @@
         ] });
     },
     paths: function () {
-      var P = [
-        ['Restaurant', 'Vegan Restaurant Guide', 'liz', '/guides/vegan-restaurant-guide', 'You feed the movement. Get your free check, claim your page and get found.'],
-        ['Event host', 'Vegan Events Guide', 'river', '/guides/vegan-events-guide', 'You bring people together. Plan it, fill it and run it, with us behind you.'],
-        ['Creator', 'Creator Guide', 'kai', '/guides/creator-guide', 'You tell the stories. Get seen, get booked and work with Vegan brands.'],
-        ['Nonprofit', 'Nonprofit Guide', 'dani', '/guides/nonprofit-guide', 'You stand up for the animals. Get found, get help and share the load.'],
-        ['Business', 'Pre-Vegan Business Guide', 'maya', '/guides/pre-vegan-business-guide', 'You are adding plant-based options. Learn what to serve, where to buy it and how to say it.']
-      ];
-      return crumb(tab('paths').label) + head('Take part', tab('paths').label, 'Everyone starts as an Explorer: that is the badge the survey gives you. If you run something, your path takes you further, with its own Guide, its own short survey and its own badge. Take as many as fit.') + lead('paths') +
-        '<div class="wg-paths">' + P.map(function (p) {
-          return '<a class="wg-path" href="' + p[3] + '"><span class="wg-path-pic" style="background-image:url(\'' + esc(art(p[2])) + '\')"></span><span><span class="dg-k">' + esc(p[0]) + '</span><b>' + esc(p[1]) + '</b><small>' + esc(p[4]) + '</small><em>Free with its survey</em></span></a>';
-        }).join('') + '</div>' +
-        '<p class="dg-lede" style="margin-top:14px">Run a group or community? That path is on its way. Ambassadors are invited by our team.</p>' + explorerCard();
+      return sectionPage('paths', { kicker: 'Take part', title: 'Everyone starts as an Explorer', pic: 'thumb-passport.jpg', group: 'The paths and their badges',
+        how: ['<b>Read the parts below.</b> Each one is a path, with its own Guide, its own short survey and its own badge.', '<b>Take as many as fit.</b> Run a group or community? That path is on its way: tap Notify me on the paths page.'],
+        go: ['See your paths', '/paths'], ctaTitle: 'Find your path.', ctaText: 'Start as an Explorer with the short survey, then pick the paths that fit what you do.',
+        parts: [
+          ['thumb-passport.jpg', 'Explorer', 'Everyone starts here. The short survey makes you a member and gives you your first badge.'],
+          ['vegan-restaurant-guide.jpg', 'Restaurant', 'You feed the movement. Get your free check, claim your page and get found.'],
+          ['vegan-events-guide.jpg', 'Event host', 'You bring people together. Plan it, fill it and run it, with us behind you.'],
+          ['creator-guide.jpg', 'Creator', 'You tell the stories. Get seen, get booked and work with Vegan brands.'],
+          ['nonprofit-guide.jpg', 'Nonprofit', 'You stand up for the animals. Get found, get help and share the load.'],
+          ['pre-vegan-business-guide.jpg', 'Business', 'You are adding plant-based options. Learn what to serve, where to buy it and how to say it.'],
+          ['partner-ambassador.jpg', 'Your badges', 'Your badges show on your profile, and you pick your main one. Each badge opens its Guide and the bounties that go with it.']
+        ] });
     },
     better: function () {
       return crumb(tab('better').label) + head('Make it better', tab('better').label, 'Use Vegans Explore in your day to day, and tell us what is working, what is not, and what you wish you could do. We read all of it, and we build from it every day.') + lead('better') +
@@ -346,7 +346,7 @@
   // Each section page plays its own short video in Liz's frame once its script is approved and recorded.
   // Each section's own video (Sean, 2026-11-09: no borrowed tour parts): Liz's approved line over that page's shots, captions from her word timings.
   var MEDIA = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/';
-  var SEC = { directory: 'sec-directory-v2', city: 'sec-city-v2', events: 'sec-events-v2', media: 'sec-media-v2', guides: 'sec-guides-v2' };
+  var SEC = { directory: 'sec-directory-v2', city: 'sec-city-v2', events: 'sec-events-v2', media: 'sec-media-v2', guides: 'sec-guides-v2', points: 'sec-points-v2' };
   var CLIPS = { overview: [0, 1e9] };
   Object.keys(SEC).forEach(function (k) { CLIPS[k] = [0, 1e9]; });
   function cur() {
