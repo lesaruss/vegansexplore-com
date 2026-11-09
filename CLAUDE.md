@@ -7585,3 +7585,16 @@ nyvegans, lavegans, cflovegans, ukvegans, soflovegans (no Atlanta, Philadelphia 
 soflocuisine, humblecabbage, relaxitsvegan, compassiondeck, compassionetarian, vegangameshow, vegnightout, vegantsunami, vhfexpo,
 worldveganexpo, veganswholiftacademy and veganswholiftpodcast (Vegans Who Lift ended; the podcast domain expires 2026-12-22, Sean decides).
 The ideas in the table are Logan's drafts until Sean picks a use; none points anywhere new yet.
+
+
+## City shows: SoFlo Vegans relaunches as South Florida's weekly show (Sean, 2026-11-09, playbook `ve-city-shows`)
+
+"We'll start with SoFlo Vegans. We'll do that for a while and we'll see where we go from there... Yes to Wednesdays at 7." A city show is
+a weekly episode built from one chapter's Pulse, Directory and events, voiced by the Guides, with Sean opening and closing and a Local voice
+(always asking their Vegan origin story, which feeds `ve-pre-vegan-guide`). SoFlo Vegans is the pilot on its own Captivate feed, Wednesdays
+7 AM Eastern, season 10, from episode 112 (112 airs Wed Nov 11 as the relaunch, never called a preview). No second city until Sean decides.
+HQ `lib/podcastStudio.ts` (`SHOWS` day/season/first/chapter, `CITY_TEMPLATE`, `slotsOf`, `templateOf`); Propose news reads only the chapter.
+**The tip line** is on the show's page: `details.show_line` {message, nominate} on a podcast listing draws **Be part of the show** (Leave a
+message, Nominate someone), each a multi comment request (`/comment/soflo-line`, `/comment/soflo-nominate`). **Sean's voice** (Higgsfield
+seed_audio, element Sean A. Russell) glitches: two takes, reword a tripped line, rebuild from stt word timings with capped pauses, check word
+for word before sending. Handoff `docs/handoff/2026-11-09-ve-city-shows-soflo-vegans-relaunch.md`.
