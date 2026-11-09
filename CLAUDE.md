@@ -177,7 +177,7 @@ Different audiences branch from a `data-vg-choose` slide into `data-path` slides
 
 ## Wrap up (Sean, 2026-11-03, canon `canon-wrap-up-standard`)
 
-"When we leave this room, I don't want anything on the floor." On Sean's cue ("wrap up", about 70% context) Logan sweeps the session into the
+"When we leave this room, I don't want anything on the floor." On Sean's cue ("wrap up", when the work is finished, not at a context percentage; v3) Logan sweeps the session into the
 playbook (`playbook_records`, the brand's slug, one decision row per topic), canon (`knowledge_records`), the repo (CLAUDE.md, a migration file for
 every DB change, `docs/handoff/<date>-<topic>.md`, pushed to main), a `brief_checkpoints` row (handed_off) and a `stream_events` row; checks each
 landed; then gives Sean one self-contained paste prompt for a new chat (no "continue" needed, no skills needed). Never call it done before the check.
