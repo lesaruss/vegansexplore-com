@@ -5,6 +5,20 @@ Static HTML site. No build pipeline. Vercel serves the repo root directly
 (`outputDirectory: "."`). All pages are `.html` files. Styling is inline CSS
 in `<style>` blocks. No separate CSS files. No framework.
 
+## Sessions and context (LOCKED by Sean 2026-11-09, canon `canon-session-procedure`)
+
+This file loads on every message. Keep it to rules and pointers; never append session history here (it goes to `docs/history/<playbook>.md`
+or the playbook). One chat is one playbook task. When a chat compacts on the same task, keep working: do not wrap and restart. Start a new
+chat only when switching playbooks, after two compactions, or when the summary has clearly lost detail. Wrap when the work is finished
+(`canon-wrap-up-standard` v3), not at a context percentage. The new-chat prompt is lean: playbook slug and task, checkpoint id, the SQL
+to read it, the first task.
+
+### Compact Instructions
+
+When summarizing this conversation, always keep: the playbook slug and task; the one next action; every branch with unmerged work and its
+last commit; every decision, approval or rejection Sean gave this session, in his words where possible; anything built but not yet proven
+live; and what waits on Sean, with its link.
+
 ## The template gate (Sean, 2026-11-02): never build from a blank file
 
 "It's like you just made something up. Not following any templates, not using any previous examples... We need a system. That's why
