@@ -7238,7 +7238,7 @@ longer name that contains it is blanked first, so Farm Sanctuary does not match 
 or the listing's name. **The page** (`loadRelated` in `directory/listing.html`): People (or Organizations on a person) as Directory cards, then On our
 podcast and On other podcasts as episode rows with Play in a docked player, right after About; then **In the Pulse**, which had no caller on real
 listings until now, draws the articles that are not episodes shown above. Films and books keep their own episode sections. First built 2026-11-08:
-834 listings, 74 with our episodes (playable), 70 with other shows (582 episodes), 14 organizations with people and 14 people with their organizations.
+834 listings, 74 with our episodes (playable), 70 with other shows (582 episodes), 14 organizations with people and 14 people with their organizations. Rachel Black's pending People listing was Removed on Sean's call (2026-11-08: no public presence, an employee at the time); a People listing is for someone who is a personality in their own right.
 
 ## Social links and price on listings (Sean, 2026-11-08, playbook `ve-feedback`)
 

@@ -146,4 +146,4 @@ begin
 end $$;
 revoke all on function public.ve_listing_related_refresh(int) from public, anon, authenticated;
 
-select cron.schedule('ve-listing-related', '*/5 * * * *', 'select public.ve_listing_related_refresh(15)');
+select cron.schedule('ve-listing-related', '17 */2 * * *', 'select public.ve_listing_related_refresh(25)');

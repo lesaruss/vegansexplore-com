@@ -22,3 +22,10 @@ starting with what is in our content, then sweep other shows.
 - Final build: 834 listings, 74 with our episodes, 70 with other shows (582 episodes), 14 with people. One-time function stubbed.
 - Sean merges this branch to main (the page part waits on that; the data is live).
 - Logan: brands and food places on other shows (needs a stricter name rule; restaurant names are often generic).
+
+## Wrap-up, 2026-11-08 7 PM Eastern
+
+- Rachel Black (pending People listing) is Removed on Sean's call: no public presence, an employee at the time. Never deleted.
+- The migration file's cron line now matches the live job (`17 */2 * * *`, refresh 25).
+- Waiting on Sean: merge `claude/epic-heisenberg-jjndg1` to `main` so the People, On our podcast and On other podcasts sections show on real listings.
+- Next for Logan after the merge: a stricter name rule so brands and food places get swept on other shows too.
