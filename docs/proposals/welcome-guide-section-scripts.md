@@ -29,7 +29,7 @@ Shots (each about 3 s): Liz's city scene; the Communities page; a chapter hub's 
 Rescues); the hub's Events; Most voted in the chapter; Liz's Make It Better scene; a Pulse comment box; Suggest a Topic with a hot tip; the Feedback
 window; a chapter's Vote; Where should we go next; the free survey; the Communities page; Liz's scene again.
 
-## 4. Events (draft v1 for Sean)
+## 4. Events (v1, approved by Sean 2026-11-09; recorded `sec-events-v1`, 64 s, stt matched; video `sec-events-v1` rendered, waiting on Sean's look)
 
 About 60 seconds.
 

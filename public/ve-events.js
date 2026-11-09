@@ -887,7 +887,7 @@
           '<p class="vev-sub">You and this event</p><div class="vev-f" data-f="role"><div class="vev-cards" role="group" aria-label="You and this event">' +
             ROLES.map(function (r) { return '<button type="button" class="vev-card" data-role="' + r[0] + '" aria-pressed="' + (draft.role === r[0]) + '"><b>' + r[1] + '</b><span>' + r[2] + '</span></button>'; }).join('') +
           '</div><small>Hosting or promoting it? After you send it, we show you how we can help it fill up.</small></div>' +
-          (signedIn() ? '' : '<p class="lead" style="margin-top:16px">You will sign in (or get your Passport) when you send it, so we can let you know when it is live.</p>');
+          (signedIn() ? '' : '<p class="lead" style="margin-top:16px">You will sign in (or join free) when you send it, so we can let you know when it is live.</p>');
       }
       el.innerHTML = head + '<div class="vev-form">' + body +
         '<p class="vev-note bad" data-v="err" role="alert"></p>' +
@@ -966,7 +966,7 @@
     function needSignIn(then) {
       if (signedIn()) { then(); return; }
       var back = location.pathname + location.search + location.hash;
-      if (window.VEAuth && VEAuth.showAuthModal) VEAuth.showAuthModal('Sign in, or get your Passport, to send an event.', function () { then(); });
+      if (window.VEAuth && VEAuth.showAuthModal) VEAuth.showAuthModal('Sign in, or join free, to send an event.', function () { then(); });
       else location.href = '/login?next=' + encodeURIComponent(back);
     }
 
@@ -1330,7 +1330,7 @@
           (e.cancelled ? '<div class="vev-warn">Cancelled: its official page says this event is not happening.</div>' : '') +
           (e.description ? '<p class="vev-desc">' + esc(e.description) + '</p>' : '') +
           (e.host && e.host.category === 'Groups' ? '<div class="vev-sale" data-v="sale"></div>' : '') +
-          (tix ? '<button type="button" class="vev-btn green" data-v="tix">Get tickets</button><p class="vev-note" style="margin-top:8px">Through our Vegans Explore group link, for Passport holders.</p><p class="vev-note bad" data-v="tixerr" role="alert"></p>' : '') +
+          (tix ? '<button type="button" class="vev-btn green" data-v="tix">Get tickets</button><p class="vev-note" style="margin-top:8px">Through our Vegans Explore group link, for members.</p><p class="vev-note bad" data-v="tixerr" role="alert"></p>' : '') +
           (link ? '<a class="vev-btn ghost" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer">Tickets and the official page</a>' : '') +
           (e.link_checked_at && !over ? '<p class="vev-note" style="margin-top:8px">' + (e.link_status === 'gone' ? 'We could not reach its official page on ' : e.link_status === 'postponed' ? 'Its official page said it is postponed on ' : 'Checked against its official page on ') + esc(new Date(e.link_checked_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })) + '.</p>' : '') + '</div>' +
           '<div class="vev-form vev-rsvp">' + (note ? '<div class="vev-banner">' + esc(note) + '</div>' : '') + rsvp +
