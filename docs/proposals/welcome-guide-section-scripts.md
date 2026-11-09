@@ -51,6 +51,14 @@ About 60 seconds.
 
 New scenes for this page's video: Liz with the cast of Guides (each Guide in its own topic), not earlier pages' pictures.
 
-## 7 to 11
+## 7. Points and Levels (draft v1 for Sean)
 
-Written one at a time after page 6 is approved.
+About 60 seconds.
+
+> These are points. They come from taking part, never from buying them. You earn them for the survey, checking in when you visit a place, bounties in your city, answering your profile, and every friend who joins with your link. Use them to open topic Guides, ask your Guide anything, or bid on gift cards where the Vault is open. Or give them to the businesses and nonprofits you believe in. Your level comes from everything you have ever earned, so spending never lowers it. We want to hear from you. As a member, you shape how points grow: tell us which rewards you want, which bounties you would take on, and let us know if something needs to be fixed. Membership is free. We ask for a short survey so we know real people are joining, and you start with 250 points. Bring people with you: invite your friends, your community, new Vegans and Pre-Vegans. And you earn points for everybody who joins using your link. That is the easiest way to grow your experience and open new doors in our community. Start earning today.
+
+New scenes for this page's video: Liz earning and using points (checking in at a cafe, a bounty, giving to a sanctuary, leveling up), not earlier pictures.
+
+## 8 to 11
+
+Written one at a time after page 7 is approved.
