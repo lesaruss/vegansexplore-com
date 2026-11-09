@@ -75,6 +75,12 @@
     .gc-chip.picked { color: #7a4b00; background: #fff4e0; }
     .gc-chip.earned { color: #fff; background: var(--ve-green-dark); }
     .gc-card.pa-hi { box-shadow: 0 0 0 3px var(--ve-green); }
+    .pa-liz { display: flex; gap: 16px; align-items: center; border: 1px solid var(--ve-border); border-radius: 12px; padding: 14px 16px; margin: 0 0 22px; background: #fff; }
+    .pa-liz img { width: 76px; height: 76px; border-radius: 10px; object-fit: cover; flex-shrink: 0; background: #f4f6f4; }
+    .pa-liz-k { font-size: 10px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ve-green-dark); margin-bottom: 4px; }
+    .pa-liz p { font-size: 14px; line-height: 1.6; color: var(--ve-text); }
+    .pa-liz .gc-btn { width: auto; margin: 10px 0 0; padding: 10px 16px; }
+    @media (max-width: 600px) { .pa-liz { align-items: flex-start; } .pa-liz img { width: 64px; height: 64px; } }
   </style>
 </head>
 <body>
@@ -85,6 +91,10 @@
   <script src="/public/ve-city-banner.js"></script>
   <section id="pa-banner"><h1 class="vcb-ssr" style="margin:0;padding:28px 16px;font:900 26px Montserrat,sans-serif">Your Paths</h1></section>
   <section class="gc-section" aria-label="Paths">
+    <!-- Liz speaks the page (A Guide speaks on every page; lines approved by Sean 2026-11-09, recorded in her roster voice, checked with stt).
+         Nothing plays until Play is pressed. -->
+    <div class="pa-liz"><img src="/public/guides/welcome/liz-paths.jpg" alt="Liz, your Guide to Vegans Explore" width="76" height="76" loading="lazy">
+      <div><div class="pa-liz-k">Liz &middot; your Guide</div><p id="pa-liz-say"></p><button type="button" class="gc-btn gc-btn-outline" id="pa-liz-play">&#9654; Play Liz</button></div></div>
     <p class="pa-lede" id="pa-lede">You're an Explorer now. Pick the paths that fit what you do. Take as many as you like. Each one opens its Guide and a badge, with up to 250 more points.</p>
     <div class="pa-first" id="pa-first" hidden><p id="pa-first-p"></p><a class="gc-btn gc-btn-primary" id="pa-first-a" href="/survey?s=explorer" data-pa-survey="/paths">Take the Explorer survey</a></div>
     <div class="gc-grid" id="pa-grid" role="list" aria-label="Paths"></div>
@@ -129,12 +139,34 @@
         '<div class="gc-title">' + esc(p.title) + '</div><p class="gc-desc">' + esc(p.desc) + '</p>' +
         '<div class="gc-meta-row">' + chips.map(function (c) { return '<span class="gc-chip' + (c.c ? ' ' + c.c : '') + '">' + esc(c.t) + '</span>'; }).join('') + '</div>' + action + '</div>';
     }
+    // Liz's two recorded lines (2026-11-09): the member one for an Explorer, the visitor one for everyone else. A line's text equals its recording.
+    var LIZ = {
+      member: { mp3: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/paths/paths-member-v1.mp3',
+        say: 'You made it in. Now pick the paths that fit what you actually do. Run a restaurant, host events, make content, work with a nonprofit, or add plant-based options to your business? Each path has its own Guide and its own badge. The ones you told us about are at the top. Take as many as you like.' },
+      visitor: { mp3: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/paths/paths-visitor-v1.mp3',
+        say: "Everyone here starts as an Explorer. It's a few quick questions, about two minutes, and you're in, free. Then come back and pick the paths that fit what you do. Each one opens its own Guide and a badge." }
+    };
+    var lizAud = new Audio(); lizAud.preload = 'none';
+    function lizLine() { return ST.explorer ? LIZ.member : LIZ.visitor; }
+    function paintLiz() {
+      var L = lizLine(), btn = document.getElementById('pa-liz-play');
+      document.getElementById('pa-liz-say').textContent = L.say;
+      if (lizAud.src && lizAud.src !== L.mp3 && lizAud.paused) lizAud.removeAttribute('src');
+      btn.innerHTML = lizAud.paused ? '&#9654; Play Liz' : 'Pause Liz';
+    }
+    document.getElementById('pa-liz-play').addEventListener('click', function () {
+      if (!lizAud.paused) { lizAud.pause(); return; }
+      var L = lizLine(); if (lizAud.src !== L.mp3) lizAud.src = L.mp3;
+      var p = lizAud.play(); if (p && p.catch) p.catch(function () {});
+      try { if (window.gtag) gtag('event', 'audio_start', { audio: 'paths_liz' }); } catch (e) {}
+    });
+    ['play', 'pause', 'ended'].forEach(function (ev) { lizAud.addEventListener(ev, paintLiz); });
     function draw() {
       var order = PATHS.slice().sort(function (a, b) {
         var pa = ST.runs.indexOf(a.run) > -1 ? 0 : 1, pb = ST.runs.indexOf(b.run) > -1 ? 0 : 1;
         return pa - pb || (a.soon ? 1 : 0) - (b.soon ? 1 : 0) || PATHS.indexOf(a) - PATHS.indexOf(b);
       });
-      var grid = document.getElementById('pa-grid'); grid.innerHTML = order.map(card).join('');
+      var grid = document.getElementById('pa-grid'); grid.innerHTML = order.map(card).join(''); paintLiz();
       var first = document.getElementById('pa-first'), lede = document.getElementById('pa-lede');
       if (!ST.explorer) {
         lede.textContent = 'Everyone starts as an Explorer. Then you pick the paths that fit what you do. Take as many as you like. Each one opens its Guide and a badge, with up to 250 more points.';
