@@ -132,8 +132,8 @@ Deno.serve(async (req) => {
     return json({ ok: true, version: v });
   }
 
-  // The member's main badge, shown on the corner of their picture (ve-explorer-path step 6, canon-ve-door-guides v10). Only one they hold, never
-  // Explorer (ve_member_badge_set_main refuses with not_held); null goes back to the most recent.
+  // The member's main badge, shown on the corner of their picture (ve-explorer-path step 6, canon-ve-door-guides v10). Any badge they hold,
+  // Explorer included (Sean, 2026-11-09; ve_member_badge_set_main refuses one they do not hold); null goes back to the most recent.
   if (body.action === 'set_main_badge') {
     const key = body.key == null || body.key === '' ? null : String(body.key);
     if (key !== null && !/^badge-[a-z0-9-]{2,30}$/.test(key)) return json({ error: 'bad_badge' }, 400);

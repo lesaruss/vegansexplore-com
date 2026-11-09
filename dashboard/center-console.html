@@ -4324,8 +4324,8 @@
   function dashApplyBadges(list) {
     var host = document.getElementById('dash-badges-host'); if (!host) return;
     var h = veBadgesHtml(list);
-    // The member picks their main badge (shown on the corner of their picture; never Explorer). With one path badge there is nothing to pick.
-    var paths = (list || []).filter(function (b) { return b && b.color && !b.explorer; });
+    // The member picks their main badge (shown on the corner of their picture), any badge they hold, Explorer included (Sean, 2026-11-09). With one badge there is nothing to pick.
+    var paths = (list || []).filter(function (b) { return b && b.color; });
     var esc = function (t) { return String(t == null ? '' : t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
     var pick = paths.length > 1 ? '<label style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;font-size:13px;font-weight:700">Main badge, on your picture' +
       '<select id="dash-main-badge" style="appearance:none;-webkit-appearance:none;font:600 13px Montserrat,sans-serif;padding:8px 40px 8px 12px;border:1px solid rgba(0,0,0,.18);border-radius:6px;background:#fff url(&quot;data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%276%27%3E%3Cpath d=%27M1 1l4 4 4-4%27 fill=%27none%27 stroke=%27%231a1a1a%27 stroke-width=%271.6%27/%3E%3C/svg%3E&quot;) no-repeat right 16px center">' +

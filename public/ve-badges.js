@@ -58,7 +58,7 @@
   }
   function corner(list, px) {
     css();
-    var m = (list || []).filter(function (b) { return b && b.main && !b.explorer; })[0];
+    var m = (list || []).filter(function (b) { return b && b.main; })[0]; // Explorer only when they chose it (Sean, 2026-11-09)
     return m ? '<span class="veb-corner" title="' + esc(m.badge) + '">' + seal(m, px || 30) + '</span>' : '';
   }
   function seals(list, px) {
