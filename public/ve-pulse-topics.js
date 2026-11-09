@@ -221,11 +221,11 @@
       var pic = im ? '<span class="vep-img" role="img" aria-label="" style="background-image:url(&quot;' + esc(im) + '&quot;)"></span>' : '<span class="vep-img vep-noimg" aria-hidden="true"></span>';
       return '<li class="vep-pic">' + (u ? '<a href="' + esc(u) + '" target="_blank" rel="noopener noreferrer" tabindex="-1" aria-hidden="true">' + pic + '</a>' : pic) + '<div>' + head + '</div></li>';
     };
-    var isBounty = function (x) { return /^\/bounties(\?|$)/.test(String(x.url || '')); };
+    var isBounty = function (x) { return /^(https?:\/\/(www\.)?vegansexplore\.com)?\/bounties(\?|$)/.test(String(x.url || '')); };
     var all = (b.stories || []), bountyStories = all.filter(isBounty), rest = all.filter(function (x) { return !isBounty(x); });
     var groups = [['local', 'In ' + placeName(t.community)]].concat(TOPICS), byKey = {};
     rest.forEach(function (x) {
-      var k = !x.national ? 'local' : (TOPIC_NAMES[x.topic] ? x.topic : 'more');
+      var k = (!x.national && !x.feature_id) ? 'local' : (TOPIC_NAMES[x.topic] ? x.topic : 'more');
       (byKey[k] = byKey[k] || []).push(x);
     });
     var sec = groups.concat([['more', 'More news']]).filter(function (g) { return (byKey[g[0]] || []).length; }).map(function (g) {
