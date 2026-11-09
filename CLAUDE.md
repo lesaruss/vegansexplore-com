@@ -7321,6 +7321,16 @@ listings until now, draws the articles that are not episodes shown above. Films 
   "not available" alone; list it for a person to look at. Instagram's own API returns 404 or 429 to our server, so Instagram checks go
   through Apify.
 
+## What connects to a listing, brands and food places too (2026-11-08, playbook `ve-community-directory`)
+
+`ve_listing_related` (cache `ve_listing_related_cache`, cron `ve-listing-related` every 15 minutes, 25 a run) feeds `loadRelated` in
+`directory/listing.html`: People / Organizations cards, On our podcast, On other podcasts. Organizations use `ve_listing_related_names`; brands and
+food places (main listings only, not grocery chains or LESARUSS.ai) use the stricter rule (`20261109_listing_related_brands_food.sql`): exact case,
+two words and 9+ letters unless every word is generic, one-word names only from `details.match_names` (a list checked by hand), food places need their
+city in the notes (a checked name counts in a title alone), a whole-domain or @handle match counts, 5+ notes-only mentions on one show is one
+"Show sponsor" row, and a show whose name contains the name never counts. Preview a rule change with `ve_listing_related_strict_elsewhere(id)`
+before it reaches the cache; a big preview times out over about 70 listings a call. Handoff `docs/handoff/2026-11-09-ve-community-directory-ve-holiday-guide-wrap.md`.
+
 ## Image conventions
 
 - Mobile hero images: stored in the same folder as the page's desktop banner.
