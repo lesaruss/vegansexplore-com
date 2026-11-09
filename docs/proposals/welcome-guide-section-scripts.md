@@ -61,7 +61,7 @@ New scenes for this page's video: Liz earning and using points (checking in at a
 
 Made: `liz-pts-{checkin,bounty,give,level,guide,share,door}.jpg` (level-up redrawn once to remove readable text). v2 (Sean, 2026-11-09): the phone in the share scene shows its back, nonprofits show the nonprofit directory, the sanctuary shirt says Volunteer with no logo, the Vault shows no empty list, and every picture is used once (the render script asserts it). New scenes: `liz-pts-{share-v2,give-v2,shape,survey,friends}.jpg`. Video `sec-points-v2.mp4` in vegan-media, captions `public/guides/welcome/sec-points-v2.vtt`, scripts `scripts/tour-video/sections/cap-points.js` and `render-points.py`.
 
-## 8. Your Path and Badges (approved 2026-11-09; recorded sec-paths-v1, video rendered, waiting on Sean's look)
+## 8. Your Path and Badges (approved 2026-11-09; recorded sec-paths-v1; video sec-paths-v2 approved and live 2026-11-09)
 
 About 60 seconds. The page is on the section template (how to use, the paths and their badges, one call to action: See your paths).
 
@@ -71,6 +71,14 @@ New scenes for this page's video: Liz with each path's world (a restaurant kitch
 
 Made: `liz-pth-{trail,kitchen,event,creator,rescue,shop,badge,meetup,link}.jpg` (the shop scene redrawn: Liz was off-model, then Sean asked for Liz and Theo with a straight shelf, v2). Every picture used once. Video `sec-paths-v2.mp4` in vegan-media (73 s), captions `public/guides/welcome/sec-paths-v2.vtt`, scripts `scripts/tour-video/sections/cap-paths.js` and `render-paths.py`.
 
-## 9 to 11
+## 9. Make It Better (draft v1 for Sean)
+
+About 70 seconds. The page is on the section template (how to use, six ways to tell us, one call to action: Send feedback now, which opens the Feedback form).
+
+> This is the part that matters most. Use Vegans Explore in your day to day, and tell us what is working, what is not, and what you wish you could do. The Feedback button is on every page, and it starts with the page you are on. Ask your Guide anything, and if your Guide does not know, members can ask a person on our team, free. Search for something we do not have yet, and it goes straight into our team's queue. Know a place, a person or a group we should list? Tell us, and we check it. Every city's board has Suggest a Topic for the Daily Pulse. We are real people, supported by technology, and we build from what you send every day. We want to hear from you. As a member, you shape what we fix and what we build next, so let us know if something needs to be fixed. Membership is free. We ask for a short survey so we know real people are joining, and that keeps this community worth your time. Bring people with you: invite your friends, your community, new Vegans and Pre-Vegans. And you earn points for everybody who joins using your link. That is the easiest way to grow your experience and open new doors in our community. Tell us one thing today.
+
+New scenes for this page's video: Liz listening, noting, fixing and building with the team and members (not earlier pictures); every picture used once.
+
+## 10 and 11
 
 Written one at a time after page 7 is approved.
