@@ -613,7 +613,11 @@ Explore. Then click through each section to learn more about it.") and no longer
 Overview), each about 150 characters and a link into the live site (Search Anything, Local Food, Products, Community and People, Vote Save and Check In), then the Explorer
 card. Liz's frame plays that page's part of the tour as its video summary until the page has its own (`CLIPS`: directory is the Find your way chapter, 35.8 to 53.3 s; the
 clip stops at its end, Expand on phones too); her poster on a section is that page's scene. The other nine sections still use the old What it is / How to use it / What
-members get layout until Sean approves this one.
+members get layout until Sean approves this one. **Then, Sean's notes the same day**: the parts are the Directory's own sections (Local Food, Products, Services, Media, Community and People;
+Search Anything and Vote, Save and Check In dropped), plain rows with no link each, and one call to action at the bottom, Go see the Directory /
+View the Directory (the `.vxc` card's look; joining stays the header's button). No borrowed tour clip: each page 2 to 11 gets its own script and
+recording, one at a time (`docs/proposals/welcome-guide-section-scripts.md`); until a page's is recorded, Play Liz is hidden there (`CLIPS`). Sean: once
+page 11 is done, the Explorer Guide is locked and the front door is open.
 
 Proposal `docs/proposals/explorer-welcome-guide.md` (approved). `/passport` (`passport.html`, `guide-scripts/welcome-guide.js`) is the Welcome Guide, copied
 from the Holiday Guide (template gate). Liz hosts. The Overview is enough on its own (Start here, Become a Founder, the tour: Liz's eight chapters, approved

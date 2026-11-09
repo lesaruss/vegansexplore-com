@@ -36,7 +36,7 @@
   // Liz's line on each tab (text drafts for the section pages; the Overview's is chapter 1). `lead` is the Guide for that area.
   var TABS = [
     { k: 'overview', scene: 'welcome/liz-overview.jpg', label: 'Overview', say: 'Watch this video to get a full overview of Vegans Explore. Then click through each section to learn more about it.', sayMember: 'Welcome back. Watch this video any time for a full overview, then click through each section to go deeper.' },
-    { k: 'directory', scene: 'welcome/liz-directory.jpg', label: 'Search and the Directory', pic: 'thumb-directory.jpg', lead: 'pascal', say: 'Press Play for my short summary, then pick any part below to open it in the Directory.' },
+    { k: 'directory', scene: 'welcome/liz-directory.jpg', label: 'Search and the Directory', pic: 'thumb-directory.jpg', lead: 'pascal', say: 'Here is everything in the Directory. When you are ready, view the Directory and pick your city.' },
     { k: 'city', scene: 'welcome/liz-city.jpg', label: 'Your City', pic: 'thumb-community.jpg', lead: 'river', say: 'Every chapter has its own home. Here is how to keep up with yours, every morning.' },
     { k: 'events', scene: 'welcome/liz-events.jpg', label: 'Events', pic: 'vegan-events-guide.jpg', lead: 'river', say: 'Find something to do this week, near you or anywhere.' },
     { k: 'media', scene: 'welcome/liz-media.jpg', label: 'Media', pic: 'holiday/p-listen.jpg', lead: 'kai', say: 'Our shows and the community\'s favorites, playing right on the page.' },
@@ -152,6 +152,7 @@
   }
   // One article row, read like the Pulse: a picture, the title, a short summary, a link (the Overview and every section page use it).
   function artRow(picUrl, title, txt, link, more) {
+    if (!link) return '<li class="wg-art"><span class="wg-art-img" style="background-image:url(&quot;' + esc(picUrl) + '&quot;)"></span><div><span class="wg-art-t">' + esc(title) + '</span><p>' + esc(txt) + '</p></div></li>';
     var ext = /^\//.test(link);
     return '<li class="wg-art"><a href="' + esc(link) + '" tabindex="-1" aria-hidden="true"><span class="wg-art-img" style="background-image:url(&quot;' + esc(picUrl) + '&quot;)"></span></a>' +
       '<div><a class="wg-art-t" href="' + esc(link) + '">' + esc(title) + '</a><p>' + esc(txt) + '</p><a class="wg-art-more" href="' + esc(link) + '">' + esc(more || (ext ? 'Open it' : 'Read more')) + ' &rsaquo;</a></div></li>';
@@ -164,14 +165,19 @@
       }).join('') + '</ol></div>';
     }).join('');
   }
-  // A section page in the Overview's shape (Sean, 2026-11-09): how to use the page (Liz's short video summary in her frame), then 3 to 5
-  // short parts, each a picture, about 150 characters and a link into the live site, then the Explorer card.
+  // A section page in the Overview's shape (Sean, 2026-11-09): how to use the page (Liz's own short video for that page, once its script is
+  // approved and recorded), then the parts of that area as plain rows (a picture, about 150 characters, no link each), then one call to action
+  // at the bottom to go see it. Becoming a member is the header's button.
   function sectionPage(k, o) {
+    var rec = !!CLIPS[k];
     var start = '<section class="wg-gs" aria-label="How to use this page"><span class="wg-gs-pic"><img src="' + pic(o.pic) + '" alt="" decoding="async" width="640" height="640"></span>' +
       '<div class="wg-gs-b"><div class="vgi-k">How to use this page</div><h3 class="wg-gs-t">' + esc(o.title) + '</h3>' + o.how.map(function (x) { return '<p>' + x + '</p>'; }).join('') +
-      '<div class="wg-gs-btns"><button type="button" class="dg-btn" data-wg-tour>&#9654; Play Liz</button>' + (o.open ? '<a class="dg-btn dg-ghost" href="' + esc(o.open[1]) + '">' + esc(o.open[0]) + '</a>' : '') + '</div></div></section>';
+      '<div class="wg-gs-btns">' + (rec ? '<button type="button" class="dg-btn" data-wg-tour>&#9654; Play Liz</button>' : '') + '<a class="dg-btn' + (rec ? ' dg-ghost' : '') + '" href="' + esc(o.go[1]) + '">' + esc(o.go[0]) + '</a></div></div></section>';
+    if (window.VEExplorerCard) VEExplorerCard.html({}); // loads the card's styles, shared by the call to action below
+    var cta = '<section class="vxc" aria-label="' + esc(o.go[0]) + '"><div class="vxc-b"><div class="vxc-k">See it for yourself</div><h3>' + esc(o.ctaTitle) + '</h3><p>' + esc(o.ctaText) + '</p></div>' +
+      '<a class="vxc-go" href="' + esc(o.go[1]) + '">' + esc(o.go[0]) + '</a></section>';
     return crumb(tab(k).label) + head(o.kicker, tab(k).label, '') + start +
-      '<div class="wg-arts"><div class="wg-grp"><h5>' + esc(o.group) + '</h5><ol>' + o.parts.map(function (x) { return artRow(pic(x[0]), x[1], x[2], x[3]); }).join('') + '</ol></div></div>' + explorerCard();
+      '<div class="wg-arts"><div class="wg-grp"><h5>' + esc(o.group) + '</h5><ol>' + o.parts.map(function (x) { return artRow(pic(x[0]), x[1], x[2]); }).join('') + '</ol></div></div>' + cta;
   }
   function viewOverview() {
     main.innerHTML = gateNote() + head('Free for everyone', member() ? 'Welcome Back to Vegans Explore' : 'Welcome to Vegans Explore', '') + gettingStarted() + '<div class="wg-arts">' + articles() + '</div>';
@@ -179,15 +185,15 @@
 
   var VIEWS = {
     directory: function () {
-      return sectionPage('directory', { kicker: 'Find your way', title: 'Find anything, city by city', pic: 'thumb-directory.jpg', group: 'In the Directory',
-        how: ['<b>Watch Liz.</b> Press Play Liz for a short summary.', '<b>Read the parts below.</b> Each one opens that part of the Directory.', '<b>Try it now.</b> Type what you want in the search box at the top of any page.'],
-        open: ['Open the Directory', '/directory'],
+      return sectionPage('directory', { kicker: 'Find your way', title: 'Every Vegan place, person and group', pic: 'thumb-directory.jpg', group: 'What is in the Directory',
+        how: ['<b>Read the parts below.</b> Each one is a section of the Directory.', '<b>Pick your city</b> in the Directory, then narrow any section with Filters.', '<b>Members vote</b> for the places they love, and that is how places rise to the top.'],
+        go: ['View the Directory', '/directory'], ctaTitle: 'Go see the Directory.', ctaText: 'Pick your city and start looking around. It is open to everyone.',
         parts: [
-          ['restaurant-guide/t-featured.jpg', 'Search Anything', 'Type what you want in the box at the top of any page, like Vegan pizza in Atlanta. It reads the place and the kind of thing for you.', '/search?q=' + encodeURIComponent('Vegan pizza in Atlanta')],
-          ['eating-out.jpg', 'Local Food', 'Restaurants, bakeries, food trucks, markets and meal prep in your chapter. Pick your city, then narrow it with Filters.', '/directory?tab=food'],
-          ['supermarket-guide.jpg', 'Products', 'Brands you can buy anywhere: food and drink, supplements, clothing, beauty and Vegan marketplaces, sorted by member votes.', '/directory?tab=products'],
-          ['thumb-community.jpg', 'Community and People', 'Nonprofits, rescues, sanctuaries and groups in every chapter, and the activists, chefs, creators and doctors in the movement.', '/directory?tab=community'],
-          ['restaurant-guide/t-mylist.jpg', 'Vote, Save and Check In', 'Members vote for the places they love once a day, save them to My Saves and check in on a visit for 10 points.', '/directory']
+          ['eating-out.jpg', 'Local Food', 'Restaurants, bakeries, food trucks, markets, catering and meal prep in your chapter, sorted by member votes.'],
+          ['supermarket-guide.jpg', 'Products', 'Brands you can buy anywhere: food and drink, supplements, clothing, beauty and Vegan marketplaces.'],
+          ['nutrition-guide.jpg', 'Services', 'Coaches, health professionals, animal care, studios and marketing help, from people who share your values.'],
+          ['restaurant-guide/t-pulse.jpg', 'Media', 'Podcasts, YouTube channels, news outlets, documentaries and books, ranked by the community.'],
+          ['thumb-community.jpg', 'Community and People', 'Nonprofits, rescues, sanctuaries and groups, and the activists, chefs, creators and doctors in the movement.']
         ] });
     },
     city: function () {
@@ -312,8 +318,8 @@
   var CH_AT = [0, 19.984, 35.814, 53.264, 81.293, 91.272, 121.443, 131.709];
   var playBtn = document.getElementById('dgPlay'), PLAY = { at: 0, playing: false, started: false };
   function vid() { return document.getElementById('wgVideo'); }
-  // Each section page plays its part of the tour as its video summary, until it has its own (Search and the Directory: Find your way).
-  var CLIPS = { overview: [0, 1e9], directory: [CH_AT[2], CH_AT[3]] };
+  // Each section page plays its own short video in Liz's frame once its script is approved and recorded.
+  var CLIPS = { overview: [0, 1e9] }; // a section joins once its own video is recorded (Sean: no borrowed tour parts)
   function clip() { return CLIPS[curTab] || null; }
   function chAt(t) { var n = 0; CH_AT.forEach(function (x, i) { if (t >= x - 0.05) n = i; }); return n; }
   // The tour plays in Liz's frame on the Overview (Sean, 2026-11-09: "the video plays on the right where you see Liz"), the Holiday Guide's way.
