@@ -40,7 +40,7 @@
     { k: 'city', scene: 'welcome/liz-city.jpg', label: 'Your City', pic: 'thumb-community.jpg', lead: 'river', say: 'Press Play and I will walk you through your city. Then find your chapter and say hello.' },
     { k: 'events', scene: 'welcome/liz-events.jpg', label: 'Events', pic: 'vegan-events-guide.jpg', lead: 'river', say: 'Press Play and I will walk you through Events. Then pick a place and find something to do this week.' },
     { k: 'media', scene: 'welcome/liz-media.jpg', label: 'Media', pic: 'holiday/p-listen.jpg', lead: 'kai', say: 'Press Play and I will walk you through Media. Then press Play on something good today.' },
-    { k: 'guides', scene: 'welcome/liz-guides.jpg', label: 'Guides', pic: 'welcome-guide.jpg', lead: 'maya', say: 'Here is how the Guides work. Pick an interest and try the free part of any Guide.' },
+    { k: 'guides', scene: 'welcome/liz-guides.jpg', label: 'Guides', pic: 'welcome-guide.jpg', lead: 'maya', say: 'Press Play and I will walk you through the Guides. Then pick an interest and try the free part of any Guide.' },
     { k: 'points', scene: 'welcome/liz-points.jpg?v=2', label: 'Points and Levels', pic: 'thumb-bounties.jpg', lead: 'theo', say: 'Here is how points work: how you earn them, what they are for, and how you level up.' },
     { k: 'paths', scene: 'welcome/liz-paths.jpg', label: 'Your Path and Badges', pic: 'thumb-passport.jpg', lead: 'kai', say: 'Everyone starts as an Explorer. If you run something, your path takes you further.' },
     { k: 'better', scene: 'welcome/liz-better.jpg', label: 'Make It Better', pic: 'restaurant-guide/t-next.jpg', lead: 'liz', say: 'This is the part that matters most. Here is every way to tell us what is working and what is not.' },
@@ -341,7 +341,7 @@
   // Each section page plays its own short video in Liz's frame once its script is approved and recorded.
   // Each section's own video (Sean, 2026-11-09: no borrowed tour parts): Liz's approved line over that page's shots, captions from her word timings.
   var MEDIA = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/';
-  var SEC = { directory: 'sec-directory-v2', city: 'sec-city-v2', events: 'sec-events-v2', media: 'sec-media-v2' };
+  var SEC = { directory: 'sec-directory-v2', city: 'sec-city-v2', events: 'sec-events-v2', media: 'sec-media-v2', guides: 'sec-guides-v2' };
   var CLIPS = { overview: [0, 1e9] };
   Object.keys(SEC).forEach(function (k) { CLIPS[k] = [0, 1e9]; });
   function cur() {

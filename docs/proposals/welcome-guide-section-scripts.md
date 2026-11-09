@@ -43,7 +43,7 @@ About 60 seconds.
 
 > This is Media. Our own shows, like the Vegans Explore Podcast, bring you years of conversations with the people building this movement. Next to them are the podcasts, documentaries and books the community votes to the top. Press Play and listen right on the page while you keep looking around. Documentaries show where to watch them, and books link to their own pages. We want to hear from you. As a member, you shape what rises here: vote for the shows, films and books you love, save episodes to My Saves, let us know if something needs to be fixed, and if you host a podcast, apply to join our network. Membership is free. We ask for a short survey so we know real people are joining, and that keeps this community worth your time. Bring people with you: invite your friends, your community, new Vegans and Pre-Vegans. And you earn points for everybody who joins using your link. That is the easiest way to grow your experience and open new doors in our community. Press Play on something good today.
 
-## 6. Guides (v1, approved by Sean 2026-11-09; recorded `sec-guides-v1`, 69 s, stt matched; video `sec-guides-v1` with seven scenes of Liz and each Guide (`liz-gd-*`), waiting on Sean's look)
+## 6. Guides (v1, approved by Sean 2026-11-09; recorded `sec-guides-v1`, 69 s, stt matched; video `sec-guides-v2` with seven scenes of Liz and each Guide (`liz-gd-*`; the Dani scene redrawn so nobody touches), approved and live)
 
 About 60 seconds.
 
