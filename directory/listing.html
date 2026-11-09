@@ -1862,16 +1862,18 @@ function renderPlatforms(l){
 // episodes from its own feed (/public/ve-episodes.js, mounted by mountEpisodes).
 // A show's tip line (Sean, 2026-11-09, playbook ve-city-shows: "the point of the podcast is to tell the story... nominate them...
 // shout out your favorite Vegan restaurant, a nonprofit, leave a message... really stress the tip line"). details.show_line {message,
-// nominate}: codes of open comment requests (multi), each opening /comment/<code> where people record or write.
+// nominate}: codes of open comment requests (multi), each opening /comment/<code> where people record or write. nominate_url (a /nominate
+// link, Sean 2026-11-09, playbook ve-nominate-someone) takes the Nominate someone button to the Nominate Someone form instead.
 function showLine(l){
   var d = (l.details || {}).show_line || {}, ok = function(c){ return /^[a-z0-9-]{3,60}$/.test(c || ''); };
-  if (!ok(d.message) && !ok(d.nominate)) return '';
+  var nu = /^\/nominate(\?[a-z0-9=&_-]*)?$/.test(d.nominate_url || '') ? d.nominate_url : '';
+  if (!ok(d.message) && !ok(d.nominate) && !nu) return '';
   var b = 'display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border-radius:6px;font-weight:700;text-decoration:none;font-size:15px;';
   return '<div class="section" id="show-line"><h2 class="section-title">Be part of the show</h2>' +
     '<p class="about-text">This show runs on what you tell us. Leave a message to shout out a restaurant or a nonprofit, send a tip, or ask a question. Record it or write it.</p>' +
     '<div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:12px">' +
     (ok(d.message) ? '<a href="/comment/'+d.message+'" style="'+b+'background:var(--vb-go,#2d7d31);color:#fff">Leave a message</a>' : '') +
-    (ok(d.nominate) ? '<a href="/comment/'+d.nominate+'" style="'+b+'background:#fff;color:var(--vb-go,#2d7d31);border:2px solid var(--vb-go,#2d7d31)">Nominate someone</a>' : '') +
+    (nu || ok(d.nominate) ? '<a href="'+(nu || '/comment/'+d.nominate)+'" style="'+b+'background:#fff;color:var(--vb-go,#2d7d31);border:2px solid var(--vb-go,#2d7d31)">Nominate someone</a>' : '') +
     '</div></div>';
 }
 function renderPodcastOverview(l){
