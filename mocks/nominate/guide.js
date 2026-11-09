@@ -9,6 +9,7 @@
   var MODE = document.body.getAttribute('data-mode') || 'nominate';
 
   var MIC = '<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
+  var APPLE = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.4 12.6c0-2.5 2-3.7 2.1-3.8-1.2-1.7-3-1.9-3.6-2-1.5-.2-3 .9-3.8.9-.8 0-2-.9-3.3-.9-1.7 0-3.3 1-4.2 2.6-1.8 3.1-.5 7.7 1.3 10.2.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8 1.6 0 2 .8 3.3.8 1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.8-1.1-2.8-4.2zM14 5.1c.7-.9 1.2-2 1-3.1-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1 3 1.1.1 2.2-.6 2.9-1.4z"/></svg>';
   var CSS = [
     '.nm-mock{margin:0;background:#FFF7EC;color:#5a3a00;border-bottom:1px solid #f5d9b0;font-size:12px;font-weight:600;padding:8px 40px;}',
     '.nm-mock b{font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#b45309;border:2px solid #b45309;border-radius:6px;padding:1px 7px;margin-right:8px;}',
@@ -45,6 +46,19 @@
     '.nm-form .wg-gs-b{height:auto !important;overflow:visible !important;}',
     '.nm-steps{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 0;}.nm-steps span{font-size:12px;font-weight:800;border-radius:6px;padding:6px 11px;border:1px solid #cfcfcf;color:var(--ink55);}.nm-steps span.on{background:var(--g);border-color:var(--g);color:#fff;}.nm-steps span.dn{background:var(--gl);border-color:var(--gm);color:var(--g);}',
     '.nm-google{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:44px;border:1px solid #dadce0;border-radius:6px;background:#fff;font:700 14px Montserrat,sans-serif;cursor:pointer;color:var(--ink);}.nm-google span{font-weight:900;color:#4285F4;font-size:16px;}',
+    '.nm-apple{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:44px;border:0;border-radius:6px;background:#000;color:#fff;font:700 14px Montserrat,sans-serif;cursor:pointer;margin-bottom:8px;}.nm-apple svg{width:16px;height:16px;fill:#fff;}',
+    '.dg-maya.nm-vid::after{content:"\\25B6  Play Kai\'s welcome for you";position:absolute;left:12px;bottom:12px;background:rgba(0,0,0,.72);color:#fff;font:800 12px Montserrat,sans-serif;letter-spacing:.04em;padding:9px 12px;border-radius:6px;}',
+    '.nm-gfx{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;margin:8px 0 18px;}',
+    '.nm-g{position:relative;border-radius:12px;overflow:hidden;background:#14301c;color:#fff;display:flex;flex-direction:column;}',
+    '.nm-g.sq{width:min(340px,100%);aspect-ratio:1;}.nm-g.st{width:min(220px,100%);aspect-ratio:9/16;}',
+    '.nm-g-pic{flex:1 1 auto;background:center 25%/cover no-repeat;}',
+    '.nm-g-t{padding:12px 14px 40px;background:linear-gradient(0deg,#14301c 70%,rgba(20,48,28,0));margin-top:-30px;position:relative;}',
+    '.nm-g-t small{display:block;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#c5f2c7;}',
+    '.nm-g-t b{display:block;font-size:19px;font-weight:900;line-height:1.15;margin:4px 0;}',
+    '.nm-g.st .nm-g-t b{font-size:17px;}',
+    '.nm-g-t span{font-size:12px;font-weight:600;color:#e8f5e9;}',
+    '.nm-g-logo{position:absolute;right:12px;bottom:10px;height:20px;}',
+    '.nm-stamp{position:absolute;top:10px;right:10px;z-index:2;font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#b45309;background:#fff;border:2px solid #b45309;border-radius:6px;padding:1px 7px;}',
     '.nm-or{text-align:center;font-size:12px;font-weight:700;color:var(--ink55);margin:12px 0 2px;}',
     '@media (max-width:900px){.nm-mock{padding:8px 16px;}.nm-form .wg-gs-pic{display:none;}.nm-grid,.nm-modes{grid-template-columns:1fr;}.nm-rv{grid-template-columns:1fr;gap:2px;}.nm-rv dd{margin-bottom:8px;}}'
   ].join('');
@@ -80,7 +94,7 @@
     interview: {
       root: 'Your Interview',
       tabs: [
-        { k: 'overview', label: 'Overview', say: 'Hey Maria! I\'m Kai. People don\'t get nominated by accident. Here is everything that happens from here, start to finish.' },
+        { k: 'overview', label: 'Overview', say: 'Congratulations, Maria! I\'m Kai. You\'re getting this because your friend Dana P. nominated you. Press Play and hear why, in Dana\'s own words.' },
         { k: 'interview', label: 'The Interview', say: 'Eight questions, one at a time. Talk to me like a friend. Record if you can.' },
         { k: 'nominate', label: 'Nominate Someone', say: 'Who else deserves their flowers? Pass it on. This one is optional, so skip it if no one comes to mind.' },
         { k: 'member', label: 'You\'re a Member', say: 'That was amazing. Thank you for trusting me with your story. You\'re a member now, and a Founding Member at that.' },
@@ -158,7 +172,8 @@
           '<div class="nm-grid"><div><label class="nm-f">Their name</label><input class="nm-in" value="Maria Rodriguez" data-dictate="off"></div>' +
           '<div><label class="nm-f">Their email <small>(so we can reach them)</small></label><input class="nm-in" type="email" value="maria@example.com"></div></div>' +
           '<label class="nm-f">Their city</label><input class="nm-in" value="South Florida" data-dictate="off">' +
-          '<label class="nm-f">They are</label><div class="nm-chips">' + ['A person', 'A business', 'A nonprofit', 'An activist', 'Me'].map(function (c, i) { return '<button type="button" class="nm-chip" aria-pressed="' + (i === 0) + '">' + c + '</button>'; }).join('') + '</div>',
+          '<label class="nm-f">What they do <small>(pick any that fit)</small></label><div class="nm-chips">' + ['Business owner', 'Content creator', 'Works for a nonprofit', 'Activist'].map(function (c, i) { return '<button type="button" class="nm-chip" aria-pressed="' + (i === 0 || i === 3) + '">' + c + '</button>'; }).join('') + '</div>' +
+          '<label class="nm-check"><input type="checkbox"> <span><b>This is me.</b> Self-nominations are welcome.</span></label>',
           '<a class="dg-btn" href="#/why">Next: Why them</a>', 'nm-form');
     },
     why: function () {
@@ -204,7 +219,7 @@
         '<div class="nm-quote">"She feeds the whole block every Thursday and never asks for anything back. Half of us tried Vegan food for the first time at her table."' +
         '<small>Dana P. nominated you <span class="nm-play"><i></i>Hear it in Dana\'s voice</span></small></div>' +
         card('Getting started', 'How this works', pic('creator-guide.jpg'), lines([
-          '<b>Why you.</b> Your neighbors say you make Vegan life better where you live.',
+          '<b>Watch Kai\'s welcome.</b> Press Play beside this page: why you were picked, in Dana\'s words.',
           '<b>Read the steps below.</b> About fifteen minutes from start to finish.',
           '<b>It is an audition.</b> Every nominee is considered, and we tell you either way.']),
           '<a class="dg-btn" href="#/interview/1">Start my interview</a>') +
@@ -245,7 +260,7 @@
         card('Who', 'Someone in your community', pic('partner-group-partner.jpg'),
           '<div class="nm-grid"><div><label class="nm-f">Their name</label><input class="nm-in" placeholder="Their name" data-dictate="off"></div>' +
           '<div><label class="nm-f">Their email <small>(so we can reach them)</small></label><input class="nm-in" type="email" placeholder="name@example.com"></div></div>' +
-          '<label class="nm-f">They are</label><div class="nm-chips">' + ['A person', 'A business', 'A nonprofit', 'An activist'].map(function (c, i) { return '<button type="button" class="nm-chip" aria-pressed="' + (i === 0) + '">' + c + '</button>'; }).join('') + '</div>',
+          '<label class="nm-f">What they do <small>(pick any that fit)</small></label><div class="nm-chips">' + ['Business owner', 'Content creator', 'Works for a nonprofit', 'Activist'].map(function (c, i) { return '<button type="button" class="nm-chip" aria-pressed="' + (i === 0 || i === 3) + '">' + c + '</button>'; }).join('') + '</div>',
           '<a class="dg-btn" href="#/nominate/2">Next: Why them</a>' + skip, 'nm-form');
       return crumb('Nominate Someone') + head('Optional', 'Why Do They Deserve Their Flowers?', 'In your own words. If you record it, we may play it when we tell their story.') + steps(['Who', 'Why them'], 2) +
         card('Why them', 'Say it however is easiest', pic('holiday/w-say.jpg'), modes('rec'),
@@ -264,13 +279,31 @@
           artRow(pic('thumb-bounties.jpg'), 'Points', 'Earn them by taking part, spend them on Guides, give them to the places and causes you love.'),
           artRow(pic('welcome-guide.jpg'), 'Your Guides', 'Ask your Guide anything, and open topic Guides with your points.')]) + '</div>';
     },
+    featured: function () {
+      return crumb('You\'ve Been Featured') + head('Your story is live', 'Maria, You\'ve Been Featured', '') +
+        card('Where you are', 'Your story is on Vegans Explore', pic('partner-community-manager.jpg'), lines([
+          '<b>Share it.</b> Your graphics are below, ready for Instagram, Facebook and stories.',
+          '<b>Tag us</b> @vegansexplore and Dana, so she sees it too.',
+          '<b>Your link</b> is made for you, so we know your post brought people in.']),
+          '<a class="dg-btn" href="#/featured">Download my graphics</a><a class="dg-btn dg-ghost" href="#/featured">Copy my link</a>') +
+        '<div class="wg-arts">' + group('Where you are featured', [
+          artRow(pic('partner-community-manager.jpg'), 'South Florida: Community Voices', 'Your card on the city hub, playing your answer in your own voice.', '#/featured', 'See it'),
+          artRow(pic('holiday/p-listen.jpg'), 'SoFlo Vegans, Episode 118', 'The Local voice segment: Dana\'s nomination, then your Vegan story.', '#/featured', 'Listen'),
+          artRow(pic('restaurant-guide/t-pulse.jpg'), 'The South Florida Daily Pulse', 'Wednesday\'s briefing tells your story to everyone in your city.', '#/featured', 'Read it')]) + '</div>' +
+        '<div class="wg-grp"><h5>Your graphics</h5></div><div class="nm-gfx">' +
+          '<div class="nm-g sq"><span class="nm-stamp">Sample</span><span class="nm-g-pic" style="background-image:url(\'' + pic('prevegan.jpg') + '\')"></span><div class="nm-g-t"><small>Community Voices &middot; South Florida</small><b>I\'ve been featured on Vegans Explore</b><span>Maria Rodriguez, Thursday Table</span></div><img class="nm-g-logo" src="/public/logo-ve-landscape-v1-inverted.svg" alt=""></div>' +
+          '<div class="nm-g st"><span class="nm-stamp">Sample</span><span class="nm-g-pic" style="background-image:url(\'' + pic('prevegan.jpg') + '\')"></span><div class="nm-g-t"><small>Nominated by my community</small><b>I\'ve been featured on Vegans Explore</b><span>Hear my story on SoFlo Vegans</span></div><img class="nm-g-logo" src="/public/logo-ve-landscape-v1-inverted.svg" alt=""></div>' +
+        '</div>' + cta('Pay it forward', 'Who else deserves their flowers?', 'Nominate someone in your community, and their story could be next.', ['Nominate someone', '/mocks/nominate/']);
+    },
     account: function () {
       return crumb('Set Up Your Account') + head('Last step', 'How Do You Want to Sign In?', '') +
         card('Your account', 'Maria Rodriguez, South Florida', pic('thumb-passport.jpg'),
+          '<button type="button" class="nm-apple">' + APPLE + 'Continue with Apple</button>' +
           '<button type="button" class="nm-google"><span>G</span>Continue with Google</button>' +
           '<div class="nm-or">or use your email</div>' +
           '<div class="nm-grid"><div><label class="nm-f">Email</label><input class="nm-in" type="email" value="maria@example.com"></div>' +
           '<div><label class="nm-f">Choose a password</label><input class="nm-in" type="password" value="samplepass"></div></div>' +
+          '<label class="nm-f">A photo for your feature <small>(optional; we use it on your graphics if you are featured)</small></label><div class="nm-in" style="color:var(--ink55)">Add a photo</div>' +
           '<span class="nm-f">What you hear from us</span>' +
           '<label class="nm-check"><input type="checkbox" checked> <span><b>The South Florida Daily Pulse</b>, a short briefing each morning.</span></label>' +
           '<label class="nm-check"><input type="checkbox" checked> <span><b>News about my interview</b>, including if it is picked.</span></label>',
@@ -293,21 +326,27 @@
     foldBtn.textContent = folded ? 'Show Kai' : 'Hide Kai'; foldBtn.setAttribute('aria-expanded', String(!folded));
   }
   foldBtn.addEventListener('click', function () { setFold(!railEl.classList.contains('dg-folded')); });
+  // Kai in a different outfit on every page, always in a Vegans Explore tee (Sean, 2026-11-09). Drawn with the locked scene recipe.
+  var KAI = { interview: { overview: 'welcome', interview: 'listen', nominate: 'flowers', member: 'cheer', account: 'phone', featured: 'cheer' },
+              nominate: { overview: 'flowers', who: 'welcome', why: 'listen', you: 'phone', send: 'cheer' } };
   function drawKai(sayOverride) {
     var t = tab(curTab), i = TABS.indexOf(t);
     bubble.textContent = sayOverride || t.say;
-    var box = document.getElementById('dgMaya'), a = art('kai');
+    var box = document.getElementById('dgMaya'), a = KAI[MODE][curTab] ? '/mocks/nominate/img/kai-' + KAI[MODE][curTab] + '.jpg' : art('kai');
+    box.classList.toggle('nm-vid', MODE === 'interview' && curTab === 'overview');
     if (a) box.style.backgroundImage = "url('" + a + "')";
     tourEl.innerHTML = tourM.innerHTML = '<a class="dg-tnav" href="' + href(TABS[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Back</a><span>' + (i + 1) + ' of ' + TABS.length + '</span>' +
       '<a class="dg-tnav next" href="' + href(TABS[Math.min(TABS.length - 1, i + 1)].k) + '"' + (i < TABS.length - 1 ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Next</a>';
   }
   function route() {
     var k = (location.hash.replace(/^#\/?/, '') || 'overview').split(/[?\/]/)[0] || 'overview';
-    var sent = MODE === 'nominate' && k === 'sent';
+    var sent = MODE === 'nominate' && k === 'sent', feat = MODE === 'interview' && k === 'featured';
     if (!VIEWS[k]) k = 'overview';
     curTab = sent ? 'send' : k;
+    if (feat) curTab = 'member';
     main.innerHTML = VIEWS[k]();
     var say = sent ? 'Thank you! You just made someone\'s week, even if they don\'t know it yet.' : '';
+    if (feat) say = 'Maria, you\'re featured! I told you people don\'t get nominated by accident. Go share it, and tag Dana.';
     if (MODE === 'interview' && k === 'interview') { var n = stepOf(); say = n >= 9 ? 'That\'s all eight. Read them over, then send it to our team.' : Q[n - 1][3]; }
     drawMenu(curTab); drawKai(say);
     window.scrollTo(0, 0);
@@ -319,7 +358,7 @@
       wrap.nextElementSibling.innerHTML = answer(m.getAttribute('data-mode')); return;
     }
     var c = e.target.closest('.nm-chip');
-    if (c) { c.parentNode.querySelectorAll('.nm-chip').forEach(function (b) { b.setAttribute('aria-pressed', String(b === c)); }); return; }
+    if (c) { c.setAttribute('aria-pressed', String(c.getAttribute('aria-pressed') !== 'true')); return; } // pick any that fit
     if (e.target.closest('[data-sent]')) location.hash = '#/sent';
   });
   window.addEventListener('hashchange', route);
