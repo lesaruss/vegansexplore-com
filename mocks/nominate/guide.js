@@ -67,7 +67,7 @@
     '.nm-kq.on .nm-kq-ic{width:10px;height:12px;border:0;border-left:3px solid #fff;border-right:3px solid #fff;}',
     '.nm-kq-bar{position:absolute;left:0;right:0;bottom:0;height:6px;background:rgba(0,0,0,.25);}',
     '.nm-kq-bar b{display:block;height:100%;width:0;background:#22C55E;}',
-    '.nm-kq.on .nm-kq-bar b{width:100%;transition:width 7s linear;}',
+    '.nm-kq video{display:block;width:100%;height:100%;object-fit:cover;}',
     '.nm-hint{font-size:12.5px;color:var(--ink55);margin:8px 0 0;}',
     '.nm-sel{appearance:none;-webkit-appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%278%27%3E%3Cpath d=%27M1 1l5 5 5-5%27 stroke=%27%231a1a1a%27 stroke-width=%272%27 fill=%27none%27/%3E%3C/svg%3E") no-repeat right 16px center;}',
     '.nm-spots{list-style:none;padding:0;margin:0;display:grid;gap:8px;}',
@@ -168,8 +168,9 @@
 
   // Kai asks each question on the picture to the left (Sean, 2026-11-09): Play once and the next questions play on their own after Save and
   // next; Pause stops that. In the mock a bar stands in for her clip (nothing is recorded yet).
+  var KAI_VID = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/kai/nominee-interview/';
   function kaiAsk(s) {
-    return '<span class="wg-gs-pic nm-kq" data-kq="' + s + '"><img src="/mocks/nominate/img/kai-ask.jpg" alt="Kai, your interviewer" width="640" height="640">' +
+    return '<span class="wg-gs-pic nm-kq" data-kq="' + s + '"><video class="nm-kq-v" src="' + KAI_VID + 'q' + s + '-v1.mp4?v=1" poster="/mocks/nominate/img/kai-ask.jpg" playsinline preload="metadata"></video>' +
       '<button type="button" class="nm-kq-btn" aria-label="Play Kai asking this question"><span class="nm-kq-ic"></span><span class="nm-kq-l">Play Kai</span></button><i class="nm-kq-bar"><b></b></i></span>';
   }
   function placeAns() {
@@ -405,13 +406,17 @@
   });
   window.addEventListener('hashchange', route);
   // Play gives consent for the next questions to play on their own; Pause takes it back (Sean, 2026-11-09).
-  function kaiPlay(el, on) {
+  function kaiPlay(el, on, keepConsent) {
     if (!el) return;
-    el.classList.toggle('on', on);
-    el.querySelector('.nm-kq-l').textContent = on ? 'Pause' : 'Play Kai';
-    try { sessionStorage.setItem('nm_kai_auto', on ? '1' : '0'); } catch (e) {}
-    clearTimeout(kaiPlay.t);
-    if (on) kaiPlay.t = setTimeout(function () { el.classList.remove('on'); el.querySelector('.nm-kq-l').textContent = 'Play again'; }, 7100);
+    var v = el.querySelector('video');
+    if (!keepConsent) { try { sessionStorage.setItem('nm_kai_auto', on ? '1' : '0'); } catch (e) {} }
+    if (!v._wired) {
+      v._wired = true;
+      v.addEventListener('timeupdate', function () { el.querySelector('.nm-kq-bar b').style.width = (v.duration ? v.currentTime / v.duration * 100 : 0) + '%'; });
+      v.addEventListener('play', function () { el.classList.add('on'); el.querySelector('.nm-kq-l').textContent = 'Pause'; });
+      v.addEventListener('pause', function () { el.classList.remove('on'); el.querySelector('.nm-kq-l').textContent = v.ended ? 'Play again' : 'Play Kai'; });
+    }
+    if (on) { if (v.ended) v.currentTime = 0; var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); } else v.pause();
   }
   document.addEventListener('click', function (e) {
     var b = e.target.closest('.nm-kq-btn'); if (!b) return;
@@ -419,7 +424,7 @@
   });
   window.addEventListener('hashchange', function () {
     setTimeout(function () { var el = document.querySelector('.nm-kq'); var auto = ''; try { auto = sessionStorage.getItem('nm_kai_auto'); } catch (e) {}
-      if (el && auto === '1') { el.offsetWidth; kaiPlay(el, true); } }, 60);
+      if (el && auto === '1') kaiPlay(el, true, true); }, 60);
   });
 
   tourM.addEventListener('click', function (e) { if (e.target.closest('.dg-tnav')) setTimeout(function () { railEl.scrollIntoView({ block: 'start' }); }, 0); });

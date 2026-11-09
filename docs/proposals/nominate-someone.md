@@ -82,3 +82,13 @@ Every question is asked by Kai and answered out loud (Sean: "I want recordings f
 outfit on every question) with Play on it. Pressing Play is consent: after Save and next, the next question plays on its own; Pause takes
 that back. Each line becomes a lip-synced clip (Kai's voice `cgSgspJ2msm6clMCkdW9`, Higgsfield `wan2_7`, one take each, about 30 credits a
 clip, so about 240 for eight) once Sean approves the words. Talk to Kai stays in the rail for questions.
+
+### Recorded 2026-11-09 (Sean: "Lines are good, record them")
+
+Eight lines in Kai's voice (`cgSgspJ2msm6clMCkdW9`, el-media `tts` from the database, "Veegan" in the text), each checked word for word with
+`stt` (differences only punctuation, lowercase "vegan", "shout out"), pauses over 0.45 s shortened, then lip-synced with Higgsfield `wan2_7`
+(720p, 1:1, one take each) from `mocks/nominate/img/kai-ask.jpg` (Higgsfield job `42a72c84`). Each clip is cut 0.7 s after her last word
+(mouth closed, eyes open on the last frame, checked by eye), and its soundtrack matches the checked mp3 exactly (envelope correlation 1.000).
+Files: `vegan-media/media/kai/nominee-interview/q1-v1.mp3` to `q8-v1.mp3` and `q1-v1.mp4` to `q8-v1.mp4` (md5 checked against the public
+URLs). Wired in `mocks/nominate/guide.js` (`KAI_VID`, `kaiAsk`, `kaiPlay`); proven in a browser: Play plays, Save and next plays the next
+question on its own, Pause stops that.
