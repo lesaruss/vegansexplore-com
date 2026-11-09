@@ -1128,6 +1128,40 @@ async function placeInsights(kind: string, slug: string, from: string, to: strin
   });
 }
 
+// Each chapter's traffic for the public Traffic sort (only the rank leaves the database): podcast downloads from the chapter over the last
+// 365 days plus Google visitors from it over the last 90. Daily cron ve-chapter-traffic; writes ve_chapter_traffic.
+async function chapterTraffic() {
+  const { data: chs } = await db.from('ve_outreach_cities').select('community_slug').eq('kind', 'city').neq('community_slug', 'brands');
+  const yest = plusDays(etDay(Date.now()), -1);
+  const podFrom = plusDays(yest, -364), webFrom = plusDays(yest, -89);
+  const site = await brandSite('vegans-explore');
+  const token = site.property ? await gToken('https://www.googleapis.com/auth/analytics.readonly') : null;
+  const shows = PODCAST_SHOWS['vegans-explore'];
+  const errors: string[] = [], out: any[] = [];
+  await pool((chs ?? []) as any[], 4, async (c: any) => {
+    const p = await placeOf('chapter', c.community_slug);
+    if (!p) return;
+    const codes = [...new Set(p.matches.filter((m) => m.province || m.cities?.length).map((m) => String(m.country)))].sort();
+    let downloads = 0; const byShow: Record<string, number> = {};
+    await Promise.all(shows.map(async (sh) => {
+      try { const raw = await placeCap(sh, podFrom, yest, codes); const n = capSum(raw, p.matches).n; byShow[sh.key] = n; downloads += n; }
+      catch (e) { errors.push(`${c.community_slug} ${sh.key}: ${(e as Error).message}`); }
+    }));
+    let web = 0;
+    if (token && site.property) {
+      try {
+        const r = await gaReport(token, site.property, { dateRanges: [{ startDate: webFrom, endDate: yest }], dimensionFilter: gaPlaceFilter(p.matches), metrics: [{ name: 'activeUsers' }] });
+        web = r[0]?.m[0] || 0;
+      } catch (e) { errors.push(`${c.community_slug} web: ${(e as Error).message}`); }
+    }
+    const row = { chapter: c.community_slug, downloads, web_users: web, score: downloads + web, by_show: byShow, at: new Date().toISOString() };
+    const { error } = await db.from('ve_chapter_traffic').upsert(row);
+    if (error) errors.push(`${c.community_slug}: ${error.message}`);
+    out.push(row);
+  });
+  return { ok: true, pod_from: podFrom, web_from: webFrom, to: yest, chapters: out, errors };
+}
+
 // Every Insights action that only reads (writes are the podcast upload, upload done and file remove).
 const READ_ONLY_OK = new Set(['web_analytics', 'podcast', 'podcast_files', 'seo', 'ads', 'campaigns', 'campaign', 'web_health', 'analysis', 'places', 'place']);
 
@@ -1138,12 +1172,12 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const token = (req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '');
     // The board's listener places: the daily cron (x-cron-secret), the admin token or a super admin. It reads Captivate and writes only ve_next_chapters.listens.
-    if (body.action === 'next_places') {
+    if (body.action === 'next_places' || body.action === 'chapter_traffic') {
       const cron = req.headers.get('x-cron-secret');
       let okCaller = (!!cron && cron === (await secret('CRON_SECRET'))) || (!!token && token === (await secret('LESARUSS_ADMIN_TOKEN')));
       if (!okCaller && token) { const m = await verifyToken(token); if (m) { const { data: me } = await db.from('members').select('is_superadmin').eq('id', m).maybeSingle(); okCaller = !!me?.is_superadmin; } }
       if (!okCaller) return json({ error: 'forbidden' }, 403);
-      return json(await nextPlaces());
+      return json(body.action === 'chapter_traffic' ? await chapterTraffic() : await nextPlaces());
     }
     const ops = !!token && token === (await secret('LESARUSS_ADMIN_TOKEN'));
     let member: string | null = null;
