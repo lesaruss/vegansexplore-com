@@ -7502,6 +7502,14 @@ Removed, never deleted; only for concealment or misleading diners). On branch `c
 
 ## The Welcome Guide is our About us and the free front door (Sean, 2026-11-08, playbook `ve-explorer-path`)
 
+**The Overview is one card, and more than 5 tabs is a dropdown (Sean, 2026-11-09).** "There's way too much going on the first page... no one's reading any of this." The
+Overview is a single card (`slider()`, `SLIDES` in `guide-scripts/welcome-guide.js`): Liz's eight beats, each its own picture, title, a summary of 250 characters or less and
+its section buttons (Find your way carries Directory, Your City, Events, Media, Guides; Become a Founder the button). Desktop: picture a third, text two-thirds, the text box as
+tall as the picture and scrolling inside; phones stack them. **The tour video plays in Liz's frame on the right** (`setVideo`, the Holiday Guide's way, Expand on phones), never
+in the middle, and the card follows the chapter she is on; arrows, dots or a swipe take over for 12 seconds (`HOLD_MS`), then it goes back to her. Watch first, Read the tour and
+the section rows are gone. The page scrolls as one on desktop (only Liz's words and the card's text scroll inside). **Rule for every Guide: more than 5 tabs, the top menu is a
+dropdown at every width** (`html.dg-dd`, numbered options); the other Guides are switched over one by one.
+
 Proposal `docs/proposals/explorer-welcome-guide.md` (approved). `/passport` (`passport.html`, `guide-scripts/welcome-guide.js`) is the Welcome Guide, copied
 from the Holiday Guide (template gate). Liz hosts. The Overview is enough on its own (Start here, Become a Founder, the tour: Liz's eight chapters, approved
 script v3, text until the video is made); ten optional section pages go deeper (Directory, Your City, Events, Media, Guides, Points and Levels, Your Path,
