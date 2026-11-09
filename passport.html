@@ -691,17 +691,22 @@
     .wg-tour-h p{margin:0;font-size:13.5px;color:var(--ink75)}
     .wg-vid{margin:14px 0 6px}
     .wg-vid .vv{margin:0 0 8px}
-    /* Start here and Watch first (Sean, 2026-11-09): the picture or video takes a third, the text two-thirds, at every width. The text box is
-       exactly as tall as the picture (contain:size keeps it from setting the row's height) and anything longer scrolls inside it. */
-    body .vgi{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:16px;align-items:stretch}
-    body .vgi-pic{width:100%;height:auto;aspect-ratio:1/1;flex:none}
-    body .vgi-b{contain:size;overflow-y:auto;overscroll-behavior:contain;padding-right:6px}
-    .wg-tbody{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:18px;align-items:stretch;margin-top:14px}
-    .wg-tbody .wg-vid{margin:0}
-    .wg-chs{contain:size;display:flex;flex-direction:column;min-height:0}
-    .wg-chs-t{flex:none;font-size:13px;font-weight:800;color:var(--g);margin:0 0 8px}
-    .wg-chs ol{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;margin:0;padding:0 6px 0 20px}
-    @media (max-width:600px){body .vgi{gap:12px;padding:12px}body .vgi-b p{font-size:13px}.wg-tbody{gap:12px}body .wg-vid .vv-play{padding:0 6px 8px}body .wg-vid .vv-btn{font-size:11px;letter-spacing:.04em;padding:7px 9px;gap:5px;outline-width:2px}body .wg-vid .vv-btn{font-size:0}body .wg-vid .vv-btn::after{content:'Play';font-size:12px}body .wg-vid .vv-sub{display:none}.wg-chs li{font-size:13.5px}}
+    .wg-chs{margin-top:12px}
+    .wg-chs summary{cursor:pointer;font-size:13px;font-weight:800;color:var(--g)}
+    .wg-chs ol{margin:10px 0 0;padding-left:20px}
+    /* Desktop only (Sean, 2026-11-09: "mainly for desktop. Mobile was perfect"): Start here and Watch first put the picture or video in a third
+       and the text in two-thirds; the text box is exactly as tall as the picture (contain:size) and anything longer scrolls inside it. */
+    @media (min-width:901px){
+      body .vgi{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:16px;align-items:stretch}
+      body .vgi-pic{width:100%;height:auto;aspect-ratio:1/1;flex:none}
+      body .vgi-b{contain:size;overflow-y:auto;overscroll-behavior:contain;padding-right:6px}
+      .wg-tbody{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:18px;align-items:stretch;margin-top:14px}
+      .wg-tbody .wg-vid{margin:0}
+      .wg-chs{contain:size;position:relative;margin-top:0}
+      .wg-chs summary{display:block;pointer-events:none;list-style:none;margin:0;line-height:20px}
+      .wg-chs summary::-webkit-details-marker{display:none}
+      .wg-chs ol{position:absolute;top:28px;left:0;right:0;bottom:0;overflow-y:auto;overscroll-behavior:contain;margin:0;padding:0 6px 0 20px}
+    }
     .wg-now{font-size:13px;font-weight:700;color:var(--muted,#525252)}
     .wg-chplay{font-size:12px;font-weight:800;color:var(--g);text-decoration:none;white-space:nowrap;margin-left:4px}
     .wg-chs li{font-size:14.5px;line-height:1.6;color:var(--ink75);margin-bottom:8px}
@@ -779,7 +784,7 @@
 <script src="/public/ve-guide-intro.js"></script>
 <script src="/public/ve-explorer-card.js"></script>
 <script src="/public/ve-video.js?v=2"></script>
-<script src="/guide-scripts/welcome-guide.js?v=2"></script>
+<script src="/guide-scripts/welcome-guide.js?v=3"></script>
 <script src="/public/ve-guide-min.js"></script>
 </body>
 </html>
