@@ -61,6 +61,9 @@
 <script>
 (function () {
   var $ = function (id) { return document.getElementById(id); };
+  // The path surveys (each path Guide's intake): they start after the Explorer survey.
+  var PATH_TITLE = { 'vegan-restaurant-guide': 'The Vegan Restaurant Guide', 'vegan-events-guide': 'The Vegan Events Guide', 'creator-guide': 'The Creator Guide', 'nonprofit-guide': 'The Nonprofit Guide', 'pre-vegan-business-guide': 'The Pre-Vegan Business Guide' };
+  function pathNext() { try { var v = sessionStorage.getItem('ve_path_next') || ''; return PATH_TITLE[v] ? v : ''; } catch (e) { return ''; } }
   var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
   function inFrame() { try { return window.self !== window.top; } catch (e) { return true; } }
   function tellParent() {
@@ -70,7 +73,7 @@
   }
   if (window.ResizeObserver) new ResizeObserver(tellParent).observe(document.body);
   // A Guide's own survey (/survey?s=<slug>, rows in ve_surveys): free, earns its points, and finishing it opens that Guide and a membership.
-  function guideSurvey(slug) {
+  function guideSurvey(slug, lede) {
     var rm = VEAuth.getRealMember && VEAuth.getRealMember();
     // Survey first, account last (Sean, 2026-11-07; playbook ve-mobile-app H): a survey that admits is answered with no account and saved at the
     // end. Only a survey that does not admit asks for an account first (onNeedAccount below).
@@ -94,18 +97,20 @@
     // Sent here from another page that wanted a member (the holiday menu form, ve-holiday-guide 2026-11-07): finishing goes back there.
     function pageBack() { try { var v = sessionStorage.getItem('ve_after_survey') || ''; return /^\/[a-z0-9/_-]{1,120}(#\/[a-z0-9/_-]{0,60})?$/.test(v) ? v : ''; } catch (e) { return ''; } }
     function explorerDone(runs) {
-      var picks = (runs || []).filter(function (k) { return GUIDE_FOR[k]; });
+      var picks = (runs || []).filter(function (k) { return GUIDE_FOR[k] && GUIDE_FOR[k][0] !== pathNext(); });
       return '<h2 class="vgs-q">Thanks.</h2><p class="vgs-h">' + (pendingAcct ? 'You are in. Your membership is open and your points are in.' : 'Your points are in.') + '</p>' +
         picks.map(function (k) { return '<p class="vgs-h">' + GUIDE_FOR[k][1] + ' opens with its own short survey, with up to ' + (GUIDE_FOR[k][2] || 250) + ' more points. <a style="color:#1f5f22;font-weight:800" href="/survey?s=' + GUIDE_FOR[k][0] + '">Take it</a></p>'; }).join('') +
+        // Explorer first, then the path they came for (ve-explorer-path step 5, 2026-11-09): its survey is the next step.
+        (pathNext() ? '<p><a class="vgs-b" href="/survey?s=' + pathNext() + '">Next: ' + PATH_TITLE[pathNext()] + ' survey</a></p>' : '') +
         // The paths page (ve-explorer-path step 4, Sean 2026-11-07): every path, the ones they ticked first.
-        '<p><a class="vgs-b" href="/paths">See your paths</a></p>' +
+        '<p><a class="vgs-b' + (pathNext() ? ' g' : '') + '" href="/paths">See your paths</a></p>' +
         (pageBack() && pageBack() !== '/paths' ? '<p><a class="vgs-b g" href="' + pageBack() + '">' + (/^\/passport/.test(pageBack()) ? 'See your first steps' : 'Pick up where you left off') + '</a></p>' : claimBack() ? (claimBack() === '_add_' ? '<p><a class="vgs-b g" href="/claim?add=1">Finish adding your business</a></p>' : '<p><a class="vgs-b g" href="/claim?listing=' + encodeURIComponent(claimBack()) + '">Finish claiming your page</a></p>') : '<p><a class="vgs-b g" href="/dashboard">Open your dashboard</a></p>');
     }
     VEGuideSurvey.mount($('host'), {
       survey: slug,
       onNeedAccount: needAccount,
       doneHtml: explorer ? function (A) { return explorerDone(A.x_run); } : null,
-      onLoaded: function (S) { window.__vgsGuide = S.guide_slug || null; $('lede').textContent = S.intro || ''; $('why').innerHTML = '<span>Free</span>' + (S.total ? '<span>Up to ' + S.total + ' points</span>' : '<span>Private</span>') + '<span>Saved as you go</span>'; },
+      onLoaded: function (S) { window.__vgsGuide = S.guide_slug || null; $('lede').textContent = lede || S.intro || ''; $('why').innerHTML = '<span>Free</span>' + (S.total ? '<span>Up to ' + S.total + ' points</span>' : '<span>Private</span>') + '<span>Saved as you go</span>'; },
       onChange: function () { var q = /^#q\//.test(location.hash); $('lede').hidden = q; $('why').hidden = q; try { window.scrollTo(0, 0); } catch (e) {} tellParent(); },
       onDone: function (res) {
         if (explorer) {
@@ -116,14 +121,36 @@
         }
         fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-auth?action=me', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON }, body: JSON.stringify({ token: VEAuth.getToken() }) })
           .then(function (r) { return r.json(); }).then(function (d) { if (d && d.member) VEAuth.setSession(VEAuth.getToken(), d.member); }).catch(function () {})
-          .then(function () { try { sessionStorage.removeItem('ve_survey_for'); } catch (e) {} setTimeout(function () { location.href = '/guides/' + (window.__vgsGuide || slug) + '?welcome=survey'; }, 1500); });
+          .then(function () { try { sessionStorage.removeItem('ve_survey_for'); sessionStorage.removeItem('ve_path_next'); } catch (e) {} setTimeout(function () { location.href = '/guides/' + (window.__vgsGuide || slug) + '?welcome=survey'; }, 1500); });
       }
     });
   }
   function start() {
     if (!window.VEAuth || !window.VEMissionSurvey || !window.VEGuideSurvey) return setTimeout(start, 200);
     var gs = /[?&]s=([a-z0-9-]{1,60})/.exec(location.search);
-    if (gs) { $('kick').textContent = 'Join free'; $('h1').textContent = 'Free with a short survey'; return guideSurvey(gs[1]); }
+    if (gs) {
+      $('kick').textContent = 'Join free'; $('h1').textContent = 'Free with a short survey';
+      var slug = gs[1];
+      if (!PATH_TITLE[slug]) { if (slug === 'explorer') { try { sessionStorage.removeItem('ve_path_next'); } catch (e) {} } return guideSurvey(slug); }
+      // A path survey starts after Explorer (canon-ve-door-guides v7/v10, ve-explorer-path step 5, 2026-11-09): someone who has not
+      // finished the Explorer survey takes it first, then goes straight on to this one. With the Explorer badge, straight here.
+      var tok = VEAuth.getToken && VEAuth.getToken();
+      var go = function (explorerDone) {
+        if (explorerDone) {
+          var two = pathNext() === slug;
+          if (two) { $('kick').textContent = 'Step 2 of 2'; $('h1').textContent = PATH_TITLE[slug] + ' survey'; }
+          return guideSurvey(slug);
+        }
+        try { sessionStorage.setItem('ve_path_next', slug); } catch (e) {}
+        $('kick').textContent = 'Step 1 of 2';
+        $('h1').textContent = 'First, the Explorer survey';
+        return guideSurvey('explorer', 'Everyone starts as an Explorer. Answer these first, about two minutes, then you go straight on to ' + PATH_TITLE[slug].replace(/^The /, 'the ') + ' survey.');
+      };
+      if (!tok) return go(false);
+      fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-mission-survey?action=survey_get', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON }, body: JSON.stringify({ survey: 'explorer', token: tok }) })
+        .then(function (r) { return r.ok ? r.json() : null; }).then(function (d) { go(!!(d && d.survey && d.survey.completed)); }).catch(function () { go(true); });
+      return;
+    }
     if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<p>Sign in to build your profile.</p><p><a class="btn" href="/login?next=/dashboard/survey">Sign in</a></p>'; return; }
     var m = VEAuth.getMember();
     if (m && m.membership_status !== 'active') { $('gate').hidden = false; $('gate').textContent = 'Your profile opens once your Passport is active.'; return; }
