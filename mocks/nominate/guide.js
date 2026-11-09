@@ -51,14 +51,16 @@
     '.nm-gfx{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;margin:8px 0 18px;}',
     '.nm-g{position:relative;border-radius:12px;overflow:hidden;background:#14301c;color:#fff;display:flex;flex-direction:column;}',
     '.nm-g.sq{width:min(340px,100%);aspect-ratio:1;}.nm-g.st{width:min(220px,100%);aspect-ratio:9/16;}',
-    '.nm-g-pic{flex:1 1 auto;background:center 25%/cover no-repeat;}',
-    '.nm-g-t{padding:12px 14px 40px;background:linear-gradient(0deg,#14301c 70%,rgba(20,48,28,0));margin-top:-30px;position:relative;}',
+    '.nm-g-pic{flex:1 1 auto;min-height:0;background:#fff center bottom/contain no-repeat;}',
+    '.nm-g-t{padding:12px 14px 40px;background:#14301c;position:relative;}',
     '.nm-g-t small{display:block;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#c5f2c7;}',
     '.nm-g-t b{display:block;font-size:19px;font-weight:900;line-height:1.15;margin:4px 0;}',
     '.nm-g.st .nm-g-t b{font-size:17px;}',
     '.nm-g-t span{font-size:12px;font-weight:600;color:#e8f5e9;}',
     '.nm-g-logo{position:absolute;right:12px;bottom:10px;height:20px;}',
     '.nm-stamp{position:absolute;top:10px;right:10px;z-index:2;font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#b45309;background:#fff;border:2px solid #b45309;border-radius:6px;padding:1px 7px;}',
+    '.nm-me{position:relative;width:min(260px,100%);aspect-ratio:1;border-radius:12px;overflow:hidden;border:1px solid var(--line);}.nm-me img{width:100%;height:100%;object-fit:cover;display:block;}',
+    '.nm-me-b{flex:1 1 280px;min-width:0;font-size:15px;line-height:1.55;color:var(--ink75);}.nm-me-b b{display:block;font-size:20px;font-weight:900;color:var(--ink);margin-bottom:4px;}',
     '.nm-or{text-align:center;font-size:12px;font-weight:700;color:var(--ink55);margin:12px 0 2px;}',
     '@media (max-width:900px){.nm-mock{padding:8px 16px;}.nm-form .wg-gs-pic{display:none;}.nm-grid,.nm-modes{grid-template-columns:1fr;}.nm-rv{grid-template-columns:1fr;gap:2px;}.nm-rv dd{margin-bottom:8px;}}'
   ].join('');
@@ -270,7 +272,7 @@
       var sent = /sent=1/.test(location.hash);
       return crumb('You\'re a Member') + head('Welcome, Founding Member', 'You\'re a Member, Maria', '') +
         card('What you have now', 'Your story is with our team', pic('welcome-ensemble.jpg'), lines([
-          '<b>You are a Founding Member.</b> Free, with your Explorer and Nominee badges and 250 points to start.' + (sent ? ' Thank you for passing it on, too.' : ''),
+          '<b>You are a Founding Member.</b> Free, with your Explorer and Nominee badges and 250 points to start. Featured members also get a drawn Vegans Explore portrait.' + (sent ? ' Thank you for passing it on, too.' : ''),
           '<b>We listen to every interview.</b> If yours is picked, you hear from us first, with the date.',
           '<b>One last step.</b> Choose how you sign in, so you can come back any time.']),
           '<a class="dg-btn" href="#/account">Set up my account</a>') +
@@ -282,6 +284,7 @@
     featured: function () {
       return crumb('You\'ve Been Featured') + head('Your story is live', 'Maria, You\'ve Been Featured', '') +
         card('Where you are', 'Your story is on Vegans Explore', pic('partner-community-manager.jpg'), lines([
+          '<b>Meet the Vegans Explore you.</b> We drew you in our style, in our tee: your badge of honor, for your profile and your socials.',
           '<b>Share it.</b> Your graphics are below, ready for Instagram, Facebook and stories.',
           '<b>Tag us</b> @vegansexplore and Dana, so she sees it too.',
           '<b>Your link</b> is made for you, so we know your post brought people in.']),
@@ -290,9 +293,11 @@
           artRow(pic('partner-community-manager.jpg'), 'South Florida: Community Voices', 'Your card on the city hub, playing your answer in your own voice.', '#/featured', 'See it'),
           artRow(pic('holiday/p-listen.jpg'), 'SoFlo Vegans, Episode 118', 'The Local voice segment: Dana\'s nomination, then your Vegan story.', '#/featured', 'Listen'),
           artRow(pic('restaurant-guide/t-pulse.jpg'), 'The South Florida Daily Pulse', 'Wednesday\'s briefing tells your story to everyone in your city.', '#/featured', 'Read it')]) + '</div>' +
+        '<div class="wg-grp"><h5>The Vegans Explore you</h5></div><div class="nm-gfx"><div class="nm-me"><span class="nm-stamp">Sample</span><img src="/mocks/nominate/img/maria-drawn.jpg" alt="Sample: Maria, drawn in the Vegans Explore style"></div>' +
+          '<div class="nm-me-b"><b>Your badge of honor</b><p>Only people we feature get one. It is yours to keep: use it as your profile picture here and on your socials.</p><div class="wg-gs-btns"><a class="dg-btn" href="#/featured">Use as my profile picture</a><a class="dg-btn dg-ghost" href="#/featured">Download</a></div><p style="font-size:12.5px;color:var(--ink55);margin-top:8px">Not quite you? Tell us and we redraw it.</p></div></div>' +
         '<div class="wg-grp"><h5>Your graphics</h5></div><div class="nm-gfx">' +
-          '<div class="nm-g sq"><span class="nm-stamp">Sample</span><span class="nm-g-pic" style="background-image:url(\'' + pic('prevegan.jpg') + '\')"></span><div class="nm-g-t"><small>Community Voices &middot; South Florida</small><b>I\'ve been featured on Vegans Explore</b><span>Maria Rodriguez, Thursday Table</span></div><img class="nm-g-logo" src="/public/logo-ve-landscape-v1-inverted.svg" alt=""></div>' +
-          '<div class="nm-g st"><span class="nm-stamp">Sample</span><span class="nm-g-pic" style="background-image:url(\'' + pic('prevegan.jpg') + '\')"></span><div class="nm-g-t"><small>Nominated by my community</small><b>I\'ve been featured on Vegans Explore</b><span>Hear my story on SoFlo Vegans</span></div><img class="nm-g-logo" src="/public/logo-ve-landscape-v1-inverted.svg" alt=""></div>' +
+          '<div class="nm-g sq"><span class="nm-stamp">Sample</span><span class="nm-g-pic" style="background-image:url(\'' + '/mocks/nominate/img/maria-drawn.jpg' + '\')"></span><div class="nm-g-t"><small>Community Voices &middot; South Florida</small><b>I\'ve been featured on Vegans Explore</b><span>Maria Rodriguez, Thursday Table</span></div><img class="nm-g-logo" src="/public/logo-ve-landscape-v1-inverted.svg" alt=""></div>' +
+          '<div class="nm-g st"><span class="nm-stamp">Sample</span><span class="nm-g-pic" style="background-image:url(\'' + '/mocks/nominate/img/maria-drawn.jpg' + '\')"></span><div class="nm-g-t"><small>Nominated by my community</small><b>I\'ve been featured on Vegans Explore</b><span>Hear my story on SoFlo Vegans</span></div><img class="nm-g-logo" src="/public/logo-ve-landscape-v1-inverted.svg" alt=""></div>' +
         '</div>' + cta('Pay it forward', 'Who else deserves their flowers?', 'Nominate someone in your community, and their story could be next.', ['Nominate someone', '/mocks/nominate/']);
     },
     account: function () {
@@ -303,7 +308,8 @@
           '<div class="nm-or">or use your email</div>' +
           '<div class="nm-grid"><div><label class="nm-f">Email</label><input class="nm-in" type="email" value="maria@example.com"></div>' +
           '<div><label class="nm-f">Choose a password</label><input class="nm-in" type="password" value="samplepass"></div></div>' +
-          '<label class="nm-f">A photo for your feature <small>(optional; we use it on your graphics if you are featured)</small></label><div class="nm-in" style="color:var(--ink55)">Add a photo</div>' +
+          '<label class="nm-f">A recent photo of you <small>(for future features)</small></label><div class="nm-in" style="color:var(--ink55)">Add a photo: a clear, recent shot of your face works best</div>' +
+          '<label class="nm-check"><input type="checkbox" checked> <span><b>You may use my photo.</b> Vegans Explore may use it in features, and if I am featured, draw me in its illustrated style, wearing a Vegans Explore tee. I can ask for either to come down at any time.</span></label>' +
           '<span class="nm-f">What you hear from us</span>' +
           '<label class="nm-check"><input type="checkbox" checked> <span><b>The South Florida Daily Pulse</b>, a short briefing each morning.</span></label>' +
           '<label class="nm-check"><input type="checkbox" checked> <span><b>News about my interview</b>, including if it is picked.</span></label>',

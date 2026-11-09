@@ -49,3 +49,18 @@ featured on Vegans Explore... that's how we can get sticky")
 The backend already verifies Apple tokens (`ve-auth` action `apple`, built for the app 2026-11-08). The website needs an Apple **Services ID**
 for vegansexplore.com (Apple developer account, domain verified, return URL), that ID added to the `APPLE_AUDIENCES` secret, and Apple's JS
 button in `ve-auth.js` beside Google, so every sign-in on the site gets it, not only this page.
+
+## The Vegans Explore you: a drawn portrait for everyone we feature (Sean, 2026-11-09)
+
+"When we feature them, we animate them... a badge of honor... a Vegans Explore version of yourself that you can use in your profile, you
+could use on social, but you'll be wearing a Vegans Explore t-shirt, so we can brand it... we won't really ask them, we'll just do it... we
+ask for an updated photo of them that we could use for future publication."
+
+- **The photo is part of joining**: Set Up Your Account asks for a clear, recent photo, with one release line: we may use it in features and,
+  if featured, draw them in our style in a Vegans Explore tee; either comes down on request. No separate ask later (Sean: "we'll just do it").
+- **On feature**, the portrait is drawn with the locked scene recipe: their photo as the first reference, the style scene second, mid shot,
+  a warm wave, white background, a Vegans Explore tee (any color). Checked by eye against their photo before it goes out (a likeness that is
+  off is worse than none). About 2 Higgsfield credits each.
+- **Delivered** in the featured email and on You've Been Featured: Use as my profile picture (sets their member picture), Download, and
+  "Not quite you? Tell us and we redraw it." It also goes on their share graphics in place of the photo.
+- **Watch**: if enough people object, Sean changes course. Requests to redraw or remove are counted in the Depot queue so that is visible.
