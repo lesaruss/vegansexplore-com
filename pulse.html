@@ -134,6 +134,10 @@
     .source-box a { color: var(--ve-green-dark); font-weight: 700; }
     body.lane-pulse .chips, body.lane-pulse #category, body.lane-pulse #status, body.lane-pulse #area-filter { display: none; }
     body.lane-pulse .toolbar { grid-template-columns: minmax(0, 1fr); }
+    .pulse-top { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 20px; align-items: end; }
+    .vps-slot:empty, body:not(.lane-pulse) .vps-slot { display: none; }
+    body.lane-pulse .pulse-top.has-sub { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+    @media (max-width: 760px) { body.lane-pulse .pulse-top.has-sub { grid-template-columns: minmax(0, 1fr); } }
 
     /* A post on its own page (Sean, 2026-10-04). Wider and larger than the old pop-up, with the
        less-used tools (copy link, report, hide) as quiet links at the bottom. */
@@ -261,6 +265,8 @@
       <h2 id="posts-title" class="visually-hidden">Posts</h2>
       <!-- Three-fourths content, one-fourth ads (Sean, 2026-10-04), beside every tab. public/ve-ad-rail.js -->
       <div class="vear-layout board-layout"><div class="vear-main">
+      <!-- Search and the Pulse subscription side by side, half and half, on the Daily Pulse tab (Sean, 2026-11-09). public/ve-pulse-subscribe.js fills #vps-slot. -->
+      <div class="pulse-top" id="pulse-top">
       <form class="toolbar" id="search-form" role="search">
         <label for="q" class="visually-hidden">Search the board</label>
         <input id="q" class="input search" type="search" placeholder="Search the Daily Pulse" maxlength="120">
@@ -277,6 +283,8 @@
           <option value="all">All</option>
         </select>
       </form>
+      <div class="vps-slot" id="vps-slot"></div>
+      </div>
       <div class="chips" id="chips" role="group" aria-label="Show"></div>
       <p class="status-line" id="status-line" role="status" aria-live="polite"></p>
       <div class="posts" id="posts"></div>
@@ -916,7 +924,7 @@
   </script>
 
   <script src="/public/ve-ad-rail.js"></script>
-  <script src="/public/ve-pulse-subscribe.js" defer></script>
+  <script src="/public/ve-pulse-subscribe.js?v=2" defer></script>
   <script src="/public/footer.js"></script>
   </div>
 </body>
