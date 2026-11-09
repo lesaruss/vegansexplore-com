@@ -30,3 +30,8 @@ Playbook `ve-podcast-studio`. Follows `2026-11-08-ve-podcast-studio-episode-disc
 1. Sean merges HQ `claude/charming-rubin-2qi0si`; then Episode 146 (Sun Nov 15): once it is on Captivate, Build the page, read it, Publish.
 2. Recommendations to bring Sean: chapter-rankings playbook, podcast subscriptions, Guide profiles ("Meet Kai").
 3. Open: Dani's and Maya's role lines; vegconomist's logo is still a letter.
+
+
+## Update 2026-11-09
+
+Sean said merge. HQ `claude/charming-rubin-2qi0si` is on HQ main (dc8f0fb; type check clean, 5 of 5 tests pass). Next: once Episode 146 (Sun Nov 15) is on Captivate, BrandDesk > Podcast > Episode 146 > Episode page > Build the page, read it, Publish. Still unproven: the Build and Publish buttons signed in on hq.lesaruss.ai.
