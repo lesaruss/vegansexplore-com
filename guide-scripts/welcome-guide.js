@@ -257,7 +257,7 @@
         ] });
     },
     paths: function () {
-      return sectionPage('paths', { kicker: 'Take part', title: 'Everyone starts as an Explorer', pic: 'thumb-passport.jpg', group: 'The paths and their badges',
+      return sectionPage('paths', { kicker: 'Take part', title: 'Everyone starts as an Explorer', pic: 'partner-group-partner.jpg', group: 'The paths and their badges',
         how: ['<b>Read the parts below.</b> Each one is a path, with its own Guide, its own short survey and its own badge.', '<b>Take as many as fit.</b> Run a group or community? That path is on its way: tap Notify me on the paths page.'],
         go: ['See your paths', '/paths'], ctaTitle: 'Find your path.', ctaText: 'Start as an Explorer with the short survey, then pick the paths that fit what you do.',
         parts: [
