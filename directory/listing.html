@@ -1447,7 +1447,8 @@ function loadGroupLive(l){
 // What connects to this listing (Sean, 2026-11-08: "the directory listing is designed for discovery. So anytime we can have something
 // that's related or connected, it needs to be there"; playbook ve-community-directory). ve_listing_related(listing), a cache rebuilt
 // daily: ours (our shows' episodes that name it, matched to the feed so they play here), people (People listings whose title or bio
-// names it), elsewhere (other Directory podcasts that name it, Featured when the title names it or one of its people, else Mentioned),
+// names it), elsewhere (other Directory podcasts that name it, Featured when the title names it or one of its people, Show sponsor when
+// a brand is read as an ad on that show (one row a show), else Mentioned; brands and food places follow 20261109_listing_related_brands_food.sql),
 // and, on a person, orgs (the organizations their title or bio names). Episodes play in the docked player (ppEpRow), lists scroll inside
 // their box. Anything already shown by details.linked or the family is left out. Then In the Pulse draws the articles that are not
 // episodes shown here.
@@ -1476,7 +1477,7 @@ function loadRelated(l){
           (ours.length ? '<h2 class="section-title">On our podcast</h2><p class="pp-sub">Episodes of our shows that talk about ' + esc(l.name) + '.</p>' +
             '<div class="pp-scroll"><div class="vep-list">' + ours.map(function(ep){ return ppEpRow(ep, ''); }).join('') + '</div></div>' : '') +
           (other.length ? '<h2 class="section-title"' + (ours.length ? ' style="margin-top:28px"' : '') + '>On other podcasts</h2><p class="pp-sub">Episodes of other shows in our Directory that feature or mention ' + esc(l.name) + '.</p>' +
-            '<div class="pp-scroll"><div class="vep-list">' + other.map(function(ep){ return ppEpRow(ep, ep.how === 'featured' ? 'Featured' : 'Mentioned'); }).join('') + '</div></div>' : '');
+            '<div class="pp-scroll"><div class="vep-list">' + other.map(function(ep){ return ppEpRow(ep, ep.how === 'featured' ? 'Featured' : ep.how === 'sponsor' ? 'Show sponsor' : 'Mentioned'); }).join('') + '</div></div>' : '');
         // Right after About and any People section, so it is seen without scrolling to the foot of the page.
         var after = null;
         Array.prototype.forEach.call(host.querySelectorAll(':scope > .section'), function(s2){
