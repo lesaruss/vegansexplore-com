@@ -78,26 +78,31 @@
     .gc-card.pa-hi { box-shadow: 0 0 0 3px var(--ve-green); }
     /* Liz, the page's Guide: the standard rail pieces (#dgRail, .dg-maya, #dgBubble, #dgPlay, #dgFold). Phones: the locked Guide mobile card
        from /public/ve-guide-corner.js (canon-guide-mobile-card). Desktop: a strip above the paths. Hide me / Show me: /public/ve-guide-min.js. */
-    #dgRail { margin: 0 0 22px; background: #fff; }
-    #dgRail .dg-maya { background: #f4f6f4 url('/public/guides/welcome/liz-paths.jpg') center top / cover no-repeat; border-radius: 10px; }
+    /* Desktop: the Holiday Guide's layout (guides/holiday-guide.html .dg-app): the paths on the left, Liz's 320 px column on the right
+       (her picture 4:5, the name line, her words up to 136 px then scrolling, Play and Talk to Liz side by side, Hide me under them). */
+    .dg-main { min-width: 0; }
+    .dg-rail { display: flex; flex-direction: column; gap: 10px; min-height: 0; }
+    #dgRail .dg-maya { position: relative; border-radius: 14px; overflow: hidden; background: #f3f6f3 url('/public/guides/welcome/liz-paths.jpg') center 18% / cover no-repeat; aspect-ratio: 4 / 5; }
     #dgRail .dg-namebar { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-    #dgRail .dg-maya-name { font-size: 10px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ve-green-dark); }
-    #dgRail .dg-bubble { font-size: 14px; line-height: 1.6; color: var(--ve-text); background: var(--ve-green-light); border: 1px solid var(--ve-green-mid); border-radius: 10px; padding: 10px 14px; }
-    #dgRail .dg-play { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font: 800 12px Montserrat, sans-serif; letter-spacing: 0.04em; padding: 10px 16px; border-radius: 6px; border: 0; background: #22C55E; color: #03170a; cursor: pointer; }
+    #dgRail .dg-maya-name { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: rgba(26,26,26,0.55); }
+    #dgRail .dg-maya-name b { color: var(--ve-text); }
+    #dgRail .dg-namebar .dg-fold { display: none; }
+    #dgRail .dg-bubble { background: var(--ve-green-light); border: 1px solid var(--ve-green-mid); border-radius: 12px; padding: 12px 14px; font-size: 14px; line-height: 1.55; color: #123d18; }
+    #dgRail .dg-play { font: 800 11px Montserrat, sans-serif; letter-spacing: 0.08em; text-transform: uppercase; padding: 11px 14px; border-radius: 6px; border: 0; background: #22C55E; color: #03170a; cursor: pointer; }
     #dgRail .dg-play:hover { background: #1fb455; }
-    #dgRail .dg-fold { text-transform: uppercase; letter-spacing: 0.06em; align-items: center; font: 700 11px Montserrat, sans-serif; padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.15); background: #fff; color: #1a1a1a; cursor: pointer; }
-    #dgRail.dg-folded > :not(.dg-fold) { display: none !important; }
+    #dgRail .dg-fold { text-transform: uppercase; letter-spacing: 0.06em; align-items: center; justify-content: center; font: 700 11px Montserrat, sans-serif; padding: 9px 12px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.15); background: #fff; color: #1a1a1a; cursor: pointer; }
+    #dgRail .dg-tour { display: none; }
     @media (min-width: 901px) {
-      #dgRail { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; grid-template-rows: auto auto auto; gap: 8px 16px; align-items: start; border: 1px solid var(--ve-border); border-radius: 12px; padding: 14px 16px; }
-      #dgRail .dg-maya { grid-column: 1; grid-row: 1 / span 3; width: 96px; height: 120px; }
-      #dgRail .dg-namebar { grid-column: 2; grid-row: 1; }
-      #dgRail .dg-bubble { grid-column: 2; grid-row: 2 / span 2; }
-      #dgRail .dg-play, #dgRail .vepg-talk, #dgRail .dg-fold { grid-column: 3; width: 150px; margin: 0 !important; justify-content: center; }
-      #dgRail .dg-play { grid-row: 1; }
-      #dgRail .vepg-talk { grid-row: 2; align-self: start !important; height: 35px; }
-      #dgRail .dg-fold.dg-fold-me { grid-column: 3; grid-row: 3; width: 150px; height: 35px; padding: 0 12px; }
-      #dgRail .dg-tour { display: none; }
+      .dg-app { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 28px; align-items: start; }
+      .dg-rail { position: sticky; top: calc(var(--ve-nav-h, 100px) + 16px); display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-auto-rows: max-content; column-gap: 10px; row-gap: 10px; }
+      .dg-rail > * { grid-column: 1 / -1; }
+      .dg-rail > #dgPlay { grid-column: 1; }
+      .dg-rail > #dgPlay ~ .vepg-talk { grid-column: 2; margin: 0 !important; justify-content: center; align-self: stretch !important; }
+      #dgRail .dg-bubble { max-height: 136px; overflow-y: auto; }
+      .dg-main .gc-grid { grid-template-columns: repeat(2, 1fr); }
     }
+    @media (min-width: 1280px) { .dg-main .gc-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 900px) { .dg-app { display: flex; flex-direction: column; } #dgRail { margin: 0 0 22px; } }
   </style>
 </head>
 <body>
@@ -111,6 +116,11 @@
     <!-- Liz speaks the page (A Guide speaks on every page; lines approved by Sean 2026-11-09, recorded in her roster voice, checked with stt).
          Nothing plays until Play is pressed. -->
     <div class="dg-app" id="dgApp">
+    <main class="dg-main">
+    <p class="pa-lede" id="pa-lede">You're an Explorer now. Pick the paths that fit what you do. Take as many as you like. Each one opens its Guide and a badge, with up to 250 more points.</p>
+    <div class="pa-first" id="pa-first" hidden><p id="pa-first-p"></p><a class="gc-btn gc-btn-primary" id="pa-first-a" href="/survey?s=explorer" data-pa-survey="/paths">Take the Explorer survey</a></div>
+    <div class="gc-grid" id="pa-grid" role="list" aria-label="Paths"></div>
+    </main>
     <aside class="dg-rail" id="dgRail" data-guide="liz" aria-label="Liz, your Guide">
       <div class="dg-maya" id="dgMaya" role="img" aria-label="Liz, your Guide to Vegans Explore"></div>
       <div class="dg-namebar"><div class="dg-maya-name"><b>Liz</b> &middot; Your Guide</div>
@@ -119,9 +129,6 @@
       <button type="button" class="dg-play go" id="dgPlay">&#9654; Play Liz</button>
       <div class="dg-tour" id="dgTour"></div>
     </aside>
-    <p class="pa-lede" id="pa-lede">You're an Explorer now. Pick the paths that fit what you do. Take as many as you like. Each one opens its Guide and a badge, with up to 250 more points.</p>
-    <div class="pa-first" id="pa-first" hidden><p id="pa-first-p"></p><a class="gc-btn gc-btn-primary" id="pa-first-a" href="/survey?s=explorer" data-pa-survey="/paths">Take the Explorer survey</a></div>
-    <div class="gc-grid" id="pa-grid" role="list" aria-label="Paths"></div>
     </div>
   </section>
   <script>
