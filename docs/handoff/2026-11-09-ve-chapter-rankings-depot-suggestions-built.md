@@ -21,3 +21,10 @@ Date: 2026-11-09. Playbook `ve-chapter-rankings`.
 ## Not done
 - Not clicked signed in as a real super admin on the live page (the actions are proven live; the page was checked with mocks).
 - Show me (a sample hub per place), podcast listener places on each card.
+
+## Next (approved by Sean 2026-11-09, in this order)
+1. Check the board signed in on the dashboard's Communities tab (1440 and 390 px).
+2. Podcast listener places on each board card: downloads by place from Captivate (`branddesk-insights` reads it; country,
+   state and city per show, `podAudience`), mapped to each `ve_next_chapters` place, plus mentions from `ve_place_mentions`.
+   Show it beside the votes ("312 downloads"). Read-only, cached; no new Captivate cost beyond the range calls.
+Later: Sean clicks the live page signed in when the first real suggestion arrives; Show me (a sample hub per place) waits for real votes.
