@@ -151,6 +151,8 @@ Sean: "I feel like I keep asking for the same thing over." The full checklist is
   `UI-SELECT-ARROW-TOO-CLOSE-TO-EDGE`): `appearance:none`, an SVG chevron at `background-position:right 16px center`,
   `padding-right` 44px or more. Copy the `select` rule in `claim.html`.
 - Buttons, tabs and inputs use a 6px corner radius, not pills (canon rule 13, Sean 2026-10-09).
+- **More than 5 tabs: the top menu is a dropdown at every width** (Sean, 2026-11-09, the BCPS rule; `html.dg-dd` and numbered options in the Welcome
+  Guide). Other Guides switch over one by one.
 - **Speak instead of typing on every field** (Sean, 2026-10-31: "make sure we have the record the dictation feature on all things
   where people are going to type in information"). `/public/ve-dictate.js`, loaded by `nav.js` on every page and by the dashboard
   itself: in any textarea or text field, a small mic floats at the field's right edge while it has focus (no page's layout changes);
