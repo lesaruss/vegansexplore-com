@@ -6974,7 +6974,7 @@ above that it contradicts (the person check at the door, the 31 questions as the
   and scavenger hunt (`ve-events-guide`, extend `ve-hunt`, the Vault's PIN as purchase proof), event food delivery and colleges (Blueprint,
   parked), Elle Jimenez and Vegans in Clermont (`ve-outreach`). No Explorer Guide exists yet: today it is two pieces, `/passport` (the Welcome)
   and `/survey?s=explorer` (8 questions, still person-reviewed); step 3 joins them.
-- **Steps 2 and 3 live 2026-11-07 (main cad2dc5)**: journey, chapter and runs are shared questions; Explorer admits on finishing (no review); `x_tough` (35) added and `x_worth` 40, nine questions, 250 points. **Step 4, the paths page, approved by Sean 2026-11-07 with its wording, not built**: the wording and build notes are in `docs/handoff/2026-11-07-ve-explorer-path-steps-2-3-live-step-4-approved.md`.
+- **Steps 2 and 3 live 2026-11-07 (main cad2dc5)**: journey, chapter and runs are shared questions; Explorer admits on finishing (no review); `x_tough` (35) added and `x_worth` 40, nine questions, 250 points. **Step 4, the paths page, live 2026-11-09** (Sean: "go"): `/paths` (`paths.html`, parent `/guides`: the same banner and Guide card; in the sitemap). Every path (Restaurant, Event host, Creator, Nonprofit, Business, Group leader Coming with Notify me, `guide-waitlist-group-leader`); a member's `x_run` ticks come first, tagged Picked from your answers (`ve-mission-survey` `survey_get` for explorer and each path survey); a finished intake shows Badge earned and Open your Guide; Start this path opens the path's survey and comes back to its Guide (`ve_after_survey`). Not an Explorer yet: a Join free / Take the Explorer survey box first. The Explorer survey's finish has See your paths. Liz's line is a text draft (`docs/proposals/paths-page-liz-line.md`). The chapter hubs' Get your Passport is Join free (the Explorer survey, back to the chapter) since the same day.
 
 ## Media drafts and the organizations door (Sean, 2026-11-06, playbook `ve-outreach`)
 
@@ -7320,6 +7320,16 @@ listings until now, draws the articles that are not episodes shown above. Films 
   "not available" for real people whose profiles hide from logged-out visitors (Tabitha Brown, Isa Chandra). Never remove a Facebook link on
   "not available" alone; list it for a person to look at. Instagram's own API returns 404 or 429 to our server, so Instagram checks go
   through Apify.
+
+## What connects to a listing, brands and food places too (2026-11-08, playbook `ve-community-directory`)
+
+`ve_listing_related` (cache `ve_listing_related_cache`, cron `ve-listing-related` every 15 minutes, 25 a run) feeds `loadRelated` in
+`directory/listing.html`: People / Organizations cards, On our podcast, On other podcasts. Organizations use `ve_listing_related_names`; brands and
+food places (main listings only, not grocery chains or LESARUSS.ai) use the stricter rule (`20261109_listing_related_brands_food.sql`): exact case,
+two words and 9+ letters unless every word is generic, one-word names only from `details.match_names` (a list checked by hand), food places need their
+city in the notes (a checked name counts in a title alone), a whole-domain or @handle match counts, 5+ notes-only mentions on one show is one
+"Show sponsor" row, and a show whose name contains the name never counts. Preview a rule change with `ve_listing_related_strict_elsewhere(id)`
+before it reaches the cache; a big preview times out over about 70 listings a call. Handoff `docs/handoff/2026-11-09-ve-community-directory-ve-holiday-guide-wrap.md`.
 
 ## Image conventions
 

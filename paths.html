@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Your Paths — Vegans Explore</title>
+  <meta name="description" content="You start as an Explorer, then pick the paths that fit what you do: restaurant, events, creator, nonprofit or business. Each opens its Guide and a badge.">
+  <link rel="canonical" href="https://vegansexplore.com/paths">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Vegans Explore">
+  <meta property="og:url" content="https://vegansexplore.com/paths">
+  <meta property="og:title" content="Your Paths — Vegans Explore">
+  <meta property="og:description" content="You start as an Explorer, then pick the paths that fit what you do. Each opens its Guide and a badge.">
+  <meta property="og:image" content="https://vegansexplore.com/public/og-default.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://vegansexplore.com/public/og-default.jpg">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- The paths page (ve-explorer-path step 4, wording approved by Sean 2026-11-07). Parent: /guides (template gate): the same banner and
+       the same Guide card. Every path shows; the ones the member ticked in the Explorer survey's "Do you run any of these?" (x_run) come
+       first, tagged Picked from your answers. A path whose intake survey they finished shows Open your Guide and Badge earned. -->
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-light: #e8f5e9; --ve-green-mid: #b8ddb9;
+      --ve-orange: #F69820; --ve-orange-dark: #d4800f;
+      --ve-border: rgba(0,0,0,0.09); --ve-text: #1a1a1a;
+      --ve-text-75: rgba(26,26,26,0.75); --ve-text-50: rgba(26,26,26,0.50); --ve-text-30: rgba(26,26,26,0.30);
+    }
+    html { scroll-behavior: smooth; }
+    .page-frame { width: 100%; background: #fff; }
+    body { background: #fff; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
+    .gc-section { padding: 80px 56px; background: #fff; }
+    #pa-banner + .gc-section { padding-top: 36px; }
+    .gc-section .section-sub { margin-bottom: 44px; }
+    @media (max-width: 600px) { .gc-section, #pa-banner + .gc-section { padding: 28px 16px 48px; } .gc-section .section-sub { margin-bottom: 28px; } }
+    .gc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+    @media (max-width: 900px) { .gc-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .gc-grid { grid-template-columns: 1fr; } }
+    .gc-card { background: #fff; border: 1px solid var(--ve-border); border-radius: 12px; padding: 24px 22px; display: flex; flex-direction: column; gap: 10px; transition: box-shadow 0.15s, transform 0.15s; }
+    .gc-card:hover { box-shadow: 0 4px 24px rgba(0,0,0,0.07); transform: translateY(-2px); }
+    /* Guide banners (Sean, 2026-11-01): 8:5, the Guide in a scene that is the Guide's subject, across the top of the card. */
+    .gc-banner { display: block; aspect-ratio: 8 / 5; border-radius: 10px; overflow: hidden; background: #f4f6f4; margin-bottom: 4px; }
+    .gc-banner img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 0.25s; }
+    .gc-card:hover .gc-banner img { transform: scale(1.02); }
+    .gc-topline { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .gc-label { font-size: 9px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ve-green-dark); }
+    .gc-new-tag { font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #fff; background: var(--ve-green-dark); border-radius: 20px; padding: 3px 10px; }
+    .gc-soon-tag { font-size: 9px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: #b45309; background: #fff3e0; border-radius: 20px; padding: 3px 10px; }
+    .gc-title { font-size: 17px; font-weight: 900; line-height: 1.25; letter-spacing: -0.01em; }
+    .gc-desc { font-size: 12.5px; color: var(--ve-text-75); line-height: 1.6; flex: 1; }
+    .gc-meta-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .gc-chip { font-size: 9px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ve-green-dark); background: var(--ve-green-light); border-radius: 20px; padding: 6px 12px; }
+    .gc-chip.price { color: #1a1a1a; background: #f0f0f0; }
+    .gc-chip.free { color: var(--ve-green-dark); background: var(--ve-green-light); }
+    .gc-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 12px 20px; border-radius: 8px; border: none; cursor: pointer; text-decoration: none; width: 100%; margin-top: 4px; }
+    .gc-btn-primary { background: var(--ve-green-dark); color: #fff; }
+    .gc-btn-primary:hover { background: var(--ve-green); }
+    .gc-btn-outline { background: #fff; color: #1a1a1a; border: 1px solid rgba(0,0,0,0.15); }
+    .gc-btn-outline:hover { background: #f5f5f5; }
+    .gc-cta-guest, .gc-cta-member { display: none; }
+    body.gc-guest .gc-cta-guest { display: flex; }
+    body.gc-member .gc-cta-member { display: flex; }
+    .gc-waitlist { display: none; margin-top: 6px; }
+    .gc-waitlist.open { display: flex; flex-direction: column; gap: 8px; }
+    .gc-waitlist input { padding: 9px 12px; border: 1.5px solid rgba(0,0,0,0.12); border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 12px; }
+    .gc-waitlist input:focus { outline: none; border-color: var(--ve-green-dark); }
+    .gc-waitlist-success { display: none; font-size: 11px; font-weight: 700; color: var(--ve-green-dark); text-align: center; }
+    .pa-lede { max-width: 860px; font-size: 15px; line-height: 1.65; color: var(--ve-text-75); margin: 0 0 22px; }
+    .pa-lede b { color: var(--ve-text); }
+    .pa-first { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; background: var(--ve-green-light); border: 1px solid var(--ve-green-mid); border-radius: 12px; padding: 18px 20px; margin: 0 0 22px; }
+    .pa-first[hidden] { display: none; }
+    .pa-first p { flex: 1; min-width: 240px; font-size: 14px; line-height: 1.6; color: var(--ve-text); }
+    .pa-first .gc-btn { width: auto; margin: 0; }
+    .gc-chip.picked { color: #7a4b00; background: #fff4e0; }
+    .gc-chip.earned { color: #fff; background: var(--ve-green-dark); }
+    .gc-card.pa-hi { box-shadow: 0 0 0 3px var(--ve-green); }
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/nav.js"></script>
+  <script src="/public/ve-hubs.js"></script>
+  <script src="/public/ve-city-banner.js"></script>
+  <section id="pa-banner"><h1 class="vcb-ssr" style="margin:0;padding:28px 16px;font:900 26px Montserrat,sans-serif">Your Paths</h1></section>
+  <section class="gc-section" aria-label="Paths">
+    <p class="pa-lede" id="pa-lede">You're an Explorer now. Pick the paths that fit what you do. Take as many as you like. Each one opens its Guide and a badge, with up to 250 more points.</p>
+    <div class="pa-first" id="pa-first" hidden><p id="pa-first-p"></p><a class="gc-btn gc-btn-primary" id="pa-first-a" href="/survey?s=explorer" data-pa-survey="/paths">Take the Explorer survey</a></div>
+    <div class="gc-grid" id="pa-grid" role="list" aria-label="Paths"></div>
+  </section>
+  <script>
+  (function () {
+    var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+    var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+    // One row a path. run: the x_run answer that picks it. survey: its intake (the door Guide's own survey). The words are Sean's (2026-11-07).
+    var PATHS = [
+      { run: 'restaurant', label: 'Restaurant', guide: 'Liz', title: 'The Vegan Restaurant Guide', slug: 'vegan-restaurant-guide', banner: '/public/guides/vegan-restaurant-guide.jpg?v=3', pts: 250,
+        desc: 'You feed the movement. Get your free check, claim your page and get found.' },
+      { run: 'events', label: 'Event host', guide: 'River', title: 'The Vegan Events Guide', slug: 'vegan-events-guide', banner: '/public/guides/vegan-events-guide.jpg', pts: 250,
+        desc: 'You bring people together. Plan it, fill it and run it, with us behind you.' },
+      { run: 'creator', label: 'Creator', guide: 'Kai', title: 'The Creator Guide', slug: 'creator-guide', banner: '/public/guides/creator-guide.jpg?v=3', pts: 250,
+        desc: 'You tell the stories. Get seen, get booked and work with Vegan brands.' },
+      { run: 'nonprofit', label: 'Nonprofit', guide: 'Dani', title: 'The Nonprofit Guide', slug: 'nonprofit-guide', banner: '/public/guides/nonprofit-guide.jpg?v=3', pts: 250,
+        desc: 'You stand up for the animals. Get found, get help and share the load.' },
+      { run: 'business', label: 'Business', guide: 'Maya', title: 'The Pre-Vegan Business Guide', slug: 'pre-vegan-business-guide', banner: '/public/guides/pre-vegan-business-guide.jpg', pts: 100,
+        desc: "You're adding plant-based options. Learn what to serve, where to buy it and how to say it." },
+      { run: 'group', label: 'Group leader', guide: 'Dani', title: 'Group leaders', slug: 'group-leader', banner: '/public/guides/partner-group-partner.jpg', soon: true,
+        desc: 'You run a group or community. Your path is on its way.' }
+    ];
+    function esc(x) { return String(x == null ? '' : x).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+    var LEDE = "You're an Explorer now. Pick the paths that fit what you do. Take as many as you like. Each one opens its Guide and a badge, with up to 250 more points.";
+    var ST = { member: false, explorer: false, runs: [], done: {} };
+    function card(p) {
+      var picked = ST.runs.indexOf(p.run) > -1, done = ST.done[p.slug];
+      var chips = [{ t: 'With ' + p.guide }].concat(p.soon ? [] : done ? [{ t: 'Badge earned', c: 'earned' }] : [{ t: 'Up to ' + p.pts + ' points', c: 'free' }]);
+      if (picked) chips.unshift({ t: 'Picked from your answers', c: 'picked' });
+      var guideHref = '/guides/' + p.slug;
+      var action = p.soon
+        ? '<button type="button" class="gc-btn gc-btn-outline" data-gc-notify>Notify me</button>' +
+          '<div class="gc-waitlist"><input type="email" placeholder="Your email address" aria-label="Email to hear when the group leader path opens">' +
+          '<button type="button" class="gc-btn gc-btn-primary" data-gc-join>Join the waitlist</button><div class="gc-waitlist-success">You\'re on the list.</div></div>'
+        : done ? '<a class="gc-btn gc-btn-primary" href="' + guideHref + '">Open your Guide</a>'
+        : '<a class="gc-btn gc-btn-primary" href="/survey?s=' + esc(p.slug) + '" data-pa-survey="' + esc(guideHref) + '">Start this path</a>';
+      var top = p.soon ? '<div class="gc-banner" aria-hidden="true"><img src="' + esc(p.banner) + '" alt="" width="800" height="500" loading="lazy"></div>'
+        : '<a class="gc-banner" href="' + esc(guideHref) + '" tabindex="-1" aria-hidden="true"><img src="' + esc(p.banner) + '" alt="" width="800" height="500" loading="lazy"></a>';
+      return '<div class="gc-card' + (p.soon ? ' is-soon' : '') + '" role="listitem" id="path-' + esc(p.run) + '" data-run="' + esc(p.run) + '">' + top +
+        '<div class="gc-topline"><span class="gc-label">' + esc(p.label) + '</span>' + (p.soon ? '<span class="gc-soon-tag">Coming</span>' : '') + '</div>' +
+        '<div class="gc-title">' + esc(p.title) + '</div><p class="gc-desc">' + esc(p.desc) + '</p>' +
+        '<div class="gc-meta-row">' + chips.map(function (c) { return '<span class="gc-chip' + (c.c ? ' ' + c.c : '') + '">' + esc(c.t) + '</span>'; }).join('') + '</div>' + action + '</div>';
+    }
+    function draw() {
+      var order = PATHS.slice().sort(function (a, b) {
+        var pa = ST.runs.indexOf(a.run) > -1 ? 0 : 1, pb = ST.runs.indexOf(b.run) > -1 ? 0 : 1;
+        return pa - pb || (a.soon ? 1 : 0) - (b.soon ? 1 : 0) || PATHS.indexOf(a) - PATHS.indexOf(b);
+      });
+      var grid = document.getElementById('pa-grid'); grid.innerHTML = order.map(card).join('');
+      var first = document.getElementById('pa-first'), lede = document.getElementById('pa-lede');
+      if (!ST.explorer) {
+        lede.textContent = 'Everyone starts as an Explorer. Then you pick the paths that fit what you do. Take as many as you like. Each one opens its Guide and a badge, with up to 250 more points.';
+        document.getElementById('pa-first-p').textContent = ST.member
+          ? 'Take the Explorer survey first: nine quick questions, about two minutes, with up to 250 points. Your answers put the paths that fit you at the top.'
+          : 'Joining is free: the Explorer survey is nine quick questions, about two minutes, and you are a member with up to 250 points.';
+        document.getElementById('pa-first-a').textContent = ST.member ? 'Take the Explorer survey' : 'Join free';
+        first.hidden = false;
+      } else { first.hidden = true; lede.textContent = LEDE; }
+      Array.prototype.forEach.call(grid.querySelectorAll('.gc-card.is-soon'), function (c) {
+        c.querySelector('[data-gc-notify]').addEventListener('click', function () { c.querySelector('.gc-waitlist').classList.toggle('open'); });
+        var join = c.querySelector('[data-gc-join]');
+        join.addEventListener('click', function () {
+          var input = c.querySelector('.gc-waitlist input'), email = (input.value || '').trim();
+          if (!email || email.indexOf('@') === -1) { input.focus(); return; }
+          join.textContent = 'Sending...'; join.disabled = true;
+          fetch(SB + '/rest/v1/member_interest', { method: 'POST', headers: { apikey: ANON, Authorization: 'Bearer ' + ANON, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+            body: JSON.stringify({ email: email, role_slug: 'guide-waitlist-group-leader', source: 'paths' }) })
+            .then(function (r) { if (!r.ok) throw new Error('failed'); c.querySelector('.gc-waitlist').classList.remove('open'); c.querySelector('.gc-waitlist-success').style.display = 'block'; })
+            .catch(function () { join.textContent = 'Try again'; join.disabled = false; });
+        });
+      });
+    }
+    // Starting a survey from here: finishing it brings them back (survey.html reads ve_after_survey).
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('[data-pa-survey]'); if (!a) return;
+      try { sessionStorage.setItem('ve_after_survey', a.getAttribute('data-pa-survey')); } catch (x) {}
+    }, true);
+    function survey(slug, token) {
+      return fetch(SB + '/functions/v1/ve-mission-survey?action=survey_get', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON },
+        body: JSON.stringify({ survey: slug, token: token }) }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    }
+    function load() {
+      var token = window.VEAuth && VEAuth.getToken ? VEAuth.getToken() : null;
+      ST.member = !!(window.VEAuth && VEAuth.isLoggedIn && VEAuth.isLoggedIn());
+      draw();
+      if (!token || !ST.member) return;
+      Promise.all([survey('explorer', token)].concat(PATHS.filter(function (p) { return !p.soon; }).map(function (p) { return survey(p.slug, token); }))).then(function (rs) {
+        var ex = rs[0] && (rs[0].survey || rs[0]);
+        if (ex) { ST.explorer = !!ex.completed; ST.runs = (ex.answers && ex.answers.x_run) || []; if (!Array.isArray(ST.runs)) ST.runs = [ST.runs]; }
+        rs.slice(1).forEach(function (r) { var s = r && (r.survey || r); if (s && s.slug && s.completed) ST.done[s.slug] = true; });
+        draw();
+      });
+    }
+    VECityBanner.mount('pa-banner', { key: 'paths', title: 'Your Paths', pickLabel: 'Path', art: '/communities/new-york/banner.jpg', param: false,
+      sub: 'You start as an Explorer. Then you pick the paths that fit what you do.',
+      choices: [{ value: 'all', label: 'Every path' }].concat(PATHS.map(function (p) { return { value: p.run, label: p.label }; })),
+      home: { label: 'Welcome Guide', href: '/passport' },
+      onChange: function (v) {
+        if (!v || v === 'all') return;
+        var c = document.getElementById('path-' + v); if (!c) return;
+        Array.prototype.forEach.call(document.querySelectorAll('.pa-hi'), function (x) { x.classList.remove('pa-hi'); });
+        c.classList.add('pa-hi'); c.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } });
+    if (window.VEAuth) load(); else window.addEventListener('load', load);
+  })();
+  </script>
+<script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
