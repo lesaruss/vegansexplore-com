@@ -1,5 +1,7 @@
 # Nominate Someone and the nominee's interview (proposal, Sean 2026-11-09)
 
+**Approved by Sean, 2026-11-09**: "I just went through it. I love it. I absolutely love it. I approved." Playbook `ve-nominate-someone`.
+
 Mocks: `/mocks/nominate/` (the nomination), `/mocks/nominate/interview.html` (the nominee's path), `/mocks/nominate/interview.html#/featured`
 (after a feature). Parent: the Explorer Guide (`passport.html?guide=welcome`), canon `canon-template-gate` v6. Kai hosts; her lines are drafts.
 
