@@ -9,14 +9,14 @@ about every 3 seconds (canon-video-shot-pace), 4:5, captions on. Nothing is reco
 "We're trying to get them to be members with this. So we always want to reiterate, as a member..." Every page's line names what is there, then
 "we want to hear from you", what a member can do to shape it, and ends with "Membership is free" before the last step.
 
-## 2. Search and the Directory (draft v2 for Sean)
+## 2. Search and the Directory (v3, approved by Sean 2026-11-09)
 
 About 40 seconds.
 
-> This is the Directory: every Vegan place, person and group we know, city by city. Local Food is where to eat in your chapter. Products are the brands you can buy anywhere. Services are the people who can help, from coaches to doctors. Media is the shows, films and books the community loves. And Community and People are the groups, nonprofits and voices of the movement. We want to hear from you. As a member, you shape where this Directory goes: submit a listing, tell us who we should be featuring, and vote for your favorites every day. That is how places rise. Membership is free. Pick your city, and go see what is near you.
+> This is the Directory: every Vegan place, person and group we know, city by city. Local Food is where to eat in your chapter. Products are the brands you can buy anywhere. Services are the people who can help, from coaches to doctors. Media is the shows, films and books the community loves. And Community and People are the groups, nonprofits and voices of the movement. We want to hear from you. As a member, you shape where this Directory goes: submit a listing, tell us who we should be featuring, let us know if you see something that needs to be fixed, and vote for your favorites every day. That is how places rise. Membership is free. Pick your city, and go see what is near you.
 
 Shots (each about 3 s, Sample stamp on any demo shot): Liz's Directory scene; the Directory banner and city picker; Local Food cards; a listing page;
-Products; Services; Media; Community; People; Submit listing; a card's Vote button; the city picker on South Florida; Liz's scene again.
+Products; Services; Media; Community; People; Submit listing; the Feedback button; a card's Vote button; the city picker on South Florida; Liz's scene again.
 
 ## 3 to 11
 
