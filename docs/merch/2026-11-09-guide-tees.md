@@ -78,9 +78,12 @@ Rendered from `public/ve-logo-mark.svg` and `public/logo-ve-portrait-v1.svg`; on
 
 Color names are the closest catalog names, to be checked against provider 39's live catalog.
 
-**Placement**: canon `canon-front-print-placement` v3 already sets the art top 3.0 in under the collar seam on L (the top of Sean's 3 to 3.5 in).
-Sean's GeekFon Society Logo Tee (Black, XL, order d013cd24) was placed 2026-10-08 10:48 UTC, about 8 hours after every tee moved to 3.0 in, so
-the likely cause of "a tad too low" is size: the rule was only measured on L. Every mockup gets measured on L, XL and 2XL (2.8 to 3.2 passes).
+**Placement (changed 2026-11-09)**: Sean photographed his GeekFon Society tee (XL, printed at the old 3.0 in rule) beside a Target XL tee with
+the same paper strip as a ruler: collar seam to print top about 1.55 strips vs 1.05, about 50 percent lower. Sean: "yes, change it to 2 inches."
+Canon `canon-front-print-placement` is now **2.0 in under the collar seam on every size** (pass 1.8 to 2.2 on L, XL and 2XL; migration
+`20261109_canon_front_print_placement_2in.sql`). On Bella+Canvas 3001 / provider 39 the print area starts 2.06 in under the seam on L, so the art
+goes at the very top of the print area. The review page mocks are drawn at 2.0 in. The live shop tees (moved to 3.0 on 2026-10-08) move to 2.0
+once Printify access is in this environment.
 
 **Blocked on Sean**: (1) the yes on the line, colors and prices; (2) `PRINTIFY_API_TOKEN` as a secret in the Claude Code environment (not copied
 out of Vercel into chat); (3) the Printify payment method, still missing (`PRINTIFY-SHOP-PAYMENT-METHOD-MISSING-HUMBLE-CABBAGE`), so no order can print.
