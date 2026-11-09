@@ -7,10 +7,13 @@ src=open('v3compose.py').read().split('\n# ---')[0]
 exec(compile(open('v3compose.py').read().split('def on_stage')[0],'c','exec'),c.__dict__)
 W,H,FPS,LEAD,XF=1080,1350,30,0.5,0.4
 REPO='/home/user/vegansexplore-com/public/guides/welcome/'
-S=[(0.0,'L:liz-pts-guide.jpg'),(1.4,'points_top'),(4.7,'survey'),(6.2,'L:liz-pts-checkin.jpg'),(8.0,'L:liz-pts-bounty.jpg'),(9.4,'bounties'),
-   (10.8,'L:liz-pts-share.jpg'),(13.8,'dairy'),(15.8,'talk'),(17.3,'vault'),(20.2,'L:liz-pts-give.jpg'),(21.6,'listing_give'),(23.8,'L:liz-pts-level.jpg'),
-   (26.9,'points_parts'),(30.0,'points_top'),(32.1,'vault'),(35.2,'bounties'),(38.9,'feedback'),(42.0,'survey'),(44.1,'paths'),(47.6,'points_parts'),
-   (50.2,'nonprofit'),(53.5,'checkin'),(56.5,'listing_give'),(59.4,'dairy'),(62.1,'paths'),(64.7,'L:liz-pts-door.jpg')]
+S=[(0.0,'points_top'),(1.4,'points_parts'),(4.7,'home2'),(6.2,'L:liz-pts-checkin.jpg'),(8.0,'L:liz-pts-bounty.jpg'),
+   (10.8,'L:liz-pts-share-v2.jpg'),(13.8,'dairy'),(15.8,'L:liz-pts-guide.jpg'),(17.3,'vaultc'),(20.2,'L:liz-pts-give-v2.jpg'),(21.6,'nonprofit'),
+   (23.8,'L:liz-pts-level.jpg'),(26.9,'points_ways'),(30.0,'feedback'),(32.1,'L:liz-pts-shape.jpg'),(35.2,'bounties'),(38.9,'talk'),
+   (42.0,'explore'),(44.1,'L:liz-pts-survey.jpg'),(47.6,'paths_top'),(50.2,'L:liz-pts-friends.jpg'),(53.5,'surveyq'),(56.5,'points_start'),
+   (59.4,'checkin'),(62.1,'L:liz-pts-door.jpg')]
+# every picture once (Sean, 2026-11-09: "make sure we're only using the photos once")
+_n=[n for _,n in S]; assert len(_n)==len(set(_n)),'a picture repeats'
 TOTAL=float(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0','voice.mp3']))+LEAD+1.5
 from PIL import ImageDraw
 R='/home/user/vegansexplore-com/communities/'
@@ -29,8 +32,8 @@ def layer(name):
     im=c.phone(f'cap/{name}.png',sw=1200)
   im=im.resize((im.width//2,im.height//2),Image.LANCZOS)
   L=Image.new('RGBA',(W,H),(0,0,0,0)); top=(H-im.height)//2 if im.height<H else 70; L.alpha_composite(im,((W-im.width)//2,top)); return L
-GROUP=[None,'what','earn',None,None,'bounty',None,'use','use','use',None,'give',None,'level','shape','shape','shape2','fix','free','free','start',
-  'bring','bring','points','doors','doors',None]
+GROUP=['what','what','earn',None,None,None,'use',None,'use',None,'give',None,'level','hear',None,'shape','fix','free',None,'free',None,
+  'bring','bring','doors',None]
 assert len(GROUP)==len(S),(len(GROUP),len(S))
 k=0;imgs=[];gcity={}
 for _,n in S:

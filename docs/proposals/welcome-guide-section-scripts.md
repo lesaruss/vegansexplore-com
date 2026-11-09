@@ -51,7 +51,7 @@ About 60 seconds.
 
 New scenes for this page's video: Liz with the cast of Guides (each Guide in its own topic), not earlier pages' pictures.
 
-## 7. Points and Levels (approved 2026-11-09; recorded sec-points-v1, video rendered, waiting on Sean's look)
+## 7. Points and Levels (approved 2026-11-09; recorded sec-points-v1; video v2 rendered after Sean's notes, waiting on his look)
 
 About 60 seconds.
 
@@ -59,7 +59,7 @@ About 60 seconds.
 
 New scenes for this page's video: Liz earning and using points (checking in at a cafe, a bounty, giving to a sanctuary, leveling up), not earlier pictures.
 
-Made: `liz-pts-{checkin,bounty,give,level,guide,share,door}.jpg` (level-up redrawn once to remove readable text). The empty Vault shot was left out. Video `sec-points-v1.mp4` in vegan-media, captions `public/guides/welcome/sec-points-v1.vtt`, scripts `scripts/tour-video/sections/cap-points.js` and `render-points.py`.
+Made: `liz-pts-{checkin,bounty,give,level,guide,share,door}.jpg` (level-up redrawn once to remove readable text). v2 (Sean, 2026-11-09): the phone in the share scene shows its back, nonprofits show the nonprofit directory, the sanctuary shirt says Volunteer with no logo, the Vault shows no empty list, and every picture is used once (the render script asserts it). New scenes: `liz-pts-{share-v2,give-v2,shape,survey,friends}.jpg`. Video `sec-points-v2.mp4` in vegan-media, captions `public/guides/welcome/sec-points-v2.vtt`, scripts `scripts/tour-video/sections/cap-points.js` and `render-points.py`.
 
 ## 8 to 11
 
