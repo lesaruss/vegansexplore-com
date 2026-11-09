@@ -7510,6 +7510,8 @@ from Sean, to the Welcome Guide, start Mon Nov 9, a draft until Sean locks and a
 (`founding-cohort-1-wed-clicked|opened|quiet`), drafts with no people until Wednesday morning. Handoff
 `docs/handoff/2026-11-08-ve-outreach-buckets-founding-cohort-email.md`. Not built: adding people to a people campaign from HQ.
 
+**Approved and the people tools (2026-11-08)**: cohort 1 approved by Sean (135 waiting, 16 held out), sends from Mon Nov 9. A campaign's people can be ticked and given an Action (hold out of this batch, put back, Do not email, take off Do not email; `campaign_bulk`); held out and Do not email people leave the list until shown with the heading's link. Personal emails have Save and close and Undo (`personal_emails.undo_<step>`). Wednesday follow-ups fill Wed Nov 11. Handoff `docs/handoff/2026-11-09-ve-outreach-buckets-cohort-1-approved-hold-out.md`.
+
 **The 36 hidden Facebook pages are a bounty (2026-11-08, playbook `ve-community-directory`)**: no Community Manager exists, so campaign `confirm-facebook` (6 remote bundle
 jobs, 60 points each, due Nov 22, South Florida board) asks members to find each page signed in to Facebook, with a link and screenshot or "No page found". A checked page is
 restored with one `ve_listing_edits` row (meta.playbook ve-community-directory, source the submission); the SQL is in `docs/handoff/2026-11-08-ve-community-directory-facebook-bounty.md`.
