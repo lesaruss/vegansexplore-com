@@ -18,3 +18,7 @@ where slug in ('oregon','las-vegas','phoenix','houston','north-carolina','austin
 update public.ve_next_chapters set art = jsonb_set(art, '{vertical_original}',
   '"https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/communities/next-las-vegas/vertical-original.jpg"')
 where slug = 'las-vegas';
+
+-- The board shows each place's 176 px thumbnail (Sean, 2026-11-09: "swap them onto the board"); public/ve-next-chapters.js reads
+-- /communities/next/<slug>/thumb.jpg and keeps the pin when a place has none.
+update public.ve_next_chapters set art = art || jsonb_build_object('thumb', '/communities/next/' || slug || '/thumb.jpg') where art is not null;

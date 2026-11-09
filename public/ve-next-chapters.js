@@ -25,7 +25,7 @@
     + '.nx-row{display:flex;align-items:center;gap:10px;border:1px solid #eee;border-radius:10px;padding:8px 10px}'
     + '.nx-rank{font:900 13px Montserrat,sans-serif;width:20px;text-align:center;color:rgba(26,26,26,.55)}'
     + '.nx-row.top3 .nx-rank{color:var(--vb-go,#2d7d31)}'
-    + '.nx-ph{width:44px;height:44px;min-width:44px;border-radius:8px;background:#eef1ee center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:#9aa89b}'
+    + '.nx-ph{position:relative;overflow:hidden;width:44px;height:44px;min-width:44px;border-radius:8px;background:#eef1ee;display:flex;align-items:center;justify-content:center;color:#9aa89b}.nx-ph img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}'
     + '.nx-info{flex:1;min-width:0}.nx-name{display:block;font:800 13px/1.25 Montserrat,sans-serif;color:#1a1a1a}'
     + '.nx-meta{display:block;font:600 11px Montserrat,sans-serif;color:rgba(26,26,26,.6);margin-top:2px}'
     + '.nx-right{display:flex;flex-direction:column;align-items:center;gap:4px}'
@@ -76,9 +76,13 @@
     el.classList.add('nx-col', 'short');
     el.setAttribute('aria-label', 'Where should we go next?');
 
+    // Each place's art lives at /communities/next/<slug>/ (thumb.jpg here, 176 px from square.jpg) (ve_next_chapters.art); a place with none keeps the pin.
+    function pic(p) {
+      return '<span class="nx-ph">' + PIN + '<img src="/communities/next/' + encodeURIComponent(p.slug) + '/thumb.jpg" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()"></span>';
+    }
     function row(p, i) {
       var voted = !!next[p.slug];
-      return '<li class="nx-row' + (i < 3 ? ' top3' : '') + (i >= PHONE_TOP ? ' nx-hide' : '') + '"><span class="nx-rank">' + (i + 1) + '</span><span class="nx-ph">' + PIN + '</span>' +
+      return '<li class="nx-row' + (i < 3 ? ' top3' : '') + (i >= PHONE_TOP ? ' nx-hide' : '') + '"><span class="nx-rank">' + (i + 1) + '</span>' + pic(p) +
         '<span class="nx-info"><span class="nx-name">' + esc(p.name) + '</span><span class="nx-meta">' + esc(p.sub || '') + '</span></span>' +
         '<span class="nx-right"><span class="nx-count">' + Number(p.votes || 0).toLocaleString() + '</span>' +
         '<button type="button" class="nx-btn' + (voted ? ' on' : '') + '" data-nx-vote="' + esc(p.slug) + '" aria-label="Vote for ' + esc(p.name) + '">' + (voted ? 'Voted' : 'Vote') + '</button></span></li>';
