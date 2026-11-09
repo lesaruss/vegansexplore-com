@@ -1,4 +1,7 @@
-# ve-explorer-path: Liz's line for /paths (draft for Sean, not recorded)
+# ve-explorer-path: Liz's line for /paths (approved by Sean 2026-11-09, recorded)
+
+Recorded: `vegan-media/media/liz/paths/paths-member-v1.mp3` (19.8 s) and `paths-visitor-v1.mp3` (12.7 s), el-media tts in her profile voice,
+both matched word for word by stt. Wired on `/paths` (`LIZ` in `paths.html`).
 
 Per "A Guide speaks on every page": Liz hosts the Welcome Guide, so she speaks the paths page. Text only until Sean approves; then record
 in her roster-profile voice (`IUMUPi350HfIhyzUBJB3`), check it word for word with stt, save as `vegan-media/media/liz/paths/paths-v1.mp3`.

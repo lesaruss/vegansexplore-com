@@ -202,8 +202,11 @@
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (ICONS[name] || ICONS.sprout) + '</svg>';
   }
 
+  // The path Guides start after the Explorer survey (ve-explorer-path step 5, 2026-11-09): visitors see it on the card.
+  var PATH_GUIDES = ['vegan-restaurant-guide', 'vegan-events-guide', 'creator-guide', 'nonprofit-guide', 'pre-vegan-business-guide'], CUR_GUEST = false;
   function card(g) {
-    var chips = (g.chips || (g.soon ? (g.guide ? [{ text: 'With ' + g.guide }] : []).concat([{ text: PRICE, cls: 'price' }]) : [])).concat(g._who ? [{ text: g._who, cls: 'who' }] : []).map(function (c) {
+    var chips = (g.chips || (g.soon ? (g.guide ? [{ text: 'With ' + g.guide }] : []).concat([{ text: PRICE, cls: 'price' }]) : [])).concat(g._who ? [{ text: g._who, cls: 'who' }] : [])
+      .concat(CUR_GUEST && !g.soon && PATH_GUIDES.indexOf(g.slug) > -1 ? [{ text: 'Starts after Explorer', cls: 'who' }] : []).map(function (c) {
       return '<span class="gc-chip' + (c.cls ? ' ' + c.cls : '') + '">' + esc(c.text) + '</span>';
     }).join('');
     // A Guide being made shows its banner too once it has one (not a link yet); without one, its flat icon.
@@ -287,6 +290,7 @@
   // number of interests, words and Ready now / Coming soon. opts.interest is the banner's single pick (it resets the chips);
   // opts.onInterest(value) tells the page when the chips come down to one interest (or none, 'all'), so the banner can follow.
   function drawCatalog(el, opts) {
+    CUR_GUEST = !opts.member;
     var all = visible(opts), st = el._gc || (el._gc = { picked: [], q: '', when: 'all' });
     if (opts.interest !== undefined) st.picked = opts.interest && opts.interest !== 'all' ? [opts.interest] : [];
     if (opts.shelf === 'soon') st.when = 'soon';
