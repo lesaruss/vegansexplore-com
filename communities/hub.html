@@ -14,10 +14,17 @@
     (function () {
       var m = location.pathname.match(/^\/communities\/([a-z-]+)\/?$/);
       var slug = m && m[1] !== 'hub' ? m[1] : new URLSearchParams(location.search).get('city');
+      // The sample community (Marisol Bay, public/ve-hubs.js VE_SAMPLE_HUB): joins VE_HUBS on this page only, and
+      // /communities/sample-data.js answers every data call from its fixtures before any of the page's scripts run.
+      if (slug === 'sample' && window.VE_SAMPLE_HUB) {
+        (window.VE_HUBS = window.VE_HUBS || []).push(window.VE_SAMPLE_HUB);
+        var rb = document.createElement('meta'); rb.name = 'robots'; rb.content = 'noindex, nofollow'; document.head.appendChild(rb);
+        document.write('<script src="/communities/sample-data.js"><\/script>');
+      }
       var hub = (window.VE_HUBS || []).filter(function (h) { return h.slug === slug; })[0];
       if (!hub) { location.replace('/communities'); return; }
       window.HUB = hub;
-      document.title = 'Vegan ' + hub.name + ' Community — Vegans Explore'; // same as api/chapter.js
+      document.title = 'Vegan ' + hub.name + ' Community' + (hub.sample ? ' (Sample)' : '') + ' — Vegans Explore'; // same as api/chapter.js
     })();
   </script>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;300;400;600;700;800;900&display=swap" rel="stylesheet">
@@ -355,6 +362,53 @@
       #tab-opportunities .news-grid { grid-template-columns: 1fr; }
       [data-frame] { padding: 0 10px; }
     }
+    /* Sponsors (playbook community-sponsorship, 2026-11-09): a hub's presenting sponsor, community sponsors and local supporters,
+       from VE_HUBS[].sponsors. Hidden on every hub without one. A logo is text on its own solid plate (CLAUDE.md: a logo over a
+       picture sits on a solid plate). */
+    .hsp-plate { display: inline-flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 2px; border-radius: 6px; padding: 10px 14px; min-height: 54px; line-height: 1.05; text-decoration: none; flex-shrink: 0; }
+    .hsp-plate b { font-size: 15px; font-weight: 900; letter-spacing: -0.01em; }
+    .hsp-plate i { font-style: normal; font-size: 9px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; }
+    .hsp-plate.lg { min-height: 72px; padding: 14px 18px; } .hsp-plate.lg b { font-size: 20px; }
+    .hsp-plate.sm { min-height: 40px; padding: 7px 10px; } .hsp-plate.sm b { font-size: 12px; } .hsp-plate.sm i { font-size: 8px; }
+    .hsp-kicker { display: block; font-size: 10px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ve-text-75); margin: 0 0 8px; }
+    .hsp-strip { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1.4fr); gap: 18px 24px; align-items: start; border: 1.5px solid var(--ve-border); border-radius: 10px; padding: 16px 18px; margin: 0 0 26px; background: #fff; }
+    .hsp-strip[hidden] { display: none; }
+    .hsp-strip .hsp-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    .hsp-strip .hov-more { grid-column: 1 / -1; margin: 0; }
+    .hsp-presented { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.92); text-shadow: 0 1px 6px rgba(0,0,0,0.8); }
+    .hsp-presented .hsp-plate { min-height: 0; padding: 5px 9px; text-shadow: none; } .hsp-presented .hsp-plate b { font-size: 12px; }
+    .hsp-tiers { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(360px, 100%), 1fr)); gap: 16px; margin: 0 0 28px; }
+    .hsp-card { border: 1.5px solid var(--ve-border); border-radius: 10px; padding: 20px; background: #fff; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+    .hsp-card.pres { border-color: var(--ve-green-mid); box-shadow: 0 3px 14px rgba(58,155,62,0.07); }
+    .hsp-tier { display: inline-block; align-self: flex-start; font-size: 9px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; padding: 4px 8px; border-radius: 6px; background: var(--ve-green-light); color: #1e5c22; }
+    .hsp-card h3 { font-size: 17px; font-weight: 900; letter-spacing: -0.01em; margin: 0; }
+    .hsp-card small { display: block; font-size: 11px; font-weight: 700; color: var(--ve-text-75); margin-top: 2px; }
+    .hsp-card p { font-size: 13px; line-height: 1.55; color: var(--ve-text-75); margin: 0; }
+    .hsp-sup { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)); gap: 12px; margin: 0 0 30px; }
+    .hsp-sup a { display: flex; align-items: center; gap: 12px; border: 1.5px solid var(--ve-border); border-radius: 10px; padding: 12px 14px; text-decoration: none; color: var(--ve-text); background: #fff; min-height: 44px; }
+    .hsp-sup a:hover, .hsp-sup a:focus-visible { border-color: var(--ve-green); outline: none; }
+    .hsp-sup a span b { display: block; font-size: 14px; font-weight: 800; } .hsp-sup a span small { font-size: 11px; font-weight: 700; color: var(--ve-text-75); }
+    .hsp-rows { display: flex; flex-direction: column; gap: 10px; margin: 0 0 30px; }
+    .hsp-r { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 2fr) 120px 120px; gap: 10px 18px; align-items: center; border: 1.5px solid var(--ve-border); border-radius: 10px; padding: 14px 16px; background: #fff; }
+    .hsp-r b { font-size: 14px; font-weight: 800; display: block; } .hsp-r small { font-size: 12px; color: var(--ve-text-75); line-height: 1.45; display: block; }
+    .hsp-tag { justify-self: start; font-size: 10px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px 9px; border-radius: 6px; }
+    .hsp-tag.live { background: var(--ve-green-light); color: #1e5c22; } .hsp-tag.coming { background: #fff3e0; color: #7d3800; }
+    .hsp-go { justify-self: end; font-family: inherit; font-size: 10px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 10px 14px; border-radius: 6px; border: 1.5px solid var(--ve-green); background: #fff; color: #1f5f22; cursor: pointer; text-decoration: none; min-height: 40px; display: inline-flex; align-items: center; }
+    .hsp-go:hover { background: var(--ve-green-light); } .hsp-go[aria-disabled="true"] { border-color: var(--ve-border); color: var(--ve-text-50); cursor: default; background: #fafafa; }
+    .hsp-camp { border: 1.5px solid var(--ve-border); border-radius: 10px; padding: 20px; background: #fafcfa; margin: 0 0 26px; }
+    .hsp-camp-top { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin: 0 0 16px; }
+    .hsp-camp-top h3 { font-size: 17px; font-weight: 900; margin: 0; } .hsp-camp-top small { display: block; font-size: 12px; color: var(--ve-text-75); margin-top: 3px; }
+    .hsp-nums { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr)); gap: 10px; margin: 0 0 14px; }
+    .hsp-num { background: #fff; border: 1.5px solid var(--ve-border); border-radius: 10px; padding: 14px 16px; }
+    .hsp-num b { display: block; font-size: 24px; font-weight: 900; line-height: 1.1; } .hsp-num span { font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--ve-text-75); }
+    .hsp-num em { display: block; font-style: normal; font-size: 11px; font-weight: 700; color: #1f5f22; margin-top: 4px; }
+    .hsp-cta { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; border-top: 1.5px dashed rgba(0,0,0,0.08); padding-top: 18px; }
+    .hsp-cta p { font-size: 13px; font-weight: 600; color: var(--ve-text-75); margin: 0; }
+    @media (max-width: 1100px) { .hsp-strip { grid-template-columns: 1fr 1fr; } .hsp-strip > div:last-of-type { grid-column: 1 / -1; } }
+    @media (max-width: 700px) {
+      .hsp-strip { grid-template-columns: 1fr; } .hsp-strip > div:last-of-type { grid-column: auto; }
+      .hsp-r { grid-template-columns: 1fr auto; } .hsp-r > div:first-child { grid-column: 1 / -1; } .hsp-r > div:nth-child(2) { grid-column: 1 / -1; grid-row: 2; } .hsp-tag { grid-column: 1; grid-row: 3; } .hsp-go { grid-column: 2; grid-row: 3; }
+    }
   </style>
   <script src="/public/ve-ad-creative.js"></script>
 </head>
@@ -378,12 +432,22 @@
     (function () {
       var h = window.HUB; if (!h) return;
       var me = window.VEAuth && VEAuth.isLoggedIn && VEAuth.isLoggedIn() ? (VEAuth.getMember && VEAuth.getMember()) || {} : null;
+      // A sponsor's logo: its name as text on its own solid plate (VE_HUBS[].sponsors[].logo), never a picture over a picture.
+      window.hubPlate = function (sp, size) {
+        var e = function (x) { return String(x == null ? '' : x).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); };
+        var lg = (sp && sp.logo) || {};
+        return '<span class="hsp-plate' + (size ? ' ' + size : '') + '" role="img" aria-label="' + e(sp.name) + '" style="background:' + e(lg.bg || '#1f5f22') + ';color:' + e(lg.fg || '#fff') + '">' +
+          '<b>' + e(lg.text || sp.name) + '</b>' + (lg.sub ? '<i style="color:' + e(lg.accent || lg.fg || '#fff') + '">' + e(lg.sub) + '</i>' : '') + '</span>';
+      };
+      var pres = h.sponsors && h.sponsors.presenting;
       window.hubBanner = VECityBanner.mount('hero-section', {
         key: 'hub', eyebrow: 'Community Hub', title: 'Vegan Community', param: false, hubLink: false, initial: h.slug,
         sub: 'Everything Vegan across ' + h.page.area + '. Pick another city any time.',
         meta: '<div class="hero-meta" aria-label="Community details"><span class="hero-region" id="hub-regions">' + h.page.regions + '</span>' +
           '<div class="hero-divider-v" aria-hidden="true"></div><div class="hero-access" aria-label="Membership access"><span class="access-badge passport" id="hub-access">' +
-          (me && me.membership_status === 'active' ? 'Member' : 'Preview') + '</span></div></div>',
+          (me && me.membership_status === 'active' ? 'Member' : 'Preview') + '</span></div>' +
+          // The presenting sponsor's name and logo on the hub's banner, only when the hub has one.
+          (pres ? '<div class="hero-divider-v" aria-hidden="true"></div><span class="hsp-presented">Presented by ' + window.hubPlate(pres, 'sm') + '</span>' : '') + '</div>',
         // Signed out, Join free (the Explorer survey, which brings them back here: 2026-11-09, the survey is the only way in); signed in, the dashboard. Page tour (ve-tour.js takes #hub-second) shows while it is open.
         actions: [
           me ? { label: 'Dashboard', href: '/dashboard', id: 'hub-join', go: true }
@@ -418,6 +482,8 @@
       </div>
     </div>
     <div id="hub-ov-card"></div>
+    <!-- Sponsors on the Overview (VE_HUBS[].sponsors): the presenting sponsor, community sponsors and local supporters. Hidden until one exists. -->
+    <div class="hsp-strip" id="hub-ov-sponsors" hidden></div>
     <div class="hov-stats" id="hub-ov-stats"></div>
     <h3 class="hov-h" data-hub-text="Explore {name}"></h3>
     <div class="hov-go" id="hub-ov-go"></div>
@@ -503,6 +569,18 @@
     <div class="section-hdr hub-frame-hdr"><div><h2 class="section-title" id="hub-board-title">Community Board</h2>
       <p class="section-sub" data-hub-text="Jobs, classifieds, fosters, rescues and the conversations in {name}."></p></div></div>
     <div data-frame="board"></div></section>
+
+  <!-- SPONSORS (playbook community-sponsorship, 2026-11-09): the community's sponsors, by level. In the menu only when the hub has
+       sponsors (VE_HUBS[].sponsors), so every hub without one is unchanged. -->
+  <section class="hub-section" id="tab-sponsors" aria-labelledby="hub-sponsors-title">
+    <div class="section-hdr">
+      <div>
+        <h2 class="section-title" id="hub-sponsors-title">Community Sponsors</h2>
+        <p class="section-sub" data-hub-text="The organizations and businesses that keep Vegan {name} going all year."></p>
+      </div>
+    </div>
+    <div id="hub-sponsors"></div>
+  </section>
 
   <!-- PARTNERS: hidden for now (Sean, 2026-10-05); kept so it can come back. Not in the menu. -->
   <section class="hub-section" id="tab-partners" aria-labelledby="hub-partners-title">
@@ -669,6 +747,9 @@
     { id: 'members', label: 'Members', locked: true, wide: true },
     { id: 'rewards', label: 'Rewards', locked: true }
   ];
+  // Sponsors join the menu only on a hub that has them (VE_HUBS[].sponsors), after Opportunities.
+  var SP = HUB.sponsors || null;
+  if (SP) TABS.splice(5, 0, { id: 'sponsors', label: 'Sponsors' });
   function tabById(id) { return TABS.filter(function (t) { return t.id === id; })[0]; }
 
   // The sections dropdown (Sean, 2026-11-01): one select, moved into the open section's header, so the Daily Pulse (and every other
@@ -722,16 +803,19 @@
   var hubEmbedded = document.documentElement.classList.contains('ve-embedded');
   function openFrame(t) {
     if (frames[t.id]) { tellView(); return; }
+    // The sample community draws its own Board and Bounties (communities/sample-data.js) instead of framing the live pages.
+    var SC = window.VE_SAMPLE_COMMUNITY;
+    if (SC && SC.frames && SC.frames[t.id]) { frames[t.id] = true; document.querySelector('#tab-' + t.id + ' [data-frame]').innerHTML = SC.frames[t.id](); return; }
     var f = document.createElement('iframe');
     f.className = 'hub-frame'; f.title = t.label + ' for ' + HUB.name;
     f.src = t.frame + '?community=' + encodeURIComponent(SLUG) + '&hub=1';
     document.querySelector('#tab-' + t.id + ' [data-frame]').appendChild(f);
     frames[t.id] = f;
   }
-  function frameFor(src) { for (var k in frames) if (frames[k].contentWindow === src) return frames[k]; return null; }
+  function frameFor(src) { for (var k in frames) if (frames[k] && frames[k].contentWindow === src) return frames[k]; return null; }
   function tellView() {
     for (var k in frames) {
-      var f = frames[k]; if (!f.offsetParent || !f.contentWindow) continue;
+      var f = frames[k]; if (!f || !f.offsetParent || !f.contentWindow) continue;
       var r = f.getBoundingClientRect();
       var vt = parentView ? parentView.top : 0, vb = parentView ? parentView.top + parentView.height : window.innerHeight;
       try { f.contentWindow.postMessage({ type: 've-frame-view', top: Math.max(0, vt - r.top), height: Math.max(0, Math.min(vb, r.bottom) - Math.max(vt, r.top)) }, location.origin); } catch (e) {}
@@ -797,6 +881,57 @@
   VEHubCommunity.wirePartnerApply(SLUG);
   VEHubCommunity.applyGates(HUB.name, P.eventCities);
   if (signedIn) document.getElementById('hub-members-gate').style.display = 'none';
+
+  // ---- Sponsors (playbook community-sponsorship, 2026-11-09): VE_HUBS[].sponsors = { presenting, community: [], supporters: [] }.
+  // A hub without sponsors shows nothing here (no menu entry, no Overview strip, no banner line). showcase (the benefits in place
+  // and the sponsor's campaign card) is the sample's: real numbers are the sponsor's own, on its dashboard.
+  function renderSponsors() {
+    if (!SP) return;
+    var plate = window.hubPlate;
+    var community = SP.community || [], sup = SP.supporters || [];
+    var supLink = function (s) { return s.slug ? '/directory/' + encodeURIComponent(s.slug) : (s.url || '#'); };
+    // The Overview strip: Presented by, then the community sponsors and the local supporters, and a way into the section.
+    var ov = document.getElementById('hub-ov-sponsors');
+    ov.innerHTML = (SP.presenting ? '<div><span class="hsp-kicker">Presented by</span><div class="hsp-row">' + plate(SP.presenting, 'lg') + '</div></div>' : '') +
+      (community.length ? '<div><span class="hsp-kicker">Community sponsor' + (community.length > 1 ? 's' : '') + '</span><div class="hsp-row">' + community.map(function (c) { return plate(c); }).join('') + '</div></div>' : '') +
+      (sup.length ? '<div><span class="hsp-kicker">Local supporters</span><div class="hsp-row">' + sup.map(function (c) { return plate(c, 'sm'); }).join('') + '</div></div>' : '') +
+      '<p class="hov-more"><a href="?tab=sponsors" data-hov-tab="sponsors">Meet the sponsors of Vegan ' + esc(HUB.name) + '</a></p>';
+    ov.hidden = false;
+    // The section: one card per sponsor at the top two levels, then the supporters, each opening its Directory listing.
+    var card = function (s, tier, pres) {
+      return '<article class="hsp-card' + (pres ? ' pres' : '') + '"><span class="hsp-tier">' + esc(tier) + '</span>' + plate(s, pres ? 'lg' : '') +
+        '<div><h3>' + esc(s.name) + '</h3>' + (s.kind ? '<small>' + esc(s.kind) + '</small>' : '') + '</div>' + (s.line ? '<p>' + esc(s.line) + '</p>' : '') +
+        (s.url ? '<a class="hsp-go" href="' + esc(s.url) + '" target="_blank" rel="noopener sponsored" aria-label="' + esc(s.name) + ', its website">Visit the website</a>' : '') + '</article>';
+    };
+    var html = '<div class="hsp-tiers">' + (SP.presenting ? card(SP.presenting, 'Presenting sponsor', true) : '') +
+      community.map(function (c) { return card(c, 'Community sponsor'); }).join('') + '</div>';
+    if (sup.length) html += '<h3 class="hov-h">Local supporters</h3><div class="hsp-sup">' + sup.map(function (s) {
+      return '<a href="' + esc(supLink(s)) + '">' + plate(s, 'sm') + '<span><b>' + esc(s.name) + '</b><small>Local supporter &middot; in the Directory</small></span></a>';
+    }).join('') + '</div>';
+    var SH = SP.showcase;
+    if (SH && SH.benefits) html += '<h3 class="hov-h">' + esc(SH.benefitsTitle || 'What the presenting sponsor gets') + '</h3><div class="hsp-rows">' + SH.benefits.map(function (b, i) {
+      var live = b.status !== 'coming';
+      return '<div class="hsp-r"><div><b>' + esc(b.name) + '</b></div><div><small>' + esc(b.where) + '</small></div>' +
+        '<span class="hsp-tag ' + (live ? 'live">Live' : 'coming">Coming') + '</span>' +
+        (live ? '<button type="button" class="hsp-go" data-hsp-see="' + i + '">See it</button>' : '<span class="hsp-go" aria-disabled="true">See it</span>') + '</div>';
+    }).join('') + '</div>';
+    var C = SH && SH.campaign;
+    if (C) html += '<div class="hsp-camp" id="hub-sponsor-campaign"><div class="hsp-camp-top"><div><h3>' + esc(C.title) + '</h3><small>' + esc(C.sub) + '</small></div>' +
+      '<span class="hsp-tag coming">' + esc(C.tag || 'Sample numbers') + '</span></div><div class="hsp-nums">' + C.nums.map(function (n) {
+        return '<div class="hsp-num"><b>' + esc(n.v) + '</b><span>' + esc(n.label) + '</span>' + (n.note ? '<em>' + esc(n.note) + '</em>' : '') + '</div>';
+      }).join('') + '</div>' + (C.report ? '<a class="hsp-go" href="' + esc(C.report.href) + '">' + esc(C.report.label) + '</a>' : '') + '</div>';
+    if (SH && SH.cta) html += '<div class="hsp-cta"><p>' + esc(SH.cta.text) + '</p><a class="btn-join" href="' + esc(SH.cta.href) + '">' + esc(SH.cta.label) + '</a></div>';
+    var root = document.getElementById('hub-sponsors');
+    root.innerHTML = html;
+    root.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-hsp-see]'); if (!b) return;
+      var x = SH.benefits[+b.getAttribute('data-hsp-see')]; if (!x) return;
+      switchTab(x.tab || 'overview');
+      var el = x.anchor && document.getElementById(x.anchor);
+      setTimeout(function () { (el || document.getElementById('tab-' + (x.tab || 'overview'))).scrollIntoView({ block: 'start', behavior: 'smooth' }); }, 60);
+    });
+  }
+  renderSponsors();
 
   // ---- The ad rail: this city's tall slot (public/ve-ad-rail.js, loaded at the end of the page).
   document.getElementById('hub-ad-rail').setAttribute('data-ad-chapter', SLUG);

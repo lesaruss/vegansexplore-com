@@ -12,13 +12,15 @@ const vm = require('vm');
 
 const SITE = 'https://vegansexplore.com';
 
-let template = null, hubs = null;
+let template = null, hubs = null, sample = null;
 function load() {
   if (!template) template = fs.readFileSync(path.join(process.cwd(), 'communities', 'hub.html'), 'utf8');
   if (!hubs) {
     const sandbox = { window: {} };
     vm.runInNewContext(fs.readFileSync(path.join(process.cwd(), 'public', 've-hubs.js'), 'utf8'), sandbox, { timeout: 500 });
     hubs = sandbox.window.VE_HUBS || [];
+    // The sample community (Marisol Bay, VE_SAMPLE_HUB) is kept out of VE_HUBS; it is served here noindex, with no canonical.
+    if (sandbox.window.VE_SAMPLE_HUB) sample = sandbox.window.VE_SAMPLE_HUB;
   }
 }
 
@@ -44,7 +46,15 @@ module.exports = (req, res) => {
     html = template;
     const slug = String((req.query && req.query.slug) || '').toLowerCase().replace(/[^a-z-]/g, '');
     const hub = hubs.filter((x) => x.slug === slug)[0];
-    if (hub) {
+    if (!hub && sample && slug === sample.slug) {
+      const h = headFor(sample);
+      html = html
+        .replace(/<title>[^<]*<\/title>/, '<title>' + text('Vegan ' + sample.name + ' Community (Sample) — Vegans Explore') + '</title>')
+        .replace(/(<meta name="description" content=")[^"]*(")/, '$1' + attr('A sample Vegans Explore community: Marisol Bay is a made-up city, here to show what a community hub and its sponsors look like.') + '$2')
+        .replace('</head>', '<meta name="robots" content="noindex, nofollow"/>\n</head>')
+        .replace('<section id="hero-section"></section>', '<section id="hero-section"><h1 class="vcb-ssr" style="margin:0;padding:28px 16px;font:900 26px Montserrat,sans-serif">' + text(h.h1) + '</h1></section>');
+      res.setHeader('X-Robots-Tag', 'noindex, nofollow');
+    } else if (hub) {
       const h = headFor(hub);
       html = html
         .replace(/<title>[^<]*<\/title>/, '<title>' + text(h.title) + '</title>')
