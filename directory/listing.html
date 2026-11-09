@@ -1858,6 +1858,20 @@ function renderPlatforms(l){
 // A podcast's Overview (Sean, 2026-10-27: "put the episodes on the overview page... their website, Apple Podcasts... Spotify, all the
 // usual suspects... little square icons... and then below it... the podcasts listed"): where to listen as square icons, then the
 // episodes from its own feed (/public/ve-episodes.js, mounted by mountEpisodes).
+// A show's tip line (Sean, 2026-11-09, playbook ve-city-shows: "the point of the podcast is to tell the story... nominate them...
+// shout out your favorite Vegan restaurant, a nonprofit, leave a message... really stress the tip line"). details.show_line {message,
+// nominate}: codes of open comment requests (multi), each opening /comment/<code> where people record or write.
+function showLine(l){
+  var d = (l.details || {}).show_line || {}, ok = function(c){ return /^[a-z0-9-]{3,60}$/.test(c || ''); };
+  if (!ok(d.message) && !ok(d.nominate)) return '';
+  var b = 'display:inline-flex;align-items:center;gap:8px;padding:12px 18px;border-radius:6px;font-weight:700;text-decoration:none;font-size:15px;';
+  return '<div class="section" id="show-line"><h2 class="section-title">Be part of the show</h2>' +
+    '<p class="about-text">This show runs on what you tell us. Leave a message to shout out a restaurant or a nonprofit, send a tip, or ask a question. Record it or write it.</p>' +
+    '<div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:12px">' +
+    (ok(d.message) ? '<a href="/comment/'+d.message+'" style="'+b+'background:var(--vb-go,#2d7d31);color:#fff">Leave a message</a>' : '') +
+    (ok(d.nominate) ? '<a href="/comment/'+d.nominate+'" style="'+b+'background:#fff;color:var(--vb-go,#2d7d31);border:2px solid var(--vb-go,#2d7d31)">Nominate someone</a>' : '') +
+    '</div></div>';
+}
 function renderPodcastOverview(l){
   var p = platformList(l), web = l.website ? [{href:/^https?:/i.test(l.website) ? l.website : 'https://'+l.website, color:'var(--vb-go,#2d7d31)', label:'Website',
     icon:'<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2d7d31" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 010 20M12 2a15 15 0 000 20"/></svg>'}] : [];
@@ -1868,7 +1882,7 @@ function renderPodcastOverview(l){
       var file = { 'Apple Podcasts': 'apple-podcasts', 'Spotify': 'spotify', 'YouTube': 'youtube', 'Amazon Music': 'amazon-music', 'RSS feed': 'rss' }[x.label];
       var ic = file ? '<img src="/public/icons/platforms/'+file+'.svg" alt="" width="28" height="28">' : x.icon.replace(/width="18" height="18"/, 'width="22" height="22"');
       return '<a href="'+esc(x.href)+'" target="_blank" rel="noopener" class="listen-icon" title="'+esc(x.label)+'" aria-label="'+esc(x.label)+'"><span'+(file ? '' : ' style="background:'+x.color+'1a"')+'>'+ic+'</span><small>'+esc(x.label)+'</small></a>';
-    }).join('') + '</div></div>' : '') +
+    }).join('') + '</div></div>' : '') + showLine(l) +
     '<div class="section" id="ep-section" hidden><h2 class="section-title">Episodes</h2><div id="ep-host"></div></div>';
 }
 // A film's Overview (Sean, 2026-10-29: "a trailer from like YouTube... a little bit more of a summary... where it can be viewed, like
