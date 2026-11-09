@@ -921,8 +921,257 @@ async function nextPlaces() {
   return { ok: true, from, to, places: out, errors };
 }
 
+// ---- Chapter insights: one place's audience (Sean, 2026-11-09, ve-chapter-rankings: "a breakdown of our audience... podcasts... using their
+// thumbnails... sort it by periods... how many people are coming from [the place] on web, YouTube, and social media... we can collect the news";
+// "it lives in the brand desk insight section under chapters"; super admins only). A place is a chapter (ve_outreach_cities kind city) or a
+// coming-next place (ve_next_chapters, its listen_match). Each is turned into the places Captivate, Google and Metricool know:
+// [{country ISO, province?, cities?}].
+//   places {brand}                         every chapter and open coming-next place, for the picker
+//   place {brand, kind, slug, from, to}    podcast downloads from there by show (and the period before), Google visitors from there (totals,
+//                                          days, cities, pages, channels), Instagram and Facebook followers there (Metricool, today's count),
+//                                          and the news we hold for it (feed stories for a chapter, our episodes that named it).
+// Read only: Captivate range calls, Google Analytics, Metricool's follower maps. Cached 3 hours (followers 12).
+const US_STATES: Record<string, string> = {
+  AL: 'Alabama', AK: 'Alaska', AZ: 'Arizona', AR: 'Arkansas', CA: 'California', CO: 'Colorado', CT: 'Connecticut', DE: 'Delaware',
+  DC: 'District of Columbia', FL: 'Florida', GA: 'Georgia', HI: 'Hawaii', ID: 'Idaho', IL: 'Illinois', IN: 'Indiana', IA: 'Iowa',
+  KS: 'Kansas', KY: 'Kentucky', LA: 'Louisiana', ME: 'Maine', MD: 'Maryland', MA: 'Massachusetts', MI: 'Michigan', MN: 'Minnesota',
+  MS: 'Mississippi', MO: 'Missouri', MT: 'Montana', NE: 'Nebraska', NV: 'Nevada', NH: 'New Hampshire', NJ: 'New Jersey',
+  NM: 'New Mexico', NY: 'New York', NC: 'North Carolina', ND: 'North Dakota', OH: 'Ohio', OK: 'Oklahoma', OR: 'Oregon',
+  PA: 'Pennsylvania', RI: 'Rhode Island', SC: 'South Carolina', SD: 'South Dakota', TN: 'Tennessee', TX: 'Texas', UT: 'Utah',
+  VT: 'Vermont', VA: 'Virginia', WA: 'Washington', WV: 'West Virginia', WI: 'Wisconsin', WY: 'Wyoming',
+};
+const ABBR_OF: Record<string, string> = Object.fromEntries(Object.entries(US_STATES).map(([a, n]) => [n.toLowerCase(), a]));
+// A chapter that is a city list: the state (or country part) its cities are in, as ve-analytics counts it.
+const CHAPTER_REGION: Record<string, string> = { 'south-florida': 'Florida', 'central-florida': 'Florida', 'north-florida': 'Florida', 'los-angeles': 'California' };
+// Each show's Directory listing, for its picture.
+const SHOW_LISTING: Record<string, string> = { 'vegans-explore': 'vegans-explore-podcast', 'soflo-vegans': 'soflo-vegans-podcast', 'vegans-who-lift': 'vegans-who-lift-podcast', 'pre-vegans': 'pre-vegans-podcast' };
+type PMatch = { country: string; province?: string; cities?: string[] };
+// Data-center towns counted out of a whole-state total (2026-11-09: Ashburn and Sterling were 764 of Virginia's 1,015 podcast downloads in a
+// year; Google's visitors already leave Ashburn out). Like Palo Alto for San Francisco. Oregon's are kept on Sean's word.
+const DC_TOWNS: Record<string, string[]> = { virginia: ['ashburn', 'sterling'] };
+const lcs = (x: unknown) => String(x ?? '').trim().toLowerCase();
+const regionName = (code: string) => { try { return new Intl.DisplayNames(['en'], { type: 'region' }).of(code) || code; } catch { return code; } };
+
+async function placeList() {
+  const [{ data: ch }, { data: nx }] = await Promise.all([
+    db.from('ve_outreach_cities').select('community_slug, name').eq('kind', 'city').neq('community_slug', 'brands').order('name'),
+    db.from('ve_next_chapters').select('slug, name, sort').eq('status', 'open').order('sort'),
+  ]);
+  return { ok: true, chapters: (ch ?? []).map((c: any) => ({ slug: c.community_slug, name: c.name })), next: (nx ?? []).map((n: any) => ({ slug: n.slug, name: n.name })) };
+}
+
+async function placeOf(kind: string, slug: string): Promise<{ name: string; matches: PMatch[]; mentions: string[] } | null> {
+  if (kind === 'chapter') {
+    const { data: c } = await db.from('ve_outreach_cities').select('community_slug, name, states, cities').eq('kind', 'city').eq('community_slug', slug).maybeSingle();
+    if (!c) return null;
+    let matches: PMatch[];
+    if (c.cities?.length) {
+      if (slug === 'london') matches = [{ country: 'GB', cities: c.cities }];
+      else matches = [{ country: 'US', province: CHAPTER_REGION[slug] ?? (c.states?.length ? US_STATES[c.states[0]] : undefined), cities: c.cities }];
+    } else matches = (c.states ?? []).map((s: string) => ({ country: 'US', province: US_STATES[s] }));
+    return { name: c.name, matches, mentions: [c.name.toLowerCase()] };
+  }
+  const { data: n } = await db.from('ve_next_chapters').select('slug, name, listen_match').eq('slug', slug).maybeSingle();
+  if (!n) return null;
+  return { name: n.name, matches: (n.listen_match?.places || []) as PMatch[], mentions: ((n.listen_match?.mentions || []) as string[]).map((m) => m.split('|')[0]) };
+}
+
+// One show, one period: every country, and provinces and cities for the countries the place needs.
+async function placeCap(sh: { key: string; id: string }, from: string, to: string, codes: string[]) {
+  return cached(`ins:placecap:${sh.key}:${from}:${to}:${codes.join(',')}`, 3 * H, false, async () => {
+    const win = { start: new Date(etStart(from)).toISOString(), end: new Date(etStart(plusDays(to, 1))).toISOString(), timezone: 'America/New_York', interval: null };
+    const map = ccMap();
+    const j = await capReq(`/insights/${sh.id}/range/`, { ...win, countryCode: null, types: ['byLocation'] });
+    const country: Record<string, number> = {};
+    for (const x of (j?.byLocation?.byCountry || [])) { const c = map.get(lcs(x.country)); if (c) country[c] = (country[c] || 0) + (Number(x.total) || 0); }
+    const prov: Record<string, any[]> = {}, city: Record<string, any[]> = {};
+    for (const code of codes) {
+      if (!country[code]) { prov[code] = []; city[code] = []; continue; }
+      const d = await capReq(`/insights/${sh.id}/range/`, { ...win, countryCode: code, types: ['byLocation'] });
+      prov[code] = (d?.byLocation?.byProvince || []).map((p: any) => ({ name: String(p.province ?? ''), total: Number(p.total) || 0 }));
+      city[code] = (d?.byLocation?.byCity || []).map((p: any) => ({ name: String(p.city ?? ''), province: p.province ?? null, total: Number(p.total) || 0 }));
+    }
+    return { connected: true, total: Number(j?.total) || 0, country, prov, city };
+  });
+}
+function capSum(raw: any, ms: PMatch[]) {
+  let n = 0; const cities = new Map<string, number>();
+  for (const m of ms) {
+    const code = String(m.country);
+    if (m.cities?.length) {
+      const want = new Set(m.cities.map(lcs));
+      for (const c of raw.city?.[code] || []) if (want.has(lcs(c.name)) && (!m.province || lcs(c.province) === lcs(m.province))) { n += c.total; cities.set(c.name, (cities.get(c.name) || 0) + c.total); }
+    } else if (m.province) {
+      const skip = DC_TOWNS[lcs(m.province)] || [];
+      for (const c of raw.prov?.[code] || []) if (lcs(c.name) === lcs(m.province)) n += c.total;
+      for (const c of raw.city?.[code] || []) if (lcs(c.province) === lcs(m.province)) {
+        if (skip.includes(lcs(c.name))) { n -= c.total; continue; }
+        cities.set(c.name, (cities.get(c.name) || 0) + c.total);
+      }
+    } else { const v = raw.country?.[code] || 0; n += v; if (v) cities.set(regionName(code), (cities.get(regionName(code)) || 0) + v); }
+  }
+  n = Math.max(0, n);
+  return { n, cities: [...cities.entries()].filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).slice(0, 25).map(([name, total]) => ({ name, total })) };
+}
+async function placePodcast(ms: PMatch[], from: string, to: string) {
+  const shows = PODCAST_SHOWS['vegans-explore'];
+  const codes = [...new Set(ms.filter((m) => m.province || m.cities?.length).map((m) => String(m.country)))].sort();
+  const { pf, pt } = prevOf(from, to);
+  const { data: ls } = await db.from('listings').select('slug, logo_url').in('slug', Object.values(SHOW_LISTING));
+  const art = new Map((ls ?? []).map((l: any) => [l.slug, l.logo_url]));
+  const errors: string[] = [];
+  const rows = await pool(shows, 2, async (sh) => {
+    const listing = SHOW_LISTING[sh.key];
+    try {
+      const [cur, prev] = await Promise.all([placeCap(sh, from, to, codes), placeCap(sh, pf, pt, codes)]);
+      const c = capSum(cur, ms), p = capSum(prev, ms);
+      return { key: sh.key, name: sh.name, listing, art: art.get(listing) ?? null, downloads: c.n, prev: p.n, all_places: (cur as any).total, share: (cur as any).total ? c.n / (cur as any).total : 0, cities: c.cities };
+    } catch (e) { errors.push(`${sh.name}: ${(e as Error).message}`); return { key: sh.key, name: sh.name, listing, art: art.get(listing) ?? null, downloads: null, prev: null, cities: [], error: true }; }
+  });
+  const total = rows.reduce((s, r: any) => s + (r.downloads || 0), 0), prevTotal = rows.reduce((s, r: any) => s + (r.prev || 0), 0);
+  const cities = new Map<string, number>();
+  for (const r of rows as any[]) for (const c of r.cities) cities.set(c.name, (cities.get(c.name) || 0) + c.total);
+  return { from, to, prev_from: pf, prev_to: pt, total, prev: prevTotal, shows: rows, cities: [...cities.entries()].sort((a, b) => b[1] - a[1]).slice(0, 25).map(([name, total]) => ({ name, total })), errors };
+}
+
+// Google: the visitors whose place is the place (country, region, city), against the period before.
+function gaPlaceFilter(ms: PMatch[]) {
+  const ex = ms.map((m) => {
+    const parts: any[] = [{ filter: { fieldName: 'country', stringFilter: { matchType: 'EXACT', value: regionName(String(m.country)) } } }];
+    if (m.province) parts.push({ filter: { fieldName: 'region', stringFilter: { matchType: 'EXACT', value: m.province } } });
+    if (m.cities?.length) parts.push({ filter: { fieldName: 'city', inListFilter: { values: m.cities } } });
+    return parts.length === 1 ? parts[0] : { andGroup: { expressions: parts } };
+  });
+  return ex.length === 1 ? ex[0] : { orGroup: { expressions: ex } };
+}
+async function placeWeb(ms: PMatch[], from: string, to: string) {
+  const site = await brandSite('vegans-explore');
+  if (!site.property) return { connected: false };
+  const token = await gToken('https://www.googleapis.com/auth/analytics.readonly');
+  const { pf, pt, days } = prevOf(from, to);
+  const both = [{ startDate: from, endDate: to, name: 'cur' }, { startDate: pf, endDate: pt, name: 'prev' }];
+  const cur = [{ startDate: from, endDate: to }];
+  const grain = days > 120 ? 'yearMonth' : 'date';
+  const P = site.property, F = gaPlaceFilter(ms);
+  const [totals, trend, cities, pages, channels] = await Promise.all([
+    gaReport(token, P, { dateRanges: both, dimensionFilter: F, metrics: ['activeUsers', 'newUsers', 'sessions', 'screenPageViews', 'engagementRate'].map((name) => ({ name })) }),
+    gaReport(token, P, { dateRanges: cur, dimensionFilter: F, dimensions: [{ name: grain }], metrics: [{ name: 'activeUsers' }, { name: 'screenPageViews' }], orderBys: [{ dimension: { dimensionName: grain } }], limit: 400 }),
+    gaReport(token, P, { dateRanges: cur, dimensionFilter: F, dimensions: [{ name: 'city' }, { name: 'region' }], metrics: [{ name: 'activeUsers' }, { name: 'sessions' }], orderBys: [{ metric: { metricName: 'activeUsers' }, desc: true }], limit: 50 }),
+    gaReport(token, P, { dateRanges: cur, dimensionFilter: F, dimensions: [{ name: 'pagePath' }, { name: 'pageTitle' }], metrics: [{ name: 'screenPageViews' }, { name: 'activeUsers' }], orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }], limit: 25 }),
+    gaReport(token, P, { dateRanges: both, dimensionFilter: F, dimensions: [{ name: 'sessionDefaultChannelGroup' }], metrics: [{ name: 'sessions' }, { name: 'activeUsers' }], limit: 30 }),
+  ]);
+  const last = (r: Row) => r.d[r.d.length - 1];
+  const T = (r?: Row) => r ? { users: r.m[0], new_users: r.m[1], sessions: r.m[2], views: r.m[3], engagement_rate: r.m[4] } : { users: 0, new_users: 0, sessions: 0, views: 0, engagement_rate: 0 };
+  const prevCh = new Map(channels.filter((r) => last(r) === 'prev').map((r) => [r.d[0], r.m[0]]));
+  return {
+    connected: true, grain, from, to, prev_from: pf, prev_to: pt,
+    totals: T(totals.find((r) => last(r) === 'cur')), totals_prev: T(totals.find((r) => last(r) === 'prev')),
+    trend: trend.map((r) => ({ t: r.d[0], users: r.m[0], views: r.m[1] })),
+    cities: cities.map((r) => ({ city: r.d[0], region: r.d[1], users: r.m[0], sessions: r.m[1] })),
+    pages: pages.map((r) => ({ path: r.d[0], title: r.d[1], views: r.m[0], users: r.m[1] })),
+    channels: channels.filter((r) => last(r) === 'cur').map((r) => ({ channel: r.d[0], sessions: r.m[0], users: r.m[1], sessions_prev: prevCh.get(r.d[0]) ?? 0 })).sort((a, b) => b.sessions - a.sessions),
+  };
+}
+
+// Metricool: followers by city and country on each network, today (it keeps no history of these maps). TikTok and YouTube return none.
+async function socialMaps() {
+  return cached('ins:placesoc:vegans-explore', 12 * H, false, async () => {
+    const { data: conn } = await db.from('analytics_connections').select('config').eq('provider', 'metricool').maybeSingle();
+    const key = await secret(conn?.config?.api_key_secret || 'METRICOOL_API_KEY');
+    if (!key || !conn?.config?.user_id) return { connected: false };
+    const q = `userId=${conn.config.user_id}&blogId=${conn.config.blog_id || 3707345}`;
+    const get = async (p: string) => { const r = await fetch(`https://app.metricool.com/api${p}?${q}`, { headers: { 'X-Mc-Auth': key, Accept: 'application/json' } }); return r.ok ? r.json() : {}; };
+    const out: Record<string, any> = {};
+    for (const n of ['instagram', 'facebook', 'tiktok', 'youtube']) { const [city, country] = await Promise.all([get(`/stats/city/${n}`), get(`/stats/country/${n}`)]); out[n] = { city, country }; }
+    return { connected: true, networks: out };
+  });
+}
+function socialIn(maps: any, ms: PMatch[]) {
+  const nets: any[] = [];
+  for (const n of ['instagram', 'facebook', 'tiktok', 'youtube']) {
+    const m = maps?.networks?.[n] || {};
+    const cityMap = (m.city || {}) as Record<string, number>, countryMap = (m.country || {}) as Record<string, number>;
+    const known = Object.values(cityMap).reduce((s, v) => s + (Number(v) || 0), 0);
+    if (!known && !Object.keys(countryMap).length) { nets.push({ network: n, available: false }); continue; }
+    let inPlace = 0; const top: { name: string; n: number }[] = [];
+    for (const [k, v] of Object.entries(cityMap)) {
+      const i = k.lastIndexOf(','), c = lcs(i > 0 ? k.slice(0, i) : k), r = lcs(i > 0 ? k.slice(i + 1) : '');
+      const hit = ms.some((x) => {
+        if (!x.province && !x.cities?.length) return false;
+        if (x.country === 'GB' && r && r !== 'england' && r !== 'gb' && r !== 'united kingdom') return false;
+        if (x.province && r && r !== lcs(x.province) && r !== lcs(ABBR_OF[lcs(x.province)] || '')) return false;
+        return x.cities?.length ? x.cities.some((y) => lcs(y) === c) : true;
+      });
+      if (hit) { inPlace += Number(v) || 0; top.push({ name: k, n: Number(v) || 0 }); }
+    }
+    // A place that is a whole country counts that country's followers.
+    for (const x of ms) if (!x.province && !x.cities?.length) for (const [k, v] of Object.entries(countryMap)) if (lcs(k) === lcs(x.country) || lcs(k) === lcs(regionName(x.country))) { inPlace += Number(v) || 0; top.push({ name: regionName(x.country), n: Number(v) || 0 }); }
+    const countryKnown = Object.values(countryMap).reduce((s, v) => s + (Number(v) || 0), 0);
+    nets.push({ network: n, available: true, in_place: inPlace, known_city: known, known_country: countryKnown, top: top.sort((a, b) => b.n - a.n).slice(0, 15) });
+  }
+  return nets;
+}
+
+async function placeNews(kind: string, slug: string, names: string[]) {
+  const leads = kind === 'chapter'
+    ? (await db.from('ve_news_leads').select('id, title, url, source_name, summary, image_url, published_at, status').eq('city_slug', slug).order('published_at', { ascending: false, nullsFirst: false }).limit(40)).data ?? []
+    : [];
+  const want = new Set(names.map(lcs));
+  const pm = ((await db.from('ve_place_mentions').select('place, country, kind, source, ref, note, created_at').order('created_at', { ascending: false }).limit(2000)).data ?? []).filter((r: any) => want.has(lcs(r.place))).slice(0, 40);
+  return { stories: leads, mentions: pm };
+}
+
+async function placeInsights(kind: string, slug: string, from: string, to: string, refresh: boolean) {
+  const p = await placeOf(kind, slug);
+  if (!p) return { error: 'no_place' };
+  return cached(`ins:place:${kind}:${slug}:${from}:${to}`, 3 * H, refresh, async () => {
+    const errors: string[] = [];
+    const [podcast, web, maps, news] = await Promise.all([
+      placePodcast(p.matches, from, to).catch((e) => { errors.push('podcast: ' + (e as Error).message); return null; }),
+      placeWeb(p.matches, from, to).catch((e) => { errors.push('web: ' + (e as Error).message); return null; }),
+      socialMaps().catch((e) => { errors.push('social: ' + (e as Error).message); return null; }),
+      placeNews(kind, slug, p.mentions).catch((e) => { errors.push('news: ' + (e as Error).message); return null; }),
+    ]);
+    return { connected: true, place: { kind, slug, name: p.name, matches: p.matches }, from, to, podcast, web, social: maps && (maps as any).connected ? { networks: socialIn(maps, p.matches), fetched_at: (maps as any).fetched_at ?? null } : null, news, errors };
+  });
+}
+
+// Each chapter's traffic for the public Traffic sort (only the rank leaves the database): podcast downloads from the chapter over the last
+// 365 days plus Google visitors from it over the last 90. Daily cron ve-chapter-traffic; writes ve_chapter_traffic.
+async function chapterTraffic() {
+  const { data: chs } = await db.from('ve_outreach_cities').select('community_slug').eq('kind', 'city').neq('community_slug', 'brands');
+  const yest = plusDays(etDay(Date.now()), -1);
+  const podFrom = plusDays(yest, -364), webFrom = plusDays(yest, -89);
+  const site = await brandSite('vegans-explore');
+  const token = site.property ? await gToken('https://www.googleapis.com/auth/analytics.readonly') : null;
+  const shows = PODCAST_SHOWS['vegans-explore'];
+  const errors: string[] = [], out: any[] = [];
+  await pool((chs ?? []) as any[], 4, async (c: any) => {
+    const p = await placeOf('chapter', c.community_slug);
+    if (!p) return;
+    const codes = [...new Set(p.matches.filter((m) => m.province || m.cities?.length).map((m) => String(m.country)))].sort();
+    let downloads = 0; const byShow: Record<string, number> = {};
+    await Promise.all(shows.map(async (sh) => {
+      try { const raw = await placeCap(sh, podFrom, yest, codes); const n = capSum(raw, p.matches).n; byShow[sh.key] = n; downloads += n; }
+      catch (e) { errors.push(`${c.community_slug} ${sh.key}: ${(e as Error).message}`); }
+    }));
+    let web = 0;
+    if (token && site.property) {
+      try {
+        const r = await gaReport(token, site.property, { dateRanges: [{ startDate: webFrom, endDate: yest }], dimensionFilter: gaPlaceFilter(p.matches), metrics: [{ name: 'activeUsers' }] });
+        web = r[0]?.m[0] || 0;
+      } catch (e) { errors.push(`${c.community_slug} web: ${(e as Error).message}`); }
+    }
+    const row = { chapter: c.community_slug, downloads, web_users: web, score: downloads + web, by_show: byShow, at: new Date().toISOString() };
+    const { error } = await db.from('ve_chapter_traffic').upsert(row);
+    if (error) errors.push(`${c.community_slug}: ${error.message}`);
+    out.push(row);
+  });
+  return { ok: true, pod_from: podFrom, web_from: webFrom, to: yest, chapters: out, errors };
+}
+
 // Every Insights action that only reads (writes are the podcast upload, upload done and file remove).
-const READ_ONLY_OK = new Set(['web_analytics', 'podcast', 'podcast_files', 'seo', 'ads', 'campaigns', 'campaign', 'web_health', 'analysis']);
+const READ_ONLY_OK = new Set(['web_analytics', 'podcast', 'podcast_files', 'seo', 'ads', 'campaigns', 'campaign', 'web_health', 'analysis', 'places', 'place']);
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
@@ -931,12 +1180,12 @@ Deno.serve(async (req) => {
     const body = await req.json().catch(() => ({}));
     const token = (req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '');
     // The board's listener places: the daily cron (x-cron-secret), the admin token or a super admin. It reads Captivate and writes only ve_next_chapters.listens.
-    if (body.action === 'next_places') {
+    if (body.action === 'next_places' || body.action === 'chapter_traffic') {
       const cron = req.headers.get('x-cron-secret');
       let okCaller = (!!cron && cron === (await secret('CRON_SECRET'))) || (!!token && token === (await secret('LESARUSS_ADMIN_TOKEN')));
       if (!okCaller && token) { const m = await verifyToken(token); if (m) { const { data: me } = await db.from('members').select('is_superadmin').eq('id', m).maybeSingle(); okCaller = !!me?.is_superadmin; } }
       if (!okCaller) return json({ error: 'forbidden' }, 403);
-      return json(await nextPlaces());
+      return json(body.action === 'chapter_traffic' ? await chapterTraffic() : await nextPlaces());
     }
     const ops = !!token && token === (await secret('LESARUSS_ADMIN_TOKEN'));
     let member: string | null = null;
@@ -957,6 +1206,7 @@ Deno.serve(async (req) => {
     const act = String(body.action || '');
     if (act === 'web_health') return json(await cached(`ins:health:${brand}`, 12 * H, refresh, () => webHealth(brand)));
     if (act.startsWith('podcast_file') || act.startsWith('podcast_upload')) return json(await podcastFiles(act, brand, body, member));
+    if (act === 'places') return json(brand === 'vegans-explore' ? await placeList() : { error: 'not_this_brand' });
     const { from, to } = body;
     if (!isDay(from) || !isDay(to) || from > to) return json({ error: 'bad_dates' }, 400);
     switch (act) {
@@ -970,6 +1220,13 @@ Deno.serve(async (req) => {
         const part = body.part === 'episodes' ? 'episodes' : body.part === 'audience' ? 'audience' : 'overview';
         const r = part === 'episodes' ? await podEpisodes(brand, sh, from, to, refresh) : part === 'audience' ? await podAudience(brand, sh, from, to, refresh) : await podOverview(brand, sh, from, to, refresh);
         return json(r);
+      }
+      case 'place': {
+        if (brand !== 'vegans-explore') return json({ error: 'not_this_brand' }, 400);
+        const kind = body.kind === 'next' ? 'next' : 'chapter', slug = String(body.slug || '');
+        if (!/^[a-z0-9-]{2,60}$/.test(slug)) return json({ error: 'bad_place' }, 400);
+        const r: any = await placeInsights(kind, slug, from, to, refresh);
+        return json(r, r?.error === 'no_place' ? 404 : 200);
       }
       case 'ads': return json(await ads(brand, from, to));
       case 'campaigns': return json(await campaigns(brand, from, to));

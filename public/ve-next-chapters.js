@@ -9,9 +9,11 @@
    Places are ve_next_chapters rows (a new place is a row); votes are ve-votes next_vote, once every 24 hours per member, like a
    chapter's; Suggest another place is ve-votes next_suggest (members, 3 a day, emailed to the team, added by hand). Signed out,
    Vote and Suggest open the members window (VEVotes). Load after /public/ve-auth.js.
-   Each place also shows its podcast listeners (2026-11-09): next_list returns downloads (all time, our four shows, from Captivate, added up
-   by branddesk-insights next_places for the place's listen_match, daily cron ve-next-places), listen_top and mentions (episodes that named
-   it, ve_place_mentions). With equal votes, more downloads ranks higher. */
+   Ranked by the algorithm, never showing its numbers (Sean, 2026-11-09: "I don't necessarily want to show the downloads on there"): votes,
+   then voters, then traffic, a rank next_list returns from podcast downloads there (branddesk-insights next_places, daily) and the episodes
+   that named it. A super admin can open each place's insights: BrandDesk > Vegans Explore > Insights > Chapters (hq.lesaruss.ai).
+   On desktop the board is as tall as the chapter cards beside it and its list scrolls inside (Sean: "aligned with the bottom of West
+   Virginia... then it'd be a scroll"). */
 (function () {
   if (window.VENextChapters) return;
   var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-votes';
@@ -45,10 +47,11 @@
     + '.nx-form textarea{min-height:72px;resize:vertical}'
     + '.nx-form .nx-send{height:42px;border-radius:6px;border:0;background:var(--vb-go,#2d7d31);color:#fff;font:800 13px Montserrat,sans-serif;cursor:pointer}'
     + '.nx-form .nx-note{font:600 11px/1.4 Montserrat,sans-serif;color:rgba(26,26,26,.6)}'
-    + '.nx-pod{display:flex;align-items:center;gap:4px;font:700 11px Montserrat,sans-serif;color:var(--vb-accent-ink,#2d7a4f);margin-top:3px}.nx-pod svg{flex:0 0 auto}'
-    + '.nx-foot{font:600 10.5px/1.45 Montserrat,sans-serif;color:rgba(26,26,26,.55);margin:12px 0 0}'
+    + '.nx-ins{display:inline-block;margin-top:3px;font:800 10px Montserrat,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--vb-accent-ink,#2d7a4f);text-decoration:none}.nx-ins:hover{text-decoration:underline}'
+    + '@media(min-width:1001px){.nx-col.fit{display:flex;flex-direction:column;overflow:hidden}.nx-col.fit .nx-scroll{flex:1 1 auto;min-height:0;overflow:auto;margin:0 -6px;padding:0 6px}}'
     + '.nx-empty{font:600 12px Montserrat,sans-serif;color:rgba(26,26,26,.6);padding:8px 0}';
-  var EAR = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1v-6h3zM3 19a2 2 0 0 0 2 2h1v-6H3z"/></svg>';
+  var HQ = 'https://hq.lesaruss.ai/branddesk/brands/vegans-explore?view=insights&in=chapters&place=';
+  function admin() { try { var m = window.VEAuth && VEAuth.isLoggedIn() && VEAuth.getMember(); return !!(m && m.is_superadmin); } catch (e) { return false; } }
   var PIN = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>';
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
@@ -86,35 +89,24 @@
     function pic(p) {
       return '<span class="nx-ph">' + PIN + '<img src="/communities/next/' + encodeURIComponent(p.slug) + '/thumb.jpg" alt="" width="44" height="44" loading="lazy" decoding="async" onerror="this.remove()"></span>';
     }
-    // Podcast listeners there (ve-chapter-rankings, Sean, 2026-11-09): all-time downloads of our four shows from the place, and how many
-    // of our episodes talked about it (ve_place_mentions). Shown only when there is something to show.
-    function pod(p) {
-      var d = Number(p.downloads || 0), m = Number(p.mentions || 0), bits = [];
-      if (d > 0) bits.push(d.toLocaleString() + ' download' + (d === 1 ? '' : 's'));
-      if (m > 0) bits.push('on ' + m + ' episode' + (m === 1 ? '' : 's'));
-      if (!bits.length) return '';
-      var top = (p.listen_top || []).map(function (t) { return t.name + ' ' + Number(t.n).toLocaleString(); }).join(', ');
-      var tip = (d > 0 ? d.toLocaleString() + ' downloads of our four podcasts from here, all time' + (top ? ' (most from ' + top + ')' : '') + '.' : '') + (m > 0 ? ' Talked about on ' + m + ' of our episodes.' : '');
-      return '<span class="nx-pod" title="' + esc(tip.trim()) + '">' + EAR + '<span>' + esc(bits.join(' · ')) + '</span></span>';
-    }
     function row(p, i) {
       var voted = !!next[p.slug];
       return '<li class="nx-row' + (i < 3 ? ' top3' : '') + (i >= PHONE_TOP ? ' nx-hide' : '') + '"><span class="nx-rank">' + (i + 1) + '</span>' + pic(p) +
-        '<span class="nx-info"><span class="nx-name">' + esc(p.name) + '</span><span class="nx-meta">' + esc(p.sub || '') + '</span>' + pod(p) + '</span>' +
+        '<span class="nx-info"><span class="nx-name">' + esc(p.name) + '</span><span class="nx-meta">' + esc(p.sub || '') + '</span>' +
+        (admin() ? '<a class="nx-ins" href="' + HQ + 'next:' + encodeURIComponent(p.slug) + '" target="_blank" rel="noopener">Insights</a>' : '') + '</span>' +
         '<span class="nx-right"><span class="nx-count">' + Number(p.votes || 0).toLocaleString() + '</span>' +
         '<button type="button" class="nx-btn' + (voted ? ' on' : '') + '" data-nx-vote="' + esc(p.slug) + '" aria-label="Vote for ' + esc(p.name) + '">' + (voted ? 'Voted' : 'Vote') + '</button></span></li>';
     }
     function draw() {
-      var list = places.slice().sort(function (a, b) { return (b.votes - a.votes) || (b.voters - a.voters) || ((b.downloads || 0) - (a.downloads || 0)) || (a.sort - b.sort); });
+      var list = places.slice().sort(function (a, b) { return (b.votes - a.votes) || (b.voters - a.voters) || ((a.traffic || 1e9) - (b.traffic || 1e9)) || (a.sort - b.sort); });
       var top = list.slice(0, TOP), rise = list.slice(TOP);
       el.classList.toggle('short', !open);
       el.innerHTML = '<div class="nx-eye">Coming next</div><h2>Where should we go next?</h2>' +
         '<p class="nx-sub">Vote for the next chapter, once a day for each place you want. Your votes guide us. They don\'t decide it: we may open somewhere because someone there is ready to lead.</p>' +
-        (list.length ? '<ol class="nx-list">' + top.map(row).join('') + '</ol>' +
-          (rise.length ? '<div class="nx-h3 nx-hide">Rising</div><ol class="nx-list nx-hide">' + rise.map(function (p, i) { return row(p, i + TOP); }).join('') + '</ol>' : '') +
+        (list.length ? '<div class="nx-scroll"><ol class="nx-list">' + top.map(row).join('') + '</ol>' +
+          (rise.length ? '<div class="nx-h3 nx-hide">Rising</div><ol class="nx-list nx-hide">' + rise.map(function (p, i) { return row(p, i + TOP); }).join('') + '</ol>' : '') + '</div>' +
           (list.length > PHONE_TOP ? '<button type="button" class="nx-more" data-nx-more>See all ' + list.length + ' places</button>' : '')
           : '<p class="nx-empty">Loading the places...</p>') +
-        (list.some(function (p) { return p.downloads > 0 || p.mentions > 0; }) ? '<p class="nx-foot">Podcast downloads are from our four shows, all time, by where the listener was. A sign of who is already listening, alongside your votes.</p>' : '') +
         '<div class="' + (open ? '' : 'nx-hide') + '">' +
         (formOpen ? '<form class="nx-form" data-nx-form><label for="nx-place">Where should we open?</label><input id="nx-place" name="place" maxlength="120" required placeholder="A city, a state or a country">' +
           '<label for="nx-why">Why there? (optional)</label><textarea id="nx-why" name="why" maxlength="600" placeholder="Who is there, what is happening"></textarea>' +
@@ -169,7 +161,19 @@
     var side = document.createElement('aside');
     listEl.parentNode.insertBefore(wrap, listEl);
     wrap.appendChild(side); wrap.appendChild(main); main.appendChild(listEl);
-    return mount(side);
+    var api = mount(side);
+    // Desktop: the board ends where the chapter cards end, and its list scrolls inside.
+    function fit() {
+      if (window.innerWidth <= 1000) { side.classList.remove('fit'); side.style.maxHeight = ''; return; }
+      var cards = listEl.querySelectorAll('.vch-card'), last = cards[cards.length - 1];
+      var bottom = last ? Math.max.apply(null, Array.prototype.map.call(cards, function (c) { return c.getBoundingClientRect().bottom; })) : main.getBoundingClientRect().bottom;
+      var h = Math.round(bottom - side.getBoundingClientRect().top);
+      if (h > 320) { side.classList.add('fit'); side.style.maxHeight = h + 'px'; side.style.position = 'static'; }
+    }
+    if (window.ResizeObserver) new ResizeObserver(fit).observe(main);
+    window.addEventListener('resize', fit);
+    setTimeout(fit, 0);
+    return api;
   }
 
   window.VENextChapters = { mount: mount, beside: beside };
