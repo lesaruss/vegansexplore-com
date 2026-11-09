@@ -33,7 +33,7 @@ we have systems, so we don't waste time and usage." Canon `canon-template-gate` 
 1. **Name its parent** from this map and copy that file; change only the content.
    | Building | Copy from |
    |---|---|
-   | A Guide, a sampler, anything a Guide walks people through | `guides/vegan-dairy-guide.html` (`docs/guides/BUILD-A-GUIDE.md`); the whole cast: `passport.html?guide=welcome` |
+   | A Guide, a sampler, anything a Guide walks people through | The Explorer Guide, `passport.html?guide=welcome` + `guide-scripts/welcome-guide.js`: its Overview (Getting started card, then article rows) and its section pages (How to use this page, parts as rows, one See it for yourself call to action), the Guide in the right rail (Sean, 2026-11-09: "That's now the template for guides moving forward"). Existing Guides move to it only one at a time, when Sean says. First copy: `mocks/nominate/` |
    | A walkthrough, pitch, mock or concept page | `/partners` with `/public/ve-guided.js` |
    | A working tool, queue or console | `admin/depot/social.html` and the Depot pages |
    | A sign-up or a form of more than one section | `claim.html` (`?step=`) |
