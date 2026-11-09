@@ -1316,8 +1316,11 @@ rows (a new place is a row; `status` open, opened, hidden), Sean's 12 seeded: Or
 the Caribbean, New Zealand, Japan, Seattle, San Francisco. Votes `ve_next_chapter_votes`, once every 24 hours per member per place (like a chapter);
 suggestions `ve_next_chapter_suggestions` (3 a day, emailed to contact@lesaruss.com, added by hand). `ve-votes` actions `next_list` (public),
 `next_today`, `next_vote`, `next_suggest` (standing checked); v9 from a2b4b98 (sha256 06e16784 matched). Migration `20261109_next_chapters.sql`.
-Proven live 2026-11-09 through the one-time `ve-once-next-proof` (now 410); test rows removed. Not built: Show me (a sample hub per place, banners
-are Higgsfield credits), a Depot page for suggestions, the podcast listener places on each card. Mock `/mocks/next-chapters/`.
+Proven live 2026-11-09 through the one-time `ve-once-next-proof` (now 410); test rows removed. **Art for every place, made 2026-11-09** (Sean: "create them so
+that we're ready for when we do launch... one vertical, one horizontal, and... the square one from the vertical"; 54 Higgsfield credits, nano_banana_pro
+with the South Florida banner as the style reference): `communities/next/<slug>/vertical.jpg` (1440 x 1920), `wide.jpg` (1920 x 1080), `square.jpg`
+(1200 x 1200, cut from the vertical), full-size originals in `vegan-media/media/communities/next-<slug>/`; each place's paths in `ve_next_chapters.art`
+(migration `20261109_next_chapters_art.sql`). The Wynn logo was taken off both Las Vegas pictures. Not shown on the board yet. Not built: Show me (a sample hub per place), a Depot page for suggestions, the podcast listener places on each card. Mock `/mocks/next-chapters/`.
 
 ## Universal search (Sean, 2026-11-02, BOSS run, playbook `ve-universal-search`)
 
