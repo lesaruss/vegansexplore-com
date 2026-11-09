@@ -603,6 +603,10 @@ Stopping them at the door for $11." Replaces "Registration is the Passport", "Gu
 picture and scrolling inside; phones stack them. The tour video plays in Liz's frame on the right (`setVideo`, the Holiday Guide's way, Expand on phones), never in the
 middle, and the card follows the chapter she is on; arrows, dots or a swipe take over for 12 seconds (`HOLD_MS`), then it goes back to her. Watch first, Read the tour and
 the section rows are gone. The page scrolls as one on desktop (only Liz's words and the card's text scroll inside). The menu is a dropdown (more than 5 tabs).
+**Then the same day, replaced** (Sean: "I would prefer the body to be longer than the right hand side... it reads like the pulse"): the Overview is **Getting started** (how to
+use the page: watch Liz's tour in her frame, read on, join; a 240 px picture, `gettingStarted()`) and then every section as a short article under its group's eyebrow, read like
+the Pulse's story rows (a 132 x 99 picture, the title, about 250 characters, Read more; `articles()`, `SUMMARY`). The sub-section buttons live on each section's page. The tour
+still plays in Liz's frame. The dropdown has 18 px under it on desktop. Next (Sean's idea): each section page gets the same shape, a short video summary and 3 to 5 sub thumbnails.
 
 Proposal `docs/proposals/explorer-welcome-guide.md` (approved). `/passport` (`passport.html`, `guide-scripts/welcome-guide.js`) is the Welcome Guide, copied
 from the Holiday Guide (template gate). Liz hosts. The Overview is enough on its own (Start here, Become a Founder, the tour: Liz's eight chapters, approved

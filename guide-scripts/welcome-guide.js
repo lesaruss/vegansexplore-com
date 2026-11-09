@@ -6,14 +6,14 @@
  * section goes deeper and is optional. Liz hosts (approved 2026-11-08); the Guide for each area appears on its page.
  * Every page ends on the Explorer card (/public/ve-explorer-card.js), the bridge from reading to joining.
  *
- *   #/              Overview: one card of Liz's eight beats (a picture, a short summary, the section buttons) that follows the tour in her frame
+ *   #/              Overview: Getting started, then every section as a short article (picture, about 250 characters, Read more)
  *   #/directory     Search and the Directory        #/points    Points and levels
  *   #/city          Your city                       #/paths     Your path and badges
  *   #/events        Events                          #/better    Make it better
  *   #/media         Media                           #/animals   For the animals
  *   #/guides        Guides                          #/founder   Become a Founder (the survey; members: your first steps)
  *
- * The Overview's tour is a video (tour-video-v2.mp4) playing in Liz's frame on the right; the card follows it, arrows and dots override it for 12 seconds; the section pages' lines are text until recorded. Every claim on these pages is
+ * The Overview's tour is a video (tour-video-v2.mp4) playing in Liz's frame on the right; the section pages' lines are text until recorded. Every claim on these pages is
  * checked against what is live (CLAUDE.md); nothing promises an unbuilt feature.
  */
 (function () {
@@ -128,48 +128,39 @@
   }
   setInterval(tickCd, 1000);
 
-  // The Overview is one card (Sean, 2026-11-09: "there's way too much going on the first page... one of those sections"): Liz's eight beats,
-  // each a picture, a title, a summary of 250 characters or less and its section buttons. The tour plays in Liz's frame on the right and the
-  // card follows her; the arrows or dots take over, and about 12 seconds after they let go it goes back to where she is.
-  var SLIDES = [
-    { pic: 'welcome-ensemble.jpg', s: 'Eat out without guessing, find your people and do more for the animals. This Guide shows you how Vegans Explore works, city by city, and exactly where you fit in.' },
-    { pic: 'welcome-guide.jpg', s: 'We have spent more than ten years inside this community: activism, events, content and running businesses. Now we are building the home it needed, and we are building it with you.' },
-    { pic: 'thumb-directory.jpg', s: 'One search box finds anything. The Directory lists places, people, groups and nonprofits in every chapter. Your city has its own Daily Pulse, boards and events, and each Guide walks you through one topic.', kids: ['directory', 'city', 'events', 'media', 'guides'] },
-    { pic: 'thumb-bounties.jpg', s: 'Vote for the places you love, check in when you visit and take on bounties to earn points. Spend them on Guides, or give them to the places and causes you care about.', kids: ['points'] },
-    { pic: 'thumb-passport.jpg', s: 'Everyone starts as an Explorer. Run a restaurant, host events, make content or work with a nonprofit? Each one has its own path, its own Guide and its own badge.', kids: ['paths'] },
-    { pic: 'restaurant-guide/t-next.jpg', s: 'Tell us what works, what does not and what you wish you could do. The Feedback button is on every page, and a search for something we do not have goes to our team. We read all of it.', kids: ['better'] },
-    { pic: 'nonprofit-guide.jpg', s: 'With businesses, people and nonprofits that actually show up, we can run campaigns that move the needle for the animals. Find the rescues, sanctuaries and nonprofits near you.', kids: ['animals'] },
-    { pic: 'welcome/liz-founder.jpg', s: 'A few quick questions, about two minutes, and you are in, free, with 250 points.' + (OPEN ? ' Join before midnight Eastern on January 1, 2027 and you are a Founding Member for good.' : ''),
-      sMember: 'You are in. Here are your first steps, and where to ask when you need help.', kids: ['founder'] }
-  ];
-  var SL = { at: 0, holdUntil: 0 };
-  function slideHtml(n) {
-    var c = SLIDES[n], t = CHAPTERS[n][0], txt = member() && c.sMember ? c.sMember : c.s;
-    var btns = (c.kids || []).map(function (k) {
-      if (k === 'founder') return '<a class="dg-btn" href="#/founder">' + (member() ? 'See your first steps' : 'Become a Founder, free') + '</a>';
-      return '<a class="rg-pill" href="' + href(k) + '"><span class="rg-pill-pic"><img src="' + pic(tab(k).pic) + '" alt="" loading="lazy" width="60" height="60"></span><span>' + esc(tab(k).label) + '</span></a>';
+  // The Overview (Sean, 2026-11-09): Getting started (how to use the page: watch Liz's tour in her frame, read on, join), then every section as a
+  // short article, read like the Pulse: a small picture, the title, about 250 characters, Read more. The sub-sections live on each section's page.
+  var SUMMARY = {
+    directory: 'One search box at the top of every page finds any place, person, show or answer. The Directory lists local food, products, services, media, community groups and people, city by city, sorted by member votes.',
+    city: 'Every chapter, from South Florida to London, has its own home: a Daily Pulse each morning with the news that matters, boards for jobs, classifieds, fosters and rescues, its events and its most voted places.',
+    events: 'Festivals, potlucks, meetups and sanctuary days, in our chapters and around the world. Pick a place and the kinds of events you like, open one for its details, or submit your own from a flyer or a link.',
+    media: 'Our own shows, like the Vegans Explore Podcast, plus the podcasts, documentaries and books the community votes to the top. Press Play and listen right on the page while you keep looking around.',
+    guides: 'A Guide is a mini website about one topic, walked through by one of our Guides. Guides for your work are free with a short survey. Topic Guides, like the Vegan Dairy Guide, are $11 or 1,100 points.',
+    points: 'Points come from taking part, never from buying them: the survey, check-ins, bounties and friends who join. Spend them on Guides, give them to the places and causes you love, and level up as you go.',
+    paths: 'Everyone starts as an Explorer. Run a restaurant, host events, make content, run a nonprofit or add plant-based options? Each path has its own Guide, its own short survey and its own badge.',
+    better: 'This is the part that matters most. The Feedback button is on every page, your Guide answers questions, and a search for something we do not have goes to our team. We read all of it, every day.',
+    animals: 'The reason we are all here. Find the nonprofits, rescues and sanctuaries near you, check your city\'s Fosters and Rescues boards, and give your points to the causes you care about.',
+    founder: 'A few quick questions, about two minutes, and you are in, free, with 250 points.' + (OPEN ? ' Join before midnight Eastern on January 1, 2027 and you are a Founding Member for good.' : '')
+  };
+  function gettingStarted() {
+    var ps = member()
+      ? ['<b>Welcome back.</b> Everything is open to you now.', '<b>Watch the tour</b> any time: press Play the tour and Liz walks you through all of it in about three minutes.', '<b>Go deeper:</b> each part of Vegans Explore is below in a few lines. Read more on any one for how to use it today.']
+      : ['<b>Watch the tour.</b> Press Play the tour and Liz walks you through all of Vegans Explore in about three minutes.', '<b>Go deeper.</b> Each part is below in a few lines. Read more on any one for how to use it today.', '<b>Ready?</b> Become a Founder: free, about two minutes, with 250 points.'];
+    return '<section class="wg-gs" aria-label="Getting started"><span class="wg-gs-pic"><img src="' + pic('welcome-ensemble.jpg') + '" alt="" decoding="async" width="640" height="640"></span>' +
+      '<div class="wg-gs-b"><div class="vgi-k">Getting started</div><h3 class="wg-gs-t">How to use this page</h3>' + ps.map(function (x) { return '<p>' + x + '</p>'; }).join('') +
+      '<div class="wg-gs-btns"><button type="button" class="dg-btn" data-wg-tour>&#9654; Play the tour</button>' + (member() ? '' : '<a class="dg-btn dg-ghost" href="#/founder">Become a Founder</a>') + '</div></div></section>';
+  }
+  function articles() {
+    return GROUPS.map(function (g) {
+      return '<div class="wg-grp"><h5>' + esc(g.label) + '</h5><ol>' + g.kids.map(function (k) {
+        var t = tab(k), txt = k === 'founder' && member() ? 'You are in. Here are your first steps, and where to ask when you need help.' : SUMMARY[k];
+        return '<li class="wg-art"><a href="' + href(k) + '" tabindex="-1" aria-hidden="true"><span class="wg-art-img" style="background-image:url(&quot;' + esc(pic(t.pic)) + '&quot;)"></span></a>' +
+          '<div><a class="wg-art-t" href="' + href(k) + '">' + esc(t.label) + '</a><p>' + esc(txt) + '</p><a class="wg-art-more" href="' + href(k) + '">Read more &rsaquo;</a></div></li>';
+      }).join('') + '</ol></div>';
     }).join('');
-    return '<span class="wg-sl-pic"><img src="' + pic(c.pic) + '" alt="" decoding="async" width="640" height="640"></span>' +
-      '<div class="wg-sl-b"><div class="vgi-k">' + (n ? (n + 1) + ' of ' + SLIDES.length : 'Start here') + '</div><h3 class="wg-sl-t">' + esc(t) + '</h3>' +
-      '<p>' + esc(txt) + '</p>' + (btns ? '<div class="wg-sl-btns">' + btns + '</div>' : '') +
-      '<a href="#" class="wg-chplay" data-wg-ch="' + n + '">&#9654; Hear Liz on this</a></div>';
-  }
-  function slider() {
-    return '<section class="wg-sl" id="wgSl" aria-label="Start here" aria-roledescription="carousel"><div class="wg-sl-card" id="wgSlCard" aria-live="polite">' + slideHtml(SL.at) + '</div>' +
-      '<div class="wg-sl-nav"><button type="button" class="wg-sl-arr" data-wg-sl="-1" aria-label="Previous">&lsaquo;</button><span class="wg-sl-dots">' +
-      SLIDES.map(function (x, n) { return '<button type="button" class="wg-sl-dot' + (n === SL.at ? ' on' : '') + '" data-wg-go="' + n + '" aria-label="' + esc(CHAPTERS[n][0]) + '"></button>'; }).join('') +
-      '</span><button type="button" class="wg-sl-arr" data-wg-sl="1" aria-label="Next">&rsaquo;</button></div></section>';
-  }
-  function showSlide(n) {
-    n = Math.max(0, Math.min(SLIDES.length - 1, n));
-    var card = document.getElementById('wgSlCard'); SL.at = n; if (!card) return;
-    if (card.getAttribute('data-n') === String(n)) return;
-    card.setAttribute('data-n', String(n)); card.innerHTML = slideHtml(n);
-    document.querySelectorAll('.wg-sl-dot').forEach(function (d, i) { d.classList.toggle('on', i === n); });
   }
   function viewOverview() {
-    main.innerHTML = gateNote() + head('Free for everyone', member() ? 'Welcome Back to Vegans Explore' : 'Welcome to Vegans Explore', '') + slider();
-    var card = document.getElementById('wgSlCard'); if (card) card.setAttribute('data-n', String(SL.at));
+    main.innerHTML = gateNote() + head('Free for everyone', member() ? 'Welcome Back to Vegans Explore' : 'Welcome to Vegans Explore', '') + gettingStarted() + '<div class="wg-arts">' + articles() + '</div>';
   }
 
   var VIEWS = {
@@ -301,7 +292,6 @@
     vtt: '/public/guides/welcome/tour-video-v2.vtt' };
   var CH_AT = [0, 19.984, 35.814, 53.264, 81.293, 91.272, 121.443, 131.709];
   var playBtn = document.getElementById('dgPlay'), PLAY = { at: 0, playing: false, started: false };
-  var HOLD_MS = 12000;
   function vid() { return document.getElementById('wgVideo'); }
   function chAt(t) { var n = 0; CH_AT.forEach(function (x, i) { if (t >= x - 0.05) n = i; }); return n; }
   // The tour plays in Liz's frame on the Overview (Sean, 2026-11-09: "the video plays on the right where you see Liz"), the Holiday Guide's way.
@@ -339,7 +329,7 @@
   }
   function playAt(n) {
     var v = vid(); if (!v) return;
-    PLAY.at = n; SL.holdUntil = 0; showSlide(n);
+    PLAY.at = n;
     var go = function () { try { v.currentTime = CH_AT[n]; } catch (e) {} startVid(); };
     if (v.readyState >= 1) go(); else { v.preload = 'auto'; v.addEventListener('loadedmetadata', go, { once: true }); v.load(); }
     if (window.innerWidth <= 900) railEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
@@ -348,7 +338,7 @@
   function toggleTour() {
     var v = vid(); if (!v) return;
     if (!v.paused) { v.pause(); return; }
-    if (PLAY.started && v.currentTime > 0) startVid(); else playAt(SL.at || PLAY.at);
+    if (PLAY.started && v.currentTime > 0) startVid(); else playAt(PLAY.at);
   }
   ['play', 'pause', 'ended', 'timeupdate'].forEach(function (ev) {
     document.addEventListener(ev, function (e) {
@@ -359,8 +349,6 @@
       if (ev === 'ended') { try { gtag('event', 'video_complete', { video: 'welcome_tour_v' + VIDEO.v }); } catch (er) {} }
       var n = chAt(v.currentTime);
       if (n !== PLAY.at || ev !== 'timeupdate') { PLAY.at = n; if (curTab === 'overview' && PLAY.started) bubble.textContent = CHAPTERS[n][1]; }
-      // The card follows Liz unless someone just moved it themselves.
-      if (PLAY.playing && Date.now() > SL.holdUntil && curTab === 'overview') showSlide(n);
       if (ev === 'ended') PLAY.at = 0;
       paintPlay();
     }, true);
@@ -368,16 +356,8 @@
   playBtn.addEventListener('click', toggleTour);
   document.addEventListener('click', function (e) {
     var c = e.target.closest('[data-wg-ch]'); if (c) { e.preventDefault(); playAt(+c.getAttribute('data-wg-ch')); return; }
-    var d = e.target.closest('[data-wg-sl]'), g = e.target.closest('[data-wg-go]');
-    if (d || g) { SL.holdUntil = Date.now() + HOLD_MS; showSlide(g ? +g.getAttribute('data-wg-go') : SL.at + (+d.getAttribute('data-wg-sl'))); }
+    if (e.target.closest('[data-wg-tour]')) { e.preventDefault(); toggleTour(); if (window.innerWidth <= 900) railEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); }
   });
-  // Swipe the card on a phone.
-  var sx = null;
-  document.addEventListener('touchstart', function (e) { if (e.target.closest('#wgSlCard')) sx = e.touches[0].clientX; else sx = null; }, { passive: true });
-  document.addEventListener('touchend', function (e) {
-    if (sx == null) return; var dx = e.changedTouches[0].clientX - sx; sx = null;
-    if (Math.abs(dx) > 40) { SL.holdUntil = Date.now() + HOLD_MS; showSlide(SL.at + (dx < 0 ? 1 : -1)); }
-  }, { passive: true });
   // Expand (phones): the tour big in a lightbox, picking up where the frame was.
   function expand() {
     var lb = document.getElementById('hgLb');
@@ -386,7 +366,7 @@
       document.body.appendChild(lb);
       lb.addEventListener('click', function (e) { if (e.target === lb || e.target.closest('.hg-lb-x')) closeExpand(); });
     }
-    var v = vid(), at = v && !isNaN(v.currentTime) ? v.currentTime : CH_AT[SL.at];
+    var v = vid(), at = v && !isNaN(v.currentTime) ? v.currentTime : CH_AT[PLAY.at];
     if (v) v.pause();
     lb.innerHTML = '<div class="hg-lb-in"><button type="button" class="hg-lb-x">Close</button><video controls playsinline autoplay poster="' + esc(VIDEO.poster) + '" src="' + esc(VIDEO.src) + '"><track kind="captions" srclang="en" label="English" default src="' + esc(VIDEO.vtt) + '"></video></div>';
     lb.hidden = false; document.documentElement.style.overflow = 'hidden';
