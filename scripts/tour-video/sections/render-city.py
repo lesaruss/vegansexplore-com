@@ -13,31 +13,40 @@ S=[(0.0,'L:liz-city.jpg'),(1.8,'hub'),(4.2,'pulse_top'),(6.0,'pulse'),(8.0,'jobs
    (47.3,'G:welcome-guide.jpg'),(49.5,'G:prevegan.jpg'),(51.5,'hub_events'),(53.7,'L:liz-points.jpg?'),(56.0,'G:thumb-bounties.jpg'),
    (58.2,'G:welcome-ensemble.jpg'),(60.6,'G:thumb-community.jpg'),(63.0,'communities'),(64.2,'L:liz-city.jpg')]
 TOTAL=float(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0','voice.mp3']))+LEAD+1.5
-def stage(name):
-  name=name.rstrip('?')
+from PIL import ImageDraw
+R='/home/user/vegansexplore-com/communities/'
+CITIES=[R+x for x in ['south-florida/banner.jpg','new-york/hero-mobile.jpg','atlanta/banner.jpg','los-angeles/banner.jpg','philadelphia/banner.jpg',
+  'london/hero-mobile.jpg','washington-dc/banner.jpg','central-florida/banner.jpg','virginia/banner.jpg','north-florida/banner.jpg','delaware/banner.jpg','west-virginia/banner.jpg']]
+def big(path):
+  im=Image.open(path).convert('RGB'); sc=max(2*W/im.width,2*H/im.height); return im.resize((round(im.width*sc),round(im.height*sc)),Image.LANCZOS)
+def layer(name):
+  # a clean RGBA layer, drawn at 2x and scaled down so every edge is smooth; no shadow
   if name.startswith('G:'):
-    im=Image.open('/home/user/vegansexplore-com/public/guides/'+name[2:]).convert('RGB'); tw=980; th=round(im.height*tw/im.width)
-    if th>1150: th=1150; tw=round(im.width*th/im.height)
-    im=im.resize((tw,th),Image.LANCZOS); from PIL import ImageDraw
-    m=Image.new('L',(tw,th),0); ImageDraw.Draw(m).rounded_rectangle([0,0,tw-1,th-1],radius=28,fill=255)
-    st=Image.new('RGB',(W,H),'white'); st.paste(im,((W-tw)//2,(H-th)//2),m); return ('still',st)
-  if name.startswith('L:'):
-    im=Image.open(REPO+name[2:]).convert('RGB'); sc=max(W/im.width,H/im.height)*1.06
-    return ('zoom',im.resize((round(im.width*sc*2/1.06),round(im.height*sc*2/1.06)),Image.LANCZOS))
-  ph=c.phone(f'cap/{name}.png',sw=600)
-  im=Image.new('RGB',(W,H),'white'); top=(H-ph.height)//2 if ph.height<H else 70
-  sh=Image.new('RGBA',ph.size,(0,0,0,0)); im.paste(ph,((W-ph.width)//2,top),ph)
-  return ('still',im)
-imgs=[stage(n) for _,n in S]
-def frame(i,t):
-  kind,im=imgs[i]
-  if kind=='still': return im
-  a,b=S[i][0]+LEAD,(S[i+1][0]+LEAD if i+1<len(S) else TOTAL)
-  k=min(max((t-a)/max(b-a,0.1),0),1); z=1.0+0.06*k
-  bw,bh=im.size; cw,ch=2*W/z,2*H/z; x0=(bw-cw)/2; y0=(bh-ch)*0.35
+    im=Image.open('/home/user/vegansexplore-com/public/guides/'+name[2:]).convert('RGB'); tw=1960; th=round(im.height*tw/im.width)
+    if th>2300: th=2300; tw=round(im.width*th/im.height)
+    im=im.resize((tw,th),Image.LANCZOS).convert('RGBA')
+    m=Image.new('L',(tw,th),0); ImageDraw.Draw(m).rounded_rectangle([0,0,tw-1,th-1],radius=56,fill=255); im.putalpha(m)
+  else:
+    im=c.phone(f'cap/{name}.png',sw=1200)
+  im=im.resize((im.width//2,im.height//2),Image.LANCZOS)
+  L=Image.new('RGBA',(W,H),(0,0,0,0)); top=(H-im.height)//2 if im.height<H else 70; L.alpha_composite(im,((W-im.width)//2,top)); return L
+k=0;imgs=[]
+for _,n in S:
+  n=n.rstrip('?')
+  if n.startswith('L:'): imgs.append(('zoom',big(REPO+n[2:]),None))
+  else: imgs.append(('layer',big(CITIES[k%len(CITIES)]),layer(n))); k+=1
+def zoomed(im,t,a,b,yb=0.35):
+  k2=min(max((t-a)/max(b-a,0.1),0),1); k2=k2*k2*(3-2*k2)*0.5+k2*0.5; z=1.0+0.07*k2
+  bw,bh=im.size; cw,ch=2*W/z,2*H/z; x0=(bw-cw)/2; y0=(bh-ch)*yb
   return im.transform((W,H),Image.EXTENT,(x0,y0,x0+cw,y0+ch),Image.BICUBIC)
-p=subprocess.Popen(['ffmpeg','-y','-loglevel','error','-f','rawvideo','-pix_fmt','rgb24','-s',f'{W}x{H}','-r',str(FPS),'-i','-','-c:v','libx264','-preset','slow','-crf','21','-pix_fmt','yuv420p','video.mp4'],stdin=subprocess.PIPE)
+def frame(i,t):
+  kind,im,L=imgs[i]
+  a,b=starts[i],(starts[i+1] if i+1<len(S) else TOTAL)
+  b=b+XF
+  if kind=='zoom': return zoomed(im,t,a,b)
+  bg=zoomed(im,t,a,b,0.5).convert('RGBA'); bg=Image.blend(bg,Image.new('RGBA',(W,H),(10,20,14,255)),0.15); bg.alpha_composite(L); return bg.convert('RGB')
 starts=[s+LEAD if i else 0 for i,(s,_) in enumerate(S)]
+p=subprocess.Popen(['ffmpeg','-y','-loglevel','error','-f','rawvideo','-pix_fmt','rgb24','-s',f'{W}x{H}','-r',str(FPS),'-i','-','-c:v','libx264','-preset','slow','-crf','21','-pix_fmt','yuv420p','video.mp4'],stdin=subprocess.PIPE)
 n=round(TOTAL*FPS)
 for f in range(n):
   t=f/FPS; i=max(j for j in range(len(S)) if starts[j]<=t)

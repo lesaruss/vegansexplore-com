@@ -5,3 +5,7 @@ checked with stt. `cap-<page>.js` captures the live pages at 390 x 703, 3x; `ren
 `../v3/compose.py` as `v3compose.py`) puts them in the v3 phone frame on white, Liz's scenes full bleed with a slow zoom, a new shot about every 3 s
 cut on her stt word timings (`S`), 0.4 s crossfades; then ffmpeg mixes the voice (0.5 s in, -15 LUFS) over `media/home/launch-bed-v1.mp3` well under it.
 Files: `vegan-media/media/liz/welcome-guide/sec-<page>-v1.mp3` and `.mp4`. Page 2: `sec-directory-v1`, 50 s.
+
+**v2 look (Sean, 2026-11-09)**: behind every phone and illustration shot, one of our chapters' tall city pictures (`CITIES`, a different one each
+shot) slowly zooms in, drawn at 2x and sampled down so the zoom is smooth; the phone or card is a clean layer drawn at 2x (no shadow, no glow) placed
+on top and never moves. Liz's scenes stay full bleed with their own slow zoom. Re-encode with `-crf 26 -movflags +faststart` for the web.
