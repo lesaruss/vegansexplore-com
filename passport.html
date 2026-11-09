@@ -690,34 +690,35 @@
     .wg-chs{margin-top:12px}
     .wg-chs summary{cursor:pointer;font-size:13px;font-weight:800;color:var(--g)}
     .wg-chs ol{margin:10px 0 0;padding-left:20px}
-    /* The Overview's one card (Sean, 2026-11-09): Liz's eight beats, a picture, a title, a short summary and its section buttons. Desktop puts
-       the picture in a third and the text in two-thirds, the text box as tall as the picture and scrolling inside; phones stack them. */
-    .wg-sl{margin:14px 0 6px}
-    .wg-sl-card{display:flex;gap:18px;align-items:flex-start;border:1px solid var(--line);border-radius:14px;background:#fff;padding:16px}
-    .wg-sl-pic{flex:0 0 132px;width:132px;height:132px;border-radius:12px;overflow:hidden;background:var(--gl)}
-    .wg-sl-pic img{display:block;width:100%;height:100%;object-fit:cover}
-    .wg-sl-b .vgi-k{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--g)}
-    .wg-sl-t{margin:4px 0 6px;font-size:20px;font-weight:900;color:var(--ink)}
-    .wg-sl-b p{margin:0;font-size:15px;line-height:1.6;color:var(--ink75)}
-    .wg-sl-btns{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 0}
-    .wg-sl-btns .rg-pill{margin:0}
-    .wg-sl-b .wg-chplay{display:inline-block;margin:12px 0 0}
-    .wg-sl-nav{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:10px}
-    .wg-sl-arr{width:36px;height:36px;border-radius:6px;border:1px solid var(--line);background:#fff;color:var(--ink);font-size:22px;line-height:1;cursor:pointer}
-    .wg-sl-arr:hover{border-color:var(--g);color:var(--g)}
-    .wg-sl-dots{display:flex;gap:6px}
-    .wg-sl-dot{width:10px;height:10px;border-radius:50%;border:0;background:#cfd8cf;padding:0;cursor:pointer}
-    .wg-sl-dot.on{background:var(--g);width:22px;border-radius:6px}
-    @media (min-width:901px){
-      .wg-sl-card{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:18px;align-items:stretch}
-      .wg-sl-pic{width:100%;height:auto;aspect-ratio:1/1;flex:none}
-      .wg-sl-b{contain:size;overflow-y:auto;overscroll-behavior:contain;padding-right:6px}
-    }
-    @media (max-width:600px){.wg-sl-card{flex-direction:column}.wg-sl-pic{width:100%;height:160px;flex-basis:auto}}
+    /* The Overview (Sean, 2026-11-09): Getting started, then every section as a short article, read like the Pulse (its .vep-pic rows: a
+       small picture left, the title, the text). Desktop: Getting started's picture is 240 px and its text box as tall, scrolling inside. */
+    .wg-gs{display:flex;gap:18px;align-items:flex-start;border:1px solid var(--line);border-radius:14px;background:#fff;padding:16px;margin:14px 0 22px}
+    .wg-gs-pic{flex:0 0 240px;width:240px;height:240px;border-radius:12px;overflow:hidden;background:var(--gl)}
+    .wg-gs-pic img{display:block;width:100%;height:100%;object-fit:cover}
+    .wg-gs-b{min-width:0;flex:1}
+    .wg-gs-b .vgi-k,.wg-grp h5{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--g)}
+    .wg-gs-t{margin:4px 0 6px;font-size:20px;font-weight:900;color:var(--ink)}
+    .wg-gs-b p{margin:0 0 8px;font-size:15px;line-height:1.55;color:var(--ink75)}
+    .wg-gs-b p b{color:var(--ink)}
+    .wg-gs-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    @media (min-width:901px){.wg-gs-b{height:240px;overflow-y:auto;overscroll-behavior:contain;padding-right:6px}}
+    @media (max-width:600px){.wg-gs{flex-direction:column}.wg-gs-pic{width:100%;height:160px;flex-basis:auto}}
+    .wg-grp{margin:0 0 20px}
+    .wg-grp h5{margin:0 0 12px;padding-bottom:6px;border-bottom:1px solid #e3efe3}
+    .wg-grp ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:16px}
+    .wg-art{display:grid;grid-template-columns:132px minmax(0,1fr);gap:14px;align-items:start}
+    .wg-art>a{display:block}
+    .wg-art-img{display:block;width:132px;height:99px;border-radius:10px;background:#eef3ee center/cover no-repeat}
+    .wg-art-t{display:block;font-size:16px;font-weight:800;color:var(--ink);text-decoration:none;margin:0 0 4px}
+    .wg-art-t:hover{color:var(--g)}
+    .wg-art p{margin:0;font-size:14.5px;line-height:1.55;color:var(--ink75)}
+    .wg-art-more{display:inline-block;margin-top:6px;font-size:13px;font-weight:800;color:var(--g);text-decoration:none}
+    @media (max-width:560px){.wg-art{grid-template-columns:96px minmax(0,1fr);gap:12px}.wg-art-img{width:96px;height:72px}}
     /* More than 5 tabs: the menu is a dropdown at every width (Sean, 2026-11-09, the BCPS rule). */
     html.dg-dd .dg-menu{display:none}
     html.dg-dd .dg-menu-select{display:block;margin-top:12px;width:100%;max-width:420px;font-family:inherit;font-size:14px;font-weight:800;padding:12px 44px 12px 14px;border-radius:6px;border:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23525252' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center/10px 6px;-webkit-appearance:none;appearance:none;color:var(--ink)}
-    @media (max-width:900px){html.dg-dd .dg-menu-select{max-width:none}}
+    html.dg-dd .dg-top{padding-bottom:18px}
+    @media (max-width:900px){html.dg-dd .dg-menu-select{max-width:none}html.dg-dd .dg-top{padding-bottom:14px}}
     .wg-now{font-size:13px;font-weight:700;color:var(--muted,#525252)}
     .wg-chplay{font-size:12px;font-weight:800;color:var(--g);text-decoration:none;white-space:nowrap;margin-left:4px}
     .wg-chs li{font-size:14.5px;line-height:1.6;color:var(--ink75);margin-bottom:8px}
@@ -795,7 +796,7 @@
 <script src="/public/ve-guide-intro.js"></script>
 <script src="/public/ve-explorer-card.js"></script>
 <script src="/public/ve-video.js?v=2"></script>
-<script src="/guide-scripts/welcome-guide.js?v=5"></script>
+<script src="/guide-scripts/welcome-guide.js?v=6"></script>
 <script src="/public/ve-guide-min.js"></script>
 </body>
 </html>
