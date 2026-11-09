@@ -95,7 +95,7 @@ create or replace function ve_member_badges(p_member uuid) returns jsonb languag
       (select w.key from withrole w where w.key <> 'badge-explorer' order by w.at desc limit 1)) main)
   select coalesce((
     select jsonb_agg(jsonb_build_object('key', w.key, 'badge', w.badge, 'color', w.color, 'role', w.role, 'at', w.at, 'listing', w.listing,
-                                        'explorer', w.key = 'badge-explorer', 'main', w.key = (select main from pick)) order by w.at desc)
+                                        'explorer', w.key = 'badge-explorer', 'main', coalesce(w.key = (select main from pick), false)) order by w.at desc)
     from withrole w), '[]'::jsonb)
   || coalesce((
     select jsonb_agg(jsonb_build_object('key', cu.key, 'badge', cu.label, 'color', null, 'role', null, 'at', u.earned_at, 'main', false, 'explorer', false))
