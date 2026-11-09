@@ -853,6 +853,74 @@ async function analysis(brand: string, name: string, from: string, to: string) {
   return { ...fix(out), facts, errors: errs, model: MODEL };
 }
 
+
+// ---- Where should we go next? Podcast listener places on each board card (ve-chapter-rankings, Sean, 2026-11-09: "Portland: 14 votes, 312 downloads").
+// All-time downloads across our four shows, added up for the Captivate places each open ve_next_chapters row names (listen_match.places:
+// {country, province?, cities?}). One range call per show for every country, then one per show for each country that needs provinces or
+// cities (US, Ireland): about 12 Captivate calls a run, no paid calls. Written to ve_next_chapters.listens; a show that fails keeps the old numbers.
+async function nextPlaces() {
+  const { data: places, error } = await db.from('ve_next_chapters').select('slug, listen_match').eq('status', 'open');
+  if (error) return { error: error.message };
+  const shows = PODCAST_SHOWS['vegans-explore'];
+  const from = '2015-01-01', to = plusDays(etDay(Date.now()), -1);
+  const win = { start: new Date(etStart(from)).toISOString(), end: new Date(etStart(plusDays(to, 1))).toISOString(), timezone: 'America/New_York', interval: null };
+  const need = new Set<string>();
+  for (const p of places || []) for (const m of (p.listen_match?.places || [])) if (m.province || m.cities) need.add(String(m.country));
+  const map = ccMap();
+  const lc = (x: unknown) => String(x ?? '').trim().toLowerCase();
+  const errors: string[] = [];
+  // per show: { country code -> total }, { code -> provinces[] }, { code -> cities[] }
+  const data = await Promise.all(shows.map(async (sh) => {
+    try {
+      const j = await capReq(`/insights/${sh.id}/range/`, { ...win, countryCode: null, types: ['byLocation'] });
+      const country: Record<string, number> = {};
+      for (const x of (j?.byLocation?.byCountry || [])) { const c = map.get(lc(x.country)); if (c) country[c] = (country[c] || 0) + (Number(x.total) || 0); }
+      const prov: Record<string, any[]> = {}, city: Record<string, any[]> = {};
+      for (const code of need) {
+        if (!country[code]) { prov[code] = []; city[code] = []; continue; }
+        const d = await capReq(`/insights/${sh.id}/range/`, { ...win, countryCode: code, types: ['byLocation'] });
+        prov[code] = (d?.byLocation?.byProvince || []).map((p: any) => ({ name: String(p.province ?? ''), total: Number(p.total) || 0 }));
+        city[code] = (d?.byLocation?.byCity || []).map((p: any) => ({ name: String(p.city ?? ''), province: p.province ?? null, total: Number(p.total) || 0 }));
+      }
+      return { key: sh.key, ok: true, country, prov, city };
+    } catch (e) { errors.push(`${sh.key}: ${(e as Error).message}`); return { key: sh.key, ok: false } as any; }
+  }));
+  if (!data.some((d: any) => d.ok)) return { error: 'captivate_failed', errors };
+  const at = new Date().toISOString();
+  const out: any[] = [];
+  for (const p of places || []) {
+    const ms = p.listen_match?.places || [];
+    if (!ms.length) continue;
+    let total = 0; const byShow: Record<string, number> = {}; const top = new Map<string, number>();
+    for (const d of data as any[]) {
+      if (!d.ok) continue;
+      let n = 0;
+      for (const m of ms) {
+        const code = String(m.country);
+        if (m.cities) {
+          const want = new Set((m.cities as string[]).map(lc));
+          for (const c of d.city[code] || []) if (want.has(lc(c.name)) && (!m.province || lc(c.province) === lc(m.province))) { n += c.total; top.set(c.name, (top.get(c.name) || 0) + c.total); }
+        } else if (m.province) {
+          for (const c of d.prov[code] || []) if (lc(c.name) === lc(m.province)) n += c.total;
+          for (const c of d.city[code] || []) if (lc(c.province) === lc(m.province)) top.set(c.name, (top.get(c.name) || 0) + c.total);
+        } else {
+          const v = d.country[code] || 0; n += v;
+          if (v) { const nm = (() => { try { return new Intl.DisplayNames(['en'], { type: 'region' }).of(code) || code; } catch { return code; } })(); top.set(nm, (top.get(nm) || 0) + v); }
+        }
+      }
+      byShow[d.key] = n; total += n;
+    }
+    const prev = (await db.from('ve_next_chapters').select('listens').eq('slug', p.slug).maybeSingle()).data?.listens || null;
+    // A show that failed this run keeps its numbers from the last good run.
+    for (const d of data as any[]) if (!d.ok && prev?.by_show?.[d.key] != null) { byShow[d.key] = prev.by_show[d.key]; total += prev.by_show[d.key]; }
+    const listens = { downloads: total, by_show: byShow, top: [...top.entries()].filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([name, n]) => ({ name, n })), from, to, at };
+    const { error: ue } = await db.from('ve_next_chapters').update({ listens }).eq('slug', p.slug);
+    if (ue) errors.push(`${p.slug}: ${ue.message}`);
+    out.push({ slug: p.slug, downloads: total, by_show: byShow });
+  }
+  return { ok: true, from, to, places: out, errors };
+}
+
 // Every Insights action that only reads (writes are the podcast upload, upload done and file remove).
 const READ_ONLY_OK = new Set(['web_analytics', 'podcast', 'podcast_files', 'seo', 'ads', 'campaigns', 'campaign', 'web_health', 'analysis']);
 
@@ -862,6 +930,14 @@ Deno.serve(async (req) => {
   try {
     const body = await req.json().catch(() => ({}));
     const token = (req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '');
+    // The board's listener places: the daily cron (x-cron-secret), the admin token or a super admin. It reads Captivate and writes only ve_next_chapters.listens.
+    if (body.action === 'next_places') {
+      const cron = req.headers.get('x-cron-secret');
+      let okCaller = (!!cron && cron === (await secret('CRON_SECRET'))) || (!!token && token === (await secret('LESARUSS_ADMIN_TOKEN')));
+      if (!okCaller && token) { const m = await verifyToken(token); if (m) { const { data: me } = await db.from('members').select('is_superadmin').eq('id', m).maybeSingle(); okCaller = !!me?.is_superadmin; } }
+      if (!okCaller) return json({ error: 'forbidden' }, 403);
+      return json(await nextPlaces());
+    }
     const ops = !!token && token === (await secret('LESARUSS_ADMIN_TOKEN'));
     let member: string | null = null;
     if (ops) member = typeof body.as_member === 'string' && /^[0-9a-f-]{36}$/.test(body.as_member) ? body.as_member : null;
