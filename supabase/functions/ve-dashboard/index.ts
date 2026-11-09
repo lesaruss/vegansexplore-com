@@ -132,6 +132,17 @@ Deno.serve(async (req) => {
     return json({ ok: true, version: v });
   }
 
+  // The member's main badge, shown on the corner of their picture (ve-explorer-path step 6, canon-ve-door-guides v10). Only one they hold, never
+  // Explorer (ve_member_badge_set_main refuses with not_held); null goes back to the most recent.
+  if (body.action === 'set_main_badge') {
+    const key = body.key == null || body.key === '' ? null : String(body.key);
+    if (key !== null && !/^badge-[a-z0-9-]{2,30}$/.test(key)) return json({ error: 'bad_badge' }, 400);
+    const { data, error } = await db.rpc('ve_member_badge_set_main', { p_member: memberId, p_key: key });
+    if (error) return json({ error: 'save_failed' }, 500);
+    if (!data || !data.ok) return json({ error: (data && data.error) || 'save_failed' }, 400);
+    return json({ ok: true, badges: data.badges || [] });
+  }
+
   if (body.action === 'home') {
     const [{ data: auto }, { data: listings }, { data: level }, { data: prof }] = await Promise.all([
       db.rpc('ve_dashboard_version', { p_member: memberId }),
