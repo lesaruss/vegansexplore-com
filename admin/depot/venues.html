@@ -110,7 +110,7 @@
       return '<div class="tabs" style="margin-bottom:14px"><a href="#list/pending" class="' + (on === 'reports' ? 'on' : '') + '">Reports</a><a href="#venues" class="' + (on === 'venues' ? 'on' : '') + '">Venues</a><a href="#barcodes" class="' + (on === 'barcodes' ? 'on' : '') + '">Barcodes</a><a href="#flags" class="' + (on === 'flags' ? 'on' : '') + '">Flags</a></div>';
     }
     // How far from the venue, against the fence the save allowed (radius plus up to 100 m of the phone's own uncertainty).
-    function distLine(r) { return r.distance_m == null ? 'No location' : Math.round(r.distance_m) + ' m from the venue\'s center (phone accurate to ' + Math.round(r.accuracy_m || 0) + ' m)'; }
+    function distLine(r) { if (r.on_site === false) return 'Not checked on site: sent from away, pays half when accepted'; return r.distance_m == null ? 'No location' : Math.round(r.distance_m) + ' m from the venue\'s center (phone accurate to ' + Math.round(r.accuracy_m || 0) + ' m)'; }
 
     function drawList(st) {
       app.innerHTML = topTabs('reports') + '<p class="msg">Loading…</p>';
@@ -121,7 +121,7 @@
           '<div class="rows">' + (d.reports.length ? d.reports.map(function (r) {
             return '<div class="row"><span><span class="t">' + esc(KIND[r.kind]) + (r.item ? ': ' + esc(r.item) : '') + '</span><br><span class="m">' + esc(r.venue) + (r.spot ? ' · ' + esc(r.spot) : '') + '</span></span>' +
               '<span class="m hide-sm">' + esc(r.member || 'A member') + ' · ' + esc(when(r.at)) + '</span>' +
-              '<span class="m hide-sm">' + (r.distance_m == null ? '' : Math.round(r.distance_m) + ' m away') + '</span>' +
+              '<span class="m hide-sm">' + (r.on_site === false ? 'Not checked on site' : r.distance_m == null ? '' : Math.round(r.distance_m) + ' m away') + '</span>' +
               '<span class="tag ' + r.status + ' hide-sm">' + STATUS[r.status] + (r.points ? ' · ' + r.points + ' pts' : '') + '</span><a class="btn btn-ghost" href="#r/' + r.id + '">Open</a></div>';
           }).join('') : '<p class="empty">' + (st === 'pending' ? 'Nothing waiting. Every report has a decision.' : 'None yet.') + '</p>') + '</div>';
       });

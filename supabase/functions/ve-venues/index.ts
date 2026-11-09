@@ -364,6 +364,9 @@ Deno.serve(async (req) => {
       p_place_photo: placePath || null, p_gtin: str(body.gtin, 20) || null, p_item_name: str(body.item_name, 160) || null,
       p_place_name: str(body.place_name, 120) || null, p_place_zone: ['landside', 'airside'].includes(body.place_zone) ? body.place_zone : null,
       p_place_where: str(body.place_where, 160) || null,
+      // Report from anywhere (Sean, 2026-11-09): Something missing and a comment may be sent away from the venue; held for the
+      // team like every report and paid half (ve_venue_report_save refuses off_site for any other kind).
+      p_off_site: body.off_site === true,
     });
     if (error) return json({ error: 'report_failed', message: error.message }, 500);
     return json(data);
@@ -429,14 +432,14 @@ Deno.serve(async (req) => {
   if (action === 'queue') {
     const status = ['pending', 'accepted', 'agreed', 'declined'].includes(body.status) ? body.status : 'pending';
     const { data, error } = await db.from('ve_venue_reports')
-      .select('id, kind, note, status, points, distance_m, accuracy_m, created_at, reviewed_at, member_id, item_id, photo_path, place_photo_path, item_name, place_name, gtin, members(name), ve_venues(slug, name), ve_venue_items(name), ve_venue_spots(name)')
+      .select('id, kind, note, status, points, distance_m, accuracy_m, on_site, created_at, reviewed_at, member_id, item_id, photo_path, place_photo_path, item_name, place_name, gtin, members(name), ve_venues(slug, name), ve_venue_items(name), ve_venue_spots(name)')
       .eq('status', status).order('created_at', { ascending: status === 'pending' }).limit(300);
     if (error) return json({ error: 'queue_failed', message: error.message }, 500);
     const { data: counts } = await db.from('ve_venue_reports').select('status');
     const tally: Record<string, number> = { pending: 0, accepted: 0, agreed: 0, declined: 0 };
     for (const c of counts || []) tally[c.status] = (tally[c.status] || 0) + 1;
     return json({ counts: tally, reports: (data || []).map((r: any) => ({ id: r.id, kind: r.kind, note: r.note, status: r.status, points: r.points,
-      distance_m: r.distance_m, accuracy_m: r.accuracy_m, at: r.created_at, reviewed_at: r.reviewed_at, member: shortName(r.members?.name), photo: !!r.photo_path, place_photo: !!r.place_photo_path, gtin: r.gtin, item_name: r.item_name, place_name: r.place_name,
+      distance_m: r.distance_m, accuracy_m: r.accuracy_m, on_site: r.on_site !== false, at: r.created_at, reviewed_at: r.reviewed_at, member: shortName(r.members?.name), photo: !!r.photo_path, place_photo: !!r.place_photo_path, gtin: r.gtin, item_name: r.item_name, place_name: r.place_name,
       venue: r.ve_venues?.name, venue_slug: r.ve_venues?.slug, item: r.ve_venue_items?.name || null, spot: r.ve_venue_spots?.name || null })) });
   }
 
@@ -454,7 +457,7 @@ Deno.serve(async (req) => {
     const { data: o } = r.item_id ? await q.eq('item_id', r.item_id) : await q.is('item_id', null).eq('kind', r.kind);
     others = (o || []).map((x: any) => ({ id: x.id, kind: x.kind, note: x.note, status: x.status, points: x.points, at: x.created_at, member: shortName(x.members?.name) }));
     const { data: paid } = await db.from('ve_venue_reports').select('id').eq('member_id', r.member_id).eq('local_day', r.local_day).gt('points', 0);
-    return json({ report: { id: r.id, kind: r.kind, note: r.note, status: r.status, points: r.points, distance_m: r.distance_m, accuracy_m: r.accuracy_m,
+    return json({ report: { id: r.id, kind: r.kind, note: r.note, status: r.status, points: r.points, distance_m: r.distance_m, accuracy_m: r.accuracy_m, on_site: r.on_site !== false,
       at: r.created_at, local_day: r.local_day, review_note: r.review_note, first_report_id: r.first_report_id, sponsored: r.sponsored !== false,
       member: { name: r.members?.name, email: r.members?.email }, photo: signed?.signedUrl || null, place_photo: signed2?.signedUrl || null, gtin: r.gtin, item_name: r.item_name,
       place_name: r.place_name, place_zone: r.place_zone, place_where: r.place_where, paid_that_day: (paid || []).length, paid_cap: Number((await bountyLimits()).daily_paid_cap) || 40,

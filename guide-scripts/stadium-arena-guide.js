@@ -516,6 +516,7 @@
         '<label class="dg-field"><span>The place <i>(the restaurant, stand or shop name on the sign)</i></span><input id="saPlace" maxlength="120" placeholder="Bird &amp; Bone, the stand by section 120"></label>' +
         '<label class="dg-field"><span>Where is it? <i>(the section or gate)</i></span><input id="saWhere" maxlength="160" placeholder="Section 120, or Gate 2"></label>' : '') +
         '<label class="dg-field"><span>' + noteLabel + '</span><textarea id="saNote" rows="3" maxlength="600"></textarea></label>' +
+        ((kind === 'missing' || kind === 'comment') ? awayChoice(v) : '') +
         (earn ? '<p class="sa-earn">' + esc(earn) + ', once the team accepts it.</p>' : '') +
         (kind === 'missing' ? photoSlot('item', 'A photo of the item', 'the food, the package or the menu board') + photoSlot('place', 'A photo of the sign', 'the name of the restaurant, stand or shop')
           : photoSlot('item', 'A photo', 'optional: the menu board, the shelf or the food, and it earns more')) +
@@ -542,7 +543,7 @@
     });
   }
   var WHY = {
-    too_far: function (d, v) { return 'You need to be inside ' + v.name + ' to send this. You look to be about ' + (d.distance_m >= 1000 ? (d.distance_m / 1000).toFixed(1) + ' km' : d.distance_m + ' m') + ' away.'; },
+    too_far: function (d, v) { return 'You need to be inside ' + v.name + ' to send this. You look to be about ' + (d.distance_m >= 1000 ? (d.distance_m / 1000).toFixed(1) + ' km' : d.distance_m + ' m') + ' away.' + (d.off_site_ok ? ' If you were there earlier, pick I am not there now and send it again.' : ''); },
     not_precise: function () { return 'Your location is not precise enough right now. Step out from under cover for a moment and try again.'; },
     no_position: function () { return 'We need your location once to check you are inside the venue.'; },
     no_location: function (d, v) { return 'Reports for ' + v.name + ' open soon.'; },
@@ -560,6 +561,15 @@
     not_a_shop_item: function () { return 'This one is checked with Still here.'; },
     bad_photo: function (d) { return (d && d.message) || 'The photo did not upload. Try again, or send it without one.'; }
   };
+  // Report from anywhere (Sean, 2026-11-09, Brion Hurley at FLL): Something missing and a comment can be sent after the visit.
+  // It skips the location check, the team still checks it, and it earns half the points once accepted.
+  function awayChoice(v) {
+    var lab = 'display:flex;gap:8px;align-items:flex-start;font-weight:600;font-size:14px;margin:6px 0;cursor:pointer';
+    return '<fieldset class="sa-away" style="border:0;padding:0;margin:0 0 14px"><legend style="font-weight:800;font-size:13px;margin-bottom:4px">Where are you?</legend>' +
+      '<label style="' + lab + '"><input type="radio" name="saAway" value="here" checked> I am at ' + esc(v.name) + ' now</label>' +
+      '<label style="' + lab + '"><input type="radio" name="saAway" value="away"> <span>I am not there now <i style="font-weight:400">(no location needed; the team checks it, and it earns half the points)</i></span></label></fieldset>';
+  }
+  function isAway() { var r = document.querySelector('input[name="saAway"]:checked'); return !!(r && r.value === 'away'); }
   function sendReport(v, kind, item) {
     var note = (document.getElementById('saNote') || {}).value || '';
     var val = function (id) { return ((document.getElementById(id) || {}).value || '').trim(); };
@@ -568,15 +578,17 @@
     if (kind === 'missing' && extra.place_name.length < 2) { setStatus('Tell us the name of the place on its sign.'); return; }
     if (kind === 'wrong' && note.trim().length < 3) { setStatus('Tell us what needs to be updated.'); return; }
     if (kind === 'comment' && note.trim().length < 3) { setStatus('Write your comment first.'); return; }
-    if (!navigator.geolocation) { setStatus('This browser cannot share your location, which the report needs.'); return; }
-    var btn = document.getElementById('saSend'); btn.disabled = true; btn.textContent = 'Finding you...';
+    var away = (kind === 'missing' || kind === 'comment') && isAway();
+    var withPos = function (cb, err, opt) { if (away) return cb({ coords: {} }); navigator.geolocation.getCurrentPosition(cb, err, opt); };
+    if (!away && !navigator.geolocation) { setStatus('This browser cannot share your location, which the report needs.'); return; }
+    var btn = document.getElementById('saSend'); btn.disabled = true; btn.textContent = away ? 'Sending...' : 'Finding you...';
     var fail = function (msg) { btn.disabled = false; btn.textContent = 'Send report'; setStatus(msg); };
-    navigator.geolocation.getCurrentPosition(function (pos) {
+    withPos(function (pos) {
       btn.textContent = 'Sending...';
       // The photo is optional: upload it first when there is one.
       var send = function (path, placePath) {
         return api(Object.assign({ action: 'report', venue: v.slug, kind: kind, item: item ? item.it.id : undefined, spot: item ? item.spot.id : undefined,
-          note: note, path: path || undefined, place_path: placePath || undefined, lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy }, extra));
+          note: note, path: path || undefined, place_path: placePath || undefined, off_site: away || undefined, lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy }, extra));
       };
       uploadPhoto(PHOTOS.item).then(function (p1) { return uploadPhoto(PHOTOS.place).then(function (p2) { return send(p1, p2); }); }).then(function (d) {
         if (d && d.ok) {

@@ -703,6 +703,7 @@
     main.innerHTML = crumb([['Stores', '#/stores'], [v.name, back]].concat(item ? [['Update', '#/store/' + v.slug + '/report/choose/' + item.it.id]] : []).concat([[REPORT[kind][2], '']])) + head('Report', esc(REPORT[kind][2]), esc(REPORT[kind][1])) +
       (gate || ('<div class="dg-form">' + what + kinds +
         '<label class="dg-field"><span>' + noteLabel + '</span><textarea id="saNote" rows="3" maxlength="600"></textarea></label>' +
+        ((kind === 'missing' || kind === 'comment') ? awayChoice(v) : '') +
         (earn ? '<p class="sa-earn">' + esc(earn) + ', once the team accepts it.</p>' : '') +
         '<div class="dg-field"><span>A photo <i>(optional: the shelf or the aisle sign, and it earns more)</i></span><div class="sa-photo"><label class="dg-btn dg-ghost" style="cursor:pointer">Take or choose a photo<input type="file" id="saPhoto" accept="image/*" capture="environment" hidden></label><span id="saPrev"></span></div></div>' +
         '<span class="dg-status" id="saStatus" role="status"></span>' +
@@ -733,7 +734,7 @@
     });
   }
   var WHY = {
-    too_far: function (d, v) { return 'You need to be at ' + v.name + ' to send this. You look to be about ' + (d.distance_m >= 1000 ? (d.distance_m / 1000).toFixed(1) + ' km' : d.distance_m + ' m') + ' away.'; },
+    too_far: function (d, v) { return 'You need to be at ' + v.name + ' to send this. You look to be about ' + (d.distance_m >= 1000 ? (d.distance_m / 1000).toFixed(1) + ' km' : d.distance_m + ' m') + ' away.' + (d.off_site_ok ? ' If you were there earlier, pick I am not there now and send it again.' : ''); },
     not_precise: function () { return 'Your location is not precise enough right now. Step near a window or the entrance for a moment and try again.'; },
     no_position: function () { return 'We need your location once to check you are in the store.'; },
     no_location: function (d, v) { return 'Reports for ' + v.name + ' open soon.'; },
@@ -743,17 +744,28 @@
     note_required: function () { return 'Add a few words first.'; },
     bad_photo: function (d) { return (d && d.message) || 'The photo did not upload. Try again, or send it without one.'; }
   };
+  // Report from anywhere (Sean, 2026-11-09, Brion Hurley at FLL): Something missing and a comment can be sent after the visit.
+  // It skips the location check, the team still checks it, and it earns half the points once accepted.
+  function awayChoice(v) {
+    var lab = 'display:flex;gap:8px;align-items:flex-start;font-weight:600;font-size:14px;margin:6px 0;cursor:pointer';
+    return '<fieldset class="sa-away" style="border:0;padding:0;margin:0 0 14px"><legend style="font-weight:800;font-size:13px;margin-bottom:4px">Where are you?</legend>' +
+      '<label style="' + lab + '"><input type="radio" name="saAway" value="here" checked> I am at ' + esc(v.name) + ' now</label>' +
+      '<label style="' + lab + '"><input type="radio" name="saAway" value="away"> <span>I am not there now <i style="font-weight:400">(no location needed; the team checks it, and it earns half the points)</i></span></label></fieldset>';
+  }
+  function isAway() { var r = document.querySelector('input[name="saAway"]:checked'); return !!(r && r.value === 'away'); }
   function sendReport(v, kind, item) {
     var note = (document.getElementById('saNote') || {}).value || '';
     if ((kind === 'missing' || kind === 'wrong' || kind === 'comment') && note.trim().length < 2) { setStatus(kind === 'wrong' ? 'Tell us which aisle it is in.' : kind === 'missing' ? 'Tell us what is missing and the aisle.' : 'Write your comment first.'); return; }
-    if (!navigator.geolocation) { setStatus('This browser cannot share your location, which the report needs.'); return; }
-    var btn = document.getElementById('saSend'); btn.disabled = true; btn.textContent = 'Finding you...';
+    var away = (kind === 'missing' || kind === 'comment') && isAway();
+    var withPos = function (cb, err, opt) { if (away) return cb({ coords: {} }); navigator.geolocation.getCurrentPosition(cb, err, opt); };
+    if (!away && !navigator.geolocation) { setStatus('This browser cannot share your location, which the report needs.'); return; }
+    var btn = document.getElementById('saSend'); btn.disabled = true; btn.textContent = away ? 'Sending...' : 'Finding you...';
     var fail = function (msg) { btn.disabled = false; btn.textContent = 'Send report'; setStatus(msg); };
-    navigator.geolocation.getCurrentPosition(function (pos) {
+    withPos(function (pos) {
       btn.textContent = 'Sending...';
       var send = function (path) {
         return api({ action: 'report', venue: v.slug, kind: kind, item: item ? item.it.id : undefined, spot: item ? item.spot.id : undefined,
-          note: note, path: path || undefined, lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy });
+          note: note, path: path || undefined, off_site: away || undefined, lat: pos.coords.latitude, lng: pos.coords.longitude, accuracy: pos.coords.accuracy });
       };
       (PHOTO ? api({ action: 'report_start' }).then(function (s) {
         if (!s || !s.upload_url) throw s || {};
