@@ -606,7 +606,9 @@ the section rows are gone. The page scrolls as one on desktop (only Liz's words 
 **Then the same day, replaced** (Sean: "I would prefer the body to be longer than the right hand side... it reads like the pulse"): the Overview is **Getting started** (how to
 use the page: watch Liz's tour in her frame, read on, join; a 240 px picture, `gettingStarted()`) and then every section as a short article under its group's eyebrow, read like
 the Pulse's story rows (a 132 x 99 picture, the title, about 250 characters, Read more; `articles()`, `SUMMARY`). The sub-section buttons live on each section's page. The tour
-still plays in Liz's frame. The dropdown has 18 px under it on desktop. Next (Sean's idea): each section page gets the same shape, a short video summary and 3 to 5 sub thumbnails.
+still plays in Liz's frame. The dropdown has 18 px under it on desktop. Next (Sean's idea): each section page gets the same shape, a short video summary and 3 to 5 sub thumbnails. **Tightened the same day** (Sean): summaries at 150 characters or less; on phones the Getting started picture shows whole (square, full width) and the
+article thumbnails are 96 px squares (desktop keeps 132 x 99); Liz's bubble on the Overview is a short instruction ("Watch this video to get a full overview of Vegans
+Explore. Then click through each section to learn more about it.") and no longer changes to each chapter's words while the tour plays.
 
 Proposal `docs/proposals/explorer-welcome-guide.md` (approved). `/passport` (`passport.html`, `guide-scripts/welcome-guide.js`) is the Welcome Guide, copied
 from the Holiday Guide (template gate). Liz hosts. The Overview is enough on its own (Start here, Become a Founder, the tour: Liz's eight chapters, approved
