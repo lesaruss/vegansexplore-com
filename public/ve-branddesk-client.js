@@ -15,6 +15,8 @@
  *              Admin (Depot) adds Build their website, the look, Send it for their OK, Add their domain, Check it, Run the final check.
  *   social     Your social (the social add-on): posts waiting for the owner's OK, coming up and posted (social_get / social_decide)
  *   campaigns  Your campaigns: the month's campaign from the rotation (ve_branddesk_campaigns), when, and how it went
+ *   insights   Insights: the latest month's numbers against the month before (from the latest sent report), and what is waiting on them
+ *   kit        Your brand kit: each part (logo, colors, type, voice, story, menu, photos, details) and where it stands, from their Cartridge
  *   reports  Monthly reports: each month's check-in once it is sent (ve-branddesk checkin_get), one report per view
  *   VEBrandDesk.reportHtml(checkin, steps) draws a report; /business/checkin uses it for the preview.
  * admin: true (Depot > BrandDesk) adds ticking steps, Archive their website and adding files to the Library.
@@ -40,6 +42,10 @@
     s.textContent = '.vebd{font-family:Montserrat,system-ui,sans-serif;color:#14261a;}' +
       '.vebd-sub{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 16px;}.vebd-sub a{font-size:13px;font-weight:800;padding:9px 14px;border-radius:6px;border:1px solid rgba(0,0,0,.18);color:#14261a;text-decoration:none;background:#fff;}' +
       '.vebd-sub a.on{border-color:var(--vb-accent,#1E7A3E);box-shadow:inset 0 -3px 0 var(--vb-accent,#1E7A3E);}' +
+      '.vebd-ins{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}@media(max-width:620px){.vebd-ins{grid-template-columns:repeat(2,minmax(0,1fr));}}' +
+      '.vebd-ins-t{border:1px solid rgba(0,0,0,.1);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:2px;}.vebd-ins-t b{font-size:24px;font-weight:900;}.vebd-ins-t span{font-size:13px;font-weight:700;}.vebd-ins-t small{font-size:12px;font-weight:700;}.vebd-ins-t small.up{color:#1E5F2A;}.vebd-ins-t small.dn{color:#a33;}' +
+      '.vebd-ins-bar{display:grid;grid-template-columns:minmax(110px,190px) 1fr 40px 48px;gap:10px;align-items:center;font-size:13px;margin:6px 0;}.vebd-ins-bar i{display:block;height:10px;background:#eef1ee;border-radius:5px;overflow:hidden;}.vebd-ins-bar em{display:block;height:100%;background:var(--vb-accent,#1E7A3E);border-radius:5px;}.vebd-ins-bar b{text-align:right;}.vebd-ins-bar small{color:#1E5F2A;font-weight:700;}' +
+      '.vebd-kit-row{display:flex;gap:12px;align-items:center;}.vebd-kit-row>span{display:flex;flex-direction:column;gap:3px;}.vebd-kit-logo{width:44px;height:44px;border-radius:8px;background:#fff center/contain no-repeat;border:1px solid rgba(0,0,0,.1);}.vebd-kit-sw{display:flex;gap:4px;}.vebd-kit-sw i{width:22px;height:22px;border-radius:5px;border:1px solid rgba(0,0,0,.12);}' +
       '.vebd-card{background:#fff;border:1px solid rgba(0,0,0,.1);border-radius:12px;padding:16px 18px;margin:0 0 16px;}' +
       '.vebd-list li.vebd-soc{display:grid;grid-template-columns:120px minmax(0,1fr);gap:14px;align-items:start;justify-content:stretch;}.vebd-form[hidden]{display:none;}.vebd-form textarea{font:inherit;font-size:14px;border:1px solid rgba(0,0,0,.22);border-radius:6px;padding:8px 10px;width:100%;box-sizing:border-box;}.vebd-soc-pics{display:grid;grid-template-columns:1fr 1fr;gap:4px;}' +
       '.vebd-soc-pics .th{display:block;aspect-ratio:1;border-radius:8px;background:#eef1ee center/cover no-repeat;}.vebd-soc-pics .th:only-child{grid-column:1/-1;}' +
@@ -183,7 +189,7 @@
       }, function () { el.innerHTML = '<div class="vebd"><p class="vebd-muted">This did not load. Try again in a moment.</p></div>'; });
     }
     function sub() {
-      return '<nav class="vebd-sub" aria-label="Managed by us">' + [['start', 'Getting started'], ['website', 'Your website'], ['library', 'Your Library'], ['sheet', 'Your asset sheet'], ['campaigns', 'Your campaigns']].concat(D.account && D.account.social ? [['social', 'Your social']] : []).concat([['reports', 'Monthly reports']]).map(function (v) {
+      return '<nav class="vebd-sub" aria-label="BrandDesk">' + [['start', 'Getting started'], ['insights', 'Insights'], ['website', 'Your website'], ['kit', 'Your brand kit']].concat(D.account && D.account.social ? [['social', 'Your social']] : []).concat([['campaigns', 'Your campaigns'], ['library', 'Your Library'], ['sheet', 'Your asset sheet'], ['reports', 'Monthly reports']]).map(function (v) {
         return '<a href="#" data-bdv="' + v[0] + '" class="' + (v[0] === view ? 'on' : '') + '">' + v[1] + '</a>'; }).join('') + '</nav>';
     }
     function drawStart() {
@@ -197,7 +203,7 @@
       var plan = '<section class="vebd-card"><h4>' + (D.admin ? 'Their plan' : 'Your plan') + '</h4><p>' + esc(PLAN[A.setup_plan] || '') + ', then $500 a month' + (A.social ? ', plus $500 a month for social media' : '') + '. Since ' + esc(day(A.activated_at)) + '.' +
         (A.pause_from ? ' Paused from ' + esc(day(A.pause_from)) + ' to ' + esc(day(A.pause_until)) + '.' : '') + '</p>' +
         '<p class="vebd-muted">' + (D.unlocked ? 'Your setup is paid in full, so every file in your Library downloads at full size.' : 'Full-size downloads of what we make open once your setup is paid in full. Your old website is always yours to download.') + '</p>' +
-        (D.sample ? '<p><a class="vebd-btn o sm" href="/business/agreement" target="_blank" rel="noopener">The agreement</a> <a class="vebd-btn o sm" href="/business/sample/brand" target="_blank" rel="noopener">Their brand kit</a> <a class="vebd-btn o sm" href="/business/sample/site" target="_blank" rel="noopener">Their website</a></p>' :
+        (D.sample ? '<p><a class="vebd-btn o sm" href="/business/agreement" target="_blank" rel="noopener">The agreement</a> <a class="vebd-btn o sm" href="/business/sample/brand" target="_blank" rel="noopener">Your brand kit</a> <a class="vebd-btn o sm" href="/business/sample/site" target="_blank" rel="noopener">Your website</a></p>' :
           D.listing ? '<p><a class="vebd-btn o sm" href="/business/managed?listing=' + esc(D.listing.slug) + '">Your plan and pause</a> <a class="vebd-btn o sm" href="/business/agreement" target="_blank" rel="noopener">Your agreement</a>' +
           ' <a class="vebd-btn o sm" href="/business/brand?listing=' + esc(D.listing.slug) + '">Your brand kit</a></p>' : '') + '</section>';
       var admin = '';
@@ -238,7 +244,7 @@
     }
     var reportId = o.report || '', RCACHE = {};
     function frame(body) {
-      el.innerHTML = '<div class="vebd">' + (D.sample ? '<p class="vebd-muted"><span class="vebd-pill wait">Sample</span> What a managed client sees: everything we made for them, theirs to keep. Downloads here are the sample\'s illustrative photos.</p>' : D.account.test ? '<p class="vebd-muted"><span class="vebd-pill wait">Test account</span></p>' : '') + sub() + body + '</div>';
+      el.innerHTML = '<div class="vebd">' + (D.sample ? '<p class="vebd-muted"><span class="vebd-pill wait">Sample</span> What a BrandDesk client sees: their onboarding, numbers, website, brand kit and everything we made for them, theirs to keep. Downloads here are the sample\'s illustrative photos.</p>' : D.account.test ? '<p class="vebd-muted"><span class="vebd-pill wait">Test account</span></p>' : '') + sub() + body + '</div>';
       wire();
     }
     var CSTATUS = { planned: ['Planned', 'wait'], scheduled: ['Date set', ''], done: ['Done', 'ok'] };
@@ -316,6 +322,73 @@
       el.querySelectorAll('[data-soc-ok]').forEach(function (b) { b.addEventListener('click', function () { decide(b.dataset.socOk, 'approve'); }); });
       el.querySelectorAll('[data-soc-ch]').forEach(function (b) { b.addEventListener('click', function () { var f = el.querySelector('[data-soc-form="' + b.dataset.socCh + '"]'); f.hidden = !f.hidden; if (!f.hidden) f.note.focus(); }); });
       el.querySelectorAll('[data-soc-form]').forEach(function (f) { f.addEventListener('submit', function (e) { e.preventDefault(); decide(f.dataset.socForm, 'changes', f.note.value); }); });
+    }
+    // ---- Insights: the latest sent report's numbers against the month before, then what is on their list this month.
+    var INS = null;
+    function pct(a, b) { a = Number(a || 0); b = Number(b || 0); if (!b) return a ? 'New' : ''; var d = Math.round((a - b) / b * 100); return (d > 0 ? '+' : '') + d + '%'; }
+    function drawInsights() {
+      var R = (D.reports || []).filter(function (r) { return r.status === 'sent'; });
+      if (!R.length) { frame('<section class="vebd-card"><h4>Insights</h4><p class="vebd-muted" style="margin:0">Your numbers start with your first monthly report, after your first full month with us. Until then, your dashboard\'s Insights shows your page\'s views day by day.</p></section>'); return; }
+      if (!INS) {
+        frame('<p class="vebd-muted">Loading...</p>');
+        (o.loadReport ? o.loadReport(R[0].id) : api({ action: 'checkin_get', id: R[0].id })).then(function (d) {
+          INS = (d && d.ok && d.checkin) ? d.checkin : { failed: true }; drawInsights();
+        }, function () { INS = { failed: true }; drawInsights(); });
+        return;
+      }
+      if (INS.failed || !INS.numbers) { INS = null; frame('<section class="vebd-card"><h4>Insights</h4><p class="vebd-muted" style="margin:0">This did not load. Try again in a moment.</p></section>'); return; }
+      var N = INS.numbers.now || {}, B = INS.numbers.before || {};
+      var sum = function (a) { return Object.keys(a || {}).reduce(function (t, k) { return t + Number(a[k] || 0); }, 0); };
+      var tile = function (v, b, label) {
+        var c = pct(v, b);
+        return '<div class="vebd-ins-t"><b>' + esc(Number(v || 0).toLocaleString()) + '</b><span>' + esc(label) + '</span>' + (c ? '<small class="' + (/^-/.test(c) ? 'dn' : 'up') + '">' + esc(c) + ' vs the month before</small>' : '') + '</div>';
+      };
+      var AW = { menu: 'Opened the menu', directions: 'Asked for directions', website: 'Went to your website', order: 'Started an order', call: 'Tapped to call', social: 'Opened your social', photos: 'Looked at photos' };
+      var acts = N.actions || {}, keys = Object.keys(acts), max = Math.max.apply(null, keys.map(function (k) { return Number(acts[k] || 0); }).concat([1]));
+      var bars = keys.sort(function (a, b) { return acts[b] - acts[a]; }).map(function (k) {
+        return '<div class="vebd-ins-bar"><span>' + esc(AW[k] || k) + '</span><i><em style="width:' + Math.round(acts[k] / max * 100) + '%"></em></i><b>' + esc(acts[k]) + '</b><small>' + esc(pct(acts[k], (B.actions || {})[k])) + '</small></div>';
+      }).join('');
+      var prev = new Date(Date.UTC(+INS.month.slice(0, 4), +INS.month.slice(5, 7) - 2, 1, 12)).toLocaleDateString('en-US', { month: 'long', timeZone: 'UTC' });
+      var list = [];
+      if (D.sample || (D.account && D.account.social)) list.push('<li><span><b>' + (D.sample ? 'Social posts waiting for your OK' : 'Your social this month') + '</b><br><small class="vebd-muted">Posts wait for your OK, or approve themselves 48 hours before they go out.</small></span><a href="#" class="vebd-btn sm" data-bdv="social">Your social</a></li>');
+      var nx = (D.campaigns || []).filter(function (c) { return c.status !== 'done'; })[0];
+      if (nx) list.push('<li><span><b>Next campaign: ' + esc(nx.title) + '</b><br><small class="vebd-muted">' + (nx.starts_at ? esc(new Date(nx.starts_at).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })) : 'Date to be set with you') + '</small></span><a href="#" class="vebd-btn o sm" data-bdv="campaigns">Your campaigns</a></li>');
+      list.push('<li><span><b>Your ' + esc(INS.month_name) + ' report</b><br><small class="vebd-muted">What the month meant and what we do next, from your check-in.</small></span><a href="#" class="vebd-btn o sm" data-bdr="' + esc(INS.id) + '">Read it</a></li>');
+      frame('<section class="vebd-card"><div class="vebd-bar"><h4 style="margin:0">' + esc(INS.month_name) + '</h4><span class="vebd-muted">Against ' + esc(prev) + '</span></div>' +
+        '<div class="vebd-ins">' + tile(N.views, B.views, 'Views of your page') + tile(N.visitors, B.visitors, 'People who saw it') + tile(sum(N.actions), sum(B.actions), 'Taps and clicks') +
+        tile(N.checkins, B.checkins, 'Member check-ins') + tile(N.visits, B.visits, 'Member visits with photos') + tile(N.files, B.files, 'New files in your Library') + '</div>' +
+        (bars ? '<h4 style="margin:18px 0 8px">What people did on your page</h4>' + bars : '') +
+        '<p class="vebd-muted" style="margin:12px 0 0">Google and social numbers join here as we connect them. Day-by-day numbers are on your dashboard\'s Insights.</p></section>' +
+        '<section class="vebd-card"><h4>On your list this month</h4><ul class="vebd-list">' + list.join('') + '</ul></section>');
+    }
+    // ---- Your brand kit: every part and where it stands (their Cartridge), with a look at each. Changing a locked part is a request.
+    var KIT_PARTS = [['logo', 'Logo'], ['colors', 'Colors'], ['type', 'Type'], ['voice', 'Voice'], ['story', 'Story'], ['menu', 'Menu'], ['photos', 'Photos'], ['info', 'Hours and details']];
+    var KST = { locked: ['Locked', 'ok'], in_review: ['Waiting for your OK', 'wait'], revising: ['Being revised', 'wait'], in_progress: ['In progress', 'wait'], not_started: ['Not started', ''] };
+    function drawKit() {
+      var K = (D.cartridge && D.cartridge.data) || {}, A = (K.meta || {}).approvals || {}, br = K.brand || {};
+      var look = function (k) {
+        if (k === 'logo') { var lg = (br.logo || {}).primary; return lg && lg.src ? '<span class="vebd-kit-logo" style="background-image:url(\'' + esc(lg.src) + '\')"></span>' : ''; }
+        if (k === 'colors') return (br.colors || []).length ? '<span class="vebd-kit-sw">' + br.colors.map(function (c) { return '<i title="' + esc(c.name + ' ' + c.hex) + '" style="background:' + esc(c.hex) + '"></i>'; }).join('') + '</span>' : '';
+        if (k === 'type') { var t = br.type || {}; return t.heading ? '<small>' + esc(t.heading.family) + ' for headings, ' + esc((t.body || {}).family || '') + ' for text</small>' : ''; }
+        if (k === 'voice') return ((K.voice || {}).personality || []).length ? '<small>' + esc(K.voice.personality.join(', ')) + '</small>' : '';
+        if (k === 'story') return (K.story || {}).tagline ? '<small>' + esc(K.story.tagline) + '</small>' : '';
+        if (k === 'menu') { var n = 0; (((K.menu || {}).sections) || []).forEach(function (s) { n += (s.items || []).length; }); return n ? '<small>' + n + ' items in ' + K.menu.sections.length + ' sections</small>' : ''; }
+        if (k === 'photos') { var p = ((K.photos || {}).space || []).filter(function (x) { return x.src; }).length; return p ? '<small>' + p + ' photos of your space and team, plus every dish</small>' : ''; }
+        if (k === 'info') { var i = K.info || {}, ad = i.address || {}; return ad.street ? '<small>' + esc([ad.street, ad.city].filter(Boolean).join(', ')) + '</small>' : ''; }
+        return '';
+      };
+      var locked = 0;
+      var rows = KIT_PARTS.map(function (p) {
+        var a = A[p[0]] || {}, st = KST[a.state] || KST.not_started; if (a.state === 'locked') locked++;
+        var lk = look(p[0]), logo = p[0] === 'logo' && lk;
+        return '<li><span class="vebd-kit-row">' + (logo ? lk : '') + '<span><b>' + esc(p[1]) + '</b>' + (logo ? '' : lk) +
+          (a.at ? '<small class="vebd-muted">' + esc(st[0]) + ' ' + esc(day(a.at)) + (a.by ? ' by ' + esc(a.by === 'Owner' ? 'you' : a.by) : '') + '</small>' : '') + '</span></span>' +
+          '<span class="vebd-pill ' + st[1] + '">' + st[0] + '</span></li>';
+      }).join('');
+      var href = D.sample ? '/business/sample/brand' : D.listing ? '/business/brand?listing=' + encodeURIComponent(D.listing.slug) : '';
+      frame('<section class="vebd-card"><div class="vebd-bar"><h4 style="margin:0">Your brand kit</h4><span class="vebd-pill ' + (locked === KIT_PARTS.length ? 'ok' : 'wait') + '">' + locked + ' of ' + KIT_PARTS.length + ' locked</span></div>' +
+        '<p class="vebd-muted">Everything we make for you comes from here: your website, your posts, your menu boards and your photos. A locked part stays as you approved it. To change one, ask for the change with a reason and your Community Manager takes it from there.</p>' +
+        '<ul class="vebd-list">' + rows + '</ul>' + (href ? '<p style="margin:12px 0 0"><a class="vebd-btn" href="' + esc(href) + '" target="_blank" rel="noopener">Open your brand kit</a></p>' : '') + '</section>');
     }
     function drawReports() {
       var R = D.reports || [];
@@ -481,12 +554,14 @@
       if (view === 'campaigns') return drawCampaigns();
       if (view === 'social') return drawSocial();
       if (view === 'website') return drawWebsite();
+      if (view === 'insights') return drawInsights();
+      if (view === 'kit') return drawKit();
       var body = view === 'library' ? drawLibrary() : view === 'sheet' ? drawSheet() : drawStart();
-      el.innerHTML = '<div class="vebd">' + (D.sample ? '<p class="vebd-muted"><span class="vebd-pill wait">Sample</span> What a managed client sees: everything we made for them, theirs to keep. Downloads here are the sample\'s illustrative photos.</p>' : D.account.test ? '<p class="vebd-muted"><span class="vebd-pill wait">Test account</span></p>' : '') + sub() + body + '</div>';
+      el.innerHTML = '<div class="vebd">' + (D.sample ? '<p class="vebd-muted"><span class="vebd-pill wait">Sample</span> What a BrandDesk client sees: their onboarding, numbers, website, brand kit and everything we made for them, theirs to keep. Downloads here are the sample\'s illustrative photos.</p>' : D.account.test ? '<p class="vebd-muted"><span class="vebd-pill wait">Test account</span></p>' : '') + sub() + body + '</div>';
       wire();
     }
     function wire() {
-      el.querySelectorAll('[data-bdr]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); reportId = a.dataset.bdr; if (o.goReport) o.goReport(reportId); drawReports(); }); });
+      el.querySelectorAll('[data-bdr]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); if (view !== 'reports') { view = 'reports'; if (o.go) o.go('reports'); } reportId = a.dataset.bdr; if (o.goReport) o.goReport(reportId); drawReports(); }); });
       el.querySelectorAll('[data-bdv]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); go(a.dataset.bdv); }); });
       el.querySelectorAll('[data-bdk]').forEach(function (b) { b.addEventListener('click', function () { kindFilter = b.dataset.bdk; draw(); }); });
       el.querySelectorAll('[data-bdstep]').forEach(function (b) {
@@ -580,7 +655,7 @@
       ((C.menu || {}).sections || []).forEach(function (sec) { (sec.items || []).forEach(function (it) { if (it.photo && it.photo.src) add('photo', it.name, it.photo.src, sec.name); }); });
       var steps = [['welcome', 'Your welcome call'], ['owner', 'We confirm you run the business'], ['archive', 'A copy of your current website, kept for you'], ['brand_kit', 'Your brand kit'],
         ['google', 'Your Google profile, with us as a manager'], ['domain', 'Access to your domain settings (you keep the domain)'], ['socials', 'Access to your two social platforms'], ['shoot', 'Your starter photo shoot'], ['website', 'Your new website, live on your domain'], ['library', 'Your Library']]
-        .map(function (s) { return { key: s[0], client: s[1], team: s[1], how: 'team', done_at: now }; });
+        .map(function (s, i) { return { key: s[0], client: s[1], team: s[1], how: 'team', done_at: ['2026-10-14', '2026-10-14', '2026-10-15', '2026-10-22', '2026-10-16', '2026-10-16', '2026-10-17', '2026-10-28', '2026-11-03', '2026-11-04'][i] + 'T16:00:00Z' }; });
       return { ok: true, admin: false, sample: true, unlocked: true, steps: steps, files: files, archives: [],
         account: { id: 'sample', status: 'active', setup_plan: '3', social: true, activated_at: '2026-10-14' },
         listing: { name: (C.business || {}).name || 'Green Leaf Kitchen', slug: 'sample' }, cartridge: { status: 'locked', updated_at: (C.meta || {}).updated, data: C },

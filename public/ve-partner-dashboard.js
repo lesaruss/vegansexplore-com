@@ -39,7 +39,7 @@
   // Guides that open with their own short survey (ve_guides.door); the list is the fallback when the server sends no door flag.
   var DOOR_GUIDES = ['vegan-restaurant-guide', 'vegan-events-guide', 'creator-guide', 'nonprofit-guide', 'pre-vegan-business-guide'];
   // A Group Partner (canon-ve-group-partners) adds Your members, Events and Earnings (D.group from the server; the sample group feeds it).
-  var VIEWS = [['home', 'Home'], ['managed', 'Managed by us'], ['gmembers', 'Your members'], ['gevents', 'Events'], ['announce', 'Announcements'], ['gift', 'Gift a membership'], ['earnings', 'Earnings'], ['insights', 'Insights'], ['audience', 'Your audience'], ['checkins', 'Check-ins'], ['saves', 'Saves'], ['page', 'Your page'], ['menu', 'Menu'], ['dishes', 'Signature dishes'], ['ads', 'Ads'], ['opps', 'Opportunities'], ['audit', 'Audit'], ['guides', 'Guides'], ['plan', 'Your plan']];
+  var VIEWS = [['home', 'Home'], ['managed', 'BrandDesk'], ['gmembers', 'Your members'], ['gevents', 'Events'], ['announce', 'Announcements'], ['gift', 'Gift a membership'], ['earnings', 'Earnings'], ['insights', 'Insights'], ['audience', 'Your audience'], ['checkins', 'Check-ins'], ['saves', 'Saves'], ['page', 'Your page'], ['menu', 'Menu'], ['dishes', 'Signature dishes'], ['ads', 'Ads'], ['opps', 'Opportunities'], ['audit', 'Audit'], ['guides', 'Guides'], ['plan', 'Your plan']];
   // Views a member needs (Home, Your page, Menu and Your plan work without).
   // The Audit view is free on claim (Sean, 2026-11-01, playbook ve-listing-check): the listing check and the check-up flags show to every owner.
   var MEMBERS = ['insights', 'audience', 'checkins', 'saves', 'ads', 'opps', 'guides'];
