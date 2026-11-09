@@ -5,6 +5,7 @@
 // every chapter, every live Guide, every approved listing (places, people, shows, books, films) and
 // every published Pulse article. A new page that should be found goes in PAGES or GUIDES; a new chapter
 // in CHAPTERS (the same slugs as VE_HUBS in /public/ve-hubs.js and the /communities rewrite).
+// The sample community (/communities/sample, Marisol Bay) is never listed: samples are noindex.
 // Listings only in the LESARUSS.ai Directory (tag lesaruss-ai-directory-candidate) are left out: they
 // live at lesaruss.ai.
 

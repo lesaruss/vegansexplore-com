@@ -74,4 +74,33 @@
   });
   window.VE_HUBS = hubs;
   window.VE_HUB = function (slug) { return hubs.filter(function (h) { return h.slug === slug; })[0] || hubs[0]; };
+
+  // The sample community (Sean, 2026-11-09, playbook community-sponsorship: "This is where we use our demo, and we can show them what
+  // it would look like if they were one of our sponsors. So we can make up a presenting sponsor, a fictitious city"). Marisol Bay is a
+  // made-up coastal city, served at /communities/sample by the same hub page, whose every data call is answered from
+  // /communities/sample-data.js (nothing is read from or written to the database). It is kept OUT of VE_HUBS so no picker, the
+  // sitemap or a chapter count ever lists it; communities/hub.html adds it to VE_HUBS on the sample page only.
+  // `sponsors` is the field every hub may carry (one presenting sponsor, community sponsors, local supporters); a hub without it
+  // shows no sponsors section, so real hubs are unchanged until they sell one. `showcase` (the sponsor's benefits in place and its
+  // campaign card) is the sample's alone.
+  var MB = ['Marisol Bay', 'Marisol Beach', 'Port Marisol', 'Seagrape Key'];
+  window.VE_SAMPLE_HUB = {
+    slug: 'sample', sample: true, state: 'FL', name: 'Marisol Bay', tz: 'America/New_York', match: { cities: MB }, places: MB,
+    country: 'United States', continent: 'North America', countryCode: 'US', filter: 'address_city=in.' + list(MB),
+    page: { boardAreas: ['Marisol Bay', 'Marisol Beach', 'Port Marisol', 'Seagrape Key'], short: 'Marisol', brand: 'Marisol Bay Vegans',
+      regions: 'Marisol Bay &middot; Marisol Beach &middot; Port Marisol', banner: '/business/sample/img/s-outside-dusk.webp',
+      alt: 'A corner cafe with string lights and palm trees at dusk in Marisol Bay, a sample city', area: 'Marisol Bay, Marisol Beach, Port Marisol and Seagrape Key',
+      eventCities: MB, adPrefix: 've-sample-hub' },
+    sponsors: {
+      presenting: { name: 'Visit Marisol Bay', kind: 'The tourism bureau', line: 'Marisol Bay\'s tourism bureau presents the community all year: its name on the hub, a sponsor story, a Daily Pulse feature, the hub\'s billboard and a weekend festival on the calendar.',
+        logo: { text: 'Visit Marisol Bay', sub: 'Sun, sand, plant-based', bg: '#0b4f6c', fg: '#ffffff', accent: '#ffd166' }, url: '#sample-sponsor' },
+      community: [{ name: 'Marisol Bay Chamber of Commerce', kind: 'The chamber of commerce', line: 'The chamber backs local restaurants adding plant-based dishes, with a mixer on the calendar and a story on the hub.',
+        logo: { text: 'Marisol Bay Chamber', sub: 'of Commerce', bg: '#1f2937', fg: '#ffffff', accent: '#9ae6b4' }, url: '#sample-sponsor' }],
+      supporters: [
+        { name: 'Green Leaf Kitchen', slug: 'sample', logo: { text: 'Green Leaf', sub: 'Kitchen', bg: '#1f5f22', fg: '#ffffff', accent: '#cdeccf' } },
+        { name: 'Saltwater Bakehouse', slug: 'saltwater-bakehouse-sample', logo: { text: 'Saltwater', sub: 'Bakehouse', bg: '#7c2d12', fg: '#fff7ed', accent: '#fdba74' } },
+        { name: 'Tidepool Tacos', slug: 'tidepool-tacos-sample', logo: { text: 'Tidepool', sub: 'Tacos', bg: '#0e7490', fg: '#ecfeff', accent: '#67e8f9' } }
+      ]
+    }
+  };
 })();
