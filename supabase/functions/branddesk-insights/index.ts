@@ -946,6 +946,9 @@ const CHAPTER_REGION: Record<string, string> = { 'south-florida': 'Florida', 'ce
 // Each show's Directory listing, for its picture.
 const SHOW_LISTING: Record<string, string> = { 'vegans-explore': 'vegans-explore-podcast', 'soflo-vegans': 'soflo-vegans-podcast', 'vegans-who-lift': 'vegans-who-lift-podcast', 'pre-vegans': 'pre-vegans-podcast' };
 type PMatch = { country: string; province?: string; cities?: string[] };
+// Data-center towns counted out of a whole-state total (2026-11-09: Ashburn and Sterling were 764 of Virginia's 1,015 podcast downloads in a
+// year; Google's visitors already leave Ashburn out). Like Palo Alto for San Francisco. Oregon's are kept on Sean's word.
+const DC_TOWNS: Record<string, string[]> = { virginia: ['ashburn', 'sterling'] };
 const lcs = (x: unknown) => String(x ?? '').trim().toLowerCase();
 const regionName = (code: string) => { try { return new Intl.DisplayNames(['en'], { type: 'region' }).of(code) || code; } catch { return code; } };
 
@@ -999,10 +1002,15 @@ function capSum(raw: any, ms: PMatch[]) {
       const want = new Set(m.cities.map(lcs));
       for (const c of raw.city?.[code] || []) if (want.has(lcs(c.name)) && (!m.province || lcs(c.province) === lcs(m.province))) { n += c.total; cities.set(c.name, (cities.get(c.name) || 0) + c.total); }
     } else if (m.province) {
+      const skip = DC_TOWNS[lcs(m.province)] || [];
       for (const c of raw.prov?.[code] || []) if (lcs(c.name) === lcs(m.province)) n += c.total;
-      for (const c of raw.city?.[code] || []) if (lcs(c.province) === lcs(m.province)) cities.set(c.name, (cities.get(c.name) || 0) + c.total);
+      for (const c of raw.city?.[code] || []) if (lcs(c.province) === lcs(m.province)) {
+        if (skip.includes(lcs(c.name))) { n -= c.total; continue; }
+        cities.set(c.name, (cities.get(c.name) || 0) + c.total);
+      }
     } else { const v = raw.country?.[code] || 0; n += v; if (v) cities.set(regionName(code), (cities.get(regionName(code)) || 0) + v); }
   }
+  n = Math.max(0, n);
   return { n, cities: [...cities.entries()].filter(([, v]) => v > 0).sort((a, b) => b[1] - a[1]).slice(0, 25).map(([name, total]) => ({ name, total })) };
 }
 async function placePodcast(ms: PMatch[], from: string, to: string) {

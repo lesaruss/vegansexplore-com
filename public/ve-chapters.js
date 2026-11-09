@@ -8,7 +8,9 @@
    page, never in a frame. Votes are ve-votes chapter_vote (once every 24 hours, members); Save is joining the chapter (ve-auth
    join_community / leave_community), so saved chapters are the member's communities. Signed out, Vote and Save open the
    Passport window (VEVotes). Numbers come from ve-votes chapter_stats.
-   A city hub shows its own card on its Overview: { only: [slug], bar: false, url: false, here: true } (no search, no link out). */
+   A city hub shows its own card on its Overview: { only: [slug], bar: false, url: false, here: true } (no search, no link out).
+   Sort by Traffic (Sean, 2026-11-09) ranks by ve_chapter_stats' traffic, a rank only (podcast downloads and web visitors from the chapter,
+   kept internal); a super admin gets Insights on each card, opening BrandDesk > Vegans Explore > Insights > Chapters for it. */
 (function () {
   if (window.VEChapters) return;
   var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-votes';
@@ -39,6 +41,8 @@
     });
   }
   function n(x) { return Number(x || 0).toLocaleString(); }
+  function admin() { var m = me(); return !!(m && m.is_superadmin); }
+  var HQ = 'https://hq.lesaruss.ai/branddesk/brands/vegans-explore?view=insights&in=chapters&place=chapter:';
 
   var CSS = '.vch-bar[hidden]{display:none!important}.vch-bar{display:flex;gap:10px;align-items:center;margin:0 0 16px;flex-wrap:wrap}'
     + '.vch-bar input{flex:1 1 220px;min-width:0;height:44px;border:1.5px solid #e2e2e2;border-radius:6px;padding:0 14px;font:600 14px Montserrat,sans-serif}'
@@ -53,12 +57,13 @@
     + '.vch-mine{font-size:9px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--vb-accent-ink,#2d7a4f);background:var(--vb-soft,#f0faf4);border:1px solid var(--vb-line,#b6e5c8);border-radius:20px;padding:2px 8px}'
     + '.vch-meta{font-size:12px;font-weight:600;color:rgba(26,26,26,.6);margin-top:2px}'
     + '.vch-nums{font-size:11px;font-weight:700;color:rgba(26,26,26,.75);margin-top:5px;display:flex;gap:10px;flex-wrap:wrap}'
-    + '.vch-right{display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0}'
+    + '.vch-right{display:flex;flex-direction:column;align-items:center;gap:4px;flex-shrink:0}'
     + '.vch-count{font-size:18px;font-weight:900;color:#1a1a1a;line-height:1}'
-    + '.vch-btn{font:800 10px Montserrat,sans-serif;letter-spacing:.1em;text-transform:uppercase;padding:7px 10px;min-width:64px;min-height:32px;border-radius:6px;background:var(--vb-soft,#f0faf4);color:var(--vb-accent-ink,#2d7a4f);border:1px solid var(--vb-line,#b6e5c8);cursor:pointer;white-space:nowrap}'
+    + '.vch-btn{font:800 9.5px Montserrat,sans-serif;letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;min-width:58px;min-height:24px;text-align:center;text-decoration:none;display:inline-block;box-sizing:border-box;line-height:16px;border-radius:6px;background:var(--vb-soft,#f0faf4);color:var(--vb-accent-ink,#2d7a4f);border:1px solid var(--vb-line,#b6e5c8);cursor:pointer;white-space:nowrap}'
     + '.vch-btn.on{background:var(--vb-go,#2d7d31);color:#fff;border-color:var(--vb-go,#2d7d31)}'
     + '.vch-btn.save{background:#fff;color:#1a1a1a;border-color:#ddd}'
     + '.vch-btn.save.on{background:#1a1a1a;color:#fff;border-color:#1a1a1a}'
+    + '.vch-btn.ins{background:#fff;color:var(--vb-accent-ink,#2d7a4f);border-color:var(--vb-line,#b6e5c8)}'
     + '.vch-card.here{cursor:default}'
     + '@media(max-width:600px){.vch-card{padding:12px;gap:12px}.vch-av{width:56px;height:56px;min-width:56px}}'
     + '.vch-empty{color:rgba(26,26,26,.6);font-weight:600;padding:20px 0}'
@@ -81,10 +86,10 @@
     if (!el || !window.VE_HUBS) return null;
     css();
     var stats = {}, next = {}, state = { q: '', sort: 'votes' };
-    try { var p = new URLSearchParams(location.search); state.q = p.get('q') || ''; if (/^(votes|places|az)$/.test(p.get('sort') || '')) state.sort = p.get('sort'); } catch (e) {}
+    try { var p = new URLSearchParams(location.search); state.q = p.get('q') || ''; if (/^(votes|traffic|places|az)$/.test(p.get('sort') || '')) state.sort = p.get('sort'); } catch (e) {}
     el.innerHTML = (opts.bar === false ? '<div class="vch-bar" hidden>' : '<div class="vch-bar">') + '<label style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)" for="vch-q">Search communities</label>' +
       '<input type="search" id="vch-q" placeholder="Search communities by city or state" autocomplete="off" value="' + esc(state.q) + '">' +
-      '<select id="vch-sort" aria-label="Sort by"><option value="votes">Most votes</option><option value="places">Most places</option><option value="az">A to Z</option></select></div>' +
+      '<select id="vch-sort" aria-label="Sort by"><option value="votes">Most votes</option><option value="traffic">Traffic</option><option value="places">Most places</option><option value="az">A to Z</option></select></div>' +
       '<div class="vch-grid" role="list"></div>';
     var grid = el.querySelector('.vch-grid'), qIn = el.querySelector('#vch-q'), sortSel = el.querySelector('#vch-sort');
     sortSel.value = state.sort;
@@ -110,6 +115,7 @@
       list.sort(function (a, b) {
         var sa = stats[a.slug] || {}, sb = stats[b.slug] || {};
         if (state.sort === 'az') return a.name.localeCompare(b.name);
+        if (state.sort === 'traffic') return (sa.traffic || 1e9) - (sb.traffic || 1e9) || (sb.votes || 0) - (sa.votes || 0) || a.name.localeCompare(b.name);
         if (state.sort === 'places') return (sb.places || 0) - (sa.places || 0) || a.name.localeCompare(b.name);
         return (sb.votes || 0) - (sa.votes || 0) || (sb.places || 0) - (sa.places || 0) || a.name.localeCompare(b.name);
       });
@@ -125,7 +131,8 @@
             (s.members ? '<span>' + n(s.members) + (s.members === 1 ? ' member' : ' members') + '</span>' : '') : '<span>&nbsp;</span>') + '</span></span>' +
           '<span class="vch-right"><span class="vch-count">' + n(v) + '</span>' +
           '<button type="button" class="vch-btn' + (voted ? ' on' : '') + '" data-vch-vote="' + esc(h.slug) + '" aria-label="Vote for ' + esc(h.name) + '">' + (voted ? 'Voted' : (v === 1 ? 'Vote' : 'Votes')) + '</button>' +
-          '<button type="button" class="vch-btn save' + (on ? ' on' : '') + '" data-vch-save="' + esc(h.slug) + '" aria-pressed="' + on + '" aria-label="' + (on ? 'Saved: ' : 'Save ') + esc(h.name) + '">' + (on ? 'Saved' : 'Save') + '</button></span></div>';
+          '<button type="button" class="vch-btn save' + (on ? ' on' : '') + '" data-vch-save="' + esc(h.slug) + '" aria-pressed="' + on + '" aria-label="' + (on ? 'Saved: ' : 'Save ') + esc(h.name) + '">' + (on ? 'Saved' : 'Save') + '</button>' +
+          (admin() && !opts.here ? '<a class="vch-btn ins" href="' + HQ + esc(h.slug) + '" target="_blank" rel="noopener" aria-label="Insights for ' + esc(h.name) + '">Insights</a>' : '') + '</span></div>';
       }).join('');
     }
 
