@@ -608,7 +608,12 @@ use the page: watch Liz's tour in her frame, read on, join; a 240 px picture, `g
 the Pulse's story rows (a 132 x 99 picture, the title, about 250 characters, Read more; `articles()`, `SUMMARY`). The sub-section buttons live on each section's page. The tour
 still plays in Liz's frame. The dropdown has 18 px under it on desktop. Next (Sean's idea): each section page gets the same shape, a short video summary and 3 to 5 sub thumbnails. **Tightened the same day** (Sean): summaries at 150 characters or less; on phones the Getting started picture shows whole (square, full width) and the
 article thumbnails are 96 px squares (desktop keeps 132 x 99); Liz's bubble on the Overview is a short instruction ("Watch this video to get a full overview of Vegans
-Explore. Then click through each section to learn more about it.") and no longer changes to each chapter's words while the tour plays.
+Explore. Then click through each section to learn more about it.") and no longer changes to each chapter's words while the tour plays. **Section pages take the Overview's shape, Search and the Directory first** (Sean, 2026-11-09: "go, build Search and the Directory first"):
+`sectionPage(k, o)` draws How to use this page (picture, three short lines, Play Liz, Open the Directory), then 3 to 5 parts as article rows (`artRow`, shared with the
+Overview), each about 150 characters and a link into the live site (Search Anything, Local Food, Products, Community and People, Vote Save and Check In), then the Explorer
+card. Liz's frame plays that page's part of the tour as its video summary until the page has its own (`CLIPS`: directory is the Find your way chapter, 35.8 to 53.3 s; the
+clip stops at its end, Expand on phones too); her poster on a section is that page's scene. The other nine sections still use the old What it is / How to use it / What
+members get layout until Sean approves this one.
 
 Proposal `docs/proposals/explorer-welcome-guide.md` (approved). `/passport` (`passport.html`, `guide-scripts/welcome-guide.js`) is the Welcome Guide, copied
 from the Holiday Guide (template gate). Liz hosts. The Overview is enough on its own (Start here, Become a Founder, the tour: Liz's eight chapters, approved

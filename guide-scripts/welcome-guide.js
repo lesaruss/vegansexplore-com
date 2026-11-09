@@ -36,7 +36,7 @@
   // Liz's line on each tab (text drafts for the section pages; the Overview's is chapter 1). `lead` is the Guide for that area.
   var TABS = [
     { k: 'overview', scene: 'welcome/liz-overview.jpg', label: 'Overview', say: 'Watch this video to get a full overview of Vegans Explore. Then click through each section to learn more about it.', sayMember: 'Welcome back. Watch this video any time for a full overview, then click through each section to go deeper.' },
-    { k: 'directory', scene: 'welcome/liz-directory.jpg', label: 'Search and the Directory', pic: 'thumb-directory.jpg', lead: 'pascal', say: 'Everything starts with search. Here is how to find any place, person or group, and what your vote does.' },
+    { k: 'directory', scene: 'welcome/liz-directory.jpg', label: 'Search and the Directory', pic: 'thumb-directory.jpg', lead: 'pascal', say: 'Press Play for my short summary, then pick any part below to open it in the Directory.' },
     { k: 'city', scene: 'welcome/liz-city.jpg', label: 'Your City', pic: 'thumb-community.jpg', lead: 'river', say: 'Every chapter has its own home. Here is how to keep up with yours, every morning.' },
     { k: 'events', scene: 'welcome/liz-events.jpg', label: 'Events', pic: 'vegan-events-guide.jpg', lead: 'river', say: 'Find something to do this week, near you or anywhere.' },
     { k: 'media', scene: 'welcome/liz-media.jpg', label: 'Media', pic: 'holiday/p-listen.jpg', lead: 'kai', say: 'Our shows and the community\'s favorites, playing right on the page.' },
@@ -150,14 +150,28 @@
       '<div class="wg-gs-b"><div class="vgi-k">Getting started</div><h3 class="wg-gs-t">How to use this page</h3>' + ps.map(function (x) { return '<p>' + x + '</p>'; }).join('') +
       '<div class="wg-gs-btns"><button type="button" class="dg-btn" data-wg-tour>&#9654; Play the tour</button>' + (member() ? '' : '<a class="dg-btn dg-ghost" href="#/founder">Become a Founder</a>') + '</div></div></section>';
   }
+  // One article row, read like the Pulse: a picture, the title, a short summary, a link (the Overview and every section page use it).
+  function artRow(picUrl, title, txt, link, more) {
+    var ext = /^\//.test(link);
+    return '<li class="wg-art"><a href="' + esc(link) + '" tabindex="-1" aria-hidden="true"><span class="wg-art-img" style="background-image:url(&quot;' + esc(picUrl) + '&quot;)"></span></a>' +
+      '<div><a class="wg-art-t" href="' + esc(link) + '">' + esc(title) + '</a><p>' + esc(txt) + '</p><a class="wg-art-more" href="' + esc(link) + '">' + esc(more || (ext ? 'Open it' : 'Read more')) + ' &rsaquo;</a></div></li>';
+  }
   function articles() {
     return GROUPS.map(function (g) {
       return '<div class="wg-grp"><h5>' + esc(g.label) + '</h5><ol>' + g.kids.map(function (k) {
         var t = tab(k), txt = k === 'founder' && member() ? 'You are in. Here are your first steps, and where to ask when you need help.' : SUMMARY[k];
-        return '<li class="wg-art"><a href="' + href(k) + '" tabindex="-1" aria-hidden="true"><span class="wg-art-img" style="background-image:url(&quot;' + esc(pic(t.pic)) + '&quot;)"></span></a>' +
-          '<div><a class="wg-art-t" href="' + href(k) + '">' + esc(t.label) + '</a><p>' + esc(txt) + '</p><a class="wg-art-more" href="' + href(k) + '">Read more &rsaquo;</a></div></li>';
+        return artRow(pic(t.pic), t.label, txt, href(k), 'Read more');
       }).join('') + '</ol></div>';
     }).join('');
+  }
+  // A section page in the Overview's shape (Sean, 2026-11-09): how to use the page (Liz's short video summary in her frame), then 3 to 5
+  // short parts, each a picture, about 150 characters and a link into the live site, then the Explorer card.
+  function sectionPage(k, o) {
+    var start = '<section class="wg-gs" aria-label="How to use this page"><span class="wg-gs-pic"><img src="' + pic(o.pic) + '" alt="" decoding="async" width="640" height="640"></span>' +
+      '<div class="wg-gs-b"><div class="vgi-k">How to use this page</div><h3 class="wg-gs-t">' + esc(o.title) + '</h3>' + o.how.map(function (x) { return '<p>' + x + '</p>'; }).join('') +
+      '<div class="wg-gs-btns"><button type="button" class="dg-btn" data-wg-tour>&#9654; Play Liz</button>' + (o.open ? '<a class="dg-btn dg-ghost" href="' + esc(o.open[1]) + '">' + esc(o.open[0]) + '</a>' : '') + '</div></div></section>';
+    return crumb(tab(k).label) + head(o.kicker, tab(k).label, '') + start +
+      '<div class="wg-arts"><div class="wg-grp"><h5>' + esc(o.group) + '</h5><ol>' + o.parts.map(function (x) { return artRow(pic(x[0]), x[1], x[2], x[3]); }).join('') + '</ol></div></div>' + explorerCard();
   }
   function viewOverview() {
     main.innerHTML = gateNote() + head('Free for everyone', member() ? 'Welcome Back to Vegans Explore' : 'Welcome to Vegans Explore', '') + gettingStarted() + '<div class="wg-arts">' + articles() + '</div>';
@@ -165,11 +179,16 @@
 
   var VIEWS = {
     directory: function () {
-      return section('directory', 'Find your way', 'One search box finds anything, and the Directory is every place, person and group we know, city by city.',
-        'The search box at the top of every page finds a place, a kind of food, a person or an answer: try &ldquo;Vegan restaurants in Atlanta&rdquo;. The Directory holds local food, products, services, media, community groups, nonprofits and people, and every list sorts by member votes.',
-        ['Type what you want in the search box at the top of any page, or open the Directory.', 'Pick your chapter and a section, then narrow it with Filters.', 'Open a listing for its hours, menu, links and directions.', 'Tap Share to send any view, just as you see it, to a friend.'],
-        ['<b>Vote</b> for each place you love, once every 24 hours. Votes decide what rises to the top and who we spotlight next.', '<b>Save</b> places to find them again in My Saves.', '<b>Check in</b> when you visit, for 10 points a visit.', '<b>Being vetted</b>: see the places waiting on member votes.'],
-        [['Open the Directory', '/directory']]) + explorerCard();
+      return sectionPage('directory', { kicker: 'Find your way', title: 'Find anything, city by city', pic: 'thumb-directory.jpg', group: 'In the Directory',
+        how: ['<b>Watch Liz.</b> Press Play Liz for a short summary.', '<b>Read the parts below.</b> Each one opens that part of the Directory.', '<b>Try it now.</b> Type what you want in the search box at the top of any page.'],
+        open: ['Open the Directory', '/directory'],
+        parts: [
+          ['restaurant-guide/t-featured.jpg', 'Search Anything', 'Type what you want in the box at the top of any page, like Vegan pizza in Atlanta. It reads the place and the kind of thing for you.', '/search?q=' + encodeURIComponent('Vegan pizza in Atlanta')],
+          ['eating-out.jpg', 'Local Food', 'Restaurants, bakeries, food trucks, markets and meal prep in your chapter. Pick your city, then narrow it with Filters.', '/directory?tab=food'],
+          ['supermarket-guide.jpg', 'Products', 'Brands you can buy anywhere: food and drink, supplements, clothing, beauty and Vegan marketplaces, sorted by member votes.', '/directory?tab=products'],
+          ['thumb-community.jpg', 'Community and People', 'Nonprofits, rescues, sanctuaries and groups in every chapter, and the activists, chefs, creators and doctors in the movement.', '/directory?tab=community'],
+          ['restaurant-guide/t-mylist.jpg', 'Vote, Save and Check In', 'Members vote for the places they love once a day, save them to My Saves and check in on a visit for 10 points.', '/directory']
+        ] });
     },
     city: function () {
       return section('city', 'Find your way', 'Every chapter, from South Florida to London, has its own home.',
@@ -293,11 +312,14 @@
   var CH_AT = [0, 19.984, 35.814, 53.264, 81.293, 91.272, 121.443, 131.709];
   var playBtn = document.getElementById('dgPlay'), PLAY = { at: 0, playing: false, started: false };
   function vid() { return document.getElementById('wgVideo'); }
+  // Each section page plays its part of the tour as its video summary, until it has its own (Search and the Directory: Find your way).
+  var CLIPS = { overview: [0, 1e9], directory: [CH_AT[2], CH_AT[3]] };
+  function clip() { return CLIPS[curTab] || null; }
   function chAt(t) { var n = 0; CH_AT.forEach(function (x, i) { if (t >= x - 0.05) n = i; }); return n; }
   // The tour plays in Liz's frame on the Overview (Sean, 2026-11-09: "the video plays on the right where you see Liz"), the Holiday Guide's way.
   function setVideo(box) {
     var v = vid(), ov = box.querySelector('.hg-rplay');
-    if (curTab !== 'overview') { if (v) { v.pause(); v.remove(); } if (ov) ov.hidden = true; return; }
+    if (!clip()) { if (v) { v.pause(); v.remove(); } if (ov) ov.hidden = true; var ex0 = box.querySelector('.hg-expand'); if (ex0) ex0.hidden = true; return; }
     if (!v) {
       v = document.createElement('video'); v.id = 'wgVideo';
       v.playsInline = true; v.preload = 'none'; v.setAttribute('playsinline', ''); v.poster = VIDEO.poster; v.src = VIDEO.src;
@@ -309,6 +331,7 @@
     }
     if (!ov) { ov = document.createElement('button'); ov.type = 'button'; ov.className = 'hg-rplay'; ov.setAttribute('aria-label', 'Play the tour'); ov.innerHTML = '&#9654;'; box.appendChild(ov);
       ov.addEventListener('click', function () { toggleTour(); }); }
+    var pst = curTab === 'overview' ? VIDEO.poster : pic(tab(curTab).scene); if (v.getAttribute('poster') !== pst) v.poster = pst;
     ov.hidden = !v.paused;
     if (!box.querySelector('.hg-expand')) {
       box.insertAdjacentHTML('beforeend', '<button type="button" class="hg-expand" aria-label="Expand Liz">Expand</button>');
@@ -322,10 +345,11 @@
     if (!PLAY.ga) { PLAY.ga = 1; try { gtag('event', 'video_start', { video: 'welcome_tour_v' + VIDEO.v }); } catch (e) {} }
   }
   function paintPlay() {
-    playBtn.hidden = curTab !== 'overview';
+    var c = clip();
+    playBtn.hidden = !c;
     playBtn.classList.toggle('go', !PLAY.started);
-    playBtn.innerHTML = PLAY.playing ? 'Pause Liz' : '&#9654; ' + (PLAY.started ? 'Keep watching' : 'Play the tour');
-    var ov = document.querySelector('#dgMaya .hg-rplay'); if (ov) ov.hidden = curTab !== 'overview' || PLAY.playing;
+    playBtn.innerHTML = PLAY.playing ? 'Pause Liz' : '&#9654; ' + (curTab !== 'overview' ? 'Play Liz' : PLAY.started ? 'Keep watching' : 'Play the tour');
+    var ov = document.querySelector('#dgMaya .hg-rplay'); if (ov) ov.hidden = !c || PLAY.playing;
   }
   function playAt(n) {
     var v = vid(); if (!v) return;
@@ -335,9 +359,16 @@
     if (window.innerWidth <= 900) railEl.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     paintPlay();
   }
+  function seekPlay(t) {
+    var v = vid(); if (!v) return;
+    var go = function () { try { v.currentTime = t; } catch (e) {} startVid(); };
+    if (v.readyState >= 1) go(); else { v.preload = 'auto'; v.addEventListener('loadedmetadata', go, { once: true }); v.load(); }
+  }
   function toggleTour() {
     var v = vid(); if (!v) return;
     if (!v.paused) { v.pause(); return; }
+    var c = clip() || [0, 1e9];
+    if (curTab !== 'overview') { if (!(v.currentTime >= c[0] && v.currentTime < c[1] - 0.3)) seekPlay(c[0]); else startVid(); return; }
     if (PLAY.started && v.currentTime > 0) startVid(); else playAt(PLAY.at);
   }
   ['play', 'pause', 'ended', 'timeupdate'].forEach(function (ev) {
@@ -347,7 +378,9 @@
       if (ev === 'play') { PLAY.playing = true; PLAY.started = true; }
       if (ev === 'pause' || ev === 'ended') PLAY.playing = false;
       if (ev === 'ended') { try { gtag('event', 'video_complete', { video: 'welcome_tour_v' + VIDEO.v }); } catch (er) {} }
-      var n = chAt(v.currentTime);
+      var n = chAt(v.currentTime), c = clip();
+      // A section's clip stops at its end and waits at its start for the next Play.
+      if (c && curTab !== 'overview' && ev === 'timeupdate' && v.currentTime >= c[1]) { v.pause(); try { v.currentTime = c[0]; } catch (er) {} }
       if (n !== PLAY.at || ev !== 'timeupdate') PLAY.at = n;
       if (ev === 'ended') PLAY.at = 0;
       paintPlay();
@@ -366,12 +399,13 @@
       document.body.appendChild(lb);
       lb.addEventListener('click', function (e) { if (e.target === lb || e.target.closest('.hg-lb-x')) closeExpand(); });
     }
-    var v = vid(), at = v && !isNaN(v.currentTime) ? v.currentTime : CH_AT[PLAY.at];
+    var v = vid(), c = clip() || [0, 1e9], at = v && v.currentTime > c[0] && v.currentTime < c[1] ? v.currentTime : (curTab === 'overview' ? CH_AT[PLAY.at] : c[0]);
     if (v) v.pause();
     lb.innerHTML = '<div class="hg-lb-in"><button type="button" class="hg-lb-x">Close</button><video controls playsinline autoplay poster="' + esc(VIDEO.poster) + '" src="' + esc(VIDEO.src) + '"><track kind="captions" srclang="en" label="English" default src="' + esc(VIDEO.vtt) + '"></video></div>';
     lb.hidden = false; document.documentElement.style.overflow = 'hidden';
     var lv = lb.querySelector('video');
     lv.addEventListener('loadedmetadata', function () { try { lv.currentTime = at; lv.textTracks[0].mode = 'showing'; } catch (e) {} }, { once: true });
+    if (curTab !== 'overview') lv.addEventListener('timeupdate', function () { if (lv.currentTime >= c[1]) lv.pause(); });
     lv.play().catch(function () {});
     try { gtag('event', 'video_expand', { video: 'welcome_tour_v' + VIDEO.v }); } catch (e) {}
     lb.querySelector('.hg-lb-x').focus();
@@ -399,7 +433,7 @@
     if (k !== 'overview' && !VIEWS[k]) k = 'overview';
     document.body.classList.toggle('dg-member', member());
     drawJoinbox(); drawMenu(k);
-    var oldV = vid(); if (oldV && !oldV.paused && k !== 'overview') oldV.pause();
+    var oldV = vid(); if (oldV && !oldV.paused) oldV.pause();
     curTab = k;
     if (k === 'overview') viewOverview(); else main.innerHTML = VIEWS[k]();
     if (window.VEExplorerCard) VEExplorerCard.wire(main);
