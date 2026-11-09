@@ -6,8 +6,8 @@
  * follows /mocks/nominate/guide.js and guide-scripts/welcome-guide.js: head, crumb, the Getting started card, artRow, sectionPage (How to
  * use this page, the parts as rows, one See it for yourself call to action), the rail's Back / N of M / Next, the numbered dropdown menu
  * when there are more than 5 tabs (html.dg-dd).
- * Views (every view is a link): #/ Overview, #/goals, #/campaigns(/all|q1..q4), #/event/<id>(/results|seen|presented|opportunity),
- * #/pulse, #/podcast, #/banners, #/dashboard(/year|q1..q4|m1..m12), #/package.
+ * Views (every view is a link): #/ Overview, #/goals, #/campaigns/q1..q4/events|social|podcast|email|ads (#/campaigns opens Q1 events),
+ * #/event/<id>(/results|seen|presented|opportunity), #/pulse, #/pulse/<id> (one Pulse post or sponsor story as an article), #/podcast, #/banners, #/dashboard(/year|q1..q4|m1..m12), #/package.
  * The sponsor is the made-up Visit Marisol Bay, the presenting sponsor of the sample hub (/communities/sample, public/ve-hubs.js
  * VE_SAMPLE_HUB). The last section, "What we can do for you", speaks to the visitor, not the sample sponsor (the brief
  * lesaruss-hq docs/research/briefs/2026-visit-lauderdale-alignment.md); no real organization is named. Every number is a made-up sample
@@ -194,6 +194,65 @@
     '.sr-ig .ph{aspect-ratio:1;background:#eef2ee center/cover no-repeat;}',
     '.sr-ig .cap{padding:10px 12px 12px;font-size:12.5px;line-height:1.45;color:var(--ink75);}',
     '.sr-ig .cap b{color:var(--ink);}',
+    // Campaigns: the kinds of promotion under the quarter tabs, the one-row results that slide, and their dots.
+    '.sr-kinds{border-bottom:0;padding-bottom:0;margin-top:-8px;}',
+    '.sr-evline a{color:var(--g);font-weight:800;text-decoration:none;}',
+    '.sr-rw{margin:0 0 22px;}',
+    '.sr-row{display:flex;gap:12px;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x mandatory;scrollbar-width:none;-ms-overflow-style:none;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch;border-radius:12px;}',
+    '.sr-row::-webkit-scrollbar{display:none;}',
+    '.sr-row:focus-visible{outline:2px solid var(--g);outline-offset:2px;}',
+    '.sr-row .sr-stat{flex:0 0 calc((100% - 36px) / 4);min-width:0;scroll-snap-align:start;padding:12px 14px;}',
+    '.sr-row .sr-stat b{font-size:24px;}',
+    '.sr-dotbar{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:8px;}',
+    '.sr-rw.one .sr-dotbar{visibility:hidden;height:0;margin:0;}',
+    '.sr-dots{display:flex;gap:2px;}',
+    '.sr-dot{width:24px;height:24px;border:0;background:none;padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;}',
+    '.sr-dot::before{content:"";width:8px;height:8px;border-radius:4px;background:#cfd8cf;transition:width .2s,background .2s;}',
+    '.sr-dot[aria-selected="true"]::before{width:22px;background:var(--g);}',
+    '.sr-arw{width:30px;height:30px;border-radius:6px;border:1.5px solid var(--line);background:#fff;color:var(--ink);font-size:18px;font-weight:800;line-height:1;cursor:pointer;}',
+    '.sr-arw:hover{border-color:var(--g2);}',
+    // Social posts, drawn like the .sr-ig mock.
+    '.sr-posts{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:16px;margin:0 0 22px;}',
+    '.sr-post{position:relative;display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden;}',
+    '.sr-post .top{display:flex;align-items:center;gap:8px;padding:10px 12px;font-size:12px;font-weight:800;}',
+    '.sr-post .top i{flex:0 0 26px;height:26px;border-radius:50%;background:#1f5f22;}',
+    '.sr-post .top span{display:block;font-size:10.5px;font-weight:600;color:var(--ink55);}',
+    '.sr-post .top em{margin-left:auto;font-style:normal;font-size:10px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#fff;border-radius:6px;padding:3px 7px;}',
+    '.sr-post .sr-stamp{top:56px;}',
+    '.sr-post .ph{position:relative;aspect-ratio:4/3;background:#eef2ee center/cover no-repeat;}',
+    '.sr-post .vid{position:absolute;left:10px;bottom:10px;background:rgba(0,0,0,.7);color:#fff;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;border-radius:6px;padding:3px 8px;}',
+    '.sr-post .cap{margin:0;padding:10px 12px 8px;font-size:12.5px;line-height:1.45;color:var(--ink75);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;}',
+    '.sr-post .cap b{color:var(--ink);}',
+    '.sr-post .ft{display:flex;flex-wrap:wrap;gap:4px 12px;padding:8px 12px;border-top:1px solid var(--line);font-size:12px;color:var(--ink55);margin-top:auto;}',
+    '.sr-post .ft b{color:var(--ink);}',
+    '.sr-post .ev{padding:0 12px 12px;font-size:12px;font-weight:800;color:var(--g);text-decoration:none;}',
+    // Podcast episodes, two across.
+    '.sr-eps{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(440px,100%),1fr));gap:16px;margin:0 0 22px;}',
+    '.sr-eps .sr-pod{padding:40px 14px 14px;}',
+    '.sr-podft{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;}',
+    '.sr-podft a{margin-top:10px;font-size:12.5px;font-weight:800;color:var(--g);text-decoration:none;}',
+    // Daily Pulse articles: a card each, then the article on its own view.
+    '.sr-arts{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(360px,100%),1fr));gap:16px;margin:0 0 22px;}',
+    '.sr-art{display:grid;grid-template-columns:132px minmax(0,1fr);border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#fff;color:inherit;text-decoration:none;transition:border-color .15s,box-shadow .15s;}',
+    '.sr-art:hover{border-color:var(--g2);box-shadow:0 4px 18px rgba(0,0,0,.06);}',
+    '.sr-art .pic{position:relative;background:#eef2ee center/cover no-repeat;min-height:150px;}',
+    '.sr-art .pic .sr-stamp{top:8px;left:8px;right:auto;font-size:9px;}',
+    '.sr-art .b{padding:12px 14px;display:flex;flex-direction:column;gap:4px;min-width:0;}',
+    '.sr-art small{font-size:10.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--g);}',
+    '.sr-art b{font-size:15.5px;font-weight:900;line-height:1.3;}',
+    '.sr-art p{margin:0;font-size:13px;line-height:1.5;color:var(--ink75);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}',
+    '.sr-art .by{font-size:11px;font-weight:800;color:#0b4f6c;}',
+    '.sr-art .nums{margin-top:auto;font-size:12px;color:var(--ink55);}.sr-art .nums b{font-size:12px;color:var(--ink);}',
+    '.sr-hero{position:relative;aspect-ratio:3/1;max-height:300px;border-radius:12px;background:#eef2ee center/cover no-repeat;margin:0 0 16px;}',
+    '.sr-by{display:flex;align-items:center;gap:12px;margin:0 0 16px;font-size:13.5px;font-weight:800;color:var(--ink);}',
+    '.sr-by small{display:block;font-size:11.5px;font-weight:600;color:var(--ink55);}',
+    '.sr-txt{max-width:860px;margin:0 0 18px;}.sr-txt p{font-size:16px;line-height:1.65;color:var(--ink75);margin:0 0 14px;}',
+    '.sr-txt a{color:var(--g);font-weight:800;text-decoration:none;}',
+    '.sr-adg{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,320px);gap:16px;align-items:start;margin:0 0 22px;}',
+    '.sr-adg .sr-snap.tall img{max-height:380px;}',
+    '@media (max-width:1180px){.sr-row .sr-stat{flex-basis:calc((100% - 24px) / 3);}}',
+    '@media (max-width:900px){.sr-adg{grid-template-columns:minmax(0,1fr);}.sr-arw{display:none;}}',
+    '@media (max-width:560px){.sr-row{gap:8px;}.sr-row .sr-stat{flex-basis:calc((100% - 8px) / 2);padding:12px;}.sr-row .sr-stat b{font-size:21px;}.sr-art{grid-template-columns:104px minmax(0,1fr);}.sr-art .pic{min-height:130px;}.sr-hero{aspect-ratio:16/9;}.sr-txt p{font-size:15px;}}',
     '@media (max-width:760px){.sr-evhead{grid-template-columns:1fr;}}','@media (max-width:560px){.sr-pick{width:100%;}.sr-price,.sr-pkg{grid-template-columns:1fr;}.sr-price strong{text-align:left;}.sr-tabs a{padding:8px 12px;font-size:12.5px;}.sr-card .pic{aspect-ratio:16/9;}}'
   ].join('');
   var st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
@@ -375,8 +434,8 @@
     ['VegFest Media Corners, presenting', cnt('vf'), RATE.vf, '#/event/vegfest-spring/opportunity'],
     ['Daily Pulse sponsorship posts', PULSE.length, RATE.pulse, '#/pulse'],
     ['SoFlo Vegans Podcast host reads', POD.length, RATE.pod, '#/podcast'],
-    ['Social posts (one platform each)', SOCIAL.length, RATE.social, '#/campaigns'],
-    ['Sponsor stories on the city hub', STORIES.length, RATE.story, '#/campaigns'],
+    ['Social posts (one platform each)', SOCIAL.length, RATE.social, '#/campaigns/q1/social'],
+    ['Sponsor stories on the city hub', STORIES.length, RATE.story, '#/campaigns/q1/email'],
     ['City Guide placement, a quarter', GUIDE_Q.length, RATE.guide, '#/package'],
     ['Banner impressions (per 1,000)', sum(BAN_IMP) / 1000, RATE.ban, '#/banners']
   ];
@@ -527,10 +586,10 @@
   function overview() {
     var qs = [1, 2, 3, 4].map(function (q) { var s = span(qMonths(q)); return s; });
     var rows = [
-      [BIZ + 's-team.webp', 'Q1: January to March', qs[0].evs.map(evTitle).join(', ') + '. ' + n(qs[0].att) + ' people at events.', 'campaigns/q1', 'See Q1'],
-      [EG + 'still-overview.jpg', 'Q2: April to June', qs[1].evs.map(evTitle).join(', ') + '. ' + n(qs[1].att) + ' people at events.', 'campaigns/q2', 'See Q2'],
-      [BIZ + 's-outside-night.webp', 'Q3: July to September', qs[2].evs.map(evTitle).join(', ') + '. ' + n(qs[2].att) + ' people at events.', 'campaigns/q3', 'See Q3'],
-      [PIC + 'vegan-events-guide.jpg', 'Q4: October to December', qs[3].evs.map(evTitle).join(', ') + ', then the year-end report. ' + n(qs[3].att) + ' people at events.', 'campaigns/q4', 'See Q4'],
+      [BIZ + 's-team.webp', 'Q1: January to March', qs[0].evs.map(evTitle).join(', ') + '. ' + n(qs[0].att) + ' people at events.', 'campaigns/q1/events', 'See Q1'],
+      [EG + 'still-overview.jpg', 'Q2: April to June', qs[1].evs.map(evTitle).join(', ') + '. ' + n(qs[1].att) + ' people at events.', 'campaigns/q2/events', 'See Q2'],
+      [BIZ + 's-outside-night.webp', 'Q3: July to September', qs[2].evs.map(evTitle).join(', ') + '. ' + n(qs[2].att) + ' people at events.', 'campaigns/q3/events', 'See Q3'],
+      [PIC + 'vegan-events-guide.jpg', 'Q4: October to December', qs[3].evs.map(evTitle).join(', ') + ', then the year-end report. ' + n(qs[3].att) + ' people at events.', 'campaigns/q4/events', 'See Q4'],
       [PIC + 'restaurant-guide/t-pulse.jpg', 'Daily Pulse', n(PULSE.length) + ' sponsorship posts in the morning briefings: ' + n(T.pReads) + ' reads and ' + n(T.pClk) + ' clicks.', 'pulse', 'See the posts'],
       [PIC + 'holiday/p-listen.jpg', 'SoFlo Vegans Podcast', n(POD.length) + ' host reads: ' + n(T.podDl) + ' downloads and ' + n(T.podClk) + ' clicks from the show notes.', 'podcast', 'See the episodes'],
       [IMG + 'snap-billboard.jpg', 'Banner Advertising', n(T.banImp) + ' impressions on the South Florida, Central Florida and Atlanta hubs: ' + n(T.banClk) + ' clicks.', 'banners', 'See the banners'],
@@ -542,7 +601,7 @@
         '<b>Start with the campaigns,</b> by quarter. Every card is an event, with its results, where people saw it and where the sponsor\'s name was.',
         '<b>Every click is tracked.</b> Reads, downloads, check-ins and visitors are people.',
         '<b>It never happened.</b> It is the year Vegans Explore is positioned to run for a sponsor, with made-up results.'
-      ], '<a class="dg-btn" href="#/campaigns">Start the walk-through</a><a class="dg-btn dg-ghost" href="#/campaigns">See the campaigns</a>') +
+      ], '<a class="dg-btn" href="#/campaigns/q1/events">Start the walk-through</a><a class="dg-btn dg-ghost" href="#/campaigns/q1/events">See the campaigns</a>') +
       '<section class="sr-pkg" aria-label="Your package"><div><small>Your package</small><b>The full package, ' + money(PACKAGE) + ' for 2027</b><p>Every campaign on this report, in one sponsorship: ' + money(PACKAGE_Q) + ' a quarter. Bought one at a time from our rate card, it comes to ' + money(ALACARTE) + '; the package saves ' + money(SAVE) + ', about ' + Math.floor(SAVE / ALACARTE * 100) + '%.</p></div><a class="dg-btn" href="#/package">See what is in it</a></section>' +
       h5('2027 at a glance') +
       stats([
@@ -557,7 +616,7 @@
       ]) +
       '<p class="sr-note">Sample results: Visit Marisol Bay and every number on this report are made up to show what a year of sponsorship looks like. The campaigns are ones Vegans Explore runs or is set up to run.</p>' +
       group('Your year, one page at a time', rows.map(function (r) { return artRow(r[0], r[1], esc(r[2]), href(r[3]), r[4]); })) +
-      cta('Walk the year with V.', 'Start with the campaigns, then see what we can do for you.', ['Start with the campaigns', '#/campaigns']);
+      cta('Walk the year with V.', 'Start with the campaigns, then see what we can do for you.', ['Start with the campaigns', '#/campaigns/q1/events']);
   }
 
   // ---------- What we can do for you (Sean, 2026-11-09: the last section, about the visitor, no Marisol Bay) ----------
@@ -597,38 +656,199 @@
       cta('Ready when you are.', 'Tell us where you are going, and we will build your year around it.', ['Talk to us', '/contact']);
   }
 
-  // ---------- Campaigns, by quarter ----------
+  // ---------- Campaigns: a quarter, then a kind of promotion (Sean, 2026-11-09: "things contained within the campaign, within the
+  // quarter ... the stats in one row with a swipe ... above the tiles, the different types of promotion ... The results will be the tiles
+  // at the top. The content will be what's listed below"). #/campaigns/q1..q4/events|social|podcast|email|ads; #/campaigns opens Q1 events.
   var QN = ['', 'January to March', 'April to June', 'July to September', 'October to December'];
-  function campaigns(sub) {
-    var q = /^q([1-4])$/.exec(sub || ''), qi = q ? +q[1] : 0;
-    var tabsHtml = tabs([['all', '#/campaigns', 'All']].concat([1, 2, 3, 4].map(function (i) { return ['q' + i, '#/campaigns/q' + i, 'Q' + i]; })), qi ? 'q' + qi : 'all');
-    function quarter(i, withHead) {
-      var s = span(qMonths(i)), evs = EVENTS.filter(function (e) { return e.q === i; });
-      return (withHead ? '<div class="sr-qh"><h4>Q' + i + ': ' + QN[i] + '</h4><span>' + n(s.att) + ' people at events &middot; ' + n(s.clk) + ' tracked clicks &middot; <a href="#/dashboard/q' + i + '" style="color:var(--g);font-weight:800;text-decoration:none">Q' + i + ' report &rsaquo;</a></span></div>' : '') +
-        '<div class="sr-cards">' + evs.map(evCard).join('') + (i === 4 ? yearEndCard() : '') + '</div>';
-    }
-    var body;
-    if (qi) {
-      var s = span(qMonths(qi));
-      body = stats([[n(s.evs.length), 'Events', QN[qi], true], [n(s.att), 'People attended'], [n(s.vis), 'Out-of-town visitors', 'Tracked'], [n(s.chk), 'Check-ins'], [n(s.clk), 'Tracked clicks', 'Every channel']]) + quarter(qi, false) +
-        '<p class="sr-note" style="margin-top:0">All quarter: Daily Pulse posts, host reads, banners, social posts and the city Guide placement. <a href="#/dashboard/q' + qi + '" style="color:var(--g);font-weight:800;text-decoration:none">Open the Q' + qi + ' report &rsaquo;</a></p>';
+  var KINDS = [['events', 'Events'], ['social', 'Social'], ['podcast', 'Podcast'], ['email', 'Email: Daily Pulse'], ['ads', 'Ads']];
+  function addDays(iso, k) { var d = dt(iso); d.setDate(d.getDate() + k); return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2); }
+
+  // The posts behind the social totals (SOCIAL, above): when each went out and what it said. Same reach and clicks, so every total agrees.
+  var ALT = [EG + 'still-after.jpg', BIZ + 's-banquette.webp', EG + 'still-hosts.jpg', BIZ + 's-counter.webp', EG + 'still-word.jpg', BIZ + 's-window-bar.webp'];
+  EVENTS.forEach(function (e, i) {
+    var plan = e.s === 'expo' ? [[-7, 'pre'], [-2, 'week'], [0, 'gala'], [2, 'recap']] : [[-7, 'pre'], [1, 'recap']];
+    e.social.forEach(function (s, j) {
+      var k = plan[j][1], t = evTitle(e);
+      s.pd = addDays(e.d, plan[j][0]); s.pic = j % 2 ? ALT[i % ALT.length] : e.pic;
+      s.cap = k === 'pre' ? t + ' is ' + day(e.d, true) + (e.city === 'Marisol Bay' ? '' : ' in ' + e.city) + '. Presented by Visit Marisol Bay. RSVP at the link in our bio.'
+        : k === 'week' ? 'This weekend: the World Vegan Expo in Marisol Bay, and the Vegans Explore Gala on Friday night. Presented by Visit Marisol Bay.'
+        : k === 'gala' ? 'Tonight: the Vegans Explore Gala, presented by Visit Marisol Bay. ' + n(e.gala) + ' guests, one stage, a plant-based dinner.'
+        : e.s === 'vf' ? 'The Media Corner clips are up: ' + e.iv + ' interviews from ' + e.sub.split(', ')[1] + '. Presented by Visit Marisol Bay.'
+        : e.s === 'expo' ? 'Thank you, Marisol Bay: ' + n(e.att) + ' people over two days at the World Vegan Expo. Presented by Visit Marisol Bay.'
+        : 'Thank you, ' + e.city + '! ' + n(e.att) + ' of you came to ' + t + '. Plan your weekend on the bay at the link in our bio.';
+    });
+  });
+
+  // The Daily Pulse posts and the sponsor stories, as articles (#/pulse/<id>): a summary each, and a short sample article.
+  var SUMS = {
+    '2027-01-07': 'Twelve months of plant-based events, festivals and suppers on the bay, from the January kickoff to the World Vegan Expo in October.',
+    '2027-01-12': 'The first community event of the year is Thursday at Green Leaf Kitchen: a tasting menu, new faces and the calendar for 2027.',
+    '2027-01-28': 'Two hours from Orlando, Marisol Bay has Vegan brunch, a beach boardwalk and a plant-based food truck row. Here is the weekend.',
+    '2027-02-11': 'Vegans Explore Orlando meets next Thursday downtown. Every guest gets a trip code for a weekend on the bay.',
+    '2027-02-25': 'February in Atlanta is cold. February on the bay is warm, with Vegan tacos by the water. A four-day plan.',
+    '2027-03-08': 'Spring VegFest fills Bayfront Park on Saturday. Find the Media Corner by the main stage and tell us your story on camera.',
+    '2027-03-25': 'From a rooftop taqueria to a garden wine bar, five patios with Vegan menus for warm spring evenings in Marisol Bay.',
+    '2027-04-15': 'Earth Day week in Tampa: a community supper in Seminole Heights, and a trip code for the bay for every guest.',
+    '2027-04-29': 'A free weekend shuttle links the boardwalk, the harbor and Seagrape Key, with stops at eight plant-based places.',
+    '2027-05-13': 'Vegans Explore Marisol Bay #2 is at Tidepool Tacos on Marisol Beach, as the summer begins. Come hungry.',
+    '2027-05-27': 'Fly or drive: a long weekend on the bay, with places to eat, stay and swim, all checked in at by members.',
+    '2027-06-10': 'Vegans Explore St. Petersburg is next Thursday at a Vegan bar on Central Avenue. Bring a friend.',
+    '2027-06-24': 'Salt in your hair and lunch in mind: the plant-based places closest to the sand in Marisol Bay.',
+    '2027-07-08': 'A summer supper at Mangrove & Mint in Port Marisol, with the harbor at sunset and a chef\'s menu.',
+    '2027-07-29': 'A summer drive south: where to stop, where to eat and where to stay for a Vegan weekend in Marisol Bay.',
+    '2027-08-12': 'Vegans Explore Atlanta is next Thursday in Old Fourth Ward, with a trip code for the bay for every guest.',
+    '2027-08-26': 'Five breakfast places on Seagrape Key, from acai bowls to banana bread, open early for the school run.',
+    '2027-09-09': 'The September community event is at Seagrape Supper Club on Seagrape Key. The quietest month on the bay is a good one to visit.',
+    '2027-09-23': 'The World Vegan Expo comes to the Marisol Bay Convention Center on October 15 and 16, with the Vegans Explore Gala on Friday night.',
+    '2027-10-07': 'Two hours south: two days of the World Vegan Expo, and the Gala on Friday night. The hotel room block is open.',
+    '2027-10-12': 'The World Vegan Expo opens Friday at the Convention Center: the floor map, the main stage and Booth 1 by the main doors.',
+    '2027-10-26': 'Fall VegFest is Saturday at Bayfront Park. Here is who is at the Media Corner, hour by hour.',
+    '2027-11-10': 'Where to book a plant-based ThanksLiving dinner in Marisol Bay, from a family table to a chef\'s tasting menu.',
+    '2027-12-02': 'Holiday lights on the boardwalk, and the Vegan bites worth the walk, from cocoa to cookies.',
+    '2027-12-16': 'The 2028 calendar is coming: save the dates for the community events, both VegFests and the World Vegan Expo.',
+    'story-2027-01-08': 'Six brunch stops across Marisol Bay, mapped by Visit Marisol Bay, with a check-in at each for points.',
+    'story-2027-05-06': 'Why summer is a good time for a plant-based trip to the bay: fewer crowds, long evenings and open tables.',
+    'story-2027-09-02': 'Warm water, open tables and the community event on Seagrape Key: Visit Marisol Bay on its quietest month.',
+    'story-2027-10-01': 'Two days, a Gala and a city ready for plant-based visitors: the Expo guide from Visit Marisol Bay.'
+  };
+  var PPIC = [BIZ + 's-outside-day.webp', BIZ + 'm-acai.webp', BIZ + 's-details.webp', BIZ + 'm-burrito.webp', BIZ + 's-room-back.webp', BIZ + 'm-pancakes.webp', BIZ + 's-owner.webp', BIZ + 'm-bananabread.webp', BIZ + 'm-hibiscus.webp', BIZ + 'm-cookie.webp', BIZ + 's-outside-dusk.webp'];
+  var ARTS = [];
+  PULSE.forEach(function (x, i) { x.id = x.d; x.kind = 'pulse'; x.pic = x.ev ? ev(x.ev).pic : PPIC[i % PPIC.length]; x.sum = SUMS[x.id]; ARTS.push(x); });
+  STORIES.forEach(function (x, i) { x.id = 'story-' + x.d; x.kind = 'story'; x.hub = 'Marisol Bay'; x.pic = [BIZ + 's-banquette.webp', BIZ + 's-outside-day.webp', BIZ + 's-outside-night.webp', PIC + 'vegan-events-guide.jpg'][i]; x.sum = SUMS[x.id]; ARTS.push(x); });
+  function art(id) { for (var i = 0; i < ARTS.length; i++) if (ARTS[i].id === id) return ARTS[i]; return null; }
+  function artBody(a) {
+    var e = ev(a.ev), ps = [a.sum];
+    if (e) ps.push(evTitle(e) + ' is ' + evDate(e) + ', at ' + e.venue + (e.city === 'Marisol Bay' ? '' : ' in ' + e.city) + '. ' +
+      (e.s === 'expo' ? 'Tickets cover both days; the Gala on Friday night has its own. Rooms in the Expo\'s hotel block are held until the week before.'
+        : e.s === 'vf' ? 'Entry to VegFest is free. The Media Corner runs all day; stop by for an interview, or just to say hello.'
+        : 'RSVP is free for members, and every guest gets a QR trip code for a weekend in Marisol Bay.'));
+    else if (a.hub === 'Marisol Bay') ps.push('Every place in this ' + (a.kind === 'story' ? 'story' : 'post') + ' is in the Vegans Explore Directory, with its hours, its menu and what members say. Check in at each one for points.');
+    else ps.push('Marisol Bay is an easy trip from ' + a.hub + '. Plan the weekend with the trip planner from Visit Marisol Bay, and check in at each place you visit for points.');
+    ps.push(a.kind === 'story' ? 'This story is by Visit Marisol Bay, the presenting sponsor of the Marisol Bay hub, and is marked as theirs on the hub.' : 'Today\'s topic is presented by Visit Marisol Bay, and is marked as the sponsor\'s in the ' + a.hub + ' Pulse.');
+    return ps;
+  }
+
+  // The banners and the city Guide placement by quarter. A quarter's hubs and sizes are split from the year so that both the quarter
+  // and the year add up (the last hub takes the quarter's remainder, Q4 takes each hub's remainder).
+  var QIMP = [1, 2, 3, 4].map(function (q) { return sum(qMonths(q).map(function (m) { return BAN_IMP[m]; })); });
+  var QCLK = [1, 2, 3, 4].map(function (q) { return sum(qMonths(q).map(function (m) { return BAN_CLK[m]; })); });
+  function splitQ(rows, key, qTot, unit) {
+    var tot = sum(rows, key), out = rows.map(function () { return [0, 0, 0, 0]; });
+    for (var q = 0; q < 3; q++) { var acc = 0; rows.forEach(function (r, h) { if (h < rows.length - 1) { var v = Math.round(r[key] * qTot[q] / tot / unit) * unit; out[h][q] = v; acc += v; } else out[h][q] = qTot[q] - acc; }); }
+    rows.forEach(function (r, h) { out[h][3] = r[key] - out[h][0] - out[h][1] - out[h][2]; });
+    return out;
+  }
+  var HUB_IMP = splitQ(BAN_HUB, 'imp', QIMP, 100), HUB_CLK = splitQ(BAN_HUB, 'clk', QCLK, 1);
+  var SIZE_IMP = splitQ(BAN_SIZE, 'imp', QIMP, 100), SIZE_CLK = splitQ(BAN_SIZE, 'clk', QCLK, 1);
+
+  // The results: one row of tiles that slides sideways, with dots under it (wired in wireRows after each render).
+  function tileRow(list) {
+    return '<div class="sr-rw"><div class="sr-row" tabindex="0" aria-label="Results, slide for more">' + list.map(function (s) { return '<div class="sr-stat' + (s[3] ? ' hi' : '') + '"><b>' + s[0] + '</b><span>' + esc(s[1]) + '</span>' + (s[2] ? '<small>' + esc(s[2]) + '</small>' : '') + '</div>'; }).join('') + '</div>' +
+      '<div class="sr-dotbar"><button type="button" class="sr-arw" data-d="-1" aria-label="Previous results">&lsaquo;</button><div class="sr-dots" role="tablist" aria-label="Result pages"></div><button type="button" class="sr-arw" data-d="1" aria-label="More results">&rsaquo;</button></div></div>';
+  }
+  function wireRows() {
+    Array.prototype.forEach.call(main.querySelectorAll('.sr-rw'), function (w) {
+      var row = w.querySelector('.sr-row'), dots = w.querySelector('.sr-dots'), tiles = row.children, pages = 1, step = 1;
+      function measure() {
+        var tw = tiles[0] ? tiles[0].getBoundingClientRect().width : 1, gap = parseFloat(getComputedStyle(row).columnGap) || 0;
+        var per = Math.max(1, Math.round((row.clientWidth + gap) / (tw + gap)));
+        step = (tw + gap) * per; pages = Math.max(1, Math.ceil(tiles.length / per));
+        w.classList.toggle('one', pages < 2);
+        var h = ''; for (var i = 0; i < pages; i++) h += '<button type="button" class="sr-dot" role="tab" aria-label="Results page ' + (i + 1) + ' of ' + pages + '" data-i="' + i + '"></button>';
+        dots.innerHTML = h; mark();
+      }
+      function cur() { return row.scrollLeft >= row.scrollWidth - row.clientWidth - 2 ? pages - 1 : Math.min(pages - 1, Math.round(row.scrollLeft / step)); }
+      function mark() { var c = cur(); Array.prototype.forEach.call(dots.children, function (d, i) { d.setAttribute('aria-selected', String(i === c)); }); }
+      function to(i) { row.scrollTo({ left: Math.max(0, Math.min(pages - 1, i)) * step, behavior: 'smooth' }); }
+      row.addEventListener('scroll', mark, { passive: true });
+      dots.addEventListener('click', function (ev) { var b = ev.target.closest('.sr-dot'); if (b) to(+b.getAttribute('data-i')); });
+      Array.prototype.forEach.call(w.querySelectorAll('.sr-arw'), function (b) { b.addEventListener('click', function () { to(cur() + +b.getAttribute('data-d')); }); });
+      measure(); window.addEventListener('resize', measure);
+    });
+  }
+
+  // The content under the tiles, one kind at a time.
+  var PLATC = { Instagram: '#c13584', TikTok: '#111', Facebook: '#1877f2' };
+  function postCard(e, s) {
+    return '<article class="sr-post"><span class="sr-stamp">Sample</span><div class="top"><i></i><div>vegansexplore<span>Paid partnership with Visit Marisol Bay</span></div><em style="background:' + PLATC[s.p] + '">' + esc(s.p) + '</em></div>' +
+      '<div class="ph" style="background-image:url(&quot;' + esc(s.pic) + '&quot;)">' + (s.p === 'TikTok' ? '<span class="vid">Video</span>' : '') + '</div>' +
+      '<p class="cap"><b>vegansexplore</b> ' + esc(s.cap) + '</p><div class="ft"><span>' + esc(day(s.pd)) + ', 2027</span><span><b>' + n(s.reach) + '</b> reach</span><span><b>' + n(s.clk) + '</b> clicks</span></div>' +
+      '<a class="ev" href="#/event/' + e.id + '/seen">' + esc(evTitle(e)) + ' &rsaquo;</a></article>';
+  }
+  function epCard(x) {
+    var e = ev(x.ev);
+    return '<article class="sr-snap"><div class="sr-mk sr-pod"><span class="sr-stamp">Sample</span><div class="art"><b>SoFlo<br>Vegans</b><small>Podcast</small></div><div><h4>Episode ' + x.ep + ': ' + esc(x.t) + '</h4>' +
+      '<p>' + day(x.d, true) + ', 2027 &middot; <b>' + n(x.dl) + '</b> downloads &middot; <b>' + n(x.clk) + '</b> clicks</p>' +
+      '<div class="sr-read"><small>Sponsor read, 30 seconds</small>"This episode is brought to you by Visit Marisol Bay. Sun, sand, plant-based. Join us at ' + esc(evTitle(e)) + ' on ' + esc(day(e.d, true)) + ', and plan your weekend at vegansexplore.com/go/marisol-bay."</div>' +
+      '<div class="sr-podft"><span class="sr-soon">Listen: Coming</span><a href="#/event/' + e.id + '/seen">' + esc(evTitle(e)) + ' &rsaquo;</a></div></div></div></article>';
+  }
+  function artCard(a) {
+    return '<a class="sr-art" href="#/pulse/' + a.id + '"><span class="pic" style="background-image:url(&quot;' + esc(a.pic) + '&quot;)"><span class="sr-stamp">Sample</span></span><span class="b">' +
+      '<small>' + (a.kind === 'story' ? 'Sponsor story &middot; Marisol Bay hub' : 'The ' + esc(a.hub) + ' Pulse') + ' &middot; ' + esc(day(a.d)) + '</small><b>' + esc(a.t) + '</b><p>' + esc(a.sum) + '</p>' +
+      '<span class="by">Presented by Visit Marisol Bay</span><span class="nums"><b>' + n(a.reads) + '</b> reads &middot; <b>' + n(a.clk) + '</b> clicks</span></span></a>';
+  }
+
+  function campaigns(sub, kind) {
+    var m = /^q([1-4])$/.exec(sub || ''), qi = m ? +m[1] : 1;
+    if (!KINDS.some(function (k) { return k[0] === kind; })) kind = 'events';
+    var here = '#/campaigns/q' + qi + '/' + kind;
+    if (location.hash !== here && history.replaceState) history.replaceState(null, '', here);
+    var s = span(qMonths(qi)), evs = EVENTS.filter(function (e) { return e.q === qi; }), kl = KINDS.filter(function (k) { return k[0] === kind; })[0][1];
+    var qTabs = tabs([1, 2, 3, 4].map(function (i) { return ['q' + i, '#/campaigns/q' + i + '/' + kind, 'Q' + i]; }), 'q' + qi);
+    var kTabs = tabs(KINDS.map(function (k) { return [k[0], '#/campaigns/q' + qi + '/' + k[0], k[1]]; }), kind).replace('class="sr-tabs"', 'class="sr-tabs sr-kinds"').replace('aria-label="Views"', 'aria-label="Kinds of promotion"');
+    var tiles, body;
+    if (kind === 'events') {
+      var vf = evs.filter(function (e) { return e.s === 'vf'; }), ex = evs.filter(function (e) { return e.s === 'expo'; });
+      tiles = [[n(evs.length), 'Events', QN[qi], true], [n(s.att), 'People attended'], [n(sum(evs, 'vis')), 'Out-of-town visitors', 'From the events, tracked'], [n(s.chk), 'Check-ins', 'At local businesses'], [n(s.mem), 'New members', 'Joined at an event'],
+        [n(sum(evs, function (e) { return e.clk + e.email.clk; })), 'Tracked clicks', 'RSVP pages, trip codes, invites']];
+      if (vf.length) tiles.push([n(sum(vf, 'views')), 'Media Corner clip views', n(sum(vf, 'clips')) + ' clips']);
+      if (ex.length) tiles.push([n(ex[0].rooms), 'Hotel room nights', 'From the World Vegan Expo'], [n(ex[0].gala), 'Guests at the Gala', 'Friday evening']);
+      body = h5('The events in Q' + qi) + '<div class="sr-cards">' + evs.map(evCard).join('') + (qi === 4 ? yearEndCard() : '') + '</div>';
+    } else if (kind === 'social') {
+      var posts = []; evs.forEach(function (e) { e.social.forEach(function (p) { posts.push([e, p]); }); });
+      posts.sort(function (a, b) { return a[1].pd < b[1].pd ? -1 : 1; });
+      var reach = sum(posts, function (x) { return x[1].reach; }), clk = sum(posts, function (x) { return x[1].clk; });
+      tiles = [[n(posts.length), 'Social posts', 'Tagged as a paid partnership', true], [n(reach), 'Reach', 'Views, all platforms'], [n(clk), 'Tracked clicks', 'From the link in bio'], [pct(clk, reach), 'Click rate']];
+      ['Instagram', 'TikTok', 'Facebook'].forEach(function (p) { var l = posts.filter(function (x) { return x[1].p === p; }); if (l.length) tiles.push([n(sum(l, function (x) { return x[1].reach; })), p + ' reach', l.length + (l.length > 1 ? ' posts' : ' post')]); });
+      body = h5('The posts in Q' + qi) + '<div class="sr-posts">' + posts.map(function (x) { return postCard(x[0], x[1]); }).join('') + '</div>';
+    } else if (kind === 'podcast') {
+      var eps = s.pod;
+      tiles = [[n(eps.length), 'Host reads', 'One per episode', true], [n(s.dl), 'Downloads', 'First 30 days of each'], [n(eps.length ? Math.round(s.dl / eps.length) : 0), 'Downloads an episode', 'On average'], [n(sum(eps, 'clk')), 'Tracked clicks', 'From the show notes'], [pct(sum(eps, 'clk'), s.dl), 'Click rate', 'Of downloads']];
+      body = h5('The episodes in Q' + qi) + '<div class="sr-eps">' + eps.map(epCard).join('') + '</div>';
+    } else if (kind === 'email') {
+      var ps = s.pulse, sts = s.stor, hubs = {}; ps.forEach(function (x) { hubs[x.hub] = 1; });
+      tiles = [[n(ps.length), 'Daily Pulse posts', 'Sent by email, and on the hub', true], [n(s.reads), 'Reads'], [n(ps.length ? Math.round(s.reads / ps.length) : 0), 'Reads a post', 'On average'], [n(sum(ps, 'clk')), 'Tracked clicks'], [pct(sum(ps, 'clk'), s.reads), 'Click rate', 'Of reads'],
+        [n(Object.keys(hubs).length), 'Cities\' Pulses', Object.keys(hubs).join(', ')], [n(sum(sts, 'reads')), 'Sponsor story reads', sts.length + (sts.length === 1 ? ' story' : ' stories') + ' on the hub'], [n(sum(sts, 'clk')), 'Sponsor story clicks']];
+      body = h5('The Daily Pulse posts in Q' + qi) + '<div class="sr-arts">' + ps.map(artCard).join('') + '</div>' +
+        (sts.length ? h5('The sponsor story on the city hub') + '<div class="sr-arts">' + sts.map(artCard).join('') + '</div>' : '');
     } else {
-      var allYear = [
-        ['#/pulse', 'Daily Pulse', n(PULSE.length) + ' sponsorship posts'], ['#/podcast', 'SoFlo Vegans Podcast', n(POD.length) + ' host reads'],
-        ['#/banners', 'Banner Advertising', n(T.banImp) + ' impressions'], ['#/package', 'City Guide placement', 'All four quarters'],
-        ['#/event/expo/seen', 'Social posts', n(SOCIAL.length) + ' posts, two for each event'], ['#/package', 'Sponsor stories', n(STORIES.length) + ' stories, one a quarter'],
-        ['#/package', 'Airport Guide placement', 'Coming'], ['#/dashboard', 'Marketing Dashboard', 'Monthly and quarterly reports']
-      ];
-      body = [1, 2, 3, 4].map(function (i) { return quarter(i, true); }).join('') +
-        h5('All year') + '<div class="sr-reps">' + allYear.map(function (x) { return '<a class="sr-rep" href="' + x[0] + '"><small>All year</small><b>' + esc(x[1]) + '</b><span>' + esc(x[2]) + '</span></a>'; }).join('') + '</div>';
+      var g = GUIDE_Q[qi - 1], fv = sum(qMonths(qi).map(function (x) { return BAN_FEEDV[x]; }));
+      tiles = [[n(s.imp), 'Banner impressions', QN[qi], true], [n(QCLK[qi - 1]), 'Banner clicks'], [pct(QCLK[qi - 1], s.imp), 'Click rate'], [n(fv), 'Feeder-city visitors', 'Sent by the banners, tracked'],
+        [n(g.views), 'City Guide views', 'The sponsor card in the Marisol Bay Guide'], [n(g.clk), 'City Guide clicks'], [money(RATE.ban), 'Per 1,000 impressions', 'Our rate card']];
+      var hubT = table([['Hub'], ['Impressions', 1], ['Clicks', 1], ['Click rate', 1]], BAN_HUB.map(function (x, h) { return ['<b>' + esc(x.hub) + '</b>', n(HUB_IMP[h][qi - 1]), n(HUB_CLK[h][qi - 1]), pct(HUB_CLK[h][qi - 1], HUB_IMP[h][qi - 1])]; }), ['Total', n(s.imp), n(QCLK[qi - 1]), pct(QCLK[qi - 1], s.imp)]);
+      var sizeT = table([['Size'], ['Where it shows'], ['Impressions', 1], ['Clicks', 1]], BAN_SIZE.map(function (x, h) { return ['<b>' + esc(x.size) + '</b>', esc(x.where), n(SIZE_IMP[h][qi - 1]), n(SIZE_CLK[h][qi - 1])]; }), ['Total', '', n(s.imp), n(QCLK[qi - 1])]);
+      var guideT = table([['Placement'], ['Where it shows'], ['Views', 1], ['Clicks', 1]], [['<b>City Guide placement</b>', 'The sponsor card in the Marisol Bay city Guide, all quarter', n(g.views), n(g.clk)]]);
+      body = h5('Where the banners ran in Q' + qi) + '<div class="sr-adg"><div>' + hubT + sizeT + guideT + '</div>' +
+        snap(IMG + 'snap-billboard.jpg', 'The billboard, 300 x 600', 'Beside every section of the hub, on desktop.', ['Open the hub', HUB + '?tab=news'], 'tall') + '</div>';
     }
-    return crumb(qi ? [['Campaigns', '#/campaigns'], ['Q' + qi]] : [['Campaigns']]) + head('The 2027 calendar', qi ? 'Campaigns, Q' + qi : 'Campaigns') +
-      card('How to use this page', 'The year by quarter', EG + 'still-plan.jpg', [
-        '<b>Pick All, or a quarter.</b> Each card is an event the sponsor presented: its date, its city and its headline result.',
-        '<b>Open a card</b> for its results, where people saw it, where Visit Marisol Bay appeared, and what the sponsorship costs.'
-      ], '<a class="dg-btn" href="#/event/marisol-bay-1">Open the first event</a>') +
-      tabsHtml + body +
-      cta('See the whole year in one report.', 'The year-end report adds up every event and every channel.', ['Open the year-end report', '#/dashboard/year']);
+    return crumb([['Campaigns', '#/campaigns/q1/events'], ['Q' + qi, '#/campaigns/q' + qi + '/events'], [kl]]) +
+      '<div class="sr-evhead"><div>' + head('The 2027 calendar', 'Campaigns, Q' + qi) + '<p class="sr-evline">' + QN[qi] + ' &middot; ' + n(s.clk) + ' tracked clicks, every channel &middot; <a href="#/dashboard/q' + qi + '">Q' + qi + ' report &rsaquo;</a></p></div></div>' +
+      qTabs + kTabs + tileRow(tiles) + body +
+      cta('See the whole year in one report.', 'The year-end report adds up every quarter and every channel.', ['Open the year-end report', '#/dashboard/year']);
+  }
+
+  // One Daily Pulse post or sponsor story, as an article: #/pulse/<id>.
+  function article(id) {
+    var a = art(id); if (!a) return null;
+    var q = qOf(a.d), e = ev(a.ev), list = ARTS.filter(function (x) { return qOf(x.d) === q; }).sort(function (x, y) { return x.d < y.d ? -1 : 1; }), i = list.indexOf(a), prev = list[i - 1], nxt = list[i + 1];
+    var nav = '<div class="wg-gs-btns" style="margin:4px 0 22px">' + (prev ? '<a class="dg-btn dg-ghost" href="#/pulse/' + prev.id + '">Previous post</a>' : '') + '<a class="dg-btn" href="#/campaigns/q' + q + '/email">Back to Q' + q + ' Daily Pulse</a>' + (nxt ? '<a class="dg-btn dg-ghost" href="#/pulse/' + nxt.id + '">Next post</a>' : '') + '</div>';
+    return crumb([['Campaigns', '#/campaigns/q1/events'], ['Q' + q, '#/campaigns/q' + q + '/events'], ['Email: Daily Pulse', '#/campaigns/q' + q + '/email'], [a.t]]) +
+      '<article class="sr-read-a">' + head((a.kind === 'story' ? 'Sponsor story, Marisol Bay hub' : 'The ' + a.hub + ' Pulse') + ' · ' + day(a.d, true) + ', 2027', a.t) +
+      '<div class="sr-hero" style="background-image:url(&quot;' + esc(a.pic) + '&quot;)"><span class="sr-stamp">Sample</span></div>' +
+      '<div class="sr-by">' + LOGO.replace('sr-logo', 'sr-logo sm') + '<span>' + (a.kind === 'story' ? 'By Visit Marisol Bay' : 'Presented by Visit Marisol Bay') + '<small>Sample article, made up for the simulation</small></span></div>' +
+      '<div class="sr-txt">' + artBody(a).map(function (p) { return '<p>' + esc(p) + '</p>'; }).join('') +
+      (e ? '<p><a href="#/event/' + e.id + '">See ' + esc(evTitle(e)) + ' and its results &rsaquo;</a></p>' : '') + '</div>' +
+      stats([[n(a.reads), 'Reads', '', true], [n(a.clk), 'Tracked clicks'], [pct(a.clk, a.reads), 'Click rate']]) + '</article>' + nav;
   }
 
   // ---------- one event, its own page ----------
@@ -749,8 +969,8 @@
       body = opportunity(e);
     }
     var i = EVENTS.indexOf(e), prev = EVENTS[i - 1], nxt = EVENTS[i + 1];
-    var pn = '<div class="wg-gs-btns" style="margin:4px 0 22px">' + (prev ? '<a class="dg-btn dg-ghost" href="#/event/' + prev.id + '">Previous event</a>' : '') + '<a class="dg-btn" href="#/campaigns/q' + e.q + '">Back to Q' + e.q + '</a>' + (nxt ? '<a class="dg-btn dg-ghost" href="#/event/' + nxt.id + '">Next event</a>' : '') + '</div>';
-    return crumb([['Campaigns', '#/campaigns'], ['Q' + e.q, '#/campaigns/q' + e.q], [evTitle(e)]]) + top + tb + body + pn;
+    var pn = '<div class="wg-gs-btns" style="margin:4px 0 22px">' + (prev ? '<a class="dg-btn dg-ghost" href="#/event/' + prev.id + '">Previous event</a>' : '') + '<a class="dg-btn" href="#/campaigns/q' + e.q + '/events">Back to Q' + e.q + '</a>' + (nxt ? '<a class="dg-btn dg-ghost" href="#/event/' + nxt.id + '">Next event</a>' : '') + '</div>';
+    return crumb([['Campaigns', '#/campaigns/q1/events'], ['Q' + e.q, '#/campaigns/q' + e.q + '/events'], [evTitle(e)]]) + top + tb + body + pn;
   }
 
   // ---------- the channel pages ----------
@@ -764,7 +984,7 @@
           h5('Where people saw it') + '<div class="sr-snaps">' + snap(IMG + 'snap-pulse-feature.jpg', 'A sponsor topic in the Daily Pulse', 'The sponsor\'s festival as the day\'s Marisol Bay topic, with the conversation under it.', ['Open the Pulse', HUB + '?tab=news']) + '</div>' +
           h5('All ' + PULSE.length + ' posts') +
           table([['Date'], ['City\'s Pulse'], ['Post'], ['Event'], ['Reads', 1], ['Clicks', 1]], PULSE.map(function (x) {
-            var e = ev(x.ev); return [day(x.d), esc(x.hub), '<b>' + esc(x.t) + '</b>', e ? '<a href="#/event/' + e.id + '/seen">' + esc(evTitle(e)) + '</a>' : '', n(x.reads), n(x.clk)];
+            var e = ev(x.ev); return [day(x.d), esc(x.hub), '<a href="#/pulse/' + x.id + '"><b>' + esc(x.t) + '</b></a>', e ? '<a href="#/event/' + e.id + '/seen">' + esc(evTitle(e)) + '</a>' : '', n(x.reads), n(x.clk)];
           }), ['Total', '', PULSE.length + ' posts', '', n(T.pReads), n(T.pClk)])
       });
     },
@@ -826,7 +1046,7 @@
       rows.push(['<b>Airport Guide placement</b>', '', 'Coming', 'Coming']);
       return sectionPage('package', { kicker: 'The full package', title: 'Everything on this report, in one sponsorship', pic: PIC + 'restaurant-guide/t-promos.jpg',
         how: ['<b>Every line</b> is a campaign on this report, priced from our rate card. Open one to see it.', '<b>The package</b> is everything together for the year, at about ' + Math.floor(SAVE / ALACARTE * 100) + '% off buying each one on its own.'],
-        go: ['See the campaigns', '#/campaigns'], ctaTitle: 'See what the package delivered.', ctaText: 'Every event in the package, quarter by quarter, with results.',
+        go: ['See the campaigns', '#/campaigns/q1/events'], ctaTitle: 'See what the package delivered.', ctaText: 'Every event in the package, quarter by quarter, with results.',
         body: '<div class="sr-price"><div><b>The full package, 2027</b><p>' + money(PACKAGE_Q) + ' a quarter. Bought one at a time, the same campaigns come to ' + money(ALACARTE) + '.</p></div><strong>' + money(PACKAGE) + '<small>for the year</small></strong></div>' +
           stats([[money(PACKAGE), 'The package', 'For 2027', true], [money(PACKAGE_Q), 'A quarter'], [money(ALACARTE), 'A la carte', 'Our rate card'], [money(SAVE), 'You save', 'About ' + Math.floor(SAVE / ALACARTE * 100) + '%']]) +
           h5('What is in it') + table([['Item'], ['Quantity', 1], ['Rate', 1], ['Value', 1]], rows, ['A la carte total', '', '', money(ALACARTE)]) +
@@ -908,13 +1128,17 @@
       html = eventPage(parts[1], parts[2]);
       if (html) { var e = ev(parts[1]); say = EV_SAY[e.s]; ak = 'ev-' + e.s; keep = lastEvent && ev(lastEvent) && ev(lastEvent).s === e.s; lastEvent = e.id; k = 'campaigns'; }
     } else lastEvent = '';
-    if (k === 'campaigns' && !html) html = campaigns(parts[1]);
+    if (k === 'pulse' && parts[1]) {
+      html = article(parts[1]);
+      if (html) { say = tab('pulse').say; ak = 'pulse'; k = 'campaigns'; }
+    }
+    if (k === 'campaigns' && !html) html = campaigns(parts[1], parts[2]);
     if (!html) { if (k !== 'overview' && !VIEWS[k]) k = 'overview'; html = k === 'overview' ? overview() : VIEWS[k](); }
     curTab = k;
     main.innerHTML = html;
     var pk = document.getElementById('srPick');
     if (pk) pk.addEventListener('change', function () { var cur = location.hash.split('/')[3] || 'results'; location.hash = '#/event/' + pk.value + '/' + cur; });
-    drawMenu(curTab); drawV(say, ak);
+    drawMenu(curTab); drawV(say, ak); wireRows();
     if (!keep) window.scrollTo(0, 0);
   }
   window.addEventListener('hashchange', route);
