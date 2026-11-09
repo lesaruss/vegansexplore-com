@@ -7180,7 +7180,7 @@ their site only, never a tax claim, never calling them Vegan unless they say so;
 try leaves `details.support_try` {at, why}. We never handle money. Pilot 2026-11-08: 20 Florida organizations, 19 written (218 to 466 words), 17
 with a donation link (Piper's Pals and Nathans Family Farm show none on their sites), Little Bear Sanctuary's site did not open from the server.
 Facebook, Instagram and link-in-bio "websites" are skipped (`social_only`). 673 open organizations in all on 2026-11-08. **Sean approved the pilot
-the same day** ("I love it... I'm just approving it"); the rest (about 653) run next in batches of 25, before Giving Tuesday. Handoff
+the same day** ("I love it... I'm just approving it"). **The full run, 2026-11-08** (3:40 to 6:45 PM Eastern, a temporary wave job of 12 batches of 4 every 6 minutes, then one retry; dropped after): 558 of 673 have Why support, 480 with a tracked Donate link; 47 not written after a retry (sites that refuse, are gone or say too little; `support_try`), 68 with no website or a social one left alone. Batches of 4 or fewer finish inside the background limit; 25 do not. Handoff `docs/handoff/2026-11-08-ve-holiday-guide-give-back-full-run.md`. Handoff
 `docs/handoff/2026-11-08-ve-holiday-guide-give-back-pilot-approved.md`.
 
 ## The Vegans Explore app (LOCKED by Sean 2026-11-07, playbook `ve-mobile-app`, canon `canon-ve-mobile-app`)
@@ -7271,6 +7271,23 @@ a sample. Edge function **`ve-comments`** (verify_jwt off; public `get`, `upload
 (`/admin/depot/comments`, Content). First: `honest-cuban`, for Honest Cuban by VCC (formerly Vegan Cuban Cuisine, renamed in the Directory and
 led the South Florida Pulse on 2026-11-08). Its email is the BrandDesk campaign `honest-cuban-comment-2026-11` (one business, from Sean, `link_path` `/comment/honest-cuban`), never Depot > Outreach: outreach goes through BrandDesk campaigns. Handoff `docs/handoff/2026-11-08-ve-community-voices-honest-cuban.md`. Not built: a Guide voice
 on the page, an Inbox row for a new answer (it emails contact@lesaruss.com).
+
+## What connects to a listing: our episodes, other shows, people (Sean, 2026-11-08, playbook `ve-community-directory`)
+
+"The directory listing is designed for discovery. So anytime we can have something that's related or connected, it needs to be there."
+`ve_listing_related(listing)` (public RPC) reads `ve_listing_related_cache`, built by `ve_listing_related_build` and refreshed by cron
+`ve-listing-related` (every 2 hours at :17, 25 listings, each rebuilt after a day; migration `20261108_listing_related.sql`): **ours** (our four
+shows' episodes that name the listing, from `ve_content_mentions`, matched to the feed through `ve_pulse_episode_map` so they play), **elsewhere**
+(other Directory podcasts' episodes whose title or show notes name it, 40 at most, `how` featured when the title names it or one of its people,
+else mentioned; organizations and groups only), **people** (People listings whose title or bio names it, those whose title names it first) and,
+on a person, **orgs** (the reverse). Names (`ve_listing_related_names`): the name without "The" or a parenthesis, the same without a trailing
+Sanctuary / Rescue / Inc / Foundation / Society, and `details.aka`; two words and 9 letters or more, or a name that is wholly capitals (PETA); a
+name of only generic words ("animal advocates") counts only as a full name of three words or more or one that goes by "The"; any other listing's
+longer name that contains it is blanked first, so Farm Sanctuary does not match Woodstock Farm Sanctuary. A wrong match is fixed by `details.aka`
+or the listing's name. **The page** (`loadRelated` in `directory/listing.html`): People (or Organizations on a person) as Directory cards, then On our
+podcast and On other podcasts as episode rows with Play in a docked player, right after About; then **In the Pulse**, which had no caller on real
+listings until now, draws the articles that are not episodes shown above. Films and books keep their own episode sections. First built 2026-11-08:
+834 listings, 74 with our episodes (playable), 70 with other shows (582 episodes), 14 organizations with people and 14 people with their organizations. Rachel Black's pending People listing was Removed on Sean's call (2026-11-08: no public presence, an employee at the time); a People listing is for someone who is a personality in their own right.
 
 ## Social links and price on listings (Sean, 2026-11-08, playbook `ve-feedback`)
 
