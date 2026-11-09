@@ -11,6 +11,8 @@
 //   { action: 'me' | 'confirm' | 'unsubscribe', token }     the emailed link's key (the Taster key, a different secret from member sessions)
 //   { action: 'save', token, cities[], frequency }          preferences
 //   { action: 'counts' }                                    super admins (member token): confirmed subscribers per city
+//   { action: 'list' }                                      super admins: every subscriber, their cities, how often, status, the page they signed up on
+//                                                           (Depot > Pulse subscribers; Sean, 2026-11-09)
 //   { action: 'preview', city, frequency? }                 super admins: the issue as it would go, from the city's latest Pulse
 //   { action: 'test', city }                                super admins: the issue to the caller's own address only
 //   { action: 'tick' }                                      the cron (x-cron-secret) or ops: sends what is due, inside the hours, only while on
@@ -233,15 +235,16 @@ Deno.serve(async (req) => {
     const { data: ex } = await db.from('ve_tasters').select('*').ilike('email', likeEsc(email)).maybeSingle();
     if (ex && ex.updated_at && Date.now() - Date.parse(ex.updated_at) < 60e3) return json({ error: 'slow_down', message: 'Give it a minute and try again.' }, 429);
     const now = new Date().toISOString();
+    const src = String(body.source || '').slice(0, 120) || null;
     const consent_basis = cities.includes('london') ? 'checkbox' : 'notice';
     let t: any;
     if (ex) {
-      const patch: Record<string, unknown> = { pulse_cities: cities, pulse_frequency: freq, updated_at: now, pulse_unsubscribed_at: null };
+      const patch: Record<string, unknown> = { pulse_cities: cities, pulse_frequency: freq, updated_at: now, pulse_unsubscribed_at: null, pulse_source: src || ex.pulse_source, pulse_requested_at: ex.pulse_requested_at || now };
       if (cities.includes('london')) { patch.consent_basis = 'checkbox'; }
       const r = await db.from('ve_tasters').update(patch).eq('id', ex.id).select('*').single(); t = r.data;
     } else {
       const local = email.split('@')[0].replace(/[^a-z0-9]+/gi, ' ').trim().slice(0, 40) || 'Subscriber';
-      const r = await db.from('ve_tasters').insert({ email, name: local, chapter: cities[0], source: 'pulse-subscribe', consent_basis, consent_at: now, pulse_cities: cities, pulse_frequency: freq }).select('*').single(); t = r.data;
+      const r = await db.from('ve_tasters').insert({ email, name: local, chapter: cities[0], source: 'pulse-subscribe', consent_basis, consent_at: now, pulse_cities: cities, pulse_frequency: freq, pulse_source: src, pulse_requested_at: now }).select('*').single(); t = r.data;
     }
     if (!t) return json({ error: 'save_failed' }, 500);
     if (t.pulse_confirmed_at) return json({ ok: true, already: true });
@@ -276,6 +279,16 @@ Deno.serve(async (req) => {
     const ok = (!!cs && cs === (await secret('CRON_SECRET'))) || (!!bearer && bearer === (await secret('LESARUSS_ADMIN_TOKEN')));
     if (!ok) return json({ error: 'forbidden' }, 403);
     return json({ ok: true, ...(await tick()) });
+  }
+
+  if (action === 'list') {
+    if (!(await adminMember(req))) return json({ error: 'forbidden' }, 403);
+    const { data, error } = await db.from('ve_tasters')
+      .select('id, email, name, pulse_cities, pulse_frequency, pulse_confirmed_at, pulse_unsubscribed_at, pulse_last_sent_at, pulse_issue_count, pulse_source, pulse_requested_at, consent_basis, member_id, source, created_at')
+      .not('pulse_requested_at', 'is', null).order('pulse_requested_at', { ascending: false }).limit(2000);
+    if (error) return json({ error: 'load_failed' }, 500);
+    const rows = (data || []).map((t: any) => ({ ...t, status: t.pulse_unsubscribed_at ? 'stopped' : t.pulse_confirmed_at ? 'subscribed' : 'waiting', test: /\[TEST\]/i.test(t.name || '') }));
+    return json({ ok: true, rows, cities: CITY, on: (await settings()).on === true });
   }
 
   if (action === 'counts' || action === 'preview' || action === 'test' || action === 'settings') {
