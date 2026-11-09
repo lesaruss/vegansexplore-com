@@ -1112,13 +1112,36 @@ function socialIn(maps: any, ms: PMatch[]) {
   return nets;
 }
 
+// News for a coming-next place (Sean, 2026-11-09: "do the news feeds"): a Google News search for Vegan stories naming the place (its
+// listen_match mentions), read live and kept 6 hours. Free and read only; the stories go to Insights only, never the Pulse or the Inbox.
+const decodeXml = (t: string) => t.replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, '$1').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'").trim();
+async function googleNews(slug: string, names: string[]) {
+  return cached(`ins:placenews:${slug}`, 6 * H, false, async () => {
+    const terms = [...new Set(names.map((n) => n.trim()).filter(Boolean))].slice(0, 6).map((n) => /\s/.test(n) ? `"${n}"` : n);
+    if (!terms.length) return { connected: true, stories: [] };
+    const q = `vegan (${terms.join(' OR ')}) when:180d`;
+    const r = await fetch(`https://news.google.com/rss/search?q=${encodeURIComponent(q)}&hl=en-US&gl=US&ceid=US:en`, { headers: { 'User-Agent': 'Mozilla/5.0 (compatible; VegansExploreInsights/1.0)' }, signal: AbortSignal.timeout(15000) });
+    if (!r.ok) throw new Error('Google News ' + r.status);
+    const xml = await r.text();
+    const stories = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/g)].slice(0, 40).map((m, i) => {
+      const it = m[1], tag = (t: string) => decodeXml((new RegExp(`<${t}[^>]*>([\\s\\S]*?)<\\/${t}>`).exec(it) || [])[1] || '');
+      const source = tag('source');
+      let title = tag('title'); if (source && title.endsWith(' - ' + source)) title = title.slice(0, -(source.length + 3));
+      const pub = tag('pubDate');
+      return { id: `gn-${i}`, title, url: tag('link'), source_name: source || null, image_url: null, published_at: pub ? new Date(pub).toISOString() : null };
+    }).filter((x) => x.title && x.url);
+    return { connected: true, query: q, stories };
+  });
+}
+
 async function placeNews(kind: string, slug: string, names: string[]) {
+  let feed: any = null;
   const leads = kind === 'chapter'
     ? (await db.from('ve_news_leads').select('id, title, url, source_name, summary, image_url, published_at, status').eq('city_slug', slug).order('published_at', { ascending: false, nullsFirst: false }).limit(40)).data ?? []
-    : [];
+    : ((feed = await googleNews(slug, names)).stories || []);
   const want = new Set(names.map(lcs));
   const pm = ((await db.from('ve_place_mentions').select('place, country, kind, source, ref, note, created_at').order('created_at', { ascending: false }).limit(2000)).data ?? []).filter((r: any) => want.has(lcs(r.place))).slice(0, 40);
-  return { stories: leads, mentions: pm };
+  return { stories: leads, mentions: pm, source: kind === 'chapter' ? 'feeds' : 'google_news', query: feed?.query ?? null };
 }
 
 // YouTube Analytics for a place (2026-11-09): the channel's views and watch time from there, now and the period before. Read only; the channel
