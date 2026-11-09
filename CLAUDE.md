@@ -5515,6 +5515,11 @@ Guides on the Dairy Guide pattern, a venue mapped to the Vegan food inside it:
   later"): `/bounties` as one two-column list (like a person's podcast rows) with search, a type and Guide filter and sort;
   evergreen bounties (check in where you go, volunteer with a nonprofit, is this place still open?); paid jobs such as attending an
   event for us, Level 2 and up, with a stipend; and past event jobs leaving the list once claims close.
+- **Report from anywhere** (Sean, 2026-11-09, playbook `ve-feedback`; Brion Hurley was refused at FLL after his trip): Something missing and
+  Comment ask "Where are you?" in all four venue Guides; "I am not there now" sends with no location (`off_site`, `ve_venue_reports.on_site` false),
+  held for the team, half the points when accepted, 10 a day (`ve_venue_setting('daily_off_site')`). Every other kind stays on-site only. Depot >
+  Venues reads "Not checked on site". Migration `20261109_venue_reports_off_site.sql`, `ve-venues` v15. Handoff
+  `docs/handoff/2026-11-09-ve-feedback-report-from-anywhere.md`.
 - **The Airport Guide, launched 2026-10-29** (Sean: "I love it. Let's lock it and let's launch the airport guide"; migration
   `20261029_airport_guide_launch.sql`; the Overview locked the same day, canon `canon-ve-venue-guides` v3): published, indexed, its
   card fifth in the Guide catalog (label Travel, banner `public/guides/airport-guide.jpg`: Nori in the black tee with a boarding pass
