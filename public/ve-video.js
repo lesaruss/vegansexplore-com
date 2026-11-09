@@ -1,5 +1,6 @@
 /* ve-video.js: a narrated video that waits for the visitor.
-   VEVideo.markup({src, vtt, poster, title, sub, label, ga}) returns the player's HTML.
+   VEVideo.markup({src, vtt, poster, title, sub, label, ga, aspect, id}) returns the player's HTML.
+   aspect: '16:9' (default) or another 'w:h' such as '4:5' for a vertical video; id goes on the <video>.
    Nothing plays until Watch the video is pressed; captions are on by default;
    Google Analytics gets video_start and video_complete with video_title = ga. */
 (function () {
@@ -10,14 +11,16 @@
     '.vv-play[hidden]{display:none}' +
     '.vv-btn{display:inline-flex;align-items:center;gap:8px;background:#F69820;color:#fff;font-weight:800;font-size:14px;letter-spacing:.06em;text-transform:uppercase;padding:12px 18px;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,.3)}' +
     '.vv-sub{font-size:13px;font-weight:700;text-shadow:0 1px 8px rgba(0,0,0,.6)}' +
+    '.vv-tall{max-width:440px}' +
     '.vv-play:focus-visible .vv-btn{outline:3px solid #fff;outline-offset:3px}';
   var st = document.createElement('style'); st.textContent = css; document.head.appendChild(st);
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function ga(name, title) { try { if (window.gtag) gtag('event', name, { video_title: title }); } catch (e) {} }
   window.VEVideo = {
     markup: function (o) {
-      return '<div class="vv" data-vv-ga="' + esc(o.ga || '') + '">' +
-        '<video playsinline preload="none" poster="' + esc(o.poster || '') + '" aria-label="' + esc(o.label || o.title || 'Video') + '">' +
+      var ar = /^\d+:\d+$/.test(o.aspect || '') ? o.aspect.replace(':', '/') : '';
+      return '<div class="vv' + (ar && ar !== '16/9' ? ' vv-tall' : '') + '" data-vv-ga="' + esc(o.ga || '') + '"' + (ar ? ' style="aspect-ratio:' + ar + '"' : '') + '>' +
+        '<video' + (o.id ? ' id="' + esc(o.id) + '"' : '') + ' playsinline preload="none" poster="' + esc(o.poster || '') + '" aria-label="' + esc(o.label || o.title || 'Video') + '">' +
         '<source src="' + esc(o.src) + '" type="video/mp4">' +
         (o.vtt ? '<track kind="captions" srclang="en" label="English" src="' + esc(o.vtt) + '" default>' : '') + '</video>' +
         '<button type="button" class="vv-play" aria-label="Play: ' + esc(o.label || o.title || 'the video') + '">' +
@@ -25,12 +28,16 @@
         (o.sub ? '<span class="vv-sub">' + esc(o.sub) + '</span>' : '') + '</button></div>';
     }
   };
+  function start(box, at) {
+    var b = box.querySelector('.vv-play'), v = box.querySelector('video');
+    if (b && !b.hidden) { b.hidden = true; v.controls = true; ga('video_start', box.getAttribute('data-vv-ga')); }
+    if (typeof at === 'number') { try { v.currentTime = at; } catch (e) {} }
+    var p = v.play(); if (p && p.catch) p.catch(function () {});
+  }
+  window.VEVideo.start = start;
   document.addEventListener('click', function (e) {
     var b = e.target.closest && e.target.closest('.vv-play'); if (!b) return;
-    var box = b.parentNode, v = box.querySelector('video');
-    b.hidden = true; v.controls = true;
-    var p = v.play(); if (p && p.catch) p.catch(function () {});
-    ga('video_start', box.getAttribute('data-vv-ga'));
+    start(b.parentNode);
   });
   document.addEventListener('ended', function (e) {
     var v = e.target; if (!v || v.tagName !== 'VIDEO') return;

@@ -11,3 +11,15 @@
   own videos) and a dated "Today" story; frame 23 (b20c-promotion) holds 6.2 s, past the ~5 s rule. Both were in the approved lookbook.
 - Next: Sean's OK, then the Overview with `/public/ve-video.js` (it is 16:9 only today; needs an aspect option for 4:5), live at 1440 and 390;
   then step 4, the paths page.
+
+## Approved and on the page (Sean, 2026-11-09: "Approved, swap frame 14 and put it on the page")
+- Frame 14 is now Atlanta's Daily Pulse (a real local lead, no apology line, no "Friendsgiving"), `v45/f07-chapter-v2.jpg`; re-rendered as
+  `tour-video-v2.mp4` (same timings, same mix). `ve_video_tours` welcome-guide is `live` with the v2 URL.
+- The Overview's tour card is the video: `VEVideo.markup` with `aspect: '4:5'` (new; `.vv-tall` caps it at 440 px) and `VEVideo.start(box, at)`
+  (new; seeks and plays). Captions and poster are served from our site (`public/guides/welcome/tour-video-v2.vtt`, `-poster.jpg`, the eight Guides
+  on the cafe steps). Desktop: the written tour sits open beside the video; phones: below it, folded. Each chapter's Play jumps the video
+  (`CH_AT` in `guide-scripts/welcome-guide.js`); Liz's rail button plays it and the bubble follows the chapter. The old audio-only player is gone
+  (the chapter mp3s stay in storage). GA `video_start` / `video_complete` as `welcome_tour_v2`.
+- Checked locally at 1440 and 390: 440 x 550 and 320 x 400, plays, 51 caption cues showing, chapter 4 seeks to 53 s, no errors, no sideways scroll.
+- Still open: the hub's "Get your Passport" button (visible in frame 14 and on every chapter page) is old wording under the survey-only rule.
+- Next: step 4, the paths page.

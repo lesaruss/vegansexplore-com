@@ -13,7 +13,7 @@
  *   #/media         Media                           #/animals   For the animals
  *   #/guides        Guides                          #/founder   Become a Founder (the survey; members: your first steps)
  *
- * The Overview's eight chapters are recorded (Play the tour); the section pages' lines are text until recorded. Every claim on these pages is
+ * The Overview's tour is a video (tour-video-v2.mp4: Play the tour, or a chapter's Play); the section pages' lines are text until recorded. Every claim on these pages is
  * checked against what is live (CLAUDE.md); nothing promises an unbuilt feature.
  */
 (function () {
@@ -129,10 +129,11 @@
   setInterval(tickCd, 1000);
 
   function tourCard() {
-    return '<div class="wg-tour"><div class="wg-tour-h"><div><div class="dg-k">Watch first</div><h3>Welcome to Vegans Explore</h3><p>Liz, about three minutes. The video is in production: listen to her or read the tour in the meantime.</p></div>' +
-      '<span class="hg-vbadge" style="position:static">Video in production</span></div>' +
-      '<div class="dg-btns" style="margin:12px 0 4px"><button type="button" class="dg-btn" data-wg-tour>' + (PLAY.playing ? 'Pause Liz' : '&#9654; Listen to the tour') + '</button><span class="wg-now" id="wgNow">' + nowText() + '</span></div>' +
-      '<details class="wg-chs"><summary>Read the tour: ' + CHAPTERS.map(function (c) { return esc(c[0]); }).join(' &middot; ') + '</summary><ol>' +
+    var vid = window.VEVideo ? VEVideo.markup({ src: VIDEO.src, vtt: VIDEO.vtt, poster: VIDEO.poster, aspect: '4:5', id: 'wgVideo', ga: 'welcome_tour_v' + VIDEO.v,
+      title: 'Watch the tour', sub: 'Liz, about three minutes', label: 'Welcome to Vegans Explore, the tour with Liz' }) : '';
+    return '<div class="wg-tour"><div class="wg-tour-h"><div><div class="dg-k">Watch first</div><h3>Welcome to Vegans Explore</h3><p>Liz walks you through all of it in about three minutes.</p></div></div>' +
+      '<div class="wg-tbody"><div class="wg-vid">' + vid + '<span class="wg-now" id="wgNow">' + nowText() + '</span></div>' +
+      '<details class="wg-chs"' + (window.innerWidth > 900 ? ' open' : '') + '><summary>Read the tour: ' + CHAPTERS.map(function (c) { return esc(c[0]); }).join(' &middot; ') + '</summary><ol>' +
       CHAPTERS.map(function (c, n) { return '<li><b>' + esc(c[0]) + '.</b> ' + esc(c[1]) + ' <a href="#" class="wg-chplay" data-wg-ch="' + n + '">&#9654; Play</a></li>'; }).join('') + '</ol></details></div>';
   }
   function groupRows() {
@@ -273,38 +274,50 @@
       '<a class="dg-tnav next" href="' + href(TABS[Math.min(TABS.length - 1, i + 1)].k) + '"' + (i < TABS.length - 1 ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Next</a>';
   }
   // Liz's eight recorded chapters (2026-11-08, her roster-profile voice, each checked word for word with stt), back to back on the Overview.
-  var AUDIO_BASE = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/tour-';
-  // A re-recorded chapter names its take (2026-11-08: chapter 1 said again with a beat after "Let's go"; chapter 4 adds what points are worth; each stt word for word).
-  var TAKE = { 1: 'v3', 4: 'v2a' };
-  var playBtn = document.getElementById('dgPlay'), aud = new Audio(), PLAY = { at: 0, playing: false, started: false };
-  aud.preload = 'none';
+  // The tour is one video (2026-11-09, Sean approved v2): Liz's eight chapters (chapter 1 take v3, chapter 4 take v2a) over the 48 approved frames.
+  // Chapter Play buttons and the rail's Play the tour drive that video; CH_AT is where each chapter starts in it.
+  var VIDEO = { v: 2, src: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/tour-video-v2.mp4',
+    poster: '/public/guides/welcome/tour-video-v2-poster.jpg',
+    vtt: '/public/guides/welcome/tour-video-v2.vtt' };
+  var CH_AT = [0, 19.984, 35.814, 53.264, 81.293, 91.272, 121.443, 131.709];
+  var playBtn = document.getElementById('dgPlay'), PLAY = { at: 0, playing: false, started: false };
+  function vid() { return document.getElementById('wgVideo'); }
+  function chAt(t) { var n = 0; CH_AT.forEach(function (x, i) { if (t >= x - 0.05) n = i; }); return n; }
   function nowText() { return PLAY.started ? 'Chapter ' + (PLAY.at + 1) + ' of ' + CHAPTERS.length + ': ' + esc(CHAPTERS[PLAY.at][0]) : ''; }
   function paintPlay() {
     playBtn.hidden = curTab !== 'overview';
     playBtn.classList.toggle('go', !PLAY.started);
-    playBtn.innerHTML = PLAY.playing ? 'Pause Liz' : '&#9654; Play the tour';
-    var b = document.querySelector('[data-wg-tour]'); if (b) b.innerHTML = PLAY.playing ? 'Pause Liz' : '&#9654; ' + (PLAY.started ? 'Keep listening' : 'Listen to the tour');
+    playBtn.innerHTML = PLAY.playing ? 'Pause Liz' : '&#9654; ' + (PLAY.started ? 'Keep watching' : 'Play the tour');
     var n = document.getElementById('wgNow'); if (n) n.innerHTML = nowText();
   }
   function playAt(n) {
+    var v = vid(); if (!v || !window.VEVideo) return;
     PLAY.at = n; PLAY.started = true;
-    aud.src = AUDIO_BASE + (n + 1) + '-' + (TAKE[n + 1] || 'v1') + '.mp3';
-    if (curTab === 'overview') bubble.textContent = CHAPTERS[n][1];
-    aud.play().then(function () { PLAY.playing = true; paintPlay(); if (!n) try { gtag('event', 'audio_start', { audio: 'welcome_tour' }); } catch (e) {} }).catch(function () { PLAY.playing = false; paintPlay(); });
+    VEVideo.start(v.closest('.vv'), CH_AT[n]);
+    v.closest('.vv').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     paintPlay();
   }
-  aud.addEventListener('ended', function () {
-    if (PLAY.at < CHAPTERS.length - 1) { playAt(PLAY.at + 1); return; }
-    PLAY.playing = false; PLAY.at = 0; paintPlay(); try { gtag('event', 'audio_complete', { audio: 'welcome_tour' }); } catch (e) {}
-  });
   function toggleTour() {
-    if (PLAY.playing) { aud.pause(); PLAY.playing = false; paintPlay(); return; }
-    if (aud.src && aud.currentTime > 0 && !aud.ended) aud.play().then(function () { PLAY.playing = true; paintPlay(); }).catch(function () {});
-    else playAt(PLAY.at);
+    var v = vid(); if (!v) return;
+    if (!v.paused) { v.pause(); return; }
+    // A video redrawn with the Overview starts at 0: pick up at the chapter they were on.
+    if (PLAY.started && v.currentTime > 0) { var p = v.play(); if (p && p.catch) p.catch(function () {}); } else playAt(PLAY.at);
   }
+  // The video's own events keep the rail and the bubble in step (it is redrawn with the Overview, so listen on the document).
+  ['play', 'pause', 'ended', 'timeupdate'].forEach(function (ev) {
+    document.addEventListener(ev, function (e) {
+      if (!e.target || e.target.id !== 'wgVideo') return;
+      var v = e.target;
+      if (ev === 'play') { PLAY.playing = true; PLAY.started = true; }
+      if (ev === 'pause' || ev === 'ended') PLAY.playing = false;
+      var n = chAt(v.currentTime);
+      if (n !== PLAY.at || ev !== 'timeupdate') { PLAY.at = n; if (curTab === 'overview' && PLAY.started) bubble.textContent = CHAPTERS[n][1]; }
+      if (ev === 'ended') PLAY.at = 0;
+      paintPlay();
+    }, true);
+  });
   playBtn.addEventListener('click', toggleTour);
   document.addEventListener('click', function (e) {
-    var t = e.target.closest('[data-wg-tour]'); if (t) { e.preventDefault(); toggleTour(); return; }
     var c = e.target.closest('[data-wg-ch]'); if (c) { e.preventDefault(); playAt(+c.getAttribute('data-wg-ch')); }
   });
   tourM.addEventListener('click', function (e) { if (e.target.closest('.dg-tnav')) setTimeout(function () { railEl.scrollIntoView({ block: 'start' }); }, 0); });
@@ -322,10 +335,10 @@
     if (k !== 'overview' && !VIEWS[k]) k = 'overview';
     document.body.classList.toggle('dg-member', member());
     drawJoinbox(); drawMenu(k);
+    var oldV = vid(); if (oldV && !oldV.paused) oldV.pause(); PLAY.playing = false;
     curTab = k;
     if (k === 'overview') viewOverview(); else main.innerHTML = VIEWS[k]();
     if (window.VEExplorerCard) VEExplorerCard.wire(main);
-    if (k !== 'overview' && PLAY.playing) { aud.pause(); PLAY.playing = false; }
     tickCd(); drawLiz(); paintPlay();
     if (k === 'overview' && PLAY.started) bubble.textContent = CHAPTERS[PLAY.at][1];
     main.scrollTop = 0; if (!document.documentElement.classList.contains('dg-fit') || window.innerWidth <= 900) window.scrollTo(0, 0);
