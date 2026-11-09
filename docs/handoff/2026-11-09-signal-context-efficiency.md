@@ -28,10 +28,21 @@ Canon: `canon-session-procedure` v2, `canon-wrap-up-standard` v3, `canon-core` (
 - CLAUDE.md on main: 314 lines (target <= 400 lines, 40 KB).
 - Error registry before the trim: about 22 hits and 11 repeats a week (weeks of Oct 12, 19, 26, Nov 2: repeats 8, 11, 16, 11).
 - Always-load canon after the trim: 43 records, 139,585 chars.
-- Fresh-chat context %: not yet reported (was 40 to 50%; target <= 15%).
+- Fresh-chat context %: about 10% at open, 12% after the first task (Sean, 2026-11-09; was 40 to 50%; target <= 15%: met).
 
 ## Next (new chat)
 1. Sean reads the context % the new chat opened at; Logan records it in the playbook.
 2. Confirm the new chat loaded the new lesaruss-handoff and lesaruss-guard text.
 3. Recreate the weekly check-in bound to the new chat, then delete trig_01EE1wPCTYuFMuSkurD6oYqu.
 4. Weekly checks until 2026-11-23, then close or roll back.
+
+## Second chat, 2026-11-09 (session_01Au68axze5MADn5vyhAKUiS): items 1 to 3 done
+
+| # | Item | Stored at |
+|---|---|---|
+| 16 | Fresh-chat context %: Sean, "It opened like around 10%. It's at 12% right now." Target <= 15% met | playbook row 12:52 UTC; baseline above |
+| 17 | lesaruss-handoff and lesaruss-guard synced into the new chat with the new text (checked on disk, 12:50 UTC) | playbook row 12:50 UTC |
+| 18 | Weekly check-in recreated bound to this chat: trig_01KQzrX1TrcB1hN63Hfzk5Hq, Mondays 1:23 PM Eastern; trig_01EE1wPCTYuFMuSkurD6oYqu deleted; list shows only the new one | playbook row 12:50 UTC; checkpoint 965 |
+
+Still open: weekly checks until 2026-11-23 (they fire into this chat on their own; leave the chat in place, do not archive it),
+then close the playbook and delete the check-in if every target held two weeks running, or roll back.
