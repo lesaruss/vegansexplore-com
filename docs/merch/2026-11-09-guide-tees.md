@@ -50,3 +50,39 @@ Placement on every one: centered on the upper chest, high, its top about a hand'
 ## 4. Liz's pink tee
 
 Her pink Vegans Explore tee (the favorite in CLAUDE.md, "Guide scenes") belongs in the line too.
+
+## Build, 2026-11-09 (Logan): waiting on Sean's yes
+
+**Where the store lives** (on record, not guessed): humblecabbage.com, the Next.js storefront in `lesaruss/humble-cabbage`, Stripe checkout,
+**Printify** fulfillment (shop 28392315; `brand_context` humble-cabbage and the repo README). New listings are preview-first: hidden in Printify
+and tagged `preview`, so only Vercel preview deployments show them (`lib/printify.ts` `shown`).
+
+**Print files**: `lesaruss/humble-cabbage` `public/brand/print/vegans-explore/` (branch `claude/humble-cabbage-guide-tees-p7k1w0`, 8992e38), with a README.
+Rendered from `public/ve-logo-mark.svg` and `public/logo-ve-portrait-v1.svg`; on dark shirts the suitcase is #3A9B3E and VEGANS EXPLORE white.
+
+**Review page for Sean** (mockups to scale on a size L, each beside its drawing): https://claude.ai/artifact/VLw5FQyYpEe2zCJkDRTAn6
+
+**Proposed products**
+
+| Product | Garment | Colors | Print | Price |
+|---|---|---|---|---|
+| Vegans Explore Mark Tee (lead) | Bella+Canvas 3001 | Natural, White, Black, Forest, Mint, Teal, Rust | Mark 5 in, front | $35 |
+| Vegans Explore Mark Long Sleeve | Bella+Canvas 3501 | Black, Maroon | Mark 5 in, front | $42 |
+| Vegans Explore Mark Hoodie | Bella+Canvas 3719 | Athletic Heather | Mark 5 in, front | $55 |
+| Vegans Explore Mark Crewneck | crewneck (Independent SS3000) | Lavender, Burgundy | Mark 3 in, wearer's left chest | $50 |
+| Vegans Explore Mark Tote | natural canvas tote | Natural | Mark 5 in | $25 |
+| VEGANS EXPLORE Stacked Logo Tee (existing listing, add colors) | Bella+Canvas 3001 | Lilac, Sage, Navy, Mustard, Olive, White, Athletic Heather (+ Black, Natural already live) | Stacked 7 in, front | $35 |
+| VEGANS EXPLORE Stacked Long Sleeve | Bella+Canvas 3501 | White | Stacked 7 in, front | $42 |
+| Volunteer Tee | Bella+Canvas 3001 | Cardinal | VOLUNTEER 10 in, front only, no mark anywhere | $35 |
+| Liz's Pink Tee | Bella+Canvas 3001 | Pink | Stacked 7 in (white letters as drawn; black shown as an option) | $35 |
+
+Color names are the closest catalog names, to be checked against provider 39's live catalog.
+
+**Placement**: canon `canon-front-print-placement` v3 already sets the art top 3.0 in under the collar seam on L (the top of Sean's 3 to 3.5 in).
+Sean's GeekFon Society Logo Tee (Black, XL, order d013cd24) was placed 2026-10-08 10:48 UTC, about 8 hours after every tee moved to 3.0 in, so
+the likely cause of "a tad too low" is size: the rule was only measured on L. Every mockup gets measured on L, XL and 2XL (2.8 to 3.2 passes).
+
+**Blocked on Sean**: (1) the yes on the line, colors and prices; (2) `PRINTIFY_API_TOKEN` as a secret in the Claude Code environment (not copied
+out of Vercel into chat); (3) the Printify payment method, still missing (`PRINTIFY-SHOP-PAYMENT-METHOD-MISSING-HUMBLE-CABBAGE`), so no order can print.
+Defaults if Sean says nothing else: stacked colors join the existing listing; pink tee white letters as drawn; the Volunteer tee keeps the inside
+Humble Cabbage neck label.
