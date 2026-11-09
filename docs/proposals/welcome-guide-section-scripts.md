@@ -43,7 +43,7 @@ About 60 seconds.
 
 > This is Media. Our own shows, like the Vegans Explore Podcast, bring you years of conversations with the people building this movement. Next to them are the podcasts, documentaries and books the community votes to the top. Press Play and listen right on the page while you keep looking around. Documentaries show where to watch them, and books link to their own pages. We want to hear from you. As a member, you shape what rises here: vote for the shows, films and books you love, save episodes to My Saves, let us know if something needs to be fixed, and if you host a podcast, apply to join our network. Membership is free. We ask for a short survey so we know real people are joining, and that keeps this community worth your time. Bring people with you: invite your friends, your community, new Vegans and Pre-Vegans. And you earn points for everybody who joins using your link. That is the easiest way to grow your experience and open new doors in our community. Press Play on something good today.
 
-## 6. Guides (draft v1 for Sean)
+## 6. Guides (v1, approved by Sean 2026-11-09; recorded `sec-guides-v1`, 69 s, stt matched; video `sec-guides-v2` with seven scenes of Liz and each Guide (`liz-gd-*`; the Dani scene redrawn so nobody touches), approved and live)
 
 About 60 seconds.
 
@@ -51,6 +51,24 @@ About 60 seconds.
 
 New scenes for this page's video: Liz with the cast of Guides (each Guide in its own topic), not earlier pages' pictures.
 
-## 7 to 11
+## 7. Points and Levels (approved 2026-11-09; recorded sec-points-v1; video sec-points-v2 approved and live 2026-11-09)
 
-Written one at a time after page 6 is approved.
+About 60 seconds.
+
+> These are points. They come from taking part, never from buying them. You earn them for the survey, checking in when you visit a place, bounties in your city, answering your profile, and every friend who joins with your link. Use them to open topic Guides, ask your Guide anything, or bid on gift cards where the Vault is open. Or give them to the businesses and nonprofits you believe in. Your level comes from everything you have ever earned, so spending never lowers it. We want to hear from you. As a member, you shape how points grow: tell us which rewards you want, which bounties you would take on, and let us know if something needs to be fixed. Membership is free. We ask for a short survey so we know real people are joining, and you start with 250 points. Bring people with you: invite your friends, your community, new Vegans and Pre-Vegans. And you earn points for everybody who joins using your link. That is the easiest way to grow your experience and open new doors in our community. Start earning today.
+
+New scenes for this page's video: Liz earning and using points (checking in at a cafe, a bounty, giving to a sanctuary, leveling up), not earlier pictures.
+
+Made: `liz-pts-{checkin,bounty,give,level,guide,share,door}.jpg` (level-up redrawn once to remove readable text). v2 (Sean, 2026-11-09): the phone in the share scene shows its back, nonprofits show the nonprofit directory, the sanctuary shirt says Volunteer with no logo, the Vault shows no empty list, and every picture is used once (the render script asserts it). New scenes: `liz-pts-{share-v2,give-v2,shape,survey,friends}.jpg`. Video `sec-points-v2.mp4` in vegan-media, captions `public/guides/welcome/sec-points-v2.vtt`, scripts `scripts/tour-video/sections/cap-points.js` and `render-points.py`.
+
+## 8. Your Path and Badges (draft v1 for Sean)
+
+About 60 seconds. The page is on the section template (how to use, the paths and their badges, one call to action: See your paths).
+
+> This is your path. Everyone starts as an Explorer: the short survey makes you a member and gives you your first badge. If you run something, your path takes you further. There is one for restaurants, event hosts, creators, nonprofits and businesses adding plant-based options, each with its own Guide, its own short survey and its own badge. Take as many as fit. Your badges show on your profile, you pick your main one, and each badge opens its Guide and the bounties that go with it. We want to hear from you. As a member, you shape where these paths go: tell us which path you are waiting for, like group leaders, which is on its way, and let us know if something needs to be fixed. Membership is free. We ask for a short survey so we know real people are joining, and that keeps this community worth your time. Bring people with you: invite your friends, your community, new Vegans and Pre-Vegans. And you earn points for everybody who joins using your link. That is the easiest way to grow your experience and open new doors in our community. Find your path today.
+
+New scenes for this page's video: Liz with each path's world (a restaurant kitchen pass, an event setup, a creator filming, a rescue, a small shop adding plant-based items) and a badge moment, not earlier pictures.
+
+## 9 to 11
+
+Written one at a time after page 7 is approved.

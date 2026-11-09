@@ -66,6 +66,7 @@
     { group: 'Content', href: '/admin/depot/cookbook', label: 'Cookbook' },
     { group: 'Content', href: '/admin/depot/search-questions', label: 'Search questions' },
     { group: 'Content', href: '/admin/depot/comments', label: 'Comments' },
+    { group: 'Content', href: '/admin/depot/nominations', label: 'Nominations' },
     { group: 'Content', href: '/admin/depot/library', label: 'Library' },
     { group: 'Bounties', href: '/admin/depot/bounties', label: 'Bounties' },
     { group: 'Bounties', href: '/admin/depot/checkins', label: 'Check-ins' },

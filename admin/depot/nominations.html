@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Nominations | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:14px;}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;}
+    .tabs a{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-text);text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:14px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
+    .card img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;background:#eee;cursor:zoom-in;}
+    .card .body{padding:14px 16px;display:flex;flex-direction:column;gap:6px;flex:1;}
+    .kind{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-green-deep);}
+    .card h3{font-size:15px;font-weight:800;line-height:1.3;}
+    .card h3 a{color:inherit;}
+    .meta{font-size:12.5px;color:var(--ve-text-75);}
+    .quote{font-size:14px;background:#f7faf7;border-left:3px solid var(--ve-green);padding:8px 12px;border-radius:6px;}
+    .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;}
+    .btn:disabled{opacity:.5;cursor:default;}
+    .btn-ghost{background:#fff;color:#8a1c12;border:1px solid rgba(0,0,0,0.25);}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .lb{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:9999;padding:20px;cursor:zoom-out;}
+    .lb img{max-width:100%;max-height:100%;border-radius:8px;}
+    .tools{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px;}
+    .tools select,.tools input{font-family:inherit;font-size:13px;min-height:40px;padding:8px 12px;border:1px solid var(--ve-border);border-radius:6px;background:#fff;color:var(--ve-text);}
+    .tools select{appearance:none;-webkit-appearance:none;padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231f5f22' stroke-width='2'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;}
+    .tools input{flex:1;min-width:200px;}
+    .btn-quiet{background:#fff;color:var(--ve-green-deep);border:1px solid var(--ve-green-deep);}
+    @media (max-width:600px){.tools select{flex:1 1 100%;}}
+    .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:#eef1ee;color:#333;}
+    .tag.new{background:#fff1dc;color:#8a5200;}.tag.working{background:#e3eefc;color:#0f4a91;}.tag.fixed{background:var(--ve-green-light);color:var(--ve-green-deep);}.tag.spam{background:#fde7e5;color:#8a1c12;}
+    .card .excerpt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:14px;}
+    .crumb{font-size:12.5px;margin-bottom:12px;}.crumb a{color:var(--ve-green-deep);font-weight:700;}
+    .item{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:20px 22px;display:grid;gap:14px;}
+    .item .full{white-space:pre-wrap;font-size:15px;background:#f7faf7;border-left:3px solid var(--ve-green);padding:12px 14px;border-radius:6px;}
+    .item dl{display:grid;grid-template-columns:140px 1fr;gap:6px 14px;font-size:13.5px;}.item dt{font-weight:800;color:var(--ve-text-75);}.item dd{word-break:break-word;}
+    .item textarea{font-family:inherit;font-size:14px;width:100%;min-height:90px;padding:10px 12px;border:1px solid var(--ve-border);border-radius:6px;}
+    @media (max-width:600px){.item dl{grid-template-columns:1fr;}.item dt{margin-top:6px;}}
+    .card .body audio,.item audio{width:100%}
+    .tag.open{background:#fff1dc;color:#8a5200;}.tag.answered,.tag.approved,.tag.used{background:var(--ve-green-light);color:var(--ve-green-deep);}.tag.closed,.tag.declined{background:#eef1ee;color:#555;}
+    .form{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:20px 22px;display:grid;gap:12px;}
+    .form label{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ve-green-deep);display:block;margin-bottom:4px;}
+    .form input[type=text],.form input[type=email],.form input[type=number],.form textarea,.form select{width:100%;font-family:inherit;font-size:14px;padding:10px 12px;border:1px solid rgba(0,0,0,.22);border-radius:6px;background:#fff;}
+    .form textarea{min-height:90px;}
+    .form .row{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr));gap:12px;}
+    .form .checks{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;}
+    .resp{border:1px solid var(--ve-border);border-radius:10px;padding:14px 16px;display:grid;gap:8px;}
+    .linkbox{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:14px;}.linkbox code{background:#f3f5f3;padding:6px 10px;border-radius:6px;word-break:break-all;}
+    .tag.new{background:#fff1dc;color:#8a5200;}
+    .roles{display:flex;gap:6px;flex-wrap:wrap;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Nominations</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">People nominate someone from their community at <a href="/nominate">/nominate</a> (Sean, 2026-11-09, playbook ve-nominate-someone). Listen or read, then Approve to mark them ready for Kai's invitation, or Not now. Approving sends nothing yet: the invitation comes with the interview.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden><div id="view"></div></main>
+  </div>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    // Depot > Nominations (Sean, 2026-11-09; playbook ve-nominate-someone). Copied from Depot > Comments. Server: ve-nominations.
+    // #list/<status>  #n/<id>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-nominations';
+      var $ = function (id) { return document.getElementById(id); };
+      var ST = [['new', 'Waiting for review'], ['approved', 'Approved'], ['declined', 'Not now'], ['all', 'All']];
+      var LABEL = { new: 'Waiting for review', approved: 'Approved, ready to invite', declined: 'Not now', invited: 'Invited', interviewing: 'Interviewing', member: 'Member', featured: 'Featured' };
+      var SRC = { hub: 'City hub', pulse: 'Daily Pulse', show: 'Show page', listing: 'Directory listing', interview: 'Interview', direct: 'Direct' };
+      var ROLES = {}, rows = [], loaded = false;
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function when(t) { return t ? new Date(t).toLocaleString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) + ' ET' : ''; }
+      function secs(s) { s = Math.round(s || 0); return Math.floor(s / 60) + ':' + ('0' + s % 60).slice(-2); }
+      function roles(list) { return (list || []).map(function (r) { return '<span class="tag">' + esc(ROLES[r] || r) + '</span>'; }).join(' '); }
+      function route() { var h = location.hash.replace(/^#/, '').split('/'); if (h[0] === 'n') return { v: 'n', id: h[1] }; return { v: 'list', st: ST.some(function (s) { return s[0] === h[1]; }) ? h[1] : 'new' }; }
+      function drawList(r) {
+        var counts = {}; rows.forEach(function (x) { counts[x.status] = (counts[x.status] || 0) + 1; });
+        var areas = []; rows.forEach(function (x) { if (areas.indexOf(x.area) < 0) areas.push(x.area); }); areas.sort();
+        var tabs = ST.map(function (s) { return '<a href="#list/' + s[0] + '" class="' + (s[0] === r.st ? 'on' : '') + '">' + s[1] + ' (' + (s[0] === 'all' ? rows.length : counts[s[0]] || 0) + ')</a>'; }).join('');
+        $('view').innerHTML = '<nav class="tabs">' + tabs + '</nav><div class="tools"><input id="q" type="search" placeholder="Search names, emails and words" data-dictate="off">' +
+          '<select id="area"><option value="">Every area</option>' + areas.map(function (a) { return '<option>' + esc(a) + '</option>'; }).join('') + '</select>' +
+          '<select id="sort"><option value="new">Newest first</option><option value="old">Oldest first</option></select><a class="btn btn-quiet" href="/nominate" target="_blank" rel="noopener">See the form</a></div><div class="grid" id="grid"></div>';
+        function fill() {
+          var q = $('q').value.toLowerCase(), a = $('area').value, old = $('sort').value === 'old';
+          var list = rows.filter(function (x) { return (r.st === 'all' || x.status === r.st) && (!a || x.area === a) && (!q || [x.nominee_name, x.nominee_email, x.nominator_name, x.written || ''].join(' ').toLowerCase().indexOf(q) >= 0); });
+          if (old) list = list.slice().reverse();
+          $('grid').innerHTML = list.length ? list.map(function (x) {
+            return '<div class="card"><div class="body"><span class="kind">' + esc(x.area) + ' &middot; ' + esc(SRC[x.source] || 'Direct') + '</span><div><span class="tag ' + esc(x.status) + '">' + esc(LABEL[x.status] || x.status) + '</span></div>' +
+              '<h3>' + esc(x.nominee_name) + '</h3><div class="roles">' + roles(x.roles) + '</div>' +
+              (x.written ? '<p class="excerpt">' + esc(x.written) + '</p>' : '<span class="meta">A ' + secs(x.audio_seconds) + ' recording</span>') +
+              '<span class="meta">' + (x.self_nominated ? 'Self-nominated' : 'By ' + esc(x.nominator_name)) + ' &middot; ' + esc(when(x.created_at)) + '</span>' +
+              '<div class="acts"><a class="btn" href="#n/' + x.id + '">Open</a></div></div></div>';
+          }).join('') : '<p class="sub">None here.</p>';
+        }
+        $('q').oninput = fill; $('area').onchange = fill; $('sort').onchange = fill; fill();
+      }
+      function drawOne(id) {
+        $('view').innerHTML = '<p class="sub">Loading...</p>';
+        api({ action: 'get', id: id }).then(function (d) {
+          if (!d || !d.ok) { $('view').innerHTML = '<p class="sub">That one did not load.</p>'; return; }
+          ROLES = d.roles || ROLES; var n = d.nomination;
+          var acts = [['approved', 'Approve, ready to invite', ''], ['declined', 'Not now', ' btn-ghost'], ['new', 'Back to waiting', ' btn-quiet']].filter(function (a) { return a[0] !== n.status; });
+          $('view').innerHTML = '<p class="crumb"><a href="#list/' + (['new', 'approved', 'declined'].indexOf(n.status) > -1 ? n.status : 'all') + '">Nominations</a> / ' + esc(n.nominee_name) + '</p><div class="item">' +
+            '<div><span class="kind">' + esc(n.area) + ' &middot; ' + esc(SRC[n.source] || 'Direct') + '</span> <span class="tag ' + esc(n.status) + '">' + esc(LABEL[n.status] || n.status) + '</span></div>' +
+            '<h3 style="font-size:22px">' + esc(n.nominee_name) + '</h3><div class="roles">' + roles(n.roles) + (n.self_nominated ? ' <span class="tag">Self-nominated</span>' : '') + '</div>' +
+            (n.audio_url ? '<audio controls preload="none" src="' + esc(n.audio_url) + '"></audio><span class="meta">' + secs(n.audio_seconds) + ' &middot; <a href="' + esc(n.audio_url) + '" download>Download the recording</a> (link good for an hour)</span>' : '') +
+            (n.written ? '<div class="full">' + esc(n.written) + '</div>' : '') +
+            '<dl><dt>Their email</dt><dd><a href="mailto:' + esc(n.nominee_email) + '">' + esc(n.nominee_email) + '</a>' + (n.other_nominations ? ' &middot; <b>nominated ' + n.other_nominations + ' other time' + (n.other_nominations === 1 ? '' : 's') + '</b>' : '') + '</dd>' +
+            '<dt>Area</dt><dd>' + esc(n.area) + '</dd>' +
+            '<dt>Nominated by</dt><dd>' + esc(n.nominator_name) + (n.nominator_email ? ' &middot; <a href="mailto:' + esc(n.nominator_email) + '">' + esc(n.nominator_email) + '</a>' : '') + (n.nominator_member_id ? ' &middot; a member' : '') + (n.credit_ok ? ' &middot; may be named' : ' &middot; <b>keep their name private</b>') + '</dd>' +
+            '<dt>Sent</dt><dd>' + esc(when(n.created_at)) + ', release ticked, 18 or over</dd>' + (n.reviewed_at ? '<dt>Reviewed</dt><dd>' + esc(when(n.reviewed_at)) + '</dd>' : '') + '</dl>' +
+            '<textarea id="tnote" placeholder="Team note" data-dictate="off">' + esc(n.team_note || '') + '</textarea>' +
+            '<div class="acts">' + acts.map(function (a) { return '<button type="button" class="btn' + a[2] + '" data-st="' + a[0] + '">' + a[1] + '</button>'; }).join('') + '<button type="button" class="btn btn-quiet" data-st="">Save note</button><span class="msg" id="msg"></span></div></div>';
+          [].forEach.call(document.querySelectorAll('[data-st]'), function (b) { b.onclick = function () {
+            var p = { action: 'set', id: id, team_note: $('tnote').value }; if (b.getAttribute('data-st')) p.status = b.getAttribute('data-st');
+            $('msg').textContent = 'Saving...';
+            api(p).then(function (x) { if (x && x.ok) { loaded = false; drawOne(id); } else $('msg').textContent = 'That did not save.'; });
+          }; });
+        });
+      }
+      function render() {
+        var r = route();
+        if (r.v === 'n') return drawOne(r.id);
+        if (loaded) return drawList(r);
+        $('view').innerHTML = '<p class="sub">Loading...</p>';
+        api({ action: 'list' }).then(function (d) { if (!d || !d.ok) { $('view').innerHTML = '<p class="sub">That did not load. Refresh to try again.</p>'; return; } rows = d.nominations; ROLES = d.roles || {}; loaded = true; drawList(route()); });
+      }
+      window.addEventListener('hashchange', render);
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="si">Sign in</button>'; $('si').onclick = function () { VEAuth.showAuthModal('Sign in to see nominations.', function () { location.reload(); }); }; return; }
+        if (!m || !m.is_superadmin) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+        $('app').hidden = false; render();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

@@ -12,7 +12,7 @@ const SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
 const SITE = 'https://vegansexplore.com';
 
-const PAGES = ['/', '/explore', '/passport', '/welcome', '/directory', '/events', '/pulse', '/media', '/guides', '/paths', '/communities',
+const PAGES = ['/', '/explore', '/passport', '/welcome', '/directory', '/events', '/pulse', '/media', '/guides', '/paths', '/nominate', '/communities',
   '/business', '/policies', '/contact', '/vault'];
 const CHAPTERS = ['south-florida', 'central-florida', 'north-florida', 'atlanta', 'washington-dc', 'delaware', 'maryland', 'virginia',
   'west-virginia', 'new-york', 'philadelphia', 'los-angeles', 'london'];
