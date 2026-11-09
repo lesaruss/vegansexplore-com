@@ -111,6 +111,8 @@
     { group: 'Moving to BrandDesk', href: '/admin/depot/invites', label: 'Invites' },
     { group: 'Moving to BrandDesk', href: '/admin/depot/referral-claims', label: 'Referral claims' },
     { group: 'Moving to BrandDesk', href: '/admin/depot/links', label: 'Links' },
+    // Ad assets (Sean, 2026-11-09, playbook ve-guide-banner-audio): every Guide banner, its campaigns, slots, /go/ link, commercials and numbers.
+    { group: 'Moving to BrandDesk', href: '/admin/depot/ad-assets', label: 'Ad assets' },
     // Members is a read-only Depot page (2026-11-08; Sean, 2026-11-07: "The Depot keeps a read-only member list"). The old roster with its
     // class moves, /dashboard/members, still opens by its address.
     { group: 'Moving to BrandDesk', href: '/dashboard/leads', label: 'Leads', kind: 'dash' },

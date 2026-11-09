@@ -12,10 +12,29 @@
   animated card as the house banners on listings (VEPromo.guideCard): four scenes from the Guide's own art, a headline each, a line and
   Get the Guide. It fills any slot: a 300 x 600 shows the line, a 300 x 250 (or a phone's full-width box) keeps the headline and button.
   A click opens the clickTag and tells the page so the ad system counts it (ad-click).
+
+  The Listen bar (Sean, 2026-11-09, playbook ve-guide-banner-audio: "the banners... can be players so people can play and hear the message...
+  we still want them to click through... a button below it... that runs the length of the width of the image"). A Guide with a banner cut of
+  its commercial (G[].spot, the version that ends "Tap below to open the <Guide>") gets a bar the full width under the picture: play, "Hear it
+  from <Guide>", the length and a progress line. It plays in place and never navigates; nothing plays until pressed; at the end the bar
+  becomes "Open the Guide" (the clickTag). The picture and its button still click through. The bar tells the page {veAd:'listen'} on the first
+  play and {veAd:'heard'} at the end, and the page counts it (public/ve-ad-creative.js). Holiday first; the others once Sean approves it.
 -->
 <style>
   html,body{margin:0;height:100%;overflow:hidden;background:#0f1f17;font-family:Montserrat,system-ui,-apple-system,"Segoe UI",sans-serif}
   a{position:absolute;inset:0;display:block;color:#fff;text-decoration:none;cursor:pointer}
+  html.lb a#ad{bottom:44px}
+  .lb-bar{display:none;position:absolute;left:0;right:0;bottom:0;height:44px;border:0;margin:0;padding:0 14px;background:#14532d;color:#fff;font:inherit;cursor:pointer;
+    align-items:center;gap:10px;text-align:left;width:100%;box-sizing:border-box;text-decoration:none}
+  html.lb .lb-bar{display:flex}
+  .lb-bar:hover,.lb-bar:focus-visible{background:#166534}
+  .lb-bar:focus-visible{outline:3px solid #bef264;outline-offset:-3px}
+  .lb-ic{flex:none;width:26px;height:26px;border-radius:50%;background:#bef264;color:#14532d;display:flex;align-items:center;justify-content:center}
+  .lb-ic svg{width:12px;height:12px;display:block}
+  .lb-t{flex:1;min-width:0;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .lb-len{flex:none;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;color:rgba(255,255,255,.85)}
+  .lb-p{position:absolute;left:0;top:0;height:3px;width:0;background:#bef264;transition:width .25s linear}
+  .lb-bar.done{background:#22c55e;color:#062b14}.lb-bar.done .lb-ic{background:#062b14;color:#bef264}.lb-bar.done .lb-len{color:#062b14}
   .f{position:absolute;inset:0;background-size:cover;background-position:center 25%;opacity:0;animation:f 16s infinite}
   .f:nth-child(1){animation-delay:0s}.f:nth-child(2){animation-delay:4s}.f:nth-child(3){animation-delay:8s}.f:nth-child(4){animation-delay:12s}
   @keyframes f{0%{opacity:0;transform:scale(1.02)}5%{opacity:1}25%{opacity:1}30%{opacity:0;transform:scale(1.12)}100%{opacity:0}}
@@ -38,6 +57,7 @@
 </head>
 <body>
 <a id="ad" href="#" aria-label="Vegans Explore Guide"></a>
+<button type="button" class="lb-bar" id="lb" hidden><span class="lb-p" id="lbp"></span><span class="lb-ic" id="lbi" aria-hidden="true"></span><span class="lb-t" id="lbt"></span><span class="lb-len" id="lbl"></span></button>
 <script>
 (function () {
   var SBM = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/';
@@ -71,6 +91,7 @@
     // The Holiday Guide (Sean, 2026-11-08: it replaces the Nonprofit Guide in the ad slots, which is a door for direct outreach; free and public,
     // and its Give Back section is the public face of the cause). Portrait pictures, so the tall slot is never a blown-up crop.
     'holiday-guide': { kicker: 'The Holiday Guide', cta: 'Open the Holiday Guide', free: true, href: '/guides/holiday-guide',
+      spot: { who: 'Theo', url: SBM + 'podcast/commercials/holiday-guide-banner-v1.mp3', secs: 35 },
       line: 'ThanksLiving ideas, recipes, holiday menus near you and ways to give back, with Theo.',
       frames: [[SITE + '/public/guides/holiday/theo-thanksliving.jpg', 'Your ThanksLiving table', 'background-position:50% 30%'], [SITE + '/public/guides/holiday/theo-menus.jpg', 'Holiday menus near you', 'background-position:50% 25%'],
         [SITE + '/public/guides/holiday/r-loaf.jpg', 'Recipes for the table', 'background-position:50% 50%'], [SITE + '/public/guides/holiday/theo-giveback.jpg', 'Give back this season', 'background-position:50% 25%']] },
@@ -96,6 +117,35 @@
     try { parent.postMessage({ veAd: 'click' }, '*'); } catch (err) {}
     window.open(clickTag, '_blank', 'noopener');
   });
+  listenBar(g, q.get('g') || 'vegan-dairy-guide');
+
+  function listenBar(g, slug) {
+    if (!g.spot) return;
+    var PLAY = '<svg viewBox="0 0 12 12"><path d="M3 1.5v9l7.5-4.5z" fill="currentColor"/></svg>';
+    var PAUSE = '<svg viewBox="0 0 12 12"><path d="M2.5 1.5h2.5v9H2.5zM7 1.5h2.5v9H7z" fill="currentColor"/></svg>';
+    var OPEN = '<svg viewBox="0 0 12 12"><path d="M4 2l4.5 4L4 10" stroke="currentColor" stroke-width="2" fill="none"/></svg>';
+    var bar = document.getElementById('lb'), t = document.getElementById('lbt'), l = document.getElementById('lbl'), ic = document.getElementById('lbi'), pr = document.getElementById('lbp');
+    function mmss(s) { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2); }
+    var audio = null, told = false, done = false;
+    function idle(label) { ic.innerHTML = PLAY; t.textContent = label || 'Hear it from ' + g.spot.who; l.textContent = mmss(g.spot.secs); bar.setAttribute('aria-label', 'Play: hear it from ' + g.spot.who + ', ' + mmss(g.spot.secs)); }
+    function tell(k) { try { parent.postMessage({ veAd: k, g: slug }, '*'); } catch (e) {} }
+    document.documentElement.classList.add('lb'); bar.hidden = false; idle();
+    bar.addEventListener('click', function () {
+      if (done) { tell('click'); window.open(clickTag, '_blank', 'noopener'); return; }
+      if (!audio) {
+        audio = new Audio(g.spot.url); audio.preload = 'auto';
+        audio.addEventListener('timeupdate', function () { var d = audio.duration || g.spot.secs; pr.style.width = Math.min(100, audio.currentTime / d * 100) + '%'; l.textContent = mmss(d - audio.currentTime); });
+        audio.addEventListener('play', function () { ic.innerHTML = PAUSE; t.textContent = g.spot.who + ' is talking'; bar.setAttribute('aria-label', 'Pause'); if (!told) { told = true; tell('listen'); } });
+        audio.addEventListener('pause', function () { if (!audio.ended) idle('Paused. Tap to keep going'); });
+        audio.addEventListener('ended', function () {
+          done = true; tell('heard'); pr.style.width = '100%'; bar.classList.add('done'); ic.innerHTML = OPEN;
+          t.textContent = 'Open the Guide'; l.textContent = ''; bar.setAttribute('aria-label', g.cta);
+        });
+        audio.addEventListener('error', function () { t.textContent = 'That did not play. Tap the picture to open the Guide'; });
+      }
+      if (audio.paused) audio.play().catch(function () {}); else audio.pause();
+    });
+  }
 })();
 </script>
 </body>

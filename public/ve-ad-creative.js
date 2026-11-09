@@ -42,12 +42,38 @@
       '<img class="' + esc(opts.imgClass || '') + '" src="' + esc(ad.image_url) + '" alt="Advertisement"></a>';
   }
 
-  // An HTML5 ad reports its own click; match the message to the frame it came from.
+  // A Guide ad's Listen bar (playbook ve-guide-banner-audio, 2026-11-09): 'listen' when play is first pressed, 'heard' when it plays to the
+  // end. A listen counts against the slot beside its views and clicks (ad_impressions.listens, ve_house_ad_count), and both count for the
+  // page in ve_promo_events (promo guide-<slug>, cta 'rail'), the same visitor id as the listing banner. Bots are never counted.
+  var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  var BOT = /bot|crawl|spider|preview|HeadlessChrome|Lighthouse/i.test(navigator.userAgent || '');
+  function rpc(fn, body) {
+    try { fetch(SB + '/rest/v1/rpc/' + fn, { method: 'POST', keepalive: true, headers: { 'Content-Type': 'application/json', apikey: ANON, Authorization: 'Bearer ' + ANON }, body: JSON.stringify(body) }).catch(function () {}); } catch (e) {}
+  }
+  function visitor() {
+    try {
+      var v = localStorage.getItem('ve_visitor');
+      if (!v || !/^[A-Za-z0-9-]{8,64}$/.test(v)) { v = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).slice(2, 12); localStorage.setItem('ve_visitor', v); }
+      return v;
+    } catch (e) { return ''; }
+  }
+  function listen(frame, kind, slug) {
+    if (BOT || !/^[a-z0-9-]{2,34}$/.test(String(slug || ''))) return;
+    if (kind === 'listen' && frame.dataset.placement && frame.dataset.campaign) rpc('ve_house_ad_count', { p_placement: frame.dataset.placement, p_campaign: frame.dataset.campaign, p_kind: 'listen' });
+    var v = visitor(), L = {}; try { L = JSON.parse(sessionStorage.getItem('ve_landing') || '{}') || {}; } catch (e) {}
+    if (v) rpc('ve_promo_track', { p_promo: 'guide-' + slug, p_step: kind, p_visitor: v, p_page: location.pathname, p_listing: null, p_cta: 'rail', p_channel: L.channel || null, p_vl: L.vl || null });
+  }
+
+  // An HTML5 ad reports its own click (and a Guide ad its listens); match the message to the frame it came from.
   window.addEventListener('message', function (e) {
-    if (!e.data || e.data.veAd !== 'click') return;
+    if (!e.data || ['click', 'listen', 'heard'].indexOf(e.data.veAd) < 0) return;
     var frames = document.querySelectorAll('iframe.ve-ad-frame');
     for (var i = 0; i < frames.length; i++) {
-      if (frames[i].contentWindow === e.source) { click(frames[i].dataset.placement, frames[i].dataset.campaign); return; }
+      if (frames[i].contentWindow !== e.source) continue;
+      if (e.data.veAd === 'click') click(frames[i].dataset.placement, frames[i].dataset.campaign);
+      else listen(frames[i], e.data.veAd, e.data.g);
+      return;
     }
   });
 

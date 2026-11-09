@@ -14,6 +14,7 @@
 // POST { action: 'tour', slug }                     -> { tour, chapters, shots }
 // POST { action: 'shot_decide', id, status, note? } -> { shot }    status approved | redo (redo needs a note) | proposed
 // POST { action: 'chapter_approve', id, approved }  -> { chapter }
+// POST { action: 'ad_assets', days? }               -> { guides }  Depot > Ad assets (playbook ve-guide-banner-audio), below.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -153,5 +154,81 @@ Deno.serve(async (req) => {
     return json({ ok: true, chapter });
   }
 
+  if (b.action === 'ad_assets') return json(await adAssets(Number(b.days) || 30));
+
   return json({ error: 'unknown_action' }, 400);
 });
+
+// ---- Depot > Ad assets (Sean, 2026-11-09, playbook ve-guide-banner-audio: "I don't want these things to get lost... a summary page or
+// like a hub where it has all these assets"). Every Guide banner: its art, its campaigns (sponsor ve-house-banners) and the slots they run
+// in, its tracked /go/ link, its commercials (podcast and banner cuts, ve_guide_commercials) and its views, clicks and listens.
+// POST { action: 'ad_assets', days? }  -> { guides, from, to, days }   days 7 | 30 | 90 | 0 (all time)
+const HOUSE_SPONSOR = '7b1c4f2e-1a10-4d2e-9a51-0c0de5a11001';
+const SITE = 'https://vegansexplore.com';
+const MEDIA = `${SUPABASE_URL}/storage/v1/object/public/vegan-media/`;
+async function adAssets(days: number) {
+  const d = [0, 7, 30, 90].includes(days) ? days : 30;
+  const to = new Date().toISOString().slice(0, 10);
+  const from = d ? new Date(Date.now() - (d - 1) * 864e5).toISOString().slice(0, 10) : '2026-01-01';
+  const [{ data: camps }, { data: comms }] = await Promise.all([
+    db.from('ad_campaigns').select('id, campaign_name, creative_url, click_through_url, status, notes, start_date, end_date').eq('sponsor_campaign_id', HOUSE_SPONSOR),
+    db.from('ve_guide_commercials').select('*').order('cut').order('version', { ascending: false }),
+  ]);
+  const cids = (camps || []).map((c) => c.id);
+  const [{ data: cps }, { data: imps }] = await Promise.all([
+    cids.length ? db.from('ad_campaign_placements').select('campaign_id, placement_id').in('campaign_id', cids) : Promise.resolve({ data: [] as any[] }),
+    cids.length ? db.from('ad_impressions').select('placement_id, campaign_id, impressions, clicks, listens').in('campaign_id', cids).gte('log_date', from).lte('log_date', to).limit(50000) : Promise.resolve({ data: [] as any[] }),
+  ]);
+  const pids = [...new Set((cps || []).map((x: any) => x.placement_id))];
+  const { data: places } = pids.length ? await db.from('ad_placements').select('id, page_slug, slot_id, dimensions, status').in('id', pids) : { data: [] as any[] };
+  const P = new Map((places || []).map((p: any) => [p.id, p]));
+  // A Guide's slug: the rail ad names it (?g=), the house banner by its /go/ code (ve-guide-<x>, matched to the rail's).
+  const goOf = (c: any) => (String(c.click_through_url || '').match(/\/go\/([a-z0-9-]+)/i) || [])[1] || '';
+  const slugByGo: Record<string, string> = {};
+  for (const c of camps || []) { const g = (String(c.creative_url || '').match(/[?&]g=([a-z0-9-]+)/) || [])[1]; if (g) slugByGo[goOf(c)] = g; }
+  const codes = [...new Set((camps || []).map(goOf).filter(Boolean))];
+  const { data: links } = codes.length ? await db.from('ve_links').select('code, destination, clicks, last_click_at, active').in('code', codes) : { data: [] as any[] };
+  const L = new Map((links || []).map((l: any) => [l.code, l]));
+  const guides: Record<string, any> = {};
+  const guide = (slug: string, name: string) => guides[slug] ||= { slug, name, art: `${SITE}/public/guides/${slug}.jpg`, page: `${SITE}/guides/${slug}`,
+    campaigns: [], commercials: [], go: null, totals: { views: 0, clicks: 0, listens: 0 }, promo: null };
+  for (const c of camps || []) {
+    const go = goOf(c);
+    const slug = (String(c.creative_url || '').match(/[?&]g=([a-z0-9-]+)/) || [])[1] || slugByGo[go] || '';
+    if (!slug) continue; // the creator ad and any non-Guide banner
+    const name = String(c.campaign_name || '').replace(/^Vegans Explore - /, '').replace(/\s*\([^)]*\)\s*$/, '');
+    const g = guide(slug, name);
+    const format = (String(c.campaign_name).match(/\(([^)]*)\)\s*$/) || [])[1] || '';
+    const slots = (cps || []).filter((x: any) => x.campaign_id === c.id).map((x: any) => {
+      const p: any = P.get(x.placement_id) || {};
+      const rows = (imps || []).filter((i: any) => i.campaign_id === c.id && i.placement_id === x.placement_id);
+      const s = { page: p.page_slug || '', slot: p.slot_id || '', size: p.dimensions || '', status: p.status || '',
+        views: rows.reduce((a: number, r: any) => a + (r.impressions || 0), 0), clicks: rows.reduce((a: number, r: any) => a + (r.clicks || 0), 0),
+        listens: rows.reduce((a: number, r: any) => a + (r.listens || 0), 0) };
+      if (c.status === 'active' || s.views) { g.totals.views += s.views; g.totals.clicks += s.clicks; g.totals.listens += s.listens; }
+      return s;
+    }).sort((a: any, b: any) => b.views - a.views);
+    g.campaigns.push({ id: c.id, name: c.campaign_name, format, status: c.status, creative: c.creative_url, link: c.click_through_url, notes: c.notes, slots });
+    if (go && !g.go) { const l: any = L.get(go); g.go = { code: go, url: `${SITE}/go/${go}`, clicks: l?.clicks ?? null, last_click_at: l?.last_click_at ?? null, destination: l?.destination ?? null, active: l?.active ?? null }; }
+  }
+  for (const m of comms || []) {
+    const g = guides[m.guide_slug] || guide(m.guide_slug, m.guide_name);
+    g.speaker ||= m.speaker;
+    g.commercials.push({ cut: m.cut, version: m.version, url: MEDIA + m.audio_path, path: m.audio_path, script: m.script, script_source: m.script_source,
+      seconds: m.seconds, checked: m.checked, note: m.note, made_at: m.made_at });
+  }
+  // The listing pages' house banner and the rail's listens by page, from ve_promo_events (promo guide-<slug>; bots are never sent).
+  const promos = Object.keys(guides).map((s) => 'guide-' + s);
+  const { data: ev } = await db.from('ve_promo_events').select('promo, step, page').in('promo', promos).gte('created_at', from + 'T00:00:00Z').limit(50000);
+  for (const s of Object.keys(guides)) {
+    const rows = (ev || []).filter((e: any) => e.promo === 'guide-' + s);
+    const count = (st: string) => rows.filter((e: any) => e.step === st).length;
+    const byPage: Record<string, any> = {};
+    for (const e of rows) { const k = e.page || '(none)'; byPage[k] ||= { page: k, view: 0, click: 0, listen: 0, heard: 0 }; if (e.step in byPage[k]) byPage[k][e.step]++; }
+    guides[s].promo = { view: count('view'), click: count('click'), listen: count('listen'), heard: count('heard'),
+      by_page: Object.values(byPage).sort((a: any, b: any) => (b.listen + b.view) - (a.listen + a.view)).slice(0, 40) };
+  }
+  const list = Object.values(guides).sort((a: any, b: any) =>
+    (b.campaigns.some((c: any) => c.status === 'active') ? 1 : 0) - (a.campaigns.some((c: any) => c.status === 'active') ? 1 : 0) || b.totals.views - a.totals.views);
+  return { ok: true, guides: list, from, to, days: d };
+}

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Ad assets | The Depot</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);--ve-red:#8a1c12;}
+    body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    .wrap{max-width:none;margin:0;padding:28px 40px 56px;}
+    @media (max-width:600px){.wrap{padding:24px 16px 48px;}}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:6px;}
+    h1{font-size:clamp(24px,3vw,32px);font-weight:900;text-transform:uppercase;line-height:1.1;margin-bottom:8px;}
+    h2{font-size:13px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--ve-green-deep);margin-bottom:10px;}
+    .sub{font-size:14.5px;color:var(--ve-text-75);max-width:860px;margin-bottom:14px;}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;}
+    .tabs a{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:6px;border:1px solid var(--ve-border);background:#fff;color:var(--ve-text);text-decoration:none;}
+    .tabs a.on{background:var(--ve-green-deep);color:#fff;border-color:var(--ve-green-deep);}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(360px,100%),1fr));gap:14px;}
+    .card{background:#fff;border:1px solid var(--ve-border);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;}
+    .card .body{padding:14px 16px;display:flex;flex-direction:column;gap:8px;flex:1;}
+    .who{display:flex;gap:12px;align-items:center;}
+    .av{width:44px;height:44px;border-radius:8px;flex:none;display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:15px;background:var(--ve-green-deep);object-fit:cover;}
+    .who b{font-size:15px;font-weight:800;line-height:1.25;display:block;}
+    .meta{font-size:12.5px;color:var(--ve-text-75);}
+    .excerpt{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:13.5px;}
+    .chips{display:flex;gap:6px;flex-wrap:wrap;}
+    .chip{font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:6px;background:#f1f3f1;color:#333;}
+    .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto;padding-top:8px;align-items:center;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 14px;border-radius:6px;font-family:inherit;font-size:11.5px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;border:0;background:var(--ve-green-deep);color:#fff;text-decoration:none;}
+    .btn:disabled{opacity:.5;cursor:default;}
+    .btn-quiet{background:#fff;color:var(--ve-green-deep);border:1px solid var(--ve-green-deep);}
+    .btn-stop{background:var(--ve-red);}
+    .btn-ghost{background:#fff;color:var(--ve-red);border:1px solid rgba(0,0,0,0.25);}
+    .msg{font-size:12.5px;font-weight:700;color:var(--ve-green-deep);}
+    .msg.err{color:var(--ve-red);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
+    .tools{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 16px;}
+    .tools input{font-family:inherit;font-size:13px;min-height:40px;padding:8px 12px;border:1px solid var(--ve-border);border-radius:6px;background:#fff;color:var(--ve-text);flex:1;min-width:200px;}
+    .tag{display:inline-block;font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:6px;background:#eef1ee;color:#333;}
+    .tag.pending{background:#fff1dc;color:#8a5200;}.tag.declined{background:#fde8e6;color:#8a1c12;}.tag.live{background:var(--ve-green-light);color:var(--ve-green-deep);}.tag.withdrawn{background:#eef1ee;color:#555;}.badge{display:inline-block;font-size:12px;font-weight:900;padding:4px 10px;border-radius:6px;background:var(--ve-green-deep);color:#fff;}
+    .mode{background:#fff;border:1px solid var(--ve-border);border-left:4px solid var(--ve-orange);border-radius:10px;padding:12px 16px;margin:0 0 16px;display:flex;gap:14px;align-items:center;flex-wrap:wrap;font-size:13.5px;}
+    .mode.on{border-left-color:var(--ve-green);}
+    .mode p{flex:1;min-width:240px;}
+    .crumb{font-size:12.5px;margin-bottom:12px;}.crumb a{color:var(--ve-green-deep);font-weight:700;}
+    .cols{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:16px;align-items:start;}
+    @media (max-width:1000px){.cols{grid-template-columns:1fr;}}
+    .box{background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:18px 20px;margin-bottom:16px;}
+    .box dl{display:grid;grid-template-columns:150px 1fr;gap:6px 14px;font-size:13.5px;}.box dt{font-weight:800;color:var(--ve-text-75);}.box dd{word-break:break-word;}
+    @media (max-width:600px){.box dl{grid-template-columns:1fr;}.box dt{margin-top:6px;}}
+    .scroll{max-height:300px;overflow:auto;border:1px solid var(--ve-border);border-radius:8px;}
+    table{width:100%;border-collapse:collapse;font-size:12.5px;}th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--ve-border);vertical-align:top;}th{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75);position:sticky;top:0;background:#f7faf7;}
+    .row{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--ve-border);font-size:13.5px;flex-wrap:wrap;}.row:last-child{border-bottom:0;}.row a{color:var(--ve-green-deep);font-weight:700;}
+    .log{list-style:none;display:grid;gap:10px;font-size:13.5px;}.log li{border-left:3px solid var(--ve-green);padding:2px 0 2px 12px;}
+    textarea{font-family:inherit;font-size:14px;width:100%;min-height:96px;padding:10px 12px;border:1px solid var(--ve-border);border-radius:6px;margin:6px 0 10px;}
+    .judge{border:2px solid var(--ve-green-deep);}
+    .neg{color:var(--ve-red);font-weight:700;}.pos{color:var(--ve-green-deep);font-weight:700;}
+    .pick{display:grid;gap:8px;margin-bottom:12px;}
+    [hidden]{display:none !important;}
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script>
+  try { if (window.self !== window.top) document.documentElement.classList.add('ve-embedded'); } catch (e) {}
+  </script>
+  <style>.ve-embedded .ve-nav,.ve-embedded .ve-footer{display:none !important}.ve-embedded body{background:#fff}.ve-embedded .wrap{padding:20px 24px 40px}@media (max-width:600px){.ve-embedded .wrap{padding:16px 14px 32px}}</style>
+  <script src="/public/nav.js"></script>
+  <div class="wrap">
+    <p class="eyebrow">The Depot</p>
+    <h1>Ad assets</h1>
+    <div id="depot-tabs"></div>
+    <p class="sub">Every Guide banner in one place, so nothing gets lost: its picture, the campaigns and slots it runs in, its tracked link, its commercial (the podcast cut and the banner cut, with the words) and how it is doing. Views, clicks and listens are counted by the ad system for each slot; the listing banner's are counted per page. Visitors only, bots left out.</p>
+    <div id="gate" class="gate" hidden></div>
+    <main id="app" hidden>
+      <div id="view"></div>
+    </main>
+  </div>
+  <!--
+    Depot > Ad assets (Sean, 2026-11-09, playbook ve-guide-banner-audio: "I don't want these things to get lost... a summary page or like a hub
+    where it has all these assets"). Parent: admin/depot/holiday-menus.html (the Depot tool shell). Data: ve-depot { action: 'ad_assets', days }
+    (ad_campaigns under sponsor ve-house-banners, their slots and ad_impressions, ve_links for the /go/ link, ve_guide_commercials for the
+    commercials, ve_promo_events for the listing banner). Views: the list (#list?days=), one Guide (#g/<slug>?days=).
+  -->
+  <style>
+    .ga{aspect-ratio:16/9;background:#e9efe9 center 25%/cover no-repeat;}
+    .nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+    .num{background:#f6f8f6;border-radius:8px;padding:8px 10px;}.num b{display:block;font-size:20px;font-weight:900;line-height:1.1;}.num span{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--ve-text-75);}
+    .cm{border:1px solid var(--ve-border);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:8px;}
+    .cm audio{width:100%;}
+    .script{max-height:150px;overflow:auto;font-size:13.5px;line-height:1.6;background:#fafbfa;border:1px solid var(--ve-border);border-radius:6px;padding:10px 12px;}
+    .two{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(420px,100%),1fr));gap:14px;}
+    .hero{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:16px;align-items:start;}
+    @media (max-width:900px){.hero{grid-template-columns:1fr;}}
+    .hero img{width:100%;border-radius:12px;display:block;}
+    .copy{font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--ve-green-deep);color:var(--ve-green-deep);background:#fff;border-radius:6px;padding:5px 10px;cursor:pointer;margin-left:6px;}
+    .tools select{font-family:inherit;font-size:13px;min-height:40px;padding:8px 44px 8px 12px;border:1px solid var(--ve-border);border-radius:6px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%231f5f22' stroke-width='2' fill='none'/%3E%3C/svg%3E") no-repeat right 16px center;appearance:none;-webkit-appearance:none;color:var(--ve-text);}
+    .tag.off{background:#eef1ee;color:#555;}
+    td.n,th.n{text-align:right;font-variant-numeric:tabular-nums;}
+    #view .grid{grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));}
+  </style>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/depot-tabs.js"></script>
+  <script>
+    (function () {
+      var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-depot';
+      var $ = function (id) { return document.getElementById(id); };
+      var PERIODS = [['7', 'Last 7 days'], ['30', 'Last 30 days'], ['90', 'Last 90 days'], ['0', 'All time']];
+      var cache = {}, q = '';
+      function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+      function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+      function n(x) { return x == null ? '-' : Number(x).toLocaleString('en-US'); }
+      function len(s) { if (!s) return ''; s = Math.round(Number(s)); return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2); }
+      function day(t) { return t ? new Date(t).toLocaleDateString('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+      function route() {
+        var h = location.hash.replace(/^#/, ''), qs = h.split('?')[1] || '', p = h.split('?')[0].split('/');
+        var days = (qs.match(/(?:^|&)days=(\d+)/) || [])[1]; days = ['7', '30', '90', '0'].indexOf(days) > -1 ? days : '30';
+        return p[0] === 'g' && p[1] ? { v: 'item', slug: decodeURIComponent(p[1]), days: days } : { v: 'list', days: days };
+      }
+      function live(g) { return g.campaigns.some(function (c) { return c.status === 'active' && c.slots.length; }); }
+      function tag(g) { return live(g) ? '<span class="tag live">Live</span>' : '<span class="tag off">Not live</span>'; }
+      function cuts(g) {
+        var p = g.commercials.filter(function (c) { return c.cut === 'podcast'; })[0], b = g.commercials.filter(function (c) { return c.cut === 'banner'; })[0];
+        return p ? 'Podcast cut ' + len(p.seconds) + ' &middot; ' + (b ? 'Banner cut ' + len(b.seconds) : 'Banner cut coming') : '';
+      }
+      function nums(t) { return '<div class="nums"><div class="num"><b>' + n(t.views) + '</b><span>Views</span></div><div class="num"><b>' + n(t.clicks) + '</b><span>Clicks</span></div><div class="num"><b>' + n(t.listens) + '</b><span>Listens</span></div></div>'; }
+      // The ad system's slot counts (ad_impressions) hold every slot, the listing banner's included; its per-page steps are on the Guide's own view.
+      function totals(g) { return g.totals; }
+      function periodPick(r) {
+        return '<div class="tools"><input id="q" type="search" placeholder="Search Guides, Guides\' voices or pages" value="' + esc(q) + '" data-dictate="off">' +
+          '<select id="per" aria-label="Period">' + PERIODS.map(function (p) { return '<option value="' + p[0] + '"' + (p[0] === r.days ? ' selected' : '') + '>' + p[1] + '</option>'; }).join('') + '</select></div>';
+      }
+      function load(days) {
+        if (cache[days]) return Promise.resolve(cache[days]);
+        return api({ action: 'ad_assets', days: Number(days) }).then(function (d) { if (!d || !d.ok) throw d; cache[days] = d; return d; });
+      }
+      function card(g, days) {
+        return '<div class="card"><div class="ga" style="background-image:url(\'' + esc(g.art) + '\')" role="img" aria-label="' + esc(g.name) + ' banner"></div><div class="body">' +
+          '<div><b style="font-size:16px;font-weight:800">' + esc(g.name) + '</b><span class="meta" style="display:block">' + (g.speaker ? 'Read by ' + esc(g.speaker) + ' &middot; ' + cuts(g) : 'No commercial yet') + '</span></div>' +
+          '<div>' + tag(g) + ' <span class="meta">' + g.campaigns.reduce(function (a, c) { return a + (c.status === 'active' ? c.slots.length : 0); }, 0) + ' slots live</span></div>' + nums(totals(g)) +
+          '<div class="acts"><a class="btn" href="#g/' + encodeURIComponent(g.slug) + '?days=' + days + '">Open</a></div></div></div>';
+      }
+      function drawList(r, d) {
+        var s = q.toLowerCase();
+        var list = d.guides.filter(function (g) { return !s || (g.name + ' ' + (g.speaker || '') + ' ' + g.campaigns.map(function (c) { return c.slots.map(function (x) { return x.page; }).join(' '); }).join(' ')).toLowerCase().indexOf(s) > -1; });
+        $('view').innerHTML = periodPick(r) + '<p class="meta" style="margin-bottom:10px">' + esc(day(d.from + 'T12:00:00Z')) + ' to ' + esc(day(d.to + 'T12:00:00Z')) + '. Live Guides first, most seen first.</p>' +
+          (list.length ? '<div class="grid">' + list.map(function (g) { return card(g, r.days); }).join('') + '</div>' : '<p class="sub">No Guide matches that.</p>');
+        wire(r);
+      }
+      function cmBox(c, g) {
+        var title = c.cut === 'banner' ? 'Banner cut' : 'Podcast cut';
+        var why = c.cut === 'banner' ? 'Plays under the banner. Ends on the button below it.' : 'Airs on the podcast. Ends on vegansexplore.com.';
+        return '<div class="cm"><div><b>' + title + ' &middot; v' + esc(c.version) + '</b> <span class="meta">' + esc(len(c.seconds)) + ' &middot; ' + esc(g.speaker || '') + ' &middot; made ' + esc(day(c.made_at)) + '</span></div>' +
+          '<p class="meta">' + why + ' ' + (c.checked ? 'Words checked against the recording.' : c.script_source === 'transcribed' ? 'No written script was kept; these words are read back from the recording.' : 'Words not checked yet.') + '</p>' +
+          '<audio controls preload="none" src="' + esc(c.url) + '"></audio>' +
+          '<div class="script">' + esc(c.script || 'No script on file.') + '</div>' +
+          '<p class="meta" style="word-break:break-all">' + esc(c.path) + '</p></div>';
+      }
+      function drawItem(r, d) {
+        var g = d.guides.filter(function (x) { return x.slug === r.slug; })[0];
+        var crumb = '<p class="crumb"><a href="#list?days=' + r.days + '">Ad assets</a> &rsaquo; ' + esc(g ? g.name : 'Not found') + '</p>';
+        if (!g) { $('view').innerHTML = crumb + '<p class="sub">No Guide banner by that name.</p>'; return; }
+        var hasBanner = g.commercials.some(function (c) { return c.cut === 'banner'; }), hasAny = g.commercials.length;
+        var slotRows = [];
+        g.campaigns.forEach(function (c) { c.slots.forEach(function (s) { slotRows.push({ c: c, s: s }); }); });
+        var pr = g.promo || { by_page: [] };
+        $('view').innerHTML = crumb + periodPick(r) +
+          '<div class="hero"><div><img src="' + esc(g.art) + '" alt="' + esc(g.name) + ' banner"></div><div class="box" style="margin:0">' +
+            '<h2>' + esc(g.name) + '</h2><p style="margin-bottom:10px">' + tag(g) + ' <span class="meta">' + esc(day(d.from + 'T12:00:00Z')) + ' to ' + esc(day(d.to + 'T12:00:00Z')) + '</span></p>' + nums(totals(g)) +
+            '<dl style="margin-top:14px">' +
+              '<dt>Tracked link</dt><dd>' + (g.go ? '<a href="' + esc(g.go.url) + '" target="_blank" rel="noopener">' + esc(g.go.url.replace(/^https:\/\//, '')) + '</a><button type="button" class="copy" data-copy="' + esc(g.go.url) + '">Copy</button><br><span class="meta">' + n(g.go.clicks) + ' clicks all time' + (g.go.last_click_at ? ', last ' + esc(day(g.go.last_click_at)) : '') + '</span>' : 'None') + '</dd>' +
+              '<dt>The Guide</dt><dd><a href="' + esc(g.page) + '" target="_blank" rel="noopener">' + esc(g.page.replace(/^https:\/\//, '')) + '</a></dd>' +
+              '<dt>Listen bar</dt><dd>' + (hasBanner ? 'On the banner: it plays the banner cut.' : hasAny ? 'Not yet. Waiting for the banner cut.' : 'No commercial yet.') + '</dd>' +
+              (g.campaigns.some(function (c) { return /house banner/i.test(c.format); }) ? '<dt>On listing pages</dt><dd>' + n(pr.view) + ' views, ' + n(pr.click) + ' clicks, ' + n(pr.listen) + ' listens, ' + n(pr.heard) + ' heard to the end</dd>' : '') +
+              '<dt>Listens heard to the end</dt><dd>' + n(pr.heard) + ' of ' + n(pr.listen) + ' who pressed play</dd>' +
+            '</dl></div></div>' +
+          '<h2 style="margin-top:22px">Commercial</h2>' + (hasAny ? '<div class="two">' + g.commercials.map(function (c) { return cmBox(c, g); }).join('') + '</div>' : '<p class="sub">No commercial yet.</p>') +
+          '<h2 style="margin-top:22px">Campaigns and slots</h2>' +
+          '<div class="box"><div class="scroll" style="max-height:420px"><table><thead><tr><th>Campaign</th><th>Status</th><th>Page</th><th>Slot</th><th>Size</th><th class="n">Views</th><th class="n">Clicks</th><th class="n">Listens</th></tr></thead><tbody>' +
+            (slotRows.length ? slotRows.map(function (x) { return '<tr><td>' + esc(x.c.format || x.c.name) + '</td><td>' + (x.c.status === 'active' ? '<span class="tag live">Live</span>' : '<span class="tag off">Paused</span>') + '</td><td>' + esc(x.s.page) + '</td><td>' + esc(x.s.slot) + '</td><td>' + esc(x.s.size) + '</td><td class="n">' + n(x.s.views) + '</td><td class="n">' + n(x.s.clicks) + '</td><td class="n">' + n(x.s.listens) + '</td></tr>'; }).join('')
+              : '<tr><td colspan="8">No slots. ' + esc(g.campaigns.map(function (c) { return c.notes || ''; }).join(' ')) + '</td></tr>') +
+          '</tbody></table></div><p class="meta" style="margin-top:8px">' + g.campaigns.map(function (c) { return '<b>' + esc(c.format) + '</b>: ' + esc(c.creative) ; }).join('<br>') + '</p></div>' +
+          (pr.by_page.length ? '<h2 style="margin-top:22px">Listing banner, by page</h2><div class="box"><div class="scroll"><table><thead><tr><th>Page</th><th class="n">Views</th><th class="n">Clicks</th><th class="n">Listens</th><th class="n">Heard to the end</th></tr></thead><tbody>' +
+            pr.by_page.map(function (p) { return '<tr><td>' + esc(p.page) + '</td><td class="n">' + n(p.view) + '</td><td class="n">' + n(p.click) + '</td><td class="n">' + n(p.listen) + '</td><td class="n">' + n(p.heard) + '</td></tr>'; }).join('') + '</tbody></table></div></div>' : '');
+        wire(r);
+      }
+      function wire(r) {
+        var per = $('per'); if (per) per.onchange = function () { location.hash = (r.v === 'item' ? '#g/' + encodeURIComponent(r.slug) : '#list') + '?days=' + per.value; };
+        var qi = $('q'); if (qi) { qi.oninput = function () { q = qi.value; if (r.v === 'list') { drawList(r, cache[r.days]); var x = $('q'); x.focus(); x.setSelectionRange(q.length, q.length); } else if (q) location.hash = '#list?days=' + r.days; }; }
+        [].forEach.call(document.querySelectorAll('[data-copy]'), function (b) { b.onclick = function () { try { navigator.clipboard.writeText(b.getAttribute('data-copy')); b.textContent = 'Copied'; } catch (e) {} }; });
+      }
+      function render() {
+        var r = route();
+        if (!cache[r.days]) $('view').innerHTML = '<p class="sub">Loading...</p>';
+        load(r.days).then(function (d) { if (r.v === 'item') drawItem(r, d); else drawList(r, d); window.scrollTo(0, 0); })
+          .catch(function () { $('view').innerHTML = '<p class="sub">That did not load. Refresh to try again.</p>'; });
+      }
+      window.addEventListener('hashchange', render);
+      function start() {
+        if (!window.VEAuth) return setTimeout(start, 200);
+        var m = VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember();
+        if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Sign in</h2><p>This page is for Vegans Explore admins.</p><button type="button" class="btn" id="si">Sign in</button>'; $('si').onclick = function () { VEAuth.showAuthModal('Sign in to open Ad assets.', function () { location.reload(); }); }; return; }
+        if (!m || !m.is_superadmin) { $('gate').hidden = false; $('gate').innerHTML = '<h2>Admins only</h2><p>This page is for Vegans Explore admins.</p>'; return; }
+        $('app').hidden = false; render();
+      }
+      start();
+    })();
+  </script>
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
