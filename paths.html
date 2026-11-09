@@ -15,6 +15,7 @@
   <meta property="og:image" content="https://vegansexplore.com/public/og-default.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://vegansexplore.com/public/og-default.jpg">
+  <script src="/public/ve-guide-corner.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <!-- The paths page (ve-explorer-path step 4, wording approved by Sean 2026-11-07). Parent: /guides (template gate): the same banner and
        the same Guide card. Every path shows; the ones the member ticked in the Explorer survey's "Do you run any of these?" (x_run) come
@@ -75,12 +76,28 @@
     .gc-chip.picked { color: #7a4b00; background: #fff4e0; }
     .gc-chip.earned { color: #fff; background: var(--ve-green-dark); }
     .gc-card.pa-hi { box-shadow: 0 0 0 3px var(--ve-green); }
-    .pa-liz { display: flex; gap: 16px; align-items: center; border: 1px solid var(--ve-border); border-radius: 12px; padding: 14px 16px; margin: 0 0 22px; background: #fff; }
-    .pa-liz img { width: 76px; height: 76px; border-radius: 10px; object-fit: cover; flex-shrink: 0; background: #f4f6f4; }
-    .pa-liz-k { font-size: 10px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ve-green-dark); margin-bottom: 4px; }
-    .pa-liz p { font-size: 14px; line-height: 1.6; color: var(--ve-text); }
-    .pa-liz .gc-btn { width: auto; margin: 10px 0 0; padding: 10px 16px; }
-    @media (max-width: 600px) { .pa-liz { align-items: flex-start; } .pa-liz img { width: 64px; height: 64px; } }
+    /* Liz, the page's Guide: the standard rail pieces (#dgRail, .dg-maya, #dgBubble, #dgPlay, #dgFold). Phones: the locked Guide mobile card
+       from /public/ve-guide-corner.js (canon-guide-mobile-card). Desktop: a strip above the paths. Hide me / Show me: /public/ve-guide-min.js. */
+    #dgRail { margin: 0 0 22px; background: #fff; }
+    #dgRail .dg-maya { background: #f4f6f4 url('/public/guides/welcome/liz-paths.jpg') center top / cover no-repeat; border-radius: 10px; }
+    #dgRail .dg-namebar { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    #dgRail .dg-maya-name { font-size: 10px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ve-green-dark); }
+    #dgRail .dg-bubble { font-size: 14px; line-height: 1.6; color: var(--ve-text); background: var(--ve-green-light); border: 1px solid var(--ve-green-mid); border-radius: 10px; padding: 10px 14px; }
+    #dgRail .dg-play { display: inline-flex; align-items: center; justify-content: center; gap: 6px; font: 800 12px Montserrat, sans-serif; letter-spacing: 0.04em; padding: 10px 16px; border-radius: 6px; border: 0; background: #22C55E; color: #03170a; cursor: pointer; }
+    #dgRail .dg-play:hover { background: #1fb455; }
+    #dgRail .dg-fold { text-transform: uppercase; letter-spacing: 0.06em; align-items: center; font: 700 11px Montserrat, sans-serif; padding: 8px 12px; border-radius: 6px; border: 1px solid rgba(0,0,0,0.15); background: #fff; color: #1a1a1a; cursor: pointer; }
+    #dgRail.dg-folded > :not(.dg-fold) { display: none !important; }
+    @media (min-width: 901px) {
+      #dgRail { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; grid-template-rows: auto auto auto; gap: 8px 16px; align-items: start; border: 1px solid var(--ve-border); border-radius: 12px; padding: 14px 16px; }
+      #dgRail .dg-maya { grid-column: 1; grid-row: 1 / span 3; width: 96px; height: 120px; }
+      #dgRail .dg-namebar { grid-column: 2; grid-row: 1; }
+      #dgRail .dg-bubble { grid-column: 2; grid-row: 2 / span 2; }
+      #dgRail .dg-play, #dgRail .vepg-talk, #dgRail .dg-fold { grid-column: 3; width: 150px; margin: 0 !important; justify-content: center; }
+      #dgRail .dg-play { grid-row: 1; }
+      #dgRail .vepg-talk { grid-row: 2; align-self: start !important; height: 35px; }
+      #dgRail .dg-fold.dg-fold-me { grid-column: 3; grid-row: 3; width: 150px; height: 35px; padding: 0 12px; }
+      #dgRail .dg-tour { display: none; }
+    }
   </style>
 </head>
 <body>
@@ -93,11 +110,19 @@
   <section class="gc-section" aria-label="Paths">
     <!-- Liz speaks the page (A Guide speaks on every page; lines approved by Sean 2026-11-09, recorded in her roster voice, checked with stt).
          Nothing plays until Play is pressed. -->
-    <div class="pa-liz"><img src="/public/guides/welcome/liz-paths.jpg" alt="Liz, your Guide to Vegans Explore" width="76" height="76" loading="lazy">
-      <div><div class="pa-liz-k">Liz &middot; your Guide</div><p id="pa-liz-say"></p><button type="button" class="gc-btn gc-btn-outline" id="pa-liz-play">&#9654; Play Liz</button></div></div>
+    <div class="dg-app" id="dgApp">
+    <aside class="dg-rail" id="dgRail" data-guide="liz" aria-label="Liz, your Guide">
+      <div class="dg-maya" id="dgMaya" role="img" aria-label="Liz, your Guide to Vegans Explore"></div>
+      <div class="dg-namebar"><div class="dg-maya-name"><b>Liz</b> &middot; Your Guide</div>
+        <button type="button" class="dg-fold" id="dgFold" aria-expanded="true">Hide Liz</button></div>
+      <div class="dg-bubble" id="dgBubble"></div>
+      <button type="button" class="dg-play go" id="dgPlay">&#9654; Play Liz</button>
+      <div class="dg-tour" id="dgTour"></div>
+    </aside>
     <p class="pa-lede" id="pa-lede">You're an Explorer now. Pick the paths that fit what you do. Take as many as you like. Each one opens its Guide and a badge, with up to 250 more points.</p>
     <div class="pa-first" id="pa-first" hidden><p id="pa-first-p"></p><a class="gc-btn gc-btn-primary" id="pa-first-a" href="/survey?s=explorer" data-pa-survey="/paths">Take the Explorer survey</a></div>
     <div class="gc-grid" id="pa-grid" role="list" aria-label="Paths"></div>
+    </div>
   </section>
   <script>
   (function () {
@@ -149,18 +174,24 @@
     var lizAud = new Audio(); lizAud.preload = 'none';
     function lizLine() { return ST.explorer ? LIZ.member : LIZ.visitor; }
     function paintLiz() {
-      var L = lizLine(), btn = document.getElementById('pa-liz-play');
-      document.getElementById('pa-liz-say').textContent = L.say;
+      var L = lizLine(), btn = document.getElementById('dgPlay');
+      document.getElementById('dgBubble').textContent = L.say;
       if (lizAud.src && lizAud.src !== L.mp3 && lizAud.paused) lizAud.removeAttribute('src');
       btn.innerHTML = lizAud.paused ? '&#9654; Play Liz' : 'Pause Liz';
     }
-    document.getElementById('pa-liz-play').addEventListener('click', function () {
+    document.getElementById('dgPlay').addEventListener('click', function () {
       if (!lizAud.paused) { lizAud.pause(); return; }
       var L = lizLine(); if (lizAud.src !== L.mp3) lizAud.src = L.mp3;
       var p = lizAud.play(); if (p && p.catch) p.catch(function () {});
       try { if (window.gtag) gtag('event', 'audio_start', { audio: 'paths_liz' }); } catch (e) {}
     });
     ['play', 'pause', 'ended'].forEach(function (ev) { lizAud.addEventListener(ev, paintLiz); });
+    (function () {
+      var rail = document.getElementById('dgRail'), fold = document.getElementById('dgFold');
+      function set(on) { rail.classList.toggle('dg-folded', on); fold.setAttribute('aria-expanded', on ? 'false' : 'true'); if (on) lizAud.pause(); try { sessionStorage.setItem('ve_paths_liz_hidden', on ? '1' : ''); } catch (e) {} }
+      fold.addEventListener('click', function () { set(!rail.classList.contains('dg-folded')); });
+      try { if (sessionStorage.getItem('ve_paths_liz_hidden')) set(true); } catch (e) {}
+    })();
     function draw() {
       var order = PATHS.slice().sort(function (a, b) {
         var pa = ST.runs.indexOf(a.run) > -1 ? 0 : 1, pb = ST.runs.indexOf(b.run) > -1 ? 0 : 1;
@@ -226,5 +257,6 @@
   </script>
 <script src="/public/footer.js"></script>
   </div>
+<script src="/public/ve-guide-min.js"></script>
 </body>
 </html>
