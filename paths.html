@@ -73,6 +73,7 @@
     .pa-first[hidden] { display: none; }
     .pa-first p { flex: 1; min-width: 240px; font-size: 14px; line-height: 1.6; color: var(--ve-text); }
     .pa-first .gc-btn { width: auto; margin: 0; }
+    .pa-prof { margin: 22px 0 0; }
     .gc-chip.picked { color: #7a4b00; background: #fff4e0; }
     .gc-chip.earned { color: #fff; background: var(--ve-green-dark); }
     .gc-card.pa-hi { box-shadow: 0 0 0 3px var(--ve-green); }
@@ -120,6 +121,8 @@
     <p class="pa-lede" id="pa-lede">You're an Explorer now. Pick the paths that fit what you do. Take as many as you like. Each one opens its Guide and a badge, with up to 250 more points.</p>
     <div class="pa-first" id="pa-first" hidden><p id="pa-first-p"></p><a class="gc-btn gc-btn-primary" id="pa-first-a" href="/survey?s=explorer" data-pa-survey="/paths">Take the Explorer survey</a></div>
     <div class="gc-grid" id="pa-grid" role="list" aria-label="Paths"></div>
+    <!-- Build your profile (ve-explorer-path step 7, words approved by Sean 2026-11-09): shown to an Explorer whose profile is not finished. -->
+    <div class="pa-first pa-prof" id="pa-prof" hidden><p id="pa-prof-p"><b>Build your profile.</b> Tell us more about you, at your own pace, and earn up to 250 more points.</p><a class="gc-btn gc-btn-primary" href="/dashboard/survey">Start your profile</a></div>
     </main>
     <aside class="dg-rail" id="dgRail" data-guide="liz" aria-label="Liz, your Guide">
       <div class="dg-maya" id="dgMaya" role="img" aria-label="Liz, your Guide to Vegans Explore"></div>
@@ -247,6 +250,14 @@
         if (ex) { ST.explorer = !!ex.completed; ST.runs = (ex.answers && ex.answers.x_run) || []; if (!Array.isArray(ST.runs)) ST.runs = [ST.runs]; }
         rs.slice(1).forEach(function (r) { var s = r && (r.survey || r); if (s && s.slug && s.completed) ST.done[s.slug] = true; });
         draw();
+        if (!ST.explorer) return;
+        fetch(SB + '/functions/v1/ve-mission-survey?action=profile', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + ANON },
+          body: JSON.stringify({ token: token }) }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+          if (!d || d.completed) return;
+          var earned = Number(d.earned) || 0, total = Number(d.total) || 250, box = document.getElementById('pa-prof');
+          if (earned > 0) { document.getElementById('pa-prof-p').innerHTML = '<b>Keep building your profile.</b> ' + earned + ' of ' + total + ' points so far. Answer at your own pace.'; box.querySelector('a').textContent = 'Keep going'; }
+          box.hidden = false;
+        }).catch(function () {});
       });
     }
     VECityBanner.mount('pa-banner', { key: 'paths', title: 'Your Paths', pickLabel: 'Path', art: '/communities/new-york/banner.jpg', param: false,

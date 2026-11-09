@@ -321,7 +321,6 @@
   }
   function ptsTag(q, S) {
     var n = (S.points && S.points[q.id]) || PTS[q.id] || 0, paid = S.paid.indexOf(q.id) >= 0;
-    if (S.held) return '<span class="vms-pts' + (paid ? ' paid' : '') + '">+' + n + ' points' + (paid ? ' when approved' : '') + '</span>';
     return '<span class="vms-pts' + (paid ? ' paid' : '') + '">' + (paid ? 'Earned ' + n : '+' + n + ' points') + '</span>';
   }
   function newState(d) {
@@ -371,47 +370,11 @@
     }
     function draw() {
       try { window.scrollTo(0, 0); document.documentElement.scrollLeft = 0; } catch (e) {}
-      if (S.door && S.review === 'pending') return drawPending();
-      if (S.door && S.ready && location.hash === '#review') return drawReview();
       var m = /^#q\/([a-z0-9_]+)/.exec(location.hash || '');
       if (m && find(m[1])) return drawQuestion(find(m[1]));
       drawCards();
     }
-    function backHash() { return S.door && S.ready ? '#review' : '#'; }
-    function sentBack() { return S.door && S.review === 'sent_back' ? '<div class="vmr-sendback"><b>Our team asked for a change.</b><br>' + esc(S.reviewNote) + '</div>' : ''; }
-    function drawPending() {
-      host.innerHTML = '<div class="vms"><div class="vmr-box"><h3>Our team is reviewing your answers</h3>' +
-        '<p>We are checking that everything was entered correctly. If something needs adjusting, we will let you know by email. If everything checks out, you will get a notification that it was accepted, your points will arrive, and you will be officially a founding member in our community.</p>' +
-        '<p><b>Your answers are locked while we look.</b> You do not need to do anything else. You can close this page.</p></div></div>';
-      changed();
-    }
-    function drawReview() {
-      var rows = '', total = QUESTIONS.length;
-      STEPS.forEach(function (st) { st.qs.forEach(function (q) { var v = S.answers[q.id];
-        rows += '<div class="vmr-row"><span>' + esc(q.label) + '</span><b>' + esc(empty(v) ? 'Not answered' : said(q, v)) + '</b><a href="#q/' + q.id + '">Edit</a></div>'; }); });
-      host.innerHTML = '<div class="vms">' +
-        '<p class="vmp-crumb"><a href="#">Your profile</a> / Review and finalize</p>' + sentBack() +
-        '<div class="vmr-box"><h3>One last look before you finalize</h3>' +
-        (opts.video ? '<video class="vmr-video" controls playsinline preload="metadata"' + (opts.poster ? ' poster="' + esc(opts.poster) + '"' : '') + ' src="' + esc(opts.video) + '"></video>' : '') +
-        '<p>Please make sure every answer is correct. Our team checks for accuracy, so a rushed or careless answer can be sent back to you.</p>' +
-        '<div class="vmr-steps"><div><b>1. You finalize</b>Your answers are locked and sent to our team.</div><div><b>2. We review</b>We check that everything was entered correctly. If something needs adjusting, we will email you.</div><div><b>3. You are in</b>Once it checks out, you get a notification, your ' + S.total + ' points, and you are officially a founding member in our community.</div></div></div>' +
-        '<div class="vmr-box"><h3>Your answers (' + total + ')</h3><div class="vmr-list">' + rows + '</div></div>' +
-        '<label class="vmr-check"><input type="checkbox" id="vmr-ok"> I checked my answers and they are correct.</label>' +
-        '<div class="vms-err" role="alert"></div>' +
-        '<div class="vms-nav"><button type="button" class="vms-btn" id="vmr-go" disabled>Finalize</button><button type="button" class="vms-link" data-exit>Save and exit</button></div></div>';
-      var ok = host.querySelector('#vmr-ok'), go = host.querySelector('#vmr-go'), err = host.querySelector('.vms-err');
-      ok.onchange = function () { go.disabled = !ok.checked; };
-      host.querySelector('[data-exit]').onclick = function () { if (opts.onExit) opts.onExit(S); else location.hash = '#'; };
-      go.onclick = function () {
-        go.disabled = true; go.textContent = 'Sending...';
-        api('finalize').then(function (d) {
-          if (d && d.ok) { S.review = 'pending'; if (opts.onFinalized) opts.onFinalized(d); return draw(); }
-          go.disabled = false; go.textContent = 'Finalize'; err.style.display = 'block';
-          err.textContent = d && d.error === 'not_finished' ? 'A few questions are still open. Go back to your profile to finish them.' : 'Could not send right now. Please try again.';
-        }, function () { go.disabled = false; go.textContent = 'Finalize'; err.style.display = 'block'; err.textContent = 'Could not reach the server. Please try again.'; });
-      };
-      changed();
-    }
+    // The survey door and its team review were retired when Explorer became the way in (ve-explorer-path step 7, 2026-11-09).
     function visTag(q) {
       if (q.team) return '';
       var on = q.id in SHOWN && S.shown[q.id];
@@ -434,18 +397,15 @@
         if (tm.length) team = team.concat(tm);
       });
       host.innerHTML = '<div class="vms">' +
-        '<div class="vmp-top"><div><b>' + S.earned + ' <small>of ' + S.total + ' points' + (S.held ? ' when approved' : '') + '</small></b><span>' + answered + ' of ' + QUESTIONS.length + ' answered</span></div>' +
+        '<div class="vmp-top"><div><b>' + S.earned + ' <small>of ' + S.total + ' points</small></b><span>' + answered + ' of ' + QUESTIONS.length + ' answered</span></div>' +
         (open ? '<button type="button" class="vms-btn" data-q="' + open + '">Answer the next one</button>' : '') + '</div>' +
         '<div class="vmp-bar" aria-hidden="true"><i style="width:' + Math.min(100, Math.round(S.earned / S.total * 100)) + '%"></i></div>' +
-        sentBack() +
-        (S.door && S.ready ? '<div class="vmp-done">Every question is answered. <button type="button" class="vms-btn" data-review style="margin-left:10px">Review and finalize</button></div>' : S.door ? '<div class="vmp-note"><b>Your points are held.</b> They arrive when our team approves your answers, after you finalize at the end.</div>' : '') +
-        (open || S.door ? '' : '<div class="vmp-done">Your profile is complete. Change any answer whenever you like.</div>') +
+        (open ? '' : '<div class="vmp-done">Your profile is complete. Change any answer whenever you like.</div>') +
         '<p class="vmp-note">You choose who sees each answer. <b>Can be shown</b> means it may appear where you take part, like the guest list of an event you join. <b>Just for Vegans Explore</b> means only our team sees it, to make your experience better. Nobody browses profiles, and we never sell your information.</p>' +
         mine.join('') +
         '<h3 class="vmp-sec">Help us build your city</h3><p class="vmp-secnote">These are for the team, not your profile: they tell us what to build next where you live.</p>' +
         '<div class="vmp-grid">' + team.map(card).join('') + '</div></div>';
       Array.prototype.forEach.call(host.querySelectorAll('[data-q]'), function (b) { b.onclick = function () { location.hash = '#q/' + b.getAttribute('data-q'); }; });
-      var rv = host.querySelector('[data-review]'); if (rv) rv.onclick = function () { location.hash = '#review'; };
       changed();
     }
     function whoBox(q) {
@@ -463,7 +423,6 @@
       host.innerHTML = '<div class="vms">' +
         '<div class="vmp-prog"><div class="vmp-prog-t"><b>Question ' + pos + ' of ' + QUESTIONS.length + '</b><span>' + done + ' answered</span></div>' +
         '<div class="vmp-bar" aria-hidden="true"><i style="width:' + Math.round(done / QUESTIONS.length * 100) + '%"></i></div></div>' +
-        sentBack() +
         '<p class="vmp-crumb"><a href="#">Your profile</a> / ' + esc(x.step.title) + '</p>' +
         (flash ? '<div class="vms-flash" role="status">' + esc(flash) + '</div>' : '') +
         '<div class="vms-meta">' + esc(x.step.title) + ptsTag(q, S) + '</div>' +
@@ -473,7 +432,7 @@
         '<div class="vms-ans"></div><div class="vms-err" role="alert"></div>' + whoBox(q) +
         '<div class="vms-nav">' + (open && open !== q.id ? '<button type="button" class="vms-btn" data-save-next>Save and next</button>' : '') +
         '<button type="button" class="' + (open && open !== q.id ? 'vms-link' : 'vms-btn') + '" data-save>Save</button>' +
-        '<button type="button" class="vms-link" data-exit>Save and exit</button><button type="button" class="vms-link" data-back>' + (S.door && S.ready ? 'Back to review' : 'Back to your profile') + '</button></div></div>';
+        '<button type="button" class="vms-link" data-exit>Save and exit</button><button type="button" class="vms-link" data-back>' + 'Back to your profile' + '</button></div></div>';
       flash = '';
       var err = host.querySelector('.vms-err');
       var ctl = control(q, S.answers, function (v) { value = v; }, function () { save(true); });
@@ -484,12 +443,12 @@
         var btns = host.querySelectorAll('.vms-nav button'); Array.prototype.forEach.call(btns, function (b) { b.disabled = true; });
         saveAnswer(S, q.id, value, opts).then(function (d) {
           if (!d.ok) { Array.prototype.forEach.call(btns, function (b) { b.disabled = false; }); err.style.display = 'block';
-            err.textContent = d.error === 'not_eligible' ? 'Your profile opens once your Passport is active, or when you start it from the join window.' : d.error === 'under_review' ? 'Your answers are with our team now, so they cannot change until we reply.' : 'Could not save right now. Please try again.'; return; }
+            err.textContent = d.error === 'not_eligible' ? 'Your profile opens once you are a member. Join free with the Explorer survey at vegansexplore.com/survey?s=explorer.' : 'Could not save right now. Please try again.'; return; }
           if (d.paid_now) flash = '+' + d.points + ' points';
           if (d.admitted && opts.onAdmitted) { opts.onAdmitted(d); return; }
           if (exit) { if (opts.onExit) return opts.onExit(S); location.hash = '#'; return; }
           var to = goNext ? nextOpen(q.id) : null;
-          location.hash = to ? '#q/' + to : (S.door && S.ready ? '#review' : '#');
+          location.hash = to ? '#q/' + to : '#';
           if (!to && flash) { var t = flash; setTimeout(function () { var el = host.querySelector('.vmp-top span'); if (el) el.textContent = t + ' earned. ' + el.textContent; }, 0); flash = ''; }
         }).catch(function () { Array.prototype.forEach.call(btns, function (b) { b.disabled = false; }); err.style.display = 'block'; err.textContent = 'Could not reach the server. Please try again.'; });
       }

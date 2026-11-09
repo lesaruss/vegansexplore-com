@@ -104,6 +104,8 @@
         (pathNext() ? '<p><a class="vgs-b" href="/survey?s=' + pathNext() + '">Next: ' + PATH_TITLE[pathNext()] + ' survey</a></p>' : '') +
         // The paths page (ve-explorer-path step 4, Sean 2026-11-07): every path, the ones they ticked first.
         '<p><a class="vgs-b' + (pathNext() ? ' g' : '') + '" href="/paths">See your paths</a></p>' +
+        // Build your profile (ve-explorer-path step 7, Sean approved the words 2026-11-09): the 31 questions, paid per answer.
+        '<p class="vgs-h"><b>Build your profile.</b> Tell us more about you, at your own pace, and earn up to 250 more points. <a style="color:#1f5f22;font-weight:800" href="/dashboard/survey">Start your profile</a></p>' +
         (pageBack() && pageBack() !== '/paths' ? '<p><a class="vgs-b g" href="' + pageBack() + '">' + (/^\/passport/.test(pageBack()) ? 'See your first steps' : 'Pick up where you left off') + '</a></p>' : claimBack() ? (claimBack() === '_add_' ? '<p><a class="vgs-b g" href="/claim?add=1">Finish adding your business</a></p>' : '<p><a class="vgs-b g" href="/claim?listing=' + encodeURIComponent(claimBack()) + '">Finish claiming your page</a></p>') : '<p><a class="vgs-b g" href="/dashboard">Open your dashboard</a></p>');
     }
     VEGuideSurvey.mount($('host'), {
@@ -153,7 +155,7 @@
     }
     if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<p>Sign in to build your profile.</p><p><a class="btn" href="/login?next=/dashboard/survey">Sign in</a></p>'; return; }
     var m = VEAuth.getMember();
-    if (m && m.membership_status !== 'active') { $('gate').hidden = false; $('gate').textContent = 'Your profile opens once your Passport is active.'; return; }
+    if (m && m.membership_status !== 'active') { $('gate').hidden = false; $('gate').innerHTML = '<p>Your profile opens once you are a member. Joining is free with the Explorer survey, about two minutes.</p><p><a class="btn" href="/survey?s=explorer">Join free</a></p>'; return; }
     $('host').hidden = false;
     // A super admin previewing as someone else sees the questions with nothing sent.
     var preview = !!(VEAuth.getViewAs && VEAuth.getViewAs());
