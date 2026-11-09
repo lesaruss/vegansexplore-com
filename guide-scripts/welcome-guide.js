@@ -35,7 +35,7 @@
 
   // Liz's line on each tab (text drafts for the section pages; the Overview's is chapter 1). `lead` is the Guide for that area.
   var TABS = [
-    { k: 'overview', scene: 'welcome/liz-overview.jpg', label: 'Overview', say: CHAPTERS[0][1], sayMember: 'Welcome back. Everything is open to you now. Pick a section below whenever you want to go deeper.' },
+    { k: 'overview', scene: 'welcome/liz-overview.jpg', label: 'Overview', say: 'Watch this video to get a full overview of Vegans Explore. Then click through each section to learn more about it.', sayMember: 'Welcome back. Watch this video any time for a full overview, then click through each section to go deeper.' },
     { k: 'directory', scene: 'welcome/liz-directory.jpg', label: 'Search and the Directory', pic: 'thumb-directory.jpg', lead: 'pascal', say: 'Everything starts with search. Here is how to find any place, person or group, and what your vote does.' },
     { k: 'city', scene: 'welcome/liz-city.jpg', label: 'Your City', pic: 'thumb-community.jpg', lead: 'river', say: 'Every chapter has its own home. Here is how to keep up with yours, every morning.' },
     { k: 'events', scene: 'welcome/liz-events.jpg', label: 'Events', pic: 'vegan-events-guide.jpg', lead: 'river', say: 'Find something to do this week, near you or anywhere.' },
@@ -131,16 +131,16 @@
   // The Overview (Sean, 2026-11-09): Getting started (how to use the page: watch Liz's tour in her frame, read on, join), then every section as a
   // short article, read like the Pulse: a small picture, the title, about 250 characters, Read more. The sub-sections live on each section's page.
   var SUMMARY = {
-    directory: 'One search box at the top of every page finds any place, person, show or answer. The Directory lists local food, products, services, media, community groups and people, city by city, sorted by member votes.',
-    city: 'Every chapter, from South Florida to London, has its own home: a Daily Pulse each morning with the news that matters, boards for jobs, classifieds, fosters and rescues, its events and its most voted places.',
-    events: 'Festivals, potlucks, meetups and sanctuary days, in our chapters and around the world. Pick a place and the kinds of events you like, open one for its details, or submit your own from a flyer or a link.',
-    media: 'Our own shows, like the Vegans Explore Podcast, plus the podcasts, documentaries and books the community votes to the top. Press Play and listen right on the page while you keep looking around.',
-    guides: 'A Guide is a mini website about one topic, walked through by one of our Guides. Guides for your work are free with a short survey. Topic Guides, like the Vegan Dairy Guide, are $11 or 1,100 points.',
-    points: 'Points come from taking part, never from buying them: the survey, check-ins, bounties and friends who join. Spend them on Guides, give them to the places and causes you love, and level up as you go.',
-    paths: 'Everyone starts as an Explorer. Run a restaurant, host events, make content, run a nonprofit or add plant-based options? Each path has its own Guide, its own short survey and its own badge.',
-    better: 'This is the part that matters most. The Feedback button is on every page, your Guide answers questions, and a search for something we do not have goes to our team. We read all of it, every day.',
-    animals: 'The reason we are all here. Find the nonprofits, rescues and sanctuaries near you, check your city\'s Fosters and Rescues boards, and give your points to the causes you care about.',
-    founder: 'A few quick questions, about two minutes, and you are in, free, with 250 points.' + (OPEN ? ' Join before midnight Eastern on January 1, 2027 and you are a Founding Member for good.' : '')
+    directory: 'One search box finds any place, person or answer. The Directory lists food, products, services, groups and people, sorted by member votes.',
+    city: 'Every chapter has its own home: a Daily Pulse each morning, boards for jobs, fosters and rescues, its events and its most voted places.',
+    events: 'Festivals, potlucks, meetups and sanctuary days, near you and around the world. Find one, or submit your own from a flyer or a link.',
+    media: 'Our own shows, plus the podcasts, films and books the community votes to the top. Press Play and listen right on the page.',
+    guides: 'Mini websites on one topic each, walked through by our Guides. Work Guides are free with a survey; topic Guides are $11 or 1,100 points.',
+    points: 'Earn points by taking part, never by buying them. Spend them on Guides, give them to the places you love, and level up as you go.',
+    paths: 'Everyone starts as an Explorer. Run a restaurant, host events, make content or run a nonprofit? Each path has its own Guide and badge.',
+    better: 'The part that matters most. Use the Feedback button on any page or ask your Guide. We read all of it and build from it every day.',
+    animals: 'The reason we are all here. Find the rescues, sanctuaries and nonprofits near you, and give your points to the causes you care about.',
+    founder: 'A few quick questions, about two minutes, and you are in, free, with 250 points.' + (OPEN ? ' Join before January 1, 2027 to be a Founding Member.' : '')
   };
   function gettingStarted() {
     var ps = member()
@@ -348,7 +348,7 @@
       if (ev === 'pause' || ev === 'ended') PLAY.playing = false;
       if (ev === 'ended') { try { gtag('event', 'video_complete', { video: 'welcome_tour_v' + VIDEO.v }); } catch (er) {} }
       var n = chAt(v.currentTime);
-      if (n !== PLAY.at || ev !== 'timeupdate') { PLAY.at = n; if (curTab === 'overview' && PLAY.started) bubble.textContent = CHAPTERS[n][1]; }
+      if (n !== PLAY.at || ev !== 'timeupdate') PLAY.at = n;
       if (ev === 'ended') PLAY.at = 0;
       paintPlay();
     }, true);
@@ -404,7 +404,6 @@
     if (k === 'overview') viewOverview(); else main.innerHTML = VIEWS[k]();
     if (window.VEExplorerCard) VEExplorerCard.wire(main);
     tickCd(); drawLiz(); paintPlay();
-    if (k === 'overview' && PLAY.started) bubble.textContent = CHAPTERS[PLAY.at][1];
     window.scrollTo(0, 0);
   }
   window.addEventListener('hashchange', route);
