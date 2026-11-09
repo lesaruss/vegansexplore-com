@@ -57,7 +57,7 @@
     '.vps-lon{display:none;font-size:13px;margin:14px 0 0}.vps-lon label{display:flex;gap:8px;align-items:flex-start;cursor:pointer}' +
     '.vps-acts{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:20px}.vps-acts .vps-go{padding:0 26px}' +
     '.vps-ghost{border:1.5px solid rgba(0,0,0,.2);border-radius:6px;background:#fff;color:#333;font:800 12.5px Montserrat,Arial,sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:0 18px;min-height:46px;cursor:pointer}' +
-    '.vps-fine{font-size:12px;color:#666;margin:14px 0 0}.vps-to{font-weight:700;color:#1a1a1a}' +
+    '.vps-fine{font-size:12px;color:#666;margin:14px 0 0}.vps-win .vps-fine{margin:18px 0 0}.vps-to{font-weight:700;color:#1a1a1a}' +
     '.vps-check{width:56px;height:56px;border-radius:50%;background:#e8f5e9;color:' + G + ';display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:900;margin:0 0 12px}' +
     '@media (max-width:480px){.vps-cta .vps-row{flex-direction:column}.vps-go{width:100%}.vps-win{padding:22px 18px 18px}.vps-acts .vps-go,.vps-acts .vps-ghost{flex:1 1 100%}}';
 
