@@ -16,9 +16,10 @@
   The Listen bar (Sean, 2026-11-09, playbook ve-guide-banner-audio: "the banners... can be players so people can play and hear the message...
   we still want them to click through... a button below it... that runs the length of the width of the image"). A Guide with a banner cut of
   its commercial (G[].spot, the version that ends "Tap below to open the <Guide>") gets a bar the full width under the picture: play, "Hear it
-  from <Guide>", the length and a progress line. It plays in place and never navigates; nothing plays until pressed; at the end the bar
-  becomes "Open the Guide" (the clickTag). The picture and its button still click through. The bar tells the page {veAd:'listen'} on the first
-  play and {veAd:'heard'} at the end, and the page counts it (public/ve-ad-creative.js). Holiday first; the others once Sean approves it.
+  from <Guide>" (the label the whole time; Sean, 2026-11-09), the time left and a progress line. It plays in place and never navigates; nothing
+  plays until pressed; at the end it goes back to the start, ready to play again (no "Open the Guide" end state: the banner has its button).
+  The bar tells the page {veAd:'listen'} on every press of play and {veAd:'heard'} at the end, and the page counts them
+  (public/ve-ad-creative.js). Holiday first; the others once Sean approves it.
 -->
 <style>
   html,body{margin:0;height:100%;overflow:hidden;background:#0f1f17;font-family:Montserrat,system-ui,-apple-system,"Segoe UI",sans-serif}
@@ -34,8 +35,12 @@
   .lb-t{flex:1;min-width:0;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .lb-len{flex:none;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums;color:rgba(255,255,255,.85)}
   .lb-p{position:absolute;left:0;top:0;height:3px;width:0;background:#bef264;transition:width .25s linear}
-  .lb-bar.done{background:#22c55e;color:#062b14}.lb-bar.done .lb-ic{background:#062b14;color:#bef264}.lb-bar.done .lb-len{color:#062b14}
-  .f{position:absolute;inset:0;background-size:cover;background-position:center 25%;opacity:0;animation:f 16s infinite}
+
+  .f{position:absolute;inset:0;background-size:cover;background-position:var(--pt,center 25%);opacity:0;animation:f 16s infinite;transform-origin:50% 0}
+  /* The zoom grows from the top edge (Sean, 2026-11-09: "I don't want his head cut off"), so a head near the top never leaves the frame. A
+     frame can carry its own crop for the tall slot (--pt) and for the short and wide ones (--pw). */
+  @media (min-aspect-ratio:4/5){ .f{background-position:var(--pw,var(--pt,center 25%));animation-name:fs} }
+  @keyframes fs{0%{opacity:0;transform:scale(1.01)}5%{opacity:1}25%{opacity:1}30%{opacity:0;transform:scale(1.05)}100%{opacity:0}}
   .f:nth-child(1){animation-delay:0s}.f:nth-child(2){animation-delay:4s}.f:nth-child(3){animation-delay:8s}.f:nth-child(4){animation-delay:12s}
   @keyframes f{0%{opacity:0;transform:scale(1.02)}5%{opacity:1}25%{opacity:1}30%{opacity:0;transform:scale(1.12)}100%{opacity:0}}
   a:after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.88) 0%,rgba(0,0,0,.55) 42%,rgba(0,0,0,0) 70%)}
@@ -50,7 +55,7 @@
   a:hover em,a:focus-visible em{background:#16a34a;color:#fff}
   a:focus-visible{outline:3px solid #22c55e;outline-offset:-3px}
   /* A short or wide slot (300 x 250, a phone's full-width box): no line, a tighter card. */
-  @media (min-aspect-ratio:4/5){ .c{padding:12px 14px} p{display:none} .h{height:24px;margin-bottom:8px} .h b{font-size:18px} em{padding:9px 10px} }
+  @media (min-aspect-ratio:4/5){ .c{padding:12px 14px} p{display:none} small{display:none} .h{height:24px;margin-bottom:8px} .h b{font-size:18px} em{padding:9px 10px} }
   @media (max-height:200px){ small{display:none} }
   @media (prefers-reduced-motion:reduce){ .f,.h b{animation:none} .f:first-child,.h b:first-child{opacity:1} }
 </style>
@@ -93,8 +98,9 @@
     'holiday-guide': { kicker: 'The Holiday Guide', cta: 'Open the Holiday Guide', free: true, href: '/guides/holiday-guide',
       spot: { who: 'Theo', url: SBM + 'podcast/commercials/holiday-guide-banner-v1.mp3', secs: 35 },
       line: 'ThanksLiving ideas, recipes, holiday menus near you and ways to give back, with Theo.',
-      frames: [[SITE + '/public/guides/holiday/theo-thanksliving.jpg', 'Your ThanksLiving table', 'background-position:50% 30%'], [SITE + '/public/guides/holiday/theo-menus.jpg', 'Holiday menus near you', 'background-position:50% 25%'],
-        [SITE + '/public/guides/holiday/r-loaf.jpg', 'Recipes for the table', 'background-position:50% 50%'], [SITE + '/public/guides/holiday/theo-giveback.jpg', 'Give back this season', 'background-position:50% 25%']] },
+      // Scenes with room above Theo's head (Sean, 2026-11-09: headroom in every slot); theo-thanksliving has almost none, so it is out.
+      frames: [[SITE + '/public/guides/holiday/theo-events.jpg', 'Your ThanksLiving table', { t: '50% 0%', w: '50% 40%' }], [SITE + '/public/guides/holiday/theo-menus.jpg', 'Holiday menus near you', { t: '50% 0%', w: '50% 8%' }],
+        [SITE + '/public/guides/holiday/r-loaf.jpg', 'Recipes for the table', 'background-position:50% 50%'], [SITE + '/public/guides/holiday/theo-giveback.jpg', 'Give back this season', { t: '100% 0%', w: '58% 30%' }]] },
     'creator-guide': { kicker: 'The Creator Guide', cta: 'Get the Creator Guide', href: '/guides/creator-guide',
       line: 'Ten tips for Vegan creators, and the way into paid work with Vegans Explore, with Kai.',
       frames: [[SITE + '/public/guides/creator-guide.jpg?v=3', 'Create Vegan content?'], [SITE + '/gigs/sample/img/post-kitchen.webp', 'Cook for the camera'],
@@ -108,7 +114,8 @@
   if (!/^https:\/\//.test(clickTag)) clickTag = SITE + g.href;
   var a = document.getElementById('ad');
   a.href = clickTag; a.setAttribute('aria-label', g.cta);
-  a.innerHTML = g.frames.map(function (f) { return '<span class="f" style="background-image:url(\'' + esc(f[0]) + '\')' + (f[2] ? ';' + f[2] : '') + '" aria-hidden="true"></span>'; }).join('') +
+  function crop(c) { return !c ? '' : typeof c === 'string' ? ';' + c : (c.t ? ';--pt:' + c.t : '') + (c.w ? ';--pw:' + c.w : ''); }
+  a.innerHTML = g.frames.map(function (f) { return '<span class="f" style="background-image:url(\'' + esc(f[0]) + '\')' + crop(f[2]) + '" aria-hidden="true"></span>'; }).join('') +
     '<span class="c"><small>' + esc(g.kicker) + '</small><span class="h" aria-hidden="true">' +
     g.frames.map(function (f) { return '<b>' + esc(f[1]) + '</b>'; }).join('') + '</span>' +
     '<p>' + esc(g.line) + '</p><em>' + esc(g.cta) + (g.free ? ' &middot; Free' : ' &middot; $11') + '</em></span>';
@@ -123,24 +130,19 @@
     if (!g.spot) return;
     var PLAY = '<svg viewBox="0 0 12 12"><path d="M3 1.5v9l7.5-4.5z" fill="currentColor"/></svg>';
     var PAUSE = '<svg viewBox="0 0 12 12"><path d="M2.5 1.5h2.5v9H2.5zM7 1.5h2.5v9H7z" fill="currentColor"/></svg>';
-    var OPEN = '<svg viewBox="0 0 12 12"><path d="M4 2l4.5 4L4 10" stroke="currentColor" stroke-width="2" fill="none"/></svg>';
     var bar = document.getElementById('lb'), t = document.getElementById('lbt'), l = document.getElementById('lbl'), ic = document.getElementById('lbi'), pr = document.getElementById('lbp');
     function mmss(s) { s = Math.max(0, Math.round(s)); return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2); }
-    var audio = null, told = false, done = false;
-    function idle(label) { ic.innerHTML = PLAY; t.textContent = label || 'Hear it from ' + g.spot.who; l.textContent = mmss(g.spot.secs); bar.setAttribute('aria-label', 'Play: hear it from ' + g.spot.who + ', ' + mmss(g.spot.secs)); }
+    var audio = null, label = 'Hear it from ' + g.spot.who;
+    function idle() { ic.innerHTML = PLAY; t.textContent = label; bar.setAttribute('aria-label', 'Play: ' + label.toLowerCase() + ', ' + l.textContent); }
     function tell(k) { try { parent.postMessage({ veAd: k, g: slug }, '*'); } catch (e) {} }
-    document.documentElement.classList.add('lb'); bar.hidden = false; idle();
+    document.documentElement.classList.add('lb'); bar.hidden = false; l.textContent = mmss(g.spot.secs); idle();
     bar.addEventListener('click', function () {
-      if (done) { tell('click'); window.open(clickTag, '_blank', 'noopener'); return; }
       if (!audio) {
         audio = new Audio(g.spot.url); audio.preload = 'auto';
         audio.addEventListener('timeupdate', function () { var d = audio.duration || g.spot.secs; pr.style.width = Math.min(100, audio.currentTime / d * 100) + '%'; l.textContent = mmss(d - audio.currentTime); });
-        audio.addEventListener('play', function () { ic.innerHTML = PAUSE; t.textContent = g.spot.who + ' is talking'; bar.setAttribute('aria-label', 'Pause'); if (!told) { told = true; tell('listen'); } });
-        audio.addEventListener('pause', function () { if (!audio.ended) idle('Paused. Tap to keep going'); });
-        audio.addEventListener('ended', function () {
-          done = true; tell('heard'); pr.style.width = '100%'; bar.classList.add('done'); ic.innerHTML = OPEN;
-          t.textContent = 'Open the Guide'; l.textContent = ''; bar.setAttribute('aria-label', g.cta);
-        });
+        audio.addEventListener('play', function () { ic.innerHTML = PAUSE; bar.setAttribute('aria-label', 'Pause'); tell('listen'); });
+        audio.addEventListener('pause', function () { if (!audio.ended) idle(); });
+        audio.addEventListener('ended', function () { tell('heard'); audio.currentTime = 0; pr.style.width = '0'; l.textContent = mmss(audio.duration || g.spot.secs); idle(); });
         audio.addEventListener('error', function () { t.textContent = 'That did not play. Tap the picture to open the Guide'; });
       }
       if (audio.paused) audio.play().catch(function () {}); else audio.pause();

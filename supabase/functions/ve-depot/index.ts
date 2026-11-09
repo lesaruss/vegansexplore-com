@@ -211,11 +211,31 @@ async function adAssets(days: number) {
     g.campaigns.push({ id: c.id, name: c.campaign_name, format, status: c.status, creative: c.creative_url, link: c.click_through_url, notes: c.notes, slots });
     if (go && !g.go) { const l: any = L.get(go); g.go = { code: go, url: `${SITE}/go/${go}`, clicks: l?.clicks ?? null, last_click_at: l?.last_click_at ?? null, destination: l?.destination ?? null, active: l?.active ?? null }; }
   }
+  // The podcast studio edits the podcast cuts (Sean, 2026-11-09: "make sure you're syncing the right one and not overriding the work that I
+  // did"). Nothing here writes them. A banner cut is out of date when the podcast file it came from (from_path) changed after the cut was made,
+  // or a newer -vN of it is on file; the hub says which file to rebuild from.
+  const { data: files } = await db.storage.from('vegan-media').list('media/podcast/commercials', { limit: 500 });
+  const F = new Map((files || []).filter((f: any) => /\.mp3$/.test(f.name)).map((f: any) => ['media/podcast/commercials/' + f.name, f.updated_at || f.created_at]));
+  const newest = (path: string) => {
+    const m = path.match(/^(.*\/)([a-z0-9-]+?)-v(\d+)\.mp3$/); if (!m) return null;
+    let best = { path, v: Number(m[3]) };
+    for (const k of F.keys()) { const x = k.match(/^(.*\/)([a-z0-9-]+?)-v(\d+)\.mp3$/); if (x && x[1] === m[1] && x[2] === m[2] && Number(x[3]) > best.v) best = { path: k, v: Number(x[3]) }; }
+    return best.path;
+  };
   for (const m of comms || []) {
     const g = guides[m.guide_slug] || guide(m.guide_slug, m.guide_name);
     g.speaker ||= m.speaker;
+    let stale: string | null = null;
+    if (m.cut === 'banner' && m.from_path) {
+      const latest = newest(m.from_path);
+      const changed = F.get(m.from_path);
+      if (latest && latest !== m.from_path) stale = `A newer podcast cut is on file (${latest.split('/').pop()}). This banner cut is from ${m.from_path.split('/').pop()}; rebuild it from the newer one.`;
+      else if (changed && new Date(changed).getTime() > new Date(m.made_at).getTime() + 60000) stale = `${m.from_path.split('/').pop()} changed after this banner cut was made; rebuild it from the podcast cut as it is now.`;
+    }
+    let newer: string | null = null;
+    if (m.cut === 'podcast') { const latest = newest(m.audio_path); if (latest && latest !== m.audio_path) newer = latest.split('/').pop() || null; }
     g.commercials.push({ cut: m.cut, version: m.version, url: MEDIA + m.audio_path, path: m.audio_path, script: m.script, script_source: m.script_source,
-      seconds: m.seconds, checked: m.checked, note: m.note, made_at: m.made_at });
+      seconds: m.seconds, checked: m.checked, note: m.note, made_at: m.made_at, from_path: m.from_path, stale, newer });
   }
   // The listing pages' house banner and the rail's listens by page, from ve_promo_events (promo guide-<slug>; bots are never sent).
   const promos = Object.keys(guides).map((s) => 'guide-' + s);

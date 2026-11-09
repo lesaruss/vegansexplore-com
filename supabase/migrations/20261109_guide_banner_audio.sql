@@ -83,3 +83,8 @@ on conflict (audio_path) do nothing;
 update public.ve_guide_commercials set script = s.script from ve_pod_segments s
  where ve_guide_commercials.audio_path = s.audio_path and s.kind = 'commercial' and coalesce(s.script, '') <> '' and ve_guide_commercials.script is null;
 -- Transcripts, lengths and the banner cuts are filled as they are made (the session's data steps, recorded in the playbook).
+
+-- from_path (Sean, 2026-11-09: "make sure you're syncing the right one and not overriding the work that I did"): the podcast file a banner cut
+-- was built from. The hub flags a banner cut as out of date when that file changes after the cut was made, or a newer -vN of it appears.
+alter table public.ve_guide_commercials add column if not exists from_path text;
+update public.ve_guide_commercials set from_path = 'media/podcast/commercials/holiday-guide-v1.mp3' where audio_path = 'media/podcast/commercials/holiday-guide-banner-v1.mp3';

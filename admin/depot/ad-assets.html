@@ -76,7 +76,7 @@
     <p class="eyebrow">The Depot</p>
     <h1>Ad assets</h1>
     <div id="depot-tabs"></div>
-    <p class="sub">Every Guide banner in one place, so nothing gets lost: its picture, the campaigns and slots it runs in, its tracked link, its commercial (the podcast cut and the banner cut, with the words) and how it is doing. Views, clicks and listens are counted by the ad system for each slot; the listing banner's are counted per page. Visitors only, bots left out.</p>
+    <p class="sub">Every Guide banner in one place, so nothing gets lost: its picture, the campaigns and slots it runs in, its tracked link, its commercial (the podcast cut and the banner cut, with the words) and how it is doing. Views, clicks and listens (every press of play on the Listen bar) are counted for each slot, and who listened and heard it to the end for each page. Visitors only, bots left out.</p>
     <div id="gate" class="gate" hidden></div>
     <main id="app" hidden>
       <div id="view"></div>
@@ -129,7 +129,7 @@
         var p = g.commercials.filter(function (c) { return c.cut === 'podcast'; })[0], b = g.commercials.filter(function (c) { return c.cut === 'banner'; })[0];
         return p ? 'Podcast cut ' + len(p.seconds) + ' &middot; ' + (b ? 'Banner cut ' + len(b.seconds) : 'Banner cut coming') : '';
       }
-      function nums(t) { return '<div class="nums"><div class="num"><b>' + n(t.views) + '</b><span>Views</span></div><div class="num"><b>' + n(t.clicks) + '</b><span>Clicks</span></div><div class="num"><b>' + n(t.listens) + '</b><span>Listens</span></div></div>'; }
+      function nums(t) { return '<div class="nums"><div class="num"><b>' + n(t.views) + '</b><span>Views</span></div><div class="num"><b>' + n(t.clicks) + '</b><span>Clicks</span></div><div class="num" title="Every press of play on the Listen bar"><b>' + n(t.listens) + '</b><span>Listens</span></div></div>'; }
       // The ad system's slot counts (ad_impressions) hold every slot, the listing banner's included; its per-page steps are on the Guide's own view.
       function totals(g) { return g.totals; }
       function periodPick(r) {
@@ -144,7 +144,7 @@
         return '<div class="card"><div class="ga" style="background-image:url(\'' + esc(g.art) + '\')" role="img" aria-label="' + esc(g.name) + ' banner"></div><div class="body">' +
           '<div><b style="font-size:16px;font-weight:800">' + esc(g.name) + '</b><span class="meta" style="display:block">' + (g.speaker ? 'Read by ' + esc(g.speaker) + ' &middot; ' + cuts(g) : 'No commercial yet') + '</span></div>' +
           '<div>' + tag(g) + ' <span class="meta">' + g.campaigns.reduce(function (a, c) { return a + (c.status === 'active' ? c.slots.length : 0); }, 0) + ' slots live</span></div>' + nums(totals(g)) +
-          '<div class="acts"><a class="btn" href="#g/' + encodeURIComponent(g.slug) + '?days=' + days + '">Open</a></div></div></div>';
+          '<div class="acts"><a class="btn" href="#g/' + encodeURIComponent(g.slug) + '?days=' + days + '">Open</a><a class="meta" href="' + esc(g.page) + '" target="_blank" rel="noopener" style="color:var(--ve-green-deep);font-weight:700">See the Guide</a></div></div></div>';
       }
       function drawList(r, d) {
         var s = q.toLowerCase();
@@ -160,7 +160,9 @@
           '<p class="meta">' + why + ' ' + (c.checked ? 'Words checked against the recording.' : c.script_source === 'transcribed' ? 'No written script was kept; these words are read back from the recording.' : 'Words not checked yet.') + '</p>' +
           '<audio controls preload="none" src="' + esc(c.url) + '"></audio>' +
           '<div class="script">' + esc(c.script || 'No script on file.') + '</div>' +
-          '<p class="meta" style="word-break:break-all">' + esc(c.path) + '</p></div>';
+          '<p class="meta" style="word-break:break-all">' + esc(c.path) + (c.from_path ? '<br>Built from ' + esc(c.from_path.split('/').pop()) : '') + '</p>' +
+          (c.stale ? '<p class="msg err">Out of date: ' + esc(c.stale) + '</p>' : '') +
+          (c.newer ? '<p class="msg err">A newer podcast cut is on file: ' + esc(c.newer) + '. This page lists the one registered for the banner.</p>' : '') + '</div>';
       }
       function drawItem(r, d) {
         var g = d.guides.filter(function (x) { return x.slug === r.slug; })[0];
@@ -177,8 +179,8 @@
               '<dt>Tracked link</dt><dd>' + (g.go ? '<a href="' + esc(g.go.url) + '" target="_blank" rel="noopener">' + esc(g.go.url.replace(/^https:\/\//, '')) + '</a><button type="button" class="copy" data-copy="' + esc(g.go.url) + '">Copy</button><br><span class="meta">' + n(g.go.clicks) + ' clicks all time' + (g.go.last_click_at ? ', last ' + esc(day(g.go.last_click_at)) : '') + '</span>' : 'None') + '</dd>' +
               '<dt>The Guide</dt><dd><a href="' + esc(g.page) + '" target="_blank" rel="noopener">' + esc(g.page.replace(/^https:\/\//, '')) + '</a></dd>' +
               '<dt>Listen bar</dt><dd>' + (hasBanner ? 'On the banner: it plays the banner cut.' : hasAny ? 'Not yet. Waiting for the banner cut.' : 'No commercial yet.') + '</dd>' +
-              (g.campaigns.some(function (c) { return /house banner/i.test(c.format); }) ? '<dt>On listing pages</dt><dd>' + n(pr.view) + ' views, ' + n(pr.click) + ' clicks, ' + n(pr.listen) + ' listens, ' + n(pr.heard) + ' heard to the end</dd>' : '') +
-              '<dt>Listens heard to the end</dt><dd>' + n(pr.heard) + ' of ' + n(pr.listen) + ' who pressed play</dd>' +
+              '<dt>Listens</dt><dd>' + n(g.totals.listens) + ' presses of play, by ' + n(pr.listen) + ' people; ' + n(pr.heard) + ' heard it to the end</dd>' +
+              (g.campaigns.some(function (c) { return /house banner/i.test(c.format); }) ? '<dt>On listing pages</dt><dd>' + n(pr.view) + ' views, ' + n(pr.click) + ' clicks</dd>' : '') +
             '</dl></div></div>' +
           '<h2 style="margin-top:22px">Commercial</h2>' + (hasAny ? '<div class="two">' + g.commercials.map(function (c) { return cmBox(c, g); }).join('') + '</div>' : '<p class="sub">No commercial yet.</p>') +
           '<h2 style="margin-top:22px">Campaigns and slots</h2>' +
@@ -186,7 +188,7 @@
             (slotRows.length ? slotRows.map(function (x) { return '<tr><td>' + esc(x.c.format || x.c.name) + '</td><td>' + (x.c.status === 'active' ? '<span class="tag live">Live</span>' : '<span class="tag off">Paused</span>') + '</td><td>' + esc(x.s.page) + '</td><td>' + esc(x.s.slot) + '</td><td>' + esc(x.s.size) + '</td><td class="n">' + n(x.s.views) + '</td><td class="n">' + n(x.s.clicks) + '</td><td class="n">' + n(x.s.listens) + '</td></tr>'; }).join('')
               : '<tr><td colspan="8">No slots. ' + esc(g.campaigns.map(function (c) { return c.notes || ''; }).join(' ')) + '</td></tr>') +
           '</tbody></table></div><p class="meta" style="margin-top:8px">' + g.campaigns.map(function (c) { return '<b>' + esc(c.format) + '</b>: ' + esc(c.creative) ; }).join('<br>') + '</p></div>' +
-          (pr.by_page.length ? '<h2 style="margin-top:22px">Listing banner, by page</h2><div class="box"><div class="scroll"><table><thead><tr><th>Page</th><th class="n">Views</th><th class="n">Clicks</th><th class="n">Listens</th><th class="n">Heard to the end</th></tr></thead><tbody>' +
+          (pr.by_page.length ? '<h2 style="margin-top:22px">By page</h2><div class="box"><div class="scroll"><table><thead><tr><th>Page</th><th class="n">Listing banner views</th><th class="n">Listing banner clicks</th><th class="n">People who listened</th><th class="n">Heard to the end</th></tr></thead><tbody>' +
             pr.by_page.map(function (p) { return '<tr><td>' + esc(p.page) + '</td><td class="n">' + n(p.view) + '</td><td class="n">' + n(p.click) + '</td><td class="n">' + n(p.listen) + '</td><td class="n">' + n(p.heard) + '</td></tr>'; }).join('') + '</tbody></table></div></div>' : '');
         wire(r);
       }
