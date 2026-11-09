@@ -69,7 +69,7 @@ About 60 seconds. The page is on the section template (how to use, the paths and
 
 New scenes for this page's video: Liz with each path's world (a restaurant kitchen pass, an event setup, a creator filming, a rescue, a small shop adding plant-based items) and a badge moment, not earlier pictures.
 
-Made: `liz-pth-{trail,kitchen,event,creator,rescue,shop,badge,meetup,link}.jpg` (the shop scene redrawn once: Liz was off-model). Every picture used once. Video `sec-paths-v1.mp4` in vegan-media (73 s), captions `public/guides/welcome/sec-paths-v1.vtt`, scripts `scripts/tour-video/sections/cap-paths.js` and `render-paths.py`.
+Made: `liz-pth-{trail,kitchen,event,creator,rescue,shop,badge,meetup,link}.jpg` (the shop scene redrawn: Liz was off-model, then Sean asked for Liz and Theo with a straight shelf, v2). Every picture used once. Video `sec-paths-v2.mp4` in vegan-media (73 s), captions `public/guides/welcome/sec-paths-v2.vtt`, scripts `scripts/tour-video/sections/cap-paths.js` and `render-paths.py`.
 
 ## 9 to 11
 
