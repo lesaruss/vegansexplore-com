@@ -2,6 +2,30 @@
 
 Moved verbatim from CLAUDE.md on 2026-11-09 (canon `canon-session-procedure`). Add new history for this area here, not in CLAUDE.md.
 
+## Nominate Someone and Kai's interview (Sean, 2026-11-09, playbook `ve-nominate-someone`)
+
+"We want them to nominate somebody from their community... Anyone can nominate someone... we review it. And if we agree, we send an
+invitation to that person to conduct the interview." Design approved by Sean the same day ("I love it. I absolutely love it. I approved.");
+the full design, the questions and every decision are in `docs/proposals/nominate-someone.md`. Mocks: `/mocks/nominate/` (the
+nomination) and `/mocks/nominate/interview.html` (the nominee's path: Overview, The Interview, Nominate Someone optional, You're a Member,
+Set Up Your Account, then the members' Welcome Guide; `#/featured`). Built on the Explorer Guide, the template for new Guides (canon
+`canon-template-gate` v6). Kai hosts in a different outfit on every page (`public/guides/nominate/kai-*.jpg`); her eight interview
+questions are recorded and lip-synced (`vegan-media/media/kai/nominee-interview/q1-q8 -v1.mp3/.mp4`, stt checked). The welcome video's
+script is approved once and names fill in per nominee (Sean: "approve the welcome video once").
+
+**Step 1, built 2026-11-09**: `/nominate` (`nominate.html`, a copy of the approved mock; `guide-scripts/nominate.js`; indexed, in the
+sitemap): Overview, Who (name, email, area from the Explorer survey's chapters `x_chapter`, what they do: Business owner, Content creator,
+Works for a nonprofit, Activist, pick any; This is me), Why them (record up to 2:00 with the time left shown, speak with the site's
+dictation mic, or write; comment.html's recorder), About you (filled in when signed in; may we say it was you), Send (the release, 18 or
+over), Thank you. `?city=<chapter>` picks the area, `?source=hub|pulse|show|listing` records where it came from. Edge function
+**`ve-nominations`** (verify_jwt off; public `chapters`, `upload`, `submit`; team `list`, `get`, `set`), table `ve_nominations`
+(migration `20261109_nominations.sql`), recordings in the private `community-comments` bucket under `nominations/`. A nomination emails
+contact@lesaruss.com ([TEST] names do not). **Depot > Nominations** (`/admin/depot/nominations`, Content; copied from Depot > Comments):
+Waiting for review, Approved, Not now, All; search, area and sort; one nomination on its own page (`#n/<id>`) with the recording, the
+email, how many other times they were nominated, the nominator (and whether we may name them), a team note, Approve (ready to invite) or
+Not now. Approving sends nothing yet. Next (step 2): the invitation (a BrandDesk Outreach campaign Sean approves) and Kai's interview for
+real; then account setup; then the featured kit.
+
 ## Where should we go next? (Sean, 2026-11-09, playbook `ve-chapter-rankings`)
 
 "A column that has 10 slots... chapters that are in the works... members can go in there and vote for what's the next chapter that we should

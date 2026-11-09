@@ -89,7 +89,7 @@ Each file holds the full, dated record of decisions, tables, functions and proof
 | `docs/history/social.md` | Depot > Social studio, the Social tab on listings |
 | `docs/history/events.md` | Events and the city banner, the Vegan Events Guide, the event host path |
 | `docs/history/daily-pulse.md` | The Daily Pulse, the Community Board, featured items, autopilot |
-| `docs/history/communities.md` | City hubs, chapter cards, Where should we go next |
+| `docs/history/communities.md` | City hubs, chapter cards, Where should we go next, Nominate Someone and Kai's interview |
 | `docs/history/search.md` | Universal search, the search question queue |
 | `docs/history/guides-standards.md` | Guides are mini apps, Overview tour standard, Guide openings, a Guide on every page, Your Guide, Guide answers, Guide voices |
 | `docs/history/guides-restaurant.md` | The restaurant audit, the Vegan Restaurant Guide, door Guides, sourcing |
