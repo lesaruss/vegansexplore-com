@@ -42,7 +42,7 @@
     { k: 'media', scene: 'welcome/liz-media.jpg', label: 'Media', pic: 'holiday/p-listen.jpg', lead: 'kai', say: 'Press Play and I will walk you through Media. Then press Play on something good today.' },
     { k: 'guides', scene: 'welcome/liz-guides.jpg', label: 'Guides', pic: 'welcome-guide.jpg', lead: 'maya', say: 'Press Play and I will walk you through the Guides. Then pick an interest and try the free part of any Guide.' },
     { k: 'points', scene: 'welcome/liz-points.jpg?v=2', label: 'Points and Levels', pic: 'thumb-bounties.jpg', lead: 'theo', say: 'Press Play and I will walk you through points. Then join free and start with 250 points.' },
-    { k: 'paths', scene: 'welcome/liz-paths.jpg', label: 'Your Path and Badges', pic: 'thumb-passport.jpg', lead: 'kai', say: 'Everyone starts as an Explorer. If you run something, your path takes you further.' },
+    { k: 'paths', scene: 'welcome/liz-paths.jpg', label: 'Your Path and Badges', pic: 'thumb-passport.jpg', lead: 'kai', say: 'Press Play and I will walk you through the paths. Then start as an Explorer and find yours.' },
     { k: 'better', scene: 'welcome/liz-better.jpg', label: 'Make It Better', pic: 'restaurant-guide/t-next.jpg', lead: 'liz', say: 'This is the part that matters most. Here is every way to tell us what is working and what is not.' },
     { k: 'animals', scene: 'welcome/liz-animals.jpg', label: 'For the Animals', pic: 'nonprofit-guide.jpg', lead: 'dani', say: 'Here is where it is all going, and how you can show up for the animals today.' },
     { k: 'founder', scene: 'welcome/liz-founder.jpg', label: 'Become a Founder', pic: 'welcome-ensemble.jpg', lead: 'liz', say: 'You are early. Answer a few quick questions and you are in.', sayMember: 'You are in. Here are your first steps.' }
@@ -172,10 +172,10 @@
     var rec = !!CLIPS[k];
     var start = '<section class="wg-gs" aria-label="How to use this page"><span class="wg-gs-pic"><img src="' + pic(o.pic) + '" alt="" decoding="async" width="640" height="640"></span>' +
       '<div class="wg-gs-b"><div class="vgi-k">How to use this page</div><h3 class="wg-gs-t">' + esc(o.title) + '</h3>' + (rec ? ['<b>Watch Liz.</b> Press Play Liz for a short walk-through.'] : []).concat(o.how).map(function (x) { return '<p>' + x + '</p>'; }).join('') +
-      '<div class="wg-gs-btns">' + (rec ? '<button type="button" class="dg-btn" data-wg-tour>&#9654; Play Liz</button>' : '') + '<a class="dg-btn' + (rec ? ' dg-ghost' : '') + '" href="' + esc(o.go[1]) + '">' + esc(o.go[0]) + '</a></div></div></section>';
+      '<div class="wg-gs-btns">' + (rec ? '<button type="button" class="dg-btn" data-wg-tour>&#9654; Play Liz</button>' : '') + '<a class="dg-btn' + (rec ? ' dg-ghost' : '') + '" href="' + esc(o.go[1]) + '"' + (o.feedback ? ' data-ve-feedback' : '') + '>' + esc(o.go[0]) + '</a></div></div></section>';
     if (window.VEExplorerCard) VEExplorerCard.html({}); // loads the card's styles, shared by the call to action below
     var cta = '<section class="vxc" aria-label="' + esc(o.go[0]) + '"><div class="vxc-b"><div class="vxc-k">See it for yourself</div><h3>' + esc(o.ctaTitle) + '</h3><p>' + esc(o.ctaText) + '</p></div>' +
-      '<a class="vxc-go" href="' + esc(o.go[1]) + '">' + esc(o.go[0]) + '</a></section>';
+      '<a class="vxc-go" href="' + esc(o.go[1]) + '"' + (o.feedback ? ' data-ve-feedback' : '') + '>' + esc(o.go[0]) + '</a></section>';
     return crumb(tab(k).label) + head(o.kicker, tab(k).label, '') + start +
       '<div class="wg-arts"><div class="wg-grp"><h5>' + esc(o.group) + '</h5><ol>' + o.parts.map(function (x) { return artRow(pic(x[0]), x[1], x[2]); }).join('') + '</ol></div></div>' + cta;
   }
@@ -271,17 +271,17 @@
         ] });
     },
     better: function () {
-      return crumb(tab('better').label) + head('Make it better', tab('better').label, 'Use Vegans Explore in your day to day, and tell us what is working, what is not, and what you wish you could do. We read all of it, and we build from it every day.') + lead('better') +
-        '<div class="wg-ways">' + [
-          ['The Feedback button', 'It is on every page, in the top bar (a small tab at the bottom right on phones). It starts with the page you are on: something broken, out of date, confusing or missing, or an idea.'],
-          ['Talk to your Guide', 'On a Guide\'s page, ask it anything. Saved answers are free; asking directly is 4 points a message.'],
-          ['Ask a person', 'Not sure, or the Guide did not know? Members can ask a person on our team, free, and we write back.'],
-          ['Search for what is missing', 'Search for something we do not have yet, and it goes into our team\'s queue. We work it every day, and it tells us what to add next.'],
-          ['Tell us a place to add', 'Know a place, a person or a group we should list? Tell us from search or in your survey, and we check it.'],
-          ['Suggest a topic', 'Every city\'s board has Suggest a Topic, with hot tips for the Daily Pulse.']
-        ].map(function (w) { return '<div class="wg-box"><h3>' + esc(w[0]) + '</h3><p>' + esc(w[1]) + '</p></div>'; }).join('') + '</div>' +
-        '<p class="dg-lede" style="margin-top:14px">Your votes count too: if a place gets a lot of votes, we may reach out to spotlight it. We are real people, supported by technology that finally lets us carry out a vision we have been working on since 2016.</p>' +
-        '<div class="dg-btns"><button type="button" class="dg-btn" data-ve-feedback>Send feedback now</button></div>' + explorerCard();
+      return sectionPage('better', { kicker: 'Take part', title: 'Tell us what is working and what is not', pic: 'restaurant-guide/t-fixes.jpg', group: 'Ways to tell us', feedback: true,
+        how: ['<b>Read the parts below.</b> Each one is a way to reach us, and we read all of it.', '<b>Use it in your day to day.</b> We are real people, supported by technology, and we build from what you send every day.'],
+        go: ['Send feedback now', '/feedback'], ctaTitle: 'Tell us one thing.', ctaText: 'Something working, missing or confusing? Send it now. It starts with the page you are on.',
+        parts: [
+          ['restaurant-guide/t-next.jpg', 'The Feedback button', 'On every page, in the top bar (a small tab at the bottom right on phones). Something broken, out of date, confusing or missing, or an idea.'],
+          ['nutrition-guide.jpg', 'Talk to your Guide', 'On a Guide\'s page, ask it anything. Saved answers are free; asking directly is 4 points a message.'],
+          ['partner-community-manager.jpg', 'Ask a person', 'Not sure, or the Guide did not know? Members can ask a person on our team, free, and we write back.'],
+          ['thumb-directory.jpg', 'Search for what is missing', 'Search for something we do not have yet, and it goes into our team\'s queue. It tells us what to add next.'],
+          ['thumb-community.jpg', 'Tell us a place to add', 'Know a place, a person or a group we should list? Tell us from search or in your survey, and we check it.'],
+          ['restaurant-guide/t-pulse.jpg', 'Suggest a topic', 'Every city\'s board has Suggest a Topic, with hot tips for the Daily Pulse. Your votes count too.']
+        ] });
     },
     animals: function () {
       return section('animals', 'The reason we are all here', 'With a network of businesses, people and nonprofits that actually show up, we can run campaigns that move the needle for the animals.',
@@ -346,7 +346,7 @@
   // Each section page plays its own short video in Liz's frame once its script is approved and recorded.
   // Each section's own video (Sean, 2026-11-09: no borrowed tour parts): Liz's approved line over that page's shots, captions from her word timings.
   var MEDIA = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/';
-  var SEC = { directory: 'sec-directory-v2', city: 'sec-city-v2', events: 'sec-events-v2', media: 'sec-media-v2', guides: 'sec-guides-v2', points: 'sec-points-v2' };
+  var SEC = { directory: 'sec-directory-v2', city: 'sec-city-v2', events: 'sec-events-v2', media: 'sec-media-v2', guides: 'sec-guides-v2', points: 'sec-points-v2', paths: 'sec-paths-v2' };
   var CLIPS = { overview: [0, 1e9] };
   Object.keys(SEC).forEach(function (k) { CLIPS[k] = [0, 1e9]; });
   function cur() {
