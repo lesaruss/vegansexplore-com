@@ -6662,8 +6662,14 @@ Guide and its stories, every story with the Directory's own cards (`VERegionDire
 See more in the Directory line; In this episode (pills by kind); Places on this episode; Keep listening (this file's `row()`, with Save). Use the
 existing components, never new tiles. Mentions not in the Directory yet are held (quarantined, tag `ve-held-place`, named in `notes.held_listings`),
 and places that are not chapters are logged to `ve_place_mentions`, the first rows of the chapter rankings (a playbook to open). Episodes with no
-notes keep the plain view. Episode 145's notes were written by hand; the studio writes them from the run sheet next. **On branch
-`claude/gracious-fermi-i4r1g1`, not on main** (waits on Sean's merge). Rich Roll's People profile and vegconomist (News Outlets) were added the
+notes keep the plain view. Episode 145's notes were written by hand. **Merged to `main` 2026-11-08 (91eb394, Sean: "merge")** and checked live at
+1440 and 390 px (no errors, no sideways scroll; signed out, Save, a Directory card's Vote and the chapter card's Vote and Save open the members
+prompts; Play builds the player on the right Captivate file, which this build session cannot reach). **The studio builds them from the run sheet**
+(HQ branch `claude/charming-rubin-2qi0si`, 22b726c, not on HQ main until Sean merges): BrandDesk > Podcast > an episode > **Episode page**: Build the
+page (draft; Claude Opus 5.5 from the run sheet only, `notesPrompt` in HQ `lib/episodeNotes.ts`; names matched to approved listings or ones already
+held, outlets by name, places through `ve_chapter_of`; `preview: true` returns it unsaved), then **Publish** (live, non-chapter places to
+`ve_place_mentions`, each new name made a held listing). A live page is never overwritten (take it down first). Proven on Episode 145's run sheet in
+76 s. Episodes 144 and 145 are numbered on Captivate (season 1) since 2026-11-08, and scheduling now sends the number. Rich Roll's People profile and vegconomist (News Outlets) were added the
 same day. Podcast subscriptions (one tile per show in My Saves, New since your last visit, an opt-in daily-at-most email) are approved and queued.
 Handoff `docs/handoff/2026-11-08-ve-podcast-studio-episode-discovery-page.md`.
 
