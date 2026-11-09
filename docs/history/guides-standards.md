@@ -426,3 +426,14 @@ line, read the voice from the profile, never from a page, a comment or memory. H
 
 On 2026-10-31 V's Guide record still held her old voice and River's profile still called him the Creator Guide with his look from
 before the 2026-10-28 refresh; both were brought in line.
+
+
+## Section videos, LOCKED (Sean, 2026-11-09, playbook `ve-explorer-path`)
+
+"Oh, that's so beautiful. Lock it." Every Guide page's video follows the Welcome Guide's: the Guide's own approved line (what is on the page, "we want to
+hear from you", what a member can do, membership is free and why the survey, bring people in and earn points for each who joins with your link), recorded in the
+Guide's roster voice and checked with stt; live pages in a clean phone frame (drawn at 2x, no shadow or glow), our illustrations as rounded cards; behind every
+phone or card one of our chapters' tall city pictures, **one city per subject** (it stays while the Guide is on that subject and changes when the subject does;
+a long subject splits once), slowly zooming in, drawn at 2x so it is smooth; the Guide's own scenes full bleed between subjects; captions from the word timings;
+web encode crf 26, faststart. How: `scripts/tour-video/sections/README.md`; reference `sec-city-v2`. Next (Sean): finish the Welcome Guide's pages 4 to 11, then
+inventory the other Guides and apply the Welcome Guide's template to each.

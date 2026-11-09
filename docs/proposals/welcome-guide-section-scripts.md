@@ -10,7 +10,7 @@ about every 3 seconds (canon-video-shot-pace), 4:5, captions on. Nothing is reco
 "we want to hear from you", what a member can do to shape it, and ends with "Membership is free", why we ask for the survey (real people joining keeps it worth their time) and an invitation to
 bring people in (friends, their community, new Vegans and Pre-Vegans) before the last step (Sean, 2026-11-09).
 
-## 2. Search and the Directory (v3, approved by Sean 2026-11-09; recorded `sec-directory-v1`, 48 s, stt matched; video approved and live)
+## 2. Search and the Directory (v3, approved by Sean 2026-11-09; recorded `sec-directory-v1`, 48 s, stt matched; video `sec-directory-v2` in the locked look, live)
 
 About 40 seconds.
 
@@ -19,7 +19,7 @@ About 40 seconds.
 Shots (each about 3 s, Sample stamp on any demo shot): Liz's Directory scene; the Directory banner and city picker; Local Food cards; a listing page;
 Products; Services; Media; Community; People; Submit listing; the Feedback button; a card's Vote button; the city picker on South Florida; Liz's scene again.
 
-## 3. Your City (draft v3 for Sean)
+## 3. Your City (v3, approved by Sean 2026-11-09; recorded `sec-city-v1`, 65 s, stt matched; video `sec-city-v2` approved and live)
 
 About 55 seconds.
 
