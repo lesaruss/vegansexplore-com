@@ -129,3 +129,10 @@ where campaign_slug like 'holiday-launch-%' and removed_at is null and coalesce(
   and lower(person_key) in (select backup_email from ve_outreach_backup_emails where note like 'Already in Founding Cohort 1%');
 update ve_outreach_campaign_members set removed_at=now(), send_status='stopped', stop_reason='not sent: our own address'
 where campaign_slug like 'holiday-launch-%' and removed_at is null and lower(person_key)='soflovegans@gmail.com';
+
+-- Sean, 2026-11-10: "hold Juan, same person."
+insert into ve_outreach_backup_emails (person_name, primary_email, backup_email, note, created_by)
+values ('Juan','juanmo1311@gmail.com','100naturaljuice@bellsouth.net','Already in Founding Cohort 1 under their other address; held off the Holiday launch (Sean confirmed same person)','Sean')
+on conflict (primary_email, backup_email) do nothing;
+update ve_outreach_campaign_members set send_status='stopped', stop_reason='backup email'
+where campaign_slug like 'holiday-launch-%' and removed_at is null and coalesce(step,0)=0 and lower(person_key)='100naturaljuice@bellsouth.net';
