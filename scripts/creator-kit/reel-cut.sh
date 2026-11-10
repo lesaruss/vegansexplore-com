@@ -1,11 +1,12 @@
+# Two-layer cut: only the picture zooms; the shade, words and bar sit still on top.
 set -e
-FPS=30
-i=0
-: > list.txt
+FPS=30; i=0; : > list2.txt
 while read name start end; do
-  d=$(python3 -c "print(round($end-$start,3))"); n=$(python3 -c "import math;print(max(1,round(($end-$start)*$FPS)))")
-  ffmpeg -nostdin -hide_banner -loglevel error -y -loop 1 -i $name.png -vf "scale=3240:5760:flags=lanczos,zoompan=z='1+0.06*on/$n':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=$n:s=1080x1920:fps=$FPS,format=yuv420p" -frames:v $n clip$i.mp4
-  echo "file 'clip$i.mp4'" >> list.txt; i=$((i+1))
+  n=$(python3 -c "print(max(1,round(($end-$start)*$FPS)))")
+  ffmpeg -nostdin -hide_banner -loglevel error -y -loop 1 -i bg-$name.png -loop 1 -i ov-$name.png -filter_complex \
+   "[0]scale=3240:5100:flags=lanczos,zoompan=z='1+0.05*on/$n':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=$n:s=1080x1700:fps=$FPS,pad=1080:1920:0:0:white[b];[b][1]overlay=0:0:shortest=1,format=yuv420p" \
+   -frames:v $n -r $FPS L$i.mp4
+  echo "file 'L$i.mp4'" >> list2.txt; i=$((i+1))
 done <<SHOTS
 a-kai 0.0 2.0
 b-philly 2.0 5.3
@@ -20,5 +21,5 @@ j-points 20.4 23.2
 k-founding 23.2 26.1
 c-cover 26.1 28.3
 SHOTS
-ffmpeg -nostdin -hide_banner -loglevel error -y -f concat -safe 0 -i list.txt -i kai.mp3 -c:v libx264 -preset medium -crf 20 -c:a aac -b:a 160k -af loudnorm=I=-16:TP=-1.5 -shortest -movflags +faststart kj-reel-v1.mp4
-ffprobe -v error -show_entries format=duration -of csv=p=0 kj-reel-v1.mp4
+ffmpeg -nostdin -hide_banner -loglevel error -y -f concat -safe 0 -i list2.txt -i kai.mp3 -c:v libx264 -preset medium -crf 20 -c:a aac -b:a 160k -af loudnorm=I=-16:TP=-1.5 -shortest -movflags +faststart kj-reel-v2.mp4
+ffprobe -v error -show_entries format=duration -of csv=p=0 kj-reel-v2.mp4

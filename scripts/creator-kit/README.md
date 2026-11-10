@@ -8,7 +8,10 @@ No image model is needed after the creator's avatar exists; these render with Pl
   "Become a Member". Slides 2 to 9: the Welcome Guide Overview sections over scenes from several Guides (variety, Sean 2026-11-10), text
   low over a shade so it never covers a face. Slide 10: Become a Founding Member by January 1.
 - `reel-frames.js` + `reel-cut.sh`: the collab reel. Kai's line (ElevenLabs voice cgSgspJ2msm6clMCkdW9, el-media tts, checked with stt)
-  over stills cut on the words, a new shot every 2 to 3.5 seconds, a slow 6 percent zoom rendered from 3x stills (no stair-stepping).
+  over stills cut on the words, a new shot every 2 to 3.5 seconds. Two layers (Sean, 2026-11-10): only the picture moves (a slow 5 percent
+  zoom from 3x stills, no stair-stepping); the shade, the words and the white bar sit still on top, the same bar on every shot.
+- Slide 6 and the reel's Guides shot: Maya, River and Kai together (`b50-maya-kai-river.jpg`, Higgsfield job b99504a5), replacing the
+  full cast, where Theo read too small (Sean, 2026-11-10).
 - Paths in the scripts point at a session scratchpad; set them to wherever the frames and scenes are.
 - Outputs for KJ: `vegan-media/media/people/keya-vegankween/kit/` (story, reel-kai-intro-v1.mp4) and Kai's line
   `vegan-media/media/kai/creator-welcome/kj-intro-v1.mp3`.

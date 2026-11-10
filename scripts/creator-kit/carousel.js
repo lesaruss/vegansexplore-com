@@ -36,7 +36,7 @@ const S = [
   [SC + 'b10-market-walk.jpg', 'Your city has its own home', `${CITY}'s page: its places, events, Daily Pulse and Community Board.`],
   [SC + 'b06-potluck.jpg', 'Something to do, near you', 'Meetups, pop-ups, festivals and dinners, every week.'],
   [SC + 'b23-kai-studio.jpg', 'Shows worth your time', 'Our podcasts, films and books the community loves.'],
-  [SC + 'b02-cast.jpg', 'Guides walk you through it', 'One topic at a time, and every Guide has a free part to try.'],
+  [SC + 'b50-maya-kai-river.jpg', 'Guides walk you through it', 'One topic at a time, and every Guide has a free part to try.'],
   ['liz-points.jpg', 'Earn points by taking part', 'Check in, vote and share. You start with 250.'],
   [SC + 'b39-nori-door.jpg', 'Everyone starts as an Explorer', 'Then find the path that fits what you do, and earn its badge.'],
   [SC + 'b35-dani-cow.jpg', 'The reason we are all here', 'Find the nonprofits, rescues and sanctuaries near you.'],
