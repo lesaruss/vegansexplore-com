@@ -185,6 +185,11 @@
     // Phones: the sub-sections are one full-width dropdown, not a sideways scroll (Sean, 2026-10-31: "a little clanky... a
     // drop-down menu instead that runs the length of that section on mobile"). It clicks the matching tab, so both stay one control.
     + '.vrd-root .vrd-subsel{display:none}'
+    // A section with too many sub-sections for one row (People, 8 and All) is a dropdown at every width (Sean, 2026-11-10: "do a drop down
+    // for people, because it's way past six. And I don't like it dropping to another row"; the more-than-5-tabs rule).
+    + '.vrd-root .vrd-subtabs-dd{border-bottom:0;margin:-8px 0 14px}.vrd-root .vrd-subtabs-dd .subcat-pill{display:none}'
+    + '.vrd-root .vrd-subtabs-dd .vrd-subsel{display:block;width:100%;max-width:360px;height:48px;border-radius:6px;border:1.5px solid #ddd;padding:0 44px 0 14px;font-family:Montserrat,sans-serif;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#1a1a1a;cursor:pointer;-webkit-appearance:none;appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' viewBox=\'0 0 12 8\'%3E%3Cpath d=\'M1 1.5l5 5 5-5\' fill=\'none\' stroke=\'%23555\' stroke-width=\'1.8\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E") no-repeat right 16px center}'
+    + '.vrd-root .vrd-subtabs-dd .vrd-subsel:focus{outline:none;border-color:var(--vb-accent,#5EC47A)}'
     + '@media(max-width:768px){.vrd-root .vrd-subtabs{border-bottom:0;margin:-8px 0 14px}.vrd-root .vrd-subtabs .subcat-pill{display:none}'
     + '.vrd-root .vrd-subsel{display:block;width:100%;height:48px;border-radius:6px;border:1.5px solid #ddd;padding:0 44px 0 14px;font-family:Montserrat,sans-serif;font-size:13px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#1a1a1a;cursor:pointer;-webkit-appearance:none;appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' viewBox=\'0 0 12 8\'%3E%3Cpath d=\'M1 1.5l5 5 5-5\' fill=\'none\' stroke=\'%23555\' stroke-width=\'1.8\' stroke-linecap=\'round\' stroke-linejoin=\'round\'/%3E%3C/svg%3E") no-repeat right 16px center}'
     + '.vrd-root .vrd-subsel:focus{outline:none;border-color:var(--vb-accent,#5EC47A)}}'
@@ -419,7 +424,7 @@
       LOC_LEVELS.map(function (lv) { return '<span class="sb-f"><span class="geo-label">' + lv[1] + '</span><select class="sort-select" aria-label="' + lv[1] + '" data-vrd-loc="' + lv[0] + '"></select></span>'; }).join('') +
       '</div></div>' : '';
     // With the sections in the page's banner (config.sectionMenu), the sub-sections are the tab row under it, not in the filter.
-    var subTabs = config && config.sectionMenu && cat.subcats.length ? '<div class="vrd-subtabs" role="tablist" aria-label="' + esc(cat.label) + '">' + subcatBtns +
+    var subTabs = config && config.sectionMenu && cat.subcats.length ? '<div class="vrd-subtabs' + (cat.subcats.length >= 8 ? ' vrd-subtabs-dd' : '') + '" role="tablist" aria-label="' + esc(cat.label) + '">' + subcatBtns +
       '<select class="vrd-subsel" data-vrd-subsel aria-label="' + esc(cat.label) + '">' +
       ['All'].concat(cat.subcats).map(function (s, i) { return '<option value="' + esc(s) + '"' + (i ? '' : ' selected') + '>' + esc(subLabel(s)) + '</option>'; }).join('') +
       '</select></div>' : '';
@@ -659,7 +664,7 @@
     var anywhere = !!(cfg && cfg.everywhere);
     var subcat = sectionsOf(l).join('|');
     var temp = l.business_status === 'CLOSED_TEMPORARILY' && !isMedia(l) && !isPerson(l) ? ' <span class="vrd-temp">' + statusWords(l.category)[0] + '</span>' : '';
-    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-vegan="' + (VEGAN_KEY[l.vegan_status] || '') + '" data-slug="' + esc(l.slug || '') + '" data-city="' + esc(l.address_city || '') + '" data-listing-type="' + esc(type || 'regular') + '" data-plus="' + (isPlus(l) ? 1 : 0) + '"' + extraAttrs(l) + '>' +
+    return '<div class="rank-card" data-name="' + esc(l.name) + '" data-votes="' + votes + '" data-idx="' + idx + '" data-subcat="' + esc(subcat) + '" data-vegan="' + (VEGAN_KEY[l.vegan_status] || '') + '" data-slug="' + esc(l.slug || '') + '"' + (isPerson(l) && l.person_member ? ' data-pm="' + esc(l.id) + '"' : '') + ' data-city="' + esc(l.address_city || '') + '" data-listing-type="' + esc(type || 'regular') + '" data-plus="' + (isPlus(l) ? 1 : 0) + '"' + extraAttrs(l) + '>' +
       makeAvatar(l) +
       '<div class="rank-info"><div class="rank-name">' + esc(l.name) + verifiedTag(l) + '</div>' +
       (isPerson(l) ? '<div class="rank-meta">' + personMeta(l) + '</div>'
@@ -668,6 +673,43 @@
           '<div class="rank-subcat">' + esc(anywhere ? shelfOf(l, cfg) : subLabel(l.category || '')) + veganTag(l) + vendsTag(l) + partnerTag(l) + bizBadgeTag(l) + '</div>') + vettingNote(l) + '</div>' +
       '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><button class="vote-btn" data-listing-id="' + esc(l.id) + '" title="Vote for this one">' + (votes === 1 ? 'Vote' : 'Votes') + '</button>' + saveBtn(l) + adminBtn(l) + '</div>' +
       '</div>';
+  }
+
+  // A person's badge on their card (Sean, 2026-11-10: "on her tile, I should see the icon on it as well"): a People card whose profile is
+  // linked to a member (details.person.member_id) gets that member's main badge stamp on the corner of the picture, as on their profile page.
+  // One ve_person_badges call per such card, only for cards on the page; ve-badges.js loads on first need.
+  var BADGE_CACHE = {};
+  function withBadges(fn) {
+    if (window.VEBadges) return fn();
+    var s = document.querySelector('script[data-ve-badges]');
+    if (!s) { s = document.createElement('script'); s.src = '/public/ve-badges.js'; s.setAttribute('data-ve-badges', '1'); document.head.appendChild(s); }
+    s.addEventListener('load', fn);
+  }
+  function decorateBadges(root) {
+    var cards = (root || document).querySelectorAll('.rank-card[data-pm]:not([data-pm-done])');
+    if (!cards.length) return;
+    withBadges(function () {
+      Array.prototype.forEach.call(cards, function (card) {
+        if (card.getAttribute('data-pm-done')) return;
+        card.setAttribute('data-pm-done', '1');
+        var id = card.getAttribute('data-pm');
+        var p = BADGE_CACHE[id] || (BADGE_CACHE[id] = fetch(SUPABASE_URL + '/rest/v1/rpc/ve_person_badges', { method: 'POST',
+          headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_listing: id }) })
+          .then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; }));
+        p.then(function (list) {
+          var corner = window.VEBadges && VEBadges.corner(list, 24);
+          if (!corner) return;
+          var pic = card.querySelector('.vrd-logo, .av');
+          if (!pic || pic.parentNode.classList.contains('veb-wrap')) return;
+          var w = document.createElement('span'); w.className = 'veb-wrap';
+          w.style.cssText = 'position:relative;display:inline-block;flex-shrink:0;line-height:0;align-self:flex-start';
+          pic.parentNode.insertBefore(w, pic);
+          var next = pic.nextElementSibling; w.appendChild(pic);
+          if (next && next.classList.contains('av') && pic.classList.contains('vrd-logo')) w.appendChild(next);
+          w.insertAdjacentHTML('beforeend', corner);
+        });
+      });
+    });
   }
 
   function makeClosedCard(l, idx, cfg) {
@@ -976,6 +1018,7 @@
     });
 
     bindVoteButtons(root);
+    decorateBadges(root);
     bindCardClicks(root, config);
     bindAdmin(root);
 
@@ -1587,7 +1630,7 @@
 
   function fetchAll(root, config, offset, acc) {
     acc = acc || [];
-    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds,cuisines,vetted_at,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type,shared_kitchen:details->shared_kitchen->>source,person_title:details->person->>title,specialty:details->person->>specialty&status=eq.approved&order=id&limit=1000&offset=' + (offset || 0);
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds,cuisines,vetted_at,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type,shared_kitchen:details->shared_kitchen->>source,person_title:details->person->>title,specialty:details->person->>specialty,person_member:details->person->>member_id&status=eq.approved&order=id&limit=1000&offset=' + (offset || 0);
     fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
       .then(function (data) {
@@ -1683,7 +1726,7 @@
   }
 
   function fetchClosed(root, config, approved) {
-    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds,cuisines,vetted_at,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type,shared_kitchen:details->shared_kitchen->>source,person_title:details->person->>title,specialty:details->person->>specialty&status=eq.closed&limit=1000';
+    var url = SUPABASE_URL + '/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds,cuisines,vetted_at,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type,shared_kitchen:details->shared_kitchen->>source,person_title:details->person->>title,specialty:details->person->>specialty,person_member:details->person->>member_id&status=eq.closed&limit=1000';
     fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); })
       .then(function (data) { populateGrids(root, config, approved, (data || []).filter(function (l) { return inRegion(config, l) && ownListing(l); })); })
@@ -1726,10 +1769,10 @@
     // card reads like that brand's Directory (no How Vegan, its avatar color, its listing addresses).
     brand: function (b) { useBrand(b); },
     card: function (l, idx) { if (l && l.id) CARD_ROWS[l.id] = l; return makeBrowseCard(l, idx || 0, isOnline(l) ? 'online' : 'regular'); },
-    wire: function (root, onOpen) { bindVoteButtons(root); bindCardClicks(root, onOpen ? { onOpenListing: onOpen } : null); bindAdmin(root); },
+    wire: function (root, onOpen) { bindVoteButtons(root); decorateBadges(root); bindCardClicks(root, onOpen ? { onOpenListing: onOpen } : null); bindAdmin(root); },
     // A super admin's More menu (Edit, Review) on cards drawn outside init (the Daily Pulse, Guides; Sean, 2026-11-09: "I should be able
     // to go in here and edit this directory listing from here"). Call before card(), then wire().
     admin: function (cb) { adminReady(function (a) { ADMIN = a; if (cb) cb(a); }); },
-    FIELDS: 'id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds,cuisines,vetted_at,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type'
+    FIELDS: 'id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds,cuisines,vetted_at,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type,person_member:details->person->>member_id'
   };
 })();

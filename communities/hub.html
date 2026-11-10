@@ -340,6 +340,8 @@
     .hov-tile small { display: block; font-size: 12px; font-weight: 500; color: var(--ve-text-75); line-height: 1.4; margin-top: 2px; }
     .hov-more { margin: 12px 0 0; font-size: 13px; font-weight: 700; }
     .hov-more a { color: #1f5f22; }
+    #hub-ov-team { margin-top: 32px; }
+    #hub-ov-team .hov-team-sub { margin: -6px 0 14px; font-weight: 500; color: #555; }
     @media (max-width: 1100px) { .hov-go { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (max-width: 700px) { .hov-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } .hov-go { grid-template-columns: 1fr; } }
     /* Opportunities: every open role, two across beside the billboard. */
@@ -491,6 +493,14 @@
       <h3 class="hov-h" data-hub-text="Most voted in {name}"></h3>
       <div class="vrd-root"><div class="rank-grid" id="hub-ov-top-grid"></div></div>
       <p class="hov-more"><a href="?tab=directory" data-hov-tab="directory">See the whole Directory</a></p>
+    </div>
+    <!-- The community's team (Sean, 2026-11-10): the creators, Ambassadors and others who represent Vegans Explore here. A member whose
+         People profile in this chapter is theirs (verified, details.person.member_id) and who holds a badge; the Directory's own card with
+         their badge on the picture. Hidden until someone is on it. -->
+    <div id="hub-ov-team" hidden>
+      <h3 class="hov-h" data-hub-text="{name} team"></h3>
+      <p class="hov-more hov-team-sub" data-hub-text="The creators, Ambassadors and members representing Vegans Explore in {name}."></p>
+      <div class="vrd-root"><div class="rank-grid" id="hub-ov-team-grid"></div></div>
     </div>
     <div id="hub-ov-dishes" hidden>
       <h3 class="hov-h" data-hub-text="Top dishes in {name}"></h3>
@@ -999,8 +1009,31 @@
         }).join('');
         document.getElementById('hub-ov-dishes').hidden = false;
       }).catch(function () {});
-    // Most voted: open places in this chapter with votes, 100% Vegan first in a tie (public at once), the Directory's own card.
     if (!window.VERegionDirectory) return;
+    // The team: People profiles in this chapter that belong to a member (verified) who holds a badge other than Explorer.
+    var H0 = { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY };
+    var PEOPLE = 'Activists,"Content Creators",Athletes,Physicians,"Health Experts",Chefs,Founders,Promoters';
+    fetch(SUPABASE_URL + '/rest/v1/listings?select=' + VERegionDirectory.FIELDS + ',person_title:details->person->>title&status=eq.approved&claim_status=eq.verified&category=in.(' + encodeURIComponent(PEOPLE) + ')&details->person->>member_id=not.is.null&order=vote_count.desc&limit=200', { headers: H0 })
+      .then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) {
+        rows = (rows || []).filter(function (l) {
+          if (HUB.match.cities && HUB.match.cities.indexOf(l.address_city) < 0) return false;
+          if (HUB.match.states && HUB.match.states.indexOf(l.address_state) < 0) return false;
+          return true;
+        });
+        return Promise.all(rows.map(function (l) {
+          return fetch(SUPABASE_URL + '/rest/v1/rpc/ve_person_badges', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, H0), body: JSON.stringify({ p_listing: l.id }) })
+            .then(function (r) { return r.ok ? r.json() : []; }).catch(function () { return []; })
+            .then(function (b) { return (b || []).some(function (x) { return x && !x.explorer; }) ? l : null; });
+        }));
+      }).then(function (team) {
+        team = (team || []).filter(Boolean);
+        if (!team.length) return;
+        var g = document.getElementById('hub-ov-team-grid');
+        g.innerHTML = team.map(function (l, i) { return VERegionDirectory.card(l, i); }).join('');
+        VERegionDirectory.wire(g.parentNode);
+        document.getElementById('hub-ov-team').hidden = false;
+      }).catch(function () {});
+    // Most voted: open places in this chapter with votes, 100% Vegan first in a tie (public at once), the Directory's own card.
     var q = 'listings?select=' + VERegionDirectory.FIELDS + '&status=eq.approved&vote_count=gt.0&vegan_status=eq.fully_vegan&order=vote_count.desc&limit=400';
     fetch(SUPABASE_URL + '/rest/v1/' + q, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
       .then(function (r) { return r.json(); }).then(function (rows) {
