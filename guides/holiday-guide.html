@@ -618,9 +618,6 @@
     .hg-steps li{font-size:15px;line-height:1.6;margin:0 0 10px;color:var(--ink)}
     @media (max-width:760px){.hg-rcp1{grid-template-columns:1fr}.hg-rcp1-p{position:static;order:-1;max-width:420px}.hg-ing{columns:1}}
     .hg-shelf{margin:18px 0}
-    .hg-shelf-h{display:flex;align-items:center;gap:12px;margin-bottom:10px}
-    .hg-shelf-h img{width:56px;height:56px;border-radius:12px;object-fit:cover}
-    .hg-shelf-h h3{margin:0;font-size:18px;font-weight:800}
     .hg-prods{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:12px}
     .hg-prod{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;background:#fff;padding:14px}
     .hg-prod small{display:block;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;color:var(--ink55)}
@@ -650,7 +647,18 @@
     .hg-chips{display:flex;flex-wrap:nowrap;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 0 6px;padding-bottom:2px}
     .hg-chips::-webkit-scrollbar{display:none}
     .hg-chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 14px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap}
-    .hg-chip img{width:30px;height:30px;border-radius:6px;object-fit:cover;margin-left:-8px}
+    .hg-chip .hg-sico{width:20px;height:20px;margin-left:-4px;flex:none}
+    /* At the Store reads like a menu (Sean, 2026-11-10): flat shelf icons, rows with the brand on the right. */
+    .hg-shelf-h{display:flex;align-items:center;gap:10px;margin:0 0 4px;padding:0 0 8px;border-bottom:1px solid #cfe5d0;font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--g)}
+    .hg-shelf-h .hg-sico{width:24px;height:24px}
+    .hg-mlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(420px,100%),1fr));column-gap:32px}
+    .hg-mrow{display:flex;justify-content:space-between;gap:14px;align-items:baseline;padding:12px 0;border-bottom:1px dashed rgba(0,0,0,.12)}
+    .hg-mrow b{display:block;font-size:15.5px;font-weight:800}.hg-mrow p{margin:3px 0 0;font-size:14px;line-height:1.5;color:var(--ink75)}
+    .hg-mbrand{flex:none;max-width:42%;text-align:right;font-size:13px;font-weight:800;color:var(--g)}.hg-mbrand a{color:var(--g)}
+    .hg-sugf textarea{display:block;width:100%;box-sizing:border-box;padding:10px;border:1.5px solid rgba(0,0,0,.18);border-radius:6px;font:inherit;font-size:16px;margin-top:4px;resize:vertical}
+    .hg-submit .hg-sug{border:0;padding:0;margin:0;background:none}
+    .hg-rcpf{max-width:none;grid-template-columns:1fr 1fr;column-gap:14px}.hg-rcpf>label:first-child,.hg-rcpf>label:nth-last-of-type(1),.hg-rcpf>.dg-btns,.hg-rcpf>p{grid-column:1/-1}
+    @media(max-width:600px){.hg-rcpf{grid-template-columns:1fr}}
     .hg-chip[aria-pressed="true"]{border-color:var(--g);background:var(--g);color:#fff}
     .hg-sug{border:1px solid var(--line);border-radius:12px;padding:16px;margin:18px 0;background:#fff}
     .hg-sug h3{margin:0 0 6px;font-size:18px;font-weight:800}
@@ -744,7 +752,7 @@
 <script src="/public/ve-guide-intro.js"></script>
 <script src="/public/ve-episodes.js"></script>
 <script src="/public/ve-holiday-menu.js?v=9"></script>
-<script src="/guide-scripts/holiday-guide.js?v=24"></script>
+<script src="/guide-scripts/holiday-guide.js?v=25"></script>
 <script src="/public/ve-guide-min.js"></script>
 </body>
 </html>

@@ -644,11 +644,56 @@
       return;
     }
     main.innerHTML = head('Cook it yourself', rh[0], rh[1]) +
+      // Chefs send their own recipes (Sean, 2026-11-10), from the button to the right of the search, the way every page adds.
+      '<div class="hg-tools2"><div class="hg-search"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#525252" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
+      '<input type="search" id="hgRq" placeholder="Search recipes and ingredients..." aria-label="Search recipes" autocomplete="off" data-dictate="off"></div>' +
+      '<button type="button" class="hg-subbtn" data-hg-open="hgRcpPanel" aria-expanded="false" aria-controls="hgRcpPanel">Submit a Recipe</button></div>' +
+      '<div class="hg-submit" id="hgRcpPanel" hidden>' + recipeForm() + '</div>' +
       '<div class="hg-rcps">' + RECIPES.map(function (x) {
-        return '<a class="hg-rcp" href="#/' + rk + '/' + x.k + '"><span class="hg-rcp-pic"><img src="' + PIC + x.pic + '" alt="" loading="lazy" width="320" height="320"></span>' +
+        return '<a class="hg-rcp" data-rq="' + esc([x.name, x.course, x.line].concat(x.ing || []).join(' ').toLowerCase()) + '" href="#/' + rk + '/' + x.k + '"><span class="hg-rcp-pic"><img src="' + PIC + x.pic + '" alt="" loading="lazy" width="320" height="320"></span>' +
           '<span class="hg-rcp-b"><span class="dg-k">' + esc(x.course) + '</span><b>' + esc(tc(x.name)) + '</b><span>' + esc(x.line) + '</span><small>' + esc(x.serves) + ' &middot; ' + esc(x.time) + '</small></span></a>';
       }).join('') + '</div>' +
+      '<div class="hg-empty" id="hgRnone" hidden><h3>Nothing Matches</h3><p>Try another dish or ingredient. Have one to share? Submit a Recipe.</p></div>' +
       '<div class="hg-note">' + rh[2] + '</div>';
+    var rq = document.getElementById('hgRq');
+    rq.addEventListener('input', function () {
+      var w = rq.value.trim().toLowerCase().split(/\s+/).filter(Boolean), n = 0;
+      Array.prototype.forEach.call(main.querySelectorAll('.hg-rcp'), function (c) { var t = c.getAttribute('data-rq'), on = !w.some(function (x) { return t.indexOf(x) < 0; }); c.hidden = !on; if (on) n++; });
+      document.getElementById('hgRnone').hidden = n > 0;
+    });
+    wireRecipeForm();
+  }
+  // Submit a Recipe: sent to ve-feedback as an idea (Depot > Feedback and the Inbox), with who sent it, so the team can try it and credit them.
+  function recipeForm() {
+    return '<section class="hg-sug"><h3>Submit a Recipe</h3><p>Chefs and home cooks: send us your plant-based ' + esc(hx().label) + ' recipe. Our team reads every one, and a recipe we feature carries your name and a link to you.</p>' +
+      '<form class="hg-sugf hg-rcpf" novalidate><label>Recipe name<input name="title" maxlength="120" required placeholder="Maple roasted squash"></label>' +
+      '<label>Your name<input name="name" maxlength="120" required></label>' +
+      '<label>Your email<input name="email" type="email" maxlength="200" required></label>' +
+      '<label>Your website or Instagram (optional)<input name="site" maxlength="200" placeholder="https:// or @handle"></label>' +
+      '<label>A link to the recipe (optional)<input name="link" maxlength="400" placeholder="https://"></label>' +
+      '<label>Or write it here: what you need and how to make it<textarea name="body" maxlength="2200" rows="7"></textarea></label>' +
+      '<div class="dg-btns" style="margin:0"><button class="dg-btn" type="submit">Send my recipe</button></div><p class="dg-srow-p" data-smsg style="margin:0"></p></form></section>';
+  }
+  function wireRecipeForm() {
+    var f = main.querySelector('.hg-rcpf'); if (!f) return;
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = function (k) { return f[k].value.trim(); }, msg = f.querySelector('[data-smsg]'), btn = f.querySelector('button');
+      if (!v('title')) { msg.textContent = 'Give the recipe a name.'; f.title.focus(); return; }
+      if (!v('name')) { msg.textContent = 'Tell us your name, so we can credit you.'; f.name.focus(); return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v('email'))) { msg.textContent = 'Add your email, so we can reach you.'; f.email.focus(); return; }
+      if (!v('link') && v('body').length < 40) { msg.textContent = 'Add a link to the recipe, or write it out.'; f.body.focus(); return; }
+      var text = ('[Holiday Guide recipe, ' + hx().label + '] ' + v('title') + '\nFrom: ' + v('name') + (v('site') ? ' (' + v('site') + ')' : '') +
+        (v('link') ? '\nLink: ' + v('link') : '') + (v('body') ? '\n\n' + v('body') : '')).slice(0, 3000);
+      var vid = ''; try { vid = localStorage.getItem('ve_visitor') || ''; } catch (x) {}
+      btn.disabled = true; msg.textContent = 'Sending...';
+      fetch(SB + '/functions/v1/ve-feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ page_url: location.origin + '/guides/holiday-guide#/' + hx().recipes, page_label: 'Holiday Guide: Recipes (' + hx().label + ')', kind: 'idea', message: text, email: v('email'), name: v('name'), visitor: vid, viewport: innerWidth + 'x' + innerHeight }) })
+        .then(function (r) { return r.json(); }).then(function (d) {
+          if (!d || !d.ok) throw d;
+          f.reset(); msg.textContent = 'Thank you. Your recipe is with our team.';
+        }).catch(function () { msg.textContent = 'That did not send. Try again in a minute.'; }).then(function () { btn.disabled = false; });
+    });
   }
 
   // ---------- At the store ----------
@@ -731,12 +776,14 @@
     STORE = STORE_SETS[h] || STORE_SETS.thanksliving;
     main.innerHTML = head('At the store', sh[0], sh[1]) +
       '<div class="hg-tools2"><div class="hg-search"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#525252" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
-      '<input type="search" id="hgSq" placeholder="Search brands and items..." aria-label="Search the store list" value="' + esc(SF.q) + '" autocomplete="off" data-dictate="off"></div></div>' +
+      '<input type="search" id="hgSq" placeholder="Search brands and items..." aria-label="Search the store list" value="' + esc(SF.q) + '" autocomplete="off" data-dictate="off"></div>' +
+      // The way to add to a page sits to the right of its search on every page (Sean, 2026-11-10), as Submit a Menu does.
+      '<button type="button" class="hg-subbtn" data-hg-open="hgSugPanel" aria-expanded="false" aria-controls="hgSugPanel">Suggest an Item</button></div>' +
+      '<div class="hg-submit" id="hgSugPanel" hidden>' + storeSuggest() + '</div>' +
       '<div class="hg-chips" role="group" aria-label="Shelves"><button type="button" class="hg-chip" data-hg-cat=""' + (Object.keys(SF.cats).length ? '' : ' aria-pressed="true"') + '>All</button>' +
-      STORE.map(function (g) { return '<button type="button" class="hg-chip" data-hg-cat="' + esc(g.h) + '" aria-pressed="' + (SF.cats[g.h] ? 'true' : 'false') + '"><img src="' + PIC + g.pic + '" alt="" width="40" height="40">' + esc(g.h) + '</button>'; }).join('') + '</div>' +
+      STORE.map(function (g) { return '<button type="button" class="hg-chip" data-hg-cat="' + esc(g.h) + '" aria-pressed="' + (SF.cats[g.h] ? 'true' : 'false') + '">' + shelfIcon(g.h) + esc(g.h) + '</button>'; }).join('') + '</div>' +
       '<div id="hgStoreList"></div>' +
       (sh[2] ? '<div class="hg-note">' + sh[2] + '</div>' : '') +
-      storeSuggest() +
       '<div class="dg-btns"><a class="dg-btn" href="#/' + hx().recipes + '">Or cook it yourself</a><a class="dg-btn dg-ghost" href="#/' + hx().menus + '">Order from a Vegan place</a></div>';
     drawStoreList();
     var q = document.getElementById('hgSq'), tq;
@@ -758,13 +805,27 @@
     var html = STORE.filter(function (g) { return !any || SF.cats[g.h]; }).map(function (g) {
       var items = g.items.filter(function (it) { var t = (it[0] + ' ' + it[1] + ' ' + it[3] + ' ' + g.h).toLowerCase(); return !words.some(function (w) { return t.indexOf(w) < 0; }); });
       if (!items.length) return '';
-      return '<section class="hg-shelf"><div class="hg-shelf-h"><img src="' + PIC + g.pic + '" alt="" loading="lazy" width="64" height="64"><h3>' + esc(g.h) + '</h3></div><div class="hg-prods">' +
+      // Each shelf reads like a section of a menu (Sean, 2026-11-10): a flat icon and the shelf's name, then the item, what it is,
+      // and the brand on the right, linked to its listing when we have one.
+      return '<section class="hg-shelf"><h3 class="hg-shelf-h">' + shelfIcon(g.h) + esc(g.h) + '</h3><div class="hg-mlist">' +
         items.map(function (it) {
-          var link = it[2] && BRANDS[it[2]] ? '<a href="/directory/' + encodeURIComponent(it[2]) + '">Their page</a>' : '';
-          return '<div class="hg-prod">' + brandLogo(it[2], it[0]) + '<div><small>' + esc(it[0]) + '</small><b>' + esc(it[1]) + '</b><p>' + esc(it[3]) + '</p>' + link + '</div></div>';
+          var brand = it[2] && BRANDS[it[2]] ? '<a href="/directory/' + encodeURIComponent(it[2]) + '">' + esc(it[0]) + '</a>' : esc(it[0]);
+          return '<div class="hg-mrow"><div><b>' + esc(it[1]) + '</b><p>' + esc(it[3]) + '</p></div><span class="hg-mbrand">' + brand + '</span></div>';
         }).join('') + '</div></section>';
     }).join('');
     box.innerHTML = html || '<div class="hg-empty"><h3>Nothing Matches</h3><p>Try fewer words or another shelf. Know one we are missing? Suggest it below.</p></div>';
+  }
+  // Flat icons for the shelves (Sean, 2026-11-10: the pictures read as brown squares at chip size).
+  var SHELF_ICON = {
+    'The Main': '<path d="M3 17h18"/><path d="M5 17a7 7 0 0 1 14 0"/><path d="M12 10V8"/><circle cx="12" cy="6.5" r="1.3"/><path d="M4 20h16"/>',
+    'Gravy and Stuffing': '<path d="M3 10h13l4.5-3"/><path d="M3 10c0 4.2 2.8 7 7 7h1.5c3.2 0 5.5-2.6 5.5-7"/><path d="M7 20h8"/>',
+    'Butter and Cream': '<rect x="3" y="10" width="18" height="7" rx="1.5"/><path d="M6 10V7.5h12V10"/><path d="M7 13.5h4"/>',
+    'Dessert': '<path d="M3 18L12 6l9 12z"/><path d="M5.6 14.5h12.8"/><path d="M3 18h18"/>',
+    'Nog': '<path d="M5 8h11v7a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5z"/><path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3.5v2M11 3.5v2M14 3.5v2"/>',
+    'Baking and Treats': '<circle cx="12" cy="12" r="8.5"/><circle cx="9" cy="9.5" r="1"/><circle cx="14.5" cy="9" r="1"/><circle cx="14" cy="14.5" r="1"/><circle cx="9.5" cy="14.5" r="1"/>'
+  };
+  function shelfIcon(h) {
+    return '<svg class="hg-sico" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (SHELF_ICON[h] || SHELF_ICON['The Main']) + '</svg>';
   }
   function storeSuggest() {
     return '<section class="hg-sug"><h3>Suggest an Item</h3><p>Found a plant-based roast, gravy or pie on a shelf near you that is not here? Tell us. Our team checks it, and the good ones go on the list for everyone.</p>' +
@@ -1167,6 +1228,11 @@
     if ((el = e.target.closest('[data-hg-menu]'))) {
       var key = el.getAttribute('data-hg-menu');
       if (openMenu(key)) { e.preventDefault(); history.pushState(null, '', '#/' + hx().menus + '/menu/' + encodeURIComponent(key)); }
+      return;
+    }
+    if ((el = e.target.closest('[data-hg-open]'))) {
+      var pn = document.getElementById(el.getAttribute('data-hg-open')), op = pn.hidden;
+      pn.hidden = !op; el.setAttribute('aria-expanded', String(op)); if (op) pn.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
       return;
     }
     if ((el = e.target.closest('#hgSubBtn'))) {
