@@ -18,8 +18,8 @@ const BAR = `<div class="bar"><div class="lg">${lan}</div><div class="t"><b>${IG
 const ov = title => `<div class="f"><div style="position:absolute;left:0;right:0;bottom:270px;height:700px;background:linear-gradient(0deg,rgba(0,0,0,.82),rgba(0,0,0,.45) 55%,transparent)"></div>
   <div class="tx" style="position:absolute;left:64px;right:64px;bottom:330px;color:#fff;font-size:92px;font-weight:900;line-height:1.04">${title}</div>${BAR}</div>`;
 const ovCover = `<div class="f"><div style="position:absolute;inset:0 0 270px 0;background:linear-gradient(180deg,rgba(0,0,0,.1),rgba(0,0,0,0) 40%,rgba(0,0,0,.6))"></div>
-  <div class="pc" style="left:170px;width:740px;top:110px;height:790px;transform:rotate(-2.5deg)"><img src="${img(FR + '/av.jpg')}"></div>
-  <div style="position:absolute;left:50px;right:50px;top:970px;text-align:center;color:#fff">
+  <div class="pc" style="left:170px;width:740px;top:190px;height:790px;transform:rotate(-2.5deg)"><img src="${img(FR + '/av.jpg')}"></div>
+  <div style="position:absolute;left:50px;right:50px;top:1050px;text-align:center;color:#fff">
     <div style="font-size:46px;font-weight:800;letter-spacing:.06em">MEET YOUR OFFICIAL</div>
     <div style="font-size:90px;font-weight:900;line-height:1.02;margin-top:8px;text-shadow:0 3px 10px rgba(0,0,0,.45)">VEGANS EXPLORE<br>CONTENT CREATOR</div>
     <div style="font-size:60px;font-weight:800;margin-top:26px">${IG}KJ (@keyz60)</div></div>${BAR}</div>`;

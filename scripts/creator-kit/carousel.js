@@ -32,21 +32,21 @@ const cover = `<div class="f" style="height:1350px;background:url(${BANNER}) cen
   ${bar('<b>Become a Member</b><span>Swipe to see why ›</span>')}</div>`;
 const SC = '/tmp/claude-0/-home-user/d2fb880b-f90e-58ab-8cdb-46b4bcdc6101/scratchpad/frames/scenes/';
 const S = [
-  [SC + 'b07-river-market.jpg', 'Every Vegan place, person and group', `Restaurants, bakeries, food trucks and the people behind them, in ${CITY}.`],
-  [SC + 'b10-market-walk.jpg', 'Your city has its own home', `${CITY}'s page: its places, events, Daily Pulse and Community Board.`],
-  [SC + 'b06-potluck.jpg', 'Something to do, near you', 'Meetups, pop-ups, festivals and dinners, every week.'],
-  [SC + 'b23-kai-studio.jpg', 'Shows worth your time', 'Our podcasts, films and books the community loves.'],
-  [SC + 'b50-maya-kai-river.jpg', 'Guides walk you through it', 'One topic at a time, and every Guide has a free part to try.'],
-  ['liz-points.jpg', 'Earn points by taking part', 'Check in, vote and share. You start with 250.'],
-  [SC + 'b39-nori-door.jpg', 'Everyone starts as an Explorer', 'Then find the path that fits what you do, and earn its badge.'],
-  [SC + 'b35-dani-cow.jpg', 'The reason we are all here', 'Find the nonprofits, rescues and sanctuaries near you.'],
+  [SC + 'b07-river-market.jpg', 'Every Vegan place,<br>person and group', `Restaurants, bakeries, food trucks and the people behind them, in ${CITY}.`],
+  [SC + 'b10-market-walk.jpg', 'Your city has<br>its own home', `${CITY}'s page: its places, events, Daily Pulse and Community Board.`],
+  [SC + 'b06-potluck.jpg', 'Something to do,<br>near you', 'Meetups, pop-ups, festivals and dinners, every week.'],
+  [SC + 'b23-kai-studio.jpg', 'Shows worth<br>your time', 'Our podcasts, films and books the community loves.'],
+  [SC + 'b50-maya-kai-river.jpg', 'Guides walk you<br>through it', 'One topic at a time, and every Guide has a free part to try.'],
+  ['liz-points.jpg', 'Earn points by<br>taking part', 'Check in, vote and share. You start with 250.'],
+  [SC + 'b39-nori-door.jpg', 'Everyone starts<br>as an Explorer', 'Then find the path that fits what you do, and earn its badge.'],
+  [SC + 'b35-dani-cow.jpg', 'The reason we<br>are all here', 'Find the nonprofits, rescues and sanctuaries near you.'],
 ];
-const closing = slide(SC + 'b44-celebrate.jpg', 'Become a Founding Member', 'Register by midnight Eastern on January 1, and Founding Member stays on your profile for good.',
+const closing = slide(SC + 'b44-celebrate.jpg', 'Become a<br>Founding Member', 'Register by midnight Eastern on January 1, and Founding Member stays on your profile for good.',
   `<b style="font-size:42px">${IG}${NAME} (${HANDLE})</b><span>Tap the link in my bio</span>`);
 const story = `<div class="f" style="height:1920px;background:url(${BANNER}) center/cover">
   <div style="position:absolute;inset:0 0 300px 0;background:linear-gradient(180deg,rgba(0,0,0,.1),rgba(0,0,0,0) 40%,rgba(0,0,0,.6))"></div>
-  <div class="pc" style="left:170px;width:740px;top:150px;height:810px;transform:rotate(-2.5deg)"><img src="${AVATAR}"></div>
-  <div style="position:absolute;left:50px;right:50px;top:1030px;text-align:center;color:#fff">
+  <div class="pc" style="left:170px;width:740px;top:230px;height:810px;transform:rotate(-2.5deg)"><img src="${AVATAR}"></div>
+  <div style="position:absolute;left:50px;right:50px;top:1110px;text-align:center;color:#fff">
     <div style="font-size:46px;font-weight:800;letter-spacing:.06em">MEET YOUR OFFICIAL</div>
     <div style="font-size:90px;font-weight:900;line-height:1.02;margin-top:8px;text-shadow:0 3px 10px rgba(0,0,0,.45)">VEGANS EXPLORE<br>CONTENT CREATOR</div>
     <div style="font-size:60px;font-weight:800;margin-top:26px">${IG}${NAME} (${HANDLE})</div></div>

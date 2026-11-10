@@ -15,3 +15,11 @@ No image model is needed after the creator's avatar exists; these render with Pl
 - Paths in the scripts point at a session scratchpad; set them to wherever the frames and scenes are.
 - Outputs for KJ: `vegan-media/media/people/keya-vegankween/kit/` (story, reel-kai-intro-v1.mp4) and Kai's line
   `vegan-media/media/kai/creator-welcome/kj-intro-v1.mp3`.
+
+## Locked as the template (Sean, 2026-11-10)
+
+"Yep, this is the template. I love it... you can just pop in a new person on there and the background match their city."
+- Every headline sits on two rows, broken by hand with `<br>` so no word hangs alone; reword a headline if it will not split evenly.
+- The bar: landscape logo v1 at 400 px (carousel), 420 px (story), 440 px (reel); the right side never wraps.
+- Story and the reel's cover shot: the postcard and words sit centered in the space above the bar.
+- Per creator: their GeekFon avatar (blank shirt), their city banner, name, handle and city. Everything else stays.
