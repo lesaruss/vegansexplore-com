@@ -43,3 +43,25 @@ never drawn by the image model, so every picture is a template.
 
 Clicks on their `/go/` link (bots left out), where the clicks came from, and the people who joined through it (`members.referred_by`)
 with the points it earned them. Today the clicks are counted and the sign-up credit works through `?ref=`; the dashboard view is not built yet.
+
+## The 10-slide carousel (draft for Sean, 2026-11-10; KJ is the prototype)
+
+Square or 4:5 slides that sell joining the community, ending on urgency and the creator's link. Only slides 1 and 10 change per creator
+(their GeekFon character in their city, their name and their link); slides 2 to 9 are the same for everyone, with their city's name dropped
+in, using Guide scenes we already have and demo screenshots stamped Sample. So a new creator costs one or two images, not ten.
+
+| # | Picture | Words |
+|---|---|---|
+| 1 | The creator in their city, in the burgundy (or their color) Vegans Explore long-sleeve | "Hi, I'm KJ. I'm an official Vegans Explore content creator in Philadelphia." |
+| 2 | The Guides together (Welcome Guide group scene) | "Vegans Explore is where Vegan Philadelphia comes together: places, people and events, all in one place." |
+| 3 | Directory cards (Sample) | "Find Vegan restaurants, bakeries, food trucks and more near you, and vote for your favorites." |
+| 4 | A community scene (potluck or market walk) | "Meet your people: groups, nonprofits, rescues and sanctuaries in your city." |
+| 5 | The Events page (Sample) | "See what is happening this week: meetups, pop-ups, festivals and dinners." |
+| 6 | A Guide with a member (Liz) | "Free Guides walk you through it, from your first week to running a Vegan business." |
+| 7 | The Daily Pulse (Sample) | "Your city's Vegan news, every day, in the Daily Pulse." |
+| 8 | Points and the dashboard (Sample) | "Earn points for checking in, voting and sharing. You start with 250." |
+| 9 | The countdown (Welcome Guide countdown scene) | "Founding Membership closes at midnight Eastern on January 1. Join before then and it stays on your profile for good." |
+| 10 | The creator waving, the portrait logo | "Join Vegans Explore. Tap the link in my bio." |
+
+Open: whether slide 10 says "free" (membership is free; Sean is not sold on putting it in the headline). Default: "free" stays off the
+headline and in slide 9's line only if Sean wants it.

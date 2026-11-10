@@ -177,7 +177,7 @@
       "destination": "/dashboard/center-console"
     },
     {
-      "source": "/dashboard/:tab(profile|directory|events|bounties|guide|campaigns|opportunities|pulse|guides|tools|communities|media|saves|depot|secret-shopper|levels|survey)",
+      "source": "/dashboard/:tab(profile|directory|events|bounties|guide|campaigns|opportunities|pulse|guides|tools|communities|media|saves|depot|secret-shopper|levels|survey|business|revenue|insights|for-you|depot-pages)",
       "destination": "/dashboard/center-console"
     },
     {

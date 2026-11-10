@@ -85,18 +85,18 @@ General (email, members, business, nonprofit, creator, Foodie Fest, explore). **
 > Hey, it's Sean. Vegans Explore is back, and I'm excited. On January 1 we launch, and I'd love for you to be one of our Founding Members.
 > Membership is free: take a short survey and you're in. If you run a business, claiming your listing is free too. Before you go, take a
 > minute with our Welcome Guide and see everything we're building. And as a thank-you, we made a free Holiday Guide. It's a mini website for
-> our community this season, with events, places to eat, recipes and gift ideas for ThanksLiving, Hanukkah and Christmas. Through 2027 we'll
+> our community this season, with events, restaurant holiday menus, gift ideas and recipes for ThanksLiving, Hanukkah and Christmas. Through 2027 we'll
 > cover the other holidays too. Check it out, and if you like it, share it. See you inside.
 
 Meetup (**draft, waiting for Sean**):
 > Hey, it's Sean. Thanks for being part of our Meetup. Vegans Explore is back, and on January 1 we launch. I'd love for you to be one of our
 > Founding Members, and it's free. Don't worry about events: we're bringing you a bunch of new ones, especially as we move into the new year,
 > and we're looking for people to help organize them. If that's you, tap Help us organize events and let us know. And as a thank-you, we made
-> a free Holiday Guide, with events, places to eat, recipes and gift ideas for ThanksLiving, Hanukkah and Christmas. See you soon.
+> a free Holiday Guide, with events, restaurant holiday menus, gift ideas and recipes for ThanksLiving, Hanukkah and Christmas. See you soon.
 
 Facebook (**draft, waiting for Sean**):
 > Hey, it's Sean. We're back! Vegans Explore launches on January 1, and I'd love for everyone in our group to be a Founding Member. It's
-> free. To say thank you, we made a free Holiday Guide, a gift for everybody: events, places to eat, recipes and gift ideas for ThanksLiving,
+> free. To say thank you, we made a free Holiday Guide, a gift for everybody: events, restaurant holiday menus, gift ideas and recipes for ThanksLiving,
 > Hanukkah and Christmas, with more holidays coming through 2027. Take a look, and if you like it, share it with a friend. See you inside.
 
 WhatsApp (**draft, waiting for Sean**):
@@ -108,31 +108,43 @@ WhatsApp (**draft, waiting for Sean**):
 Until a page's own note is recorded, that page plays the general note, and the words on the left are the general note's (they always match
 the recording); the page's own line sits above them.
 
-### 3. Meetup (one message per group, sent to members from the Meetup app; draft, waiting for Sean)
+### 3. Meetup (v2, Sean's notes 2026-11-10 8:10 AM: gift ideas before recipes; no hosting ask in the post, it lives on the Meetup page)
 
 > Hi everyone, it's Sean. Vegans Explore is back! We launch on January 1, and I'd love for every member of this group to be a Founding
-> Member. It's free. And not to worry about events: we're bringing you a bunch of new ones, especially as we move into the new year, and we're
-> looking for people to help us organize them. If that's you, let us know here: {link}
-> As a thank-you, we also made a free Holiday Guide for the season, with events, places to eat, recipes and gift ideas for ThanksLiving,
-> Hanukkah and Christmas. If you like it, share it with a friend. See you soon.
+> Member. It's free. And not to worry about events: we're bringing you a bunch of new ones, especially as we move into the new year.
+> As a thank-you, we made a free Holiday Guide for the season, with events, restaurant holiday menus, gift ideas and recipes for ThanksLiving,
+> Hanukkah and Christmas. Here's a quick note on how to get started and to open the Holiday Guide: {link}
+> If you like it, share it with a friend. See you soon.
 
-### 4. Facebook group (a post, pinned for the week; draft, waiting for Sean)
+The Meetup page (`/hello?b=meetup`) asks "Do you want to lead events with us?" with its own button and its own voice note (recorded v1).
 
-> We're back! 🎉 Vegans Explore launches on January 1, and we'd love for you to be one of our Founding Members. Membership is free.
+### 4. Facebook group (v2: "today", gift ideas before recipes, "a quick note on how to get started")
+
+> We're back! 🎉 Vegans Explore launches on January 1, and we'd love for you to be one of our Founding Members today. Membership is free.
 >
-> To say thank you, we made a free Holiday Guide, a gift for everybody: Vegan events, places to eat, recipes and gift ideas for ThanksLiving,
-> Hanukkah and Christmas, with more holidays coming through 2027.
+> To say thank you, we made a free Holiday Guide, a gift for everybody: Vegan events, restaurant holiday menus, gift ideas and recipes for
+> ThanksLiving, Hanukkah and Christmas, with more holidays coming through 2027.
 >
-> Hear a quick note from Sean and open the guide: {link}
+> Here's a quick note on how to get started and to open the Holiday Guide: {link}
 >
 > If you like it, share it. Tag a friend who needs it this season.
 
-### 5. WhatsApp (an announcement; draft, waiting for Sean)
+### 5. WhatsApp (v2: shorter, about the Holiday Guide)
 
-> Vegans Explore is back! 🌱 We've moved the community onto our own platform. We'll still post notes here now and then, but to stay locked in
-> with all the events, see the Directory of Vegan businesses and connect with our growing community in time for our January 1 launch, now's
-> your opportunity. Membership is free, and there's a free Holiday Guide waiting for you as a thank-you.
-> A quick note from Sean and the guide: {link}
+> Vegans Explore is back, and we've moved into a brand new community on our own platform. 🌱 To celebrate, we made a free Holiday
+> Guide: Vegan events, restaurant holiday menus, gift ideas and recipes for ThanksLiving, Hanukkah and Christmas.
+> Tap below to claim it and learn more about this exciting new chapter: {link}
+
+### 6. Instagram DM (cheat sheet, copy and paste; not salesy)
+
+> Hey {first name}! Hope your week's going well. We just put together a free Holiday Guide for the Vegan community: events, places to
+> eat, gift ideas and recipes for ThanksLiving, Hanukkah and Christmas. Thought of you. Want me to send you the link?
+
+(When they say yes, send their personal tracked link.)
+
+### 7. Instagram post line (comment-to-get-it; Sean answers by hand until ManyChat)
+
+> Want our free Holiday Guide? Comment HOLIDAY (or DM us HOLIDAY) and we'll send you the link. 🎁
 
 ## The work, in order
 

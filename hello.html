@@ -17,8 +17,8 @@
   <style>
     /* The Holiday Guide launch page (Sean, 2026-11-10, playbook ve-outreach-buckets, task holiday-launch-blast): "their landing page is
        just going to be me... almost the same design as the one we did for content creators". Parent: /invite (template gate). Sean's
-       still with a play button for his voice note (locked 2026-11-10: a still, not a video; nothing plays until pressed), his words on
-       the left, one line by audience (?b=), three doors: Founding Member, the Welcome Guide, the Holiday Guide. Every link we send is a
+       still with the play button on the picture itself (Sean, 2026-11-10: play and pause on the image; the video, when it comes, sits in the same 4:5 frame; nothing plays until pressed), his words on
+       the left, one line by audience (?b=), two doors: Become a Founding Member (opens the Welcome Guide) and the Holiday Guide; no Share (Sean: they would be sharing their invitation). Every link we send is a
        tracked /go/ link that lands here with its ?b=. */
 
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -56,7 +56,7 @@
     @media (max-width:900px){
       main{padding:28px 16px 64px;}
       .split{grid-template-columns:minmax(0,1fr);gap:28px;}
-      .media{aspect-ratio:16/11;max-height:none;order:-1;}
+      .media{max-height:none;order:-1;}
       .media img{object-position:50% 12%;}
     }
   
@@ -70,8 +70,14 @@
     .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(31,95,34,.35)}
     .btn-ghost:hover{border-color:var(--ve-green-deep)}
     .side{display:flex;flex-direction:column;align-self:start}
-    .side .media{max-height:calc(100vh - 250px);aspect-ratio:1/1}
-    @media (max-width:900px){.side .media{max-height:none;aspect-ratio:16/11}.side{order:-1}}
+    .side .media{position:relative;display:block;width:100%;padding:0;border:0;cursor:pointer;max-height:calc(100vh - 180px);aspect-ratio:4/5}
+    .pbtn{position:absolute;left:24px;bottom:24px;width:84px;height:84px;border-radius:50%;background:rgba(15,26,16,.62);color:#fff;display:grid;place-items:center;transition:opacity .2s,transform .2s;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+    .pbtn svg{width:38px;height:38px;margin-left:4px}
+    .media:hover .pbtn{transform:scale(1.06)}
+    .media[aria-pressed="true"] .pbtn{opacity:0}
+    .media[aria-pressed="true"]:hover .pbtn{opacity:1}
+    .media[aria-pressed="true"] .pbtn svg{margin-left:0}
+    @media (max-width:900px){.side .media{max-height:none;aspect-ratio:4/5}.side{order:-1}.pbtn{left:16px;bottom:16px;width:72px;height:72px}}
     .cta-row{margin-bottom:10px}
   </style>
 </head>
@@ -85,29 +91,23 @@
         <h1>We're back.</h1>
         <p class="reason" id="line" hidden></p>
         <div class="said" id="said">
-          <p>Hey, it's Sean. Vegans Explore is back, and I'm excited. On January 1 we launch, and I'd love for you to be one of our Founding Members. Membership is free: take a short survey and you're in. If you run a business, claiming your listing is free too.</p>
-          <p>Before you go, take a minute with our Welcome Guide and see everything we're building.</p>
-          <p>And as a thank-you, we made a free Holiday Guide. It's a mini website for our community this season, with events, places to eat, recipes and gift ideas for ThanksLiving, Hanukkah and Christmas. Through 2027 we'll cover the other holidays too.</p>
+          <p>Hey, it's Sean. Vegans Explore is back. We officially launch on January 1, but we're already up and running, and I'd love for you to be one of our Founding Members. It's free.</p>
+          <p>As a thank-you, we made a free Holiday Guide: events, restaurant holiday menus, gift ideas and recipes for ThanksLiving, Hanukkah and Christmas.</p>
           <p>Check it out, and if you like it, share it. See you inside.</p>
         </div>
         <div class="cta-row">
-          <a class="btn btn-primary" id="join" href="/survey?s=explorer">Become a Founding Member, free</a>
+          <a class="btn btn-primary" id="join" href="/passport?guide=welcome&amp;from=hello">Become a Founding Member, free</a>
           <a class="btn btn-ghost" href="/guides/holiday-guide?from=hello">Open the free Holiday Guide</a>
-        </div>
-        <div class="cta-row">
-          <a class="btn btn-ghost" href="/passport?guide=welcome&amp;from=hello">Take the Welcome tour</a>
-          <a class="btn btn-ghost" id="lead" href="/paths#path-group" hidden>Help us organize events</a>
           <a class="btn btn-ghost" id="reset" href="/forgot-password" hidden>Reset your password</a>
-          <span id="share-host"></span>
+          <a class="btn btn-ghost" id="lead" href="/paths#path-group" hidden>Lead events with us</a>
         </div>
         <p class="fine" id="fine">Founding Membership closes at midnight Eastern on January 1, 2027.</p>
       </div>
       <div class="side">
-        <div class="media"><img src="/public/founder/sean-square.jpg" alt="Sean A. Russell waving hello in a Vegans Explore tee"></div>
-        <div class="note">
-          <button type="button" class="play" id="play" aria-pressed="false"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path id="play-ic" d="M8 5v14l11-7z"/></svg><span id="play-t">Play Sean's note</span></button>
-          <small id="play-len">Under a minute</small>
-        </div>
+        <button type="button" class="media" id="play" aria-pressed="false" aria-label="Play Sean's note">
+          <img src="/public/founder/sean-square.jpg" alt="Sean A. Russell waving hello in a Vegans Explore tee">
+          <span class="pbtn" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path id="play-ic" d="M8 5v14l11-7z"/></svg></span>
+        </button>
         <audio id="audio" preload="none"></audio>
       </div>
     </section>
@@ -116,7 +116,7 @@
   <script>
   (function () {
     // One line by audience, and the note each one hears (a different note per page where Sean records one; general until then).
-    var GENERAL = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/hello/sean-general-v2.mp3';
+    var GENERAL = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/hello/sean-general-v6.mp3';
     var B = {
       members: { line: "You're already in. Thank you. Now help us spread the word: share the Holiday Guide with everyone you know.", join: ['Go to your dashboard', '/dashboard'] },
       business: { line: 'If you run a Vegan business, claiming your listing is free for members.' },
@@ -124,12 +124,15 @@
       creator: { line: "If you create content, we're registering official Vegans Explore creators. Join, then pick the Creator path." },
       'foodie-fest': { line: 'We met at Vegan Foodie Fest Miami, and we kept building.' },
       explore: { line: '' },
-      meetup: { line: "Thanks for being part of our Meetup. We're bringing you a bunch of new events, especially into the new year, and we're looking for people to help organize them.", lead: true },
+      meetup: { line: "Thanks for being part of our Meetup. We're bringing you a bunch of new events into the new year. Do you want to lead events with us?", lead: true,
+        audio: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/hello/sean-meetup-v4.mp3',
+        said: ["Hey, it's Sean. Thanks for being part of our Meetup. Vegans Explore is back. We officially launch on January 1, but we're already up and running, and I'd love for you to be one of our Founding Members. It's free.",
+          "As a thank-you, we made a free Holiday Guide: events, restaurant holiday menus, gift ideas and recipes for ThanksLiving, Hanukkah and Christmas. See you soon."] },
       facebook: { line: 'Thanks for being part of our Facebook group. The Holiday Guide is our gift to everybody.' },
       // People who made an account before (Sean, 2026-11-10: "factor in that they don't know their login... give them a process to... reset
       // their password"). Sign in goes first; the reset is one tap away.
       registered: { line: "You already have an account with us, so you're one step from your dashboard. Don't remember your password? Tap Reset your password and we'll email you a link in a minute.", join: ['Sign in to your account', '/login'], reset: true },
-      whatsapp: { line: "We've moved the community onto our platform. To stay locked in with every event, the Directory and the people, join before our January 1 launch." }
+      whatsapp: { line: "We've moved into a brand new community on our own platform. To celebrate, the Holiday Guide is yours, free." }
     };
     var b = (new URLSearchParams(location.search).get('b') || '').toLowerCase();
     var cfg = B[b] || B.explore;
@@ -138,19 +141,17 @@
     if (cfg.join) { $('join').textContent = cfg.join[0]; $('join').href = cfg.join[1]; }
     if (cfg.lead) $('lead').hidden = false;
     if (cfg.reset) $('reset').hidden = false;
+    if (cfg.said) $('said').innerHTML = cfg.said.map(function (t) { return '<p>' + t.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</p>'; }).join('');
     var a = $('audio'); a.src = cfg.audio || GENERAL;
     function setPlaying(on) {
       $('play').setAttribute('aria-pressed', on ? 'true' : 'false');
-      $('play-t').textContent = on ? 'Pause' : (a.currentTime > 0 && !a.ended ? 'Keep listening' : "Play Sean's note");
+      $('play').setAttribute('aria-label', on ? "Pause Sean's note" : "Play Sean's note");
       $('play-ic').setAttribute('d', on ? 'M6 5h4v14H6zM14 5h4v14h-4z' : 'M8 5v14l11-7z');
     }
     $('play').addEventListener('click', function () { if (a.paused) { a.play().catch(function () {}); } else { a.pause(); } });
     a.addEventListener('play', function () { setPlaying(true); });
     a.addEventListener('pause', function () { setPlaying(false); });
     a.addEventListener('ended', function () { a.currentTime = 0; setPlaying(false); });
-    a.addEventListener('loadedmetadata', function () { if (isFinite(a.duration)) $('play-len').textContent = Math.round(a.duration) + ' seconds'; });
-    function share() { if (!window.VEShare) return false; var h = $('share-host'); h.innerHTML = window.VEShare.button('btn btn-ghost'); var el = h.firstElementChild; if (el) window.VEShare.wire(el); return true; }
-    if (!share()) { var n = 0, t = setInterval(function () { if (share() || ++n > 40) clearInterval(t); }, 150); }
   })();
   </script>
   <script src="/public/footer.js"></script>

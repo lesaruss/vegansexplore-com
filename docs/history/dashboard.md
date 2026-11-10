@@ -160,6 +160,21 @@ and Done). They share the database; LESARUSS.ai's own Depot is to be set up the 
   **Copy link** beside the breadcrumb copies the public `/directory/<slug>`, and the address opened signed out goes straight to
   the public listing (`listingSlugFromPath` in center-console). The public Directory already opens `/directory/<slug>`.
 
+**Recent activity first, everything else as tiles** (Sean, 2026-11-10: the dashboard is "very jumbled"; Recent activity is what he uses
+most; Your business "I don't need it to be as big and to the top like that"). Mock `/mocks/dashboard` (6 slides), then "Let's go ahead and
+approve it. I want to see what it looks like live, and then if we need to make adjustments, we'll make adjustments." Live from commits ab739e14
+and e2de9507 (`dashTilesLayout`, `dashApplyView` in `dashboard/center-console.html`; `dashLayout` was already a name there, the saved module
+layout). **Super admins**: the banner, then **Recent activity** (moved up at run time, four boxes across, three under 1200 px, two under 1000;
+on phones one box at a time, picked from a row of box names, `dashRecentChips`, the pick kept in `sessionStorage` `ve_dash_recent_pick`),
+then **Your tiles**, one grid of same-size tiles: Your business (its logos and the listing with the fewest checks passed), Revenue (this month),
+Insights (visitors, 30 days), the Your role row's three tiles moved in as they are (Platform health, Submissions, This week), For you (how many,
+and the first) and The Depot (your most used page). **A tile opens its own view** under Dashboard &rsaquo;: `/dashboard/business`, `/revenue`,
+`/insights`, `/for-you`, `/depot-pages` (rewrite in `vercel.json`), showing the block that used to sit on the page, unchanged; Back returns to
+the dashboard. **A member who owns a listing**: Your business as a tile beside Your numbers' three tiles; For you and the Leaderboard stay as
+they were. Everyone else: unchanged. No section use is counted anywhere (only the Depot's browser counter), so the order is from Sean's words
+and the measured page. Measured as Sean before and after: at 1440, Recent activity from 2,074 px down to 172, the page from 3,883 px to 1,504;
+at 390, from 4,840 px to 214, the page from 8,112 to 1,575.
+
 ## Sign In As: switch into another account (Sean, 2026-10-26)
 
 "The same way I do view as, I want to have that option to choose from the super admin... so I can log in and see that
