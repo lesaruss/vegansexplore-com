@@ -23,3 +23,12 @@ vegansexplore.com/go/holiday-david-sfv
 Feel free to share it with the group if it''s useful. Happy ThanksLiving!',
 note = 'Organizer of South Florida Vegans (Facebook group). First outreach: he posted on his group''s board asking for something like this; we have not talked about the Guide. Clicks from his link count under holiday-david-sfv.'
 where program_slug = 'holiday-launch-2026' and handle = 'David Schwartzberg';
+
+-- Sean, 2026-11-10: "He knows who I am. I don't have to introduce myself... just go, hey David... I saw your post."
+update ve_campaign_dms set opener =
+'Hey David! I saw your post on South Florida Vegans and thought this might help: we just put out a free Holiday Guide with recipes for the whole table, plant-based roasts at the store, holiday menus near you, and ways to give back this season.
+
+vegansexplore.com/go/holiday-david-sfv
+
+Feel free to share it with the group if it''s useful. Happy ThanksLiving!'
+where program_slug = 'holiday-launch-2026' and handle = 'David Schwartzberg';
