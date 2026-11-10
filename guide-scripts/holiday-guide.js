@@ -69,12 +69,12 @@
     { k: 'hanukkah', label: 'Hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hanukkah.jpg', say: 'Hanukkah starts at sundown on December fourth, eight nights of light. On this page are a few easy ideas for a plant-based Hanukkah: latkes, sufganiyot and the people around the menorah.' },
     { k: 'hk-ideas', parent: 'hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hanukkah.jpg', label: 'Ideas', say: 'A few easy ideas for a plant-based Hanukkah: something fried, the candles with the people you love, eight nights of kindness, and gifts that do no harm.' },
     { k: 'hk-recipes', parent: 'hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hanukkah.jpg', label: 'Recipes', say: 'Here is a plant-based Hanukkah table you can make at home: crispy latkes with a cashew sour cream, applesauce, carrot tzimmes and jelly doughnuts.' },
-    { k: 'hk-kosher', parent: 'hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hanukkah.jpg', label: 'Kosher Places', say: 'Keeping kosher this Hanukkah? These Vegan and plant-based places describe themselves as kosher or kosher certified. Ask each one about its certification before you go.' },
+    { k: 'hk-kosher', parent: 'hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hk-kosher.jpg', label: 'Kosher Places', say: 'Keeping kosher this Hanukkah? These Vegan and plant-based places describe themselves as kosher or kosher certified. Ask each one about its certification before you go.' },
     { k: 'hk-menus', parent: 'hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hanukkah.jpg', label: 'Holiday Menus', say: 'Rather order in? Pick your chapter and see which Vegan places are cooking for Hanukkah. Our team checks every menu before it shows.' },
     { k: 'hk-events', parent: 'hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hanukkah.jpg', label: 'Events', say: 'Looking for a latke night or a party near you? Here are the Hanukkah events on our calendar. Hosting one? Add it, so people can find you.' },
     { k: 'christmas', label: 'Christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', say: 'Christmas, the plant-based way. On this page are a few easy ideas: a centerpiece for the table, cookies to share, and gifts that do no harm.' },
-    { k: 'xm-gifts', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Gift Guide', say: 'Shopping for a Vegan, or for anyone? Here are gifts our team picked. Save the ones you love to your wish list and share it with your family.' },
-    { k: 'xm-wish', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Holiday Wish List', say: 'Not sure what to give the Vegan in your life? Start with the Most Wanted shelf. Making a list? Add what you are wishing for and share it with your family.' },
+    { k: 'xm-gifts', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-xm-gifts.jpg', label: 'Gift Guide', say: 'Shopping for a Vegan, or for anyone? Here are gifts our team picked. Save the ones you love to your wish list and share it with your family.' },
+    { k: 'xm-wish', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-xm-wish.jpg', label: 'Holiday Wish List', say: 'Not sure what to give the Vegan in your life? Start with the Most Wanted shelf. Making a list? Add what you are wishing for and share it with your family.' },
     { k: 'xm-recipes', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Recipes', say: 'Cooking Christmas dinner? Here is a mushroom Wellington for the middle of the table, maple Brussels sprouts, a creamy nog and gingerbread cookies.' },
     { k: 'xm-store', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'At the Store', say: 'Short on time? Here are the plant-based roasts, nogs, butters and treats you can pick up this season. Stock changes by store, so check before you go.' },
     { k: 'xm-menus', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Holiday Menus', say: 'Don\'t want to cook Christmas dinner? Pick your chapter and see which Vegan places are cooking for the holiday and when to order by.' },
@@ -96,8 +96,9 @@
   var VFILE = { ideas: 'thanksliving', 'hk-ideas': 'hanukkah', 'xm-ideas': 'christmas' };
   var VIDEO = { overview: 'v1', thanksliving: 'v1', ideas: 'v1', 'hk-ideas': 'v1', 'xm-ideas': 'v1', recipes: 'v2', store: 'v2', menus: 'v3', events: 'v2', listen: 'v2', giveback: 'v1', business: 'v2',
     hanukkah: 'v1', 'hk-recipes': 'v1', 'hk-menus': 'v1', 'hk-events': 'v1', christmas: 'v1', 'xm-recipes': 'v1', 'xm-store': 'v1', 'xm-menus': 'v1', 'xm-events': 'v1',
-    // Recorded 2026-11-10 (Sean: "Those look good, go ahead and record them"): stt matched word for word.
-    'xm-gifts': 'v1', 'xm-wish': 'v1', 'hk-kosher': 'v1' };
+    // Recorded 2026-11-10 (Sean: "Those look good, go ahead and record them"): stt matched word for word. v2: each page has its own
+    // Theo (Sean: "I don't want to see him looking the same in each of the videos... each page... shouldn't be the same image").
+    'xm-gifts': 'v2', 'xm-wish': 'v2', 'hk-kosher': 'v2' };
   var RULE_ICON = [
     '<path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.1 4.3 2.4.7-1.3 2.2-2.4 4.3-2.4 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/>',
     '<path d="M3 11h18M5 11a7 5 0 0114 0M12 4v2M4 15h16l-1.5 4h-13z"/>',
