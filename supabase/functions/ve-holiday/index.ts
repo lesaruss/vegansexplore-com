@@ -169,13 +169,29 @@ Deno.serve(async (req) => {
     return json({ ok: true, menus: rows, tips });
   }
   // The Holiday Wish List (Sean, 2026-11-10): the public shelves show only what the team approved.
+  // Gift Guide gifts a member saved: Save is how a gift joins their wish list (Sean, 2026-11-10: "if they save it, it goes to the wish
+  // list"), the buy link first (the brand's page, else our Amazon link).
+  const savedGifts = async (mid: string, hs: string) => {
+    const { data: sv } = await db.from('ve_holiday_gift_plus').select('gift_id, created_at').eq('member_id', mid).order('created_at').limit(200);
+    const ids = (sv || []).map((x) => x.gift_id);
+    if (!ids.length) return [] as any[];
+    const { data: gs } = await db.from('ve_holiday_gifts').select('id, title, brand, link, amazon_link, image_url').in('id', ids).eq('holiday_slug', hs).eq('status', 'live');
+    const G = Object.fromEntries((gs || []).map((g: any) => [g.id, g]));
+    return ids.map((id) => G[id]).filter(Boolean).map((g: any) => ({ gift_id: g.id, title: g.title, link: g.link || g.amazon_link || null, note: g.brand || null, image_url: g.image_url }));
+  };
   if (action === 'wishes') {
     const hs = String(b.holiday || 'christmas');
     if (!SLUG.test(hs)) return json({ error: 'bad_holiday' }, 400);
     const { data } = await db.from('ve_holiday_wishes').select('id, kind, title, link, note, reviewed_at').eq('holiday_slug', hs).eq('status', 'live').order('reviewed_at', { ascending: false }).limit(500);
     const rows = data || [];
-    const tally: Record<string, { title: string; link: string | null; note: string | null; n: number }> = {};
+    const tally: Record<string, { title: string; link: string | null; note: string | null; n: number; image_url?: string | null }> = {};
     for (const w of rows) { const k = wishKey(w as any); if (!tally[k]) tally[k] = { title: w.title, link: w.link, note: w.note, n: 0 }; tally[k].n++; }
+    // Saves on Gift Guide gifts count toward Most Wanted too: every save is a wish (2026-11-10).
+    const { data: gl } = await db.from('ve_holiday_gifts').select('id, title, brand, link, amazon_link, image_url').eq('holiday_slug', hs).eq('status', 'live').limit(300);
+    const gids = (gl || []).map((g) => g.id);
+    const { data: pl } = gids.length ? await db.from('ve_holiday_gift_plus').select('gift_id').in('gift_id', gids) : { data: [] as any[] };
+    const pn: Record<string, number> = {}; for (const x of pl || []) pn[x.gift_id] = (pn[x.gift_id] || 0) + 1;
+    for (const g of gl || []) { if (!pn[g.id]) continue; const k = 'g:' + g.id; tally[k] = { title: g.title, link: g.link || g.amazon_link || null, note: g.brand || null, n: pn[g.id], image_url: g.image_url || null }; }
     const most = Object.values(tally).sort((x, y) => y.n - x.n || x.title.localeCompare(y.title)).slice(0, 12);
     return json({ ok: true, gifts: rows.filter((w) => w.kind === 'gift').slice(0, 60), most_wanted: most });
   }
@@ -201,7 +217,8 @@ Deno.serve(async (req) => {
     const { data: who } = await db.from('members').select('id, name').eq('referral_code', code).maybeSingle();
     if (!who) return json({ error: 'not_found' }, 404);
     const { data } = await db.from('ve_holiday_wishes').select('id, title, link, note').eq('holiday_slug', hs).eq('member_id', who.id).eq('kind', 'wish').in('status', ['pending', 'live']).order('created_at').limit(100);
-    return json({ ok: true, first_name: String(who.name || '').trim().split(/\s+/)[0] || 'A friend', items: data || [] });
+    const saved = await savedGifts(who.id, hs);
+    return json({ ok: true, first_name: String(who.name || '').trim().split(/\s+/)[0] || 'A friend', items: [...saved, ...(data || [])] });
   }
 
   // ---- Signed in ----
@@ -373,7 +390,11 @@ Deno.serve(async (req) => {
         if ((count || 0) >= WISHES_A_DAY) return json({ error: 'rate_limited' }, 429);
       }
       const now = new Date().toISOString();
+      // A gift suggested from the Gift Guide can name its brand, say it is theirs, and answer the giveaway soft ask (2026-11-10).
+      const gift = kind === 'gift', owner = gift && b.brand_owner === true;
+      const giveaway = owner && (b.giveaway === 'yes' || b.giveaway === 'no') ? b.giveaway : null;
       const { data: saved, error } = await db.from('ve_holiday_wishes').insert({ holiday_slug: hs, member_id: me, kind, title, link, note: clean(b.note, 300) || null,
+        brand: gift ? clean(b.brand, 120) || null : null, brand_owner: owner, giveaway, giveaway_note: giveaway === 'yes' ? clean(b.giveaway_note, 300) || null : null,
         status: admin ? 'live' : 'pending', reviewed_by: admin ? me : null, reviewed_at: admin ? now : null }).select('id, status').single();
       if (error || !saved) return json({ error: 'save_failed' }, 500);
       return json({ ok: true, id: saved.id, status: saved.status });
@@ -382,7 +403,7 @@ Deno.serve(async (req) => {
       db.from('ve_holiday_wishes').select('id, kind, title, link, note, status, created_at').eq('holiday_slug', hs).eq('member_id', me).neq('status', 'removed').order('created_at').limit(200),
       db.from('members').select('referral_code').eq('id', me).maybeSingle(),
     ]);
-    return json({ ok: true, items: rows || [], code: who?.referral_code || null });
+    return json({ ok: true, items: rows || [], saved: await savedGifts(me, hs), code: who?.referral_code || null });
   }
 
   if (action === 'tip') {

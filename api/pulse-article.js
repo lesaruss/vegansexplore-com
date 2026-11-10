@@ -268,7 +268,8 @@ module.exports = async (req, res) => {
     playerIsRow = useRow;
     epHtml = (playerIsRow ? '<div class="vep-dock" data-vep-always></div><div id="ep-player" class="ep-player" data-show="' + esc(show.slug) + '" data-guid="' + esc(feedEp.guid) + '">' : '')
       + '<div class="ep-card">'
-      + (art ? pic(art, 256, ' class="ep-art" width="96" height="96"') : '')
+      // The show's art opens its Directory page, like every logo (Sean, 2026-11-10).
+      + (art ? '<a href="' + showUrl + '" aria-label="' + esc(show.name) + '">' + pic(art, 256, ' class="ep-art" width="96" height="96"') + '</a>' : '')
       + '<div class="ep-body"><a class="ep-show" href="' + showUrl + '">' + esc(show.name) + '</a>'
       + '<div class="ep-meta">' + meta + '</div>'
       + '<div class="ep-links"><a class="ep-btn ep-btn-go" href="' + epUrl + '">' + (!playerIsRow && (post.youtubeId || !feedEp) ? 'Listen on the show page' : 'Open on the show page') + '</a>'

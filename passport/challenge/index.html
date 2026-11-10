@@ -198,6 +198,7 @@
         $('stops').innerHTML = state.stops.length ? state.stops.map(function (s) {
           var st = stamps[s.id];
           var logo = s.logo_url ? '<img class="stop-logo" src="' + esc(s.logo_url) + '" alt="">' : '<div class="stop-logo" style="background:' + esc(s.color || '#3A9B3E') + '">' + esc((s.name || 'V').charAt(0)) + '</div>';
+          if (s.slug) logo = '<a href="/directory/' + encodeURIComponent(s.slug) + '" aria-label="' + esc(s.name) + '" style="display:contents">' + logo + '</a>';
           return '<div class="stop ' + (st === 'stamped' ? 'done' : st === 'pending' ? 'pending' : '') + '">' + logo + '<div>' +
             '<b><a href="/directory/' + esc(s.slug) + '">' + esc(s.name) + '</a></b>' +
             '<div class="muted">' + esc(s.address || '') + '</div>' +

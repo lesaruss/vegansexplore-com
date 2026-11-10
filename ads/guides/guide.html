@@ -33,6 +33,8 @@
   /* A short or wide slot (300 x 250, a phone's full-width box): no line, a tighter card. */
   @media (min-aspect-ratio:4/5){ .c{padding:12px 14px} p{display:none} .h{height:24px;margin-bottom:8px} .h b{font-size:18px} em{padding:9px 10px} }
   @media (max-height:200px){ small{display:none} }
+  /* A narrow skyscraper (160 wide): the headline wraps to two lines instead of being cut off (Sean, 2026-11-10). */
+  @media (max-width:220px) and (max-aspect-ratio:4/5){ .h{display:grid;height:auto} .h b{position:static;grid-area:1/1;white-space:normal;font-size:16px;line-height:1.25} }
   @media (prefers-reduced-motion:reduce){ .f,.h b{animation:none} .f:first-child,.h b:first-child{opacity:1} }
 </style>
 </head>
