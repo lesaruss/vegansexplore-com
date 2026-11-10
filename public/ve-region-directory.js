@@ -60,6 +60,9 @@
     // and saves work the same. Keep PEOPLE_CATS below, SECTIONS in ve-listing-admin.js and PEOPLE in directory/listing.html in step.
     'Activists': 'people', 'Content Creators': 'people', 'Athletes': 'people', 'Physicians': 'people', 'Health Experts': 'people',
     'Chefs': 'people', 'Founders': 'people', 'Promoters': 'people',
+    // Travel (Sean, 2026-11-10: "find some vegan cruises and cruise liners that are strong vegan options... great to have when we're
+    // reaching out to the tourism bureaus"): Cruises first (Vegan sailings and cruise lines with strong Vegan options). Sold anywhere, no location.
+    'Cruises': 'travel',
     'Uncategorized': 'hidden'
   };
 
@@ -82,6 +85,9 @@
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><circle cx="12" cy="12" r="10"></circle><line x1="2" x2="22" y1="12" y2="12"></line><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"></path></svg>',
       // Groups (Sean, 2026-10-29): social clubs and meetup groups; a group's page lists the events it hosts (events.host_listing_id).
       subcats: ['Nonprofits', 'Rescues', 'Sanctuaries', 'Groups', 'Events'] },
+    { key: 'travel', label: 'Travel', hasVF: false,
+      icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M2 20c2 1 4 1 6 0s4-1 6 0 4 1 6 0"></path><path d="M4 16l-1-5h18l-2 5"></path><path d="M7 11V7h10v4"></path><path d="M12 3v4"></path></svg>',
+      subcats: ['Cruises'] },
     // People. Open to everyone since Sean launched it (2026-10-28: "launch the people directory").
     { key: 'people', label: 'People', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 00-3-3.87"></path><path d="M16 3.13a4 4 0 010 7.75"></path></svg>',
@@ -1030,7 +1036,7 @@
   // The media section has no location filter on any of its pills, All included.
   function subFiltersFor(panel, sub) {
     var sf = SUB_FILTERS[sub] || {};
-    if (panel && (panel.id === 'board-media' || panel.id === 'board-people') && sf.geo !== false) return Object.assign({ geo: false }, sf);
+    if (panel && (panel.id === 'board-media' || panel.id === 'board-people' || panel.id === 'board-travel') && sf.geo !== false) return Object.assign({ geo: false }, sf);
     // Products is sold anywhere: no location until Sells at asks for Near me or Markets & events (canon-ve-local-food-products).
     var c = panel && CAT_CONFIG.filter(function (x) { return 'board-' + x.key === panel.id; })[0];
     if (c && c.everywhere) return Object.assign({ geo: false, sells: true }, sf);
