@@ -129,22 +129,24 @@
 
   // The Overview (Sean, 2026-11-09): Getting started (how to use the page: watch Liz's tour in her frame, read on, join), then every section as a
   // short article, read like the Pulse: a small picture, the title, about 250 characters, Read more. The sub-sections live on each section's page.
+  // About 150 characters each (Sean, 2026-11-10: "condense it so it's like 150 characters. They can get more when they read more").
   var SUMMARY = {
-    directory: 'One search box finds any place, person or answer. The Directory lists Vegan places to eat and shop, products, services, groups and people, city by city, and member votes decide who leads each list.',
-    city: 'Every chapter has its own home: a Daily Pulse each morning with the local news, boards for jobs, fosters and rescues, its events on one calendar, and its most voted places to eat and shop.',
-    events: 'Festivals, potlucks, meetups and sanctuary days, near you and around the world, on one calendar. Open one for the details and its official page, or submit your own from a flyer or a link.',
-    media: 'Our own shows, plus the podcasts, films and books the community votes to the top. Press Play and listen right on the page, then vote up what is worth everyone\'s time.',
-    guides: 'Mini websites on one topic each, walked through by one of our Guides. Work Guides are free with a short survey, topic Guides are $11 or 1,100 points, and each one has a free part to try first.',
-    points: 'Earn points by taking part, never by buying them: the survey, check-ins and bounties. Spend them to open Guides, give them to the places you love, and level up as you go.',
-    paths: 'Everyone starts as an Explorer. Run a restaurant, host events, make content or run a nonprofit? Each path has its own Guide, its own short survey and its own badge, and you can take as many as fit.',
-    better: 'The part that matters most. Use the Feedback button on any page, ask your Guide, or tell us a place we are missing. We read all of it and build from it every day.',
-    animals: 'The reason we are all here. Find the rescues, sanctuaries and nonprofits near you, support them on their own sites, and read For the animals in every morning\'s Daily Pulse.',
-    founder: 'A few quick questions, about two minutes, and you are in, free, with 250 points and your own dashboard.' + (OPEN ? ' Join before January 1, 2027 to be a Founding Member.' : '')
+    directory: 'One search box finds any place, person or answer. The Directory lists Vegan places, products, groups and people, ranked by member votes.',
+    city: 'Every chapter has its own home: a Daily Pulse each morning, boards for jobs, fosters and rescues, its events and its most voted places.',
+    events: 'Festivals, potlucks, meetups and sanctuary days near you and around the world. Find one, or submit your own from a flyer or a link.',
+    media: 'Our own shows, plus the podcasts, films and books the community votes to the top. Press Play and listen right on the page.',
+    guides: 'Mini websites on one topic each, walked through by our Guides. Each has a free part to try; topic Guides are $11 or 1,100 points.',
+    points: 'Earn points by taking part, never by buying them. Spend them on Guides, give them to the places you love, and level up as you go.',
+    paths: 'Everyone starts as an Explorer. Run a restaurant, host events, make content or run a nonprofit? Each path has its own Guide and badge.',
+    better: 'The part that matters most. Use the Feedback button on any page or ask your Guide. We read all of it and build from it every day.',
+    animals: 'The reason we are all here. Find the rescues, sanctuaries and nonprofits near you, and support the causes you care about.',
+    founder: 'A few quick questions, about two minutes, and you are in, free, with 250 points.' + (OPEN ? ' Founding Membership closes January 1, 2027.' : '')
   };
   function gettingStarted() {
+    // One blurb, about 250 characters (Sean, 2026-11-10: "I don't like the three sections... just make it a 250 character blurb").
     var ps = member()
-      ? ['<b>Welcome back.</b> Everything is open to you now.', '<b>Watch the tour</b> any time: press Play the tour and Liz walks you through all of it in about three minutes.', '<b>Go deeper:</b> each part of Vegans Explore is below in a few lines. Read more on any one for how to use it today.']
-      : ['<b>Watch the tour.</b> Press Play the tour and Liz walks you through all of Vegans Explore in about three minutes.', '<b>Go deeper.</b> Each part is below in a few lines. Read more on any one for how to use it today.', '<b>Ready?</b> Become a Founder: free, about two minutes, with 250 points.'];
+      ? ['<b>Welcome back.</b> Everything is open to you now. Press Play the tour any time and Liz walks you through Vegans Explore in about three minutes, or read on: every part is below, and Read more shows how to use it today.']
+      : ['<b>Vegans Explore is your Vegan world in one place:</b> places to eat and shop, your city, events, shows and Guides. Press Play the tour and Liz walks you through it in about three minutes, or read on. Joining is free, with 250 points.'];
     return '<section class="wg-gs" aria-label="Getting started"><span class="wg-gs-pic"><img src="' + pic('welcome-ensemble.jpg') + '" alt="" decoding="async" width="640" height="640"></span>' +
       '<div class="wg-gs-b"><div class="vgi-k">Getting started</div><h3 class="wg-gs-t">How to use this page</h3>' + ps.map(function (x) { return '<p>' + x + '</p>'; }).join('') +
       '<div class="wg-gs-btns"><button type="button" class="dg-btn" data-wg-tour>&#9654; Play the tour</button>' + (member() ? '' : '<a class="dg-btn dg-ghost" href="#/founder">Become a Founder</a>') + '</div></div></section>';
