@@ -96,7 +96,9 @@
   // The ideas pages moved under each holiday's Overview (2026-11-10) and keep the video files made for them (VFILE).
   var VFILE = { ideas: 'thanksliving', 'hk-ideas': 'hanukkah', 'xm-ideas': 'christmas' };
   var VIDEO = { overview: 'v1', thanksliving: 'v1', ideas: 'v1', 'hk-ideas': 'v1', 'xm-ideas': 'v1', recipes: 'v2', store: 'v2', menus: 'v3', events: 'v2', listen: 'v2', giveback: 'v1', business: 'v2',
-    hanukkah: 'v1', 'hk-recipes': 'v1', 'hk-menus': 'v1', 'hk-events': 'v1', christmas: 'v1', 'xm-recipes': 'v1', 'xm-store': 'v1', 'xm-menus': 'v1', 'xm-events': 'v1' };
+    hanukkah: 'v1', 'hk-recipes': 'v1', 'hk-menus': 'v1', 'hk-events': 'v1', christmas: 'v1', 'xm-recipes': 'v1', 'xm-store': 'v1', 'xm-menus': 'v1', 'xm-events': 'v1',
+    // Recorded 2026-11-10 (Sean: "Those look good, go ahead and record them"): stt matched word for word.
+    'xm-gifts': 'v1', 'xm-wish': 'v1', 'hk-kosher': 'v1' };
   var RULE_ICON = [
     '<path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.1 4.3 2.4.7-1.3 2.2-2.4 4.3-2.4 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/>',
     '<path d="M3 11h18M5 11a7 5 0 0114 0M12 4v2M4 15h16l-1.5 4h-13z"/>',
