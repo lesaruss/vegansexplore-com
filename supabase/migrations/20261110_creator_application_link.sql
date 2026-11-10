@@ -1,4 +1,5 @@
 -- Creator applications flow into the creator's account and Directory profile (Sean, 2026-11-10: "go, and build the automatic fix too").
+-- Applied 2026-11-10 through ve-once-creator-welcome (now the 410 stub); a rolled-back [TEST] proof found the text[] || text bug, fixed with array_append the same day, then passed.
 -- Before this, an accepted application stayed a separate record: no account link, and nothing reached their /directory page.
 --
 -- ve_creator_application_link(app) runs when the team marks an application Accepted (the team's check is the identity check, as with an
@@ -31,7 +32,7 @@ begin
   if m is null and a.email is not null then
     select id into m from members where lower(btrim(email)) = lower(btrim(a.email)) and merged_into_member_id is null and deleted_at is null
       and membership_status = 'active' order by created_at limit 1;
-    if m is not null then update ve_creator_applications set member_id = m where id = a.id; done := done || 'member'; end if;
+    if m is not null then update ve_creator_applications set member_id = m where id = a.id; done := array_append(done, 'member'); end if;
   end if;
 
   -- 2. The profile.
@@ -58,22 +59,22 @@ begin
   if coalesce(l.instagram, '') = '' and ig is not null then
     update listings set instagram = '@' || ig where id = lid;
     insert into ve_listing_edits (listing_id, member_id, field, old_value, new_value, meta) values (lid, m, 'instagram', to_jsonb(l.instagram), to_jsonb('@' || ig), jsonb_build_object('source', 'creator_application', 'application', a.id));
-    done := done || 'instagram';
+    done := array_append(done, 'instagram');
   end if;
   if coalesce(l.tiktok, '') = '' and tt is not null then
     update listings set tiktok = '@' || tt where id = lid;
     insert into ve_listing_edits (listing_id, member_id, field, old_value, new_value, meta) values (lid, m, 'tiktok', to_jsonb(l.tiktok), to_jsonb('@' || tt), jsonb_build_object('source', 'creator_application', 'application', a.id));
-    done := done || 'tiktok';
+    done := array_append(done, 'tiktok');
   end if;
   if coalesce(l.youtube, '') = '' and yt is not null then
     update listings set youtube = yt where id = lid;
     insert into ve_listing_edits (listing_id, member_id, field, old_value, new_value, meta) values (lid, m, 'youtube', to_jsonb(l.youtube), to_jsonb(yt), jsonb_build_object('source', 'creator_application', 'application', a.id));
-    done := done || 'youtube';
+    done := array_append(done, 'youtube');
   end if;
   if coalesce(l.address_city, '') = '' and coalesce(btrim(a.city), '') <> '' then
     update listings set address_city = btrim(a.city), address_state = coalesce(nullif(address_state, ''), st) where id = lid;
     insert into ve_listing_edits (listing_id, member_id, field, old_value, new_value, meta) values (lid, m, 'address_city', to_jsonb(l.address_city), to_jsonb(btrim(a.city)), jsonb_build_object('source', 'creator_application', 'application', a.id, 'state', st));
-    done := done || 'city';
+    done := array_append(done, 'city');
   end if;
 
   -- 4. Ownership, only when nobody holds it.
@@ -82,7 +83,7 @@ begin
       details = jsonb_set(coalesce(details, '{}'::jsonb), '{person}', coalesce(details->'person', '{}'::jsonb) || jsonb_build_object('member_id', m))
       where id = lid;
     insert into ve_listing_edits (listing_id, member_id, field, old_value, new_value, meta) values (lid, m, 'owner_member_id', null, to_jsonb(m), jsonb_build_object('source', 'creator_application', 'application', a.id));
-    done := done || 'owner';
+    done := array_append(done, 'owner');
   end if;
   update listings set updated_at = now() where id = lid and array_length(done, 1) > 0;
   return jsonb_build_object('ok', true, 'member', m, 'listing', lid, 'done', done);
