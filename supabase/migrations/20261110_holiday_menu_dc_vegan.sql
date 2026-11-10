@@ -33,3 +33,9 @@ where holiday_slug = 'thanksliving' and place_name = 'DC Vegan' and link = 'http
 
 update events set ticket_url = 'https://www.dc-vegan.com/', source_url = 'https://www.dc-vegan.com/', organizer_url = 'https://www.dc-vegan.com/', updated_at = now()
 where id = '5e0cab7f-fd90-406e-a444-d6a41e8d92bd' and ticket_url = 'https://dcvegan.com';
+
+-- Their direct order page (Sean, 2026-11-10), tracking codes left off.
+update ve_holiday_menus set order_url = 'https://www.dc-vegan.com/catering-homepage', updated_at = now()
+where listing_id = 'b18026b9-01b7-45c5-a84e-b6cb84c561cf' and holiday_slug = 'thanksliving';
+update ve_holiday_menu_tips set link = 'https://www.dc-vegan.com/catering-homepage', updated_at = now()
+where place_name = 'DC Vegan' and holiday_slug = 'thanksliving';

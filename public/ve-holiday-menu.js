@@ -51,8 +51,9 @@
     'html.vhm-open{overflow:hidden}' +
     '.vhm-card{border:1px solid #f2d7a6;background:#fff7e8;border-radius:10px;padding:18px 20px;margin:0 0 22px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}' +
     '.vhm-card h3{margin:0 0 4px;font-size:18px}.vhm-card p{margin:0;font-size:14px;color:rgba(26,26,26,.75);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}' +
-    '.vhm-cbtns{display:flex;gap:8px;flex-wrap:nowrap}.vhm-card .vhm-cbtns a{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 18px;border-radius:6px;background:#fff;color:#1a1a1a;border:1.5px solid rgba(0,0,0,.16);font-weight:800;font-size:12px;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;white-space:nowrap}' +
-    '@media(max-width:600px){.vhm-cbtns{width:100%}.vhm-cbtns>*{flex:1 1 0}}' +
+    // On the listing card the two buttons stack, one under the other, the same width (Sean, 2026-11-10).
+    '.vhm-cbtns{display:flex;flex-direction:column;gap:8px;min-width:190px}.vhm-cbtns>*{width:100%}.vhm-card .vhm-cbtns a{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 18px;border-radius:6px;background:#fff;color:#1a1a1a;border:1.5px solid rgba(0,0,0,.16);font-weight:800;font-size:12px;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;white-space:nowrap}' +
+    '@media(max-width:600px){.vhm-cbtns{width:100%}}' +
     '.vhm-card button{min-height:42px;padding:0 18px;border-radius:6px;border:0;background:#22C55E;color:#03170a;font:inherit;font-weight:800;font-size:12px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap}' +
     '@media(max-width:600px){.vhm-back{padding:10px;align-items:center}.vhm{max-height:92vh}.vhm-head,.vhm-body,.vhm-foot{padding-left:' + PADM + 'px;padding-right:' + PADM + 'px}' +
       '.vhm-logo{width:52px;height:52px}.vhm-nm h2{font-size:20px}.vhm-acts a,.vhm-acts button{font-size:11px;letter-spacing:.04em;padding:0 8px}}';
