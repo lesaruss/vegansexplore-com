@@ -1,0 +1,45 @@
+-- People card titles capped at 45 characters (Sean, 2026-11-10: Keya's 43-character line is the example).
+-- Only rows still longer than 45 change, so this is safe to run twice.
+update listings l
+set details = jsonb_set(l.details, '{person,title}', to_jsonb(v.t))
+from (values
+  ('louie-psihoyos', 'Filmmaker, director of The Cove'),
+  ('brooke-sellers', 'Vegan bodybuilder, fitness coach and author'),
+  ('sherri-johnson', 'Co-host of Plant Based in the Burbz'),
+  ('marc-pierschel', 'Director of Live and Let Live'),
+  ('dominic-thompson', 'Founder of Crazies and Weirdos'),
+  ('elle-jimenez', 'Co-founder of Vegans in Clermont'),
+  ('keegan-kuhn', 'Co-director of Cowspiracy and What the Health'),
+  ('paige-parsons-roache', 'Host of Plant Based in the Burbz'),
+  ('sailesh-rao', 'Founder of Climate Healers'),
+  ('renee-king-sonnen', 'Founder of Rowdy Girl Sanctuary'),
+  ('lakshman-mulpuri', 'Built a plant-based medical curriculum'),
+  ('richard-kudo-couto', 'Founder of Animal Recovery Mission'),
+  ('james-and-dahlia-marin', 'Dietitians, founders of Your Gut Connection'),
+  ('gad-hakimi', 'Creator of the International Vegan Flag'),
+  ('cyrus-khambatta', 'Co-founder of Mastering Diabetes'),
+  ('evie-kevish', 'Certified Juice Therapist'),
+  ('earthling-ed', 'Activist and co-director of Surge'),
+  ('dotsie-bausch', 'Olympic cyclist and founder of Switch4Good'),
+  ('john-lewis', 'Founder of Badass Vegan and filmmaker'),
+  ('michael-klaper', 'Founder of Moving Medicine Forward'),
+  ('sean-russell', 'Founder of Vegans Explore, podcast host'),
+  ('jordan-david', 'Founder of Conscious Muscle'),
+  ('shaun-monson', 'Director of Earthlings and Unity'),
+  ('joel-kahn', 'Cardiologist, author and professor'),
+  ('susan-hargreaves', 'Founder of Animal Hero Kids'),
+  ('tabay-atkins', 'Yoga instructor and Reiki master'),
+  ('honey-labronx', 'Vegan drag queen and animal rights speaker'),
+  ('james-wildman', 'Humane educator, ARFF'),
+  ('vladimir-mickovic', 'Co-founder of Juicy Marbles'),
+  ('jacobo-garcia', 'Owner of Vgan Corner'),
+  ('alex-yabonk', 'Founder of Karma Farm Sanctuary'),
+  ('maxime-sigouin', 'Fitness coach, founder of Mavy Wellness'),
+  ('rich-roll', 'Ultra-endurance athlete and podcast host'),
+  ('gwenna-hunter', 'Founder of Vegans of LA'),
+  ('robby-barbaro', 'Co-founder of Mastering Diabetes'),
+  ('jonny-juicer', 'Raw Vegan creator and juicing advocate'),
+  ('noah-hyams', 'Founder of Vegapreneur and Vegan Cuts'),
+  ('jason-kartalian', 'Host of Vegan Hacks Pod, filmmaker')
+) as v(slug, t)
+where l.slug = v.slug and length(l.details->'person'->>'title') > 45;

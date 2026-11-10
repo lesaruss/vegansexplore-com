@@ -143,6 +143,11 @@ Classes currently under the rule:
 - `.pulse-link-excerpt` — the "In the Pulse" section on a listing's page (`loadInPulse`
   in `directory/listing.html`), each article's summary (`ve_pulse_content.summary`).
 - `.ml-card-tagline` — Saved listings, `/account/my-list.html` (2026-11-10 sweep; the Remove button sits at the card's foot so rows stay flush)
+- **People titles are 45 characters at most** (Sean, 2026-11-10: rows change with the screen, so the cap is characters; Keya's line,
+  "Educator and Vegans Explore content creator", 43 characters, is the example). The line under a person's name on the Directory card is
+  `details.person.title`. Capped in the Edit listing field (`#vla-ptitle`, maxlength 45 with a live count), the Ambassador door
+  (`#pTitle`), `ve-people` (save and the bio writer's prompt) and `ve-ambassador` (every write). The 38 longer titles were rewritten that day
+  (migration `20261110_people_titles_45.sql`). Restaurant and media cards carry no description line.
 - Already clamped, checked in the same sweep: `.tl` (`/search.html` results), `.hg-sum` (Holiday Guide menu cards), `.vpg-tagline` (`/public/partner-guide.js`). The shared Directory card (`ve-region-directory.js`) shows no description.
 
 **Directory cards in the Pulse (Sean, 2026-11-02).** Every Pulse article carries **In this story** above **On this episode** (one section, grouped by pills: People, Media,
