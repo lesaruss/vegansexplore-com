@@ -16,3 +16,10 @@ from (values
   ('explore', 'You may know me from SoFlo Vegans.', '', 'Watch it, then pick a button:')
 ) v(b, o, l, c)
 where e.campaign_slug = 'holiday-launch-' || v.b and e.step = 1 and e.locked_at is null;
+
+-- Sean, 2026-11-10: "some people in there that we've known for a while, and the language makes it sound like we met them at the Foodie Fest."
+-- One line true for both: old friends and people first met at the festival. Subject matches the SoFlo Vegans groups.
+update ve_outreach_campaign_emails set
+  subject = 'From Sean at Vegans Explore (SoFlo Vegans)',
+  body = replace(body, 'We met at Vegan Foodie Fest Miami, and it''s been a while.', 'You may know me from SoFlo Vegans, or from Vegan Foodie Fest Miami.')
+where campaign_slug = 'holiday-launch-foodie-fest' and step = 1 and locked_at is null;
