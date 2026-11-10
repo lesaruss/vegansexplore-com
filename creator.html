@@ -133,6 +133,7 @@
     .who{position:relative;}
     .fbk{position:absolute;right:0;top:0;}
     @media (max-width:600px){.who{padding-right:46px}.fbk{font-size:0;gap:0;padding:0;width:38px;min-height:38px;justify-content:center}.fbk svg{width:17px;height:17px}}
+    @media (max-width:600px){.tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;}.tabs::-webkit-scrollbar{display:none;}.tabs a{flex:none;}}
     .soon{display:inline-block;font-size:10.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;background:#FFF1DF;color:#8a4b00;border-radius:4px;padding:3px 8px;}
   </style>
 </head>
@@ -230,7 +231,7 @@
   }
   function drawBounties() {
     app.innerHTML = head() +
-      '<section class="card"><h2>Bounties <span class="soon">Coming soon</span></h2><p class="lede" style="margin:0">Paid jobs made for creators: a post, a video, a visit. When we have one for you, it shows up here with what it pays and what to make.</p></section>';
+      '<section class="card"><h2>Bounties <span class="soon">Coming soon</span></h2><p class="lede" style="margin:0">Jobs made for creators: a post, a video, a visit. When we have one for you, it shows up here with what it earns and what to make.</p></section>';
   }
   function draw() {
     var r = route();
