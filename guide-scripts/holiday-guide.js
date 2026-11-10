@@ -178,7 +178,11 @@
     var par = tab(cur).parent || cur, kids = TABS.filter(function (c) { return c.parent === par; });
     if (!kids.length) return '';
     var items = [tab(par)].concat(kids);
-    return '<div class="hg-sub"><label class="hg-sub-l" for="hgSubSel">' + esc(tab(par).label) + '</label><select id="hgSubSel" class="dg-sort hg-subsel">' + items.map(function (c) {
+    // Fewer than 6 sections show as buttons on desktop; 6 or more, and every phone, use the dropdown (Sean, 2026-11-10).
+    var row = items.length < 6 ? '<nav class="hg-subrow" aria-label="' + esc(tab(par).label) + '">' + items.map(function (c) {
+      return '<a class="hg-subb' + (c.k === cur ? ' on' : '') + '" href="' + href(c.k) + '"' + (c.k === cur ? ' aria-current="page"' : '') + '>' + esc(c.k === par ? 'Ideas' : c.label) + '</a>';
+    }).join('') + '</nav>' : '';
+    return '<div class="hg-sub' + (row ? ' hg-sub-few' : '') + '"><label class="hg-sub-l" for="hgSubSel">' + esc(tab(par).label) + '</label>' + row + '<select id="hgSubSel" class="dg-sort hg-subsel">' + items.map(function (c) {
       return '<option value="' + c.k + '"' + (c.k === cur ? ' selected' : '') + '>' + esc(c.k === par ? 'Ideas' : c.label) + '</option>';
     }).join('') + '</select></div>';
   }
@@ -1204,19 +1208,12 @@
     try { sessionStorage.setItem('ve_after_survey', '/guides/holiday-guide' + (p && p.tell ? '#/' + (typeof p.tell === 'string' ? p.tell : 'menus') + '/tell' : '')); } catch (e) {}
     location.href = '/survey?s=explorer';
   }
-  function joinWindow(title, text) {
-    var w = document.getElementById('hgJoin');
-    if (!w) {
-      w = document.createElement('div'); w.id = 'hgJoin';
-      w.setAttribute('style', 'position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px');
-      document.body.appendChild(w);
-    }
-    w.innerHTML = '<div role="dialog" aria-modal="true" aria-labelledby="hgJoinT" style="background:#fff;border-radius:14px;max-width:440px;width:100%;padding:24px;font-family:Montserrat,sans-serif">' +
-      '<h3 id="hgJoinT" style="margin:0 0 8px;font-size:20px">' + esc(tc(title)) + '</h3><p style="margin:0 0 16px;font-size:15px;line-height:1.5;color:rgba(26,26,26,.78)">' + esc(text) + '</p>' +
-      '<div class="dg-btns"><button type="button" class="dg-btn" data-hg-survey>Join free</button><button type="button" class="dg-btn dg-ghost" data-hg-close>Not now</button></div>' +
-      '<p style="margin:14px 0 0;font-size:13px">Already a member? <a href="#" data-signin>Sign in</a></p></div>';
-    w.style.display = 'flex';
-    w.querySelector('[data-hg-survey]').focus();
+  // Anything sent to us needs a name on it (Sean, 2026-11-10: "We don't want just blind submissions"): the shared join window
+  // (/public/ve-join-box.js) with Theo, quick registration or the survey; after either, what they tapped carries on (onDone).
+  function joinWindow(title, text, onDone) {
+    var pic = (tab(curView).pic) || '/public/guides/holiday/theo-thanksliving.jpg';
+    if (window.VEJoinBox) { VEJoinBox.open({ guide: 'Holiday Guide', character: 'Theo', pic: pic, reason: title, line: text, onDone: function () { document.body.classList.toggle('dg-member', member()); drawJoinbox(); if (onDone) onDone(); }, onSurvey: goSurvey }); return; }
+    if (auth()) auth().showAuthModal(text, onDone || null, 'signup');
   }
   function closeJoin() { var w = document.getElementById('hgJoin'); if (w) w.style.display = 'none'; }
   function saveListing(id, btn) {
@@ -1237,7 +1234,7 @@
     if (e.target.closest('[data-hg-tell]') && !member()) {
       e.preventDefault();
       store('hg_pending', JSON.stringify({ tell: hx().menus, at: Date.now() }));
-      joinWindow('Tell us about a menu', 'Join free with a short survey, then send us the menu. You come right back here.');
+      joinWindow('Tell Us About a Menu', 'Everything in the Holiday Guide is free to read. To send us a menu you found, we just need to know who is sending it.', function () { location.hash = '#/' + hx().menus + '/tell'; });
       return;
     }
     // Until the video is made, its Play runs Theo's recorded tour (the same chapters) from the rail.
@@ -1255,8 +1252,18 @@
       return;
     }
     if ((el = e.target.closest('[data-hg-open]'))) {
-      var pn = document.getElementById(el.getAttribute('data-hg-open')), op = pn.hidden;
+      var pid = el.getAttribute('data-hg-open'), pn = document.getElementById(pid), op = pn.hidden, ob = el;
+      var showIt = function () { var p2 = document.getElementById(pid), b2 = main.querySelector('[data-hg-open="' + pid + '"]') || ob; if (!p2) return; p2.hidden = false; b2.setAttribute('aria-expanded', 'true'); p2.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); };
+      if (op && !member()) {
+        var rcp = pid === 'hgRcpPanel';
+        joinWindow(rcp ? 'Submit a Recipe' : 'Suggest an Item', rcp ? 'Everything in the Holiday Guide is free to read. To send a recipe, we just need to know who you are, so we can credit you.' : 'Everything in the Holiday Guide is free to read. To suggest an item, we just need to know who is sending it.', showIt);
+        return;
+      }
       pn.hidden = !op; el.setAttribute('aria-expanded', String(op)); if (op) pn.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      return;
+    }
+    if ((el = e.target.closest('#hgSubBtn')) && !member() && document.getElementById('hgSubmit').hidden) {
+      joinWindow('Submit a Menu', 'Everything in the Holiday Guide is free to read. To send a menu, we just need to know who is sending it.', function () { var b = document.getElementById('hgSubBtn'); if (b) b.click(); });
       return;
     }
     if ((el = e.target.closest('#hgSubBtn'))) {
@@ -1269,12 +1276,12 @@
       var id = el.getAttribute('data-hg-save');
       if (member()) { saveListing(id, el); return; }
       store('hg_pending', JSON.stringify({ save: id, at: Date.now() }));
-      joinWindow('Save this place', 'Join free with a short survey and this place goes into My Saves, so you can find it again when it is time to order.');
+      joinWindow('Save This Place', 'Register and this place goes into My Saves, so you can find it again when it is time to order.', function () { saveListing(id, el); });
       return;
     }
     if (e.target.closest('[data-hg-join]')) {
       if (member()) { location.href = '/dashboard/saves'; return; }
-      joinWindow('Join Vegans Explore, free', 'A short survey makes you a member. Save holiday menus, vote for the places you love, and open the Guides.');
+      joinWindow('', 'Everything in the Holiday Guide is free to read. Register to send menus and recipes and get the Daily Pulse, or become a member and open everything.');
       return;
     }
     if (e.target.closest('[data-signin]')) {

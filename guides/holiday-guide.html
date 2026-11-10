@@ -517,6 +517,12 @@
     /* ThanksLiving's section row (Sean, 2026-11-08): rectangles with 6px corners, square icons, one row that slides sideways, never a dropdown. */
     .hg-sub{display:flex;align-items:center;gap:12px;margin:0 0 18px;padding-bottom:14px;border-bottom:1px solid var(--line);}
     .hg-sub-l{font-size:13px;font-weight:800;color:var(--ink,#1A1A1A);white-space:nowrap}
+    .hg-subrow{display:none;gap:8px;flex-wrap:wrap}
+    .hg-subb{display:inline-flex;align-items:center;min-height:38px;padding:0 14px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);font-size:14px;font-weight:700;text-decoration:none}
+    .hg-subb:hover{border-color:var(--g)}.hg-subb.on{background:var(--g);border-color:var(--g);color:#fff}
+    @media (min-width:641px){.hg-sub-few .hg-subrow{display:flex}.hg-sub-few .hg-subsel{display:none}}
+    /* The Overview's sections in two columns on desktop (Sean, 2026-11-10). */
+    @media (min-width:901px){.wg-arts .wg-grp ol{display:grid;grid-template-columns:1fr 1fr;gap:18px 28px}}
     .hg-subsel{min-width:240px}
     @media (max-width:640px){.hg-sub{flex-wrap:wrap;gap:6px}.hg-subsel{width:100%;min-width:0;font-size:16px}}
     .rg-pill{display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);text-decoration:none;font-size:14px;font-weight:700;transition:border-color .12s,background .12s;}
@@ -775,7 +781,8 @@
 <script src="/public/ve-guide-intro.js"></script>
 <script src="/public/ve-episodes.js"></script>
 <script src="/public/ve-holiday-menu.js?v=9"></script>
-<script src="/guide-scripts/holiday-guide.js?v=27"></script>
+<script src="/public/ve-join-box.js?v=2"></script>
+<script src="/guide-scripts/holiday-guide.js?v=28"></script>
 <script src="/public/ve-guide-min.js"></script>
 </body>
 </html>
