@@ -45,7 +45,7 @@
     { k: 'paths', scene: 'welcome/liz-paths.jpg', label: 'Your Path and Badges', pic: 'thumb-passport.jpg', lead: 'kai', say: 'Press Play and I will walk you through the paths. Then start as an Explorer and find yours.' },
     { k: 'better', scene: 'welcome/liz-better.jpg', label: 'Make It Better', pic: 'restaurant-guide/t-next.jpg', lead: 'liz', say: 'Press Play and I will walk you through every way to tell us. Then tell us one thing today.' },
     { k: 'animals', scene: 'welcome/liz-animals.jpg', label: 'For the Animals', pic: 'nonprofit-guide.jpg', lead: 'dani', say: 'Press Play and I will walk you through how to show up for the animals. Then find the groups near you.' },
-    { k: 'founder', scene: 'welcome/liz-founder.jpg', label: 'Become a Founder', pic: 'welcome-ensemble.jpg', lead: 'liz', say: 'You are early. Answer a few quick questions and you are in.', sayMember: 'You are in. Here are your first steps.' }
+    { k: 'founder', scene: 'welcome/liz-founder.jpg', label: 'Become a Founder', pic: 'welcome-ensemble.jpg', lead: 'liz', say: 'Press Play and I will walk you through becoming a Founder. Then answer a few quick questions and you are in.', sayMember: 'You are in. Here are your first steps.' }
   ];
   var LEADS = {
     pascal: ['Pascal', 'our cook, making the Meat Alternatives and Meal Prep Guides'],
@@ -315,6 +315,7 @@
           '<div class="dg-btns"><a class="dg-btn" href="' + esc(back || '/dashboard') + '">' + (back ? 'Go back' : 'Open your dashboard') + '</a></div>';
       }
       return crumb(tab('founder').label) + head('Become a Founder', 'You Are Early, and That Is Rare', 'A few quick questions, about two minutes, and you are in, free, with 250 points to use across the platform.' + (OPEN ? ' Join before midnight Eastern on January 1, 2027 and you are a Founding Member for good. Founders unlock some really cool things in 2027, and the only way to hear about them, and lock them in for yourself, is to join today.' : '')) +
+        (CLIPS.founder ? '<div class="dg-btns" style="margin:0 0 14px"><button type="button" class="dg-btn dg-ghost" data-wg-tour>&#9654; Play Liz</button></div>' : '') +
         countdown() + explorerCard() +
         '<p class="dg-lede" style="margin-top:14px">Want to take your time? Every section of this Guide breaks down exactly how to use it today. <a href="#/" style="color:var(--g);font-weight:800">Back to the Overview</a>.</p>';
     }
@@ -357,7 +358,7 @@
   // Each section page plays its own short video in Liz's frame once its script is approved and recorded.
   // Each section's own video (Sean, 2026-11-09: no borrowed tour parts): Liz's approved line over that page's shots, captions from her word timings.
   var MEDIA = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/';
-  var SEC = { directory: 'sec-directory-v2', city: 'sec-city-v2', events: 'sec-events-v2', media: 'sec-media-v2', guides: 'sec-guides-v2', points: 'sec-points-v2', paths: 'sec-paths-v2', better: 'sec-better-v1', animals: 'sec-animals-v1' };
+  var SEC = { directory: 'sec-directory-v2', city: 'sec-city-v2', events: 'sec-events-v2', media: 'sec-media-v2', guides: 'sec-guides-v2', points: 'sec-points-v2', paths: 'sec-paths-v2', better: 'sec-better-v1', animals: 'sec-animals-v1', founder: 'sec-founder-v1' };
   var CLIPS = { overview: [0, 1e9] };
   Object.keys(SEC).forEach(function (k) { CLIPS[k] = [0, 1e9]; });
   function cur() {

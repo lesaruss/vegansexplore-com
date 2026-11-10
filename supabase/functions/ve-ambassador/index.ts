@@ -489,7 +489,7 @@ Deno.serve(async (req) => {
         const { data: made, error } = await db.from('listings').insert({
           name, slug, category: 'Content Creators', specialty: '', location: 'Online', status: 'approved', communities: ['all'], vegan_status: null,
           description: clean(np.bio, 2000) || null, crawl_source: 'ambassador', owner_member_id: c.member_id, claimed_by_member_id: c.member_id, claim_status: 'verified',
-          details: { person: { title: clean(np.title, 200) || '', added: `Ambassador door, ${at.slice(0, 10)}` } },
+          details: { person: { title: clean(np.title, 45) || '', added: `Ambassador door, ${at.slice(0, 10)}` } },
         }).select('id').single();
         if (error || !made) return json({ error: 'save_failed', message: error?.message }, 500);
         listingId = made.id;
@@ -588,7 +588,7 @@ Deno.serve(async (req) => {
       if (l.owner_member_id) return json({ error: 'taken', message: 'That profile is already claimed. Tell us if it is yours.' }, 409);
       row = { member_id: member.id, listing_id: l.id, note };
     } else {
-      const name = clean(body.name, 120), title = clean(body.title, 200), bio = clean(body.bio, 2000);
+      const name = clean(body.name, 120), title = clean(body.title, 45), bio = clean(body.bio, 2000);
       if (!name || !title) return json({ error: 'missing', message: 'Give your name and what you do.' }, 400);
       row = { member_id: member.id, new_profile: { name, title, bio }, note };
     }
@@ -613,7 +613,7 @@ Deno.serve(async (req) => {
     if (!l) return json({ error: 'no_profile' }, 409);
     const patch: Record<string, unknown> = {}, edits: { field: string; old_value: unknown; new_value: unknown }[] = [];
     if (typeof body.title === 'string') {
-      const v = clean(body.title, 200), old = l.details?.person?.title || '';
+      const v = clean(body.title, 45), old = l.details?.person?.title || '';
       if (v !== old) { patch.details = { ...(l.details || {}), person: { ...(l.details?.person || {}), title: v } }; edits.push({ field: 'person_title', old_value: old || null, new_value: v || null }); }
     }
     if (typeof body.bio === 'string') {

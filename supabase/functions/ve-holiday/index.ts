@@ -184,14 +184,14 @@ Deno.serve(async (req) => {
     if (!SLUG.test(hs)) return json({ error: 'bad_holiday' }, 400);
     const { data } = await db.from('ve_holiday_wishes').select('id, kind, title, link, note, reviewed_at').eq('holiday_slug', hs).eq('status', 'live').order('reviewed_at', { ascending: false }).limit(500);
     const rows = data || [];
-    const tally: Record<string, { title: string; link: string | null; note: string | null; n: number }> = {};
+    const tally: Record<string, { title: string; link: string | null; note: string | null; n: number; image_url?: string | null }> = {};
     for (const w of rows) { const k = wishKey(w as any); if (!tally[k]) tally[k] = { title: w.title, link: w.link, note: w.note, n: 0 }; tally[k].n++; }
     // Saves on Gift Guide gifts count toward Most Wanted too: every save is a wish (2026-11-10).
-    const { data: gl } = await db.from('ve_holiday_gifts').select('id, title, brand, link, amazon_link').eq('holiday_slug', hs).eq('status', 'live').limit(300);
+    const { data: gl } = await db.from('ve_holiday_gifts').select('id, title, brand, link, amazon_link, image_url').eq('holiday_slug', hs).eq('status', 'live').limit(300);
     const gids = (gl || []).map((g) => g.id);
     const { data: pl } = gids.length ? await db.from('ve_holiday_gift_plus').select('gift_id').in('gift_id', gids) : { data: [] as any[] };
     const pn: Record<string, number> = {}; for (const x of pl || []) pn[x.gift_id] = (pn[x.gift_id] || 0) + 1;
-    for (const g of gl || []) { if (!pn[g.id]) continue; const k = 'g:' + g.id; tally[k] = { title: g.title, link: g.link || g.amazon_link || null, note: g.brand || null, n: pn[g.id] }; }
+    for (const g of gl || []) { if (!pn[g.id]) continue; const k = 'g:' + g.id; tally[k] = { title: g.title, link: g.link || g.amazon_link || null, note: g.brand || null, n: pn[g.id], image_url: g.image_url || null }; }
     const most = Object.values(tally).sort((x, y) => y.n - x.n || x.title.localeCompare(y.title)).slice(0, 12);
     return json({ ok: true, gifts: rows.filter((w) => w.kind === 'gift').slice(0, 60), most_wanted: most });
   }

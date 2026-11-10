@@ -660,3 +660,19 @@ a demo first and edit the video after. **Clothes (Sean, same day):** the Vegans 
 colors (black, white, cream, pink...) and as a long sleeve, with different pants and a jacket over it as the scene needs, as long as the mark can be seen.
 No other brand's logo. This loosens "only clothes from our store" (2026-11-01). **A sample member** (approved): an invented member like Kai, so the member
 side can be shown fully built.
+
+**The Welcome Guide is locked (Sean, 2026-11-10: "Approved" on page 11).** All eleven pages are on the section template with Liz's section
+videos: Overview, then `sec-directory-v2`, `sec-city-v2`, `sec-events-v2`, `sec-media-v2`, `sec-guides-v2`, `sec-points-v2`, `sec-paths-v2`,
+`sec-better-v1`, `sec-animals-v1`, `sec-founder-v1` (vegan-media `media/liz/welcome-guide/`, captions in `public/guides/welcome/`). Become a
+Founder keeps its own sign-up layout (countdown and Explorer card) with Play Liz added. Rules Sean added on the way: every picture is used once
+in a video (the render scripts assert it) and look-alike shots count as repeats; each line shows the page it talks about; new Liz stills per
+page, no animation (Higgsfield budget, 2026-11-10); a phone in a scene shows its back; the Volunteer tee has no logo. Scripts and status:
+`docs/proposals/welcome-guide-section-scripts.md`. Live proof 2026-11-10: every page at 1440 and 390 px has its video, caption track and
+Play Liz, and nothing scrolls sideways. Next: inventory the other Guides and move them to this template one at a time, when Sean says.
+
+**The Welcome Guide, compact** (Sean, 2026-11-10). Overview: one Getting started blurb of about 230 characters ("I don't like the three
+sections... just make it a 250 character blurb"), then two groups, Find Your Way (Directory, City, Events, Media) and Take Part (Guides,
+Points, Path, Make It Better, For the Animals, Become a Founder), two columns ("put them side by side like we just did with the holiday
+guide"), each row about 75 characters ("let's go with 75 characters"). Section pages: the How to use this page card is one blurb ("fold those
+into one blurb too") and the rows are two across at about 75 characters ("do the section pages at 75 too"). Text sizes match the Holiday
+Guide (15px card, 14.5px rows); Sean kept them. `guide-scripts/welcome-guide.js` v30, `passport.html`.

@@ -359,6 +359,38 @@
   @media (max-width:760px){.rev-tiles{grid-template-columns:repeat(2,minmax(0,1fr));}.rev-tile b{font-size:21px;}}
   /* Recent activity (Sean, 2026-10-30): every feed the same size, the latest 100 scrolling inside the box. */
   #dash-recent{margin-bottom:28px;}
+  /* Your tiles and Recent activity first (Sean, 2026-11-10, approved mock /mocks/dashboard). */
+  #dash-recent .dash-preview-grid{grid-template-columns:repeat(4,minmax(0,1fr));}
+  @media (max-width:1200px){ #dash-recent .dash-preview-grid{grid-template-columns:repeat(3,minmax(0,1fr));} }
+  @media (max-width:1000px){ #dash-recent .dash-preview-grid{grid-template-columns:repeat(2,minmax(0,1fr));} }
+  .dash-recent-chips{display:none;gap:6px;overflow-x:auto;margin:0 0 10px;padding-bottom:2px;scrollbar-width:none;}
+  .dash-recent-chips button{flex:none;font-family:inherit;font-size:12px;font-weight:800;border:1px solid var(--ve-border);border-radius:6px;background:#fff;color:var(--ve-text);padding:7px 11px;cursor:pointer;}
+  .dash-recent-chips button i{font-style:normal;color:var(--ve-green-dark,#2D5C27);margin-left:3px;}
+  .dash-recent-chips button[aria-selected="true"]{background:var(--ve-green-dark,#2D5C27);border-color:var(--ve-green-dark,#2D5C27);color:#fff;}
+  .dash-recent-chips button[aria-selected="true"] i{color:#d7efd8;}
+  @media (max-width:640px){
+    #dash-recent .dash-preview-grid{grid-template-columns:minmax(0,1fr);}
+    .dash-tiled-sa .dash-recent-chips{display:flex;}
+    .dash-tiled-sa #dash-recent-grid > .dash-preview-card:not(.is-pick){display:none;}
+    .dash-tiled-sa .dash-recent-hint{display:none;}
+  }
+  .dash-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:28px;}
+  .dash-tiles > .dash-stat{display:flex;flex-direction:column;min-height:134px;min-width:0;}
+  .dash-tiles .dash-stat-sub{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .dash-tile-go{margin-top:auto;padding-top:8px;font-size:12px;font-weight:800;color:var(--ve-green-dark,#2D5C27);}
+  .dash-tile-logos{display:flex;gap:6px;margin:6px 0 4px;}
+  .dash-tile-logos span{width:30px;height:30px;border-radius:6px;background:var(--ve-green-light,#e8f5e9) center/cover no-repeat;display:grid;place-items:center;font-weight:900;font-size:13px;color:var(--ve-green-dark,#1f5f22);}
+  .dash-tile-value-sm{font-size:18px !important;line-height:1.2;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  @media (max-width:900px){ .dash-tiles{grid-template-columns:repeat(2,minmax(0,1fr));} .dash-tiles > .dash-stat{min-height:118px;padding:12px;} }
+  .dash-tiled-sa:not(.dv-on) #dash-biz,.dash-tiled-biz:not(.dv-on) #dash-biz,.dash-tiled-sa:not(.dv-on) #dash-rev,.dash-tiled-sa:not(.dv-on) .dash-home-split,
+  .dash-tiled-sa:not(.dv-on) #dash-depot-block,.dash-tiled-sa #dash-role-label,.dash-tiled-sa #dash-stats-row,.dash-tiled-biz #dash-mine-label,.dash-tiled-biz #dash-mine-row{display:none !important;}
+  #dash-profile-section.dv-on > :not(#dash-home-hero):not(#dash-dv-crumb):not(.dv-keep){display:none !important;}
+  #dash-profile-section.dv-on .dash-home-split > :not(.dv-keep),#dash-profile-section.dv-on .dash-home-overview > :not(.dv-keep){display:none !important;}
+  #dash-profile-section.dv-on .dash-home-split{grid-template-columns:minmax(0,1fr);}
+  .dash-dv-crumb{font-size:13px;color:var(--ve-text-50);margin:0 0 16px;}
+  .dash-dv-crumb a{color:var(--ve-green-dark,#2D5C27);font-weight:800;text-decoration:none;}
+  .dash-dv-crumb b{color:var(--ve-text);}
+  .dash-dv-empty{margin-top:12px;font-size:14px;}
   #dash-recent .dash-preview-body{height:268px;overflow-y:auto;overscroll-behavior:contain;padding-right:6px;margin-right:-6px;}
   .dash-preview-who{width:32px;height:32px;border-radius:9px;flex-shrink:0;border:2px solid #fff;box-shadow:0 0 0 1.5px var(--ve-border);padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font:inherit;font-size:12px;font-weight:800;color:#fff;background:var(--ve-green);overflow:hidden;}
   .dash-preview-who img{width:100%;height:100%;object-fit:cover;}
@@ -960,9 +992,14 @@
       <!-- Your business first (Sean, 2026-11-01, playbook ve-listing-check: "the dashboard on that profile becomes their dashboard"):
            an owner opening /dashboard sees each listing they own on top, with its listing check score and the way into its business
            dashboard. Filled by renderBusinessFirst() from ve-dashboard home and ve-claims owner_dashboard (only: 'health'). -->
+      <nav class="dash-dv-crumb" id="dash-dv-crumb" hidden aria-label="Breadcrumb"><a href="/dashboard" id="dash-dv-back">Dashboard</a> &rsaquo; <b id="dash-dv-title"></b>
+        <p class="dash-dv-empty" id="dash-dv-empty" hidden>Nothing to show here yet.</p></nav>
       <div id="dash-after-host" style="display:none;margin:0 0 18px"></div>
       <div id="dash-badges-host" style="display:none;margin:0 0 18px"></div>
       <div id="dash-biz" style="display:none;"></div>
+      <!-- Your tiles (Sean, 2026-11-10: "very jumbled"; approved mock /mocks/dashboard). A tile opens its own view under Dashboard ›
+           (/dashboard/business, /revenue, /insights, /for-you, /depot-pages) showing the block it stands for. dashTilesLayout(). -->
+      <div id="dash-tiles-wrap" hidden><p class="dash-section-title">Your tiles</p><div class="dash-tiles" id="dash-tiles"></div></div>
 
       <!-- Dashboard preview hub (Sean, 2026-09-22): a preview of the member's
            tools. Superadmins see the 5 most recent Members, Event Submissions,
@@ -1112,6 +1149,7 @@
           <div id="dash-findm-out" class="dash-findm-out" role="listbox" aria-label="Members found" hidden></div>
         </div>
         <p class="dash-recent-hint">Drag a box by its handle to put it where you want it.</p>
+        <div id="dash-recent-chips" class="dash-recent-chips" role="tablist" aria-label="Recent activity"></div>
         <div id="dash-recent-grid" class="dash-preview-grid"></div>
       </div>
       <!-- The Depot (Sean, 2026-10-30; moved to the bottom 2026-11-03, below Recent activity): every Depot page, the Admin pages and the
@@ -1578,6 +1616,7 @@
     var lv = veLevelFor(life, member.level_override, member.founding_member), nextAt = veLevelTable(member.founding_member)[lv];
     document.getElementById('dash-mine-points').textContent = pts.toLocaleString();
     document.getElementById('dash-mine-level').textContent = 'Level ' + lv;
+    dashTilesLayout();
     document.getElementById('dash-mine-level-sub').textContent = nextAt == null ? 'The top level' : Math.max(0, nextAt - life).toLocaleString() + ' points to Level ' + (lv + 1);
     var amb = member.ve_role === 'ambassador', year = new Date().getFullYear();
     if (amb) document.getElementById('dash-mine-third-label').textContent = 'Earned in ' + year;
@@ -4067,6 +4106,7 @@
     if (!INS.web && !INS.social) { body.innerHTML = '<p style="font-size:12px;color:var(--ve-text-50);">Reading Analytics and Social&hellip;</p>'; return; }
     body.innerHTML = INS.tab === 'social' ? insSocial(INS.social) : INS.tab === 'seo' ? insSeo(INS.web) : insWeb(INS.web);
     if (window.veSyncHome) setTimeout(window.veSyncHome, 0);
+    dashTilesLayout();
   }
   function renderInsights() {
     var tabs = document.getElementById('dash-ins-tabs'), more = document.getElementById('dash-ins-more');
@@ -4276,10 +4316,147 @@
       '<div class="dash-tour-prompt-desc">' + dvEsc(c.body) + '</div></div><div class="dash-tour-prompt-arrow" aria-hidden="true">&rarr;</div></a>';
   }
   // Your business, first on the Dashboard tab for anyone who owns a listing: its listing check (free on claim) and the way in.
+  // ---- Your tiles (Sean, 2026-11-10: "very jumbled... I don't need it to be as big and to the top like that"; approved mock /mocks/dashboard).
+  // Super admins: Recent activity leads under the banner, then one grid of same-size tiles: Your business, Revenue, Insights, the Your role
+  // row (Platform health, Submissions, This week, moved in as they are), For you and the Depot. A member who owns a listing: Your business
+  // and Your numbers as tiles. A tile opens its own view under Dashboard › (DV below), which shows the block that used to sit on the page,
+  // so nothing was taken away. On phones Recent activity is one box at a time, picked from a row of names (dashRecentChips).
+  var DV = {
+    business: { title: 'Your business', el: function () { return document.getElementById('dash-biz'); } },
+    revenue: { title: 'Revenue', el: function () { return document.getElementById('dash-rev'); } },
+    insights: { title: 'Insights', el: function () { return document.getElementById('dash-insights-block'); } },
+    'for-you': { title: 'For you', el: function () { return document.querySelector('#dash-profile-section .dash-home-actions'); } },
+    'depot-pages': { title: 'The Depot', el: function () { return document.getElementById('dash-depot-block'); } }
+  };
+  var DASH_BIZ = [], DASH_BIZ_SCORE = [], DASH_ROLE_TILES = null, DASH_MINE_TILES = null, dlTimer = null;
+  function dvFromPath() { var m = location.pathname.match(/^\/dashboard\/(business|revenue|insights|for-you|depot-pages)\/?$/); return m ? m[1] : ''; }
+  function dashApplyView() {
+    var sec = document.getElementById('dash-profile-section'), crumb = document.getElementById('dash-dv-crumb'); if (!sec) return;
+    var v = dvFromPath();
+    Array.prototype.forEach.call(sec.querySelectorAll('.dv-keep'), function (x) { x.classList.remove('dv-keep'); });
+    sec.classList.toggle('dv-on', !!v);
+    if (crumb) crumb.hidden = !v;
+    if (!v) return;
+    document.getElementById('dash-dv-title').textContent = DV[v].title;
+    var t = DV[v].el();
+    for (var n = t; n && n !== sec; n = n.parentNode) n.classList.add('dv-keep');
+    var empty = document.getElementById('dash-dv-empty');
+    if (empty) empty.hidden = !!(t && !t.hidden && t.style.display !== 'none');
+  }
+  window.dashApplyView = dashApplyView;
+  function dashOpenView(v) {
+    var url = v ? '/dashboard/' + v : '/dashboard';
+    if (location.pathname !== url) history.pushState({ tabKey: 'profile' }, '', url);
+    dashApplyView(); window.scrollTo(0, 0);
+  }
+  function dashTile(o) {
+    var a = document.createElement('a'); a.className = 'dash-stat dash-gen'; a.href = '/dashboard/' + o.view;
+    a.innerHTML = '<div class="dash-stat-label">' + dvEsc(o.label) + '</div>' +
+      (o.logos || '<div class="dash-stat-value' + (o.cls ? ' ' + o.cls : '') + '">' + o.value + '</div>') +
+      '<div class="dash-stat-sub">' + o.sub + '</div><span class="dash-tile-go">Open &rarr;</span>';
+    a.addEventListener('click', function (e) { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return; e.preventDefault(); dashOpenView(o.view); });
+    return a;
+  }
+  function dashBizTile() {
+    var worst = null;
+    DASH_BIZ_SCORE.forEach(function (x) { if (x && x.total && (!worst || x.passed / x.total < worst.passed / worst.total)) worst = x; });
+    var logos = '<div class="dash-tile-logos">' + DASH_BIZ.map(function (l) {
+      return l.logo_url ? '<span style="background-image:url(\'' + dvEsc(l.logo_url) + '\')" title="' + dvEsc(l.name) + '"></span>' : '<span title="' + dvEsc(l.name) + '">' + dvEsc(String(l.name || '?').charAt(0)) + '</span>';
+    }).join('') + '</div>';
+    var n = DASH_BIZ.length;
+    var sub = worst ? dvEsc(worst.name) + ': ' + worst.passed + ' of ' + worst.total + ' checks passed'
+      : n === 1 ? dvEsc(DASH_BIZ[0].name) : n + ' listings: open each business dashboard and listing check';
+    return dashTile({ view: 'business', label: 'Your business', logos: logos, sub: sub });
+  }
+  function dashRevTile() {
+    var d = REV.data, t = d && d.totals;
+    return dashTile({ view: 'revenue', label: 'Revenue', value: t ? revMoney(t.month.gross, true) : '--',
+      sub: t ? 'This month, ' + t.month.n + ' payment' + (t.month.n === 1 ? '' : 's') + ' &middot; ' + revMoney(t.year.gross) + ' this year' : 'Reading Stripe&hellip;' });
+  }
+  function dashInsTile() {
+    var g = INS.web && INS.web.ga, t = g && g.totals, tp = g && g.totals_prev, pct = t && tp && tp.users ? Math.round((t.users - tp.users) / tp.users * 100) : null;
+    return dashTile({ view: 'insights', label: 'Insights', value: t ? insN(t.users) : '--',
+      sub: t ? 'Visitors, last 30 days' + (pct == null ? '' : ', ' + (pct >= 0 ? 'up ' : 'down ') + Math.abs(pct) + '%') + ' &middot; Web, Social, SEO' : 'Reading Analytics&hellip;' });
+  }
+  function dashForYouTile() {
+    var list = document.getElementById('dash-action-list');
+    var vis = list ? Array.prototype.filter.call(list.children, function (c) { return c.id !== 'dash-action-empty' && !c.hidden && c.style.display !== 'none'; }) : [];
+    var first = '';
+    if (vis[0]) { var h = vis[0].querySelector('.dash-tour-prompt-title, [class*="title"], [class*="name"], b, strong, h3, h4'); first = (h || vis[0]).textContent.replace(/\s+/g, ' ').trim(); }
+    return dashTile({ view: 'for-you', label: 'For you', value: String(vis.length), sub: first ? 'First: ' + dvEsc(first) : 'You&rsquo;re all caught up' });
+  }
+  function dashDepotTile() {
+    var use = depotUse(), top = null;
+    (window.VE_DEPOT_TABS || []).forEach(function (t) { var u = use[t.href]; if (u && u.n && (!top || u.n > top.n)) top = { n: u.n, label: t.label }; });
+    return dashTile({ view: 'depot-pages', label: 'The Depot', value: top ? dvEsc(top.label) : 'Every page', cls: 'dash-tile-value-sm',
+      sub: top ? 'Your most used &middot; search every Depot page' : 'Search every Depot page, admin page and demo' });
+  }
+  function dashTilesLayout() { clearTimeout(dlTimer); dlTimer = setTimeout(dashLayoutNow, 60); }
+  function dashLayoutNow() {
+    var sec = document.getElementById('dash-profile-section'), wrap = document.getElementById('dash-tiles-wrap'), grid = document.getElementById('dash-tiles');
+    if (!sec || !wrap || !grid) return;
+    var recent = document.getElementById('dash-recent'), sa = !!(recent && !recent.hidden), biz = DASH_BIZ.length > 0;
+    sec.classList.toggle('dash-tiled-sa', sa);
+    sec.classList.toggle('dash-tiled-biz', biz && !sa);
+    if (!sa && !biz) { wrap.hidden = true; dashApplyView(); return; }
+    if (sa && recent.nextElementSibling !== wrap) wrap.parentNode.insertBefore(recent, wrap);
+    var items = [];
+    if (biz) items.push(dashBizTile());
+    if (sa) {
+      if (!DASH_ROLE_TILES) DASH_ROLE_TILES = Array.prototype.slice.call(document.querySelectorAll('#dash-stats-row > a.dash-stat'));
+      items.push(dashRevTile(), dashInsTile());
+      items = items.concat(DASH_ROLE_TILES);
+      items.push(dashForYouTile(), dashDepotTile());
+    } else {
+      if (!DASH_MINE_TILES) DASH_MINE_TILES = Array.prototype.slice.call(document.querySelectorAll('#dash-mine-row > a.dash-stat'));
+      items = items.concat(DASH_MINE_TILES);
+    }
+    grid.innerHTML = '';
+    items.forEach(function (x) {
+      if (!x) return;
+      // The same action in the same place on every tile (the Your role and Your numbers tiles moved in without one).
+      if (!x.querySelector('.dash-tile-go')) { var go = document.createElement('span'); go.className = 'dash-tile-go'; go.innerHTML = 'Open &rarr;'; x.appendChild(go); }
+      grid.appendChild(x);
+    });
+    wrap.hidden = false;
+    dashRecentChips();
+    dashApplyView();
+  }
+  function dashRecentChips() {
+    var grid = document.getElementById('dash-recent-grid'), bar = document.getElementById('dash-recent-chips'); if (!grid || !bar) return;
+    var keyOf = function (c) { return c.getAttribute('data-key') || ((c.querySelector('.dash-preview-title') || {}).textContent || ''); };
+    var cards = Array.prototype.filter.call(grid.children, function (c) { return c.classList.contains('dash-preview-card'); });
+    var pick = ''; try { pick = sessionStorage.getItem('ve_dash_recent_pick') || ''; } catch (e) {}
+    if (!cards.some(function (c) { return keyOf(c) === pick; })) pick = cards[0] ? keyOf(cards[0]) : '';
+    cards.forEach(function (c) { c.classList.toggle('is-pick', keyOf(c) === pick); });
+    var html = cards.map(function (c) {
+      var k = keyOf(c), n = c.querySelector('.dash-preview-count');
+      return '<button type="button" role="tab" aria-selected="' + (k === pick) + '" data-k="' + dvEsc(k) + '">' + dvEsc(k) + (n && n.textContent ? '<i>' + dvEsc(n.textContent) + '</i>' : '') + '</button>';
+    }).join('');
+    if (bar.innerHTML !== html) bar.innerHTML = html;
+  }
+  var dashWatched = false;
+  function dashWatch() {
+    if (dashWatched) return; dashWatched = true;
+    var bar = document.getElementById('dash-recent-chips'), back = document.getElementById('dash-dv-back');
+    if (bar) bar.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-k]'); if (!b) return;
+      try { sessionStorage.setItem('ve_dash_recent_pick', b.getAttribute('data-k')); } catch (x) {}
+      dashRecentChips();
+    });
+    if (back) back.addEventListener('click', function (e) { if (e.metaKey || e.ctrlKey || e.shiftKey) return; e.preventDefault(); dashOpenView(''); });
+    if (!window.MutationObserver) return;
+    var rg = document.getElementById('dash-recent-grid'), al = document.getElementById('dash-action-list'), ct = null;
+    if (rg) new MutationObserver(function () { clearTimeout(ct); ct = setTimeout(dashRecentChips, 120); }).observe(rg, { childList: true, subtree: true });
+    if (al) new MutationObserver(function (recs) {
+      if (recs.some(function (r) { return r.attributeName !== 'style' || r.target.parentNode === al; })) dashTilesLayout();
+    }).observe(al, { childList: true, subtree: true, attributes: true, attributeFilter: ['style', 'hidden'] });
+  }
   function renderBusinessFirst(listings) {
     var box = document.getElementById('dash-biz'); if (!box) return;
-    if (!listings.length) { box.style.display = 'none'; box.innerHTML = ''; return; }
+    if (!listings.length) { box.style.display = 'none'; box.innerHTML = ''; DASH_BIZ = []; dashTilesLayout(); return; }
     var href = function (l, pd) { return '/directory/' + encodeURIComponent(l.slug) + '?tab=brand' + (pd ? '&pd=' + pd : ''); };
+    DASH_BIZ = listings.slice(0, 4); DASH_BIZ_SCORE = []; dashTilesLayout();
     box.innerHTML = '<div class="dash-biz-head"><p class="dash-section-title">Your business</p></div>' + listings.slice(0, 4).map(function (l, i) {
       var pic = l.logo_url ? '<span class="dash-biz-logo" style="background-image:url(\'' + dvEsc(l.logo_url) + '\')"></span>' : '<span class="dash-biz-logo dash-biz-letter">' + dvEsc(String(l.name || '?').charAt(0)) + '</span>';
       return '<div class="dash-biz-card">' + pic + '<div class="dash-biz-body"><b>' + dvEsc(l.name) + '</b>' +
@@ -4296,6 +4473,7 @@
         var h = d && d.health; if (!h || !h.checks || !h.checks.length) { el.textContent = 'Your listing check runs this month'; return; }
         var passed = h.checks.filter(function (c) { return c.status === 'pass'; }).length, fl = h.checks.filter(function (c) { return c.status === 'flag'; }).length;
         var more = h.checkup && h.checkup.flags ? h.checkup.flags.length : 0;
+        DASH_BIZ_SCORE[i] = { name: l.name, passed: passed, total: h.checks.length }; dashTilesLayout();
         el.textContent = 'Listing check: ' + passed + ' of ' + h.checks.length + ' passed' + (fl ? ', ' + fl + ' flagged' : '') + (more ? ', ' + more + ' from our monthly check-up' : '');
       }).catch(function () { var el = document.getElementById('dash-biz-score-' + i); if (el) el.textContent = 'Open it to see your listing check'; });
     });
@@ -4607,7 +4785,7 @@
     if (!REV.data) box.innerHTML = '<div class="rev-head"><p class="dash-section-title">Revenue</p><span class="rev-asof">Reading Stripe&hellip;</span></div>';
     dvCall({ action: 'revenue', refresh: !!refresh }).then(function (d) {
       if (!d || !d.ok) { if (!REV.data) box.innerHTML = '<div class="rev-head"><p class="dash-section-title">Revenue</p><span class="rev-asof">Couldn\'t read Stripe right now.</span><button type="button" class="rev-btn" id="rev-refresh">Try again</button></div>'; var b = document.getElementById('rev-refresh'); if (b) { b.disabled = false; b.onclick = function () { renderRevenue(true); }; } return; }
-      REV.data = d; revDraw();
+      REV.data = d; revDraw(); dashTilesLayout();
     });
   }
 
@@ -4724,6 +4902,7 @@
     var access = memberTools(member, false);
     var first = DASH_TOOLS_FIRST[DASH_VERSION] || [], rank = function (c) { var i = first.indexOf(c.title); return i < 0 ? 99 : i; };
     renderToolGrid(grid, access.map(function (c, i) { return [rank(c), i, c]; }).sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; }).map(function (x) { return x[2]; }));
+    dashWatch(); dashTilesLayout();
   }
 
   function renderDirectory(member) {
@@ -4865,6 +5044,7 @@
         var url = key === 'depot' ? depotAddress() : key === 'profile' ? '/dashboard' : '/dashboard/' + key; // the Dashboard tab is /dashboard, which the header marks
         if (location.pathname + (key === 'depot' ? location.search + location.hash : '') !== url) history.pushState({ tabKey: key }, '', url);
       }
+      if (key === 'profile' && window.dashApplyView) window.dashApplyView(); // a tile's own view, /dashboard/business and the rest
     }
     // Exposed so tiles outside this closure (Your Tools) can jump straight
     // to a tab instead of navigating away (2026-09-07, Sean direction:

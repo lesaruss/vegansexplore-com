@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>We're back — Vegans Explore</title>
+  <meta name="description" content="Vegans Explore launches January 1. Become a Founding Member free, and open our free Holiday Guide.">
+  <meta name="robots" content="noindex">
+  <meta property="og:title" content="We're back — Vegans Explore">
+  <meta property="og:description" content="Vegans Explore launches January 1. Become a Founding Member free, and open our free Holiday Guide.">
+  <meta property="og:image" content="https://vegansexplore.com/public/og-default.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* The Holiday Guide launch page (Sean, 2026-11-10, playbook ve-outreach-buckets, task holiday-launch-blast): "their landing page is
+       just going to be me... almost the same design as the one we did for content creators". Parent: /invite (template gate). Sean's
+       still with a green play button in the middle of the picture (Sean, 2026-11-10: "put the play button in the center so people can't miss it... make it green"; play and pause on the image; the video, when it comes, sits in the same 4:5 frame; nothing plays until pressed), his words on
+       the left, one line by audience (?b=), two doors: Become a Founding Member (opens the Welcome Guide) and the Holiday Guide; no Share (Sean: they would be sharing their invitation). Every link we send is a
+       tracked /go/ link that lands here with its ?b=. */
+
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-border:rgba(0,0,0,0.09);}
+    body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    main{padding:56px 40px 88px;}
+    .split{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:56px;align-items:center;}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:12px;}
+    h1{font-weight:900;line-height:1.05;letter-spacing:-0.02em;text-transform:uppercase;font-size:clamp(32px,4.4vw,56px);margin-bottom:20px;}
+    .lede{font-size:17px;color:var(--ve-text-75);margin-bottom:16px;max-width:640px;}
+    .reason{white-space:pre-line;font-size:18px;font-weight:800;line-height:1.45;border-left:4px solid var(--ve-orange);padding:6px 0 6px 16px;margin:0 0 20px;max-width:640px;}
+    .gift{display:inline-flex;align-items:center;gap:10px;background:var(--ve-green-light);color:var(--ve-green-deep);border:1px solid rgba(58,155,62,0.25);border-radius:999px;padding:9px 16px;font-size:13px;font-weight:800;margin-bottom:18px;}
+    .points{list-style:none;display:grid;gap:10px;margin:6px 0 22px;max-width:640px;}
+    .points li{display:flex;gap:12px;align-items:flex-start;font-size:15px;font-weight:600;line-height:1.45;}
+    .points li::before{content:"";flex:0 0 20px;height:20px;margin-top:1px;border-radius:50%;background:var(--ve-green-light) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='11' viewBox='0 0 24 24' fill='none' stroke='%232d7d31' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'/%3E%3C/svg%3E") center no-repeat;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:14px 28px;border-radius:6px;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;border:none;cursor:pointer;text-decoration:none;}
+    .btn-primary{background:#22C55E;color:#0b2e14;}
+    .btn-primary:hover{background:#4ade80;}
+    .btn-primary:disabled{background:#9CA3AF;color:#fff;cursor:default;}
+    .btn-link{background:none;color:var(--ve-green-deep);text-decoration:underline;text-underline-offset:3px;padding:14px 8px;letter-spacing:0.06em;}
+    .cta-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+    .decline{margin-top:16px;max-width:640px;}
+    .decline textarea{font:inherit;font-size:14px;width:100%;min-height:90px;padding:10px 12px;border:1px solid rgba(0,0,0,.25);border-radius:6px;margin:6px 0 10px;resize:vertical;}
+    .decline label{font-size:13px;font-weight:700;}
+    .fine{font-size:12.5px;color:#6b6b6b;margin-top:14px;max-width:640px;}
+    .msg{font-size:14px;font-weight:700;margin-top:14px;max-width:640px;}
+    .msg.err{color:#b42318;}
+    .msg.ok{color:var(--ve-green-deep);}
+    .media{border-radius:16px;overflow:hidden;background:#0f1a10;aspect-ratio:4/5;max-height:calc(100vh - 180px);box-shadow:0 18px 40px rgba(0,0,0,0.18);}
+    .media img{width:100%;height:100%;object-fit:cover;object-position:50% 10%;display:block;}
+    .state{max-width:760px;}
+    .state h1{font-size:clamp(28px,3.6vw,44px);}
+    [hidden]{display:none !important;}
+    @media (max-width:900px){
+      main{padding:28px 16px 64px;}
+      .split{grid-template-columns:minmax(0,1fr);gap:28px;}
+      .media{max-height:none;order:-1;}
+      .media img{object-position:50% 12%;}
+    }
+  
+    .note{display:flex;align-items:center;gap:12px;margin-top:14px}
+    .play{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:12px 22px;border-radius:6px;border:0;background:var(--ve-green);color:#fff;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;cursor:pointer}
+    .play:hover{background:var(--ve-green-dark)}
+    .play svg{width:16px;height:16px}
+    .note small{font-size:13px;color:var(--ve-text-75);font-weight:600}
+    .said{font-size:16px;line-height:1.65;color:var(--ve-text);max-width:640px;margin:0 0 22px}
+    .said p{margin:0 0 10px}
+    .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(31,95,34,.35)}
+    .btn-ghost:hover{border-color:var(--ve-green-deep)}
+    .side{display:flex;flex-direction:column;align-self:start}
+    .side .media{position:relative;display:block;width:100%;padding:0;border:0;cursor:pointer;max-height:calc(100vh - 180px);aspect-ratio:4/5}
+    .pbtn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:96px;height:96px;border-radius:50%;background:#22C55E;border:4px solid #fff;color:#fff;display:grid;place-items:center;transition:opacity .2s,transform .2s;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+    .pbtn svg{width:38px;height:38px;margin-left:4px}
+    .media:hover .pbtn{transform:translate(-50%,-50%) scale(1.06);background:#16a34a}
+    .media[aria-pressed="true"] .pbtn{opacity:0}
+    .media[aria-pressed="true"]:hover .pbtn{opacity:1}
+    .media[aria-pressed="true"] .pbtn svg{margin-left:0}
+    @media (max-width:900px){.side .media{max-height:none;aspect-ratio:4/5}.side{order:-1}.pbtn{width:80px;height:80px}}
+    .cta-row{margin-bottom:10px}
+  </style>
+</head>
+<body>
+  <script src="/public/nav.js"></script>
+
+  <main>
+    <section class="split">
+      <div>
+        <div class="eyebrow">A note from Sean A. Russell</div>
+        <h1>We're back.</h1>
+        <p class="reason" id="line" hidden></p>
+        <div class="said" id="said">
+          <p>Hey, it's Sean. Vegans Explore is back. We officially launch on January 1, but we're already up and running, and I'd love for you to be one of our Founding Members. It's free.</p>
+          <p>As a thank-you, we made a free Holiday Guide: events, restaurant holiday menus, gift ideas and recipes for ThanksLiving, Hanukkah and Christmas.</p>
+          <p>Check it out, and if you like it, share it. See you inside.</p>
+        </div>
+        <div class="cta-row">
+          <a class="btn btn-primary" id="join" href="/passport?guide=welcome&amp;from=hello">Become a Founding Member, free</a>
+          <a class="btn btn-ghost" href="/guides/holiday-guide?from=hello">Open the free Holiday Guide</a>
+          <a class="btn btn-ghost" id="reset" href="/forgot-password" hidden>Reset your password</a>
+          <a class="btn btn-ghost" id="lead" href="/paths#path-group" hidden>Lead events with us</a>
+        </div>
+        <p class="fine" id="fine">Founding Membership closes at midnight Eastern on January 1, 2027.</p>
+      </div>
+      <div class="side">
+        <button type="button" class="media" id="play" aria-pressed="false" aria-label="Play Sean's note">
+          <img src="/public/founder/sean-square.jpg" alt="Sean A. Russell waving hello in a Vegans Explore tee">
+          <span class="pbtn" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path id="play-ic" d="M8 5v14l11-7z"/></svg></span>
+        </button>
+        <audio id="audio" preload="none"></audio>
+      </div>
+    </section>
+  </main>
+
+  <script>
+  (function () {
+    // One line by audience, and the note each one hears (a different note per page where Sean records one; general until then).
+    var GENERAL = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/hello/sean-general-v6.mp3';
+    var B = {
+      members: { line: "You're already in. Thank you. Now help us spread the word: share the Holiday Guide with everyone you know.", join: ['Go to your dashboard', '/dashboard'] },
+      business: { line: 'If you run a Vegan business, claiming your listing is free for members.' },
+      nonprofit: { line: 'If you lead a nonprofit, there is a free Guide made just for you, on your path after you join.' },
+      creator: { line: "If you create content, we're registering official Vegans Explore creators. Join, then pick the Creator path." },
+      'foodie-fest': { line: 'We met at Vegan Foodie Fest Miami, and we kept building.' },
+      explore: { line: '' },
+      meetup: { line: "Thanks for being part of our Meetup. We're bringing you a bunch of new events into the new year. Do you want to lead events with us?", lead: true,
+        audio: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/hello/sean-meetup-v4.mp3',
+        said: ["Hey, it's Sean. Thanks for being part of our Meetup. Vegans Explore is back. We officially launch on January 1, but we're already up and running, and I'd love for you to be one of our Founding Members. It's free.",
+          "As a thank-you, we made a free Holiday Guide: events, restaurant holiday menus, gift ideas and recipes for ThanksLiving, Hanukkah and Christmas. See you soon."] },
+      facebook: { line: 'Thanks for being part of our Facebook group. The Holiday Guide is our gift to everybody.' },
+      // People who made an account before (Sean, 2026-11-10: "factor in that they don't know their login... give them a process to... reset
+      // their password"). Sign in goes first; the reset is one tap away.
+      registered: { line: "You already have an account with us, so you're one step from your dashboard. Don't remember your password? Tap Reset your password and we'll email you a link in a minute.", join: ['Sign in to your account', '/login'], reset: true },
+      whatsapp: { line: "We've moved into a brand new community on our own platform. To celebrate, the Holiday Guide is yours, free." }
+    };
+    var b = (new URLSearchParams(location.search).get('b') || '').toLowerCase();
+    var cfg = B[b] || B.explore;
+    var $ = function (id) { return document.getElementById(id); };
+    if (cfg.line) { $('line').textContent = cfg.line; $('line').hidden = false; }
+    if (cfg.join) { $('join').textContent = cfg.join[0]; $('join').href = cfg.join[1]; }
+    if (cfg.lead) $('lead').hidden = false;
+    if (cfg.reset) $('reset').hidden = false;
+    if (cfg.said) $('said').innerHTML = cfg.said.map(function (t) { return '<p>' + t.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</p>'; }).join('');
+    var a = $('audio'); a.src = cfg.audio || GENERAL;
+    function setPlaying(on) {
+      $('play').setAttribute('aria-pressed', on ? 'true' : 'false');
+      $('play').setAttribute('aria-label', on ? "Pause Sean's note" : "Play Sean's note");
+      $('play-ic').setAttribute('d', on ? 'M6 5h4v14H6zM14 5h4v14h-4z' : 'M8 5v14l11-7z');
+    }
+    $('play').addEventListener('click', function () { if (a.paused) { a.play().catch(function () {}); } else { a.pause(); } });
+    a.addEventListener('play', function () { setPlaying(true); });
+    a.addEventListener('pause', function () { setPlaying(false); });
+    a.addEventListener('ended', function () { a.currentTime = 0; setPlaying(false); });
+  })();
+  </script>
+  <script src="/public/footer.js"></script>
+</body>
+</html>

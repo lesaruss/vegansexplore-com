@@ -42,6 +42,7 @@ we have systems, so we don't waste time and usage." Canon `canon-template-gate` 
    | A browse page with a banner | `/public/ve-city-banner.js`, as the Directory and Events use it |
    | A search box or a results page | `/public/ve-search.js` and `search.html` (universal search, below) |
    | An email | `email-send`, as `ve-nurture` and `ve-people-outreach` call it |
+| An outreach campaign (a launch, a blast, a follow-up run) | a program in HQ Outreach > Campaigns (`ve_campaign_programs`): its numbered steps as the lookbook (each email or page shown as it is), its groups, its schedule; first: `holiday-launch-2026` (Sean, 2026-11-10: "when we do launch another campaign... it needs to follow suit") |
    | A Guide page's video (a section summary in the Guide's frame) | the Welcome Guide's section videos: `scripts/tour-video/sections/` (README), `sec-city-v2` the reference |
    | A creator's social kit (10-slide carousel, story, collab reel) | `scripts/creator-kit/` (README), KJ (@keyz60) the reference: swap the person, their city banner, name and handle; headlines always two rows; only the picture moves in the reel (Sean, 2026-11-10: "this is the template. I love it") |
 | A city restaurant carousel for social | Canva `DAHaJ8TQI0I` "5 Vegan Restaurants to Try in Philadelphia" in Vegans Explore > Directory (canon `canon-ve-city-carousel`) |
@@ -67,6 +68,8 @@ Passport, part 3).
 **The logo** (LOCKED 2026-11-10, canon `canon-ve-logo`): the portrait logo is the stacked shirt version, `/public/logo-ve-portrait-v2.svg` (`-inverted` white type on dark or color, `-white` all white, PNGs beside them); the landscape logo stays v1. Always place the real file, never a model-drawn logo; portrait v1 is retired.
 
 **Pictures.** Pictures from other sites go through `/_vercel/image?url=&w=&q=75` (hosts in `vercel.json` `images`). Repo photos are JPEG, at most 1920 px wide, about 80 quality; banners under about 500 KB. Logos are always copied into `vegan-media` storage, never hot-linked. Generic pictures are our illustration style, never photorealistic; real photos only for real places and people. Our Guides are always drawn, never photographs, and wear the Vegans Explore mark (store clothes; colors and layers may vary).
+
+**A Guide's picture is different on every page** (Sean, 2026-11-10: "I don't want to see him looking the same in each of the videos... make it make sense to it... each page. It shouldn't be the same image"). Each page of a Guide has its own scene of its Guide doing that page's thing (wrapping gifts on the Gift Guide, sharing a list on the Wish List), made with the Guide scenes recipe below; it is the page's still and opens and closes the page's video. Never reuse one page's picture on another.
 
 **Every logo links to its profile** (Sean, 2026-11-10: "Anytime we have the logo anywhere, when you click it, it should take you to their profile"). On every page, card, lightbox and Guide, a listing's logo is a link to `/directory/<slug>` (a person's picture to their People page). A new component that shows a logo builds the link in; a logo with no listing behind it is not shown as clickable.
 

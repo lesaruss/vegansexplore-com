@@ -1148,3 +1148,20 @@ two words and 9+ letters unless every word is generic, one-word names only from 
 city in the notes (a checked name counts in a title alone), a whole-domain or @handle match counts, 5+ notes-only mentions on one show is one
 "Show sponsor" row, and a show whose name contains the name never counts. Preview a rule change with `ve_listing_related_strict_elsewhere(id)`
 before it reaches the cache; a big preview times out over about 70 listings a call. Handoff `docs/handoff/2026-11-09-ve-community-directory-ve-holiday-guide-wrap.md`.
+
+**One call to action at the foot of the Directory** (Sean, 2026-11-10: "I'd rather there just be one call to action box at the bottom,
+the first one that's black, and then we could have three buttons in there... join free, claim your business, suggest the place").
+`directory/index.html`: the three boxes (Your votes rank them, Is your business in here?, Know a place we are missing?) are one black
+box, "Find your way in.", with Join free (orange), Claim your business and Suggest a place (the listing-request window). Members see it
+without Join free. Commit 1354c39.
+
+**Points only to claimed listings** (Sean, 2026-11-10: "only businesses that claim their listing can receive points... remove that
+feature until they've claimed... that becomes a perk for them"; "Anyone that's received points already, let's just leave it").
+`ve_listing_contribute` refuses an unclaimed listing (`not_claimed`, migration `20261110_holiday_for_dairy_and_points_claimed_only.sql`,
+applied live); an unclaimed listing's Community Support card shows the total and "Giving points opens once this business claims its page"
+with a claim link instead of Give. Points given before stay: Dina's Vegan Deli & Desserts 625, Love Life Cafe 500 (both unclaimed).
+
+**The Holiday Guide on food listings** (Sean, 2026-11-10: "wherever there's a dairy guide, let's put the holiday guide... come
+Christmas, the holiday guide is going to go on hiatus until Valentine's Day"). `public/ve-guide-tab.js` `FOOD_GUIDE = 'holiday-guide'`
+(food places' Resources tab, free, Theo); the right column banner shows the Holiday Guide on every listing through Christmas. After
+Christmas steps: `docs/history/ads.md`.

@@ -13,7 +13,7 @@
 //   remove      { contact_id, hold? } takes a business out of its batch (hold: never email it)
 //   contact     { contact_id, email?, contact_name? }  fix a row before approving
 //   city        { city, enabled }     the city's switch (nothing sends while it is off)
-//   find_emails { city, limit? }      reads listings' own websites for a published email (never guessed)
+//   find_emails { city, limit? } or { listing_ids }  reads listings' own websites for a published email (never guessed)
 // Ops (Bearer <LESARUSS_ADMIN_TOKEN>, Logan and crons): overview, batch, waiting, preview, plan and find_emails only.
 // Approving, changing a row and the city switch need a signed-in superadmin (Sean's call).
 //
@@ -1070,20 +1070,24 @@ Deno.serve(async (req) => {
     }
 
     if (action === 'find_emails') {
-      const city = clean(body.city, 60);
+      // listing_ids (2026-11-10, the Gift Guide's brands): read just these listings' sites, whatever their city or category; they are
+      // filed under the 'brands' list. Without it, a city's (or 'brands') listings not tried before, as always.
+      const ids = Array.isArray(body.listing_ids) ? body.listing_ids.filter((x: unknown) => typeof x === 'string' && /^[0-9a-f-]{36}$/i.test(x as string)).slice(0, 30) : [];
+      const city = ids.length ? 'brands' : clean(body.city, 60);
       const limit = Math.max(1, Math.min(30, Number(body.limit) || 20));
       const { data: oc } = await db.from('ve_outreach_cities').select('*').eq('community_slug', city).maybeSingle();
-      if (!oc) return json({ error: 'city' }, 400);
+      if (!oc && !ids.length) return json({ error: 'city' }, 400);
       const { data: tried } = await db.from('ve_outreach_lookups').select('listing_id');
       const { data: have } = await db.from('ve_outreach_contacts').select('listing_id');
       const skip = new Set([...(tried || []), ...(have || [])].map((r) => r.listing_id));
       let q = db.from('listings').select('id,name,website,category,address_city,address_state').eq('status', 'approved')
         .is('owner_member_id', null).is('claimed_by_member_id', null).not('website', 'is', null)
         .or('business_status.is.null,business_status.neq.CLOSED_PERMANENTLY').limit(1000);
-      if (city === 'brands') q = q.in('category', ['Food Brands', 'Nutrition & Supplements', 'Brands']);
+      if (ids.length) q = q.in('id', ids);
+      else if (city === 'brands') q = q.in('category', ['Food Brands', 'Nutrition & Supplements', 'Brands']);
       else { if (oc.cities) q = q.in('address_city', oc.cities); if (oc.states) q = q.in('address_state', oc.states); }
       const { data: ls } = await q;
-      const todo = (ls || []).filter((l) => !skip.has(l.id) && l.website && (city === 'brands' || !['Food Brands', 'Nutrition & Supplements', 'Brands'].includes(l.category))).slice(0, limit);
+      const todo = (ls || []).filter((l) => !skip.has(l.id) && l.website && (ids.length || city === 'brands' || !['Food Brands', 'Nutrition & Supplements', 'Brands'].includes(l.category))).slice(0, limit);
       const out: { name: string; email: string | null; note: string }[] = [];
       for (let i = 0; i < todo.length; i += 6) {
         await Promise.all(todo.slice(i, i + 6).map(async (l) => {
