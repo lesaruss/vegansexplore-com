@@ -87,7 +87,7 @@
         <div class="said" id="said">
           <p>Hey, it's Sean. Vegans Explore is back, and I'm excited. On January 1 we launch, and I'd love for you to be one of our Founding Members. Membership is free: take a short survey and you're in. If you run a business, claiming your listing is free too.</p>
           <p>Before you go, take a minute with our Welcome Guide and see everything we're building.</p>
-          <p>And as a thank-you, we made a free Holiday Guide. It's a mini website for our community this season, with events, places to eat, recipes and gift ideas for ThanksLiving, Hanukkah and Christmas. Through 2027 we'll cover the other holidays too.</p>
+          <p>And as a thank-you, we made a free Holiday Guide. It's a mini website for our community this season, with events, places to eat, gift ideas and recipes for ThanksLiving, Hanukkah and Christmas. Through 2027 we'll cover the other holidays too.</p>
           <p>Check it out, and if you like it, share it. See you inside.</p>
         </div>
         <div class="cta-row">
@@ -96,7 +96,7 @@
         </div>
         <div class="cta-row">
           <a class="btn btn-ghost" href="/passport?guide=welcome&amp;from=hello">Take the Welcome tour</a>
-          <a class="btn btn-ghost" id="lead" href="/paths#path-group" hidden>Help us organize events</a>
+          <a class="btn btn-ghost" id="lead" href="/paths#path-group" hidden>Lead events with us</a>
           <a class="btn btn-ghost" id="reset" href="/forgot-password" hidden>Reset your password</a>
           <span id="share-host"></span>
         </div>
@@ -116,7 +116,7 @@
   <script>
   (function () {
     // One line by audience, and the note each one hears (a different note per page where Sean records one; general until then).
-    var GENERAL = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/hello/sean-general-v2.mp3';
+    var GENERAL = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/hello/sean-general-v3.mp3';
     var B = {
       members: { line: "You're already in. Thank you. Now help us spread the word: share the Holiday Guide with everyone you know.", join: ['Go to your dashboard', '/dashboard'] },
       business: { line: 'If you run a Vegan business, claiming your listing is free for members.' },
@@ -124,12 +124,16 @@
       creator: { line: "If you create content, we're registering official Vegans Explore creators. Join, then pick the Creator path." },
       'foodie-fest': { line: 'We met at Vegan Foodie Fest Miami, and we kept building.' },
       explore: { line: '' },
-      meetup: { line: "Thanks for being part of our Meetup. We're bringing you a bunch of new events, especially into the new year, and we're looking for people to help organize them.", lead: true },
+      meetup: { line: "Thanks for being part of our Meetup. We're bringing you a bunch of new events into the new year. Do you want to lead events with us?", lead: true,
+        audio: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/hello/sean-meetup-v1.mp3',
+        said: ["Hey, it's Sean. Thanks for being part of our Meetup. Vegans Explore is back, and on January 1 we launch. I'd love for you to be one of our Founding Members, and it's free.",
+          "Don't worry about events: we're bringing you a bunch of new ones, especially as we move into the new year, and we're looking for people to lead them with us. If that's you, tap Lead events with us.",
+          "And as a thank-you, we made a free Holiday Guide, with events, places to eat, gift ideas and recipes for ThanksLiving, Hanukkah and Christmas. See you soon."] },
       facebook: { line: 'Thanks for being part of our Facebook group. The Holiday Guide is our gift to everybody.' },
       // People who made an account before (Sean, 2026-11-10: "factor in that they don't know their login... give them a process to... reset
       // their password"). Sign in goes first; the reset is one tap away.
       registered: { line: "You already have an account with us, so you're one step from your dashboard. Don't remember your password? Tap Reset your password and we'll email you a link in a minute.", join: ['Sign in to your account', '/login'], reset: true },
-      whatsapp: { line: "We've moved the community onto our platform. To stay locked in with every event, the Directory and the people, join before our January 1 launch." }
+      whatsapp: { line: "We've moved into a brand new community on our own platform. To celebrate, the Holiday Guide is yours, free." }
     };
     var b = (new URLSearchParams(location.search).get('b') || '').toLowerCase();
     var cfg = B[b] || B.explore;
@@ -138,6 +142,7 @@
     if (cfg.join) { $('join').textContent = cfg.join[0]; $('join').href = cfg.join[1]; }
     if (cfg.lead) $('lead').hidden = false;
     if (cfg.reset) $('reset').hidden = false;
+    if (cfg.said) $('said').innerHTML = cfg.said.map(function (t) { return '<p>' + t.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</p>'; }).join('');
     var a = $('audio'); a.src = cfg.audio || GENERAL;
     function setPlaying(on) {
       $('play').setAttribute('aria-pressed', on ? 'true' : 'false');
