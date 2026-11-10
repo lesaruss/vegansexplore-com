@@ -71,7 +71,7 @@ New scenes for this page's video: Liz with each path's world (a restaurant kitch
 
 Made: `liz-pth-{trail,kitchen,event,creator,rescue,shop,badge,meetup,link}.jpg` (the shop scene redrawn: Liz was off-model, then Sean asked for Liz and Theo with a straight shelf, v2). Every picture used once. Video `sec-paths-v2.mp4` in vegan-media (73 s), captions `public/guides/welcome/sec-paths-v2.vtt`, scripts `scripts/tour-video/sections/cap-paths.js` and `render-paths.py`.
 
-## 9. Make It Better (approved 2026-11-09 with Nominate them; recorded sec-better-v1, video rendered, waiting on Sean's look)
+## 9. Make It Better (approved 2026-11-09 with Nominate them; video sec-better-v1 approved and live 2026-11-10)
 
 About 70 seconds. The page is on the section template (how to use, seven ways to tell us, one call to action: Send feedback now, which opens the Feedback form).
 
@@ -81,7 +81,7 @@ New scenes for this page's video: Liz listening, noting, fixing and building wit
 
 Made (2026-11-10, after Sean's Higgsfield top-up, stills only): `liz-bet-{note,team,cafe,spotlight,build,fix,potluck,card}.jpg`, no redraws (16 credits). Video `sec-better-v1.mp4` (82 s), captions `sec-better-v1.vtt`.
 
-## 10. For the Animals (draft v1 for Sean)
+## 10. For the Animals (approved 2026-11-10)
 
 About 75 seconds. The page is on the section template (how to use, six ways to show up, one call to action: Find nonprofits and rescues).
 
