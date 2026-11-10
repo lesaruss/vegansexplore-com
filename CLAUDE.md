@@ -237,6 +237,9 @@ every new Guide scene uses this recipe.
   head to shoes in frame (the old ensemble reference made the Guides look short).
 - **Never stretch or outpaint a character scene** to change its shape; draw it new in the target shape. Outpainting is only for city art.
 - Liz's pink Vegans Explore tee is a favorite: use it often.
+- **Sean himself** (LOCKED 2026-11-10, canon `canon-sean-illustrated-likeness`): 44, black beard with a gray chin patch, bold black square
+  frames with clear lenses and never any glare, his black GeekFon wearable on the right wrist, seven bead bracelets on the left. References:
+  `/public/founder/sean-square.jpg` and `sean-tall.jpg`.
 
 ## Show the site with our demos, stamped Sample (Sean, 2026-11-08)
 
