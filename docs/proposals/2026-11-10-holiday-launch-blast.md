@@ -81,7 +81,7 @@ waitlist, not a registration yet). `noindex`. Each bucket's link is `/go/<code>`
 
 **Voice notes, one per page** (Sean, 2026-11-10: "it may not be one size fits all"; Sean's Higgsfield voice; ThanksLiving, the brand):
 
-General (email, members, business, nonprofit, creator, Foodie Fest, explore). **Approved and recorded** (`/public/hello/sean-general-v1.mp3`):
+General (email, members, business, nonprofit, creator, Foodie Fest, explore). **Approved and recorded** (`vegan-media/media/hello/sean-general-v2.mp3`, Sean's Higgsfield voice; checked word for word with stt, and ThanksLiving checked on its own since the full transcript autocorrects it; v1 said Thanksgiving and is not used):
 > Hey, it's Sean. Vegans Explore is back, and I'm excited. On January 1 we launch, and I'd love for you to be one of our Founding Members.
 > Membership is free: take a short survey and you're in. If you run a business, claiming your listing is free too. Before you go, take a
 > minute with our Welcome Guide and see everything we're building. And as a thank-you, we made a free Holiday Guide. It's a mini website for
