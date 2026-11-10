@@ -74,7 +74,7 @@
     { k: 'hk-events', parent: 'hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hanukkah.jpg', label: 'Events', say: 'Looking for a latke night or a party near you? Here are the Hanukkah events on our calendar. Hosting one? Add it, so people can find you.' },
     { k: 'christmas', label: 'Christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', say: 'Christmas, the plant-based way. On this page are a few easy ideas: a centerpiece for the table, cookies to share, and gifts that do no harm.' },
     { k: 'xm-ideas', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Ideas and Gifts', say: 'A few easy ideas for a plant-based Christmas: a centerpiece for the table, cookies to share, and gifts that do no harm.' },
-    { k: 'xm-gifts', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Gift Guide', say: 'Shopping for a Vegan, or for anyone? Here are gifts our team picked, from food to beauty to your animal companion. Plus the ones you love so others can find them.' },
+    { k: 'xm-gifts', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Gift Guide', say: 'Shopping for a Vegan, or for anyone? Here are gifts our team picked. Save the ones you love to your wish list and share it with your family.' },
     { k: 'xm-wish', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Holiday Wish List', say: 'Not sure what to give the Vegan in your life? Start with the Most Wanted shelf. Making a list? Add what you are wishing for and share it with your family.' },
     { k: 'xm-recipes', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Recipes', say: 'Cooking Christmas dinner? Here is a mushroom Wellington for the middle of the table, maple Brussels sprouts, a creamy nog and gingerbread cookies.' },
     { k: 'xm-store', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'At the Store', say: 'Short on time? Here are the plant-based roasts, nogs, butters and treats you can pick up this season. Stock changes by store, so check before you go.' },
@@ -442,16 +442,19 @@
       (g.note ? '<p class="hg-sum">' + esc(g.note) + '</p>' : '') + (g.source_name ? '<small class="hg-gsrc">Found in ' + (g.source_url ? '<a href="' + esc(g.source_url) + '" target="_blank" rel="noopener">' + esc(g.source_name) + '</a>' : esc(g.source_name)) + '</small>' : '') +
       '<div class="hg-acts">' + (g.link ? '<a class="dg-btn" href="' + esc(g.link) + '" target="_blank" rel="noopener nofollow">Shop</a>' : '') +
       (g.amazon_link ? '<a class="dg-btn' + (g.link ? ' dg-ghost' : '') + '" href="' + esc(g.amazon_link) + '" target="_blank" rel="noopener nofollow">Amazon</a>' : '') +
-      '<button type="button" class="dg-save hg-plus' + (g.mine ? ' on' : '') + '" data-gift-plus="' + esc(g.id) + '" aria-pressed="' + !!g.mine + '" aria-label="Plus this gift">+ ' + (g.plus || 0) + '</button></div></div></div>';
+      // Save puts the gift on the member's wish list (Sean, 2026-11-10: "if they save it, it goes to the wish list"); saves rank the gifts.
+      '<button type="button" class="dg-save hg-plus' + (g.mine ? ' on' : '') + '" data-gift-plus="' + esc(g.id) + '" aria-pressed="' + !!g.mine + '" aria-label="Save to my wish list">' + (g.mine ? 'Saved' : 'Save') + '</button></div></div></div>';
   }
   function viewGifts() {
-    main.innerHTML = head('Christmas', 'Gift Guide', 'Gifts our team picked for the Vegan on your list, and for anyone who loves a gift that does no harm. Plus the ones you love so others can find them.') +
+    // The page's instructions are its call to action (Sean, 2026-11-10): save to the wish list and share it; suggest what is missing.
+    main.innerHTML = head('Christmas', 'Gift Guide', 'Gifts our team picked for the Vegan on your list. Save items to add them to your wish list, so you can share it with the people you love. See a gift that is not here? Press Suggest a Gift so we can consider it.') +
       '<div class="hg-tools2"><div class="hg-search"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#525252" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
       '<input type="search" id="hgGq" placeholder="Search gifts and brands..." aria-label="Search gifts" autocomplete="off" data-dictate="off" value="' + esc(GF.q) + '"></div>' +
       // Sections are a dropdown beside the search, the Events region way (Sean, 2026-11-10: "Keep the titles, use a drop-down... you may
       // want to put more categories in there in the future").
-      '<select class="dg-sort hg-evsel" id="hgGsec" aria-label="Section"><option value="">Every section</option></select>' +
-      '<button type="button" class="hg-subbtn" data-hg-open="hgGiftPanel" aria-expanded="false" aria-controls="hgGiftPanel">Suggest a Gift</button></div>' +
+      '<select class="dg-sort hg-evsel" id="hgGsec" aria-label="Category"><option value="">Choose a category</option></select>' +
+      '<button type="button" class="hg-subbtn" data-hg-open="hgGiftPanel" aria-expanded="false" aria-controls="hgGiftPanel">Suggest a Gift</button>' +
+      (registered() ? '<a class="dg-btn dg-ghost hg-mywl" href="#/xm-wish">My Wish List</a>' : '') + '</div>' +
       // The suggestion goes to the team for a check (ve-holiday wish_add, kind gift). A brand suggesting its own gift gets the soft ask
       // (Sean, 2026-11-10): would they give an item to the December giveaway? Yes or no, both optional.
       '<div class="hg-submit" id="hgGiftPanel" hidden><section class="hg-sug"><h3>Suggest a Gift</h3><form class="hg-sugf hg-giftf" novalidate>' +
@@ -464,7 +467,9 @@
           '<div class="hg-wk" role="radiogroup" aria-label="Giveaway"><label><input type="radio" name="giveaway" value="yes"> Yes, I would like to</label><label><input type="radio" name="giveaway" value="no"> Not this time</label></div>' +
           '<label class="hg-gwhat" hidden>What would you give, and how many? (optional)<input name="giveaway_note" maxlength="300" placeholder="Two gift boxes"></label></div>' +
         '<div class="dg-btns" style="margin:0"><button class="dg-btn" type="submit">Send it</button></div><p class="dg-srow-p" data-smsg style="margin:0"></p></form></section></div>' +
-      '<div id="hgGiftList"><div class="dg-loading">Loading the gifts...</div></div>';
+      '<div id="hgGiftList"><div class="dg-loading">Loading the gifts...</div></div>' +
+      // Amazon's Associates terms ask for this line wherever our tagged Amazon links are.
+      '<p class="hg-note">Some links go to Amazon through our tracked links. As an Amazon Associate, Vegans Explore earns from qualifying purchases.</p>';
     var gf = main.querySelector('.hg-giftf');
     gf.addEventListener('change', function () {
       var own = gf.owner.checked, yes = (gf.querySelector('input[name=giveaway]:checked') || {}).value === 'yes';
@@ -486,11 +491,11 @@
     var draw = function () {
       var box = document.getElementById('hgGiftList'), chips = document.getElementById('hgGsec'); if (!box) return;
       var all = GIFTS || [], secs = []; all.forEach(function (g) { if (secs.indexOf(g.section) < 0) secs.push(g.section); });
-      chips.innerHTML = '<option value="">Every section</option>' + secs.map(function (x) { return '<option value="' + esc(x) + '"' + (GF.sec === x ? ' selected' : '') + '>' + esc(x) + '</option>'; }).join('');
+      chips.innerHTML = '<option value="">Choose a category</option>' + secs.map(function (x) { return '<option value="' + esc(x) + '"' + (GF.sec === x ? ' selected' : '') + '>' + esc(x) + '</option>'; }).join('');
       var w = GF.q.trim().toLowerCase().split(/\s+/).filter(Boolean);
       var list = all.filter(function (g) { var t = [g.title, g.brand, g.note, g.section].join(' ').toLowerCase(); return (!GF.sec || g.section === GF.sec) && !w.some(function (x) { return t.indexOf(x) < 0; }); });
       box.innerHTML = list.length ? secs.filter(function (x) { return list.some(function (g) { return g.section === x; }); }).map(function (x) {
-        return '<section class="hg-shelf"><h3 class="hg-shelf-h">' + GIFT + esc(x) + '</h3><div class="hg-gifts">' + list.filter(function (g) { return g.section === x; }).map(giftCard).join('') + '</div></section>';
+        return '<section class="hg-shelf"><h3 class="hg-shelf-h">' + GIFT + esc(x) + '</h3><div class="hg-gifts">' + list.filter(function (g) { return g.section === x; }).sort(function (a, b) { return (b.plus || 0) - (a.plus || 0) || (a.sort || 0) - (b.sort || 0); }).map(giftCard).join('') + '</div></section>';
       }).join('') : '<div class="hg-empty"><h3>' + (all.length ? 'Nothing Matches' : 'Gifts Coming Soon') + '</h3><p>' + (all.length ? 'Try another word or section.' : 'Our team is picking them now.') + '</p></div>';
     };
     document.getElementById('hgGq').addEventListener('input', function (e) { GF.q = e.target.value; draw(); });
@@ -503,9 +508,9 @@
         var id = el.getAttribute('data-gift-plus'), g = (GIFTS || []).filter(function (x) { return x.id === id; })[0]; if (!g) return;
         var go = function () {
           var on = !g.mine; el.disabled = true;
-          holA('gift_plus', { gift_id: id, on: on }).then(function (d) { if (d && d.ok) { g.mine = on; g.plus = d.plus; el.classList.toggle('on', on); el.setAttribute('aria-pressed', String(on)); el.textContent = '+ ' + d.plus; } }).catch(function () {}).then(function () { el.disabled = false; });
+          holA('gift_plus', { gift_id: id, on: on }).then(function (d) { if (d && d.ok) { g.mine = on; g.plus = d.plus; el.classList.toggle('on', on); el.setAttribute('aria-pressed', String(on)); el.textContent = on ? 'Saved' : 'Save'; } }).catch(function () {}).then(function () { el.disabled = false; });
         };
-        if (registered()) go(); else joinWindow('Plus This Gift', 'Everything in the Holiday Guide is free to read. Register to plus the gifts you love, so others shopping for a Vegan can find them.', function () { setTimeout(function () { GIFTS = null; viewGifts(); }, 50); });
+        if (registered()) go(); else joinWindow('Save to Your Wish List', 'Everything in the Holiday Guide is free to read. Register to save gifts to your wish list and share it with the people you love.', function () { setTimeout(function () { GIFTS = null; viewGifts(); }, 50); });
       }
     });
     if (GIFTS) { draw(); return; }
@@ -562,11 +567,13 @@
       var box = document.getElementById('hgWishMine'); if (!box) return;
       holA('wish_mine', { holiday: hk }).then(function (d) {
         if (!d || !d.ok) return;
-        var mine = d.items.filter(function (w) { return w.kind === 'wish'; }), url = location.origin + '/guides/holiday-guide#/xm-wish/list/' + encodeURIComponent(d.code || '');
+        // Gifts saved in the Gift Guide are on the list too, first (2026-11-10); Remove unsaves them.
+        var saved = d.saved || [], mine = d.items.filter(function (w) { return w.kind === 'wish'; }), url = location.origin + '/guides/holiday-guide#/xm-wish/list/' + encodeURIComponent(d.code || '');
         box.innerHTML = '<section class="hg-shelf"><h3 class="hg-shelf-h">' + GIFT + 'My Wish List</h3>' +
-          (mine.length ? '<div class="hg-mlist">' + mine.map(function (w) { return wishRow(w, '<button type="button" class="hg-wx" data-wish-rm="' + esc(w.id) + '" aria-label="Remove ' + esc(w.title) + '">Remove</button>'); }).join('') + '</div>' +
+          (saved.length || mine.length ? '<div class="hg-mlist">' + saved.map(function (w) { return wishRow(w, '<button type="button" class="hg-wx" data-wish-unsave="' + esc(w.gift_id) + '" aria-label="Remove ' + esc(w.title) + '">Remove</button>'); }).join('') +
+            mine.map(function (w) { return wishRow(w, '<button type="button" class="hg-wx" data-wish-rm="' + esc(w.id) + '" aria-label="Remove ' + esc(w.title) + '">Remove</button>'); }).join('') + '</div>' +
             (d.code ? '<div class="dg-btns" style="margin:12px 0 0"><button type="button" class="dg-btn" data-wish-share="' + esc(url) + '">Share my list</button></div>' : '') :
-            '<p class="dg-srow-p">Nothing on your list yet. Press Add to My List.</p>') + '</section>';
+            '<p class="dg-srow-p">Nothing on your list yet. Save gifts in the <a href="#/xm-gifts">Gift Guide</a>, or press Add to My List.</p>') + '</section>';
       }).catch(function () {});
     };
     var drawShelves = function () {
@@ -593,6 +600,7 @@
       if (curView !== 'xm-wish') return;
       var el;
       if ((el = e.target.closest('[data-wish-rm]'))) { holA('wish_remove', { id: el.getAttribute('data-wish-rm'), holiday: hk }).then(drawMine); return; }
+      if ((el = e.target.closest('[data-wish-unsave]'))) { GIFTS = null; holA('gift_plus', { gift_id: el.getAttribute('data-wish-unsave'), on: false }).then(drawMine); return; }
       if ((el = e.target.closest('[data-wish-share]'))) {
         var u = el.getAttribute('data-wish-share');
         if (navigator.share) navigator.share({ title: 'My Holiday Wish List', url: u }).catch(function () {});
