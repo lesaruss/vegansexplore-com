@@ -97,6 +97,7 @@
         <div class="cta-row">
           <a class="btn btn-ghost" href="/passport?guide=welcome&amp;from=hello">Take the Welcome tour</a>
           <a class="btn btn-ghost" id="lead" href="/paths#path-group" hidden>Help us organize events</a>
+          <a class="btn btn-ghost" id="reset" href="/forgot-password" hidden>Reset your password</a>
           <span id="share-host"></span>
         </div>
         <p class="fine" id="fine">Founding Membership closes at midnight Eastern on January 1, 2027.</p>
@@ -125,6 +126,9 @@
       explore: { line: '' },
       meetup: { line: "Thanks for being part of our Meetup. We're bringing you a bunch of new events, especially into the new year, and we're looking for people to help organize them.", lead: true },
       facebook: { line: 'Thanks for being part of our Facebook group. The Holiday Guide is our gift to everybody.' },
+      // People who made an account before (Sean, 2026-11-10: "factor in that they don't know their login... give them a process to... reset
+      // their password"). Sign in goes first; the reset is one tap away.
+      registered: { line: "You already have an account with us, so you're one step from your dashboard. Don't remember your password? Tap Reset your password and we'll email you a link in a minute.", join: ['Sign in to your account', '/login'], reset: true },
       whatsapp: { line: "We've moved the community onto our platform. To stay locked in with every event, the Directory and the people, join before our January 1 launch." }
     };
     var b = (new URLSearchParams(location.search).get('b') || '').toLowerCase();
@@ -133,6 +137,7 @@
     if (cfg.line) { $('line').textContent = cfg.line; $('line').hidden = false; }
     if (cfg.join) { $('join').textContent = cfg.join[0]; $('join').href = cfg.join[1]; }
     if (cfg.lead) $('lead').hidden = false;
+    if (cfg.reset) $('reset').hidden = false;
     var a = $('audio'); a.src = cfg.audio || GENERAL;
     function setPlaying(on) {
       $('play').setAttribute('aria-pressed', on ? 'true' : 'false');
