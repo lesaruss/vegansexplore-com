@@ -62,3 +62,13 @@ from unnest(array['registered','business','creator','foodie-fest','explore']) b
 where not exists (select 1 from ve_outreach_campaign_members m where m.campaign_slug = 'holiday-launch-' || b and m.person_key = 'contact@lesaruss.com');
 
 update ve_campaign_program_steps set outreach_campaign = 'holiday-launch-explore', outreach_step = 1 where program_slug = 'holiday-launch-2026' and n = 1;
+
+-- Revision (Sean, 2026-11-10 ~8:50 AM: "we officially launch... make it clear that we're active now... gearing up and finding our tribe...
+-- come in now"; "send a little bit of each group each day... equal batches... by Thursday, if nobody's replying... pause and regroup").
+-- Today's warm-up allowance is 128, so today's paces share it across every group; Wednesday's are raised after the bounce and click check.
+update ve_outreach_campaign_emails set body = replace(body,
+  'Vegans Explore is back. We launch on January 1, and I''d love for you to be one of our Founding Members. It''s free.',
+  'Vegans Explore is back. We officially launch on January 1, but we''re already up and running: gearing up and finding our tribe before the big day. I''d love for you to come in now as one of our Founding Members. It''s free.')
+where campaign_slug like 'holiday-launch-%' and step = 1;
+update ve_outreach_campaigns c set start_on = '2026-11-10', daily_pace = v.p
+from (values ('registered',5),('business',28),('creator',3),('foodie-fest',17),('explore',72)) v(b,p) where c.slug = 'holiday-launch-' || v.b;
