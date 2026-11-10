@@ -5290,10 +5290,13 @@ function houseAd(l){
 function guideBanner(l, tabGuide){
   var el = document.getElementById('ve-house-banner'); if(!el) return;
   function go(){
-      // The Holiday Guide is the main Guide for the season (Sean, 2026-11-10): it shows on every listing whose Resources tab is not
-    // already the Holiday Guide; those show one of the others at random.
+      // The Holiday Guide is the main Guide for the season (Sean, 2026-11-10: "show the Holiday Guide on restaurants too"): through
+    // Christmas it shows on every listing, even where the Resources tab is the Holiday Guide too. From December 26 (Eastern) the
+    // banner goes back to one of the others at random, never the Guide the tab shows.
     var all = (VEPromo.guides || ['airport-guide', 'holiday-guide', 'stadium-arena-guide']).filter(function(s){ return s !== tabGuide; });
-    var slug = all.indexOf('holiday-guide') >= 0 ? 'holiday-guide' : all[Math.floor(Math.random() * all.length)];
+    var season = Date.now() < Date.parse('2026-12-26T05:00:00Z');
+    if(!season) all = all.filter(function(s){ return s !== 'holiday-guide'; });  // on hiatus until Valentine's Day (Sean, 2026-11-10)
+    var slug = season && VEPromo.guides && VEPromo.guides.indexOf('holiday-guide') >= 0 ? 'holiday-guide' : all[Math.floor(Math.random() * all.length)];
     VEPromo.guideCard(el, slug, { page: '/directory/' + (l.slug || ''), listing_id: l.id || null, preview: typeof DEMO !== 'undefined' && !!DEMO });
   }
   if(window.VEPromo && VEPromo.guideCard) return go();

@@ -104,4 +104,6 @@ Guide, `/go/ve-dairy-guide`). The same day the Dairy Guide's rail slots moved to
 landscape slot kept, its skyscraper is already Holiday), the listing house banner got a Holiday campaign `...13005` with `...13002` paused
 (migration `20261110_holiday_for_dairy_and_points_claimed_only.sql`), and the rail ad wraps its headline on a 160-wide skyscraper.
 After Christmas: move the rail slots back to `...14001`, set `...14001` and `...13002` active, and point `FOOD_GUIDE` in
-`public/ve-guide-tab.js` back to the Dairy Guide.
+`public/ve-guide-tab.js` back to the Dairy Guide. The listing Guide banner (`guideBanner`) shows the Holiday Guide on every listing,
+restaurants included, through Christmas (Sean, 2026-11-10: "show the Holiday Guide on restaurants too"), then leaves it out of the
+rotation from December 26 by itself.
