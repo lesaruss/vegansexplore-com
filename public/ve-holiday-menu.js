@@ -6,7 +6,7 @@
  * One component for the Holiday Guide's menu cards and the Directory listing page; never copy it.
  *
  *   VEHolidayMenu.open(menu, { onClose })   menu = { name, slug, logo, city, state, vegan (true | false | null), holiday,
- *                                                     summary, items [{name, desc, price, photo}], order_by (YYYY-MM-DD), pickup,
+ *                                                     summary, items [{name, desc, price, photo, section?}], order_by (YYYY-MM-DD), pickup,
  *                                                     price_range, holiday_hours, order_url, link, note }
  *                                             A business menu has items; a found menu (a tip) has a note and a link to its own post.
  *   VEHolidayMenu.close()
@@ -66,6 +66,16 @@
     var ph = safe(photo) || (/^\//.test(String(photo || '')) ? photo : '');
     return '<div class="vhm-it">' + (ph ? '<img src="' + esc(ph) + '" alt="" loading="lazy">' : '') + '<div><div class="vhm-ih"><b>' + esc(name) + '</b>' + (price ? '<em>' + esc(price) + '</em>' : '') + '</div>' + (desc ? '<p>' + esc(desc) + '</p>' : '') + '</div></div>';
   }
+  // A menu keeps its own sections (Starters, Mains, Sweets...) when its items carry `section`; otherwise it is one list, The Menu.
+  function secs(items) {
+    var out = [], cur = null;
+    items.forEach(function (x) {
+      var k = x.section || 'The Menu';
+      if (!cur || cur.k !== k) { cur = { k: k, rows: [] }; out.push(cur); }
+      cur.rows.push(row(x.name, x.desc, x.price, x.photo));
+    });
+    return out.map(function (g) { return '<div class="vhm-sec"><h3>' + esc(g.k) + '</h3>' + g.rows.join('') + '</div>'; }).join('');
+  }
   function html(m) {
     var where = [m.city, m.state].filter(Boolean).join(', ');
     var tag = m.vegan === true ? '<span class="vhm-tag">100% Vegan</span>' : m.vegan === false ? '<span class="vhm-tag pv">Plant-based (Pre-Vegan)</span>' : '';
@@ -79,7 +89,7 @@
         '<div class="vhm-id"><div class="vhm-logo"' + (logo ? ' style="background-image:url(\'' + esc(logo) + '\')"' : '') + '>' + (logo ? '' : esc(String(m.name || '?').charAt(0))) + '</div>' +
         '<div class="vhm-nm"><h2 id="vhm-t">' + esc(m.name) + '</h2>' + (where ? '<p>' + esc(where) + '</p>' : '') + '</div>' + tag + '</div></div>' +
       '<div class="vhm-body">' + (m.summary ? '<p class="vhm-sum">' + esc(m.summary) + '</p>' : '') +
-        (items.length ? '<div class="vhm-sec"><h3>The Menu</h3>' + items.map(function (x) { return row(x.name, x.desc, x.price, x.photo); }).join('') + '</div>'
+        (items.length ? secs(items)
           : '<div class="vhm-sec"><h3>The Menu</h3>' + (m.note ? '<p class="vhm-note">' + esc(m.note) + '</p>' : '') + '<p class="vhm-note">We are still getting their full dish list. Their own post has it for now.</p></div>') +
         (ordering ? '<div class="vhm-sec"><h3>Ordering</h3>' + ordering + '</div>' : '') + '</div>' +
       '<div class="vhm-foot"><div class="vhm-acts">' + (order ? '<a href="' + esc(order) + '" target="_blank" rel="noopener">Order</a>' : '') +
