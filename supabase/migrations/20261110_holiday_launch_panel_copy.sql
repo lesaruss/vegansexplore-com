@@ -17,3 +17,10 @@ from (values
   ('explore', 'A quick note from Sean at Vegans Explore', 'You may know us as SoFlo Vegans', '', 'Watch it, then pick: become a Founding Member, or open the Holiday Guide.')
 ) v(b, s, o, l, c)
 where e.campaign_slug = 'holiday-launch-' || v.b and e.step = 1 and e.locked_at is null;
+
+-- Sean, 2026-11-10: "SoFlo Vegans still exists. Should we put (SoFlo Vegans) at the end of Vegans Explore in the subject?" Yes for the groups
+-- who knew us there; the body says "from SoFlo Vegans" (it still exists), not "as".
+update ve_outreach_campaign_emails set
+  subject = case when campaign_slug in ('holiday-launch-explore','holiday-launch-business','holiday-launch-creator') then 'From Sean at Vegans Explore (SoFlo Vegans)' else subject end,
+  body = replace(body, 'You may know us as SoFlo Vegans', 'You may know us from SoFlo Vegans')
+where campaign_slug like 'holiday-launch-%' and step = 1 and locked_at is null;
