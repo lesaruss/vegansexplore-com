@@ -91,7 +91,7 @@ New scenes (Higgsfield budget: about 7 stills, 14 credits): Liz at a sanctuary, 
 
 Made: `liz-ani-{sanct,foster,adopt,fund,pulse,causes,walk}.jpg` (the adoption day was refused once by a false content flag and redrawn with new words; 16 credits). Video `sec-animals-v1.mp4` (72 s), captions `sec-animals-v1.vtt`.
 
-## 11. Become a Founder (approved 2026-11-10; recorded sec-founder-v1, video rendered, waiting on Sean's look)
+## 11. Become a Founder (approved 2026-11-10; video sec-founder-v1 approved and live 2026-11-10)
 
 About 72 seconds. The page keeps its own sign-up layout (the countdown and the Explorer card), with Play Liz added.
 
