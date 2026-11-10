@@ -17,7 +17,7 @@
   <style>
     /* The Holiday Guide launch page (Sean, 2026-11-10, playbook ve-outreach-buckets, task holiday-launch-blast): "their landing page is
        just going to be me... almost the same design as the one we did for content creators". Parent: /invite (template gate). Sean's
-       still with the play button on the picture itself (Sean, 2026-11-10: play and pause on the image; the video, when it comes, sits in the same 4:5 frame; nothing plays until pressed), his words on
+       still with a green play button in the middle of the picture (Sean, 2026-11-10: "put the play button in the center so people can't miss it... make it green"; play and pause on the image; the video, when it comes, sits in the same 4:5 frame; nothing plays until pressed), his words on
        the left, one line by audience (?b=), two doors: Become a Founding Member (opens the Welcome Guide) and the Holiday Guide; no Share (Sean: they would be sharing their invitation). Every link we send is a
        tracked /go/ link that lands here with its ?b=. */
 
@@ -71,13 +71,13 @@
     .btn-ghost:hover{border-color:var(--ve-green-deep)}
     .side{display:flex;flex-direction:column;align-self:start}
     .side .media{position:relative;display:block;width:100%;padding:0;border:0;cursor:pointer;max-height:calc(100vh - 180px);aspect-ratio:4/5}
-    .pbtn{position:absolute;left:24px;bottom:24px;width:84px;height:84px;border-radius:50%;background:rgba(15,26,16,.62);color:#fff;display:grid;place-items:center;transition:opacity .2s,transform .2s;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+    .pbtn{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:96px;height:96px;border-radius:50%;background:#22C55E;border:4px solid #fff;color:#fff;display:grid;place-items:center;transition:opacity .2s,transform .2s;box-shadow:0 8px 24px rgba(0,0,0,.25)}
     .pbtn svg{width:38px;height:38px;margin-left:4px}
-    .media:hover .pbtn{transform:scale(1.06)}
+    .media:hover .pbtn{transform:translate(-50%,-50%) scale(1.06);background:#16a34a}
     .media[aria-pressed="true"] .pbtn{opacity:0}
     .media[aria-pressed="true"]:hover .pbtn{opacity:1}
     .media[aria-pressed="true"] .pbtn svg{margin-left:0}
-    @media (max-width:900px){.side .media{max-height:none;aspect-ratio:4/5}.side{order:-1}.pbtn{left:16px;bottom:16px;width:72px;height:72px}}
+    @media (max-width:900px){.side .media{max-height:none;aspect-ratio:4/5}.side{order:-1}.pbtn{width:80px;height:80px}}
     .cta-row{margin-bottom:10px}
   </style>
 </head>
