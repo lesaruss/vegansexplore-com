@@ -74,6 +74,7 @@
     { k: 'hk-events', parent: 'hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hanukkah.jpg', label: 'Events', say: 'Looking for a latke night or a party near you? Here are the Hanukkah events on our calendar. Hosting one? Add it, so people can find you.' },
     { k: 'christmas', label: 'Christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', say: 'Christmas, the plant-based way. On this page are a few easy ideas: a centerpiece for the table, cookies to share, and gifts that do no harm.' },
     { k: 'xm-ideas', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Ideas and Gifts', say: 'A few easy ideas for a plant-based Christmas: a centerpiece for the table, cookies to share, and gifts that do no harm.' },
+    { k: 'xm-gifts', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Gift Guide', say: 'Shopping for a Vegan, or for anyone? Here are gifts our team picked, from food to beauty to your animal companion. Plus the ones you love so others can find them.' },
     { k: 'xm-wish', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Holiday Wish List', say: 'Not sure what to give the Vegan in your life? Start with the Most Wanted shelf. Making a list? Add what you are wishing for and share it with your family.' },
     { k: 'xm-recipes', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Recipes', say: 'Cooking Christmas dinner? Here is a mushroom Wellington for the middle of the table, maple Brussels sprouts, a creamy nog and gingerbread cookies.' },
     { k: 'xm-store', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'At the Store', say: 'Short on time? Here are the plant-based roasts, nogs, butters and treats you can pick up this season. Stock changes by store, so check before you go.' },
@@ -257,7 +258,7 @@
     { label: 'Run a Business?', line: 'Send your holiday menu and we feature it here, free for members.', kids: ['business'] }
   ];
   var PILL_PIC = { hanukkah: 'theo-hanukkah.jpg', 'hk-recipes': 'r-latkes.jpg', 'hk-menus': 'p-menus.jpg', 'hk-events': 'p-events.jpg',
-    christmas: 'theo-christmas.jpg', 'xm-recipes': 'r-wellington.jpg', 'xm-store': 'r-nog.jpg', 'xm-menus': 'p-menus.jpg', 'xm-events': 'p-events.jpg', recipes: 'r-loaf.jpg', ideas: 'p-thanks.jpg', 'hk-ideas': 'r-sufganiyot.jpg', 'hk-kosher': 'r-latkes.jpg', 'xm-ideas': 'r-gingerbread.jpg', 'xm-wish': 'w-give.jpg', store: 'p-store.jpg', listen: 'p-listen.jpg', thanksliving: 'p-thanks.jpg', events: 'p-events.jpg', menus: 'p-menus.jpg', giveback: 'p-giveback.jpg', business: 'p-business.jpg' };
+    christmas: 'theo-christmas.jpg', 'xm-recipes': 'r-wellington.jpg', 'xm-store': 'r-nog.jpg', 'xm-menus': 'p-menus.jpg', 'xm-events': 'p-events.jpg', recipes: 'r-loaf.jpg', ideas: 'p-thanks.jpg', 'hk-ideas': 'r-sufganiyot.jpg', 'hk-kosher': 'r-latkes.jpg', 'xm-ideas': 'r-gingerbread.jpg', 'xm-wish': 'w-give.jpg', 'xm-gifts': 'r-gingerbread.jpg', store: 'p-store.jpg', listen: 'p-listen.jpg', thanksliving: 'p-thanks.jpg', events: 'p-events.jpg', menus: 'p-menus.jpg', giveback: 'p-giveback.jpg', business: 'p-business.jpg' };
   function groupRows() {
     return GROUPS.filter(function (g) { return !g.hol || !holPast(g.hol); }).map(function (g) {
       return '<section class="rg-grow"><h3>' + esc(g.label) + '</h3><p>' + esc(g.line) + '</p><div class="rg-pills">' + g.kids.map(function (k) {
@@ -300,12 +301,13 @@
         ['hk-kosher', 'Kosher Places', 'Vegan and plant-based places that describe themselves as kosher or kosher certified, in our chapters and beyond.'],
         ['hk-menus', 'Holiday Menus', 'Vegan places cooking for Hanukkah: their menus, prices and the date to order by, each one checked by our team.'],
         ['hk-events', 'Events', 'Plant-based Hanukkah parties, latke nights and menorah lightings on our calendar. Hosting one? Add it.']] },
-    christmas: { pic: 'r-wellington.jpg', cta: ['Gift ideas', '#/xm-ideas'],
+    christmas: { pic: 'r-wellington.jpg', cta: ['Gift Guide', '#/xm-gifts'],
       intro: '<b>Christmas, December 25,</b> is the biggest day of family and giving of the year, and the easiest time to give gifts that do no harm. Here are ideas and gifts, a wish list, recipes, the store, Vegan menus and events.',
       what: '<b>What it is.</b> Christmas, on Friday, December 25, is a day of family, giving and a shared table for millions of people.',
       why: '<b>Why it matters.</b> It is also the biggest gift season of the year, so it is the easiest time to give gifts that do no harm and set a table everyone can enjoy.',
       how: '<b>What you can do here.</b> Find ideas and gifts, cook a Wellington from our recipes, pick up nog at the store, order from a Vegan place near you, or find a cookie swap or a holiday party.',
       rows: [['xm-ideas', 'Ideas and Gifts', 'A centerpiece for the table, cookies to share and gifts that do no harm, from Vegan brands in our Directory.'],
+        ['xm-gifts', 'Gift Guide', 'Gifts our team picked for the Vegan on your list, from food and home to beauty, style and animal companions. Plus the ones you love.'],
         ['xm-wish', 'Holiday Wish List', 'Make a list of what you are wishing for and share it with your family, or suggest the perfect gift for a Vegan. Family: start with Most Wanted.'],
         ['xm-recipes', 'Recipes', 'A mushroom Wellington for the middle of the table, maple Brussels sprouts, a creamy nog and cookies to share.'],
         ['xm-store', 'At the Store', 'Plant-based roasts, nogs, butters and treats you can pick up this season, by brand.'],
@@ -424,6 +426,56 @@
     rest(SB + '/rest/v1/listings?select=' + FIELDS + '&status=eq.approved&tags=cs.%7Bkosher%7D&order=vote_count.desc.nullslast&limit=200')
       .then(function (rows) { KOSHER = (Array.isArray(rows) ? rows : []).sort(function (a, b) { return (a.vegan_status === 'fully_vegan' ? 0 : 1) - (b.vegan_status === 'fully_vegan' ? 0 : 1) || (b.vote_count || 0) - (a.vote_count || 0) || a.name.localeCompare(b.name); }); })
       .catch(function () { KOSHER = []; }).then(function () { if (curView === 'hk-kosher') draw(); });
+  }
+
+  // ---------- Gift Guide (Christmas) ----------
+  // Sean, 2026-11-10: gifts our team picks (ve_holiday_gifts: section, brand listing, where to buy it, Amazon when sold there, our own note,
+  // the source credited), by section, with a Plus that lives only in the Holiday Guide (registered accounts, ve-holiday gift_plus).
+  var GIFTS = null, GF = { q: '', sec: '' };
+  var GIFT_ICO = function () { return GIFT; };
+  function giftCard(g) {
+    var l = g.listing, brand = l ? '<a class="hg-gbr" href="/directory/' + encodeURIComponent(l.slug) + '">' + (l.logo_url ? '<span class="hg-gbl" style="background-image:url(\'' + esc(l.logo_url) + '\')"></span>' : '') + esc(g.brand || l.name) + '</a>' : '<span class="hg-gbr">' + esc(g.brand || '') + '</span>';
+    var shop = g.link || g.amazon_link;
+    return '<div class="hg-gift">' + (g.image_url ? '<a class="hg-gpic" href="' + esc(shop || '#') + '" target="_blank" rel="noopener nofollow" style="background-image:url(\'' + esc(g.image_url) + '\')" aria-label="' + esc(g.title) + '"></a>' : '') +
+      '<div class="hg-gb"><div class="hg-gtop">' + brand + (g.price ? '<span class="hg-gpr">' + esc(g.price) + '</span>' : '') + '</div><h3>' + esc(g.title) + '</h3>' +
+      (g.note ? '<p class="hg-sum">' + esc(g.note) + '</p>' : '') + (g.source_name ? '<small class="hg-gsrc">Found in ' + (g.source_url ? '<a href="' + esc(g.source_url) + '" target="_blank" rel="noopener">' + esc(g.source_name) + '</a>' : esc(g.source_name)) + '</small>' : '') +
+      '<div class="hg-acts">' + (g.link ? '<a class="dg-btn" href="' + esc(g.link) + '" target="_blank" rel="noopener nofollow">Shop</a>' : '') +
+      (g.amazon_link ? '<a class="dg-btn' + (g.link ? ' dg-ghost' : '') + '" href="' + esc(g.amazon_link) + '" target="_blank" rel="noopener nofollow">Amazon</a>' : '') +
+      '<button type="button" class="dg-save hg-plus' + (g.mine ? ' on' : '') + '" data-gift-plus="' + esc(g.id) + '" aria-pressed="' + !!g.mine + '" aria-label="Plus this gift">+ ' + (g.plus || 0) + '</button></div></div></div>';
+  }
+  function viewGifts() {
+    main.innerHTML = head('Christmas', 'Gift Guide', 'Gifts our team picked for the Vegan on your list, and for anyone who loves a gift that does no harm. Plus the ones you love so others can find them.') +
+      '<div class="hg-tools2"><div class="hg-search"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#525252" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
+      '<input type="search" id="hgGq" placeholder="Search gifts and brands..." aria-label="Search gifts" autocomplete="off" data-dictate="off" value="' + esc(GF.q) + '"></div>' +
+      '<a class="hg-subbtn" href="#/xm-wish" style="display:inline-flex;align-items:center;text-decoration:none">Suggest a Gift</a></div>' +
+      '<div class="hg-chips" id="hgGsec" role="group" aria-label="Sections"></div><div id="hgGiftList"><div class="dg-loading">Loading the gifts...</div></div>';
+    var draw = function () {
+      var box = document.getElementById('hgGiftList'), chips = document.getElementById('hgGsec'); if (!box) return;
+      var all = GIFTS || [], secs = []; all.forEach(function (g) { if (secs.indexOf(g.section) < 0) secs.push(g.section); });
+      chips.innerHTML = '<button type="button" class="hg-chip" data-gsec="" aria-pressed="' + !GF.sec + '">All</button>' + secs.map(function (x) { return '<button type="button" class="hg-chip" data-gsec="' + esc(x) + '" aria-pressed="' + (GF.sec === x) + '">' + esc(x) + '</button>'; }).join('');
+      var w = GF.q.trim().toLowerCase().split(/\s+/).filter(Boolean);
+      var list = all.filter(function (g) { var t = [g.title, g.brand, g.note, g.section].join(' ').toLowerCase(); return (!GF.sec || g.section === GF.sec) && !w.some(function (x) { return t.indexOf(x) < 0; }); });
+      box.innerHTML = list.length ? secs.filter(function (x) { return list.some(function (g) { return g.section === x; }); }).map(function (x) {
+        return '<section class="hg-shelf"><h3 class="hg-shelf-h">' + GIFT + esc(x) + '</h3><div class="hg-gifts">' + list.filter(function (g) { return g.section === x; }).map(giftCard).join('') + '</div></section>';
+      }).join('') : '<div class="hg-empty"><h3>' + (all.length ? 'Nothing Matches' : 'Gifts Coming Soon') + '</h3><p>' + (all.length ? 'Try another word or section.' : 'Our team is picking them now.') + '</p></div>';
+    };
+    document.getElementById('hgGq').addEventListener('input', function (e) { GF.q = e.target.value; draw(); });
+    if (main._giftH) main.removeEventListener('click', main._giftH);
+    main.addEventListener('click', main._giftH = function (e) {
+      if (curView !== 'xm-gifts') return;
+      var el = e.target.closest('[data-gsec]');
+      if (el) { GF.sec = el.getAttribute('data-gsec'); draw(); return; }
+      if ((el = e.target.closest('[data-gift-plus]'))) {
+        var id = el.getAttribute('data-gift-plus'), g = (GIFTS || []).filter(function (x) { return x.id === id; })[0]; if (!g) return;
+        var go = function () {
+          var on = !g.mine; el.disabled = true;
+          holA('gift_plus', { gift_id: id, on: on }).then(function (d) { if (d && d.ok) { g.mine = on; g.plus = d.plus; el.classList.toggle('on', on); el.setAttribute('aria-pressed', String(on)); el.textContent = '+ ' + d.plus; } }).catch(function () {}).then(function () { el.disabled = false; });
+        };
+        if (registered()) go(); else joinWindow('Plus This Gift', 'Everything in the Holiday Guide is free to read. Register to plus the gifts you love, so others shopping for a Vegan can find them.', function () { setTimeout(function () { GIFTS = null; viewGifts(); }, 50); });
+      }
+    });
+    if (GIFTS) { draw(); return; }
+    holA('gifts', { holiday: 'christmas' }).then(function (d) { GIFTS = (d && d.gifts) || []; }).catch(function () { GIFTS = []; }).then(function () { if (curView === 'xm-gifts') draw(); });
   }
 
   // ---------- Holiday Wish List (Christmas) ----------
@@ -1365,7 +1417,7 @@
     var parts = (location.hash || '').replace(/^#\/?/, '').split('/');
     var view = parts[0] || 'overview', sub = parts.slice(1).join('/');
     var V = { overview: viewOverview, thanksliving: function () { viewHolOverview('thanksliving'); }, ideas: viewThanksLiving,
-      'hk-ideas': function () { viewHoliday('hanukkah'); }, 'xm-ideas': function () { viewHoliday('christmas'); }, 'hk-kosher': viewKosher, 'xm-wish': function () { viewWish(sub); }, recipes: function () { viewRecipes(sub); }, store: viewStore, listen: viewListen, menus: function () { viewMenus(sub); }, events: function () { viewEvents(sub); },
+      'hk-ideas': function () { viewHoliday('hanukkah'); }, 'xm-ideas': function () { viewHoliday('christmas'); }, 'hk-kosher': viewKosher, 'xm-wish': function () { viewWish(sub); }, 'xm-gifts': function () { viewGifts(sub); }, recipes: function () { viewRecipes(sub); }, store: viewStore, listen: viewListen, menus: function () { viewMenus(sub); }, events: function () { viewEvents(sub); },
       hanukkah: function () { viewHolOverview('hanukkah'); }, christmas: function () { viewHolOverview('christmas'); },
       'hk-recipes': function () { viewRecipes(sub); }, 'hk-menus': function () { viewMenus(sub); }, 'hk-events': function () { viewEvents(sub); },
       'xm-recipes': function () { viewRecipes(sub); }, 'xm-store': viewStore, 'xm-menus': function () { viewMenus(sub); }, 'xm-events': function () { viewEvents(sub); }, giveback: function () { viewGiveBack(sub); }, business: viewBusiness };
