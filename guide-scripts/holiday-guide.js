@@ -325,7 +325,8 @@
       // The kind of menu sits in the card's top right corner (Sean, 2026-11-10), as it does in the menu window.
       '<span class="hg-tag hg-tr' + (vegan ? '' : ' pv') + '">' + (vegan ? '100% Vegan' : 'Plant-based (Pre-Vegan)') + '</span></div>' +
       (m.summary ? '<p class="hg-sum">' + esc(m.summary) + '</p>' : '') +
-      '<div class="hg-facts">' + (m.order_by ? '<span><b>Order by</b> ' + esc(dayFmt(onDay(m.order_by), { month: 'long', day: 'numeric' })) + '</span>' : '') +
+      // Past the order-by day the card stays for reference, says so, and its menu has no Order button (Sean, 2026-11-10).
+      '<div class="hg-facts">' + (m.order_by ? (m.order_by < today() ? '<span><b>Orders closed</b> ' + esc(dayFmt(onDay(m.order_by), { month: 'long', day: 'numeric' })) + '</span>' : '<span><b>Order by</b> ' + esc(dayFmt(onDay(m.order_by), { month: 'long', day: 'numeric' })) + '</span>') : '') +
       (m.price_range ? '<span><b>Price</b> ' + esc(m.price_range) + '</span>' : '') + '</div>' +
       // One row of three (Sean, 2026-11-10): See Menu opens the menu in a lightbox over the page (/public/ve-holiday-menu.js).
       '<div class="hg-acts">' + menuBtn('m-' + l.slug) +

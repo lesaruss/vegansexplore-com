@@ -61,6 +61,10 @@
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function css() { if (document.getElementById('vhm-css')) return; var s = document.createElement('style'); s.id = 'vhm-css'; s.textContent = CSS; document.head.appendChild(s); }
   function day(iso) { try { return new Date(iso + 'T12:00:00').toLocaleDateString('en-US', { timeZone: 'America/New_York', weekday: 'long', month: 'long', day: 'numeric' }); } catch (e) { return iso; } }
+  // Ordering closes at the end of the order-by day, Eastern (Sean, 2026-11-10: "the order button disappears once their deadline ends
+  // and... it is removed from their listing. It can stay in the guide for reference").
+  function today() { return new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }); }
+  function closed(m) { return !!(m && m.order_by) && today() > String(m.order_by).slice(0, 10); }
   function safe(u) { return /^https?:\/\//i.test(String(u || '')) ? u : ''; }
   function row(name, desc, price, photo) {
     var ph = safe(photo) || (/^\//.test(String(photo || '')) ? photo : '');
@@ -81,9 +85,11 @@
     var tag = m.vegan === true ? '<span class="vhm-tag">100% Vegan</span>' : m.vegan === false ? '<span class="vhm-tag pv">Plant-based (Pre-Vegan)</span>' : '';
     var logo = safe(m.logo) || (/^\//.test(String(m.logo || '')) ? m.logo : '');
     var items = (m.items || []).filter(function (x) { return x && x.name; });
-    var ordering = [m.pickup ? row('Pickup', m.pickup) : '', m.price_range ? row('Price', m.price_range) : '', m.order_by ? row('Order by', day(m.order_by)) : '',
+    var shut = closed(m);
+    var ordering = [shut ? row('Orders closed', 'Ordering ended ' + day(m.order_by) + '. This menu stays here so you can see what they offered.') : '',
+      m.pickup ? row('Pickup', m.pickup) : '', m.price_range ? row('Price', m.price_range) : '', m.order_by && !shut ? row('Order by', day(m.order_by)) : '',
       m.holiday_hours ? row('Holiday hours', m.holiday_hours) : ''].join('');
-    var order = safe(m.order_url) || safe(m.link);
+    var order = shut ? '' : safe(m.order_url) || safe(m.link);
     return '<div class="vhm-head"><div class="vhm-bar"><p class="vhm-k"><img src="/public/ve-logo-mark.svg" alt="">Vegans Explore &middot; ' + esc((m.holiday || 'Holiday') + ' Menu') + '</p>' +
         '<button type="button" class="vhm-x" aria-label="Close" data-vhm-x>&times;</button></div>' +
         '<div class="vhm-id"><div class="vhm-logo"' + (logo ? ' style="background-image:url(\'' + esc(logo) + '\')"' : '') + '>' + (logo ? '' : esc(String(m.name || '?').charAt(0))) + '</div>' +
@@ -128,6 +134,7 @@
           return post({ action: 'live', holiday: h.slug }).then(function (r) {
             var m = ((r && r.menus) || []).filter(function (x) { return x.listing_id === l.id; })[0];
             var t = !m && ((r && r.tips) || []).filter(function (x) { return x.listing_id === l.id; })[0];
+            if (m && closed(m)) m = null; // past its order-by day: off the listing page (it stays in the Guide)
             if (!m && !t) return null;
             var base = { name: l.name, slug: l.slug, logo: l.logo_url, city: l.address_city, state: l.address_state,
               vegan: l.vegan_status === 'fully_vegan' ? true : l.vegan_status ? false : null, holiday: String(h.name || '').replace(/\s*\(.*\)$/, '') };
@@ -145,5 +152,5 @@
       el.querySelector('[data-vhm-open]').addEventListener('click', function () { open(m); });
     }).catch(function () {});
   }
-  window.VEHolidayMenu = { open: open, close: close, forListing: forListing };
+  window.VEHolidayMenu = { open: open, close: close, forListing: forListing, closed: closed };
 })();
