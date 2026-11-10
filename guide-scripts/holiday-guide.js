@@ -810,7 +810,8 @@
       return '<section class="hg-shelf"><h3 class="hg-shelf-h">' + shelfIcon(g.h) + esc(g.h) + '</h3><div class="hg-mlist">' +
         items.map(function (it) {
           var brand = it[2] && BRANDS[it[2]] ? '<a href="/directory/' + encodeURIComponent(it[2]) + '">' + esc(it[0]) + '</a>' : esc(it[0]);
-          return '<div class="hg-mrow"><div><b>' + esc(it[1]) + '</b><p>' + esc(it[3]) + '</p></div><span class="hg-mbrand">' + brand + '</span></div>';
+          // The brand's logo stays on the left of every row (Sean, 2026-11-10: "Anytime we can have a logo on a page, we want a logo").
+          return '<div class="hg-mrow">' + brandLogo(it[2], it[0]) + '<div class="hg-mrow-b"><b>' + esc(it[1]) + '</b><p>' + esc(it[3]) + '</p></div><span class="hg-mbrand">' + brand + '</span></div>';
         }).join('') + '</div></section>';
     }).join('');
     box.innerHTML = html || '<div class="hg-empty"><h3>Nothing Matches</h3><p>Try fewer words or another shelf. Know one we are missing? Suggest it below.</p></div>';
