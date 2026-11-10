@@ -480,6 +480,8 @@
     // A grocery chain (tag ve-grocery-store, 2026-10-08) has no one address but is not an online business.
     if ((l.tags || []).indexOf('ve-grocery-store') >= 0) return 'Grocery store';
     if ((l.communities || []).indexOf('all') >= 0) return 'Every chapter';
+    // A cruise has no one address and is not an online business (Sean, 2026-11-10: "change Online to Sails worldwide").
+    if (VE_CAT_MAP[l.category] === 'travel' && !l.address_city && !l.address_state) return 'Sails worldwide';
     if (!l.address_city && !l.address_state) return '<span class="online-badge">Online</span>';
     // A listing that serves more than one chapter reads like a brand: where it works, not its headquarters' city (Sean,
     // 2026-10-27: Be An Animal Hero "still says Jupiter... we could treat it like a brand").
