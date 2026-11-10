@@ -285,11 +285,17 @@
         ] });
     },
     animals: function () {
-      return section('animals', 'The reason we are all here', 'With a network of businesses, people and nonprofits that actually show up, we can run campaigns that move the needle for the animals.',
-        'The Directory\'s Community section lists nonprofits, rescues and sanctuaries in every chapter. Every city has Fosters and Rescues boards. The campaigns we run together for the animals are what all of this is building toward.',
-        ['Open the Directory\'s Community section and find the groups near you.', 'Check your city\'s Fosters and Rescues boards.', 'Go to a sanctuary day or a fundraiser from Events.'],
-        ['<b>Give your points</b> to a nonprofit, rescue or sanctuary from its page.', '<b>Post</b> on the Fosters and Rescues boards.', '<b>Be first to hear</b> about the campaigns we run together.'],
-        [['Find nonprofits and rescues', '/directory?tab=community']]) + explorerCard();
+      return sectionPage('animals', { kicker: 'Take part', title: 'The reason we are all here', pic: 'partner-nonprofit-partner.jpg', group: 'How to show up for the animals',
+        how: ['<b>Read the parts below.</b> Each one is a way to help, starting today.', '<b>Together we move the needle.</b> Businesses, people and nonprofits that actually show up can run campaigns for the animals. Be first to hear about the ones we run together.'],
+        go: ['Find nonprofits and rescues', '/directory?tab=community'], ctaTitle: 'Show up for the animals.', ctaText: 'Find the nonprofits, rescues and sanctuaries near you, and give them your points.',
+        parts: [
+          ['nonprofit-guide.jpg', 'Nonprofits, rescues and sanctuaries', 'The Directory\'s Community section lists them in every chapter, ranked by member votes.'],
+          ['vegan-pets.jpg', 'The Fosters board', 'Every city has a Fosters board, so animals find a home close by.'],
+          ['thumb-community.jpg', 'The Rescues board', 'Every city has a Rescues board for animals who need help now.'],
+          ['vegan-events-guide.jpg', 'Sanctuary days and fundraisers', 'Find them in Events, in your chapter and around the world.'],
+          ['thumb-bounties.jpg', 'Give your points', 'Give points to a nonprofit, rescue or sanctuary, right from its page.'],
+          ['restaurant-guide/t-pulse.jpg', 'For the animals in the Pulse', 'Every morning\'s Daily Pulse has a For the animals section with the news that matters.']
+        ] });
     },
     founder: function () {
       if (member()) {

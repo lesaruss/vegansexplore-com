@@ -9,7 +9,7 @@ W,H,FPS,LEAD,XF=1080,1350,30,0.5,0.4
 REPO='/home/user/vegansexplore-com/public/guides/welcome/'
 S=[(0.0,'wg_better'),(2.92,'L:liz-bet-note.jpg'),(5.18,'directory'),(9.76,'wg_ways'),(12.0,'fb_kinds'),(14.54,'guide_ask'),
    (17.88,'L:liz-bet-team.jpg'),(21.72,'search_miss'),(23.66,'wg_ways2'),(26.18,'L:liz-bet-cafe.jpg'),(29.42,'board'),(31.14,'nominate'),
-   (35.0,'L:liz-bet-spotlight.jpg'),(37.64,'show_line'),(39.32,'L:liz-bet-build.jpg'),(42.28,'pulse'),(45.22,'fb_form'),
+   (35.0,'L:liz-bet-spotlight.jpg'),(37.64,'show_line'),(39.32,'L:liz-bet-build.jpg'),(42.28,'pulse'),(45.22,'contact'),
    (47.72,'L:liz-bet-fix.jpg'),(51.08,'fb_broken'),(53.9,'home2'),(56.0,'survey'),(59.9,'communities'),(63.18,'L:liz-bet-potluck.jpg'),
    (66.84,'explore2'),(69.2,'paths'),(72.9,'events'),(75.62,'search_add'),(78.34,'L:liz-bet-card.jpg')]
 # every picture once (Sean, 2026-11-09: "make sure we're only using the photos once")

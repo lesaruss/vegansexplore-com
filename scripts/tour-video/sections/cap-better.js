@@ -12,6 +12,7 @@ const SH={
  search_add:{u:W+'/search?q=vegan%20sushi%20in%20Boise',f:p=>down(p,500)},
  board:{u:W+'/communities/south-florida',f:p=>to(p,/Suggest a Topic/i,250)},
  pulse:{u:W+'/pulse'},
+ contact:{u:W+'/contact'},
  fb_broken:{u:W+'/pulse',f:async p=>{await p.waitForTimeout(2000);await p.evaluate(()=>window.VEFeedback&&VEFeedback.open&&VEFeedback.open({form:true}));await p.waitForTimeout(800);await p.getByText(/^Something is broken$/).first().click().catch(()=>{});}},
  nominate:{u:W+'/pulse/suggest?city=south-florida'},
  show_line:{u:W+'/comment/soflo-nominate'},
