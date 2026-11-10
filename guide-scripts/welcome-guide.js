@@ -56,12 +56,11 @@
     dani: ['Dani', 'leads the Nonprofit Guide'],
     liz: ['Liz', 'your host, and the Vegan Restaurant Guide']
   };
+  // Two groups, side by side in two columns (Sean, 2026-11-10: "I don't think we need that many pills... put them side by side like we
+  // just did with the holiday guide... two columns and more of a paragraph"). Guides moved to Take Part so both columns come out even.
   var GROUPS = [
-    { label: 'Find Your Way', line: 'Search, the Directory, your city, events, our shows and the Guides.', kids: ['directory', 'city', 'events', 'media', 'guides'] },
-    { label: 'Take Part', line: 'How points work, and the path that fits what you do.', kids: ['points', 'paths'] },
-    { label: 'Make It Better', line: 'Every way to tell us what is working, what is not, and what you wish you could do.', kids: ['better'] },
-    { label: 'For the Animals', line: 'The reason we are all here, and how to show up today.', kids: ['animals'] },
-    { label: 'Become a Founder', line: 'A few quick questions, free, with 250 points.' + (OPEN ? ' Founding Membership closes at midnight Eastern on January 1, 2027.' : ''), kids: ['founder'] }
+    { label: 'Find Your Way', line: 'Search, the Directory, your city, events and our shows.', kids: ['directory', 'city', 'events', 'media'] },
+    { label: 'Take Part', line: 'Guides, points, your path, telling us what to build, the animals, and becoming a Founder.', kids: ['guides', 'points', 'paths', 'better', 'animals', 'founder'] }
   ];
   // Old addresses: the nine-tab Welcome (2026-11-03) and the four Founding Member pages (2026-11-01) land on the page that holds them now.
   var OLD = { places: 'directory', community: 'city', supports: 'animals', bring: 'points', business: 'paths', join: 'founder', can: 'directory', now: 'founder' };
@@ -131,16 +130,16 @@
   // The Overview (Sean, 2026-11-09): Getting started (how to use the page: watch Liz's tour in her frame, read on, join), then every section as a
   // short article, read like the Pulse: a small picture, the title, about 250 characters, Read more. The sub-sections live on each section's page.
   var SUMMARY = {
-    directory: 'One search box finds any place, person or answer. The Directory lists food, products, services, groups and people, sorted by member votes.',
-    city: 'Every chapter has its own home: a Daily Pulse each morning, boards for jobs, fosters and rescues, its events and its most voted places.',
-    events: 'Festivals, potlucks, meetups and sanctuary days, near you and around the world. Find one, or submit your own from a flyer or a link.',
-    media: 'Our own shows, plus the podcasts, films and books the community votes to the top. Press Play and listen right on the page.',
-    guides: 'Mini websites on one topic each, walked through by our Guides. Work Guides are free with a survey; topic Guides are $11 or 1,100 points.',
-    points: 'Earn points by taking part, never by buying them. Spend them on Guides, give them to the places you love, and level up as you go.',
-    paths: 'Everyone starts as an Explorer. Run a restaurant, host events, make content or run a nonprofit? Each path has its own Guide and badge.',
-    better: 'The part that matters most. Use the Feedback button on any page or ask your Guide. We read all of it and build from it every day.',
-    animals: 'The reason we are all here. Find the rescues, sanctuaries and nonprofits near you, and give your points to the causes you care about.',
-    founder: 'A few quick questions, about two minutes, and you are in, free, with 250 points.' + (OPEN ? ' Join before January 1, 2027 to be a Founding Member.' : '')
+    directory: 'One search box finds any place, person or answer. The Directory lists Vegan places to eat and shop, products, services, groups and people, city by city, and member votes decide who leads each list.',
+    city: 'Every chapter has its own home: a Daily Pulse each morning with the local news, boards for jobs, fosters and rescues, its events on one calendar, and its most voted places to eat and shop.',
+    events: 'Festivals, potlucks, meetups and sanctuary days, near you and around the world, on one calendar. Open one for the details and its official page, or submit your own from a flyer or a link.',
+    media: 'Our own shows, plus the podcasts, films and books the community votes to the top. Press Play and listen right on the page, then vote up what is worth everyone\'s time.',
+    guides: 'Mini websites on one topic each, walked through by one of our Guides. Work Guides are free with a short survey, topic Guides are $11 or 1,100 points, and each one has a free part to try first.',
+    points: 'Earn points by taking part, never by buying them: the survey, check-ins and bounties. Spend them to open Guides, give them to the places you love, and level up as you go.',
+    paths: 'Everyone starts as an Explorer. Run a restaurant, host events, make content or run a nonprofit? Each path has its own Guide, its own short survey and its own badge, and you can take as many as fit.',
+    better: 'The part that matters most. Use the Feedback button on any page, ask your Guide, or tell us a place we are missing. We read all of it and build from it every day.',
+    animals: 'The reason we are all here. Find the rescues, sanctuaries and nonprofits near you, support them on their own sites, and read For the animals in every morning\'s Daily Pulse.',
+    founder: 'A few quick questions, about two minutes, and you are in, free, with 250 points and your own dashboard.' + (OPEN ? ' Join before January 1, 2027 to be a Founding Member.' : '')
   };
   function gettingStarted() {
     var ps = member()
@@ -180,7 +179,7 @@
       '<div class="wg-arts"><div class="wg-grp"><h5>' + esc(o.group) + '</h5><ol>' + o.parts.map(function (x) { return artRow(pic(x[0]), x[1], x[2]); }).join('') + '</ol></div></div>' + cta;
   }
   function viewOverview() {
-    main.innerHTML = gateNote() + head('Free for everyone', member() ? 'Welcome Back to Vegans Explore' : 'Welcome to Vegans Explore', '') + gettingStarted() + '<div class="wg-arts">' + articles() + '</div>';
+    main.innerHTML = gateNote() + head('Free for everyone', member() ? 'Welcome Back to Vegans Explore' : 'Welcome to Vegans Explore', '') + gettingStarted() + '<div class="wg-arts wg-arts-ov">' + articles() + '</div>';
   }
 
   var VIEWS = {
@@ -233,7 +232,7 @@
         ] });
     },
     guides: function () {
-      return sectionPage('guides', { kicker: 'Find your way', title: 'One topic at a time, walked through', pic: 'vegan-dairy-guide.jpg', group: 'In the Guides',
+      return sectionPage('guides', { kicker: 'Take part', title: 'One topic at a time, walked through', pic: 'vegan-dairy-guide.jpg', group: 'In the Guides',
         how: ['<b>Read the parts below.</b> Each one is part of the Guides.', '<b>Pick an interest</b> on the Guides page, then open any Guide and try its free part.'],
         go: ['See every Guide', '/guides'], ctaTitle: 'Go pick a Guide.', ctaText: 'Every Guide has a free part to try. Open to everyone.',
         parts: [

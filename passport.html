@@ -704,6 +704,8 @@
     @media (min-width:901px){.wg-gs-b{height:240px;overflow-y:auto;overscroll-behavior:contain;padding-right:6px}}
     @media (max-width:600px){.wg-gs{flex-direction:column}.wg-gs-pic{width:100%;height:auto;aspect-ratio:1/1;flex-basis:auto}}
     .wg-grp{margin:0 0 20px}
+    /* The Overview's rows sit two across, as in the Holiday Guide (Sean, 2026-11-10). */
+    @media (min-width:901px){.wg-arts-ov .wg-grp ol{display:grid;grid-template-columns:1fr 1fr;gap:18px 28px}}
     .wg-grp h5{margin:0 0 12px;padding-bottom:6px;border-bottom:1px solid #e3efe3}
     .wg-grp ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:16px}
     .wg-art{display:grid;grid-template-columns:132px minmax(0,1fr);gap:14px;align-items:start}
@@ -789,7 +791,7 @@
 <script src="/public/ve-guide-intro.js"></script>
 <script src="/public/ve-explorer-card.js"></script>
 <script src="/public/ve-video.js?v=2"></script>
-<script src="/guide-scripts/welcome-guide.js?v=25"></script>
+<script src="/guide-scripts/welcome-guide.js?v=26"></script>
 <script src="/public/ve-guide-min.js"></script>
 </body>
 </html>
