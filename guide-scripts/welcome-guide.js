@@ -129,18 +129,19 @@
 
   // The Overview (Sean, 2026-11-09): Getting started (how to use the page: watch Liz's tour in her frame, read on, join), then every section as a
   // short article, read like the Pulse: a small picture, the title, about 250 characters, Read more. The sub-sections live on each section's page.
-  // About 150 characters each (Sean, 2026-11-10: "condense it so it's like 150 characters. They can get more when they read more").
+  // About 75 characters each (Sean, 2026-11-10: "let's go with 75 characters, because I still feel like they're a little long").
+  // Read more carries the rest.
   var SUMMARY = {
-    directory: 'One search box finds any place, person or answer. The Directory lists Vegan places, products, groups and people, ranked by member votes.',
-    city: 'Every chapter has its own home: a Daily Pulse each morning, boards for jobs, fosters and rescues, its events and its most voted places.',
-    events: 'Festivals, potlucks, meetups and sanctuary days near you and around the world. Find one, or submit your own from a flyer or a link.',
-    media: 'Our own shows, plus the podcasts, films and books the community votes to the top. Press Play and listen right on the page.',
-    guides: 'Mini websites on one topic each, walked through by our Guides. Each has a free part to try; topic Guides are $11 or 1,100 points.',
-    points: 'Earn points by taking part, never by buying them. Spend them on Guides, give them to the places you love, and level up as you go.',
-    paths: 'Everyone starts as an Explorer. Run a restaurant, host events, make content or run a nonprofit? Each path has its own Guide and badge.',
-    better: 'The part that matters most. Use the Feedback button on any page or ask your Guide. We read all of it and build from it every day.',
-    animals: 'The reason we are all here. Find the rescues, sanctuaries and nonprofits near you, and support the causes you care about.',
-    founder: 'A few quick questions, about two minutes, and you are in, free, with 250 points.' + (OPEN ? ' Founding Membership closes January 1, 2027.' : '')
+    directory: 'One search finds any Vegan place, person or answer, ranked by member votes.',
+    city: 'Your chapter\'s home: a Daily Pulse each morning, boards, events and places.',
+    events: 'Festivals, potlucks and meetups near you, or submit your own from a flyer.',
+    media: 'Our shows, plus podcasts, films and books the community votes to the top.',
+    guides: 'Mini websites on one topic each, walked through by one of our Guides.',
+    points: 'Earn points by taking part, then spend them on Guides and level up.',
+    paths: 'Start as an Explorer, then find the path, Guide and badge that fit you.',
+    better: 'Tell us what works and what does not. We read it all and build from it.',
+    animals: 'The reason we are all here: rescues, sanctuaries and nonprofits near you.',
+    founder: 'A few quick questions, about two minutes, and you are in, free, with 250 points.'
   };
   function gettingStarted() {
     // One blurb, about 250 characters (Sean, 2026-11-10: "I don't like the three sections... just make it a 250 character blurb").
@@ -161,7 +162,7 @@
   function articles() {
     return GROUPS.map(function (g) {
       return '<div class="wg-grp"><h5>' + esc(g.label) + '</h5><ol>' + g.kids.map(function (k) {
-        var t = tab(k), txt = k === 'founder' && member() ? 'You are in. Here are your first steps, and where to ask when you need help.' : SUMMARY[k];
+        var t = tab(k), txt = k === 'founder' && member() ? 'You are in. Your first steps, and where to ask when you need help.' : SUMMARY[k];
         return artRow(pic(t.pic), t.label, txt, href(k), 'Read more');
       }).join('') + '</ol></div>';
     }).join('');
