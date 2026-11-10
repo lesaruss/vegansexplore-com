@@ -4412,7 +4412,12 @@
       items = items.concat(DASH_MINE_TILES);
     }
     grid.innerHTML = '';
-    items.forEach(function (x) { if (x) grid.appendChild(x); });
+    items.forEach(function (x) {
+      if (!x) return;
+      // The same action in the same place on every tile (the Your role and Your numbers tiles moved in without one).
+      if (!x.querySelector('.dash-tile-go')) { var go = document.createElement('span'); go.className = 'dash-tile-go'; go.innerHTML = 'Open &rarr;'; x.appendChild(go); }
+      grid.appendChild(x);
+    });
     wrap.hidden = false;
     dashRecentChips();
     dashApplyView();
