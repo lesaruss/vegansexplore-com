@@ -123,6 +123,8 @@ const CATEGORIES = [
   'Web & Development', 'AI & Automation', 'Business Operations', 'Health Professionals', 'Animal Care', 'Studios', 'Event Venues',
   'Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media',
   'Nonprofits', 'Rescues', 'Sanctuaries', 'Groups', 'Events',
+  // Travel (Sean, 2026-11-10).
+  'Cruises',
   // People (2026-10-28): a person's profile; ve-people holds the rest of it.
   'Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders', 'Promoters', 'Uncategorized'];
 // At a Glance, which listing.html shows for restaurants and cafes.
