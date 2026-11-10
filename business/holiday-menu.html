@@ -196,8 +196,10 @@
         </div>
         <label class="f" for="pickup">Pickup or delivery <small>(when and how)</small></label>
         <input type="text" id="pickup" maxlength="300" placeholder="Pick up Wednesday, Nov 25, 11 AM to 6 PM">
-        <label class="f" for="order_url">Where to order <small>(your ordering page, optional)</small></label>
-        <input type="url" id="order_url" maxlength="500" placeholder="https://">
+        <!-- The direct link where people pay (Sean, 2026-11-10: "the direct link of where people can purchase, not send them to their
+             Instagram page"): Order on the menu goes straight there. -->
+        <label class="f" for="order_url">Where people order and pay <small>(the direct link to your ordering page, such as Square, Toast or your own checkout; not Instagram or a link in bio)</small></label>
+        <input type="url" id="order_url" maxlength="500" placeholder="https://yourplace.square.site">
         <label class="f" for="holiday_hours">Your hours on the day <small>(or Closed)</small></label>
         <input type="text" id="holiday_hours" maxlength="200" placeholder="Open 9 AM to 2 PM">
         <label class="f" for="contact_note">Anything our team should know <small>(optional, not shown)</small></label>
@@ -206,7 +208,7 @@
 
       <div data-step="review" hidden>
         <h2>Check it and send</h2>
-        <p class="note" style="margin-bottom:12px">This is how it will show in the Holiday Guide once our team checks it.</p>
+        <p class="note" style="margin-bottom:12px">This is how it will show in the Holiday Guide and on your page once our team checks it. Tap See Menu to open it the way people will.</p>
         <div id="preview"></div>
       </div>
 
@@ -232,6 +234,7 @@
   </div>
 
   <script src="/public/ve-auth.js"></script>
+  <script src="/public/ve-holiday-menu.js?v=3"></script>
   <script>
     (function () {
       var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-holiday';
@@ -311,15 +314,23 @@
         [].forEach.call(document.querySelectorAll('input[name=lst]'), function (r) { r.onchange = function () { SEL.listing = r.value; loadSelection(); }; });
         $('holiday').onchange = function () { SEL.holiday = $('holiday').value; loadSelection(); };
       }
-      function preview() {
+      // The review shows their card the way the Guide shows it, and See Menu opens the same menu window people get
+      // (/public/ve-holiday-menu.js; Sean, 2026-11-10: "I want them to see what their listing could look like").
+      function previewData() {
         var v = read(), l = listing() || {}, h = holiday() || {};
-        var vegan = l.vegan_status === 'fully_vegan';
-        var dl = [v.order_by ? ['Order by', new Date(v.order_by + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })] : null, v.pickup ? ['Pickup or delivery', v.pickup] : null, v.price_range ? ['Price', v.price_range] : null, v.holiday_hours ? ['Hours on the day', v.holiday_hours] : null].filter(Boolean);
-        $('preview').innerHTML = '<div class="pv"><h3>' + esc(l.name) + '</h3><span class="note">' + esc([l.address_city, l.address_state].filter(Boolean).join(', ')) + '</span><br>' +
-          '<span class="lbl' + (vegan ? '' : ' pre') + '">' + (vegan ? '100% Vegan' : 'Plant-based (Pre-Vegan) menu') + ' &middot; ' + esc(h.name) + '</span>' +
-          '<p>' + esc(v.summary) + '</p><ul>' + v.items.map(function (i) { return '<li><div class="pvl">' + (i.photo ? '<img class="pvph" src="' + esc(i.photo) + '" alt="">' : '') + '<div><b>' + esc(i.name) + '</b>' + (i.desc ? '<span>' + esc(i.desc) + '</span>' : '') + '</div></div>' + (i.price ? '<b>' + esc(i.price) + '</b>' : '') + '</li>'; }).join('') + '</ul>' +
-          (dl.length ? '<dl>' + dl.map(function (x) { return '<dt>' + esc(x[0]) + '</dt><dd>' + esc(x[1]) + '</dd>'; }).join('') + '</dl>' : '') +
-          (v.order_url ? '<p style="margin-top:10px"><a class="btn btn-ghost" href="' + esc(/^https?:/i.test(v.order_url) ? v.order_url : 'https://' + v.order_url) + '" target="_blank" rel="noopener">Order</a></p>' : '') + '</div>';
+        return { name: l.name, slug: '', logo: l.logo_url, city: l.address_city, state: l.address_state, vegan: l.vegan_status === 'fully_vegan' ? true : l.vegan_status ? false : null,
+          holiday: String(h.name || '').replace(/\s*\(.*\)$/, ''), summary: v.summary, items: v.items, order_by: v.order_by, pickup: v.pickup, price_range: v.price_range,
+          holiday_hours: v.holiday_hours, order_url: v.order_url ? (/^https?:/i.test(v.order_url) ? v.order_url : 'https://' + v.order_url) : '' };
+      }
+      function preview() {
+        var d = previewData();
+        $('preview').innerHTML = '<div class="pv"><div style="display:flex;gap:12px;align-items:center">' +
+          '<div style="width:52px;height:52px;border-radius:10px;flex:none;border:1px solid rgba(0,0,0,.1);background:#fff ' + (d.logo ? 'url(\'' + esc(d.logo) + '\') center/contain no-repeat' : '') + '"></div>' +
+          '<div><h3 style="margin:0">' + esc(d.name) + '</h3><span class="note">' + esc([d.city, d.state].filter(Boolean).join(', ')) + '</span></div></div>' +
+          '<span class="lbl' + (d.vegan ? '' : ' pre') + '" style="margin-top:10px;display:inline-block">' + (d.vegan ? '100% Vegan' : 'Plant-based (Pre-Vegan) menu') + '</span>' +
+          '<p>' + esc(d.summary) + '</p>' + (d.price_range ? '<p class="note"><b>Price</b> ' + esc(d.price_range) + '</p>' : '') +
+          '<p style="margin-top:10px"><button type="button" class="btn" id="pv-open">See Menu</button></p></div>';
+        $('pv-open').onclick = function () { if (window.VEHolidayMenu) VEHolidayMenu.open(previewData()); };
       }
       function bad(t, el) { $('msg').className = 'msg bad'; $('msg').textContent = t; if (el) el.focus(); return false; }
       function check(name) {
@@ -329,6 +340,10 @@
         if (name === 'details') {
           var ob = $('order_by').value.trim();
           if (ob && !/^\d{4}-\d{2}-\d{2}$/.test(ob)) return bad('Write the order-by date as YYYY-MM-DD, for example 2026-11-22.', $('order_by'));
+          var ou = $('order_url').value.trim();
+          if (!ou) return bad('Add the link where people order and pay.', $('order_url'));
+          if (!/^(https?:\/\/)?[^\s.\/]+\.[^\s]+$/i.test(ou)) return bad('That ordering link does not look right. Paste the full address, starting https://', $('order_url'));
+          if (/(^|\/\/|\.)(instagram\.com|facebook\.com|fb\.com|m\.me|tiktok\.com|x\.com|twitter\.com|linktr\.ee|beacons\.ai|lnk\.bio)(\/|$)/i.test(ou)) return bad('Use the page where people actually order and pay (Square, Toast, your checkout), not a social page or link in bio.', $('order_url'));
         }
         return true;
       }

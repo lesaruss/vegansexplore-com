@@ -1,7 +1,7 @@
 -- ve-holiday-guide: the prototype full holiday menu (Sean, 2026-11-10: "let's use Nana's A Vegan as the prototype of how the menu is
 -- going to appear"). Read from Nana's A Vegan's own four-slide Instagram post (@nanasavegan, Oct 31, Sean's screenshots IMG_8171 to
 -- IMG_8174) and entered by the team for its listing, live at once. Items keep ve-holiday's shape {name, desc, price}, 20 at most.
--- Pickup for every order is from their caption (Sean pasted it). Not on the post: an order-by date. Safe to run twice.
+-- Pickup for every order is from their caption (Sean pasted it); the order link is their Square site (Sean, 2026-11-10). Not on the post: an order-by date. Safe to run twice.
 insert into ve_holiday_menus (holiday_slug, listing_id, member_id, status, summary, items, order_url, pickup, price_range, team_note, reviewed_by, reviewed_at)
 select 'thanksliving', l.id, '72712a4a-ea0e-4ef4-a29e-d382496ef8da', 'live',
   'Plant-based soul food for ThanksLiving: pick a protein, your sides and dessert, from a solo plate to a feast for ten, with a gluten-free solo plate and Puddin'' Brat banana pudding trays.',
@@ -17,8 +17,8 @@ select 'thanksliving', l.id, '72712a4a-ea0e-4ef4-a29e-d382496ef8da', 'live',
     jsonb_build_object('name', 'Puddin'' Brat: Biscoff Brat', 'price', 'Half pan', 'desc', 'Vanilla pudding layered with Biscoff cookies, fresh bananas, cookie butter and whipped cream.'),
     jsonb_build_object('name', 'Puddin'' Brat: Strawberry Shortie', 'price', 'Half pan', 'desc', 'Vanilla pudding with vanilla wafers, bananas, strawberries, strawberry puree, whipped cream and a strawberry crunch.')
   ),
-  'https://www.instagram.com/nanasavegan/',
-  'Wed Nov 25, 5 to 8 PM, in the Bronx. Order through the link in their Instagram bio.',
+  'https://nanasavegan.square.site/#6VHP5DSHSNCSNU5R6BGRY42G',
+  'Wed Nov 25, 5 to 8 PM, in the Bronx.',
   '$50 to $375',
   'Prototype full menu, 2026-11-10, from Nana''s own post (Sean''s screenshots IMG_8171 to IMG_8174).',
   '72712a4a-ea0e-4ef4-a29e-d382496ef8da', now()

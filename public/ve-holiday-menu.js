@@ -22,8 +22,9 @@
   var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
   var PAD = 28, PADM = 18;
   var CSS = '' +
-    '.vhm-back{position:fixed;inset:0;z-index:100000;background:rgba(15,23,15,.6);display:flex;align-items:center;justify-content:center;padding:24px 16px}' +
-    '.vhm{background:#fff;color:#1a1a1a;border-radius:12px;width:min(680px,100%);max-height:min(88vh,920px);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.32);font-family:inherit}' +
+    // The same gap above as before, and a deeper one below so it never reads as resting on the site footer (Sean, 2026-11-10).
+    '.vhm-back{position:fixed;inset:0;z-index:100000;background:rgba(15,23,15,.6);display:flex;align-items:flex-start;justify-content:center;padding:6vh 16px 0}' +
+    '.vhm{background:#fff;color:#1a1a1a;border-radius:12px;width:min(680px,100%);max-height:min(84vh,880px);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.32);font-family:inherit}' +
     '.vhm-head,.vhm-body,.vhm-foot{padding-left:' + PAD + 'px;padding-right:' + PAD + 'px;scrollbar-gutter:stable}' +
     '.vhm-head{flex:none;overflow:hidden;padding-top:14px;padding-bottom:16px;border-bottom:3px solid #1f5f22;background:#fbfdf9}' +
     '.vhm-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 12px}' +
@@ -50,7 +51,7 @@
     '.vhm-card{border:1px solid #f2d7a6;background:#fff7e8;border-radius:10px;padding:18px 20px;margin:0 0 22px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}' +
     '.vhm-card h3{margin:0 0 4px;font-size:18px}.vhm-card p{margin:0;font-size:14px;color:rgba(26,26,26,.75);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}' +
     '.vhm-card button{min-height:42px;padding:0 18px;border-radius:6px;border:0;background:#22C55E;color:#03170a;font:inherit;font-weight:800;font-size:12px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap}' +
-    '@media(max-width:600px){.vhm-back{padding:10px}.vhm{max-height:92vh}.vhm-head,.vhm-body,.vhm-foot{padding-left:' + PADM + 'px;padding-right:' + PADM + 'px}' +
+    '@media(max-width:600px){.vhm-back{padding:10px;align-items:center}.vhm{max-height:92vh}.vhm-head,.vhm-body,.vhm-foot{padding-left:' + PADM + 'px;padding-right:' + PADM + 'px}' +
       '.vhm-logo{width:52px;height:52px}.vhm-nm h2{font-size:20px}.vhm-acts a,.vhm-acts button{font-size:11px;letter-spacing:.04em;padding:0 8px}}';
   var box = null, onClose = null, lastFocus = null;
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
