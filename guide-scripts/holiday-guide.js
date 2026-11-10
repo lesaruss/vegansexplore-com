@@ -321,14 +321,15 @@
     var saved = !!SAVED[l.id];
     return '<div class="hg-menu">' +
       '<div class="hg-mh"><div class="hg-logo"' + (l.logo_url ? ' style="background-image:url(\'' + esc(l.logo_url) + '\')"' : '') + '>' + (l.logo_url ? '' : esc((l.name || '?').charAt(0))) + '</div>' +
-      '<div><h3><a href="#/' + hx().menus + '/listing/' + encodeURIComponent(l.slug) + '">' + esc(l.name) + '</a></h3><small>' + esc(where || 'Online') + '</small></div></div>' +
-      '<div><span class="hg-tag' + (vegan ? '' : ' pv') + '">' + (vegan ? '100% Vegan' : 'Plant-based (Pre-Vegan) menu') + '</span></div>' +
+      '<div><h3><a href="#/' + hx().menus + '/listing/' + encodeURIComponent(l.slug) + '">' + esc(l.name) + '</a></h3><small>' + esc(where || 'Online') + '</small></div>' +
+      // The kind of menu sits in the card's top right corner (Sean, 2026-11-10), as it does in the menu window.
+      '<span class="hg-tag hg-tr' + (vegan ? '' : ' pv') + '">' + (vegan ? '100% Vegan' : 'Plant-based (Pre-Vegan)') + '</span></div>' +
       (m.summary ? '<p class="hg-sum">' + esc(m.summary) + '</p>' : '') +
       '<div class="hg-facts">' + (m.order_by ? '<span><b>Order by</b> ' + esc(dayFmt(onDay(m.order_by), { month: 'long', day: 'numeric' })) + '</span>' : '') +
       (m.price_range ? '<span><b>Price</b> ' + esc(m.price_range) + '</span>' : '') + '</div>' +
       // One row of three (Sean, 2026-11-10): See Menu opens the menu in a lightbox over the page (/public/ve-holiday-menu.js).
       '<div class="hg-acts">' + menuBtn('m-' + l.slug) +
-      '<a class="dg-btn dg-ghost" href="/directory/' + encodeURIComponent(l.slug) + '">Their page</a>' +
+      '<a class="dg-btn dg-ghost" href="/directory/' + encodeURIComponent(l.slug) + '">Their Listing</a>' +
       '<button type="button" class="dg-save' + (saved ? ' on' : '') + '" data-hg-save="' + esc(l.id) + '" aria-pressed="' + saved + '">' + (saved ? 'Saved' : 'Save') + '</button></div></div>';
   }
   // Search, then Filters to the right of it (the Directory and Events way): chapter, kind of menu, ordering and sort; each filter set
@@ -466,10 +467,10 @@
     var l = x.listing, where = [x.city || (l && l.address_city), x.state || (l && l.address_state)].filter(Boolean).join(', ');
     var name = l ? '<a href="#/' + hx().menus + '/listing/' + encodeURIComponent(l.slug) + '">' + esc(l.name) + '</a>' : esc(x.place_name);
     return '<div class="hg-menu"><div class="hg-mh"><div class="hg-logo"' + (l && l.logo_url ? ' style="background-image:url(\'' + esc(l.logo_url) + '\')"' : '') + '>' + (l && l.logo_url ? '' : esc(String(x.place_name || '?').charAt(0))) + '</div>' +
-      '<div><h3>' + name + '</h3><small>' + esc(where || 'Online') + '</small></div></div>' +
-      '<div><span class="hg-tag pv">Order direct</span></div>' + (x.note ? '<p class="hg-sum">' + esc(x.note) + '</p>' : '') +
+      '<div><h3>' + name + '</h3><small>' + esc(where || 'Online') + '</small></div>' +
+      (l && l.vegan_status ? '<span class="hg-tag hg-tr' + (l.vegan_status === 'fully_vegan' ? '' : ' pv') + '">' + (l.vegan_status === 'fully_vegan' ? '100% Vegan' : 'Plant-based (Pre-Vegan)') + '</span>' : '') + '</div>' + (x.note ? '<p class="hg-sum">' + esc(x.note) + '</p>' : '') +
       '<div class="hg-acts">' + menuBtn('t-' + x.id) +
-      (l ? '<a class="dg-btn dg-ghost" href="/directory/' + encodeURIComponent(l.slug) + '">Their page</a><button type="button" class="dg-save' + (SAVED[l.id] ? ' on' : '') + '" data-hg-save="' + esc(l.id) + '" aria-pressed="' + !!SAVED[l.id] + '">' + (SAVED[l.id] ? 'Saved' : 'Save') + '</button>' : '') + '</div>' +
+      (l ? '<a class="dg-btn dg-ghost" href="/directory/' + encodeURIComponent(l.slug) + '">Their Listing</a><button type="button" class="dg-save' + (SAVED[l.id] ? ' on' : '') + '" data-hg-save="' + esc(l.id) + '" aria-pressed="' + !!SAVED[l.id] + '">' + (SAVED[l.id] ? 'Saved' : 'Save') + '</button>' : '') + '</div>' +
       // Menus We Found (Sean, 2026-11-10): every found menu invites the place to claim its listing and post its full menu.
       '<p class="hg-claim">Your place? <a href="' + (l ? '/claim?listing=' + encodeURIComponent(l.slug) : '/claim?add=1') + '">' + (l ? 'Claim it free' : 'Get listed free') + '</a> and post your full menu.</p></div>';
   }

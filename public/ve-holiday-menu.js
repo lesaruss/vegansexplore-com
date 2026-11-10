@@ -14,7 +14,7 @@
  *                                             Holiday Guide goes to the whole Guide (every page with a menu promotes the Guide).
  *
  * Layout: the header (their logo and name, the Vegan tag at the right on the name's row, lined up with the prices) and the footer
- * (Order, Their page, Close) stay put; the menu between them scrolls. Ordering facts (Pickup, Price, Order by, Holiday hours) are
+ * (Order, Their Listing, Close) stay put; the menu between them scrolls. Ordering facts (Pickup, Price, Order by, Holiday hours) are
  * menu rows like the dishes. Closes on X, Close, Escape or a tap outside. Data comes from ve-holiday (`holidays`, `live`).
  */
 (function () {
@@ -85,7 +85,7 @@
       '<div class="vhm-foot"><div class="vhm-acts">' + (order ? '<a href="' + esc(order) + '" target="_blank" rel="noopener">Order</a>' : '') +
         // On their own page the menu points to the whole Holiday Guide instead (Sean, 2026-11-10: "Any page that features a menu
         // should also feature the Holiday Guide").
-        (/\/directory\//.test(location.pathname) ? '<a class="g" href="' + GUIDE + '">Holiday Guide</a>' : m.slug ? '<a class="g" href="/directory/' + encodeURIComponent(m.slug) + '">Their page</a>' : '') +
+        (/\/directory\//.test(location.pathname) ? '<a class="g" href="' + GUIDE + '">Holiday Guide</a>' : m.slug ? '<a class="g" href="/directory/' + encodeURIComponent(m.slug) + '">Their Listing</a>' : '') +
         '<button type="button" class="g" data-vhm-x>Close</button></div>' +
         '<p class="vhm-fine"><span>From their own holiday post. Check prices and dates when you order.</span><span>Menu by Vegans Explore</span></p></div>';
   }
