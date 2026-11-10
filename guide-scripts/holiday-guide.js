@@ -272,12 +272,13 @@
   // The Guide's home is the hook (Sean, 2026-11-10: "the holidays are around the corner... a free holiday guide... as our gift to you...
   // claim your founding membership before the opportunity disappears"), then one list: each holiday, Give Back and For Businesses.
   // Each holiday's own Overview holds its sections (HOL_OV).
+  // Row summaries are about 75 characters (Sean, 2026-11-10, the Welcome Guide's rule: "now do the same for the Holiday Guide").
   var HOME_ROWS = [
-    ['thanksliving', 'ThanksLiving · November 26', 'Thanksgiving with a fully plant-based table: what it is and why it matters, then ideas, recipes, the store, Vegan holiday menus near you, events and what to listen to.'],
-    ['hanukkah', 'Hanukkah · Begins December 4', 'Eight nights of light, plant-based: ideas, recipes, kosher places, Vegan holiday menus and events, with Jewish voices on the meaning of the holiday.'],
-    ['christmas', 'Christmas · December 25', 'A centerpiece for the table, cookies to share and gifts that do no harm: ideas and gifts, a Holiday Wish List, recipes, the store, Vegan holiday menus and events.'],
-    ['giveback', 'Give Back', 'The nonprofits, rescues and sanctuaries doing the work, in your city and beyond, each with an easy way to give. Giving Tuesday is December 1.'],
-    ['business', 'Run a Business?', 'Send your holiday menu and we feature it in this Guide and on your listing, free for members. Most people order early, so send it soon.']
+    ['thanksliving', 'ThanksLiving · November 26', 'Thanksgiving with a fully plant-based table: ideas, recipes, menus, events.'],
+    ['hanukkah', 'Hanukkah · Begins December 4', 'Eight nights of light, plant-based: ideas, recipes, kosher places, menus.'],
+    ['christmas', 'Christmas · December 25', 'A centerpiece, cookies to share and gifts that do no harm, plus a wish list.'],
+    ['giveback', 'Give Back', 'Nonprofits, rescues and sanctuaries doing the work, each easy to give to.'],
+    ['business', 'Run a Business?', 'Send your holiday menu and we feature it here and on your listing, free.']
   ];
   var HOL_OV = {
     thanksliving: { pic: 'p-thanks.jpg', cta: ['Find a holiday menu', '#/menus'],
@@ -285,34 +286,34 @@
       what: '<b>What it is.</b> Thanksgiving is the American holiday of gratitude, on the fourth Thursday of November: family, friends and a long table.',
       why: '<b>Why it matters.</b> Sanctuaries and Vegan groups have called it ThanksLiving for years: the same gratitude, and a table where nobody is harmed. Many sanctuaries hold a dinner for the turkeys instead of one of them.',
       how: '<b>What you can do here.</b> Pick up an easy idea, cook from our recipes, grab what you need at the store, order from a Vegan place near you, find an event, or listen on the drive.',
-      rows: [['ideas', 'Ideas for the Table', 'A few easy ideas for a fully plant-based Thanksgiving, whether you host the whole table or bring one dish, plus why so many call it ThanksLiving.'],
-        ['menus', 'Holiday Menus', 'Vegan places near you cooking for the holiday: their full menus, prices, pickup times and the date to order by, each one checked by our team.'],
-        ['recipes', 'Recipes', 'A loaf, gravy, mashed potatoes, stuffing, cranberry sauce, green beans and pumpkin pie, all plant-based. Chefs can send us their own.'],
-        ['store', 'At the Store', 'Roasts, gravy, butter, cream and dessert you can pick up at the supermarket this season, by brand. Found one we missed? Suggest it.'],
-        ['events', 'Events', 'Sanctuary dinners, potlucks and ThanksLiving gatherings on our calendar, near you and online. Hosting one? Add it so people can find you.'],
-        ['listen', 'Listen', 'Our episodes on family, patience and the holidays, and holiday episodes from other Vegan shows, ready to play on the way to dinner.']] },
+      rows: [['ideas', 'Ideas for the Table', 'Easy ideas for a fully plant-based Thanksgiving, hosting or bringing a dish.'],
+        ['menus', 'Holiday Menus', 'Vegan places near you cooking for the holiday, with the date to order by.'],
+        ['recipes', 'Recipes', 'A loaf, gravy, stuffing, cranberry sauce and pumpkin pie, all plant-based.'],
+        ['store', 'At the Store', 'Roasts, gravy, butter, cream and dessert at the supermarket, by brand.'],
+        ['events', 'Events', 'Sanctuary dinners, potlucks and gatherings, near you and online.'],
+        ['listen', 'Listen', 'Our episodes on family and the holidays, ready to play on the way to dinner.']] },
     hanukkah: { pic: 'r-latkes.jpg', cta: ['Find kosher places', '#/hk-kosher'],
       intro: '<b>Hanukkah is the Jewish Festival of Lights,</b> eight nights from sundown on December 4 to nightfall on December 12: light, family and food fried in oil, all of it plant-based. Here are ideas, recipes, kosher places, Vegan menus and events.',
       what: '<b>What it is.</b> Hanukkah is the Jewish Festival of Lights: eight nights, from sundown on Friday, December 4 to nightfall on Saturday, December 12.',
       why: '<b>Why it matters.</b> It is a holiday of light, family and food fried in oil, and all of it can be plant-based. For its meaning and blessings, start with Jewish voices like My Jewish Learning and Jewish Veg.',
       how: '<b>What you can do here.</b> Pick up a few easy ideas, fry latkes from our recipes, find kosher places, order from a Vegan place cooking for the holiday, or find a latke night near you.',
-      rows: [['hk-ideas', 'Ideas', 'Something fried, the candles with the people you love, eight nights of kindness and gifts that do no harm, all plant-based.'],
-        ['hk-recipes', 'Recipes', 'Crispy latkes with cashew sour cream, applesauce, carrot tzimmes and jelly doughnuts. Every one is plant-based.'],
-        ['hk-kosher', 'Kosher Places', 'Vegan and plant-based places that describe themselves as kosher or kosher certified, in our chapters and beyond.'],
-        ['hk-menus', 'Holiday Menus', 'Vegan places cooking for Hanukkah: their menus, prices and the date to order by, each one checked by our team.'],
-        ['hk-events', 'Events', 'Plant-based Hanukkah parties, latke nights and menorah lightings on our calendar. Hosting one? Add it.']] },
+      rows: [['hk-ideas', 'Ideas', 'Something fried, the candles, eight nights of kindness and kind gifts.'],
+        ['hk-recipes', 'Recipes', 'Crispy latkes, applesauce, carrot tzimmes and jelly doughnuts, plant-based.'],
+        ['hk-kosher', 'Kosher Places', 'Vegan and plant-based places that describe themselves as kosher.'],
+        ['hk-menus', 'Holiday Menus', 'Vegan places cooking for Hanukkah, with the date to order by.'],
+        ['hk-events', 'Events', 'Plant-based Hanukkah parties, latke nights and menorah lightings.']] },
     christmas: { pic: 'r-wellington.jpg', cta: ['Gift Guide', '#/xm-gifts'],
       intro: '<b>Christmas, December 25,</b> is the biggest day of family and giving of the year, and the easiest time to give gifts that do no harm. Here are ideas and gifts, a wish list, recipes, the store, Vegan menus and events.',
       what: '<b>What it is.</b> Christmas, on Friday, December 25, is a day of family, giving and a shared table for millions of people.',
       why: '<b>Why it matters.</b> It is also the biggest gift season of the year, so it is the easiest time to give gifts that do no harm and set a table everyone can enjoy.',
       how: '<b>What you can do here.</b> Find ideas and gifts, cook a Wellington from our recipes, pick up nog at the store, order from a Vegan place near you, or find a cookie swap or a holiday party.',
-      rows: [['xm-ideas', 'Ideas and Gifts', 'A centerpiece for the table, cookies to share and gifts that do no harm, from Vegan brands in our Directory.'],
-        ['xm-gifts', 'Gift Guide', 'Gifts our team picked for the Vegan on your list, from food and home to beauty, style and animal companions. Plus the ones you love.'],
-        ['xm-wish', 'Holiday Wish List', 'Make a list of what you are wishing for and share it with your family, or suggest the perfect gift for a Vegan. Family: start with Most Wanted.'],
-        ['xm-recipes', 'Recipes', 'A mushroom Wellington for the middle of the table, maple Brussels sprouts, a creamy nog and cookies to share.'],
-        ['xm-store', 'At the Store', 'Plant-based roasts, nogs, butters and treats you can pick up this season, by brand.'],
-        ['xm-menus', 'Holiday Menus', 'Vegan places cooking for Christmas: their menus, prices and the date to order by, each one checked by our team.'],
-        ['xm-events', 'Events', 'Vegan Christmas festivals, cookie swaps, holiday lights and parties on our calendar. Hosting one? Add it.']] }
+      rows: [['xm-ideas', 'Ideas and Gifts', 'A centerpiece, cookies to share and gifts from Vegan brands we list.'],
+        ['xm-gifts', 'Gift Guide', 'Gifts our team picked for the Vegan on your list, from food to style.'],
+        ['xm-wish', 'Holiday Wish List', 'Make a wish list and share it with family, or suggest the perfect gift.'],
+        ['xm-recipes', 'Recipes', 'A mushroom Wellington, maple Brussels sprouts, a creamy nog and cookies.'],
+        ['xm-store', 'At the Store', 'Plant-based roasts, nogs, butters and treats this season, by brand.'],
+        ['xm-menus', 'Holiday Menus', 'Vegan places cooking for Christmas, with the date to order by.'],
+        ['xm-events', 'Events', 'Vegan Christmas festivals, cookie swaps, holiday lights and parties.']] }
   };
   var FOUNDING = Date.now() < Date.parse('2027-01-01T05:00:00Z');
   function artRow(picUrl, title, txt, link) {

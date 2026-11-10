@@ -168,13 +168,14 @@
     }).join('');
   }
   // Section page rows are about 75 characters too (Sean, 2026-11-10: "do the section pages at 75 too").
+  // Its intro is one blurb (Sean, 2026-11-10: "fold those into one blurb too"), like the Overview's Getting started.
   // A section page in the Overview's shape (Sean, 2026-11-09): how to use the page (Liz's own short video for that page, once its script is
   // approved and recorded), then the parts of that area as plain rows (a picture, about 150 characters, no link each), then one call to action
   // at the bottom to go see it. Becoming a member is the header's button.
   function sectionPage(k, o) {
     var rec = !!CLIPS[k];
     var start = '<section class="wg-gs" aria-label="How to use this page"><span class="wg-gs-pic"><img src="' + pic(o.pic) + '" alt="" decoding="async" width="640" height="640"></span>' +
-      '<div class="wg-gs-b"><div class="vgi-k">How to use this page</div><h3 class="wg-gs-t">' + esc(o.title) + '</h3>' + (rec ? ['<b>Watch Liz.</b> Press Play Liz for a short walk-through.'] : []).concat(o.how).map(function (x) { return '<p>' + x + '</p>'; }).join('') +
+      '<div class="wg-gs-b"><div class="vgi-k">How to use this page</div><h3 class="wg-gs-t">' + esc(o.title) + '</h3>' + '<p>' + (rec ? 'Press Play Liz for a short walk-through, or read on. ' : '') + o.how + '</p>' +
       '<div class="wg-gs-btns">' + (rec ? '<button type="button" class="dg-btn" data-wg-tour>&#9654; Play Liz</button>' : '') + '<a class="dg-btn' + (rec ? ' dg-ghost' : '') + '" href="' + esc(o.go[1]) + '"' + (o.feedback ? ' data-ve-feedback' : '') + '>' + esc(o.go[0]) + '</a></div></div></section>';
     if (window.VEExplorerCard) VEExplorerCard.html({}); // loads the card's styles, shared by the call to action below
     var cta = '<section class="vxc" aria-label="' + esc(o.go[0]) + '"><div class="vxc-b"><div class="vxc-k">See it for yourself</div><h3>' + esc(o.ctaTitle) + '</h3><p>' + esc(o.ctaText) + '</p></div>' +
@@ -189,7 +190,7 @@
   var VIEWS = {
     directory: function () {
       return sectionPage('directory', { kicker: 'Find your way', title: 'Every Vegan place, person and group', pic: 'thumb-directory.jpg', group: 'What is in the Directory',
-        how: ['<b>Read the parts below.</b> Each one is a section of the Directory.', '<b>Members vote</b> for the places they love, and that is how places rise to the top.'],
+        how: '<b>Everything below is part of the Directory.</b> Members vote for the places they love, and that is how places rise to the top. When you are ready, open the Directory and pick your city.',
         go: ['View the Directory', '/directory'], ctaTitle: 'Go see the Directory.', ctaText: 'Pick your city and start looking around. It is open to everyone.',
         parts: [
           ['eating-out.jpg', 'Local Food', 'Restaurants, bakeries, food trucks, markets and more, ranked by votes.'],
@@ -201,7 +202,7 @@
     },
     city: function () {
       return sectionPage('city', { kicker: 'Find your way', title: 'Every chapter has its own home', pic: 'partner-community-manager.jpg', group: 'In your city',
-        how: ['<b>Read the parts below.</b> Each one is part of your chapter\'s home.', '<b>Find your city</b> on the Communities page and read today\'s Daily Pulse.'],
+        how: '<b>Everything below is part of your chapter\'s home.</b> Find your city on the Communities page, read today\'s Daily Pulse, and see what is on near you this week.',
         go: ['Find your city', '/communities'], ctaTitle: 'Go find your city.', ctaText: 'Pick your chapter and read today\'s Daily Pulse. It is open to everyone.',
         parts: [
           ['holiday/w-say.jpg', 'The Daily Pulse', 'A short morning briefing: your city\'s news, what is on, one thing to do.'],
@@ -213,7 +214,7 @@
     },
     events: function () {
       return sectionPage('events', { kicker: 'Find your way', title: 'Something to do, near you or anywhere', pic: 'holiday/p-events.jpg', group: 'On the calendar',
-        how: ['<b>Read the parts below.</b> Each one is part of Events.', '<b>Pick a place</b> and the kinds of events you like, then open one for its details.'],
+        how: '<b>Everything below is part of Events.</b> Pick a place and the kinds of events you like, then open one for its details and its official page.',
         go: ['See events', '/events'], ctaTitle: 'Go find something to do.', ctaText: 'Pick a place and see what is on this week. It is open to everyone.',
         parts: [
           ['vegan-events-guide.jpg', 'Find Something to Do', 'Events in your chapter and around the world, filtered by place and kind.'],
@@ -225,7 +226,7 @@
     },
     media: function () {
       return sectionPage('media', { kicker: 'Find your way', title: 'Shows, films and books worth your time', pic: 'holiday/p-listen.jpg', group: 'In Media',
-        how: ['<b>Read the parts below.</b> Each one is part of Media.', '<b>Press Play</b> on any episode; it keeps playing while you look around.'],
+        how: '<b>Everything below is part of Media.</b> Press Play on any episode and it keeps playing while you look around the rest of the site.',
         go: ['Open Media', '/media'], ctaTitle: 'Go press Play.', ctaText: 'Our shows and the community\'s favorites, right on the page. Open to everyone.',
         parts: [
           ['restaurant-guide/t-pulse.jpg', 'Our Shows', 'The Vegans Explore Podcast, SoFlo Vegans and Pre-Vegans.'],
@@ -237,7 +238,7 @@
     },
     guides: function () {
       return sectionPage('guides', { kicker: 'Take part', title: 'One topic at a time, walked through', pic: 'vegan-dairy-guide.jpg', group: 'In the Guides',
-        how: ['<b>Read the parts below.</b> Each one is part of the Guides.', '<b>Pick an interest</b> on the Guides page, then open any Guide and try its free part.'],
+        how: '<b>Everything below is part of the Guides.</b> Pick an interest on the Guides page, then open any Guide and try its free part first.',
         go: ['See every Guide', '/guides'], ctaTitle: 'Go pick a Guide.', ctaText: 'Every Guide has a free part to try. Open to everyone.',
         parts: [
           ['welcome-guide.jpg', 'Find Your Guide', 'Every Guide in one place, sorted by what you care about.'],
@@ -249,7 +250,7 @@
     },
     points: function () {
       return sectionPage('points', { kicker: 'Take part', title: 'Earn them by taking part', pic: 'thumb-bounties.jpg', group: 'How points work',
-        how: ['<b>Read the parts below.</b> Each one is part of how points work.', '<b>Points are never bought.</b> They come from what you do here.'],
+        how: '<b>Everything below is how points work.</b> Points are never bought: they come from what you do here, and spending them never lowers your level.',
         go: ['Start earning, free', '/survey?s=explorer'], ctaTitle: 'Start with 250 points.', ctaText: 'Take the short survey, join free, and your points start today.',
         parts: [
           ['thumb-bounties.jpg', 'Earn Points', 'The survey, check-ins, bounties and friends who join with your link.'],
@@ -261,7 +262,7 @@
     },
     paths: function () {
       return sectionPage('paths', { kicker: 'Take part', title: 'Everyone starts as an Explorer', pic: 'partner-group-partner.jpg', group: 'The paths and their badges',
-        how: ['<b>Read the parts below.</b> Each one is a path, with its own Guide, its own short survey and its own badge.', '<b>Take as many as fit.</b> Run a group or community? That path is on its way: tap Notify me on the paths page.'],
+        how: '<b>Each part below is a path,</b> with its own Guide, short survey and badge. Take as many as fit. Run a group or community? That path is on its way: tap Notify me on the paths page.',
         go: ['See your paths', '/paths'], ctaTitle: 'Find your path.', ctaText: 'Start as an Explorer with the short survey, then pick the paths that fit what you do.',
         parts: [
           ['thumb-passport.jpg', 'Explorer', 'Everyone starts here. The short survey makes you a member, with a badge.'],
@@ -275,7 +276,7 @@
     },
     better: function () {
       return sectionPage('better', { kicker: 'Take part', title: 'Tell us what is working and what is not', pic: 'restaurant-guide/t-fixes.jpg', group: 'Ways to tell us', feedback: true,
-        how: ['<b>Read the parts below.</b> Each one is a way to reach us, and we read all of it.', '<b>Use it in your day to day.</b> We are real people, supported by technology, and we build from what you send every day.'],
+        how: '<b>Each part below is a way to reach us,</b> and we read all of it. We are real people, supported by technology, and we build from what you send every day.',
         go: ['Send feedback now', '/feedback'], ctaTitle: 'Tell us one thing.', ctaText: 'Something working, missing or confusing? Send it now. It starts with the page you are on.',
         parts: [
           ['restaurant-guide/t-next.jpg', 'The Feedback button', 'On every page, in the top bar. Tell us what is broken, missing or an idea.'],
@@ -289,7 +290,7 @@
     },
     animals: function () {
       return sectionPage('animals', { kicker: 'Take part', title: 'The reason we are all here', pic: 'partner-nonprofit-partner.jpg', group: 'How to show up for the animals',
-        how: ['<b>Read the parts below.</b> Each one is a way to help, starting today.', '<b>Together we move the needle.</b> Businesses, people and nonprofits that actually show up can run campaigns for the animals. Be first to hear about the ones we run together.'],
+        how: '<b>Each part below is a way to help, starting today.</b> Businesses, people and nonprofits that show up can run campaigns for the animals together. Be first to hear about ours.',
         go: ['Find nonprofits and rescues', '/directory?tab=community'], ctaTitle: 'Show up for the animals.', ctaText: 'Find the nonprofits, rescues and sanctuaries near you, and give them your points.',
         parts: [
           ['nonprofit-guide.jpg', 'Nonprofits, rescues and sanctuaries', 'Listed in every chapter in the Directory, ranked by member votes.'],
