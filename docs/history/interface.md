@@ -142,6 +142,8 @@ Classes currently under the rule:
   intro (`ve_board_posts.body`) is the summary there.
 - `.pulse-link-excerpt` — the "In the Pulse" section on a listing's page (`loadInPulse`
   in `directory/listing.html`), each article's summary (`ve_pulse_content.summary`).
+- `.ml-card-tagline` — Saved listings, `/account/my-list.html` (2026-11-10 sweep; the Remove button sits at the card's foot so rows stay flush)
+- Already clamped, checked in the same sweep: `.tl` (`/search.html` results), `.hg-sum` (Holiday Guide menu cards), `.vpg-tagline` (`/public/partner-guide.js`). The shared Directory card (`ve-region-directory.js`) shows no description.
 
 **Directory cards in the Pulse (Sean, 2026-11-02).** Every Pulse article carries **In this story** above **On this episode** (one section, grouped by pills: People, Media,
 Places, Organizations; each card keeps its vote and opens the listing): the Directory cards of the people, restaurants, brands and groups it names (`api/pulse-article.js`, loaded from `ve_content_mentions`). A listing's page
