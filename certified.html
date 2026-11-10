@@ -159,7 +159,8 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
         : state === 'suspended' ? 'No dish here is certified right now. Do not rely on the mark until this page says Certified again.'
         : 'This location has no current Pre-Vegan certification. Do not rely on any mark you see for it.';
       var hero = '<div class="listing-hero city-bg" style="background-image:url(\''+esc(heroArt(l))+'\')">'+
-        '<div class="listing-hero-avatar">'+av+'</div>'+
+        // The logo opens the place's listing (Sean, 2026-11-10: every logo links to its profile).
+        (l.slug ? '<a class="listing-hero-avatar" href="/directory/'+encodeURIComponent(l.slug)+'" aria-label="'+esc(l.name)+', their listing">'+av+'</a>' : '<div class="listing-hero-avatar">'+av+'</div>')+
         '<div class="listing-hero-content"><div class="listing-hero-body">'+
           '<div class="listing-breadcrumb"><a href="/certified">Pre-Vegan Certified</a> <span>/ Status '+esc(d.code)+'</span></div>'+
           '<h1 class="listing-name">'+esc(l.name)+'</h1>'+

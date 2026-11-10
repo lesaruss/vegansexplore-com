@@ -84,7 +84,8 @@
     function api(b) { var h = { 'Content-Type': 'application/json' }, t = tok(); if (t) h.Authorization = 'Bearer ' + t; return fetch(FN, { method: 'POST', headers: h, body: JSON.stringify(b) }).then(function (r) { return r.json(); }); }
     function chName(s) { var h = (window.VE_HUBS || []).filter(function (x) { return x.slug === s; })[0]; return h ? (h.name || h.title || s) : s; }
     function left(t) { var ms = new Date(t) - Date.now(); if (ms <= 0) return 'closing now'; var d = Math.floor(ms / 864e5), h = Math.floor(ms % 864e5 / 36e5); return d ? d + 'd ' + h + 'h left' : h ? h + 'h left' : Math.max(1, Math.floor(ms / 6e4)) + 'm left'; }
-    function logo(l) { return '<div class="logo">' + (l.logo_url ? '<img alt="" src="' + esc(l.logo_url) + '" loading="lazy">' : esc((l.name || 'V').charAt(0))) + '</div>'; }
+    // Every logo opens its listing (Sean, 2026-11-10).
+    function logo(l) { var t = l.slug ? 'a' : 'div'; return '<' + t + ' class="logo"' + (l.slug ? ' href="/directory/' + encodeURIComponent(l.slug) + '" aria-label="' + esc(l.name || '') + '" style="text-decoration:none"' : '') + '>' + (l.logo_url ? '<img alt="" src="' + esc(l.logo_url) + '" loading="lazy">' : esc((l.name || 'V').charAt(0))) + '</' + t + '>'; }
     function drawCards() {
       var rows = (D.cards || []).filter(function (c) { return !CH || c.chapter === CH; });
       document.getElementById('cards').innerHTML = rows.length ? rows.map(function (c) {

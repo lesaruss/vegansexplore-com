@@ -1057,7 +1057,9 @@
   function brandLogo(slug, name) {
     // Field Roast's Directory logo is a Chao cheese picture (set 2026-11-01), so it shows its letter here until the logo is fixed.
     var l = slug && slug !== 'fieldroast' && BRANDS[slug];
-    return '<span class="hg-blogo"' + (l && l.logo_url ? ' style="background-image:url(\'' + esc(l.logo_url) + '\')"' : '') + '>' + (l && l.logo_url ? '' : esc(name.charAt(0))) + '</span>';
+    // Every logo opens its listing (Sean, 2026-11-10: "Anytime we have the logo anywhere, when you click it, it should take you to their profile").
+    var tag = slug && BRANDS[slug] ? 'a' : 'span', href = tag === 'a' ? ' href="/directory/' + encodeURIComponent(slug) + '" aria-label="' + esc(name) + ', their listing"' : '';
+    return '<' + tag + ' class="hg-blogo"' + href + (l && l.logo_url ? ' style="background-image:url(\'' + esc(l.logo_url) + '\')"' : '') + '>' + (l && l.logo_url ? '' : esc(name.charAt(0))) + '</' + tag + '>';
   }
   // At the Store (Sean, 2026-11-08: "a filter system where people can choose the categories... and search for items. They can also
   // suggest items as feedback"): a search, the shelves as chips (any number on, none means every shelf), and Suggest an item, sent to

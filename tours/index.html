@@ -199,6 +199,7 @@
           $('t-stops').innerHTML = (tour.stops || []).map(function (s) {
             var logo = s.logo_url ? '<img class="logo" src="' + esc(s.logo_url) + '" alt="">' : '<span class="logo" aria-hidden="true" style="background:' + esc(s.color || '#3A9B3E') + '">' + esc((s.name || '?').charAt(0)) + '</span>';
             var name = s.slug ? '<a href="/directory/' + encodeURIComponent(s.slug) + '">' + esc(s.name) + '</a>' : esc(s.name);
+            if (s.slug) logo = '<a href="/directory/' + encodeURIComponent(s.slug) + '" aria-label="' + esc(s.name) + '" style="display:contents">' + logo + '</a>';
             return '<li>' + logo + '<div><b>' + name + '</b>' + (s.tier ? '<span class="tag">VE Verified</span>' : '') + '</div></li>';
           }).join('');
           $('t-attr').textContent = tour.attraction ? 'Then: ' + tour.attraction + '.' : '';

@@ -85,7 +85,8 @@ try { if (window.self !== window.top) document.documentElement.classList.add('ve
       card.className = 'ml-card';
       card.setAttribute('data-listing-id', l.id);
       card.innerHTML =
-        '<div class="ml-card-thumb"' + (thumb ? ' style="background-image:url(\'' + esc(thumb) + '\')"' : '') + '></div>' +
+        // The picture opens the listing, like every logo (Sean, 2026-11-10).
+        '<a class="ml-card-thumb" href="/directory/' + encodeURIComponent(l.slug || '') + '" aria-label="' + esc(l.name || '') + '"' + (thumb ? ' style="background-image:url(\'' + esc(thumb) + '\');display:block"' : ' style="display:block"') + '></a>' +
         '<div class="ml-card-body">' +
           '<div class="ml-card-cat">' + esc(l.category || '') + (l.address_city ? ' &middot; ' + esc(l.address_city) : '') + '</div>' +
           '<div class="ml-card-title"><a href="/directory/' + esc(l.slug || '') + '">' + esc(l.name) + '</a></div>' +
