@@ -46,7 +46,7 @@
       fallback: { slug: 'thanksliving', name: 'ThanksLiving (Thanksgiving)', holiday_on: '2026-11-26', submit_close: '2026-11-19T05:00:00Z' },
       evTo: '2026-11-27T05:00:00Z', evOr: 'title.ilike.*thanksliving*,title.ilike.*thanksgiving*,title.ilike.*turkeys*,title.ilike.*friendsgiving*,description.ilike.*thanksliving*',
       evLede: 'Sanctuary dinners, Vegan potlucks and Thanksgiving events on our calendar.', evEmpty: 'Hosting a ThanksLiving dinner or a potluck?' },
-    hanukkah: { page: 'hanukkah', recipes: 'hk-recipes', menus: 'hk-menus', events: 'hk-events', label: 'Hanukkah',
+    hanukkah: { page: 'hanukkah', recipes: 'hk-recipes', menus: 'hk-menus', label: 'Hanukkah',
       fallback: { slug: 'hanukkah', name: 'Hanukkah', holiday_on: '2026-12-04', submit_close: '2026-12-01T05:00:00Z' },
       evTo: '2026-12-13T05:00:00Z', evOr: 'title.ilike.*hanukkah*,title.ilike.*chanukah*,title.ilike.*hanukah*,title.ilike.*menorah*,title.ilike.*latke*,description.ilike.*hanukkah*',
       evLede: 'Plant-based Hanukkah parties, latke nights and menorah lightings on our calendar.', evEmpty: 'Hosting a latke night or a Hanukkah party?' },
@@ -71,7 +71,6 @@
     { k: 'hk-recipes', parent: 'hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hk-recipes.jpg', label: 'Recipes', say: 'Here is a plant-based Hanukkah table you can make at home: crispy latkes with a cashew sour cream, applesauce, carrot tzimmes and jelly doughnuts.' },
     { k: 'hk-kosher', parent: 'hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hk-kosher.jpg', label: 'Kosher Places', say: 'Keeping kosher this Hanukkah? These Vegan and plant-based places describe themselves as kosher or kosher certified. Ask each one about its certification before you go.' },
     { k: 'hk-menus', parent: 'hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hk-menus.jpg', label: 'Holiday Menus', say: 'Rather order in? Pick your chapter and see which Vegan places are cooking for Hanukkah. Our team checks every menu before it shows.' },
-    { k: 'hk-events', parent: 'hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hk-events.jpg', label: 'Events', say: 'Looking for a latke night or a party near you? Here are the Hanukkah events on our calendar. Hosting one? Add it, so people can find you.' },
     { k: 'christmas', label: 'Christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', say: 'Christmas, the plant-based way. On this page are a few easy ideas: a centerpiece for the table, cookies to share, and gifts that do no harm.' },
     { k: 'xm-gifts', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-xm-gifts.jpg', label: 'Gift Guide', say: 'Shopping for a Vegan, or for anyone? Here are gifts our team picked. Save the ones you love to your wish list and share it with your family.' },
     { k: 'xm-wish', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-xm-wish.jpg', label: 'Holiday Wish List', say: 'Not sure what to give the Vegan in your life? Start with the Most Wanted shelf. Making a list? Add what you are wishing for and share it with your family.' },
@@ -256,7 +255,7 @@
   var PIC = '/public/guides/holiday/';
   var GROUPS = [
     { label: 'ThanksLiving · November 26', line: 'Easy ideas for the table, recipes, what to pick up at the store, a Vegan place to order from, events, and what to listen to on the way.', kids: ['thanksliving', 'recipes', 'store', 'menus', 'events', 'listen'] },
-    { label: 'Hanukkah · Begins December 4', hol: 'hanukkah', line: 'Latkes, sufganiyot and the people around the menorah: ideas, recipes, a Vegan place to order from, and events.', kids: ['hanukkah', 'hk-recipes', 'hk-menus', 'hk-events'] },
+    { label: 'Hanukkah · Begins December 4', hol: 'hanukkah', line: 'Latkes, sufganiyot and the people around the menorah: ideas, recipes, kosher places and a Vegan place to order from.', kids: ['hanukkah', 'hk-recipes', 'hk-menus'] },
     { label: 'Christmas · December 25', hol: 'christmas', line: 'A centerpiece, cookies to share, nog, and gifts that do no harm: ideas, recipes, the store, menus and events.', kids: ['christmas', 'xm-recipes', 'xm-store', 'xm-menus', 'xm-events'] },
     { label: 'Give Back', line: 'The nonprofits, rescues and sanctuaries doing the work. Giving Tuesday is December 1.', kids: ['giveback'] },
     { label: 'Run a Business?', line: 'Send your holiday menu and we feature it here, free for members.', kids: ['business'] }
@@ -297,15 +296,14 @@
         ['events', 'Events', 'Sanctuary dinners, potlucks and gatherings, near you and online.'],
         ['listen', 'Listen', 'Our episodes on family and the holidays, ready to play on the way to dinner.']] },
     hanukkah: { pic: 'r-latkes.jpg', cta: ['Find kosher places', '#/hk-kosher'],
-      intro: '<b>Hanukkah is the Jewish Festival of Lights,</b> eight nights from sundown on December 4 to nightfall on December 12: light, family and food fried in oil, all of it plant-based. Here are ideas, recipes, kosher places, Vegan menus and events.',
+      intro: '<b>Hanukkah is the Jewish Festival of Lights,</b> eight nights from sundown on December 4 to nightfall on December 12: light, family and food fried in oil, all of it plant-based. Here are ideas, recipes, kosher places and Vegan menus.',
       what: '<b>What it is.</b> Hanukkah is the Jewish Festival of Lights: eight nights, from sundown on Friday, December 4 to nightfall on Saturday, December 12.',
       why: '<b>Why it matters.</b> It is a holiday of light, family and food fried in oil, and all of it can be plant-based. For its meaning and blessings, start with Jewish voices like My Jewish Learning and Jewish Veg.',
-      how: '<b>What you can do here.</b> Pick up a few easy ideas, fry latkes from our recipes, find kosher places, order from a Vegan place cooking for the holiday, or find a latke night near you.',
+      how: '<b>What you can do here.</b> Pick up a few easy ideas, fry latkes from our recipes, find kosher places, or order from a Vegan place cooking for the holiday.',
       rows: [['hk-ideas', 'Ideas', 'Something fried, the candles, eight nights of kindness and kind gifts.'],
         ['hk-recipes', 'Recipes', 'Crispy latkes, applesauce, carrot tzimmes and jelly doughnuts, plant-based.'],
         ['hk-kosher', 'Kosher Places', 'Vegan and plant-based places that describe themselves as kosher.'],
-        ['hk-menus', 'Holiday Menus', 'Vegan places cooking for Hanukkah, with the date to order by.'],
-        ['hk-events', 'Events', 'Plant-based Hanukkah parties, latke nights and menorah lightings.']] },
+        ['hk-menus', 'Holiday Menus', 'Vegan places cooking for Hanukkah, with the date to order by.']] },
     christmas: { pic: 'r-wellington.jpg', cta: ['Gift Guide', '#/xm-gifts'],
       intro: '<b>Christmas, December 25,</b> is the biggest day of family and giving of the year, and the easiest time to give gifts that do no harm. Here are our Gift Guide, a wish list to share, recipes, the store, Vegan menus and events.',
       what: '<b>What it is.</b> Christmas, on Friday, December 25, is a day of family, giving and a shared table for millions of people.',
@@ -935,7 +933,7 @@
     thanksliving: ['A ThanksLiving table to make at home', 'A main, gravy, four sides and a pie. Every one is plant-based, and most can be made a day ahead.',
       '<b>Short on time?</b> Pick up a roast, a gravy or a pie <a href="#/store">at the store</a>, or <a href="#/menus">order from a Vegan place near you</a>.'],
     hanukkah: ['A plant-based Hanukkah table', 'Latkes with cashew sour cream, applesauce, carrot tzimmes and jelly doughnuts. Every one is plant-based.',
-      '<b>Rather not fry?</b> <a href="#/hk-menus">Order from a Vegan place near you</a>, or find <a href="#/hk-events">a latke night on our calendar</a>.'],
+      '<b>Rather not fry?</b> <a href="#/hk-menus">Order from a Vegan place near you</a>, or find <a href="#/hk-kosher">a kosher place</a>.'],
     christmas: ['A plant-based Christmas table', 'A Wellington for the middle of the table, a side, a nog and cookies to share. Every one is plant-based.',
       '<b>Mashed potatoes and gravy?</b> Use <a href="#/recipes/mash">our ThanksLiving ones</a>. Short on time? <a href="#/xm-store">Pick it up at the store</a> or <a href="#/xm-menus">order from a Vegan place</a>.']
   };
@@ -1474,7 +1472,7 @@
     var V = { overview: viewOverview, thanksliving: function () { viewHolOverview('thanksliving'); }, ideas: viewThanksLiving,
       'hk-ideas': function () { viewHoliday('hanukkah'); }, 'xm-ideas': function () { history.replaceState(null, '', '#/xm-gifts'); route(); }, 'hk-kosher': viewKosher, 'xm-wish': function () { viewWish(sub); }, 'xm-gifts': function () { viewGifts(sub); }, recipes: function () { viewRecipes(sub); }, store: viewStore, listen: viewListen, menus: function () { viewMenus(sub); }, events: function () { viewEvents(sub); },
       hanukkah: function () { viewHolOverview('hanukkah'); }, christmas: function () { viewHolOverview('christmas'); },
-      'hk-recipes': function () { viewRecipes(sub); }, 'hk-menus': function () { viewMenus(sub); }, 'hk-events': function () { viewEvents(sub); },
+      'hk-recipes': function () { viewRecipes(sub); }, 'hk-menus': function () { viewMenus(sub); }, 'hk-events': function () { history.replaceState(null, '', '#/hanukkah'); route(); },
       'xm-recipes': function () { viewRecipes(sub); }, 'xm-store': viewStore, 'xm-menus': function () { viewMenus(sub); }, 'xm-events': function () { viewEvents(sub); }, giveback: function () { viewGiveBack(sub); }, business: viewBusiness };
     if (!V[view]) view = 'overview';
     document.body.classList.toggle('dg-member', member());
