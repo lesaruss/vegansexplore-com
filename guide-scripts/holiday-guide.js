@@ -423,7 +423,7 @@
       (MENUS.length && any ? '<div class="hg-empty"><h3>Nothing Matches</h3><p>Try fewer words or reset the filters.</p><button type="button" class="dg-btn dg-ghost" data-hg-reset>Reset filters</button></div>' :
       '<div class="hg-empty"><h3>No Holiday Menus ' + (ch === 'all' ? '' : 'in ' + esc(chapterName(ch)) + ' ') + 'Yet</h3><p>' + (open ? 'Menus are coming in now, and each one shows here once our team has checked it.' : 'Menus for this holiday are closed.') + '</p>' +
         (open ? '<a class="dg-btn dg-ghost" href="#/business">Run a business? Send your menu</a>' : '') + '</div>')) +
-      (tips.length ? '<h3 style="margin:22px 0 4px;font-size:17px">Spotted by Members</h3><p class="dg-srow-p" style="margin:0 0 10px">Holiday menus our members found. Our team checked each link; order from the place directly.</p><div class="hg-menus">' + tips.map(tipCard).join('') + '</div>' : '') +
+      (tips.length ? '<h3 style="margin:22px 0 4px;font-size:17px">Menus We Found</h3><p class="dg-srow-p" style="margin:0 0 10px">Holiday menus our team and our members found. We checked each link; order from the place directly. Run one of these places? Claim your listing free and post your full menu here.</p><div class="hg-menus">' + tips.map(tipCard).join('') + '</div>' : '') +
       (daysUntil(onDay(t.holiday_on)) ? '<div class="hg-tell"><div><b>Know a place cooking for ' + esc(t.name) + '?</b><p>Send us the link to its holiday menu. Our team checks it, then it shows here for everyone.</p></div><a class="dg-btn dg-ghost" href="#/' + hx().menus + '/tell" data-hg-tell>Tell us about a menu</a></div>' : '');
   }
   // Menus members spotted (Sean, 2026-11-08): a place and a link to its own holiday menu, checked by our team, never copied.
@@ -442,9 +442,11 @@
     var name = l ? '<a href="#/' + hx().menus + '/listing/' + encodeURIComponent(l.slug) + '">' + esc(l.name) + '</a>' : esc(x.place_name);
     return '<div class="hg-menu"><div class="hg-mh"><div class="hg-logo"' + (l && l.logo_url ? ' style="background-image:url(\'' + esc(l.logo_url) + '\')"' : '') + '>' + (l && l.logo_url ? '' : esc(String(x.place_name || '?').charAt(0))) + '</div>' +
       '<div><h3>' + name + '</h3><small>' + esc(where || 'Online') + '</small></div></div>' +
-      '<div><span class="hg-tag pv">Spotted by a member</span></div>' + (x.note ? '<p class="hg-sum">' + esc(x.note) + '</p>' : '') +
+      '<div><span class="hg-tag pv">Order direct</span></div>' + (x.note ? '<p class="hg-sum">' + esc(x.note) + '</p>' : '') +
       '<div class="hg-acts"><a class="dg-btn" href="' + esc(x.link) + '" target="_blank" rel="noopener">See their holiday menu</a>' +
-      (l ? '<a class="dg-btn dg-ghost" href="/directory/' + encodeURIComponent(l.slug) + '">Their page</a><button type="button" class="dg-save' + (SAVED[l.id] ? ' on' : '') + '" data-hg-save="' + esc(l.id) + '" aria-pressed="' + !!SAVED[l.id] + '">' + (SAVED[l.id] ? 'Saved' : 'Save') + '</button>' : '') + '</div></div>';
+      (l ? '<a class="dg-btn dg-ghost" href="/directory/' + encodeURIComponent(l.slug) + '">Their page</a><button type="button" class="dg-save' + (SAVED[l.id] ? ' on' : '') + '" data-hg-save="' + esc(l.id) + '" aria-pressed="' + !!SAVED[l.id] + '">' + (SAVED[l.id] ? 'Saved' : 'Save') + '</button>' : '') + '</div>' +
+      // Menus We Found (Sean, 2026-11-10): every found menu invites the place to claim its listing and post its full menu.
+      '<p class="hg-claim">Your place? <a href="' + (l ? '/claim?listing=' + encodeURIComponent(l.slug) : '/claim?add=1') + '">' + (l ? 'Claim it free' : 'Get listed free') + '</a> and post your full menu.</p></div>';
   }
   // Tell us about a menu: members only (a join window first), checked by our team before it shows.
   function viewTell() {
