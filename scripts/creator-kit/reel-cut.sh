@@ -4,7 +4,7 @@ FPS=30; i=0; : > list2.txt
 while read name start end; do
   n=$(python3 -c "print(max(1,round(($end-$start)*$FPS)))")
   ffmpeg -nostdin -hide_banner -loglevel error -y -loop 1 -i bg-$name.png -loop 1 -i ov-$name.png -filter_complex \
-   "[0]scale=3240:5100:flags=lanczos,zoompan=z='1+0.05*on/$n':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=$n:s=1080x1700:fps=$FPS,pad=1080:1920:0:0:white[b];[b][1]overlay=0:0:shortest=1,format=yuv420p" \
+   "[0]scale=3240:4950:flags=lanczos,zoompan=z='1+0.05*on/$n':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=$n:s=1080x1650:fps=$FPS,pad=1080:1920:0:0:white[b];[b][1]overlay=0:0:shortest=1,format=yuv420p" \
    -frames:v $n -r $FPS L$i.mp4
   echo "file 'L$i.mp4'" >> list2.txt; i=$((i+1))
 done <<SHOTS
@@ -21,5 +21,5 @@ j-points 20.4 23.2
 k-founding 23.2 26.1
 c-cover 26.1 28.3
 SHOTS
-ffmpeg -nostdin -hide_banner -loglevel error -y -f concat -safe 0 -i list2.txt -i kai.mp3 -c:v libx264 -preset medium -crf 20 -c:a aac -b:a 160k -af loudnorm=I=-16:TP=-1.5 -shortest -movflags +faststart kj-reel-v2.mp4
-ffprobe -v error -show_entries format=duration -of csv=p=0 kj-reel-v2.mp4
+ffmpeg -nostdin -hide_banner -loglevel error -y -f concat -safe 0 -i list2.txt -i kai.mp3 -c:v libx264 -preset medium -crf 20 -c:a aac -b:a 160k -af loudnorm=I=-16:TP=-1.5 -shortest -movflags +faststart kj-reel-v3.mp4
+ffprobe -v error -show_entries format=duration -of csv=p=0 kj-reel-v3.mp4

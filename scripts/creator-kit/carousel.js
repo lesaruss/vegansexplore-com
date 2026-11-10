@@ -12,20 +12,20 @@ const css = `@font-face{font-family:M;src:url(data:font/ttf;base64,${font})}*{bo
 .f{position:relative;overflow:hidden;width:1080px}.lg svg{width:100%;height:auto;display:block}
 .pc{position:absolute;background:#fff;padding:20px;box-shadow:0 20px 44px rgba(0,0,0,.4);border-radius:4px}
 .pc img{display:block;width:100%;height:100%;object-fit:cover}
-.bar{position:absolute;left:0;right:0;bottom:0;height:160px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 48px;gap:24px}
-.bar .lg{width:290px;flex:none}.bar .t{text-align:right}.bar b{display:block;font-size:42px;font-weight:900;color:#141414;line-height:1.1}.bar span{font-size:28px;font-weight:600;color:#555}
+.bar{position:absolute;left:0;right:0;bottom:0;height:200px;background:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 48px;gap:24px}
+.bar .lg{width:400px;flex:none}.bar .t{text-align:right;white-space:nowrap}.bar b{display:block;font-size:46px;font-weight:900;color:#141414;line-height:1.1}.bar span{font-size:32px;font-weight:600;color:#555}
 .tx{text-shadow:0 3px 16px rgba(0,0,0,.6)}`;
 const bar = (right) => `<div class="bar"><div class="lg">${lan}</div><div class="t">${right}</div></div>`;
-const who = `<b style="font-size:38px">${IG}${NAME} (${HANDLE})</b><span>${CITY}</span>`;
+const who = `<b style="font-size:42px">${IG}${NAME} (${HANDLE})</b><span>${CITY}</span>`;
 const slide = (pic, title, sub, right) => `<div class="f" style="height:1350px">
-  <div style="position:absolute;inset:0 0 160px 0;background:url(${img(pic.startsWith('/') ? pic : R + '/public/guides/welcome/' + pic)}) center/cover"></div>
-  <div style="position:absolute;left:0;right:0;bottom:160px;height:560px;background:linear-gradient(0deg,rgba(0,0,0,.82),rgba(0,0,0,.5) 55%,transparent)"></div>
-  <div class="tx" style="position:absolute;left:60px;right:60px;bottom:200px;color:#fff"><div style="font-size:78px;font-weight:900;line-height:1.04">${title}</div><div style="font-size:42px;font-weight:600;margin-top:18px;line-height:1.25">${sub}</div></div>
+  <div style="position:absolute;inset:0 0 200px 0;background:url(${img(pic.startsWith('/') ? pic : R + '/public/guides/welcome/' + pic)}) center/cover"></div>
+  <div style="position:absolute;left:0;right:0;bottom:200px;height:560px;background:linear-gradient(0deg,rgba(0,0,0,.82),rgba(0,0,0,.5) 55%,transparent)"></div>
+  <div class="tx" style="position:absolute;left:60px;right:60px;bottom:240px;color:#fff"><div style="font-size:78px;font-weight:900;line-height:1.04">${title}</div><div style="font-size:42px;font-weight:600;margin-top:18px;line-height:1.25">${sub}</div></div>
   ${bar(right || who)}</div>`;
 const cover = `<div class="f" style="height:1350px;background:url(${BANNER}) center/cover">
-  <div style="position:absolute;inset:0 0 160px 0;background:linear-gradient(180deg,rgba(0,0,0,.1),rgba(0,0,0,0) 40%,rgba(0,0,0,.6))"></div>
-  <div class="pc" style="left:230px;width:620px;top:70px;height:680px;transform:rotate(-2.5deg)"><img src="${AVATAR}"></div>
-  <div style="position:absolute;left:50px;right:50px;top:790px;text-align:center;color:#fff">
+  <div style="position:absolute;inset:0 0 200px 0;background:linear-gradient(180deg,rgba(0,0,0,.1),rgba(0,0,0,0) 40%,rgba(0,0,0,.6))"></div>
+  <div class="pc" style="left:230px;width:620px;top:60px;height:650px;transform:rotate(-2.5deg)"><img src="${AVATAR}"></div>
+  <div style="position:absolute;left:50px;right:50px;top:750px;text-align:center;color:#fff">
     <div style="font-size:40px;font-weight:800;letter-spacing:.06em">MEET YOUR OFFICIAL</div>
     <div style="font-size:80px;font-weight:900;line-height:1.02;margin-top:6px;text-shadow:0 3px 10px rgba(0,0,0,.45)">VEGANS EXPLORE<br>CONTENT CREATOR</div>
     <div style="font-size:52px;font-weight:800;margin-top:18px">${IG}${NAME} (${HANDLE})</div></div>
@@ -42,15 +42,15 @@ const S = [
   [SC + 'b35-dani-cow.jpg', 'The reason we are all here', 'Find the nonprofits, rescues and sanctuaries near you.'],
 ];
 const closing = slide(SC + 'b44-celebrate.jpg', 'Become a Founding Member', 'Register by midnight Eastern on January 1, and Founding Member stays on your profile for good.',
-  `<b style="font-size:38px">${IG}${NAME} (${HANDLE})</b><span>Tap the link in my bio</span>`);
+  `<b style="font-size:42px">${IG}${NAME} (${HANDLE})</b><span>Tap the link in my bio</span>`);
 const story = `<div class="f" style="height:1920px;background:url(${BANNER}) center/cover">
-  <div style="position:absolute;inset:0 0 260px 0;background:linear-gradient(180deg,rgba(0,0,0,.1),rgba(0,0,0,0) 40%,rgba(0,0,0,.6))"></div>
+  <div style="position:absolute;inset:0 0 300px 0;background:linear-gradient(180deg,rgba(0,0,0,.1),rgba(0,0,0,0) 40%,rgba(0,0,0,.6))"></div>
   <div class="pc" style="left:170px;width:740px;top:150px;height:810px;transform:rotate(-2.5deg)"><img src="${AVATAR}"></div>
   <div style="position:absolute;left:50px;right:50px;top:1030px;text-align:center;color:#fff">
     <div style="font-size:46px;font-weight:800;letter-spacing:.06em">MEET YOUR OFFICIAL</div>
     <div style="font-size:90px;font-weight:900;line-height:1.02;margin-top:8px;text-shadow:0 3px 10px rgba(0,0,0,.45)">VEGANS EXPLORE<br>CONTENT CREATOR</div>
     <div style="font-size:60px;font-weight:800;margin-top:26px">${IG}${NAME} (${HANDLE})</div></div>
-  <div class="bar" style="height:260px"><div class="lg" style="width:340px">${lan}</div><div class="t"><b style="font-size:52px">Become a Member</b><span style="font-size:32px">Link in my bio</span></div></div></div>`;
+  <div class="bar" style="height:300px"><div class="lg" style="width:420px">${lan}</div><div class="t" style="white-space:nowrap"><b style="font-size:50px">Become a Member</b><span style="font-size:32px">Link in my bio</span></div></div></div>`;
 (async () => {
   const b = await chromium.launch();
   const all = [['01-cover', cover], ...S.map((s, i) => [String(i + 2).padStart(2, '0') + '-' + s[0].split('/').pop().replace('liz-', '').replace('.jpg', ''), slide(...s)]), ['10-founder', closing]];
