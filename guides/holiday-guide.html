@@ -523,6 +523,8 @@
     @media (min-width:641px){.hg-sub-few .hg-subrow{display:flex}.hg-sub-few .hg-subsel{display:none}}
     /* The Overview's sections in two columns on desktop (Sean, 2026-11-10). */
     @media (min-width:901px){.wg-arts .wg-grp ol{display:grid;grid-template-columns:1fr 1fr;gap:18px 28px}}
+    /* This Guide's Getting started text runs longer than the Welcome Guide's, so the card grows to fit and its buttons always show. */
+    @media (min-width:901px){#dgMain .wg-gs-b{height:auto;overflow:visible}}
     .hg-subsel{min-width:240px}
     @media (max-width:640px){.hg-sub{flex-wrap:wrap;gap:6px}.hg-subsel{width:100%;min-width:0;font-size:16px}}
     .rg-pill{display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);text-decoration:none;font-size:14px;font-weight:700;transition:border-color .12s,background .12s;}
@@ -782,7 +784,7 @@
 <script src="/public/ve-episodes.js"></script>
 <script src="/public/ve-holiday-menu.js?v=9"></script>
 <script src="/public/ve-join-box.js?v=2"></script>
-<script src="/guide-scripts/holiday-guide.js?v=28"></script>
+<script src="/guide-scripts/holiday-guide.js?v=30"></script>
 <script src="/public/ve-guide-min.js"></script>
 </body>
 </html>
