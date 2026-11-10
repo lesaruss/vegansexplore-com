@@ -702,7 +702,7 @@
           var pic = card.querySelector('.vrd-logo, .av');
           if (!pic || pic.parentNode.classList.contains('veb-wrap')) return;
           var w = document.createElement('span'); w.className = 'veb-wrap';
-          w.style.cssText = 'position:relative;display:inline-block;flex-shrink:0;line-height:0;align-self:flex-start';
+          w.style.cssText = 'position:relative;display:inline-block;flex-shrink:0;line-height:0;align-self:center';
           pic.parentNode.insertBefore(w, pic);
           var next = pic.nextElementSibling; w.appendChild(pic);
           if (next && next.classList.contains('av') && pic.classList.contains('vrd-logo')) w.appendChild(next);
