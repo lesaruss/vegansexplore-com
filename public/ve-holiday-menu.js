@@ -1,5 +1,5 @@
 /*
- * /public/ve-holiday-menu.js — a place's holiday menu in a window over the page (Sean, 2026-11-10, Nana's A Vegan the prototype:
+ * /public/ve-holiday-menu.js: a place's holiday menu in a window over the page (Sean, 2026-11-10, Nana's A Vegan the prototype:
  * "a pop-up... in the center, overlaid the page, you could see it and then close it, and then have the same thing on their page").
  * One component for the Holiday Guide's menu cards and the Directory listing page; never copy it.
  *
