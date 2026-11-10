@@ -8,7 +8,9 @@
 //          tip {holiday, place_name, city, state, link, note, listing_id?} (a menu a member found; a person checks it; the team's go live at once)
 //          (any registered account, Sean 2026-11-10: quick registration is enough to send things) tip; wish_mine {holiday},
 //          wish_add {holiday, kind: wish | gift, title, link?, note?}, wish_remove {id}
-// Public:  wishes {holiday} (the team-approved gift ideas and the Most Wanted shelf), wish_list {code} (one person's list, by referral code)
+// Public:  wishes {holiday} (the team-approved gift ideas and the Most Wanted shelf), wish_list {code} (one person's list, by referral code),
+//          gifts {holiday} (the Gift Guide our team picks, with each gift's pluses, and the caller's own when signed in)
+// Account: gift_plus {gift_id, on} (any registered account; a plus lives only in the Holiday Guide)
 // Admin:   queue {holiday?, status?}, get {id}, review {id, decision: approve | decline | note, note},
 //          tips {holiday?}, tip_review {id, decision: approve | decline | note, note, listing_id?}, wish_queue {holiday?}, wish_review {id, decision}
 import Anthropic from 'npm:@anthropic-ai/sdk';
@@ -177,6 +179,22 @@ Deno.serve(async (req) => {
     const most = Object.values(tally).sort((x, y) => y.n - x.n || x.title.localeCompare(y.title)).slice(0, 12);
     return json({ ok: true, gifts: rows.filter((w) => w.kind === 'gift').slice(0, 60), most_wanted: most });
   }
+  if (action === 'gifts') {
+    const hs = String(b.holiday || 'christmas');
+    if (!SLUG.test(hs)) return json({ error: 'bad_holiday' }, 400);
+    const { data } = await db.from('ve_holiday_gifts').select('id, section, title, brand, listing_id, link, amazon_link, price, image_url, note, source_name, source_url, sort').eq('holiday_slug', hs).eq('status', 'live').order('sort').limit(300);
+    const rows = data || [], ids = rows.map((g) => g.id), lids = [...new Set(rows.map((g) => g.listing_id).filter(Boolean))];
+    const [{ data: pl }, { data: ls }] = await Promise.all([
+      ids.length ? db.from('ve_holiday_gift_plus').select('gift_id, member_id').in('gift_id', ids) : Promise.resolve({ data: [] as any[] }),
+      lids.length ? db.from('listings').select('id, slug, name, logo_url').in('id', lids).eq('status', 'approved') : Promise.resolve({ data: [] as any[] }),
+    ]);
+    const tok0 = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
+    const who = tok0 && tok0.split('.').length === 3 ? await verifyToken(tok0) : null;
+    const n: Record<string, number> = {}, mine: Record<string, boolean> = {};
+    for (const p of pl || []) { n[p.gift_id] = (n[p.gift_id] || 0) + 1; if (who && p.member_id === who) mine[p.gift_id] = true; }
+    const L = Object.fromEntries((ls || []).map((l: any) => [l.id, l]));
+    return json({ ok: true, gifts: rows.map((g) => ({ ...g, listing: g.listing_id ? L[g.listing_id] || null : null, plus: n[g.id] || 0, mine: !!mine[g.id] })) });
+  }
   if (action === 'wish_list') {
     const code = String(b.code || ''), hs = String(b.holiday || 'christmas');
     if (!CODE.test(code) || !SLUG.test(hs)) return json({ error: 'bad_code' }, 400);
@@ -320,6 +338,15 @@ Deno.serve(async (req) => {
     return json({ ok: true, status: 'withdrawn' });
   }
 
+  if (action === 'gift_plus') {
+    const gid = String(b.gift_id || '');
+    if (!UUID.test(gid)) return json({ error: 'bad_id' }, 400);
+    if (!(await db.from('ve_holiday_gifts').select('id').eq('id', gid).eq('status', 'live').maybeSingle()).data) return json({ error: 'not_found' }, 404);
+    if (b.on === false) await db.from('ve_holiday_gift_plus').delete().eq('gift_id', gid).eq('member_id', me);
+    else await db.from('ve_holiday_gift_plus').upsert({ gift_id: gid, member_id: me }, { onConflict: 'gift_id,member_id', ignoreDuplicates: true });
+    const { count } = await db.from('ve_holiday_gift_plus').select('gift_id', { count: 'exact', head: true }).eq('gift_id', gid);
+    return json({ ok: true, plus: count || 0, mine: b.on !== false });
+  }
   // Wish list: any registered account (quick registration is enough).
   if (action === 'wish_mine' || action === 'wish_add' || action === 'wish_remove') {
     const hs = String(b.holiday || 'christmas');
