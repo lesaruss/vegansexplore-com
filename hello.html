@@ -17,7 +17,7 @@
   <style>
     /* The Holiday Guide launch page (Sean, 2026-11-10, playbook ve-outreach-buckets, task holiday-launch-blast): "their landing page is
        just going to be me... almost the same design as the one we did for content creators". Parent: /invite (template gate). Sean's
-       still with a green play button in the middle of the picture (Sean, 2026-11-10: "put the play button in the center so people can't miss it... make it green"; play and pause on the image; the video, when it comes, sits in the same 4:5 frame; nothing plays until pressed), his words on
+       still with a green play button in the middle of the picture; tapped, the approved video plays in the same 4:5 frame (the Meetup page plays its own voice note over the still) (Sean, 2026-11-10: "put the play button in the center so people can't miss it... make it green"; play and pause on the image; the video, when it comes, sits in the same 4:5 frame; nothing plays until pressed), his words on
        the left, one line by audience (?b=), two doors: Become a Founding Member (opens the Welcome Guide) and the Holiday Guide; no Share (Sean: they would be sharing their invitation). Every link we send is a
        tracked /go/ link that lands here with its ?b=. */
 
@@ -49,7 +49,7 @@
     .msg.err{color:#b42318;}
     .msg.ok{color:var(--ve-green-deep);}
     .media{border-radius:16px;overflow:hidden;background:#0f1a10;aspect-ratio:4/5;max-height:calc(100vh - 180px);box-shadow:0 18px 40px rgba(0,0,0,0.18);}
-    .media img{width:100%;height:100%;object-fit:cover;object-position:50% 10%;display:block;}
+    .media img,.media video{width:100%;height:100%;object-fit:cover;object-position:50% 10%;display:block;}
     .state{max-width:760px;}
     .state h1{font-size:clamp(28px,3.6vw,44px);}
     [hidden]{display:none !important;}
@@ -105,7 +105,8 @@
       </div>
       <div class="side">
         <button type="button" class="media" id="play" aria-pressed="false" aria-label="Play Sean's note">
-          <img src="/public/founder/sean-square.jpg" alt="Sean A. Russell waving hello in a Vegans Explore tee">
+          <img id="still" src="/public/founder/sean-square.jpg" alt="Sean A. Russell waving hello in a Vegans Explore tee">
+          <video id="vid" playsinline preload="none" poster="/public/founder/sean-square.jpg" hidden></video>
           <span class="pbtn" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path id="play-ic" d="M8 5v14l11-7z"/></svg></span>
         </button>
         <audio id="audio" preload="none"></audio>
@@ -142,7 +143,11 @@
     if (cfg.lead) $('lead').hidden = false;
     if (cfg.reset) $('reset').hidden = false;
     if (cfg.said) $('said').innerHTML = cfg.said.map(function (t) { return '<p>' + t.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</p>'; }).join('');
-    var a = $('audio'); a.src = cfg.audio || GENERAL;
+    // The video (Sean approved 2026-11-10, v4): Sean's general note over 21 stills. The Meetup page keeps its own note over the still.
+    var VIDEO = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/hello/video/hello-v4.mp4';
+    var a;
+    if (cfg.audio) { a = $('audio'); a.src = cfg.audio; }
+    else { a = $('vid'); a.src = VIDEO; a.addEventListener('play', function () { $('vid').hidden = false; $('still').hidden = true; }); }
     function setPlaying(on) {
       $('play').setAttribute('aria-pressed', on ? 'true' : 'false');
       $('play').setAttribute('aria-label', on ? "Pause Sean's note" : "Play Sean's note");
@@ -151,7 +156,7 @@
     $('play').addEventListener('click', function () { if (a.paused) { a.play().catch(function () {}); } else { a.pause(); } });
     a.addEventListener('play', function () { setPlaying(true); });
     a.addEventListener('pause', function () { setPlaying(false); });
-    a.addEventListener('ended', function () { a.currentTime = 0; setPlaying(false); });
+    a.addEventListener('ended', function () { a.currentTime = 0; setPlaying(false); if ($('vid') === a) { $('vid').hidden = true; $('still').hidden = false; } });
   })();
   </script>
   <script src="/public/footer.js"></script>
