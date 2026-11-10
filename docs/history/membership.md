@@ -669,3 +669,10 @@ in a video (the render scripts assert it) and look-alike shots count as repeats;
 page, no animation (Higgsfield budget, 2026-11-10); a phone in a scene shows its back; the Volunteer tee has no logo. Scripts and status:
 `docs/proposals/welcome-guide-section-scripts.md`. Live proof 2026-11-10: every page at 1440 and 390 px has its video, caption track and
 Play Liz, and nothing scrolls sideways. Next: inventory the other Guides and move them to this template one at a time, when Sean says.
+
+**The Welcome Guide, compact** (Sean, 2026-11-10). Overview: one Getting started blurb of about 230 characters ("I don't like the three
+sections... just make it a 250 character blurb"), then two groups, Find Your Way (Directory, City, Events, Media) and Take Part (Guides,
+Points, Path, Make It Better, For the Animals, Become a Founder), two columns ("put them side by side like we just did with the holiday
+guide"), each row about 75 characters ("let's go with 75 characters"). Section pages: the How to use this page card is one blurb ("fold those
+into one blurb too") and the rows are two across at about 75 characters ("do the section pages at 75 too"). Text sizes match the Holiday
+Guide (15px card, 14.5px rows); Sean kept them. `guide-scripts/welcome-guide.js` v30, `passport.html`.
