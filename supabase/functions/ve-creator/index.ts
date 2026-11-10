@@ -93,6 +93,7 @@ async function dashboard(row: Row) {
         captions: Array.isArray(kit.reel.captions) ? kit.reel.captions.map((c: any) => ({ label: c.label, text: String(c.text ?? '').replace(/\{link\}/g, link ?? '') })) : [] } : null,
       story: kit.story ? { file: u(kit.story.file), about: kit.story.about ?? '' } : null,
       carousel: Array.isArray(kit.carousel) ? kit.carousel.map(u) : [],
+      carousel_zip: u(kit.carousel_zip),
       captions,
     },
   };

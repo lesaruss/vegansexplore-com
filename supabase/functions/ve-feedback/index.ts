@@ -3,6 +3,8 @@
 // gathered into one daily digest ({action:'digest'}, cron with x-cron-secret; Sean 2026-11-05). 5 a visitor an hour, 15 a day.
 // Super admins: admin_settings {digest?: bool} reads or sets the switch.
 // Kind missing on a Directory, search or chapter-Directory page also makes a ve_listing_requests row (source feedback, feedback_id).
+// A voice message (Sean, 2026-11-10: "she can leave a voice message, a voice dictation, she could type out"): voice (base64 audio, at most
+// about 3 MB, webm or mp4) comes with the feedback, after the visitor limit; it is saved to vegan-media media/feedback/voice/<day>/<uuid>.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
 const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, x-cron-secret', 'Access-Control-Allow-Methods': 'POST, OPTIONS' };
@@ -82,6 +84,7 @@ async function toListingQueue(fid: string, row: any, message: string, page: stri
   await db.from('ve_feedback').update({ note: 'Also sent to the listing-request queue (Sean\'s For you once Logan drafts it).' }).eq('id', fid);
   return true;
 }
+const VOICE_PREFIX = `${Deno.env.get('SUPABASE_URL')}/storage/v1/object/public/vegan-media/media/feedback/voice/`;
 const clean = (v: unknown, n: number) => String(v ?? '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '').trim().slice(0, n);
 
 Deno.serve(async (req) => {
@@ -127,10 +130,11 @@ Deno.serve(async (req) => {
     return error || !data ? json({ error: 'save_failed' }, 500) : json({ ok: true, row: data });
   }
   const kind = KINDS[b.kind] ? String(b.kind) : 'other';
-  const message = clean(b.message, 3000);
+  let message = clean(b.message, 3000);
+  const hasVoice = typeof b.voice === 'string' && b.voice.length > 100;
   const page = clean(b.page_url, 500);
   const email = clean(b.email, 200).toLowerCase();
-  if (message.length < 5) return json({ error: 'message_needed' }, 400);
+  if (message.length < 5 && !hasVoice) return json({ error: 'message_needed' }, 400);
   if (!/^https?:\/\//i.test(page)) return json({ error: 'page_needed' }, 400);
   if (email && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json({ error: 'bad_email' }, 400);
   const visitor = clean(b.visitor, 40) || null;
@@ -141,6 +145,20 @@ Deno.serve(async (req) => {
       db.from('ve_feedback').select('id', { count: 'exact', head: true }).eq('visitor', visitor).gte('created_at', day),
     ]);
     if ((h.count ?? 0) >= 5 || (d.count ?? 0) >= 15) return json({ error: 'daily_limit' }, 429);
+  }
+  if (hasVoice) {
+    if (b.voice.length > 4_200_000) return json({ error: 'voice_too_long' }, 413);
+    if (!visitor) return json({ error: 'visitor_needed' }, 400);
+    // A ceiling on voice messages from everyone together, so the upload cannot be used as free file hosting.
+    const { count: vh } = await db.from('ve_feedback').select('id', { count: 'exact', head: true }).ilike('message', '%Voice message: %').gte('created_at', new Date(Date.now() - 3600e3).toISOString());
+    if ((vh ?? 0) >= 30) return json({ error: 'daily_limit' }, 429);
+    const ext = String(b.voice_type || '').includes('mp4') ? 'mp4' : 'webm';
+    let bytes: Uint8Array;
+    try { bytes = b64d(String(b.voice)); } catch { return json({ error: 'bad_voice' }, 400); }
+    const path = `media/feedback/voice/${new Date().toISOString().slice(0, 10)}/${crypto.randomUUID()}.${ext}`;
+    const up = await db.storage.from('vegan-media').upload(path, bytes, { contentType: ext === 'mp4' ? 'audio/mp4' : 'audio/webm', upsert: false });
+    if (up.error) { console.error('voice upload:', up.error); return json({ error: 'save_failed' }, 500); }
+    message = (message.length >= 5 ? message + '\n\n' : 'A voice message.\n\n') + 'Voice message: ' + VOICE_PREFIX + path.replace('media/feedback/voice/', '');
   }
   const row = { kind, page_url: page, page_label: clean(b.page_label, 120) || null, message, email: email || null, name: clean(b.name, 120) || null, visitor,
     member_signed_in: b.signed_in === true, user_agent: clean(req.headers.get('user-agent'), 300) || null, viewport: clean(b.viewport, 20) || null };

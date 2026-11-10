@@ -126,6 +126,13 @@
     .thumbrow p{margin:0;font-size:13.5px;}
     .steps{margin:0;padding-left:22px;font-size:14.5px;line-height:1.6;color:var(--ink75);}
     .steps li{margin:0 0 6px;}
+    .car a .dli{position:absolute;right:8px;top:8px;width:32px;height:32px;border-radius:6px;background:rgba(255,255,255,.94);display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.25);}
+    .car a .dli svg,.btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+    .car a .dli svg{stroke:#1f5f22;}
+    .car a:hover .dli{background:#fff;}
+    .who{position:relative;}
+    .fbk{position:absolute;right:0;top:0;}
+    @media (max-width:600px){.who{padding-right:46px}.fbk{font-size:0;gap:0;padding:0;width:38px;min-height:38px;justify-content:center}.fbk svg{width:17px;height:17px}}
     .soon{display:inline-block;font-size:10.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;background:#FFF1DF;color:#8a4b00;border-radius:4px;padding:3px 8px;}
   </style>
 </head>
@@ -143,6 +150,7 @@
   var $ = function (id) { return document.getElementById(id); };
   var app = $('app'), D = null;
   var AS = (new URLSearchParams(location.search).get('as') || '').toLowerCase().replace(/[^a-z0-9-]/g, '');
+  var DLI = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>';
   var KINDS = [['reel', 'Reel'], ['story', 'Story'], ['carousel', 'Carousel'], ['avatar', 'Avatar'], ['captions', 'Captions']];
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function n(v) { return Number(v || 0).toLocaleString('en-US'); }
@@ -165,16 +173,16 @@
   }
   function route() {
     var h = location.hash.replace(/^#/, '').split('/');
-    var v = ['overview', 'assets', 'link'].indexOf(h[0]) >= 0 ? h[0] : 'overview';
+    var v = ['overview', 'assets', 'link', 'bounties'].indexOf(h[0]) >= 0 ? h[0] : 'overview';
     var k = KINDS.map(function (x) { return x[0]; }).indexOf(h[1]) >= 0 ? h[1] : 'reel';
     return { v: v, k: k };
   }
   function slug() { return String(D.slug || 'creator'); }
   function head() {
     var r = route();
-    var tabs = [['overview', 'Overview'], ['assets', 'Your assets'], ['link', 'Your link']];
+    var tabs = [['overview', 'Overview'], ['assets', 'Your assets'], ['link', 'Your link'], ['bounties', 'Bounties']];
     return (D.preview ? '<p class="preview">Preview' + (D.enabled ? '' : ': not switched on yet. ' + esc(D.name) + ' does not see this until it is turned on.') + '</p>' : '') +
-      '<div class="who"><span class="av" style="background-image:url(\'' + esc(D.kit.avatar || '') + '\')" role="img" aria-label="' + esc(D.name) + '"></span>' +
+      '<div class="who"><button type="button" class="btn btn-ghost btn-sm fbk" data-fbk><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/></svg>Feedback</button><span class="av" style="background-image:url(\'' + esc(D.kit.avatar || '') + '\')" role="img" aria-label="' + esc(D.name) + '"></span>' +
       '<div><p class="k">Creator dashboard</p><h1>' + esc(D.name) + '<span class="crt">Official creator</span></h1><p>' + esc([D.handle, D.city].filter(Boolean).join(' · ')) + '</p></div></div>' +
       '<nav class="tabs" aria-label="Creator dashboard">' + tabs.map(function (t) { return '<a href="#' + t[0] + '" class="' + (t[0] === r.v ? 'on' : '') + '">' + t[1] + '</a>'; }).join('') + '</nav>';
   }
@@ -187,7 +195,7 @@
       '<div class="tot"><b>' + n(D.joined.length) + '</b><span>Joined through you</span></div><div class="tot"><b>' + n(D.joined.length * D.points_per_join) + '</b><span>Points from your link</span></div></div>' +
       '<section class="card"><h2>Share your link</h2><p class="lede">Every click counts for you, and every friend who joins through it earns you ' + n(D.points_per_join) + ' points.</p>' + linkBox() + '</section>' +
       '<section class="card"><h2>Ready to post</h2><p class="lede">Your reel, your story, your carousel, your avatar and the words to go with them.</p><a class="btn" href="#assets/reel">Open your assets</a></section>' +
-      '<section class="card"><h2>Coming</h2><ul class="fine"><li>Traffic to your page, and where it came from <span class="soon">Coming</span></li><li>People who liked your page <span class="soon">Coming</span></li><li>Bounties and earnings <span class="soon">Coming</span></li></ul>' +
+      '<section class="card"><h2>Coming</h2><ul class="fine"><li>Traffic to your page, and where it came from <span class="soon">Coming</span></li><li>People who liked your page <span class="soon">Coming</span></li></ul>' +
       (D.profile ? '<p style="margin:12px 0 0"><a class="btn btn-ghost btn-sm" href="' + esc(D.profile) + '" target="_top">See your profile</a></p>' : '') + '</section>';
   }
   function drawAssets() {
@@ -202,8 +210,9 @@
         K.reel.captions.map(function (c) { return '<div class="cap"><b>' + esc(c.label) + '</b><p style="white-space:pre-line">' + esc(c.text) + '</p><button type="button" class="btn btn-ghost btn-sm" data-copy="' + esc(c.text) + '">Copy caption</button></div>'; }).join('') + '</div>' : '');
     else if (r.k === 'story' && K.story) body = '<div class="asset"><img class="tall" src="' + esc(K.story.file) + '" alt="Your story">' +
       '<div><h2>Your story</h2><p>' + esc(K.story.about) + '</p><p>Add a link sticker with your link.</p><div class="acts"><a class="btn" href="' + esc(dl(K.story.file, s + '-story.jpg')) + '">Download the story</a><button type="button" class="btn btn-ghost" data-copy="' + esc(D.link || '') + '">Copy your link</button></div></div></div>';
-    else if (r.k === 'carousel') body = '<h2>Your carousel, ' + K.carousel.length + ' slides</h2><p class="lede">Post them in order as one carousel. Tap a slide to download it.</p><div class="car">' +
-      K.carousel.map(function (u, i) { return '<a href="' + esc(dl(u, s + '-carousel-' + (i < 9 ? '0' : '') + (i + 1) + '.jpg')) + '" title="Download slide ' + (i + 1) + '"><img src="' + esc(u) + '" alt="Carousel slide ' + (i + 1) + '" loading="lazy"><span>' + (i + 1) + '</span></a>'; }).join('') + '</div>';
+    else if (r.k === 'carousel') body = '<h2>Your carousel, ' + K.carousel.length + ' slides</h2><p class="lede">Post them in order as one carousel. Download them all at once, or tap a slide to download just that one.</p>' +
+      (K.carousel_zip ? '<div class="acts" style="margin:0 0 14px"><a class="btn" href="' + esc(dl(K.carousel_zip, s + '-carousel.zip')) + '">' + DLI + 'Download all ' + K.carousel.length + '</a></div>' : '') + '<div class="car">' +
+      K.carousel.map(function (u, i) { return '<a href="' + esc(dl(u, s + '-carousel-' + (i < 9 ? '0' : '') + (i + 1) + '.jpg')) + '" title="Download slide ' + (i + 1) + '"><img src="' + esc(u) + '" alt="Carousel slide ' + (i + 1) + '" loading="lazy"><span>' + (i + 1) + '</span><em class="dli" aria-hidden="true">' + DLI + '</em></a>'; }).join('') + '</div>';
     else if (r.k === 'avatar' && K.avatar) body = '<div class="asset"><img class="sq" src="' + esc(K.avatar) + '" alt="Your avatar">' +
       '<div><h2>Your avatar</h2><p>Your Vegans Explore avatar, drawn in our style. It is already your picture on your profile; use it on your socials too.</p><div class="acts"><a class="btn" href="' + esc(dl(K.avatar, s + '-avatar.jpg')) + '">Download your avatar</a></div></div></div>';
     else if (r.k === 'captions') body = '<h2>Words to post with</h2><p class="lede">Each one is ready to paste. Your link is already in the bio line.</p><div class="caps">' +
@@ -219,11 +228,16 @@
       '<section class="card"><h2>Who joined through you</h2>' + (D.joined.length ? '<div class="rows">' + D.joined.map(function (j) { return '<div class="r"><b>' + esc(j.first) + '</b><small>' + esc(day(j.at)) + '</small><span class="pts">+' + n(D.points_per_join) + '</span></div>'; }).join('') + '</div>' :
         '<p class="lede" style="margin:0">No one yet. Share your link and the first one shows up here.</p>') + '</section>';
   }
+  function drawBounties() {
+    app.innerHTML = head() +
+      '<section class="card"><h2>Bounties <span class="soon">Coming soon</span></h2><p class="lede" style="margin:0">Paid jobs made for creators: a post, a video, a visit. When we have one for you, it shows up here with what it pays and what to make.</p></section>';
+  }
   function draw() {
     var r = route();
-    if (r.v === 'assets') drawAssets(); else if (r.v === 'link') drawLink(); else drawOverview();
+    if (r.v === 'assets') drawAssets(); else if (r.v === 'link') drawLink(); else if (r.v === 'bounties') drawBounties(); else drawOverview();
     tellParent();
   }
+  app.addEventListener('click', function (e) { var fb = e.target.closest('[data-fbk]'); if (fb) { e.preventDefault(); if (window.VEFeedback) VEFeedback.open({ form: true, page: location.origin + '/dashboard/creator' + location.hash }); return; } });
   app.addEventListener('click', function (e) { var b = e.target.closest('[data-copy]'); if (b) { e.preventDefault(); copy(b.getAttribute('data-copy'), b); } });
   function admins(list) {
     $('gate').hidden = false;
@@ -244,6 +258,7 @@
   start();
 })();
 </script>
+<script src="/public/ve-feedback.js"></script>
 <script src="/public/footer.js"></script>
 </body>
 </html>

@@ -42,3 +42,6 @@ on conflict (member_id) do update set kit = excluded.kit, display_name = exclude
 -- seven posting steps (download, Reel, leave Instagram music off, Edit cover from camera roll, caption and link in bio, invite
 -- @vegansexplore as collaborator, post when followers are active and share to Story), and three captions in her voice
 -- (The announcement, Short and sweet, Bring your people). She posts it herself: Sean, "That way I know for sure she wants to send it out."
+
+-- Avatar without the logo and Download all (Sean, 2026-11-10): applied live.
+update public.ve_creator_dashboards set kit = kit || jsonb_build_object('avatar', 'avatar-geekfon-v3.jpg', 'carousel_zip', 'kit/carousel-v1.zip') where slug = 'keya';
