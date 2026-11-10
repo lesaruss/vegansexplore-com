@@ -72,3 +72,8 @@ update ve_outreach_campaign_emails set body = replace(body,
 where campaign_slug like 'holiday-launch-%' and step = 1;
 update ve_outreach_campaigns c set start_on = '2026-11-10', daily_pace = v.p
 from (values ('registered',5),('business',28),('creator',3),('foodie-fest',17),('explore',72)) v(b,p) where c.slug = 'holiday-launch-' || v.b;
+
+-- Corrected 2026-11-10: today's warm-up allowance is 256 (Logan had read the 14-day peak, 128); ThanksLiving used 30, so today's slices share
+-- about 220 across the groups.
+update ve_outreach_campaigns c set daily_pace = v.p
+from (values ('registered',10),('business',50),('creator',3),('foodie-fest',30),('explore',125)) v(b,p) where c.slug = 'holiday-launch-' || v.b;
