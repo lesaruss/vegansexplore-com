@@ -69,3 +69,29 @@ on conflict (campaign_slug, step) do nothing;
 insert into ve_outreach_campaign_members (campaign_slug, person_key, person_name, step, send_status, stop_reason)
 select 'welcome-community', 'contact@lesaruss.com', 'Sample Member', 0, 'stopped', 'Sample for previews and tests; never sends'
 where not exists (select 1 from ve_outreach_campaign_members where campaign_slug = 'welcome-community' and person_key = 'contact@lesaruss.com');
+
+-- 3. Welcome v2 (Sean, 2026-11-10: share the link with as many people as they can; the welcome lets people sort themselves into the kind of
+--    membership they want; say it is free; value first so they become lifelong fans; the engine behind the Vegan movement; good work rewarded
+--    by word of mouth opens bigger opportunities). Applied 2026-11-10.
+update ve_outreach_campaign_emails set body = 'Hi {first_name},
+
+Welcome to Vegans Explore. I''m really glad you''re here, and I want to say it up front: your membership is free.
+
+Here''s what we''re building. Between now and January 1, we''re bringing every Vegan business, organization and person we can find onto the platform. Come January 1, we hit the ground running, city by city: partners, sponsors and campaigns that put real support behind the Vegan community where you are.
+
+Our goal in these early days is simple: give the community as much value as we can, so Vegans Explore becomes something you love for life. We want to be the engine behind the Vegan movement, and we earn that by doing good work for you. If we do it well, word spreads, more people use what we build, and that opens the door to bigger opportunities that can truly transform the community.
+
+To get there, we need people on the ground, and that''s you. Three things you can do this week:
+
+1. Pick the path made for you. Whether you run a business, host events, create content, lead an organization or just love exploring, each path has its own free Guide, opened with a short survey, so you get what fits you: {link}
+
+2. Share your link with as many people as you can. Press Share on any page while you''re signed in, and you get 111 points for every friend who joins.
+
+3. Look at your city''s page (Communities, at the top of any page) and tell me who''s missing: groups, nonprofits, restaurants, creators, anyone who should be here. Just reply to this email.
+
+You don''t have to stick to one city, either. If you know a Vegan business or organization anywhere, send it my way.
+
+Thank you for being here early.
+
+Sean'
+where campaign_slug = 'welcome-community' and step = 1;
