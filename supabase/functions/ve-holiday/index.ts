@@ -373,7 +373,11 @@ Deno.serve(async (req) => {
         if ((count || 0) >= WISHES_A_DAY) return json({ error: 'rate_limited' }, 429);
       }
       const now = new Date().toISOString();
+      // A gift suggested from the Gift Guide can name its brand, say it is theirs, and answer the giveaway soft ask (2026-11-10).
+      const gift = kind === 'gift', owner = gift && b.brand_owner === true;
+      const giveaway = owner && (b.giveaway === 'yes' || b.giveaway === 'no') ? b.giveaway : null;
       const { data: saved, error } = await db.from('ve_holiday_wishes').insert({ holiday_slug: hs, member_id: me, kind, title, link, note: clean(b.note, 300) || null,
+        brand: gift ? clean(b.brand, 120) || null : null, brand_owner: owner, giveaway, giveaway_note: giveaway === 'yes' ? clean(b.giveaway_note, 300) || null : null,
         status: admin ? 'live' : 'pending', reviewed_by: admin ? me : null, reviewed_at: admin ? now : null }).select('id, status').single();
       if (error || !saved) return json({ error: 'save_failed' }, 500);
       return json({ ok: true, id: saved.id, status: saved.status });

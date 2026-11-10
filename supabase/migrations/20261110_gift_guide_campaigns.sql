@@ -24,6 +24,8 @@ Good news: our team picked {business} for the Vegans Explore Holiday Gift Guide 
 Your gift has its own card in the guide, with your photo, a link to buy it and a link to your page in our Directory:
 https://vegansexplore.com/go/gift-guide
 
+We started you off with one of our favorites. Have another item you would like in the guide? Press Suggest a Gift on that page and tell us it is your brand. There is also an optional question there about our holiday giveaway, which starts in December: say yes or no, either is fine.
+
 We added {business} to the Directory so shoppers can find you. Claim your page to add your logo, photos and links, and to see who finds you. Membership is free with a short survey, and claiming is free for members:
 {link}
 
