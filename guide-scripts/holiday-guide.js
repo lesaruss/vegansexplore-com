@@ -73,7 +73,6 @@
     { k: 'hk-menus', parent: 'hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hanukkah.jpg', label: 'Holiday Menus', say: 'Rather order in? Pick your chapter and see which Vegan places are cooking for Hanukkah. Our team checks every menu before it shows.' },
     { k: 'hk-events', parent: 'hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hanukkah.jpg', label: 'Events', say: 'Looking for a latke night or a party near you? Here are the Hanukkah events on our calendar. Hosting one? Add it, so people can find you.' },
     { k: 'christmas', label: 'Christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', say: 'Christmas, the plant-based way. On this page are a few easy ideas: a centerpiece for the table, cookies to share, and gifts that do no harm.' },
-    { k: 'xm-ideas', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Ideas and Gifts', say: 'A few easy ideas for a plant-based Christmas: a centerpiece for the table, cookies to share, and gifts that do no harm.' },
     { k: 'xm-gifts', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Gift Guide', say: 'Shopping for a Vegan, or for anyone? Here are gifts our team picked. Save the ones you love to your wish list and share it with your family.' },
     { k: 'xm-wish', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Holiday Wish List', say: 'Not sure what to give the Vegan in your life? Start with the Most Wanted shelf. Making a list? Add what you are wishing for and share it with your family.' },
     { k: 'xm-recipes', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Recipes', say: 'Cooking Christmas dinner? Here is a mushroom Wellington for the middle of the table, maple Brussels sprouts, a creamy nog and gingerbread cookies.' },
@@ -305,12 +304,12 @@
         ['hk-menus', 'Holiday Menus', 'Vegan places cooking for Hanukkah, with the date to order by.'],
         ['hk-events', 'Events', 'Plant-based Hanukkah parties, latke nights and menorah lightings.']] },
     christmas: { pic: 'r-wellington.jpg', cta: ['Gift Guide', '#/xm-gifts'],
-      intro: '<b>Christmas, December 25,</b> is the biggest day of family and giving of the year, and the easiest time to give gifts that do no harm. Here are ideas and gifts, a wish list, recipes, the store, Vegan menus and events.',
+      intro: '<b>Christmas, December 25,</b> is the biggest day of family and giving of the year, and the easiest time to give gifts that do no harm. Here are our Gift Guide, a wish list to share, recipes, the store, Vegan menus and events.',
       what: '<b>What it is.</b> Christmas, on Friday, December 25, is a day of family, giving and a shared table for millions of people.',
       why: '<b>Why it matters.</b> It is also the biggest gift season of the year, so it is the easiest time to give gifts that do no harm and set a table everyone can enjoy.',
-      how: '<b>What you can do here.</b> Find ideas and gifts, cook a Wellington from our recipes, pick up nog at the store, order from a Vegan place near you, or find a cookie swap or a holiday party.',
-      rows: [['xm-ideas', 'Ideas and Gifts', 'A centerpiece, cookies to share and gifts from Vegan brands we list.'],
-        ['xm-gifts', 'Gift Guide', 'Gifts our team picked for the Vegan on your list, from food to style.'],
+      how: '<b>What you can do here.</b> Find gifts in our Gift Guide, cook a Wellington from our recipes, pick up nog at the store, order from a Vegan place near you, or find a cookie swap or a holiday party.',
+      // The Gift Guide leads; the old Ideas page is gone (Sean, 2026-11-10: "we can have the gift guide as the first one").
+      rows: [['xm-gifts', 'Gift Guide', 'Gifts our team picked for the Vegan on your list, from food to style.'],
         ['xm-wish', 'Holiday Wish List', 'Make a wish list and share it with family, or suggest the perfect gift.'],
         ['xm-recipes', 'Recipes', 'A mushroom Wellington, maple Brussels sprouts, a creamy nog and cookies.'],
         ['xm-store', 'At the Store', 'Plant-based roasts, nogs, butters and treats this season, by brand.'],
@@ -523,9 +522,15 @@
   // Sean, 2026-11-10: "share links to products that you wish... or make suggestions for perfect gifts for vegans... to help family members
   // get ideas". Your list (shared by your own link), Most Wanted and Gift Ideas from the community (team-approved), ve-holiday wish_*.
   var GIFT = '<svg class="hg-sico" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="5" rx="1"/><path d="M12 8v13M5 13v8h14v-8M12 8c-2-4-6-4-6-1s6 1 6 1zm0 0c2-4 6-4 6-1s-6 1-6 1z"/></svg>';
+  // A wish row (Sean, 2026-11-10): the gift's own picture when we have one, the picture and the name open the same place as Shop,
+  // and the row's buttons stack on the right (Remove, then See it).
   function wishRow(w, extra) {
-    var ln = w.link ? '<a href="' + esc(w.link) + '" target="_blank" rel="noopener nofollow">See it &rsaquo;</a>' : '';
-    return '<div class="hg-mrow"><span class="hg-blogo hg-wico">' + GIFT + '</span><div class="hg-mrow-b"><b>' + esc(w.title) + '</b>' + (w.note ? '<p>' + esc(w.note) + '</p>' : '') + '</div><span class="hg-mbrand">' + (extra || '') + ln + '</span></div>';
+    var href = w.link ? esc(w.link) : '', ext = ' target="_blank" rel="noopener nofollow"';
+    var pic = w.image_url ? '<span class="hg-blogo hg-wpic" style="background-image:url(\'' + esc(w.image_url) + '\')"></span>' : '<span class="hg-blogo hg-wico">' + GIFT + '</span>';
+    if (href) pic = '<a class="hg-wlink" href="' + href + '"' + ext + ' aria-label="' + esc(w.title) + '">' + pic + '</a>';
+    var title = href ? '<a href="' + href + '"' + ext + '>' + esc(w.title) + '</a>' : esc(w.title);
+    return '<div class="hg-mrow">' + pic + '<div class="hg-mrow-b"><b>' + title + '</b>' + (w.note ? '<p>' + esc(w.note) + '</p>' : '') + '</div>' +
+      '<span class="hg-mbrand hg-wacts">' + (extra || '') + (href ? '<a class="hg-wx" href="' + href + '"' + ext + '>See it</a>' : '') + '</span></div>';
   }
   function viewWish(sub) {
     var hk = 'christmas';
@@ -537,7 +542,7 @@
         if (!d || !d.ok) { box.innerHTML = '<div class="hg-empty"><h3>That List Is Not Here</h3><p>Ask them to share it again.</p><a class="dg-btn" href="#/xm-wish">See the Most Wanted gifts</a></div>'; return; }
         box.innerHTML = head('Holiday Wish List', esc(d.first_name) + '’s Wish List', 'What ' + esc(d.first_name) + ' is wishing for this season. Every gift on it does no harm.') +
           (d.items.length ? '<section class="hg-shelf"><div class="hg-mlist">' + d.items.map(function (w) { return wishRow(w); }).join('') + '</div></section>' : '<div class="hg-empty"><h3>Nothing on It Yet</h3><p>Check back soon, or start with Most Wanted.</p></div>') +
-          '<div class="dg-btns" style="margin-top:18px"><a class="dg-btn" href="#/xm-wish">Make your own list</a><a class="dg-btn dg-ghost" href="#/xm-ideas">More gift ideas</a></div>';
+          '<div class="dg-btns" style="margin-top:18px"><a class="dg-btn" href="#/xm-wish">Make your own list</a><a class="dg-btn dg-ghost" href="#/xm-gifts">See the Gift Guide</a></div>';
       }).catch(function () {});
       return;
     }
@@ -1464,7 +1469,7 @@
     var parts = (location.hash || '').replace(/^#\/?/, '').split('/');
     var view = parts[0] || 'overview', sub = parts.slice(1).join('/');
     var V = { overview: viewOverview, thanksliving: function () { viewHolOverview('thanksliving'); }, ideas: viewThanksLiving,
-      'hk-ideas': function () { viewHoliday('hanukkah'); }, 'xm-ideas': function () { viewHoliday('christmas'); }, 'hk-kosher': viewKosher, 'xm-wish': function () { viewWish(sub); }, 'xm-gifts': function () { viewGifts(sub); }, recipes: function () { viewRecipes(sub); }, store: viewStore, listen: viewListen, menus: function () { viewMenus(sub); }, events: function () { viewEvents(sub); },
+      'hk-ideas': function () { viewHoliday('hanukkah'); }, 'xm-ideas': function () { history.replaceState(null, '', '#/xm-gifts'); route(); }, 'hk-kosher': viewKosher, 'xm-wish': function () { viewWish(sub); }, 'xm-gifts': function () { viewGifts(sub); }, recipes: function () { viewRecipes(sub); }, store: viewStore, listen: viewListen, menus: function () { viewMenus(sub); }, events: function () { viewEvents(sub); },
       hanukkah: function () { viewHolOverview('hanukkah'); }, christmas: function () { viewHolOverview('christmas'); },
       'hk-recipes': function () { viewRecipes(sub); }, 'hk-menus': function () { viewMenus(sub); }, 'hk-events': function () { viewEvents(sub); },
       'xm-recipes': function () { viewRecipes(sub); }, 'xm-store': viewStore, 'xm-menus': function () { viewMenus(sub); }, 'xm-events': function () { viewEvents(sub); }, giveback: function () { viewGiveBack(sub); }, business: viewBusiness };
