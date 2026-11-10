@@ -63,6 +63,8 @@ Passport, part 3).
 
 **Every view is a link.** A view keeps its state in the address (`?tab= &sub= &city= &q=`, `#/...`) so Share (`/public/ve-share.js`) can send it. Use the shared components, never a copy: `ve-city-banner.js`, `ve-region-directory.js` (the Directory card everywhere), `ve-events.js`, `ve-episodes.js`, `ve-guided.js`, `ve-logo-editor.js`, `ve-video.js`, `ve-explorer-card.js`.
 
+**The logo** (LOCKED 2026-11-10, canon `canon-ve-logo`): the portrait logo is the stacked shirt version, `/public/logo-ve-portrait-v2.svg` (`-inverted` white type on dark or color, `-white` all white, PNGs beside them); the landscape logo stays v1. Always place the real file, never a model-drawn logo; portrait v1 is retired.
+
 **Pictures.** Pictures from other sites go through `/_vercel/image?url=&w=&q=75` (hosts in `vercel.json` `images`). Repo photos are JPEG, at most 1920 px wide, about 80 quality; banners under about 500 KB. Logos are always copied into `vegan-media` storage, never hot-linked. Generic pictures are our illustration style, never photorealistic; real photos only for real places and people. Our Guides are always drawn, never photographs, and wear the Vegans Explore mark (store clothes; colors and layers may vary).
 
 **Every logo links to its profile** (Sean, 2026-11-10: "Anytime we have the logo anywhere, when you click it, it should take you to their profile"). On every page, card, lightbox and Guide, a listing's logo is a link to `/directory/<slug>` (a person's picture to their People page). A new component that shows a logo builds the link in; a logo with no listing behind it is not shown as clickable.
