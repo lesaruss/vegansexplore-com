@@ -81,7 +81,7 @@ New scenes for this page's video: Liz listening, noting, fixing and building wit
 
 Made (2026-11-10, after Sean's Higgsfield top-up, stills only): `liz-bet-{note,team,cafe,spotlight,build,fix,potluck,card}.jpg`, no redraws (16 credits). Video `sec-better-v1.mp4` (82 s), captions `sec-better-v1.vtt`.
 
-## 10. For the Animals (approved 2026-11-10; recorded sec-animals-v1, video rendered, waiting on Sean's look)
+## 10. For the Animals (approved 2026-11-10; video sec-animals-v1 approved and live 2026-11-10)
 
 About 75 seconds. The page is on the section template (how to use, six ways to show up, one call to action: Find nonprofits and rescues).
 
