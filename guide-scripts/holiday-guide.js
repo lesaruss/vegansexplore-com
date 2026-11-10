@@ -74,6 +74,7 @@
     { k: 'hk-events', parent: 'hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hanukkah.jpg', label: 'Events', say: 'Looking for a latke night or a party near you? Here are the Hanukkah events on our calendar. Hosting one? Add it, so people can find you.' },
     { k: 'christmas', label: 'Christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', say: 'Christmas, the plant-based way. On this page are a few easy ideas: a centerpiece for the table, cookies to share, and gifts that do no harm.' },
     { k: 'xm-ideas', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Ideas and Gifts', say: 'A few easy ideas for a plant-based Christmas: a centerpiece for the table, cookies to share, and gifts that do no harm.' },
+    { k: 'xm-wish', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Holiday Wish List', say: 'Not sure what to give the Vegan in your life? Start with the Most Wanted shelf. Making a list? Add what you are wishing for and share it with your family.' },
     { k: 'xm-recipes', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Recipes', say: 'Cooking Christmas dinner? Here is a mushroom Wellington for the middle of the table, maple Brussels sprouts, a creamy nog and gingerbread cookies.' },
     { k: 'xm-store', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'At the Store', say: 'Short on time? Here are the plant-based roasts, nogs, butters and treats you can pick up this season. Stock changes by store, so check before you go.' },
     { k: 'xm-menus', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', label: 'Holiday Menus', say: 'Don\'t want to cook Christmas dinner? Pick your chapter and see which Vegan places are cooking for the holiday and when to order by.' },
@@ -129,11 +130,19 @@
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function auth() { return window.VEAuth || null; }
   function member() { var a = auth(); return !!(a && a.isLoggedIn && a.isLoggedIn()); }
+  // Registered: has a login, member or not (VEAuth.isLoggedIn is false for an account that has not become a member). Enough to send us
+  // menus, recipes, suggestions and wishes (Sean, 2026-11-10: quick registration first); Save and votes still need membership.
+  function registered() { var a = auth(); return !!(a && a.getToken && a.getToken()); }
   function tab(k) { for (var i = 0; i < TABS.length; i++) if (TABS[i].k === k) return TABS[i]; return TABS[0]; }
   function href(k) { return '#/' + (k === 'overview' ? '' : k); }
   function store(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
   function recall(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function rest(url) { return fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function (r) { return r.json(); }); }
+  function holA(action, extra) {
+    var a = auth();
+    return fetch(HOLIDAY_FN, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: ANON_KEY, Authorization: 'Bearer ' + (a && a.getToken ? a.getToken() : '') }, body: JSON.stringify(Object.assign({ action: action }, extra || {})) })
+      .then(function (r) { return r.json(); });
+  }
   function hol(action, extra) {
     return fetch(HOLIDAY_FN, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: ANON_KEY }, body: JSON.stringify(Object.assign({ action: action }, extra || {})) })
       .then(function (r) { return r.json(); });
@@ -248,7 +257,7 @@
     { label: 'Run a Business?', line: 'Send your holiday menu and we feature it here, free for members.', kids: ['business'] }
   ];
   var PILL_PIC = { hanukkah: 'theo-hanukkah.jpg', 'hk-recipes': 'r-latkes.jpg', 'hk-menus': 'p-menus.jpg', 'hk-events': 'p-events.jpg',
-    christmas: 'theo-christmas.jpg', 'xm-recipes': 'r-wellington.jpg', 'xm-store': 'r-nog.jpg', 'xm-menus': 'p-menus.jpg', 'xm-events': 'p-events.jpg', recipes: 'r-loaf.jpg', ideas: 'p-thanks.jpg', 'hk-ideas': 'r-sufganiyot.jpg', 'hk-kosher': 'r-latkes.jpg', 'xm-ideas': 'r-gingerbread.jpg', store: 'p-store.jpg', listen: 'p-listen.jpg', thanksliving: 'p-thanks.jpg', events: 'p-events.jpg', menus: 'p-menus.jpg', giveback: 'p-giveback.jpg', business: 'p-business.jpg' };
+    christmas: 'theo-christmas.jpg', 'xm-recipes': 'r-wellington.jpg', 'xm-store': 'r-nog.jpg', 'xm-menus': 'p-menus.jpg', 'xm-events': 'p-events.jpg', recipes: 'r-loaf.jpg', ideas: 'p-thanks.jpg', 'hk-ideas': 'r-sufganiyot.jpg', 'hk-kosher': 'r-latkes.jpg', 'xm-ideas': 'r-gingerbread.jpg', 'xm-wish': 'w-give.jpg', store: 'p-store.jpg', listen: 'p-listen.jpg', thanksliving: 'p-thanks.jpg', events: 'p-events.jpg', menus: 'p-menus.jpg', giveback: 'p-giveback.jpg', business: 'p-business.jpg' };
   function groupRows() {
     return GROUPS.filter(function (g) { return !g.hol || !holPast(g.hol); }).map(function (g) {
       return '<section class="rg-grow"><h3>' + esc(g.label) + '</h3><p>' + esc(g.line) + '</p><div class="rg-pills">' + g.kids.map(function (k) {
@@ -265,7 +274,7 @@
   var HOME_ROWS = [
     ['thanksliving', 'ThanksLiving · November 26', 'Thanksgiving with a fully plant-based table: what it is and why it matters, then ideas, recipes, the store, Vegan holiday menus near you, events and what to listen to.'],
     ['hanukkah', 'Hanukkah · Begins December 4', 'Eight nights of light, plant-based: ideas, recipes, kosher places, Vegan holiday menus and events, with Jewish voices on the meaning of the holiday.'],
-    ['christmas', 'Christmas · December 25', 'A centerpiece for the table, cookies to share and gifts that do no harm: ideas and gifts, recipes, the store, Vegan holiday menus and events.'],
+    ['christmas', 'Christmas · December 25', 'A centerpiece for the table, cookies to share and gifts that do no harm: ideas and gifts, a Holiday Wish List, recipes, the store, Vegan holiday menus and events.'],
     ['giveback', 'Give Back', 'The nonprofits, rescues and sanctuaries doing the work, in your city and beyond, each with an easy way to give. Giving Tuesday is December 1.'],
     ['business', 'Run a Business?', 'Send your holiday menu and we feature it in this Guide and on your listing, free for members. Most people order early, so send it soon.']
   ];
@@ -294,6 +303,7 @@
       why: '<b>Why it matters.</b> It is also the biggest gift season of the year, so it is the easiest time to give gifts that do no harm and set a table everyone can enjoy.',
       how: '<b>What you can do here.</b> Find ideas and gifts, cook a Wellington from our recipes, pick up nog at the store, order from a Vegan place near you, or find a cookie swap or a holiday party.',
       rows: [['xm-ideas', 'Ideas and Gifts', 'A centerpiece for the table, cookies to share and gifts that do no harm, from Vegan brands in our Directory.'],
+        ['xm-wish', 'Holiday Wish List', 'Make a list of what you are wishing for and share it with your family, or suggest the perfect gift for a Vegan. Family: start with Most Wanted.'],
         ['xm-recipes', 'Recipes', 'A mushroom Wellington for the middle of the table, maple Brussels sprouts, a creamy nog and cookies to share.'],
         ['xm-store', 'At the Store', 'Plant-based roasts, nogs, butters and treats you can pick up this season, by brand.'],
         ['xm-menus', 'Holiday Menus', 'Vegan places cooking for Christmas: their menus, prices and the date to order by, each one checked by our team.'],
@@ -411,6 +421,100 @@
     rest(SB + '/rest/v1/listings?select=' + FIELDS + '&status=eq.approved&tags=cs.%7Bkosher%7D&order=vote_count.desc.nullslast&limit=200')
       .then(function (rows) { KOSHER = (Array.isArray(rows) ? rows : []).sort(function (a, b) { return (a.vegan_status === 'fully_vegan' ? 0 : 1) - (b.vegan_status === 'fully_vegan' ? 0 : 1) || (b.vote_count || 0) - (a.vote_count || 0) || a.name.localeCompare(b.name); }); })
       .catch(function () { KOSHER = []; }).then(function () { if (curView === 'hk-kosher') draw(); });
+  }
+
+  // ---------- Holiday Wish List (Christmas) ----------
+  // Sean, 2026-11-10: "share links to products that you wish... or make suggestions for perfect gifts for vegans... to help family members
+  // get ideas". Your list (shared by your own link), Most Wanted and Gift Ideas from the community (team-approved), ve-holiday wish_*.
+  var GIFT = '<svg class="hg-sico" viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="8" width="18" height="5" rx="1"/><path d="M12 8v13M5 13v8h14v-8M12 8c-2-4-6-4-6-1s6 1 6 1zm0 0c2-4 6-4 6-1s-6 1-6 1z"/></svg>';
+  function wishRow(w, extra) {
+    var ln = w.link ? '<a href="' + esc(w.link) + '" target="_blank" rel="noopener nofollow">See it &rsaquo;</a>' : '';
+    return '<div class="hg-mrow"><span class="hg-blogo hg-wico">' + GIFT + '</span><div class="hg-mrow-b"><b>' + esc(w.title) + '</b>' + (w.note ? '<p>' + esc(w.note) + '</p>' : '') + '</div><span class="hg-mbrand">' + (extra || '') + ln + '</span></div>';
+  }
+  function viewWish(sub) {
+    var hk = 'christmas';
+    if (/^list\//.test(sub || '')) {
+      var code = decodeURIComponent(sub.slice(5));
+      main.innerHTML = crumb([['Holiday Wish List', '#/xm-wish'], ['A shared list']]) + '<div id="hgWishShared"><div class="dg-loading">Loading the list...</div></div>';
+      hol('wish_list', { code: code, holiday: hk }).then(function (d) {
+        var box = document.getElementById('hgWishShared'); if (!box) return;
+        if (!d || !d.ok) { box.innerHTML = '<div class="hg-empty"><h3>That List Is Not Here</h3><p>Ask them to share it again.</p><a class="dg-btn" href="#/xm-wish">See the Most Wanted gifts</a></div>'; return; }
+        box.innerHTML = head('Holiday Wish List', esc(d.first_name) + '’s Wish List', 'What ' + esc(d.first_name) + ' is wishing for this season. Every gift on it does no harm.') +
+          (d.items.length ? '<section class="hg-shelf"><div class="hg-mlist">' + d.items.map(function (w) { return wishRow(w); }).join('') + '</div></section>' : '<div class="hg-empty"><h3>Nothing on It Yet</h3><p>Check back soon, or start with Most Wanted.</p></div>') +
+          '<div class="dg-btns" style="margin-top:18px"><a class="dg-btn" href="#/xm-wish">Make your own list</a><a class="dg-btn dg-ghost" href="#/xm-ideas">More gift ideas</a></div>';
+      }).catch(function () {});
+      return;
+    }
+    main.innerHTML = head('Christmas', 'Holiday Wish List', 'Make a list of what you are wishing for and share it with your family, or suggest the perfect gift for a Vegan. Shopping for someone? Start with Most Wanted.') +
+      '<div class="hg-tools2"><p class="dg-srow-p" style="flex:1;margin:0">Every gift here is one that does no harm. Links go to the place that sells it.</p>' +
+      '<button type="button" class="hg-subbtn" data-hg-open="hgWishPanel" aria-expanded="false" aria-controls="hgWishPanel">Add to My List</button></div>' +
+      '<div class="hg-submit" id="hgWishPanel" hidden><section class="hg-sug"><h3>Add to Your Wish List</h3><form class="hg-sugf hg-wishf" novalidate>' +
+        '<div class="hg-wk" role="radiogroup" aria-label="What is it"><label><input type="radio" name="kind" value="wish" checked> A wish for me</label><label><input type="radio" name="kind" value="gift"> A gift idea for any Vegan</label></div>' +
+        '<label>What is it?<input name="title" maxlength="120" required placeholder="A Vegan leather wallet"></label>' +
+        '<label>A link to where it is sold (optional)<input name="link" maxlength="400" placeholder="https://"></label>' +
+        '<label>A note (optional)<input name="note" maxlength="300" placeholder="Size, color, or why it is a good gift"></label>' +
+        '<div class="dg-btns" style="margin:0"><button class="dg-btn" type="submit">Add it</button></div><p class="dg-srow-p" data-smsg style="margin:0"></p></form></section></div>' +
+      (registered() ? '<div id="hgWishMine"></div>' : '') +
+      '<div id="hgWishShelves"><div class="dg-loading">Loading the gifts...</div></div>' + (isAdmin() ? '<div id="hgWishQueue"></div>' : '');
+    var f = main.querySelector('.hg-wishf');
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var msg = f.querySelector('[data-smsg]'), btn = f.querySelector('button'), kind = (f.querySelector('input[name=kind]:checked') || {}).value || 'wish';
+      if (f.title.value.trim().length < 2) { msg.textContent = 'Tell us what it is.'; f.title.focus(); return; }
+      btn.disabled = true; msg.textContent = 'Adding...';
+      holA('wish_add', { holiday: hk, kind: kind, title: f.title.value.trim(), link: f.link.value.trim(), note: f.note.value.trim() }).then(function (d) {
+        if (!d || !d.ok) throw d;
+        f.reset(); msg.textContent = kind === 'gift' ? 'Thank you. Your gift idea goes on the shelf once our team checks it.' : 'Added to your list.';
+        drawMine();
+      }).catch(function (d) { msg.textContent = d && d.error === 'bad_link' ? 'That link does not look right. Paste the full address.' : d && d.error === 'rate_limited' ? 'That is a lot for one day. Try again tomorrow.' : 'That did not save. Try again in a minute.'; })
+        .then(function () { btn.disabled = false; });
+    });
+    var drawMine = function () {
+      var box = document.getElementById('hgWishMine'); if (!box) return;
+      holA('wish_mine', { holiday: hk }).then(function (d) {
+        if (!d || !d.ok) return;
+        var mine = d.items.filter(function (w) { return w.kind === 'wish'; }), url = location.origin + '/guides/holiday-guide#/xm-wish/list/' + encodeURIComponent(d.code || '');
+        box.innerHTML = '<section class="hg-shelf"><h3 class="hg-shelf-h">' + GIFT + 'My Wish List</h3>' +
+          (mine.length ? '<div class="hg-mlist">' + mine.map(function (w) { return wishRow(w, '<button type="button" class="hg-wx" data-wish-rm="' + esc(w.id) + '" aria-label="Remove ' + esc(w.title) + '">Remove</button>'); }).join('') + '</div>' +
+            (d.code ? '<div class="dg-btns" style="margin:12px 0 0"><button type="button" class="dg-btn" data-wish-share="' + esc(url) + '">Share my list</button></div>' : '') :
+            '<p class="dg-srow-p">Nothing on your list yet. Press Add to My List.</p>') + '</section>';
+      }).catch(function () {});
+    };
+    var drawShelves = function () {
+      hol('wishes', { holiday: hk }).then(function (d) {
+        var box = document.getElementById('hgWishShelves'); if (!box) return;
+        var most = (d && d.most_wanted) || [], gifts = (d && d.gifts) || [];
+        box.innerHTML = '<section class="hg-shelf"><h3 class="hg-shelf-h">' + GIFT + 'Most Wanted</h3>' + (most.length ? '<div class="hg-mlist">' + most.map(function (w) { return wishRow(w, w.n > 1 ? '<small>Wished by ' + w.n + '</small> ' : ''); }).join('') + '</div>' : '<p class="dg-srow-p">The shelf fills as people add their wishes. Add yours.</p>') + '</section>' +
+          '<section class="hg-shelf"><h3 class="hg-shelf-h">' + GIFT + 'Gift Ideas from the Community</h3>' + (gifts.length ? '<div class="hg-mlist">' + gifts.map(function (w) { return wishRow(w); }).join('') + '</div>' : '<p class="dg-srow-p">No gift ideas yet. Know the perfect gift for a Vegan? Add it.</p>') + '</section>';
+      }).catch(function () {});
+    };
+    var drawQueue = function () {
+      var box = document.getElementById('hgWishQueue'); if (!box) return;
+      holA('wish_queue', { holiday: hk }).then(function (d) {
+        var rows = (d && d.rows) || [];
+        box.innerHTML = '<section class="hg-shelf"><h3 class="hg-shelf-h">Waiting for a Check (' + rows.length + ', team only)</h3>' + (rows.length ? '<div class="hg-mlist">' + rows.map(function (w) {
+          return wishRow(w, '<small>' + esc(w.kind) + ', ' + esc((w.member && w.member.name) || '') + '</small> <button type="button" class="hg-wx" data-wish-ok="' + esc(w.id) + '">Approve</button> <button type="button" class="hg-wx" data-wish-no="' + esc(w.id) + '">Decline</button> ');
+        }).join('') + '</div>' : '<p class="dg-srow-p">Nothing waiting.</p>') + '</section>';
+      }).catch(function () {});
+    };
+    // One click handler for the page at a time (a second visit replaces the first).
+    if (main._wishH) main.removeEventListener('click', main._wishH);
+    main.addEventListener('click', main._wishH = function (e) {
+      if (curView !== 'xm-wish') return;
+      var el;
+      if ((el = e.target.closest('[data-wish-rm]'))) { holA('wish_remove', { id: el.getAttribute('data-wish-rm'), holiday: hk }).then(drawMine); return; }
+      if ((el = e.target.closest('[data-wish-share]'))) {
+        var u = el.getAttribute('data-wish-share');
+        if (navigator.share) navigator.share({ title: 'My Holiday Wish List', url: u }).catch(function () {});
+        else if (navigator.clipboard) navigator.clipboard.writeText(u).then(function () { el.textContent = 'Link copied'; });
+        return;
+      }
+      if ((el = e.target.closest('[data-wish-ok],[data-wish-no]'))) {
+        var ok = el.hasAttribute('data-wish-ok');
+        holA('wish_review', { id: el.getAttribute(ok ? 'data-wish-ok' : 'data-wish-no'), decision: ok ? 'approve' : 'decline' }).then(function () { drawQueue(); drawShelves(); });
+      }
+    });
+    drawMine(); drawShelves(); drawQueue();
   }
 
   // ---------- Holiday menus ----------
@@ -582,7 +686,7 @@
     var t = hrow(), mk = hx().menus;
     main.innerHTML = crumb([['Holiday menus', '#/' + mk], ['Tell us about a menu']]) + head(t.name, 'Tell us about a holiday menu',
       'Found a place near you cooking for ' + esc(t.name) + '? Send us where to see its menu. Our team checks the link, and then it shows on Holiday menus for everyone.');
-    if (!member()) {
+    if (!registered()) {
       main.innerHTML += '<div class="hg-empty"><h3>Members Tell Us About Menus</h3><p>Join free with a short survey, then send it. It comes back here when you are done.</p><button type="button" class="dg-btn" data-hg-tell>Join free</button></div>';
       return;
     }
@@ -1258,7 +1362,7 @@
     var parts = (location.hash || '').replace(/^#\/?/, '').split('/');
     var view = parts[0] || 'overview', sub = parts.slice(1).join('/');
     var V = { overview: viewOverview, thanksliving: function () { viewHolOverview('thanksliving'); }, ideas: viewThanksLiving,
-      'hk-ideas': function () { viewHoliday('hanukkah'); }, 'xm-ideas': function () { viewHoliday('christmas'); }, 'hk-kosher': viewKosher, recipes: function () { viewRecipes(sub); }, store: viewStore, listen: viewListen, menus: function () { viewMenus(sub); }, events: function () { viewEvents(sub); },
+      'hk-ideas': function () { viewHoliday('hanukkah'); }, 'xm-ideas': function () { viewHoliday('christmas'); }, 'hk-kosher': viewKosher, 'xm-wish': function () { viewWish(sub); }, recipes: function () { viewRecipes(sub); }, store: viewStore, listen: viewListen, menus: function () { viewMenus(sub); }, events: function () { viewEvents(sub); },
       hanukkah: function () { viewHolOverview('hanukkah'); }, christmas: function () { viewHolOverview('christmas'); },
       'hk-recipes': function () { viewRecipes(sub); }, 'hk-menus': function () { viewMenus(sub); }, 'hk-events': function () { viewEvents(sub); },
       'xm-recipes': function () { viewRecipes(sub); }, 'xm-store': viewStore, 'xm-menus': function () { viewMenus(sub); }, 'xm-events': function () { viewEvents(sub); }, giveback: function () { viewGiveBack(sub); }, business: viewBusiness };
@@ -1285,9 +1389,10 @@
   }
   // Anything sent to us needs a name on it (Sean, 2026-11-10: "We don't want just blind submissions"): the shared join window
   // (/public/ve-join-box.js) with Theo, quick registration or the survey; after either, what they tapped carries on (onDone).
+  // A registered account that is not a member yet gets the window on Become a member (mode 'member'): it already has a login.
   function joinWindow(title, text, onDone) {
     var pic = (tab(curView).pic) || '/public/guides/holiday/theo-thanksliving.jpg';
-    if (window.VEJoinBox) { VEJoinBox.open({ guide: 'Holiday Guide', character: 'Theo', pic: pic, reason: title, line: text, onDone: function () { document.body.classList.toggle('dg-member', member()); drawJoinbox(); if (onDone) onDone(); }, onSurvey: goSurvey }); return; }
+    if (window.VEJoinBox) { VEJoinBox.open({ guide: 'Holiday Guide', character: 'Theo', pic: pic, reason: title, line: text, mode: registered() && !member() ? 'member' : '', onDone: function () { document.body.classList.toggle('dg-member', member()); drawJoinbox(); if (onDone) onDone(); }, onSurvey: goSurvey }); return; }
     if (auth()) auth().showAuthModal(text, onDone || null, 'signup');
   }
   function closeJoin() { var w = document.getElementById('hgJoin'); if (w) w.style.display = 'none'; }
@@ -1306,7 +1411,7 @@
     var el, a = auth();
     if (e.target.closest('[data-hg-close]') || e.target.id === 'hgJoin') { closeJoin(); return; }
     if (e.target.closest('[data-hg-survey]')) { goSurvey(); return; }
-    if (e.target.closest('[data-hg-tell]') && !member()) {
+    if (e.target.closest('[data-hg-tell]') && !registered()) {
       e.preventDefault();
       store('hg_pending', JSON.stringify({ tell: hx().menus, at: Date.now() }));
       joinWindow('Tell Us About a Menu', 'Everything in the Holiday Guide is free to read. To send us a menu you found, we just need to know who is sending it.', function () { location.hash = '#/' + hx().menus + '/tell'; });
@@ -1329,15 +1434,16 @@
     if ((el = e.target.closest('[data-hg-open]'))) {
       var pid = el.getAttribute('data-hg-open'), pn = document.getElementById(pid), op = pn.hidden, ob = el;
       var showIt = function () { var p2 = document.getElementById(pid), b2 = main.querySelector('[data-hg-open="' + pid + '"]') || ob; if (!p2) return; p2.hidden = false; b2.setAttribute('aria-expanded', 'true'); p2.scrollIntoView({ block: 'nearest', behavior: 'smooth' }); };
-      if (op && !member()) {
-        var rcp = pid === 'hgRcpPanel', kos = pid === 'hgKosPanel';
-        joinWindow(rcp ? 'Submit a Recipe' : kos ? 'Suggest a Place' : 'Suggest an Item', rcp ? 'Everything in the Holiday Guide is free to read. To send a recipe, we just need to know who you are, so we can credit you.' : 'Everything in the Holiday Guide is free to read. To suggest ' + (kos ? 'a place' : 'an item') + ', we just need to know who is sending it.', showIt);
+      if (op && !registered()) {
+        var J = { hgRcpPanel: ['Submit a Recipe', 'To send a recipe, we just need to know who you are, so we can credit you.'], hgKosPanel: ['Suggest a Place', 'To suggest a place, we just need to know who is sending it.'],
+          hgWishPanel: ['Start Your Wish List', 'Register and your list is yours to share with family, and your gift ideas can help everyone shopping for a Vegan.'], hgSugPanel: ['Suggest an Item', 'To suggest an item, we just need to know who is sending it.'] }[pid] || ['Join Vegans Explore', ''];
+        joinWindow(J[0], 'Everything in the Holiday Guide is free to read. ' + J[1], function () { if (pid === 'hgWishPanel') { route(); setTimeout(function () { var b2 = main.querySelector('[data-hg-open="hgWishPanel"]'); if (b2) b2.click(); }, 400); } else showIt(); });
         return;
       }
       pn.hidden = !op; el.setAttribute('aria-expanded', String(op)); if (op) pn.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
       return;
     }
-    if ((el = e.target.closest('#hgSubBtn')) && !member() && document.getElementById('hgSubmit').hidden) {
+    if ((el = e.target.closest('#hgSubBtn')) && !registered() && document.getElementById('hgSubmit').hidden) {
       joinWindow('Submit a Menu', 'Everything in the Holiday Guide is free to read. To send a menu, we just need to know who is sending it.', function () { var b = document.getElementById('hgSubBtn'); if (b) b.click(); });
       return;
     }
@@ -1351,12 +1457,12 @@
       var id = el.getAttribute('data-hg-save');
       if (member()) { saveListing(id, el); return; }
       store('hg_pending', JSON.stringify({ save: id, at: Date.now() }));
-      joinWindow('Save This Place', 'Register and this place goes into My Saves, so you can find it again when it is time to order.', function () { saveListing(id, el); });
+      joinWindow('Save This Place', registered() ? 'Saving places is for members. Take the short survey and this place goes into My Saves.' : 'Register and this place goes into My Saves, so you can find it again when it is time to order.', function () { if (member()) saveListing(id, el); });
       return;
     }
     if (e.target.closest('[data-hg-join]')) {
       if (member()) { location.href = '/dashboard/saves'; return; }
-      joinWindow('', 'Everything in the Holiday Guide is free to read. Register to send menus and recipes and get the Daily Pulse, or become a member and open everything.');
+      joinWindow('', registered() ? 'You are registered. Become a member to save places, vote and open every Guide.' : 'Everything in the Holiday Guide is free to read. Register to send menus and recipes and get the Daily Pulse, or become a member and open everything.');
       return;
     }
     if (e.target.closest('[data-signin]')) {

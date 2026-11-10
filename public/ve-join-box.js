@@ -7,7 +7,7 @@
  *   2. Full membership, free: the Explorer survey (about two minutes, 250 points, everything open).
  * Beside them: the Guide's own short video (a placeholder until it is made; each Guide's own character, never another Guide's) and the perks.
  *
- *   VEJoinBox.open({ guide, character, pic, reason, line, onDone, onSurvey })
+ *   VEJoinBox.open({ guide, character, pic, reason, line, onDone, onSurvey, mode })   mode 'member': already registered, only the survey path
  *     guide      'Holiday Guide'                     character 'Theo'          pic  a still of that Guide's character (4:5)
  *     reason     what they tapped ('Submit a Recipe')                      line one sentence about why it needs an account
  *     onDone()   runs after a quick registration or a sign-in (the thing they tapped carries on)
@@ -137,6 +137,13 @@
     opts = o || {}; lastFocus = document.activeElement;
     box = document.createElement('div'); box.className = 'vjb-back';
     box.innerHTML = '<div class="vjb" role="dialog" aria-modal="true" aria-labelledby="vjb-t">' + html(opts) + '</div>';
+    // Already registered (mode 'member'): only the membership path, no toggle.
+    if (opts.mode === 'member') {
+      var tg = box.querySelector('.vjb-tog'); if (tg) tg.hidden = true;
+      [].forEach.call(box.querySelectorAll('[data-vjb-pane]'), function (pn) { pn.hidden = pn.getAttribute('data-vjb-pane') !== 'member'; });
+      var t2 = box.querySelector('#vjb-t'); if (t2) t2.textContent = 'Become a member' + (opts.reason ? ' to ' + opts.reason.toLowerCase() : '');
+      var nt = box.querySelector('.vjb-note'); if (nt) nt.innerHTML = '<a href="#" data-vjb-x>Not now</a>';
+    }
     box.addEventListener('click', function (e) {
       if (e.target === box || e.target.closest('[data-vjb-x]')) { e.preventDefault(); close(); return; }
       var tb = e.target.closest('[data-vjb-tab]');
