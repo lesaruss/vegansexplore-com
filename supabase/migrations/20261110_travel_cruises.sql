@@ -31,3 +31,9 @@ update listings set category='Cruises', extra_categories = array['Events'], vega
   tagline='A Vegan wellness cruise with talks and classes', specialty='A Vegan wellness cruise with talks and classes',
   description='Holistic Holiday at Sea is a Vegan wellness group cruise, sailing from Miami and beyond: a 100% Vegan whole-food menu on board, with talks and classes alongside the ports of call.'
 where slug='holistic-holiday-at-sea-miami';
+
+-- Checked on the live site (Sean opened the network to holisticholidayatsea.com, 2026-11-10): "The Original Vegan Cruise", a 100% whole-foods,
+-- plant-based menu, over 100 classes led by 30+ experts, Miami (March 2027) and Seattle to Alaska (August 2027) on MSC Poesia.
+update listings set tagline='The Original Vegan Cruise', specialty='The Original Vegan Cruise',
+ description='Holistic Holiday at Sea calls itself the Original Vegan Cruise: a Vegan wellness group cruise from Miami to the Caribbean and Latin America, and from Seattle to Alaska. On board, a 100% whole-foods, plant-based menu and more than 100 classes from 30-plus experts, from lectures and cooking classes to yoga and fitness.'
+where slug='holistic-holiday-at-sea-miami';
