@@ -33,7 +33,7 @@
     '.vhm-k img{width:18px;height:18px;display:block}' +
     '.vhm-x{width:36px;height:36px;border-radius:6px;border:1px solid rgba(0,0,0,.14);background:#fff;font-size:22px;line-height:1;cursor:pointer;color:#1a1a1a;flex:none}' +
     '.vhm-id{display:flex;align-items:center;gap:14px}' +
-    '.vhm-logo{width:64px;height:64px;border-radius:10px;flex:none;background:#fff center/contain no-repeat;border:1px solid rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:24px;color:#1f5f22}' +
+    'a.vhm-logo{text-decoration:none}.vhm-logo{width:64px;height:64px;border-radius:10px;flex:none;background:#fff center/contain no-repeat;border:1px solid rgba(0,0,0,.1);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:24px;color:#1f5f22}' +
     '.vhm-nm{flex:1;min-width:0}.vhm-nm h2{font-size:24px;line-height:1.15;margin:0;font-weight:800}.vhm-nm p{margin:3px 0 0;color:rgba(26,26,26,.6);font-size:14px}' +
     '.vhm-tag{flex:none;align-self:center;font-size:11.5px;font-weight:800;border-radius:6px;padding:4px 9px;background:#e8f5e9;color:#1f5f22;white-space:nowrap}.vhm-tag.pv{background:#fff3df;color:#8a5a00}' +
     '.vhm-body{flex:1 1 auto;overflow-y:auto;padding-top:6px;padding-bottom:10px;overscroll-behavior:contain}' +
@@ -92,7 +92,12 @@
     var order = shut ? '' : safe(m.order_url) || safe(m.link);
     return '<div class="vhm-head"><div class="vhm-bar"><p class="vhm-k"><img src="/public/ve-logo-mark.svg" alt="">Vegans Explore &middot; ' + esc((m.holiday || 'Holiday') + ' Menu') + '</p>' +
         '<button type="button" class="vhm-x" aria-label="Close" data-vhm-x>&times;</button></div>' +
-        '<div class="vhm-id"><div class="vhm-logo"' + (logo ? ' style="background-image:url(\'' + esc(logo) + '\')"' : '') + '>' + (logo ? '' : esc(String(m.name || '?').charAt(0))) + '</div>' +
+        // The logo opens their listing, except on the listing itself (Sean, 2026-11-10).
+        '<div class="vhm-id">' + (function () {
+          var tag = m.slug && !/\/directory\//.test(location.pathname) ? 'a' : 'div';
+          return '<' + tag + ' class="vhm-logo"' + (tag === 'a' ? ' href="/directory/' + encodeURIComponent(m.slug) + '" aria-label="' + esc(m.name) + ', their listing"' : '') +
+            (logo ? ' style="background-image:url(\'' + esc(logo) + '\')"' : '') + '>' + (logo ? '' : esc(String(m.name || '?').charAt(0))) + '</' + tag + '>';
+        })() +
         '<div class="vhm-nm"><h2 id="vhm-t">' + esc(m.name) + '</h2>' + (where ? '<p>' + esc(where) + '</p>' : '') + '</div>' + tag + '</div></div>' +
       '<div class="vhm-body">' + (m.summary ? '<p class="vhm-sum">' + esc(m.summary) + '</p>' : '') +
         (items.length ? secs(items)

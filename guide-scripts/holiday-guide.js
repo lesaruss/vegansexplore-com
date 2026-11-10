@@ -320,7 +320,8 @@
     var where = [l.address_city, l.address_state].filter(Boolean).join(', ');
     var saved = !!SAVED[l.id];
     return '<div class="hg-menu">' +
-      '<div class="hg-mh"><div class="hg-logo"' + (l.logo_url ? ' style="background-image:url(\'' + esc(l.logo_url) + '\')"' : '') + '>' + (l.logo_url ? '' : esc((l.name || '?').charAt(0))) + '</div>' +
+      // Every logo opens the place's listing (Sean, 2026-11-10: "Make all of their logos take them to their listing").
+      '<div class="hg-mh"><a class="hg-logo" href="/directory/' + encodeURIComponent(l.slug) + '" aria-label="' + esc(l.name) + ', their listing"' + (l.logo_url ? ' style="background-image:url(\'' + esc(l.logo_url) + '\')"' : '') + '>' + (l.logo_url ? '' : esc((l.name || '?').charAt(0))) + '</a>' +
       '<div><h3><a href="#/' + hx().menus + '/listing/' + encodeURIComponent(l.slug) + '">' + esc(l.name) + '</a></h3><small>' + esc(where || 'Online') + '</small></div>' +
       // The kind of menu sits in the card's top right corner (Sean, 2026-11-10), as it does in the menu window.
       '<span class="hg-tag hg-tr' + (vegan ? '' : ' pv') + '">' + (vegan ? '100% Vegan' : 'Plant-based (Pre-Vegan)') + '</span></div>' +
@@ -467,7 +468,8 @@
   function tipCard(x) {
     var l = x.listing, where = [x.city || (l && l.address_city), x.state || (l && l.address_state)].filter(Boolean).join(', ');
     var name = l ? '<a href="#/' + hx().menus + '/listing/' + encodeURIComponent(l.slug) + '">' + esc(l.name) + '</a>' : esc(x.place_name);
-    return '<div class="hg-menu"><div class="hg-mh"><div class="hg-logo"' + (l && l.logo_url ? ' style="background-image:url(\'' + esc(l.logo_url) + '\')"' : '') + '>' + (l && l.logo_url ? '' : esc(String(x.place_name || '?').charAt(0))) + '</div>' +
+    var lg = (l && l.logo_url ? ' style="background-image:url(\'' + esc(l.logo_url) + '\')"' : '') + '>' + (l && l.logo_url ? '' : esc(String(x.place_name || '?').charAt(0)));
+    return '<div class="hg-menu"><div class="hg-mh">' + (l ? '<a class="hg-logo" href="/directory/' + encodeURIComponent(l.slug) + '" aria-label="' + esc(l.name) + ', their listing"' + lg + '</a>' : '<div class="hg-logo"' + lg + '</div>') +
       '<div><h3>' + name + '</h3><small>' + esc(where || 'Online') + '</small></div>' +
       (l && l.vegan_status ? '<span class="hg-tag hg-tr' + (l.vegan_status === 'fully_vegan' ? '' : ' pv') + '">' + (l.vegan_status === 'fully_vegan' ? '100% Vegan' : 'Plant-based (Pre-Vegan)') + '</span>' : '') + '</div>' + (x.note ? '<p class="hg-sum">' + esc(x.note) + '</p>' : '') +
       '<div class="hg-acts">' + menuBtn('t-' + x.id) +
