@@ -8,7 +8,7 @@
  *                                                               (form: true, for People who are not creators, opens a short claim
  *                                                               request in the card instead: name, email, a link that shows it is
  *                                                               them, a note; ve-ambassador person_claim, promo 'profile-claim')
- *   VEPromo.guideCard(el, slug, ctx)    the same animated card for a Guide (GUIDE_ADS: the Airport, Dairy and Stadium & Arena Guides;
+ *   VEPromo.guideCard(el, slug, ctx)    the same animated card for a Guide (GUIDE_ADS: the Airport, Holiday and Stadium & Arena Guides, the Dairy Guide out of rotation until Christmas;
  *                                        Sean, 2026-10-31: "create that for other guides and sprinkle it throughout the website"), four
  *                                        scenes from the Guide's own art, tracked as promo 'guide-<slug>' (view, click) from ctx.page
  *   VEPromo.step(promo, step)          'landed' or 'started' on the destination, sent with where the visitor clicked
@@ -156,6 +156,11 @@
       line: 'The brands, swaps and recipes that replace dairy, and where to buy them, with Maya.',
       frames: [['/public/guides/vegan-dairy-guide.jpg?v=3', 'Life after dairy'], [SBM + 'dairy/s-milk-in-coffee.jpg', 'Swap the milk'],
         [SBM + 'dairy/s-butter-cooking.jpg', 'Swap the butter'], [SBM + 'dairy-guide-billboard.jpg', 'The brands worth buying']] },
+    // The Holiday Guide takes the Dairy Guide's place in the rotation (Sean, 2026-11-10), free and public, until Christmas.
+    'holiday-guide': { campaign: '7b1c4f2e-1a10-4d2e-9a51-0c0de5a13005', go: '/go/ve-guide-holiday', kicker: 'The Holiday Guide', href: '/guides/holiday-guide', cta: 'Open the Holiday Guide', free: true,
+      line: 'ThanksLiving ideas, recipes, holiday menus near you and ways to give back, with Theo.',
+      frames: [['/public/guides/holiday/theo-thanksliving.jpg', 'Your ThanksLiving table', 'background-position:50% 30%'], ['/public/guides/holiday/theo-menus.jpg', 'Holiday menus near you', 'background-position:50% 25%'],
+        ['/public/guides/holiday/r-loaf.jpg', 'Recipes for the table', 'background-position:50% 50%'], ['/public/guides/holiday/theo-giveback.jpg', 'Give back this season', 'background-position:50% 25%']] },
     'stadium-arena-guide': { campaign: '7b1c4f2e-1a10-4d2e-9a51-0c0de5a13003', go: '/go/ve-guide-stadium', kicker: 'The Stadium & Arena Guide', href: '/guides/stadium-arena-guide', cta: 'Get the Stadium Guide',
       line: 'Every Vegan stand at the stadiums and arenas near you, mapped by section.',
       frames: [['/public/guides/stadium-arena-guide.jpg?v=4', 'Vegan eats on game day'], ['/public/guides/venues/hard-rock-stadium.webp', 'Find your stand', 'background-size:auto 115%;background-position:50% 55%'],
@@ -179,7 +184,7 @@
       g.frames.map(function (f) { return '<span class="vpc-f" style="background-image:url(\'' + f[0] + '\')' + (f[2] ? ';' + f[2] : '') + '" aria-hidden="true"></span>'; }).join('') +
       '<span class="vpc-copy"><small>' + esc(g.kicker) + '</small><span class="vpc-lines" aria-hidden="true">' +
         g.frames.map(function (f) { return '<b>' + esc(f[1]) + '</b>'; }).join('') + '</span>' +
-        '<p>' + esc(g.line) + '</p><em>' + esc(g.cta) + ' &middot; $11</em></span></a></div>';
+        '<p>' + esc(g.line) + '</p><em>' + esc(g.cta) + (g.free ? ' &middot; Free' : ' &middot; $11') + '</em></span></a></div>';
     var a = el.querySelector('.vpc-ad');
     onScreen(a, function () { send(promo, 'view', base); if (!ctx.preview) adCount(placement, g.campaign, 'view'); });
     a.addEventListener('click', function () { click(promo, base); if (!ctx.preview) adCount(placement, g.campaign, 'click'); });
@@ -231,5 +236,5 @@
     body.querySelector('.vpc-open').addEventListener('click', open);
   }
 
-  window.VEPromo = { creatorCards: creatorCards, guideCard: guideCard, guides: Object.keys(GUIDE_ADS), house: HOUSE, step: step, source: source, click: click };
+  window.VEPromo = { creatorCards: creatorCards, guideCard: guideCard, guides: Object.keys(GUIDE_ADS).filter(function (k) { return k !== 'vegan-dairy-guide'; }), house: HOUSE, step: step, source: source, click: click };
 })();

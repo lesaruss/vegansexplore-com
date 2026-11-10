@@ -2602,13 +2602,17 @@ function renderSidebar(l){
           '<div class="cstat-label">Points</div>'+
         '</div>'+
       '</div>'+
+      // Points go only to a claimed listing (Sean, 2026-11-10: "only businesses that claim their listing can receive points... that
+      // becomes a perk for them"; ve_listing_contribute refuses the rest with not_claimed). Points given before stay and still show.
+      (l.claimed_by_member_id ?
       '<div style="display:flex;gap:6px;margin-bottom:8px">'+
         '<input class="donate-input" id="donate-amount" type="number" min="1" max="10000" step="1" placeholder="Give points" aria-label="Points to give" style="font-size:11px;padding:8px 10px"/>'+
         '<button class="donate-btn" id="donate-btn" style="font-size:9px;padding:8px 10px;white-space:nowrap">Give</button>'+
       '</div>'+
       '<div class="donate-confirm" id="donate-confirm" role="status"></div>'+
       // Points are a boost, never money (Sean locked 2026-10-25, playbook ve-pricing-points-passport): ve-votes contribute.
-      '<p class="member-note">Members give points to the places they love as a boost. It never lowers your level. <a href="/survey?s=explorer">Join free with a short survey</a>.</p>'+
+      '<p class="member-note">Members give points to the places they love as a boost. It never lowers your level. <a href="/survey?s=explorer">Join free with a short survey</a>.</p>' :
+      '<p class="member-note">Giving points opens once this '+esc(listingNoun(l))+' claims its page: it is a perk of claiming. <a href="'+claimHref(l)+'" data-claim-open>Is it yours? Claim it free</a>.</p>')+
     '</div>';
 
   // A brand's site: the votes, no points (points are ours, playbook ve-pricing-points-passport).
@@ -3563,7 +3567,7 @@ function ppPromo(l){
   var creator = l.category === 'Content Creators' || (l.extra_categories || []).indexOf('Content Creators') >= 0;
   function go(){ VEPromo.creatorCards(el, { page: '/directory/' + l.slug, listing_id: l.id, name: l.name, claim: held ? '' : l.slug, form: !creator }); }
   if(window.VEPromo) return go();
-  var s = document.createElement('script'); s.src = '/public/ve-promo.js?v=3'; s.onload = go; document.head.appendChild(s);
+  var s = document.createElement('script'); s.src = '/public/ve-promo.js?v=4'; s.onload = go; document.head.appendChild(s);
 }
 function ytThumb(id){ return 'https://i.ytimg.com/vi/' + encodeURIComponent(id) + '/mqdefault.jpg'; }
 function clockOf(sec){ sec = Math.max(0, Math.floor(sec || 0)); var h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s2 = sec % 60;
@@ -5127,6 +5131,7 @@ function renderListing(l){
             return;
           }
           if(d && d.error === 'payment_required'){ say('Join free with a short survey to give points.', true); if(VEAuth.showActivateModal) VEAuth.showActivateModal(d.message); return; }
+          if(d && d.error === 'not_claimed'){ say('Points open once this business claims its page.', true); return; }
           if(d && d.error === 'not_enough_points'){ say('You have ' + Number(d.balance || 0).toLocaleString() + ' points to give.', true); return; }
           say('That did not go through, and no points were given. Try again in a minute.', true);
         }).catch(function(){ donateBtn.disabled = false; donateBtn.textContent = 'Give'; say('That did not go through, and no points were given. Try again in a minute.', true); });
@@ -5264,12 +5269,15 @@ function houseAd(l){
   var d = l.details || {}, g = null;
   (VEProducts.SOURCES || []).forEach(function(k){ if(!g && Array.isArray(d[k]) && d[k].length){ Object.keys(VEProducts.GUIDES).forEach(function(s){ if(!g && VEProducts.GUIDES[s][3]) g = VEProducts.GUIDES[s]; }); } });
   if(!g) return loadBillboardAds();
+  // For the season the house ad promotes the Holiday Guide in the Dairy Guide's place (Sean, 2026-11-10: "wherever there's a dairy
+  // guide, let's put the holiday guide"); its tracked link is ve-guide-holiday. Remove this line after Christmas.
+  g = ['Holiday Guide', '/guides/holiday-guide', 'theo', '/go/ve-guide-holiday', 'ThanksLiving, recipes, holiday menus near you and ways to give back, with Theo', '/public/guides/holiday/theo-thanksliving.jpg', 'The Holiday Guide'];
   // The Guide's own ad picture (Sean, 2026-10-09: "a better graphic"): Maya in a store's dairy-free aisle, words laid on top.
   // A Guide without one falls back to its Guide's square portrait.
   var art = g[5] || (window.VEGuideArt ? VEGuideArt(g[2], 'square') : '/public/guides/' + g[2] + '.jpg');
   el.classList.add('bb-filled');
   el.innerHTML = '<a class="bb-house' + (g[5] ? ' bb-house-ad' : '') + '" href="' + esc(g[3]) + '"><span class="bb-house-pic" style="background-image:url(\'' + esc(art) + '\')"></span>' +
-    '<span class="bb-house-txt"><small>From Vegans Explore</small><b>The Vegan ' + esc(g[0]) + '</b><span>' + esc(g[4] || '') + '</span><em>Open the guide</em></span></a>';
+    '<span class="bb-house-txt"><small>From Vegans Explore</small><b>' + esc(g[6] || 'The Vegan ' + g[0]) + '</b><span>' + esc(g[4] || '') + '</span><em>Open the guide</em></span></a>';
 }
 
 // The Guide banner on a listing (Sean, 2026-10-31: "put the airport guide, the dairy guide, the stadium and arena guide... spread that
@@ -5281,12 +5289,14 @@ function houseAd(l){
 function guideBanner(l, tabGuide){
   var el = document.getElementById('ve-house-banner'); if(!el) return;
   function go(){
-    var all = (VEPromo.guides || ['airport-guide', 'vegan-dairy-guide', 'stadium-arena-guide']).filter(function(s){ return s !== tabGuide; });
-    var slug = all[Math.floor(Math.random() * all.length)];
+      // The Holiday Guide is the main Guide for the season (Sean, 2026-11-10): it shows on every listing whose Resources tab is not
+    // already the Holiday Guide; those show one of the others at random.
+    var all = (VEPromo.guides || ['airport-guide', 'holiday-guide', 'stadium-arena-guide']).filter(function(s){ return s !== tabGuide; });
+    var slug = all.indexOf('holiday-guide') >= 0 ? 'holiday-guide' : all[Math.floor(Math.random() * all.length)];
     VEPromo.guideCard(el, slug, { page: '/directory/' + (l.slug || ''), listing_id: l.id || null, preview: typeof DEMO !== 'undefined' && !!DEMO });
   }
   if(window.VEPromo && VEPromo.guideCard) return go();
-  var s = document.createElement('script'); s.src = '/public/ve-promo.js?v=3'; s.onload = go; document.head.appendChild(s);
+  var s = document.createElement('script'); s.src = '/public/ve-promo.js?v=4'; s.onload = go; document.head.appendChild(s);
 }
 
 // The Social tab (Sean, 2026-11-03): Featured by us (posts on @vegansexplore and @soflovegans that feature the listing, matched
@@ -5376,7 +5386,7 @@ function loadGuideTab(l){
     side(p ? p.primary : null);
   }
   if(window.VEGuideTab) return go();
-  var s = document.createElement('script'); s.src = '/public/ve-guide-tab.js?v=2'; s.onload = go; s.onerror = function(){ side(null); };
+  var s = document.createElement('script'); s.src = '/public/ve-guide-tab.js?v=3'; s.onload = go; s.onerror = function(){ side(null); };
   document.head.appendChild(s);
 }
 

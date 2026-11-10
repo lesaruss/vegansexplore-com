@@ -23,6 +23,13 @@
 
   // paid: a ve_guides row sold at $11 or 1,100 points (ownership read from ve-guide-unlock). Words never count items.
   var GUIDES = {
+    // The Holiday Guide takes the Dairy Guide's place on food listings for the season (Sean, 2026-11-10: "wherever there's a dairy guide,
+    // let's put the holiday guide... come Christmas, the holiday guide is going to go on hiatus until Valentine's Day"). Free and public.
+    // After Christmas, point FOOD_GUIDE below back to 'vegan-dairy-guide'.
+    'holiday-guide': { tab: 'Holiday Guide', title: 'The Holiday Guide', guide: 'Theo', paid: false, href: '/guides/holiday-guide',
+      banner: '/public/guides/holiday-guide.jpg?v=1', kicker: 'For the holidays',
+      line: 'ThanksLiving ideas, recipes, holiday menus from Vegan places near you, events and ways to give back, with Theo walking you through it.',
+      items: ['Simple ways to celebrate ThanksLiving', 'Holiday menus from Vegan places near you', 'Recipes for the table, and what to buy at the store', 'Events, and ways to give back this season'] },
     'vegan-dairy-guide': { tab: 'Dairy Guide', title: 'The Vegan Dairy Guide', guide: 'Maya', paid: true, href: '/guides/vegan-dairy-guide',
       banner: '/public/guides/vegan-dairy-guide.jpg?v=3',
       line: 'Everything you need to go dairy-free: the brands to buy and where to find them, swaps for every kind of dairy, and recipes, with Maya walking you through it.',
@@ -62,9 +69,10 @@
       items: ['Find your places in the Directory', 'Your community, in every chapter', 'The Guides, points and levels', 'What your $11 supports'] }
   };
   // Category to Guide. A row's third slug stands in only while its Guide is not in GUIDES.
+  var FOOD_GUIDE = 'holiday-guide';
   var MAP = [
-    [['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Markets', 'Catering', 'Meal Prep', 'Food Brands'], 'vegan-dairy-guide'],
-    [['Nutrition & Supplements', 'Physicians', 'Health Experts'], 'nutrition-guide', 'vegan-dairy-guide'],
+    [['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Markets', 'Catering', 'Meal Prep', 'Food Brands'], FOOD_GUIDE, 'vegan-dairy-guide'],
+    [['Nutrition & Supplements', 'Physicians', 'Health Experts'], 'nutrition-guide', FOOD_GUIDE],
     [['Content Creators', 'YouTube', 'Podcasts'], 'creator-guide'],
     [['Activists', 'Nonprofits', 'Rescues', 'Sanctuaries'], 'nonprofit-guide'],
     [['Groups'], 'group-partner'],

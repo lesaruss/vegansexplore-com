@@ -81,7 +81,7 @@
   };
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   var q = new URLSearchParams(location.search);
-  var g = G[q.get('g')] || G['vegan-dairy-guide'];
+  var g = G[q.get('g')] || G['holiday-guide'];
   // Only an https link the host passes is followed; anything else goes to the Guide itself.
   var clickTag = q.get('clickTag') || '';
   if (!/^https:\/\//.test(clickTag)) clickTag = SITE + g.href;

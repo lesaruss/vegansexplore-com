@@ -38,12 +38,9 @@
 
     .vote-box { margin-top: 40px; display: flex; align-items: center; gap: 28px; flex-wrap: wrap; background: #1a1a1a; color: #fff; border-radius: 14px; padding: 28px 32px; }
     .vote-box[hidden] { display: none; }
-    .biz-strip { margin-top: 16px; display: flex; align-items: center; gap: 28px; flex-wrap: wrap; background: #f3faf5; border: 1px solid #b9dfc3; border-radius: 14px; padding: 24px 32px; }
-    .biz-strip .vote-box-copy strong { color: #1a1a1a; }
-    .biz-strip .vote-box-copy strong span { color: #1f7a3a; }
-    .biz-strip .vote-box-copy p { color: rgba(0,0,0,0.72); }
-    .btn-claim { display: inline-block; font-weight: 800; font-size: 14px; padding: 13px 22px; border-radius: 6px; background: #fff; color: #1a1a1a; border: 2px solid #1a1a1a; text-decoration: none; }
-    .btn-claim:hover { background: #1a1a1a; color: #fff; }
+    .vote-box-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn-alt { display: inline-flex; align-items: center; background: transparent; color: #fff; border: 2px solid rgba(255,255,255,0.7); font: inherit; font-size: 12px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; padding: 14px 24px; border-radius: 6px; text-decoration: none; cursor: pointer; transition: background 0.15s, color 0.15s; }
+    .btn-alt:hover { background: #fff; color: #1a1a1a; }
     .vote-box-copy { flex: 1; min-width: 240px; }
     .vote-box-copy strong { display: block; font-size: 20px; font-weight: 900; margin-bottom: 6px; }
     .vote-box-copy strong span { color: #5EC47A; }
@@ -54,7 +51,8 @@
 
     @media (max-width: 700px) {
       main { padding: 28px 16px 64px; }
-      .vote-box, .biz-strip { padding: 24px 20px; }
+      .vote-box { padding: 24px 20px; }
+      .vote-box-btns > * { flex: 1 1 100%; justify-content: center; }
     }
   </style>
 </head>
@@ -76,33 +74,21 @@
     <!-- Three-fourths the Directory, one-fourth the chapter's two banners (Sean, 2026-10-26). public/ve-ad-rail.js -->
     <div class="vear-layout"><div class="vear-main"><div id="ve-region-directory"></div></div><aside class="vear-rail" id="dir-ad-rail" data-ad-page="chapter"></aside></div>
 
-    <section class="vote-box" id="dir-vote-box" aria-label="Founding Membership">
+    <!-- One box at the foot (Sean, 2026-11-10: "I'd rather there just be one call to action box at the bottom, the first one that's
+         black, and then we could have three buttons in there... join free, claim your business, suggest the place"). It replaced
+         the three stacked boxes (Your votes rank them, Is your business in here?, Know a place we are missing?). Members already
+         vote, so they see it without Join free. Suggest a place opens the listing-request window (ve-listing-requests,
+         2026-11-08, Brion Hurley's feedback); /directory?suggest=1 opens it straight away, for links in emails. -->
+    <section class="vote-box" id="dir-vote-box" aria-label="Join, claim or suggest">
       <div class="vote-box-copy">
-        <strong>Your votes <span>rank them.</span></strong>
-        <p>Joining is free with a short survey: vote once a day for every business you love (the votes decide who leads each list) and get your own dashboard to build your Vegan world. Businesses join the same way and claim their page free.</p>
+        <strong>Find your way <span>in.</span></strong>
+        <p id="dir-vote-line"><b>Explorers:</b> join free with a short survey and vote once a day for the places you love (the votes decide who leads each list). <b>Businesses:</b> claim your page free once you are a member. <b>Know a place we are missing?</b> Tell us, and our team checks it before it goes on.</p>
       </div>
-      <a class="btn-join" href="/survey?s=explorer">Join free</a>
-    </section>
-
-    <!-- The Directory is the business front door (Sean, 2026-10-29): every business here can claim its page with the
-         Passport, members included, so this strip shows to everyone. -->
-    <section class="biz-strip" aria-label="Claim your business">
-      <div class="vote-box-copy">
-        <strong>Is your business <span>in here?</span></strong>
-        <p>Claim it free once you are a member (joining is free with a short survey): tell your story, keep your details right, see how many people find your page, and be first to hear about sponsorships and ads. Not listed yet? Add it the same way.</p>
+      <div class="vote-box-btns">
+        <a class="btn-join" id="dir-join-btn" href="/survey?s=explorer">Join free</a>
+        <a class="btn-alt" href="/claim">Claim your business</a>
+        <button type="button" class="btn-alt" data-ve-listing-request>Suggest a place</button>
       </div>
-      <a class="btn-claim" href="/claim">Claim your business</a>
-    </section>
-
-    <!-- Suggest a place (2026-11-08, from Brion Hurley's feedback): for someone who knows a Vegan spot but does not run it. A name
-         and where is enough; a website or Instagram helps. Our team looks it up before it is listed (ve-listing-requests).
-         /directory?suggest=1 opens it straight away, for links in emails. -->
-    <section class="biz-strip" aria-label="Suggest a place">
-      <div class="vote-box-copy">
-        <strong>Know a place <span>we are missing?</span></strong>
-        <p>Tell us its name and where it is. A website or Instagram helps, but it is not required. Our team looks it up and checks it before it goes on the Directory, and a place with Vegan options waits for member votes like every other.</p>
-      </div>
-      <button type="button" class="btn-claim" data-ve-listing-request style="border:0;cursor:pointer;font:inherit">Suggest a place</button>
     </section>
   </main>
 
@@ -153,9 +139,12 @@
     if (new URLSearchParams(location.search).get('tab')) banner.autoFold();
     if (q0.get('suggest') === '1' && window.VEListingRequest) VEListingRequest.open({ page: location.href });
 
-    // Members already vote; the box is for everyone else.
+    // Members already vote: the box keeps Claim and Suggest, without Join free.
     var m = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null;
-    if (m && m.membership_status === 'active') document.getElementById('dir-vote-box').hidden = true;
+    if (m && m.membership_status === 'active') {
+      document.getElementById('dir-join-btn').remove();
+      document.getElementById('dir-vote-line').innerHTML = '<b>Run a Vegan business?</b> Claim your page free: tell your story, keep your details right and see how many people find you. <b>Know a place we are missing?</b> Tell us, and our team checks it before it goes on.';
+    }
   })();
   </script>
 

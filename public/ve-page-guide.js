@@ -26,7 +26,7 @@
   function pageUrl() { try { if (window.VEFeedback && VEFeedback.url) return VEFeedback.url(); } catch (e) {} return location.href; }
   var NAMES = { liz: 'Liz', maya: 'Maya', river: 'River', nori: 'Nori', dani: 'Dani', theo: 'Theo', kai: 'Kai', pascal: 'Pascal' };
   // The Resources tab's Guide per card (ve-guide-tab.js GUIDES).
-  var GT = { 'vegan-dairy-guide': 'maya', 'vegan-restaurant-guide': 'liz', 'creator-guide': 'kai', 'nonprofit-guide': 'dani', 'nutrition-guide': 'theo',
+  var GT = { 'holiday-guide': 'theo', 'vegan-dairy-guide': 'maya', 'vegan-restaurant-guide': 'liz', 'creator-guide': 'kai', 'nonprofit-guide': 'dani', 'nutrition-guide': 'theo',
     'supermarket-guide': 'pascal', 'vegan-events-guide': 'river', 'group-partner': 'dani', 'welcome': 'dani' };
   var G = 'liz';
   function slugOf(name) { var k = String(name || '').trim().toLowerCase(); return NAMES[k] ? k : null; }
