@@ -221,6 +221,16 @@ Deno.serve(async (req) => {
     return json({ ok: true, first_name: String(who.name || '').trim().split(/\s+/)[0] || 'A friend', items: [...saved, ...(data || [])] });
   }
 
+  // A featured brand's landing page (/hello/gifts?l=<slug>, 2026-11-10): the listing and its live Gift Guide card(s).
+  if (action === 'gift_card') {
+    const slug = String(b.slug || '');
+    if (!/^[a-z0-9][a-z0-9-]{0,120}$/.test(slug)) return json({ error: 'bad_slug' }, 400);
+    const { data: l } = await db.from('listings').select('id, slug, name, logo_url, owner_member_id').eq('slug', slug).eq('status', 'approved').maybeSingle();
+    if (!l) return json({ error: 'not_found' }, 404);
+    const { data: gs } = await db.from('ve_holiday_gifts').select('id, section, title, brand, link, amazon_link, image_url, note, source_name').eq('listing_id', l.id).eq('status', 'live').order('sort');
+    return json({ ok: true, listing: { id: l.id, slug: l.slug, name: l.name, logo_url: l.logo_url, claimed: !!l.owner_member_id }, gifts: gs || [] });
+  }
+
   // ---- Signed in ----
   const tok = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '') || String(b.token || '');
   const me = tok ? await verifyToken(tok) : null;
@@ -364,6 +374,40 @@ Deno.serve(async (req) => {
     const { count } = await db.from('ve_holiday_gift_plus').select('gift_id', { count: 'exact', head: true }).eq('gift_id', gid);
     return json({ ok: true, plus: count || 0, mine: b.on !== false });
   }
+  // A brand's change to its Gift Guide card (2026-11-10): any registered account may ask; the team checks every request before it is
+  // applied, so the gate is the review, not a claim. A photo is one we hold (gift_photo_url).
+  if (action === 'gift_photo_url' || action === 'gift_request') {
+    const lid = String(b.listing_id || '');
+    if (!UUID.test(lid)) return json({ error: 'bad_request' }, 400);
+    const { data: L } = await db.from('listings').select('id, slug').eq('id', lid).eq('status', 'approved').maybeSingle();
+    if (!L) return json({ error: 'not_found' }, 404);
+    if (action === 'gift_photo_url') {
+      const path = `media/holiday-gift-requests/${L.slug}/${crypto.randomUUID()}.jpg`;
+      const { data: up, error } = await db.storage.from('vegan-media').createSignedUploadUrl(path);
+      if (error || !up) return json({ error: 'upload_failed' }, 500);
+      return json({ ok: true, upload_url: up.signedUrl, url: PUBLIC_BASE + path });
+    }
+    const change = ['keep', 'item', 'photo'].includes(String(b.change)) ? String(b.change) : '';
+    if (!change) return json({ error: 'bad_change' }, 400);
+    const gid = UUID.test(String(b.gift_id || '')) ? String(b.gift_id) : null;
+    if (gid && !(await db.from('ve_holiday_gifts').select('id').eq('id', gid).eq('listing_id', lid).maybeSingle()).data) return json({ error: 'not_their_gift' }, 400);
+    const rawLink = clean(b.link, 500), link = rawLink ? cleanUrl(rawLink) : null;
+    if (rawLink && !link) return json({ error: 'bad_link' }, 400);
+    const img = clean(b.image_url, 600);
+    if (img && !img.startsWith(PUBLIC_BASE + 'media/holiday-gift-requests/' + L.slug + '/')) return json({ error: 'bad_photo' }, 400);
+    const title = clean(b.title, 120);
+    if (change === 'item' && title.length < 2) return json({ error: 'title_needed' }, 400);
+    if (change === 'photo' && !img) return json({ error: 'photo_needed' }, 400);
+    const since = new Date(Date.now() - 86400000).toISOString();
+    const { count } = await db.from('ve_holiday_gift_requests').select('id', { count: 'exact', head: true }).eq('member_id', me).gte('created_at', since);
+    if (!admin && (count || 0) >= 10) return json({ error: 'rate_limited' }, 429);
+    const giveaway = b.giveaway === 'yes' || b.giveaway === 'no' ? b.giveaway : null;
+    const { data: saved, error } = await db.from('ve_holiday_gift_requests').insert({ listing_id: lid, gift_id: gid, member_id: me, change,
+      title: change === 'item' ? title : null, link: change === 'item' ? link : null, note: clean(b.note, 600) || null, image_url: img || null,
+      giveaway, giveaway_note: giveaway === 'yes' ? clean(b.giveaway_note, 300) || null : null }).select('id').single();
+    if (error || !saved) return json({ error: 'save_failed' }, 500);
+    return json({ ok: true, id: saved.id });
+  }
   // Wish list: any registered account (quick registration is enough).
   if (action === 'wish_mine' || action === 'wish_add' || action === 'wish_remove') {
     const hs = String(b.holiday || 'christmas');
@@ -480,6 +524,36 @@ Deno.serve(async (req) => {
     return json({ ok: true, status: upd.status || null });
   }
 
+  // The brands' card requests (2026-11-10): the team queue, and applying one to its card.
+  if (action === 'gift_requests') {
+    const { data } = await db.from('ve_holiday_gift_requests').select('*').eq('status', 'pending').order('created_at').limit(200);
+    const lids = [...new Set((data || []).map((r) => r.listing_id))], mids = [...new Set((data || []).map((r) => r.member_id))], gids = [...new Set((data || []).map((r) => r.gift_id).filter(Boolean))];
+    const [{ data: ls }, { data: ms }, { data: gs }] = await Promise.all([
+      lids.length ? db.from('listings').select('id, slug, name').in('id', lids) : Promise.resolve({ data: [] as any[] }),
+      mids.length ? db.from('members').select('id, name, email').in('id', mids) : Promise.resolve({ data: [] as any[] }),
+      gids.length ? db.from('ve_holiday_gifts').select('id, title, image_url').in('id', gids) : Promise.resolve({ data: [] as any[] }),
+    ]);
+    const by = (a: any[] | null) => Object.fromEntries((a || []).map((x: any) => [x.id, x]));
+    const L = by(ls), M = by(ms), G = by(gs);
+    return json({ ok: true, rows: (data || []).map((r) => ({ ...r, listing: L[r.listing_id] || null, member: M[r.member_id] || null, gift: r.gift_id ? G[r.gift_id] || null : null })) });
+  }
+  if (action === 'gift_request_review') {
+    const id = String(b.id || ''), d = String(b.decision || '');
+    if (!UUID.test(id) || !['apply', 'decline'].includes(d)) return json({ error: 'bad_request' }, 400);
+    const { data: r } = await db.from('ve_holiday_gift_requests').select('*').eq('id', id).maybeSingle();
+    if (!r || r.status !== 'pending') return json({ error: 'not_found' }, 404);
+    const now = new Date().toISOString();
+    if (d === 'apply' && r.change !== 'keep' && r.gift_id) {
+      const upd: Record<string, unknown> = { updated_at: now };
+      if (r.change === 'item') { upd.title = r.title; if (r.link) { upd.link = r.link; upd.amazon_link = null; } if (r.note) upd.note = r.note; }
+      if (r.image_url) upd.image_url = r.image_url;
+      // A brand's own pick is no longer VegNews's: the card credits the brand.
+      if (r.change === 'item') { upd.source_name = null; upd.source_url = null; }
+      await db.from('ve_holiday_gifts').update(upd).eq('id', r.gift_id);
+    }
+    await db.from('ve_holiday_gift_requests').update({ status: d === 'apply' ? 'applied' : 'declined', team_note: clean(b.note, 300) || null, reviewed_by: me, reviewed_at: now }).eq('id', id);
+    return json({ ok: true });
+  }
   if (action === 'wish_queue') {
     let q = db.from('ve_holiday_wishes').select('*').eq('status', 'pending').order('created_at').limit(500);
     if (SLUG.test(String(b.holiday || ''))) q = q.eq('holiday_slug', String(b.holiday));
