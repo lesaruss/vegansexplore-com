@@ -45,3 +45,5 @@ on conflict (member_id) do update set kit = excluded.kit, display_name = exclude
 
 -- Avatar without the logo and Download all (Sean, 2026-11-10): applied live.
 update public.ve_creator_dashboards set kit = kit || jsonb_build_object('avatar', 'avatar-geekfon-v3.jpg', 'carousel_zip', 'kit/carousel-v1.zip') where slug = 'keya';
+
+-- Switched on for KJ by Sean (2026-11-10: "I think we can push this"): enabled = true, enabled_by Sean.
