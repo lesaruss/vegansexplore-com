@@ -38,6 +38,7 @@ we have systems, so we don't waste time and usage." Canon `canon-template-gate` 
    | A working tool, queue or console | `admin/depot/social.html` and the Depot pages |
    | A sign-up or a form of more than one section | `claim.html` (`?step=`) |
    | A listing or profile | `directory/listing.html` |
+   | Any list of Directory listings, on any page or Guide | The shared Directory card, `VERegionDirectory.card` / `.wire` (`/public/ve-region-directory.js`; a Guide's `cards()` / `wireCards()`), never a hand-made card (Sean, 2026-11-10: "I'm getting tired of telling you"; error registry `UI-LISTING-CARD-COPIED-NOT-SHARED`) |
    | A browse page with a banner | `/public/ve-city-banner.js`, as the Directory and Events use it |
    | A search box or a results page | `/public/ve-search.js` and `search.html` (universal search, below) |
    | An email | `email-send`, as `ve-nurture` and `ve-people-outreach` call it |

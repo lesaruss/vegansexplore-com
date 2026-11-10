@@ -387,7 +387,8 @@
 
   // ---------- Kosher Places (Hanukkah) ----------
   // Sean, 2026-11-10: "we could show restaurants that are kosher". Listings tagged `kosher` (migration 20261110_kosher_places_tag.sql: their
-  // own description says kosher, kosher certified or a kosher kitchen), 100% Vegan first, a search, and Suggest a Place to the right of it.
+  // own description says kosher, kosher certified or a kosher kitchen), 100% Vegan first, in the shared Directory card (vote, save), a search,
+  // and Suggest a Place to the right of it.
   var KOSHER = null;
   function viewKosher() {
     main.innerHTML = head('Hanukkah', 'Kosher Places', 'Vegan and plant-based places that describe themselves as kosher or kosher certified. Ask each place about its certification before you go.') +
@@ -401,19 +402,14 @@
       var box = document.getElementById('hgKosList'); if (!box) return;
       var w = (document.getElementById('hgKq').value || '').trim().toLowerCase().split(/\s+/).filter(Boolean);
       var list = (KOSHER || []).filter(function (l) { var t = [l.name, l.address_city, l.address_state].join(' ').toLowerCase(); return !w.some(function (x) { return t.indexOf(x) < 0; }); });
-      box.innerHTML = list.length ? '<div class="hg-menus">' + list.map(function (l) {
-        var vegan = l.vegan_status === 'fully_vegan', saved = !!SAVED[l.id], where = [l.address_city, l.address_state].filter(Boolean).join(', ');
-        return '<div class="hg-menu"><div class="hg-mh"><a class="hg-logo" href="/directory/' + encodeURIComponent(l.slug) + '" aria-label="' + esc(l.name) + ', their listing"' + (l.logo_url ? ' style="background-image:url(\'' + esc(l.logo_url) + '\')"' : '') + '>' + (l.logo_url ? '' : esc((l.name || '?').charAt(0))) + '</a>' +
-          '<div><h3><a href="/directory/' + encodeURIComponent(l.slug) + '">' + esc(l.name) + '</a></h3><small>' + esc(where || 'Online') + '</small></div>' +
-          '<span class="hg-tag hg-tr' + (vegan ? '' : ' pv') + '">' + (vegan ? '100% Vegan' : 'Plant-based (Pre-Vegan)') + '</span></div>' +
-          (l.description ? '<p class="hg-sum">' + esc(l.description) + '</p>' : '') +
-          '<div class="hg-acts"><a class="dg-btn" href="/directory/' + encodeURIComponent(l.slug) + '">Their Listing</a><button type="button" class="dg-save' + (saved ? ' on' : '') + '" data-hg-save="' + esc(l.id) + '" aria-pressed="' + saved + '">' + (saved ? 'Saved' : 'Save') + '</button></div></div>';
-      }).join('') + '</div>' : '<div class="hg-empty"><h3>Nothing Matches</h3><p>Try another name or city. Know one we are missing? Suggest a Place.</p></div>';
+      // The shared Directory card, never a copy (CLAUDE.md "Every view is a link", error registry UI-LISTING-CARD-COPIED-NOT-SHARED).
+      box.innerHTML = list.length ? cards(list, 'hgKosGrid') : '<div class="hg-empty"><h3>Nothing Matches</h3><p>Try another name or city. Know one we are missing? Suggest a Place.</p></div>';
+      if (list.length) wireCards('hgKosGrid');
     };
     document.getElementById('hgKq').addEventListener('input', draw);
     if (KOSHER) { draw(); return; }
-    rest(SB + '/rest/v1/listings?select=id,slug,name,description,address_city,address_state,logo_url,vegan_status&status=eq.approved&tags=cs.%7Bkosher%7D&limit=200')
-      .then(function (rows) { KOSHER = (Array.isArray(rows) ? rows : []).sort(function (a, b) { return (a.vegan_status === 'fully_vegan' ? 0 : 1) - (b.vegan_status === 'fully_vegan' ? 0 : 1) || a.name.localeCompare(b.name); }); })
+    rest(SB + '/rest/v1/listings?select=' + FIELDS + '&status=eq.approved&tags=cs.%7Bkosher%7D&order=vote_count.desc.nullslast&limit=200')
+      .then(function (rows) { KOSHER = (Array.isArray(rows) ? rows : []).sort(function (a, b) { return (a.vegan_status === 'fully_vegan' ? 0 : 1) - (b.vegan_status === 'fully_vegan' ? 0 : 1) || (b.vote_count || 0) - (a.vote_count || 0) || a.name.localeCompare(b.name); }); })
       .catch(function () { KOSHER = []; }).then(function () { if (curView === 'hk-kosher') draw(); });
   }
 

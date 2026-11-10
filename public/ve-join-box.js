@@ -2,7 +2,7 @@
  * /public/ve-join-box.js: the join window for our free Guides (Sean, 2026-11-10, first draft on the Holiday Guide). The information is
  * free, but anything someone sends us (a recipe, a menu, an item, a save) needs a name on it: "We don't want just blind submissions."
  * It opens over the page (close with X, Not now, Escape or a tap outside) with two ways in:
- *   1. Quick registration (under two minutes): name, email, a password and their city. That is an account, enough to send things and get
+ *   1. Quick registration, the default (under a minute): name, email, a password and their city. That is an account, enough to send things and get
  *      the Daily Pulse; it is not membership. The Pulse box subscribes them through ve-pulse-subscribe (double opt-in).
  *   2. Full membership, free: the Explorer survey (about two minutes, 250 points, everything open).
  * Beside them: the Guide's own short video (a placeholder until it is made; each Guide's own character, never another Guide's) and the perks.
@@ -27,7 +27,7 @@
     '.vjb{position:relative;background:#fff;color:#1a1a1a;border-radius:14px;width:min(980px,100%);max-height:86vh;overflow:auto;box-shadow:0 24px 60px rgba(0,0,0,.32);font-family:inherit;display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr)}' +
     '.vjb-x{position:absolute;top:12px;right:12px;width:38px;height:38px;border-radius:6px;border:1px solid rgba(0,0,0,.14);background:#fff;font-size:22px;line-height:1;cursor:pointer;color:#1a1a1a;z-index:2}' +
     '.vjb-side{background:#f3f8f2;padding:24px;display:flex;flex-direction:column;gap:16px;border-right:1px solid #e3efe3}' +
-    '.vjb-vid{position:relative;aspect-ratio:4/5;border-radius:12px;overflow:hidden;background:#dfeadf center/cover no-repeat}' +
+    '.vjb-vid{position:relative;aspect-ratio:4/5;border-radius:12px;overflow:hidden;background:#dfeadf center top/cover no-repeat}' +
     '.vjb-play{position:absolute;left:14px;bottom:14px;width:54px;height:54px;border-radius:50%;background:rgba(0,0,0,.62);display:flex;align-items:center;justify-content:center}' +
     '.vjb-soon{position:absolute;right:10px;top:10px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:#fff;color:#1f5f22;border-radius:6px;padding:4px 8px}' +
     '.vjb-cap{margin:6px 0 0;font-size:12.5px;color:rgba(26,26,26,.6)}' +
@@ -51,40 +51,58 @@
     '.vjb-note{margin:12px 0 0;font-size:12.5px;line-height:1.5;color:rgba(26,26,26,.6)}.vjb-note a{color:#1f5f22;font-weight:700}' +
     '.vjb-err{margin:0;font-size:13px;color:#9a3412;min-height:1em}' +
     '.vjb-hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}' +
+    '.vjb-tog{display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;border-radius:8px;background:#eef3ee;margin:0 0 14px}' +
+    '.vjb-tog button{min-height:40px;border:0;border-radius:6px;background:transparent;font:inherit;font-size:13.5px;font-weight:800;color:rgba(26,26,26,.7);cursor:pointer}' +
+    '.vjb-tog button[aria-selected=true]{background:#fff;color:#1f5f22;box-shadow:0 1px 3px rgba(0,0,0,.12)}' +
+    '.vjb-pl{margin:0 0 10px;font-size:14px;line-height:1.5;color:rgba(26,26,26,.75)}.vjb-pl b{color:#1a1a1a}' +
+    '.vjb-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}' +
+    '.vjb-mvid,.vjb-mperks,.vjb-cs{display:none}' +
     'html.vjb-open{overflow:hidden}' +
-    '@media(max-width:820px){.vjb{grid-template-columns:1fr;max-height:92vh}.vjb-side{order:2;border-right:0;border-top:1px solid #e3efe3}' +
-      '.vjb-vid{aspect-ratio:16/10}.vjb-paths{grid-template-columns:1fr}.vjb-back{padding:10px;align-items:center}.vjb-main{padding:22px 18px 18px}.vjb-main h2{font-size:22px}}';
+    // Phones: one column; Theo's video comes up under the title as one row (his picture, framed from the top so his head shows, and the
+    // caption beside it), then the toggle and the form, then the perks.
+    '@media(max-width:820px){.vjb{grid-template-columns:1fr;max-height:92vh}.vjb-side{display:none}.vjb-back{padding:10px;align-items:center}' +
+      '.vjb-main{padding:22px 18px 18px}.vjb-main h2{font-size:22px}.vjb-2{grid-template-columns:1fr}' +
+      '.vjb-mvid{display:flex;gap:12px;align-items:center;margin:0 0 14px;padding:10px;border-radius:12px;background:#f3f8f2}' +
+      '.vjb-mvid .vjb-vid{flex:0 0 96px;width:96px;aspect-ratio:4/5;background-position:center top}.vjb-mvid .vjb-soon{display:none}.vjb-mvid .vjb-cs{display:inline;color:#1f5f22;font-weight:800}' +
+      '.vjb-mvid .vjb-play{width:34px;height:34px;left:8px;bottom:8px}.vjb-mvid .vjb-cap{margin:0;font-size:14px;line-height:1.45}' +
+      '.vjb-mperks{display:block;margin:16px 0 0;padding-top:14px;border-top:1px solid #e3efe3}}';
   var CHECK = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
   var box = null, opts = null, lastFocus = null;
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function css() { if (document.getElementById('vjb-css')) return; var s = document.createElement('style'); s.id = 'vjb-css'; s.textContent = CSS; document.head.appendChild(s); }
   function guessCity() { try { return sessionStorage.getItem('ve_dir_city') || localStorage.getItem('hg_chapter') || ''; } catch (e) { return ''; } }
+  // Quick registration is the default (Sean, 2026-11-10: "I want them through the door as quick as possible... If I can get 10,000 email
+  // addresses versus 100 people registering, I'm fine with that"); a toggle under the title switches to Become a member, so the window
+  // shows one path at a time and never turns into a long scroll.
   function html(o) {
     var city = guessCity();
     var perks = ['Send menus, recipes and finds, with your name on them', 'The Daily Pulse for your city, every morning', 'Save places and find them again in My Saves',
       'Hear first about ways to support your local Vegan community'];
+    var vid = function (cls) {
+      return '<div class="' + cls + '"><div class="vjb-vid" style="background-image:url(\'' + esc(o.pic || '') + '\')"><span class="vjb-soon">Video coming</span>' +
+        '<span class="vjb-play" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span></div>' +
+        '<p class="vjb-cap"><b>' + esc(o.character || 'Your Guide') + '</b> on why it is free to join, in about 30 seconds.<span class="vjb-cs"> Video coming.</span></p></div>';
+    };
     return '<button type="button" class="vjb-x" aria-label="Close" data-vjb-x>&times;</button>' +
-      '<aside class="vjb-side"><div><div class="vjb-vid" style="background-image:url(\'' + esc(o.pic || '') + '\')"><span class="vjb-soon">Video coming</span>' +
-        '<span class="vjb-play" aria-hidden="true"><svg width="22" height="22" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg></span></div>' +
-        '<p class="vjb-cap">' + esc(o.character || 'Your Guide') + ' on why it is free to join, in about 30 seconds.</p></div>' +
+      '<aside class="vjb-side">' + vid('vjb-dvid') +
         '<div class="vjb-perks"><h4>When you register</h4><ul>' + perks.map(function (p) { return '<li>' + CHECK + '<span>' + esc(p) + '</span></li>'; }).join('') + '</ul></div></aside>' +
       '<div class="vjb-main"><div class="vjb-k">Join Vegans Explore, free</div><h2 id="vjb-t">' + esc(o.reason ? 'Register to ' + o.reason.toLowerCase() : 'Join Vegans Explore') + '</h2>' +
         '<p class="vjb-lede">' + esc(o.line || 'Everything in the ' + (o.guide || 'Guide') + ' is free to read. To send us something, we just need to know who you are.') + '</p>' +
-        '<div class="vjb-paths">' +
-          '<section class="vjb-path on" aria-label="Quick registration"><span class="vjb-t">Under 2 minutes</span><h3>Quick registration</h3>' +
-            '<p>Make a login to send this in and get the Daily Pulse. This is not a membership; you can become a member any time.</p>' +
-            '<form class="vjb-f" novalidate><label>Your name<input type="text" name="name" autocomplete="name" maxlength="120" data-dictate="off"></label>' +
-              '<label>Email<input type="email" name="email" autocomplete="email" maxlength="200"></label>' +
-              '<label>Make a password<input type="password" name="password" autocomplete="new-password" minlength="8" placeholder="8 or more characters"></label>' +
-              '<label>Your city<select name="city">' + CITIES.map(function (c) { return '<option value="' + c[0] + '"' + (c[0] === city ? ' selected' : '') + '>' + esc(c[1]) + '</option>'; }).join('') + '</select></label>' +
-              '<label class="vjb-ck"><input type="checkbox" name="pulse" checked><span>Send me the Daily Pulse and news about ways to support my Vegan community. Unsubscribe any time.</span></label>' +
-              '<span class="vjb-hp" aria-hidden="true"><input type="text" name="website" tabindex="-1" autocomplete="off"></span>' +
-              '<p class="vjb-err" role="alert"></p><button type="submit" class="vjb-btn">Register and continue</button></form></section>' +
-          '<section class="vjb-path" aria-label="Full membership"><span class="vjb-t">About 2 minutes</span><h3>Become a member, free</h3>' +
-            '<p>Take the Explorer survey and everything opens: 250 points, every Guide, voting for the places you love' + (FOUNDING ? ', and you are a Founding Member before January 1' : '') + '.</p>' +
-            (o.reason ? '<p>We bring you right back here to finish when you are done.</p>' : '') +
-            '<div style="margin-top:auto"><button type="button" class="vjb-btn g" data-vjb-survey>Take the survey</button></div></section>' +
-        '</div>' +
+        vid('vjb-mvid') +
+        '<div class="vjb-tog" role="tablist" aria-label="How to join"><button type="button" role="tab" aria-selected="true" data-vjb-tab="quick">Quick registration</button>' +
+          '<button type="button" role="tab" aria-selected="false" data-vjb-tab="member">Become a member</button></div>' +
+        '<section class="vjb-pane" data-vjb-pane="quick" aria-label="Quick registration"><p class="vjb-pl"><b>Under a minute.</b> Your name, a password and your city, and you can send it in right away. This is not a membership; you can become a member any time.</p>' +
+          '<form class="vjb-f" novalidate><div class="vjb-2"><label>Your name<input type="text" name="name" autocomplete="name" maxlength="120" data-dictate="off"></label>' +
+            '<label>Email<input type="email" name="email" autocomplete="email" maxlength="200"></label></div>' +
+            '<div class="vjb-2"><label>Make a password<input type="password" name="password" autocomplete="new-password" minlength="8" placeholder="8 or more characters"></label>' +
+            '<label>Your city<select name="city">' + CITIES.map(function (c) { return '<option value="' + c[0] + '"' + (c[0] === city ? ' selected' : '') + '>' + esc(c[1]) + '</option>'; }).join('') + '</select></label></div>' +
+            '<label class="vjb-ck"><input type="checkbox" name="pulse" checked><span>Send me the Daily Pulse and news about ways to support my Vegan community. Unsubscribe any time.</span></label>' +
+            '<span class="vjb-hp" aria-hidden="true"><input type="text" name="website" tabindex="-1" autocomplete="off"></span>' +
+            '<p class="vjb-err" role="alert"></p><button type="submit" class="vjb-btn">Register and continue</button></form></section>' +
+        '<section class="vjb-pane" data-vjb-pane="member" aria-label="Become a member" hidden><p class="vjb-pl"><b>About 2 minutes.</b> Take the Explorer survey and everything opens: 250 points, every Guide and voting for the places you love' + (FOUNDING ? ', and you are a Founding Member before January 1' : '') + '.</p>' +
+          (o.reason ? '<p class="vjb-pl">We bring you right back here to finish when you are done.</p>' : '') +
+          '<button type="button" class="vjb-btn" data-vjb-survey>Take the survey</button></section>' +
+        '<div class="vjb-mperks vjb-perks"><h4>When you register</h4><ul>' + perks.map(function (p) { return '<li>' + CHECK + '<span>' + esc(p) + '</span></li>'; }).join('') + '</ul></div>' +
         '<p class="vjb-note">Already have an account? <a href="#" data-vjb-signin>Sign in</a>. <a href="#" data-vjb-x>Not now</a></p></div>';
   }
   function close() {
@@ -121,6 +139,10 @@
     box.innerHTML = '<div class="vjb" role="dialog" aria-modal="true" aria-labelledby="vjb-t">' + html(opts) + '</div>';
     box.addEventListener('click', function (e) {
       if (e.target === box || e.target.closest('[data-vjb-x]')) { e.preventDefault(); close(); return; }
+      var tb = e.target.closest('[data-vjb-tab]');
+      if (tb) { var k = tb.getAttribute('data-vjb-tab');
+        [].forEach.call(box.querySelectorAll('[data-vjb-tab]'), function (b) { b.setAttribute('aria-selected', String(b === tb)); });
+        [].forEach.call(box.querySelectorAll('[data-vjb-pane]'), function (pn) { pn.hidden = pn.getAttribute('data-vjb-pane') !== k; }); return; }
       if (e.target.closest('[data-vjb-survey]')) { var s = opts.onSurvey; close(); if (s) s(); else location.href = '/survey?s=explorer'; return; }
       if (e.target.closest('[data-vjb-signin]')) {
         e.preventDefault(); var A = window.VEAuth, f = opts.onDone; close();
