@@ -81,13 +81,15 @@ New scenes for this page's video: Liz listening, noting, fixing and building wit
 
 Made (2026-11-10, after Sean's Higgsfield top-up, stills only): `liz-bet-{note,team,cafe,spotlight,build,fix,potluck,card}.jpg`, no redraws (16 credits). Video `sec-better-v1.mp4` (82 s), captions `sec-better-v1.vtt`.
 
-## 10. For the Animals (approved 2026-11-10)
+## 10. For the Animals (approved 2026-11-10; video sec-animals-v1 approved and live 2026-11-10)
 
 About 75 seconds. The page is on the section template (how to use, six ways to show up, one call to action: Find nonprofits and rescues).
 
 > This is the reason we are all here. With a network of businesses, people and nonprofits that actually show up, we can run campaigns that move the needle for the animals. The Directory's Community section lists nonprofits, rescues and sanctuaries in every chapter. Every city has a Fosters board and a Rescues board, so animals find help close by. Events has sanctuary days and fundraisers, and every morning the Daily Pulse has news for the animals. You can give your points to a nonprofit, rescue or sanctuary, right from its page. We want to hear from you. As a member, you shape what we take on together: tell us which causes matter most to you, post on the boards, and let us know if something needs to be fixed. Membership is free. We ask for a short survey so we know real people are joining, and that keeps this community worth your time. Bring people with you: invite your friends, your community, new Vegans and Pre-Vegans. And you earn points for everybody who joins using your link. That is the easiest way to grow your experience and open new doors in our community. Show up for the animals today.
 
 New scenes (Higgsfield budget: about 7 stills, 14 credits): Liz at a sanctuary, with a foster, at a rescue adoption day, at a fundraiser, reading the morning Pulse, giving points, and a close with animals. Not earlier pictures.
+
+Made: `liz-ani-{sanct,foster,adopt,fund,pulse,causes,walk}.jpg` (the adoption day was refused once by a false content flag and redrawn with new words; 16 credits). Video `sec-animals-v1.mp4` (72 s), captions `sec-animals-v1.vtt`.
 
 ## 11
 
