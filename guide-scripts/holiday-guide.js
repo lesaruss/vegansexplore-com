@@ -213,7 +213,7 @@
     return '<div class="dg-head"><div><div class="dg-k">' + esc(k) + '</div><h2 class="dg-h1">' + (/</.test(h) ? h : tc(h)) + '</h2></div>' + (right || '') + '</div>' + (lede ? '<p class="dg-lede">' + lede + '</p>' : '');
   }
   function row(o) {
-    return '<div class="dg-srow"' + (o.href ? ' data-href="' + o.href + '"' : '') + '>' +
+    return '<div class="dg-srow"' + (o.href ? ' data-href="' + o.href + '"' : '') + '>' + (o.icon ? '<span class="hg-sric" aria-hidden="true">' + ic(o.icon) + '</span>' : '') +
       '<div class="dg-srow-b"><h3>' + (o.href ? '<a href="' + o.href + '">' + esc(tc(o.title)) + '</a>' : esc(tc(o.title))) + '</h3>' + (o.body || '') + '</div></div>';
   }
   function countdown() {
@@ -280,6 +280,7 @@
   ];
   var HOL_OV = {
     thanksliving: { pic: 'p-thanks.jpg', cta: ['Find a holiday menu', '#/menus'],
+      intro: '<b>Thanksgiving is the American holiday of gratitude.</b> Sanctuaries and Vegan groups call it ThanksLiving: the same family and gratitude, at a table where nobody is harmed. Here are ideas, recipes, the store, Vegan menus near you, events and more.',
       what: '<b>What it is.</b> Thanksgiving is the American holiday of gratitude, on the fourth Thursday of November: family, friends and a long table.',
       why: '<b>Why it matters.</b> Sanctuaries and Vegan groups have called it ThanksLiving for years: the same gratitude, and a table where nobody is harmed. Many sanctuaries hold a dinner for the turkeys instead of one of them.',
       how: '<b>What you can do here.</b> Pick up an easy idea, cook from our recipes, grab what you need at the store, order from a Vegan place near you, find an event, or listen on the drive.',
@@ -290,6 +291,7 @@
         ['events', 'Events', 'Sanctuary dinners, potlucks and ThanksLiving gatherings on our calendar, near you and online. Hosting one? Add it so people can find you.'],
         ['listen', 'Listen', 'Our episodes on family, patience and the holidays, and holiday episodes from other Vegan shows, ready to play on the way to dinner.']] },
     hanukkah: { pic: 'r-latkes.jpg', cta: ['Find kosher places', '#/hk-kosher'],
+      intro: '<b>Hanukkah is the Jewish Festival of Lights,</b> eight nights from sundown on December 4 to nightfall on December 12: light, family and food fried in oil, all of it plant-based. Here are ideas, recipes, kosher places, Vegan menus and events.',
       what: '<b>What it is.</b> Hanukkah is the Jewish Festival of Lights: eight nights, from sundown on Friday, December 4 to nightfall on Saturday, December 12.',
       why: '<b>Why it matters.</b> It is a holiday of light, family and food fried in oil, and all of it can be plant-based. For its meaning and blessings, start with Jewish voices like My Jewish Learning and Jewish Veg.',
       how: '<b>What you can do here.</b> Pick up a few easy ideas, fry latkes from our recipes, find kosher places, order from a Vegan place cooking for the holiday, or find a latke night near you.',
@@ -299,6 +301,7 @@
         ['hk-menus', 'Holiday Menus', 'Vegan places cooking for Hanukkah: their menus, prices and the date to order by, each one checked by our team.'],
         ['hk-events', 'Events', 'Plant-based Hanukkah parties, latke nights and menorah lightings on our calendar. Hosting one? Add it.']] },
     christmas: { pic: 'r-wellington.jpg', cta: ['Gift ideas', '#/xm-ideas'],
+      intro: '<b>Christmas, December 25,</b> is the biggest day of family and giving of the year, and the easiest time to give gifts that do no harm. Here are ideas and gifts, a wish list, recipes, the store, Vegan menus and events.',
       what: '<b>What it is.</b> Christmas, on Friday, December 25, is a day of family, giving and a shared table for millions of people.',
       why: '<b>Why it matters.</b> It is also the biggest gift season of the year, so it is the easiest time to give gifts that do no harm and set a table everyone can enjoy.',
       how: '<b>What you can do here.</b> Find ideas and gifts, cook a Wellington from our recipes, pick up nog at the store, order from a Vegan place near you, or find a cookie swap or a holiday party.',
@@ -311,21 +314,21 @@
   };
   var FOUNDING = Date.now() < Date.parse('2027-01-01T05:00:00Z');
   function artRow(picUrl, title, txt, link) {
-    return '<li class="wg-art"><a href="' + esc(link) + '" tabindex="-1" aria-hidden="true"><span class="wg-art-img" style="background-image:url(&quot;' + esc(picUrl) + '&quot;)"></span></a>' +
+    // Theo's pictures are framed from the top so his head is never cut off (Sean, 2026-11-10).
+    var top = /\/theo-[a-z-]+\.jpg$/.test(picUrl) ? ';background-position:center top' : '';
+    return '<li class="wg-art"><a href="' + esc(link) + '" tabindex="-1" aria-hidden="true"><span class="wg-art-img" style="background-image:url(&quot;' + esc(picUrl) + '&quot;)' + top + '"></span></a>' +
       '<div><a class="wg-art-t" href="' + esc(link) + '">' + esc(title) + '</a><p>' + esc(txt) + '</p><a class="wg-art-more" href="' + esc(link) + '">Read more &rsaquo;</a></div></li>';
   }
   function viewOverview() {
     var t = thanks(), d = daysUntil(onDay(t.holiday_on));
+    // One paragraph, about as long as the gift sentence (Sean, 2026-11-10: "a bit more compact... especially as we start to shrink the site").
     var ps = member()
-      ? ['<b>Welcome back.</b> The holidays are around the corner, and this Guide has everything for a Vegan season: holiday menus near you, recipes, the store, events and ways to give back.',
-         '<b>Start with your holiday below.</b> Each one opens with what it is, why it matters and all you can do there.', (d ? '<b>' + d + ' days to ThanksLiving.</b> ' : '') + 'Share this Guide with whoever is at your table this year.']
-      : ['<b>The holidays are around the corner,</b> and Vegans Explore is back for the busy season with a free Holiday Guide: Vegan holiday menus near you, recipes, what to pick up at the store, events and ways to give back. It is our gift to you.',
-         '<b>Start with your holiday below,</b> then explore the rest of Vegans Explore: the Directory, the Daily Pulse and your city.',
-         FOUNDING ? '<b>Founding Membership closes January 1.</b> Join free before then and you are a Founding Member, with 250 points. After that, the door to Founding Member is gone.' : '<b>Join free</b> with a short survey and 250 points.'];
+      ? ['<b>Welcome back.</b> The holidays are around the corner, and this Guide has everything for a Vegan season: holiday menus near you, recipes, the store, events and ways to give back. Start with your holiday below.']
+      : ['<b>The holidays are around the corner,</b> and Vegans Explore is back for the busy season with a free Holiday Guide: Vegan holiday menus near you, recipes, what to pick up at the store, events and ways to give back. It is our gift to you.' + (FOUNDING ? ' Founding Membership closes January 1.' : '')];
     var gs = '<section class="wg-gs" aria-label="Getting started"><span class="wg-gs-pic"><img src="' + PIC + 'start.jpg" alt="" decoding="async" width="640" height="640"></span>' +
       '<div class="wg-gs-b"><div class="vgi-k">A gift from Vegans Explore</div><h3 class="wg-gs-t">Your Free Holiday Guide</h3>' + ps.map(function (x) { return '<p>' + x + '</p>'; }).join('') +
       '<div class="wg-gs-btns"><button type="button" class="dg-btn" data-hg-video>&#9654; Play the tour</button>' +
-      (member() ? '<a class="dg-btn dg-ghost" href="#/menus">Find a holiday menu</a>' : '<button type="button" class="dg-btn dg-ghost" data-hg-join>' + (FOUNDING ? 'Claim your Founding Membership' : 'Join free') + '</button>') + '</div></div></section>';
+      (member() ? '<a class="dg-btn dg-ghost" href="#/menus">Find a holiday menu</a>' : '<button type="button" class="dg-btn dg-ghost" data-hg-join>Claim membership</button>') + '</div></div></section>';
     var rows = HOME_ROWS.filter(function (r) { return !((r[0] === 'hanukkah' || r[0] === 'christmas') && holPast(r[0])); });
     main.innerHTML = head('Free for everyone', 'Welcome to the Holiday Guide', '') + gs + '<div class="wg-arts"><div class="wg-grp"><h5>Your Holidays</h5><ol>' +
       rows.map(function (r) { return artRow(PIC + PILL_PIC[r[0]], r[1], r[2], href(r[0])); }).join('') + '</ol></div></div>';
@@ -336,7 +339,7 @@
     var o = HOL_OV[h], t = holRow(h), left = daysUntil(onDay(t.holiday_on));
     var gs = '<section class="wg-gs" aria-label="About ' + esc(t.name) + '"><span class="wg-gs-pic"><img src="' + PIC + o.pic + '" alt="" decoding="async" width="640" height="640"></span>' +
       '<div class="wg-gs-b"><div class="vgi-k">' + (left ? left + ' days to go' : 'This season') + '</div><h3 class="wg-gs-t">' + esc(tc('About ' + (h === 'thanksliving' ? 'ThanksLiving' : t.name))) + '</h3>' +
-      [o.what, o.why, o.how].map(function (x) { return '<p>' + x + '</p>'; }).join('') +
+      '<p>' + o.intro + '</p>' +
       '<div class="wg-gs-btns"><button type="button" class="dg-btn" data-hg-video>&#9654; Play Theo</button><a class="dg-btn dg-ghost" href="' + o.cta[1] + '">' + esc(o.cta[0]) + '</a></div></div></section>';
     main.innerHTML = head(HOLX[h] && h !== 'thanksliving' ? IDEAS[h].k : 'November 26', h === 'thanksliving' ? 'ThanksLiving' : t.name, '') + gs +
       '<div class="wg-arts"><div class="wg-grp"><h5>In This Section</h5><ol>' + o.rows.map(function (r) { return artRow(PIC + PILL_PIC[r[0]], r[1], r[2], href(r[0])); }).join('') + '</ol></div></div>';
@@ -1228,9 +1231,9 @@
     main.innerHTML = head('For businesses', 'Feature your holiday menu',
       'Cooking for the holidays? Send us your menu, your order-by date and your holiday hours, and we feature it in this Guide, free for members. After a quick check by our team, usually within a day, it goes up right away. Most people order early, so send it as soon as it is set.') +
       '<div class="dg-srows">' +
-      row({ title: '1. Join free', body: '<p class="dg-srow-p">A short survey makes you a member. No charge.</p>' }) +
-      row({ title: '2. Claim your page', body: '<p class="dg-srow-p">Claiming your Directory page is free for members. Not listed yet? Add it free.</p>' }) +
-      row({ title: '3. Send your menu', body: '<p class="dg-srow-p">Type your dishes, add photos, or drop a photo or PDF of your menu and we read it for you.</p>' }) +
+      row({ icon: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4.4-7 8-7s7 2.5 8 7"/>', title: '1. Join free', body: '<p class="dg-srow-p">A short survey makes you a member. No charge.</p>' }) +
+      row({ icon: '<path d="M4 10l8-6 8 6v10H4z"/><path d="M9 20v-6h6v6"/>', title: '2. Claim your page', body: '<p class="dg-srow-p">Claiming your Directory page is free for members. Not listed yet? Add it free.</p>' }) +
+      row({ icon: '<path d="M7 3h10v18H7z"/><path d="M10 8h4M10 12h4M10 16h2"/>', title: '3. Send your menu', body: '<p class="dg-srow-p">Type your dishes, add photos, or drop a photo or PDF of your menu and we read it for you.</p>' }) +
       '</div>' +
       '<div class="hg-facts" style="margin-top:14px">' + (open ? '<span><b>' + esc(t.name) + '</b> menus close at the end of ' + esc(lastDay(t.submit_close)) + '</span>' : '<span><b>' + esc(t.name) + '</b> menus are closed</span>') +
       others.map(function (h) { return '<span><b>' + esc(h.name) + '</b> menus close at the end of ' + esc(lastDay(h.submit_close)) + '</span>'; }).join('') + '</div>' +

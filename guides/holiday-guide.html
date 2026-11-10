@@ -524,7 +524,11 @@
     /* The Overview's sections in two columns on desktop (Sean, 2026-11-10). */
     @media (min-width:901px){.wg-arts .wg-grp ol{display:grid;grid-template-columns:1fr 1fr;gap:18px 28px}}
     /* This Guide's Getting started text runs longer than the Welcome Guide's, so the card grows to fit and its buttons always show. */
-    @media (min-width:901px){#dgMain .wg-gs-b{height:auto;overflow:visible}}
+    /* The intro card is one paragraph, level with its photo (it scrolls inside if ever longer), with its two buttons side by side at the
+       same size (Sean, 2026-11-10). */
+    #dgMain .wg-gs-btns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;max-width:460px}#dgMain .wg-gs-btns .dg-btn{width:100%;padding-left:10px;padding-right:10px}
+    @media (max-width:600px){#dgMain .wg-gs-btns{max-width:none}#dgMain .wg-gs-btns .dg-btn{font-size:11px;letter-spacing:.05em}}
+    .hg-sric{flex:0 0 52px;width:52px;height:52px;border-radius:10px;background:var(--gl);color:var(--g);display:flex;align-items:center;justify-content:center}.hg-sric svg{width:26px;height:26px}
     .hg-subsel{min-width:240px}
     @media (max-width:640px){.hg-sub{flex-wrap:wrap;gap:6px}.hg-subsel{width:100%;min-width:0;font-size:16px}}
     .rg-pill{display:inline-flex;align-items:center;gap:8px;padding:5px 12px 5px 5px;border:1px solid var(--line);border-radius:6px;background:#fff;color:var(--ink);text-decoration:none;font-size:14px;font-weight:700;transition:border-color .12s,background .12s;}
@@ -788,7 +792,7 @@
 <script src="/public/ve-episodes.js"></script>
 <script src="/public/ve-holiday-menu.js?v=9"></script>
 <script src="/public/ve-join-box.js?v=5"></script>
-<script src="/guide-scripts/holiday-guide.js?v=34"></script>
+<script src="/guide-scripts/holiday-guide.js?v=35"></script>
 <script src="/public/ve-guide-min.js"></script>
 </body>
 </html>
