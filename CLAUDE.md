@@ -44,7 +44,8 @@ we have systems, so we don't waste time and usage." Canon `canon-template-gate` 
    | An email | `email-send`, as `ve-nurture` and `ve-people-outreach` call it |
 | An outreach campaign (a launch, a blast, a follow-up run) | a program in HQ Outreach > Campaigns (`ve_campaign_programs`): its numbered steps as the lookbook (each email or page shown as it is), its groups, its schedule; first: `holiday-launch-2026` (Sean, 2026-11-10: "when we do launch another campaign... it needs to follow suit") |
    | A Guide page's video (a section summary in the Guide's frame) | the Welcome Guide's section videos: `scripts/tour-video/sections/` (README), `sec-city-v2` the reference |
-   | A city restaurant carousel for social | Canva `DAHaJ8TQI0I` "5 Vegan Restaurants to Try in Philadelphia" in Vegans Explore > Directory (canon `canon-ve-city-carousel`) |
+   | A creator's social kit (10-slide carousel, story, collab reel) | `scripts/creator-kit/` (README), KJ (@keyz60) the reference: swap the person, their city banner, name and handle; headlines always two rows; only the picture moves in the reel (Sean, 2026-11-10: "this is the template. I love it") |
+| A city restaurant carousel for social | Canva `DAHaJ8TQI0I` "5 Vegan Restaurants to Try in Philadelphia" in Vegans Explore > Directory (canon `canon-ve-city-carousel`) |
 2. **Nothing fits?** Stop and bring Sean a recommendation (which parent, or a new template) before building.
 3. **Before it ships**, screenshot the new page beside its parent at 1440 and 390 px. If they do not read as the same family, it does
    not ship. A new template joins this table and the canon.
