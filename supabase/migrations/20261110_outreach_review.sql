@@ -63,3 +63,10 @@ revoke all on function public.ve_outreach_review_resolve(uuid[], text, text) fro
 -- First: Alex Chisholm (The Krazy Vegan), Business group, Sean 2026-11-10.
 select ve_outreach_review_add(array(select id from ve_outreach_campaign_members where campaign_slug = 'holiday-launch-business'
   and lower(person_key) = 'thekrazyvegan@gmail.com' and removed_at is null), 'Sean, 2026-11-10: legal history; not ready to decide', 'Sean');
+
+-- Sean, 2026-11-10: "put Tori and Brett... throw them in the everyone else pile" (he had pulled them from Creators for the email's wording).
+select ve_outreach_review_resolve(array(select id from ve_outreach_review where resolved_at is null and campaign_slug='holiday-launch-creator'
+  and lower(person_key) in ('torre@torrewashington.com','brettwyoungsac@gmail.com')), 'removed', 'Sean: moved to Everyone Else');
+insert into ve_outreach_campaign_members (campaign_slug, person_key, person_name, step, send_status)
+select 'holiday-launch-explore', e, n, 0, 'waiting' from (values ('torre@torrewashington.com','Torre Washington'),('brettwyoungsac@gmail.com','Brett Young')) v(e,n)
+where not exists (select 1 from ve_outreach_campaign_members m where m.campaign_slug='holiday-launch-explore' and lower(m.person_key)=v.e);
