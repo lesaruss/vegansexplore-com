@@ -79,6 +79,8 @@ Passport, part 3).
 
 **Email and outreach.** Every email to people goes through a BrandDesk Outreach campaign in HQ, never Depot > Outreach (removed) and never Sean's name for team emails. Nothing sends until Sean approves. Every link we send is a tracked `/go/` link. Emails through `email-send` must contain `{{unsubscribe_url}}` and `{{postal_address}}`. Depot pages that moved to BrandDesk are never used or restored. History: `docs/history/outreach.md`.
 
+**Everyone a Guide features hears about it** (Sean, 2026-11-10: "I want everybody that's mentioned in this holiday guide to be on this mailing list. And we just spotlight what we're showcasing. And that honestly should be for all of our guides"). Each Guide gets a "Featured in" program in HQ Outreach: one group per kind of feature, each email spotlighting what we show them, and DMs to send for whoever has no published email (warm opener first, the link once they reply). First: `gift-guide-2026`, Featured in the Holiday Guide.
+
 **Claude calls.** On 5.x models give `max_tokens` 16000 and treat any `stop_reason` but `end_turn` as an error; never save half an answer.
 
 **Edge functions.** Before deploying a function from `main`, check that no unmerged branch deployed a newer version (diff live source against the file), and check `ve-outreach` still has `campaignTick`. Large functions deploy through `ve-function-deploy` `{slug, sha}`; confirm the returned source sha256. Type-check (`tsc --noEmit`) before deploying.
