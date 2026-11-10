@@ -5270,9 +5270,12 @@ function houseAd(l){
   var d = l.details || {}, g = null;
   (VEProducts.SOURCES || []).forEach(function(k){ if(!g && Array.isArray(d[k]) && d[k].length){ Object.keys(VEProducts.GUIDES).forEach(function(s){ if(!g && VEProducts.GUIDES[s][3]) g = VEProducts.GUIDES[s]; }); } });
   if(!g) return loadBillboardAds();
-  // For the season the house ad promotes the Holiday Guide in the Dairy Guide's place (Sean, 2026-11-10: "wherever there's a dairy
-  // guide, let's put the holiday guide"); its tracked link is ve-guide-holiday. Remove this line after Christmas.
-  g = ['Holiday Guide', '/guides/holiday-guide', 'theo', '/go/ve-guide-holiday', 'ThanksLiving, recipes, holiday menus and ways to give back.', '/public/guides/holiday/theo-thanksliving.jpg', 'The Holiday Guide'];
+  // For the season the house ad is the Holiday Guide's own animated rail ad (Sean, 2026-11-10: "I like that style where the button is
+  // just at the bottom and you could see more of Theo"): /ads/guides/guide.html fills the slot, picture full bleed, words and button on
+  // top, and leaves through the tracked ve-guide-holiday link. Remove this block after Christmas to bring back the Guide's own ad.
+  el.classList.add('bb-filled');
+  el.innerHTML = '<iframe src="/ads/guides/guide.html?g=holiday-guide&amp;clickTag=' + encodeURIComponent('https://vegansexplore.com/go/ve-guide-holiday') + '" title="The Holiday Guide" loading="lazy" scrolling="no" style="display:block;width:100%;height:100%;border:0;border-radius:8px"></iframe>';
+  return;
   // The Guide's own ad picture (Sean, 2026-10-09: "a better graphic"): Maya in a store's dairy-free aisle, words laid on top.
   // A Guide without one falls back to its Guide's square portrait.
   var art = g[5] || (window.VEGuideArt ? VEGuideArt(g[2], 'square') : '/public/guides/' + g[2] + '.jpg');
