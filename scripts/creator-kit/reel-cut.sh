@@ -21,5 +21,5 @@ j-points 20.4 23.2
 k-founding 23.2 26.1
 c-cover 26.1 28.3
 SHOTS
-ffmpeg -nostdin -hide_banner -loglevel error -y -f concat -safe 0 -i list2.txt -i kai.mp3 -c:v libx264 -preset medium -crf 20 -c:a aac -b:a 160k -af loudnorm=I=-16:TP=-1.5 -shortest -movflags +faststart kj-reel-v3.mp4
-ffprobe -v error -show_entries format=duration -of csv=p=0 kj-reel-v3.mp4
+ffmpeg -nostdin -hide_banner -loglevel error -y -f concat -safe 0 -i list2.txt -i kai.mp3 -i music.mp3 -filter_complex "[1]aresample=48000,asplit=2[v][sc];[2]aresample=48000,volume=0.16,afade=t=in:d=0.8,afade=t=out:st=26.6:d=1.6[m];[m][sc]sidechaincompress=threshold=0.03:ratio=4:attack=20:release=400[md];[v][md]amix=inputs=2:duration=first:normalize=0,loudnorm=I=-16:TP=-1.5[a]" -map 0:v -map "[a]" -c:v libx264 -preset medium -crf 20 -c:a aac -b:a 192k -shortest -movflags +faststart kj-reel-v4.mp4
+ffprobe -v error -show_entries format=duration -of csv=p=0 kj-reel-v4.mp4
