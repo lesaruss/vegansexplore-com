@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Creator dashboard: mock — Vegans Explore</title>
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Mock of the creator dashboard for Keya, VeganKween: profile, stats, traffic, people who liked her page, bounties and earnings, assets and her link. Illustrative, not live.">
+  <link rel="canonical" href="https://vegansexplore.com/mocks/creator-dashboard/">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <!-- Parent template: mocks/depot/index.html (the /partners guided view on the white stage, /public/ve-guided.js).
+       Dashboard pieces copied from dashboard/center-console.html (dash-stats-hero tiles, dash-eyebrow, the member card);
+       badges from /public/ve-badges.js. Sean, 2026-11-10: a creator dashboard for Keya, before anything is built. -->
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-text-50:rgba(26,26,26,0.5);--pink:#DB2777;}
+    body{font-family:"Montserrat",sans-serif;background:#fff;color:#1a1a1a;line-height:1.5;}
+    .dm-row{display:flex;flex-wrap:wrap;gap:18px 26px;align-items:flex-start;}
+    .dm-main{flex:1 1 640px;min-width:0;}
+    .dm-side{flex:1 1 300px;min-width:0;font-size:12.5px;line-height:1.5;}
+    .dm-side h3{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#2D5C27;margin:0 0 6px;}
+    .dm-side ul{list-style:none;display:grid;gap:5px;margin-bottom:12px;}
+    .dm-side li b{color:#2D5C27;}
+    .dm-chip{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;background:#F69820;color:#1a1a1a;border-radius:6px;padding:2px 8px;margin-left:8px;vertical-align:middle;}
+
+    /* Live / Sample / Coming tags. Sample is the demo stamp color (communities/sample-data.js). */
+    .tg{display:inline-block;font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;border-radius:6px;padding:2px 7px;vertical-align:middle;line-height:1.4;white-space:nowrap;}
+    .tg.live{background:#E8F5E9;color:#2D5C27;}
+    .tg.smp{background:#9a3412;color:#fff;}
+    .tg.soon{background:#FFF1DF;color:#8a4b00;}
+    .smp-corner{position:absolute;top:8px;right:8px;z-index:2;}
+
+    /* The dashboard panel (white app panel, as in the Depot mock) */
+    .ui{position:relative;background:#fff;color:#1a1a1a;border-radius:10px;border:1px solid #e3e3e3;box-shadow:0 2px 10px rgba(0,0,0,.06);padding:14px 16px;font-size:12px;}
+    .kd-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--ve-border);}
+    .kd-av{position:relative;width:42px;height:42px;border-radius:50%;background:#eee center 30%/cover no-repeat;flex:none;}
+    .kd-who{flex:1 1 180px;min-width:0;}
+    .dash-eyebrow{font-size:10px;font-weight:800;letter-spacing:0.16em;text-transform:uppercase;color:var(--ve-green-dark);}
+    .kd-name{font-size:17px;font-weight:900;line-height:1.15;}
+    .kd-crumb{font-size:11px;color:#666;}
+    .kd-crumb b{color:#1a1a1a;}
+    .kd-sel{appearance:none;-webkit-appearance:none;font-family:inherit;font-size:12px;font-weight:800;color:#1a1a1a;border:1px solid #d6d6d6;border-radius:6px;padding:8px 44px 8px 12px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%232D5C27' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 16px center;}
+    .ui-btn{display:inline-block;border-radius:6px;background:#2D5C27;color:#fff;font-weight:800;font-size:11px;padding:8px 12px;white-space:nowrap;text-decoration:none;}
+    .ui-btn.ghost{background:#fff;color:#2D5C27;border:1px solid #2D5C27;}
+    .ui-sec{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#888;margin:12px 0 7px;display:flex;align-items:center;gap:8px;}
+    .ui-sec:first-child{margin-top:0;}
+
+    /* Stat tiles: dash-stats-hero from the center console */
+    .dash-stats-hero{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+    .dash-stats-hero-tile{position:relative;border:1.5px solid var(--ve-border);border-radius:14px;padding:14px 12px;background:linear-gradient(180deg,#fff,#fafdfa);text-align:center;}
+    .dash-stats-hero-value{font-size:26px;font-weight:900;letter-spacing:-0.01em;color:var(--ve-green-dark);line-height:1.1;}
+    .dash-stats-hero-value.zero{color:var(--ve-text-50);}
+    .dash-stats-hero-label{font-size:10px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--ve-text-50);margin-top:4px;}
+    .dash-stats-hero-sub{font-size:10.5px;color:var(--ve-text-75);margin-top:4px;line-height:1.35;}
+    .dash-stats-hero-tile .tg{position:absolute;top:8px;left:8px;}
+
+    /* Slide 1: her page, signed in */
+    .pg{position:relative;border:1px solid #e3e3e3;border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 2px 10px rgba(0,0,0,.06);}
+    .pg-bar{display:flex;align-items:center;gap:6px;padding:7px 10px;background:#f4f5f4;border-bottom:1px solid #e3e3e3;font-size:10.5px;color:#666;}
+    .pg-bar i{width:8px;height:8px;border-radius:50%;background:#d6d6d6;}
+    .pg-bar span{margin-left:8px;background:#fff;border:1px solid #e3e3e3;border-radius:6px;padding:2px 10px;flex:1;}
+    .pg-nav{height:30px;background:#1a1a1a;}
+    .pg-body{display:grid;grid-template-columns:150px minmax(0,1fr);gap:18px;padding:18px 20px 70px;}
+    .pg-photo{position:relative;width:150px;height:150px;border-radius:14px;background:#eee center/cover no-repeat;}
+    .pg-cat{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#2D5C27;}
+    .pg-h{font-size:24px;font-weight:900;line-height:1.1;margin:2px 0 4px;}
+    .pg-sub{font-size:12.5px;color:#555;}
+    .pg-lines i{display:block;height:7px;border-radius:4px;background:#eee;margin-top:8px;}
+    .pg-tabs{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap;}
+    .pg-tabs b{font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border:1px solid #e3e3e3;border-radius:6px;padding:5px 9px;color:#555;}
+    .pg-tabs b.on{background:#2D5C27;border-color:#2D5C27;color:#fff;}
+    .yd{position:absolute;right:16px;bottom:16px;display:flex;align-items:center;gap:10px;background:#2D5C27;color:#fff;border-radius:6px;padding:10px 14px 10px 10px;box-shadow:0 10px 26px rgba(0,0,0,.22);font-weight:800;font-size:12px;letter-spacing:.06em;text-transform:uppercase;outline:3px solid #F69820;outline-offset:3px;}
+    .yd .kd-av{width:30px;height:30px;border:2px solid #fff;}
+    .yd small{display:block;font-size:9.5px;letter-spacing:.04em;text-transform:none;font-weight:600;color:#c5f2c7;}
+    .only{position:absolute;right:16px;bottom:74px;background:#1a1a1a;color:#fff;font-size:10.5px;font-weight:700;border-radius:6px;padding:5px 9px;}
+
+    /* Slide 2: profile */
+    .pf{display:grid;grid-template-columns:200px minmax(0,1fr);gap:20px;align-items:start;}
+    .pf-pic{position:relative;}
+    .pf-photo{position:relative;width:200px;height:200px;border-radius:16px;background:#eee center/cover no-repeat;}
+    .pf-gf{margin-top:8px;display:flex;align-items:center;gap:8px;border:1.5px dashed #c9c9c9;border-radius:10px;padding:8px 10px;font-size:11px;line-height:1.35;color:#555;}
+    .pf-gf b{display:block;color:#1a1a1a;font-size:11.5px;}
+    .pf-dl{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 14px;margin-top:10px;font-size:12px;}
+    .pf-dl dt{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#888;padding-top:2px;}
+    .pf-dl dd{font-weight:600;}
+    .soc{display:inline-flex;align-items:center;gap:5px;border:1px solid #e3e3e3;border-radius:6px;padding:3px 8px;margin:0 4px 4px 0;font-weight:700;font-size:11.5px;}
+    .soc svg{width:13px;height:13px;}
+
+    /* Slide 4: traffic chart */
+    .tr{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:16px;}
+    .chart{position:relative;}
+    .chart svg{display:block;width:100%;height:auto;}
+    .chart .bar{fill:#2D5C27;}
+    .chart .bar:hover{fill:#3A9B3E;}
+    .chart .ax{font:600 10px Montserrat,sans-serif;fill:#777;}
+    .chart .vl{font:800 10px Montserrat,sans-serif;fill:#1a1a1a;}
+    .chart .grid{stroke:#eee;stroke-width:1;}
+    .src{display:grid;gap:9px;}
+    .src-r{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:3px 10px;align-items:center;font-size:11.5px;font-weight:700;}
+    .src-r .n{font-weight:900;font-variant-numeric:tabular-nums;}
+    .src-r .b{grid-column:1 / -1;height:8px;border-radius:4px;background:#f0f0f0;overflow:hidden;}
+    .src-r .b i{display:block;height:100%;border-radius:4px;background:#2D5C27;}
+    .src-r.sm .b i{background:#9cc79f;}
+
+    /* Slide 5: fans */
+    .fans{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
+    .fan{display:flex;align-items:center;gap:9px;border:1px solid #ececec;border-radius:10px;padding:8px 10px;text-decoration:none;color:#1a1a1a;}
+    .fan i{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:900;color:#fff;font-size:14px;}
+    .fan b{display:block;font-size:12px;line-height:1.2;}
+    .fan small{display:block;font-size:10.5px;color:#777;line-height:1.3;}
+
+    /* Slide 6: bounties */
+    .bt{display:grid;gap:7px;}
+    .bt-r{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:12px;border:1px solid #ececec;border-radius:8px;padding:8px 10px;}
+    .bt-r b{display:block;font-size:12px;line-height:1.3;}
+    .bt-r small{display:block;font-size:10.5px;color:#777;}
+    .bt-r .pts{text-align:right;font-size:10.5px;color:#555;line-height:1.3;}
+    .bt-r .pts b{font-size:13px;color:#1a1a1a;}
+
+    /* Slide 7: assets */
+    .af{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
+    .fold{position:relative;border:1px solid #e3e3e3;border-radius:10px;padding:10px;background:#fff;}
+    .fold .th{position:relative;aspect-ratio:16/10;border-radius:8px;margin-bottom:8px;display:grid;place-items:center;overflow:hidden;background:#f4f7f4;}
+    .fold .th svg{width:30px;height:30px;stroke:#2D5C27;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
+    .fold b{display:block;font-size:12px;}
+    .fold small{display:block;font-size:10.5px;color:#666;line-height:1.35;}
+    .fold .tg{position:absolute;top:16px;left:16px;}
+
+    /* Slide 8: link */
+    .lk{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:1.5px solid #2D5C27;border-radius:10px;padding:10px 12px;background:#F6FBF6;}
+    .lk code{flex:1 1 220px;font:800 16px Montserrat,sans-serif;color:#1a1a1a;}
+
+    .dm-card{padding:14px 16px;font-size:12.5px;line-height:1.5;}
+    .dm-card b.t{display:block;font-size:13px;font-weight:800;margin-bottom:4px;color:#1a1a1a;}
+
+    @media (min-width:901px) and (max-height:820px){
+      .ui{padding:11px 14px;}
+      .kd-top{margin-bottom:9px;padding-bottom:9px;}
+      .dash-stats-hero-tile{padding:10px 10px;}
+      .dash-stats-hero-value{font-size:22px;}
+      .dm-side{font-size:11.5px;}
+      .pg-body{padding:14px 18px 60px;}
+      .pg-photo{width:120px;height:120px;}
+      .pg-body{grid-template-columns:120px minmax(0,1fr);}
+      .pf{grid-template-columns:150px minmax(0,1fr);}
+      .pf-photo{width:150px;height:150px;}
+      .pf-dl{gap:3px 14px;margin-top:6px;}
+      .pf .veb-pills{margin-top:6px;}
+      .pf-gf{margin-top:6px;padding:5px 8px;}
+      .pf-dl + div{margin-top:8px !important;}
+      .fold .th{aspect-ratio:16/8;}
+      .chart svg{max-height:220px;}
+    }
+    @media (max-width:900px){
+      .dash-stats-hero{grid-template-columns:repeat(2,minmax(0,1fr));}
+      .tr{grid-template-columns:minmax(0,1fr);}
+      .fans{grid-template-columns:repeat(2,minmax(0,1fr));}
+      .af{grid-template-columns:repeat(2,minmax(0,1fr));}
+      .pg-body{grid-template-columns:minmax(0,1fr);padding-bottom:80px;}
+      .pf{grid-template-columns:minmax(0,1fr);}
+      .bt-r{grid-template-columns:minmax(0,1fr) auto;}
+      .bt-r .hide-m{display:none;}
+      .kd-sel{width:100%;}
+    }
+  </style>
+</head>
+<body>
+<div class="page-frame">
+  <script src="/public/nav.js"></script>
+  <div class="vg-note"><strong>Illustrative</strong>A mock of Keya's creator dashboard for review. Nothing here is built. Numbers tagged <b>Live</b> were read from the database on November 10, 2026; anything tagged <b>Sample</b> is made up to show the layout.</div>
+
+  <main class="vg-stage vg-light" aria-label="Creator dashboard: mock">
+
+    <!-- 1. How she opens it -->
+    <section class="vg-slide" id="open" data-title="How she opens it">
+      <div class="vg-eyebrow">1 · How she opens it</div>
+      <h2 class="vg-h">Signed in, her own page shows a Your dashboard button</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="pg">
+          <div class="pg-bar"><i></i><i></i><i></i><span>vegansexplore.com/directory/keya-vegankween</span></div>
+          <div class="pg-nav"></div>
+          <div class="pg-body">
+            <div class="pg-photo js-photo"><span class="js-corner"></span></div>
+            <div>
+              <div class="pg-cat">Content Creators · Philadelphia, PA</div>
+              <div class="pg-h">Keya, VeganKween</div>
+              <div class="pg-sub">Educator and Vegans Explore content creator</div>
+              <div class="js-pills"></div>
+              <div class="pg-tabs"><b class="on">About</b><b>Podcast</b><b>Social</b><b>Guide</b></div>
+              <div class="pg-lines"><i style="width:92%"></i><i style="width:84%"></i><i style="width:60%"></i></div>
+            </div>
+          </div>
+          <div class="only">Only Keya sees this</div>
+          <div class="yd"><span class="kd-av js-photo"></span><span>Your dashboard<small>Stats, fans, bounties, assets</small></span></div>
+        </div></div>
+        <div class="dm-side">
+          <h3>How it works</h3>
+          <ul>
+            <li>Keya signs in and opens her own page. Because she owns it (she is its claimed owner), a <b>Your dashboard</b> button sits in the bottom right corner. Visitors never see it.</li>
+            <li>Tapping it opens her dashboard at <code>/dashboard/creator</code>, the same way every member feature lives in the dashboard. Each part is its own view in the address bar (<code>?tab=stats</code>), so Back works and Share sends it.</li>
+            <li>Seven parts, picked from one dropdown (more than five, so a dropdown, the BCPS rule): Profile, Stats, Traffic, Fans, Bounties, Assets, Your link. The next seven slides are one each.</li>
+          </ul>
+          <h3>Pulled from yours</h3>
+          <ul>
+            <li>The stat tiles, the eyebrow and the member card are copied from your dashboard; the badge is the real Registered creator stamp from <code>ve-badges.js</code>.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Profile -->
+    <section class="vg-slide" id="profile" data-title="Profile">
+      <div class="vg-eyebrow">2 · Profile</div>
+      <h2 class="vg-h">Her picture, her details, her badge, in one card</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <div class="kd-top"><span class="kd-av js-photo"></span><div class="kd-who"><div class="dash-eyebrow">Creator dashboard</div><div class="kd-crumb">Dashboard &rsaquo; <b>Profile</b></div></div><span class="kd-sel">1. Profile</span><span class="ui-btn ghost">View my page</span></div>
+          <div class="pf">
+            <div class="pf-pic">
+              <div class="pf-photo js-photo"><span class="js-corner"></span></div>
+              <div class="pf-gf"><span class="tg soon">Coming</span><div><b>GeekFon avatar coming</b>Her photo stands in until it is drawn.</div></div>
+            </div>
+            <div>
+              <div class="dash-eyebrow">Official Vegans Explore content creator</div>
+              <div class="kd-name" style="font-size:24px">Keya, VeganKween</div>
+              <div style="font-size:13px;color:#555">Educator and Vegans Explore content creator</div>
+              <div class="js-pills"></div>
+              <dl class="pf-dl">
+                <dt>Home</dt><dd>Philadelphia, PA</dd>
+                <dt>Socials</dt><dd>
+                  <span class="soc"><svg viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/></svg>@keyz60</span>
+                  <span class="soc"><svg viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2"><path d="M14 3v11a4 4 0 1 1-4-4"/><path d="M14 3c1 3 3 4 6 4"/></svg>@VeganKween</span>
+                </dd>
+                <dt>On the show</dt><dd>Vegans Explore Podcast 63: Meet Keya, VeganKween</dd>
+                <dt>On the site</dt><dd>Since October 28, 2026 <span class="tg live">Live</span></dd>
+                <dt>Points</dt><dd>250 <span class="tg live">Live</span></dd>
+              </dl>
+              <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><span class="ui-btn">Edit my profile</span><span class="ui-btn ghost">Change my picture</span></div>
+            </div>
+          </div>
+        </div></div>
+        <div class="dm-side">
+          <h3>What she sees</h3>
+          <ul>
+            <li>Everything on this card is already on her page today: the photo from Instagram @keyz60, her title, Philadelphia, both socials and the podcast episode.</li>
+            <li>The <b>Registered creator</b> stamp is her real main badge, drawn by the shared badge code, in the creator pink.</li>
+            <li><b>Edit my profile</b> opens her listing's editor (the claim tools she already has as owner).</li>
+          </ul>
+          <h3>The avatar</h3>
+          <ul>
+            <li>When her GeekFon avatar is drawn, it replaces the photo here, on her page and on her dashboard button. Until then the spot says <b>GeekFon avatar coming</b>.</li>
+            <li>Never shown: her email, phone or survey answers.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Stats -->
+    <section class="vg-slide" id="stats" data-title="Your stats">
+      <div class="vg-eyebrow">3 · Your stats</div>
+      <h2 class="vg-h">Six numbers, the last 30 days, her real ones</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <div class="kd-top"><span class="kd-av js-photo"></span><div class="kd-who"><div class="dash-eyebrow">Creator dashboard</div><div class="kd-crumb">Dashboard &rsaquo; <b>Stats</b> · October 11 to November 9</div></div><span class="kd-sel">2. Stats</span><span class="ui-btn ghost">Last 30 days</span></div>
+          <div class="dash-stats-hero">
+            <div class="dash-stats-hero-tile"><span class="tg live">Live</span><div class="dash-stats-hero-value">22</div><div class="dash-stats-hero-label">Page views</div><div class="dash-stats-hero-sub">Her page, last 30 days</div></div>
+            <div class="dash-stats-hero-tile"><span class="tg live">Live</span><div class="dash-stats-hero-value">13</div><div class="dash-stats-hero-label">Visitors</div><div class="dash-stats-hero-sub">About 22 seconds each</div></div>
+            <div class="dash-stats-hero-tile"><span class="tg live">Live</span><div class="dash-stats-hero-value">4</div><div class="dash-stats-hero-label">Link clicks</div><div class="dash-stats-hero-sub">vegansexplore.com/go/keya, bots left out</div></div>
+            <div class="dash-stats-hero-tile"><span class="tg live">Live</span><div class="dash-stats-hero-value">2</div><div class="dash-stats-hero-label">Votes</div><div class="dash-stats-hero-sub">From 1 member</div></div>
+            <div class="dash-stats-hero-tile"><span class="tg live">Live</span><div class="dash-stats-hero-value zero">0</div><div class="dash-stats-hero-label">Likes</div><div class="dash-stats-hero-sub">Liking her page is the Fans view</div></div>
+            <div class="dash-stats-hero-tile"><span class="tg live">Live</span><div class="dash-stats-hero-value zero">0</div><div class="dash-stats-hero-label">Saves</div><div class="dash-stats-hero-sub">Members who saved her page</div></div>
+          </div>
+        </div></div>
+        <div class="dm-side">
+          <h3>Where each number comes from</h3>
+          <ul>
+            <li><b>Page views and visitors:</b> Google Analytics for <code>/directory/keya-vegankween</code>, the same numbers your Insights read.</li>
+            <li><b>Link clicks:</b> her tracked link. Four real clicks on November 2; two link previews were bots and do not count.</li>
+            <li><b>Votes, likes and saves:</b> straight from her listing.</li>
+          </ul>
+          <h3>Zeros stay honest</h3>
+          <ul>
+            <li>A zero shows in gray, never hidden, so she can watch it move. Each tile opens its own view (Traffic, Fans).</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Traffic -->
+    <section class="vg-slide" id="traffic" data-title="Traffic to your page">
+      <div class="vg-eyebrow">4 · Traffic to your page</div>
+      <h2 class="vg-h">Views by day, and where her visitors came from</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <div class="kd-top"><span class="kd-av js-photo"></span><div class="kd-who"><div class="dash-eyebrow">Creator dashboard</div><div class="kd-crumb">Dashboard &rsaquo; <b>Traffic</b> · since her page went up</div></div><span class="kd-sel">3. Traffic</span></div>
+          <div class="tr">
+            <div class="chart">
+              <div class="ui-sec">Page views by day <span class="tg smp">Sample split</span></div>
+              <div class="js-chart" role="img" aria-label="Page views by day, October 28 to November 9, Sample split of the real 22 views"></div>
+            </div>
+            <div>
+              <div class="ui-sec">Where they came from</div>
+              <div class="src">
+                <div class="src-r"><span>Instagram, through her link <span class="tg live">Live</span></span><span class="n">3</span><span class="b"><i style="width:30%"></i></span></div>
+                <div class="src-r"><span>Text or direct, through her link <span class="tg live">Live</span></span><span class="n">1</span><span class="b"><i style="width:10%"></i></span></div>
+                <div class="src-r sm"><span>Vegans Explore Directory <span class="tg smp">Sample</span></span><span class="n">10</span><span class="b"><i style="width:100%"></i></span></div>
+                <div class="src-r sm"><span>The Philadelphia page <span class="tg smp">Sample</span></span><span class="n">5</span><span class="b"><i style="width:50%"></i></span></div>
+                <div class="src-r sm"><span>Google search <span class="tg smp">Sample</span></span><span class="n">3</span><span class="b"><i style="width:30%"></i></span></div>
+              </div>
+            </div>
+          </div>
+        </div></div>
+        <div class="dm-side">
+          <h3>What's real</h3>
+          <ul>
+            <li>The <b>22 views</b> are real. How they fall by day is Sample: Google Analytics gives us her total, and her page by day is not kept yet. Building it means asking Analytics for her page by day.</li>
+            <li>The two <b>Live</b> sources are her tracked link's clicks: 3 from Instagram, 1 direct.</li>
+            <li>The Directory, Philadelphia page and Google rows are Sample, to show the layout.</li>
+          </ul>
+          <h3>Hover</h3>
+          <ul><li>Each bar names its day and count. Range picks: 7 days, 30 days, since she joined.</li></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Fans -->
+    <section class="vg-slide" id="fans" data-title="People who liked your page">
+      <div class="vg-eyebrow">5 · People who liked your page</div>
+      <h2 class="vg-h">A tile of the members who liked, saved or voted for her</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <div class="kd-top"><span class="kd-av js-photo"></span><div class="kd-who"><div class="dash-eyebrow">Creator dashboard</div><div class="kd-crumb">Dashboard &rsaquo; <b>Fans</b> · newest first <span class="tg smp">Sample</span></div></div><span class="kd-sel">4. Fans</span></div>
+          <div class="fans">
+            <a class="fan"><i style="background:#2D5C27">A</i><span><b>Ari M.</b><small>Liked · Philadelphia</small></span></a>
+            <a class="fan"><i style="background:#DB2777">J</i><span><b>Jordan T.</b><small>Saved · Camden</small></span></a>
+            <a class="fan"><i style="background:#2b7a8a">R</i><span><b>Renee W.</b><small>Voted · Philadelphia</small></span></a>
+            <a class="fan"><i style="background:#7a4fb5">M</i><span><b>Marcus L.</b><small>Liked · Wilmington</small></span></a>
+            <a class="fan"><i style="background:#c04a2b">S</i><span><b>Sam P.</b><small>Liked · Philadelphia</small></span></a>
+            <a class="fan"><i style="background:#8a6d1f">D</i><span><b>Dee K.</b><small>Saved · New York</small></span></a>
+            <a class="fan"><i style="background:#3A9B3E">T</i><span><b>Tasha R.</b><small>Voted · Philadelphia</small></span></a>
+            <a class="fan"><i style="background:#555">+</i><span><b>See all</b><small>Every fan, filter by city</small></span></a>
+          </div>
+          <div class="ui-sec">Her real counts today <span class="tg live">Live</span></div>
+          <div style="font-size:12px">0 likes · 0 saves · 2 votes from 1 member</div>
+        </div></div>
+        <div class="dm-side">
+          <h3>How it works</h3>
+          <ul>
+            <li>Every member who likes, saves or votes for her page shows up here: their picture, first name and last initial, what they did and their city. Each tile opens that member's People page.</li>
+            <li>Only members show. Visitors who are not signed in count in Traffic, never by name.</li>
+            <li>The eight people on the left are Sample. Her page has no likes or saves yet, and the one member who voted is not shown in a mock.</li>
+          </ul>
+          <h3>Why it matters</h3>
+          <ul><li>It tells her who her Vegans Explore audience is, city by city.</li></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Bounties and earnings -->
+    <section class="vg-slide" id="earn" data-title="Bounties and earnings">
+      <div class="vg-eyebrow">6 · Bounties and earnings</div>
+      <h2 class="vg-h">What she has earned, and bounties she can take</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <div class="kd-top"><span class="kd-av js-photo"></span><div class="kd-who"><div class="dash-eyebrow">Creator dashboard</div><div class="kd-crumb">Dashboard &rsaquo; <b>Bounties</b></div></div><span class="kd-sel">5. Bounties</span><span class="ui-btn ghost">All bounties</span></div>
+          <div class="dash-stats-hero">
+            <div class="dash-stats-hero-tile"><span class="tg live">Live</span><div class="dash-stats-hero-value">250</div><div class="dash-stats-hero-label">Points</div><div class="dash-stats-hero-sub">Her welcome points</div></div>
+            <div class="dash-stats-hero-tile"><span class="tg live">Live</span><div class="dash-stats-hero-value zero">$0</div><div class="dash-stats-hero-label">Cash earned</div><div class="dash-stats-hero-sub">Paid bounties land here</div></div>
+            <div class="dash-stats-hero-tile"><span class="tg live">Live</span><div class="dash-stats-hero-value zero">0</div><div class="dash-stats-hero-label">Bounties done</div><div class="dash-stats-hero-sub">98 are open right now</div></div>
+          </div>
+          <div class="ui-sec">Picked for her</div>
+          <div class="bt">
+            <div class="bt-r"><span><b>Facebook pages: New York, Philadelphia and Southern California</b><small>Find each listing's Facebook page · due November 22</small></span><span class="tg live hide-m">Live</span><span class="pts"><b>60</b>points</span></div>
+            <div class="bt-r"><span><b>Film a 30-second reel at a Philadelphia Vegan restaurant</b><small>Creator bounty · tag the listing · due in 2 weeks</small></span><span class="tg smp hide-m">Sample</span><span class="pts"><b>300</b>points + $50</span></div>
+            <div class="bt-r"><span><b>Cover a Philly Vegan event for the Daily Pulse</b><small>Photos and 100 words · within a day of the event</small></span><span class="tg smp hide-m">Sample</span><span class="pts"><b>150</b>points</span></div>
+          </div>
+        </div></div>
+        <div class="dm-side">
+          <h3>What's real</h3>
+          <ul>
+            <li>Her <b>250 points</b>, <b>$0</b> cash and no bounties done yet are real. <b>98</b> bounties are open on the site today.</li>
+            <li>The first bounty is real (60 points, due November 22 Eastern). The reel and event bounties are Sample: the kind of creator bounty a partner or we could post for her.</li>
+          </ul>
+          <h3>How it works</h3>
+          <ul>
+            <li>Bounties she can take come first: her city, then remote, then creator bounties. Take one, send the proof, and the points (and any cash) land in the tiles above.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Assets -->
+    <section class="vg-slide" id="assets" data-title="Your asset folder">
+      <div class="vg-eyebrow">7 · Your asset folder <span class="dm-chip">Coming</span></div>
+      <h2 class="vg-h">Graphics and videos to share as an official creator</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <div class="kd-top"><span class="kd-av js-photo"></span><div class="kd-who"><div class="dash-eyebrow">Creator dashboard</div><div class="kd-crumb">Dashboard &rsaquo; <b>Assets</b></div></div><span class="kd-sel">6. Assets</span></div>
+          <div class="af">
+            <div class="fold"><span class="tg soon">Coming</span><div class="th"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M8 12l3 3 5-6"/></svg></div><b>Creator kit</b><small>Logo, her Registered creator stamp, the "Official creator" frame</small></div>
+            <div class="fold"><span class="tg soon">Coming</span><div class="th"><svg viewBox="0 0 24 24"><path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/></svg></div><b>Philadelphia graphics</b><small>The city banner and story cards for the Philly page</small></div>
+            <div class="fold"><span class="tg soon">Coming</span><div class="th"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9l5 3-5 3z"/></svg></div><b>Videos</b><small>Guide and page videos, 9:16, ready to post</small></div>
+            <div class="fold"><span class="tg soon">Coming</span><div class="th"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></div><b>Her podcast episode</b><small>Clips from Episode 63, sized for Instagram and TikTok</small></div>
+          </div>
+          <div class="ui-sec">Each file</div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:11.5px"><span class="ui-btn">Download</span><span class="ui-btn ghost">Copy caption</span><span class="ui-btn ghost">Copy her link</span><span style="color:#666">Every caption carries her tracked link.</span></div>
+        </div></div>
+        <div class="dm-side">
+          <h3>Coming</h3>
+          <ul>
+            <li>Nothing in this folder exists yet. Default: it fills from the Depot Library and the BrandDesk brand kit, so we add a file once and every creator gets it.</li>
+            <li>Her podcast episode is real (Episode 63); the clips are not cut yet.</li>
+          </ul>
+          <h3>Rules it keeps</h3>
+          <ul>
+            <li>Every link in a caption is her tracked <code>/go/</code> link, so a share counts for her.</li>
+            <li>No counts of cities or chapters in any caption.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Your link -->
+    <section class="vg-slide" id="link" data-title="Your link">
+      <div class="vg-eyebrow">8 · Your link</div>
+      <h2 class="vg-h">Share one link. 111 points for every friend who joins</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <div class="kd-top"><span class="kd-av js-photo"></span><div class="kd-who"><div class="dash-eyebrow">Creator dashboard</div><div class="kd-crumb">Dashboard &rsaquo; <b>Your link</b></div></div><span class="kd-sel">7. Your link</span></div>
+          <div class="lk"><code>vegansexplore.com/go/keya</code><span class="ui-btn">Copy</span><span class="ui-btn ghost">Share</span></div>
+          <div class="dash-stats-hero" style="margin-top:12px">
+            <div class="dash-stats-hero-tile"><span class="tg live">Live</span><div class="dash-stats-hero-value">4</div><div class="dash-stats-hero-label">Clicks</div><div class="dash-stats-hero-sub">3 from Instagram</div></div>
+            <div class="dash-stats-hero-tile"><span class="tg live">Live</span><div class="dash-stats-hero-value zero">0</div><div class="dash-stats-hero-label">Friends joined</div><div class="dash-stats-hero-sub">111 points each</div></div>
+            <div class="dash-stats-hero-tile"><span class="tg live">Live</span><div class="dash-stats-hero-value zero">0</div><div class="dash-stats-hero-label">Points from friends</div><div class="dash-stats-hero-sub">Counted when they join</div></div>
+          </div>
+          <div class="ui-sec">Her other link</div>
+          <div style="font-size:12px"><b>vegansexplore.com/go/keya-philly</b> to the Philadelphia page · made today · 0 clicks <span class="tg live">Live</span></div>
+        </div></div>
+        <div class="vg-glass dm-card" style="flex:1 1 300px;min-width:0">
+          <b class="t">What's real, what's Coming</b>
+          <ul style="list-style:none;display:grid;gap:6px;margin:6px 0 12px">
+            <li>Both links are real and counted. 111 points to whoever refers a friend who joins is the live points rule.</li>
+            <li><b>Coming:</b> crediting a join that came through <code>/go/keya</code> to Keya. Today her link counts clicks; joins are not tied to it yet.</li>
+          </ul>
+          <b class="t">Defaults I'll take unless you say otherwise</b>
+          <ul style="list-style:none;display:grid;gap:6px;margin-top:6px">
+            <li>The dashboard lives at <code>/dashboard/creator</code>, opened from the button on her page.</li>
+            <li>Build order: Profile and Stats first (real data), then Fans, Your link, Bounties, Traffic by day, Assets last.</li>
+            <li>Any member with the creator badge gets the same dashboard; Keya is first.</li>
+          </ul>
+          <p style="margin-top:10px"><b style="color:#b45309">Your call:</b> tell me what to change on any slide, or say go.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/public/footer.js"></script>
+</div>
+<script src="/public/ve-guided.js"></script>
+<script src="/public/ve-badges.js"></script>
+<script>
+(function () {
+  var PHOTO = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/people/keya-vegankween/photo-1793587232663.jpg';
+  // Her real badge list, as ve_member_badges returned it on 2026-11-10.
+  var BADGES = [{ key: 'badge-creator', badge: 'Registered creator', color: '#DB2777', main: true, role: null, listing: null, explorer: false }];
+  document.querySelectorAll('.js-photo').forEach(function (el) { el.style.backgroundImage = "url('" + PHOTO + "')"; });
+  var PILLS = BADGES.map(function (b) { var o = {}; for (var k in b) o[k] = b[k]; o.main = false; return o; }); // the main badge is never shown twice
+  if (window.VEBadges) {
+    document.querySelectorAll('.js-corner').forEach(function (el) { el.outerHTML = VEBadges.corner(BADGES, 40); });
+    document.querySelectorAll('.js-pills').forEach(function (el) { el.innerHTML = VEBadges.pills(PILLS); });
+  }
+  // Page views by day: a Sample split of her real 22 views, from the day her page went up.
+  var days = [['Oct 28',3],['Oct 29',1],['Oct 30',0],['Oct 31',1],['Nov 1',0],['Nov 2',7],['Nov 3',2],['Nov 4',1],['Nov 5',0],['Nov 6',1],['Nov 7',0],['Nov 8',2],['Nov 9',4]];
+  var W = 520, H = 230, L = 24, B = 26, T = 14, max = 8, bw = (W - L) / days.length;
+  var s = '<svg viewBox="0 0 ' + W + ' ' + H + '">';
+  [0, 4, 8].forEach(function (v) { var y = H - B - (H - B - T) * v / max; s += '<line class="grid" x1="' + L + '" x2="' + W + '" y1="' + y + '" y2="' + y + '"/><text class="ax" x="' + (L - 6) + '" y="' + (y + 3) + '" text-anchor="end">' + v + '</text>'; });
+  days.forEach(function (d, i) {
+    var h = (H - B - T) * d[1] / max, x = L + i * bw + 4, w = bw - 8, y = H - B - h;
+    if (d[1]) s += '<path class="bar" d="M' + x + ' ' + (H - B) + 'V' + (y + 4) + 'q0-4 4-4h' + (w - 8) + 'q4 0 4 4V' + (H - B) + 'z"><title>' + d[0] + ': ' + d[1] + ' views (Sample split)</title></path>';
+    if (d[1] >= 4) s += '<text class="vl" x="' + (x + w / 2) + '" y="' + (y - 4) + '" text-anchor="middle">' + d[1] + '</text>';
+    if (i % 2 === 0) s += '<text class="ax" x="' + (x + w / 2) + '" y="' + (H - 8) + '" text-anchor="middle">' + d[0] + '</text>';
+  });
+  s += '</svg>';
+  var c = document.querySelector('.js-chart'); if (c) c.innerHTML = s;
+})();
+</script>
+</body>
+</html>
