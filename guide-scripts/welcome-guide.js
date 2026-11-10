@@ -167,6 +167,7 @@
       }).join('') + '</ol></div>';
     }).join('');
   }
+  // Section page rows are about 75 characters too (Sean, 2026-11-10: "do the section pages at 75 too").
   // A section page in the Overview's shape (Sean, 2026-11-09): how to use the page (Liz's own short video for that page, once its script is
   // approved and recorded), then the parts of that area as plain rows (a picture, about 150 characters, no link each), then one call to action
   // at the bottom to go see it. Becoming a member is the header's button.
@@ -191,11 +192,11 @@
         how: ['<b>Read the parts below.</b> Each one is a section of the Directory.', '<b>Members vote</b> for the places they love, and that is how places rise to the top.'],
         go: ['View the Directory', '/directory'], ctaTitle: 'Go see the Directory.', ctaText: 'Pick your city and start looking around. It is open to everyone.',
         parts: [
-          ['eating-out.jpg', 'Local Food', 'Restaurants, bakeries, food trucks, markets, catering and meal prep in your chapter, sorted by member votes.'],
-          ['supermarket-guide.jpg', 'Products', 'Brands you can buy anywhere: food and drink, supplements, clothing, beauty and Vegan marketplaces.'],
-          ['nutrition-guide.jpg', 'Services', 'Coaches, health professionals, animal care, studios and marketing help, from people who share your values.'],
-          ['restaurant-guide/t-pulse.jpg', 'Media', 'Podcasts, YouTube channels, news outlets, documentaries and books, ranked by the community.'],
-          ['thumb-community.jpg', 'Community and People', 'Nonprofits, rescues, sanctuaries and groups, and the activists, chefs, creators and doctors in the movement.']
+          ['eating-out.jpg', 'Local Food', 'Restaurants, bakeries, food trucks, markets and more, ranked by votes.'],
+          ['supermarket-guide.jpg', 'Products', 'Brands you can buy anywhere: food, supplements, clothing and beauty.'],
+          ['nutrition-guide.jpg', 'Services', 'Coaches, health pros, animal care and more, from people who share your values.'],
+          ['restaurant-guide/t-pulse.jpg', 'Media', 'Podcasts, channels, documentaries and books, ranked by the community.'],
+          ['thumb-community.jpg', 'Community and People', 'Nonprofits, rescues, groups, and the people leading the movement.']
         ] });
     },
     city: function () {
@@ -203,11 +204,11 @@
         how: ['<b>Read the parts below.</b> Each one is part of your chapter\'s home.', '<b>Find your city</b> on the Communities page and read today\'s Daily Pulse.'],
         go: ['Find your city', '/communities'], ctaTitle: 'Go find your city.', ctaText: 'Pick your chapter and read today\'s Daily Pulse. It is open to everyone.',
         parts: [
-          ['holiday/w-say.jpg', 'The Daily Pulse', 'A short briefing every morning: the news that matters in your city and beyond, what is on this week, and one thing to do today.'],
-          ['vegan-pets.jpg', 'The Boards', 'Jobs, classifieds, fosters and rescues, a board for each in your city. Post what you need, offer what you have, help an animal home.'],
-          ['partner-group-partner.jpg', 'Events in Your City', 'Potlucks, meetups, festivals and sanctuary days near you, on one calendar. Open one for the details and its official page.'],
-          ['restaurant-guide/t-promos.jpg', 'Most Voted Places', 'Every chapter shows the places its members vote to the top, so you always know where locals love to eat and shop.'],
-          ['vegan-abroad.jpg', 'Where We Go Next', 'Not seeing your city yet? Vote for the next chapter, or suggest one. Members tell us where to open next.']
+          ['holiday/w-say.jpg', 'The Daily Pulse', 'A short morning briefing: your city\'s news, what is on, one thing to do.'],
+          ['vegan-pets.jpg', 'The Boards', 'Jobs, classifieds, fosters and rescues, a board for each in your city.'],
+          ['partner-group-partner.jpg', 'Events in Your City', 'Potlucks, meetups, festivals and sanctuary days, on one calendar.'],
+          ['restaurant-guide/t-promos.jpg', 'Most Voted Places', 'The places your chapter\'s members vote to the top, to eat and shop.'],
+          ['vegan-abroad.jpg', 'Where We Go Next', 'Not seeing your city? Vote for the next chapter, or suggest one.']
         ] });
     },
     events: function () {
@@ -215,11 +216,11 @@
         how: ['<b>Read the parts below.</b> Each one is part of Events.', '<b>Pick a place</b> and the kinds of events you like, then open one for its details.'],
         go: ['See events', '/events'], ctaTitle: 'Go find something to do.', ctaText: 'Pick a place and see what is on this week. It is open to everyone.',
         parts: [
-          ['vegan-events-guide.jpg', 'Find Something to Do', 'Festivals, potlucks, meetups and sanctuary days, in your chapter and around the world. Filter by place and kind of event.'],
-          ['restaurant-guide/t-dashboard.jpg', 'Every Event Checked', 'Our team checks every event before it shows, and we read its official page every week so the dates and details stay right.'],
-          ['stadium-arena-guide.jpg', 'Going and Tickets', 'Members tap I\'m going, and some events have members-only tickets through our group link.'],
-          ['restaurant-guide/t-next.jpg', 'Submit an Event', 'Hosting one? Add it from a flyer, a link or typed in. Our team reviews it and tells you when it is live.'],
-          ['holiday/p-business.jpg', 'Run Events With Us', 'Running an event? Claim it, and the free Vegan Events Guide shows you how to plan it, fill it and run it.']
+          ['vegan-events-guide.jpg', 'Find Something to Do', 'Events in your chapter and around the world, filtered by place and kind.'],
+          ['restaurant-guide/t-dashboard.jpg', 'Every Event Checked', 'Our team checks every event and keeps its dates and details right.'],
+          ['stadium-arena-guide.jpg', 'Going and Tickets', 'Members tap I\'m going, and some events have members-only tickets.'],
+          ['restaurant-guide/t-next.jpg', 'Submit an Event', 'Add yours from a flyer, a link or typed in. We tell you when it is live.'],
+          ['holiday/p-business.jpg', 'Run Events With Us', 'Claim your event, and the free Vegan Events Guide helps you run it.']
         ] });
     },
     media: function () {
@@ -227,10 +228,10 @@
         how: ['<b>Read the parts below.</b> Each one is part of Media.', '<b>Press Play</b> on any episode; it keeps playing while you look around.'],
         go: ['Open Media', '/media'], ctaTitle: 'Go press Play.', ctaText: 'Our shows and the community\'s favorites, right on the page. Open to everyone.',
         parts: [
-          ['restaurant-guide/t-pulse.jpg', 'Our Shows', 'The Vegans Explore Podcast, SoFlo Vegans and Pre-Vegans: years of conversations with the people building this movement.'],
-          ['holiday/p-listen.jpg', 'Top Podcasts', 'The podcasts the community votes to the top, every episode playable right on the page.'],
-          ['creator-guide.jpg', 'Documentaries', 'Films that changed how people see food and animals, with where to watch them and our talks with the people who made them.'],
-          ['restaurant-guide/t-mylist.jpg', 'Books', 'Cookbooks, memoirs and health books, including the ones our guests talk about on the shows.'],
+          ['restaurant-guide/t-pulse.jpg', 'Our Shows', 'The Vegans Explore Podcast, SoFlo Vegans and Pre-Vegans.'],
+          ['holiday/p-listen.jpg', 'Top Podcasts', 'The podcasts the community votes to the top, playable on the page.'],
+          ['creator-guide.jpg', 'Documentaries', 'Films that changed how people see food and animals, and where to watch.'],
+          ['restaurant-guide/t-mylist.jpg', 'Books', 'Cookbooks, memoirs and health books, including our guests\' picks.'],
           ['partner-official-creator.jpg', 'Join Our Network', 'Host a podcast? Apply to join the Vegans Explore Podcast Network.']
         ] });
     },
@@ -239,11 +240,11 @@
         how: ['<b>Read the parts below.</b> Each one is part of the Guides.', '<b>Pick an interest</b> on the Guides page, then open any Guide and try its free part.'],
         go: ['See every Guide', '/guides'], ctaTitle: 'Go pick a Guide.', ctaText: 'Every Guide has a free part to try. Open to everyone.',
         parts: [
-          ['welcome-guide.jpg', 'Find Your Guide', 'Every Guide in one place, sorted by what you care about: food, health, travel, game day, business, the animals and more.'],
-          ['vegan-restaurant-guide.jpg', 'Free With a Survey', 'Guides for your work, like the Vegan Restaurant Guide and the Vegan Events Guide, open free with a short survey.'],
-          ['airport-guide.jpg', 'Topic Guides', 'Topic Guides, like the Vegan Dairy Guide and the Airport Guide, are yours to keep with points, and each has a free part to try.'],
-          ['nutrition-guide.jpg', 'Ask Your Guide', 'Every Guide has its own Guide to ask. Saved answers are free, and asking directly costs a few points.'],
-          ['holiday-guide.jpg', 'What We Build Next', 'Members see the Guides we are making next and tap Notify me on the ones they want first.']
+          ['welcome-guide.jpg', 'Find Your Guide', 'Every Guide in one place, sorted by what you care about.'],
+          ['vegan-restaurant-guide.jpg', 'Free With a Survey', 'Guides for your work open free with a short survey.'],
+          ['airport-guide.jpg', 'Topic Guides', 'Yours to keep with points, and each has a free part to try first.'],
+          ['nutrition-guide.jpg', 'Ask Your Guide', 'Ask any Guide a question. Saved answers are free; asking costs points.'],
+          ['holiday-guide.jpg', 'What We Build Next', 'See the Guides we are making next and tap Notify me on the ones you want.']
         ] });
     },
     points: function () {
@@ -251,11 +252,11 @@
         how: ['<b>Read the parts below.</b> Each one is part of how points work.', '<b>Points are never bought.</b> They come from what you do here.'],
         go: ['Start earning, free', '/survey?s=explorer'], ctaTitle: 'Start with 250 points.', ctaText: 'Take the short survey, join free, and your points start today.',
         parts: [
-          ['thumb-bounties.jpg', 'Earn Points', 'The survey, check-ins, bounties, your profile answers and friends who join with your link all add points.'],
-          ['airport-guide.jpg', 'Use Points', 'Open topic Guides, ask your Guide directly, or bid on gift cards in the Vault where it is open.'],
-          ['nonprofit-guide.jpg', 'Give Points', 'Boost a business or nonprofit you believe in, right from its page.'],
-          ['thumb-passport.jpg', 'Level Up', 'Your level comes from everything you have ever earned, so spending never lowers it. Level 2 starts at 2,500.'],
-          ['partner-ambassador.jpg', 'Your Link', 'Share any page and your own link comes with it. Every friend who joins with it earns you 111 points.']
+          ['thumb-bounties.jpg', 'Earn Points', 'The survey, check-ins, bounties and friends who join with your link.'],
+          ['airport-guide.jpg', 'Use Points', 'Open topic Guides, ask your Guide, or bid in the Vault where it is open.'],
+          ['nonprofit-guide.jpg', 'Give Points', 'Boost a business or nonprofit you believe in, once it claims its page.'],
+          ['thumb-passport.jpg', 'Level Up', 'Your level counts everything you have earned, so spending never lowers it.'],
+          ['partner-ambassador.jpg', 'Your Link', 'Share any page with your link. Every friend who joins earns you 111 points.']
         ] });
     },
     paths: function () {
@@ -263,13 +264,13 @@
         how: ['<b>Read the parts below.</b> Each one is a path, with its own Guide, its own short survey and its own badge.', '<b>Take as many as fit.</b> Run a group or community? That path is on its way: tap Notify me on the paths page.'],
         go: ['See your paths', '/paths'], ctaTitle: 'Find your path.', ctaText: 'Start as an Explorer with the short survey, then pick the paths that fit what you do.',
         parts: [
-          ['thumb-passport.jpg', 'Explorer', 'Everyone starts here. The short survey makes you a member and gives you your first badge.'],
+          ['thumb-passport.jpg', 'Explorer', 'Everyone starts here. The short survey makes you a member, with a badge.'],
           ['vegan-restaurant-guide.jpg', 'Restaurant', 'You feed the movement. Get your free check, claim your page and get found.'],
           ['vegan-events-guide.jpg', 'Event host', 'You bring people together. Plan it, fill it and run it, with us behind you.'],
           ['creator-guide.jpg', 'Creator', 'You tell the stories. Get seen, get booked and work with Vegan brands.'],
           ['nonprofit-guide.jpg', 'Nonprofit', 'You stand up for the animals. Get found, get help and share the load.'],
-          ['pre-vegan-business-guide.jpg', 'Business', 'You are adding plant-based options. Learn what to serve, where to buy it and how to say it.'],
-          ['partner-ambassador.jpg', 'Your badges', 'Your badges show on your profile, and you pick your main one. Each badge opens its Guide and the bounties that go with it.']
+          ['pre-vegan-business-guide.jpg', 'Business', 'Adding plant-based options? Learn what to serve and how to say it.'],
+          ['partner-ambassador.jpg', 'Your badges', 'Your badges show on your profile. Each opens its Guide and bounties.']
         ] });
     },
     better: function () {
@@ -277,13 +278,13 @@
         how: ['<b>Read the parts below.</b> Each one is a way to reach us, and we read all of it.', '<b>Use it in your day to day.</b> We are real people, supported by technology, and we build from what you send every day.'],
         go: ['Send feedback now', '/feedback'], ctaTitle: 'Tell us one thing.', ctaText: 'Something working, missing or confusing? Send it now. It starts with the page you are on.',
         parts: [
-          ['restaurant-guide/t-next.jpg', 'The Feedback button', 'On every page, in the top bar (a small tab at the bottom right on phones). Something broken, out of date, confusing or missing, or an idea.'],
-          ['nutrition-guide.jpg', 'Talk to your Guide', 'On a Guide\'s page, ask it anything. Saved answers are free; asking directly is 4 points a message.'],
-          ['partner-community-manager.jpg', 'Ask a person', 'Not sure, or the Guide did not know? Members can ask a person on our team, free, and we write back.'],
-          ['thumb-directory.jpg', 'Search for what is missing', 'Search for something we do not have yet, and it goes into our team\'s queue. It tells us what to add next.'],
-          ['thumb-community.jpg', 'Tell us a place to add', 'Know a place, a person or a group we should list? Tell us from search or in your survey, and we check it.'],
-          ['restaurant-guide/t-pulse.jpg', 'Suggest a topic', 'Every city\'s board has Suggest a Topic, with hot tips for the Daily Pulse. Your votes count too.'],
-          ['partner-official-creator.jpg', 'Nominate someone', 'Know someone in your community who should be spotlighted? Nominate them for the Daily Pulse and our shows. You can nominate yourself too.']
+          ['restaurant-guide/t-next.jpg', 'The Feedback button', 'On every page, in the top bar. Tell us what is broken, missing or an idea.'],
+          ['nutrition-guide.jpg', 'Talk to your Guide', 'Ask a Guide anything. Saved answers are free; asking is 4 points a message.'],
+          ['partner-community-manager.jpg', 'Ask a person', 'Guide did not know? Members can ask a person on our team, free.'],
+          ['thumb-directory.jpg', 'Search for what is missing', 'Search for something we do not have, and it tells us what to add next.'],
+          ['thumb-community.jpg', 'Tell us a place to add', 'Know a place, person or group we should list? Tell us, and we check it.'],
+          ['restaurant-guide/t-pulse.jpg', 'Suggest a topic', 'Every city\'s board has Suggest a Topic, with tips for the Daily Pulse.'],
+          ['partner-official-creator.jpg', 'Nominate someone', 'Nominate someone, or yourself, for the Daily Pulse and our shows.']
         ] });
     },
     animals: function () {
@@ -291,12 +292,12 @@
         how: ['<b>Read the parts below.</b> Each one is a way to help, starting today.', '<b>Together we move the needle.</b> Businesses, people and nonprofits that actually show up can run campaigns for the animals. Be first to hear about the ones we run together.'],
         go: ['Find nonprofits and rescues', '/directory?tab=community'], ctaTitle: 'Show up for the animals.', ctaText: 'Find the nonprofits, rescues and sanctuaries near you, and give them your points.',
         parts: [
-          ['nonprofit-guide.jpg', 'Nonprofits, rescues and sanctuaries', 'The Directory\'s Community section lists them in every chapter, ranked by member votes.'],
+          ['nonprofit-guide.jpg', 'Nonprofits, rescues and sanctuaries', 'Listed in every chapter in the Directory, ranked by member votes.'],
           ['vegan-pets.jpg', 'The Fosters board', 'Every city has a Fosters board, so animals find a home close by.'],
           ['thumb-community.jpg', 'The Rescues board', 'Every city has a Rescues board for animals who need help now.'],
           ['vegan-events-guide.jpg', 'Sanctuary days and fundraisers', 'Find them in Events, in your chapter and around the world.'],
-          ['thumb-bounties.jpg', 'Give your points', 'Give points to a nonprofit, rescue or sanctuary, right from its page.'],
-          ['restaurant-guide/t-pulse.jpg', 'For the animals in the Pulse', 'Every morning\'s Daily Pulse has a For the animals section with the news that matters.']
+          ['thumb-bounties.jpg', 'Give your points', 'Give points to a nonprofit, rescue or sanctuary that has claimed its page.'],
+          ['restaurant-guide/t-pulse.jpg', 'For the animals in the Pulse', 'Every morning\'s Daily Pulse has a For the animals section.']
         ] });
     },
     founder: function () {
