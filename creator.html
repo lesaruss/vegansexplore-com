@@ -121,6 +121,11 @@
     .cap b{font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--g);}
     .cap p{margin:0;font-size:14.5px;line-height:1.55;}
     .cap .btn{align-self:flex-start;}
+    .thumbrow{display:flex;gap:14px;align-items:center;margin:16px 0 0;}
+    .thumbrow img{width:96px;aspect-ratio:9/16;object-fit:cover;border-radius:8px;border:1px solid var(--line);flex:none;}
+    .thumbrow p{margin:0;font-size:13.5px;}
+    .steps{margin:0;padding-left:22px;font-size:14.5px;line-height:1.6;color:var(--ink75);}
+    .steps li{margin:0 0 6px;}
     .soon{display:inline-block;font-size:10.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;background:#FFF1DF;color:#8a4b00;border-radius:4px;padding:3px 8px;}
   </style>
 </head>
@@ -187,8 +192,14 @@
   }
   function drawAssets() {
     var r = route(), K = D.kit, s = slug(), body = '';
-    if (r.k === 'reel' && K.reel) body = '<div class="asset"><video src="' + esc(K.reel.file) + '" poster="' + esc(K.reel.poster || '') + '" controls playsinline preload="metadata"></video>' +
-      '<div><h2>Your reel</h2><p>' + esc(K.reel.about) + '</p><p>Post it as a Reel and add us, @VegansExplore, as a collaborator.</p><div class="acts"><a class="btn" href="' + esc(dl(K.reel.file, s + '-reel.mp4')) + '">Download the reel</a></div></div></div>';
+    if (r.k === 'reel' && K.reel) body = '<div class="asset"><video src="' + esc(K.reel.file) + '" poster="' + esc(K.reel.thumb || K.reel.poster || '') + '" controls playsinline preload="metadata"></video>' +
+      '<div><h2>Your reel</h2><p>' + esc(K.reel.about) + '</p><div class="acts"><a class="btn" href="' + esc(dl(K.reel.file, s + '-reel.mp4')) + '">Download the reel</a>' +
+      (K.reel.thumb ? '<a class="btn btn-ghost" href="' + esc(dl(K.reel.thumb, s + '-reel-thumbnail.jpg')) + '">Download the thumbnail</a>' : '') + '</div>' +
+      (K.reel.thumb ? '<div class="thumbrow"><img src="' + esc(K.reel.thumb) + '" alt="Your reel thumbnail"><p>Your thumbnail, the cover people see before they press play. It is made so your profile grid shows all of it.</p></div>' : '') +
+      (K.reel.steps && K.reel.steps.length ? '<h2 style="margin-top:18px">How we recommend posting it</h2><ol class="steps">' + K.reel.steps.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ol>' : '') +
+      '</div></div>' +
+      (K.reel.captions && K.reel.captions.length ? '<h2 style="margin-top:22px">Captions you can use</h2><p class="lede">Written in your voice. Use one as it is, change it, or write your own: it is up to you.</p><div class="caps">' +
+        K.reel.captions.map(function (c) { return '<div class="cap"><b>' + esc(c.label) + '</b><p style="white-space:pre-line">' + esc(c.text) + '</p><button type="button" class="btn btn-ghost btn-sm" data-copy="' + esc(c.text) + '">Copy caption</button></div>'; }).join('') + '</div>' : '');
     else if (r.k === 'story' && K.story) body = '<div class="asset"><img class="tall" src="' + esc(K.story.file) + '" alt="Your story">' +
       '<div><h2>Your story</h2><p>' + esc(K.story.about) + '</p><p>Add a link sticker with your link.</p><div class="acts"><a class="btn" href="' + esc(dl(K.story.file, s + '-story.jpg')) + '">Download the story</a><button type="button" class="btn btn-ghost" data-copy="' + esc(D.link || '') + '">Copy your link</button></div></div></div>';
     else if (r.k === 'carousel') body = '<h2>Your carousel, ' + K.carousel.length + ' slides</h2><p class="lede">Post them in order as one carousel. Tap a slide to download it.</p><div class="car">' +

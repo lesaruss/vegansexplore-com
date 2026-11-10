@@ -87,7 +87,10 @@ async function dashboard(row: Row) {
     joined: (joined ?? []).map((j: { name: string | null; created_at: string }) => ({ first: String(j.name ?? '').trim().split(/\s+/)[0] || 'A new member', at: j.created_at })),
     kit: {
       avatar: u(kit.avatar),
-      reel: kit.reel ? { file: u(kit.reel.file), poster: u(kit.reel.poster), about: kit.reel.about ?? '' } : null,
+      // The reel tab (Sean, 2026-11-10): a clean thumbnail, how we recommend posting it, and captions in the creator's voice to copy.
+      reel: kit.reel ? { file: u(kit.reel.file), poster: u(kit.reel.poster), thumb: u(kit.reel.thumb), about: kit.reel.about ?? '',
+        steps: Array.isArray(kit.reel.steps) ? kit.reel.steps.map((t: unknown) => String(t).replace(/\{link\}/g, link ?? '')) : [],
+        captions: Array.isArray(kit.reel.captions) ? kit.reel.captions.map((c: any) => ({ label: c.label, text: String(c.text ?? '').replace(/\{link\}/g, link ?? '') })) : [] } : null,
       story: kit.story ? { file: u(kit.story.file), about: kit.story.about ?? '' } : null,
       carousel: Array.isArray(kit.carousel) ? kit.carousel.map(u) : [],
       captions,

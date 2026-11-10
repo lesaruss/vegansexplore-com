@@ -36,3 +36,9 @@ values ('19f67b83-9368-40d5-af00-87084b0f3fae', 'keya', 'KJ (VeganKween)', '@key
       jsonb_build_object('label', 'Reel caption', 'text', 'Exploring Vegan Philadelphia with @VegansExplore. Free to join, link in bio.'))))
 on conflict (member_id) do update set kit = excluded.kit, display_name = excluded.display_name, handle = excluded.handle,
   city = excluded.city, go_code = excluded.go_code, people_slug = excluded.people_slug;
+
+-- The reel tab (Sean, 2026-11-10: "a clean thumbnail that she can use... instructions as well and what we recommend... caption copy
+-- recommendations... written from her voice"). Applied live with the same jsonb_set on kit->'reel': thumb 'kit/reel-thumbnail-v1.jpg',
+-- seven posting steps (download, Reel, leave Instagram music off, Edit cover from camera roll, caption and link in bio, invite
+-- @vegansexplore as collaborator, post when followers are active and share to Story), and three captions in her voice
+-- (The announcement, Short and sweet, Bring your people). She posts it herself: Sean, "That way I know for sure she wants to send it out."
