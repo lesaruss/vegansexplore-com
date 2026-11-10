@@ -161,6 +161,8 @@ Sean: "I feel like I keep asking for the same thing over." The full checklist is
   `UI-SELECT-ARROW-TOO-CLOSE-TO-EDGE`): `appearance:none`, an SVG chevron at `background-position:right 16px center`,
   `padding-right` 44px or more. Copy the `select` rule in `claim.html`.
 - Buttons, tabs and inputs use a 6px corner radius, not pills (canon rule 13, Sean 2026-10-09).
+- The picture in a dashboard's top-left corner (the member's or creator's avatar) is a square with rounded corners, never a circle (Sean, 2026-11-10: "always remember we're using square with rounded corners for the little icon in the top left hand corner").
+- **The creator dashboard** (Sean, 2026-11-10: "only select people will get the dashboard"): `/dashboard/creator` (`creator.html` in the dashboard window, `ve-creator`), one row per creator in `ve_creator_dashboards`, `enabled` switched on only by Sean; a creator whose dashboard is on lands on it from `/dashboard`; super admins preview with `?as=<slug>`. Assets are tabs (Reel, Story, Carousel, Avatar, Captions), one kind at a time.
 - **More than 5 tabs: the top menu is a dropdown at every width** (Sean, 2026-11-09, the BCPS rule; `html.dg-dd` and numbered options in the Welcome
   Guide). Other Guides switch over one by one.
 - **Speak instead of typing on every field** (Sean, 2026-10-31: "make sure we have the record the dictation feature on all things

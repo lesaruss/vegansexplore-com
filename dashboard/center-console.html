@@ -3517,6 +3517,30 @@
     else if (location.pathname + location.hash !== url) history.pushState({ tabKey: 'tools', frame: 'levels' }, '', url);
   }
   window.openLevels = openLevels;
+  // The creator dashboard (Sean, 2026-11-10: "this should be her dashboard, what she sees when she logs in... only select people will
+  // get the dashboard"). /creator in the dashboard window, /dashboard/creator in the address bar; ve-creator decides who has one.
+  function openCreator(hash, noPush) {
+    var h = String(hash || '').replace(/^#?/, '');
+    var q = /^\/dashboard\/creator/.test(location.pathname) ? location.search : '';
+    if (window.activateDashTab) window.activateDashTab('tools', { skipHistory: true });
+    openConsoleFrame('/creator' + q + (h ? '#' + h : ''), 'Creator dashboard');
+    var url = '/dashboard/creator' + q + (h ? '#' + h : '');
+    if (noPush) history.replaceState({ tabKey: 'tools', frame: 'creator' }, '', url);
+    else if (location.pathname + location.search + location.hash !== url) history.pushState({ tabKey: 'tools', frame: 'creator' }, '', url);
+  }
+  window.openCreator = openCreator;
+  // Who has a creator dashboard: asked once per visit; a creator whose dashboard is on lands on it when they open /dashboard.
+  window.veCreatorInfo = null;
+  function loadCreatorInfo() {
+    if (window.veCreatorInfo) return window.veCreatorInfo;
+    var tok = null; try { tok = localStorage.getItem('ve_token'); } catch (e) {}
+    window.veCreatorInfo = !tok ? Promise.resolve({ has: false }) : fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-creator', {
+      method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok }, body: JSON.stringify({ action: 'me' })
+    }).then(function (r) { return r.json(); }).catch(function () { return { has: false }; });
+    return window.veCreatorInfo;
+  }
+  window.loadCreatorInfo = loadCreatorInfo;
+  loadCreatorInfo().then(function (d) { window.veCreatorHas = !!(d && d.has); });
   // Your profile (Sean, 2026-10-28): its own page in the dashboard window, first in For you until every point is earned.
   function openSurvey(noPush) {
     if (window.activateDashTab) window.activateDashTab('tools', { skipHistory: true });
@@ -3555,6 +3579,10 @@
       tellFrameView();
     } else if (e.data.type === 've-frame-url') {
       var fp = String(e.data.path || '');
+      if (/^\/creator([?#]|$)/.test(fp) && /^\/dashboard\/creator/.test(location.pathname)) {
+        var wantC = '/dashboard/creator' + fp.replace(/^\/creator/, '');
+        if (location.pathname + location.search + location.hash !== wantC) history.replaceState(history.state, '', wantC);
+      }
       if (/^\/levels(#|$)/.test(fp) && /^\/dashboard\/levels/.test(location.pathname)) {
         var wantL = '/dashboard/levels' + fp.replace(/^\/levels/, '');
         if (location.pathname + location.hash !== wantL) history.replaceState(history.state, '', wantL);
@@ -4654,6 +4682,9 @@
       t.push({ icon: 'map', title: 'Passport Challenge', desc: 'Coming 2027. Preview the monthly stamp challenge: local Vegan spots, a stamp at each.', fn: function () { openConsoleFrame('/passport/challenge', 'Passport Challenge'); } });
       t.push({ icon: 'bus', title: 'Vegans Explore Tours', desc: 'Coming 2027. Preview the monthly tasting tour: three restaurants and an attraction.', fn: function () { openConsoleFrame('/tours', 'Vegans Explore Tours'); } });
     }
+    // The creator dashboard: first for a creator who has one; super admins preview them (Sean, 2026-11-10: only select people).
+    if (window.veCreatorHas) t.unshift({ icon: 'star', title: 'Creator dashboard', desc: 'Your reel, story, carousel, avatar and captions, and who joined through your link.', fn: function () { openCreator(''); } });
+    else if (admin) t.push({ icon: 'star', title: 'Creator dashboards', desc: 'Preview the dashboards of our official content creators.', fn: function () { openCreator(''); } });
     t.push({ icon: 'map', title: 'Communities', desc: 'Explore and join Vegans Explore communities.', fn: function () { if (window.activateDashTab) activateDashTab('communities'); } });
     if (member.membership_status === 'active' && !window.VE_PREVIEW) t.push({ icon: 'sprout', title: 'Contribute', desc: 'Give again any time, from $11. A contribution to the community, never a donation.', fn: function () { openContribute(); } });
     return t;
@@ -5080,6 +5111,7 @@
       if (/^\/dashboard\/guide\/?$/.test(location.pathname)) { openGuide(location.search, true); return; }
       if (/^\/dashboard\/secret-shopper\/?$/.test(location.pathname)) { openShopper(location.hash, true); return; }
       if (/^\/dashboard\/levels\/?$/.test(location.pathname)) { openLevels(location.hash, true); return; }
+      if (/^\/dashboard\/creator\/?$/.test(location.pathname)) { openCreator(location.hash, true); return; }
       if (/^\/dashboard\/survey\/?$/.test(location.pathname)) { openSurvey(true); return; }
       // Back and forward between the Directory and a listing.
       if (listingSlugFromPath()) { activate('directory', { skipHistory: true }); openDashboardListing(listingSlugFromPath(), '', true); return; }
@@ -5102,6 +5134,11 @@
     if (/^\/dashboard\/guide\/?$/.test(location.pathname)) openGuide(location.search, true);
     if (/^\/dashboard\/secret-shopper\/?$/.test(location.pathname)) openShopper(location.hash, true);
     if (/^\/dashboard\/levels\/?$/.test(location.pathname)) openLevels(location.hash, true);
+    if (/^\/dashboard\/creator\/?$/.test(location.pathname)) openCreator(location.hash, true);
+    // A creator with a dashboard sees it when they log in (Sean, 2026-11-10): plain /dashboard opens it.
+    else if (/^\/dashboard\/?$/.test(location.pathname) && !location.hash) loadCreatorInfo().then(function (d) {
+      if (d && d.has && /^\/dashboard\/?$/.test(location.pathname)) openCreator('', true);
+    });
     if (/^\/dashboard\/survey\/?$/.test(location.pathname)) openSurvey(true);
   }
 
