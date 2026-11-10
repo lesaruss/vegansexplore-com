@@ -543,6 +543,29 @@
     .hg-mh>div:not(.hg-logo){flex:1;min-width:0}.hg-tr{flex:none;align-self:flex-start;margin-left:auto;white-space:nowrap}
     .hg-mh h3 a{color:inherit;text-decoration:none}
     .hg-mh small{display:block;font-size:13px;color:var(--ink55);margin-top:2px}
+    /* The Overview in the Welcome Guide's shape (copied from passport.html, 2026-11-10). */
+    .wg-gs{display:flex;gap:18px;align-items:flex-start;border:1px solid var(--line);border-radius:14px;background:#fff;padding:16px;margin:14px 0 22px}
+    .wg-gs-pic{flex:0 0 240px;width:240px;height:240px;border-radius:12px;overflow:hidden;background:var(--gl)}
+    .wg-gs-pic img{display:block;width:100%;height:100%;object-fit:cover}
+    .wg-gs-b{min-width:0;flex:1}
+    .wg-gs-b .vgi-k,.wg-grp h5{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--g)}
+    .wg-gs-t{margin:4px 0 6px;font-size:20px;font-weight:900;color:var(--ink)}
+    .wg-gs-b p{margin:0 0 8px;font-size:15px;line-height:1.55;color:var(--ink75)}
+    .wg-gs-b p b{color:var(--ink)}
+    .wg-gs-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    @media (min-width:901px){.wg-gs-b{height:240px;overflow-y:auto;overscroll-behavior:contain;padding-right:6px}}
+    @media (max-width:600px){.wg-gs{flex-direction:column}.wg-gs-pic{width:100%;height:auto;aspect-ratio:1/1;flex-basis:auto}}
+    .wg-grp{margin:0 0 20px}
+    .wg-grp h5{margin:0 0 12px;padding-bottom:6px;border-bottom:1px solid #e3efe3}
+    .wg-grp ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:16px}
+    .wg-art{display:grid;grid-template-columns:132px minmax(0,1fr);gap:14px;align-items:start}
+    .wg-art>a{display:block}
+    .wg-art-img{display:block;width:132px;height:99px;border-radius:10px;background:#eef3ee center/cover no-repeat}
+    .wg-art-t{display:block;font-size:16px;font-weight:800;color:var(--ink);text-decoration:none;margin:0 0 4px}
+    .wg-art-t:hover{color:var(--g)}
+    .wg-art p{margin:0;font-size:14.5px;line-height:1.55;color:var(--ink75)}
+    .wg-art-more{display:inline-block;margin-top:6px;font-size:13px;font-weight:800;color:var(--g);text-decoration:none}
+    @media (max-width:560px){.wg-art{grid-template-columns:96px minmax(0,1fr);gap:12px}.wg-art-img{width:96px;height:96px}}
     .hg-tag{display:inline-block;font-size:11.5px;font-weight:800;border-radius:6px;padding:3px 8px;background:var(--gl);color:var(--g)}
     .hg-tag.pv{background:#fff3df;color:#8a5a00}
     .hg-claim{margin:10px 0 0;font-size:13px;color:#5b6b58}.hg-claim a{color:var(--g);font-weight:700}
@@ -752,7 +775,7 @@
 <script src="/public/ve-guide-intro.js"></script>
 <script src="/public/ve-episodes.js"></script>
 <script src="/public/ve-holiday-menu.js?v=9"></script>
-<script src="/guide-scripts/holiday-guide.js?v=26"></script>
+<script src="/guide-scripts/holiday-guide.js?v=27"></script>
 <script src="/public/ve-guide-min.js"></script>
 </body>
 </html>

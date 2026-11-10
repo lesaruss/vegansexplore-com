@@ -246,20 +246,43 @@
       }).join('') + '</div></section>';
     }).join('');
   }
+  // The Overview in the Welcome Guide's shape (Sean, 2026-11-10: "the more simplified version of the overview page that we've been using
+  // lately... that little blurb... then it shows the different sections below with a little blurb and read more"; the Welcome Guide is
+  // the template for every Guide): Getting started, then each section as a short article row (a picture, a few lines, Read more).
+  var ART = [
+    { label: 'ThanksLiving · November 26', kids: [
+      ['thanksliving', 'Ideas for the Table', 'A few easy ideas for a fully plant-based Thanksgiving, whether you host the whole table or bring one dish, plus why so many call it ThanksLiving.'],
+      ['menus', 'Holiday Menus', 'Vegan places near you cooking for the holiday: their full menus, prices, pickup times and the date to order by, each one checked by our team.'],
+      ['recipes', 'Recipes', 'A loaf, gravy, mashed potatoes, stuffing, cranberry sauce, green beans and pumpkin pie, all plant-based. Chefs can send us their own.'],
+      ['store', 'At the Store', 'Roasts, gravy, butter, cream and dessert you can pick up at the supermarket this season, by brand. Found one we missed? Suggest it.'],
+      ['events', 'Events', 'Sanctuary dinners, potlucks and ThanksLiving gatherings on our calendar, near you and online. Hosting one? Add it so people can find you.'],
+      ['listen', 'Listen', 'Our episodes on family, patience and the holidays, and holiday episodes from other Vegan shows, ready to play on the way to dinner.']] },
+    { label: 'More Holidays', kids: [
+      ['hanukkah', 'Hanukkah · Begins December 4', 'Latkes, jelly doughnuts and eight nights of kindness: ideas, recipes, Vegan places to order from and events, with Jewish voices on the meaning of the holiday.'],
+      ['christmas', 'Christmas · December 25', 'A centerpiece for the table, cookies to share, nog and gifts that do no harm: ideas, recipes, the store, holiday menus and events.']] },
+    { label: 'Give and Grow', kids: [
+      ['giveback', 'Give Back', 'The nonprofits, rescues and sanctuaries doing the work, in your city and beyond, each with an easy way to give. Giving Tuesday is December 1.'],
+      ['business', 'Run a Business?', 'Send your holiday menu and we feature it in this Guide and on your listing, free for members. Most people order early, so send it soon.']] }
+  ];
+  function artRow(picUrl, title, txt, link) {
+    return '<li class="wg-art"><a href="' + esc(link) + '" tabindex="-1" aria-hidden="true"><span class="wg-art-img" style="background-image:url(&quot;' + esc(picUrl) + '&quot;)"></span></a>' +
+      '<div><a class="wg-art-t" href="' + esc(link) + '">' + esc(title) + '</a><p>' + esc(txt) + '</p><a class="wg-art-more" href="' + esc(link) + '">Read more &rsaquo;</a></div></li>';
+  }
   function viewOverview() {
     var t = thanks(), d = daysUntil(onDay(t.holiday_on)), c = daysUntil(t.submit_close);
-    var start = window.VEGuideIntro ? VEGuideIntro.html({
-      place: 'This Guide is for anyone celebrating the holidays the Vegan way, whether you host, bring a dish or order your table.',
-      why: ['The holidays are about the people at the table.', 'Vegans Explore has covered the Vegan community since 2016, city by city, so we know the places cooking near you and the groups doing good.'],
-      change: 'you will have a plan for ' + t.name + ', a place to order from if you want one, and a way to give back.',
-      how: member() ? 'pick a section below. Save the places you want to order from and find them in My Saves.' : 'watch the video, then pick a section below. Everything is free to read; join free to save places.',
-      pic: PIC + 'start.jpg' }) : '';
-    // The tour video now plays in Theo's frame (Sean, 2026-11-08), so the Overview no longer carries its own video card.
-    main.innerHTML = head('Free for everyone', 'Welcome to the Holiday Guide', '') + start +
-      '<div class="dg-start" style="margin:18px 0 6px"><a class="dg-btn" href="#/menus">Find a holiday menu</a><p>' +
-      (d ? d + ' days to ThanksLiving.' : 'Happy ThanksLiving.') + (c ? ' Businesses can send a menu for ' + c + ' more days.' : '') + '</p></div>' +
-      groupRows();
+    var ps = [(d ? '<b>' + d + ' days to ThanksLiving.</b> ' : '<b>Happy ThanksLiving.</b> ') + 'Everything for the Vegan holidays is here, free to read.',
+      '<b>Watch the tour.</b> Press Play the tour and Theo walks you through the whole Guide.',
+      '<b>Go deeper.</b> Each part is below in a few lines. Read more on any one.' + (member() ? ' Save the places you want and find them in My Saves.' : ' Join free to save places.')];
+    var gs = '<section class="wg-gs" aria-label="Getting started"><span class="wg-gs-pic"><img src="' + PIC + 'start.jpg" alt="" decoding="async" width="640" height="640"></span>' +
+      '<div class="wg-gs-b"><div class="vgi-k">Getting started</div><h3 class="wg-gs-t">How to use this Guide</h3>' + ps.map(function (x) { return '<p>' + x + '</p>'; }).join('') +
+      '<div class="wg-gs-btns"><button type="button" class="dg-btn" data-hg-video>&#9654; Play the tour</button><a class="dg-btn dg-ghost" href="#/menus">Find a holiday menu</a></div></div></section>';
+    main.innerHTML = head('Free for everyone', 'Welcome to the Holiday Guide', '') + gs + '<div class="wg-arts">' +
+      ART.map(function (g) {
+        var kids = g.kids.filter(function (k) { return !((k[0] === 'hanukkah' || k[0] === 'christmas') && holPast(k[0])) && !(k[0] === 'business' && !c && !others()); });
+        return kids.length ? '<div class="wg-grp"><h5>' + esc(g.label) + '</h5><ol>' + kids.map(function (k) { return artRow(PIC + PILL_PIC[k[0]], k[1], k[2], href(k[0])); }).join('') + '</ol></div>' : '';
+      }).join('') + '</div>';
   }
+  function others() { return (HOLS || []).some(function (h) { return daysUntil(h.submit_close) > 0; }); }
 
   // The Overview is a video (canon-ve-guide-tour-standard v3): Theo walks them through the Guide. Until it is made this is its
   // placeholder: the frame it will play in and its chapters, so everyone can see what is coming (Sean, 2026-11-07).
