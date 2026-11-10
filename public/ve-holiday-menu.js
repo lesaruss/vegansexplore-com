@@ -10,7 +10,8 @@
  *                                                     price_range, holiday_hours, order_url, link, note }
  *                                             A business menu has items; a found menu (a tip) has a note and a link to its own post.
  *   VEHolidayMenu.close()
- *   VEHolidayMenu.forListing(listing, el)    fills el with the listing's live holiday menu, if it has one (See Menu opens it).
+ *   VEHolidayMenu.forListing(listing, el)    fills el with the listing's live holiday menu, if it has one: See Menu opens it,
+ *                                             Holiday Guide goes to the whole Guide (every page with a menu promotes the Guide).
  *
  * Layout: the header (their logo and name, the Vegan tag at the right on the name's row, lined up with the prices) and the footer
  * (Order, Their page, Close) stay put; the menu between them scrolls. Ordering facts (Pickup, Price, Order by, Holiday hours) are
@@ -20,7 +21,7 @@
   if (window.VEHolidayMenu) return;
   var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-holiday';
   var KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
-  var PAD = 28, PADM = 18;
+  var PAD = 28, PADM = 18, GUIDE = '/guides/holiday-guide';
   var CSS = '' +
     // The same gap above as before, and a deeper one below so it never reads as resting on the site footer (Sean, 2026-11-10).
     '.vhm-back{position:fixed;inset:0;z-index:100000;background:rgba(15,23,15,.6);display:flex;align-items:flex-start;justify-content:center;padding:6vh 16px 0}' +
@@ -50,6 +51,8 @@
     'html.vhm-open{overflow:hidden}' +
     '.vhm-card{border:1px solid #f2d7a6;background:#fff7e8;border-radius:10px;padding:18px 20px;margin:0 0 22px;display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap}' +
     '.vhm-card h3{margin:0 0 4px;font-size:18px}.vhm-card p{margin:0;font-size:14px;color:rgba(26,26,26,.75);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}' +
+    '.vhm-cbtns{display:flex;gap:8px;flex-wrap:nowrap}.vhm-card .vhm-cbtns a{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 18px;border-radius:6px;background:#fff;color:#1a1a1a;border:1.5px solid rgba(0,0,0,.16);font-weight:800;font-size:12px;letter-spacing:.1em;text-transform:uppercase;text-decoration:none;white-space:nowrap}' +
+    '@media(max-width:600px){.vhm-cbtns{width:100%}.vhm-cbtns>*{flex:1 1 0}}' +
     '.vhm-card button{min-height:42px;padding:0 18px;border-radius:6px;border:0;background:#22C55E;color:#03170a;font:inherit;font-weight:800;font-size:12px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;white-space:nowrap}' +
     '@media(max-width:600px){.vhm-back{padding:10px;align-items:center}.vhm{max-height:92vh}.vhm-head,.vhm-body,.vhm-foot{padding-left:' + PADM + 'px;padding-right:' + PADM + 'px}' +
       '.vhm-logo{width:52px;height:52px}.vhm-nm h2{font-size:20px}.vhm-acts a,.vhm-acts button{font-size:11px;letter-spacing:.04em;padding:0 8px}}';
@@ -79,7 +82,9 @@
           : '<div class="vhm-sec"><h3>The Menu</h3>' + (m.note ? '<p class="vhm-note">' + esc(m.note) + '</p>' : '') + '<p class="vhm-note">We are still getting their full dish list. Their own post has it for now.</p></div>') +
         (ordering ? '<div class="vhm-sec"><h3>Ordering</h3>' + ordering + '</div>' : '') + '</div>' +
       '<div class="vhm-foot"><div class="vhm-acts">' + (order ? '<a href="' + esc(order) + '" target="_blank" rel="noopener">Order</a>' : '') +
-        (m.slug && !/\/directory\//.test(location.pathname) ? '<a class="g" href="/directory/' + encodeURIComponent(m.slug) + '">Their page</a>' : '') +
+        // On their own page the menu points to the whole Holiday Guide instead (Sean, 2026-11-10: "Any page that features a menu
+        // should also feature the Holiday Guide").
+        (/\/directory\//.test(location.pathname) ? '<a class="g" href="' + GUIDE + '">Holiday Guide</a>' : m.slug ? '<a class="g" href="/directory/' + encodeURIComponent(m.slug) + '">Their page</a>' : '') +
         '<button type="button" class="g" data-vhm-x>Close</button></div>' +
         '<p class="vhm-fine"><span>From their own holiday post. Check prices and dates when you order.</span><span>Menu by Vegans Explore</span></p></div>';
   }
@@ -123,7 +128,8 @@
     }).then(function (m) {
       if (!m) return;
       css();
-      el.innerHTML = '<div class="vhm-card"><div style="flex:1;min-width:220px"><h3>' + esc(m.holiday) + ' Menu</h3><p>' + esc(m.summary || m.note || '') + '</p></div><button type="button" data-vhm-open>See Menu</button></div>';
+      el.innerHTML = '<div class="vhm-card"><div style="flex:1;min-width:220px"><h3>' + esc(m.holiday) + ' Menu</h3><p>' + esc(m.summary || m.note || '') + '</p></div>' +
+        '<div class="vhm-cbtns"><button type="button" data-vhm-open>See Menu</button><a class="g" href="' + GUIDE + '">Holiday Guide</a></div></div>';
       el.hidden = false;
       el.querySelector('[data-vhm-open]').addEventListener('click', function () { open(m); });
     }).catch(function () {});
