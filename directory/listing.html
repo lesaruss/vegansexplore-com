@@ -763,8 +763,9 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .bb-house-pic{position:absolute;inset:0;background:center/cover no-repeat}
 .bb-house::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.2) 55%,transparent 75%)}
 /* The Guide's ad picture on top, the words in a band under it, so nothing covers the Guide. */
-.bb-house.bb-house-ad{aspect-ratio:auto;display:flex;flex-direction:column;background:var(--vb-deep,#0d1a10)}
-.bb-house-ad .bb-house-pic{position:relative;inset:auto;aspect-ratio:9/4;background-position:70% 28%}
+/* The house ad fills its slot; the picture takes what the words leave, so the button is never cut off (Sean, 2026-11-10). */
+.bb-house.bb-house-ad{aspect-ratio:auto;height:100%;display:flex;flex-direction:column;background:var(--vb-deep,#0d1a10)}
+.bb-house-ad .bb-house-pic{position:relative;inset:auto;flex:1 1 auto;min-height:72px;background-position:70% 28%}
 .bb-house-ad::after{display:none}
 .bb-house-ad .bb-house-txt{position:static;padding:10px 14px 12px;gap:2px}.bb-house-ad .bb-house-txt em{margin-top:5px}
 .bb-house-txt{position:absolute;left:16px;right:16px;bottom:14px;z-index:1;display:flex;flex-direction:column;gap:3px}
@@ -5271,12 +5272,12 @@ function houseAd(l){
   if(!g) return loadBillboardAds();
   // For the season the house ad promotes the Holiday Guide in the Dairy Guide's place (Sean, 2026-11-10: "wherever there's a dairy
   // guide, let's put the holiday guide"); its tracked link is ve-guide-holiday. Remove this line after Christmas.
-  g = ['Holiday Guide', '/guides/holiday-guide', 'theo', '/go/ve-guide-holiday', 'ThanksLiving, recipes, holiday menus near you and ways to give back, with Theo', '/public/guides/holiday/theo-thanksliving.jpg', 'The Holiday Guide'];
+  g = ['Holiday Guide', '/guides/holiday-guide', 'theo', '/go/ve-guide-holiday', 'ThanksLiving, recipes, holiday menus and ways to give back.', '/public/guides/holiday/theo-thanksliving.jpg', 'The Holiday Guide'];
   // The Guide's own ad picture (Sean, 2026-10-09: "a better graphic"): Maya in a store's dairy-free aisle, words laid on top.
   // A Guide without one falls back to its Guide's square portrait.
   var art = g[5] || (window.VEGuideArt ? VEGuideArt(g[2], 'square') : '/public/guides/' + g[2] + '.jpg');
   el.classList.add('bb-filled');
-  el.innerHTML = '<a class="bb-house' + (g[5] ? ' bb-house-ad' : '') + '" href="' + esc(g[3]) + '"><span class="bb-house-pic" style="background-image:url(\'' + esc(art) + '\')"></span>' +
+  el.innerHTML = '<a class="bb-house' + (g[5] ? ' bb-house-ad' : '') + '" href="' + esc(g[3]) + '"><span class="bb-house-pic" style="background-image:url(\'' + esc(art) + '\')' + (/\/theo-[a-z-]+\.jpg$/.test(art) ? ';background-position:center top' : '') + '"></span>' +
     '<span class="bb-house-txt"><small>From Vegans Explore</small><b>' + esc(g[6] || 'The Vegan ' + g[0]) + '</b><span>' + esc(g[4] || '') + '</span><em>Open the guide</em></span></a>';
 }
 
