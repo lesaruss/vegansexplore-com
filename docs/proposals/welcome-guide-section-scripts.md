@@ -91,6 +91,10 @@ New scenes (Higgsfield budget: about 7 stills, 14 credits): Liz at a sanctuary, 
 
 Made: `liz-ani-{sanct,foster,adopt,fund,pulse,causes,walk}.jpg` (the adoption day was refused once by a false content flag and redrawn with new words; 16 credits). Video `sec-animals-v1.mp4` (72 s), captions `sec-animals-v1.vtt`.
 
-## 11
+## 11. Become a Founder (approved 2026-11-10; recorded sec-founder-v1, video rendered, waiting on Sean's look)
 
-Written one at a time after page 7 is approved.
+About 72 seconds. The page keeps its own sign-up layout (the countdown and the Explorer card), with Play Liz added.
+
+> You made it to the end, and you are early. That is rare. Becoming a Founder takes a few quick questions, about two minutes, and you are in, free, with 250 points to use across the platform. Join before midnight Eastern on January 1, 2027, and Founding Member stays on your profile for good. Founders unlock some really cool things in 2027, and the only way to hear about them, and lock them in for yourself, is to join today. Once you are in, start simple: vote for three places you love, check in when you visit a Vegan place, and tell us one thing. Then pick your path. We want to hear from you. As a member, you shape what Vegans Explore becomes, so let us know if something needs to be fixed. Membership is free. We ask for a short survey so we know real people are joining, and that keeps this community worth your time. Bring people with you: invite your friends, your community, new Vegans and Pre-Vegans. And you earn points for everybody who joins using your link. That is the easiest way to grow your experience and open new doors in our community. Become a Founder today.
+
+Made: `liz-fnd-{hill,window,nye,gift,bakery,picnic,welcome}.jpg` (14 credits, no redraws; the close in Liz's pink tee). Video `sec-founder-v1.mp4` (74 s), captions `sec-founder-v1.vtt`, every picture used once.
