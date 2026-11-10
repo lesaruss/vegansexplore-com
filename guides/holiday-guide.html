@@ -553,7 +553,18 @@
     .hg-item span{margin-left:auto;font-weight:700;white-space:nowrap}
     .hg-facts{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;color:var(--ink75)}
     .hg-facts b{color:var(--ink)}
-    .hg-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:auto}
+    .hg-acts{display:flex;gap:8px;flex-wrap:nowrap;margin-top:auto;align-items:stretch}
+    /* A menu card's buttons sit on one row at every width (Sean, 2026-11-10): Holiday Menu, Their page, Save. */
+    .hg-acts .dg-btn{flex:1 1 auto;min-width:0;padding:10px 12px;letter-spacing:.06em}
+    .hg-acts .dg-save{flex:0 0 auto;justify-content:center;padding:0 14px}
+    @media(max-width:420px){.hg-acts{gap:6px}.hg-acts .dg-btn{padding:10px 8px;font-size:11px;letter-spacing:.03em}.hg-acts .dg-save{padding:0 10px}}
+    .hg-subbtn{flex:0 0 auto;height:46px;padding:0 18px;border:0;border-radius:6px;background:#22C55E;color:#03170a;cursor:pointer;font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap}
+    .hg-subbtn:hover,.hg-subbtn[aria-expanded="true"]{background:#4ade80}
+    .hg-submit{border:1px solid var(--line);border-radius:12px;background:#fbfdfb;padding:16px;margin:0 0 16px}
+    .hg-subgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:14px}
+    .hg-subgrid>div{display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+    .hg-subgrid b{font-size:15.5px}.hg-subgrid p{margin:0 0 6px;font-size:14px;color:var(--ink75);line-height:1.5}
+    .hg-submit .hg-admin{margin:14px 0 0}
     .hg-tell{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin:22px 0 4px;padding:16px 18px;border:1px solid var(--line);border-radius:12px;background:#fbfdfb}
     .hg-tell b{font-size:16px}.hg-tell p{margin:4px 0 0;font-size:14.5px;color:var(--ink75);line-height:1.5;max-width:620px}
     .hg-form{display:flex;flex-direction:column;gap:14px;max-width:720px}
@@ -665,6 +676,7 @@
     .dg-eps-sub{font-size:13px;color:var(--ink75);margin:-4px 0 12px}
     @media (max-width:760px){.dg-eps .vep-list{grid-template-columns:minmax(0,1fr)}}
     .hg-tools2{position:relative;display:flex;gap:12px;align-items:center;margin:12px 0 10px}
+    @media(max-width:600px){.hg-tools2{flex-wrap:wrap;gap:10px}.hg-tools2 .hg-search{flex:1 1 100%}.hg-tools2 .hg-fbtn,.hg-tools2 .hg-subbtn{flex:1 1 0}}
     .hg-search{flex:1 1 auto;min-width:160px;display:flex;align-items:center;gap:8px;height:46px;padding:0 14px;border:1.5px solid rgba(0,0,0,.14);border-radius:6px;background:#fff}
     .hg-search input{flex:1;border:0;outline:0;font:inherit;font-size:15px;background:transparent;min-width:0}
     .hg-fbtn{flex:0 0 auto;min-width:132px;height:46px;padding:0 18px;display:flex;align-items:center;justify-content:center;gap:8px;border:1.5px solid rgba(0,0,0,.14);border-radius:6px;background:#fff;color:#1a1a1a;cursor:pointer;font-family:inherit;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
@@ -730,7 +742,8 @@
 <script src="/public/ve-region-directory.js"></script>
 <script src="/public/ve-guide-intro.js"></script>
 <script src="/public/ve-episodes.js"></script>
-<script src="/guide-scripts/holiday-guide.js?v=19"></script>
+<script src="/public/ve-holiday-menu.js?v=1"></script>
+<script src="/guide-scripts/holiday-guide.js?v=20"></script>
 <script src="/public/ve-guide-min.js"></script>
 </body>
 </html>

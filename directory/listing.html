@@ -1219,6 +1219,7 @@ try { if (window.self !== window.top) document.documentElement.classList.add('ve
 <script src="/public/ve-votes.js"></script>
 <script src="/public/ve-badges.js"></script>
 <script src="/public/ve-episodes.js"></script>
+<script src="/public/ve-holiday-menu.js?v=1"></script>
 <script src="/public/ve-products.js"></script>
 <script src="/public/ve-guide-tour.js"></script>
 <script src="/public/ve-macros.js"></script>
@@ -4630,6 +4631,9 @@ function renderListing(l){
   if(l.category === 'News Outlets' && !isYouTubeL(l) && !DEMO) overviewContent += newsStoriesHtml();
 
   // Signature dishes (playbook ve-signature-dishes): a claimed food place's featured dishes, right under About. Filled by loadSigDishes.
+  // A holiday menu in its season (Sean, 2026-11-10: "their menu items need to appear on their pages as well"), at the top of the
+  // Overview; See the menu opens it over the page (/public/ve-holiday-menu.js, the Holiday Guide's window). Filled by VEHolidayMenu.forListing.
+  if(!person && !DEMO && !l._brandSite) overviewContent = '<div id="holiday-menu" hidden></div>' + overviewContent;
   if(PLACE_MENU_CATS.indexOf(l.category) >= 0 && !l._brandSite) overviewContent += '<div id="sig-dishes" hidden></div>';
   // A group's events, or any listing that hosts events (Sean, 2026-10-29), right under About. Filled by loadHostedEvents.
   if(!person && catType !== 'media' && !l._brandSite && (!DEMO || DEMO.events)) overviewContent += '<div id="hosted-events"' + (l.category === 'Groups' ? '' : ' hidden') + '></div>';
@@ -5748,6 +5752,7 @@ if(!slug || slug === 'listing'){
       if(!DEMO || DEMO.events) loadHostedEvents(l);
       if(!DEMO || DEMO.dishes) loadSigDishes(l);
       if(!DEMO && l.category === 'Groups') loadGroupLive(l);
+      if(!DEMO && !l._brandSite && window.VEHolidayMenu) VEHolidayMenu.forListing(l, document.getElementById('holiday-menu'));
       // A location with no menu of its own shows its main listing's.
       // A food place's menu has to be current (Sean, 2026-10-27: "only if we can keep the menu up to date with our processes").
       // Claimed: what the owner (or our team) entered. Not claimed: the menu we copied from their site, only while our monthly

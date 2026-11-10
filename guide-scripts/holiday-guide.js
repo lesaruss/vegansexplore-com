@@ -317,7 +317,6 @@
   function money(s) { return s ? esc(s) : ''; }
   function menuCard(m) {
     var l = m.listing || {}, vegan = l.vegan_status === 'fully_vegan';
-    var items = (m.items || []).slice(0, 20);
     var where = [l.address_city, l.address_state].filter(Boolean).join(', ');
     var saved = !!SAVED[l.id];
     return '<div class="hg-menu">' +
@@ -325,13 +324,10 @@
       '<div><h3><a href="#/' + hx().menus + '/listing/' + encodeURIComponent(l.slug) + '">' + esc(l.name) + '</a></h3><small>' + esc(where || 'Online') + '</small></div></div>' +
       '<div><span class="hg-tag' + (vegan ? '' : ' pv') + '">' + (vegan ? '100% Vegan' : 'Plant-based (Pre-Vegan) menu') + '</span></div>' +
       (m.summary ? '<p class="hg-sum">' + esc(m.summary) + '</p>' : '') +
-      (items.length ? '<div class="hg-items">' + items.map(function (it) {
-        return '<div class="hg-item">' + (it.photo ? '<img src="' + esc(it.photo) + '" alt="" loading="lazy">' : '') + '<div><b>' + esc(it.name) + '</b>' + (it.desc ? '<div style="color:var(--ink55);font-size:13px">' + esc(it.desc) + '</div>' : '') + '</div>' + (it.price ? '<span>' + money(it.price) + '</span>' : '') + '</div>';
-      }).join('') + '</div>' : '') +
       '<div class="hg-facts">' + (m.order_by ? '<span><b>Order by</b> ' + esc(dayFmt(onDay(m.order_by), { month: 'long', day: 'numeric' })) + '</span>' : '') +
-      (m.pickup ? '<span><b>Pickup</b> ' + esc(m.pickup) + '</span>' : '') + (m.price_range ? '<span><b>Price</b> ' + esc(m.price_range) + '</span>' : '') +
-      (m.holiday_hours ? '<span><b>Holiday hours</b> ' + esc(m.holiday_hours) + '</span>' : '') + '</div>' +
-      '<div class="hg-acts">' + (m.order_url ? '<a class="dg-btn" href="' + esc(m.order_url) + '" target="_blank" rel="noopener">Order</a>' : '') +
+      (m.price_range ? '<span><b>Price</b> ' + esc(m.price_range) + '</span>' : '') + '</div>' +
+      // One row of three (Sean, 2026-11-10): Holiday Menu opens the dishes in a window over the page (/public/ve-holiday-menu.js).
+      '<div class="hg-acts">' + menuBtn('m-' + l.slug) +
       '<a class="dg-btn dg-ghost" href="/directory/' + encodeURIComponent(l.slug) + '">Their page</a>' +
       '<button type="button" class="dg-save' + (saved ? ' on' : '') + '" data-hg-save="' + esc(l.id) + '" aria-pressed="' + saved + '">' + (saved ? 'Saved' : 'Save') + '</button></div></div>';
   }
@@ -373,11 +369,13 @@
     if (!LIVE[hk]) loadLive(hk);
     if (/^listing\//.test(sub)) return viewListing(decodeURIComponent(sub.slice(8)), ['Holiday menus', '#/' + mk]);
     if (sub === 'tell') return viewTell();
-    var ch = chapter(sub), t = hrow(), n = pills(ch).length;
+    if (/^menu\//.test(sub)) { OPEN_MENU = decodeURIComponent(sub.slice(5)); sub = null; }
+    var ch = chapter(sub), t = hrow(), n = pills(ch).length, open = daysUntil(t.submit_close) > 0;
     main.innerHTML = head(t.name, 'Holiday menus near you', 'What Vegan places are cooking for ' + esc(t.name) + '. Every menu is checked by our team before it shows.') +
       '<div class="hg-tools2"><div class="hg-search"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#525252" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
       '<input type="search" id="hgQ" placeholder="Search places, dishes, cities..." aria-label="Search holiday menus" value="' + esc(MF.q) + '" autocomplete="off" data-dictate="off"></div>' +
       '<button type="button" class="hg-fbtn" id="hgFbtn" aria-expanded="false" aria-controls="hgPop">Filters<span class="hg-fcount"' + (n ? '' : ' hidden') + '>' + n + '</span></button>' +
+      '<button type="button" class="hg-subbtn" id="hgSubBtn" aria-expanded="false" aria-controls="hgSubmit">Submit a Menu</button>' +
       '<div class="hg-pop" id="hgPop" hidden><div class="hg-pgrid">' +
         '<label class="hg-pf"><span>Chapter</span>' + chapterPick('hgChapter', ch) + '</label>' +
         sel('hgType', 'Menu', MF.type, [['all', 'Every menu'], ['vegan', '100% Vegan'], ['pv', 'Plant-based (Pre-Vegan)']]) +
@@ -385,7 +383,12 @@
         sel('hgSort', 'Sort by', MF.sort, [['vegan', '100% Vegan first'], ['az', 'A to Z'], ['soon', 'Order by soonest']]) +
       '</div><div class="hg-pfoot"><button type="button" class="dg-btn dg-ghost" data-hg-reset>Reset filters</button><button type="button" class="dg-btn" data-hg-done>Done</button></div></div></div>' +
       '<div class="hg-pills">' + pills(ch).map(function (p) { return '<button type="button" class="hg-pill" data-hg-unpill="' + p[0] + '">' + esc(p[1]) + ' <span aria-hidden="true">&times;</span></button>'; }).join('') + '</div>' +
-      adminUpload() + '<div id="hgMenuList"></div>';
+      // Sending a menu stays out of the way until asked for (Sean, 2026-11-10: "focus on the menus... a green button next to the filter").
+      '<div class="hg-submit" id="hgSubmit" hidden><div class="hg-subgrid">' +
+        (open ? '<div><b>Run a Vegan business?</b><p>Send us your holiday menu. Free for members, up after a quick check.</p><a class="dg-btn" href="#/business">Send your menu</a></div>' : '') +
+        (daysUntil(onDay(t.holiday_on)) ? '<div><b>Found a place cooking for ' + esc(t.name) + '?</b><p>Send us the link to its holiday menu and our team checks it.</p><a class="dg-btn dg-ghost" href="#/' + mk + '/tell" data-hg-tell>Tell us about a menu</a></div>' : '') +
+      '</div>' + adminUpload() + '</div>' +
+      '<div id="hgMenuList"></div>';
     drawMenuList(ch);
     wireMenuTools(ch);
     wireAdminUpload();
@@ -419,13 +422,35 @@
     var box = document.getElementById('hgMenuList'); if (!box) return;
     if (MENUS === null) { box.innerHTML = '<div class="dg-loading">Loading the menus...</div>'; return; }
     var t = hrow(), open = daysUntil(t.submit_close) > 0, list = filtered(ch), any = MF.q || pills(ch).length, tips = tipsFiltered(ch);
-    box.innerHTML = (list.length ? '<div class="hg-menus">' + list.map(menuCard).join('') + '</div>' :
-      (MENUS.length && any ? '<div class="hg-empty"><h3>Nothing Matches</h3><p>Try fewer words or reset the filters.</p><button type="button" class="dg-btn dg-ghost" data-hg-reset>Reset filters</button></div>' :
-      '<div class="hg-empty"><h3>No Holiday Menus ' + (ch === 'all' ? '' : 'in ' + esc(chapterName(ch)) + ' ') + 'Yet</h3><p>' + (open ? 'Menus are coming in now, and each one shows here once our team has checked it.' : 'Menus for this holiday are closed.') + '</p>' +
-        (open ? '<a class="dg-btn dg-ghost" href="#/business">Run a business? Send your menu</a>' : '') + '</div>')) +
-      (tips.length ? '<h3 style="margin:22px 0 4px;font-size:17px">Menus We Found</h3><p class="dg-srow-p" style="margin:0 0 10px">Holiday menus our team and our members found. We checked each link; order from the place directly. Run one of these places? Claim your listing free and post your full menu here.</p><div class="hg-menus">' + tips.map(tipCard).join('') + '</div>' : '') +
-      (daysUntil(onDay(t.holiday_on)) ? '<div class="hg-tell"><div><b>Know a place cooking for ' + esc(t.name) + '?</b><p>Send us the link to its holiday menu. Our team checks it, then it shows here for everyone.</p></div><a class="dg-btn dg-ghost" href="#/' + hx().menus + '/tell" data-hg-tell>Tell us about a menu</a></div>' : '');
+    box.innerHTML = (list.length ? '<div class="hg-menus">' + list.map(menuCard).join('') + '</div>' : '') +
+      (tips.length ? (list.length ? '<h3 style="margin:22px 0 10px;font-size:17px">Menus We Found</h3>' : '') + '<div class="hg-menus">' + tips.map(tipCard).join('') + '</div>' : '') +
+      (list.length || tips.length ? '' : any && (MENUS.length || (TIPS || []).length) ? '<div class="hg-empty"><h3>Nothing Matches</h3><p>Try fewer words or reset the filters.</p><button type="button" class="dg-btn dg-ghost" data-hg-reset>Reset filters</button></div>' :
+      '<div class="hg-empty"><h3>No Holiday Menus ' + (ch === 'all' ? '' : 'in ' + esc(chapterName(ch)) + ' ') + 'Yet</h3><p>' + (open ? 'Menus are coming in now, and each one shows here once our team has checked it.' : 'Menus for this holiday are closed.') + '</p></div>');
+    openPending();
   }
+  // The menu window (Sean, 2026-11-10): a card's Holiday Menu opens the place's menu over the page. The address carries it
+  // (#/menus/menu/m-<slug> for a menu a place sent, t-<id> for one we found), so it can be shared; closing goes back to the list.
+  var OPEN_MENU = null;
+  function menuBtn(key) { return '<a class="dg-btn" href="#/' + hx().menus + '/menu/' + encodeURIComponent(key) + '" data-hg-menu="' + esc(key) + '">Holiday Menu</a>'; }
+  function menuData(key) {
+    var hn = String(hrow().name || '').replace(/\s*\(.*\)$/, '');
+    if (/^m-/.test(key)) {
+      var m = (MENUS || []).filter(function (x) { return x.listing && x.listing.slug === key.slice(2); })[0]; if (!m) return null;
+      var l = m.listing;
+      return { name: l.name, slug: l.slug, city: l.address_city, state: l.address_state, vegan: l.vegan_status === 'fully_vegan', holiday: hn, summary: m.summary, items: m.items,
+        order_by: m.order_by, pickup: m.pickup, price_range: m.price_range, holiday_hours: m.holiday_hours, order_url: m.order_url };
+    }
+    var t = (TIPS || []).filter(function (x) { return String(x.id) === key.slice(2); })[0]; if (!t) return null;
+    var tl = t.listing;
+    return { name: tl ? tl.name : t.place_name, slug: tl ? tl.slug : '', city: t.city || (tl && tl.address_city), state: t.state || (tl && tl.address_state),
+      vegan: tl && tl.vegan_status ? tl.vegan_status === 'fully_vegan' : null, holiday: hn, note: t.note, link: t.link };
+  }
+  function openMenu(key) {
+    var d = menuData(key); if (!d || !window.VEHolidayMenu) return false;
+    VEHolidayMenu.open(d, { onClose: function () { if (/\/menu\//.test(location.hash)) history.replaceState(null, '', '#/' + hx().menus); } });
+    return true;
+  }
+  function openPending() { if (OPEN_MENU && MENUS !== null) { var k = OPEN_MENU; OPEN_MENU = null; openMenu(k); } }
   // Menus members spotted (Sean, 2026-11-08): a place and a link to its own holiday menu, checked by our team, never copied.
   function tipPlace(x) { return x.listing || { address_city: x.city, address_state: x.state, communities: [] }; }
   function tipsFiltered(ch) {
@@ -443,7 +468,7 @@
     return '<div class="hg-menu"><div class="hg-mh"><div class="hg-logo"' + (l && l.logo_url ? ' style="background-image:url(\'' + esc(l.logo_url) + '\')"' : '') + '>' + (l && l.logo_url ? '' : esc(String(x.place_name || '?').charAt(0))) + '</div>' +
       '<div><h3>' + name + '</h3><small>' + esc(where || 'Online') + '</small></div></div>' +
       '<div><span class="hg-tag pv">Order direct</span></div>' + (x.note ? '<p class="hg-sum">' + esc(x.note) + '</p>' : '') +
-      '<div class="hg-acts"><a class="dg-btn" href="' + esc(x.link) + '" target="_blank" rel="noopener">See their holiday menu</a>' +
+      '<div class="hg-acts">' + menuBtn('t-' + x.id) +
       (l ? '<a class="dg-btn dg-ghost" href="/directory/' + encodeURIComponent(l.slug) + '">Their page</a><button type="button" class="dg-save' + (SAVED[l.id] ? ' on' : '') + '" data-hg-save="' + esc(l.id) + '" aria-pressed="' + !!SAVED[l.id] + '">' + (SAVED[l.id] ? 'Saved' : 'Save') + '</button>' : '') + '</div>' +
       // Menus We Found (Sean, 2026-11-10): every found menu invites the place to claim its listing and post its full menu.
       '<p class="hg-claim">Your place? <a href="' + (l ? '/claim?listing=' + encodeURIComponent(l.slug) : '/claim?add=1') + '">' + (l ? 'Claim it free' : 'Get listed free') + '</a> and post your full menu.</p></div>';
@@ -1134,6 +1159,16 @@
       var k = el.getAttribute('data-hg-unpill');
       if (k === 'ch') { store('hg_chapter', 'all'); location.hash = '#/' + hx().menus + '/all'; return; }
       MF[k] = k === 'sort' ? 'vegan' : 'all'; viewMenus(chapter(null)); return;
+    }
+    if ((el = e.target.closest('[data-hg-menu]'))) {
+      var key = el.getAttribute('data-hg-menu');
+      if (openMenu(key)) { e.preventDefault(); history.pushState(null, '', '#/' + hx().menus + '/menu/' + encodeURIComponent(key)); }
+      return;
+    }
+    if ((el = e.target.closest('#hgSubBtn'))) {
+      var sp = document.getElementById('hgSubmit'), on = sp.hidden;
+      sp.hidden = !on; el.setAttribute('aria-expanded', String(on)); if (on) sp.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      return;
     }
     if ((el = e.target.closest('[data-hg-save]'))) {
       e.preventDefault();
