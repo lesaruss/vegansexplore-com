@@ -42,6 +42,7 @@ we have systems, so we don't waste time and usage." Canon `canon-template-gate` 
    | A browse page with a banner | `/public/ve-city-banner.js`, as the Directory and Events use it |
    | A search box or a results page | `/public/ve-search.js` and `search.html` (universal search, below) |
    | An email | `email-send`, as `ve-nurture` and `ve-people-outreach` call it |
+| An outreach campaign (a launch, a blast, a follow-up run) | a program in HQ Outreach > Campaigns (`ve_campaign_programs`): its numbered steps as the lookbook (each email or page shown as it is), its groups, its schedule; first: `holiday-launch-2026` (Sean, 2026-11-10: "when we do launch another campaign... it needs to follow suit") |
    | A Guide page's video (a section summary in the Guide's frame) | the Welcome Guide's section videos: `scripts/tour-video/sections/` (README), `sec-city-v2` the reference |
    | A city restaurant carousel for social | Canva `DAHaJ8TQI0I` "5 Vegan Restaurants to Try in Philadelphia" in Vegans Explore > Directory (canon `canon-ve-city-carousel`) |
 2. **Nothing fits?** Stop and bring Sean a recommendation (which parent, or a new template) before building.
