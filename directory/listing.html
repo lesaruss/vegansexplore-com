@@ -5267,21 +5267,18 @@ function trackActions(l){
 // holds each Guide's house ad: its Guide's picture, a line, and a /go/ tracked link.
 function houseAd(l){
   var el = document.getElementById('bb-ad-landscape-1'); if(!el || !window.VEProducts) return;
-  var d = l.details || {}, g = null;
-  (VEProducts.SOURCES || []).forEach(function(k){ if(!g && Array.isArray(d[k]) && d[k].length){ Object.keys(VEProducts.GUIDES).forEach(function(s){ if(!g && VEProducts.GUIDES[s][3]) g = VEProducts.GUIDES[s]; }); } });
-  if(!g) return loadBillboardAds();
-  // For the season the house ad is the Holiday Guide's own animated rail ad (Sean, 2026-11-10: "I like that style where the button is
-  // just at the bottom and you could see more of Theo"): /ads/guides/guide.html fills the slot, picture full bleed, words and button on
-  // top, and leaves through the tracked ve-guide-holiday link. Remove this block after Christmas to bring back the Guide's own ad.
+  var d = l.details || {}, slug = null;
+  (VEProducts.SOURCES || []).forEach(function(k){ if(!slug && Array.isArray(d[k]) && d[k].length){ Object.keys(VEProducts.GUIDES).forEach(function(s){ if(!slug && VEProducts.GUIDES[s][3]) slug = s; }); } });
+  if(!slug) return loadBillboardAds();
+  // The house ad in this slot is the Guide's own animated rail ad (Sean, 2026-11-10: "I like that style where the button is just at the
+  // bottom and you could see more of Theo... apply that as the updated look for that size"): /ads/guides/guide.html fills the slot,
+  // pictures full bleed, words and button on top, and leaves through the Guide's tracked /go/ link.
+  // Through Christmas it is the Holiday Guide (Sean, 2026-11-10: "wherever there's a dairy guide, let's put the holiday guide"); from
+  // December 26 (Eastern) it goes back to the Guide the brand's products are in.
+  var go = VEProducts.GUIDES[slug][3];
+  if(Date.now() < Date.parse('2026-12-26T05:00:00Z')){ slug = 'holiday-guide'; go = '/go/ve-guide-holiday'; }
   el.classList.add('bb-filled');
-  el.innerHTML = '<iframe src="/ads/guides/guide.html?g=holiday-guide&amp;clickTag=' + encodeURIComponent('https://vegansexplore.com/go/ve-guide-holiday') + '" title="The Holiday Guide" loading="lazy" scrolling="no" style="display:block;width:100%;height:100%;border:0;border-radius:8px"></iframe>';
-  return;
-  // The Guide's own ad picture (Sean, 2026-10-09: "a better graphic"): Maya in a store's dairy-free aisle, words laid on top.
-  // A Guide without one falls back to its Guide's square portrait.
-  var art = g[5] || (window.VEGuideArt ? VEGuideArt(g[2], 'square') : '/public/guides/' + g[2] + '.jpg');
-  el.classList.add('bb-filled');
-  el.innerHTML = '<a class="bb-house' + (g[5] ? ' bb-house-ad' : '') + '" href="' + esc(g[3]) + '"><span class="bb-house-pic" style="background-image:url(\'' + esc(art) + '\')' + (/\/theo-[a-z-]+\.jpg$/.test(art) ? ';background-position:center top' : '') + '"></span>' +
-    '<span class="bb-house-txt"><small>From Vegans Explore</small><b>' + esc(g[6] || 'The Vegan ' + g[0]) + '</b><span>' + esc(g[4] || '') + '</span><em>Open the guide</em></span></a>';
+  el.innerHTML = '<iframe src="/ads/guides/guide.html?g=' + encodeURIComponent(slug) + '&amp;clickTag=' + encodeURIComponent('https://vegansexplore.com' + go) + '" title="' + esc(slug === 'holiday-guide' ? 'The Holiday Guide' : 'The Vegan ' + VEProducts.GUIDES[slug][0]) + '" loading="lazy" scrolling="no" style="display:block;width:100%;height:100%;border:0;border-radius:8px"></iframe>';
 }
 
 // The Guide banner on a listing (Sean, 2026-10-31: "put the airport guide, the dairy guide, the stadium and arena guide... spread that

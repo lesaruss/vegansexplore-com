@@ -93,3 +93,15 @@ in a sandbox and passes the tracked link as `?clickTag=`; the ad opens that link
 Our guides (River, Maya, Nori and the rest) are always drawn in the GeekFon illustration style,
 never photographs, in ads and everywhere else. Example: `/ads/humble-cabbage/ve-tee.html`, River
 in the tee, then Shop now plays the tee, Maya and Nori in Black, the $5 donation, and Shop now.
+
+**The brand-page billboard slot is the Guide's rail ad** (Sean, 2026-11-10: "I like that style where the button is just at the bottom
+and you could see more of Theo... apply that as the updated look for that size"). `houseAd` in `directory/listing.html` fills
+`bb-ad-landscape-1` (6:5) with `/ads/guides/guide.html?g=<guide>&clickTag=<tracked /go/ link>`: the Guide's scenes full bleed, the kicker,
+headline and button on top. The old card (`.bb-house`, a picture over a text block) cut off the button with a longer line and is no longer
+drawn there. Through Christmas the slot shows the Holiday Guide (`/go/ve-guide-holiday`; Sean, 2026-11-10: "wherever there's a dairy
+guide, let's put the holiday guide"); from December 26 Eastern it returns by itself to the Guide the brand's products are in (the Dairy
+Guide, `/go/ve-dairy-guide`). The same day the Dairy Guide's rail slots moved to the Holiday rail campaign `...14008` (Washington DC hub's
+landscape slot kept, its skyscraper is already Holiday), the listing house banner got a Holiday campaign `...13005` with `...13002` paused
+(migration `20261110_holiday_for_dairy_and_points_claimed_only.sql`), and the rail ad wraps its headline on a 160-wide skyscraper.
+After Christmas: move the rail slots back to `...14001`, set `...14001` and `...13002` active, and point `FOOD_GUIDE` in
+`public/ve-guide-tab.js` back to the Dairy Guide.
