@@ -6,8 +6,11 @@
 //          photo_url {listing_id} (a dish photo, squared in the browser, into vegan-media), scan_start {listing_id, type},
 //          scan_read {listing_id, holiday, paths[]} (up to 3 photos or a PDF of their menu, read by Claude into dishes; 10 reads a day)
 //          tip {holiday, place_name, city, state, link, note, listing_id?} (a menu a member found; a person checks it; the team's go live at once)
+//          (any registered account, Sean 2026-11-10: quick registration is enough to send things) tip; wish_mine {holiday},
+//          wish_add {holiday, kind: wish | gift, title, link?, note?}, wish_remove {id}
+// Public:  wishes {holiday} (the team-approved gift ideas and the Most Wanted shelf), wish_list {code} (one person's list, by referral code)
 // Admin:   queue {holiday?, status?}, get {id}, review {id, decision: approve | decline | note, note},
-//          tips {holiday?}, tip_review {id, decision: approve | decline | note, note, listing_id?}
+//          tips {holiday?}, tip_review {id, decision: approve | decline | note, note, listing_id?}, wish_queue {holiday?}, wish_review {id, decision}
 import Anthropic from 'npm:@anthropic-ai/sdk';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
@@ -24,6 +27,10 @@ const SCAN_BUCKET = 'holiday-menu-scans';
 const SCAN_TYPES: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'application/pdf': 'pdf' };
 const SCAN_READS_A_DAY = 10;
 const TIPS_A_DAY = 10;
+const WISHES_A_DAY = 20;
+const CODE = /^[A-Za-z0-9-]{4,20}$/;
+// The same wish from many people counts once per link (or per name when there is no link) on Most Wanted.
+const wishKey = (w: { link?: string | null; title: string }) => { try { if (w.link) { const u = new URL(w.link); return (u.hostname.replace(/^www\./, '') + u.pathname.replace(/\/$/, '')).toLowerCase(); } } catch { /* the name then */ } return w.title.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim(); };
 const TIP_LISTING = 'id, slug, name, category, address_city, address_state, logo_url, color, vegan_status, communities';
 const MODEL = 'claude-opus-5-5';
 // A dish photo must be one we hold, uploaded through photo_url.
@@ -158,6 +165,25 @@ Deno.serve(async (req) => {
     const shown = new Set(rows.map((r) => r.listing_id));
     const tips = (tp || []).filter((t) => !t.listing_id || !shown.has(t.listing_id)).map((t) => ({ ...t, listing: t.listing_id ? TL[t.listing_id] || null : null }));
     return json({ ok: true, menus: rows, tips });
+  }
+  // The Holiday Wish List (Sean, 2026-11-10): the public shelves show only what the team approved.
+  if (action === 'wishes') {
+    const hs = String(b.holiday || 'christmas');
+    if (!SLUG.test(hs)) return json({ error: 'bad_holiday' }, 400);
+    const { data } = await db.from('ve_holiday_wishes').select('id, kind, title, link, note, reviewed_at').eq('holiday_slug', hs).eq('status', 'live').order('reviewed_at', { ascending: false }).limit(500);
+    const rows = data || [];
+    const tally: Record<string, { title: string; link: string | null; note: string | null; n: number }> = {};
+    for (const w of rows) { const k = wishKey(w as any); if (!tally[k]) tally[k] = { title: w.title, link: w.link, note: w.note, n: 0 }; tally[k].n++; }
+    const most = Object.values(tally).sort((x, y) => y.n - x.n || x.title.localeCompare(y.title)).slice(0, 12);
+    return json({ ok: true, gifts: rows.filter((w) => w.kind === 'gift').slice(0, 60), most_wanted: most });
+  }
+  if (action === 'wish_list') {
+    const code = String(b.code || ''), hs = String(b.holiday || 'christmas');
+    if (!CODE.test(code) || !SLUG.test(hs)) return json({ error: 'bad_code' }, 400);
+    const { data: who } = await db.from('members').select('id, name').eq('referral_code', code).maybeSingle();
+    if (!who) return json({ error: 'not_found' }, 404);
+    const { data } = await db.from('ve_holiday_wishes').select('id, title, link, note').eq('holiday_slug', hs).eq('member_id', who.id).eq('kind', 'wish').in('status', ['pending', 'live']).order('created_at').limit(100);
+    return json({ ok: true, first_name: String(who.name || '').trim().split(/\s+/)[0] || 'A friend', items: data || [] });
   }
 
   // ---- Signed in ----
@@ -294,8 +320,45 @@ Deno.serve(async (req) => {
     return json({ ok: true, status: 'withdrawn' });
   }
 
+  // Wish list: any registered account (quick registration is enough).
+  if (action === 'wish_mine' || action === 'wish_add' || action === 'wish_remove') {
+    const hs = String(b.holiday || 'christmas');
+    if (!SLUG.test(hs)) return json({ error: 'bad_holiday' }, 400);
+    if (action === 'wish_remove') {
+      const id = String(b.id || '');
+      if (!UUID.test(id)) return json({ error: 'bad_id' }, 400);
+      const { data: w } = await db.from('ve_holiday_wishes').select('id, member_id').eq('id', id).maybeSingle();
+      if (!w || (w.member_id !== me && !admin)) return json({ error: 'not_found' }, 404);
+      await db.from('ve_holiday_wishes').update({ status: 'removed', updated_at: new Date().toISOString() }).eq('id', id);
+      return json({ ok: true });
+    }
+    if (action === 'wish_add') {
+      const { data: h } = await db.from('ve_holidays').select('slug, name, active').eq('slug', hs).maybeSingle();
+      if (!h || !h.active) return json({ error: 'bad_holiday' }, 400);
+      const kind = b.kind === 'gift' ? 'gift' : 'wish';
+      const title = clean(b.title, 120);
+      if (title.length < 2) return json({ error: 'title_needed' }, 400);
+      const rawLink = clean(b.link, 500), link = rawLink ? cleanUrl(rawLink) : null;
+      if (rawLink && !link) return json({ error: 'bad_link' }, 400);
+      if (!admin) {
+        const since = new Date(Date.now() - 86400000).toISOString();
+        const { count } = await db.from('ve_holiday_wishes').select('id', { count: 'exact', head: true }).eq('member_id', me).gte('created_at', since);
+        if ((count || 0) >= WISHES_A_DAY) return json({ error: 'rate_limited' }, 429);
+      }
+      const now = new Date().toISOString();
+      const { data: saved, error } = await db.from('ve_holiday_wishes').insert({ holiday_slug: hs, member_id: me, kind, title, link, note: clean(b.note, 300) || null,
+        status: admin ? 'live' : 'pending', reviewed_by: admin ? me : null, reviewed_at: admin ? now : null }).select('id, status').single();
+      if (error || !saved) return json({ error: 'save_failed' }, 500);
+      return json({ ok: true, id: saved.id, status: saved.status });
+    }
+    const [{ data: rows }, { data: who }] = await Promise.all([
+      db.from('ve_holiday_wishes').select('id, kind, title, link, note, status, created_at').eq('holiday_slug', hs).eq('member_id', me).neq('status', 'removed').order('created_at').limit(200),
+      db.from('members').select('referral_code').eq('id', me).maybeSingle(),
+    ]);
+    return json({ ok: true, items: rows || [], code: who?.referral_code || null });
+  }
+
   if (action === 'tip') {
-    if (!member) return json({ error: 'member_needed' }, 403);
     const hs = String(b.holiday || '');
     if (!SLUG.test(hs)) return json({ error: 'bad_holiday' }, 400);
     const { data: h } = await db.from('ve_holidays').select('slug, name, holiday_on, active').eq('slug', hs).maybeSingle();
@@ -367,6 +430,23 @@ Deno.serve(async (req) => {
     if (d !== 'note') { upd.status = d === 'approve' ? 'live' : 'declined'; upd.reviewed_by = me; upd.reviewed_at = now; }
     await db.from('ve_holiday_menu_tips').update(upd).eq('id', id);
     return json({ ok: true, status: upd.status || null });
+  }
+
+  if (action === 'wish_queue') {
+    let q = db.from('ve_holiday_wishes').select('*').eq('status', 'pending').order('created_at').limit(500);
+    if (SLUG.test(String(b.holiday || ''))) q = q.eq('holiday_slug', String(b.holiday));
+    const { data } = await q;
+    const mids = [...new Set((data || []).map((w) => w.member_id))];
+    const { data: ms } = mids.length ? await db.from('members').select('id, name, email').in('id', mids) : { data: [] as any[] };
+    const M = Object.fromEntries((ms || []).map((m: any) => [m.id, m]));
+    return json({ ok: true, rows: (data || []).map((w) => ({ ...w, member: M[w.member_id] || null })) });
+  }
+  if (action === 'wish_review') {
+    const id = String(b.id || ''), d = String(b.decision || '');
+    if (!UUID.test(id) || !['approve', 'decline'].includes(d)) return json({ error: 'bad_request' }, 400);
+    const now = new Date().toISOString();
+    await db.from('ve_holiday_wishes').update({ status: d === 'approve' ? 'live' : 'declined', reviewed_by: me, reviewed_at: now, updated_at: now, team_note: clean(b.note, 500) || null }).eq('id', id).eq('status', 'pending');
+    return json({ ok: true });
   }
 
   if (action === 'queue') {
