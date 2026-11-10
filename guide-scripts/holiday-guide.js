@@ -326,7 +326,7 @@
       (m.summary ? '<p class="hg-sum">' + esc(m.summary) + '</p>' : '') +
       '<div class="hg-facts">' + (m.order_by ? '<span><b>Order by</b> ' + esc(dayFmt(onDay(m.order_by), { month: 'long', day: 'numeric' })) + '</span>' : '') +
       (m.price_range ? '<span><b>Price</b> ' + esc(m.price_range) + '</span>' : '') + '</div>' +
-      // One row of three (Sean, 2026-11-10): Holiday Menu opens the dishes in a window over the page (/public/ve-holiday-menu.js).
+      // One row of three (Sean, 2026-11-10): See Menu opens the menu in a lightbox over the page (/public/ve-holiday-menu.js).
       '<div class="hg-acts">' + menuBtn('m-' + l.slug) +
       '<a class="dg-btn dg-ghost" href="/directory/' + encodeURIComponent(l.slug) + '">Their page</a>' +
       '<button type="button" class="dg-save' + (saved ? ' on' : '') + '" data-hg-save="' + esc(l.id) + '" aria-pressed="' + saved + '">' + (saved ? 'Saved' : 'Save') + '</button></div></div>';
@@ -431,18 +431,18 @@
   // The menu window (Sean, 2026-11-10): a card's Holiday Menu opens the place's menu over the page. The address carries it
   // (#/menus/menu/m-<slug> for a menu a place sent, t-<id> for one we found), so it can be shared; closing goes back to the list.
   var OPEN_MENU = null;
-  function menuBtn(key) { return '<a class="dg-btn" href="#/' + hx().menus + '/menu/' + encodeURIComponent(key) + '" data-hg-menu="' + esc(key) + '">Holiday Menu</a>'; }
+  function menuBtn(key) { return '<a class="dg-btn" href="#/' + hx().menus + '/menu/' + encodeURIComponent(key) + '" data-hg-menu="' + esc(key) + '">See Menu</a>'; }
   function menuData(key) {
     var hn = String(hrow().name || '').replace(/\s*\(.*\)$/, '');
     if (/^m-/.test(key)) {
       var m = (MENUS || []).filter(function (x) { return x.listing && x.listing.slug === key.slice(2); })[0]; if (!m) return null;
       var l = m.listing;
-      return { name: l.name, slug: l.slug, city: l.address_city, state: l.address_state, vegan: l.vegan_status === 'fully_vegan', holiday: hn, summary: m.summary, items: m.items,
+      return { name: l.name, slug: l.slug, logo: l.logo_url, city: l.address_city, state: l.address_state, vegan: l.vegan_status === 'fully_vegan', holiday: hn, summary: m.summary, items: m.items,
         order_by: m.order_by, pickup: m.pickup, price_range: m.price_range, holiday_hours: m.holiday_hours, order_url: m.order_url };
     }
     var t = (TIPS || []).filter(function (x) { return String(x.id) === key.slice(2); })[0]; if (!t) return null;
     var tl = t.listing;
-    return { name: tl ? tl.name : t.place_name, slug: tl ? tl.slug : '', city: t.city || (tl && tl.address_city), state: t.state || (tl && tl.address_state),
+    return { name: tl ? tl.name : t.place_name, slug: tl ? tl.slug : '', logo: tl && tl.logo_url, city: t.city || (tl && tl.address_city), state: t.state || (tl && tl.address_state),
       vegan: tl && tl.vegan_status ? tl.vegan_status === 'fully_vegan' : null, holiday: hn, note: t.note, link: t.link };
   }
   function openMenu(key) {
