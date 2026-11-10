@@ -471,7 +471,9 @@
         '<div class="dg-btns" style="margin:0"><button class="dg-btn" type="submit">Send it</button></div><p class="dg-srow-p" data-smsg style="margin:0"></p></form></section></div>' +
       '<div id="hgGiftList"><div class="dg-loading">Loading the gifts...</div></div>' +
       // Amazon's Associates terms ask for this line wherever our tagged Amazon links are.
-      '<p class="hg-note">Some links go to Amazon through our tracked links. As an Amazon Associate, Vegans Explore earns from qualifying purchases.</p>';
+      '<p class="hg-note">Some links go to Amazon through our tracked links. As an Amazon Associate, Vegans Explore earns from qualifying purchases.</p>' +
+      // Brands' own changes to their cards, from /hello/gifts (2026-11-10): the team checks, then Apply puts them on the card.
+      (isAdmin() ? '<div id="hgGiftReq"></div>' : '');
     var gf = main.querySelector('.hg-giftf');
     gf.addEventListener('change', function () {
       var own = gf.owner.checked, yes = (gf.querySelector('input[name=giveaway]:checked') || {}).value === 'yes';
@@ -515,6 +517,23 @@
         if (registered()) go(); else joinWindow('Save to Your Wish List', 'Everything in the Holiday Guide is free to read. Register to save gifts to your wish list and share it with the people you love.', function () { setTimeout(function () { GIFTS = null; viewGifts(); }, 50); });
       }
     });
+    var drawReq = function () {
+      var box = document.getElementById('hgGiftReq'); if (!box) return;
+      holA('gift_requests', {}).then(function (d) {
+        var rows = (d && d.rows) || [], CH = { keep: 'Keep it as is', item: 'A different item', photo: 'A different photo' };
+        box.innerHTML = '<section class="hg-shelf"><h3 class="hg-shelf-h">Card Changes from Brands (' + rows.length + ', team only)</h3>' + (rows.length ? '<div class="hg-mlist">' + rows.map(function (r) {
+          var w = { title: (r.listing ? r.listing.name : '') + ': ' + CH[r.change] + (r.title ? ', ' + r.title : ''), link: r.link, image_url: r.image_url || (r.gift && r.gift.image_url), note: [r.note, r.giveaway ? 'Giveaway: ' + (r.giveaway === 'yes' ? 'yes' + (r.giveaway_note ? ' (' + r.giveaway_note + ')' : '') : 'no') : '', r.member ? 'From ' + (r.member.name || '') + ' ' + (r.member.email || '') : ''].filter(Boolean).join(' \u00b7 ') };
+          return wishRow(w, (r.change === 'keep' || !r.gift_id ? '' : '<button type="button" class="hg-wx" data-greq-ok="' + esc(r.id) + '">Apply</button>') + '<button type="button" class="hg-wx" data-greq-no="' + esc(r.id) + '">' + (r.change === 'keep' || !r.gift_id ? 'Done' : 'Decline') + '</button>');
+        }).join('') + '</div>' : '<p class="dg-srow-p">Nothing waiting.</p>') + '</section>';
+      }).catch(function () {});
+    };
+    if (main._greqH) main.removeEventListener('click', main._greqH);
+    main.addEventListener('click', main._greqH = function (e) {
+      var el = e.target.closest('[data-greq-ok],[data-greq-no]'); if (!el || curView !== 'xm-gifts') return;
+      var ok = el.hasAttribute('data-greq-ok'); el.disabled = true;
+      holA('gift_request_review', { id: el.getAttribute(ok ? 'data-greq-ok' : 'data-greq-no'), decision: ok ? 'apply' : 'decline' }).then(function () { GIFTS = null; drawReq(); holA('gifts', { holiday: 'christmas' }).then(function (d) { GIFTS = (d && d.gifts) || []; draw(); }); });
+    });
+    drawReq();
     if (GIFTS) { draw(); return; }
     holA('gifts', { holiday: 'christmas' }).then(function (d) { GIFTS = (d && d.gifts) || []; }).catch(function () { GIFTS = []; }).then(function () { if (curView === 'xm-gifts') draw(); });
   }

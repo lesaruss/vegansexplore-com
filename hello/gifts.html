@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>You're in our Gift Guide — Vegans Explore</title>
+  <meta name="description" content="Your gift is in the Vegans Explore Holiday Gift Guide. Keep it, swap the item or the photo, and claim your page free.">
+  <meta name="robots" content="noindex">
+  <meta property="og:title" content="You're in our Gift Guide — Vegans Explore">
+  <meta property="og:description" content="Your gift is in the Vegans Explore Holiday Gift Guide.">
+  <meta property="og:image" content="https://vegansexplore.com/public/og-default.jpg">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* The Gift Guide's brand landing page (Sean, 2026-11-10: "give them that page that they land on... create a intake for that so that way it
+       just goes automatically to you... a specific one for this campaign that matches the business one we created"). Parent: /hello?b=business
+       (template gate): the words on the left, one line for the audience, the picture on the right in the same 4:5 frame (here the brand's own
+       gift), the doors under the words. The intake is a two-step form under the doors (ve-holiday gift_request), checked by the team on the
+       Gift Guide's team queue before it touches the card. Every link we send is a tracked /go/ link that lands here with ?l=<listing slug>. */
+
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-border:rgba(0,0,0,0.09);}
+    body{font-family:"Montserrat",sans-serif;background:#fff;color:var(--ve-text);line-height:1.6;}
+    :focus-visible{outline:3px solid var(--ve-orange);outline-offset:2px;}
+    main{padding:56px 40px 88px;}
+    .split{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:56px;align-items:center;}
+    .eyebrow{font-size:11px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--ve-green-dark);margin-bottom:12px;}
+    h1{font-weight:900;line-height:1.05;letter-spacing:-0.02em;text-transform:uppercase;font-size:clamp(32px,4.4vw,56px);margin-bottom:20px;}
+    .reason{white-space:pre-line;font-size:18px;font-weight:800;line-height:1.45;border-left:4px solid var(--ve-orange);padding:6px 0 6px 16px;margin:0 0 20px;max-width:640px;}
+    .btn{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:14px 28px;border-radius:6px;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;border:none;cursor:pointer;text-decoration:none;}
+    .btn-primary{background:#22C55E;color:#0b2e14;}
+    .btn-primary:hover{background:#4ade80;}
+    .btn-primary:disabled{background:#9CA3AF;color:#fff;cursor:default;}
+    .btn-ghost{background:#fff;color:var(--ve-green-deep);border:1px solid rgba(31,95,34,.35)}
+    .btn-ghost:hover{border-color:var(--ve-green-deep)}
+    .cta-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:10px}
+    .fine{font-size:12.5px;color:#6b6b6b;margin-top:14px;max-width:640px;}
+    .msg{font-size:14px;font-weight:700;margin-top:14px;max-width:640px;}
+    .msg.err{color:#b42318;}
+    .msg.ok{color:var(--ve-green-deep);}
+    .said{font-size:16px;line-height:1.65;color:var(--ve-text);max-width:640px;margin:0 0 22px}
+    .said p{margin:0 0 10px}
+    .side{display:flex;flex-direction:column;align-self:start}
+    .media{border-radius:16px;overflow:hidden;background:#f6f6f4;aspect-ratio:4/5;max-height:calc(100vh - 180px);box-shadow:0 18px 40px rgba(0,0,0,0.18);display:block}
+    .media img{width:100%;height:100%;object-fit:cover;display:block;}
+    .cap{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:14px;font-weight:700}
+    .cap .lg{width:36px;height:36px;border-radius:8px;border:1px solid var(--ve-border);background:#fff center/contain no-repeat;flex:none}
+    .cap small{display:block;font-weight:600;color:var(--ve-text-75);font-size:12.5px}
+    [hidden]{display:none !important;}
+
+    /* The intake: claim.html's family (stepper, Back / Step N of M / Next) */
+    .intake{max-width:640px;margin-top:22px;border:1px solid var(--ve-border);border-radius:12px;padding:22px;background:#fff}
+    .intake h2{font-size:20px;font-weight:900;margin:0 0 4px}
+    .intake .sub{font-size:14px;color:var(--ve-text-75);margin:0 0 14px}
+    .stepper{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin:0 0 16px;padding:0;counter-reset:st;}
+    .stepper li{counter-increment:st;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--ve-text-75);border:1px solid var(--ve-border);border-radius:6px;padding:6px 10px}
+    .stepper li::before{content:counter(st);display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:#e7ece8;color:var(--ve-text);font-size:11px}
+    .stepper li.on{border-color:var(--ve-green-deep);color:var(--ve-green-deep);}.stepper li.on::before{background:var(--ve-green-deep);color:#fff;}
+    .stepper li.done::before{background:var(--ve-green);color:#fff;content:'\2713';}
+    .choice{display:grid;gap:8px;margin:0 0 14px}
+    .choice label{display:flex;gap:10px;align-items:flex-start;border:1px solid var(--ve-border);border-radius:6px;padding:12px 14px;cursor:pointer;font-size:14px;font-weight:700}
+    .choice label small{display:block;font-weight:600;color:var(--ve-text-75)}
+    .choice input{margin-top:3px;width:18px;height:18px;flex:none}
+    .choice label:has(input:checked){border-color:var(--ve-green-deep);background:var(--ve-green-light)}
+    .f{display:block;font-size:13px;font-weight:700;color:var(--ve-text-75);margin:12px 0 6px}
+    .f small{font-weight:600}
+    .intake input[type=text],.intake input[type=url],.intake textarea{width:100%;font:inherit;font-size:15px;padding:11px 12px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff}
+    .intake textarea{min-height:84px;resize:vertical}
+    .ph{display:flex;gap:14px;align-items:center;margin-top:4px}
+    .ph .pv{width:92px;height:92px;border-radius:10px;border:1px dashed rgba(0,0,0,.25);background:#f6f6f4 center/cover no-repeat;flex:none}
+    .step-nav{display:flex;align-items:center;gap:12px;margin-top:18px;}
+    .step-nav .step-count{flex:1;text-align:center;font-size:13px;font-weight:800;color:var(--ve-text-75);}
+    .done-box{max-width:640px;margin-top:22px;border:1px solid rgba(58,155,62,.35);background:var(--ve-green-light);border-radius:12px;padding:20px}
+    .done-box h2{font-size:20px;font-weight:900;margin:0 0 6px}
+
+    @media (max-width:900px){
+      main{padding:28px 16px 64px;}
+      .split{grid-template-columns:minmax(0,1fr);gap:28px;}
+      .side{order:-1}
+      .media{max-height:none;}
+      .cta-row .btn{flex:1 1 100%}
+      .intake{padding:16px}
+    }
+  </style>
+</head>
+<body>
+  <script src="/public/nav.js"></script>
+
+  <main>
+    <section class="split" id="page">
+      <div>
+        <div class="eyebrow">The Vegans Explore Holiday Gift Guide</div>
+        <h1>You're in our Gift Guide.</h1>
+        <p class="reason" id="line">Our team picked your gift for this year's Holiday Gift Guide.</p>
+        <div class="said">
+          <p>It's a free guide that helps people shop for the Vegans in their lives, and for anyone who loves a gift that does no harm. Your card has your photo, a link to buy it and your page in our Directory.</p>
+          <p>We started you off with one of our favorites. Would you like us to feature a different item, or use a different photo? Tell us below and our team updates your card.</p>
+        </div>
+        <div class="cta-row">
+          <button type="button" class="btn btn-primary" id="open">Update my gift</button>
+          <a class="btn btn-ghost" id="see" href="/guides/holiday-guide#/xm-gifts">See it in the Gift Guide</a>
+          <a class="btn btn-ghost" id="claim" href="/claim">Claim my page, free</a>
+        </div>
+        <p class="fine" id="fine">Brands that claim their page by Friday, November 20 get first pick of a few things we are planning for December.</p>
+
+        <section class="intake" id="intake" hidden aria-labelledby="in-h">
+          <h2 id="in-h">Update your gift</h2>
+          <p class="sub">Our team checks every change before it goes on your card.</p>
+          <ol class="stepper" id="stepper"></ol>
+          <div data-step="card">
+            <div class="choice" role="radiogroup" aria-label="What to change">
+              <label><input type="radio" name="change" value="keep" checked><span>Keep it as is<small>Your card stays the way it is now.</small></span></label>
+              <label><input type="radio" name="change" value="item"><span>Feature a different item<small>Tell us what it is and where people buy it.</small></span></label>
+              <label><input type="radio" name="change" value="photo"><span>Use a different photo<small>Upload the photo you would like us to use.</small></span></label>
+            </div>
+            <div id="item-f" hidden>
+              <label class="f" for="title">The item</label>
+              <input type="text" id="title" maxlength="120" placeholder="Holiday gift box">
+              <label class="f" for="link">Where people buy it <small>(the product's page)</small></label>
+              <input type="url" id="link" maxlength="500" placeholder="https://">
+            </div>
+            <div id="photo-f" hidden>
+              <label class="f">The photo <small>(a clear product photo; we show it square)</small></label>
+              <div class="ph"><span class="pv" id="pv"></span><label class="btn btn-ghost" style="cursor:pointer">Choose a photo<input type="file" id="file" accept="image/jpeg,image/png,image/webp" hidden></label></div>
+            </div>
+            <label class="f" for="note">Anything our team should know <small>(optional)</small></label>
+            <textarea id="note" maxlength="600" placeholder="A line about it, a discount code, or anything else"></textarea>
+          </div>
+          <div data-step="giveaway" hidden>
+            <p style="font-size:15px;margin:0 0 12px"><b>Our holiday giveaway starts in December.</b> Every day we give something to our community. Is there an item you would like to give to it? (optional)</p>
+            <div class="choice" role="radiogroup" aria-label="Giveaway">
+              <label><input type="radio" name="giveaway" value="yes"><span>Yes, I would like to</span></label>
+              <label><input type="radio" name="giveaway" value="no"><span>Not this time</span></label>
+            </div>
+            <div id="ga-f" hidden>
+              <label class="f" for="ga">What would you give, and how many? <small>(optional)</small></label>
+              <input type="text" id="ga" maxlength="300" placeholder="Two gift boxes">
+            </div>
+          </div>
+          <p class="msg" id="msg" role="status"></p>
+          <div class="step-nav">
+            <button type="button" class="btn btn-ghost" id="back">Back</button>
+            <span class="step-count" id="count"></span>
+            <button type="button" class="btn btn-primary" id="next">Next</button>
+            <button type="button" class="btn btn-primary" id="send" hidden>Send it</button>
+          </div>
+        </section>
+        <section class="done-box" id="done" hidden><h2>Thank you. We have it.</h2><p>Our team checks it and updates your card, usually within a day. We will be in touch if we have a question.</p></section>
+      </div>
+      <div class="side">
+        <a class="media" id="media" href="/guides/holiday-guide#/xm-gifts" aria-label="Your gift in the Gift Guide"><img id="pic" src="/public/og-default.jpg" alt=""></a>
+        <div class="cap" id="cap" hidden><a class="lg" id="lg" href="#" aria-label="Your page in the Directory"></a><div><span id="ct"></span><small id="cb"></small></div></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/ve-join-box.js?v=5"></script>
+  <script>
+  (function () {
+    var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-holiday';
+    var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+    var $ = function (id) { return document.getElementById(id); };
+    var slug = (new URLSearchParams(location.search).get('l') || '').toLowerCase();
+    var L = null, G = null, PHOTO = '', at = 0, STEPS = ['card', 'giveaway'], NAME = { card: 'Your card', giveaway: 'The giveaway' };
+    function tok() { return window.VEAuth && VEAuth.getToken ? VEAuth.getToken() : ''; }
+    function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: ANON, Authorization: 'Bearer ' + (tok() || ANON) }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+    function val(n) { var e = document.querySelector('input[name=' + n + ']:checked'); return e ? e.value : ''; }
+    function bad(t) { $('msg').className = 'msg err'; $('msg').textContent = t; return false; }
+
+    // The brand and its card
+    if (slug) api({ action: 'gift_card', slug: slug }).then(function (d) {
+      if (!d || !d.ok) return;
+      L = d.listing; G = (d.gifts || [])[0] || null;
+      $('claim').href = '/claim?listing=' + encodeURIComponent(L.slug);
+      if (L.claimed) $('claim').hidden = true;
+      $('lg').href = '/directory/' + encodeURIComponent(L.slug);
+      if (L.logo_url) $('lg').style.backgroundImage = "url('" + L.logo_url + "')";
+      if (G) {
+        $('line').textContent = L.name + ', our team picked your ' + G.title + ' for this year’s Holiday Gift Guide.';
+        if (G.image_url) { $('pic').src = G.image_url; $('pic').alt = G.title; }
+        $('ct').textContent = G.title; $('cb').textContent = (G.brand || L.name) + (G.section ? ' · ' + G.section : '');
+        $('cap').hidden = false;
+      } else $('line').textContent = L.name + ', you are in our Holiday Gift Guide.';
+    }).catch(function () {});
+
+    // The intake (two steps)
+    function go(n) {
+      at = n;
+      [].forEach.call(document.querySelectorAll('#intake [data-step]'), function (d) { d.hidden = d.getAttribute('data-step') !== STEPS[n]; });
+      $('stepper').innerHTML = STEPS.map(function (k, i) { return '<li class="' + (i < n ? 'done' : i === n ? 'on' : '') + '">' + NAME[k] + '</li>'; }).join('');
+      $('count').textContent = 'Step ' + (n + 1) + ' of ' + STEPS.length;
+      $('back').hidden = n === 0; $('next').hidden = n === STEPS.length - 1; $('send').hidden = n !== STEPS.length - 1;
+      $('msg').textContent = '';
+    }
+    function check() {
+      var c = val('change');
+      if (c === 'item' && $('title').value.trim().length < 2) { $('title').focus(); return bad('Tell us the item.'); }
+      if (c === 'photo' && !PHOTO) return bad('Choose a photo first.');
+      return true;
+    }
+    function sync() {
+      var c = val('change'); $('item-f').hidden = c !== 'item'; $('photo-f').hidden = c !== 'photo' && c !== 'item';
+      $('ga-f').hidden = val('giveaway') !== 'yes';
+    }
+    document.addEventListener('change', sync);
+    $('open').onclick = function () { $('intake').hidden = false; go(0); sync(); $('intake').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+    $('back').onclick = function () { go(at - 1); };
+    $('next').onclick = function () { if (check()) go(at + 1); };
+
+    // A photo: squared to at most 1200 px as a JPEG, then uploaded to our storage (gift_photo_url).
+    $('file').onchange = function () {
+      var f = this.files && this.files[0]; if (!f || !L) return;
+      if (!tok()) { needAccount(function () { $('file').onchange.call({ files: [f] }); }); return; }
+      $('msg').className = 'msg'; $('msg').textContent = 'Uploading...';
+      var img = new Image(), u = URL.createObjectURL(f);
+      img.onload = function () {
+        var s = Math.min(1200, Math.max(img.width, img.height)), r = s / Math.max(img.width, img.height), c = document.createElement('canvas');
+        c.width = Math.round(img.width * r); c.height = Math.round(img.height * r); c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+        c.toBlob(function (blob) {
+          api({ action: 'gift_photo_url', listing_id: L.id }).then(function (d) {
+            if (!d || !d.ok) throw d;
+            return fetch(d.upload_url, { method: 'PUT', headers: { 'Content-Type': 'image/jpeg' }, body: blob }).then(function (r) { if (!r.ok) throw r; PHOTO = d.url; $('pv').style.backgroundImage = "url('" + d.url + "')"; $('msg').className = 'msg ok'; $('msg').textContent = 'Photo added.'; });
+          }).catch(function () { bad('That photo did not upload. Try another one.'); });
+        }, 'image/jpeg', 0.86);
+      };
+      img.src = u;
+    };
+
+    // Registration first (Sean: every submission comes from a registered account; quick registration is enough).
+    function needAccount(then) {
+      if (window.VEJoinBox) { VEJoinBox.open({ guide: 'Holiday Guide', character: 'Theo', pic: '/public/guides/holiday/theo-xm-gifts.jpg', reason: 'Update Your Gift', line: 'So we know who is asking, register in a few seconds. Then your change goes straight to our team.', mode: '', onDone: then }); return; }
+      if (window.VEAuth) VEAuth.showAuthModal('Register to update your gift.', then, 'signup');
+    }
+    $('send').onclick = function () {
+      if (!L) return bad('We could not find your page. Open the link from our message again.');
+      if (!check()) { go(0); return; }
+      if (!tok()) { needAccount(function () { $('send').onclick(); }); return; }
+      var c = val('change'), ga = val('giveaway') || null;
+      $('send').disabled = true; $('msg').className = 'msg'; $('msg').textContent = 'Sending...';
+      api({ action: 'gift_request', listing_id: L.id, gift_id: G ? G.id : null, change: c, title: $('title').value.trim(), link: $('link').value.trim(),
+        image_url: PHOTO, note: $('note').value.trim(), giveaway: ga, giveaway_note: ga === 'yes' ? $('ga').value.trim() : '' }).then(function (d) {
+        if (!d || !d.ok) throw d;
+        $('intake').hidden = true; $('done').hidden = false; $('open').hidden = true;
+      }).catch(function (d) {
+        bad(d && d.error === 'bad_link' ? 'That link does not look right. Paste the full address.' : d && d.error === 'rate_limited' ? 'That is a lot for one day. Try again tomorrow.' : 'That did not send. Try again in a minute.');
+      }).then(function () { $('send').disabled = false; });
+    };
+  })();
+  </script>
+  <script src="/public/footer.js"></script>
+</body>
+</html>
