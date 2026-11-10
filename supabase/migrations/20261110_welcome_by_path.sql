@@ -124,3 +124,9 @@ insert into ve_outreach_campaign_members (campaign_slug, person_key, person_name
 select s, 'contact@lesaruss.com', 'Sample Member', 0, 'stopped', 'Sample for previews and tests; never sends'
 from unnest(array['welcome-creator','welcome-restaurant','welcome-business','welcome-nonprofit','welcome-events','welcome-group-leader']) s
 where not exists (select 1 from ve_outreach_campaign_members m where m.campaign_slug = s and m.person_key = 'contact@lesaruss.com');
+
+-- HQ lists only campaigns with a start day (readDoorCampaigns), so the drafts get today's; a draft never sends before approval. Keya's
+-- retired invitation draft is finished, so it leaves the list. Applied 2026-11-10.
+update ve_outreach_campaigns set start_on = '2026-11-10'
+where slug in ('creator-invitation','welcome-creator','welcome-restaurant','welcome-business','welcome-nonprofit','welcome-events','welcome-group-leader') and start_on is null and approved_at is null;
+update ve_outreach_campaigns set status = 'finished' where slug = 'creator-welcome-keya' and approved_at is null;
