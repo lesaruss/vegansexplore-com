@@ -23,4 +23,5 @@ No image model is needed after the creator's avatar exists; these render with Pl
 - The bar: landscape logo v1 at 400 px (carousel), 420 px (story), 440 px (reel); the right side never wraps.
 - Story and the reel's cover shot: the postcard and words sit centered in the space above the bar.
 - Per creator: their GeekFon avatar (blank shirt), their city banner, name, handle and city. Everything else stays.
-- Music (Sean, 2026-11-10: "put some soft music underneath it"): the soft acoustic bed `vegan-media/media/music/creator-kit/reel-music-bed-v1.mp3` (ElevenLabs Music v2.5 in Higgsfield, 30 s, instrumental), at 0.16 volume and dipped under the voice; reuse it for every creator's reel.
+- Music (Sean, 2026-11-10: "put some soft music underneath it"): the soft acoustic bed `vegan-media/media/music/creator-kit/reel-music-bed-v1.mp3` (ElevenLabs Music v2.5 in Higgsfield, 30 s, instrumental), at 0.16 volume and dipped under the voice; not one track for everyone: the music is picked per creator and situation (Sean, 2026-11-10).
+- Music beds to pick from, `vegan-media/media/music/beds/`: `soft-acoustic-v1.mp3` (warm acoustic) and `lofi-neo-soul-v1.mp3` (lo-fi hip hop, neo soul R&B; KJ's, for Philly). Set `MUSIC=` and `MVOL=` (0.14 for the lo-fi) when cutting. KJ's reel: `reel-kai-intro-v5.mp4`. A better music system comes later.
