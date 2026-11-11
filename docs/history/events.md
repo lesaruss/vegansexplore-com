@@ -339,7 +339,9 @@ they are two duplicate events, you can flag those and I can choose"; "select mul
   website) is folded into the one we keep (the live one, else the organizer's own page over Eventbrite, Meetup and the like) and
   turned down as "Duplicate of <id>". Two organizations listing one event wait for Sean (`gate_status` duplicate, `dupe_of`), the
   official one recommended. (2) Its official page (the weekly check's `checkOne`): still this event -> live (`gate_status` passed,
-  `gate_note`); cancelled -> off; gone -> turned down; a 404 once, postponed or unreadable -> held, asked again the next day.
+  `gate_note`); cancelled -> off; gone (404 or 410 on two checks) -> turned down; a page that loads without the event on it, a 404 once,
+  postponed or unreadable -> held, asked again the next day (first run: a Plant Powered Metro New York neoncrm portal page, built in
+  the browser, read as "not this event" and was turned down; fixed the same hour, the event put back to waiting).
   Live duplicates are swept the same way each run (`ve_event_live_dupes`: same organizer folded, RSVPs moved to the one kept;
   two organizations flagged, both stay live until Sean picks).
 - **The intake** refuses a near-same event by the same organizer on the same day (`ve_event_intake_dupe`), not only the exact name.

@@ -21,7 +21,7 @@
 //   1. Duplicates (ve_event_gate_dupes): the same event by the same organizer is folded into the one we keep (turned down as
 //      "Duplicate of <id>"); the same event by two organizations waits for Sean side by side (gate_status 'duplicate').
 //   2. Its official page (checkOne): still there and still this event -> live (gate_status 'passed'); cancelled -> off;
-//      gone -> turned down; a 404 once, postponed, or a page we cannot read -> waits (gate_status 'held', gate_note why),
+//      a page that is gone (404 or 410 twice) -> turned down; a page that loads without this event on it -> held; a 404 once, postponed, or a page we cannot read -> waits (gate_status 'held', gate_note why),
 //      asked again the next day.
 // Live duplicates are folded or flagged the same way first (ve_event_live_dupes).
 //
@@ -291,6 +291,12 @@ async function gateOne(ev: any) {
   if (r.outcome === 'cancelled') {
     await db.from('events').update({ gate_status: 'passed', gated_at: now, gate_note: 'Its official page says it is cancelled.' }).eq('id', ev.id);
     return { id: ev.id, title: ev.title, outcome: 'cancelled' };
+  }
+  // A page that loads but reads as not this event is often one built in the browser (the neoncrm event portals): held for a
+  // person, never turned down on that read alone. Only a page that is really gone (404 or 410 on two checks) is turned down.
+  if (r.outcome === 'gone' && r.http === 200) {
+    await set({ gate_status: 'held', gate_note: 'Its page loads, but we could not find this event on it (it may only show in a browser). Check it by hand.' });
+    return { id: ev.id, title: ev.title, outcome: 'held', note: r.note };
   }
   if (r.outcome === 'gone') {
     await set({ status: 'rejected', reviewed_at: now, rejection_reason: `Its official page no longer shows this event (checked ${day})`, gate_status: 'passed', gate_note: r.note });
