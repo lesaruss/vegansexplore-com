@@ -67,6 +67,8 @@ Passport, part 3).
 
 **The logo** (LOCKED 2026-11-10, canon `canon-ve-logo`): the portrait logo is the stacked shirt version, `/public/logo-ve-portrait-v2.svg` (`-inverted` white type on dark or color, `-white` all white, PNGs beside them); the landscape logo stays v1. Always place the real file, never a model-drawn logo; portrait v1 is retired.
 
+**The look** (LOCKED 2026-11-11, canon `canon-ve-look-color-block`): Color Block, the concept at `/mocks/directory-looks/bold`. Build the brand kit on it first, then the homepage, then each page in the preview, then live; never apply it piecemeal before the kit is locked. **Outreach is paused** until Sean lifts it (handoff `docs/handoff/2026-11-11-holiday-launch-and-brand-lock.md`).
+
 **Pictures.** Pictures from other sites go through `/_vercel/image?url=&w=&q=75` (hosts in `vercel.json` `images`). Repo photos are JPEG, at most 1920 px wide, about 80 quality; banners under about 500 KB. Logos are always copied into `vegan-media` storage, never hot-linked. Generic pictures are our illustration style, never photorealistic; real photos only for real places and people. Our Guides are always drawn, never photographs, and wear the Vegans Explore mark (store clothes; colors and layers may vary).
 
 **A Guide's picture is different on every page** (Sean, 2026-11-10: "I don't want to see him looking the same in each of the videos... make it make sense to it... each page. It shouldn't be the same image"). Each page of a Guide has its own scene of its Guide doing that page's thing (wrapping gifts on the Gift Guide, sharing a list on the Wish List), made with the Guide scenes recipe below; it is the page's still and opens and closes the page's video. Never reuse one page's picture on another.
