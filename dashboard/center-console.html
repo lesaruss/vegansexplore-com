@@ -3529,6 +3529,18 @@
     else if (location.pathname + location.search + location.hash !== url) history.pushState({ tabKey: 'tools', frame: 'creator' }, '', url);
   }
   window.openCreator = openCreator;
+  // The business dashboard (Sean, 2026-11-11, the approved mock /mocks/business-dashboard): /business-dashboard in the dashboard window,
+  // /dashboard/business?l=<slug>&tab=<part> in the address bar. Its seven parts are in the page; ve-claims checks the owner.
+  function openBusiness(search, noPush) {
+    var q = String(search || '');
+    if (q && q.charAt(0) !== '?') q = '?' + q;
+    if (window.activateDashTab) window.activateDashTab('tools', { skipHistory: true });
+    openConsoleFrame('/business-dashboard' + q, 'Business dashboard');
+    var url = '/dashboard/business' + q;
+    if (noPush) history.replaceState({ tabKey: 'tools', frame: 'business' }, '', url);
+    else if (location.pathname + location.search !== url) history.pushState({ tabKey: 'tools', frame: 'business' }, '', url);
+  }
+  window.openBusiness = openBusiness;
   // Who has a creator dashboard: asked once per visit; a creator whose dashboard is on lands on it when they open /dashboard.
   window.veCreatorInfo = null;
   function loadCreatorInfo() {
@@ -3579,6 +3591,10 @@
       tellFrameView();
     } else if (e.data.type === 've-frame-url') {
       var fp = String(e.data.path || '');
+      if (/^\/business-dashboard([?#]|$)/.test(fp) && /^\/dashboard\/business/.test(location.pathname)) {
+        var wantB = '/dashboard/business' + fp.replace(/^\/business-dashboard/, '');
+        if (location.pathname + location.search + location.hash !== wantB) history.replaceState(history.state, '', wantB);
+      }
       if (/^\/creator([?#]|$)/.test(fp) && /^\/dashboard\/creator/.test(location.pathname)) {
         var wantC = '/dashboard/creator' + fp.replace(/^\/creator/, '');
         if (location.pathname + location.search + location.hash !== wantC) history.replaceState(history.state, '', wantC);
@@ -4357,7 +4373,8 @@
     'depot-pages': { title: 'The Depot', el: function () { return document.getElementById('dash-depot-block'); } }
   };
   var DASH_BIZ = [], DASH_BIZ_SCORE = [], DASH_ROLE_TILES = null, DASH_MINE_TILES = null, dlTimer = null;
-  function dvFromPath() { var m = location.pathname.match(/^\/dashboard\/(business|revenue|insights|for-you|depot-pages)\/?$/); return m ? m[1] : ''; }
+  // /dashboard/business is the business dashboard page now (openBusiness), no longer a view of this one.
+  function dvFromPath() { var m = location.pathname.match(/^\/dashboard\/(revenue|insights|for-you|depot-pages)\/?$/); return m ? m[1] : ''; }
   function dashApplyView() {
     var sec = document.getElementById('dash-profile-section'), crumb = document.getElementById('dash-dv-crumb'); if (!sec) return;
     var v = dvFromPath();
@@ -4382,7 +4399,7 @@
     a.innerHTML = '<div class="dash-stat-label">' + dvEsc(o.label) + '</div>' +
       (o.logos || '<div class="dash-stat-value' + (o.cls ? ' ' + o.cls : '') + '">' + o.value + '</div>') +
       '<div class="dash-stat-sub">' + o.sub + '</div><span class="dash-tile-go">Open &rarr;</span>';
-    a.addEventListener('click', function (e) { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return; e.preventDefault(); dashOpenView(o.view); });
+    a.addEventListener('click', function (e) { if (e.metaKey || e.ctrlKey || e.shiftKey || e.button) return; e.preventDefault(); if (o.fn) o.fn(); else dashOpenView(o.view); });
     return a;
   }
   function dashBizTile() {
@@ -4394,7 +4411,7 @@
     var n = DASH_BIZ.length;
     var sub = worst ? dvEsc(worst.name) + ': ' + worst.passed + ' of ' + worst.total + ' checks passed'
       : n === 1 ? dvEsc(DASH_BIZ[0].name) : n + ' listings: open each business dashboard and listing check';
-    return dashTile({ view: 'business', label: 'Your business', logos: logos, sub: sub });
+    return dashTile({ view: 'business', label: 'Your business', logos: logos, sub: sub, fn: function () { openBusiness(n === 1 ? '?l=' + encodeURIComponent(DASH_BIZ[0].slug) + '&tab=home' : ''); } });
   }
   function dashRevTile() {
     var d = REV.data, t = d && d.totals;
@@ -4483,14 +4500,14 @@
   function renderBusinessFirst(listings) {
     var box = document.getElementById('dash-biz'); if (!box) return;
     if (!listings.length) { box.style.display = 'none'; box.innerHTML = ''; DASH_BIZ = []; dashTilesLayout(); return; }
-    var href = function (l, pd) { return '/directory/' + encodeURIComponent(l.slug) + '?tab=brand' + (pd ? '&pd=' + pd : ''); };
+    var href = function (l, pd) { return '/dashboard/business?l=' + encodeURIComponent(l.slug) + (pd ? '&tab=page&pd=' + pd : '&tab=home'); };
     DASH_BIZ = listings.slice(0, 4); DASH_BIZ_SCORE = []; dashTilesLayout();
     box.innerHTML = '<div class="dash-biz-head"><p class="dash-section-title">Your business</p></div>' + listings.slice(0, 4).map(function (l, i) {
       var pic = l.logo_url ? '<span class="dash-biz-logo" style="background-image:url(\'' + dvEsc(l.logo_url) + '\')"></span>' : '<span class="dash-biz-logo dash-biz-letter">' + dvEsc(String(l.name || '?').charAt(0)) + '</span>';
       return '<div class="dash-biz-card">' + pic + '<div class="dash-biz-body"><b>' + dvEsc(l.name) + '</b>' +
         '<small>' + (l.claim_status === 'verified' ? 'Yours' : 'Waiting for our approval') + ' &middot; <span id="dash-biz-score-' + i + '">Reading your listing check...</span></small></div>' +
-        '<div class="dash-biz-acts"><a class="dash-biz-btn" href="' + href(l) + '">Open your business dashboard</a>' +
-        '<a class="dash-biz-btn o" id="dash-biz-check-' + i + '" href="' + href(l, 'audit') + '">Your listing check</a></div></div>';
+        '<div class="dash-biz-acts"><a class="dash-biz-btn" href="' + href(l) + '" onclick="if(event.metaKey||event.ctrlKey||event.shiftKey)return true;openBusiness(this.getAttribute(\'href\').replace(/^[^?]*/, \'\'));return false;">Open your business dashboard</a>' +
+        '<a class="dash-biz-btn o" id="dash-biz-check-' + i + '" href="' + href(l, 'audit') + '" onclick="if(event.metaKey||event.ctrlKey||event.shiftKey)return true;openBusiness(this.getAttribute(\'href\').replace(/^[^?]*/, \'\'));return false;">Your listing check</a></div></div>';
     }).join('');
     box.style.display = '';
     listings.slice(0, 4).forEach(function (l, i) {
@@ -5112,6 +5129,7 @@
       if (/^\/dashboard\/secret-shopper\/?$/.test(location.pathname)) { openShopper(location.hash, true); return; }
       if (/^\/dashboard\/levels\/?$/.test(location.pathname)) { openLevels(location.hash, true); return; }
       if (/^\/dashboard\/creator\/?$/.test(location.pathname)) { openCreator(location.hash, true); return; }
+      if (/^\/dashboard\/business\/?$/.test(location.pathname)) { openBusiness(location.search, true); return; }
       if (/^\/dashboard\/survey\/?$/.test(location.pathname)) { openSurvey(true); return; }
       // Back and forward between the Directory and a listing.
       if (listingSlugFromPath()) { activate('directory', { skipHistory: true }); openDashboardListing(listingSlugFromPath(), '', true); return; }
@@ -5135,6 +5153,7 @@
     if (/^\/dashboard\/secret-shopper\/?$/.test(location.pathname)) openShopper(location.hash, true);
     if (/^\/dashboard\/levels\/?$/.test(location.pathname)) openLevels(location.hash, true);
     if (/^\/dashboard\/creator\/?$/.test(location.pathname)) openCreator(location.hash, true);
+    else if (/^\/dashboard\/business\/?$/.test(location.pathname)) openBusiness(location.search, true);
     // A creator with a dashboard sees it when they log in (Sean, 2026-11-10): plain /dashboard opens it.
     else if (/^\/dashboard\/?$/.test(location.pathname) && !location.hash) loadCreatorInfo().then(function (d) {
       if (d && d.has && /^\/dashboard\/?$/.test(location.pathname)) openCreator('', true);
