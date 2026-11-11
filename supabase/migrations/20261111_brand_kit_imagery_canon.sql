@@ -1,0 +1,38 @@
+-- Brand kit part 2, Imagery, locked with Sean's changes 2026-11-11 (playbook ve-brand-kit). Each insert is safe to run twice.
+
+insert into public.knowledge_records (slug,title,category,subcategory,body,status,owner,always_load,load_priority,tags,version,change_summary,created_by,updated_by)
+select 'canon-ve-brand-kit-imagery','Vegans Explore brand kit, part 2: Imagery (LOCKED)','brand','canonical',$j${
+"authority":"Sean, 2026-11-11, on /mocks/brand-kit/imagery: approved the style, Do and Don't, retiring the old ensemble shot and cut-outs for social, with changes: the face hard block, the strip shape, whole screenshots, one universe.",
+"reference":"/mocks/brand-kit/imagery (10 slides). Built on canon-ve-brand-kit-foundations.",
+"hard_block":"Sean: \"there should be a strict rule against posting any image where the subject, where the face is cut off, are obstructed by a graphic element... That should be a hard block on anything like that.\" No picture ships anywhere (page, card, thumbnail, banner, post, story, video, email) with a head or face cut off by its frame or crop, or covered by text, a logo, a sticker or any graphic. If a face does not fit the spot, the picture is drawn again for that shape. Check every frame before it ships.",
+"style":"Clean ink lines and soft painted color; everyone doing the page's action; real adults (about 7.5 heads tall), every age, skin tone, body and ability, Dani always seated in her manual wheelchair; food is the hero; the Vegans Explore suitcase mark on the Guides, no other logos, no readable words; warm, lived-in real places. Never flat vector, 3D or photoreal for generic ideas.",
+"shapes":{"1:1":"mid shot head to waist: avatars, picker, tiles, phones","4:5":"a Guide doing the page's thing: Guide pages, scene cards, vertical video (1856x2304 out, 1080x1350 saved)","9:16":"full body: stories and reels only","16:10":"banners, Directory doors, Guide cards, thumbnails","21:9":"strip (new, Sean: \"we need to also have custom images that could fit a strip like that\"): drawn for the strip, every face in the middle band with room above, so a page can trim to 3:1 without touching a head"},
+"shape_rule":"Every spot names its shape and its picture is made in that shape. Never squeeze or crop a picture into a frame it was not drawn for (no 16:10 forced into a strip, no full body in a square, no stretching, no outpainting a character scene).",
+"in_the_frame":"Art sits in a 3px white frame, 10px corner, on its section color block; words go beside the picture on the section color, never on top of it. Site screenshots fit their frame whole, never cropped at the sides (Sean: \"the site should not be cut off on the sides. It should fit into the frame\"); demos only, with the Sample stamp on the frame edge.",
+"photos":"Real photos only for real places and real people; other sites' pictures through /_vercel/image; other brands' logos copied to vegan-media, on a white square, linking to the profile.",
+"approved_calls":{"retire_ensemble":"done 2026-11-11: welcome-ensemble.jpg replaced by a new square group shot drawn with the recipe (old copy public/brand-kit/retired-ensemble.jpg)","cutouts":"a Guide's square mid shot may be cut out and set on a section color block for posts and thumbnails; scenes are never cut out","clothes":"new scenes dress the Guides in palette colors (pink, cream, black, brand green, orange), mark always visible, Liz in her pink tee often (default, not overridden)"},
+"recipe":"unchanged, the locked Guide scene recipe of 2026-11-08 (CLAUDE.md)",
+"open":"Do the Guides also get LESARUSS-style profile avatars? Default yes, profile picture only, scenes keep the recipe; waiting on Sean."
+}$j$::jsonb,'active','sar',false,20,array['vegans-explore','brand','brand-kit','imagery','canon'],1,'Created: Sean locked Imagery with the face hard block, the 21:9 strip, whole screenshots.','logan','logan'
+where not exists (select 1 from public.knowledge_records where slug='canon-ve-brand-kit-imagery');
+
+insert into public.knowledge_records (slug,title,category,subcategory,body,status,owner,always_load,load_priority,tags,version,change_summary,created_by,updated_by)
+select 'canon-lesaruss-universal-profiles','One universe: universal profiles and the LESARUSS style','brand','canonical',$j${
+"authority":"Sean, 2026-11-11",
+"rename":"The style formerly called the GeekFon style (hard-cel comic: thick even outlines, flat fills, crisp two-tone shadows; the Shamanic Resin v4 sheets) is now the LESARUSS style. Sean: \"I'm gonna switch it from GeekFon style to LESARUSS style, since it's now going into a lot of different places.\"",
+"honor":"Approved content creators and people officially part of the organization get an avatar in the LESARUSS style for their profile. Sean: \"it's almost like you're officially part of our universe once you get that. So it's an honor, it's a privilege.\" Earned, never handed out.",
+"sean":"Sean's locked likeness (canon-sean-illustrated-likeness) is the same everywhere: vegansexplore.com, seanarussell.com, GeekFon Society, wherever he shows up. Sean: \"I want my style to be the same everywhere... I want my profile to be the same.\" Art that carries his design is redone to match over time, not all at once.",
+"universal_profiles":"Profiles are universal, not tied to one brand. A character or person keeps one look and one profile across every LESARUSS brand, with the work they have done anywhere. Sean: \"Maya's shown up in GeekFon Society... it's almost like she got hired by GeekFon Society to be in the ad. And now that could be on her profile... her filmography... You could see it in all different places.\"",
+"consistency":"Styles stay the same across brands; when the look is upgraded, art is redone gradually until everything carrying a design matches.",
+"replaces":"The 2026-11-11 Imagery mock's first draft said the Vegans Explore and GeekFon drawn worlds were kept apart; Sean rejected that (\"No, I want my style to be the same everywhere\")."
+}$j$::jsonb,'active','sar',false,15,array['lesaruss','universe','profiles','lesaruss-style','geekfon','vegans-explore','canon'],1,'Created from Sean''s Imagery review: LESARUSS style (formerly GeekFon style), creator avatars as an honor, universal profiles, Sean the same everywhere.','logan','logan'
+where not exists (select 1 from public.knowledge_records where slug='canon-lesaruss-universal-profiles');
+
+insert into public.error_registry (error_code,error_category,title,description,root_cause,fix_steps,prevention_notes,reported_by,first_seen,last_seen,occurrence_count,resolved)
+select 'IMG-HEAD-CUT-OFF-BY-CROP','other','Heads and faces cut off by a crop or frame, or covered by a graphic',
+'Sean, 2026-11-11: "One of the things I see that becomes a constant issue is cutting heads off in thumbnails... We constantly breaking that rule." Found on the Imagery mock itself: Theo cut in a split tile, Liz and Theo cut in the recipe references, a 4:5 scene forced into a thin strip.',
+'Pictures drawn in one shape were dropped into frames of another shape with object-fit: cover (or squeezed), so the frame trimmed heads; nothing checked faces before shipping.',
+'["Name the spot''s shape (1:1, 4:5, 9:16, 16:10, 21:9 strip)","Use a picture drawn in that shape, or draw one with the scene recipe","Show pictures in frames of their own aspect ratio (no cover-crop into another shape)","Screenshot the page and look at every face before it ships"]'::jsonb,
+'Hard block in canon-ve-brand-kit-imagery and CLAUDE.md: no head or face cut off or covered, anywhere. Check every frame in the proof screenshots.',
+'logan',now(),now(),1,true
+where not exists (select 1 from public.error_registry where error_code='IMG-HEAD-CUT-OFF-BY-CROP');
