@@ -55,10 +55,6 @@
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
     },
     {
-      "source": "/directory-preview",
-      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
-    },
-    {
       "source": "/sw.js",
       "headers": [
         { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" },
@@ -196,6 +192,8 @@
     { "source": "/challenges", "destination": "/passport", "permanent": false },
     {"source": "/dashboard/directory/:slug", "destination": "/directory/:slug", "permanent": false},
     {"source": "/dashboard/directory", "destination": "/directory", "permanent": false},
+    {"source": "/directory-preview", "destination": "/directory", "permanent": false},
+    {"source": "/preview", "destination": "/", "permanent": false},
     {"source": "/dashboard/events", "destination": "/events", "permanent": false},
     {"source": "/dashboard/pulse", "destination": "/pulse", "permanent": false},
     {"source": "/dashboard/media", "destination": "/media", "permanent": false},
