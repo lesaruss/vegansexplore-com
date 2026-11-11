@@ -106,12 +106,20 @@
     return VE_DEFAULT_GUIDE_SLUG;
   }
   // VEGuideArt(slug, 'square' | 'tall'); VEGuideImage(shape) is the member's own Guide. Square by default.
-  function veGuideArt(slug, shape) {
+  // Served through Vercel's resizer (vercel.json images): the art files are 2048 px and up to 150 KB, but no spot shows
+  // a Guide wider than about 540 px, so 1080 covers a 2x screen (site health, 2026-11-11: oversized images cost every
+  // Guide page speed). VEGuideArtRaw gives the original file for anything that leaves the site.
+  function veGuideArtRaw(slug, shape) {
     var a = VE_GUIDE_ART[slug] || VE_GUIDE_ART[VE_DEFAULT_GUIDE_SLUG];
     return a[shape === 'tall' ? 'tall' : 'square'];
   }
+  function veGuideArt(slug, shape) {
+    var u = veGuideArtRaw(slug, shape);
+    return '/_vercel/image?url=' + encodeURIComponent(u) + '&w=1080&q=75';
+  }
   function veGuideImage(shape) { return veGuideArt(veChosenGuideSlug(), shape); }
   window.VEGuideArt = veGuideArt;
+  window.VEGuideArtRaw = veGuideArtRaw;
   window.VEGuideImage = veGuideImage;
   window.VEChosenGuideSlug = veChosenGuideSlug;
 })();

@@ -7,6 +7,7 @@
     "remotePatterns": [
       {"protocol": "https", "hostname": "^fwbhwfxpncrsfhttimna\\.supabase\\.co$", "pathname": "^/storage/v1/object/public/.*$"},
       {"protocol": "https", "hostname": "^d3t3ozftmdmh3i\\.cloudfront\\.net$"},
+      {"protocol": "https", "hostname": "^d8j0ntlcm91z4\\.cloudfront\\.net$"},
       {"protocol": "https", "hostname": "^static\\.libsyn\\.com$"},
       {"protocol": "https", "hostname": "^artwork\\.captivate\\.fm$"},
       {"protocol": "https", "hostname": "^megaphone\\.imgix\\.net$"},
