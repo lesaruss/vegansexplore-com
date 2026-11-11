@@ -456,7 +456,7 @@
         sec.innerHTML = '<h3>Referenced books</h3><div class="vep-bgrid">' + list.map(function (b) {
           var href = b.page || b.buy || '', out = !b.page;
           return '<a class="vep-book" href="' + esc(href) + '"' + (out ? ' target="_blank" rel="noopener sponsored"' : '') + '>' +
-            (b.cover ? '<img src="' + esc(b.cover) + '" alt="" loading="lazy">' : '<span class="vep-bnc">' + esc(b.title) + '</span>') +
+            (b.cover ? '<img src="' + esc(window.VEImg ? VEImg(b.cover, 384) : b.cover) + '" alt="" loading="lazy">' : '<span class="vep-bnc">' + esc(b.title) + '</span>') +
             '<b>' + esc(b.title) + '</b>' + (b.author ? '<small>' + esc(b.author) + '</small>' : '') +
             '<em>' + esc([WHY[b.context] || 'Mentioned', b.speaker && !/^(host|guest)$/i.test(b.speaker) ? 'by ' + b.speaker : ''].filter(Boolean).join(' ')) + (out ? ' · Amazon' : '') + '</em></a>';
         }).join('') + '</div>' + (list.some(function (b) { return !b.page; }) ? '<p class="vep-bnote">As an Amazon Associate we earn from qualifying purchases.</p>' : '');

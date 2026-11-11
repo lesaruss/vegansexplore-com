@@ -1,0 +1,233 @@
+/* ve-look-hubs.css: the city hubs (/communities/<slug>, communities/hub.html) in the Color Block look (canon canon-ve-look-color-block).
+   Loaded by /public/ve-look.js beside ve-look.css, only when the look is on. Every rule sits under html.ve-cb.ve-cb-s-communities,
+   and the hub's banner is #hero-section, which only hub.html has, so the live site and every other page never see a rule here.
+   Look parent: /preview (the homepage hero: words on a color block, the picture beside them in its own frame; Join your city:
+   the city art in 3:4 frames on mid green). Rules: /mocks/brand-kit (Foundations).
+
+   The header: the banner (ve-city-banner.js, open or folded, old header or new) becomes one mid green block. The words sit on the
+   block (ink, since mid green takes white only at 19px and up); the city art sits beside them in .vcb-art, a frame hub.html adds
+   only while the look is on, sized to the picture's own shape (hub.html sets its aspect-ratio from the picture itself), so the
+   picture is never cut, squeezed or covered. Phones stack it: words, then the picture. The stripe runs under the block.
+   The one orange button in view is Join free (Dashboard when signed in); every other button is white with an ink outline. */
+
+/* ---------- The header block ---------- */
+html.ve-cb.ve-cb-s-communities #hero-section.vcb {
+  position: relative; display: block; min-height: 0 !important; margin: 0;
+  background: var(--cb-md) !important; background-image: none !important;
+  border-bottom: 0; padding: 0 0 11px;
+}
+html.ve-cb.ve-cb-s-communities #hero-section.vcb::before { display: none !important; content: none; }
+html.ve-cb.ve-cb-s-communities #hero-section.vcb::after {
+  content: "" !important; display: block !important; position: absolute; inset: auto 0 0 0; height: 8px; background: var(--cb-stripe) !important;
+  box-shadow: 0 -3px 0 #fff; pointer-events: none;
+}
+/* Three columns: the picker, the buttons beside it, the picture on the right across every row */
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-inner {
+  display: grid !important; grid-template-columns: auto minmax(0, 1fr) auto; grid-template-rows: 1fr repeat(5, auto) 1fr; align-items: center; gap: 0 14px;
+  max-width: none !important; width: 100%; margin: 0 !important; padding: 40px 40px 46px !important; min-height: 0;
+  background: none !important; border: 0; border-radius: 0; -webkit-backdrop-filter: none !important; backdrop-filter: none !important;
+}
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-main { display: contents !important; }
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-eyebrow,
+html.ve-cb.ve-cb-s-communities #hero-section h1,
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-sub,
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-meta { grid-column: 1 / 3; }
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-eyebrow { grid-row: 2; }
+html.ve-cb.ve-cb-s-communities #hero-section h1 { grid-row: 3; }
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-sub { grid-row: 4; }
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-meta { grid-row: 5; }
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-pick { grid-column: 1; grid-row: 6; }
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-actions { grid-column: 2; grid-row: 6; }
+
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-eyebrow {
+  display: flex !important; margin: 0 0 12px; color: var(--cb-ink); font-size: 11px; font-weight: 900; letter-spacing: .22em;
+}
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-eyebrow::before { background: var(--cb-ink); }
+
+/* The title: Vegan Community on a line of its own, then the city, big, with the marker */
+html.ve-cb.ve-cb-s-communities #hero-section h1 {
+  display: block !important; margin: 0 !important; text-transform: none; text-shadow: none; white-space: normal; color: var(--cb-ink);
+  font-size: 20px !important; line-height: 1.1 !important; letter-spacing: -.01em; font-weight: 900; min-width: 0;
+}
+html.ve-cb.ve-cb-s-communities #hero-section h1 .vcb-t {
+  display: block !important; color: var(--cb-ink); font-size: 20px !important; line-height: 1.15 !important; white-space: normal !important;
+  cursor: auto; text-decoration: none;
+}
+html.ve-cb.ve-cb-s-communities #hero-section h1 em {
+  display: inline !important; margin: 0 !important; color: var(--cb-ink); font-style: normal; font-weight: 900; white-space: normal; overflow: visible;
+  font-size: clamp(42px, 5vw, 76px) !important; line-height: 1.08; letter-spacing: -.03em;
+  padding: 0 .08em; border-radius: 4px;
+  background: linear-gradient(transparent 56%, var(--cb-br) 56%, var(--cb-br) 92%, transparent 92%);
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+html.ve-cb.ve-cb-s-communities #hero-section h1 em::before { content: none !important; display: none; }
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-sub {
+  display: block !important; margin: 18px 0 0; max-width: 760px; color: var(--cb-ink); font-size: 17px; font-weight: 600; line-height: 1.5;
+}
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-meta { display: block !important; margin: 14px 0 0; }
+html.ve-cb.ve-cb-s-communities #hero-section .hero-region { color: var(--cb-ink); text-shadow: none; font-weight: 700; }
+html.ve-cb.ve-cb-s-communities #hero-section .hero-divider-v { background: rgba(26,26,26,.35); }
+html.ve-cb.ve-cb-s-communities #hero-section .access-badge.passport {
+  background: #fff; color: var(--cb-ink); border: 2px solid var(--cb-ink); border-radius: 6px; font-weight: 900; padding: 4px 9px;
+}
+html.ve-cb.ve-cb-s-communities #hero-section .hsp-presented { color: var(--cb-ink); text-shadow: none; font-weight: 800; }
+
+/* The city picker and the buttons, one row under the words */
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-pick { display: flex !important; margin: 26px 0 0 !important; flex-wrap: nowrap; min-width: 0; }
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-pick select {
+  min-width: 220px; max-width: none; min-height: 44px; padding: 9px 44px 9px 14px !important; font-size: 13px; font-weight: 800;
+  color: var(--cb-ink); border: 2px solid var(--cb-ink); border-radius: 6px;
+  /* our ink chevron, 16px from the edge (canon rule 15), in either header (the old one draws a white chevron) */
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%231a1a1a' stroke-width='1.8' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 16px center;
+}
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-actions {
+  display: flex !important; flex-direction: row; flex-wrap: wrap; align-items: center; align-content: center; gap: 10px; margin: 26px 0 0 !important;
+}
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-btn {
+  width: auto !important; min-height: 44px; padding: 10px 16px; display: inline-flex !important; align-items: center; justify-content: center;
+  background: #fff; color: var(--cb-ink); border: 2px solid var(--cb-ink); border-radius: 6px; font-size: 11px; font-weight: 900; letter-spacing: .1em;
+  white-space: nowrap; text-align: center;
+}
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-btn:hover { background: var(--cb-tint); color: var(--cb-ink); border-color: var(--cb-ink); }
+/* Join free (or Dashboard): the one orange button in view */
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-btn-go { background: var(--cb-or); color: var(--cb-ink); border-color: var(--cb-ink); box-shadow: 3px 3px 0 var(--cb-ink); }
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-btn-go:hover { background: var(--cb-or-hi); color: var(--cb-ink); }
+/* The header stays one block in the look, so Page tour stays and Collapse / Expand has nothing to fold */
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-open-only { display: inline-flex !important; }
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-toggle { display: none !important; }
+html.ve-cb.ve-cb-s-communities #hero-section :focus-visible { outline: 3px solid var(--cb-ink); outline-offset: 3px; }
+
+/* The city art: its own frame, in the picture's own shape (aspect-ratio set from the picture by hub.html; 3:4 until it loads).
+   content-box, so the shape belongs to the picture and not to the frame's border. */
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-art {
+  grid-column: 3; grid-row: 1 / -1; order: 9; justify-self: end; align-self: center;
+  box-sizing: content-box; height: clamp(300px, 26vw, 380px); width: auto; aspect-ratio: 3 / 4;
+  margin: 0 0 0 36px; border: 3px solid #fff; border-radius: 10px; overflow: hidden; background: #fff;
+  box-shadow: 6px 6px 0 var(--cb-ink);
+}
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-art.vcb-art-wide { height: clamp(260px, 22vw, 330px); }
+html.ve-cb.ve-cb-s-communities #hero-section .vcb-art img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+@media (max-width: 1100px) {
+  html.ve-cb.ve-cb-s-communities #hero-section .vcb-art { height: 300px; }
+  html.ve-cb.ve-cb-s-communities #hero-section .vcb-art.vcb-art-wide { height: 230px; }
+}
+/* Phones and small tablets: one column, the words, the picker and buttons, then the picture */
+@media (max-width: 900px) {
+  html.ve-cb.ve-cb-s-communities #hero-section .vcb-inner { grid-template-columns: minmax(0, 1fr); grid-template-rows: none; padding: 26px 16px 32px !important; }
+  html.ve-cb.ve-cb-s-communities #hero-section .vcb-eyebrow,
+  html.ve-cb.ve-cb-s-communities #hero-section h1,
+  html.ve-cb.ve-cb-s-communities #hero-section .vcb-sub,
+  html.ve-cb.ve-cb-s-communities #hero-section .vcb-meta,
+  html.ve-cb.ve-cb-s-communities #hero-section .vcb-pick,
+  html.ve-cb.ve-cb-s-communities #hero-section .vcb-actions { grid-column: 1; grid-row: auto; order: 0; }
+  html.ve-cb.ve-cb-s-communities #hero-section h1, html.ve-cb.ve-cb-s-communities #hero-section h1 .vcb-t { font-size: 18px !important; }
+  html.ve-cb.ve-cb-s-communities #hero-section h1 em { font-size: 40px !important; }
+  html.ve-cb.ve-cb-s-communities #hero-section .vcb-sub { font-size: 15px; margin-top: 14px; }
+  html.ve-cb.ve-cb-s-communities #hero-section .vcb-meta .hero-meta { gap: 8px 12px; }
+  html.ve-cb.ve-cb-s-communities #hero-section .vcb-pick { margin-top: 20px !important; }
+  html.ve-cb.ve-cb-s-communities #hero-section .vcb-pick select { width: 100%; min-width: 0; flex: 1 1 auto; }
+  html.ve-cb.ve-cb-s-communities #hero-section .vcb-actions { margin-top: 10px !important; flex-wrap: nowrap; }
+  html.ve-cb.ve-cb-s-communities #hero-section .vcb-actions .vcb-btn { flex: 1 1 0; min-width: 0; padding: 10px 8px; font-size: 10.5px; letter-spacing: .06em; }
+  html.ve-cb.ve-cb-s-communities #hero-section .vcb-art,
+  html.ve-cb.ve-cb-s-communities #hero-section .vcb-art.vcb-art-wide {
+    grid-column: 1; grid-row: auto; justify-self: start; margin: 24px 6px 6px 0; height: auto; width: min(calc(100% - 12px), 300px);
+  }
+  html.ve-cb.ve-cb-s-communities #hero-section .vcb-art.vcb-art-wide { width: calc(100% - 12px); }
+}
+
+/* ---------- The sections: headings with the marker, the In this community dropdown, the cards ---------- */
+html.ve-cb.ve-cb-s-communities .hub-section .section-title {
+  display: inline; margin: 0; text-transform: none;
+  font-size: clamp(26px, 2.6vw, 36px); font-weight: 900; letter-spacing: -.02em; line-height: 1.12;
+  padding: 0 .08em; border-radius: 4px;
+  background: linear-gradient(transparent 56%, var(--cb-mark) 56%, var(--cb-mark) 92%, transparent 92%);
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+html.ve-cb.ve-cb-s-communities .hub-section .section-sub { color: var(--cb-mute); font-size: 14px; font-weight: 600; margin-top: 10px; }
+html.ve-cb.ve-cb-s-communities .hub-section .section-action { color: var(--cb-ink); font-weight: 900; }
+html.ve-cb.ve-cb-s-communities .hub-section .section-action:hover { color: var(--cb-dk); }
+html.ve-cb.ve-cb-s-communities .hov-h { font-size: 20px; font-weight: 900; letter-spacing: -.01em; }
+html.ve-cb.ve-cb-s-communities .hov-more a { color: var(--cb-dk); font-weight: 900; }
+
+html.ve-cb.ve-cb-s-communities .hub-sec-pick label { color: var(--cb-eye); font-weight: 900; }
+html.ve-cb.ve-cb-s-communities .hub-sec-pick select {
+  border: 2px solid var(--cb-ink); border-radius: 6px; color: var(--cb-ink); font-weight: 900;
+  box-shadow: 4px 4px 0 var(--cb-shadow); margin: 0 4px 4px 0; width: calc(100% - 4px);
+}
+html.ve-cb.ve-cb-s-communities .hub-sec-pick select:focus-visible { outline: 3px solid var(--cb-ink); outline-offset: 2px; }
+
+/* Cards: ink outline, solid offset shadow in the section color (as the first slice did the Directory card and chapter cards) */
+html.ve-cb.ve-cb-s-communities .hov-stats,
+html.ve-cb.ve-cb-s-communities .hov-go { gap: 18px; padding: 0 6px 6px 0; }
+html.ve-cb.ve-cb-s-communities .sd-grid,
+html.ve-cb.ve-cb-s-communities .news-grid,
+html.ve-cb.ve-cb-s-communities .hsp-tiers { gap: 18px; padding: 0 6px 6px 0; }
+html.ve-cb.ve-cb-s-communities .hov-stat,
+html.ve-cb.ve-cb-s-communities .hov-tile,
+html.ve-cb.ve-cb-s-communities .sd-card,
+html.ve-cb.ve-cb-s-communities .news-card,
+html.ve-cb.ve-cb-s-communities .hsp-card,
+html.ve-cb.ve-cb-s-communities .hub-section .event-row {
+  border: 2px solid var(--cb-ink); border-radius: 14px; box-shadow: 6px 6px 0 var(--cb-shadow); background: #fff;
+  transition: transform .15s, box-shadow .15s;
+}
+html.ve-cb.ve-cb-s-communities .hub-section .event-row { margin: 0 6px 16px 0; }
+html.ve-cb.ve-cb-s-communities .hov-stat:hover, html.ve-cb.ve-cb-s-communities .hov-stat:focus-visible,
+html.ve-cb.ve-cb-s-communities .hov-tile:hover, html.ve-cb.ve-cb-s-communities .hov-tile:focus-visible,
+html.ve-cb.ve-cb-s-communities .sd-card:hover, html.ve-cb.ve-cb-s-communities .sd-card:focus-visible,
+html.ve-cb.ve-cb-s-communities .news-card:hover,
+html.ve-cb.ve-cb-s-communities .hub-section .event-row:hover {
+  border-color: var(--cb-ink); transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--cb-shadow);
+}
+html.ve-cb.ve-cb-s-communities .hov-stat b { font-size: 28px; letter-spacing: -.02em; }
+html.ve-cb.ve-cb-s-communities .hov-stat span { color: var(--cb-ink); font-weight: 900; }
+html.ve-cb.ve-cb-s-communities .hov-tile b { font-weight: 900; font-size: 15px; }
+html.ve-cb.ve-cb-s-communities .hov-ic { background: var(--cb-tint); border: 2px solid var(--cb-ink); border-radius: 8px; }
+html.ve-cb.ve-cb-s-communities .hov-ic svg { stroke: var(--cb-ink); }
+html.ve-cb.ve-cb-s-communities .sd-pic { border-bottom: 2px solid var(--cb-ink); }
+html.ve-cb.ve-cb-s-communities .sd-name, html.ve-cb.ve-cb-s-communities .news-headline, html.ve-cb.ve-cb-s-communities .event-name { font-weight: 900; }
+html.ve-cb.ve-cb-s-communities .news-img { border-bottom: 2px solid var(--cb-ink); }
+html.ve-cb.ve-cb-s-communities .news-tag { border-radius: 6px; font-weight: 900; }
+html.ve-cb.ve-cb-s-communities .news-read { color: var(--cb-dk); font-weight: 900; }
+html.ve-cb.ve-cb-s-communities .hub-section .event-date-col { background: var(--cb-md); border-right: 2px solid var(--cb-ink); }
+html.ve-cb.ve-cb-s-communities .hub-section .event-date-col .event-day,
+html.ve-cb.ve-cb-s-communities .hub-section .event-date-col .event-mon { color: var(--cb-ink); }
+/* Upcoming / Past: tabs, 6px corners, the chosen one ink (white type on ink) */
+html.ve-cb.ve-cb-s-communities .event-toggle-pill { border: 2px solid var(--cb-ink); border-radius: 6px; color: var(--cb-ink); font-weight: 900; min-height: 40px; }
+html.ve-cb.ve-cb-s-communities .event-toggle-pill:hover { border-color: var(--cb-ink); background: var(--cb-tint); color: var(--cb-ink); }
+html.ve-cb.ve-cb-s-communities .event-toggle-pill.active { background: var(--cb-ink); border-color: var(--cb-ink); color: #fff; }
+html.ve-cb.ve-cb-s-communities .lb-row { border: 2px solid var(--cb-ink); border-radius: 10px; }
+html.ve-cb.ve-cb-s-communities .lb-row.lb-you { background: var(--cb-tint); }
+html.ve-cb.ve-cb-s-communities .locked-badge,
+html.ve-cb.ve-cb-s-communities .hsp-tag { border-radius: 6px; font-weight: 900; }
+
+/* Every other button in the sections steps back: white with an ink outline (Join free in the header is the orange one) */
+html.ve-cb.ve-cb-s-communities .hub-section .btn-rsvp,
+html.ve-cb.ve-cb-s-communities .hub-section .btn-join,
+html.ve-cb.ve-cb-s-communities .hub-section .locked-cta,
+html.ve-cb.ve-cb-s-communities .hub-section .btn-partner,
+html.ve-cb.ve-cb-s-communities .hub-section .btn-outline,
+html.ve-cb.ve-cb-s-communities .hub-section .hsp-go {
+  background: #fff; color: var(--cb-ink); border: 2px solid var(--cb-ink); border-radius: 6px; font-weight: 900;
+}
+html.ve-cb.ve-cb-s-communities .hub-section .btn-rsvp:hover,
+html.ve-cb.ve-cb-s-communities .hub-section .btn-join:hover,
+html.ve-cb.ve-cb-s-communities .hub-section .locked-cta:hover,
+html.ve-cb.ve-cb-s-communities .hub-section .btn-partner:hover,
+html.ve-cb.ve-cb-s-communities .hub-section .btn-outline:hover,
+html.ve-cb.ve-cb-s-communities .hub-section .hsp-go:hover { background: var(--cb-tint); color: var(--cb-ink); }
+
+@media (max-width: 700px) {
+  html.ve-cb.ve-cb-s-communities .hov-stat,
+  html.ve-cb.ve-cb-s-communities .hov-tile,
+  html.ve-cb.ve-cb-s-communities .sd-card,
+  html.ve-cb.ve-cb-s-communities .news-card,
+  html.ve-cb.ve-cb-s-communities .hsp-card,
+  html.ve-cb.ve-cb-s-communities .hub-section .event-row { box-shadow: 5px 5px 0 var(--cb-shadow); }
+  html.ve-cb.ve-cb-s-communities .hov-stats, html.ve-cb.ve-cb-s-communities .hov-go { gap: 14px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html.ve-cb.ve-cb-s-communities .hov-stat, html.ve-cb.ve-cb-s-communities .hov-tile, html.ve-cb.ve-cb-s-communities .sd-card,
+  html.ve-cb.ve-cb-s-communities .news-card, html.ve-cb.ve-cb-s-communities .hub-section .event-row { transition: none; }
+}

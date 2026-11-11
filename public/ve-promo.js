@@ -180,7 +180,7 @@
     if (!document.getElementById('vpc-css')) { var st = document.createElement('style'); st.id = 'vpc-css'; st.textContent = CSS; document.head.appendChild(st); }
     var promo = 'guide-' + slug, base = { page: ctx.page || location.pathname, listing_id: ctx.listing_id || null, cta: 'ad' };
     var placement = ctx.placement || HOUSE.listing;
-    el.innerHTML = '<div class="vpc"><a class="vpc-ad" href="' + esc(ctx.preview ? g.href : g.go) + '" data-vpc="ad" aria-label="' + esc(g.cta) + '">' +
+    el.innerHTML = '<div class="vpc"><a class="vpc-ad" href="' + esc(ctx.preview ? g.href : g.go) + '" data-vpc="ad">' + // read from its visible text (accessibility: the label must contain the words on screen)
       g.frames.map(function (f) { return '<span class="vpc-f" style="background-image:url(\'' + f[0] + '\')' + (f[2] ? ';' + f[2] : '') + '" aria-hidden="true"></span>'; }).join('') +
       '<span class="vpc-copy"><small>' + esc(g.kicker) + '</small><span class="vpc-lines" aria-hidden="true">' +
         g.frames.map(function (f) { return '<b>' + esc(f[1]) + '</b>'; }).join('') + '</span>' +

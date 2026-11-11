@@ -468,6 +468,31 @@
       });
       // Back from another city can leave the picker on it: show this city again.
       window.addEventListener('pageshow', function () { setTimeout(function () { window.hubBanner.setQuiet(h.slug); }, 0); });
+      // The Color Block look (preview only, public/ve-look-hubs.css): the city art in its own frame beside the words, never behind
+      // them, in the picture's own shape. Built only once <html> wears ve-cb, so with the look off nothing here runs or changes.
+      (function () {
+        var el = window.hubBanner.el, de = document.documentElement, fig = null;
+        function paint() {
+          var m = /url\(["']?([^"')]+)["']?\)/.exec(el.style.backgroundImage || ''), img = fig && fig.firstChild;
+          if (!m || !img || img.getAttribute('src') === m[1]) return;
+          img.onload = function () {
+            fig.style.aspectRatio = img.naturalWidth + ' / ' + img.naturalHeight;
+            fig.classList.toggle('vcb-art-wide', img.naturalWidth > img.naturalHeight);
+          };
+          img.src = m[1];
+        }
+        function build() {
+          if (fig) return true;
+          if (!de.classList.contains('ve-cb')) return false;
+          if (!document.getElementById('ve-look-hubs-css')) { var lh = document.createElement('link'); lh.id = 've-look-hubs-css'; lh.rel = 'stylesheet'; lh.href = '/public/ve-look-hubs.css?v=1'; document.head.appendChild(lh); }
+          fig = document.createElement('figure'); fig.className = 'vcb-art';
+          var img = document.createElement('img'); img.alt = h.page.alt || ''; img.decoding = 'async';
+          fig.appendChild(img); el.querySelector('.vcb-inner').appendChild(fig);
+          paint(); new MutationObserver(paint).observe(el, { attributes: true, attributeFilter: ['style'] });
+          return true;
+        }
+        if (!build()) { var mo = new MutationObserver(function () { if (build()) mo.disconnect(); }); mo.observe(de, { attributes: true, attributeFilter: ['class'] }); }
+      })();
     })();
   </script>
 

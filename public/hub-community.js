@@ -123,7 +123,7 @@
           ? ''
           : '<button type="button" class="news-read hub-opp-apply-btn" data-opp-id="' + esc(row.id) + '" style="background:none;border:none;cursor:pointer;font:inherit;padding:0;">Apply</button>';
         return '<article class="news-card">' +
-          '<div class="news-img"><img src="' + esc(meta.img) + '" alt="' + esc(row.title) + '" style="width:100%;height:100%;object-fit:cover;"></div>' +
+          '<div class="news-img"><img src="' + esc(window.VEImg ? VEImg(meta.img, 828) : meta.img) + '" alt="' + esc(row.title) + '" loading="lazy" decoding="async" style="width:100%;height:100%;object-fit:cover;"></div>' +
           '<div class="news-body">' +
             '<p class="news-date" style="color:var(--ve-green-dark);font-weight:800;letter-spacing:0.1em;text-transform:uppercase;font-size:10px;">' + esc(meta.tier) + '</p>' +
             '<h3 class="news-headline">' + esc(row.title) + '</h3>' +

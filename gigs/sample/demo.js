@@ -9,7 +9,7 @@
   var IMG = '/gigs/sample/img/';
 
   var creator = {
-    name: 'Kai Monroe', handle: '@kaieatsplants', avatar: IMG + 'kai-avatar.webp', city: 'South Florida',
+    name: 'Kai Monroe', handle: '@kaieatsplants', avatar: '/public/brand-kit/avatars/kai-v2.jpg', city: 'South Florida',
     chapters: ['south-florida', 'central-florida'], level: 2, points: 3450, profile: 'creator',
     line: 'Vegan food and fitness, Miami. Easy plant-based meals, gym days and the spots worth the drive.',
     platforms: [

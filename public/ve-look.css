@@ -1,0 +1,323 @@
+/* ve-look.css: the Color Block look over the live site (canon canon-ve-look-color-block, LOCKED 2026-11-11).
+   Loaded only by /public/ve-look.js when the look is on. Every rule sits under html.ve-cb, so the live site never sees one.
+   Look parent: /mocks/directory-looks/bold. Rules: /mocks/brand-kit (Foundations). Reference page: /preview.
+   Order: tokens and section colors, then the shared components (nav, page bar and stripe, buttons and tags, fields, the
+   Directory card, events, chapters, join bands, headings), then each page's own overrides, then the chip. */
+
+/* ---------- Tokens ---------- */
+html.ve-cb {
+  --cb-dk: #2D5C27; --cb-md: #3A9B3E; --cb-br: #22C55E; --cb-tint: #E8F5E9;
+  --cb-or: #F69820; --cb-or-hi: #ffad40; --cb-peach: #FFEBD1; --cb-pink: #FF9EC4; --cb-pinkd: #C2185B;
+  --cb-ink: #1a1a1a; --cb-mute: #5c5c5c; --cb-line: #e7e7e7;
+  --cb-stripe: linear-gradient(90deg, #2D5C27 0 25%, #F69820 25% 37.5%, #FF9EC4 37.5% 50%, #FFEBD1 50% 62.5%, #22C55E 62.5% 75%, #E8F5E9 75% 87.5%, #3A9B3E 87.5% 100%);
+  /* the section: its block color, the type on it, its card shadow, its marker, its underline, its eyebrow text on white */
+  --cb-sec: #2D5C27; --cb-on: #fff; --cb-on-em: #22C55E; --cb-shadow: #2D5C27; --cb-mark: #22C55E; --cb-under: #2D5C27; --cb-eye: #2D5C27;
+}
+html.ve-cb.ve-cb-s-events { --cb-sec: #F69820; --cb-on: #1a1a1a; --cb-on-em: #1a1a1a; --cb-shadow: #F69820; --cb-mark: #F69820; --cb-under: #F69820; --cb-eye: #1a1a1a; }
+html.ve-cb.ve-cb-s-guides { --cb-sec: #FF9EC4; --cb-on: #1a1a1a; --cb-on-em: #1a1a1a; --cb-shadow: #FF9EC4; --cb-mark: #FF9EC4; --cb-under: #FF9EC4; --cb-eye: #C2185B; }
+/* mid green takes white only at 19px bold and up, so the bar's smaller words are ink */
+html.ve-cb.ve-cb-s-communities { --cb-sec: #3A9B3E; --cb-on: #1a1a1a; --cb-on-em: #1a1a1a; --cb-shadow: #3A9B3E; --cb-mark: #3A9B3E; --cb-under: #3A9B3E; --cb-eye: #2D5C27; }
+html.ve-cb.ve-cb-s-pulse { --cb-sec: #22C55E; --cb-on: #1a1a1a; --cb-on-em: #1a1a1a; --cb-shadow: #22C55E; --cb-mark: #22C55E; --cb-under: #22C55E; --cb-eye: #2D5C27; }
+/* peach and mint are soft blocks: an ink shadow (their own color disappears on white), never a peach or mint marker */
+html.ve-cb.ve-cb-s-media { --cb-sec: #FFEBD1; --cb-on: #1a1a1a; --cb-on-em: #1a1a1a; --cb-shadow: #1a1a1a; --cb-mark: #F69820; --cb-under: #F69820; --cb-eye: #1a1a1a; }
+html.ve-cb.ve-cb-s-passport { --cb-sec: #E8F5E9; --cb-on: #1a1a1a; --cb-on-em: #2D5C27; --cb-shadow: #1a1a1a; --cb-mark: #22C55E; --cb-under: #2D5C27; --cb-eye: #2D5C27; }
+
+/* ---------- Nav: as /preview shows it; the current section underlined in its own color ---------- */
+html.ve-cb .ve-menu-row a[aria-current="page"] { color: var(--cb-ink); box-shadow: 0 3px 0 var(--cb-under); }
+html.ve-cb .ve-pub-tabs a[aria-current="page"] { color: var(--cb-ink); border-bottom-color: var(--cb-under); }
+html.ve-cb .ve-burger-menu a[aria-current="page"] { color: var(--cb-ink); border-left-color: var(--cb-under); }
+
+/* ---------- The page bar (ve-city-banner.js, folded): the section's header block, the stripe under it ---------- */
+html.ve-cb .vcb.vcb-bar {
+  background-color: #fff !important;
+  background-image: linear-gradient(var(--cb-sec), var(--cb-sec)) !important;
+  background-size: 100% calc(100% - 11px) !important; background-position: 0 0 !important; background-repeat: no-repeat !important;
+  border-bottom: 0; padding-bottom: 11px;
+}
+html.ve-cb .vcb.vcb-bar::after {
+  content: ""; display: block !important; position: absolute; inset: auto 0 0 0; height: 8px; background: var(--cb-stripe); pointer-events: none;
+}
+html.ve-cb .vcb.vcb-bar .vcb-inner { min-height: 64px; }
+html.ve-cb .vcb.vcb-bar h1,
+html.ve-cb .vcb.vcb-bar h1 .vcb-t { color: var(--cb-on); font-size: 18px !important; letter-spacing: -.01em; }
+html.ve-cb .vcb.vcb-bar h1 em { color: var(--cb-on-em); font-size: 18px !important; font-weight: 900; }
+html.ve-cb .vcb.vcb-bar h1 em::before { color: var(--cb-on); opacity: .55; }
+html.ve-cb .vcb.vcb-bar .vcb-pick select { border: 2px solid var(--cb-ink); color: var(--cb-ink); border-radius: 6px; min-height: 38px; }
+html.ve-cb .vcb.vcb-bar .vcb-btn { background: #fff; color: var(--cb-ink); border: 2px solid var(--cb-ink); border-radius: 6px; font-weight: 900; min-height: 38px; }
+html.ve-cb .vcb.vcb-bar .vcb-btn:hover { background: var(--cb-tint); color: var(--cb-ink); border-color: var(--cb-ink); }
+/* the page's own action is the one orange button in view */
+html.ve-cb .vcb.vcb-bar .vcb-btn-go { background: var(--cb-or); color: var(--cb-ink); border-color: var(--cb-ink); box-shadow: 3px 3px 0 var(--cb-ink); }
+html.ve-cb .vcb.vcb-bar .vcb-btn-go:hover { background: var(--cb-or-hi); color: var(--cb-ink); }
+html.ve-cb .vcb.vcb-bar :focus-visible { outline-color: var(--cb-ink); }
+@media (max-width: 900px) {
+  html.ve-cb .vcb.vcb-bar .vcb-inner { min-height: 0; padding: 14px 16px 12px !important; }
+  html.ve-cb .vcb.vcb-bar h1, html.ve-cb .vcb.vcb-bar h1 .vcb-t, html.ve-cb .vcb.vcb-bar h1 em { font-size: 17px !important; }
+  html.ve-cb .vcb.vcb-bar .vcb-pick select { padding-left: 10px !important; }
+}
+
+/* ---------- Status tags: plain words, a dot and a soft fill, 6px corners ---------- */
+html.ve-cb .vrd-root .vrd-vegan,
+html.ve-cb .vrd-root .vrd-mstat,
+html.ve-cb .vrd-root .vrd-vends { border-radius: 6px; padding: 3px 7px; font-weight: 900; letter-spacing: .08em; display: inline-flex; align-items: center; gap: 4px; }
+html.ve-cb .vrd-root .vrd-vegan-fully,
+html.ve-cb .vrd-root .vrd-mstat-on { background: var(--cb-tint); color: var(--cb-dk); }
+html.ve-cb .vrd-root .vrd-vegan-fully::before,
+html.ve-cb .vrd-root .vrd-mstat-on::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--cb-br); flex: none; }
+html.ve-cb .vrd-root .vrd-mstat-paused,
+html.ve-cb .vrd-root .vrd-vegan-options { background: var(--cb-peach); color: #6b4300; }
+html.ve-cb .vrd-root .vrd-mstat-paused::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--cb-or); flex: none; }
+html.ve-cb .vrd-root .vrd-verified { border-radius: 6px; background: var(--cb-dk); }
+
+/* ---------- Fields: search and the main picker in a 2px ink outline; our chevron stays (canon rule 15) ---------- */
+html.ve-cb .vrd-root .vrd-search-input,
+html.ve-cb .vrd-root .vrd-subsel,
+html.ve-cb .vev-search input,
+html.ve-cb .vem-search input,
+html.ve-cb .vch-bar input,
+html.ve-cb .vch-bar select,
+html.ve-cb .gc-search,
+html.ve-cb.ve-cb-p-pulse #q,
+html.ve-cb.ve-cb-p-pulse .vps-slot input[type="email"] { border: 2px solid var(--cb-ink) !important; border-radius: 6px; }
+html.ve-cb .vrd-root .vrd-filter-btn,
+html.ve-cb .vev-fbtn,
+html.ve-cb .vem-fbtn { border: 2px solid var(--cb-ink); border-radius: 6px; color: var(--cb-ink); font-weight: 900; }
+html.ve-cb .vrd-root .vrd-filter-btn:hover, html.ve-cb .vrd-root .vrd-filter-btn[aria-expanded=true],
+html.ve-cb .vev-fbtn:hover, html.ve-cb .vev-fbtn[aria-expanded="true"],
+html.ve-cb .vem-fbtn:hover { background: var(--cb-tint); color: var(--cb-ink); border-color: var(--cb-ink); }
+
+/* ---------- Tabs under the bar: the active one underlined in the section color ---------- */
+html.ve-cb .vrd-root .vrd-subtabs { border-bottom: 2px solid var(--cb-line); }
+html.ve-cb .vrd-root .vrd-subtabs .subcat-pill { font-weight: 900; color: var(--cb-mute); border-bottom-width: 3px; }
+html.ve-cb .vrd-root .vrd-subtabs .subcat-pill.sc-active { color: var(--cb-ink); border-color: var(--cb-under); }
+html.ve-cb .vev-tabs button { font-weight: 900; border-bottom-width: 3px; }
+html.ve-cb .vev-tabs button[aria-pressed="true"] { color: var(--cb-ink); border-bottom-color: var(--cb-under); }
+
+/* ---------- The shared Directory card (ve-region-directory.js): ink outline, solid offset shadow in the section color ---------- */
+html.ve-cb .vrd-root .rank-grid { gap: 18px; padding: 0 6px 6px 0; }
+html.ve-cb .vrd-root .rank-card {
+  border: 2px solid var(--cb-ink); border-radius: 14px; box-shadow: 6px 6px 0 var(--cb-shadow);
+  transition: transform .15s, box-shadow .15s;
+}
+html.ve-cb .vrd-root .rank-card:hover { border-color: var(--cb-ink); transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--cb-shadow); }
+html.ve-cb .vrd-root .rank-name { font-weight: 900; font-size: 15px; }
+html.ve-cb .vrd-root .rank-meta { color: var(--cb-mute); }
+html.ve-cb .vrd-root .vrd-logo,
+html.ve-cb .vrd-root .rank-card > .av { border: 2px solid var(--cb-ink); border-radius: 10px; }
+html.ve-cb .vrd-root .vote-count { font-size: 22px; letter-spacing: -.02em; }
+html.ve-cb .vrd-root .vote-btn { background: var(--cb-br); color: var(--cb-ink); border: 2px solid var(--cb-ink); font-weight: 900; padding: 5px 10px; }
+html.ve-cb .vrd-root .vote-btn:hover { background: var(--cb-dk); color: #fff; border-color: var(--cb-dk); }
+html.ve-cb .vrd-root .vrd-save { background: #fff; color: var(--cb-ink); border: 2px solid var(--cb-ink); font-weight: 900; padding: 4px 10px; }
+html.ve-cb .vrd-root .vrd-save:hover { background: var(--cb-tint); }
+html.ve-cb .vrd-root .vrd-save.on { background: var(--cb-pink); color: var(--cb-ink); border-color: var(--cb-ink); }
+html.ve-cb .vrd-root .vrd-page-num,
+html.ve-cb .vrd-root .vrd-page-btn { border: 2px solid var(--cb-ink); font-weight: 900; }
+html.ve-cb .vrd-root .vrd-page-num.on { background: var(--cb-ink); color: #fff; }
+html.ve-cb .vrd-root .vrd-page-btn:disabled { border-color: var(--cb-line); }
+html.ve-cb .vrd-root .perpage-select { border: 2px solid var(--cb-ink); border-radius: 6px; color: var(--cb-ink); font-weight: 800; }
+html.ve-cb .vrd-root .vrd-pop-done { background: var(--cb-dk); border-color: var(--cb-dk); }
+html.ve-cb .vrd-root .vrd-filter-pop { border: 2px solid var(--cb-ink); border-radius: 14px; box-shadow: 6px 6px 0 var(--cb-shadow); }
+
+/* ---------- Events (ve-events.js): the row as a card, the date in the section color ---------- */
+html.ve-cb .vev-row { border: 2px solid var(--cb-ink); border-radius: 14px; box-shadow: 6px 6px 0 var(--cb-shadow); margin: 0 6px 16px 0; transition: transform .15s, box-shadow .15s; }
+html.ve-cb .vev-row:hover { border-color: var(--cb-ink); transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--cb-shadow); }
+html.ve-cb .vev-date { background: var(--cb-sec); border-right: 2px solid var(--cb-ink); }
+html.ve-cb .vev-day, html.ve-cb .vev-mon { color: var(--cb-on); }
+html.ve-cb .vev-kind { color: var(--cb-ink); font-weight: 900; }
+html.ve-cb .vev-kind::before { width: 7px; height: 7px; background: var(--cb-br); }
+html.ve-cb .vev-name { font-weight: 900; font-size: 16px; }
+/* many rows, so their button steps back: white with an ink outline (the bar's button is the orange one) */
+html.ve-cb .vev-go { background: #fff; color: var(--cb-ink); border: 2px solid var(--cb-ink); font-weight: 900; }
+html.ve-cb .vev-go:hover { background: var(--cb-tint); color: var(--cb-ink); }
+html.ve-cb .vev-go.off { border-color: var(--cb-line); }
+html.ve-cb .vev-count { color: var(--cb-mute); font-weight: 900; }
+html.ve-cb .vev-btn.ghost { border: 2px solid var(--cb-ink); color: var(--cb-ink); background: #fff; font-weight: 900; border-radius: 6px; }
+@media (max-width: 640px) {
+  html.ve-cb .vev-date { border-right: 0; border-bottom: 2px solid var(--cb-ink); }
+}
+
+/* ---------- Chapters (ve-chapters.js, ve-next-chapters.js) ---------- */
+html.ve-cb .vch-grid { gap: 18px; padding: 0 6px 6px 0; }
+html.ve-cb .vch-card { border: 2px solid var(--cb-ink); border-radius: 14px; box-shadow: 6px 6px 0 var(--cb-shadow); transition: transform .15s, box-shadow .15s; }
+html.ve-cb .vch-card:hover, html.ve-cb .vch-card:focus-within { border-color: var(--cb-ink); transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--cb-shadow); }
+html.ve-cb .vch-av { border: 2px solid var(--cb-ink); }
+html.ve-cb .vch-name { font-weight: 900; }
+html.ve-cb .vch-count { font-size: 22px; }
+html.ve-cb .vch-btn { background: var(--cb-br); color: var(--cb-ink); border: 2px solid var(--cb-ink); font-weight: 900; }
+html.ve-cb .vch-btn.on { background: var(--cb-dk); color: #fff; border-color: var(--cb-dk); }
+html.ve-cb .vch-btn.save { background: #fff; color: var(--cb-ink); border-color: var(--cb-ink); }
+html.ve-cb .vch-btn.save.on { background: var(--cb-pink); color: var(--cb-ink); }
+html.ve-cb .nx-col { border: 2px solid var(--cb-ink); border-radius: 14px; box-shadow: 6px 6px 0 var(--cb-ink); }
+html.ve-cb .nx-eye { color: var(--cb-eye); font-weight: 900; }
+html.ve-cb .nx-row { border: 2px solid var(--cb-line); }
+html.ve-cb .nx-row.top3 .nx-rank { color: var(--cb-dk); }
+html.ve-cb .nx-btn { background: var(--cb-br); color: var(--cb-ink); border: 2px solid var(--cb-ink); font-weight: 900; }
+html.ve-cb .nx-btn.on { background: var(--cb-dk); color: #fff; border-color: var(--cb-dk); }
+
+/* ---------- The join band: dark green with the one orange button closes the page (Foundations, section colors) ---------- */
+html.ve-cb .vote-box,
+html.ve-cb .lv-vote { background: var(--cb-dk); border-radius: 16px; position: relative; overflow: hidden; }
+html.ve-cb .vote-box::after,
+html.ve-cb .lv-vote::after { content: ""; position: absolute; right: -60px; top: -60px; width: 200px; height: 200px; border-radius: 50%; background: var(--cb-md); opacity: .55; z-index: 0; pointer-events: none; }
+html.ve-cb .vote-box > *, html.ve-cb .lv-vote > * { position: relative; z-index: 1; }
+html.ve-cb .vote-box-copy strong, html.ve-cb .lv-vote-copy strong { font-size: clamp(22px, 2.4vw, 32px); line-height: 1.1; letter-spacing: -.02em; }
+html.ve-cb .vote-box-copy strong span, html.ve-cb .lv-vote-copy strong span { color: var(--cb-br); }
+html.ve-cb .vote-box-copy p, html.ve-cb .lv-vote-copy p { color: rgba(255,255,255,.9); font-weight: 600; }
+html.ve-cb .vote-box .btn-join,
+html.ve-cb .lv-vote .lv-vote-btn { background: var(--cb-or); color: var(--cb-ink); border: 2px solid var(--cb-or); border-radius: 6px; font-weight: 900; }
+html.ve-cb .vote-box .btn-join:hover,
+html.ve-cb .lv-vote .lv-vote-btn:hover { background: var(--cb-or-hi); }
+html.ve-cb .vote-box .btn-alt { border: 2px solid #fff; color: #fff; border-radius: 6px; font-weight: 900; }
+html.ve-cb .vote-box .btn-alt:hover { background: #fff; color: var(--cb-dk); }
+
+/* ---------- Section headings: big, heavy, with the marker in the section's color ---------- */
+html.ve-cb .vem-head h2,
+html.ve-cb .lane-intro h2,
+html.ve-cb .dg-head .dg-h1 {
+  display: inline; margin: 0;
+  font-size: clamp(26px, 2.6vw, 36px) !important; font-weight: 900; letter-spacing: -.02em; line-height: 1.08;
+  padding: 0 .08em; border-radius: 4px;
+  background: linear-gradient(transparent 56%, var(--cb-mark) 56%, var(--cb-mark) 92%, transparent 92%);
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+html.ve-cb .vem-head { border-bottom: 0; padding-bottom: 0; }
+html.ve-cb .vem-head p, html.ve-cb .lane-intro p { color: var(--cb-mute); font-weight: 600; margin-top: 8px; }
+
+/* ================= Page by page ================= */
+
+/* ---------- /directory/<slug>: the listing ---------- */
+/* The header is the Directory's block, brand green with white type, never words over a picture (canon canon-ve-brand-kit-imagery). */
+html.ve-cb.ve-cb-p-listing .listing-hero { position: relative; background: var(--cb-dk) !important; background-image: none !important; border-bottom: 0; padding-bottom: 46px; }
+html.ve-cb.ve-cb-p-listing .listing-hero.city-bg::before { display: none; }
+html.ve-cb.ve-cb-p-listing .listing-hero::after { content: ""; position: absolute; inset: auto 0 0 0; height: 8px; background: var(--cb-stripe); box-shadow: 0 -3px 0 #fff; }
+html.ve-cb.ve-cb-p-listing .listing-hero-avatar { background: #fff; border: 3px solid #fff; border-radius: 14px; }
+html.ve-cb.ve-cb-p-listing .listing-name { font-size: clamp(30px, 3.4vw, 48px); letter-spacing: -.025em; line-height: 1.04; }
+html.ve-cb.ve-cb-p-listing .listing-hero.city-bg .listing-breadcrumb,
+html.ve-cb.ve-cb-p-listing .listing-breadcrumb { color: rgba(255,255,255,.85); font-weight: 800; }
+html.ve-cb.ve-cb-p-listing .listing-breadcrumb a { color: var(--cb-br); }
+html.ve-cb.ve-cb-p-listing .listing-tagline { color: #fff; font-weight: 600; }
+html.ve-cb.ve-cb-p-listing .badge-cat { background: var(--cb-br); color: var(--cb-ink); border-radius: 6px; font-weight: 900; }
+html.ve-cb.ve-cb-p-listing .listing-hero .badge-subcat { background: #fff !important; color: var(--cb-dk) !important; border: 0 !important; border-radius: 6px; font-weight: 900; }
+html.ve-cb.ve-cb-p-listing .listing-hero .badge-verified { border-radius: 6px; }
+html.ve-cb.ve-cb-p-listing .vote-hero-btn { background: var(--cb-br); color: var(--cb-ink); border: 2px solid var(--cb-ink); font-weight: 900; }
+html.ve-cb.ve-cb-p-listing .vote-hero-btn:hover { background: #4ade80; }
+html.ve-cb.ve-cb-p-listing .save-hero-btn { background: #fff; color: var(--cb-ink); border: 2px solid #fff; font-weight: 900; }
+html.ve-cb.ve-cb-p-listing .save-hero-btn svg { stroke: var(--cb-ink); }
+html.ve-cb.ve-cb-p-listing .save-hero-btn.saved { background: var(--cb-pink); border-color: var(--cb-pink); color: var(--cb-ink); }
+html.ve-cb.ve-cb-p-listing .checkin-hero-btn { background: transparent; color: #fff; border: 2px solid #fff; font-weight: 900; }
+html.ve-cb.ve-cb-p-listing .checkin-hero-btn:hover { background: rgba(255,255,255,.12); }
+html.ve-cb.ve-cb-p-listing .checkin-hero-btn.done { background: var(--cb-br); color: var(--cb-ink); border-color: var(--cb-br); }
+html.ve-cb.ve-cb-p-listing .info-bar { background: #fff; border-bottom: 2px solid var(--cb-line); }
+html.ve-cb.ve-cb-p-listing .tab-btn { font-weight: 900; }
+html.ve-cb.ve-cb-p-listing .tab-btn.active { color: var(--cb-ink); border-bottom-color: var(--cb-dk); }
+html.ve-cb.ve-cb-p-listing .side-card { border: 2px solid var(--cb-ink); border-radius: 14px; box-shadow: 6px 6px 0 var(--cb-dk); margin: 0 6px 18px 0; }
+html.ve-cb.ve-cb-p-listing .side-card-title { color: var(--cb-dk); font-weight: 900; }
+html.ve-cb.ve-cb-p-listing .lv-vote { margin-left: 40px; margin-right: 40px; }
+@media (max-width: 768px) {
+  html.ve-cb.ve-cb-p-listing .listing-hero { padding-bottom: 30px; }
+  html.ve-cb.ve-cb-p-listing .listing-name { font-size: 28px; }
+  html.ve-cb.ve-cb-p-listing .side-card { box-shadow: 5px 5px 0 var(--cb-dk); }
+  html.ve-cb.ve-cb-p-listing .lv-vote { margin-left: 16px; margin-right: 16px; }
+}
+
+/* ---------- /guides: the Guide catalog (ve-guide-catalog.js) ---------- */
+html.ve-cb.ve-cb-p-guides .gc-int { border: 2px solid var(--cb-dk); color: var(--cb-dk); font-weight: 800; }
+html.ve-cb.ve-cb-p-guides .gc-int:hover { background: var(--cb-tint); }
+html.ve-cb.ve-cb-p-guides .gc-int[aria-pressed="true"] { background: var(--cb-dk); border-color: var(--cb-dk); color: #fff; }
+html.ve-cb.ve-cb-p-guides .gc-grid { gap: 22px; padding: 0 6px 6px 0; }
+html.ve-cb.ve-cb-p-guides .gc-card { border: 2px solid var(--cb-ink); border-radius: 14px; box-shadow: 6px 6px 0 var(--cb-shadow); }
+html.ve-cb.ve-cb-p-guides .gc-card:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--cb-shadow); }
+html.ve-cb.ve-cb-p-guides .gc-banner { border: 2px solid var(--cb-ink); }
+html.ve-cb.ve-cb-p-guides .gc-card:hover .gc-banner img { transform: none; }
+html.ve-cb.ve-cb-p-guides .gc-label { color: var(--cb-eye); font-weight: 900; font-size: 10px; }
+html.ve-cb.ve-cb-p-guides .gc-title { font-weight: 900; }
+html.ve-cb.ve-cb-p-guides .gc-new-tag { background: var(--cb-pink); color: var(--cb-ink); border-radius: 6px; font-weight: 900; }
+html.ve-cb.ve-cb-p-guides .gc-chip { border-radius: 6px; font-weight: 900; background: var(--cb-tint); color: var(--cb-dk); }
+html.ve-cb.ve-cb-p-guides .gc-chip.price { background: var(--cb-peach); color: #6b4300; }
+html.ve-cb.ve-cb-p-guides .gc-btn { border-radius: 6px; font-weight: 900; letter-spacing: .1em; }
+html.ve-cb.ve-cb-p-guides .gc-btn-primary { background: #fff; color: var(--cb-ink); border: 2px solid var(--cb-ink); }
+html.ve-cb.ve-cb-p-guides .gc-btn-primary:hover { background: var(--cb-pink); }
+html.ve-cb.ve-cb-p-guides .gc-btn-outline { border: 2px solid var(--cb-ink); }
+
+/* ---------- /pulse: the Daily Pulse ---------- */
+html.ve-cb.ve-cb-p-pulse .lane { font-weight: 900; }
+html.ve-cb.ve-cb-p-pulse .lane[aria-selected="true"] { color: var(--cb-ink); border-bottom-color: var(--cb-under); }
+html.ve-cb.ve-cb-p-pulse .join-note { background: var(--cb-tint); border-radius: 6px; }
+html.ve-cb.ve-cb-p-pulse .btn-ghost { border: 2px solid var(--cb-ink); font-weight: 900; }
+html.ve-cb.ve-cb-p-pulse .posts { gap: 18px; padding: 0 6px 6px 0; }
+html.ve-cb.ve-cb-p-pulse .post-card { border: 2px solid var(--cb-ink); border-radius: 14px; box-shadow: 6px 6px 0 var(--cb-shadow); transition: transform .15s, box-shadow .15s; }
+html.ve-cb.ve-cb-p-pulse .post-card:hover { border-color: var(--cb-ink); transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--cb-shadow); }
+html.ve-cb.ve-cb-p-pulse .post-card.pinned { border-color: var(--cb-ink); }
+html.ve-cb.ve-cb-p-pulse .post-title { font-weight: 900; }
+html.ve-cb.ve-cb-p-pulse .tag { font-weight: 900; }
+@media (max-width: 760px) {
+  html.ve-cb.ve-cb-p-pulse .lane { border: 2px solid var(--cb-ink); }
+  html.ve-cb.ve-cb-p-pulse .lane[aria-selected="true"] { background: var(--cb-ink); color: #fff; }
+}
+
+/* ---------- /passport: the Welcome Guide's frame, in Passport mint ---------- */
+/* The header is the mint block (no words over the city picture), the stripe under it. */
+html.ve-cb.ve-cb-s-passport .dg-top { position: relative; background: var(--cb-sec); color: var(--cb-ink); padding-bottom: 32px; }
+html.ve-cb.ve-cb-s-passport .dg-top::after { content: ""; position: absolute; inset: auto 0 0 0; height: 8px; background: var(--cb-stripe); box-shadow: 0 -3px 0 #fff; }
+html.ve-cb.ve-cb-s-passport .dg-eyebrow { color: var(--cb-dk); font-weight: 900; }
+html.ve-cb.ve-cb-s-passport .dg-title { font-size: clamp(28px, 3.2vw, 44px); letter-spacing: -.025em; text-transform: none; }
+html.ve-cb.ve-cb-s-passport .dg-joinbox { background: #fff; border: 2px solid var(--cb-ink); border-radius: 14px; box-shadow: 6px 6px 0 var(--cb-ink); -webkit-backdrop-filter: none; backdrop-filter: none; }
+html.ve-cb.ve-cb-s-passport .dg-jb-price b { color: var(--cb-dk); }
+html.ve-cb.ve-cb-s-passport .dg-jb-price small { color: var(--cb-ink); }
+html.ve-cb.ve-cb-s-passport .dg-jb-in { color: var(--cb-ink); }
+html.ve-cb.ve-cb-s-passport .dg-jb-in a { color: var(--cb-dk); }
+html.ve-cb.ve-cb-s-passport .dg-status { color: #8a4b00; }
+html.ve-cb.ve-cb-s-passport .dg-menu a { color: var(--cb-ink); }
+html.ve-cb.ve-cb-s-passport .dg-menu a:hover { background: rgba(26,26,26,.06); color: var(--cb-ink); }
+html.ve-cb.ve-cb-s-passport.dg-dd .dg-menu-select { border: 2px solid var(--cb-ink); }
+/* Become a Founder in the header is the page's one orange button; Play is bright green, the rest white */
+html.ve-cb.ve-cb-s-passport .dg-btn { border: 2px solid var(--cb-ink); font-weight: 900; }
+html.ve-cb.ve-cb-s-passport .dg-joinbox .dg-btn { background: var(--cb-or); color: var(--cb-ink); }
+html.ve-cb.ve-cb-s-passport .dg-joinbox .dg-btn:hover { background: var(--cb-or-hi); }
+html.ve-cb.ve-cb-s-passport .dg-btn.dg-ghost { background: #fff; color: var(--cb-ink); border-color: var(--cb-ink); }
+html.ve-cb.ve-cb-s-passport .dg-k { color: var(--cb-eye); font-weight: 900; }
+html.ve-cb.ve-cb-p-passport .wg-gs { border: 2px solid var(--cb-ink); box-shadow: 6px 6px 0 var(--cb-shadow); margin-right: 6px; }
+html.ve-cb.ve-cb-p-passport .wg-gs-pic { border: 2px solid var(--cb-ink); }
+html.ve-cb.ve-cb-p-passport .wg-gs-b .vgi-k,
+html.ve-cb.ve-cb-p-passport .wg-grp h5 { color: var(--cb-dk); font-weight: 900; }
+html.ve-cb.ve-cb-p-passport .wg-gs-t { font-size: 22px; }
+html.ve-cb.ve-cb-p-passport .wg-art-img { border: 2px solid var(--cb-ink); }
+html.ve-cb.ve-cb-p-passport .wg-art-more { color: var(--cb-dk); font-weight: 900; }
+html.ve-cb.ve-cb-s-passport .dg-maya { border: 2px solid var(--cb-ink); }
+html.ve-cb.ve-cb-s-passport .dg-bubble { background: var(--cb-tint); border: 2px solid var(--cb-ink); color: var(--cb-ink); }
+html.ve-cb.ve-cb-s-passport .dg-play { border: 2px solid var(--cb-ink); font-weight: 900; }
+html.ve-cb.ve-cb-s-passport .dg-play.go { background: var(--cb-br); border-color: var(--cb-ink); color: var(--cb-ink); }
+html.ve-cb.ve-cb-s-passport .dg-tnav { border: 2px solid var(--cb-ink); font-weight: 900; }
+html.ve-cb.ve-cb-s-passport .dg-tnav.next { background: var(--cb-dk); border-color: var(--cb-dk); color: #fff; }
+html.ve-cb.ve-cb-s-passport .dg-fold { border: 2px solid var(--cb-ink); color: var(--cb-ink); }
+@media (max-width: 900px) {
+  html.ve-cb.ve-cb-s-passport .dg-top { padding-bottom: 28px; }
+}
+
+/* ---------- Phones: shadows drop to 5px ---------- */
+@media (max-width: 700px) {
+  html.ve-cb .vrd-root .rank-card,
+  html.ve-cb .vev-row,
+  html.ve-cb .vch-card,
+  html.ve-cb .nx-col,
+  html.ve-cb.ve-cb-p-guides .gc-card,
+  html.ve-cb.ve-cb-p-pulse .post-card,
+  html.ve-cb.ve-cb-p-passport .wg-gs { box-shadow: 5px 5px 0 var(--cb-shadow); }
+  html.ve-cb .nx-col { box-shadow: 5px 5px 0 var(--cb-ink); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html.ve-cb .vrd-root .rank-card, html.ve-cb .vev-row, html.ve-cb .vch-card, html.ve-cb.ve-cb-p-pulse .post-card { transition: none; }
+}
+
+/* ---------- The preview chip: small, bottom left ---------- */
+html.ve-cb #ve-look-chip {
+  position: fixed; left: 12px; bottom: 12px; z-index: 2147483000;
+  display: inline-flex; align-items: center; gap: 8px; max-width: calc(100vw - 24px);
+  background: var(--cb-ink); color: #fff; border-radius: 6px; padding: 6px 8px 6px 10px;
+  font: 800 10.5px/1 Montserrat, sans-serif; letter-spacing: .1em; text-transform: uppercase;
+  box-shadow: 3px 3px 0 var(--cb-or);
+}
+html.ve-cb #ve-look-chip .vlc-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--cb-br); flex: none; }
+html.ve-cb #ve-look-chip .vlc-off { color: var(--cb-ink); background: #fff; border-radius: 4px; padding: 5px 7px; text-decoration: none; letter-spacing: .06em; }
+html.ve-cb #ve-look-chip .vlc-off:hover { background: var(--cb-or); }
+html.ve-cb #ve-look-chip .vlc-off:focus-visible { outline: 3px solid var(--cb-or); outline-offset: 2px; }
+@media print { html.ve-cb #ve-look-chip { display: none; } }

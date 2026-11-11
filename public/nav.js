@@ -1,3 +1,16 @@
+/* VEImg(url, width): a picture through Vercel's resizer at the width its spot needs (site health, 2026-11-11:
+   pages loaded multi-megabyte files into 60 to 360 px spots). Only on Vegans Explore's own addresses (lesaruss.ai
+   loads some of our scripts and its resizer refuses our hosts), only for raster files on our image hosts (the ones
+   in vercel.json images), and only at a width vercel.json allows; anything else comes back unchanged. */
+window.VEImg = window.VEImg || function (u, w) {
+  try {
+    var own = /(^|\.)vegansexplore\.com$/.test(location.hostname) || /^vegansexplore[a-z0-9-]*\.vercel\.app$/.test(location.hostname);
+    if (!own || !u || [64, 128, 160, 256, 384, 480, 640, 828, 1080, 1440, 1920].indexOf(w) < 0) return u;
+    if (!/^https:\/\/(fwbhwfxpncrsfhttimna\.supabase\.co\/storage\/v1\/object\/public\/|d8j0ntlcm91z4\.cloudfront\.net\/|d3t3ozftmdmh3i\.cloudfront\.net\/)/.test(u) && !/^\/(communities|public)\//.test(u)) return u;
+    if (!/\.(png|jpe?g|webp)(\?|$)/i.test(u)) return u;
+    return '/_vercel/image?url=' + encodeURIComponent(u) + '&w=' + w + '&q=75';
+  } catch (e) { return u; }
+};
 /* ---- Google Analytics on every page (Sean, 2026-10-28: "add the tag to the missing pages") ----
  * 43 of 142 pages had no /analytics.js, among them Join the Directory and both Guides. nav.js is on every page, so it loads the
  * tag where a page does not (analytics.js runs once either way). Not on our own admin pages (/admin/, the board consent), so the
@@ -6,6 +19,19 @@
   // Another brand's site (window.VE_BRAND, /public/ve-brand.js) keeps its own analytics.
   if (window.__veGA || window.VE_BRAND || /^\/(admin\/|board-consent)/.test(location.pathname)) return;
   var s = document.createElement('script'); s.src = '/analytics.js'; s.async = true;
+  (document.head || document.documentElement).appendChild(s);
+})();
+
+/* ---- The Color Block look, as a preview over the live site (canon canon-ve-look-color-block, 2026-11-11) ----
+ * /public/ve-look.js loads only when the look is asked for (?look=, localStorage ve_look, or a /preview page). Everyone else
+ * loads nothing and sees the site as it is. Not on another brand's site (window.VE_BRAND). */
+(function () {
+  if (window.VE_BRAND || window.__veLookLoad) return;
+  var want = /^\/preview(\/|$)/.test(location.pathname) || /[?&]look=/.test(location.search);
+  if (!want) { try { want = localStorage.getItem('ve_look') === 'preview'; } catch (e) {} }
+  if (!want) return;
+  window.__veLookLoad = true;
+  var s = document.createElement('script'); s.src = '/public/ve-look.js?v=2'; s.setAttribute('blocking', 'render');
   (document.head || document.documentElement).appendChild(s);
 })();
 

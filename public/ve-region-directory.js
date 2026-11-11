@@ -321,6 +321,17 @@
     document.head.appendChild(s);
   }
 
+  // Site health (2026-11-11): logos are shown at 60 px but some files are over 1 MB (a 1.17 MB podcast cover on
+  // every card that shows it). On Vegans Explore's own addresses, raster logos from our hosts go through Vercel's
+  // resizer at 128 px (sharp on 2x screens). Elsewhere (lesaruss.ai loads this file too, and its resizer refuses
+  // our hosts), and for SVGs, the original file is used.
+  var VRD_RESIZE = typeof location !== 'undefined' && (/(^|\.)vegansexplore\.com$/.test(location.hostname) || /^vegansexplore[a-z0-9-]*\.vercel\.app$/.test(location.hostname));
+  function logoSrc(u) {
+    if (!VRD_RESIZE || !u) return u;
+    if (!/^https:\/\/(fwbhwfxpncrsfhttimna\.supabase\.co\/storage\/v1\/object\/public\/|d8j0ntlcm91z4\.cloudfront\.net\/|d3t3ozftmdmh3i\.cloudfront\.net\/)/.test(u)) return u;
+    if (!/\.(png|jpe?g|webp)(\?|$)/i.test(u)) return u;
+    return '/_vercel/image?url=' + encodeURIComponent(u) + '&w=128&q=75';
+  }
   function esc(s) {
     if (!s) return '';
     return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -471,7 +482,7 @@
     if (l.logo_url) {
       // Lazy: the Directory draws every section's cards up front (about 700 logos), so only the ones on screen load
       // (Sean, 2026-10-28: People photos came last, behind every hidden card's logo).
-      return '<img class="vrd-logo" loading="lazy" decoding="async" src="' + esc(l.logo_url) + '" style="width:60px;height:60px;min-width:60px;object-fit:cover;border-radius:10px" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' + fallback;
+      return '<img class="vrd-logo" loading="lazy" decoding="async" alt="' + esc(l.name || '') + '" src="' + esc(logoSrc(l.logo_url)) + '" style="width:60px;height:60px;min-width:60px;object-fit:cover;border-radius:10px" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">' + fallback;
     }
     return '<div class="av" style="width:60px;height:60px;min-width:60px;background:' + esc(color) + ';display:flex;align-items:center;justify-content:center"><span style="font-size:24px;font-weight:900;color:#fff;line-height:1">' + esc(initial) + '</span></div>';
   }
