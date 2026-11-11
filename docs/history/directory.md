@@ -1201,3 +1201,14 @@ registering the metadata address, localhost and localhost:8080 refused by the gu
 firewall first (the reader's handling proven in a local test). Not proven live: a cross-host redirect into a private address (httpbin and
 httpbingo both refuse Supabase's servers); the code refuses it by scope before the guard. `ve-menu-reader`'s open `get` action is retired
 (410, "use ve-web-reader"), v13.
+
+## Booking.com first: the Book card (2026-11-11)
+
+Sean: "Go Booking.com first" (research `docs/proposals/2026-11-11-travelpayouts-coverage.md`). `bookCta` in `directory/listing.html`, copied
+from the Give card (`giveCta`): on a Stays, Retreats or Cruises listing, "Book your stay at <name>", a disclosure ("We may earn a small
+commission at no cost to you; it never decides what we list") and one Book button through our own tracked `/go/` link
+(`details.book_link_code`, a `ve_links` row, initiative `travel-booking`), `rel="sponsored"`. It shows only when `book_link_code` is set:
+nothing shows until Sean approves. `details.book` {provider, url} holds the stay's Booking.com page for 7 stays (migration
+`20261111_travel_book_booking_pages.sql`, through `ve-once-travel-stays`, now the 410 stub); Il Mansio's page is to be found in the
+Travelpayouts link tool. Previewed (browser-only test data on Beck Hall) at 1440 and 390 beside Farm Sanctuary's Donate card: same family.
+Waiting on Sean: Booking.com connected in the Travelpayouts account, and the account's partner marker for the links.

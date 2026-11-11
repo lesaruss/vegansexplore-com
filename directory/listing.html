@@ -2519,6 +2519,18 @@ function giveCta(l){
   return '<div class="give-cta"><div class="give-cta-t"><b>Support ' + esc(l.name) + '</b><span>Give on their own site. Your gift goes straight to them; Vegans Explore never handles donations.</span></div>' +
     '<a class="give-btn" href="' + esc(href) + '" target="_blank" rel="noopener" data-act="donate">Donate</a></div>';
 }
+// Book your stay (Sean, 2026-11-11: "Go Booking.com first"; docs/proposals/2026-11-11-travelpayouts-coverage.md): a Travel listing whose
+// booking site has a partner program shows one Book button, through our own tracked /go/ link (details.book_link_code, ve_links initiative
+// travel-booking) so every click is counted. Disclosed on the card; never the site-wide script, and what we list never depends on it.
+// details.book {provider, url} is the stay's page on that site. No book_link_code, no card.
+var BOOK_CATS = ['Stays', 'Retreats', 'Cruises'];
+function bookCta(l){
+  var d = l.details || {}, b = d.book || {};
+  if(!d.book_link_code || !b.provider) return '';
+  return '<div class="give-cta book-cta"><div class="give-cta-t"><b>Book your stay at ' + esc(l.name) + '</b><span>Book on ' + esc(b.provider) +
+    '. We may earn a small commission at no cost to you; it never decides what we list.</span></div>' +
+    '<a class="give-btn" href="/go/' + encodeURIComponent(d.book_link_code) + '" target="_blank" rel="noopener sponsored" data-act="book">Book on ' + esc(b.provider) + '</a></div>';
+}
 function giveWhy(l){
   var s = (l.details || {}).support;
   if(!s || !s.text) return '';
@@ -4645,6 +4657,7 @@ function renderListing(l){
   // Give back (Sean, 2026-11-08, playbook ve-holiday-guide): a nonprofit, rescue or sanctuary shows a Donate button that is easy to see,
   // at the top, and "Why support" written from its own website (details.support, ve-giveback). Gifts go to them; we never handle money.
   if(GIVE_CATS.indexOf(l.category) >= 0 && !DEMO && !l._brandSite) overviewContent = giveCta(l) + overviewContent + giveWhy(l);
+  if(BOOK_CATS.indexOf(l.category) >= 0 && !DEMO && !l._brandSite) overviewContent = bookCta(l) + overviewContent;
   if(l.category === 'News Outlets' && !isYouTubeL(l) && !DEMO) overviewContent += newsStoriesHtml();
 
   // Signature dishes (playbook ve-signature-dishes): a claimed food place's featured dishes, right under About. Filled by loadSigDishes.
