@@ -31,7 +31,7 @@ window.VEImg = window.VEImg || function (u, w) {
   if (!want) { try { want = localStorage.getItem('ve_look') === 'preview'; } catch (e) {} }
   if (!want) return;
   window.__veLookLoad = true;
-  var s = document.createElement('script'); s.src = '/public/ve-look.js?v=1'; s.setAttribute('blocking', 'render');
+  var s = document.createElement('script'); s.src = '/public/ve-look.js?v=2'; s.setAttribute('blocking', 'render');
   (document.head || document.documentElement).appendChild(s);
 })();
 

@@ -97,8 +97,12 @@
     .dr-crumb a { color: #2D5C27; font-weight: 800; text-decoration: none; }
     .dr-crumb b { font-weight: 900; font-size: 20px; }
     .dr-crumb .n { color: #666; font-weight: 700; }
+    /* The doors stay visible as a row inside a door too (the BOSS: no door only in a dropdown); the sub-sections are the row under it. */
+    #door .vrd-root.vrd-menu-out .cat-tabs { display: flex; margin-bottom: 8px; }
     #door .vrd-root .cat-tab { padding: 11px 13px; }
-    @media (max-width: 700px) { #door .vrd-root .cat-tabs { flex-wrap: nowrap; overflow-x: auto; } #door .vrd-root .cat-tab { white-space: nowrap; } }
+    /* On the front page there is no open door, so the bar keeps only the door picker. */
+    html.ve-doors-front .vcb-bar .vcb-subsel { display: none !important; }
+    @media (max-width: 700px) { #door .vrd-root .cat-tabs { flex-wrap: nowrap; overflow-x: auto; } #door .vrd-root .cat-tab { white-space: nowrap; } .dr-crumb > span[aria-hidden] { display: none; } }
 
     /* The join band at the foot of every view, copied from the live Directory (one box, three buttons; Sean, 2026-11-10). */
     .vote-box { margin-top: 40px; display: flex; align-items: center; gap: 28px; flex-wrap: wrap; background: #1a1a1a; color: #fff; border-radius: 14px; padding: 28px 32px; }
@@ -134,7 +138,7 @@
        ink on every other color; Foundations), each with the ink outline and the solid offset shadow, Eat the wide lead tile. */
     html.ve-cb .fd-top { margin-bottom: 22px; }
     html.ve-cb .fd-eb { display: none; }
-    html.ve-cb .fd-h { font-size: clamp(30px, 4.2vw, 60px); line-height: 1.05; letter-spacing: -.025em; max-width: 1240px; }
+    html.ve-cb .fd-h { font-size: clamp(30px, 3.6vw, 52px); line-height: 1.05; letter-spacing: -.025em; max-width: 1240px; }
     html.ve-cb .hl { padding: 0 .08em; border-radius: 4px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
     html.ve-cb .hl.g { background: linear-gradient(transparent 56%, var(--cb-br) 56%, var(--cb-br) 92%, transparent 92%); }
     html.ve-cb .hl.o { background: linear-gradient(transparent 56%, var(--cb-or) 56%, var(--cb-or) 92%, transparent 92%); }
@@ -189,13 +193,13 @@
     html.ve-cb .dr-crumb a { color: var(--cb-dk); font-weight: 900; }
     html.ve-cb .dr-crumb b { font-size: clamp(26px, 2.6vw, 36px); letter-spacing: -.02em; padding: 0 .08em; border-radius: 4px; background: linear-gradient(transparent 56%, var(--cb-br) 56%, var(--cb-br) 92%, transparent 92%); }
     html.ve-cb .dr-crumb .n { color: var(--cb-mute); }
-    html.ve-cb #door .vrd-root .cat-tabs { gap: 8px; border-bottom: 0; flex-wrap: wrap; margin-bottom: 14px; }
-    html.ve-cb #door .vrd-root .cat-tab { border: 2px solid var(--cb-ink); border-radius: 6px; font-weight: 900; color: var(--cb-ink); background: #fff; }
+    /* the doors as one row of outlined tabs (it scrolls sideways where it does not fit, a phone) */
+    html.ve-cb #door .vrd-root .cat-tabs { gap: 6px; border-bottom: 0; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-bottom: 14px; padding-bottom: 2px; }
+    html.ve-cb #door .vrd-root .cat-tabs::-webkit-scrollbar { display: none; }
+    html.ve-cb #door .vrd-root .cat-tab { flex: none; border: 2px solid var(--cb-ink); border-radius: 6px; font-weight: 900; font-size: 10.5px; letter-spacing: .05em; color: var(--cb-ink); background: #fff; padding: 8px 10px; margin: 0; }
     html.ve-cb #door .vrd-root .cat-tab:hover { background: var(--cb-tint); }
     html.ve-cb #door .vrd-root .cat-tab.active { background: var(--cb-dk); border-color: var(--cb-dk); color: #fff; }
     html.ve-cb #door .vrd-root .cat-tab.active svg { stroke: #fff; }
-    html.ve-cb #door .vrd-root .subcat-pill { border: 2px solid var(--cb-ink); border-radius: 6px; font-weight: 900; color: var(--cb-ink); background: #fff; }
-    html.ve-cb #door .vrd-root .subcat-pill.sc-active { background: var(--cb-ink); border-color: var(--cb-ink); color: #fff; }
 
     @media (max-width: 1100px) { html.ve-cb .fd-door.lead .fd-t { font-size: 44px; } }
     @media (max-width: 700px) {
@@ -236,7 +240,7 @@
     <section id="front" aria-label="Directory doors">
       <div class="fd-top"><div><div class="fd-eb">Vegan Directory</div><h2 class="fd-h">Everything Vegan near you: <span class="hl g">places to eat</span>, <span class="hl o">animals to help</span>, <span class="hl p">people to follow</span>.</h2></div></div>
       <div class="fd-bar">
-        <form class="fd-search" action="/search" method="get" role="search"><input type="search" name="q" placeholder='Search everything: "Vegan pizza in Atlanta"' aria-label="Search everything"><button type="submit">Search</button></form>
+        <form class="fd-search" action="/search" method="get" role="search"><input type="search" name="q" placeholder='Search: "Vegan pizza in Atlanta"' aria-label="Search everything"><button type="submit">Search</button></form>
         <label class="fd-loc"><select id="fd-loc" aria-label="Location"></select></label>
       </div>
       <div class="fd-doors" id="fd-doors"></div>
@@ -425,10 +429,16 @@
     function show(tab) {
       var on = !!tab && DOORS.some(function (d) { return d.key === tab; });
       front.hidden = on; door.hidden = !on; cur = on ? tab : '';
+      document.documentElement.classList.toggle('ve-doors-front', !on);
       var d = DOORS.filter(function (x) { return x.key === tab; })[0];
       document.getElementById('dr-name').textContent = d ? d.label : 'Directory';
       document.title = (on && d ? d.label + ' \u00b7 ' : '') + 'Vegan Directory \u2014 Vegans Explore';
       paintBar();
+      // The open door's tab in view when the row scrolls sideways (phones).
+      setTimeout(function () {
+        var t = on && document.querySelector('#door .cat-tab.active'), row = t && t.parentElement;
+        if (row && row.scrollWidth > row.clientWidth) row.scrollLeft = Math.max(0, t.offsetLeft - row.offsetLeft - 16);
+      }, 60);
     }
     // A door opens in place (the address carries ?tab= so Back and Share work); All doors comes back to the front page.
     function go(tab, url) {
@@ -454,7 +464,8 @@
 
     var rail = document.getElementById('dir-ad-rail'), INIT_LOC = loc && loc.chapter || '';
     VERegionDirectory.init({ mount: 've-region-directory', hub: '', regions: true, matchListing: function () { return true; },
-      url: BASE, sectionMenu: false,
+      // sectionMenu: the door's sub-sections are the tab row under the bar (and, on phones, a picker in the bar), as on the live Directory.
+      url: BASE, sectionMenu: true,
       brand: { sections: DOORS, catMap: CATMAP, merge: MERGE },
       onData: function (rows) { DATA = rows; paintFront(); paintBar(); },
       onSection: function (key, label, subs) { secInfo = subs; if (key === cur) paintBar(); },
