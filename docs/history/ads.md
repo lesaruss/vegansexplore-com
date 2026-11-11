@@ -107,3 +107,13 @@ After Christmas: move the rail slots back to `...14001`, set `...14001` and `...
 `public/ve-guide-tab.js` back to the Dairy Guide. The listing Guide banner (`guideBanner`) shows the Holiday Guide on every listing,
 restaurants included, through Christmas (Sean, 2026-11-10: "show the Holiday Guide on restaurants too"), then leaves it out of the
 rotation from December 26 by itself.
+
+**Every house ad on the kit's ad template** (Sean, 2026-11-11: "Fix the banners", then "Fix the listing Guide banner next"). The
+brand kit's ad template (`/mocks/brand-kit/templates`, slide Ad banners) is the only layout: the section color with a label in an ink
+block and the big line, the art whole in a white frame of its own shape with an ink shadow, the logo and one orange button in a white bar,
+never words on the art. `ads/guides/guide.html` (every Guide ad, sized by its slot) and `ads/humble-cabbage/ve-tee.html` were rebuilt on it;
+the 14 Humble Cabbage campaigns moved off flat images that had Shop now and tags baked on (`20261111_house_ads_kit_template.sql`, stills
+archived in `ad_assets`). The listing Guide banner (`VEPromo.guideCard` in `public/ve-promo.js`, `#ve-house-banner` on listings) now
+frames the same `guide.html` instead of its own card that laid the copy over the scenes; it still counts the view on screen and the
+click (the ad posts `{veAd:'click'}`) as promo `guide-<slug>` and through `ve_house_ad_count`. `creatorCards` (People pages, Kai) still
+uses the old overlay card and is the next to move.
