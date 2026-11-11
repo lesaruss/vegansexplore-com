@@ -367,6 +367,11 @@ there... But we're not there yet" (not built: a paid promotion hiding supporters
   own page over a ticketing or group site, then one tied to a Directory listing, then the live one) stays the event; the other
   becomes a supporter under it: `status` 'supporting', `dupe_of` the event (`ve_event_attach_supporter`, RSVPs move to the event).
   A supporter is off the calendar but readable by anyone (policy "Public can view supporting events").
+- **Which one is official** (`ve_event_official_pick`, after the first live run put Poplar Spring Animal Sanctuary's own event under
+  the Veg Society of DC Meetup post "VSDC Joins Poplar Spring Animal Sanctuary for Thanksgiving..."): (1) the one whose organizer the
+  other's title names; (2) the organizer's own site, then a ticketing page (Eventbrite and the like), then a group post (Meetup,
+  Partiful, Facebook, Instagram); (3) one tied to a Directory listing; (4) the live one, then the first in. Poplar Spring was put back
+  through the gate the same morning.
 - **The event's page** (`ve-events` `event` returns `supporters`; `public/ve-events.js`): under Hosted by and Held at, **Supporting
   organizations**, "Going with one of them? Register through them.": each one's logo and name link to its Directory page, and
   **Register with them** opens its own link.
