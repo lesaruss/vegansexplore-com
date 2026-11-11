@@ -77,11 +77,11 @@
     liz:   { square: '/public/brand-kit/avatars/liz-v2.jpg',
              tall:   ART + 'hf_20261005_021230_e7e80a66-1335-48aa-9765-3cb2f90dd979_min.webp' }, // version 2, extended to 9:16
     // Square: the mid shot like Liz's (waving, head to waist). Tall: version 1 of 2 until Sean picks.
-    maya:   { square: '/public/brand-kit/avatars/maya-v2.jpg',
+    maya:   { square: '/public/brand-kit/avatars/maya-v3.jpg',
               tall:   ART + 'hf_20261005_021228_c4d6da03-4abc-477b-886b-7b2fb8427a9f_min.webp' },
-    theo:   { square: '/public/brand-kit/avatars/theo-v1.jpg',
+    theo:   { square: '/public/brand-kit/avatars/theo-v2.jpg',
               tall:   ART + 'hf_20261005_021227_af42b1d0-8e0b-42b7-821a-a6ea8e5585f0_min.webp' },
-    nori:   { square: '/public/brand-kit/avatars/nori-v1.jpg',
+    nori:   { square: '/public/brand-kit/avatars/nori-v2.jpg',
               tall:   ART + 'hf_20261005_021228_7539346c-a5aa-44a9-8a44-2a6cb463e378_min.webp' },
     // Dani uses a wheelchair; she is always drawn seated in it.
     dani:   { square: '/public/brand-kit/avatars/dani-v2.jpg',
@@ -93,7 +93,7 @@
     kai:    { square: '/public/brand-kit/avatars/kai-v2.jpg',
               tall:   '/gigs/sample/img/kai-avatar.webp' },
     // Pascal, the Cultural Bridge (the guide chat demo and the pitches); not in the member picker.
-    pascal: { square: '/public/brand-kit/avatars/pascal-v1.jpg',
+    pascal: { square: '/public/brand-kit/avatars/pascal-v2.jpg',
               tall:   ART + 'hf_20261005_024304_5e1634a6-d9de-43d5-919a-1af4001dbf45_min.webp' }
   };
   // Square mid shots are the LESARUSS-style avatars Sean approved 2026-11-11 (public/brand-kit/avatars/); tall stays the 9:16 art.
