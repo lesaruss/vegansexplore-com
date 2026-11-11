@@ -69,8 +69,8 @@ function chefJacket(){
   g+=`<path d="M${s(16.1)},${s(19.4)} L${s(13.3)},${s(20.5)}" stroke="${st}" stroke-width="2"/><path d="M${s(-16.1)},${s(19.4)} L${s(-13.3)},${s(20.5)}" stroke="${st}" stroke-width="2"/>`;
   return g;
 }
-// Dark green bib apron. Mark centered on the bib, its top 2.0 in under the bib's top edge (the collar rule, read from the bib).
-const BIB_TOP=3.2;
+// Dark green bib apron. Mark centered on the bib, its top 3.1 in under the bib's top edge, where the real apron prints it.
+const BIB_TOP=3.2, APRON_DROP=3.1;
 function apron(withStraps=true){
   const hex=COL.darkgreen, st=shade(hex,30);
   const pts=[[5,BIB_TOP],[5,9.5],[Math.sin(0)+11.8,15],[11.8,37],[0.001,37.2]];
@@ -81,7 +81,8 @@ function apron(withStraps=true){
   g+=`<path d="${mir(pts)}" fill="${hex}" stroke="${st}" stroke-width="2.2" stroke-linejoin="round"/>`;
   g+=`<path d="M${s(-4.4)},${s(BIB_TOP+0.6)} L${s(4.4)},${s(BIB_TOP+0.6)}" stroke="${st}" stroke-width="1.4" stroke-dasharray="5 4"/>`;
   g+=`<rect x="${s(-6.5)}" y="${s(20)}" width="${s(13)}" height="${s(6.5)}" rx="4" fill="none" stroke="${st}" stroke-width="1.8"/><path d="M0,${s(20)} L0,${s(26.5)}" stroke="${st}" stroke-width="1.6"/>`;
-  g+=mark('white',0,BIB_TOP+DROP);
+  // The real apron (Port Authority A900, Printify blueprint 5549) prints no higher than 3.1 in under the bib's top edge (measured on its mockup, 2026-11-11).
+  g+=mark('white',0,BIB_TOP+APRON_DROP);
   return g;
 }
 
