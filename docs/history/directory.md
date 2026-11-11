@@ -1177,3 +1177,27 @@ aparthotel is a Stay. First batch: 18 stays from myvegantravels.com/travel-tips/
 (Pre-Vegan) options), migration `20261111_travel_stays_hotels.sql`, all **on hold** (status pending, Depot > Directory review) until each is
 checked on its own site; the session's network blocked the hotels' sites. Website is always the business's own site, never a source's
 affiliate link. The source URL is kept in `details.source_url`.
+
+**The first Stays batch, checked (2026-11-11, later the same day).** Read through `ve-web-reader` (below), no network change. Approved
+on their own sites (11): Agrivilla I Pini, Casa Albets, Koukoumi, Harmony Hill, Bluedothotel, Il Mansio (address_city Lake Garda), Kapuhala,
+Beck Hall, Casa Mauna, Mother Earth Vegan Hotel (Vegan in its own domain, booking and Facebook names), The House of AïA (plant-based
+(Pre-Vegan) options). Kept on hold with the reason in `admin_notes` (7): HOY (its site no longer says Vegan), Dreamers Welcome, Jean-Michel
+Cousteau Resort, Finca Victoria (only breakfast Vegan), Plantonia ("vegan-friendly", built with Vegan materials: Sean to decide), The Farm at
+San Benito (now a Marriott page that refused the read), Mikasa (no website). Migration `20261111_travel_stays_checked.sql`, written through
+`ve-once-travel-stays` (now the 410 stub). Proven live at 1440 and 390: Travel shows the five sections and "19 trips listed".
+
+## ve-web-reader: reading the sites Sean feeds (2026-11-11)
+
+Sean: "What can we do so you can easily access these websites I'm feeding you without me having to add it every single time?... I don't
+want to put us at risk. Can we put a safety net in?" (switching the session to full access offered to delete the 51 allowed domains). BOSS
+`docs/proposals/2026-11-11-web-reader-boss.md`. `supabase/functions/ve-web-reader` (admin token or super admin; Logan calls it from SQL
+through pg_net so the token stays in the database): `register` a link Sean sent (`ve_web_sources`), `read` (text and links, scripts,
+comments and hidden elements stripped, marked untrusted; `browser: true` opens it in Apify's browser), `unregister`, `log`. Scope: a
+source, a link found exactly on a source page (one hop), or any page of a listing's own website (approved or on hold); anything else is
+refused. Address guard: http(s) on 80/443, private, loopback, link-local, carrier, multicast and metadata addresses refused for literals and
+resolved hosts, at most 3 redirects each re-checked, 15 s, 2 MB, 300 reads a day. Every attempt is a `ve_web_reads` row (migration
+`20261111_ve_web_reader.sql`). Proven live: no token 403; an unrelated site, 127.0.0.1 and 169.254.169.254 refused as out of scope;
+registering the metadata address, localhost and localhost:8080 refused by the guard; a decimal loopback address stopped by Supabase's own
+firewall first (the reader's handling proven in a local test). Not proven live: a cross-host redirect into a private address (httpbin and
+httpbingo both refuse Supabase's servers); the code refuses it by scope before the guard. `ve-menu-reader`'s open `get` action is retired
+(410, "use ve-web-reader"), v13.
