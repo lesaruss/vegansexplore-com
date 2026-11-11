@@ -24,7 +24,7 @@ const css = `*{box-sizing:border-box;margin:0}body{font-family:Montserrat,sans-s
 .bar .lg{width:420px;flex:none}.bar .t{text-align:right;white-space:nowrap}.bar b{display:block;font-size:50px;font-weight:900;color:#141414;line-height:1.1}.bar span{font-size:32px;font-weight:600;color:#555}`;
 const frame = (r) => {
   const k = KIND[r.kind], pic = r.picture !== '-' ? r.picture : r.logo, isLogo = r.picture === '-';
-  const src = pic.startsWith('/') ? 'https://vegansexplore.com' + pic : pic;
+  const src = pic.startsWith('/') ? 'https://vegansexplore.com' + pic : pic; // (a repo path is read from the live site)
   const name = r.name.length > 26 ? r.name.replace(/ (-|&|Vegan Mexican|Gluten-free).*$/, '') : r.name;
   return `<div class="f" style="background:url(${local(k.bg)}) center/cover">
   <div style="position:absolute;inset:0 0 300px 0;background:linear-gradient(180deg,rgba(0,0,0,.15),rgba(0,0,0,.05) 35%,rgba(0,0,0,.72))"></div>
