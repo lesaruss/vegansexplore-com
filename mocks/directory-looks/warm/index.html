@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Directory look: Welcome Mat — Vegans Explore</title>
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Design concept for the Vegan Directory: illustrated doors, warm cards, sample data.">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Directory look "Welcome Mat" (design concept, sample data). The flow is the locked one from /directory-preview;
+       only the look changes: illustrated doors, one floating search bar, place-like cards, a warm join panel. */
+    :root {
+      --g-dark: #2D5C27; --g: #3A9B3E; --g-bright: #22C55E; --g-tint: #E8F5E9; --g-mist: #F4FAF3;
+      --orange: #F69820; --peach: #FFF3E3; --ink: #1a1a1a; --mute: #5f6360; --line: #ebebeb;
+      --lift: 0 1px 2px rgba(0,0,0,.06), 0 6px 18px rgba(0,0,0,.07);
+      --lift-hi: 0 2px 4px rgba(0,0,0,.06), 0 14px 32px rgba(0,0,0,.12);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; }
+    body { background: #fff; color: var(--ink); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    img { display: block; max-width: 100%; }
+    a { color: inherit; }
+    [hidden] { display: none !important; }
+    :focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+    .page-frame { width: 100%; background: #fff; display: flex; flex-direction: column; min-height: 100vh; }
+    main { flex: 1; max-width: none; margin: 0; padding: 0 40px 88px; }
+
+    /* concept notice and view switch */
+    .wm-note { display: flex; align-items: center; justify-content: space-between; gap: 10px 18px; flex-wrap: wrap; background: var(--peach); border-bottom: 1px solid #f3dcbc; padding: 8px 40px; font-size: 12.5px; color: #6b4300; }
+    .wm-note b { font-weight: 800; letter-spacing: .12em; text-transform: uppercase; font-size: 10.5px; color: #c46d00; margin-right: 8px; }
+    .wm-switch { display: inline-flex; background: #fff; border: 1px solid #ecd3ae; border-radius: 6px; padding: 3px; gap: 3px; }
+    .wm-switch button { font: inherit; font-size: 11.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; border: 0; background: none; color: #6b4300; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
+    .wm-switch button[aria-pressed="true"] { background: var(--g-dark); color: #fff; }
+
+    /* hero: promise and the floating search bar */
+    .wm-hero { padding: 44px 0 30px; }
+    .wm-eb { display: inline-flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: var(--g-dark); margin-bottom: 12px; }
+    .wm-eb::before { content: ""; width: 22px; height: 3px; border-radius: 2px; background: var(--g-bright); }
+    .wm-h { font-size: clamp(26px, 3.3vw, 46px); font-weight: 900; line-height: 1.1; letter-spacing: -.015em; max-width: 980px; }
+    .wm-h em { font-style: normal; color: var(--g); }
+    .wm-bar { margin-top: 26px; display: flex; align-items: stretch; background: #fff; border: 1px solid #e2e2e2; border-radius: 14px; box-shadow: var(--lift); padding: 6px; max-width: 1080px; transition: box-shadow .2s; }
+    .wm-bar:focus-within { box-shadow: var(--lift-hi); }
+    .wm-seg { display: flex; flex-direction: column; justify-content: center; padding: 8px 18px; min-width: 0; border-radius: 10px; }
+    .wm-seg:hover { background: #f7f7f7; }
+    .wm-seg.what { flex: 1 1 auto; }
+    .wm-seg.where { flex: 0 0 280px; border-left: 1px solid #ececec; }
+    .wm-seg label { font-size: 10.5px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--g-dark); margin-bottom: 3px; }
+    .wm-seg input { font: inherit; font-size: 15px; font-weight: 500; border: 0; outline: none; background: transparent; color: var(--ink); width: 100%; min-width: 0; }
+    .wm-seg input::placeholder { color: #8a8d8b; }
+    .wm-seg select { appearance: none; -webkit-appearance: none; font: inherit; font-size: 15px; font-weight: 700; color: var(--ink); border: 0; outline: none; padding: 0 44px 0 0; cursor: pointer; width: 100%;
+      background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%232D5C27' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 16px center; }
+    .wm-go { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 8px; border: 0; border-radius: 6px; background: var(--orange); color: var(--ink); font: inherit; font-size: 12.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; padding: 0 24px; cursor: pointer; }
+    .wm-go:hover { background: #e88b12; }
+    .wm-go svg { width: 18px; height: 18px; }
+
+    /* the seven doors: illustrated, rounded, the name and live count under the picture */
+    .wm-doors { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 28px 22px; }
+    .wm-door { position: relative; display: flex; flex-direction: column; text-decoration: none; color: inherit; }
+    .wm-door .art { position: relative; border-radius: 16px; overflow: hidden; aspect-ratio: 4 / 3; background: var(--g-mist); box-shadow: 0 1px 2px rgba(0,0,0,.05); transition: transform .25s ease, box-shadow .25s ease; }
+    .wm-door .art img { width: 100%; height: 100%; object-fit: cover; transition: transform .5s ease; }
+    .wm-door:hover .art { transform: translateY(-3px); box-shadow: var(--lift-hi); }
+    .wm-door:hover .art img { transform: scale(1.035); }
+    .wm-door.lead { grid-column: span 2; }
+    .wm-door.lead .art { aspect-ratio: auto; height: 100%; min-height: 0; }
+    .wm-door.lead .art-wrap { flex: 1; }
+    .wm-door .info { padding: 12px 2px 0; display: flex; flex-direction: column; gap: 3px; }
+    .wm-door .row { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+    .wm-door .t { font-size: 17px; font-weight: 900; line-height: 1.2; text-decoration: none; color: inherit; }
+    .wm-door .t::after { content: ""; position: absolute; inset: 0; }
+    .wm-door .ct { flex: 0 0 auto; font-size: 12.5px; font-weight: 800; color: var(--g-dark); background: var(--g-tint); border-radius: 6px; padding: 3px 8px; font-variant-numeric: tabular-nums; }
+    .wm-door .ex { font-size: 13px; color: var(--mute); line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .wm-door .qp { position: relative; z-index: 2; display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .wm-door .qp a { font-size: 12px; font-weight: 700; text-decoration: none; color: var(--g-dark); background: #fff; border: 1px solid #d9e6d6; border-radius: 6px; padding: 7px 11px; transition: background .15s, border-color .15s; }
+    .wm-door .qp a:hover { background: var(--g-tint); border-color: var(--g); }
+    /* the lead door: the picture fills the column height beside the other two doors in its row */
+    .wm-door.lead { display: grid; grid-template-rows: 1fr auto; }
+    .wm-door.lead .art { aspect-ratio: auto; height: auto; }
+    .wm-door.lead .art img { position: absolute; inset: 0; }
+    .wm-door .tag-lead { position: absolute; left: 14px; top: 14px; background: #fff; color: var(--g-dark); font-size: 10.5px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; border-radius: 6px; padding: 6px 9px; box-shadow: 0 2px 8px rgba(0,0,0,.12); }
+
+    /* section headers */
+    .wm-sec { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; margin: 56px 0 18px; }
+    .wm-sec h2 { font-size: clamp(20px, 1.9vw, 26px); font-weight: 900; letter-spacing: -.01em; }
+    .wm-sec p { font-size: 13.5px; color: var(--mute); margin-top: 4px; }
+    .wm-sec a.more { font-size: 12.5px; font-weight: 800; color: var(--g-dark); text-decoration: underline; text-underline-offset: 4px; }
+
+    /* listing cards: a soft tinted plate holds the logo on its own white plate, then name, place and kind, How Vegan, Vote and Save */
+    .wm-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(290px, 100%), 1fr)); gap: 26px 22px; }
+    .wm-top .wm-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .pc { display: flex; flex-direction: column; min-width: 0; }
+    .pc-art { position: relative; display: grid; place-items: center; aspect-ratio: 4 / 3; border-radius: 16px; background: var(--tint, var(--g-mist)); overflow: hidden; text-decoration: none; transition: transform .25s ease, box-shadow .25s ease; }
+    .pc-art::before { content: ""; position: absolute; width: 70%; aspect-ratio: 1; border-radius: 50%; background: rgba(255,255,255,.55); }
+    .pc-art:hover { transform: translateY(-3px); box-shadow: var(--lift-hi); }
+    .pc-plate { position: relative; width: 46%; aspect-ratio: 1; background: #fff; border-radius: 18px; box-shadow: 0 6px 20px rgba(0,0,0,.10); display: grid; place-items: center; overflow: hidden; }
+    .pc-plate img { width: 84%; height: 84%; object-fit: contain; }
+    .pc-plate.photo img { width: 100%; height: 100%; object-fit: cover; object-position: center 20%; }
+    .pc-kind { position: absolute; left: 12px; top: 12px; background: #fff; border-radius: 6px; padding: 5px 9px; font-size: 10.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--g-dark); box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+    .pc-body { padding: 12px 2px 0; display: flex; flex-direction: column; gap: 4px; flex: 1; }
+    .pc-name { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+    .pc-name a { font-size: 16px; font-weight: 800; text-decoration: none; line-height: 1.25; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .pc-name a:hover { text-decoration: underline; }
+    .pc-votes { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .pc-votes svg { width: 13px; height: 13px; color: var(--g); }
+    .pc-meta { font-size: 13px; color: var(--mute); line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .pc-tag { align-self: flex-start; display: inline-flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 800; color: var(--g-dark); background: var(--g-tint); border-radius: 6px; padding: 4px 8px; margin-top: 2px; }
+    .pc-tag::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--g-bright); }
+    .pc-tag.muted { color: #555; background: #f1f1f1; }
+    .pc-tag.muted::before { background: #aaa; }
+    .pc-act { display: flex; gap: 8px; margin-top: auto; padding-top: 10px; }
+    .pc-act button { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; font: inherit; font-size: 11.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; border-radius: 6px; padding: 9px 10px; cursor: pointer; border: 1.5px solid var(--g-dark); background: #fff; color: var(--g-dark); transition: background .15s, color .15s; }
+    .pc-act button svg { width: 14px; height: 14px; }
+    .pc-act button:hover { background: var(--g-tint); }
+    .pc-act button[aria-pressed="true"] { background: var(--g-dark); color: #fff; }
+    .pc-act .save[aria-pressed="true"] { background: #fff; color: #d6336c; border-color: #d6336c; }
+    .pc-act .save[aria-pressed="true"] svg { fill: #d6336c; }
+
+    /* join panel: the belonging moment */
+    .wm-join { margin-top: 64px; display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); align-items: stretch; background: var(--peach); border-radius: 20px; overflow: hidden; }
+    .wm-join .copy { padding: 44px 40px; display: flex; flex-direction: column; justify-content: center; gap: 12px; }
+    .wm-join .eb { font-size: 11px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: #b35f00; }
+    .wm-join h2 { font-size: clamp(22px, 2.3vw, 32px); font-weight: 900; line-height: 1.15; }
+    .wm-join p { font-size: 14.5px; line-height: 1.6; color: #4a4036; max-width: 520px; }
+    .wm-join .btns { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+    .wm-join .btns .wm-btn { padding: 13px 14px; }
+    .wm-btn { display: inline-flex; align-items: center; justify-content: center; border-radius: 6px; font: inherit; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 13px 18px; text-decoration: none; cursor: pointer; border: 1.5px solid var(--g-dark); background: #fff; color: var(--g-dark); }
+    .wm-btn:hover { background: var(--g-tint); }
+    .wm-btn.main { background: var(--orange); border-color: var(--orange); color: var(--ink); }
+    .wm-btn.main:hover { background: #e88b12; }
+    .wm-join .pic { position: relative; min-height: 320px; }
+    .wm-join .pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
+
+    /* inside a door */
+    .dr-crumb { display: flex; align-items: center; gap: 10px; padding: 26px 0 16px; font-size: 13px; }
+    .dr-crumb a { display: inline-flex; align-items: center; gap: 6px; color: var(--g-dark); font-weight: 800; text-decoration: none; border: 1px solid #dfe9dc; border-radius: 6px; padding: 7px 12px; background: #fff; }
+    .dr-crumb a:hover { background: var(--g-mist); }
+    .dr-head { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 28px; align-items: center; margin-bottom: 26px; }
+    .dr-head .art { border-radius: 16px; overflow: hidden; aspect-ratio: 16 / 10; box-shadow: var(--lift); }
+    .dr-head .art img { width: 100%; height: 100%; object-fit: cover; }
+    .dr-head h1 { font-size: clamp(30px, 3.4vw, 48px); font-weight: 900; letter-spacing: -.015em; line-height: 1.05; }
+    .dr-head p { font-size: 15px; color: var(--mute); margin-top: 8px; line-height: 1.55; max-width: 640px; }
+    .dr-head .ct { display: inline-block; margin-top: 12px; font-size: 12.5px; font-weight: 800; color: var(--g-dark); background: var(--g-tint); border-radius: 6px; padding: 5px 10px; }
+
+    /* the doors as tabs: a strip of little pictures with names, the open door underlined */
+    .dr-tabs { display: flex; gap: 6px; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; margin-bottom: 20px; }
+    .dr-tabs::-webkit-scrollbar { display: none; }
+    .dr-tab { flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 6px 14px 12px; text-decoration: none; color: var(--mute); font-size: 12.5px; font-weight: 700; border-bottom: 3px solid transparent; margin-bottom: -1px; transition: color .15s, border-color .15s; }
+    .dr-tab img { width: 64px; height: 44px; object-fit: cover; border-radius: 8px; opacity: .78; filter: saturate(.75); transition: opacity .15s, filter .15s; }
+    .dr-tab:hover { color: var(--ink); border-bottom-color: #d8d8d8; }
+    .dr-tab:hover img, .dr-tab.on img { opacity: 1; filter: none; }
+    .dr-tab.on { color: var(--ink); font-weight: 900; border-bottom-color: var(--g-dark); }
+    .dr-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .dr-pill { font: inherit; font-size: 13px; font-weight: 700; border: 1px solid #dcdcdc; background: #fff; color: var(--ink); border-radius: 6px; padding: 9px 14px; cursor: pointer; transition: border-color .15s, background .15s; }
+    .dr-pill:hover { border-color: var(--ink); }
+    .dr-pill[aria-pressed="true"] { background: var(--ink); border-color: var(--ink); color: #fff; }
+    .dr-filter { display: flex; gap: 10px; align-items: stretch; margin-bottom: 26px; }
+    .dr-find { flex: 1 1 auto; display: flex; align-items: center; gap: 10px; border: 1px solid #dcdcdc; border-radius: 6px; padding: 0 14px; background: #fff; min-width: 0; }
+    .dr-find:focus-within { border-color: var(--g-dark); box-shadow: 0 0 0 3px var(--g-tint); }
+    .dr-find svg { width: 18px; height: 18px; color: #777; flex: 0 0 auto; }
+    .dr-find input { flex: 1; min-width: 0; border: 0; outline: none; font: inherit; font-size: 14px; padding: 12px 0; background: transparent; }
+    .dr-chip { position: relative; display: flex; align-items: center; gap: 8px; border: 1px solid #dcdcdc; border-radius: 6px; background: #fff; padding: 0 0 0 14px; }
+    .dr-chip svg { width: 16px; height: 16px; color: var(--g-dark); flex: 0 0 auto; }
+    .dr-chip select { appearance: none; -webkit-appearance: none; font: inherit; font-size: 13.5px; font-weight: 700; border: 0; outline: none; padding: 12px 44px 12px 0; cursor: pointer; color: var(--ink);
+      background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23555' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 16px center; }
+    .dr-filters { display: inline-flex; align-items: center; gap: 8px; font: inherit; font-size: 13.5px; font-weight: 700; border: 1px solid #dcdcdc; border-radius: 6px; background: #fff; padding: 0 16px; cursor: pointer; }
+    .dr-filters svg { width: 16px; height: 16px; }
+    .dr-filters:hover, .dr-chip:hover { border-color: var(--ink); }
+    .dr-count { font-size: 13px; color: var(--mute); margin: -12px 0 18px; }
+    .dr-count b { color: var(--ink); }
+
+    @media (max-width: 1100px) {
+      .wm-doors { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .wm-door.lead { grid-column: span 3; }
+      .wm-door.lead .art { aspect-ratio: 21 / 8; }
+      .wm-top .wm-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .wm-join { grid-template-columns: 1fr; }
+      .wm-join .pic { min-height: 260px; order: -1; }
+    }
+    @media (max-width: 700px) {
+      main { padding: 0 16px 64px; }
+      .wm-note { padding: 8px 16px; }
+      .wm-hero { padding: 26px 0 22px; }
+      .wm-h { font-size: 26px; }
+      .wm-bar { flex-direction: column; border-radius: 14px; padding: 6px; margin-top: 20px; }
+      .wm-seg { padding: 10px 12px; }
+      .wm-seg.where { flex: 0 0 auto; border-left: 0; border-top: 1px solid #ececec; border-radius: 0; }
+      .wm-go { justify-content: center; padding: 14px; margin-top: 4px; }
+      .wm-doors { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 12px; }
+      .wm-door.lead { grid-column: span 2; }
+      .wm-door.lead .art { aspect-ratio: 16 / 9; }
+      .wm-door .art { border-radius: 12px; }
+      .wm-door .t { font-size: 14.5px; }
+      .wm-door .row { flex-direction: column; align-items: flex-start; gap: 5px; }
+      .wm-door.lead .row { flex-direction: row; align-items: baseline; }
+      .wm-door .ct { font-size: 11.5px; padding: 2px 7px; }
+      .wm-door .ex { display: none; }
+      .wm-door .qp { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-right: -16px; padding-right: 16px; }
+      .wm-door .qp::-webkit-scrollbar { display: none; }
+      .wm-door .qp a { flex: 0 0 auto; }
+      .wm-door .tag-lead { left: 10px; top: 10px; }
+      .wm-sec { margin: 40px 0 14px; }
+      /* on phones a listing card turns sideways: the picture on the left, the words and buttons on the right */
+      .wm-grid, .wm-top .wm-grid { grid-template-columns: 1fr; gap: 14px; }
+      .pc { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 14px; align-items: start; padding-bottom: 14px; border-bottom: 1px solid var(--line); }
+      .pc:last-child { border-bottom: 0; }
+      .pc-art { aspect-ratio: 1; border-radius: 12px; }
+      .pc-plate { width: 70%; border-radius: 12px; }
+      .pc-kind { display: none; }
+      .pc-body { padding: 0; }
+      .pc-name a { font-size: 15px; white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+      .pc-act { margin-top: 0; padding-top: 8px; }
+      .pc-act button { padding: 8px 6px; font-size: 11px; }
+      .wm-join { margin-top: 44px; border-radius: 16px; }
+      .wm-join .pic { min-height: 200px; }
+      .wm-join .copy { padding: 26px 20px 28px; }
+      .wm-join .btns .wm-btn { flex: 1 1 100%; }
+      .dr-crumb { padding: 18px 0 12px; }
+      .dr-head { grid-template-columns: 1fr; gap: 14px; margin-bottom: 18px; }
+      .dr-head .art { aspect-ratio: 16 / 8; }
+      .dr-head p { font-size: 14px; }
+      .dr-tabs { margin-right: -16px; padding-right: 16px; }
+      .dr-tab { padding: 4px 10px 10px; font-size: 11.5px; }
+      .dr-tab img { width: 54px; height: 38px; }
+      .dr-pills { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-right: -16px; padding-right: 16px; }
+      .dr-pills::-webkit-scrollbar { display: none; }
+      .dr-pill { flex: 0 0 auto; }
+      .dr-filter { flex-wrap: wrap; }
+      .dr-find { flex: 1 1 100%; }
+      .dr-chip { flex: 1 1 auto; }
+      .dr-chip select { width: 100%; }
+    }
+    @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script src="/public/nav.js"></script>
+
+  <div class="wm-note">
+    <span><b>Design concept</b>Directory look "Welcome Mat", sample data. The flow is the locked one; only the look changes.</span>
+    <span class="wm-switch" role="group" aria-label="Which view">
+      <button type="button" data-view="front" aria-pressed="true">Front page</button>
+      <button type="button" data-view="door" aria-pressed="false">Inside a door</button>
+    </span>
+  </div>
+
+  <main id="main-content">
+    <!-- THE FRONT PAGE: the promise, search and location, the seven doors, Top voted near you, Join. -->
+    <section id="front" aria-label="Directory doors">
+      <div class="wm-hero">
+        <div class="wm-eb">Vegan Directory</div>
+        <h1 class="wm-h">Everything Vegan near you: <em>places to eat, animals to help, people to follow.</em></h1>
+        <form class="wm-bar" action="/search" method="get" role="search" onsubmit="return false">
+          <div class="wm-seg what"><label for="wm-q">Search everything</label><input id="wm-q" type="search" name="q" placeholder='"Vegan pizza in Atlanta"'></div>
+          <div class="wm-seg where"><label for="wm-loc">Where</label><select id="wm-loc"><option value="">Everywhere</option><option value="south-florida">Near South Florida</option></select></div>
+          <button class="wm-go" type="submit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>Search</button>
+        </form>
+      </div>
+
+      <div class="wm-doors" id="wm-doors"></div>
+
+      <div class="wm-top">
+        <div class="wm-sec"><div><h2>Top voted near you</h2><p>The places and people members love most, across every door.</p></div></div>
+        <div class="wm-grid" id="wm-top"></div>
+      </div>
+
+      <section class="wm-join" aria-label="Join">
+        <div class="copy">
+          <div class="eb">Belong here</div>
+          <h2>Your votes put the best Vegan places on the map.</h2>
+          <p>Members vote, save their favorites and help every new listing get found. It is free, and your business or a place you love is one tap away.</p>
+          <div class="btns">
+            <a class="wm-btn main" href="/survey?s=explorer">Join free to vote and save</a>
+            <a class="wm-btn" href="/claim">Claim your business</a>
+            <button type="button" class="wm-btn">Suggest a listing</button>
+          </div>
+        </div>
+        <div class="pic"><img src="/public/guides/thumb-community.jpg" alt="Vegans sharing a long outdoor table under string lights" loading="lazy"></div>
+      </section>
+    </section>
+
+    <!-- INSIDE A DOOR (Eat): All doors, the door's name, the seven doors as tabs, its pills, the filter bar, the listings. -->
+    <section id="door" hidden aria-label="Directory door">
+      <div class="dr-crumb"><a href="?view=front" data-go="front">‹ All doors</a></div>
+      <div class="dr-head">
+        <div class="art"><img src="/public/guides/eating-out.jpg" alt="Friends sharing a meal at a Vegan restaurant"></div>
+        <div><h1>Eat</h1><p>Restaurants, bakeries, food trucks, markets and catering, voted on by the people who eat there.</p><span class="ct" id="dr-ct">548 listings</span></div>
+      </div>
+      <nav class="dr-tabs" id="dr-tabs" aria-label="Doors"></nav>
+      <div class="dr-pills" id="dr-pills" role="group" aria-label="Kinds of places"></div>
+      <div class="dr-filter">
+        <label class="dr-find"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg><input type="search" placeholder="Filter Eat by name, dish or city" aria-label="Filter Eat"></label>
+        <span class="dr-chip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-6.3 7-12a7 7 0 10-14 0c0 5.7 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/></svg><select id="dr-loc" aria-label="Location"><option value="">Everywhere</option><option value="south-florida">Near South Florida</option></select></span>
+        <button type="button" class="dr-filters"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>Filters</button>
+      </div>
+      <p class="dr-count">Showing <b>everything in Eat</b>, most votes first</p>
+      <div class="wm-grid" id="dr-grid"></div>
+    </section>
+  </main>
+
+  <script>
+  (function () {
+    var IMG = '/public/guides/';
+    var DOORS = [
+      { key: 'food', label: 'Eat', art: 'eating-out.jpg', ex: 'Restaurants, bakeries, food trucks, markets, catering', all: 548, sf: 88,
+        quick: ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Markets'] },
+      { key: 'community', label: 'Animals & Causes', art: 'nonprofit-guide.jpg', pos: 'center 30%', ex: 'Sanctuaries, rescues, nonprofits', all: 666, sf: 99 },
+      { key: 'people', label: 'People & Groups', art: 'welcome-ensemble.jpg', pos: 'center 20%', ex: 'Founders, athletes, activists, groups', all: 114, sf: 114 },
+      { key: 'products', label: 'Shop', art: 'supermarket-guide.jpg', ex: 'Food and drink, supplements, clothing, beauty', all: 158, sf: 158 },
+      { key: 'media', label: 'Books, Podcasts & Films', art: 'holiday/p-listen.jpg', ex: 'Books, podcasts, films, YouTube, news', all: 198, sf: 198 },
+      { key: 'services', label: 'Services & Spaces', art: 'entrepreneur.jpg', pos: 'center 35%', ex: 'Studios, event venues, health and coaching', all: 214, sf: 136 },
+      { key: 'travel', label: 'Travel', art: 'vegan-abroad.jpg', pos: 'center 30%', ex: 'Cruises, with retreats, stays and airlines coming', all: 8, sf: 8 }
+    ];
+    var PILLS = ['All', 'Restaurants', 'Bakeries & Cafes', 'Markets', 'Catering & Meal Prep', 'Food Trucks & Vendors'];
+    var S = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/';
+    var TOP = [
+      { slug: 'love-life-cafe', name: 'Love Life Cafe', meta: 'Miami · Restaurants', kind: 'Eat', tag: '100% Vegan', votes: 9, logo: S + 'library/475f0758124c4e3b8481.webp', tint: '#E8F5E9' },
+      { slug: 'be-an-animal-hero', name: 'Be An Animal Hero', meta: 'Every chapter · Nonprofits', kind: 'Animals & Causes', tag: '100% Vegan', votes: 3, logo: S + 'media/listings/be-an-animal-hero/logo-2026-10-27-cb7e3950.jpg', tint: '#FFF1DF' },
+      { slug: 'the-rich-roll-podcast', name: 'The Rich Roll Podcast', meta: 'Podcast', kind: 'Podcasts', votes: 3, logo: S + 'media/listings/the-rich-roll-podcast/logo-copied-2026-10-27-7df49906.jpg', tint: '#EAF1F8' },
+      { slug: 'brooke-sellers', name: 'Brooke Sellers', meta: 'Athletes · Vegan bodybuilder, fitness coach and author', kind: 'People', votes: 2, logo: S + 'media/people/brooke-sellers/photo-1793183446793.jpg', photo: true, tint: '#F3EEF8' }
+    ];
+    var EAT = [
+      { slug: 'love-life-cafe', name: 'Love Life Cafe', city: 'Miami', votes: 9, logo: S + 'library/475f0758124c4e3b8481.webp', tint: '#E8F5E9', sf: true },
+      { slug: 'dinas-vegan-deli-and-desserts', name: "Dina's Vegan Deli & Desserts", city: 'Riviera Beach', votes: 8, logo: S + 'library/11fb27d7891ea7ba15dd.webp', tint: '#FFF1DF', sf: true },
+      { slug: 'the-rabbit-hole', name: 'The Rabbit Hole', city: 'Pompano Beach', votes: 6, logo: S + 'library/d109d6db2db59180d828.webp', tint: '#EAF1F8', sf: true },
+      { slug: 'sen-saigon', name: 'Sen Saigon', city: 'New York', votes: 6, logo: S + 'library/44c573b924960a591edf.webp', tint: '#F3EEF8' },
+      { slug: 'christophers-kitchen', name: "Christopher's Kitchen", city: 'Palm Beach Gardens', votes: 6, logo: S + 'library/b652c82cc690855f1a65.webp', tint: '#FFF1DF', sf: true },
+      { slug: 'vegan-cuban-cuisine', name: 'Honest Cuban by VCC', city: 'Miami', votes: 5, logo: S + 'media/listings/vegan-cuban-cuisine/logo-2026-11-08-b3bab7a7.jpg', tint: '#E8F5E9', sf: true }
+    ];
+    var loc = '';
+    function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
+    function slugify(s) { return s.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+    function n(d) { return (loc ? d.sf : d.all).toLocaleString('en-US'); }
+    var UP = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l8 10h-5v6H9v-6H4z"/></svg>';
+    var HEART = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 00-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 000-7.8z"/></svg>';
+
+    function paintDoors() {
+      document.getElementById('wm-doors').innerHTML = DOORS.map(function (d) {
+        var lead = d.key === 'food';
+        var quick = d.quick ? '<span class="qp">' + d.quick.map(function (s) { return '<a href="?view=door&sub=' + slugify(s) + '" data-go="door">' + esc(s) + '</a>'; }).join('') + '</span>' : '';
+        return '<div class="wm-door' + (lead ? ' lead' : '') + '">' +
+          '<div class="art"><img src="' + IMG + d.art + '" alt="" loading="lazy"' + (d.pos ? ' style="object-position:' + d.pos + '"' : '') + '>' + '</div>' +
+          '<div class="info"><div class="row"><a class="t" href="?view=door&tab=' + d.key + '" data-go="door">' + esc(d.label) + '</a><span class="ct">' + n(d) + '</span></div>' +
+          '<span class="ex">' + esc(d.ex) + '</span>' + quick + '</div></div>';
+      }).join('');
+    }
+    function card(l, kind, meta, tag) {
+      return '<article class="pc">' +
+        '<a class="pc-art" href="/directory/' + l.slug + '" style="--tint:' + l.tint + '" aria-label="' + esc(l.name) + ' profile">' +
+          (kind ? '<span class="pc-kind">' + esc(kind) + '</span>' : '') +
+          '<span class="pc-plate' + (l.photo ? ' photo' : '') + '"><img src="' + l.logo + '" alt="' + esc(l.name) + (l.photo ? '' : ' logo') + '" loading="lazy"></span></a>' +
+        '<div class="pc-body">' +
+          '<div class="pc-name"><a href="/directory/' + l.slug + '">' + esc(l.name) + '</a><span class="pc-votes" title="Votes">' + UP + '<span data-n>' + l.votes + '</span></span></div>' +
+          '<span class="pc-meta">' + esc(meta) + '</span>' +
+          (tag ? '<span class="pc-tag">' + esc(tag) + '</span>' : '') +
+          '<div class="pc-act"><button type="button" class="vote" aria-pressed="false">' + UP + '<span>Vote</span></button><button type="button" class="save" aria-pressed="false">' + HEART + '<span>Save</span></button></div>' +
+        '</div></article>';
+    }
+    function paintTop() {
+      document.getElementById('wm-top').innerHTML = TOP.map(function (l) { return card(l, l.kind, l.meta, l.tag); }).join('');
+    }
+    function paintDoor() {
+      document.getElementById('dr-tabs').innerHTML = DOORS.map(function (d) {
+        return '<a class="dr-tab' + (d.key === 'food' ? ' on' : '') + '" href="?view=door&tab=' + d.key + '"' + (d.key === 'food' ? ' aria-current="page"' : '') + '><img src="' + IMG + d.art + '" alt=""' + (d.pos ? ' style="object-position:' + d.pos + '"' : '') + '>' + esc(d.label) + '</a>';
+      }).join('');
+      var sub = new URLSearchParams(location.search).get('sub');
+      var on = PILLS.filter(function (p) { return slugify(p) === sub; })[0] || 'All';
+      document.getElementById('dr-pills').innerHTML = PILLS.map(function (p) { return '<button type="button" class="dr-pill" aria-pressed="' + (p === on) + '">' + esc(p) + '</button>'; }).join('');
+      var rows = loc ? EAT.filter(function (l) { return l.sf; }) : EAT;
+      document.getElementById('dr-grid').innerHTML = rows.map(function (l) { return card(l, 'Restaurants', l.city + ' · Restaurants', '100% Vegan'); }).join('');
+      document.getElementById('dr-ct').textContent = n(DOORS[0]) + ' listings' + (loc ? ' near South Florida' : '');
+    }
+    function show(view) {
+      var door = view === 'door';
+      document.getElementById('front').hidden = door;
+      document.getElementById('door').hidden = !door;
+      [].forEach.call(document.querySelectorAll('.wm-switch button'), function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-view') === view)); });
+      if (door) paintDoor();
+    }
+    function go(view, href) {
+      history.pushState({}, '', href || ('?view=' + view));
+      show(view); window.scrollTo(0, 0);
+    }
+    document.addEventListener('click', function (e) {
+      var sw = e.target.closest('.wm-switch button');
+      if (sw) { go(sw.getAttribute('data-view')); return; }
+      var a = e.target.closest('a[data-go]');
+      if (a && !e.metaKey && !e.ctrlKey) { e.preventDefault(); go(a.getAttribute('data-go'), a.getAttribute('href')); return; }
+      var tab = e.target.closest('.dr-tab');
+      if (tab) { e.preventDefault(); return; }
+      var pill = e.target.closest('.dr-pill');
+      if (pill) { [].forEach.call(pill.parentNode.children, function (p) { p.setAttribute('aria-pressed', String(p === pill)); }); document.querySelector('.dr-count b').textContent = pill.textContent === 'All' ? 'everything in Eat' : pill.textContent; return; }
+      var b = e.target.closest('.pc-act button');
+      if (b) {
+        var on = b.getAttribute('aria-pressed') !== 'true';
+        b.setAttribute('aria-pressed', String(on));
+        if (b.classList.contains('vote')) {
+          b.querySelector('span').textContent = on ? 'Voted' : 'Vote';
+          var c = b.closest('.pc').querySelector('[data-n]'); c.textContent = +c.textContent + (on ? 1 : -1);
+        } else b.querySelector('span').textContent = on ? 'Saved' : 'Save';
+      }
+    });
+    function setLoc(v) { loc = v; document.getElementById('wm-loc').value = v; document.getElementById('dr-loc').value = v; paintDoors(); if (!document.getElementById('door').hidden) paintDoor(); }
+    document.getElementById('wm-loc').addEventListener('change', function () { setLoc(this.value); });
+    document.getElementById('dr-loc').addEventListener('change', function () { setLoc(this.value); });
+    window.addEventListener('popstate', function () { show(new URLSearchParams(location.search).get('view') === 'door' ? 'door' : 'front'); });
+    paintDoors(); paintTop();
+    show(new URLSearchParams(location.search).get('view') === 'door' ? 'door' : 'front');
+  })();
+  </script>
+
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
