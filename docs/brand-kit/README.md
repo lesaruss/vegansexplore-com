@@ -59,6 +59,8 @@ Source files: `mocks/brand-kit/*.html`, `preview/index.html`.
 
 ## Where the site stands
 
-- **Live site:** still the old look.
-- **Preview:** the new look is being rolled across the site as a switch: open any page with `?look=preview` (code in `/public/ve-look.js` and `/public/ve-look.css`, loaded from `nav.js`). Going live is flipping its default. A navigation or page redesign should match `/preview` and, once it lands, use that layer's classes rather than its own copy of the tokens.
-- **Outreach:** paused until Sean confirms the front end.
+- **Live since 2026-11-11.** The look is on for everyone: `/public/ve-look.js` (loaded by `nav.js`) adds `html.ve-cb` and loads
+  `/public/ve-look.css`. Put a page's look rules there under `html.ve-cb` (city hubs: `ve-look-hubs.css`). `?look=off` turns it
+  off for one browser while checking; `?look=on` clears that.
+- The homepage (`index.html`), the Directory's seven doors (`directory/index.html`, with Near me) and the house ads (`ads/`) are built on the kit.
+- **Outreach:** paused until Sean lifts it.
