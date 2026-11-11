@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vegan Directory (preview) — Vegans Explore</title>
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Preview of the new Directory: seven doors named for what people come to do. Not linked from the site yet.">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* The Directory doors preview (Sean, 2026-11-11: "mock out exactly what it would look like. I want to be able to interact with it...
+       do it in a preview... once we're happy with it, then we could push it to live"). BOSS docs/proposals/2026-11-11-directory-navigation-boss.md,
+       mock /mocks/directory-nav. Real listings through the shared component (/public/ve-region-directory.js) with this page's doors passed
+       as config.brand (sections, catMap, merge); stored categories never change. Not linked from the site; noindex. */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #fff; color: #1a1a1a; font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
+    .page-frame { width: 100%; background: #fff; display: flex; flex-direction: column; min-height: 100vh; }
+    main { flex: 1; max-width: none; margin: 0; padding: 28px 40px 80px; }
+    .pv-note { background: #FFF8EE; border-bottom: 1px solid #f3d9b5; font-size: 12.5px; padding: 9px 40px; color: #6b4300; }
+    .pv-note b { font-weight: 800; letter-spacing: .12em; text-transform: uppercase; font-size: 10.5px; color: #c46d00; margin-right: 8px; }
+    .pv-note a { color: #6b4300; font-weight: 700; }
+
+    /* the front page */
+    .fd-top { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px 24px; margin-bottom: 18px; }
+    .fd-eb { font-size: 11px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: #2D5C27; margin-bottom: 6px; }
+    .fd-h { font-size: clamp(22px, 2.6vw, 32px); font-weight: 900; line-height: 1.15; max-width: 900px; }
+    .fd-bar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
+    .fd-search { flex: 1 1 320px; display: flex; border: 2px solid #22C55E; border-radius: 6px; overflow: hidden; min-width: 0; }
+    .fd-search input { flex: 1; min-width: 0; border: 0; font: inherit; font-size: 14px; padding: 12px 14px; outline: none; }
+    .fd-search button { border: 0; background: #2D5C27; color: #fff; font: inherit; font-weight: 800; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding: 0 18px; cursor: pointer; }
+    .fd-loc { position: relative; }
+    .fd-loc select { appearance: none; -webkit-appearance: none; font: inherit; font-size: 13px; font-weight: 700; border: 1px solid #d6d6d6; border-radius: 6px; padding: 12px 44px 12px 14px; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23555' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 16px center; cursor: pointer; }
+    .fd-doors { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .fd-door { position: relative; display: flex; flex-direction: column; gap: 6px; border: 1px solid #e3e3e3; border-radius: 12px; padding: 16px; background: #fff; text-decoration: none; color: inherit; min-height: 128px; transition: border-color .15s, box-shadow .15s; }
+    .fd-door:hover { border-color: #2D5C27; box-shadow: 0 4px 14px rgba(0,0,0,.07); }
+    .fd-door .ic { width: 40px; height: 40px; border-radius: 10px; background: #E8F5E9; display: grid; place-items: center; }
+    .fd-door .ic svg { width: 22px; height: 22px; stroke: #2D5C27; fill: none; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+    .fd-door .fd-t { font-size: 17px; font-weight: 900; line-height: 1.2; color: inherit; text-decoration: none; }
+    .fd-door .fd-t::after { content: ""; position: absolute; inset: 0; border-radius: 12px; }
+    .fd-door .qp { position: relative; z-index: 2; }
+    .fd-door span.ex { font-size: 12px; color: #666; line-height: 1.4; }
+    .fd-door .ct { position: absolute; top: 14px; right: 14px; font-size: 11.5px; font-weight: 800; background: #f1f1f1; border-radius: 6px; padding: 3px 8px; color: #333; }
+    .fd-door .ct.all { background: #fff; border: 1px dashed #bbb; color: #555; }
+    .fd-door.lead { grid-column: span 2; background: #F4FAF4; border-color: #2D5C27; }
+    .fd-door .qp { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+    .fd-door .qp a { font-size: 11px; font-weight: 800; border: 1px solid #2D5C27; color: #2D5C27; border-radius: 6px; padding: 4px 9px; background: #fff; text-decoration: none; }
+    .fd-door .qp a:hover { background: #2D5C27; color: #fff; }
+    .fd-door.members { border-style: dashed; }
+    .fd-sec { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin: 26px 0 12px; }
+    .fd-sec h2 { font-size: 12px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: #2D5C27; }
+    .fd-join { display: flex; gap: 8px; flex-wrap: wrap; }
+    .fd-btn { display: inline-flex; align-items: center; border-radius: 6px; font: inherit; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 10px 16px; text-decoration: none; cursor: pointer; border: 1.5px solid #2D5C27; background: #fff; color: #2D5C27; }
+    .fd-btn.main { background: #F69820; border-color: #F69820; color: #1a1a1a; }
+    #fd-top .rank-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .fd-empty { font-size: 13px; color: #666; }
+
+    /* inside a door */
+    .dr-crumb { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; font-size: 13px; }
+    .dr-crumb a { color: #2D5C27; font-weight: 800; text-decoration: none; }
+    .dr-crumb b { font-weight: 900; font-size: 20px; }
+    #door .vrd-root .cat-tab { padding: 11px 13px; }
+    @media (max-width: 700px) { #door .vrd-root .cat-tabs { flex-wrap: nowrap; overflow-x: auto; } #door .vrd-root .cat-tab { white-space: nowrap; } }
+    [hidden] { display: none !important; }
+    :focus-visible { outline: 3px solid #F69820; outline-offset: 3px; }
+
+    @media (max-width: 1100px) { .fd-doors, #fd-top .rank-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 700px) {
+      main { padding: 20px 16px 64px; }
+      .pv-note { padding: 9px 16px; }
+      .fd-door { min-height: 0; padding: 12px; }
+      .fd-door span.ex { display: none; }
+      .fd-door .fd-t { font-size: 15px; }
+      .fd-loc, .fd-loc select { width: 100%; }
+      #fd-top .rank-grid { grid-template-columns: 1fr; }
+      .fd-join { width: 100%; }
+      .fd-join .fd-btn { flex: 1 1 100%; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script src="/public/nav.js"></script>
+  <script src="/public/ve-auth.js"></script>
+  <script src="/public/ve-votes.js"></script>
+  <script src="/public/ve-hubs.js"></script>
+  <script src="/public/ve-region-directory.js"></script>
+  <script src="/public/ve-ad-rail.js"></script>
+  <script src="/public/ve-listing-request.js"></script>
+
+  <div class="pv-note"><b>Preview</b>The new Directory, with real listings. Not linked from the site yet. <a href="/mocks/directory-nav">The plan</a> · <a href="/directory">Today's Directory</a></div>
+
+  <main id="main-content">
+    <!-- The front page: the promise, search and location, the doors, Top voted, Join. -->
+    <section id="front" aria-label="Directory doors">
+      <div class="fd-top"><div><div class="fd-eb">Vegan Directory</div><h1 class="fd-h">Everything Vegan near you: places to eat, animals to help, people to follow.</h1></div></div>
+      <div class="fd-bar">
+        <form class="fd-search" action="/search" method="get" role="search"><input type="search" name="q" placeholder='Search everything: "Vegan pizza in Atlanta"' aria-label="Search the Directory"><button type="submit">Search</button></form>
+        <label class="fd-loc"><span class="sr" hidden>Location</span><select id="fd-loc" aria-label="Location"></select></label>
+      </div>
+      <div class="fd-doors" id="fd-doors"></div>
+      <div class="fd-sec"><h2 id="fd-top-h">Top voted near you</h2>
+        <div class="fd-join" id="fd-join"><a class="fd-btn main" id="fd-join-btn" href="/survey?s=explorer">Join free to vote and save</a><a class="fd-btn" href="/claim">Claim your business</a><button type="button" class="fd-btn" data-ve-listing-request>Suggest a listing</button></div>
+      </div>
+      <div class="vrd-root" id="fd-top"><div class="rank-grid"><p class="fd-empty">Loading...</p></div></div>
+    </section>
+
+    <!-- Inside a door: the doors as tabs (all visible), then the door's pills, filters and listings. -->
+    <section id="door" hidden aria-label="Directory door">
+      <div class="dr-crumb"><a href="/directory-preview" id="dr-home">‹ All doors</a><span aria-hidden="true">·</span><b id="dr-name">Directory</b></div>
+      <div class="vear-layout"><div class="vear-main"><div id="ve-region-directory"></div></div><aside class="vear-rail" id="dir-ad-rail" data-ad-page="chapter"></aside></div>
+    </section>
+  </main>
+
+  <script>
+  (function () {
+    var IC = {
+      food: '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2M7 2v20M21 15V2M18 2v4M21 8a3 3 0 01-6 0"/>',
+      community: '<path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 00-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 000-7.8z"/>',
+      people: '<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.9M16 3.1a4 4 0 010 7.8"/>',
+      products: '<path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0"/>',
+      media: '<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0014 0M12 17v5"/>',
+      services: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/>',
+      travel: '<path d="M2 20c2 1 4 1 6 0s4-1 6 0 4 1 6 0M4 16l-1-5h18l-2 5M7 11V7h10v4M12 3v4"/>',
+      vetting: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>',
+      review: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'
+    };
+    function svg(k, w) { return '<svg fill="none" height="' + (w || 13) + '" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24" width="' + (w || 13) + '">' + IC[k] + '</svg>'; }
+
+    // The doors (keys kept from today so links, location rules and ads still apply; only labels, order and pills change).
+    var DOORS = [
+      { key: 'food', label: 'Eat', hasVF: true, ex: 'Restaurants, bakeries, food trucks, markets, catering', local: true,
+        subcats: ['Restaurants', 'Bakeries & Cafes', 'Markets', 'Catering & Meal Prep', 'Food Trucks & Vendors'] },
+      { key: 'community', label: 'Animals & Causes', ex: 'Sanctuaries, rescues, nonprofits', local: true, subcats: ['Rescues', 'Sanctuaries', 'Nonprofits'] },
+      { key: 'people', label: 'People & Groups', ex: 'Founders, athletes, activists, groups', subcats: ['Founders', 'Athletes', 'Activists', 'Health Experts', 'Chefs & Creators', 'Groups', 'Event Hosts'] },
+      { key: 'products', label: 'Shop', ex: 'Food and drink, supplements, clothing, beauty', everywhere: true, subcats: ['Food Brands', 'Nutrition & Supplements', 'Clothing and Fashion', 'Beauty and Personal Care', 'Marketplaces'] },
+      { key: 'media', label: 'Books, Podcasts & Films', ex: 'Books, podcasts, films, YouTube, news', subcats: ['Books', 'Podcasts', 'Documentaries & Films', 'YouTube', 'News Outlets'] },
+      { key: 'services', label: 'Services & Spaces', ex: 'Studios, event venues, health and coaching', local: true, subcats: ['Studios', 'Event Venues', 'Health & Coaching', 'More services'] },
+      { key: 'travel', label: 'Travel', ex: 'Cruises, with retreats, stays and airlines coming', subcats: ['Cruises'] },
+      { key: 'vetting', label: 'Being vetted', membersOnly: true, ex: 'Places waiting for member votes', local: true, subcats: ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Catering', 'Meal Prep'] },
+      { key: 'review', label: 'Review', adminOnly: true, frame: '/admin/depot/directory-review', subcats: [] }
+    ];
+    DOORS.forEach(function (d) { d.icon = svg(d.key); });
+    var MERGE = {
+      'Catering & Meal Prep': ['Catering', 'Meal Prep'], 'Food Trucks & Vendors': ['Food Trucks', 'Vendors'],
+      'Health Experts': ['Physicians'], 'Chefs & Creators': ['Chefs', 'Content Creators'], 'Event Hosts': ['Events', 'Promoters'],
+      'Health & Coaching': ['Health and Wellness', 'Health Professionals', 'Coaches and Consultants'], 'More services': ['Marketing & Growth', 'Animal Care']
+    };
+    var CATMAP = {
+      'Restaurants': 'food', 'Bakeries & Cafes': 'food', 'Food Trucks': 'food', 'Vendors': 'food', 'Food Trucks & Vendors': 'food', 'Markets': 'food', 'Catering': 'food', 'Meal Prep': 'food', 'Catering & Meal Prep': 'food',
+      'Food Brands': 'products', 'Nutrition & Supplements': 'products', 'Brands': 'products', 'Clothing and Fashion': 'products', 'Beauty and Personal Care': 'products', 'Marketplaces': 'products', 'Fitness and Athletics': 'products', 'E-Commerce & Marketplaces': 'products',
+      'Health and Wellness': 'services', 'Coaches and Consultants': 'services', 'Marketing & Growth': 'services', 'Branding & Creative Assets': 'services', 'Content Creation & Media': 'services', 'Web & Development': 'services', 'AI & Automation': 'services', 'Business Operations': 'services', 'Health Professionals': 'services', 'Animal Care': 'services', 'Studios': 'services', 'Event Venues': 'services', 'Health & Coaching': 'services', 'More services': 'services',
+      'Podcasts': 'media', 'YouTube': 'media', 'News Outlets': 'media', 'Documentaries & Films': 'media', 'Books': 'media', 'Media': 'media',
+      'Nonprofits': 'community', 'Rescues': 'community', 'Sanctuaries': 'community', 'Community Partner': 'community',
+      'Groups': 'people', 'Events': 'people', 'Event Hosts': 'people', 'Activists': 'people', 'Content Creators': 'people', 'Chefs & Creators': 'people', 'Athletes': 'people', 'Physicians': 'people', 'Health Experts': 'people', 'Chefs': 'people', 'Founders': 'people', 'Promoters': 'people',
+      'Cruises': 'travel', 'Uncategorized': 'hidden'
+    };
+    var QUICK = { food: ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Markets'] };
+
+    var q = new URLSearchParams(location.search);
+    var front = document.getElementById('front'), door = document.getElementById('door');
+    var me = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null;
+    var member = !!(me && me.membership_status === 'active'), admin = !!(me && me.is_superadmin);
+    if (member) { var jb = document.getElementById('fd-join-btn'); if (jb) jb.remove(); }
+
+    // Location: the same remembered choice as today's Directory (localStorage ve_dir_loc), picked here once.
+    var LOC_KEY = 've_dir_loc', loc = null;
+    try { loc = JSON.parse(localStorage.getItem(LOC_KEY) || 'null'); } catch (e) { loc = null; }
+    if (q.get('city')) { var h0 = (window.VE_HUBS || []).filter(function (h) { return h.slug === q.get('city'); })[0]; if (h0) loc = { continent: h0.continent, country: h0.country, chapter: h0.slug }; }
+    if (!loc && me && me.home_community) { var h1 = (window.VE_HUBS || []).filter(function (h) { return h.slug === me.home_community; })[0]; if (h1) loc = { continent: h1.continent, country: h1.country, chapter: h1.slug }; }
+    var sel = document.getElementById('fd-loc');
+    sel.innerHTML = '<option value="">Everywhere</option>' + (window.VE_HUBS || []).map(function (h) { return '<option value="' + h.slug + '">Near ' + h.name + '</option>'; }).join('');
+    sel.value = loc && loc.chapter ? loc.chapter : '';
+    sel.addEventListener('change', function () {
+      var h = (window.VE_HUBS || []).filter(function (x) { return x.slug === sel.value; })[0];
+      loc = h ? { continent: h.continent, country: h.country, chapter: h.slug } : null;
+      try { if (loc) localStorage.setItem(LOC_KEY, JSON.stringify(loc)); else localStorage.removeItem(LOC_KEY); } catch (e) {}
+      paintFront();
+    });
+
+    function doorOf(l) {
+      var ds = [];
+      VERegionDirectory.sectionsOf(l).forEach(function (c) { var d = CATMAP[c]; if (d && d !== 'hidden' && ds.indexOf(d) < 0) ds.push(d); });
+      return ds;
+    }
+    function near(l) { if (!loc || !loc.chapter) return true; var h = VERegionDirectory.hubsOf(l); return h === '*' || h.split('|').indexOf(loc.chapter) >= 0; }
+    function hubName() { var h = loc && (window.VE_HUBS || []).filter(function (x) { return x.slug === loc.chapter; })[0]; return h ? h.name : ''; }
+    function fmt(n) { return n.toLocaleString('en-US'); }
+
+    var DATA = null;
+    function paintFront() {
+      var box = document.getElementById('fd-doors');
+      var shown = DOORS.filter(function (d) { return d.key !== 'review' && (!d.membersOnly || member); });
+      box.innerHTML = shown.map(function (d) {
+        var ct = '<span class="ct">...</span>';
+        if (DATA) {
+          var all = DATA.filter(function (l) { return doorOf(l).indexOf(d.key) >= 0; });
+          var here = d.local ? all.filter(near) : all;
+          ct = d.local && loc && loc.chapter && here.length < 5 ? '<span class="ct all">' + fmt(all.length) + ' everywhere</span>' : '<span class="ct">' + fmt(here.length) + '</span>';
+        }
+        var quick = QUICK[d.key] ? '<span class="qp">' + QUICK[d.key].map(function (s) { return '<a href="/directory-preview?tab=' + d.key + '&sub=' + encodeURIComponent(s.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')) + '" data-door="' + d.key + '">' + s + '</a>'; }).join('') + '</span>' : '';
+        return '<div class="fd-door' + (d.key === 'food' ? ' lead' : '') + (d.membersOnly ? ' members' : '') + '">' + ct +
+          '<span class="ic">' + svg(d.key, 22) + '</span><a class="fd-t" href="/directory-preview?tab=' + d.key + '" data-door="' + d.key + '">' + d.label + '</a><span class="ex">' + d.ex + '</span>' + quick + '</div>';
+      }).join('');
+      document.getElementById('fd-top-h').textContent = loc && loc.chapter ? 'Top voted near ' + hubName() : 'Top voted';
+      paintTop();
+    }
+    // Top voted, mixed across doors: the best of Eat and Animals near you, then a podcast or book, then a person.
+    function paintTop() {
+      var grid = document.querySelector('#fd-top .rank-grid');
+      if (!DATA) return;
+      function best(key, local) {
+        return DATA.filter(function (l) { return doorOf(l)[0] === key && (!local || near(l)) && l.business_status !== 'CLOSED_PERMANENTLY'; })
+          .sort(function (a, b) { return (b.vote_count || 0) - (a.vote_count || 0) || String(a.name).localeCompare(b.name); })[0];
+      }
+      var picks = [best('food', true), best('community', true), best('media'), best('people')].filter(Boolean);
+      if (!picks.length) { grid.innerHTML = '<p class="fd-empty">Nothing voted here yet.</p>'; return; }
+      grid.innerHTML = picks.map(function (l, i) { return VERegionDirectory.card(l, i); }).join('');
+      VERegionDirectory.wire(document.getElementById('fd-top'));
+    }
+
+    function show(tab) {
+      var on = !!tab && DOORS.some(function (d) { return d.key === tab; });
+      front.hidden = on; door.hidden = !on;
+      var d = DOORS.filter(function (x) { return x.key === tab; })[0];
+      document.getElementById('dr-name').textContent = d ? d.label : 'Directory';
+      document.title = (d ? d.label + ' · ' : '') + 'Vegan Directory (preview) — Vegans Explore';
+    }
+    // A door opens in place (the address carries ?tab= so Back and Share work); All doors comes back to the front page.
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest('a[data-door]');
+      if (!a || e.metaKey || e.ctrlKey) return;
+      e.preventDefault();
+      // The location was changed on the front page after the listings loaded: open the door fresh, set to it.
+      if ((loc && loc.chapter || '') !== INIT_LOC) { location.href = a.getAttribute('href') + (loc && loc.chapter ? '&city=' + loc.chapter : ''); return; }
+      history.pushState({}, '', a.getAttribute('href'));
+      show(new URLSearchParams(location.search).get('tab'));
+      window.dispatchEvent(new PopStateEvent('popstate'));
+      window.scrollTo(0, 0);
+    });
+    document.getElementById('dr-home').addEventListener('click', function (e) { e.preventDefault(); history.pushState({}, '', '/directory-preview'); show(''); window.scrollTo(0, 0); });
+    window.addEventListener('popstate', function () { show(new URLSearchParams(location.search).get('tab')); });
+
+    var rail = document.getElementById('dir-ad-rail'), INIT_LOC = loc && loc.chapter || '';
+    VERegionDirectory.init({ mount: 've-region-directory', hub: '', regions: true, matchListing: function () { return true; },
+      url: '/directory-preview', sectionMenu: false,
+      brand: { sections: DOORS, catMap: CATMAP, merge: MERGE },
+      onData: function (rows) { DATA = rows; paintFront(); },
+      location: { initial: loc, onChange: function (l) {
+        loc = l && l.chapter ? l : null; sel.value = loc ? loc.chapter : ''; INIT_LOC = loc ? loc.chapter : '';
+        try { if (loc) localStorage.setItem(LOC_KEY, JSON.stringify(loc)); } catch (e) {}
+        if (window.VEAdRail) VEAdRail.chapter(rail, loc ? loc.chapter : '');
+      } } });
+    show(q.get('tab'));
+    paintFront();
+  })();
+  </script>
+
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>

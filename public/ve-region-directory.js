@@ -515,6 +515,9 @@
   function sectionsOf(l) {
     var out = [l.category || ''];
     (l.extra_categories || []).forEach(function (c) { if (c && out.indexOf(c) < 0) out.push(c); });
+    // A brand's merged pills (config.brand.merge = {'Food Trucks & Vendors': ['Food Trucks', 'Vendors']}; the Directory doors preview,
+    // Sean 2026-11-11): a listing also counts under the merged pill of any of its categories. Stored categories never change.
+    if (BRAND.merge) Object.keys(BRAND.merge).forEach(function (k) { if (out.indexOf(k) < 0 && BRAND.merge[k].some(function (c) { return out.indexOf(c) >= 0; })) out.push(k); });
     return out;
   }
   // A brand that also sells in person (Sean, 2026-10-26: "they still show up at vendor... farmers markets and special events,
@@ -1653,6 +1656,8 @@
           withTrust(function (T) {
             TRUST = T;
             if (T) approved = approved.filter(function (l) { return window.VETrust.visible(l, T); });
+            // config.onData(listings): the same public listings, for a page that draws its own summary (the doors preview).
+            if (typeof config.onData === 'function') { try { config.onData(approved); } catch (e) { console.error(e); } }
             adminReady(function (a) { ADMIN = a; fetchClosed(root, config, approved); });
           });
         }
@@ -1773,6 +1778,9 @@
     // vrd-root and a .rank-grid; wire() adds votes and opens a listing through onOpen(slug, name)
     // so the visitor stays where they are. A listing needs the fields fetchAll selects.
     css: injectStyleOnce,
+    // Which chapters a listing counts in ('*' for every one), and its sections (with a brand's merged pills).
+    hubsOf: function (l) { return hubsOf(l); },
+    sectionsOf: function (l) { return sectionsOf(l); },
     // A brand's cards outside init (2026-10-30: a LESARUSS.ai Guide's Directory tab): the same config.brand init takes, so the
     // card reads like that brand's Directory (no How Vegan, its avatar color, its listing addresses).
     brand: function (b) { useBrand(b); },
