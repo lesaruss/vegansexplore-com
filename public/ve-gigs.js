@@ -618,7 +618,7 @@
       { v: 'overview', name: 'Overview' }, { v: 'dashboard', name: 'Your dashboard' }, { v: 'board', name: 'Open gigs' }, { v: 'mine', name: 'My gigs' },
       { v: 'profile', name: 'Your media kit', subs: ['you', 'partner', 'public', 'team'] }, { v: 'how', name: 'How you rise' }, { v: 'join', name: 'Apply' }
     ];
-    var KAI_IMG = C.avatar || '/gigs/sample/img/kai-avatar.webp';
+    var KAI_IMG = C.avatar || '/public/brand-kit/avatars/kai-v2.jpg';
     function tourAt(h) {
       var v = h[0] === 'gig' || h[0] === 'apply' ? 'board' : h[0] || 'overview';
       var i = 0; TOUR.forEach(function (t, j) { if (t.v === v) i = j; });
@@ -844,5 +844,5 @@
       });
   }
 
-  window.VEGigs = { mount: mount, live: live, checks: checks, standing: standing, voice: voice, LINES: LINES, KAI: '/gigs/sample/img/kai-avatar.webp' };
+  window.VEGigs = { mount: mount, live: live, checks: checks, standing: standing, voice: voice, LINES: LINES, KAI: '/public/brand-kit/avatars/kai-v2.jpg' };
 })();
