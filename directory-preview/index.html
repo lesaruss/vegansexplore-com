@@ -423,8 +423,8 @@
       banner.setLabel((d ? d.label : 'All doors') + (where ? ' · ' + where : ''));
       banner.setQuiet(cur);
       var c = d && countOf(d);
-      // Near me sets the location aside, so the count is the door's whole list, closest first.
-      if (c && secInfo && secInfo.near && DATA) c = { n: DATA.filter(function (l) { return doorOf(l).indexOf(d.key) >= 0; }).length, cap: 'closest first' };
+      // Near me sets the location aside, so the count is the door's whole list, by distance.
+      if (c && secInfo && secInfo.near && DATA) c = { n: DATA.filter(function (l) { return doorOf(l).indexOf(d.key) >= 0; }).length, cap: 'by distance' };
       document.getElementById('dr-n').textContent = c ? fmt(c.n) + ' ' + d.unit + ' ' + c.cap : '';
     }
 

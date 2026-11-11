@@ -181,6 +181,7 @@
     + '.vrd-root .vrd-near-btn:hover,.vrd-root .vrd-near-btn[aria-pressed=true]{background:var(--vb-soft,#f0faf4)}'
     + '.vrd-root .vrd-near-btn:focus-visible{outline:2px solid var(--vb-accent,#5EC47A);outline-offset:2px}'
     + '.vrd-root .vrd-near-btn[aria-busy=true]{cursor:progress;opacity:.75}'
+    + '.vrd-root .vrd-near-btn svg,.vrd-root .vrd-near-tag svg{flex:none}'
     + '.vrd-root .vrd-near-btn[hidden],.vrd-root .vrd-near-tag[hidden]{display:none}'
     + '.vrd-root .vrd-near-tag{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px 0 12px;border-radius:6px;border:1px solid var(--vb-line,#b6e5c8);background:var(--vb-soft,#f0faf4);color:var(--vb-accent-ink,#2d7a4f);font-family:Montserrat,sans-serif;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}'
     + '.vrd-root .vrd-near-tag .vrd-x{font-size:15px;line-height:1;margin-left:2px}'
