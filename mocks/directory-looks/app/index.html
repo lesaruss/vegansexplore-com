@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Directory look: Today Tab — Vegans Explore</title>
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="A design concept for the Vegan Directory with sample data: art-led doors, layered cards and an app-like sticky search.">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Directory look "Today Tab": a design concept on the locked Directory flow (directory-preview). Sample data only. */
+    :root {
+      --g-dark: #2D5C27; --g: #3A9B3E; --g-bright: #22C55E; --g-tint: #E8F5E9; --g-wash: #F4FAF4;
+      --orange: #F69820; --orange-tint: #FFF3E2; --ink: #1a1a1a; --ink-2: #5b5f58; --line: #ebeee9;
+      --sh-1: 0 1px 2px rgba(20,40,18,.06), 0 4px 14px rgba(20,40,18,.06);
+      --sh-2: 0 2px 4px rgba(20,40,18,.06), 0 14px 34px rgba(20,40,18,.12);
+      --r-card: 20px; --r-ctl: 6px; --nav-h: 60px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; }
+    body { background: #fff; color: var(--ink); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+    .page-frame { width: 100%; background: #fff; display: flex; flex-direction: column; min-height: 100vh; }
+    main { flex: 1; max-width: none; margin: 0; padding: 0 40px 88px; }
+    a { color: inherit; }
+    [hidden] { display: none !important; }
+    :focus-visible { outline: 3px solid var(--orange); outline-offset: 3px; }
+    .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+    /* concept notice and the view switch */
+    .cn { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; background: #FFF8EE; border-bottom: 1px solid #f3d9b5; padding: 8px 40px; font-size: 12.5px; color: #6b4300; }
+    .cn b { font-weight: 800; letter-spacing: .12em; text-transform: uppercase; font-size: 10.5px; color: #c46d00; margin-right: 8px; }
+    .seg { display: inline-flex; background: rgba(107,67,0,.08); border-radius: 8px; padding: 3px; }
+    .seg a { font-size: 11.5px; font-weight: 800; text-decoration: none; color: #6b4300; padding: 6px 12px; border-radius: var(--r-ctl); }
+    .seg a[aria-current="page"] { background: #fff; color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.12); }
+
+    /* large title */
+    .hero { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 28px; padding: 36px 0 20px; }
+    .eb { display: inline-flex; align-items: center; gap: 8px; font-size: 11.5px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--g); margin-bottom: 10px; }
+    .eb .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--g-bright); box-shadow: 0 0 0 4px rgba(34,197,94,.18); }
+    .h1 { font-size: clamp(30px, 4.1vw, 56px); font-weight: 900; line-height: 1.04; letter-spacing: -.025em; max-width: 980px; }
+    .h1 em { font-style: normal; color: var(--g-dark); background: linear-gradient(transparent 62%, rgba(34,197,94,.28) 62%); }
+    .place { position: relative; width: clamp(240px, 24vw, 360px); aspect-ratio: 16 / 9; border-radius: var(--r-card); overflow: hidden; box-shadow: var(--sh-2); background: var(--g-tint); }
+    .place img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity .5s ease; }
+    .place .strip { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, 1fr); }
+    .place .strip img { position: static; height: 100%; }
+    .place .plate { position: absolute; left: 12px; bottom: 12px; background: #fff; border-radius: var(--r-ctl); padding: 7px 10px; font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; display: inline-flex; gap: 6px; align-items: center; box-shadow: var(--sh-1); }
+    .place .plate svg { width: 13px; height: 13px; stroke: var(--g-dark); }
+
+    /* sticky search and location */
+    .bar { position: sticky; top: var(--nav-h); z-index: 50; margin: 0 -40px; padding: 12px 40px; background: rgba(255,255,255,.82); backdrop-filter: saturate(1.6) blur(18px); -webkit-backdrop-filter: saturate(1.6) blur(18px); border-bottom: 1px solid transparent; transition: border-color .2s, box-shadow .2s; }
+    .bar.stuck { border-bottom-color: var(--line); box-shadow: 0 6px 20px rgba(20,40,18,.06); }
+    .bar-in { display: flex; gap: 10px; align-items: stretch; }
+    .search { flex: 1 1 auto; min-width: 0; position: relative; display: flex; }
+    .search svg { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); width: 19px; height: 19px; stroke: var(--g-dark); pointer-events: none; }
+    .search input { flex: 1; min-width: 0; font: inherit; font-size: 15px; font-weight: 600; color: var(--ink); background: #F3F5F2; border: 2px solid transparent; border-radius: var(--r-ctl); padding: 14px 16px 14px 46px; outline: none; transition: background .15s, border-color .15s, box-shadow .15s; }
+    .search input::placeholder { color: #80867d; font-weight: 600; }
+    .search input:focus { background: #fff; border-color: var(--g-bright); box-shadow: 0 0 0 4px rgba(34,197,94,.15); }
+    .loc { position: relative; flex: 0 0 auto; }
+    .loc svg.pin { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 17px; height: 17px; stroke: var(--orange); pointer-events: none; }
+    .loc select { appearance: none; -webkit-appearance: none; height: 100%; font: inherit; font-size: 13.5px; font-weight: 800; color: var(--ink); border: 0; border-radius: var(--r-ctl); padding: 0 46px 0 40px; background: var(--orange-tint) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231a1a1a' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 16px center; cursor: pointer; min-height: 50px; }
+    .go { flex: 0 0 auto; border: 0; border-radius: var(--r-ctl); background: var(--g-dark); color: #fff; font: inherit; font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; padding: 0 22px; cursor: pointer; }
+
+    /* section heads */
+    .sh { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin: 30px 0 14px; }
+    .sh h2 { font-size: clamp(21px, 1.9vw, 27px); font-weight: 900; letter-spacing: -.015em; line-height: 1.1; }
+    .sh .k { display: block; font-size: 11px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--g); margin-bottom: 5px; }
+    .sh .more { font-size: 13px; font-weight: 800; color: var(--g-dark); text-decoration: none; }
+
+    /* the doors: editorial cards with art on top, a solid panel under it */
+    .doors { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+    .door { position: relative; display: flex; flex-direction: column; background: #fff; border-radius: var(--r-card); overflow: hidden; box-shadow: var(--sh-1); outline: 1px solid rgba(20,40,18,.05); transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s; animation: rise .6s cubic-bezier(.2,.8,.2,1) both; }
+    .door:hover { transform: translateY(-3px); box-shadow: var(--sh-2); }
+    .door:active { transform: scale(.985); }
+    .door .art { position: relative; height: clamp(150px, 12.5vw, 210px); overflow: hidden; background: var(--g-tint); }
+    .door .art img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .8s cubic-bezier(.2,.8,.2,1); }
+    .door:hover .art img { transform: scale(1.045); }
+    .door .pn { flex: 1; display: flex; flex-direction: column; gap: 4px; padding: 14px 16px 16px; }
+    .door .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .door .t { font-size: 18px; font-weight: 900; line-height: 1.18; letter-spacing: -.01em; text-decoration: none; color: var(--ink); }
+    .door .t::after { content: ""; position: absolute; inset: 0; z-index: 1; }
+    .door .ex { font-size: 12.5px; color: var(--ink-2); line-height: 1.45; font-weight: 500; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .door .ct { flex: 0 0 auto; display: inline-flex; align-items: baseline; gap: 4px; background: var(--g-tint); color: var(--g-dark); border-radius: var(--r-ctl); padding: 5px 9px; font-size: 15px; font-weight: 900; font-variant-numeric: tabular-nums; }
+    .door .ct small { font-size: 9.5px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; opacity: .75; }
+    .door .ct.bump { animation: bump .5s ease; }
+    .door.lead { grid-column: span 2; }
+    .door.lead .t { font-size: 26px; }
+    .door.lead .ct { font-size: 18px; padding: 6px 11px; }
+    .door.lead .ex { font-size: 13.5px; }
+    .qp { position: relative; z-index: 2; display: flex; flex-wrap: wrap; gap: 7px; margin-top: 8px; }
+    .qp a { font-size: 12px; font-weight: 800; text-decoration: none; color: var(--g-dark); background: #fff; border: 1.5px solid #cfe5cf; border-radius: var(--r-ctl); padding: 7px 11px; transition: background .15s, color .15s, border-color .15s; }
+    .qp a:hover { background: var(--g-dark); border-color: var(--g-dark); color: #fff; }
+
+    /* listing cards: a color band drawn from the listing's own logo, the logo on a white plate, then the facts */
+    .grid4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+    .grid-auto { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr)); gap: 18px; }
+    .lc { position: relative; background: #fff; border-radius: var(--r-card); box-shadow: var(--sh-1); outline: 1px solid rgba(20,40,18,.05); overflow: hidden; display: flex; flex-direction: column; transition: transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s; animation: rise .6s cubic-bezier(.2,.8,.2,1) both; }
+    .lc:hover { transform: translateY(-3px); box-shadow: var(--sh-2); }
+    .lc .band { position: relative; height: 74px; overflow: hidden; background: linear-gradient(120deg, #DDF2DF 0%, #EEF8EA 55%, #FFEFD9 100%); }
+    .lc .band::before { content: ""; position: absolute; inset: -40px; background-image: var(--img); background-size: cover; background-position: center; filter: blur(26px) saturate(1.8); transform: scale(1.3); opacity: .5; mix-blend-mode: multiply; }
+    .lc .band::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,.4)); }
+    .lc .rank { position: absolute; top: 12px; right: 12px; z-index: 2; background: #fff; color: var(--ink); border-radius: var(--r-ctl); font-size: 11px; font-weight: 900; letter-spacing: .08em; padding: 5px 8px; box-shadow: var(--sh-1); }
+    .lc .logo { position: relative; z-index: 2; display: block; width: 76px; height: 76px; margin: -42px 0 0 16px; border-radius: 18px; background: #fff; padding: 4px; box-shadow: 0 6px 16px rgba(20,40,18,.18); }
+    .lc .logo img { width: 100%; height: 100%; object-fit: cover; border-radius: 14px; display: block; }
+    .lc .logo.person, .lc .logo.person img { border-radius: 50%; }
+    .lc .bd { padding: 10px 16px 0; flex: 1; }
+    .lc .nm { font-size: 17px; font-weight: 900; line-height: 1.22; letter-spacing: -.01em; text-decoration: none; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .lc .nm:hover { color: var(--g-dark); }
+    .lc .meta { margin-top: 4px; font-size: 12.5px; color: var(--ink-2); font-weight: 600; line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+    .tag { display: inline-flex; align-items: center; gap: 5px; font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; border-radius: var(--r-ctl); padding: 5px 8px; background: var(--g-tint); color: var(--g-dark); }
+    .tag svg { width: 12px; height: 12px; stroke: currentColor; }
+    .tag.kind { background: #F3F5F2; color: #474b45; }
+    .lc .ft { display: flex; align-items: center; gap: 8px; padding: 14px 16px 16px; margin-top: 12px; border-top: 1px solid var(--line); }
+    .votes { display: inline-flex; align-items: baseline; gap: 5px; margin-right: auto; }
+    .votes b { font-size: 20px; font-weight: 900; font-variant-numeric: tabular-nums; }
+    .votes span { font-size: 10px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-2); }
+    .btn-v { display: inline-flex; align-items: center; gap: 6px; border: 0; border-radius: var(--r-ctl); background: var(--g-dark); color: #fff; font: inherit; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 10px 14px; cursor: pointer; transition: transform .12s, background .15s; min-height: 40px; }
+    .btn-v svg { width: 14px; height: 14px; stroke: currentColor; }
+    .btn-v:active, .btn-s:active { transform: scale(.94); }
+    .btn-v.on { background: var(--g-bright); color: #0d2b0b; }
+    .btn-s { display: inline-flex; align-items: center; gap: 6px; border: 1.5px solid #d5dcd2; border-radius: var(--r-ctl); background: #fff; color: var(--ink); font: inherit; font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 9px 12px; cursor: pointer; transition: transform .12s, border-color .15s; min-height: 40px; }
+    .btn-s svg { width: 14px; height: 14px; stroke: currentColor; }
+    .btn-s.on { border-color: var(--orange); background: var(--orange-tint); }
+    .btn-s.on svg { fill: var(--orange); stroke: var(--orange); }
+
+    /* join */
+    .join { position: relative; margin-top: 30px; border-radius: 24px; overflow: hidden; background: radial-gradient(120% 140% at 0% 0%, #3A9B3E 0%, #2D5C27 55%, #1f441b 100%); color: #fff; display: grid; grid-template-columns: minmax(0, 1fr) clamp(220px, 26vw, 380px); align-items: stretch; box-shadow: var(--sh-2); }
+    .join .jt { padding: 30px 32px; display: flex; flex-direction: column; justify-content: center; gap: 16px; }
+    .join .jt p { font-size: clamp(19px, 1.7vw, 24px); font-weight: 900; letter-spacing: -.01em; line-height: 1.2; max-width: 620px; }
+    .join .jb { display: flex; gap: 10px; flex-wrap: wrap; }
+    .jbtn { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; border-radius: var(--r-ctl); font: inherit; font-size: 12.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 12px 18px; text-decoration: none; cursor: pointer; border: 1.5px solid rgba(255,255,255,.55); background: rgba(255,255,255,.06); color: #fff; transition: background .15s, transform .12s; }
+    .jbtn:hover { background: rgba(255,255,255,.16); }
+    .jbtn:active { transform: scale(.97); }
+    .jbtn.main { background: var(--orange); border-color: var(--orange); color: var(--ink); }
+    .jbtn.main:hover { background: #ffab3d; }
+    .join .ja { position: relative; background: var(--g-tint); }
+    .join .ja img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
+
+    /* inside a door */
+    .back { display: inline-flex; align-items: center; gap: 4px; margin-top: 22px; font-size: 15px; font-weight: 700; color: var(--g-dark); text-decoration: none; padding: 6px 8px 6px 2px; border-radius: var(--r-ctl); }
+    .back svg { width: 18px; height: 18px; stroke: currentColor; }
+    .dh { display: grid; grid-template-columns: minmax(0, 1fr) clamp(260px, 34vw, 520px); gap: 28px; align-items: end; padding: 10px 0 20px; }
+    .dh .h1 { font-size: clamp(38px, 5vw, 64px); }
+    .dh .sub { margin-top: 8px; font-size: 15px; color: var(--ink-2); font-weight: 600; max-width: 640px; line-height: 1.5; }
+    .dh .ban { position: relative; aspect-ratio: 16 / 7; border-radius: var(--r-card); overflow: hidden; box-shadow: var(--sh-2); }
+    .dh .ban img { width: 100%; height: 100%; object-fit: cover; object-position: center 35%; display: block; }
+    .tabs { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 4px 2px 6px; margin: 0 -2px; }
+    .tabs::-webkit-scrollbar { display: none; }
+    .tab { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 9px; padding: 6px 12px 6px 6px; border-radius: 10px; background: #fff; border: 1.5px solid var(--line); text-decoration: none; font-size: 13.5px; font-weight: 800; color: var(--ink); white-space: nowrap; transition: border-color .15s, background .15s; }
+    .tab img { width: 30px; height: 30px; border-radius: var(--r-ctl); object-fit: cover; }
+    .tab .n { font-size: 11.5px; font-weight: 800; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+    .tab:hover { border-color: #b9d8b9; }
+    .tab[aria-current="page"] { background: var(--g-dark); border-color: var(--g-dark); color: #fff; }
+    .tab[aria-current="page"] .n { color: #cfe8cf; }
+    .pills { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0 0; }
+    .pill { font: inherit; font-size: 12.5px; font-weight: 800; border-radius: var(--r-ctl); padding: 9px 14px; background: #F3F5F2; color: #3b3f39; border: 0; cursor: pointer; transition: background .15s, color .15s; }
+    .pill:hover { background: var(--g-tint); color: var(--g-dark); }
+    .pill[aria-pressed="true"] { background: var(--g-tint); color: var(--g-dark); box-shadow: inset 0 0 0 1.5px var(--g); }
+    .fbar .bar-in { gap: 8px; }
+    .chip-loc { display: inline-flex; align-items: center; gap: 7px; border: 0; border-radius: var(--r-ctl); background: var(--orange-tint); color: var(--ink); font: inherit; font-size: 13px; font-weight: 800; padding: 0 14px; cursor: pointer; white-space: nowrap; }
+    .chip-loc svg { width: 16px; height: 16px; stroke: var(--orange); }
+    .fbtn { display: inline-flex; align-items: center; gap: 7px; border: 1.5px solid #d5dcd2; border-radius: var(--r-ctl); background: #fff; font: inherit; font-size: 13px; font-weight: 800; padding: 0 14px; cursor: pointer; white-space: nowrap; }
+    .fbtn svg { width: 16px; height: 16px; stroke: var(--ink); }
+    .rc { display: flex; justify-content: space-between; align-items: center; margin: 20px 0 12px; font-size: 13px; font-weight: 700; color: var(--ink-2); }
+    .rc b { color: var(--ink); font-weight: 900; }
+
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+    @keyframes bump { 0% { transform: scale(1); } 40% { transform: scale(1.14); background: #d4f0d6; } 100% { transform: scale(1); } }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+
+    @media (max-width: 1180px) {
+      .doors { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .grid4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 760px) {
+      :root { --r-card: 16px; }
+      main { padding: 0 16px 64px; }
+      .cn { padding: 8px 16px; }
+      .cn .cn-t { flex: 1 1 100%; }
+      .hero { grid-template-columns: 1fr; padding: 22px 0 14px; gap: 0; }
+      .place { display: none; }
+      .h1 { font-size: 30px; }
+      .bar { margin: 0 -16px; padding: 10px 16px; }
+      .bar-in { gap: 8px; }
+      .search input { font-size: 16px; padding: 12px 12px 12px 42px; }
+      .search svg { left: 14px; }
+      .loc select { font-size: 12.5px; padding: 0 34px 0 34px; max-width: 158px; background-position: right 12px center; text-overflow: ellipsis; min-height: 48px; }
+      .loc svg.pin { left: 11px; width: 15px; height: 15px; }
+      .go { display: none; }
+      .doors { gap: 12px; }
+      .door .art { height: 108px; }
+      .door.lead .art { height: 170px; }
+      .door .pn { padding: 11px 12px 13px; gap: 3px; }
+      .door .row { flex-direction: column; align-items: flex-start; gap: 6px; }
+      .door.lead .row { flex-direction: row; align-items: center; }
+      .door .t { font-size: 15px; }
+      .door.lead .t { font-size: 22px; }
+      .door .ex { display: none; }
+      .door.lead .ex { display: -webkit-box; font-size: 12.5px; }
+      .door .ct { font-size: 13px; padding: 4px 8px; }
+      .qp a { padding: 8px 10px; font-size: 12px; }
+      .sh { margin: 26px 0 12px; }
+      .grid4 { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 82%; overflow-x: auto; scroll-snap-type: x mandatory; margin: 0 -16px; padding: 2px 16px 16px; scroll-padding: 0 16px; scrollbar-width: none; gap: 12px; }
+      .grid4::-webkit-scrollbar { display: none; }
+      .grid4 .lc { scroll-snap-align: start; }
+      .join { grid-template-columns: 1fr; margin-top: 18px; }
+      .join .ja { order: -1; height: 170px; }
+      .join .jt { padding: 22px 18px 20px; }
+      .join .jb { flex-direction: column; }
+      .jbtn { width: 100%; }
+      .dh { grid-template-columns: 1fr; gap: 14px; padding-top: 6px; }
+      .dh .ban { order: -1; aspect-ratio: 16 / 8; }
+      .dh .h1 { font-size: 38px; }
+      .dh .sub { font-size: 14px; }
+      .back { margin-top: 14px; }
+      .tabs { margin: 0 -16px; padding: 4px 16px 6px; }
+      .pills { flex-wrap: nowrap; overflow-x: auto; margin: 12px -16px 0; padding: 0 16px 4px; scrollbar-width: none; }
+      .pills::-webkit-scrollbar { display: none; }
+      .pill { flex: 0 0 auto; white-space: nowrap; }
+      .chip-loc .lbl, .fbtn .lbl { display: none; }
+      .chip-loc, .fbtn { padding: 0 13px; min-width: 48px; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-frame">
+  <script src="/public/nav.js"></script>
+
+  <div class="cn" role="note">
+    <span class="cn-t"><b>Design concept</b>A look for the Directory with sample data. Nothing here is live.</span>
+    <nav class="seg" aria-label="Concept views"><a href="?view=front" data-view="front">Front page</a><a href="?view=door" data-view="door">Inside a door</a></nav>
+  </div>
+
+  <main id="main-content">
+    <!-- FRONT PAGE -->
+    <section id="front" aria-label="Directory doors">
+      <header class="hero">
+        <div>
+          <div class="eb"><span class="dot" aria-hidden="true"></span>Vegan Directory</div>
+          <h1 class="h1">Everything Vegan near you: <em>places to eat</em>, <em>animals to help</em>, <em>people to follow</em>.</h1>
+        </div>
+        <figure class="place" id="place" aria-hidden="true"></figure>
+      </header>
+
+      <div class="bar" id="bar">
+        <div class="bar-in">
+          <form class="search" action="/search" method="get" role="search">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+            <input type="search" name="q" placeholder="Search everything" aria-label="Search everything">
+          </form>
+          <label class="loc"><span class="sr">Location</span>
+            <svg class="pin" viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>
+            <select id="loc"><option value="">Everywhere</option><option value="south-florida">Near South Florida</option></select>
+          </label>
+          <button class="go" type="button" onclick="this.previousElementSibling.previousElementSibling.submit()">Search</button>
+        </div>
+      </div>
+
+      <div class="sh"><h2><span class="k">Browse</span>Choose a door</h2></div>
+      <div class="doors" id="doors"></div>
+
+      <div class="sh"><h2><span class="k">Voted by members</span><span id="top-h">Top voted near you</span></h2></div>
+      <div class="grid4" id="top"></div>
+
+      <section class="join" aria-label="Join">
+        <div class="jt">
+          <p>Your votes decide what rises. Help the next person find it.</p>
+          <div class="jb"><a class="jbtn main" href="/survey?s=explorer">Join free to vote and save</a><a class="jbtn" href="/claim">Claim your business</a><a class="jbtn" href="#suggest">Suggest a listing</a></div>
+        </div>
+        <div class="ja"><img src="/public/guides/thumb-directory.jpg" alt="A Guide pointing friends to a Vegan spot on a busy street" loading="lazy"></div>
+      </section>
+    </section>
+
+    <!-- INSIDE A DOOR (Eat) -->
+    <section id="door" hidden aria-label="Eat">
+      <a class="back" href="?view=front" data-view="front"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>All doors</a>
+      <header class="dh">
+        <div>
+          <div class="eb"><span class="dot" aria-hidden="true"></span>Vegan Directory</div>
+          <h1 class="h1">Eat</h1>
+          <p class="sub">Restaurants, bakeries, food trucks, markets and catering, voted up by Vegans who eat there.</p>
+        </div>
+        <div class="ban"><img src="/public/guides/eating-out.jpg" alt="Friends sharing a meal at a Vegan restaurant"></div>
+      </header>
+
+      <nav class="tabs" id="tabs" aria-label="Doors"></nav>
+
+      <div class="bar fbar" id="fbar">
+        <div class="bar-in">
+          <form class="search" role="search" onsubmit="return false">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+            <input type="search" placeholder="Search Eat" aria-label="Search Eat">
+          </form>
+          <button class="chip-loc" type="button" aria-label="Location: Near South Florida"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg><span class="lbl">Near South Florida</span></button>
+          <button class="fbtn" type="button" aria-label="Filters"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round"><path d="M4 6h16M7 12h10M10 18h4"/></svg><span class="lbl">Filters</span></button>
+        </div>
+        <div class="pills" id="pills" role="group" aria-label="Kinds of places"></div>
+      </div>
+
+      <div class="rc"><span><b>88</b> places near South Florida</span><span>Most voted</span></div>
+      <div class="grid-auto" id="eat"></div>
+    </section>
+  </main>
+
+  <script>
+  (function () {
+    var LOGO = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/';
+    var ICON = {
+      leaf: '<path d="M11 20A7 7 0 019.8 6.1C15.5 5 17 4.5 19 2c1 2 2 4.2 2 8 0 5.5-4.8 10-10 10z"/><path d="M2 21c0-3 1.9-5.4 5.1-6"/>',
+      up: '<path d="M12 19V5M5 12l7-7 7 7"/>',
+      save: '<path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>'
+    };
+    function ic(k) { return '<svg viewBox="0 0 24 24" fill="none" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">' + ICON[k] + '</svg>'; }
+
+    var DOORS = [
+      { key: 'food', label: 'Eat', art: 'eating-out.jpg', pos: 'center 0%', ex: 'Restaurants, bakeries, food trucks, markets, catering', all: 548, sf: 88,
+        quick: ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Markets'] },
+      { key: 'community', label: 'Animals & Causes', art: 'nonprofit-guide.jpg', pos: 'center 30%', ex: 'Sanctuaries, rescues, nonprofits', all: 666, sf: 99 },
+      { key: 'people', label: 'People & Groups', art: 'welcome-ensemble.jpg', pos: 'center 6%', ex: 'Founders, athletes, activists, groups', all: 114, sf: 114 },
+      { key: 'products', label: 'Shop', art: 'supermarket-guide.jpg', pos: 'center 30%', ex: 'Food and drink, supplements, clothing, beauty', all: 158, sf: 158 },
+      { key: 'media', label: 'Books, Podcasts & Films', art: 'holiday/p-listen.jpg', pos: 'center 55%', ex: 'Books, podcasts, films, YouTube, news', all: 198, sf: 198 },
+      { key: 'services', label: 'Services & Spaces', art: 'entrepreneur.jpg', pos: 'center 30%', ex: 'Studios, event venues, health and coaching', all: 214, sf: 136 },
+      { key: 'travel', label: 'Travel', art: 'vegan-abroad.jpg', pos: 'center 30%', ex: 'Cruises, with retreats, stays and airlines coming', all: 8, sf: 8 }
+    ];
+    var TOP = [
+      { name: 'Love Life Cafe', href: '/directory/love-life-cafe', logo: LOGO + 'library/475f0758124c4e3b8481.webp', meta: 'Miami', kind: 'Restaurants', vegan: '100% Vegan', votes: 9 },
+      { name: 'Be An Animal Hero', href: '/directory/be-an-animal-hero', logo: LOGO + 'media/listings/be-an-animal-hero/logo-2026-10-27-cb7e3950.jpg', meta: 'Every chapter', kind: 'Nonprofits', vegan: '100% Vegan', votes: 3 },
+      { name: 'The Rich Roll Podcast', href: '/directory/the-rich-roll-podcast', logo: LOGO + 'media/listings/the-rich-roll-podcast/logo-copied-2026-10-27-7df49906.jpg', meta: 'Listen anywhere', kind: 'Podcast', votes: 3 },
+      { name: 'Brooke Sellers', href: '/people/brooke-sellers', logo: LOGO + 'media/people/brooke-sellers/photo-1793183446793.jpg', meta: 'Vegan bodybuilder, fitness coach and author', kind: 'Athletes', votes: 2, person: true }
+    ];
+    var EAT = [
+      ['Love Life Cafe', 'love-life-cafe', 'Miami', 9, 'library/475f0758124c4e3b8481.webp'],
+      ["Dina's Vegan Deli & Desserts", 'dinas-vegan-deli-desserts', 'Riviera Beach', 8, 'library/11fb27d7891ea7ba15dd.webp'],
+      ['The Rabbit Hole', 'the-rabbit-hole', 'Pompano Beach', 6, 'library/d109d6db2db59180d828.webp'],
+      ['Sen Saigon', 'sen-saigon', 'New York', 6, 'library/44c573b924960a591edf.webp'],
+      ["Christopher's Kitchen", 'christophers-kitchen', 'Palm Beach Gardens', 6, 'library/b652c82cc690855f1a65.webp'],
+      ['Honest Cuban by VCC', 'vegan-cuban-cuisine', 'Miami', 5, 'media/listings/vegan-cuban-cuisine/logo-2026-11-08-b3bab7a7.jpg']
+    ].map(function (r) { return { name: r[0], href: '/directory/' + r[1], meta: r[2], votes: r[3], logo: LOGO + r[4], kind: 'Restaurants', vegan: '100% Vegan' }; });
+    var PILLS = ['All', 'Restaurants', 'Bakeries & Cafes', 'Markets', 'Catering & Meal Prep', 'Food Trucks & Vendors'];
+
+    var loc = '';
+    function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
+    function slug(s) { return s.toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+    function count(d) { return loc ? d.sf : d.all; }
+
+    function paintDoors() {
+      document.getElementById('doors').innerHTML = DOORS.map(function (d, i) {
+        var quick = d.quick ? '<div class="qp">' + d.quick.map(function (s) { return '<a href="?view=door&amp;sub=' + slug(s) + '" data-view="door">' + esc(s) + '</a>'; }).join('') + '</div>' : '';
+        return '<article class="door' + (i === 0 ? ' lead' : '') + '" style="animation-delay:' + (i * 50) + 'ms">' +
+          '<div class="art"><img src="/public/guides/' + d.art + '" alt="" style="object-position:' + d.pos + '" loading="' + (i < 3 ? 'eager' : 'lazy') + '"></div>' +
+          '<div class="pn"><div class="row"><a class="t" href="?view=door&amp;tab=' + d.key + '" data-view="door">' + esc(d.label) + '</a>' +
+          '<span class="ct" data-k="' + d.key + '">' + count(d).toLocaleString('en-US') + '</span></div>' +
+          '<span class="ex">' + esc(d.ex) + '</span>' + quick + '</div></article>';
+      }).join('');
+    }
+    function card(l, i, rank) {
+      var tags = (l.vegan ? '<span class="tag">' + ic('leaf') + esc(l.vegan) + '</span>' : '') + '<span class="tag kind">' + esc(l.kind) + '</span>';
+      return '<article class="lc" style="--img:url(\'' + l.logo + '\');animation-delay:' + (i * 60) + 'ms">' +
+        '<div class="band">' + (rank ? '<span class="rank">#' + (i + 1) + '</span>' : '') + '</div>' +
+        '<a class="logo' + (l.person ? ' person' : '') + '" href="' + l.href + '" aria-label="' + esc(l.name) + ' profile"><img src="' + l.logo + '" alt="' + esc(l.name) + (l.person ? '' : ' logo') + '" loading="lazy"></a>' +
+        '<div class="bd"><a class="nm" href="' + l.href + '">' + esc(l.name) + '</a><div class="meta">' + esc(l.meta) + '</div><div class="tags">' + tags + '</div></div>' +
+        '<div class="ft"><span class="votes"><b>' + l.votes + '</b><span>votes</span></span>' +
+        '<button class="btn-v" type="button" aria-pressed="false">' + ic('up') + 'Vote</button>' +
+        '<button class="btn-s" type="button" aria-pressed="false">' + ic('save') + 'Save</button></div></article>';
+    }
+    function paintPlace() {
+      var box = document.getElementById('place');
+      box.innerHTML = loc
+        ? '<img src="/communities/south-florida/banner.jpg" alt="" style="object-position:center 62%"><span class="plate"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.6"><path d="M12 22s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"/></svg>Near South Florida</span>'
+        : '<div class="strip"><img src="/communities/new-york/banner.jpg" alt="" style="object-fit:cover"><img src="/communities/south-florida/banner.jpg" alt="" style="object-fit:cover;object-position:center 62%"><img src="/communities/london/banner.jpg" alt="" style="object-fit:cover"></div><span class="plate"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.6"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"/></svg>Everywhere</span>';
+    }
+    function tween(el, to) {
+      var from = parseInt(el.textContent.replace(/,/g, ''), 10) || 0; if (from === to) return;
+      el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
+      var t0 = performance.now();
+      (function step(t) { var p = Math.min(1, (t - t0) / 450), e = 1 - Math.pow(1 - p, 3); el.textContent = Math.round(from + (to - from) * e).toLocaleString('en-US'); if (p < 1) requestAnimationFrame(step); })(t0);
+    }
+
+    paintDoors(); paintPlace();
+    document.getElementById('top').innerHTML = TOP.map(function (l, i) { return card(l, i, true); }).join('');
+    document.getElementById('eat').innerHTML = EAT.map(function (l, i) { return card(l, i, false); }).join('');
+    document.getElementById('tabs').innerHTML = DOORS.map(function (d) {
+      return '<a class="tab" href="?view=door&amp;tab=' + d.key + '"' + (d.key === 'food' ? ' aria-current="page"' : '') + '><img src="/public/guides/' + d.art + '" alt="" style="object-position:' + d.pos + '">' + esc(d.label) + '<span class="n">' + d.sf.toLocaleString('en-US') + '</span></a>';
+    }).join('');
+    var pills = document.getElementById('pills');
+    pills.innerHTML = PILLS.map(function (p, i) { return '<button class="pill" type="button" aria-pressed="' + (i === 0) + '">' + esc(p) + '</button>'; }).join('');
+    pills.addEventListener('click', function (e) { var b = e.target.closest('.pill'); if (!b) return; pills.querySelectorAll('.pill').forEach(function (x) { x.setAttribute('aria-pressed', x === b); }); });
+
+    document.getElementById('loc').addEventListener('change', function (e) {
+      loc = e.target.value; paintPlace();
+      DOORS.forEach(function (d) { var el = document.querySelector('.ct[data-k="' + d.key + '"]'); if (el) tween(el, count(d)); });
+      document.getElementById('top-h').textContent = 'Top voted near you';
+    });
+
+    // Vote and Save toggle in place (a concept: nothing is written).
+    document.addEventListener('click', function (e) {
+      var b = e.target.closest('.btn-v, .btn-s'); if (!b) return;
+      var on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on); b.classList.toggle('on', on);
+      if (b.classList.contains('btn-v')) { var v = b.parentNode.querySelector('.votes b'); v.textContent = (+v.textContent) + (on ? 1 : -1); b.lastChild.textContent = on ? 'Voted' : 'Vote'; }
+      else b.lastChild.textContent = on ? 'Saved' : 'Save';
+    });
+
+    // Front page and the Eat door switch in place; the address carries ?view= so Back and Share work.
+    function show(v) {
+      var door = v === 'door';
+      document.getElementById('front').hidden = door; document.getElementById('door').hidden = !door;
+      document.querySelectorAll('.seg a').forEach(function (a) { if (a.dataset.view === (door ? 'door' : 'front')) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+      document.title = 'Directory look: Today Tab' + (door ? ' · Eat' : '') + ' — Vegans Explore';
+    }
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest('a[data-view], .tab'); if (!a || e.metaKey || e.ctrlKey) return;
+      e.preventDefault();
+      var v = a.dataset.view || 'door';
+      history.pushState({}, '', '?view=' + v); show(v); window.scrollTo(0, 0);
+    });
+    window.addEventListener('popstate', function () { show(new URLSearchParams(location.search).get('view')); });
+    show(new URLSearchParams(location.search).get('view'));
+
+    // The sticky bars sit under the site nav (its real height) and pick up a hairline once stuck.
+    function navH() { var n = document.querySelector('.ve-nav, ve-nav, nav.ve-nav, header.ve-nav'); var h = n ? n.getBoundingClientRect().height : 60; document.documentElement.style.setProperty('--nav-h', Math.round(h) + 'px'); }
+    navH(); window.addEventListener('load', navH); window.addEventListener('resize', navH);
+    function stuck() { ['bar', 'fbar'].forEach(function (id) { var b = document.getElementById(id); if (!b || !b.offsetParent) return; var top = parseFloat(getComputedStyle(b).top) || 0; b.classList.toggle('stuck', b.getBoundingClientRect().top <= top + 0.5 && window.scrollY > 40); }); }
+    window.addEventListener('scroll', stuck, { passive: true }); stuck();
+  })();
+  </script>
+
+  <script src="/public/footer.js"></script>
+  </div>
+</body>
+</html>
