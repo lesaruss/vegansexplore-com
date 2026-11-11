@@ -9,6 +9,19 @@
   (document.head || document.documentElement).appendChild(s);
 })();
 
+/* ---- The Color Block look, as a preview over the live site (canon canon-ve-look-color-block, 2026-11-11) ----
+ * /public/ve-look.js loads only when the look is asked for (?look=, localStorage ve_look, or a /preview page). Everyone else
+ * loads nothing and sees the site as it is. Not on another brand's site (window.VE_BRAND). */
+(function () {
+  if (window.VE_BRAND || window.__veLookLoad) return;
+  var want = /^\/preview(\/|$)/.test(location.pathname) || /[?&]look=/.test(location.search);
+  if (!want) { try { want = localStorage.getItem('ve_look') === 'preview'; } catch (e) {} }
+  if (!want) return;
+  window.__veLookLoad = true;
+  var s = document.createElement('script'); s.src = '/public/ve-look.js?v=1'; s.setAttribute('blocking', 'render');
+  (document.head || document.documentElement).appendChild(s);
+})();
+
 /* ---- Installable website (playbook ve-mobile-app, step D, 2026-11-07) ----
  * Every page gets the app manifest, icons and theme color, registers /sw.js (network first; /offline.html when there is no
  * connection) and, on phones, loads /public/ve-install.js (Add to home screen, polite: from the 3rd page, 30 days after Not now).
