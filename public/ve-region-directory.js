@@ -62,7 +62,8 @@
     'Chefs': 'people', 'Founders': 'people', 'Promoters': 'people',
     // Travel (Sean, 2026-11-10: "find some vegan cruises and cruise liners that are strong vegan options... great to have when we're
     // reaching out to the tourism bureaus"): Cruises first (Vegan sailings and cruise lines with strong Vegan options). Sold anywhere, no location.
-    'Cruises': 'travel',
+    // Sean, 2026-11-11: Travel is a full door (Cruises, Retreats, Stays, Airlines, Travel Apps), primed empty for him to fill.
+    'Cruises': 'travel', 'Retreats': 'travel', 'Stays': 'travel', 'Airlines': 'travel', 'Travel Apps': 'travel',
     'Uncategorized': 'hidden'
   };
 
@@ -87,7 +88,7 @@
       subcats: ['Nonprofits', 'Rescues', 'Sanctuaries', 'Groups', 'Events'] },
     { key: 'travel', label: 'Travel', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M2 20c2 1 4 1 6 0s4-1 6 0 4 1 6 0"></path><path d="M4 16l-1-5h18l-2 5"></path><path d="M7 11V7h10v4"></path><path d="M12 3v4"></path></svg>',
-      subcats: ['Cruises'] },
+      subcats: ['Cruises', 'Retreats', 'Stays', 'Airlines', 'Travel Apps'] },
     // People. Open to everyone since Sean launched it (2026-10-28: "launch the people directory").
     { key: 'people', label: 'People', hasVF: false,
       icon: '<svg fill="none" height="13" stroke="currentColor" stroke-linecap="round" stroke-width="2.2" viewBox="0 0 24 24" width="13"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 00-3-3.87"></path><path d="M16 3.13a4 4 0 010 7.75"></path></svg>',
@@ -525,7 +526,11 @@
     if ((l.tags || []).indexOf('ve-grocery-store') >= 0) return 'Grocery store';
     if ((l.communities || []).indexOf('all') >= 0) return 'Every chapter';
     // A cruise has no one address and is not an online business (Sean, 2026-11-10: "change Online to Sails worldwide").
-    if (VE_CAT_MAP[l.category] === 'travel' && !l.address_city && !l.address_state) return 'Sails worldwide';
+    // Travel with no one address says how it reaches you: a cruise sails, an airline flies, an app is online, a retreat or stay runs in many places.
+    if (VE_CAT_MAP[l.category] === 'travel' && !l.address_city && !l.address_state) {
+      if (l.category === 'Travel Apps') return '<span class="online-badge">Online</span>';
+      return ({ 'Cruises': 'Sails worldwide', 'Airlines': 'Flies worldwide' })[l.category] || 'Worldwide';
+    }
     if (!l.address_city && !l.address_state) return '<span class="online-badge">Online</span>';
     // A listing that serves more than one chapter reads like a brand: where it works, not its headquarters' city (Sean,
     // 2026-10-27: Be An Animal Hero "still says Jupiter... we could treat it like a brand").
