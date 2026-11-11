@@ -10,6 +10,10 @@
 -- its Directory page, and its own link is "Register with them"), and stays on its own group's Directory page with its own link.
 -- Depot > Events > Supporting can swap which one is the main event or say they are two different events.
 
+-- 'supporting' joins the statuses an event can have.
+alter table events drop constraint if exists events_status_check;
+alter table events add constraint events_status_check check (status = any (array['pending', 'approved', 'rejected', 'cancelled', 'supporting']));
+
 -- Anyone can read a supporter row, as they can a live event.
 drop policy if exists "Public can view supporting events" on events;
 create policy "Public can view supporting events" on events for select to anon, authenticated using (status = 'supporting');
