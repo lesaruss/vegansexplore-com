@@ -22,8 +22,8 @@ The four that matter to our stays:
 | Hotels.com | 3.6% (vacation rentals 1.8%) | 7 days | |
 | Trip.com | 1 to 5.5% | 30 days | average booking $202 |
 
-Cruises: Travelpayouts' Dreamlines and Cruise Critic pages now show the generic Travelpayouts page (those programs appear to be gone);
-see "Cruises" below for the directory check.
+Cruises: Travelpayouts' Dreamlines and Cruise Critic pages now show the generic Travelpayouts page (those programs are gone), and its
+Cruises directory lists only Booking.com and Viator (tours and shore excursions). No cruise line is on Travelpayouts.
 
 ## Our listings, matched (Travel > Stays, live)
 
@@ -50,7 +50,7 @@ site). A stay can be on more than one site; this is confirmed property by proper
 ## Cruises (8 live)
 
 Royal Caribbean, Carnival, Princess, Holland America and Oceania are big lines; Vegan Travel, World Vegan Travel and Holistic Holiday at
-Sea book direct. No Travelpayouts cruise program was confirmed on its own pages. Cruise lines run their own affiliate programs on other
+Sea book direct. Travelpayouts has no cruise line program (its Cruises directory, read 2026-11-11, lists only Booking.com and Viator). Cruise lines run their own affiliate programs on other
 networks (third-party guides name CJ Affiliate for Royal Caribbean); that is a separate research step if Sean wants it.
 
 ## Recommendation
