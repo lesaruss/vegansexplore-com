@@ -88,3 +88,14 @@ fix what people trip on; measure the 30-day share; repeat up to three rounds.
 Recommendation: keep the top menu, rebuild the Directory's front door as seven visible doors named for what people come to do, merge the
 thin sub-sections, and stop repeating top-menu words. Confidence: high on visibility and naming (well-established patterns, and 1,349
 listings are hidden today); medium on the exact door names and splits until the first-click test runs.
+
+## Round 2 (2026-11-11): the panel, then Sean
+
+Panel (StoryBrand, positioning, movement, information architecture, mobile local discovery). All five: keep the top menu, visible doors,
+two levels, stored categories unchanged, Eat first and Animals second. Adopted: a one-line promise above the doors; Eat as the wide lead
+tile; Top voted mixed across doors with votes; a next step on every card; counts that follow location with an Everywhere fallback;
+location carried across the site; a second door per listing through "Also show it under"; a bigger test (first-time non-members, phones,
+scenario tasks that avoid label words, split old/new, five-second test) after a search-query read and a card sort; behavior after the click
+as the 30-day measure. Sean: Travel is a full door (Cruises, Retreats, Stays, Airlines, Travel Apps) backed by our own travel agency; door
+names tested as nouns vs verbs. Logan's recommendation on affiliates: list on merit, "Book with us" where we can sell it, disclose
+affiliate links, label sponsored spots. The mock (11 slides) carries all of it.
