@@ -26,9 +26,31 @@
   window.VELook = { on: on };
   if (!on) return;
 
+  /* The Directory's seven doors (Sean, 2026-11-11: "I want to apply what they recommended... I'm fine with where we landed on that";
+     BOSS docs/proposals/2026-11-11-directory-navigation-boss.md). While the look is on, /directory opens the doors build
+     (directory-preview/index.html) with everything in its address (?tab= &sub= &city= &q= and the filters), and that page writes
+     /directory back into the address before anything reads it, so the address bar, Back, reload and Share all stay on /directory.
+     Every link into the Directory (the menu, a listing's breadcrumb, a city hub's Directory links, old ?tab= links) lands on the
+     doors this way, with no live markup changed. With the look off this file never loads, so /directory is exactly today's page.
+     Only /directory itself: a listing (/directory/<slug>) is untouched. It stops by itself on a page that already is the doors
+     (<meta name="ve-directory" content="doors">).
+
+     GO-LIVE, either one is enough:
+       1. The doors alone, any time:  git mv -f directory-preview/index.html directory/index.html
+          That is the whole step. The doors file already carries the live Directory's title, canonical and share tags; the
+          preview's noindex is a header in vercel.json (on /directory-preview only), so nothing wrong travels with the file; this
+          block then never fires (the meta is on /directory). Tidy later: delete this block and that vercel.json header.
+       2. With the look: flip its default (on = true above). The doors come with it through this block, one extra page load per
+          visit to /directory, so do step 1 at the same time or soon after. */
+  if (path === '/directory' && !document.querySelector('meta[name="ve-directory"][content="doors"]')) {
+    document.documentElement.style.visibility = 'hidden';
+    location.replace('/directory-preview' + (location.search ? location.search + '&' : '?') + 'as=directory' + location.hash);
+    return;
+  }
+
   // Each part of the site wears its own color (Foundations, section colors, LOCKED 2026-11-11).
   function sectionOf(p) {
-    if (/^\/(directory|explore|search|claim)(\/|$)/.test(p)) return 'directory';
+    if (/^\/(directory|directory-preview|explore|search|claim)(\/|$)/.test(p)) return 'directory';
     if (/^\/events(\/|$)/.test(p)) return 'events';
     if (/^\/(guides|guide|business-guide|nominate)(\/|$)/.test(p)) return 'guides';
     if (/^\/communities(\/|$)/.test(p)) return 'communities';
@@ -39,7 +61,7 @@
   }
   function pageOf(p) {
     if (onPreviewPath) return 'preview';
-    if (p === '/directory') return 'directory';
+    if (p === '/directory' || p === '/directory-preview') return document.querySelector('meta[name="ve-directory"][content="doors"]') ? 'doors' : 'directory';
     if (/^\/directory\/[^/]+$/.test(p) && p !== '/directory/product') return 'listing';
     if (p === '/events') return 'events';
     if (p === '/guides') return 'guides';
