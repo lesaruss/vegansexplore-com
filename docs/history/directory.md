@@ -1182,7 +1182,7 @@ affiliate link. The source URL is kept in `details.source_url`.
 on their own sites (11): Agrivilla I Pini, Casa Albets, Koukoumi, Harmony Hill, Bluedothotel, Il Mansio (address_city Lake Garda), Kapuhala,
 Beck Hall, Casa Mauna, Mother Earth Vegan Hotel (Vegan in its own domain, booking and Facebook names), The House of AïA (plant-based
 (Pre-Vegan) options). Kept on hold with the reason in `admin_notes` (7): HOY (its site no longer says Vegan), Dreamers Welcome, Jean-Michel
-Cousteau Resort, Finca Victoria (only breakfast Vegan), Plantonia ("vegan-friendly", built with Vegan materials: Sean to decide), The Farm at
+Cousteau Resort, Finca Victoria (only breakfast Vegan), Plantonia (later the same day listed as Vegan-friendly, Sean: "List Plantonia as Vegan-friendly"; migration `20261111_travel_plantonia_vegan_friendly.sql`), The Farm at
 San Benito (now a Marriott page that refused the read), Mikasa (no website). Migration `20261111_travel_stays_checked.sql`, written through
 `ve-once-travel-stays` (now the 410 stub). Proven live at 1440 and 390: Travel shows the five sections and "19 trips listed".
 
