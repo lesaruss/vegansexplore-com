@@ -211,6 +211,11 @@
       "permanent": false
     },
     {
+      "source": "/:p(prevegans|pre-vegans)",
+      "destination": "/directory/pre-vegans-podcast",
+      "permanent": false
+    },
+    {
       "source": "/podcast/:slug(vegans-explore-podcast|soflo-vegans-podcast|pre-vegans-podcast|vegans-who-lift-podcast)",
       "destination": "/directory/:slug",
       "permanent": false
