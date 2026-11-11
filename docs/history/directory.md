@@ -1165,3 +1165,15 @@ with a claim link instead of Give. Points given before stay: Dina's Vegan Deli &
 Christmas, the holiday guide is going to go on hiatus until Valentine's Day"). `public/ve-guide-tab.js` `FOOD_GUIDE = 'holiday-guide'`
 (food places' Resources tab, free, Theo); the right column banner shows the Holiday Guide on every listing through Christmas. After
 Christmas steps: `docs/history/ads.md`.
+
+## Travel, the full door (2026-11-11)
+
+Sean: "I want us to start filling up the travel directory. So I'm going to start feeding you some information." The Travel door now has
+the five sections from his Directory notes: Cruises, Retreats, Stays, Airlines, Travel Apps (`CAT_CONFIG` / `VE_CAT_MAP` in
+`/public/ve-region-directory.js`, `SECTIONS` in `ve-listing-admin.js`, `KINDS` in Directory review, `CATS` in `claim.html`, the doors preview,
+`CATEGORIES` in `ve-claims`, v54 deployed from d7e5b3a through `ve-function-deploy`, source sha256 matched). A travel card with no one address
+reads Sails worldwide (Cruises), Flies worldwide (Airlines), Online (Travel Apps) or Worldwide (Retreats, Stays). A hotel, B&B, villa or
+aparthotel is a Stay. First batch: 18 stays from myvegantravels.com/travel-tips/vegan-hotels (15 at 100% Vegan, 3 filed as plant-based
+(Pre-Vegan) options), migration `20261111_travel_stays_hotels.sql`, all **on hold** (status pending, Depot > Directory review) until each is
+checked on its own site; the session's network blocked the hotels' sites. Website is always the business's own site, never a source's
+affiliate link. The source URL is kept in `details.source_url`.

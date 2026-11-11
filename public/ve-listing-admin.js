@@ -42,7 +42,7 @@
     ['Services', ['Health and Wellness', 'Health Professionals', 'Coaches and Consultants', 'Animal Care', 'Studios', 'Event Venues', 'Marketing & Growth']],
     ['Media', ['Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media']],
     ['Community', ['Nonprofits', 'Rescues', 'Sanctuaries', 'Groups', 'Events']],
-    ['Travel', ['Cruises']],
+    ['Travel', ['Cruises', 'Retreats', 'Stays', 'Airlines', 'Travel Apps']],
     // People (Sean, 2026-10-28). A person has no place: their profile, links and credits are saved by ve-people.
     ['People', ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders', 'Promoters']]
   ];

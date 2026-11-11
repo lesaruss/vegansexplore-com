@@ -289,7 +289,7 @@
       { key: 'products', label: 'Shop', ex: 'Food and drink, supplements, clothing, beauty', everywhere: true, go: 'Shop Vegan brands', unit: 'brands', subcats: ['Food Brands', 'Nutrition & Supplements', 'Clothing and Fashion', 'Beauty and Personal Care', 'Marketplaces'] },
       { key: 'media', label: 'Watch, Listen & Read', ex: 'Books, podcasts, films, YouTube, news', go: 'Find something to watch', unit: 'titles', subcats: ['Books', 'Podcasts', 'Documentaries & Films', 'YouTube', 'News Outlets'] },
       { key: 'services', label: 'Services & Spaces', ex: 'Studios, event venues, health and coaching', local: true, go: 'Book a service or space', unit: 'services', subcats: ['Studios', 'Event Venues', 'Health & Coaching', 'More services'] },
-      { key: 'travel', label: 'Travel', ex: 'Cruises, with retreats, stays and airlines coming', go: 'Plan a Vegan trip', unit: 'trips', subcats: ['Cruises'] },
+      { key: 'travel', label: 'Travel', ex: 'Cruises, retreats, stays, airlines and travel apps', go: 'Plan a Vegan trip', unit: 'trips', subcats: ['Cruises', 'Retreats', 'Stays', 'Airlines', 'Travel Apps'] },
       { key: 'vetting', label: 'Being vetted', membersOnly: true, ex: 'Places waiting for member votes', local: true, go: 'Vote on new places', unit: 'places', subcats: ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Catering', 'Meal Prep'] },
       { key: 'review', label: 'Review', adminOnly: true, frame: '/admin/depot/directory-review', subcats: [] }
     ];
@@ -306,7 +306,7 @@
       'Podcasts': 'media', 'YouTube': 'media', 'News Outlets': 'media', 'Documentaries & Films': 'media', 'Books': 'media', 'Media': 'media',
       'Nonprofits': 'community', 'Rescues': 'community', 'Sanctuaries': 'community', 'Community Partner': 'community',
       'Groups': 'people', 'Events': 'people', 'Event Hosts': 'people', 'Activists': 'people', 'Content Creators': 'people', 'Chefs & Creators': 'people', 'Athletes': 'people', 'Physicians': 'people', 'Health Experts': 'people', 'Chefs': 'people', 'Founders': 'people', 'Promoters': 'people',
-      'Cruises': 'travel', 'Uncategorized': 'hidden'
+      'Cruises': 'travel', 'Retreats': 'travel', 'Stays': 'travel', 'Airlines': 'travel', 'Travel Apps': 'travel', 'Uncategorized': 'hidden'
     };
     var QUICK = { food: ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Markets'] };
     function slug(s) { return String(s || '').toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
