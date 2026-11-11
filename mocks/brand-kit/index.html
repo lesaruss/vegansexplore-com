@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brand kit, part 1: Foundations — Vegans Explore</title>
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="The Vegans Explore brand kit on the locked Color Block look, part 1: colors, type, the marker highlight, the stripe, cards, buttons, shadows, spacing and the logo. A mock for approval, not live.">
+  <link rel="canonical" href="https://vegansexplore.com/mocks/brand-kit/">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Brand kit, part 1: Foundations. Built on the locked Color Block look (canon canon-ve-look-color-block, concept
+       /mocks/directory-looks/bold), in the guided view (parent: /partners + /public/ve-guided.js, white stage).
+       Every token below is the one the concept already uses; nothing here is new except the rules written around them. */
+    :root {
+      --dk: #2D5C27; --md: #3A9B3E; --br: #22C55E; --tint: #E8F5E9;
+      --or: #F69820; --peach: #FFEBD1; --pink: #FF9EC4; --pinkt: #FFE3EE; --pinkd: #C2185B;
+      --ink: #1a1a1a; --mute: #5c5c5c; --line: #e7e7e7; --r: 6px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Montserrat", sans-serif; background: #fff; color: var(--ink); line-height: 1.45; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; }
+
+    /* slide frame */
+    .bk-eb { display: inline-block; background: var(--dk); color: #fff; font-size: 10.5px; font-weight: 900; letter-spacing: .18em; text-transform: uppercase; padding: 6px 10px; border-radius: var(--r); margin-bottom: 12px; }
+    .bk-h { font-size: clamp(26px, 2.8vw, 42px); font-weight: 900; line-height: 1.04; letter-spacing: -.025em; margin-bottom: 8px; max-width: 1100px; }
+    .bk-lede { font-size: 13.5px; font-weight: 600; color: var(--mute); max-width: 860px; margin-bottom: 14px; }
+    .hl { padding: 0 .08em; border-radius: 4px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+    .hl.g { background: linear-gradient(transparent 56%, var(--br) 56%, var(--br) 92%, transparent 92%); }
+    .hl.o { background: linear-gradient(transparent 56%, var(--or) 56%, var(--or) 92%, transparent 92%); }
+    .hl.p { background: linear-gradient(transparent 56%, var(--pink) 56%, var(--pink) 92%, transparent 92%); }
+    .bk-row { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 22px 30px; align-items: start; }
+    .bk-rules { font-size: 12.5px; line-height: 1.5; }
+    .bk-rules h3 { font-size: 10.5px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; color: var(--dk); margin: 0 0 6px; }
+    .bk-rules ul { list-style: none; display: grid; gap: 6px; margin-bottom: 14px; }
+    .bk-rules li { padding-left: 16px; position: relative; }
+    .bk-rules li::before { content: ""; position: absolute; left: 0; top: 6px; width: 8px; height: 8px; border-radius: 2px; background: var(--br); }
+    .bk-rules li.no::before { background: #d93025; border-radius: 50%; }
+    .bk-rules b { font-weight: 800; }
+    .bk-stripe { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr; height: 8px; border-radius: 4px; overflow: hidden; }
+    .bk-stripe i:nth-child(1) { background: var(--dk); } .bk-stripe i:nth-child(2) { background: var(--or); } .bk-stripe i:nth-child(3) { background: var(--pink); }
+    .bk-stripe i:nth-child(4) { background: var(--peach); } .bk-stripe i:nth-child(5) { background: var(--br); } .bk-stripe i:nth-child(6) { background: var(--tint); } .bk-stripe i:nth-child(7) { background: var(--md); }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .92em; }
+    .tagx { display: inline-block; font-size: 9.5px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; background: var(--or); color: var(--ink); border-radius: var(--r); padding: 2px 7px; vertical-align: middle; margin-left: 6px; }
+
+    /* 1 cover */
+    .cv { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 36px; align-items: center; min-height: 100%; }
+    .cv h1 { font-size: clamp(34px, 3.9vw, 58px); font-weight: 900; line-height: 1; letter-spacing: -.035em; margin: 6px 0 16px; }
+    .cv .bk-stripe { margin: 18px 0; max-width: 620px; }
+    .cv ol { list-style: none; counter-reset: s; display: grid; gap: 7px; font-size: 13.5px; font-weight: 700; }
+    .cv ol li { counter-increment: s; display: flex; gap: 10px; align-items: center; }
+    .cv ol li::before { content: counter(s); flex: none; width: 24px; height: 24px; border-radius: 6px; display: grid; place-items: center; font-size: 11px; font-weight: 900; background: var(--line); }
+    .cv ol li.now::before { background: var(--or); }
+    .cv ol li.now { font-weight: 900; }
+    .cv ol li span { color: var(--mute); font-weight: 600; }
+    .cv-art { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 420px; justify-self: center; width: 100%; }
+    .cv-art i { aspect-ratio: 1; border-radius: 14px; display: block; }
+    .cv-art .lg { grid-column: span 2; grid-row: span 2; background: #fff; border: 3px solid var(--ink); box-shadow: 8px 8px 0 var(--pink); display: grid; place-items: center; aspect-ratio: auto; }
+    .cv-art .lg img { width: 62%; }
+
+    /* 2 palette */
+    .pal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 10px; margin-bottom: 16px; }
+    .sw { border-radius: 14px; overflow: hidden; border: 2px solid var(--ink); display: flex; flex-direction: column; background: #fff; }
+    .sw .chip { height: 118px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; background: var(--c); color: var(--t); }
+    .sw .chip b { font-size: 30px; font-weight: 900; letter-spacing: -.02em; line-height: 1; }
+    .sw .chip small { font-size: 9.5px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
+    .sw .meta { padding: 9px 11px 11px; font-size: 11.5px; line-height: 1.35; }
+    .sw .meta strong { display: block; font-size: 13px; font-weight: 900; }
+    .sw .meta .mono { color: var(--mute); }
+    .sw .meta em { display: block; font-style: normal; margin-top: 5px; color: var(--mute); font-weight: 600; }
+    .neutral { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: 12px; font-weight: 700; align-items: center; }
+    .neutral span { display: inline-flex; align-items: center; gap: 7px; }
+    .neutral i { width: 20px; height: 20px; border-radius: 5px; display: inline-block; border: 1px solid #d6d6d6; }
+
+    /* 3 section colors */
+    .secs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .sec { border-radius: 14px; background: var(--c); color: var(--t); padding: 14px 15px; min-height: 112px; display: flex; flex-direction: column; justify-content: space-between; }
+    .sec .n { font-size: 9.5px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; opacity: .78; }
+    .sec h4 { font-size: 22px; font-weight: 900; letter-spacing: -.01em; line-height: 1.05; }
+    .sec p { font-size: 11.5px; font-weight: 700; opacity: .88; }
+    .sec.ex { background: #fff; color: var(--ink); border: 2px dashed #cfcfcf; }
+    .sec.ex p { color: var(--mute); }
+
+    /* 4 pink */
+    .pk { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .pko { border: 2px solid var(--line); border-radius: 14px; padding: 14px; background: #fff; }
+    .pko.rec { border-color: var(--ink); box-shadow: 6px 6px 0 var(--pk); }
+    .pko .hd { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+    .pko .hd strong { font-size: 15px; font-weight: 900; }
+    .pko .big { height: 70px; border-radius: 10px; background: var(--pk); margin-bottom: 10px; }
+    .pko .demo { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .pko .demo .t { font-size: 20px; font-weight: 900; letter-spacing: -.02em; }
+    .pko .demo .t span { background: linear-gradient(transparent 56%, var(--pk) 56%, var(--pk) 92%, transparent 92%); padding: 0 .08em; }
+    .pko .demo .b { font-size: 10.5px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; padding: 8px 11px; border-radius: var(--r); border: 2px solid var(--ink); background: var(--pk); }
+    .pko .mini { width: 54px; height: 40px; border: 2px solid var(--ink); border-radius: 8px; background: #fff; box-shadow: 4px 4px 0 var(--pk); }
+    .pko p { font-size: 11.5px; color: var(--mute); font-weight: 600; line-height: 1.4; }
+    .pko .row3 { display: flex; gap: 6px; margin-bottom: 8px; }
+    .pko .row3 i { flex: 1; height: 16px; border-radius: 4px; display: block; }
+
+    /* 5 type */
+    .ty { display: grid; gap: 0; border-top: 2px solid var(--ink); }
+    .ty > div { display: grid; grid-template-columns: 120px minmax(0, 1fr) 150px; gap: 14px; align-items: baseline; padding: 4px 0; border-bottom: 1px solid var(--line); }
+    .ty .lb { font-size: 10px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: var(--dk); }
+    .ty .sp { font-size: 11px; color: var(--mute); font-weight: 700; text-align: right; }
+    .ty .s { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* 6 marker */
+    .mk { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .mkc { border-radius: 14px; padding: 16px 18px; border: 2px solid var(--line); position: relative; }
+    .mkc.y { border-color: var(--ink); }
+    .mkc .lbl { position: absolute; top: 12px; right: 12px; font-size: 9.5px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; border-radius: var(--r); padding: 3px 7px; }
+    .mkc.y .lbl { background: var(--br); }
+    .mkc.n .lbl { background: #fde2e0; color: #a3221b; }
+    .mkc h4 { font-size: 26px; font-weight: 900; letter-spacing: -.02em; line-height: 1.12; padding-right: 60px; }
+    .mkc p { font-size: 11.5px; color: var(--mute); font-weight: 600; margin-top: 8px; }
+    .mkc.n .bad1 { background: linear-gradient(transparent 56%, var(--br) 56%, var(--br) 92%, transparent 92%); }
+    .mkc.n .bad2 { background: var(--pink); }
+    .anat { display: flex; align-items: flex-end; gap: 10px; margin-top: 4px; }
+    .anat .w { font-size: 48px; font-weight: 900; letter-spacing: -.03em; line-height: 1; position: relative; }
+    .anat .w span { background: linear-gradient(transparent 56%, var(--or) 56%, var(--or) 92%, transparent 92%); padding: 0 .08em; border-radius: 4px; }
+    .anat .ms { font-size: 10.5px; font-weight: 700; color: var(--mute); line-height: 1.5; }
+
+    /* 7 stripe */
+    .st-big { margin-bottom: 14px; }
+    .st-big .bk-stripe { height: 22px; border-radius: 6px; }
+    .st-key { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr; gap: 0; font-size: 9.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--mute); margin-top: 5px; }
+    .st-uses { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .su { border: 2px solid var(--line); border-radius: 12px; overflow: hidden; background: #fff; }
+    .su .scr { height: 112px; position: relative; background: #fafafa; padding: 10px; }
+    .su .cap { padding: 8px 10px 10px; font-size: 11.5px; font-weight: 700; }
+    .su .cap span { display: block; color: var(--mute); font-weight: 600; font-size: 11px; }
+    .su .fake { height: 8px; border-radius: 3px; background: #e3e3e3; margin-bottom: 6px; }
+    .mosaic { display: grid; grid-template-columns: repeat(3, 22px); gap: 5px; }
+    .mosaic i { width: 22px; height: 22px; border-radius: 5px; display: block; }
+    .mosaic i:nth-child(1) { background: var(--dk); } .mosaic i:nth-child(2) { background: var(--or); } .mosaic i:nth-child(3) { background: var(--pink); }
+    .mosaic i:nth-child(4) { background: var(--peach); } .mosaic i:nth-child(5) { background: var(--br); border-radius: 50%; } .mosaic i:nth-child(6) { background: var(--tint); }
+    .mosaic i:nth-child(7) { background: var(--md); } .mosaic i:nth-child(8) { background: transparent; border: 3px solid var(--ink); } .mosaic i:nth-child(9) { background: var(--or); border-radius: 50% 5px 5px 5px; }
+
+    /* 8 cards (the shared Directory card and the door block, from the concept) */
+    .cds { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(0, 1.15fr); gap: 18px; align-items: start; }
+    .card { position: relative; border: 2px solid var(--ink); border-radius: 14px; background: #fff; overflow: hidden; display: flex; flex-direction: column; box-shadow: 6px 6px 0 var(--c); }
+    .card .band { background: var(--c); height: 46px; display: flex; align-items: center; justify-content: flex-end; gap: 12px; padding: 0 14px; }
+    .card .kind { font-size: 10px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; }
+    .card.on-dark .band { color: #fff; }
+    .card .rank { font-size: 12px; font-weight: 900; }
+    .card .body { padding: 0 14px 14px; display: flex; flex-direction: column; }
+    .card .logo { display: block; width: 70px; height: 70px; border-radius: 12px; background: #fff; border: 2px solid var(--ink); margin-top: -28px; overflow: hidden; }
+    .card .logo img { width: 100%; height: 100%; object-fit: contain; display: block; padding: 5px; }
+    .card h5 { font-size: 16px; font-weight: 900; line-height: 1.2; margin: 10px 0 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .card h5 a { text-decoration: none; }
+    .card .where { font-size: 12px; font-weight: 600; color: var(--mute); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .card .foot { display: flex; align-items: center; gap: 8px; padding-top: 12px; }
+    .votes { margin-right: auto; line-height: 1; }
+    .votes b { font-size: 24px; font-weight: 900; letter-spacing: -.02em; }
+    .votes small { font-size: 9.5px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; color: var(--mute); margin-left: 3px; }
+    .door { border-radius: 14px; padding: 16px; background: var(--c); color: var(--t); display: flex; flex-direction: column; }
+    .door .top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+    .door .num { font-size: 10px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; opacity: .75; }
+    .door .ct { text-align: right; line-height: 1; }
+    .door .ct b { display: block; font-size: 34px; font-weight: 900; letter-spacing: -.03em; }
+    .door .ct small { font-size: 9.5px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; opacity: .75; }
+    .door h5 { font-size: 22px; font-weight: 900; line-height: 1.08; margin-bottom: 10px; }
+    .door .pic { border-radius: 10px; overflow: hidden; aspect-ratio: 8 / 5; border: 3px solid rgba(255,255,255,.92); }
+    .door .pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .cdlbl { font-size: 10px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: var(--dk); margin-bottom: 8px; }
+
+    /* 9 buttons, tags, fields */
+    .ui9 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+    .ui9 > div { border: 2px solid var(--line); border-radius: 14px; padding: 14px; }
+    .ui9 .dkp { background: var(--dk); border-color: var(--dk); color: #fff; }
+    .ui9 h4 { font-size: 10.5px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: var(--dk); margin-bottom: 10px; }
+    .ui9 .dkp h4 { color: var(--br); }
+    .bs { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: var(--r); font: inherit; font-size: 11.5px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; padding: 10px 14px; text-decoration: none; cursor: pointer; border: 2px solid var(--ink); background: #fff; color: var(--ink); }
+    .btn.cta { background: var(--or); border-color: var(--or); }
+    .btn.vote { background: var(--br); }
+    .btn.on { background: var(--dk); border-color: var(--dk); color: #fff; }
+    .btn.save { background: var(--pink); }
+    .btn.wh { background: #fff; color: var(--dk); border-color: #fff; }
+    .btn.gh { background: transparent; color: #fff; border-color: #fff; }
+    .note9 { font-size: 11px; color: var(--mute); font-weight: 600; line-height: 1.4; }
+    .dkp .note9 { color: #d9ead7; }
+    .tag { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; border-radius: var(--r); padding: 5px 8px; }
+    .tag::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: .8; }
+    .tag.live { background: var(--tint); color: var(--dk); }
+    .tag.wait { background: var(--peach); color: #8a4d00; }
+    .tag.not { background: #efefef; color: #555; }
+    .tag.new { background: var(--pinkt); color: var(--pinkd); }
+    .fld { display: flex; align-items: center; border: 3px solid var(--ink); border-radius: var(--r); overflow: hidden; margin-bottom: 8px; }
+    .fld span { flex: 1; font-size: 13px; font-weight: 600; color: #8a8a8a; padding: 11px 12px; }
+    .fld b { align-self: stretch; display: flex; align-items: center; background: var(--or); border-left: 3px solid var(--ink); font-size: 11px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; padding: 0 14px; }
+    .sel { font-size: 13px; font-weight: 800; border: 3px solid var(--ink); border-radius: var(--r); padding: 11px 48px 11px 14px; background: var(--tint) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231a1a1a' stroke-width='2.4'/%3E%3C/svg%3E") no-repeat right 16px center; margin-bottom: 8px; }
+    .pill { display: inline-block; font-size: 12px; font-weight: 800; border: 2px solid var(--dk); color: var(--dk); background: #fff; border-radius: var(--r); padding: 7px 12px; }
+    .pill.on { background: var(--dk); color: #fff; }
+
+    /* 10 shadows, corners, spacing */
+    .s10 { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+    .s10 > div { border: 2px solid var(--line); border-radius: 14px; padding: 14px; }
+    .s10 h4 { font-size: 10.5px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: var(--dk); margin-bottom: 12px; }
+    .shd { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 10px; max-width: 330px; }
+    .shd i { display: block; aspect-ratio: 1; border: 2px solid var(--ink); border-radius: 12px; background: #fff; }
+    .shd span { display: block; font-size: 10.5px; font-weight: 800; text-align: center; margin-top: 10px; color: var(--mute); }
+    .shd .bad { border-color: #e3e3e3; box-shadow: 0 8px 20px rgba(0,0,0,.18); }
+    .rad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .rad i { display: block; height: 48px; background: var(--peach); border: 2px solid var(--ink); }
+    .rad span { display: block; font-size: 10.5px; font-weight: 800; text-align: center; margin-top: 6px; line-height: 1.25; }
+    .rad span em { display: block; font-style: normal; color: var(--mute); font-weight: 600; }
+    .spc { display: grid; gap: 5px; }
+    .spc div { display: grid; grid-template-columns: 56px 22px minmax(0, 1fr); gap: 8px; align-items: center; font-size: 11px; font-weight: 700; }
+    .spc i { display: block; height: 12px; background: var(--br); border-radius: 2px; }
+    .spc div span { color: var(--mute); font-weight: 600; }
+
+    /* 11 logo */
+    .lg11 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 12px; }
+    .lgc { border-radius: 14px; overflow: hidden; border: 2px solid var(--line); background: #fff; }
+    .lgc .stage { height: 140px; display: grid; place-items: center; align-content: center; position: relative; }
+    .lgc .stage img { max-height: 104px; max-width: 72%; }
+    .lgc .cap { padding: 8px 10px 10px; font-size: 11.5px; font-weight: 800; line-height: 1.35; }
+    .lgc .cap span { display: block; font-weight: 600; color: var(--mute); font-size: 10.5px; }
+    .lgc .busy { background: url(https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/communities/maryland/banner.jpg) center 40%/cover; }
+    .lgc .busy img { filter: drop-shadow(0 2px 6px rgba(0,0,0,.55)); }
+    .lgc .hdr { background: #fff; border-bottom: 1px solid var(--line); height: 48px; display: flex; align-items: center; padding: 0 12px; gap: 10px; }
+    .lgc .hdr img { height: 26px; max-width: none; }
+    .lgc .hdr i { flex: 1; height: 22px; border: 2px solid var(--br); border-radius: 6px; display: block; }
+    .donts { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+    .dn { border: 2px solid #f3c4c0; border-radius: 12px; overflow: hidden; background: #fff; }
+    .dn .stage { height: 70px; display: grid; place-items: center; position: relative; overflow: hidden; }
+    .dn .stage img { max-height: 58px; max-width: 70%; }
+    .dn .stage::after { content: "✕"; position: absolute; top: 6px; right: 8px; width: 20px; height: 20px; border-radius: 50%; background: #d93025; color: #fff; font-size: 11px; font-weight: 900; display: grid; place-items: center; }
+    .dn .cap { padding: 6px 9px 8px; font-size: 10.5px; font-weight: 700; line-height: 1.3; }
+
+    /* 12 your call */
+    .dec { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .dc { border: 2px solid var(--ink); border-radius: 14px; padding: 14px 16px; box-shadow: 5px 5px 0 var(--c); background: #fff; }
+    .dc .q { font-size: 15px; font-weight: 900; line-height: 1.25; margin-bottom: 6px; }
+    .dc .q i { font-style: normal; display: inline-block; font-size: 10px; font-weight: 900; background: var(--c); color: var(--t, var(--ink)); border-radius: 5px; padding: 2px 6px; margin-right: 6px; vertical-align: 2px; }
+    .dc p { font-size: 12px; color: var(--mute); font-weight: 600; line-height: 1.45; }
+    .dc p b { color: var(--ink); }
+    .next { margin-top: 14px; font-size: 12.5px; font-weight: 700; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+    .next span { background: #f2f2f2; border-radius: var(--r); padding: 5px 9px; }
+    .next span.on { background: var(--or); }
+
+    @media (max-width: 1100px) {
+      .pal { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .secs, .st-uses, .lg11 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .cds, .ui9, .s10 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .donts { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+    @media (max-width: 900px) {
+      .bk-row, .cv, .pk, .mk, .dec { grid-template-columns: minmax(0, 1fr); }
+      .cv-art { max-width: 340px; }
+      .pal { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .ty > div { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+      .ty .sp { text-align: left; }
+      .ty .s { white-space: normal; }
+    }
+    @media (max-width: 600px) {
+      .secs, .st-uses, .lg11, .cds, .ui9, .s10 { grid-template-columns: minmax(0, 1fr); }
+      .donts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .mkc h4 { font-size: 22px; }
+      .anat .w { font-size: 38px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page-frame">
+  <script src="/public/nav.js"></script>
+  <div class="vg-note"><strong>For approval</strong>Brand kit, part 1 of 4: Foundations, on the locked Color Block look. A mock, nothing here is live. Listing cards use real listings as style examples only.</div>
+
+  <main class="vg-stage vg-light" aria-label="Brand kit, part 1: Foundations">
+
+    <!-- 1. Cover -->
+    <section class="vg-slide" id="start" data-title="Start">
+      <div class="cv">
+        <div>
+          <span class="bk-eb">Vegans Explore brand kit</span>
+          <h1>Part 1: <span class="hl o">Foundations</span>. The pieces every page, post and video is <span class="hl g">built from</span>.</h1>
+          <div class="bk-stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <ol>
+            <li class="now">Foundations <span>colors, pink, type, marker, stripe, cards, buttons, shadows, spacing, logo</span></li>
+            <li>Imagery <span>our illustration style, do and don't, the Guide scene recipe</span></li>
+            <li>Templates <span>posts, carousels, stories, reels, thumbnails, video, podcast, email, ads</span></li>
+            <li>The Guide roster <span>art, bio, voice and what each one guides</span></li>
+          </ol>
+        </div>
+        <div class="cv-art" aria-hidden="true">
+          <i class="lg"><img src="/public/logo-ve-portrait-v2.svg" alt=""></i>
+          <i style="background:var(--or)"></i><i style="background:var(--pink);border-radius:50%"></i>
+          <i style="background:var(--br)"></i><i style="background:var(--peach)"></i><i style="background:var(--md);border-radius:50% 14px 14px 14px"></i>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Palette -->
+    <section class="vg-slide" id="colors" data-title="Colors">
+      <span class="bk-eb">1 · Colors</span>
+      <h2 class="bk-h">Seven colors on <span class="hl g">clean white</span>. Each one knows which type sits on it.</h2>
+      <p class="bk-lede">The palette from the concept, measured. The type color on each block is fixed: white only where it reads (contrast 4.5 to 1 or better), ink everywhere else.</p>
+      <div class="pal">
+        <div class="sw" style="--c:#2D5C27;--t:#fff"><div class="chip"><small>White type</small><b>Aa</b></div><div class="meta"><strong>Brand green</strong><span class="mono">#2D5C27</span><em>Lead color, the main call to action band, the logo mark.</em></div></div>
+        <div class="sw" style="--c:#F69820;--t:#1a1a1a"><div class="chip"><small>Ink type</small><b>Aa</b></div><div class="meta"><strong>Orange</strong><span class="mono">#F69820</span><em>The one action color: Join, Search, Book. Marker on headings.</em></div></div>
+        <div class="sw" style="--c:#FF9EC4;--t:#1a1a1a"><div class="chip"><small>Ink type</small><b>Aa</b></div><div class="meta"><strong>Pink</strong><span class="mono">#FF9EC4</span><em>The one supporting color: Save, warmth, people. Next slide.</em></div></div>
+        <div class="sw" style="--c:#FFEBD1;--t:#1a1a1a"><div class="chip"><small>Ink type</small><b>Aa</b></div><div class="meta"><strong>Peach</strong><span class="mono">#FFEBD1</span><em>Soft block, notices, waiting tags. Never a shadow.</em></div></div>
+        <div class="sw" style="--c:#22C55E;--t:#1a1a1a"><div class="chip"><small>Ink type</small><b>Aa</b></div><div class="meta"><strong>Bright green</strong><span class="mono">#22C55E</span><em>Votes, highlights, live dots, numbers on dark green.</em></div></div>
+        <div class="sw" style="--c:#E8F5E9;--t:#1a1a1a"><div class="chip"><small>Ink type</small><b>Aa</b></div><div class="meta"><strong>Mint</strong><span class="mono">#E8F5E9</span><em>Soft block, fields, Live tags. Never a shadow.</em></div></div>
+        <div class="sw" style="--c:#3A9B3E;--t:#fff"><div class="chip"><small>White, big only</small><b>Aa</b></div><div class="meta"><strong>Mid green</strong><span class="mono">#3A9B3E</span><em>White type 19px bold and up (3.5 to 1); smaller words in ink.</em></div></div>
+      </div>
+      <div class="neutral">
+        <span><i style="background:#1a1a1a"></i>Ink <span class="mono">#1a1a1a</span></span>
+        <span><i style="background:#5c5c5c"></i>Quiet text <span class="mono">#5c5c5c</span></span>
+        <span><i style="background:#e7e7e7"></i>Line <span class="mono">#e7e7e7</span></span>
+        <span><i style="background:#fff"></i>Page <span class="mono">#ffffff</span></span>
+        <span style="color:var(--mute);font-weight:600">Measured: white on orange 2.2, on pink 1.9, on bright green 2.3, so those always take ink.</span>
+      </div>
+    </section>
+
+    <!-- 3. Section colors -->
+    <section class="vg-slide" id="sections" data-title="Section colors">
+      <span class="bk-eb">2 · Section colors</span>
+      <h2 class="bk-h">Every part of the site <span class="hl o">owns one color</span>.</h2>
+      <p class="bk-lede">The section color is the page's header block, its eyebrow, the shadow on its cards and the lead of its stripe, so you know where you are before you read a word. My proposed map:</p>
+      <div class="secs">
+        <div class="sec" style="--c:#2D5C27;--t:#fff"><span class="n">Section 1</span><div><h4>Directory</h4><p>Places, causes, people. Its doors reuse the palette inside.</p></div></div>
+        <div class="sec" style="--c:#F69820;--t:#1a1a1a"><span class="n">Section 2</span><div><h4>Events</h4><p>Things to go to, near you and online.</p></div></div>
+        <div class="sec" style="--c:#FF9EC4;--t:#1a1a1a"><span class="n">Section 3</span><div><h4>Guides</h4><p>Our drawn Guides, the warmest part of the brand.</p></div></div>
+        <div class="sec" style="--c:#3A9B3E;--t:#fff"><span class="n">Section 4</span><div><h4>Communities</h4><p>City hubs and chapters.</p></div></div>
+        <div class="sec" style="--c:#22C55E;--t:#1a1a1a"><span class="n">Section 5</span><div><h4>Daily Pulse</h4><p>News, the Community Board, what's new.</p></div></div>
+        <div class="sec" style="--c:#FFEBD1;--t:#1a1a1a"><span class="n">Section 6</span><div><h4>Media &amp; Podcast</h4><p>Episodes, shows, city shows.</p></div></div>
+        <div class="sec" style="--c:#E8F5E9;--t:#1a1a1a"><span class="n">Section 7</span><div><h4>Passport &amp; Membership</h4><p>Points, levels, your path. Its button stays orange.</p></div></div>
+        <div class="sec ex"><span class="n">Everywhere</span><div><h4>Join and act</h4><p>The dark green band with the orange button closes every page, whatever its section.</p></div></div>
+      </div>
+    </section>
+
+    <!-- 4. Pink -->
+    <section class="vg-slide" id="pink" data-title="The pink">
+      <span class="bk-eb">3 · The pink shade</span>
+      <h2 class="bk-h">One pink, used <span class="hl p">for warmth</span>, never for alarm.</h2>
+      <p class="bk-lede">Pink is the only color outside the green and orange we already owned, so it has to sit well beside both. Three shades, each shown as a marker, a button, a card shadow and next to the greens.</p>
+      <div class="pk">
+        <div class="pko rec" style="--pk:#FF9EC4">
+          <div class="hd"><strong>A · Blossom <span class="mono" style="font-weight:600">#FF9EC4</span></strong><span class="tagx">Recommended</span></div>
+          <div class="big"></div>
+          <div class="row3"><i style="background:var(--dk)"></i><i style="background:#FF9EC4"></i><i style="background:var(--or)"></i><i style="background:var(--br)"></i></div>
+          <div class="demo"><span class="t"><span>people to follow</span></span><span class="b">Saved</span><span class="mini"></span></div>
+          <p>The concept's own pink. Holds its own beside orange without fighting it; ink on it measures 9.1 to 1. For pink words on white, a deep pink <span class="mono">#C2185B</span> (5.9 to 1) is the text partner.</p>
+        </div>
+        <div class="pko" style="--pk:#F9A8D4">
+          <div class="hd"><strong>B · Soft <span class="mono" style="font-weight:600">#F9A8D4</span></strong></div>
+          <div class="big"></div>
+          <div class="row3"><i style="background:var(--dk)"></i><i style="background:#F9A8D4"></i><i style="background:var(--or)"></i><i style="background:var(--br)"></i></div>
+          <div class="demo"><span class="t"><span>people to follow</span></span><span class="b">Saved</span><span class="mini"></span></div>
+          <p>Cooler and quieter, leans lilac. Reads gentler on screens, but goes faint as a card shadow and next to peach.</p>
+        </div>
+        <div class="pko" style="--pk:#FF6FA8">
+          <div class="hd"><strong>C · Bold <span class="mono" style="font-weight:600">#FF6FA8</span></strong></div>
+          <div class="big"></div>
+          <div class="row3"><i style="background:var(--dk)"></i><i style="background:#FF6FA8"></i><i style="background:var(--or)"></i><i style="background:var(--br)"></i></div>
+          <div class="demo"><span class="t"><span>people to follow</span></span><span class="b">Saved</span><span class="mini"></span></div>
+          <p>Loudest on social, but it competes with orange for "press me" and starts to read as the brand color instead of the support.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Type -->
+    <section class="vg-slide" id="type" data-title="Type">
+      <span class="bk-eb">4 · Type</span>
+      <h2 class="bk-h">One family, Montserrat. <span class="hl g">Big and heavy</span> on top, calm underneath.</h2>
+      <div class="bk-row">
+        <div class="ty">
+          <div><span class="lb">Display</span><span class="s" style="font-size:46px;font-weight:900;letter-spacing:-.035em;line-height:1">Eat</span><span class="sp">120 / 900 · phone 64</span></div>
+          <div><span class="lb">Headline</span><span class="s" style="font-size:32px;font-weight:900;letter-spacing:-.025em;line-height:1.05">Everything Vegan near you</span><span class="sp">72 / 900 · phone 34</span></div>
+          <div><span class="lb">Section</span><span class="s" style="font-size:25px;font-weight:900;letter-spacing:-.02em">Top voted near you</span><span class="sp">40 / 900 · phone 26</span></div>
+          <div><span class="lb">Card title</span><span class="s" style="font-size:20px;font-weight:900">Love Life Cafe</span><span class="sp">18–23 / 900</span></div>
+          <div><span class="lb">Body</span><span class="s" style="font-size:15px;font-weight:600">Vote for the places, causes and people you love.</span><span class="sp">14–15 / 600</span></div>
+          <div><span class="lb">Small</span><span class="s" style="font-size:12.5px;font-weight:600;color:var(--mute)">Miami · Restaurants · 100% Vegan</span><span class="sp">12.5–13 / 600</span></div>
+          <div><span class="lb">Eyebrow</span><span class="s"><span class="bk-eb" style="margin:0">Vegan Directory</span></span><span class="sp">11 / 900 · caps · .18em</span></div>
+          <div><span class="lb">Big number</span><span class="s" style="font-size:32px;font-weight:900;letter-spacing:-.03em;line-height:1">548 <small style="font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--mute)">listed</small></span><span class="sp">40 / 900 + 10 caps</span></div>
+        </div>
+        <div class="bk-rules">
+          <h3>Rules</h3>
+          <ul>
+            <li>Headlines are <b>900</b>, tight (<span class="mono">-.025em</span>), line height about 1.04. Sizes flex between the desktop and phone numbers.</li>
+            <li>Body copy is <b>600</b>, never lighter than 400, and keeps its own reading width (about 860px) while the page stays full width.</li>
+            <li>Capitals with spacing only for eyebrows, tags, buttons and the word under a big number.</li>
+            <li>Numbers are the loudest thing in a block: live counts from data, never a typed chapter or city count.</li>
+            <li class="no">No second font, no italics for emphasis (use the marker), no em-dashes, "Vegan" always capitalized.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. Marker -->
+    <section class="vg-slide" id="marker" data-title="Marker highlight">
+      <span class="bk-eb">5 · Marker highlight</span>
+      <h2 class="bk-h">A swipe of color under <span class="hl o">the words that matter</span>.</h2>
+      <div class="bk-row">
+        <div class="mk">
+          <div class="mkc y"><span class="lbl">Do</span><h4>Places to eat, <span class="hl g">animals to help</span>, people to follow.</h4><p>One to three phrases per headline, each a few words.</p></div>
+          <div class="mkc y"><span class="lbl">Do</span><h4><span class="hl p">Your vote</span> moves the list.</h4><p>Pink, green or orange; the section's own color first.</p></div>
+          <div class="mkc n"><span class="lbl">Don't</span><h4 style="font-size:15px;font-weight:600;line-height:1.5"><span class="bad1">Vote for the places, causes and people you love, save them for later and add what is missing.</span></h4><p>Never on body copy or a whole sentence.</p></div>
+          <div class="mkc n"><span class="lbl">Don't</span><h4><span class="bad2">Everything</span> Vegan near you</h4><p>Never a full box behind the word; that is a tag, not a marker.</p></div>
+        </div>
+        <div class="bk-rules">
+          <h3>How it is drawn</h3>
+          <div class="anat"><span class="w"><span>near you</span></span><span class="ms">from 56% to 92%<br>of the line height</span></div>
+          <ul style="margin-top:14px">
+            <li>The band runs from 56% to 92% of the line, so it sits under the lower half of the letters and the words stay ink.</li>
+            <li>It wraps cleanly onto a second line (<span class="mono">box-decoration-break: clone</span>), with a 4px corner.</li>
+            <li>Only on headings 26px and up: pages, section heads, social, thumbnails, video titles.</li>
+            <li>On dark green the marker word turns bright green instead of getting a band (as in "Your vote moves <b style="color:var(--md)">the list</b>").</li>
+            <li class="no">Never peach or mint (too faint), never on a face or a logo.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Stripe -->
+    <section class="vg-slide" id="stripe" data-title="Color stripe">
+      <span class="bk-eb">6 · Color stripe and mosaic</span>
+      <h2 class="bk-h">The stripe is our <span class="hl g">signature</span>: all seven colors, always in this order.</h2>
+      <div class="st-big">
+        <div class="bk-stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="st-key"><span>Brand green · double</span><span>Orange</span><span>Pink</span><span>Peach</span><span>Bright</span><span>Mint</span><span>Mid</span></div>
+      </div>
+      <div class="st-uses">
+        <div class="su"><div class="scr"><div class="fake" style="width:60%;height:12px;background:#1a1a1a"></div><div style="height:22px;border:2px solid #1a1a1a;border-radius:5px;margin:8px 0"></div><div class="bk-stripe"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div style="display:grid;grid-template-columns:2fr 1fr 1fr;gap:5px;margin-top:8px"><i style="height:30px;background:var(--dk);border-radius:5px"></i><i style="height:30px;background:var(--or);border-radius:5px"></i><i style="height:30px;background:var(--pink);border-radius:5px"></i></div></div><div class="cap">Web pages<span>8px, under the search bar or the page title, once per page.</span></div></div>
+        <div class="su"><div class="scr" style="background:#fff;display:flex;flex-direction:column"><div class="bk-stripe" style="height:6px"></div><div style="flex:1;display:grid;place-items:center"><img src="/public/logo-ve-landscape-v1.svg" alt="" style="height:22px"></div><div class="fake" style="width:80%"></div><div class="fake" style="width:55%"></div></div><div class="cap">Email header<span>6px across the very top, logo under it.</span></div></div>
+        <div class="su"><div class="scr" style="background:var(--dk);display:flex;flex-direction:column;justify-content:flex-end;padding:0"><div style="padding:10px;color:#fff;font-weight:900;font-size:15px;line-height:1.1">5 Vegan spots<br>in Miami</div><div class="bk-stripe" style="border-radius:0;height:10px"></div></div><div class="cap">Social and thumbnails<span>Full width along the bottom edge, about 1.5% of the height.</span></div></div>
+        <div class="su"><div class="scr" style="background:url(/public/guides/creator-guide.jpg) center/cover;padding:0;display:flex;align-items:flex-end"><div style="background:#fff;margin:0 0 10px 10px;border-radius:6px;overflow:hidden;width:75%"><div style="padding:6px 8px;font-size:11px;font-weight:900">Kai Monroe<span style="display:block;font-size:9px;font-weight:700;color:var(--mute)">Creator Guide</span></div><div class="bk-stripe" style="height:4px;border-radius:0"></div></div></div><div class="cap">Video lower third<span>A thin stripe under the name plate, never across a face.</span></div></div>
+      </div>
+      <div class="bk-rules" style="display:flex;gap:18px;align-items:center;margin-top:14px">
+        <div class="mosaic" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+        <p style="font-size:12.5px;max-width:900px"><b>The mosaic</b> (nine tiles, two circles, one outlined square) is the stripe's bigger sibling: a corner accent on hero headers, covers and end cards. Desktop and covers only, one per frame. <b>Never</b> reorder, recolor or animate the stripe colors one by one.</p>
+      </div>
+    </section>
+
+    <!-- 8. Cards -->
+    <section class="vg-slide" id="cards" data-title="Cards">
+      <span class="bk-eb">7 · Cards</span>
+      <h2 class="bk-h">Black outline, a color band, a <span class="hl o">solid shadow</span> in the section color.</h2>
+      <div class="cds">
+        <div>
+          <div class="cdlbl">Directory card · dark section</div>
+          <article class="card on-dark" style="--c:#2D5C27">
+            <div class="band"><span class="kind">Restaurants</span><span class="rank">#1</span></div>
+            <div class="body"><a class="logo" href="/directory/love-life-cafe" aria-label="Love Life Cafe profile"><img src="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/library/475f0758124c4e3b8481.webp" alt="Love Life Cafe logo"></a>
+              <h5><a href="/directory/love-life-cafe">Love Life Cafe</a></h5><p class="where">Miami</p>
+              <div class="foot"><span class="votes"><b>9</b><small>votes</small></span><span class="btn vote">Vote</span><span class="btn">Save</span></div></div>
+          </article>
+        </div>
+        <div>
+          <div class="cdlbl">Directory card · light section</div>
+          <article class="card" style="--c:#F69820">
+            <div class="band"><span class="kind">Nonprofits</span><span class="rank">#2</span></div>
+            <div class="body"><a class="logo" href="/directory/be-an-animal-hero" aria-label="Be An Animal Hero profile"><img src="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/listings/be-an-animal-hero/logo-2026-10-27-cb7e3950.jpg" alt="Be An Animal Hero logo"></a>
+              <h5><a href="/directory/be-an-animal-hero">Be An Animal Hero</a></h5><p class="where">Nonprofits</p>
+              <div class="foot"><span class="votes"><b>3</b><small>votes</small></span><span class="btn vote">Vote</span><span class="btn save">Saved</span></div></div>
+          </article>
+        </div>
+        <div>
+          <div class="cdlbl">Door or feature block</div>
+          <div class="door" style="--c:#FF9EC4;--t:#1a1a1a">
+            <div class="top"><span class="num">Door 03</span><span class="ct"><b>114</b><small>listed</small></span></div>
+            <h5>People &amp; Groups</h5>
+            <div class="pic"><img src="/public/guides/creator-guide.jpg" alt="Our Guides together, drawn in our illustration style"></div>
+          </div>
+        </div>
+        <div class="bk-rules">
+        <h3>Rules</h3>
+        <ul>
+          <li>Outline 2px ink, corner 14px, band 46 to 54px in the section color.</li>
+          <li>The logo sits on a white square over the band edge and always links to the profile.</li>
+          <li>Title and summary clamp to two rows. One action row, same place on every card.</li>
+          <li>Shadow 6px right, 6px down, solid, no blur; on hover the card lifts 2px and the shadow grows to 8px.</li>
+          <li>Peach and mint sections use an ink shadow (their own color disappears on white).</li>
+          <li>Blocks (doors, features) are solid color with no outline; the picture sits in a white frame.</li>
+        </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. Buttons, tags, fields -->
+    <section class="vg-slide" id="buttons" data-title="Buttons and tags">
+      <span class="bk-eb">8 · Buttons, tags and fields</span>
+      <h2 class="bk-h">One orange "<span class="hl o">do this</span>" per view. Everything else steps back.</h2>
+      <div class="ui9">
+        <div>
+          <h4>Buttons on white</h4>
+          <div class="bs"><span class="btn cta">Join free</span><span class="note9">Primary: orange, ink type. One per view.</span></div>
+          <div class="bs"><span class="btn">Suggest a listing</span><span class="note9">Secondary: white, ink outline.</span></div>
+          <div class="bs"><span class="btn vote">Vote</span><span class="btn on">Voted</span><span class="note9">Vote: bright green, dark green when on.</span></div>
+          <div class="bs"><span class="btn save">Saved</span><span class="note9">Save: pink when on.</span></div>
+          <p class="note9">6px corners, 2px outline, 900 caps. Never pills, never gradients.</p>
+        </div>
+        <div class="dkp">
+          <h4>On the dark green band</h4>
+          <div class="bs"><span class="btn cta">Join free to vote and save</span></div>
+          <div class="bs"><span class="btn wh">Claim your business</span><span class="btn gh">Suggest</span></div>
+          <p class="note9">Orange stays the primary; white fill for the second; outlined white for the rest.</p>
+          <h4 style="margin-top:14px">Status tags</h4>
+          <div class="bs"><span class="tag live" style="background:#fff">Live</span><span class="tag wait">Waiting for approval</span><span class="tag not">Not live yet</span><span class="tag new">New</span></div>
+          <p class="note9">Plain words, never an action word. A dot and a soft fill.</p>
+        </div>
+        <div>
+          <h4>Fields</h4>
+          <div class="fld"><span>Search everything: "Vegan pizza in Atlanta"</span><b>Search</b></div>
+          <div class="sel">Near South Florida</div>
+          <div class="bs"><span class="pill on">All</span><span class="pill">Restaurants</span><span class="pill">Bakeries</span></div>
+          <p class="note9">Search and the main picker get a 3px ink outline; form fields 2px. Dropdowns: no browser arrow, our chevron 16px from the edge. Filter pills are dark green outline, filled when on. Every text field keeps the dictation mic.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. Shadows, corners, spacing -->
+    <section class="vg-slide" id="spacing" data-title="Shadows and spacing">
+      <span class="bk-eb">9 · Shadows, corners and spacing</span>
+      <h2 class="bk-h">Flat color, <span class="hl g">solid shadows</span>, room to breathe.</h2>
+      <div class="s10">
+        <div>
+          <h4>Shadows</h4>
+          <div class="shd">
+            <div><i style="box-shadow:6px 6px 0 var(--or)"></i><span>Card · 6px</span></div>
+            <div><i style="box-shadow:8px 8px 0 var(--pink)"></i><span>Hover, cover · 8px</span></div>
+            <div><i class="bad"></i><span style="color:#a3221b">No soft blur</span></div>
+          </div>
+          <p class="note9">Solid offset only, down and to the right, in the section color (ink on peach or mint). Phones drop to 5px. Doors lift with a faint ink shelf (<span class="mono">0 10px 0 -2px</span>) on hover.</p>
+        </div>
+        <div>
+          <h4>Corners</h4>
+          <div class="rad">
+            <div><i style="border-radius:6px"></i><span>6px<em>buttons, tags, fields</em></span></div>
+            <div><i style="border-radius:10px"></i><span>10px<em>pictures</em></span></div>
+            <div><i style="border-radius:14px"></i><span>14px<em>cards, doors</em></span></div>
+            <div><i style="border-radius:16px"></i><span>16px<em>bands, headers</em></span></div>
+          </div>
+          <p class="note9" style="margin-top:12px">Circles only for people's faces on cards and the odd tile in the mosaic. The dashboard's corner picture stays a rounded square.</p>
+        </div>
+        <div>
+          <h4>Spacing</h4>
+          <div class="spc">
+            <div><i style="width:6px"></i>6 <span>· tag gaps, icon to word</span></div>
+            <div><i style="width:10px"></i>10 <span>· button rows</span></div>
+            <div><i style="width:16px"></i>16 <span>· card grid gap, phone page edge</span></div>
+            <div><i style="width:22px"></i>22 <span>· card padding, stripe to content</span></div>
+            <div><i style="width:40px"></i>40 <span>· desktop page edge</span></div>
+            <div><i style="width:52px"></i>52 <span>· between sections</span></div>
+          </div>
+          <p class="note9" style="margin-top:10px">Full width always: grids fill the page (<span class="mono">auto-fill, minmax(300px, 1fr)</span>), never a fixed column.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 11. Logo -->
+    <section class="vg-slide" id="logo" data-title="Logo">
+      <span class="bk-eb">10 · Logo use</span>
+      <h2 class="bk-h">The real file, every time. <span class="hl g">Never</span> a drawn copy.</h2>
+      <div class="lg11">
+        <div class="lgc"><div class="stage"><img src="/public/logo-ve-portrait-v2.svg" alt="Vegans Explore portrait logo"></div><div class="cap">Portrait, on white or a light block<span>logo-ve-portrait-v2.svg · social, video, shirts, covers</span></div></div>
+        <div class="lgc"><div class="stage" style="background:var(--ink)"><img src="/public/logo-ve-portrait-v2-inverted.svg" alt="Vegans Explore portrait logo, white type"></div><div class="cap">On black or a dark color (the shirt)<span>-inverted · white type, green mark</span></div></div>
+        <div class="lgc"><div class="stage" style="background:var(--dk);grid-template-columns:1fr 1fr;gap:0;padding:0"><img src="/public/logo-ve-portrait-v2-white.svg" alt="Vegans Explore portrait logo, all white" style="justify-self:center;max-width:80%"><div class="busy" style="height:140px;width:100%;display:grid;place-items:center"><img src="/public/logo-ve-portrait-v2-white.svg" alt="" style="max-width:80%"></div></div><div class="cap">On brand green or a picture: all white<span>-white · soft shadow on pictures, never on a face</span></div></div>
+        <div class="lgc"><div class="stage" style="display:flex;flex-direction:column;justify-content:center;background:#fafafa;padding:0 12px"><div class="hdr" style="border:1px solid var(--line);border-radius:8px"><img src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore landscape logo"><i></i></div></div><div class="cap">Landscape, site header only<span>logo-ve-landscape-v1.svg · drawn by nav.js</span></div></div>
+      </div>
+      <div class="donts">
+        <div class="dn"><div class="stage"><img src="/public/logo-ve-portrait-v2.svg" alt="" style="transform:scaleX(1.5)"></div><div class="cap">Don't stretch or squash it</div></div>
+        <div class="dn"><div class="stage"><img src="/public/logo-ve-portrait-v2.svg" alt="" style="filter:hue-rotate(150deg)"></div><div class="cap">Don't recolor it</div></div>
+        <div class="dn"><div class="stage" style="background:var(--dk)"><img src="/public/logo-ve-portrait-v2-inverted.svg" alt=""></div><div class="cap">Don't use the green mark on brand green: it disappears</div></div>
+        <div class="dn"><div class="stage" style="background:var(--or)"><img src="/public/logo-ve-portrait-v2.svg" alt=""></div><div class="cap">Don't put the green mark on orange or pink without a white plate</div></div>
+        <div class="dn"><div class="stage"><img src="/public/logo-ve-portrait-v1.svg" alt=""></div><div class="cap">Don't use portrait v1 (retired)</div></div>
+      </div>
+      <p class="note9" style="margin-top:10px;font-size:11.5px">Clear space on every side: the height of the suitcase handle. Smallest size: portrait 64px wide on screen, landscape 120px. Never over a face; over a picture it sits on a solid plate or uses the all-white file. Correction to the logo canon: the inverted file is for black and dark non-green colors only.</p>
+    </section>
+
+    <!-- 12. Your call -->
+    <section class="vg-slide" id="decide" data-title="Your call">
+      <span class="bk-eb">Your call</span>
+      <h2 class="bk-h">Four calls to lock <span class="hl o">Foundations</span>. My default is in bold.</h2>
+      <div class="dec">
+        <div class="dc" style="--c:#FF9EC4"><div class="q"><i>1</i>The pink shade</div><p><b>A, Blossom #FF9EC4</b>, with deep pink #C2185B only when pink has to be text on white. It is already the concept you locked, and it supports orange instead of competing with it.</p></div>
+        <div class="dc" style="--c:#F69820"><div class="q"><i>2</i>Section colors</div><p><b>The map on slide 3</b>: Directory brand green, Events orange, Guides pink, Communities mid green, Pulse bright green, Media peach, Passport mint. Directory doors keep their own colors inside.</p></div>
+        <div class="dc" style="--c:#22C55E"><div class="q"><i>3</i>Orange is the only "do this" color</div><p><b>Yes</b>: one orange button per view, everything else white or green. It keeps the call to action obvious on every page and every post.</p></div>
+        <div class="dc" style="--c:#2D5C27;--t:#fff"><div class="q"><i>4</i>The stripe on everything we make</div><p><b>Yes</b>: once per page, along the bottom of every social post and thumbnail, across the top of every email, under every lower third. It is what makes a frame read as ours at a glance.</p></div>
+      </div>
+      <div class="next"><b>Then:</b><span class="on">1 Foundations</span><span>2 Imagery</span><span>3 Templates</span><span>4 Guide roster</span><span>Homepage</span><span>Every page in the preview</span><span>Live</span><span>Every LESARUSS brand</span></div>
+    </section>
+
+  </main>
+
+  <script src="/public/footer.js"></script>
+</div>
+<script src="/public/ve-guided.js"></script>
+</body>
+</html>
