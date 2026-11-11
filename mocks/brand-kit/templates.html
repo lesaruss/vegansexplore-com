@@ -318,12 +318,110 @@
       .row > div { width: 100% !important; max-width: 100% !important; flex: 1 1 100% !important; }
       .mail { width: 100%; }
     }
+
+    /* round two */
+    .s45 .band .blogo { height: 15cqw; width: auto; flex: none; align-self: center; }
+    .s916 .top .tlogo { position: absolute; top: 13cqw; left: 6cqw; height: 13cqw; width: auto; }
+    .lgcmp { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .lgcmp div { border: 2px solid var(--line); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .lgcmp img { height: 92px; width: auto; max-width: 100%; }
+    .lgcmp span { font-size: 10px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: var(--mute); }
+    .ozoom { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+    .ozoom img { width: 100%; height: 64px; object-fit: contain; border: 2px solid var(--line); border-radius: 10px; background: #fff; }
+    .ozoom img:first-child { border-color: #e9a7a2; }
+    .lgset { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .lgset div { border-radius: 10px; padding: 12px 8px 8px; display: flex; flex-direction: column; align-items: center; gap: 6px; border: 1px solid var(--line); }
+    .lgset img { height: 52px; width: auto; }
+    .lgset span { font-size: 9.5px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; color: var(--ink); background: #fff; border-radius: 4px; padding: 2px 6px; }
+    /* door frames (thumbnail, share image) */
+    .dr { position: absolute; inset: 0 0 1.3cqw 0; background: var(--c); display: flex; align-items: stretch; gap: 3cqw; padding: 3.6cqw 3.6cqw 3.6cqw 4.4cqw; }
+    .dr .dt { flex: 1; display: flex; flex-direction: column; justify-content: center; min-width: 0; position: relative; }
+    .dr .dl { align-self: flex-start; background: var(--ink); color: #fff; font-size: 1.9cqw; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; padding: 1cqw 1.5cqw; border-radius: .6cqw; margin-bottom: 2.6cqw; }
+    .dr h5 { font-size: var(--hs, 8cqw); font-weight: 900; line-height: 1.16; letter-spacing: -.035em; }
+    .blk { white-space: nowrap; display: inline-block; padding: .1em .22em .14em; border-radius: .9cqw; box-shadow: .7cqw .7cqw 0 var(--ink); margin: .05em 0; }
+    .blk.wh { background: #fff; color: var(--ink); }
+    .blk.ik { background: var(--ink); color: #fff; box-shadow: .7cqw .7cqw 0 #fff; }
+    .blk.gr { background: var(--br); color: var(--ink); }
+    .dr .dp { height: 100%; aspect-ratio: var(--k); flex: none; border: .8cqw solid #fff; border-radius: 1.8cqw; overflow: hidden; box-shadow: 1cqw 1cqw 0 var(--ink); }
+    .dr .dp img { width: 100%; height: 100%; object-fit: cover; }
+    .mos2 { position: absolute; right: 0; top: 0; display: grid; grid-template-columns: repeat(3, 2.4cqw); gap: .6cqw; }
+    .mos2 i { width: 2.4cqw; height: 2.4cqw; border-radius: .5cqw; display: block; }
+    /* video open animation: 2 s, then a pause before it plays again */
+    .vopen.anim img { animation: vlogo 3.2s ease-out infinite; }
+    .stp.wipe { transform-origin: left center; animation: vwipe 3.2s ease-out infinite; }
+    @keyframes vwipe { 0% { transform: scaleX(0); } 25%, 92% { transform: scaleX(1); } 100% { transform: scaleX(1); opacity: 0; } }
+    @keyframes vlogo { 0%, 18% { opacity: 0; transform: translateY(2cqw) scale(.94); } 44%, 92% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+    /* lower third v2 */
+    .lt2 { position: absolute; left: 4cqw; bottom: 6cqw; display: grid; grid-template-columns: auto auto; background: #fff; border-radius: 1cqw; overflow: hidden; box-shadow: .7cqw .7cqw 0 var(--pink); }
+    .lt2a { grid-row: 1 / 3; padding: 1.2cqw 0 1.2cqw 1.2cqw; }
+    .lt2a img { width: 6.4cqw; height: 6.4cqw; border-radius: 1cqw; object-fit: cover; display: block; border: .3cqw solid var(--ink); }
+    .lt2t { padding: 1.3cqw 2.2cqw 1cqw 1.4cqw; }
+    .lt2t b { display: block; font-size: 3cqw; font-weight: 900; line-height: 1.02; }
+    .lt2t span { display: block; font-size: 1.55cqw; font-weight: 700; color: var(--mute); margin-top: .3cqw; }
+    .lt2h { grid-column: 2; align-self: end; margin: 0 1.2cqw 1.2cqw 1.4cqw; justify-self: start; background: var(--pink); color: var(--ink); font-size: 1.3cqw; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; padding: .6cqw 1cqw; border-radius: .5cqw; }
+    /* close v2: the end card's look */
+    .vclose2 { position: absolute; inset: 0 0 1.4cqw 0; background: var(--dk); color: #fff; display: grid; grid-template-columns: 1.1fr .9fr; gap: 4cqw; padding: 4.6cqw 6.4cqw 4cqw 4.6cqw; }
+    .vclose2 .cl { display: flex; flex-direction: column; }
+    .vclose2 .lg { width: 15cqw; }
+    .vclose2 h5 { font-size: 5.6cqw; font-weight: 900; line-height: 1.02; letter-spacing: -.03em; margin-top: auto; }
+    .vclose2 h5 span { color: var(--br); }
+    .vclose2 .b { align-self: flex-start; background: var(--or); color: var(--ink); font-size: 1.8cqw; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; padding: 1.3cqw 2.2cqw; border-radius: .7cqw; margin-top: 2.2cqw; box-shadow: .5cqw .5cqw 0 #fff; }
+    .vclose2 .url { font-size: 1.5cqw; font-weight: 800; opacity: .8; margin-top: 1.4cqw; letter-spacing: .04em; }
+    .vclose2 .cr { display: grid; gap: 2cqw; align-content: center; position: relative; }
+    .es2 { aspect-ratio: 16 / 9; background: rgba(255,255,255,.08); border: .5cqw solid #fff; border-radius: 1.4cqw; display: grid; place-items: center; font-size: 1.5cqw; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; box-shadow: .8cqw .8cqw 0 var(--or); }
+    .sub2 { position: absolute; left: -5.2cqw; top: 50%; transform: translateY(-50%); width: 8cqw; height: 8cqw; border-radius: 50%; background: var(--pink); color: var(--ink); display: grid; place-items: center; font-size: 1.2cqw; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; border: .4cqw solid #fff; }
+    /* podcast v2 */
+    .pod2 { position: absolute; inset: 0; background: var(--peach); padding: 6.4cqw 7cqw 8cqw; display: flex; flex-direction: column; }
+    .pod2 .e { font-size: 3.2cqw; font-weight: 900; letter-spacing: .2em; text-transform: uppercase; color: #8a4d00; }
+    .pod2 h5 { font-size: 11.6cqw; font-weight: 900; line-height: .92; letter-spacing: -.04em; margin-top: 1.6cqw; }
+    .pod2 .pp { font-size: 4.8cqw; font-weight: 800; letter-spacing: .5em; text-transform: uppercase; margin-top: 1.4cqw; }
+    .pod2 .lg { position: absolute; right: 7cqw; top: 6.4cqw; width: 19cqw; }
+    .pod2 .art { margin-top: auto; border: 1.3cqw solid #fff; border-radius: 3cqw; overflow: hidden; aspect-ratio: 16 / 9; box-shadow: 1.6cqw 1.6cqw 0 var(--or); }
+    .pod2 .art img { width: 100%; height: 100%; object-fit: cover; }
+    /* packs */
+    .pack { --h: min(clamp(120px, calc(100vh - 560px), 230px), calc((100vw - 190px) / 6.5)); display: flex; gap: 18px; align-items: flex-start; flex-wrap: nowrap; }
+    @media (max-width: 900px) { .pack { flex-wrap: wrap; --h: 150px; } }
+    .pack > div { width: calc(var(--h) * var(--k)); max-width: 100%; }
+    .pack .pk { height: var(--h); border-radius: 10px; overflow: hidden; border: 2px solid var(--ink); box-shadow: 5px 5px 0 var(--or); }
+    .pack .pk img { width: 100%; height: 100%; object-fit: cover; }
+    .pack .pk.todo { border-style: dashed; box-shadow: none; display: grid; place-items: center; text-align: center; font-size: 11px; font-weight: 800; color: var(--mute); padding: 8px; }
+    .pack b { display: block; font-size: 12.5px; font-weight: 900; margin-top: 8px; }
+    .pack span { display: block; font-size: 11px; font-weight: 600; color: var(--mute); }
+    /* ads v2 */
+    .ad2 { background: var(--c); padding: 10px 12px 0; display: flex; flex-direction: column; box-shadow: 0 0 0 2px var(--ink); }
+    .ad2 .dl { align-self: flex-start; background: var(--ink); color: #fff; font-size: 9px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; padding: 3px 6px; border-radius: 3px; }
+    .ad2 .h { font-size: 24px; font-weight: 900; line-height: 1.05; letter-spacing: -.02em; margin: 6px 0 8px; }
+    .ad2 .fr { border: 3px solid #fff; border-radius: 8px; overflow: hidden; box-shadow: 4px 4px 0 var(--ink); aspect-ratio: 21 / 9; }
+    .ad2 .fr img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .ad2 .so { margin: auto -12px 0; background: #fff; display: flex; align-items: center; justify-content: space-between; padding: 7px 10px; border-top: 2px solid var(--ink); }
+    .ad2 .so img { height: 22px; }
+    .bt { display: inline-block; background: var(--or); color: var(--ink); font-size: 10px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; padding: 6px 10px; border-radius: 4px; border: 2px solid var(--ink); }
+    .ad2.tall { padding: 20px 22px 0; }
+    .ad2.tall .dl { font-size: 14px; padding: 6px 10px; }
+    .ad2.tall .h { font-size: 46px; margin: 12px 0 16px; }
+    .ad2.tall .fr { border-width: 5px; border-radius: 14px; box-shadow: 7px 7px 0 var(--ink); }
+    .ad2.tall .so { margin: auto -22px 0; padding: 14px 18px; }
+    .ad2.tall .so img { height: 36px; }
+    .ad2.tall .bt { font-size: 15px; padding: 10px 14px; }
+    .ad3 { background: var(--dk); display: flex; align-items: center; gap: 2.2%; padding: 0 2%; box-shadow: 0 0 0 2px var(--ink); }
+    .ad3 .fr { height: 78%; aspect-ratio: 21 / 9; border: 3px solid #fff; border-radius: 6px; overflow: hidden; flex: none; box-shadow: 3px 3px 0 var(--or); }
+    .ad3 .fr img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .ad3 b { color: #fff; font-size: clamp(11px, 1.6vw, 19px); font-weight: 900; line-height: 1.02; flex: 1; letter-spacing: -.01em; }
+    .ad3 b span { color: var(--br); }
+    .ad3 .wl { height: 72%; width: auto; }
+    .ad3 .bt { font-size: clamp(9px, 1vw, 12px); padding: 8px 12px; border-color: #fff; }
+    .ad4 { display: flex; align-items: center; gap: 8px; padding: 0 8px 3px; margin-top: 14px; background: #fff; box-shadow: 0 0 0 2px var(--ink); }
+    .ad4 img { height: 26px; }
+    .ad4 b { font-size: 11.5px; font-weight: 900; flex: 1; line-height: 1.1; }
+    .ad4 .bt { font-size: 9px; padding: 5px 8px; }
+    @media (max-width: 900px) { .bk-rules ul { grid-template-columns: minmax(0, 1fr) !important; } .bk-rules .mono { overflow-wrap: anywhere; } }
+    @media (prefers-reduced-motion: reduce) { .vopen.anim img, .stp.wipe { animation: none; } }
   </style>
 </head>
 <body>
 <div class="page-frame">
   <script src="/public/nav.js"></script>
-  <div class="vg-note"><strong>For approval</strong>Brand kit, part 3 of 4: Templates, on the locked Foundations and Imagery. A mock, nothing here is posted. Every frame is drawn at its true shape.</div>
+  <div class="vg-note"><strong>Round two</strong>Brand kit, part 3 of 4: Templates, rebuilt from Sean's notes. A mock, nothing here is posted. Every frame is drawn at its true shape.</div>
 
   <main class="vg-stage vg-light" aria-label="Brand kit, part 3: Templates">
 
@@ -331,36 +429,49 @@
       <div class="cv">
         <div>
           <span class="bk-eb">Vegans Explore brand kit</span>
-          <h1>Part 3: <span class="hl o">Templates</span>. Swap the words and the picture; <span class="hl g">the rest stays</span>.</h1>
+          <h1>Part 3: <span class="hl o">Templates</span>. Every one is a <span class="hl g">door</span>: a color, a label, big words, the picture framed.</h1>
           <div class="bk-stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
           <ol>
             <li>Foundations <span>locked</span></li>
             <li>Imagery <span>locked, with the face hard block</span></li>
-            <li class="now">Templates <span>posts and carousels, stories and reels, thumbnails, video, podcast, email, ads</span></li>
+            <li class="now">Templates <span>round two, with your notes: the logo, thumbnails, the lower third, the close, the podcast, ads, asset packs</span></li>
             <li>The Guide roster <span>art, bio, voice and what each one guides</span></li>
           </ol>
         </div>
         <div class="row" style="justify-content:center;gap:14px" aria-hidden="true">
-          <div style="width:170px"><div class="tf s45" style="--sh:var(--dk)"><div class="art"><img src="/public/brand-kit/group-square.jpg" alt=""></div><div class="band" style="--c:var(--dk);--t:#fff"><h5>Everything Vegan,<br>near you</h5></div><div class="stp"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div>
-          <div style="width:118px;margin-top:30px"><div class="tf s916" style="--sh:var(--or)"><div class="top" style="--c:var(--or)"><span class="lg"><img src="/public/logo-ve-landscape-v1.svg" alt=""></span><h5>This weekend:<br>pop-ups</h5></div><div class="art"><img src="/public/guides/welcome/liz-ani-adopt.jpg" alt=""></div></div></div>
+          <div style="width:170px"><div class="tf s45" style="--sh:var(--dk)"><div class="art"><img src="/public/brand-kit/group-square.jpg" alt=""></div><div class="band" style="--c:var(--dk);--t:#fff"><h5>Everything Vegan,<br>near you</h5><img class="blogo" src="/public/logo-ve-portrait-v2-white.svg" alt=""></div><div class="stp"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div>
+          <div style="width:118px;margin-top:30px"><div class="tf s916" style="--sh:var(--or)"><div class="top" style="--c:var(--or)"><img class="tlogo" src="/public/logo-ve-portrait-v2-ink.svg" alt=""><h5>This weekend:<br>adoption day</h5></div><div class="art"><img src="/public/guides/welcome/liz-ani-adopt.jpg" alt=""></div></div></div>
         </div>
+      </div>
+    </section>
+
+    <section class="vg-slide" id="logo" data-title="The logo, fixed">
+      <span class="bk-eb">Your note · the logo</span>
+      <h2 class="bk-h">You were right: <span class="hl o">two fixes</span>, and no more white chips.</h2>
+      <div class="row">
+        <div style="flex:1 1 300px;min-width:260px"><div class="lgcmp"><div><img src="/public/brand-kit/logo-before/logo-ve-portrait-v2-before.svg" alt="The portrait logo before"><span>Before</span></div><div><img src="/public/logo-ve-portrait-v2.svg" alt="The portrait logo after"><span>After</span></div></div>
+          <p class="tnote"><b>EXPLORE looked wider than VEGANS.</b> Measured, both lines were exactly the same width. But the V tapers to a point and the S is round, while EXPLORE starts and ends on the flat sides of two E's, so it read wider, most on the left. Fix: EXPLORE's letters moved 2.5% closer together, each letter's shape untouched. All three portrait files and their PNGs.</p></div>
+        <div style="flex:1 1 300px;min-width:260px"><div class="lgcmp"><div><img src="/public/brand-kit/logo-before/logo-ve-landscape-v1-before.svg" alt="The landscape logo before" style="height:62px"><span>Before</span></div><div><img src="/public/logo-ve-landscape-v1.svg" alt="The landscape logo after" style="height:62px"><span>After</span></div></div>
+          <div class="ozoom"><img src="/public/brand-kit/logo-before/o-before.png" alt="The O before, with a notch"><img src="/public/brand-kit/logo-before/o-after.png" alt="The O after, round"></div>
+          <p class="tnote"><b>The O in the landscape logo had a notch</b>, top right, on every page's header. One number in the file was wrong (58.5 where the mirror of the O says 85.1). Fixed in all three landscape files.</p></div>
+        <div style="flex:1 1 260px;min-width:240px"><div class="lgset"><div style="background:var(--dk)"><img src="/public/logo-ve-portrait-v2-white.svg" alt=""><span>Dark: all white</span></div><div style="background:var(--or)"><img src="/public/logo-ve-portrait-v2-ink.svg" alt=""><span>Light or bright: ink</span></div><div style="background:var(--pink)"><img src="/public/logo-ve-portrait-v2-ink.svg" alt=""><span>Pink: ink</span></div><div style="background:#fff"><img src="/public/logo-ve-portrait-v2.svg" alt=""><span>White: full color</span></div></div>
+          <p class="tnote"><b>The logo lives in the color, like the end card.</b> Never a white chip on a picture. A new one-color ink version covers orange, pink, peach and the greens, the way the all-white one covers dark green.</p></div>
       </div>
     </section>
 
     <section class="vg-slide" id="posts" data-title="Posts and carousels">
       <span class="bk-eb">1 · Instagram posts and carousels · 4:5, 1080 x 1350</span>
-      <h2 class="bk-h">A square scene on top, <span class="hl o">the words on their own band</span>.</h2>
+      <h2 class="bk-h">A square scene on top, <span class="hl o">the words and the logo on the band</span>.</h2>
       <div class="row">
-        <div style="width:min(250px,30vh)"><div class="tf s45" style="--sh:var(--dk)"><div class="art"><img src="/public/brand-kit/group-square.jpg" alt="The Guides at a market"></div><span class="chip"><img src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore"></span><div class="band" style="--c:var(--dk);--t:#fff"><h5>Everything Vegan,<br>near <span class="hl2" style="--m:var(--md)">you</span></h5><span class="n">1 / 10</span></div><div class="stp"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="lab">Cover <span>· section color band, logo chip</span></div></div>
+        <div style="width:min(250px,30vh)"><div class="tf s45" style="--sh:var(--dk)"><div class="art"><img src="/public/brand-kit/group-square.jpg" alt="The Guides at a market"></div><div class="band" style="--c:var(--dk);--t:#fff"><h5>Everything Vegan,<br>near <span style="color:var(--br)">you</span></h5><img class="blogo" src="/public/logo-ve-portrait-v2-white.svg" alt="Vegans Explore"></div><div class="stp"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="lab">Cover <span>· the logo on the band, like the end card</span></div></div>
         <div style="width:min(250px,30vh)"><div class="tf s45" style="--sh:var(--pink)"><div class="art"><img src="/public/guides/holiday/r-pie.jpg" alt="A Vegan pumpkin pie"></div><div class="band" style="--c:var(--pink)"><h5>Pumpkin pie,<br>made Vegan</h5><span class="n">4 / 10</span></div><div class="stp"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="lab">Inside slide <span>· Guides pink</span></div></div>
         <div style="width:min(250px,30vh)"><div class="tf s45" style="--sh:var(--or)"><div class="endc"><img class="lg" src="/public/logo-ve-portrait-v2-white.svg" alt="Vegans Explore"><span class="pic"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261005_021226_51fc0dd1-aad1-45ee-ada3-f6cab13ed3a2_min.webp" alt="Liz"></span><h5>Become a<br><span>Founding Member</span></h5><p>Free. Register by midnight Eastern, January 1.</p><span class="b">Join free</span></div><div class="stp"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="lab">End card <span>· always the same</span></div></div>
         <div class="bk-rules" style="flex:1 1 240px;min-width:220px"><h3>Rules</h3><ul>
-          <li>The scene is a square drawn square (1080 x 1080), never cut from a 4:5.</li>
-          <li>The headline is always two rows, broken by hand, on the section color of what the post is about.</li>
-          <li>The logo chip sits top left on the cover only; slide numbers on the band.</li>
-          <li>The stripe runs along the bottom of every slide.</li>
-          <li>Ten slides: cover, eight inside, the end card.</li>
-          <li class="no">No words on the picture. This replaces the shade-under-text of the KJ kit and the city carousel.</li>
+          <li>The scene is a square drawn square (1080 x 1080).</li>
+          <li>Two-row headline on the section color of what the post is about.</li>
+          <li>The logo sits in the band on the cover (white on dark, ink on light); inside slides carry the slide number instead.</li>
+          <li>The stripe along the bottom of every slide.</li>
+          <li class="no">No words, chips or logos on the picture.</li>
         </ul></div>
       </div>
     </section>
@@ -369,11 +480,11 @@
       <span class="bk-eb">2 · Stories and reel covers · 9:16, 1080 x 1920</span>
       <h2 class="bk-h">Headline up top, <span class="hl p">the 4:5 scene whole below</span>.</h2>
       <div class="row">
-        <div style="width:min(190px,24vh)"><div class="tf s916" style="--sh:var(--or)"><div class="top" style="--c:var(--or)"><span class="lg"><img src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore"></span><h5>This weekend:<br>adoption day</h5></div><div class="art"><img src="/public/guides/welcome/liz-ani-adopt.jpg" alt="Liz at an adoption event"></div></div><div class="lab">Story <span>· Events orange</span></div></div>
-        <div style="width:min(190px,24vh)"><div class="tf s916" style="--sh:var(--pink)"><div class="top" style="--c:var(--pink)"><span class="lg"><img src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore"></span><h5>Make your<br>Wish List</h5></div><div class="art"><img src="/public/guides/holiday/theo-xm-wish.jpg" alt="Theo sharing his wish list"></div></div><div class="lab">Reel cover <span>· Guides pink</span></div></div>
-        <div style="width:min(190px,24vh)"><div class="tf s916"><div class="top" style="--c:var(--pink)"><span class="lg"><img src="/public/logo-ve-landscape-v1.svg" alt=""></span><h5>Make your<br>Wish List</h5></div><div class="art"><img src="/public/guides/holiday/theo-xm-wish.jpg" alt=""></div><div class="safe" style="top:0;height:13%">App bar covers this</div><div class="safe" style="bottom:0;height:18%">Reply bar covers this</div></div><div class="lab">Safe zones <span>· checked every time</span></div></div>
+        <div style="width:min(190px,24vh)"><div class="tf s916" style="--sh:var(--or)"><div class="top" style="--c:var(--or)"><img class="tlogo" src="/public/logo-ve-portrait-v2-ink.svg" alt="Vegans Explore"><h5>This weekend:<br>adoption day</h5></div><div class="art"><img src="/public/guides/welcome/liz-ani-adopt.jpg" alt="Liz at an adoption event"></div></div><div class="lab">Story <span>· Events orange</span></div></div>
+        <div style="width:min(190px,24vh)"><div class="tf s916" style="--sh:var(--pink)"><div class="top" style="--c:var(--pink)"><img class="tlogo" src="/public/logo-ve-portrait-v2-ink.svg" alt="Vegans Explore"><h5>Make your<br>Wish List</h5></div><div class="art"><img src="/public/guides/holiday/theo-xm-wish.jpg" alt="Theo sharing his wish list"></div></div><div class="lab">Reel cover <span>· Guides pink</span></div></div>
+        <div style="width:min(190px,24vh)"><div class="tf s916"><div class="top" style="--c:var(--pink)"><img class="tlogo" src="/public/logo-ve-portrait-v2-ink.svg" alt=""><h5>Make your<br>Wish List</h5></div><div class="art"><img src="/public/guides/holiday/theo-xm-wish.jpg" alt=""></div><div class="safe" style="top:0;height:13%">App bar covers this</div><div class="safe" style="bottom:0;height:18%">Reply bar covers this</div></div><div class="lab">Safe zones <span>· checked every time</span></div></div>
         <div class="bk-rules" style="flex:1 1 240px;min-width:220px"><h3>Rules</h3><ul>
-          <li>The top 570 px is the section color: logo on a white chip, two-row headline at the bottom of it.</li>
+          <li>The top 570 px is the section color: the logo in the band (ink on light, white on dark), two-row headline at the bottom of it.</li>
           <li>The bottom 1350 px is one 4:5 scene, shown whole.</li>
           <li>Nothing that matters in the top 250 px or the bottom 340 px, where the app draws over it; faces sit above the reply bar.</li>
           <li>A reel's moving shots keep the same top band and logo still; only the picture moves (the KJ reel rule).</li>
@@ -383,48 +494,65 @@
     </section>
 
     <section class="vg-slide" id="thumbs" data-title="Thumbnails">
-      <span class="bk-eb">3 · YouTube thumbnails and share images</span>
-      <h2 class="bk-h">Big words on the block, <span class="hl g">a whole face on the right</span>.</h2>
+      <span class="bk-eb">2 · YouTube thumbnails and share images</span>
+      <h2 class="bk-h">A door: <span class="hl p">words in solid blocks</span>, the face framed and big.</h2>
       <div class="row">
-        <div style="width:min(520px,44vw)"><div class="tf s169" style="--sh:var(--pink)"><div class="split2"><div class="w" style="--c:var(--pink)"><span class="eb2">Holiday Guide</span><h5>Gifts,<br>made <span class="hl2" style="--m:#fff">Vegan</span></h5><img class="lg" src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore"></div><div class="p" style="--k:.805"><img src="/public/guides/holiday/theo-xm-gifts.jpg" alt="Theo wrapping a gift"></div></div><div class="stp" style="--sth:1.4cqw"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="lab">YouTube thumbnail <span>· 16:9, 1280 x 720</span></div></div>
-        <div style="width:min(400px,34vw)"><div class="tf s191" style="--sh:var(--dk)"><div class="split2"><div class="w" style="--c:var(--dk);--t:#fff;--hs:6.6cqw"><span class="eb2">Vegan Directory</span><h5>Everything Vegan,<br>near you</h5></div><div class="p" style="--k:.805"><img src="/public/guides/holiday/theo-store.jpg" alt="Theo shopping"></div></div><div class="stp" style="--sth:1.3cqw"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="lab">Share image <span>· 1200 x 630, every page's og:image</span></div></div>
-        <div class="bk-rules" style="flex:1 1 220px;min-width:200px"><h3>Rules</h3><ul>
-          <li>Two rows, at most four words, readable at phone size.</li>
-          <li>The picture is a 4:5 scene, full height and whole; the face is the biggest thing in it.</li>
-          <li>The eyebrow names the section or show; the logo sits bottom left on the block.</li>
-          <li class="no">No arrows, no circles, no shocked faces pasted on.</li>
+        <div style="width:min(560px,46vw)"><div class="tf s169" style="--sh:var(--ink)"><div class="dr" style="--c:var(--pink)"><div class="dt"><span class="dl">Holiday Guide</span><h5><span class="blk wh">Gifts,</span><br><span class="blk ik">made Vegan</span></h5><span class="mos2"><i style="background:var(--dk)"></i><i style="background:var(--or)"></i><i style="background:#fff"></i><i style="background:var(--peach)"></i><i style="background:var(--br);border-radius:50%"></i><i style="background:var(--tint)"></i><i style="background:var(--md)"></i><i style="border:.35cqw solid var(--ink)"></i><i style="background:var(--or);border-radius:50% 20% 20% 20%"></i></span></div><div class="dp" style="--k:.805"><img src="/public/guides/holiday/theo-xm-gifts.jpg" alt="Theo wrapping a gift"></div></div><div class="stp" style="--sth:1.3cqw"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="lab">YouTube thumbnail <span>· 16:9, 1280 x 720</span></div></div>
+        <div style="width:min(380px,32vw)"><div class="tf s191" style="--sh:var(--ink)"><div class="dr" style="--c:var(--dk);--hs:5.6cqw"><div class="dt"><span class="dl" style="background:#fff;color:var(--dk)">Vegan Directory</span><h5><span class="blk wh">Everything Vegan,</span><br><span class="blk gr">near you</span></h5></div><div class="dp" style="--k:.805"><img src="/public/guides/holiday/theo-store.jpg" alt="Theo shopping"></div></div><div class="stp" style="--sth:1.2cqw"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="lab">Share image <span>· 1200 x 630, every page's og:image</span></div></div>
+        <div class="bk-rules" style="flex:1 1 220px;min-width:200px"><h3>Why it is a 10 now</h3><ul>
+          <li>Each line of the headline is its own solid block with a hard shadow, like stickers on a door: reads at phone size.</li>
+          <li>The picture sits in a white frame on the color, with the ink shadow, so it reads as ours, not as a pasted photo.</li>
+          <li>The label names the show or section; the mosaic and the stripe carry the brand, so no logo is needed.</li>
+          <li class="no">No arrows, circles or pasted shocked faces.</li>
         </ul></div>
       </div>
     </section>
 
     <section class="vg-slide" id="video" data-title="Video">
-      <span class="bk-eb">4 · Video open, lower third and close · 16:9 (9:16 versions stack the same parts)</span>
+      <span class="bk-eb">3 · Video open, lower third and close · 16:9 (9:16 versions stack the same parts)</span>
       <h2 class="bk-h">Two seconds in, <span class="hl o">a name that never covers a face</span>, a clear way out.</h2>
       <div class="row">
-        <div style="width:min(360px,30vw)"><div class="tf s169" style="--sh:var(--dk)"><div class="vopen"><img src="/public/logo-ve-portrait-v2-white.svg" alt="Vegans Explore"><div class="mos"><i style="background:var(--or)"></i><i style="background:var(--pink)"></i><i style="background:var(--br);border-radius:50%"></i><i style="background:var(--peach)"></i><i style="background:var(--md)"></i><i style="border:.4cqw solid #fff"></i></div></div><div class="stp" style="--sth:1.4cqw"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="lab">Open <span>· 2 s: the stripe wipes in, the white logo fades up</span></div></div>
-        <div style="width:min(360px,30vw)"><div class="tf s169" style="--sh:var(--pink)"><img src="/public/brand-kit/host-liz-kitchen.jpg" alt="Liz in a kitchen holding a Vegan bowl" style="width:100%;height:100%;object-fit:cover"><div class="lt"><div><b>Liz</b><span>Your Guide to Vegans Explore</span></div><div class="stp ls"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div><div class="lab">Lower third <span>· white plate, stripe under, in the clear corner</span></div></div>
-        <div style="width:min(360px,30vw)"><div class="tf s169" style="--sh:var(--or)"><div class="vclose"><div class="l"><img src="/public/logo-ve-portrait-v2-white.svg" alt="Vegans Explore"><h5>Find your<br>Vegan city</h5><span class="b">Join free</span></div><div class="es"><div>Next video</div><div>Subscribe</div></div></div><div class="stp" style="--sth:1.4cqw"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="lab">Close <span>· the last 20 s, end-screen spots on the right</span></div></div>
+        <div style="width:min(360px,30vw)"><div class="tf s169" style="--sh:var(--dk)"><div class="vopen anim"><img src="/public/logo-ve-portrait-v2-white.svg" alt="Vegans Explore"></div><div class="stp wipe" style="--sth:2.2cqw"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="lab">Open <span>· playing: the stripe wipes in, the logo lands, 2 s</span></div></div>
+        <div style="width:min(360px,30vw)"><div class="tf s169" style="--sh:var(--pink)"><img src="/public/brand-kit/host-liz-kitchen.jpg" alt="Liz in a kitchen holding a Vegan bowl" style="width:100%;height:100%;object-fit:cover"><div class="lt2"><div class="lt2a"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261005_021226_51fc0dd1-aad1-45ee-ada3-f6cab13ed3a2_min.webp" alt=""></div><div class="lt2t"><b>Liz</b><span>Your Guide to Vegans Explore</span></div><div class="lt2h">vegansexplore.com/liz</div><div class="stp" style="position:static;height:.6cqw;grid-column:1/-1"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></div><div class="lab">Lower third <span>· her profile picture, name, role, where to find her</span></div></div>
+        <div style="width:min(360px,30vw)"><div class="tf s169" style="--sh:var(--or)"><div class="vclose2"><div class="cl"><img class="lg" src="/public/logo-ve-portrait-v2-white.svg" alt="Vegans Explore"><h5>Find your<br><span>Vegan city</span></h5><span class="b">Join free</span><span class="url">vegansexplore.com</span></div><div class="cr"><div class="es2">Next video</div><div class="es2">Playlist</div><span class="sub2">Subscribe</span></div></div><div class="stp" style="--sth:1.4cqw"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="lab">Close <span>· the last 20 s; end-screen spots framed on the right</span></div></div>
       </div>
       <div class="bk-rules" style="margin-top:12px"><ul style="grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 22px;margin-bottom:0">
-        <li>Scenes for video are drawn 16:9 with a clear corner for the name plate (the host shot here was made for it today).</li>
-        <li>A new shot about every 3 seconds, each a still with a slow, smooth zoom (canon-video-shot-pace).</li>
-        <li class="no">The lower third never sits over a face; if no corner is clear, the shot is drawn again.</li>
+        <li>The open is exactly 2 s: 0.8 s stripe wipe, the white logo lands by 1.4 s, holds.</li>
+        <li>The lower third carries the person's universal profile picture, so the same face greets them on every brand.</li>
+        <li class="no">The lower third never sits over a face; scenes for video are drawn 16:9 with a clear corner.</li>
       </ul></div>
     </section>
 
     <section class="vg-slide" id="podcast" data-title="Podcast cover">
-      <span class="bk-eb">5 · Podcast cover · 3000 x 3000</span>
-      <h2 class="bk-h">The show's city art, <span class="hl o">re-set in Color Block</span>.</h2>
+      <span class="bk-eb">4 · Podcast cover · 3000 x 3000</span>
+      <h2 class="bk-h">The show's skyline, <span class="hl o">redrawn for its frame</span>, never cropped.</h2>
       <div class="row">
-        <div style="width:min(300px,40vh)"><div class="tf s11" style="--sh:var(--or)"><div class="pod"><span class="e">Every Sunday</span><h5>Vegans<br>Explore</h5><span class="pp">PODCAST</span><img class="lg" src="/public/logo-ve-portrait-v2.svg" alt="Vegans Explore"><div class="art"><img src="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/podcast/brand/cover-b-v1.jpg" alt="The show's city skyline and radio tower art"></div></div><div class="stp" style="--sth:1.6cqw"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="lab">New cover <span>· Media peach</span></div></div>
-        <div style="width:min(200px,26vh)"><div class="tf s11"><img src="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/podcast/brand/cover-b-v1.jpg" alt="The current cover" style="width:100%;height:100%"></div><div class="lab">Today's cover</div></div>
+        <div style="width:min(300px,40vh)"><div class="tf s11" style="--sh:var(--or)"><div class="pod2"><span class="e">Every Sunday</span><h5>Vegans<br>Explore</h5><span class="pp">Podcast</span><img class="lg" src="/public/logo-ve-portrait-v2-ink.svg" alt="Vegans Explore"><div class="art"><img src="/public/brand-kit/podcast/skyline-16x9.jpg" alt="The show's skyline and radio tower, drawn 16:9"></div></div><div class="stp" style="--sth:1.6cqw"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="lab">New cover <span>· the art drawn 16:9 for the window</span></div></div>
+        <div style="width:min(200px,26vh)"><div class="tf s11"><img src="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/podcast/brand/cover-b-v1.jpg" alt="Today's cover" style="width:100%;height:100%"></div><div class="lab">Today's cover</div></div>
         <div class="bk-rules" style="flex:1 1 240px;min-width:220px"><h3>Rules</h3><ul>
-          <li>Media peach, the show name in 900 type, readable at the 55 px a podcast app shows it.</li>
-          <li>The skyline and tower art keeps its place, in a white frame, no words on it (it has no faces).</li>
-          <li>City shows swap the art for their city and keep everything else.</li>
-          <li>Episode art: the same frame with the guest's photo or avatar whole in the art window.</li>
+          <li>Media peach, the show name in 900 type, the ink logo in the color, readable at 55 px.</li>
+          <li>The skyline was redrawn today as its own 16:9 picture: the whole tower and every ring inside the window.</li>
+          <li>City shows: the same frame, their city drawn for it, in all five shapes (next slide).</li>
+          <li class="no">Never a picture cropped to fit; a new frame gets a new drawing.</li>
         </ul></div>
       </div>
+    </section>
+
+    <section class="vg-slide" id="packs" data-title="Asset packs">
+      <span class="bk-eb">5 · Your note · asset packs</span>
+      <h2 class="bk-h">Every new picture comes <span class="hl g">in all five shapes</span>.</h2>
+      <div class="pack">
+        <div style="--k:1.778"><div class="pk"><img src="/public/brand-kit/podcast/skyline-16x9.jpg" alt="Skyline, 16:9"></div><b>16:9</b><span>YouTube, video, thumbnails, the podcast window</span></div>
+        <div style="--k:2.333"><div class="pk"><img src="/public/brand-kit/podcast/skyline-21x9.jpg" alt="Skyline, 21:9"></div><b>21:9 strip</b><span>email headers, page strips, ad banners</span></div>
+        <div style="--k:.5625"><div class="pk"><img src="/public/brand-kit/podcast/skyline-9x16.jpg" alt="Skyline, 9:16"></div><b>9:16</b><span>stories, reels</span></div>
+        <div style="--k:.8"><div class="pk todo">After the credit top-up</div><b>4:5</b><span>Guide pages, scene cards</span></div>
+        <div style="--k:1"><div class="pk todo">After the credit top-up</div><b>1:1</b><span>carousels, posts, avatars</span></div>
+      </div>
+      <div class="bk-rules" style="margin-top:12px"><ul style="grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 22px;margin-bottom:0">
+        <li>You: "when we create assets, we should know automatically we need to create these... so 2 weeks later, when we need to make a banner using a certain dimension, we're not trying to recreate it in a new session."</li>
+        <li>Each pack is saved together, <span class="mono">vegan-media/media/&lt;topic&gt;/&lt;name&gt;/&lt;shape&gt;.jpg</span>, and listed in the asset library, so any size is a lookup, not a new drawing.</li>
+        <li>First pack: the podcast skyline (three of five today; 4:5 and 1:1 wait for credits).</li>
+      </ul></div>
     </section>
 
     <section class="vg-slide" id="email" data-title="Email header">
@@ -443,17 +571,17 @@
     </section>
 
     <section class="vg-slide" id="ads" data-title="Ad banners">
-      <span class="bk-eb">7 · Ad banners · the sizes our pages and partners use</span>
-      <h2 class="bk-h">Strip on top, <span class="hl o">one line, one button</span>.</h2>
+      <span class="bk-eb">6 · Ad banners · the sizes our pages and partners use</span>
+      <h2 class="bk-h">Little doors: <span class="hl o">a color, a label, the picture framed</span>, a white sign-off.</h2>
       <div class="row" style="align-items:flex-end">
-        <div><div class="ad" style="width:300px;height:250px"><img class="strip" src="/public/brand-kit/strip-liz-adoption.jpg" alt="Liz at an adoption day"><div style="background:var(--or);position:absolute;left:0;right:0;top:129px;bottom:0;padding:12px 14px;display:flex;flex-direction:column;justify-content:space-between"><b style="font-size:20px;font-weight:900;line-height:1.05;letter-spacing:-.02em">Adopt, don't shop.<br>This Saturday.</b><div style="display:flex;justify-content:space-between;align-items:center"><img src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore" style="height:20px;background:#fff;padding:3px 5px;border-radius:3px"><span class="b" style="font-size:10px;padding:7px 10px;background:#fff">See it</span></div></div></div><div class="ad-adl">300 x 250 · rail, listings</div></div>
-        <div><div class="ad" style="width:150px;height:300px"><img src="/public/guides/holiday/theo-xm-gifts.jpg" alt="Theo wrapping a gift" style="width:150px;height:187.5px;object-fit:cover;display:block"><div style="background:var(--pink);position:absolute;left:0;right:0;top:187.5px;bottom:0;padding:9px 10px;display:flex;flex-direction:column;justify-content:space-between"><b style="font-size:14px;font-weight:900;line-height:1.05">Gifts,<br>made Vegan</b><span class="b" style="font-size:8px;padding:5px 7px;align-self:flex-start">Holiday Guide</span></div></div><div class="ad-adl">300 x 600 · shown half size</div></div>
+        <div><div class="ad ad2" style="width:300px;height:250px;--c:var(--or)"><span class="dl">This Saturday</span><b class="h">Adoption day</b><div class="fr"><img src="/public/brand-kit/strip-liz-adoption.jpg" alt="Liz at an adoption day"></div><div class="so"><img src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore"><span class="bt">See it</span></div></div><div class="ad-adl">300 x 250 · rail, listings</div></div>
+        <div><div style="width:150px;height:300px;overflow:hidden"><div class="ad ad2 tall" style="width:300px;height:600px;--c:var(--pink);transform:scale(.5);transform-origin:0 0"><span class="dl">Holiday Guide</span><b class="h">Gifts,<br>made Vegan</b><div class="fr" style="aspect-ratio:.805"><img src="/public/guides/holiday/theo-xm-gifts.jpg" alt="Theo wrapping a gift"></div><div class="so"><img src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore"><span class="bt">Open it</span></div></div></div><div class="ad-adl">300 x 600 · shown half size</div></div>
         <div style="flex:1 1 400px;min-width:300px">
-          <div class="ad" style="width:min(100%,728px);aspect-ratio:728/90;display:flex;align-items:center;background:var(--dk)"><img src="/public/brand-kit/strip-liz-adoption.jpg" alt="Liz at an adoption day" style="height:100%;aspect-ratio:21/9;object-fit:cover"><b style="color:#fff;font-size:clamp(12px,2.2vw,19px);font-weight:900;padding:0 14px;flex:1">Everything Vegan, near you</b><span class="b" style="font-size:11px;padding:9px 12px;margin-right:14px">Join free</span></div><div class="ad-adl">728 x 90 · partner sites</div>
-          <div class="ad" style="width:320px;height:50px;display:flex;align-items:center;gap:8px;padding:0 8px;margin-top:14px;background:#fff"><img src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore" style="height:24px"><b style="font-size:12px;font-weight:900;flex:1;line-height:1.1">Vegan near you</b><span class="b" style="font-size:9px;padding:6px 8px">Join</span></div><div class="ad-adl">320 x 50 · phones</div>
+          <div class="ad ad3" style="width:min(100%,728px);aspect-ratio:728/90"><div class="fr"><img src="/public/brand-kit/strip-liz-adoption.jpg" alt="Liz at an adoption day"></div><b>Everything Vegan,<br><span>near you</span></b><img class="wl" src="/public/logo-ve-portrait-v2-white.svg" alt="Vegans Explore"><span class="bt">Join free</span></div><div class="ad-adl">728 x 90 · partner sites</div>
+          <div class="ad ad4" style="width:320px;height:50px"><img src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore"><b>Everything Vegan, near you</b><span class="bt">Join</span><div class="stp" style="--sth:3px"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="ad-adl">320 x 50 · phones</div>
           <div class="bk-rules" style="margin-top:12px"><ul style="margin-bottom:0">
-            <li>Pictures are strips or 4:5 scenes, whole; words on the color block, never on the art.</li>
-            <li>One line, one button, a tracked /go/ link; "Your ad here / Advertise with Vegans Explore" stays under our own slots.</li>
+            <li>Every ad is a door: section color, a label in a solid block, a big line, the picture in a white frame with an ink shadow.</li>
+            <li>The logo signs off in a white bar at the bottom (the KJ kit's bar), never a chip on the art; one button, a tracked /go/ link.</li>
           </ul></div>
         </div>
       </div>
@@ -461,12 +589,12 @@
 
     <section class="vg-slide" id="decide" data-title="Your call">
       <span class="bk-eb">Your call</span>
-      <h2 class="bk-h">Four calls to lock <span class="hl o">Templates</span>. My default is in bold.</h2>
+      <h2 class="bk-h">Round two is in. <span class="hl o">Three calls</span>, my default in bold.</h2>
       <div class="dec">
-        <div class="dc" style="--c:#FF9EC4"><div class="q"><i>1</i>Words move off the picture</div><p><b>Yes</b>: carousels, stories and thumbnails put the headline on its own color band, so no face is ever under text. This changes the locked KJ creator kit and the city carousel (both put words over a shade on the picture); they are re-set on it, one at a time.</p></div>
-        <div class="dc" style="--c:#F69820"><div class="q"><i>2</i>Square scenes for carousels</div><p><b>Yes</b>: carousel and post scenes are drawn square (1080 x 1080) from now on, so the band fits below without cutting anything. Scenes already drawn at 4:5 go to stories, thumbnails and Guide pages.</p></div>
-        <div class="dc" style="--c:#22C55E"><div class="q"><i>3</i>The podcast cover</div><p><b>Keep the skyline and tower art</b>, re-set on Media peach with the show name in our type. It is a known cover, so listeners still recognize it.</p></div>
-        <div class="dc" style="--c:#2D5C27;--t:#fff"><div class="q"><i>4</i>Every template becomes a render script</div><p><b>Yes</b>: once locked, each template is a script in <span class="mono">scripts/brand-templates/</span> (Playwright, like the creator kit), so a post is made by swapping words and art, with the face check built in. The email button switches to orange in email-send.</p></div>
+        <div class="dc" style="--c:#22C55E"><div class="q"><i>✓</i>Done from your notes</div><p><b>Both logo fixes</b> (EXPLORE spacing, the notched O) on every file; <b>no white chips</b>, the logo lives in the color; <b>thumbnails, share images and ads rebuilt as doors</b>; <b>lower third</b> gets the profile picture and a link row; <b>the open plays</b>; <b>the close</b> takes the end card's look; <b>the podcast skyline redrawn</b> for its frame; <b>asset packs</b>, five shapes per picture.</p></div>
+        <div class="dc" style="--c:#FF9EC4"><div class="q"><i>1</i>The one-color ink logo</div><p><b>Yes</b>: add <span class="mono">logo-ve-portrait-v2-ink</span> to the logo set for orange, pink, peach and the greens, the same way the all-white one covers dark green.</p></div>
+        <div class="dc" style="--c:#F69820"><div class="q"><i>2</i>Words off the picture, square carousel scenes</div><p><b>Yes</b>: the KJ creator kit and the city carousel are re-set on the band layout one at a time; carousel scenes are drawn square from now on.</p></div>
+        <div class="dc" style="--c:#2D5C27;--t:#fff"><div class="q"><i>3</i>Render scripts</div><p><b>Yes</b>: once locked, each template is a script in <span class="mono">scripts/brand-templates/</span>, so a post is words and a picture from its pack, with the face check built in; the email button turns orange in email-send.</p></div>
       </div>
       <div class="next"><b>Then:</b><span><a href="/mocks/brand-kit">1 Foundations</a></span><span><a href="/mocks/brand-kit/imagery">2 Imagery</a></span><span class="on">3 Templates</span><span>4 Guide roster</span><span>Homepage</span><span>Every page in the preview</span><span>Live</span><span>Every LESARUSS brand</span></div>
     </section>
