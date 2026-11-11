@@ -92,7 +92,12 @@ Guide's wardrobe reference third, with "wearing exactly the garment in the third
 size and place". Then check the mark in the render against the real file (canon `canon-ve-logo`); if the model drew it wrong, keep
 the drawing and composite the real mark (canon `canon-front-print-placement`, lookbook rule).
 
-### Humble Cabbage drafts for the wardrobe (built hidden in Printify 2026-11-11; nothing published)
+### Humble Cabbage: the wardrobe products (LIVE 2026-11-11)
+
+Sean, 2026-11-11: "I like the mock-ups. I approve." Defaults 1 to 4 below accepted. Both set visible at 19:13 UTC and proven on
+production (`humblecabbage.com/products/6af4babfa731c69cb1011006` and `/products/6af4baf2e5e7d79941063a2e` load with Add to cart; `/shop`
+lists both). Blanks stay as they are (Sean: "Let's keep what we're doing, what we're using"; organic options looked at and not adopted).
+Orders cannot print until the Printify payment method is added to the shop.
 
 Sean, 2026-11-11: "go ahead and look where we keep the secrets." The token is `PRINTIFY_API_TOKEN` in `lesaruss_secrets`; it was read server
 side by the one-time function `ve-once-printify` (never copied into a chat), now back to the 410 stub.
