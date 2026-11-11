@@ -54,9 +54,11 @@ better deal than they give the big booking sites; that a tourism bureau will pay
    ([Track360](https://track360.io/blog/destination-marketing-organization-partnerships-operator-guide-2026),
    [DCI](https://aboutdci.com/blog/partners-not-posts-4-ways-dmos-elevate-influencers-beyond-pretty-pictures/),
    [Sojern 2026](https://sojern.com/blog/inside-the-state-of-destination-marketing-2026-what-every-dmo-needs-to-know)). The clearest Vegan
-   precedent: the Aruba Tourism Authority paid for a two-year Vegan Aruba campaign (flights from the bureau, rooms and meals from local
-   businesses), after which HappyCow named Aruba the most Vegan-friendly island in the Caribbean
-   ([Sandra Nomoto interview, 2022](https://www.sandranomoto.com/2022/11/23/vegan-marketing-success-stories-contributor-meredith-marin-vegan-hospitality/)).
+   precedent: the Aruba Tourism Authority supported a Vegan Aruba campaign of hosted influencer and press trips (flights from the bureau,
+   rooms and meals from local businesses) ([Sandra Nomoto interview, 2022](https://www.sandranomoto.com/2022/11/23/vegan-marketing-success-stories-contributor-meredith-marin-vegan-hospitality/),
+   [Aruba.com](https://aruba.com/us/news/the-sunset-grille-delights-vegan-social-media-influencers-with-a-special-dining-experience)).
+   Corrected by the panel: HappyCow's 2019 claim was the most Vegan listings per capita in the Caribbean, not "most Vegan-friendly island"
+   ([HappyCow](https://www.happycow.net/blog/?p=21810)). State it exactly in any pitch.
 6. **The model to avoid.** HappyCow sells restaurants "top placement" on its city pages ([HappyCow](https://happycow.net/supporter)). Paid
    placement in the ranking is the opposite of the Michelin rule and would undercut our "Vegans Explore approved" suitcase mark.
 
