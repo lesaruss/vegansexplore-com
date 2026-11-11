@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Directory, by what people come to do — Vegans Explore</title>
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="A mock of a new Directory front door: seven visible doors named for what people come to do. Illustrative, not live.">
+  <link rel="canonical" href="https://vegansexplore.com/mocks/directory-nav/">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:"Montserrat",sans-serif;background:#fff;color:#1a1a1a;line-height:1.5;}
+    .dm-row{display:flex;flex-wrap:wrap;gap:18px 26px;align-items:flex-start;}
+    .dm-main{flex:1 1 640px;min-width:0;}
+    .dm-side{flex:1 1 300px;min-width:0;font-size:12.5px;line-height:1.5;}
+    .dm-side h3{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#2D5C27;margin:0 0 6px;}
+    .dm-side ul{list-style:none;display:grid;gap:5px;margin-bottom:12px;}
+    .dm-side li b{color:#2D5C27;}
+    .dm-chip{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;background:#F69820;color:#1a1a1a;border-radius:6px;padding:2px 8px;margin-left:8px;vertical-align:middle;}
+    .dm-card{padding:14px 16px;font-size:12.5px;line-height:1.5;}
+    .dm-card b.t{display:block;font-size:13px;font-weight:800;margin-bottom:4px;color:#1a1a1a;}
+    .dm-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;}
+    .dm-grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;}
+    .src{display:block;margin-top:6px;font-size:10.5px;color:#666;font-style:italic;}
+
+    /* the mini site */
+    .ui{background:#fff;color:#1a1a1a;border-radius:10px;border:1px solid #e3e3e3;box-shadow:0 2px 10px rgba(0,0,0,.06);padding:16px 18px;font-size:12px;}
+    .ui-top{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap;}
+    .ui-eb{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#2D5C27;}
+    .ui-h{font-size:18px;font-weight:900;line-height:1.15;}
+    .ui-crumb{font-size:11.5px;color:#666;}
+    .ui-crumb b{color:#2D5C27;}
+    .ui-search{flex:1 1 220px;border:1.5px solid #22C55E;border-radius:6px;padding:8px 10px;color:#888;font-size:11.5px;min-width:160px;}
+    .ui-loc{border:1px solid #d6d6d6;border-radius:6px;padding:7px 28px 7px 10px;font-size:11px;font-weight:700;position:relative;white-space:nowrap;}
+    .ui-loc::after{content:"";position:absolute;right:10px;top:50%;width:6px;height:6px;border-right:2px solid #555;border-bottom:2px solid #555;transform:translateY(-70%) rotate(45deg);}
+    .ui-sec{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#888;margin:12px 0 7px;}
+    .doors{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;}
+    .door{border:1px solid #e3e3e3;border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:5px;min-height:112px;position:relative;background:#fff;}
+    .door .ic{width:34px;height:34px;border-radius:9px;background:#E8F5E9;display:grid;place-items:center;}
+    .door .ic svg{width:19px;height:19px;stroke:#2D5C27;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;}
+    .door b{font-size:14px;font-weight:900;line-height:1.2;}
+    .door span{font-size:10.5px;color:#666;line-height:1.35;}
+    .door .ct{position:absolute;top:11px;right:11px;font-size:10.5px;font-weight:800;background:#f1f1f1;border-radius:6px;padding:2px 7px;color:#333;}
+    .door.on{border-color:#2D5C27;box-shadow:0 0 0 2px #2D5C27 inset;}
+    .door.dim{opacity:.4;}
+    .pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;}
+    .pill{font-size:10.5px;font-weight:700;border:1px solid #d6d6d6;border-radius:6px;padding:4px 9px;color:#333;background:#fff;}
+    .pill.on{background:#2D5C27;border-color:#2D5C27;color:#fff;}
+    .pill small{font-weight:800;opacity:.7;margin-left:4px;}
+    .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;}
+    .lc{display:grid;grid-template-columns:38px minmax(0,1fr);gap:9px;align-items:center;border:1px solid #ececec;border-radius:8px;padding:8px 10px;}
+    .lc i{width:38px;height:38px;border-radius:8px;display:grid;place-items:center;font-style:normal;font-weight:900;color:#fff;font-size:15px;}
+    .lc b{font-size:11.5px;display:block;line-height:1.25;}
+    .lc small{font-size:10px;color:#777;display:block;}
+    .tag{display:inline-block;font-size:9px;font-weight:800;border-radius:6px;padding:1px 6px;background:#E8F5E9;color:#2D5C27;margin-top:2px;}
+    .tag.or{background:#FFF1DF;color:#8a4b00;}
+    .fbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px;}
+    .fbar .ui-search{border-color:#d6d6d6;flex:1 1 200px;}
+    .chipf{font-size:10.5px;font-weight:800;border-radius:6px;padding:4px 9px;background:#E8F5E9;color:#2D5C27;}
+
+    /* today */
+    .now{border:1px solid #e3e3e3;border-radius:10px;padding:12px 14px;background:#fff;font-size:12px;}
+    .now .bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;}
+    .now .dd{border:1.5px solid #F69820;border-radius:6px;padding:5px 26px 5px 10px;font-weight:800;position:relative;}
+    .now .dd::after{content:"";position:absolute;right:9px;top:50%;width:6px;height:6px;border-right:2px solid #555;border-bottom:2px solid #555;transform:translateY(-70%) rotate(45deg);}
+    .now .menu{border:1px dashed #F69820;border-radius:8px;padding:8px 10px;display:grid;gap:3px;font-size:11.5px;background:#FFF8EE;}
+    .now .menu span{display:flex;justify-content:space-between;gap:12px;}
+    .now .menu span b{font-weight:800;}
+    .bars{display:grid;gap:4px;font-size:11px;}
+    .bars div{display:grid;grid-template-columns:150px minmax(0,1fr) 44px;align-items:center;gap:8px;}
+    .bars i{display:block;height:9px;border-radius:5px;background:#2D5C27;}
+    .bars i.thin{background:#F69820;}
+    .bars em{font-style:normal;text-align:right;font-weight:800;}
+
+    /* the map */
+    .map{width:100%;border-collapse:collapse;font-size:11.5px;}
+    .map th{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#2D5C27;text-align:left;padding:5px 8px;border-bottom:1px solid #d6d6d6;}
+    .map td{padding:5px 8px;border-bottom:1px solid #eee;vertical-align:top;}
+    .map td b{font-weight:900;}
+    .map td.n{text-align:right;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;}
+    .map .was{color:#777;}
+
+    /* phone */
+    .phone{width:300px;border:10px solid #1a1a1a;border-radius:30px;padding:12px 10px;background:#fff;font-size:11px;margin:0 auto;}
+    .phone .ui-search{font-size:10.5px;padding:7px 9px;}
+    .phone .doors{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;}
+    .phone .door{min-height:86px;padding:9px;}
+    .phone .door b{font-size:12.5px;}
+    .phone .door span{display:none;}
+
+    @media (min-width:901px) and (max-height:820px){#home .door{min-height:84px;gap:3px;}#home .ui-sec{margin:8px 0 5px;}.phone .door{min-height:54px;padding:7px;}.phone{padding:8px;}.door{min-height:96px;padding:10px;}.door span{font-size:10px;}.ui{padding:12px 14px;}.cards .lc:nth-child(n+7){display:none;}}
+    @media (max-width:900px){
+      .doors{grid-template-columns:repeat(2,minmax(0,1fr));}
+      .dm-grid3,.dm-grid2{grid-template-columns:1fr;}
+      .cards{grid-template-columns:1fr;}
+      .bars div{grid-template-columns:110px minmax(0,1fr) 40px;}
+      .map .hm{display:none;}
+    }
+  </style>
+</head>
+<body>
+<div class="page-frame">
+  <script src="/public/nav.js"></script>
+  <div class="vg-note"><strong>Illustrative</strong>A mock of the Directory's front door for review. Nothing here is live and nothing has changed. Counts are live, read from the database on November 11, 2026 (open listings only).</div>
+
+  <main class="vg-stage vg-light" aria-label="The Directory, by what people come to do">
+
+    <!-- 1. Today -->
+    <section class="vg-slide" id="today" data-title="Today">
+      <div class="vg-eyebrow">1 · The Directory today</div>
+      <h2 class="vg-h">Half the Directory hides behind one dropdown</h2>
+      <div class="dm-row">
+        <div class="dm-main">
+          <div class="now">
+            <div class="bar"><span class="ui-crumb">Vegan Directory › <b>Local Food</b></span><span class="dm-chip" style="margin:0">The only way in</span><span class="dd">Local Food</span></div>
+            <div class="dm-grid2">
+              <div class="menu">
+                <span><b>Local Food</b><em>1,150 · open on arrival</em></span>
+                <span>Products<em>152</em></span>
+                <span>Services<em>214</em></span>
+                <span>Media<em>197</em></span>
+                <span>Community<em>665</em></span>
+                <span>Travel<em>8</em></span>
+                <span>People<em>113</em></span>
+              </div>
+              <div style="font-size:12px;line-height:1.5">
+                <p><b>1,349 of 2,499 open listings</b> (sanctuaries, rescues, nonprofits, studios, venues, books, podcasts, films, people, products, cruises) are only reachable by opening this dropdown.</p>
+                <p style="margin-top:6px">The page opens on Local Food with no sign the others exist.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="dm-side">
+          <h3>Three more things that feel off</h3>
+          <ul>
+            <li><b>Words that mean two things.</b> The Directory's "Media" is books and podcasts; the top menu's Media is our shows. The Directory's "Community" is nonprofits and rescues; the top menu's Communities is city hubs. That is likely why Cruises read as "in communities."</li>
+            <li><b>Named by how we file, not what people want.</b> Local Food, Products, Services, Media, Community are our filing drawers.</li>
+            <li><b>Thin pills.</b> 15 of 38 sub-sections hold fewer than 10 listings (Animal Care 1, Promoters 1, Marketing &amp; Growth 2...), so parts of the Directory look empty when the Directory isn't.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Lopsided -->
+    <section class="vg-slide" id="shape" data-title="The shape">
+      <div class="vg-eyebrow">2 · What's actually in it</div>
+      <h2 class="vg-h">Big collections hidden, tiny ones on show</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="now">
+          <div class="bars">
+            <div><span>Restaurants</span><i style="width:100%"></i><em>984</em></div>
+            <div><span>Rescues</span><i style="width:37%"></i><em>365</em></div>
+            <div><span>Sanctuaries</span><i style="width:15%"></i><em>150</em></div>
+            <div><span>Nonprofits</span><i style="width:15%"></i><em>150</em></div>
+            <div><span>Studios</span><i style="width:12.5%"></i><em>123</em></div>
+            <div><span>Bakeries &amp; Cafes</span><i style="width:11.6%"></i><em>114</em></div>
+            <div><span>Books</span><i style="width:10.3%"></i><em>101</em></div>
+            <div><span>Food Brands</span><i style="width:9.2%"></i><em>91</em></div>
+            <div><span>Event Venues</span><i style="width:7.7%"></i><em>76</em></div>
+            <div><span>Podcasts</span><i style="width:5.7%"></i><em>56</em></div>
+            <div><span>15 sub-sections</span><i class="thin" style="width:1%"></i><em>1 to 10</em></div>
+          </div>
+        </div></div>
+        <div class="dm-side">
+          <h3>Read it this way</h3>
+          <ul>
+            <li>After Restaurants, our biggest collections are <b>animals and causes</b> (665) and <b>studios and venues</b> (199). Neither shows on the first screen.</li>
+            <li>The thin ones aren't wrong, they're just split too fine: Food Trucks (11) and Vendors (5), Catering (10) and Meal Prep (7), Physicians (8) and Health Experts (8).</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Best practice -->
+    <section class="vg-slide" id="why" data-title="What works">
+      <div class="vg-eyebrow">3 · What the research says</div>
+      <h2 class="vg-h">Show every door, in the visitor's words</h2>
+      <div class="dm-grid3">
+        <div class="vg-glass dm-card"><b class="t">Visible beats hidden</b>When navigation hides behind a menu, people use it less and find things less often than when it is on screen.<span class="src">NN/g, Pernice and Budiu, "Hamburger Menus and Hidden Navigation Hurt UX Metrics," 2016</span></div>
+        <div class="vg-glass dm-card"><b class="t">Lead with top tasks</b>A few tasks drive most visits. Put those on the surface, in the visitor's words.<span class="src">Gerry McGovern, "Top Tasks," 2018; NN/g, "Top Tasks Management"</span></div>
+        <div class="vg-glass dm-card"><b class="t">Labels must predict the content</b>People follow labels that tell them what's behind them; vague or repeated labels make them stop.<span class="src">Pirolli and Card, "Information Foraging," Psychological Review, 1999; NN/g, "Information Scent"</span></div>
+        <div class="vg-glass dm-card"><b class="t">Local sites lead with category doors</b>Yelp's home page, Google Maps' category chips and Airbnb's category icons all show a short row of visible categories before any list.</div>
+        <div class="vg-glass dm-card"><b class="t">Shallow tree, strong filters</b>Two levels (door, then sub-section). Location, 100% Vegan and sort are filters, not more levels.<span class="src">NN/g, "Filters vs. Facets," 2014</span></div>
+        <div class="vg-glass dm-card"><b class="t">Test the tree before building</b>Give people find-it tasks on the bare structure and count first clicks, old tree vs new.<span class="src">NN/g, "Tree Testing"</span></div>
+      </div>
+    </section>
+
+    <!-- 4. The new front door -->
+    <section class="vg-slide" id="home" data-title="The new front door">
+      <div class="vg-eyebrow">4 · The Directory's front page <span class="dm-chip">Proposed</span></div>
+      <h2 class="vg-h">Seven doors, all on screen</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <div class="ui-top">
+            <div style="flex:1 1 180px"><div class="ui-eb">Vegan Directory</div><div class="ui-h">What are you looking for?</div></div>
+            <div class="ui-search">Search everything: "Vegan pizza in Atlanta"</div>
+            <span class="ui-loc">South Florida</span>
+          </div>
+          <div class="doors">
+            <div class="door"><span class="ct">1,150</span><div class="ic"><svg viewBox="0 0 24 24"><path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2M7 2v20M21 15V2M18 2v4M21 8a3 3 0 01-6 0"/></svg></div><b>Eat</b><span>Restaurants, bakeries, food trucks, markets, catering</span></div>
+            <div class="door"><span class="ct">152</span><div class="ic"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0"/></svg></div><b>Shop</b><span>Food &amp; drink, supplements, clothing, beauty</span></div>
+            <div class="door"><span class="ct">665</span><div class="ic"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 00-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 000-7.8z"/></svg></div><b>Animals &amp; Causes</b><span>Sanctuaries, rescues, nonprofits</span></div>
+            <div class="door"><span class="ct">197</span><div class="ic"><svg viewBox="0 0 24 24"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0014 0M12 17v5"/></svg></div><b>Watch, Listen &amp; Read</b><span>Books, podcasts, films, YouTube</span></div>
+            <div class="door"><span class="ct">113</span><div class="ic"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.9M16 3.1a4 4 0 010 7.8"/></svg></div><b>People &amp; Groups</b><span>Founders, athletes, activists, groups</span></div>
+            <div class="door"><span class="ct">214</span><div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/></svg></div><b>Services &amp; Spaces</b><span>Studios, event venues, health &amp; coaching</span></div>
+            <div class="door"><span class="ct">8</span><div class="ic"><svg viewBox="0 0 24 24"><path d="M2 20c2 1 4 1 6 0s4-1 6 0 4 1 6 0M4 16l-1-5h18l-2 5M7 11V7h10v4M12 3v4"/></svg></div><b>Travel</b><span>Vegan cruises and cruise lines</span></div>
+            <div class="door" style="border-style:dashed;background:#fafafa"><div class="ic" style="background:#f1f1f1"><svg viewBox="0 0 24 24" style="stroke:#555"><path d="M12 5v14M5 12h14"/></svg></div><b>Suggest a place</b><span>Know a spot we're missing?</span></div>
+          </div>
+          <div class="ui-sec">Top voted near you</div>
+          <div class="cards">
+            <div class="lc"><i style="background:#1a1a1a">L</i><div><b>Love Life Cafe</b><small>Miami · Eat</small><span class="tag">100% Vegan</span></div></div>
+            <div class="lc"><i style="background:#8a4b00">D</i><div><b>Dina's Vegan Deli</b><small>Riviera Beach · Eat</small><span class="tag">100% Vegan</span></div></div>
+            <div class="lc"><i style="background:#2D5C27">C</i><div><b>Christopher's Kitchen</b><small>Palm Beach Gardens · Eat</small><span class="tag">100% Vegan</span></div></div>
+          </div>
+        </div></div>
+        <div class="dm-side">
+          <h3>How it works</h3>
+          <ul>
+            <li>The Directory's address opens <b>here</b>, not inside Local Food. Every door is on screen with its count.</li>
+            <li>The location chip carries into every door that's about a place (Eat, Animals &amp; Causes, Services, People). Shop, Watch and Travel ignore it, as Products does today.</li>
+            <li>Search stays the fastest way in; the doors are for browsing.</li>
+            <li>Each door keeps its own link (<code>?tab=eat</code>), so Share still works.</li>
+          </ul>
+          <h3>Names</h3>
+          <ul><li>Door names are your call. These are my recommendation: verbs and plain words, none repeating the top menu.</li></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. Inside a door: Eat -->
+    <section class="vg-slide" id="eat" data-title="Inside a door">
+      <div class="vg-eyebrow">5 · Inside a door: Eat</div>
+      <h2 class="vg-h">One row of pills, merged where thin</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <div class="ui-top"><span class="ui-crumb">Directory › <b>Eat</b> · South Florida</span><span style="flex:1"></span><span class="ui-loc">South Florida</span></div>
+          <div class="pills">
+            <span class="pill on">All<small>1,150</small></span><span class="pill">Restaurants<small>984</small></span><span class="pill">Bakeries &amp; Cafes<small>114</small></span><span class="pill">Markets<small>19</small></span><span class="pill">Catering &amp; Meal Prep<small>17</small></span><span class="pill">Food Trucks &amp; Vendors<small>16</small></span><span class="pill" style="border-style:dashed">Being vetted · members</span>
+          </div>
+          <div class="fbar"><div class="ui-search">Filter Eat...</div><span class="chipf">100% Vegan ×</span><span class="chipf">Cuisine: Caribbean ×</span><span class="ui-loc">Most votes</span></div>
+          <div class="cards">
+            <div class="lc"><i style="background:#1a1a1a">L</i><div><b>Love Life Cafe</b><small>Miami · Restaurants</small><span class="tag">100% Vegan</span></div></div>
+            <div class="lc"><i style="background:#8a4b00">D</i><div><b>Dina's Vegan Deli</b><small>Riviera Beach · Restaurants</small><span class="tag">100% Vegan</span></div></div>
+            <div class="lc"><i style="background:#2D5C27">C</i><div><b>Christopher's Kitchen</b><small>Palm Beach Gardens</small><span class="tag">100% Vegan</span></div></div>
+            <div class="lc"><i style="background:#b5179e">S</i><div><b>Sen Saigon</b><small>New York · Restaurants</small><span class="tag">100% Vegan</span></div></div>
+            <div class="lc"><i style="background:#7a5c2e">H</i><div><b>Honest Cuban by VCC</b><small>Miami · Restaurants</small><span class="tag">100% Vegan</span></div></div>
+            <div class="lc"><i style="background:#333">C</i><div><b>C4Eats</b><small>Hollywood · Restaurants</small><span class="tag">100% Vegan</span></div></div>
+          </div>
+        </div></div>
+        <div class="dm-side">
+          <h3>What changes</h3>
+          <ul>
+            <li><b>Merged pills</b>: Food Trucks + Vendors, Catering + Meal Prep. Each listing keeps its stored category, so cards still say "Food Truck."</li>
+            <li><b>The rule</b>: a sub-section gets its own pill at 5 listings or more; smaller ones join a neighbor or a More pill until they grow.</li>
+            <li>Counts on every pill, so a thin one never surprises anyone.</li>
+            <li>Being vetted stays inside Eat, members only, as today.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. A door that's hidden today -->
+    <section class="vg-slide" id="causes" data-title="A hidden door, opened">
+      <div class="vg-eyebrow">6 · Inside a door: Animals &amp; Causes</div>
+      <h2 class="vg-h">665 hidden listings, one tap from the front</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <div class="ui-top"><span class="ui-crumb">Directory › <b>Animals &amp; Causes</b> · South Florida</span><span style="flex:1"></span><span class="ui-loc">South Florida</span></div>
+          <div class="pills"><span class="pill on">All<small>665</small></span><span class="pill">Rescues<small>365</small></span><span class="pill">Sanctuaries<small>150</small></span><span class="pill">Nonprofits<small>150</small></span></div>
+          <div class="fbar"><div class="ui-search">Filter Animals &amp; Causes...</div><span class="ui-loc">Most votes</span></div>
+          <div class="cards">
+            <div class="lc"><i style="background:#2D5C27">S</i><div><b>A sanctuary</b><small>South Florida · Sanctuaries</small><span class="tag">Visit · Volunteer · Give</span></div></div>
+            <div class="lc"><i style="background:#8a4b00">R</i><div><b>A rescue</b><small>South Florida · Rescues</small><span class="tag">Adopt · Foster</span></div></div>
+            <div class="lc"><i style="background:#333">N</i><div><b>A nonprofit</b><small>Every chapter · Nonprofits</small><span class="tag">Give</span></div></div>
+          </div>
+          <p style="font-size:10.5px;color:#888;margin-top:8px">Cards here are placeholders for the layout; the real door shows real listings.</p>
+        </div></div>
+        <div class="dm-side">
+          <h3>Why this one matters</h3>
+          <ul>
+            <li>It's our second-biggest collection and the heart of the mission, and today it's filed under "Community," a word the top menu uses for city hubs.</li>
+            <li>The Holiday Guide's Give back section and the Directory finally point to the same place.</li>
+            <li>Groups (21) and event organizers (10) move to People &amp; Groups, where people look for people.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. The full map -->
+    <section class="vg-slide" id="map" data-title="Old to new">
+      <div class="vg-eyebrow">7 · Every listing has a home</div>
+      <h2 class="vg-h">Old section to new door</h2>
+      <table class="map">
+        <thead><tr><th>New door</th><th>Its pills</th><th class="hm">Comes from today's</th><th style="text-align:right">Listings</th></tr></thead>
+        <tbody>
+          <tr><td><b>Eat</b></td><td>Restaurants, Bakeries &amp; Cafes, Markets, Catering &amp; Meal Prep, Food Trucks &amp; Vendors</td><td class="hm was">Local Food</td><td class="n">1,150</td></tr>
+          <tr><td><b>Shop</b></td><td>Food &amp; Drink, Supplements, Clothing, Beauty, Marketplaces</td><td class="hm was">Products</td><td class="n">152</td></tr>
+          <tr><td><b>Animals &amp; Causes</b></td><td>Rescues, Sanctuaries, Nonprofits</td><td class="hm was">Community (part)</td><td class="n">665</td></tr>
+          <tr><td><b>Watch, Listen &amp; Read</b></td><td>Books, Podcasts, Films, YouTube, News</td><td class="hm was">Media</td><td class="n">197</td></tr>
+          <tr><td><b>People &amp; Groups</b></td><td>Founders, Athletes, Activists, Creators, Health Experts (with Physicians), Chefs, Groups, Event Hosts</td><td class="hm was">People, Community's Groups and Events</td><td class="n">113</td></tr>
+          <tr><td><b>Services &amp; Spaces</b></td><td>Studios, Event Venues, Health &amp; Coaching, Business Help, Animal Care</td><td class="hm was">Services</td><td class="n">214</td></tr>
+          <tr><td><b>Travel</b></td><td>Cruises</td><td class="hm was">Travel</td><td class="n">8</td></tr>
+        </tbody>
+      </table>
+      <p style="font-size:11.5px;color:#555;margin-top:10px">Nothing is re-filed in the database: stored categories stay as they are, only the door that shows them changes (the same move we made for Local Food and Products on November 1). City hubs, the dashboard and LESARUSS.ai share the component, so they get the same doors.</p>
+    </section>
+
+    <!-- 8. Top menu and phone -->
+    <section class="vg-slide" id="phone" data-title="Top menu and phone">
+      <div class="vg-eyebrow">8 · The top menu, and the phone</div>
+      <h2 class="vg-h">Keep the top menu; same doors on phones</h2>
+      <div class="dm-row">
+        <div class="dm-main">
+          <div class="vg-glass dm-card" style="margin-bottom:12px"><b class="t">Top menu: no change needed</b>Directory, Events, Daily Pulse, Media, Guides, Communities, with search on every page. Six items is a healthy size, and each is a real destination. The fix is inside the Directory: stop reusing "Media" and "Community" there with different meanings.</div>
+          <div class="vg-glass dm-card"><b class="t">Where things live</b>Event listings (organizers like Holistic Holiday at Sea) show in People &amp; Groups as Event Hosts; the events themselves stay in the top menu's Events. Our own shows stay in the top menu's Media; other people's podcasts and films are in Watch, Listen &amp; Read.</div>
+        </div>
+        <div class="dm-side" style="flex:0 0 320px">
+          <div class="phone">
+            <div class="ui-eb" style="margin-bottom:6px">Vegan Directory</div>
+            <div class="ui-search" style="margin-bottom:8px">Search everything</div>
+            <div class="doors">
+              <div class="door"><span class="ct">1,150</span><b>Eat</b></div>
+              <div class="door"><span class="ct">152</span><b>Shop</b></div>
+              <div class="door"><span class="ct">665</span><b>Animals &amp; Causes</b></div>
+              <div class="door"><span class="ct">197</span><b>Watch, Listen &amp; Read</b></div>
+              <div class="door"><span class="ct">113</span><b>People &amp; Groups</b></div>
+              <div class="door"><span class="ct">214</span><b>Services &amp; Spaces</b></div>
+              <div class="door"><span class="ct">8</span><b>Travel</b></div>
+              <div class="door" style="border-style:dashed"><b>Suggest a place</b></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9. Your call -->
+    <section class="vg-slide" id="decide" data-title="Your call">
+      <div class="vg-eyebrow">9 · How we'll know, and your call</div>
+      <h2 class="vg-h">Test it, then switch</h2>
+      <div class="dm-row" style="gap:28px">
+        <div style="flex:1 1 480px;min-width:0" class="vg-glass dm-card">
+          <b class="t">How we'll know it's better</b>
+          <ul style="list-style:none;display:grid;gap:7px;margin-top:6px">
+            <li><b style="color:#2D5C27">1</b> Every door is one click from the Directory's front page, at desktop and phone size.</li>
+            <li><b style="color:#2D5C27">2</b> No word means two things between the top menu and the Directory.</li>
+            <li><b style="color:#2D5C27">3</b> No pill under 5 listings.</li>
+            <li><b style="color:#2D5C27">4</b> A first-click test (you plus at least 5 members, 8 find-it tasks like "a sanctuary near you," "a protein powder," "a studio to film in") on the old and new trees: at least 80% right first clicks on the new, and better than the old.</li>
+            <li><b style="color:#2D5C27">5</b> After 30 days, more Directory visits open a non-food door than before.</li>
+          </ul>
+        </div>
+        <div style="flex:1 1 360px;min-width:0" class="vg-glass dm-card">
+          <b class="t">Defaults I'll take unless you say otherwise</b>
+          <ul style="list-style:none;display:grid;gap:7px;margin-top:6px">
+            <li>The seven door names as shown.</li>
+            <li>The top menu stays as it is.</li>
+            <li>Merged pills as on slide 7; stored categories don't change.</li>
+            <li>Run the first-click test before building, so we switch on evidence.</li>
+          </ul>
+          <p style="margin-top:10px"><b style="color:#b45309">Your call:</b> say go to run the test and build, change any door name, or tell me what to change on any slide.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/public/footer.js"></script>
+</div>
+<script src="/public/ve-guided.js"></script>
+</body>
+</html>
