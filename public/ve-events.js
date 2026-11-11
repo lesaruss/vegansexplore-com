@@ -319,6 +319,17 @@
     '.vev-host small{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(26,26,26,.68);}',
     '.vev-host b{font-size:15px;font-weight:800;}',
     '.vev-host em{font-style:normal;font-size:12px;font-weight:700;color:var(--vb-go-hover,#1f5f22);white-space:nowrap;}',
+    // Supporting organizations (Sean, 2026-11-11): another organization's listing of the same event, under it, with its own link.
+    '.vev-sups{margin:0 0 14px;}',
+    '.vev-sups>small{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:rgba(26,26,26,.68);margin-bottom:2px;}',
+    '.vev-sups>p{font-size:13px;color:rgba(26,26,26,.75);margin:0 0 8px;}',
+    '.vev-sup{display:flex;align-items:center;gap:12px;padding:10px 14px;border:1px solid rgba(26,26,26,.12);border-radius:8px;background:#fff;margin:0 0 8px;}',
+    '.vev-sup img,.vev-sup i{width:40px;height:40px;border-radius:8px;object-fit:cover;flex:none;}',
+    '.vev-sup i{display:flex;align-items:center;justify-content:center;background:var(--vb-go,#2d7d31);color:#fff;font-style:normal;font-weight:900;}',
+    '.vev-sup .nm{font-size:15px;font-weight:800;color:inherit;text-decoration:none;min-width:0;flex:1;}',
+    '.vev-sup a.nm:hover{text-decoration:underline;}',
+    '.vev-sup .rg{flex:none;font-size:12px;font-weight:800;color:var(--vb-go-hover,#1f5f22);text-decoration:none;border:1px solid rgba(26,26,26,.2);border-radius:6px;padding:8px 10px;white-space:nowrap;}',
+    '.vev-sup .rg:hover{border-color:var(--vb-go,#2d7d31);}',
     '.vev-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(170px,100%),1fr));gap:10px;margin:0 0 18px;}',
     '.vev-tiles div{background:#f7f8f7;border-radius:8px;padding:12px 14px;}',
     '.vev-tiles b{display:block;font-size:24px;font-weight:900;line-height:1.1;}',
@@ -1327,6 +1338,11 @@
           (e.venue && e.venue.slug ? '<a class="vev-host" href="/directory/' + encodeURIComponent(e.venue.slug) + '">' + (e.venue.logo_url ? '<img src="' + esc(e.venue.logo_url) + '" alt="">' : '<i aria-hidden="true">' + esc((e.venue.name || '?').charAt(0)) + '</i>') + '<span><small>Held at</small><b>' + esc(e.venue.name) + '</b>' + (e.venue.address_street || e.venue.address_city ? '<small style="text-transform:none;letter-spacing:0;font-weight:600">' + esc([e.venue.address_street, e.venue.address_city].filter(Boolean).join(', ')) + '</small>' : '') + '</span><em>See the venue and its events</em></a>' : '') +
           (!(e.host && e.host.slug) && !org && e.organizer_name ? '<p class="vev-note" style="margin:0 0 12px"><b>Put on by</b> ' + (safeUrl(e.organizer_url) ? '<a href="' + esc(safeUrl(e.organizer_url)) + '" target="_blank" rel="noopener noreferrer">' + esc(e.organizer_name) + '</a>' : esc(e.organizer_name)) + '</p>' : '') +
           (e.people && e.people.length ? '<div class="vev-people"><small>People at this event</small>' + e.people.map(function (pp) { return '<a href="/directory/' + encodeURIComponent(pp.slug) + '">' + (pp.logo_url ? '<img src="' + esc(pp.logo_url) + '" alt="">' : '<i aria-hidden="true">' + esc((pp.name || '?').charAt(0)) + '</i>') + '<span><b>' + esc(pp.name) + '</b>' + esc(pp.role || '') + '</span></a>'; }).join('') + '</div>' : '') +
+          (e.supporters && e.supporters.length ? '<div class="vev-sups"><small>Supporting organizations</small><p>Going with one of them? Register through them.</p>' + e.supporters.map(function (sp) {
+            var pic = sp.logo_url ? '<img src="' + esc(sp.logo_url) + '" alt="">' : '<i aria-hidden="true">' + esc((sp.name || '?').charAt(0)) + '</i>', prof = sp.slug ? '/directory/' + encodeURIComponent(sp.slug) : '';
+            return '<div class="vev-sup">' + (prof ? '<a href="' + prof + '" aria-label="' + esc(sp.name) + ' on Vegans Explore">' + pic + '</a><a class="nm" href="' + prof + '">' + esc(sp.name) + '</a>' : pic + '<span class="nm">' + esc(sp.name) + '</span>') +
+              (safeUrl(sp.url) && !over ? '<a class="rg" href="' + esc(safeUrl(sp.url)) + '" target="_blank" rel="noopener noreferrer">Register with them</a>' : '') + '</div>';
+          }).join('') + '</div>' : '') +
           (e.cancelled ? '<div class="vev-warn">Cancelled: its official page says this event is not happening.</div>' : '') +
           (e.description ? '<p class="vev-desc">' + esc(e.description) + '</p>' : '') +
           (e.host && e.host.category === 'Groups' ? '<div class="vev-sale" data-v="sale"></div>' : '') +

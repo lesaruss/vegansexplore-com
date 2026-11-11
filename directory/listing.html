@@ -1569,13 +1569,16 @@ function loadHostedEvents(l){
   var box = document.getElementById('hosted-events'); if(!box) return;
   // Events it puts on (host_listing_id) and events held at it (venue_listing_id, Sean, 2026-11-01: where Vegans hold their events;
   // ve_event_venues_sync links them by the event's place name). A place that only hosts others' events reads "Vegan events here".
-  var url = SUPABASE_URL + '/rest/v1/events?or=(host_listing_id.eq.' + l.id + ',venue_listing_id.eq.' + l.id + ')&status=eq.approved&select=id,title,starts_at,ends_at,timezone,time_set,location_name,city,state,country,event_type,ticket_url,virtual_url,host_listing_id,venue_listing_id,' +
+  var url = SUPABASE_URL + '/rest/v1/events?or=(host_listing_id.eq.' + l.id + ',venue_listing_id.eq.' + l.id + ')&status=in.(approved,supporting)&select=id,dupe_of,status,title,starts_at,ends_at,timezone,time_set,location_name,city,state,country,event_type,ticket_url,virtual_url,host_listing_id,venue_listing_id,' +
     'hostL:listings!events_host_listing_id_fkey(id,slug,name,logo_url,category,status),venueL:listings!events_venue_listing_id_fkey(id,slug,name,logo_url,category,status)&order=starts_at.asc&limit=1000';
   // The sample group's events come from its demo file; each opens the sample's RSVP and ticket simulation (data-demo-ev).
   var demoEv = DEMO && DEMO.events;
   (demoEv ? Promise.resolve(DEMO.events.slice().sort(function(a, b){ return Date.parse(a.starts_at) - Date.parse(b.starts_at); }))
     : fetch(url, { headers:{ apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.json(); })).then(function(rows){
     rows = Array.isArray(rows) ? rows : [];
+    // A group that supports another organization's event (Sean, 2026-11-11) keeps it here with its own link; its name opens the
+    // main event. Only the group's own copy counts, never one that is merely held at this place.
+    rows = rows.filter(function(e){ return e.status !== 'supporting' || e.host_listing_id === l.id; });
     var now = Date.now(), endOf = function(e){ return new Date(e.ends_at || new Date(e.starts_at).getTime() + 4 * 3600000).getTime(); };
     var up = rows.filter(function(e){ return endOf(e) >= now; }), past = rows.filter(function(e){ return endOf(e) < now; }).reverse();
     var isGroup = l.category === 'Groups';
@@ -1588,7 +1591,7 @@ function loadHostedEvents(l){
       var where = e.event_type === 'virtual' && !e.city ? 'Online' : [e.location_name, e.city].filter(Boolean).join(', ');
       var link = /^https?:\/\//.test(e.ticket_url || '') ? e.ticket_url : /^https?:\/\//.test(e.virtual_url || '') ? e.virtual_url : '';
       return '<div class="he-row' + (old ? ' he-past' : '') + '"><div class="he-date" aria-hidden="true"><b>' + esc(fmt(e, { day: 'numeric' })) + '</b><span>' + esc(fmt(e, { month: 'short' })) + '</span></div>' +
-        '<div class="he-body"><a class="he-name" href="' + (demoEv ? '#' : '/events?event=' + esc(e.id)) + '"' + (demoEv ? ' data-demo-ev="' + esc(e.id) + '"' : '') + '>' + esc(e.title) + '</a><span>' + esc(when) + (where ? ' · ' + esc(where) : '') + (demoEv ? ' · ' + (e.price_cents ? '$' + (e.price_cents / 100).toFixed(2) : 'Free') + ' · ' + e.going + (old ? ' went' : ' going') : '') + '</span></div>' +
+        '<div class="he-body"><a class="he-name" href="' + (demoEv ? '#' : '/events?event=' + esc(e.status === 'supporting' && e.dupe_of ? e.dupe_of : e.id)) + '"' + (demoEv ? ' data-demo-ev="' + esc(e.id) + '"' : '') + '>' + esc(e.title) + '</a><span>' + esc(when) + (where ? ' · ' + esc(where) : '') + (demoEv ? ' · ' + (e.price_cents ? '$' + (e.price_cents / 100).toFixed(2) : 'Free') + ' · ' + e.going + (old ? ' went' : ' going') : '') + '</span></div>' +
         (demoEv ? '<button type="button" class="he-go' + (old ? ' ghost' : '') + '" data-demo-ev="' + esc(e.id) + '">' + (old ? 'See it' : e.price_cents ? 'Get tickets' : 'RSVP') + '</button>' : '') +
         (!demoEv && link ? '<a class="he-go' + (old ? ' ghost' : '') + '" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer" aria-label="' + (old ? 'Event page for ' : 'Tickets and details for ') + esc(e.title) + '">' + (old ? 'Event page' : 'Tickets &amp; info') + '</a>' : '') + '</div>';
     };

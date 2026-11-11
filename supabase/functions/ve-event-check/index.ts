@@ -14,6 +14,11 @@
 // POST { action: 'gate', limit? }             cron or ops or a super admin: the gates on events waiting for approval (below)
 // POST { action: 'holds' }                    super admin: what the gates left for a person (held, and duplicate pairs)
 // POST { action: 'not_dupes', a, b }          super admin: the pair are two different events; never match them again
+// POST { action: 'support_swap', id }         super admin: make this supporter the main event (the old main goes under it)
+//
+// Supporting organizations (Sean, 2026-11-11, migration 20261111_event_supporters.sql): two organizations listing one event no
+// longer wait for Sean. The official one stays the event; the other goes under it (status 'supporting', dupe_of), shown on the
+// event's page with its Directory page and its own link to register, and still on its own group's Directory page.
 //
 // The gates (Sean, 2026-11-11: "If they are still active, if they have a link to register, it hasn't been canceled, it's not
 // duplicated, I would say we can roll with it"; migration 20261111_event_gates.sql). Every event waiting for approval that the
@@ -261,6 +266,11 @@ async function gateDue(limit: number) {
     .order('gated_at', { ascending: true, nullsFirst: true }).order('starts_at', { ascending: true }).limit(limit);
   return data || [];
 }
+// An event turned down or cancelled lets its supporters go back through the gates on their own.
+async function releaseSupporters(id: string) {
+  const { data: sups } = await db.from('events').select('id').eq('dupe_of', id).eq('status', 'supporting');
+  for (const x of sups || []) await db.rpc('ve_event_support_release', { p_sup: x.id });
+}
 async function gateOne(ev: any) {
   const now = new Date().toISOString();
   const set = (patch: Record<string, unknown>) => db.from('events').update({ ...patch, gated_at: now }).eq('id', ev.id).eq('status', 'pending');
@@ -272,12 +282,13 @@ async function gateOne(ev: any) {
       gate_note: `The same event by the same organizer is already here (${d.why}); folded into it.` });
     return { id: ev.id, title: ev.title, outcome: 'duplicate_folded', into: d.into };
   }
-  if (d?.action === 'flag') {
-    await set({ gate_status: 'duplicate', dupe_of: d.with,
-      gate_note: d.keep === ev.id ? 'Another organization lists the same event. We recommend this one (the organizer\'s own page).' : 'Another organization lists the same event. We recommend the other one (the organizer\'s own page).' });
-    return { id: ev.id, title: ev.title, outcome: 'duplicate_flagged', with: d.with, keep: d.keep };
+  // Another organization lists it: the official one is the event, the other a supporter under it.
+  if (d?.action === 'support' && d.keep !== ev.id) {
+    await db.rpc('ve_event_attach_supporter', { p_main: d.keep, p_sup: ev.id });
+    return { id: ev.id, title: ev.title, outcome: 'supporting', under: d.keep };
   }
   const r: any = await checkOne(ev, true);
+  const supportOther = d?.action === 'support' ? d.with : null; // this one is the official one: the other goes under it once it is live
   const day = now.slice(0, 10);
   if (r.outcome === 'ok' && (r.http === 404 || r.http === 410)) {
     await set({ gate_status: 'held', gate_note: `Its page answered ${r.http}; we look again tomorrow.` });
@@ -286,9 +297,11 @@ async function gateOne(ev: any) {
   if (r.outcome === 'ok' || r.outcome === 'changed') {
     await set({ status: 'approved', reviewed_at: now, rejection_reason: null, gate_status: 'passed',
       gate_note: `Passed the gates ${day}: its official page shows it` + (r.outcome === 'changed' ? ', and we moved the date to match.' : '.') });
-    return { id: ev.id, title: ev.title, outcome: 'approved', note: r.note };
+    if (supportOther) await db.rpc('ve_event_attach_supporter', { p_main: ev.id, p_sup: supportOther });
+    return { id: ev.id, title: ev.title, outcome: 'approved', note: r.note, supported_by: supportOther || undefined };
   }
   if (r.outcome === 'cancelled') {
+    await releaseSupporters(ev.id);
     await db.from('events').update({ gate_status: 'passed', gated_at: now, gate_note: 'Its official page says it is cancelled.' }).eq('id', ev.id);
     return { id: ev.id, title: ev.title, outcome: 'cancelled' };
   }
@@ -299,6 +312,7 @@ async function gateOne(ev: any) {
     return { id: ev.id, title: ev.title, outcome: 'held', note: r.note };
   }
   if (r.outcome === 'gone') {
+    await releaseSupporters(ev.id);
     await set({ status: 'rejected', reviewed_at: now, rejection_reason: `Its official page no longer shows this event (checked ${day})`, gate_status: 'passed', gate_note: r.note });
     return { id: ev.id, title: ev.title, outcome: 'turned_down', note: r.note };
   }
@@ -342,30 +356,29 @@ Deno.serve(async (req) => {
   if (!w.admin && !w.ops) return json({ error: 'forbidden' }, 403);
 
   if (action === 'holds') {
-    // Waiting events the gates left for a person, and every duplicate pair (both sides still waiting or live).
+    // Waiting events the gates left for a person, and every supporting organization under an upcoming event.
     const cols = 'id, title, starts_at, timezone, city, state, country, location_name, ticket_url, organizer_name, status, source, gate_status, gate_note, gated_at, dupe_of, host_listing_id, rsvp_count';
-    const { data: held } = await db.from('events').select(cols).eq('tenant_id', VE_TENANT).in('status', ['pending', 'approved']).in('gate_status', ['held', 'duplicate']).gte('starts_at', new Date(Date.now() - 86400000).toISOString()).order('starts_at', { ascending: true }).limit(400);
-    const others = [...new Set((held || []).map((e: any) => e.dupe_of).filter(Boolean))];
-    const { data: os } = others.length ? await db.from('events').select(cols).in('id', others) : { data: [] };
-    const byId: Record<string, any> = {}; (os || []).forEach((e: any) => { byId[e.id] = e; });
-    const reposted = (u: string) => /:\/\/([a-z0-9-]+\.)*(eventbrite\.[a-z.]+|meetup\.com|partiful\.com|eventeny\.com|humanitix\.com|donorbox\.org|allevents\.in|facebook\.com|instagram\.com|blackthorn\.io|neoncrm\.com|ticketleap\.com|universe\.com|lu\.ma)/i.test(u || '');
-    const pairs: any[] = []; const seen = new Set<string>();
-    for (const e of held || []) {
-      if (e.gate_status !== 'duplicate') continue;
-      const o = byId[e.dupe_of];
-      if (!o || !['pending', 'approved'].includes(o.status)) continue; // already settled
-      const k = [e.id, o.id].sort().join(':'); if (seen.has(k)) continue; seen.add(k);
-      // The organizer's own page over a ticketing or group site, then one tied to a Directory listing, then the live one.
-      const rank = (x: any) => (reposted(x.ticket_url) ? 10 : 0) + (x.host_listing_id ? 0 : 1) + (x.status === 'approved' ? 0 : 0.5);
-      pairs.push({ a: e, b: o, keep: rank(o) < rank(e) ? o.id : e.id });
-    }
-    const counts = { held: (held || []).filter((e: any) => e.gate_status === 'held' && e.status === 'pending').length, duplicates: pairs.length };
-    return json({ held: (held || []).filter((e: any) => e.gate_status === 'held' && e.status === 'pending'), pairs, counts });
+    const soon = new Date(Date.now() - 86400000).toISOString();
+    const { data: held } = await db.from('events').select(cols).eq('tenant_id', VE_TENANT).eq('status', 'pending').eq('gate_status', 'held').gte('starts_at', soon).order('starts_at', { ascending: true }).limit(400);
+    const { data: sups } = await db.from('events').select(cols).eq('tenant_id', VE_TENANT).eq('status', 'supporting').gte('starts_at', soon).order('starts_at', { ascending: true }).limit(400);
+    const mains = [...new Set((sups || []).map((e: any) => e.dupe_of).filter(Boolean))];
+    const { data: ms } = mains.length ? await db.from('events').select(cols).in('id', mains) : { data: [] };
+    const byId: Record<string, any> = {}; (ms || []).forEach((e: any) => { byId[e.id] = e; });
+    const pairs = (sups || []).filter((e: any) => byId[e.dupe_of]).map((e: any) => ({ main: byId[e.dupe_of], sup: e }));
+    return json({ held: held || [], pairs, counts: { held: (held || []).length, supporting: pairs.length } });
+  }
+  if (action === 'support_swap') {
+    if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+    const { data, error } = await db.rpc('ve_event_support_swap', { p_sup: body.id });
+    return json(error ? { error: error.message } : data);
   }
   if (action === 'not_dupes') {
     if (!isId(body.a) || !isId(body.b) || body.a === body.b) return json({ error: 'bad_id' }, 400);
     const { data: two } = await db.from('events').select('id, status, not_dupes').in('id', [body.a, body.b]);
     if ((two || []).length !== 2) return json({ error: 'not_found' }, 404);
+    // A supporter goes back to being its own event, through the gates.
+    const sup = (two || []).find((e: any) => e.status === 'supporting');
+    if (sup) { const { data, error } = await db.rpc('ve_event_support_release', { p_sup: sup.id }); return json(error ? { error: error.message } : data); }
     for (const e of two || []) {
       const other = e.id === body.a ? body.b : body.a;
       // The waiting one goes back through the gates (its page is read next run); the live one just loses the flag.

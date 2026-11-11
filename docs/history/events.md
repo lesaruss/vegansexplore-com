@@ -354,3 +354,24 @@ they are two duplicate events, you can flag those and I can choose"; "select mul
 - **Georgia VegFest**: the Atlanta Veggie Eats Meetup copy came down as a duplicate of the official listing (Farm of the Free), on
   Sean's word. The one-time write ran through `ve-once-event-gates` (`scripts/supabase-once/event-gates.ts`), the connector having
   held the second migration.
+
+### Supporting organizations (Sean, 2026-11-11, same day)
+
+Sean, on the pick-one pairs: "If we have an organization that is also hosting their meetup, let's put it underneath that listing.
+You know, we don't have to lose it completely, but we can show that these are the organizations that are supporting this event.
+And then they can see, click on it and see their listing. So somebody might want to register through DC Meetup... going is going,
+right? And it's almost like a referral." "Unless Polar Springs is a sponsor, then it's like, okay, maybe we don't have DC Meetup on
+there... But we're not there yet" (not built: a paid promotion hiding supporters).
+
+- Two organizations listing one event no longer wait for Sean (migration `20261111_event_supporters.sql`). The official one (its
+  own page over a ticketing or group site, then one tied to a Directory listing, then the live one) stays the event; the other
+  becomes a supporter under it: `status` 'supporting', `dupe_of` the event (`ve_event_attach_supporter`, RSVPs move to the event).
+  A supporter is off the calendar but readable by anyone (policy "Public can view supporting events").
+- **The event's page** (`ve-events` `event` returns `supporters`; `public/ve-events.js`): under Hosted by and Held at, **Supporting
+  organizations**, "Going with one of them? Register through them.": each one's logo and name link to its Directory page, and
+  **Register with them** opens its own link.
+- **The supporter's own Directory page** (`directory/listing.html`) keeps the event with its own link; the name opens the main event.
+- The gate (`ve-event-check`): a waiting event whose official twin is already here goes under it; an official one that passes its
+  page check takes the other under it; an event turned down or cancelled releases its supporters back through the gates.
+- **Depot > Events > Supporting** (`#supporting`, replacing Duplicates): each event and its supporter, **Make this the main one**
+  (`support_swap`) and **Not the same event** (`ve_event_support_release`: back through the gates, never matched again).

@@ -17,9 +17,9 @@
        LESARUSS.ai's calendar (2026-10-30): ?brand=lesaruss switches the page to its business events and funding (the same table,
        the LESARUSS tenant); every call then carries brand 'lesaruss'. A funding item's date is its deadline.
        The gates (Sean, 2026-11-11: "I am not going through all 122 of these"): ve-event-check puts what the crawl finds live
-       on its own once its page checks out and it is not a duplicate. What the gates leave for a person: #dupes (the same
-       event from two organizations, side by side, Keep this one or Not the same event) and #held (a page we could not
-       confirm, with why). Every queue takes a selection: tick rows, then Approve or Turn down them all at once. */
+       on its own once its page checks out and it is not a duplicate. Two organizations listing one event: the official one is
+       the event and the other is a supporting organization under it (Sean, 2026-11-11); #supporting lists them, with Make this
+       the main one and Not the same event. #held: what a page could not confirm, with why. Every queue takes a selection: tick rows, then Approve or Turn down them all at once. */
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
     body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
@@ -171,13 +171,13 @@
     function gateInfo(id) {
       if (!holds) return null;
       for (var i = 0; i < holds.held.length; i++) if (holds.held[i].id === id) return holds.held[i];
-      for (var j = 0; j < holds.pairs.length; j++) { var p = holds.pairs[j]; if (p.a.id === id) return p.a; if (p.b.id === id) return p.b; }
+      for (var j = 0; j < holds.pairs.length; j++) { var p = holds.pairs[j]; if (p.main.id === id) return p.main; if (p.sup.id === id) return p.sup; }
       return null;
     }
     function gateLinks() {
       if (brand || !holds) return '';
       var c = holds.counts || {};
-      return '<a class="btn btn-ghost" href="#dupes">Duplicates (' + (c.duplicates || 0) + ')</a><a class="btn btn-ghost" href="#held">Held (' + (c.held || 0) + ')</a>';
+      return '<a class="btn btn-ghost" href="#supporting">Supporting (' + (c.supporting || 0) + ')</a><a class="btn btn-ghost" href="#held">Held (' + (c.held || 0) + ')</a>';
     }
 
     /* ---------- many at once (Sean, 2026-11-11: "select multiple and then have an action") ---------- */
@@ -257,7 +257,7 @@
       var g = gateInfo(e.id), on = !!picked[e.id];
       return '<div class="row' + (on ? ' sel' : '') + '"><span class="d"><label><input type="checkbox" data-pick="' + e.id + '"' + (on ? ' checked' : '') + ' aria-label="Select ' + esc(e.title) + '"><span>' + esc(day(e)) + '</span></label></span>' +
         '<span><span class="t">' + esc(e.title) + '</span><br><span class="m">' + esc(where(e)) + (e.by ? ' · sent by ' + esc(e.by.name) + (ROLE[e.submitter_role] ? ', ' + ROLE[e.submitter_role] : '') : '') + (e.source_name ? ' · ' + esc(e.source_name) : '') + '</span>' +
-        (g && g.gate_note ? '<span class="g">' + (g.gate_status === 'duplicate' ? 'Possible duplicate. ' : 'Held. ') + esc(g.gate_note) + '</span>' : '') + '</span>' +
+        (g && g.gate_status === 'held' && g.gate_note ? '<span class="g">Held. ' + esc(g.gate_note) + '</span>' : '') + '</span>' +
         '<span class="m">' + esc(kindLabel(e)) + (e.funding && e.funding.amount ? ' · ' + esc(e.funding.amount) : '') + (e.ticket_url ? ' · ' + esc(e.ticket_url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]) : '') + '</span>' +
         '<span class="tag src">' + esc(SRC[e.source] || e.source) + '</span>' +
         '<a class="btn' + (status === 'pending' ? '' : ' btn-ghost') + '" href="#event/' + e.id + '">' + (status === 'pending' ? 'Review' : 'Open') + '</a></div>';
@@ -272,50 +272,39 @@
       wireBulk(status, list, function () { drawQueue(status); });
     }
 
-    /* ---------- Duplicates: the same event from two organizations, side by side ---------- */
-    function pairCard(e, rec, other) {
+    /* ---------- Supporting: another organization's listing of the same event, under it (Sean, 2026-11-11) ---------- */
+    function pairCard(e, isMain) {
       var host = (e.ticket_url || '').replace(/^https?:\/\/(www\.)?/, '').split('/')[0];
-      return '<div class="c' + (rec ? ' rec' : '') + '">' +
-        '<span style="display:flex;gap:6px;flex-wrap:wrap"><span class="tag ' + (e.status === 'approved' ? 'approved' : 'pending') + '">' + (e.status === 'approved' ? 'Live' : 'Waiting for approval') + '</span>' + (rec ? '<span class="tag approved">Recommended</span>' : '') + '</span>' +
+      return '<div class="c' + (isMain ? ' rec' : '') + '">' +
+        '<span style="display:flex;gap:6px;flex-wrap:wrap"><span class="tag ' + (isMain ? (e.status === 'approved' ? 'approved' : 'pending') : 'src') + '">' + (isMain ? (e.status === 'approved' ? 'The event, live' : 'The event, waiting') : 'Supporting organization') + '</span></span>' +
         '<span class="t">' + esc(e.title) + '</span>' +
         '<span class="m">' + esc(day(e)) + ' · ' + esc(where(e) || 'No city') + '</span>' +
         '<span class="m">Organizer: <b>' + esc(e.organizer_name || 'not named') + '</b></span>' +
-        '<span class="m">Link: ' + (e.ticket_url ? '<a href="' + esc(e.ticket_url) + '" target="_blank" rel="noopener">' + esc(host) + '</a>' : 'none') + (e.rsvp_count ? ' · ' + e.rsvp_count + ' going' : '') + '</span>' +
-        '<span style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px"><button class="btn' + (rec ? '' : ' btn-ghost') + '" data-keep="' + e.id + '" data-drop="' + other.id + '">Keep this one</button><a class="btn btn-ghost" href="#event/' + e.id + '">Open</a></span></div>';
+        '<span class="m">Link: ' + (e.ticket_url ? '<a href="' + esc(e.ticket_url) + '" target="_blank" rel="noopener">' + esc(host) + '</a>' : 'none') + '</span>' +
+        (isMain ? '<span style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px"><a class="btn btn-ghost" href="/events?event=' + e.id + '" target="_blank" rel="noopener">See its page</a></span>'
+          : '<span style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px"><button class="btn btn-ghost" data-swap="' + e.id + '">Make this the main one</button></span>') + '</div>';
     }
-    function drawDupes() {
-      app.innerHTML = brandBar() + '<nav class="crumb"><a href="#queue/pending">Events</a><span>/</span><span>Duplicates</span></nav>' +
-        '<p class="sub">The same event, the same day, listed by two organizations (the official one and, say, a Meetup group going to it). Keep one: it goes live and the other comes down. We recommend the organization\'s own page. If they are two different events, say so and both go through.</p>' +
+    function drawSupporting() {
+      app.innerHTML = brandBar() + '<nav class="crumb"><a href="#queue/pending">Events</a><span>/</span><span>Supporting</span></nav>' +
+        '<p class="sub">When two organizations list the same event (the official one and, say, a Meetup group going to it), the official one is the event and the other shows under it as a supporting organization: its logo links to its page, and people can register through them. Swap them, or say they are two different events and the supporter goes back through the gates on its own.</p>' +
         '<div id="dp-rows"><p class="msg">Loading…</p></div>';
       loadHolds().then(function (h) {
         var box = $('dp-rows');
         box.innerHTML = h.pairs.length ? h.pairs.map(function (p) {
-          return '<div class="pair">' + pairCard(p.a, p.keep === p.a.id, p.b) + pairCard(p.b, p.keep === p.b.id, p.a) +
-            '<div class="foot"><button class="btn btn-ghost" data-distinct="' + p.a.id + ':' + p.b.id + '">Not the same event</button><span class="msg" data-pm="' + p.a.id + '"></span></div></div>';
-        }).join('') : '<p class="empty">No duplicates waiting. The same event from one organizer twice is folded on its own; only two organizations listing one event come here.</p>';
+          return '<div class="pair">' + pairCard(p.main, true) + pairCard(p.sup, false) +
+            '<div class="foot"><button class="btn btn-ghost" data-distinct="' + p.main.id + ':' + p.sup.id + '">Not the same event</button><span class="msg"></span></div></div>';
+        }).join('') : '<p class="empty">No supporting organizations on upcoming events yet.</p>';
         var msgFor = function (b, t, bad) { var m = b.closest('.pair').querySelector('.msg'); m.textContent = t; m.className = 'msg' + (bad ? ' bad' : ''); };
-        box.querySelectorAll('[data-keep]').forEach(function (b) {
-          b.onclick = function () {
-            var keep = b.getAttribute('data-keep'), drop = b.getAttribute('data-drop'), kp = gateInfo(keep);
-            b.closest('.pair').querySelectorAll('button').forEach(function (x) { x.disabled = true; });
-            msgFor(b, 'Saving…');
-            var first = kp && kp.status === 'pending' ? api({ action: 'review', id: keep, decision: 'approved' }) : Promise.resolve({ ok: true });
-            first.then(function (r) {
-              if (!r || !r.ok) throw new Error((r && r.message) || 'That did not save.');
-              return api({ action: 'review', id: drop, decision: 'rejected', reason: 'Duplicate of ' + keep });
-            }).then(function (r) {
-              if (!r || !r.ok) throw new Error((r && r.message) || 'That did not save.');
-              cache = { pending: null, approved: null, rejected: null }; drawDupes();
-            }).catch(function (x) { msgFor(b, x.message, true); b.closest('.pair').querySelectorAll('button').forEach(function (y) { y.disabled = false; }); });
-          };
-        });
-        box.querySelectorAll('[data-distinct]').forEach(function (b) {
-          b.onclick = function () {
-            var ab = b.getAttribute('data-distinct').split(':');
-            b.disabled = true; msgFor(b, 'Saving…');
-            ck({ action: 'not_dupes', a: ab[0], b: ab[1] }).then(function (r) { if (r && r.ok) { cache = { pending: null, approved: null, rejected: null }; drawDupes(); } else { b.disabled = false; msgFor(b, 'That did not save.', true); } });
-          };
-        });
+        var run = function (b, body) {
+          b.closest('.pair').querySelectorAll('button').forEach(function (x) { x.disabled = true; });
+          msgFor(b, 'Saving…');
+          ck(body).then(function (r) {
+            if (r && r.ok) { cache = { pending: null, approved: null, rejected: null }; drawSupporting(); }
+            else { msgFor(b, (r && (r.why || r.error)) || 'That did not save.', true); b.closest('.pair').querySelectorAll('button').forEach(function (x) { x.disabled = false; }); }
+          });
+        };
+        box.querySelectorAll('[data-swap]').forEach(function (b) { b.onclick = function () { run(b, { action: 'support_swap', id: b.getAttribute('data-swap') }); }; });
+        box.querySelectorAll('[data-distinct]').forEach(function (b) { b.onclick = function () { var ab = b.getAttribute('data-distinct').split(':'); run(b, { action: 'not_dupes', a: ab[0], b: ab[1] }); }; });
       });
     }
 
@@ -810,7 +799,7 @@
       else if ((m = /^#headsup\/host\/([0-9a-f-]{36})$/.exec(h))) drawHeadsupHost(m[1]);
       else if ((m = /^#headsup(?:\/(active|no_email|held|has_account|stopped))?$/.exec(h))) drawHeadsup(m[1] || '');
       else if (h === '#sources') drawSources();
-      else if (h === '#dupes') drawDupes();
+      else if (h === '#supporting' || h === '#dupes') drawSupporting();
       else if (h === '#held') drawHeld();
       else if ((m = /^#checks(?:\/(changed|cancelled|postponed|gone|unreadable))?$/.exec(h))) drawChecks(m[1] || '');
       else if ((m = /^#leads\/(venue|organizer)\/(new|listed|linked|set_aside)$/.exec(h))) drawLeads(m[1], m[2]);
