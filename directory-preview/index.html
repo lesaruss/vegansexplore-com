@@ -419,10 +419,12 @@
     banner.autoFold();
     function paintBar() {
       var d = DOORS.filter(function (x) { return x.key === cur; })[0];
-      var where = d ? (secInfo && secInfo.location && secInfo.location.applies ? secInfo.location.name : '') : hubName();
+      var where = d ? (secInfo && secInfo.near ? secInfo.near : secInfo && secInfo.location && secInfo.location.applies ? secInfo.location.name : '') : hubName();
       banner.setLabel((d ? d.label : 'All doors') + (where ? ' · ' + where : ''));
       banner.setQuiet(cur);
       var c = d && countOf(d);
+      // Near me sets the location aside, so the count is the door's whole list, closest first.
+      if (c && secInfo && secInfo.near && DATA) c = { n: DATA.filter(function (l) { return doorOf(l).indexOf(d.key) >= 0; }).length, cap: 'closest first' };
       document.getElementById('dr-n').textContent = c ? fmt(c.n) + ' ' + d.unit + ' ' + c.cap : '';
     }
 
@@ -466,6 +468,9 @@
     VERegionDirectory.init({ mount: 've-region-directory', hub: '', regions: true, matchListing: function () { return true; },
       // sectionMenu: the door's sub-sections are the tab row under the bar (and, on phones, a picker in the bar), as on the live Directory.
       url: BASE, sectionMenu: true,
+      // Near me (Sean, 2026-11-11): on the doors whose listings are places (Eat, Animals & Causes, Services & Spaces, and Being vetted
+      // for members); never on Shop, Watch Listen & Read, People & Groups or Travel. Only this page turns it on.
+      nearMe: ['food', 'community', 'services', 'vetting'],
       brand: { sections: DOORS, catMap: CATMAP, merge: MERGE },
       onData: function (rows) { DATA = rows; paintFront(); paintBar(); },
       onSection: function (key, label, subs) { secInfo = subs; if (key === cur) paintBar(); },

@@ -85,6 +85,24 @@ html.ve-cb .vrd-root .vrd-filter-btn:hover, html.ve-cb .vrd-root .vrd-filter-btn
 html.ve-cb .vev-fbtn:hover, html.ve-cb .vev-fbtn[aria-expanded="true"],
 html.ve-cb .vem-fbtn:hover { background: var(--cb-tint); color: var(--cb-ink); border-color: var(--cb-ink); }
 
+/* Near me (the Directory doors, ve-region-directory.js config.nearMe): white with the ink outline beside Filters, never orange;
+   its chip by the search, the distance in ink at the head of the card's line, the line over listings with no point on the map, the ZIP pop-up. */
+html.ve-cb .vrd-root .vrd-near-btn { border: 2px solid var(--cb-ink); color: var(--cb-ink); background: #fff; font-weight: 900; }
+html.ve-cb .vrd-root .vrd-near-btn:hover, html.ve-cb .vrd-root .vrd-near-btn[aria-pressed=true] { background: var(--cb-tint); color: var(--cb-ink); }
+html.ve-cb .vrd-root .vrd-near-btn:focus-visible { outline: 3px solid var(--cb-ink); outline-offset: 2px; }
+html.ve-cb .vrd-root .vrd-near-tag { border: 2px solid var(--cb-ink); background: var(--cb-tint); color: var(--cb-ink); font-weight: 900; height: 34px; }
+html.ve-cb .vrd-root .vrd-near-tag:hover { background: #fff; }
+html.ve-cb .vrd-root .vrd-dist { color: var(--cb-ink); font-weight: 900; }
+html.ve-cb .vrd-root .vrd-near-div { color: var(--cb-ink); font-weight: 900; margin-top: 14px; }
+html.ve-cb .vrd-root .vrd-near-div::before, html.ve-cb .vrd-root .vrd-near-div::after { height: 2px; background: var(--cb-line); }
+html.ve-cb .vrd-near-modal .vrd-near-card { border: 2px solid var(--cb-ink); border-radius: 14px; box-shadow: 6px 6px 0 var(--cb-ink); }
+html.ve-cb .vrd-near-modal h3 { letter-spacing: -.01em; }
+html.ve-cb .vrd-near-modal input { border: 2px solid var(--cb-ink); }
+html.ve-cb .vrd-near-modal input:focus { outline: 3px solid var(--cb-br); }
+html.ve-cb .vrd-near-modal .vrd-near-go { background: var(--cb-ink); border: 2px solid var(--cb-ink); }
+html.ve-cb .vrd-near-modal .vrd-near-go:hover { background: var(--cb-dk); border-color: var(--cb-dk); }
+html.ve-cb .vrd-near-modal .vrd-near-msg { color: var(--cb-pinkd); }
+
 /* ---------- Tabs under the bar: the active one underlined in the section color ---------- */
 html.ve-cb .vrd-root .vrd-subtabs { border-bottom: 2px solid var(--cb-line); }
 html.ve-cb .vrd-root .vrd-subtabs .subcat-pill { font-weight: 900; color: var(--cb-mute); border-bottom-width: 3px; }
