@@ -15,7 +15,11 @@
        per view: the queue (#queue/pending|approved|rejected), one event (#event/<id>), Add from a flyer (#add), and the
        places the crawl reads (#sources, #source/<id>|new). Server: ve-events.
        LESARUSS.ai's calendar (2026-10-30): ?brand=lesaruss switches the page to its business events and funding (the same table,
-       the LESARUSS tenant); every call then carries brand 'lesaruss'. A funding item's date is its deadline. */
+       the LESARUSS tenant); every call then carries brand 'lesaruss'. A funding item's date is its deadline.
+       The gates (Sean, 2026-11-11: "I am not going through all 122 of these"): ve-event-check puts what the crawl finds live
+       on its own once its page checks out and it is not a duplicate. What the gates leave for a person: #dupes (the same
+       event from two organizations, side by side, Keep this one or Not the same event) and #held (a page we could not
+       confirm, with why). Every queue takes a selection: tick rows, then Approve or Turn down them all at once. */
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-border:rgba(0,0,0,0.09);--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.8);}
     body{font-family:"Montserrat",sans-serif;background:#f7f8f7;color:var(--ve-text);line-height:1.6;}
@@ -83,6 +87,20 @@
     .drop b{display:block;font-size:16px;font-weight:800;}
     .drop span{font-size:13px;color:var(--ve-text-75);}
     .empty{background:#fff;border:1px dashed rgba(0,0,0,0.2);border-radius:10px;padding:24px;text-align:center;color:var(--ve-text-75);}
+    .row .d label{display:flex;gap:8px;align-items:flex-start;cursor:pointer;}
+    .row .d input{width:18px;height:18px;margin-top:1px;flex:none;accent-color:var(--ve-green-deep);}
+    .row.sel{border-color:var(--ve-green);background:#f6fbf6;}
+    .row .g{display:block;font-size:12px;font-weight:700;color:#6b3f00;margin-top:2px;}
+    .bulk{position:sticky;top:0;z-index:5;display:flex;flex-wrap:wrap;gap:10px;align-items:center;background:#fff;border:1px solid var(--ve-border);border-radius:10px;padding:10px 14px;margin-bottom:10px;}
+    .bulk .chk{font-size:13px;font-weight:800;}
+    .bulk .n{font-size:13px;font-weight:700;color:var(--ve-text-75);margin-right:auto;}
+    .pair{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(360px,100%),1fr));gap:12px;background:#fff;border:1px solid var(--ve-border);border-radius:12px;padding:14px;margin-bottom:12px;}
+    .pair .c{border:1px solid var(--ve-border);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;}
+    .pair .c.rec{border:2px solid var(--ve-green);}
+    .pair .c .t{font-size:15px;font-weight:800;line-height:1.3;}
+    .pair .c .m{font-size:12.5px;color:var(--ve-text-75);word-break:break-word;}
+    .pair .c .m a{color:var(--ve-green-deep);font-weight:800;}
+    .pair .foot{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
     .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--ve-border);border-radius:14px;padding:32px;text-align:center;}
     .gate h2{font-size:18px;margin-bottom:8px;}
     .gate p{margin-bottom:16px;color:var(--ve-text-75);}
@@ -147,6 +165,74 @@
       return null;
     }
 
+    /* ---------- what the gates left for a person (ve-event-check holds) ---------- */
+    var holds = null;
+    function loadHolds() { return ck({ action: 'holds' }).then(function (d) { holds = d && d.pairs ? d : { held: [], pairs: [], counts: {} }; return holds; }, function () { holds = { held: [], pairs: [], counts: {} }; return holds; }); }
+    function gateInfo(id) {
+      if (!holds) return null;
+      for (var i = 0; i < holds.held.length; i++) if (holds.held[i].id === id) return holds.held[i];
+      for (var j = 0; j < holds.pairs.length; j++) { var p = holds.pairs[j]; if (p.a.id === id) return p.a; if (p.b.id === id) return p.b; }
+      return null;
+    }
+    function gateLinks() {
+      if (brand || !holds) return '';
+      var c = holds.counts || {};
+      return '<a class="btn btn-ghost" href="#dupes">Duplicates (' + (c.duplicates || 0) + ')</a><a class="btn btn-ghost" href="#held">Held (' + (c.held || 0) + ')</a>';
+    }
+
+    /* ---------- many at once (Sean, 2026-11-11: "select multiple and then have an action") ---------- */
+    var picked = {};
+    function runMany(ids, decision, reason, done) {
+      var i = 0, ok = 0, bad = [], N = ids.length;
+      function next() {
+        if (i >= N) return Promise.resolve();
+        var id = ids[i++];
+        return api({ action: 'review', id: id, decision: decision, reason: reason }).then(function (d) { if (d && d.ok) ok++; else bad.push((find(id) || {}).title || id); }, function () { bad.push((find(id) || {}).title || id); })
+          .then(function () { done(ok, bad, N, false); return next(); });
+      }
+      Promise.all([next(), next(), next(), next()]).then(function () { done(ok, bad, N, true); });
+    }
+    function bulkBar(status) {
+      if (status === 'held') status = 'pending';
+      var acts = status === 'pending' ? '<button class="btn" data-bulk="approved">Approve</button><button class="btn btn-red" data-bulk="rejected">Turn down</button>'
+        : status === 'approved' ? '<button class="btn btn-red" data-bulk="rejected">Turn down</button>' : '<button class="btn" data-bulk="approved">Approve</button>';
+      return '<div class="bulk" id="ev-bulk"><label class="chk"><input type="checkbox" id="ev-all"> Select all shown</label><span class="n" id="ev-n">None selected</span>' + acts + '</div>';
+    }
+    function wireBulk(status, list, after) {
+      var bar = $('ev-bulk'); if (!bar) return;
+      var shown = list.map(function (e) { return e.id; });
+      var count = function () {
+        var n = shown.filter(function (id) { return picked[id]; }).length;
+        $('ev-n').textContent = n ? n + ' selected' : 'None selected';
+        $('ev-all').checked = n > 0 && n === shown.length;
+        bar.querySelectorAll('[data-bulk]').forEach(function (b) { b.disabled = !n; });
+      };
+      app.querySelectorAll('[data-pick]').forEach(function (c) {
+        c.onchange = function () { var id = c.getAttribute('data-pick'); if (c.checked) picked[id] = 1; else delete picked[id]; c.closest('.row').classList.toggle('sel', c.checked); count(); };
+      });
+      $('ev-all').onchange = function () {
+        var on = this.checked;
+        app.querySelectorAll('[data-pick]').forEach(function (c) { c.checked = on; c.closest('.row').classList.toggle('sel', on); var id = c.getAttribute('data-pick'); if (on) picked[id] = 1; else delete picked[id]; });
+        count();
+      };
+      bar.querySelectorAll('[data-bulk]').forEach(function (b) {
+        b.onclick = function () {
+          var ids = shown.filter(function (id) { return picked[id]; }), dec = b.getAttribute('data-bulk'), reason = '';
+          if (!ids.length) return;
+          if (dec === 'rejected') { reason = prompt('Turn down ' + ids.length + ' event' + (ids.length === 1 ? '' : 's') + '. Why? (a member who sent one sees this)'); if (reason === null) return; }
+          else if (!confirm('Put ' + ids.length + ' event' + (ids.length === 1 ? '' : 's') + ' live on the calendar?')) return;
+          bar.querySelectorAll('button,input').forEach(function (x) { x.disabled = true; });
+          runMany(ids, dec, reason, function (ok, bad, n, end) {
+            $('ev-n').textContent = (end ? 'Done: ' : 'Working: ') + ok + ' of ' + n + (bad.length ? '. These did not save: ' + bad.join(', ') : '');
+            if (!end) return;
+            picked = {}; cache = { pending: null, approved: null, rejected: null }; holds = null;
+            setTimeout(after, bad.length ? 2500 : 600);
+          });
+        };
+      });
+      count();
+    }
+
     /* ---------- the queue ---------- */
     function drawQueue(status) {
       var tabs = ['pending', 'approved', 'rejected'].map(function (s) {
@@ -154,30 +240,97 @@
       }).join('');
       app.innerHTML = brandBar() + '<div class="tabs" data-v="qtabs">' + tabs + '</div>' +
         '<div class="bar"><input type="search" id="ev-q" placeholder="Search by name, city or link" aria-label="Search events" value="' + esc(q) + '">' +
-        '<a class="btn btn-orange" href="#add">' + (brand ? 'Add one' : 'Add from a flyer') + '</a><a class="btn btn-ghost" href="#sources">Crawl sources</a>' + (brand ? '' : '<a class="btn btn-ghost" href="#claims/new">Claims</a><a class="btn btn-ghost" href="#headsup">Heads-up</a><a class="btn btn-ghost" href="#checks">Weekly check</a><a class="btn btn-ghost" href="#leads/venue/new">From our events</a>') + '<a class="btn btn-ghost" href="' + (brand ? 'https://lesaruss.ai/events' : '/events') + '" target="_blank" rel="noopener">See the calendar</a></div>' +
-        '<div class="rows" id="ev-rows"><p class="msg">Loading…</p></div>';
+        '<a class="btn btn-orange" href="#add">' + (brand ? 'Add one' : 'Add from a flyer') + '</a><a class="btn btn-ghost" href="#sources">Crawl sources</a><span id="ev-gl" style="display:contents">' + gateLinks() + '</span>' + (brand ? '' : '<a class="btn btn-ghost" href="#claims/new">Claims</a><a class="btn btn-ghost" href="#headsup">Heads-up</a><a class="btn btn-ghost" href="#checks">Weekly check</a><a class="btn btn-ghost" href="#leads/venue/new">From our events</a>') + '<a class="btn btn-ghost" href="' + (brand ? 'https://lesaruss.ai/events' : '/events') + '" target="_blank" rel="noopener">See the calendar</a></div>' +
+        '<div id="ev-bulkbox"></div><div class="rows" id="ev-rows"><p class="msg">Loading…</p></div>';
       $('ev-q').addEventListener('input', function () { q = this.value.trim().toLowerCase(); drawRows(status); });
-      (cache[status] ? Promise.resolve() : load(status)).then(function () { drawQueue2(status); }, function () { $('ev-rows').innerHTML = '<p class="msg bad">The events did not load. Refresh to try again.</p>'; });
+      Promise.all([cache[status] ? Promise.resolve() : load(status), holds || brand ? Promise.resolve() : loadHolds()]).then(function () { drawQueue2(status); }, function () { $('ev-rows').innerHTML = '<p class="msg bad">The events did not load. Refresh to try again.</p>'; });
     }
     function drawQueue2(status) {
       // Counts arrive with the first load; redraw the tabs once.
       app.querySelector('[data-v="qtabs"]').innerHTML = ['pending', 'approved', 'rejected'].map(function (s) {
         return '<a href="#queue/' + s + '" class="' + (s === status ? 'on' : '') + '">' + STATUS[s] + ' (' + (counts[s] || 0) + ')</a>';
       }).join('');
+      if ($('ev-gl')) $('ev-gl').innerHTML = gateLinks();
       drawRows(status);
+    }
+    function rowHtml(e, status) {
+      var g = gateInfo(e.id), on = !!picked[e.id];
+      return '<div class="row' + (on ? ' sel' : '') + '"><span class="d"><label><input type="checkbox" data-pick="' + e.id + '"' + (on ? ' checked' : '') + ' aria-label="Select ' + esc(e.title) + '"><span>' + esc(day(e)) + '</span></label></span>' +
+        '<span><span class="t">' + esc(e.title) + '</span><br><span class="m">' + esc(where(e)) + (e.by ? ' · sent by ' + esc(e.by.name) + (ROLE[e.submitter_role] ? ', ' + ROLE[e.submitter_role] : '') : '') + (e.source_name ? ' · ' + esc(e.source_name) : '') + '</span>' +
+        (g && g.gate_note ? '<span class="g">' + (g.gate_status === 'duplicate' ? 'Possible duplicate. ' : 'Held. ') + esc(g.gate_note) + '</span>' : '') + '</span>' +
+        '<span class="m">' + esc(kindLabel(e)) + (e.funding && e.funding.amount ? ' · ' + esc(e.funding.amount) : '') + (e.ticket_url ? ' · ' + esc(e.ticket_url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]) : '') + '</span>' +
+        '<span class="tag src">' + esc(SRC[e.source] || e.source) + '</span>' +
+        '<a class="btn' + (status === 'pending' ? '' : ' btn-ghost') + '" href="#event/' + e.id + '">' + (status === 'pending' ? 'Review' : 'Open') + '</a></div>';
     }
     function drawRows(status) {
       var list = (cache[status] || []).filter(function (e) {
-        return !q || [e.title, e.city, e.state, e.country, e.ticket_url, e.location_name].join(' ').toLowerCase().indexOf(q) > -1;
+        return !q || [e.title, e.city, e.state, e.country, e.ticket_url, e.location_name, e.organizer_name].join(' ').toLowerCase().indexOf(q) > -1;
       });
       var box = $('ev-rows'); if (!box) return;
-      box.innerHTML = list.length ? list.map(function (e) {
-        return '<div class="row"><span class="d">' + esc(day(e)) + '</span>' +
-          '<span><span class="t">' + esc(e.title) + '</span><br><span class="m">' + esc(where(e)) + (e.by ? ' · sent by ' + esc(e.by.name) + (ROLE[e.submitter_role] ? ', ' + ROLE[e.submitter_role] : '') : '') + (e.source_name ? ' · ' + esc(e.source_name) : '') + '</span></span>' +
-          '<span class="m">' + esc(kindLabel(e)) + (e.funding && e.funding.amount ? ' · ' + esc(e.funding.amount) : '') + (e.ticket_url ? ' · ' + esc(e.ticket_url.replace(/^https?:\/\/(www\.)?/, '').split('/')[0]) : '') + '</span>' +
-          '<span class="tag src">' + esc(SRC[e.source] || e.source) + '</span>' +
-          '<a class="btn' + (status === 'pending' ? '' : ' btn-ghost') + '" href="#event/' + e.id + '">' + (status === 'pending' ? 'Review' : 'Open') + '</a></div>';
-      }).join('') : '<p class="empty">' + (status === 'pending' ? 'Nothing waiting. New ones arrive as members send them and the crawl finds them.' : 'Nothing here.') + '</p>';
+      $('ev-bulkbox').innerHTML = list.length ? bulkBar(status) : '';
+      box.innerHTML = list.length ? list.map(function (e) { return rowHtml(e, status); }).join('') : '<p class="empty">' + (status === 'pending' ? 'Nothing waiting. New ones arrive as members send them and the crawl finds them; the gates put what checks out live on their own.' : 'Nothing here.') + '</p>';
+      wireBulk(status, list, function () { drawQueue(status); });
+    }
+
+    /* ---------- Duplicates: the same event from two organizations, side by side ---------- */
+    function pairCard(e, rec, other) {
+      var host = (e.ticket_url || '').replace(/^https?:\/\/(www\.)?/, '').split('/')[0];
+      return '<div class="c' + (rec ? ' rec' : '') + '">' +
+        '<span style="display:flex;gap:6px;flex-wrap:wrap"><span class="tag ' + (e.status === 'approved' ? 'approved' : 'pending') + '">' + (e.status === 'approved' ? 'Live' : 'Waiting for approval') + '</span>' + (rec ? '<span class="tag approved">Recommended</span>' : '') + '</span>' +
+        '<span class="t">' + esc(e.title) + '</span>' +
+        '<span class="m">' + esc(day(e)) + ' · ' + esc(where(e) || 'No city') + '</span>' +
+        '<span class="m">Organizer: <b>' + esc(e.organizer_name || 'not named') + '</b></span>' +
+        '<span class="m">Link: ' + (e.ticket_url ? '<a href="' + esc(e.ticket_url) + '" target="_blank" rel="noopener">' + esc(host) + '</a>' : 'none') + (e.rsvp_count ? ' · ' + e.rsvp_count + ' going' : '') + '</span>' +
+        '<span style="display:flex;gap:8px;flex-wrap:wrap;margin-top:4px"><button class="btn' + (rec ? '' : ' btn-ghost') + '" data-keep="' + e.id + '" data-drop="' + other.id + '">Keep this one</button><a class="btn btn-ghost" href="#event/' + e.id + '">Open</a></span></div>';
+    }
+    function drawDupes() {
+      app.innerHTML = brandBar() + '<nav class="crumb"><a href="#queue/pending">Events</a><span>/</span><span>Duplicates</span></nav>' +
+        '<p class="sub">The same event, the same day, listed by two organizations (the official one and, say, a Meetup group going to it). Keep one: it goes live and the other comes down. We recommend the organization\'s own page. If they are two different events, say so and both go through.</p>' +
+        '<div id="dp-rows"><p class="msg">Loading…</p></div>';
+      loadHolds().then(function (h) {
+        var box = $('dp-rows');
+        box.innerHTML = h.pairs.length ? h.pairs.map(function (p) {
+          return '<div class="pair">' + pairCard(p.a, p.keep === p.a.id, p.b) + pairCard(p.b, p.keep === p.b.id, p.a) +
+            '<div class="foot"><button class="btn btn-ghost" data-distinct="' + p.a.id + ':' + p.b.id + '">Not the same event</button><span class="msg" data-pm="' + p.a.id + '"></span></div></div>';
+        }).join('') : '<p class="empty">No duplicates waiting. The same event from one organizer twice is folded on its own; only two organizations listing one event come here.</p>';
+        var msgFor = function (b, t, bad) { var m = b.closest('.pair').querySelector('.msg'); m.textContent = t; m.className = 'msg' + (bad ? ' bad' : ''); };
+        box.querySelectorAll('[data-keep]').forEach(function (b) {
+          b.onclick = function () {
+            var keep = b.getAttribute('data-keep'), drop = b.getAttribute('data-drop'), kp = gateInfo(keep);
+            b.closest('.pair').querySelectorAll('button').forEach(function (x) { x.disabled = true; });
+            msgFor(b, 'Saving…');
+            var first = kp && kp.status === 'pending' ? api({ action: 'review', id: keep, decision: 'approved' }) : Promise.resolve({ ok: true });
+            first.then(function (r) {
+              if (!r || !r.ok) throw new Error((r && r.message) || 'That did not save.');
+              return api({ action: 'review', id: drop, decision: 'rejected', reason: 'Duplicate of ' + keep });
+            }).then(function (r) {
+              if (!r || !r.ok) throw new Error((r && r.message) || 'That did not save.');
+              cache = { pending: null, approved: null, rejected: null }; drawDupes();
+            }).catch(function (x) { msgFor(b, x.message, true); b.closest('.pair').querySelectorAll('button').forEach(function (y) { y.disabled = false; }); });
+          };
+        });
+        box.querySelectorAll('[data-distinct]').forEach(function (b) {
+          b.onclick = function () {
+            var ab = b.getAttribute('data-distinct').split(':');
+            b.disabled = true; msgFor(b, 'Saving…');
+            ck({ action: 'not_dupes', a: ab[0], b: ab[1] }).then(function (r) { if (r && r.ok) { cache = { pending: null, approved: null, rejected: null }; drawDupes(); } else { b.disabled = false; msgFor(b, 'That did not save.', true); } });
+          };
+        });
+      });
+    }
+
+    /* ---------- Held: what the gates could not confirm on the event's own page ---------- */
+    function drawHeld() {
+      app.innerHTML = brandBar() + '<nav class="crumb"><a href="#queue/pending">Events</a><span>/</span><span>Held</span></nav>' +
+        '<p class="sub">The gates could not confirm these on their own page (it turned us away, it said postponed, or it answered not found once). They are asked again each day; approve or turn down any you know.</p>' +
+        '<div id="ev-bulkbox"></div><div class="rows" id="ev-rows"><p class="msg">Loading…</p></div>';
+      Promise.all([loadHolds(), cache.pending ? Promise.resolve() : load('pending')]).then(function (r) {
+        var ids = {}; r[0].held.forEach(function (e) { ids[e.id] = 1; });
+        var list = (cache.pending || []).filter(function (e) { return ids[e.id]; });
+        $('ev-bulkbox').innerHTML = list.length ? bulkBar('pending') : '';
+        $('ev-rows').innerHTML = list.length ? list.map(function (e) { return rowHtml(e, 'pending'); }).join('') : '<p class="empty">Nothing held.</p>';
+        wireBulk('pending', list, drawHeld);
+      });
     }
 
     /* ---------- one event: its fields, its flyer, approve or turn down ---------- */
@@ -657,6 +810,8 @@
       else if ((m = /^#headsup\/host\/([0-9a-f-]{36})$/.exec(h))) drawHeadsupHost(m[1]);
       else if ((m = /^#headsup(?:\/(active|no_email|held|has_account|stopped))?$/.exec(h))) drawHeadsup(m[1] || '');
       else if (h === '#sources') drawSources();
+      else if (h === '#dupes') drawDupes();
+      else if (h === '#held') drawHeld();
       else if ((m = /^#checks(?:\/(changed|cancelled|postponed|gone|unreadable))?$/.exec(h))) drawChecks(m[1] || '');
       else if ((m = /^#leads\/(venue|organizer)\/(new|listed|linked|set_aside)$/.exec(h))) drawLeads(m[1], m[2]);
       else if ((m = /^#source\/(new|[0-9a-f-]{36})$/.exec(h))) drawSource(m[1]);

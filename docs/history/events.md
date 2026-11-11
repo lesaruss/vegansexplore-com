@@ -323,3 +323,32 @@ with us?... it's per event." Separate from Group Partners.
   3. Per-event ticketing.
   4. The sponsorship and extras checkout.
   5. The ad console's credit, booking and creative support.
+
+## The event gates and many at once (Sean, 2026-11-11)
+
+Sean, on 122 events waiting: "I am not going through all 122 of these... why can't we just approve them? Can we put in some
+gates?"; "If they are still active, if they have a link to register, it hasn't been canceled, it's not duplicated, I would say we
+can roll with it"; "We should automatically defer to the official organization's listing and not put up the meetup group... if
+they are two duplicate events, you can flag those and I can choose"; "select multiple and then have an action".
+
+- **The gates** (migration `20261111_event_gates.sql`, `ve-event-check` `gate`, cron `ve-event-gate` at :04, :19, :34, :49, 10 a
+  run). Every waiting event the crawl, a flyer or the team brought in (members' own still wait for a person: Logan's default,
+  Sean's to change) goes through: (1) duplicates (`ve_event_gate_dupes` over `ve_event_match`: the same local day, and the same link,
+  or a near-same name (`ve_event_title_key`, trigram 0.5) in the same city or by the same organizer). The same organizer twice
+  (`ve_event_same_org`: the same name, or one starting with the other; with no organizer named, the same link or the same own
+  website) is folded into the one we keep (the live one, else the organizer's own page over Eventbrite, Meetup and the like) and
+  turned down as "Duplicate of <id>". Two organizations listing one event wait for Sean (`gate_status` duplicate, `dupe_of`), the
+  official one recommended. (2) Its official page (the weekly check's `checkOne`): still this event -> live (`gate_status` passed,
+  `gate_note`); cancelled -> off; gone -> turned down; a 404 once, postponed or unreadable -> held, asked again the next day.
+  Live duplicates are swept the same way each run (`ve_event_live_dupes`: same organizer folded, RSVPs moved to the one kept;
+  two organizations flagged, both stay live until Sean picks).
+- **The intake** refuses a near-same event by the same organizer on the same day (`ve_event_intake_dupe`), not only the exact name.
+- **A series on one link**: the weekly check no longer moves a waiting event's date to the page's next date when another waiting or
+  live event shares the link (the Vegan Toastmasters Meetup had three dates on one link).
+- **Depot > Events**: every queue has a checkbox per row, Select all shown, and Approve / Turn down for the selection (one reason
+  for all; it calls `ve-events` `review` per event, so members still get their email). **Duplicates** (`#dupes`): each pair side
+  by side, Keep this one (it goes live, the other is turned down as its duplicate) or Not the same event (`not_dupes`, never matched
+  again; the waiting one goes back through the gates). **Held** (`#held`): what the gates could not confirm, with why.
+- **Georgia VegFest**: the Atlanta Veggie Eats Meetup copy came down as a duplicate of the official listing (Farm of the Free), on
+  Sean's word. The one-time write ran through `ve-once-event-gates` (`scripts/supabase-once/event-gates.ts`), the connector having
+  held the second migration.
