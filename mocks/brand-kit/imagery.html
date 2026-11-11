@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brand kit, part 2: Imagery — Vegans Explore</title>
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="The Vegans Explore brand kit, part 2: our illustration style with do and don't examples, picture shapes, the Guide scene recipe, photos and logos. A mock for approval, not live.">
+  <link rel="canonical" href="https://vegansexplore.com/mocks/brand-kit/imagery">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* Brand kit, part 2: Imagery (copied from part 1, /mocks/brand-kit). Part 1 header follows. Brand kit, part 1: Foundations. Built on the locked Color Block look (canon canon-ve-look-color-block, concept
+       /mocks/directory-looks/bold), in the guided view (parent: /partners + /public/ve-guided.js, white stage).
+       Every token below is the one the concept already uses; nothing here is new except the rules written around them. */
+    :root {
+      --dk: #2D5C27; --md: #3A9B3E; --br: #22C55E; --tint: #E8F5E9;
+      --or: #F69820; --peach: #FFEBD1; --pink: #FF9EC4; --pinkt: #FFE3EE; --pinkd: #C2185B;
+      --ink: #1a1a1a; --mute: #5c5c5c; --line: #e7e7e7; --r: 6px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: "Montserrat", sans-serif; background: #fff; color: var(--ink); line-height: 1.45; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; }
+
+    /* slide frame */
+    .bk-eb { display: inline-block; background: var(--dk); color: #fff; font-size: 10.5px; font-weight: 900; letter-spacing: .18em; text-transform: uppercase; padding: 6px 10px; border-radius: var(--r); margin-bottom: 12px; }
+    .bk-h { font-size: clamp(26px, 2.8vw, 42px); font-weight: 900; line-height: 1.04; letter-spacing: -.025em; margin-bottom: 8px; max-width: 1100px; }
+    .bk-lede { font-size: 13.5px; font-weight: 600; color: var(--mute); max-width: 860px; margin-bottom: 14px; }
+    .hl { padding: 0 .08em; border-radius: 4px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+    .hl.g { background: linear-gradient(transparent 56%, var(--br) 56%, var(--br) 92%, transparent 92%); }
+    .hl.o { background: linear-gradient(transparent 56%, var(--or) 56%, var(--or) 92%, transparent 92%); }
+    .hl.p { background: linear-gradient(transparent 56%, var(--pink) 56%, var(--pink) 92%, transparent 92%); }
+    .bk-row { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 22px 30px; align-items: start; }
+    .bk-rules { font-size: 12.5px; line-height: 1.5; }
+    .bk-rules h3 { font-size: 10.5px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; color: var(--dk); margin: 0 0 6px; }
+    .bk-rules ul { list-style: none; display: grid; gap: 6px; margin-bottom: 14px; }
+    .bk-rules li { padding-left: 16px; position: relative; }
+    .bk-rules li::before { content: ""; position: absolute; left: 0; top: 6px; width: 8px; height: 8px; border-radius: 2px; background: var(--br); }
+    .bk-rules li.no::before { background: #d93025; border-radius: 50%; }
+    .bk-rules b { font-weight: 800; }
+    .bk-stripe { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr; height: 8px; border-radius: 4px; overflow: hidden; }
+    .bk-stripe i:nth-child(1) { background: var(--dk); } .bk-stripe i:nth-child(2) { background: var(--or); } .bk-stripe i:nth-child(3) { background: var(--pink); }
+    .bk-stripe i:nth-child(4) { background: var(--peach); } .bk-stripe i:nth-child(5) { background: var(--br); } .bk-stripe i:nth-child(6) { background: var(--tint); } .bk-stripe i:nth-child(7) { background: var(--md); }
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .92em; }
+    .tagx { display: inline-block; font-size: 9.5px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; background: var(--or); color: var(--ink); border-radius: var(--r); padding: 2px 7px; vertical-align: middle; margin-left: 6px; }
+
+    /* 1 cover */
+    .cv { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 36px; align-items: center; min-height: 100%; }
+    .cv h1 { font-size: clamp(34px, 3.9vw, 58px); font-weight: 900; line-height: 1; letter-spacing: -.035em; margin: 6px 0 16px; }
+    .cv .bk-stripe { margin: 18px 0; max-width: 620px; }
+    .cv ol { list-style: none; counter-reset: s; display: grid; gap: 7px; font-size: 13.5px; font-weight: 700; }
+    .cv ol li { counter-increment: s; display: flex; gap: 10px; align-items: center; }
+    .cv ol li::before { content: counter(s); flex: none; width: 24px; height: 24px; border-radius: 6px; display: grid; place-items: center; font-size: 11px; font-weight: 900; background: var(--line); }
+    .cv ol li.now::before { background: var(--or); }
+    .cv ol li.now { font-weight: 900; }
+    .cv ol li span { color: var(--mute); font-weight: 600; }
+    .cv-art { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 420px; justify-self: center; width: 100%; }
+    .cv-art i { aspect-ratio: 1; border-radius: 14px; display: block; }
+    .cv-art .lg { grid-column: span 2; grid-row: span 2; background: #fff; border: 3px solid var(--ink); box-shadow: 8px 8px 0 var(--pink); display: grid; place-items: center; aspect-ratio: auto; }
+    .cv-art .lg img { width: 62%; }
+    .cv-pics { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; max-width: 460px; justify-self: center; width: 100%; }
+    .cv-pics img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 10px; display: block; border: 3px solid #fff; }
+    .cv-pics .f { border-radius: 14px; padding: 10px; background: var(--c); }
+    .cv-pics .f:nth-child(2) { transform: translateY(26px); }
+
+    /* figure tiles */
+    .tiles { display: grid; grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)); gap: 12px; }
+    .tl { border-radius: 14px; overflow: hidden; border: 2px solid var(--ink); background: #fff; display: flex; flex-direction: column; }
+    .tl.no { border-color: #e9a7a2; }
+    .tl .im { position: relative; aspect-ratio: var(--ar, 4 / 3); overflow: hidden; background: #f4f4f4; }
+    .tl .im img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .tl .badge { position: absolute; top: 8px; left: 8px; font-size: 9.5px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; border-radius: var(--r); padding: 3px 7px; background: var(--br); color: var(--ink); z-index: 2; }
+    .tl.no .badge { background: #d93025; color: #fff; }
+    .tl .cap { padding: 7px 9px 9px; font-size: 11px; line-height: 1.35; }
+    .tl .cap b { display: block; font-size: 12.5px; font-weight: 900; margin-bottom: 2px; }
+    .tl .cap span { color: var(--mute); font-weight: 600; }
+    .twin { display: grid; grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; height: 100%; gap: 3px; background: #fff; }
+    .twin > div { position: relative; overflow: hidden; }
+    .twin img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .twin i { position: absolute; left: 6px; bottom: 6px; font-style: normal; font-size: 9px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; background: #fff; border-radius: 4px; padding: 2px 5px; }
+    .txtile { height: 100%; display: grid; place-items: center; text-align: center; padding: 12px; font-size: 12px; font-weight: 800; line-height: 1.35; background: repeating-linear-gradient(-45deg, #fafafa 0 10px, #f1f1f1 10px 20px); color: #7a2b25; }
+
+    /* 2 the style */
+    .traits { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px 18px; margin-bottom: 14px; }
+    .trait { border-left: 4px solid var(--c); padding: 1px 0 1px 12px; font-size: 11.5px; line-height: 1.45; color: var(--mute); font-weight: 600; }
+    .trait b { display: block; font-size: 13.5px; font-weight: 900; color: var(--ink); }
+
+    /* 5 shapes */
+    .shapes { --h: clamp(150px, calc(100vh - 580px), 280px); display: flex; flex-wrap: wrap; gap: 18px 22px; align-items: flex-start; }
+    .shp { width: calc(var(--h) * var(--k)); min-width: 150px; }
+    .shp .fr { height: var(--h); }
+    .shp .fr { border-radius: 10px; overflow: hidden; border: 2px solid var(--ink); background: #fff; }
+    .shp .fr img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .shp b { display: block; font-size: 13px; font-weight: 900; margin-top: 8px; }
+    .shp span { display: block; font-size: 11px; color: var(--mute); font-weight: 600; line-height: 1.4; }
+    .shp .r { font-size: 10px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; color: var(--dk); }
+
+    /* 6 in the frame */
+    .frm { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start; }
+    .blk { border-radius: 14px; padding: 14px; background: var(--c); color: var(--t, var(--ink)); }
+    .blk h5 { font-size: 20px; font-weight: 900; line-height: 1.1; margin-bottom: 10px; }
+    .blk .p { border-radius: 10px; overflow: hidden; border: 3px solid #fff; aspect-ratio: 8 / 5; }
+    .blk .p img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border-radius: 14px; overflow: hidden; border: 2px solid var(--ink); }
+    .split .t { background: var(--dk); color: #fff; padding: 14px; display: flex; flex-direction: column; justify-content: center; }
+    .split .t h5 { font-size: 20px; font-weight: 900; line-height: 1.1; }
+    .split .t h5 span { color: var(--br); }
+    .split img { width: 100%; height: 100%; object-fit: cover; display: block; min-height: 170px; }
+    .samp { position: relative; border-radius: 14px; overflow: hidden; border: 2px solid var(--ink); }
+    .samp img { width: 100%; display: block; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; }
+    .samp .stamp { position: absolute; top: 10px; right: 10px; background: var(--or); color: var(--ink); font-size: 11px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; border: 2px solid var(--ink); border-radius: var(--r); padding: 5px 9px; transform: rotate(-4deg); box-shadow: 3px 3px 0 var(--ink); }
+    .frm .cap { font-size: 11.5px; color: var(--mute); font-weight: 600; margin-top: 8px; line-height: 1.4; }
+    .frm .cap b { color: var(--ink); font-weight: 900; display: block; font-size: 12.5px; }
+
+    /* 7 recipe */
+    .rcp { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+    .refs { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .refs figure { border: 2px solid var(--ink); border-radius: 12px; overflow: hidden; background: #fff; }
+    .refs img { width: 100%; aspect-ratio: 5 / 4; object-fit: cover; display: block; }
+    .refs figcaption { font-size: 10.5px; font-weight: 800; padding: 6px 8px; line-height: 1.3; }
+    .refs figcaption span { display: block; font-weight: 600; color: var(--mute); }
+    .arrow { text-align: center; font-size: 11px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; color: var(--dk); margin: 5px 0; }
+    .out { border: 2px solid var(--ink); border-radius: 12px; overflow: hidden; box-shadow: 6px 6px 0 var(--pink); }
+    .out img { width: 100%; aspect-ratio: 3 / 1; object-fit: cover; object-position: center 30%; display: block; }
+    .out div { font-size: 10.5px; font-weight: 800; padding: 6px 8px; }
+    .prompt { background: #fafafa; border: 2px solid var(--ink); border-radius: 12px; padding: 12px 14px; font-size: 11.5px; line-height: 1.5; }
+    .prompt h4, .spec h4 { font-size: 10.5px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: var(--dk); margin-bottom: 6px; }
+    .prompt q { quotes: none; display: block; font-weight: 600; }
+    .prompt q em { font-style: normal; background: var(--pinkt); border-radius: 4px; padding: 0 4px; font-weight: 800; color: var(--pinkd); }
+    .spec { margin-top: 12px; display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; font-size: 11.5px; }
+    .spec h4 { grid-column: 1 / -1; margin: 0 0 2px; }
+    .spec dt { font-weight: 900; }
+    .spec dd { color: var(--mute); font-weight: 600; }
+
+    /* 9 other drawn people */
+    .oth { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start; }
+    .oc { border: 2px solid var(--line); border-radius: 14px; padding: 14px; }
+    .oc.k { border-color: var(--ink); }
+    .oc h4 { font-size: 15px; font-weight: 900; margin-bottom: 6px; }
+    .oc p { font-size: 12px; color: var(--mute); font-weight: 600; line-height: 1.45; margin-bottom: 8px; }
+    .oc img { width: 100%; height: 150px; object-fit: cover; object-position: center 6%; border-radius: 10px; display: block; margin-bottom: 10px; border: 2px solid var(--ink); }
+    .oc .chip2 { display: inline-block; font-size: 9.5px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; border-radius: var(--r); padding: 3px 7px; background: var(--tint); color: var(--dk); margin-bottom: 8px; }
+    .gfs { height: 150px; border-radius: 10px; margin-bottom: 10px; display: grid; place-items: center; text-align: center; background: #111; color: #fff; padding: 16px; position: relative; overflow: hidden; }
+    .gfs b { font-size: 18px; font-weight: 900; letter-spacing: .02em; position: relative; z-index: 1; }
+    .gfs span { display: block; font-size: 11px; font-weight: 700; opacity: .8; margin-top: 6px; position: relative; z-index: 1; }
+    .gfs::before { content: ""; position: absolute; inset: 14px; border: 4px solid #fff; border-radius: 6px; opacity: .25; }
+
+    /* decide */
+    .dec { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .dc { border: 2px solid var(--ink); border-radius: 14px; padding: 14px 16px; box-shadow: 5px 5px 0 var(--c); background: #fff; }
+    .dc .q { font-size: 15px; font-weight: 900; line-height: 1.25; margin-bottom: 6px; }
+    .dc .q i { font-style: normal; display: inline-block; font-size: 10px; font-weight: 900; background: var(--c); color: var(--t, var(--ink)); border-radius: 5px; padding: 2px 6px; margin-right: 6px; vertical-align: 2px; }
+    .dc p { font-size: 12px; color: var(--mute); font-weight: 600; line-height: 1.45; }
+    .dc p b { color: var(--ink); }
+    .next { margin-top: 14px; font-size: 12.5px; font-weight: 700; display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: center; }
+    .next span { background: #f2f2f2; border-radius: var(--r); padding: 5px 9px; }
+    .next span.on { background: var(--or); }
+    .next a { text-decoration: none; }
+
+    @media (max-width: 600px) { .shapes { --h: 200px; } .shp { width: 100%; } .shp .fr { height: auto; aspect-ratio: var(--k); } }
+    @media (max-width: 1100px) {
+      .tiles { --n: 3 !important; }
+      .traits, .frm, .oth { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .rcp { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 900px) {
+      .bk-row, .cv, .dec, .rcp { grid-template-columns: minmax(0, 1fr); }
+      .cv-pics { max-width: 340px; }
+      .tiles { --n: 2 !important; }
+    }
+    @media (max-width: 600px) {
+      .traits, .frm, .oth { grid-template-columns: minmax(0, 1fr); }
+    }
+  </style>
+</head>
+<body>
+<div class="page-frame">
+  <script src="/public/nav.js"></script>
+  <div class="vg-note"><strong>For approval</strong>Brand kit, part 2 of 4: Imagery, on the locked Color Block look. A mock, nothing here is live. Every picture is our own art.</div>
+
+  <main class="vg-stage vg-light" aria-label="Brand kit, part 2: Imagery">
+
+    <!-- 1. Cover -->
+    <section class="vg-slide" id="start" data-title="Start">
+      <div class="cv">
+        <div>
+          <span class="bk-eb">Vegans Explore brand kit</span>
+          <h1>Part 2: <span class="hl p">Imagery</span>. Drawn, warm, and always <span class="hl g">doing something</span>.</h1>
+          <div class="bk-stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <ol>
+            <li>Foundations <span>locked November 11</span></li>
+            <li class="now">Imagery <span>our illustration style, do and don't, shapes, the Guide scene recipe, photos, GeekFon</span></li>
+            <li>Templates <span>posts, carousels, stories, reels, thumbnails, video, podcast, email, ads</span></li>
+            <li>The Guide roster <span>art, bio, voice and what each one guides</span></li>
+          </ol>
+        </div>
+        <div class="cv-pics" aria-hidden="true">
+          <div class="f" style="--c:var(--pink)"><img src="/public/guides/welcome/liz-ani-adopt.jpg" alt=""></div>
+          <div class="f" style="--c:var(--or)"><img src="/public/guides/holiday/theo-xm-gifts.jpg" alt=""></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. The style -->
+    <section class="vg-slide" id="style" data-title="Our style">
+      <span class="bk-eb">1 · Our illustration style</span>
+      <h2 class="bk-h">Hand-drawn people, <span class="hl o">real places</span>, Vegan food you can almost taste.</h2>
+      <div class="traits">
+        <div class="trait" style="--c:var(--dk)"><b>Clean ink lines, soft painted color</b>Confident outlines, warm light, gentle texture. Never flat vector, never 3D, never a photo.</div>
+        <div class="trait" style="--c:var(--or)"><b>Everyone doing something</b>Shopping, cooking, wrapping, adopting. A scene shows the page's action, not a pose.</div>
+        <div class="trait" style="--c:var(--pink)"><b>Real adults, real range</b>About seven and a half heads tall, every age, skin tone, body and ability. Dani is always in her wheelchair.</div>
+        <div class="trait" style="--c:var(--br)"><b>The food is the hero</b>Colorful, plant-based plates up front and in focus whenever food is in the story.</div>
+        <div class="trait" style="--c:var(--md)"><b>Our mark, no one else's</b>Guides wear the Vegans Explore suitcase mark. No other logos, no readable words in a scene.</div>
+        <div class="trait" style="--c:var(--peach);border-left-color:var(--or)"><b>Warm, lived-in places</b>Markets, kitchens, cafes, parks, string lights. Real places drawn, never generic stock rooms.</div>
+      </div>
+      <div class="tiles" style="--n:5;--ar:5/4">
+        <div class="tl"><div class="im"><img src="/public/guides/holiday/theo-store.jpg" alt="Theo shopping in a store, drawn"></div></div>
+        <div class="tl"><div class="im"><img src="/public/guides/welcome/liz-ani-foster.jpg" alt="Liz with foster kittens, drawn"></div></div>
+        <div class="tl"><div class="im"><img src="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/tours/welcome-guide/v45/b10-market-walk.jpg" alt="The Guides walking through a market, drawn"></div></div>
+        <div class="tl"><div class="im"><img src="/public/guides/holiday/r-pie.jpg" alt="A Vegan pumpkin pie, drawn"></div></div>
+        <div class="tl"><div class="im"><img src="/public/guides/vegan-dating.jpg" alt="A couple sharing a Vegan dinner, drawn" style="object-position:30% center"></div></div>
+      </div>
+    </section>
+
+    <!-- 3. Do -->
+    <section class="vg-slide" id="do" data-title="Do">
+      <span class="bk-eb">2 · Do</span>
+      <h2 class="bk-h">Six things every picture <span class="hl g">gets right</span>.</h2>
+      <div class="tiles" style="--n:6;--ar:1/1">
+        <div class="tl"><div class="im"><span class="badge">Do</span><div class="twin"><div><img src="/public/guides/holiday/theo-xm-gifts.jpg" alt="Theo wrapping gifts"><i>Gift Guide</i></div><div><img src="/public/guides/holiday/theo-xm-wish.jpg" alt="Theo sharing a wish list"><i>Wish List</i></div></div></div><div class="cap"><b>A new scene for every page</b><span>Same Guide, a different picture doing that page's thing. It opens and closes that page's video.</span></div></div>
+        <div class="tl"><div class="im"><span class="badge">Do</span><img src="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/tours/welcome-guide/v45/b10-market-walk.jpg" alt="The Guides in a market" style="object-position:center 35%"></div><div class="cap"><b>Groups at real adult height</b><span>The approved group shot: head to shoes in frame, nobody short or squat.</span></div></div>
+        <div class="tl"><div class="im"><span class="badge">Do</span><img src="/public/guides/dani.jpg" alt="Dani seated in her wheelchair" style="object-position:center 30%"></div><div class="cap"><b>Dani always seated in her wheelchair</b><span>Said in every prompt; a reference picture alone is not enough.</span></div></div>
+        <div class="tl"><div class="im"><span class="badge">Do</span><img src="/public/guides/eating-out.jpg" alt="Friends ordering at a Vegan restaurant"></div><div class="cap"><b>Food up front</b><span>The plate is in focus and in color; the people are enjoying it.</span></div></div>
+        <div class="tl"><div class="im"><span class="badge">Do</span><img src="/public/guides/welcome/liz-ani-adopt.jpg" alt="Liz at an adoption event" style="object-position:center 40%"></div><div class="cap"><b>The mark is visible</b><span>The suitcase on the tee, sweater or apron, clear and unbroken. Store clothes; colors and layers vary.</span></div></div>
+        <div class="tl"><div class="im"><span class="badge">Do</span><img src="/public/guides/holiday/r-pie.jpg" alt="A Vegan pumpkin pie"></div><div class="cap"><b>Things drawn, too</b><span>Recipes, products and places get the same hand, so a page of cards reads as one family.</span></div></div>
+      </div>
+    </section>
+
+    <!-- 4. Don't -->
+    <section class="vg-slide" id="dont" data-title="Don't">
+      <span class="bk-eb">3 · Don't</span>
+      <h2 class="bk-h">Six mistakes we have made, <span class="hl o">so we never make them again</span>.</h2>
+      <div class="tiles" style="--n:6;--ar:1/1">
+        <div class="tl no"><div class="im"><span class="badge">Don't</span><div style="height:100%;background:#fff"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261005_021230_e7e80a66-1335-48aa-9765-3cb2f90dd979_min.webp" alt="Liz full body squeezed into a square" style="width:100%;height:100%;object-fit:contain"></div></div><div class="cap"><b>A full body in a square</b><span>Square spots take the mid shot (head to waist). Full body only at 9:16.</span></div></div>
+        <div class="tl no"><div class="im"><span class="badge">Don't</span><img src="/public/guides/holiday/theo-store.jpg" alt="Theo's scene stretched wide" style="object-fit:fill"></div><div class="cap"><b>Stretched or outpainted to fit</b><span>Draw it new in the target shape. Outpainting is only for city art.</span></div></div>
+        <div class="tl no"><div class="im"><span class="badge">Don't</span><img src="/public/guides/eating-out.jpg" alt="A headline covering faces"><div style="position:absolute;left:0;right:0;top:22%;text-align:center;font-size:17px;font-weight:900;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.6);letter-spacing:-.02em">5 VEGAN SPOTS IN MIAMI</div></div><div class="cap"><b>Words or a logo over a face</b><span>Text goes beside the picture or on a solid plate, never across a face.</span></div></div>
+        <div class="tl no"><div class="im"><span class="badge">Don't</span><img src="/public/guides/welcome-ensemble.jpg" alt="The old group shot with short proportions" style="object-position:center 40%"></div><div class="cap"><b>Short, squat groups</b><span>The old ensemble shot made the Guides look short. Still on five pages; see your calls.</span></div></div>
+        <div class="tl no"><div class="im"><span class="badge">Don't</span><div class="twin"><div><img src="/public/guides/holiday/theo-xm-gifts.jpg" alt=""><i>Gift Guide</i></div><div><img src="/public/guides/holiday/theo-xm-gifts.jpg" alt=""><i>Wish List</i></div></div></div><div class="cap"><b>One picture on two pages</b><span>The same scene reused reads as lazy. Every page gets its own.</span></div></div>
+        <div class="tl no"><div class="im"><span class="badge">Don't</span><div class="txtile">No photorealistic "stock" pictures<br>for anything generic. (No example on purpose.)</div></div><div class="cap"><b>Photoreal for generic ideas</b><span>Real photos only for real places and real people. Everything else is drawn.</span></div></div>
+      </div>
+    </section>
+
+    <!-- 5. Shapes -->
+    <section class="vg-slide" id="shapes" data-title="Shapes">
+      <span class="bk-eb">4 · Shapes</span>
+      <h2 class="bk-h">Four shapes, each <span class="hl g">drawn for its spot</span>.</h2>
+      <div class="shapes">
+        <div class="shp" style="--k:1"><div class="fr"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261005_021226_51fc0dd1-aad1-45ee-ada3-f6cab13ed3a2_min.webp" alt="Liz mid shot, square"></div><span class="r">1:1 · square</span><b>Mid shot, head to waist</b><span>Avatars, the Guide picker, tiles, phones. A warm wave on white, like Liz's.</span></div>
+        <div class="shp" style="--k:.8"><div class="fr"><img src="/public/guides/holiday/theo-xm-wish.jpg" alt="Theo scene, 4:5"></div><span class="r">4:5 · scene</span><b>A Guide doing the page's thing</b><span>Guide pages, scene cards, vertical video. Made at 1856 x 2304, saved 1080 x 1350.</span></div>
+        <div class="shp" style="--k:.5625"><div class="fr"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261005_021230_e7e80a66-1335-48aa-9765-3cb2f90dd979_min.webp" alt="Liz full body, 9:16"></div><span class="r">9:16 · tall</span><b>Full body</b><span>True 9:16 spots only: stories, reels.</span></div>
+        <div class="shp" style="--k:1.6"><div class="fr"><img src="/public/guides/eating-out.jpg" alt="Restaurant scene, wide"></div><span class="r">16:10 · wide</span><b>Banners and door blocks</b><span>Directory doors, Guide cards, thumbnails. Under about 500 KB; JPEG at most 1920 px wide, quality about 80.</span></div>
+      </div>
+      <div class="bk-rules" style="margin-top:10px"><ul style="grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 22px;margin-bottom:0">
+        <li>Square spots use <span class="mono">cover</span>, never <span class="mono">contain</span>.</li>
+        <li>Ask for a Guide's picture with <span class="mono">VEGuideArt(slug, 'square'|'tall')</span>; never point a page at the file.</li>
+        <li class="no">Never crop a full body down to a square, and never stretch one shape into another.</li>
+      </ul></div>
+    </section>
+
+    <!-- 6. In the frame -->
+    <section class="vg-slide" id="frame" data-title="In the Color Block frame">
+      <span class="bk-eb">5 · Pictures in the Color Block frame</span>
+      <h2 class="bk-h">Art sits <span class="hl p">in a white frame</span> on its color, words beside it.</h2>
+      <div class="frm">
+        <div>
+          <div class="blk" style="--c:var(--pink)"><h5>People &amp; Groups</h5><div class="p"><img src="/public/guides/creator-guide.jpg" alt="A creator filming a Vegan bowl, drawn"></div></div>
+          <p class="cap"><b>On a color block</b>3px white frame, 10px corner, the block's padding around it. Nothing laid over the picture.</p>
+        </div>
+        <div>
+          <div class="split"><div class="t"><h5>Wrap it up <span>Vegan</span>.</h5></div><img src="/public/guides/holiday/theo-xm-gifts.jpg" alt="Theo wrapping a gift, drawn" style="object-position:center 30%"></div>
+          <p class="cap"><b>Words beside, not on top</b>The headline gets its own half on the section color; the picture keeps every face clear. Social uses this split too.</p>
+        </div>
+        <div>
+          <div class="samp"><img src="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/tours/welcome-guide/f09-sample-listing.jpg" alt="The sample listing, Green Leaf Kitchen"><span class="stamp">Sample</span></div>
+          <p class="cap"><b>Showing the site? Use the demos, stamped</b>Green Leaf Kitchen, the sample group, the sample Gig Board and pitch, with a visible Sample stamp that is never cropped out.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. Recipe -->
+    <section class="vg-slide" id="recipe" data-title="Guide scene recipe">
+      <span class="bk-eb">6 · The Guide scene recipe</span>
+      <h2 class="bk-h">Locked November 8: <span class="hl o">two references in</span>, one scene out.</h2>
+      <div class="rcp">
+        <div>
+          <div class="refs">
+            <figure><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261005_021226_51fc0dd1-aad1-45ee-ada3-f6cab13ed3a2_min.webp" alt="Reference 1, the Guide's own picture"><figcaption>1 · The Guide's picture<span>same face, hair, skin tone</span></figcaption></figure>
+            <figure><img src="/public/guides/holiday/theo-store.jpg" alt="Reference 2, the Theo store scene"><figcaption>2 · The style scene<span>Theo in the store</span></figcaption></figure>
+          </div>
+          <div class="arrow">↓ one new scene ↓</div>
+          <div class="out"><img src="/public/guides/welcome/liz-ani-adopt.jpg" alt="The result, Liz at an adoption event"><div>Liz at an adoption event: her face, the store scene's hand</div></div>
+        </div>
+        <div class="prompt">
+          <h4>The prompt, every time</h4>
+          <q>"<em>&lt;Guide&gt;</em>, the same character as the first reference (same face, hair, skin tone), drawn in the illustrated style of the second reference scene, mid shot, <em>&lt;the scene&gt;</em>. She wears <em>&lt;store clothes, the Vegans Explore suitcase mark clearly visible&gt;</em>. Hands fully drawn. No other logos, no readable words."</q>
+          <h4 style="margin-top:12px">For a group, add</h4>
+          <q>"Realistic adult proportions, about seven and a half heads tall, never short, squat or chibi, everyone head to shoes in frame." First reference: the approved group shot (frame 10).</q>
+          <h4 style="margin-top:12px">For Dani, add</h4>
+          <q>"Seated in her manual wheelchair."</q>
+        </div>
+        <div>
+          <dl class="spec">
+            <h4>Settings</h4>
+            <dt>Model</dt><dd>request nano_banana_pro in Higgsfield (jobs come back labeled nano_banana_2, the approved run)</dd>
+            <dt>Shape</dt><dd>4:5, 1856 x 2304 out, saved 1080 x 1350 JPEG about 84</dd>
+            <dt>Ref 1</dt><dd>the Guide (Liz: media 85023ca7…)</dd>
+            <dt>Ref 2</dt><dd>Theo store scene (media 6c80cc2c…)</dd>
+            <dt>Group</dt><dd>vegan-media …/v45/b10-market-walk.jpg</dd>
+          </dl>
+          <div class="bk-rules" style="margin-top:12px"><ul>
+            <li>Each page's scene is its still and opens and closes its video.</li>
+            <li>Liz's pink Vegans Explore tee is a favorite: use it often.</li>
+            <li>Logos on clothing are checked against the real file.</li>
+            <li class="no">Never stretch or outpaint a character scene.</li>
+          </ul></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8. Photos and logos -->
+    <section class="vg-slide" id="photos" data-title="Photos and logos">
+      <span class="bk-eb">7 · Real photos and other brands' logos</span>
+      <h2 class="bk-h">Photos for <span class="hl g">real places and people</span> only.</h2>
+      <div class="bk-row" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+        <div class="bk-rules"><h3>When a photo is right</h3><ul>
+          <li>A real listing's own place, food and team (their profile, their card).</li>
+          <li>A real person: a creator, a guest, a member, Sean on the podcast.</li>
+          <li>Real events we were at.</li>
+          <li class="no">Never a stock photo standing in for an idea.</li>
+        </ul></div>
+        <div class="bk-rules"><h3>How photos are handled</h3><ul>
+          <li>Pictures from other sites go through <span class="mono">/_vercel/image?url=&amp;w=&amp;q=75</span> (hosts listed in <span class="mono">vercel.json</span>).</li>
+          <li>Repo photos: JPEG, at most 1920 px wide, about 80 quality; banners under about 500 KB.</li>
+          <li>In a card or block, a photo takes the same white frame and corners as our art.</li>
+        </ul></div>
+        <div class="bk-rules"><h3>Other brands' logos</h3><ul>
+          <li>Always copied into <span class="mono">vegan-media</span> storage, never hot-linked.</li>
+          <li>Shown on a white square, contained, never cropped or recolored.</li>
+          <li>Every logo links to its profile, <span class="mono">/directory/&lt;slug&gt;</span>.</li>
+          <li class="no">A logo over a picture sits on a solid plate, never on a face.</li>
+        </ul></div>
+      </div>
+    </section>
+
+    <!-- 9. Other drawn people -->
+    <section class="vg-slide" id="people" data-title="Sean and GeekFon">
+      <span class="bk-eb">8 · Sean, and the GeekFon line</span>
+      <h2 class="bk-h">Two other drawn worlds, <span class="hl p">kept apart</span>.</h2>
+      <div class="oth">
+        <div class="oc k">
+          <img src="/public/founder/sean-square.jpg" alt="Sean, drawn">
+          <span class="chip2">Locked November 10</span>
+          <h4>Sean, drawn</h4>
+          <p>44, black beard with a gray chin patch, bold black square frames with clear lenses and never any glare, the black GeekFon wearable on the right wrist, seven bead bracelets on the left. References: sean-square.jpg and sean-tall.jpg.</p>
+        </div>
+        <div class="oc k">
+          <div class="gfs"><div><b>GeekFon Society</b><span>Hard-cel comic style: thick even outlines, flat fills, crisp two-tone shadows (the Shamanic Resin v4 sheets)</span></div></div>
+          <span class="chip2">Your default, applied</span>
+          <h4>GeekFon keeps its own style</h4>
+          <p>GeekFon art is its own brand's look. It appears on Vegans Explore only as itself (a featured artist, an episode), credited, in a white frame, and goes in the kit as that example, not as a second Vegans Explore style.</p>
+        </div>
+        <div class="oc">
+          <div class="txtile" style="height:150px;border-radius:10px;margin-bottom:10px;color:#1a1a1a">A Vegans Explore Guide is never redrawn in the GeekFon style, and a GeekFon character is never put in a Vegans Explore tee.</div>
+          <h4>The line between them</h4>
+          <p>The one shared object is Sean's GeekFon wearable, because he really wears it. If you meant something else by "the GeekFon image," say so and this slide changes.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 10. Your call -->
+    <section class="vg-slide" id="decide" data-title="Your call">
+      <span class="bk-eb">Your call</span>
+      <h2 class="bk-h">Four calls to lock <span class="hl p">Imagery</span>. My default is in bold.</h2>
+      <div class="dec">
+        <div class="dc" style="--c:#FF9EC4"><div class="q"><i>1</i>The style, do and don't, as written</div><p><b>Lock slides 2 to 8</b> as the imagery standard. They restate rules you already set (scene recipe, mid shot in squares, nothing over faces, drawn not photoreal) in one place.</p></div>
+        <div class="dc" style="--c:#F69820"><div class="q"><i>2</i>Retire the old ensemble shot</div><p><b>Yes</b>: replace welcome-ensemble.jpg on the five pages that still use it (the Welcome Guide, Nominate, the business Guide, Taste, one mock) with the approved group shot, cropped square. It is what made the Guides look short.</p></div>
+        <div class="dc" style="--c:#22C55E"><div class="q"><i>3</i>Guide clothes in our palette</div><p><b>Yes</b>: new scenes dress the Guides in brand colors (pink, cream, black, brand green, orange), the suitcase mark always visible, Liz in her pink tee often, so the art lands on the Color Block page without clashing.</p></div>
+        <div class="dc" style="--c:#2D5C27;--t:#fff"><div class="q"><i>4</i>Cut-outs on color for social</div><p><b>Yes</b>: for posts and thumbnails, a Guide's square mid shot may be cut out of its white background and set on a section color block. Scenes are never cut out.</p></div>
+      </div>
+      <div class="next"><b>Then:</b><span><a href="/mocks/brand-kit">1 Foundations, locked</a></span><span class="on">2 Imagery</span><span>3 Templates</span><span>4 Guide roster</span><span>Homepage</span><span>Every page in the preview</span><span>Live</span><span>Every LESARUSS brand</span></div>
+    </section>
+
+  </main>
+
+  <script src="/public/footer.js"></script>
+</div>
+<script src="/public/ve-guided.js"></script>
+</body>
+</html>
