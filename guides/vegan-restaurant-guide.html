@@ -26,7 +26,9 @@
     *,*::before,*::after{box-sizing:border-box;}
 
     /* Header: the Guide's name, then the $11 box for visitors or search for members, then the tabs. */
-    .dg-top{background:linear-gradient(120deg,rgba(10,18,12,0.92) 0%,rgba(16,40,22,0.8) 50%,rgba(31,95,34,0.55) 100%),url('/communities/new-york/banner.jpg') center 32%/cover no-repeat;background-color:#14301c;color:#fff;padding:16px 40px 0;}
+    .dg-top{background:linear-gradient(120deg,rgba(10,18,12,0.92) 0%,rgba(16,40,22,0.8) 50%,rgba(31,95,34,0.55) 100%),url('/_vercel/image?url=%2Fcommunities%2Fnew-york%2Fbanner.jpg&w=1920&q=75') center 32%/cover no-repeat;background-color:#14301c;color:#fff;padding:16px 40px 0;}
+    /* Phones get the banner resized to 828 px (80 KB instead of 479 KB). */
+    @media (max-width:828px){.dg-top{background-image:linear-gradient(120deg,rgba(10,18,12,0.92) 0%,rgba(16,40,22,0.8) 50%,rgba(31,95,34,0.55) 100%),url('/_vercel/image?url=%2Fcommunities%2Fnew-york%2Fbanner.jpg&w=828&q=75');}}
     .dg-top-row{display:flex;align-items:center;gap:20px;flex-wrap:wrap;}
     .dg-brand-mark{flex:1 1 280px;min-width:0;}
     .dg-eyebrow{font-size:10.5px;font-weight:800;letter-spacing:0.22em;text-transform:uppercase;color:#c5f2c7;}
