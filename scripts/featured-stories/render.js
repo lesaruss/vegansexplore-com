@@ -9,7 +9,7 @@ const R = '/home/user/vegansexplore-com';
 const [rowsFile, out] = [process.argv[2], process.argv[3]];
 const b64 = (f) => fs.readFileSync(f).toString('base64');
 const local = (p) => 'data:image/jpeg;base64,' + b64(R + p);
-const lan = fs.readFileSync(R + '/public/logo-ve-landscape-v1.svg', 'utf8');
+const lan = fs.readFileSync(R + '/public/logo-ve-landscape-v2.svg', 'utf8');
 const KIND = {
   gift: { bg: '/public/guides/holiday/r-gingerbread.jpg', what: 'In our Christmas Gift Guide' },
   menu: { bg: '/public/guides/holiday/p-menus.jpg', what: 'In our Holiday Menus' },

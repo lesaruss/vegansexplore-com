@@ -412,7 +412,7 @@
     '<nav class="ve-nav ve-nav-public' + (loggedIn ? ' ve-nav-in' : '') + '" role="navigation" aria-label="Main navigation">' +
       '<div class="ve-nav-inner">' +
         '<a href="/" class="ve-wordmark" aria-label="Vegans Explore home"' + cur('/') + '>' +
-          '<img class="ve-wordmark-logo" src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore">' +
+          '<img class="ve-wordmark-logo" src="/public/logo-ve-landscape-v2.svg" alt="Vegans Explore">' +
         '</a>' +
         navTabsHtml +
         '<div class="ve-nav-right-wrap">' + desktopRight +
@@ -434,7 +434,7 @@
     html =
       '<nav class="ve-nav ve-nav-public ve-nav-new' + (loggedIn ? ' ve-nav-in' : '') + '" role="navigation" aria-label="Main navigation">' +
         '<div class="ve-nav-inner">' +
-          '<a href="/" class="ve-wordmark" aria-label="Vegans Explore home"' + cur('/') + '><img class="ve-wordmark-logo" src="/public/logo-ve-landscape-v1.svg" alt="Vegans Explore"></a>' +
+          '<a href="/" class="ve-wordmark" aria-label="Vegans Explore home"' + cur('/') + '><img class="ve-wordmark-logo" src="/public/logo-ve-landscape-v2.svg" alt="Vegans Explore"></a>' +
           '<form class="ve-hs" id="ve-hs" role="search" action="/search" method="get"><label class="ve-hs-field">' + _mag +
             '<span class="ve-hs-chip" id="ve-hs-chip" hidden></span>' +
             '<input type="text" name="q" id="' + (_onSearch ? 've-hs-input' : 'ves-page-input') + '" placeholder="Search places, people, shows, products… try “vegan pizza in Atlanta”" aria-label="Search Vegans Explore"' + (window.matchMedia && matchMedia('(pointer: coarse)').matches ? ' data-dictate="off"' : '') + '>' +

@@ -5,7 +5,7 @@ const S = '/tmp/claude-0/-home-user/d2fb880b-f90e-58ab-8cdb-46b4bcdc6101/scratch
 const R = '/home/user/vegansexplore-com', FR = S + '/frames', SC = FR + '/scenes/', W = R + '/public/guides/welcome/';
 const b64 = f => fs.readFileSync(f).toString('base64');
 const img = f => 'data:image/' + (f.endsWith('.png') ? 'png' : 'jpeg') + ';base64,' + b64(f);
-const lan = fs.readFileSync(R + '/public/logo-ve-landscape-v1.svg', 'utf8');
+const lan = fs.readFileSync(R + '/public/logo-ve-landscape-v2.svg', 'utf8');
 const font = b64('/tmp/claude-0/-home-user-vegansexplore-com/d2fb880b-f90e-58ab-8cdb-46b4bcdc6101/scratchpad/fonts/Montserrat.ttf');
 const IG = '<svg viewBox="0 0 24 24" width="1em" height="1em" style="vertical-align:-0.14em;margin-right:.3em"><rect x="2" y="2" width="20" height="20" rx="6" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="17.6" cy="6.4" r="1.4" fill="currentColor"/></svg>';
 const css = `@font-face{font-family:M;src:url(data:font/ttf;base64,${font})}*{box-sizing:border-box;margin:0}html,body{background:transparent;font-family:M,sans-serif}

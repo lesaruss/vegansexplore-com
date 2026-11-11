@@ -29,7 +29,7 @@
     '<footer class="ve-footer" role="contentinfo">' +
       '<div class="ve-footer-inner">' +
       '<a href="/" aria-label="Vegans Explore home">' +
-        '<img class="footer-logo" src="/public/logo-ve-landscape-v1-inverted.svg" alt="Vegans Explore">' +
+        '<img class="footer-logo" src="/public/logo-ve-landscape-v2-inverted.svg" alt="Vegans Explore">' +
       '</a>' +
       '<nav class="footer-links" aria-label="Footer navigation">' +
         '<a href="/passport">ABOUT</a>' +
