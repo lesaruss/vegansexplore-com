@@ -19,6 +19,7 @@
 // POST { action: 'register', url, note? }                      a link Sean sent becomes a source
 // POST { action: 'read', url, browser?: false, requested_by? }  -> { ok, untrusted, scope, url, final_url, status, title, text, links, hidden_removed }
 // POST { action: 'log', limit?: 50 }                           the latest attempts
+// POST { action: 'unregister', url }                          a source taken out of scope (its one-hop links go with it)
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
@@ -260,6 +261,16 @@ Deno.serve(async (req) => {
     if (g) return json({ ok: false, why: g }, 400);
     const { data, error } = await db.from('ve_web_sources').upsert({ url: u.href, host: bareHost(u.hostname), note: b.note ? String(b.note).slice(0, 500) : null, added_by: by }, { onConflict: 'url' }).select('id, url').single();
     return json(error ? { ok: false, why: error.message } : { ok: true, source: data });
+  }
+  if (b.action === 'unregister') {
+    const u = norm(b.url);
+    if (!u) return json({ ok: false, why: 'not_a_web_address' }, 400);
+    const { data: src } = await db.from('ve_web_sources').select('id').eq('url', u.href).maybeSingle();
+    if (!src) return json({ ok: false, why: 'not_a_source' }, 404);
+    // Its reads stay in the log, but no longer count as a source, so the links on it fall out of scope.
+    await db.from('ve_web_reads').update({ scope: 'source_removed' }).eq('via_source', src.id).eq('scope', 'source');
+    const { error } = await db.from('ve_web_sources').delete().eq('id', src.id);
+    return json(error ? { ok: false, why: error.message } : { ok: true, removed: u.href });
   }
   if (b.action === 'read') return json(await read(String(b.url || ''), !!b.browser, by));
   if (b.action === 'log') {

@@ -431,10 +431,8 @@ Deno.serve(async (req) => {
   let body: any = {};
   try { body = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
 
-  if (body.action === 'get') { // diagnostics: the first part of any URL, as the reader sees it
-    try { const r = await fetch(String(body.url || ''), { headers: { 'User-Agent': UA, Accept: '*/*' }, signal: AbortSignal.timeout(15000) }); return json({ status: r.status, type: r.headers.get('content-type'), body: (await r.text()).slice(0, 3000) }); }
-    catch (e) { return json({ error: String((e as Error).message || e) }); }
-  }
+  // 'get' (any URL, no address checks) retired 2026-11-11: read pages through ve-web-reader, which scopes, guards and logs every read.
+  if (body.action === 'get') return json({ error: 'retired', use: 've-web-reader' }, 410);
   if (body.action === 'probe') {
     const p = await fetchPage(String(body.url || ''));
     const base = p.final || body.url;
