@@ -114,9 +114,12 @@
     var a = VE_GUIDE_ART[slug] || VE_GUIDE_ART[VE_DEFAULT_GUIDE_SLUG];
     return a[shape === 'tall' ? 'tall' : 'square'];
   }
+  // Only on Vegans Explore's own addresses: lesaruss.ai serves some of these pages too (its /directory/<slug> is
+  // this site's listing page) and its resizer refuses our hosts, so there the original file is used.
+  var VE_RESIZE = /(^|\.)vegansexplore\.com$/.test(location.hostname) || /^vegansexplore[a-z0-9-]*\.vercel\.app$/.test(location.hostname);
   function veGuideArt(slug, shape) {
     var u = veGuideArtRaw(slug, shape);
-    return '/_vercel/image?url=' + encodeURIComponent(u) + '&w=1080&q=75';
+    return VE_RESIZE ? '/_vercel/image?url=' + encodeURIComponent(u) + '&w=1080&q=75' : u;
   }
   function veGuideImage(shape) { return veGuideArt(veChosenGuideSlug(), shape); }
   window.VEGuideArt = veGuideArt;

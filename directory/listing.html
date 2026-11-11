@@ -2104,6 +2104,8 @@ function mobileTabMenu(){
       }
     }
     if(nav.classList.contains('lt-fold') !== fold) nav.classList.toggle('lt-fold', fold);
+    // Folded, the tabs are hidden behind the dropdown, so the strip is no longer a tab list (accessibility audit).
+    if(fold) nav.removeAttribute('role'); else nav.setAttribute('role','tablist');
   }
   var rt; window.addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(fit, 120); });
   sel.addEventListener('change', function(){
@@ -4183,6 +4185,14 @@ function getCommunityForListing(l){
 }
 // The header's city art: the listing's own city banner from VE_HUBS, else South Florida's (Sean, 2026-10-25).
 var SF_HERO_ART = 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260719_144549_57bc2592-c910-4189-94d7-828e4af569a5_min.webp';
+// Site health (2026-11-11): the city banner is the largest thing on a listing and was a 419 KB file on phones.
+// On Vegans Explore's own addresses it goes through Vercel's resizer (828 px on phones, 1920 on desktop); lesaruss.ai
+// serves this page too and its resizer refuses our hosts, so there the original is used.
+function heroSized(u){
+  var own = /(^|\.)vegansexplore\.com$/.test(location.hostname) || /^vegansexplore[a-z0-9-]*\.vercel\.app$/.test(location.hostname);
+  if(!own || !u || !/^https:\/\/(fwbhwfxpncrsfhttimna\.supabase\.co\/|d8j0ntlcm91z4\.cloudfront\.net\/)/.test(u)) return u;
+  return '/_vercel/image?url='+encodeURIComponent(u)+'&w='+(window.innerWidth <= 828 ? 828 : 1920)+'&q=75';
+}
 function heroArt(l, community){
   if(!window.VE_HUBS) return SF_HERO_ART;
   // The city the address is in, by VE_HUBS[].match (every city, the DMV and Philadelphia included), else the chapter it serves.
@@ -4713,7 +4723,7 @@ function renderListing(l){
 
   // Build page
   document.getElementById('listing-root').innerHTML =
-    '<div class="listing-hero city-bg" style="background-image:url(\''+esc(heroArt(l, community))+'\')">'+
+    '<div class="listing-hero city-bg" style="background-image:url(\''+esc(heroSized(heroArt(l, community)))+'\')">'+
       '<div class="listing-hero-avatar" style="background:'+esc(avBg)+'">'+av+'</div>'+
       '<div class="listing-hero-content">'+
         '<div class="listing-hero-body">'+
