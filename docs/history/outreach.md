@@ -215,3 +215,9 @@ Explorer; only completions after the later of start day and approval count. Each
 previews and tests, never sent. All draft until Sean locks and approves each in HQ (Outreach > Campaigns > Orientation). Migration
 `20261108_orientation_explorer_paths.sql`; proven in a rolled-back transaction. Once `orientation-events` is approved, turn off ve-nurture's
 Events Guide Day 3 and 7 notes (`nurture.door_on`) so hosts are not mailed twice.
+
+## 2026-11-10 to 11: Holiday launch, Review and backups, the pause
+Full record in `docs/handoff/2026-11-11-holiday-launch-and-brand-lock.md` and playbook `ve-outreach-buckets`. Rules from it: people moved to
+Review leave group lists and counts until Sean decides; a duplicate person has one primary email and backups that send only if the primary
+bounces (personal address over a business one); every launch email says who we are and how we know them; all campaigns paused 2026-11-11
+until the Color Block brand is live (welcome-community excepted).
