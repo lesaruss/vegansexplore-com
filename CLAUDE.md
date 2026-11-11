@@ -251,6 +251,7 @@ every new Guide scene uses this recipe.
   reference scene, mid shot, <the scene>. She wears <store clothes, the Vegans Explore suitcase mark clearly visible>. Hands fully drawn. No other
   logos, no readable words." For groups add: realistic adult proportions, about seven and a half heads tall, never short, squat or chibi, everyone
   head to shoes in frame (the old ensemble reference made the Guides look short).
+- **Third reference, the Guide's wardrobe** (Sean, 2026-11-11: "so you don't have to constantly be creating these"): pass the Guide's wardrobe sheet, the garment with the real mark at the right size and place (Higgsfield ids in `docs/merch/2026-11-09-guide-tees.md` part 5), and check the mark in the render against the real file.
 - **Never stretch or outpaint a character scene** to change its shape; draw it new in the target shape. Outpainting is only for city art.
 - Liz's pink Vegans Explore tee is a favorite: use it often.
 - **Sean himself** (LOCKED 2026-11-10, canon `canon-sean-illustrated-likeness`): 44, black beard with a gray chin patch, bold black square
