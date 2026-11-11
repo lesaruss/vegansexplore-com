@@ -3584,7 +3584,7 @@ function ppPromo(l){
   var creator = l.category === 'Content Creators' || (l.extra_categories || []).indexOf('Content Creators') >= 0;
   function go(){ VEPromo.creatorCards(el, { page: '/directory/' + l.slug, listing_id: l.id, name: l.name, claim: held ? '' : l.slug, form: !creator }); }
   if(window.VEPromo) return go();
-  var s = document.createElement('script'); s.src = '/public/ve-promo.js?v=4'; s.onload = go; document.head.appendChild(s);
+  var s = document.createElement('script'); s.src = '/public/ve-promo.js?v=5'; s.onload = go; document.head.appendChild(s);
 }
 function ytThumb(id){ return 'https://i.ytimg.com/vi/' + encodeURIComponent(id) + '/mqdefault.jpg'; }
 function clockOf(sec){ sec = Math.max(0, Math.floor(sec || 0)); var h = Math.floor(sec / 3600), m = Math.floor(sec % 3600 / 60), s2 = sec % 60;
@@ -5325,7 +5325,7 @@ function guideBanner(l, tabGuide){
     VEPromo.guideCard(el, slug, { page: '/directory/' + (l.slug || ''), listing_id: l.id || null, preview: typeof DEMO !== 'undefined' && !!DEMO });
   }
   if(window.VEPromo && VEPromo.guideCard) return go();
-  var s = document.createElement('script'); s.src = '/public/ve-promo.js?v=4'; s.onload = go; document.head.appendChild(s);
+  var s = document.createElement('script'); s.src = '/public/ve-promo.js?v=5'; s.onload = go; document.head.appendChild(s);
 }
 
 // The Social tab (Sean, 2026-11-03): Featured by us (posts on @vegansexplore and @soflovegans that feature the listing, matched

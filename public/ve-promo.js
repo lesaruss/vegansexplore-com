@@ -79,6 +79,8 @@
     '.vpc-ad{display:block;position:relative;border-radius:8px;overflow:hidden;text-decoration:none;color:#fff;background:#0f1f17;width:100%;aspect-ratio:4/5;max-height:440px;box-shadow:0 2px 10px rgba(0,0,0,.12)}' +
     // On phones the card runs the column's full width: Safari shrank its width to keep 4:5 under the 440px cap (2026-11-02).
     '@media(max-width:900px){.vpc-ad{max-height:none}}' +
+    '.vpc-frame{display:block;width:100%;aspect-ratio:4/5;max-height:440px;border:0;border-radius:8px;background:#FF9EC4}' +
+    '@media(max-width:900px){.vpc-frame{max-height:520px}}' +
     '.vpc-ad:focus-visible{outline:3px solid var(--vb-accent,#16a34a);outline-offset:2px}' +
     '.vpc-f{position:absolute;inset:0;background-size:cover;background-position:center 20%;opacity:0;animation:vpcF 16s infinite}' +
     '.vpc-f:nth-child(1){animation-delay:0s}.vpc-f:nth-child(2){animation-delay:4s}.vpc-f:nth-child(3){animation-delay:8s}.vpc-f:nth-child(4){animation-delay:12s}' +
@@ -180,14 +182,20 @@
     if (!document.getElementById('vpc-css')) { var st = document.createElement('style'); st.id = 'vpc-css'; st.textContent = CSS; document.head.appendChild(st); }
     var promo = 'guide-' + slug, base = { page: ctx.page || location.pathname, listing_id: ctx.listing_id || null, cta: 'ad' };
     var placement = ctx.placement || HOUSE.listing;
-    el.innerHTML = '<div class="vpc"><a class="vpc-ad" href="' + esc(ctx.preview ? g.href : g.go) + '" data-vpc="ad">' + // read from its visible text (accessibility: the label must contain the words on screen)
-      g.frames.map(function (f) { return '<span class="vpc-f" style="background-image:url(\'' + f[0] + '\')' + (f[2] ? ';' + f[2] : '') + '" aria-hidden="true"></span>'; }).join('') +
-      '<span class="vpc-copy"><small>' + esc(g.kicker) + '</small><span class="vpc-lines" aria-hidden="true">' +
-        g.frames.map(function (f) { return '<b>' + esc(f[1]) + '</b>'; }).join('') + '</span>' +
-        '<p>' + esc(g.line) + '</p><em>' + esc(g.cta) + (g.free ? ' &middot; Free' : ' &middot; $11') + '</em></span></a></div>';
-    var a = el.querySelector('.vpc-ad');
-    onScreen(a, function () { send(promo, 'view', base); if (!ctx.preview) adCount(placement, g.campaign, 'view'); });
-    a.addEventListener('click', function () { click(promo, base); if (!ctx.preview) adCount(placement, g.campaign, 'click'); });
+    // The brand kit's ad template (Sean, 2026-11-11: "Fix the listing Guide banner"): the same creative as the ad rail,
+    // /ads/guides/guide.html, with the words in the color block and the Guide's scene whole in its own frame, never words on the
+    // art. The ad opens its tracked link itself and posts {veAd:'click'}; this card counts the view and the click as before.
+    var dest = ctx.preview ? g.href : g.go;
+    var tag = /^https:\/\//.test(dest) ? dest : 'https://vegansexplore.com' + dest;
+    el.innerHTML = '<div class="vpc"><iframe class="vpc-frame" title="' + esc(g.kicker + ': ' + g.cta) + '" loading="lazy" scrolling="no"' +
+      ' sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"' +
+      ' src="/ads/guides/guide.html?g=' + encodeURIComponent(slug) + '&clickTag=' + encodeURIComponent(tag) + '"></iframe></div>';
+    var fr = el.querySelector('.vpc-frame');
+    onScreen(fr, function () { send(promo, 'view', base); if (!ctx.preview) adCount(placement, g.campaign, 'view'); });
+    window.addEventListener('message', function (e) {
+      if (!e.data || e.data.veAd !== 'click' || e.source !== fr.contentWindow) return;
+      click(promo, base); if (!ctx.preview) adCount(placement, g.campaign, 'click');
+    });
   }
 
   // The short claim (Sean, 2026-10-31: "a short claim request for people who aren't creators"), in the card itself. A signed-in member's
