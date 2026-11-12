@@ -350,4 +350,7 @@ right column (`.listing-sidebar` in `directory/listing.html`) had `max-height:10
 sticky with a top that keeps its bottom on screen (a short column pins at the top, a tall one scrolls with the page and pins once its
 bottom arrives), measured on scroll and resize because the column is drawn again after the listing loads. Proven live: a wheel over the
 right column and over its ad moves the page 600 of 600 px (it was 240). Ad frames pass the scroll through to the page. A capped short
-list that scrolls inside its box (Interface defaults) shows its scrollbar.
+list that scrolls inside its box (Interface defaults) shows its scrollbar. Same day, the second trap Sean found ("when I get to With Vegans Explore, that's where it gets stuck"): the listing's episode
+lists (`.pp-scroll`, With Vegans Explore and On other podcasts) were capped at 880 px with `overflow-y:auto; overscroll-behavior:contain`,
+which never hands the scroll to the page; the cap is gone and they run the full page (proven live: a wheel over the tiles moves the page
+600 of 600 px at 1440 and 390). `overscroll-behavior:contain` is only for a box that is meant to scroll on its own and shows it.
