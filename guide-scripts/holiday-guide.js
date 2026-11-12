@@ -773,8 +773,8 @@
     if (near) ch = 'all';
     var t = hrow(), open = daysUntil(t.submit_close) > 0, list = filtered(ch), any = MF.q || pills(ch).length, tips = tipsFiltered(ch);
     if (near && (list.length || tips.length)) { box.innerHTML = nearList(list, tips); openPending(); return; }
-    box.innerHTML = (list.length ? '<div class="hg-menus">' + list.map(menuCard).join('') + '</div>' : '') +
-      (tips.length ? (list.length ? '<h3 style="margin:22px 0 10px;font-size:17px">Menus We Found</h3>' : '') + '<div class="hg-menus">' + tips.map(tipCard).join('') + '</div>' : '') +
+    box.innerHTML = (list.length ? '<div class="hg-menus">' + list.map(function (m) { return menuCard(m); }).join('') + '</div>' : '') +
+      (tips.length ? (list.length ? '<h3 style="margin:22px 0 10px;font-size:17px">Menus We Found</h3>' : '') + '<div class="hg-menus">' + tips.map(function (x) { return tipCard(x); }).join('') + '</div>' : '') +
       (list.length || tips.length ? '' : any && (MENUS.length || (TIPS || []).length) ? '<div class="hg-empty"><h3>Nothing Matches</h3><p>Try fewer words or reset the filters.</p><button type="button" class="dg-btn dg-ghost" data-hg-reset>Reset filters</button></div>' :
       '<div class="hg-empty"><h3>No Holiday Menus ' + (ch === 'all' ? '' : 'in ' + esc(chapterName(ch)) + ' ') + 'Yet</h3><p>' + (open ? 'Menus are coming in now, and each one shows here once our team has checked it.' : 'Menus for this holiday are closed.') + '</p></div>');
     openPending();
