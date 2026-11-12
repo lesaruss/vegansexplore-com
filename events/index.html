@@ -89,6 +89,8 @@
   var LOC_KEY = 've_ev_loc', loc0 = null;
   try { loc0 = JSON.parse(localStorage.getItem(LOC_KEY) || 'null'); } catch (e) { loc0 = null; }
   if (!loc0) { var me = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null; if (me && me.home_community) loc0 = { chapter: me.home_community }; }
+  // North America > United States by default (playbook ve-near-me; Sean, 2026-11-12); a visitor's own saved pick (Everywhere included) wins.
+  if (!loc0) loc0 = { continent: 'North America', country: 'US' };
   var q0 = new URLSearchParams(location.search);
   // The address carries the location (Sean, 2026-11-01: every view is a link to share), read ahead of the kept one.
   if (q0.get('city')) loc0 = { chapter: q0.get('city') };

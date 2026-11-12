@@ -228,13 +228,23 @@
 
   // ---------- chapters (VE_HUBS) ----------
   function chapters() { return window.VE_HUBS || []; }
-  function chapterOk(c) { return c === 'all' || chapters().some(function (h) { return h.slug === c; }); }
+  // The United States by default (playbook ve-near-me; Sean, 2026-11-12: "the majority of the people are going to be from the United
+  // States... it should automatically be defaulted"); a visitor's own pick (hg_chapter, Everywhere included) still wins.
+  function chapterOk(c) { return c === 'all' || c === 'us' || chapters().some(function (h) { return h.slug === c; }); }
   function chapter(fromUrl) {
     if (fromUrl && chapterOk(fromUrl)) { store('hg_chapter', fromUrl); return fromUrl; }
-    var c = recall('hg_chapter'); return c && chapterOk(c) ? c : 'all';
+    var c = recall('hg_chapter'); return c && chapterOk(c) ? c : 'us';
+  }
+  // In the United States unless its address says otherwise (a place with no address, online, stays in).
+  function inUS(l) {
+    var st = String(l.address_state || '').trim();
+    if (!st) return true;
+    if (US_STATES[st.toUpperCase()] || st.toUpperCase() === 'PR') return true;
+    return Object.keys(US_STATES).some(function (k) { return US_STATES[k].toLowerCase() === st.toLowerCase(); });
   }
   function inChapter(l, slug) {
     if (slug === 'all') return true;
+    if (slug === 'us') return inUS(l);
     var c = l.communities || [];
     if (c.indexOf('all') >= 0 || c.indexOf(slug) >= 0) return true;
     var h = chapters().filter(function (x) { return x.slug === slug; })[0];
@@ -244,10 +254,11 @@
     return true;
   }
   function chapterPick(id, cur) {
-    return '<select class="dg-sort ng-pick" id="' + id + '" aria-label="Chapter"><option value="all"' + (cur === 'all' ? ' selected' : '') + '>Every chapter</option>' +
+    return '<select class="dg-sort ng-pick" id="' + id + '" aria-label="Chapter"><option value="all"' + (cur === 'all' ? ' selected' : '') + '>Everywhere</option>' +
+      '<option value="us"' + (cur === 'us' ? ' selected' : '') + '>North America &rsaquo; United States</option>' +
       chapters().map(function (h) { return '<option value="' + h.slug + '"' + (h.slug === cur ? ' selected' : '') + '>' + esc(h.name) + '</option>'; }).join('') + '</select>';
   }
-  function chapterName(slug) { var h = chapters().filter(function (x) { return x.slug === slug; })[0]; return h ? h.name : 'every chapter'; }
+  function chapterName(slug) { if (slug === 'us') return 'the United States'; var h = chapters().filter(function (x) { return x.slug === slug; })[0]; return h ? h.name : 'every chapter'; }
 
   // ---------- Overview ----------
   // The Overview (Sean, 2026-11-07): the video, then the Restaurant Guide's look under it: Start here (public/ve-guide-intro.js), one
@@ -698,7 +709,7 @@
   function pills(ch) {
     var out = [];
     if (nearOn()) out.push(['near', NM().state().label]);
-    else if (ch !== 'all') out.push(['ch', chapterName(ch)]);
+    else if (ch !== 'all') out.push(['ch', ch === 'us' ? 'United States' : chapterName(ch)]);
     ['type', 'order', 'sort'].forEach(function (k) { var v = MF[k]; if (MF_LABEL[k][v]) out.push([k, MF_LABEL[k][v]]); });
     return out;
   }
