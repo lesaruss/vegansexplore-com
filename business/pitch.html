@@ -143,13 +143,13 @@
             { area: 'Your website', label: 'Your menu is on your website as text', found: 'The menu is a photo of the printed menu.' }, { area: 'Social', label: 'You have posted on Instagram in the last month', found: 'Your last post was in June.' },
             { area: 'Being found in search', label: 'Your name, address and phone match everywhere', found: 'Google and your website list different phone numbers.' }],
           fix_count: 11, goods: ['Your Google Business Profile can be found', 'Your hours are on Google', 'People rate you well on Google'], good_count: 23, google: { rating: 4.7, reviews: 312 } },
-        plan: null, prices: { setup: 150000, setup3: 50000, setup6: 25000, monthly: 50000, social: 50000 }, who: null, sample: true };
+        plan: null, prices: { site: 50000, managed: 50000, managed_setup: 25000, photos: 25000, video: 25000, social: 50000 }, who: null, sample: true };
     }
     var PLAN = [
       { when: 'Day 1', title: 'A welcome call', text: 'We meet, you tell us what you want people to know, and we start your brand kit from what you already have.' },
       { when: 'Days 1 to 3', title: 'Your Google profile', text: 'Claimed, hours, photos, categories and the details people search for. Google\'s own verification can take longer; that part is theirs.' },
       { when: 'Days 2 to 5', title: 'Your logo and brand kit', text: 'A clean logo in every size, your colors, your type and your voice, written down so everything matches.' },
-      { when: 'Days 3 to 7', title: 'Your starter photo shoot', text: 'Up to 15 dishes and your space, shot to one standard, so every photo of your food looks like it belongs together.' },
+      { when: 'Days 3 to 7', title: 'Your photos', text: 'Upload your own, or add our photos: up to 8 dishes shot to one standard, so every photo of your food looks like it belongs together.' },
       { when: 'Days 5 to 10', title: 'Your new website', text: 'Built on our frame and fed by your Directory page: menu, hours, ordering and directions, ready for phones.' },
       { when: 'Days 10 to 14', title: 'Launch', text: 'Your site goes live, your Vegans Explore page and dashboard are ready, and we pick your first month\'s campaign together.' }
     ];
@@ -210,11 +210,11 @@
           '<div class="pt-g3">' + (D.plan || PLAN).map(function (p, i) { var pic = PLAN_PICS[i % PLAN_PICS.length]; return '<div class="pt-card pt-pcard"><img class="pt-pic' + (/^logo/.test(pic) ? ' pt-contain' : '') + '" src="' + IMG + pic + '" alt="" loading="lazy"><div class="pt-pbody"><div class="pt-when">' + esc(p.when) + '</div><b>' + esc(p.title) + '</b><small>' + esc(p.text) + '</small></div></div>'; }).join('') + '</div>' +
           '<p class="vg-lede" style="margin-top:14px">After that, every month: your website and Google kept current, a check-in with ' + (D.who ? esc(D.who) + ', your Community Manager' : 'your Community Manager') + ', a campaign, and your results live on your dashboard.</p>' + sampleCap());
       var Pr = D.prices;
-      html += slide('price', 'What it costs', '<div class="vg-split pt-two pt-top"><div><div class="vg-eyebrow">What it costs</div><h2 class="vg-h">A marketing team for ' + money(Pr.monthly) + ' a month</h2>' +
-          '<div class="pt-grid" style="grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr))"><div class="pt-card"><div class="pt-area">To start</div><div class="pt-price">' + money(Pr.setup) + '</div><small>Once, or ' + money(Pr.setup3) + ' a month for 3 months, or ' + money(Pr.setup6) + ' for 6.</small></div>' +
-          '<div class="pt-card"><div class="pt-area">Every month</div><div class="pt-price">' + money(Pr.monthly) + ' <small>a month</small></div><small>Your site, Google, a check-in, a campaign and your results.</small></div>' +
-          '<div class="pt-card"><div class="pt-area">If you want it</div><div class="pt-price">+' + money(Pr.social) + ' <small>a month</small></div><small>Social media on two platforms, run for you.</small></div></div>' +
-          '<p class="vg-lede" style="margin-top:14px">12 months, then month to month. You can pause up to 3 months a year.</p></div>' +
+      html += slide('price', 'What it costs', '<div class="vg-split pt-two pt-top"><div><div class="vg-eyebrow">What it costs</div><h2 class="vg-h">Two ways to work with us</h2>' +
+          '<div class="pt-grid" style="grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr))"><div class="pt-card"><div class="pt-area">Site</div><div class="pt-price">' + money(Pr.site) + ' <small>every 3 months</small></div><small>No setup fee. Your website on our frame, your brand kit and your Directory page. A Community Manager gets you set up and checks in every quarter.</small></div>' +
+          '<div class="pt-card"><div class="pt-area">Managed</div><div class="pt-price">' + money(Pr.managed) + ' <small>a month</small></div><small>Everything in Site, plus Google, a campaign and a check-in every month. ' + money(Pr.managed_setup) + ' to set up, done with you live in one call.</small></div>' +
+          '<div class="pt-card"><div class="pt-area">If you want it</div><div class="pt-price">+' + money(Pr.photos) + ' <small>photos</small></div><small>Up to 8 dishes, one time. A narrated video of your photos is ' + money(Pr.video) + '. On Managed, social media on two platforms is +' + money(Pr.social) + ' a month.</small></div></div>' +
+          '<p class="vg-lede" style="margin-top:14px">Site renews every 3 months. Managed is 12 months, then month to month, and you can pause up to 3 months a year.</p></div>' +
           '<div><div class="vg-eyebrow">Yours to keep</div>' +
           '<div class="pt-strip"><img src="' + IMG + 'm-acai.webp" alt="A dish photo"><img src="' + IMG + 's-outside-dusk.webp" alt="The outside at dusk"><img class="pt-contain" src="' + IMG + 'logo.jpg" alt="A logo"><img src="' + IMG + 'm-latte.webp" alt="A drink photo"></div>' +
           '<ul class="pt-list"><li>Every photo, your logo in every format and your brand kit, to download any time</li><li>Your domain, your Google profile and your social accounts, always in your name</li><li>Your words, your menu and a copy of your old website</li><li>Your Vegans Explore page, free, whatever you decide</li></ul>' +
@@ -282,23 +282,27 @@
     }
 
     /* ---- The sign-up, on this page (the same steps as /business/managed). ---- */
-    var KEY = 've_bd_choice_' + (SAMPLE ? 'sample' : ''), C = { setup: 'full', social: false, name: '', agree: false };
-    function loadC() { try { Object.assign(C, JSON.parse(sessionStorage.getItem(KEY) || '{}')); } catch (e) {} }
+    var KEY = 've_bd_choice_' + (SAMPLE ? 'sample' : ''), C = { plan: 'managed', photos: false, video: false, social: false, name: '', agree: false };
+    function loadC() { try { Object.assign(C, JSON.parse(sessionStorage.getItem(KEY) || '{}')); } catch (e) {} if (C.plan !== 'site' && C.plan !== 'managed') C.plan = 'managed'; }
+    function isSite() { return C.plan === 'site'; }
     function saveC() { try { sessionStorage.setItem(KEY, JSON.stringify(C)); } catch (e) {} }
     function loadPlan() {
-      if (SAMPLE) { P = { ok: true, allowed: true, listing: { name: D.business.name, slug: 'sample' }, managed: false, account: null, amounts: { setup: 150000, setup3: 50000, setup6: 25000, monthly: 50000, social: 50000, pause: 9900 } }; drawSignup(); return; }
+      if (SAMPLE) { P = { ok: true, allowed: true, listing: { name: D.business.name, slug: 'sample' }, managed: false, account: null, amounts: { social: 50000, pause: 9900, site: 50000, managed: 50000, managed_setup: 25000, photos: 25000, video: 25000 } }; drawSignup(); return; }
       api({ action: 'plan', slug: D.business.slug }).then(function (d) { if (d && d.ok) { P = d; if (d.social_open === false) C.social = false; drawSignup(); } });
     }
     function totals() {
-      var A = P.amounts, n = C.setup === '3' ? 3 : C.setup === '6' ? 6 : 0, setupNow = n === 3 ? A.setup3 : n === 6 ? A.setup6 : A.setup, monthly = A.monthly + (C.social ? A.social : 0);
-      return { n: n, today: monthly + setupNow, monthly: monthly, inst: n ? setupNow : 0 };
+      var A = P.amounts, add = (C.photos ? A.photos : 0) + (C.video ? A.video : 0), again = isSite() ? A.site : A.managed + (C.social ? A.social : 0);
+      return { again: again, today: again + add + (isSite() ? 0 : A.managed_setup) };
     }
     function summary() {
       var t = totals(), A = P.amounts;
-      return '<div class="su-sum"><div><span>Managed marketing, monthly</span><b>' + money(A.monthly) + '</b></div>' + (C.social ? '<div><span>Social media, two platforms</span><b>' + money(A.social) + '</b></div>' : '') +
-        '<div><span>Setup' + (t.n ? ', payment 1 of ' + t.n : '') + '</span><b>' + money(t.n ? t.inst : A.setup) + '</b></div>' +
+      return '<div class="su-sum">' + (isSite() ? '<div><span>Site, every 3 months</span><b>' + money(A.site) + '</b></div><div><span>Setup</span><b>None</b></div>' :
+          '<div><span>Managed, monthly</span><b>' + money(A.managed) + '</b></div>' + (C.social ? '<div><span>Social media, two platforms, monthly</span><b>' + money(A.social) + '</b></div>' : '') +
+          '<div><span>Setup, live on one call (one time)</span><b>' + money(A.managed_setup) + '</b></div>') +
+        (C.photos ? '<div><span>Photos, up to 8 dishes (one time)</span><b>' + money(A.photos) + '</b></div>' : '') +
+        (C.video ? '<div><span>Video (one time)</span><b>' + money(A.video) + '</b></div>' : '') +
         '<div class="tot"><span>Due today</span><span>' + money(t.today) + '</span></div>' +
-        '<div><span>Then each month</span><b>' + money(t.monthly + t.inst) + (t.n ? ' for ' + (t.n - 1) + ' more month' + (t.n > 2 ? 's' : '') + ', then ' + money(t.monthly) : '') + '</b></div></div>';
+        '<div><span>' + (isSite() ? 'Then every 3 months' : 'Then each month') + '</span><b>' + money(t.again) + '</b></div></div>';
     }
     function steps(s) { return '<div class="su-steps">' + ['Your plan', 'The agreement', 'Review and pay'].map(function (n, i) { return '<span class="' + (i + 1 === s ? 'on' : i + 1 < s ? 'done' : '') + '">' + (i + 1) + '. ' + n + '</span>'; }).join('') + '</div>'; }
     function drawSignup() {
@@ -307,19 +311,22 @@
       var name = esc(D.business.name);
       if (!P) { a.innerHTML = b.innerHTML = c.innerHTML = '<p class="vg-lede" style="padding-top:30px">Loading your plan...</p>'; return; }
       if (P.managed && !SAMPLE) {
-        var line = '<div class="vg-eyebrow">Managed marketing</div><h2 class="vg-h">' + name + ' is already with us</h2><p class="vg-lede">Sign in with the account that signed up to see your plan and your Library.</p><p><a class="vg-btn" href="/business/managed?listing=' + encodeURIComponent(D.business.slug) + '">See your plan</a></p>';
+        var line = '<div class="vg-eyebrow">Work with us</div><h2 class="vg-h">' + name + ' is already with us</h2><p class="vg-lede">Sign in with the account that signed up to see your plan and your Library.</p><p><a class="vg-btn" href="/business/managed?listing=' + encodeURIComponent(D.business.slug) + '">See your plan</a></p>';
         a.innerHTML = b.innerHTML = c.innerHTML = line; return;
       }
-      var A = P.amounts, opts = [['full', 'Pay the setup now', 'All at once.', money(A.setup)], ['3', 'In 3 payments', 'Over your first 3 months.', '3 x ' + money(A.setup3)], ['6', 'In 6 payments', 'Over your first 6 months.', '6 x ' + money(A.setup6)]];
+      var A = P.amounts, opts = [['site', 'Site', 'Your website, brand kit and Directory page. No setup fee.', money(A.site) + ' every 3 months'], ['managed', 'Managed', 'Everything in Site, plus Google and a campaign every month.', money(A.managed) + ' a month + ' + money(A.managed_setup) + ' setup']];
+      var box = function (k, on, t, line, pr) { return '<label class="su-opt' + (on ? ' on' : '') + '" style="margin-top:12px"><input type="checkbox" name="su-' + k + '"' + (on ? ' checked' : '') + '><b>' + t + '</b><small>' + line + '</small><strong>+' + pr + '</strong></label>'; };
       a.innerHTML = '<div class="vg-split pt-two pt-top"><div><div class="vg-eyebrow">Sign up · ' + name + '</div>' + steps(1) + '<h2 class="vg-h">Your plan</h2>' +
-        '<div class="pt-g3" style="margin-top:6px">' + opts.map(function (o) { return '<label class="su-opt' + (C.setup === o[0] ? ' on' : '') + '"><input type="radio" name="su-setup" value="' + o[0] + '"' + (C.setup === o[0] ? ' checked' : '') + '><b>' + o[1] + '</b><small>' + o[2] + '</small><strong>' + o[3] + '</strong></label>'; }).join('') + '</div>' +
-        (P.social_open === false ? '' : '<label class="su-opt' + (C.social ? ' on' : '') + '" style="margin-top:12px"><input type="checkbox" name="su-social"' + (C.social ? ' checked' : '') + '><b>Add social media, two platforms</b><small>We plan, make and post on two platforms you pick.</small><strong>+' + money(A.social) + ' a month</strong></label>') +
+        '<div class="pt-g3" style="margin-top:6px;grid-template-columns:repeat(2,minmax(0,1fr))">' + opts.map(function (o) { return '<label class="su-opt' + (C.plan === o[0] ? ' on' : '') + '"><input type="radio" name="su-plan" value="' + o[0] + '"' + (C.plan === o[0] ? ' checked' : '') + '><b>' + o[1] + '</b><small>' + o[2] + '</small><strong>' + o[3] + '</strong></label>'; }).join('') + '</div>' +
+        '<div class="pt-g3" style="grid-template-columns:repeat(2,minmax(0,1fr))">' + box('photos', C.photos, 'Add photos', 'Up to 8 dishes, one standard.', money(A.photos) + ' one time') + box('video', C.video, 'Add a video', 'A narrated slideshow of your photos.', money(A.video) + ' one time') + '</div>' +
+        (isSite() || P.social_open === false ? '' : box('social', C.social, 'Add social media, two platforms', 'We plan, make and post on two platforms you pick.', money(A.social) + ' a month')) +
         summary() + '</div>' +
-        '<div><div class="vg-eyebrow">Your starter shoot</div><div class="pt-strip" style="grid-template-columns:repeat(2,minmax(0,1fr))"><img src="' + IMG + 'm-burritobowl.webp" alt=""><img src="' + IMG + 'm-club.webp" alt=""><img src="' + IMG + 'm-smoothie.webp" alt=""><img src="' + IMG + 'm-cheesecake.webp" alt=""></div>' +
-        '<p class="pt-cap">Up to 15 of your dishes, shot to one standard, are part of your setup.' + (SAMPLE ? '' : ' These are from our sample restaurant.') + '</p></div></div>';
+        '<div><div class="vg-eyebrow">Photos to one standard</div><div class="pt-strip" style="grid-template-columns:repeat(2,minmax(0,1fr))"><img src="' + IMG + 'm-burritobowl.webp" alt=""><img src="' + IMG + 'm-club.webp" alt=""><img src="' + IMG + 'm-smoothie.webp" alt=""><img src="' + IMG + 'm-cheesecake.webp" alt=""></div>' +
+        '<p class="pt-cap">Add photos and we shoot up to 8 of your dishes to one standard, or upload your own.' + (SAMPLE ? '' : ' These are from our sample restaurant.') + '</p></div></div>';
       b.innerHTML = '<div class="vg-split pt-two pt-top"><div><div class="vg-eyebrow">Sign up · ' + name + '</div>' + steps(2) + '<h2 class="vg-h">The agreement</h2>' +
-        '<ul class="su-keys"><li><b>12 months</b>, then month to month.</li><li><b>You own what we make</b>: photos, your logo and brand kit, your copy. Your domain, Google profile and social accounts stay yours.</li>' +
-        '<li><b>Leaving early</b>: the service ends at the end of the month you paid for, and any unpaid part of the setup is due.</li><li><b>Pause</b> up to 3 months a year for $99 a month, once the setup is paid.</li>' +
+        '<ul class="su-keys">' + (isSite() ? '<li><b>Every 3 months</b>, billed at the start of each 3 months. To stop, give notice before the next 3 months start.</li>' :
+          '<li><b>12 months</b>, then month to month.</li><li><b>Leaving early</b>: the service ends at the end of the month you paid for.</li><li><b>Pause</b> up to 3 months a year for $99 a month.</li>') +
+        '<li><b>You own what we make</b>: photos, your logo and brand kit, your copy. Your domain, Google profile and social accounts stay yours.</li>' +
         '<li><b>When it ends</b>, you get every file and your asset sheet, and 30 days to download anything else.</li></ul>' +
         '<p style="margin-top:10px"><button type="button" class="su-link" data-read>Read the full Managed Marketing Agreement</button></p>' +
         '<div class="pt-form" style="margin-top:8px"><label>Your full name, to sign<input name="su-name" autocomplete="name" value="' + esc(C.name) + '"></label></div>' +
@@ -363,7 +370,7 @@
       var fail = function (msg) { btn.disabled = false; btn.textContent = 'Continue to secure checkout'; m.className = 'pt-msg err'; m.textContent = msg || 'Checkout did not open. Try again in a minute.'; };
       // Record the choice first (it also opens checkout for this business), then open Stripe.
       api({ action: 'pitch_choice', code: CODE, choice: 'ready', name: C.name.trim(), email: (D.contact || {}).email || '', preview: false }).catch(function () {}).then(function () {
-        return api({ action: 'checkout', slug: D.business.slug, setup: C.setup, social: C.social, agreed_name: C.name.trim(), agree: C.agree, origin: location.origin, back: '/business/pitch?c=' + CODE });
+        return api({ action: 'checkout', slug: D.business.slug, plan: C.plan, photos: C.photos, video: C.video, social: !isSite() && C.social, agreed_name: C.name.trim(), agree: C.agree, origin: location.origin, back: '/business/pitch?c=' + CODE });
       }).then(function (d) { if (d && d.url) { location.href = d.url; return; } fail(d && d.message); }, function () { fail(); });
     }
     function readAgreement() {
@@ -380,8 +387,8 @@
 
     stage.addEventListener('change', function (e) {
       var t = e.target;
-      if (t.name === 'su-setup') { C.setup = t.value; saveC(); drawSignup(); }
-      if (t.name === 'su-social') { C.social = t.checked; saveC(); drawSignup(); }
+      if (t.name === 'su-plan') { C.plan = t.value; if (C.plan === 'site') C.social = false; saveC(); drawSignup(); }
+      if (t.name === 'su-social' || t.name === 'su-photos' || t.name === 'su-video') { C[t.name.slice(3)] = t.checked; saveC(); drawSignup(); }
       if (t.name === 'su-agree') { C.agree = t.checked; saveC(); var m = document.getElementById('suAgreeErr'); if (m) m.textContent = ''; }
     });
     stage.addEventListener('input', function (e) { if (e.target.name === 'su-name') { C.name = e.target.value; saveC(); } });

@@ -656,3 +656,21 @@ just paid) and by the LESARUSS.ai webhook (checkout kind `client_billing`). A ne
 first, then set the row's `mode` to live. Never write "hosting" where a client reads it. **Not proven live**: a real (live) charge. Proven in test mode with a Stripe
 test card (the row went `paid`, subscription and customer saved). The claude.ai Stripe connector shows `connect_incomplete`, so a session cannot see or cancel anything in
 Stripe: cancelling a client's old subscription is Sean's. First use: Brooke Sellers, $200 a month from Nov 30, 2026 (her old subscription is on the Vegans Explore account).
+
+- **pricing_v9 built and live, 2026-11-12** (canon `canon-ve-front-of-house` v9 `pricing_v9`, v14 `hot_labs_v12`; canon v15 marks it built).
+  Stripe Prices by lookup key, made by the new `prices_ensure` action in the live and test accounts: `bd_site_v9` $500 every 3 months
+  (interval month, count 3), `bd_managed_v9` $500 a month, `bd_managed_setup_v9` $250 once, `bd_photos_v9` and `bd_video_v9` $250 once;
+  `bd_social_v1` and `bd_pause_v1` stay for Managed, every `bd_*_v1` kept. `ve-branddesk` v23 (commit 598c1b0, source sha256 matched);
+  before it, the repo was synced to live v22, which held creator-onboarding code (Brooke Sellers: `CREATOR_STEPS`, `kitFor`, billed
+  outside) that was never merged (commit 06130a8). Migration `20261112_branddesk_pricing_v9.sql`: `plan` (managed_v1 | site | managed,
+  every older row managed_v1), `addons`, `setup_plan` gains `none`. Checkout takes `{plan, photos, video, social}`; social and pause are
+  Managed only. **Owner checkout on v9 waits on `branddesk.terms_v9`** (false): the live agreement (2026-10-31) still names the $1,500
+  setup, so until Sean approves the v9 draft (`docs/legal/managed-marketing-agreement-v9-draft.md`) an owner who tries gets "our team
+  will reach out" and the team gets an email; super admins can check out. On approval: publish the draft at `business/agreement.html`
+  (old text kept beside it), set `AGREEMENT_VERSION` to 2026-11-12, set `terms_v9` true. Pages: `/business/managed` (plan step: Site or
+  Managed, photos and video, social on Managed; `?plan=site|managed`), the pitch page's What it costs and in-page sign-up, `/business`
+  Managed by us, the sample BrandDesk plan text (`planText` in `ve-branddesk-client.js`, which also shows an account's `plan_line`), and
+  Depot > BrandDesk's plan column. The name BrandDesk stays off what owners see (eyebrow "Work with us", Stripe product "Site plan").
+  Proof: two [TEST] live Checkout Sessions (Site with photos and video; Managed with photos) read back from Stripe through
+  `ve-once-pricing-v9` (both $1,000 due today, intervals right), then expired; rows removed; the once function is the 410 stub. Pages
+  checked live at 1440 and 390. The $150 Community Manager onboarding fee on Site is internal and appears nowhere public.

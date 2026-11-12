@@ -443,20 +443,22 @@
         card('Start with the basics', 'Not ready? Your page and dashboard come free with your membership. Add the Partner plan any time.', 'Members') +
         '</div>' + startBtns();
     },
-    // Managed by us (BrandDesk, canon canon-ve-front-of-house; 2026-10-31). The name BrandDesk stays off this public page until its
+    // Managed by us (BrandDesk, canon canon-ve-front-of-house; 2026-10-31; prices are pricing_v9 since 2026-11-12: Site or Managed). The name BrandDesk stays off this public page until its
     // trademark check; the request goes to ve-brand-kit managed_interest and lands in the dashboard's Inbox (/public/ve-managed.js).
     managed: function () {
-      return head('Managed by us', 'A marketing team for your restaurant', 'This is a lot to carry, and you do not have to carry it alone. A real person on our team does the hard parts, and you keep your brand kit up to date. <b>From $500 a month.</b>') +
+      return head('Managed by us', 'A marketing team for your restaurant', 'This is a lot to carry, and you do not have to carry it alone. A real person on our team does the hard parts, and you keep your brand kit up to date. <b>From $500 every 3 months.</b>') +
         '<div class="dg-grid">' +
         card('Your website, built for you', 'On our restaurant template, fed by your page here, with your menu, photos, hours and online ordering. <a href="/business/sample/site" target="_blank" rel="noopener">See a sample</a>.', 'Included') +
-        card('Google, handled', 'Your Google profile claimed and complete: hours, photos, posts and replies to reviews.', 'Included') +
-        card('Every dish photographed', 'A starter shoot of up to 15 menu items, all on one surface and angle, so your menu looks like one place.', 'Included') +
+        card('Google, handled', 'Your Google profile claimed and complete: hours, photos, posts and replies to reviews.', 'Managed') +
+        card('Every dish photographed', 'Up to 8 dishes, all on one surface and angle, so your menu looks like one place. Or upload your own.', '$250 one time') +
         card('Your logo and brand kit', 'Colors, type, your voice and your story in one place you can edit. <a href="/business/sample/brand" target="_blank" rel="noopener">See a sample</a>.', 'Included') +
-        card('A person who knows you', 'A monthly check-in with your Community Manager, a campaign every month, and your results on your dashboard.', 'Included') +
+        card('A person who knows you', 'A Community Manager gets you set up. On Managed: Google, a check-in and a campaign every month, and your results on your dashboard.', 'Included') +
         card('Yours to keep', 'Your domain, your photos and your brand kit are yours. Download everything any time. If you ever leave, you keep the pieces.', 'Always') +
         '</div>' +
-        '<div class="dg-card" style="margin-top:14px"><b>What it costs</b><p><strong style="display:inline;font-weight:800">$1,500 to set up</strong>, at once or over 3 or 6 months. Then <strong style="display:inline;font-weight:800">$500 a month</strong>. Social media is <strong style="display:inline;font-weight:800">$500 a month more</strong> for two platforms. ' +
+        '<div class="dg-card" style="margin-top:14px"><b>What it costs</b><p><strong style="display:inline;font-weight:800">Site: $500 every 3 months</strong>, no setup fee. Your website, your brand kit and your page here, with a check-in every quarter.</p>' +
+        '<p><strong style="display:inline;font-weight:800">Managed: $500 a month</strong>, plus a <strong style="display:inline;font-weight:800">$250 setup</strong> we do with you live, in one call. Everything in Site, plus Google, a campaign and a check-in every month. Social media is <strong style="display:inline;font-weight:800">$500 a month more</strong> for two platforms. ' +
         '12 months, then month to month. Need a break? Pause up to 3 months a year for $99 a month and your site stays up.</p>' +
+        '<p>On either plan: photos of up to 8 dishes, $250 one time, and a narrated video of your photos, $250 one time.</p>' +
         '<p>We are starting with a small group of restaurants, city by city, where we have a Community Manager. Tell us about yours.</p></div>' +
         '<div class="dg-btns"><button type="button" class="dg-btn" data-managed="business">Talk to our team</button><a href="/business/sample/site" target="_blank" rel="noopener" style="font-size:13px;font-weight:800;color:var(--g)">See a sample website</a></div>';
     },
