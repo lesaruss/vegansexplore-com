@@ -115,5 +115,7 @@ never words on the art. `ads/guides/guide.html` (every Guide ad, sized by its sl
 the 14 Humble Cabbage campaigns moved off flat images that had Shop now and tags baked on (`20261111_house_ads_kit_template.sql`, stills
 archived in `ad_assets`). The listing Guide banner (`VEPromo.guideCard` in `public/ve-promo.js`, `#ve-house-banner` on listings) now
 frames the same `guide.html` instead of its own card that laid the copy over the scenes; it still counts the view on screen and the
-click (the ad posts `{veAd:'click'}`) as promo `guide-<slug>` and through `ve_house_ad_count`. `creatorCards` (People pages, Kai) still
-uses the old overlay card and is the next to move.
+click (the ad posts `{veAd:'click'}`) as promo `guide-<slug>` and through `ve_house_ad_count`. `creatorCards` (People pages, Kai) moved
+the same way on 2026-11-12 (Sean: "fix the Kai creator card"): `guide.html?g=creator` (its own label, line and "Become a creator" button),
+the "Is this you?" claim box above it unchanged; promo `creator-register` and `ve_house_ad_count` still count the view and click.
+No house ad on the site lays words over its art any more.
