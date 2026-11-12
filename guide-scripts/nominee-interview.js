@@ -267,11 +267,16 @@
     if (PREVIEW) { A[q] = { written: W.mode === 'rec' ? '' : W.written, audio_url: W.url || (A[q] && A[q].audio_url) || (W.mode === 'rec' ? 'preview' : null), audio_seconds: Math.round(W.seconds), extra: extra || {} }; return Promise.resolve({ ok: true }); }
     var body = { action: 'answer_save', t: T, q: q, extra: extra || {} };
     var up = Promise.resolve();
+    if (W.mode === 'rec' && W.blob && W.blob.size < 512) {
+      // An empty clip (the microphone gave nothing): uploading it again would fail every time, so ask for a new recording.
+      W.blob = null; W.url = ''; W.seconds = 0; if ($('nmAns')) $('nmAns').innerHTML = answer(W);
+      return Promise.reject({ message: 'That recording came out empty. Tap the button and record it again.' });
+    }
     if (W.mode === 'rec' && W.blob) {
       up = api({ action: 'answer_upload', t: T, q: q, type: W.type, size: W.blob.size }).then(function (d) {
         if (!d || !d.ok) throw d || {};
         return fetch(d.url, { method: 'PUT', headers: { 'Content-Type': W.type, 'x-upsert': 'true' }, body: W.blob }).then(function (r) {
-          if (!r.ok) throw { message: 'Your recording did not upload. Try again.' };
+          if (!r.ok) throw { message: 'Your recording did not upload. Try again, or record it again.' };
           body.audio = { path: d.path, key: d.key, seconds: Math.round(W.seconds) };
         });
       });
