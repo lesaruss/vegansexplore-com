@@ -4510,6 +4510,18 @@
     if (!listings.length) { box.style.display = 'none'; box.innerHTML = ''; DASH_BIZ = []; dashTilesLayout(); return; }
     var href = function (l, pd) { return '/dashboard/business?l=' + encodeURIComponent(l.slug) + (pd ? '&tab=page&pd=' + pd : '&tab=home'); };
     DASH_BIZ = listings.slice(0, 4); DASH_BIZ_SCORE = []; dashTilesLayout();
+    // A business owner lands on their business dashboard when they sign in (Sean, 2026-11-12: "when they log in... they go directly
+    // to their dashboard"), once per visit so Back to your dashboard does not loop; a creator's own dashboard comes first, and super
+    // admins keep this console.
+    var landed = false; try { landed = sessionStorage.getItem('ve_biz_landed') === '1'; } catch (e) {}
+    var sa = window.VEAuth && VEAuth.isRealSuperAdmin && VEAuth.isRealSuperAdmin();
+    if (!landed && !sa && /^\/dashboard\/?$/.test(location.pathname) && !location.hash) {
+      (window.loadCreatorInfo ? loadCreatorInfo() : Promise.resolve({})).then(function (c) {
+        if ((c && c.has) || !/^\/dashboard\/?$/.test(location.pathname)) return;
+        try { sessionStorage.setItem('ve_biz_landed', '1'); } catch (e) {}
+        openBusiness(listings.length === 1 ? '?l=' + encodeURIComponent(listings[0].slug) + '&tab=home' : '', true);
+      });
+    }
     box.innerHTML = '<div class="dash-biz-head"><p class="dash-section-title">Your business</p></div>' + listings.slice(0, 4).map(function (l, i) {
       var pic = l.logo_url ? '<span class="dash-biz-logo" style="background-image:url(\'' + dvEsc(l.logo_url) + '\')"></span>' : '<span class="dash-biz-logo dash-biz-letter">' + dvEsc(String(l.name || '?').charAt(0)) + '</span>';
       return '<div class="dash-biz-card">' + pic + '<div class="dash-biz-body"><b>' + dvEsc(l.name) + '</b>' +

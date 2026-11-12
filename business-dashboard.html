@@ -95,6 +95,55 @@
     .pick i{width:48px;height:48px;border-radius:10px;background:#fff center/contain no-repeat;border:1px solid var(--line);flex:none;display:grid;place-items:center;font-style:normal;font-weight:900;color:var(--g);}
     .pick small{display:block;color:var(--ink55);font-size:12.5px;}
     .search{font:inherit;font-size:14px;padding:9px 11px;min-height:44px;border:1px solid rgba(0,0,0,.25);border-radius:6px;width:100%;max-width:420px;}
+    /* The new look (Color Block, Sean 2026-11-12: "what I want them to land on is what you showed me earlier with Liz"; /mocks/claims
+       slides 7 and 8): a white page, the stripe on every card, one orange action, the parts as one sliding row. */
+    body{background:#fff;}
+    .card,.rows{position:relative;}
+    .card::before{content:"";position:absolute;left:0;right:0;top:0;height:5px;border-radius:14px 14px 0 0;background:linear-gradient(90deg,#2D5C27 0 25%,#F69820 25% 37.5%,#FF9EC4 37.5% 50%,#FFEBD1 50% 62.5%,#22C55E 62.5% 75%,#E8F5E9 75% 87.5%,#3A9B3E 87.5%);}
+    .btn.go{background:#F69820;color:#1a1a1a;}
+    .rows .btn:not(.go),.card .btn:not(.go){background:#fff;color:var(--ink);border:1.5px solid rgba(0,0,0,.25);}
+    .btn.ok{background:var(--gl);color:var(--g);}
+    /* The parts as one sliding row, copied from the listing page's .listing-tabs (Sean, 2026-11-12: "I've grown to be okay with the
+       sliding feature... they can see the options versus having to do the drop down"). */
+    .ptabs{display:flex;overflow-x:auto;scrollbar-width:none;gap:4px;border-bottom:2px solid var(--line);margin:0 0 20px;}
+    .ptabs::-webkit-scrollbar{display:none;}
+    .ptabs a{flex:none;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;padding:10px 14px;color:var(--ink75);border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;text-decoration:none;}
+    .ptabs a.on{color:var(--g);border-bottom-color:var(--g);}
+    .ptabs a em{font-style:normal;background:#F69820;color:#1a1a1a;border-radius:6px;font-size:10.5px;font-weight:900;padding:1px 7px;}
+    .loc{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:-8px 0 18px;font-size:13px;font-weight:700;color:var(--ink55);}
+    /* Getting Started with Liz (the Welcome Guide's Getting started card): her picture, the meter, one button per row. */
+    .welcome{font-size:clamp(20px,2.2vw,26px);font-weight:900;margin:0 0 12px;letter-spacing:-.01em;}
+    .gs{position:relative;display:grid;grid-template-columns:160px minmax(0,1fr);gap:18px;align-items:start;border:1.5px solid #F69820;background:#FFFBF3;border-radius:14px;padding:18px;margin:0 0 22px;}
+    .gs .liz{width:160px;aspect-ratio:1;border-radius:12px;background:#f3f6f3 center 18%/cover no-repeat;}
+    .gs h3{font-size:18px;font-weight:900;margin:0 0 4px;}
+    .gs .gsp{font-size:14px;color:var(--ink75);margin:0 0 8px;line-height:1.5;}
+    .meter{height:10px;border-radius:6px;background:#eee;overflow:hidden;margin:0 0 12px;}
+    .meter i{display:block;height:100%;background:#2D5C27;border-radius:6px;}
+    .gsr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
+    .gr{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:12px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;}
+    .gr .ic{width:40px;height:40px;border-radius:9px;background:var(--gl);display:grid;place-items:center;}
+    .gr .ic svg{width:20px;height:20px;stroke:#2D5C27;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;}
+    .gr b{display:block;font-size:14px;line-height:1.3;}
+    .gr small{display:block;font-size:12px;color:var(--ink55);line-height:1.35;}
+    .gr.done .ic{background:#2D5C27;}.gr.done .ic svg{stroke:#fff;}
+    .gr.done b{text-decoration:line-through;text-decoration-color:rgba(45,92,39,.45);color:var(--ink55);}
+    .gr.hot{border-color:#F69820;}
+    .gr .btn{min-height:38px;padding:8px 14px;}
+    @media (max-width:900px){.gsr{grid-template-columns:minmax(0,1fr);}}
+    @media (max-width:600px){.gs{grid-template-columns:minmax(0,1fr);}.gs .liz{width:96px;}}
+    /* Your post (Media kit): the post in a phone feed, the story in a phone frame, then download, the link and the caption. */
+    .sh{display:grid;grid-template-columns:260px 160px minmax(0,1fr);gap:22px;align-items:start;}
+    .ph{border:7px solid #1a1a1a;border-radius:22px;overflow:hidden;background:#fff;}
+    .ph img{display:block;width:100%;}
+    .ph-top{display:flex;align-items:center;gap:7px;padding:7px 9px;font-size:11px;font-weight:800;}
+    .ph-top i{width:22px;height:22px;border-radius:50%;background:#fff center/cover no-repeat;border:1px solid #eee;}
+    .ph-cap{font-size:10.5px;line-height:1.45;padding:7px 9px 10px;color:#333;}
+    .lk{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:1.5px solid #2D5C27;border-radius:10px;padding:9px 11px;background:#F6FBF6;margin:12px 0 0;}
+    .lk code{flex:1 1 200px;font:800 15px Montserrat,sans-serif;color:#1a1a1a;}
+    .cap{border:1px dashed #c9c9c9;border-radius:10px;padding:11px 13px;font-size:13.5px;color:#333;margin-top:10px;}
+    .cap p{margin:0 0 10px;line-height:1.5;}
+    .shn{font-size:13px;color:#2D5C27;background:#F2F8F2;border-radius:8px;padding:9px 11px;margin-top:12px;}
+    @media (max-width:900px){.sh{grid-template-columns:minmax(0,1fr) 120px;}.sh-act{grid-column:1 / -1;}}
   </style>
 </head>
 <body>
@@ -122,6 +171,53 @@
     insights: ['insights', 'audience', 'checkins', 'saves', 'gmembers'],
     plan: ['plan', 'managed', 'gift', 'earnings']
   };
+  // Their Find us on Vegans Explore post and story (scripts/brand-templates/find-us.js, rendered at approval into /public/claims/<slug>/)
+  // and their own tracked link (ve_links, initiative ve-claims-onboarding). First group 2026-11-12; next: served by owner_dashboard.
+  var POST_OK = { 'chaska': 'chaska', 'next-level-veggie-grill': 'nlvg-pasadena', 'next-level-veggie-grill-burbank-d55b': 'nlvg-burbank',
+    'next-level-veggie-grill-long-beach-b4fc': 'nlvg-long-beach', 'next-level-veggie-grill-los-angeles-9f8d': 'nlvg-sunset',
+    'next-level-veggie-grill-tustin': 'nlvg-tustin', 'veggie-grill': 'nlvg-ucla' };
+  var CAPTION = 'Find us on @vegansexplore \uD83C\uDF31 Our menu, hours and signature dishes, all in one place. Link in bio.';
+  function did(k) { try { return localStorage.getItem('ve_gs_' + k + '_' + L.slug) === '1'; } catch (e) { return false; } }
+  function mark(k) { try { localStorage.setItem('ve_gs_' + k + '_' + L.slug, '1'); } catch (e) {} }
+  var IC = { done: '<path d="M4 12l5 5L20 6"/>', share: '<path d="M4 12v7h16v-7M12 3v12M7 8l5-5 5 5"/>', talk: '<path d="M4 5h16v11H8l-4 4z"/>',
+    photo: '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 15l5-5 4 4 3-3 6 6"/>', star: '<path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/>',
+    menu: '<path d="M4 4h16v16H4zM8 9h8M8 13h8M8 17h5"/>' };
+  // Getting started with Liz (Sean, 2026-11-12, the walkthrough /mocks/claims slide 7): the first part done by us, the gift second,
+  // their voice third. Folds away when every row is done.
+  function gettingStarted() {
+    var ck = {}; (D.checklist || []).forEach(function (c) { ck[c.k] = c.done; });
+    var basics = ['photos', 'hours', 'menu'].every(function (k) { return ck[k] !== false; });
+    var rows = [
+      { k: 'built', ic: 'done', t: 'Your page is built', s: 'Your words, logo and address. Done by us.', done: true, btn: '<a class="btn btn-sm ok" href="' + esc(listingUrl()) + '" target="_top">See it</a>' },
+      { k: 'share', ic: 'share', t: 'Share your post', s: 'It\'s made. See how it looks.', done: did('share'), hot: true, btn: POST_OK[L.slug] ? '<a class="btn btn-sm go" href="' + base('media') + '&pd=post" data-part="media" data-pd="post">Share</a>' : '' },
+      { k: 'talk', ic: 'talk', t: 'Help shape launch', s: 'What would bring you back every day?', done: did('talk'), btn: '<button type="button" class="btn btn-sm btn-ghost" data-fbk data-gs="talk">Tell us</button>' },
+      { k: 'basics', ic: 'photo', t: 'Check photos, hours and menu', s: 'About 3 minutes', done: basics, btn: '<a class="btn btn-sm btn-ghost" href="' + esc(listingUrl('?tab=brand&edit=photos')) + '" target="_top">Check</a>' },
+      { k: 'dishes', ic: 'star', t: 'Feature 3 signature dishes', s: 'They show first on your page', done: did('dishes'), btn: '<a class="btn btn-sm btn-ghost" href="' + base('page') + '&pd=dishes" data-part="page" data-pd="dishes" data-gs="dishes">Pick</a>' },
+      { k: 'holiday', ic: 'menu', t: 'Add your holiday menu', s: 'Get into the free Holiday Guide', done: did('holiday'), btn: '<a class="btn btn-sm btn-ghost" href="/business/holiday-menu?listing=' + encodeURIComponent(L.slug) + '" target="_top" data-gs="holiday">Add</a>' }
+    ];
+    var n = rows.filter(function (r) { return r.done; }).length, pct = Math.round(n / rows.length * 100);
+    if (n === rows.length) return '';
+    var liz = window.VEGuideArt ? VEGuideArt('liz', 'square') : '/public/brand-kit/avatars/liz-v2.jpg';
+    return '<p class="welcome">Welcome, ' + esc(L.name) + '. You\'re a founding business.</p>' +
+      '<section class="gs"><span class="liz" style="background-image:url(\'' + esc(liz) + '\')" role="img" aria-label="Liz, your Guide"></span><div>' +
+      '<h3>Getting started with Liz</h3><p class="gsp">' + pct + '% ready: we built the first part. We launch January 1, and you\'re helping build it.</p>' +
+      '<div class="meter"><i style="width:' + pct + '%"></i></div><div class="gsr">' + rows.map(function (r) {
+        return '<div class="gr' + (r.done ? ' done' : '') + (r.hot && !r.done ? ' hot' : '') + '"><span class="ic"><svg viewBox="0 0 24 24">' + IC[r.done ? 'done' : r.ic] + '</svg></span>' +
+          '<div><b>' + esc(r.t) + '</b><small>' + esc(r.s) + '</small></div>' + (r.btn || '<span></span>') + '</div>'; }).join('') + '</div></div></section>';
+  }
+  // Media kit > Your post: their post and story as their followers will see them (Sean, 2026-11-12, /mocks/claims slide 8).
+  function drawPost() {
+    var code = POST_OK[L.slug];
+    if (!code) return drawSoon('Media kit', 'Your "Find us on Vegans Explore" post and story are being made from your logo. They land here with your own link and a caption to copy.');
+    var dir = '/public/claims/' + encodeURIComponent(L.slug) + '/', link = 'vegansexplore.com/go/' + code, handle = String(L.instagram || L.name || '').replace(/^.*instagram\.com\//i, '').replace(/[\/?#].*$/, '').replace(/^@/, '') || L.name;
+    return '<section class="card"><h2>Find us on Vegans Explore <span class="tag t-new">Ready</span></h2><p class="lede" style="margin:0 0 16px">Made for you when your page was approved. Post it, tag @vegansexplore, and use your own link so you can see who it brings.</p>' +
+      '<div class="sh"><div class="ph"><div class="ph-top"><i' + (L.logo_url ? ' style="background-image:url(\'' + esc(L.logo_url) + '\')"' : '') + '></i>' + esc(handle) + '</div><img src="' + dir + 'post.jpg" alt="Your post, Find us on Vegans Explore, with your logo"><div class="ph-cap"><b>' + esc(handle) + '</b> ' + esc(CAPTION) + '</div></div>' +
+      '<div class="ph"><img src="' + dir + 'story.jpg" alt="Your story, Find us on Vegans Explore"></div>' +
+      '<div class="sh-act"><a class="btn go" href="' + dir + 'post.jpg" download="' + esc(L.slug) + '-post.jpg" data-gs="share">Download the post</a> <a class="btn btn-ghost" href="' + dir + 'story.jpg" download="' + esc(L.slug) + '-story.jpg" data-gs="share">Download the story</a>' +
+      '<div class="lk"><code>' + esc(link) + '</code><button type="button" class="btn btn-sm btn-ghost" data-copy="https://' + esc(link) + '" data-gs="share">Copy my link</button></div>' +
+      '<div class="cap"><p>' + esc(CAPTION) + '</p><button type="button" class="btn btn-sm btn-ghost" data-copy="' + esc(CAPTION) + '" data-gs="share">Copy caption</button></div>' +
+      '<div class="shn">Every click on your link shows up in Your week as <b>visitors you sent</b>.</div></div></div></section>';
+  }
   var CHECK = { logo: ['Your logo', 'A clear, official logo instead of your first letter.', 'photos'],
     description: ['Your story', 'A few lines on who you are and what to try first.', 'about'],
     photos: ['Photos', 'Photos you own, so visitors can picture it.', 'photos'], hours: ['Your hours', 'Each day the way you want it shown.', 'hours'],
@@ -161,10 +257,9 @@
       '<div><p class="k">Business dashboard</p><h1>' + esc(L.name) + (waiting ? '<span class="crt wait">Waiting for our approval</span>' : '') + '</h1><p>' + esc([L.category, place()].filter(Boolean).join(' · ')) + '</p></div>' +
       '<div class="who-acts"><a class="btn btn-ghost btn-sm" href="' + esc(listingUrl()) + '" target="_top">View my page</a>' +
       '<button type="button" class="btn btn-ghost btn-sm" data-fbk><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/></svg>Feedback</button></div></div>' +
-      '<div class="parts"><label for="bdPart">Your dashboard</label><select id="bdPart" aria-label="Part of your dashboard">' +
-      PARTS.map(function (x, i) { return '<option value="' + x[0] + '"' + (x[0] === p ? ' selected' : '') + '>' + (i + 1) + '. ' + x[1] + '</option>'; }).join('') + '</select>' +
-      (MINE.length > 1 ? '<select id="bdListing" aria-label="Which listing">' + MINE.map(function (m) { return '<option value="' + esc(m.slug) + '"' + (m.slug === L.slug ? ' selected' : '') + '>' + esc(m.name) + '</option>'; }).join('') + '</select>' : '') +
-      '</div>';
+      '<nav class="ptabs" aria-label="Your dashboard">' + PARTS.map(function (x) { var b = x[0] === 'media' && POST_OK[L.slug] ? 1 : 0;
+        return '<a href="' + base(x[0]) + '" data-part="' + x[0] + '" class="' + (x[0] === p ? 'on' : '') + '"' + (x[0] === p ? ' aria-current="page"' : '') + '>' + esc(x[1]) + (b ? ' <em>' + b + '</em>' : '') + '</a>'; }).join('') + '</nav>' +
+      (MINE.length > 1 ? '<div class="loc"><label for="bdListing">Location</label><select id="bdListing" aria-label="Which location">' + MINE.map(function (m) { return '<option value="' + esc(m.slug) + '"' + (m.slug === L.slug ? ' selected' : '') + '>' + esc(m.name + (m.address_city ? ', ' + m.address_city : '')) + '</option>'; }).join('') + '</select></div>' : '');
   }
   function row(tag, cls, title, body, btn) {
     return '<div class="r"><div><b>' + esc(title) + '</b>' + (body ? '<p>' + esc(body) + '</p>' : '') + '</div><span class="tag ' + cls + '">' + esc(tag) + '</span>' + btn + '</div>';
@@ -217,7 +312,7 @@
   }
   function drawHome() {
     var a = needs(), b = fresh();
-    return '<div class="sec"><h2>Needs you</h2>' + (a.length ? '<span class="count">' + a.length + '</span>' : '') + '</div>' +
+    return gettingStarted() + '<div class="sec"><h2>Needs you</h2>' + (a.length ? '<span class="count">' + a.length + '</span>' : '') + '</div>' +
       (a.length ? '<div class="rows">' + a.join('') + '</div>' : '<p class="empty">Nothing is waiting on you. Your page is ready for visitors.</p>') +
       '<div class="sec"><h2>New for you</h2></div>' +
       (b.length ? '<div class="rows" style="max-height:60vh;overflow-y:auto">' + b.join('') + '</div>' : '<p class="empty">Nothing new this week. New opportunities show up here first.</p>') +
@@ -240,7 +335,7 @@
     var html = head() + (p === 'home' ? '' : '<p class="crumb"><a href="' + base('home') + '" data-part="home">Home</a> &rsaquo; ' + esc(label) + '</p>');
     if (p === 'home') html += drawHome();
     else if (p === 'page') html += drawPageTop() + '<div id="bdHost"></div>';
-    else if (p === 'media') html += drawSoon('Media kit', 'Every time we feature you (a Guide, a Daily Pulse story, a podcast, a carousel), it lands here with what you need to share it: the story, a square post, your own link and a caption to copy.');
+    else if (p === 'media') html += drawPost() + drawSoon('Every feature, ready to share', 'Every time we feature you (a Guide, a Daily Pulse story, a podcast, a carousel), it lands here with what you need to share it: the story, a square post, your own link and a caption to copy.');
     else if (p === 'messages') html += drawSoon('Messages', 'Messages from our team, and your replies, right here. Anything important is emailed to you too.');
     else html += '<div id="bdHost"></div>';
     app.innerHTML = html;
@@ -254,6 +349,10 @@
     tellParent();
   }
   app.addEventListener('click', function (e) {
+    var g = e.target.closest('[data-gs]'); if (g && L) mark(g.getAttribute('data-gs'));
+    var cp = e.target.closest('[data-copy]');
+    if (cp) { e.preventDefault(); var t = cp.getAttribute('data-copy'), o = cp.textContent;
+      (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(function () { cp.textContent = 'Copied'; setTimeout(function () { cp.textContent = o; }, 1400); }).catch(function () { prompt('Copy this:', t); }); return; }
     var fb = e.target.closest('[data-fbk]');
     if (fb) { e.preventDefault(); if (window.VEFeedback) VEFeedback.open({ form: true, page: location.origin + '/dashboard/business' + location.search }); return; }
     var a = e.target.closest('[data-part]');
@@ -267,7 +366,7 @@
   window.addEventListener('popstate', function () { if (L) { if (q('l') && q('l') !== L.slug) open(q('l'), part()); else draw(); } });
 
   function fetchListing(slug) {
-    return fetch(SB + '/rest/v1/listings?slug=eq.' + encodeURIComponent(slug) + '&status=eq.approved&select=id,name,slug,category,logo_url,address_city,address_state,location,claim_status&limit=1',
+    return fetch(SB + '/rest/v1/listings?slug=eq.' + encodeURIComponent(slug) + '&status=eq.approved&select=id,name,slug,category,logo_url,address_city,address_state,location,claim_status,instagram&limit=1',
       { headers: { apikey: ANON, Authorization: 'Bearer ' + ANON } }).then(function (r) { return r.json(); }).then(function (rows) { return rows && rows[0]; });
   }
   function open(slug, p) {
@@ -303,9 +402,12 @@
     var admin = VEAuth.isRealSuperAdmin && VEAuth.isRealSuperAdmin();
     post('ve-dashboard', { action: 'home' }).then(function (d) {
       MINE = (d && d.listings) || [];
+      return MINE.length > 1 ? fetch(SB + '/rest/v1/listings?select=slug,address_city&slug=in.(' + MINE.map(function (m) { return encodeURIComponent(m.slug); }).join(',') + ')', { headers: { apikey: ANON, Authorization: 'Bearer ' + ANON } })
+        .then(function (r) { return r.json(); }).then(function (rows) { (rows || []).forEach(function (x) { MINE.forEach(function (m) { if (m.slug === x.slug) m.address_city = x.address_city; }); }); }).catch(function () {}) : null;
+    }).then(function () {
       var want = q('l');
       if (want) return open(want, part());
-      if (MINE.length === 1) return open(MINE[0].slug, part());
+      if (MINE.length >= 1) return open(MINE[0].slug, part());
       pickOrClaim(admin);
     });
   }
