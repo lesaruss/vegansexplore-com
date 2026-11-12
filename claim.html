@@ -130,6 +130,23 @@
     .pp-stp i:nth-child(1){background:#2D5C27}.pp-stp i:nth-child(2){background:#F69820}.pp-stp i:nth-child(3){background:#FF9EC4}.pp-stp i:nth-child(4){background:#FFEBD1}.pp-stp i:nth-child(5){background:#22C55E}.pp-stp i:nth-child(6){background:#E8F5E9}.pp-stp i:nth-child(7){background:#3A9B3E}
     .pp-tag{position:absolute;top:3cqw;left:3cqw;background:#1a1a1a;color:#fff;font-size:2.8cqw;font-weight:900;letter-spacing:.14em;text-transform:uppercase;padding:1.2cqw 2cqw;border-radius:1cqw;}
     .pp-l{font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-green-deep,#2D5C27);text-align:center;margin:8px 0 0;}
+    /* The sent screen (Sean, 2026-11-12): the clock, rows with an icon, the post bigger on the right. */
+    .fd{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:28px;align-items:start;margin-top:6px;text-align:left;}
+    .fd-rows{display:grid;gap:10px;}
+    .fd-row,.fd-clock{display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px;align-items:center;border:1px solid var(--ve-border);border-radius:12px;padding:14px 16px;background:#fff;}
+    .fd-row small{display:block;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--ve-green);margin-bottom:2px;}
+    .fd-row small .tag{margin:0;}
+    .fd-row b,.fd-clock b{display:block;font-size:15.5px;font-weight:900;line-height:1.25;}
+    .fd-row span,.fd-clock span{font-size:13.5px;line-height:1.5;color:var(--ve-text-75);}
+    .fd-row.soon{border-style:dashed;background:#fbfdfb;}
+    .fd-ic{width:44px;height:44px;border-radius:10px;background:var(--gl);display:grid;place-items:center;}
+    .fd-ic svg{width:22px;height:22px;stroke:#2D5C27;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;}
+    .fd-clock{grid-template-columns:44px minmax(0,1fr) auto;border:1.5px solid #F69820;background:#FFFBF3;}
+    .fd-clock .fd-ic{background:#F69820;}
+    .fd-clock .fd-ic svg{stroke:#1a1a1a;}
+    .fd-cd{font-size:24px !important;font-weight:900;color:#1a1a1a !important;font-variant-numeric:tabular-nums;letter-spacing:.02em;}
+    .fd-post .pp-w{max-width:none;margin:0;}
+    @media (max-width:760px){.fd{grid-template-columns:minmax(0,1fr);}.fd-post{max-width:260px;margin:0 auto;width:100%;}.fd-clock{grid-template-columns:44px minmax(0,1fr);}.fd-cd{grid-column:2;font-size:20px !important;}}
     /* Is this you?: their page and their post side by side (stacked on phones). */
     .iy{display:grid;grid-template-columns:minmax(0,420px) 200px;gap:28px;align-items:start;}
     .iy-h{margin:0 0 12px;}
@@ -331,7 +348,7 @@
       <button type="button" class="btn" id="step-next">Next</button>
       <button type="submit" form="claim" class="btn" id="go">Take my front-row seat</button>
     </div>
-    <p class="note" id="free-note" hidden style="margin-top:10px">Free for members. New to Vegans Explore? A two-minute survey makes you a member, then your claim goes in. Liz reviews every claim, most within one business day.</p>
+    <p class="note" id="free-note" hidden style="margin-top:10px">Free for members. New to Vegans Explore? A few questions about your business make you a member, then your claim goes in. You'll hear from us within 24 hours.</p>
     <p class="msg" id="msg" role="status"></p>
     </div>
     <!-- Liz on the Guide layout rail, copied from the Welcome Guide (template map, Sean 2026-11-12: "it's using the old version of
@@ -402,6 +419,14 @@
       // outlet (its own free card), another brand's site (VB), and a link that asks for a plan (?plan=brand|verified|plus).
       var ASKED_PLAN = /^(verified|plus|brand)$/.test(qs.get('plan') || '');
       function FREE() { return !VB && !ASKED_PLAN && !isBrand() && !isMedia(); }
+      function claimSurvey() {
+        var cat = add0() ? $('n-cat').value : (L && L.category) || '', vs = (document.querySelector('input[name=vs]:checked') || {}).value || '';
+        if (/^(Nonprofits|Rescues|Sanctuaries|Groups)$/.test(cat)) return 'organizations';
+        if (vs === 'vegan_options') return 'pre-vegan-business-guide';
+        if (/^(Restaurants|Bakeries & Cafes|Food Trucks|Vendors|Meal Prep|Markets)$/.test(cat)) return 'vegan-restaurant-guide';
+        return 'organizations';
+      }
+      function add0() { return MODE === 'add'; }
       function bizName() { return L ? L.name : ($('n-name') && $('n-name').value.trim()) || ''; }
       function isActiveMember() { var m = window.VEAuth && VEAuth.isLoggedIn() && VEAuth.getMember(); return !!(m && m.membership_status === 'active'); }
       function pName() { return isBrand() ? 'Brand Partner' : 'Partner'; }
@@ -597,7 +622,7 @@
         isyou: { say: 'Hi, I\'m Liz. This takes about three minutes, and it\'s free. Your post is already waiting for you.' },
         describe: { say: 'Readers trust a guide more than an ad, so every page reads like one: "The business serves...", not "We serve...".' },
         keys: { say: 'Last step: who you are, so we know it\'s really you. I\'ll have your post ready the moment you\'re approved.' },
-        freedone: { say: 'Your claim is in. Most claims are approved within one business day, and your post will be waiting in your dashboard.' },
+        freedone: { say: 'Your claim is in. You\'ll hear from us within 24 hours, and your post will be waiting in your dashboard.' },
         claim: { say: 'That\'s the one? Great. Tell us a little about you, and check your details below.' },
         add: { say: 'Tell us about your business below. We review every application, and I\'ll be right here when you\'re in.' },
         offer: { say: 'Join now, and every day until January is on us. $111 covers your first period, and your seat is saved for our campaigns.' },
@@ -886,7 +911,10 @@
           }).catch(function () { $('go').disabled = false; bad('Could not connect. Please try again.'); });
           return;
         }
-        if (p === 'member' && !isActiveMember()) { saveDraft(); try { sessionStorage.setItem('ve_claim_after_survey', add ? '_add_' : L.slug); } catch (e) {} location.href = '/survey?s=explorer'; return; }
+        // Not a member yet: their business's own survey makes them one (canon-ve-door-guides v12: the Explorer survey or a business
+        // Guide's survey). Vegan or Vegan-friendly food: the restaurant survey; Pre-Vegan: the business survey; anything else: For
+        // organizations (Sean, 2026-11-12). Finishing it brings them back here and the claim goes in by itself.
+        if (p === 'member' && !isActiveMember()) { saveDraft(); try { sessionStorage.setItem('ve_claim_after_survey', add ? '_add_' : L.slug); } catch (e) {} location.href = '/survey?s=' + claimSurvey() + '&for=claim'; return; }
         $('go').disabled = true; $('msg').className = 'msg'; $('msg').textContent = p === 'member' ? 'Claiming your page...' : p === 'points' ? (add ? 'Submitting your listing...' : 'Claiming your page...') : p === 'claim' ? 'Taking you to the secure contribution page...' : 'Taking you to the secure checkout...';
         if (add && p !== 'claim' && p !== 'brand' && p !== 'points' && p !== 'member') p = 'brand';
         saveDraft();
@@ -987,19 +1015,45 @@
       }
 
       // The free claim, sent (Sean, 2026-11-12): no plans and no prices; what happens next, and the post again.
-      function freeDone(added) {
+      // The 24-hour clock (Sean, 2026-11-12: "put a clock on these things that they'll hear back from us within 24 hours... we give it
+      // like 2 hours and then we deliver 22 hours ahead of time. So we set the expectation and we over deliver."). The promise is 24
+      // hours from when the claim was sent; our own target is 2 (the review is automated, ve-claims checks). Their own time zone.
+      var IC = {
+        clock: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+        dash: '<svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M9 9v11"/></svg>',
+        post: '<svg viewBox="0 0 24 24"><path d="M4 12v7h16v-7M12 3v12M7 8l5-5 5 5"/></svg>',
+        gift: '<svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="5" rx="1"/><path d="M12 8v13M5 13v8h14v-8"/></svg>'
+      };
+      var CLOCK_T = null;
+      function clockOn(sentAt) {
+        var due = sentAt + 24 * 3600e3, el = $('fd-cd'), by = $('fd-by');
+        var day = new Date(due).toDateString() === new Date().toDateString() ? 'today' : 'tomorrow';
+        by.textContent = 'By ' + new Date(due).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) + ' ' + day + ', at the latest.';
+        function tick() { var left = Math.max(0, due - Date.now()), h = Math.floor(left / 3600e3), m = Math.floor(left % 3600e3 / 60e3), x = Math.floor(left % 60e3 / 1e3);
+          el.textContent = h + ':' + (m < 10 ? '0' : '') + m + ':' + (x < 10 ? '0' : '') + x; }
+        tick(); clearInterval(CLOCK_T); CLOCK_T = setInterval(tick, 1000);
+      }
+      // The free claim, sent (Sean, 2026-11-12): no plans and no prices. The clock first, then what comes next as rows with an icon,
+      // their post bigger on the right.
+      function freeDone(added, sentAt) {
         try { sessionStorage.removeItem(DRAFT); sessionStorage.removeItem('ve_claim_after_survey'); } catch (e) {}
         var nm = added || (L ? L.name : 'your business');
-        $('nx-h').textContent = added ? 'Thank you for adding ' + nm + '.' : 'Your claim is in.';
-        $('nx-p').textContent = 'Liz is reviewing it. Most claims are approved within one business day. Then ' + nm + ' is yours to run, and your post is waiting in your dashboard.';
-        $('nx-grid').innerHTML = '<div class="nx"><small>Next</small><b>Your dashboard</b><span>It opens once we approve your claim: your page, your post ready to share, and Getting Started with Liz.</span></div>' +
-          '<div class="nx"><small>Waiting for you</small><b>Your post, ready to share</b><span>"Find us on Vegans Explore", made from your logo, with your own link to see who it brings.</span></div>' +
-          '<div class="nx soon"><span class="tag">Coming</span><b>Bounties for businesses</b><span>Take part in our campaigns and earn points, right from your dashboard.</span></div>';
-        show(['st-next']); $('st-next').appendChild($('pp'));
+        var row = function (ic, k, t, d, soon) { return '<div class="fd-row' + (soon ? ' soon' : '') + '"><span class="fd-ic">' + IC[ic] + '</span><div><small>' + (soon ? '<span class="tag">Coming</span>' : esc(k)) + '</small><b>' + esc(t) + '</b><span>' + esc(d) + '</span></div></div>'; };
+        $('nx-h').textContent = 'What happens next';
+        $('nx-p').textContent = 'Liz is reviewing it now. Then ' + nm + ' is yours to run.';
+        $('nx-grid').innerHTML = '<div class="fd"><div class="fd-rows">' +
+          '<div class="fd-clock"><span class="fd-ic">' + IC.clock + '</span><div><b>You\'ll hear from us within 24 hours</b><span id="fd-by"></span></div><span class="fd-cd" id="fd-cd" aria-label="Time left"></span></div>' +
+          row('dash', 'Next', 'Your dashboard', 'It opens once we approve your claim: your page, your post ready to share, and Getting Started with Liz.') +
+          row('post', 'Waiting for you', 'Your post, ready to share', '"Find us on Vegans Explore", made from your logo, with your own link to see who it brings.') +
+          row('gift', '', 'Bounties for businesses', 'Take part in our campaigns and earn points, right from your dashboard.', true) +
+          '</div><div class="fd-post" id="fd-post"></div></div>';
+        $('nx-grid').className = '';
+        show(['st-next']); $('fd-post').appendChild($('pp'));
         $('free-note').hidden = true; $('stepper').hidden = true;
         document.querySelector('.wrap h1').textContent = added ? 'Thank you for adding ' + nm + '.' : 'Your claim is in, ' + nm + '.';
-        $('nx-h').textContent = 'What happens next';
         $('lede').hidden = true; liz.say('freedone'); drawPost();
+        var at = sentAt || Date.now(); try { if (!sentAt) sessionStorage.setItem('ve_claim_sent_' + (L ? L.slug : 'add'), String(at)); } catch (e) {}
+        clockOn(at);
       }
 
       // ---- A business picked (from the search, or ?listing= in the link).
@@ -1040,11 +1094,13 @@
               return;
             }
             // Claimed with the $11 and now joining as a Partner: the form again, with the Partner plan picked.
+            // Already sent: the same screen and the same clock, from when the claim was made (ve-claims mine, created_at).
+            if (c && c.status === 'submitted' && FREE()) return freeDone('', Date.parse(c.created_at) || null);
             if (c && (c.status === 'submitted' || c.status === 'approved') && qs.get('plan') !== 'brand') return nextStep('claim');
             fill(L); renderPlans();
             // Back from the survey (they are a member now): what they wrote is restored, and they land on Your keys to send it.
             var fromSurvey = false; try { fromSurvey = sessionStorage.getItem('ve_claim_after_survey') === L.slug && isActiveMember() && !!loadDraft(); } catch (e) {}
-            if (fromSurvey && FREE()) { goStep('you', false); $('msg').className = 'msg'; $('msg').textContent = 'Welcome back, you are a member now. Everything you wrote is here: send your claim when you are ready.'; return; }
+            if (fromSurvey && FREE()) { goStep('you', false); $('msg').className = 'msg'; $('msg').textContent = 'Welcome back, you are a member now. Sending your claim...'; submit(); return; }
             goStep(qs.get('step') || 'find');
             var back = qs.get('claim') || qs.get('verified');
             if (back === 'cancelled' || back === 'unpaid') { loadDraft(); goStep('join'); $('msg').className = 'msg bad'; $('msg').textContent = 'Checkout was not completed, so nothing has gone through yet. Your details are still here when you are ready.'; }
@@ -1116,7 +1172,7 @@
           var back0 = /^(cancelled|unpaid)$/.test(qs.get('claim') || qs.get('verified') || '');
           // Back from the survey after adding a business: what they wrote is restored, on Your keys.
           var fromSurvey0 = false; try { fromSurvey0 = sessionStorage.getItem('ve_claim_after_survey') === '_add_' && isActiveMember() && !!loadDraft(); } catch (e) {}
-          if (fromSurvey0) { addMode('you'); $('msg').className = 'msg'; $('msg').textContent = 'Welcome back, you are a member now. Everything you wrote is here: add your business when you are ready.'; return; }
+          if (fromSurvey0) { addMode('you'); $('msg').className = 'msg'; $('msg').textContent = 'Welcome back, you are a member now. Sending your business...'; submit(); return; }
           addMode(back0 ? 'join' : qs.get('step') || 'newbiz');
           if (back0) { loadDraft(); syncPlan(); $('msg').className = 'msg bad'; $('msg').textContent = 'Checkout was not completed, so nothing has gone through yet. Your details are still here when you are ready.'; }
           return;
