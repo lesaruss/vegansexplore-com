@@ -497,6 +497,14 @@
         });
       }
       function viewAdd(n) {
+        // Create listing from another Depot page (Sean, 2026-11-12, Holiday menus: "Whenever that warning pops up, there should be a
+        // button that says create listing"): #add/1?q=<name>&where=<city, state>&url=<link> starts a fresh Add a listing filled in.
+        var pre = n === 1 ? (location.hash.split('?')[1] || '') : '';
+        if (pre) {
+          var pp = new URLSearchParams(pre);
+          add = freshAdd(); add.q = pp.get('q') || ''; add.where = pp.get('where') || ''; add.url = pp.get('url') || '';
+          history.replaceState(null, '', location.pathname + location.search + '#add/1');
+        }
         if (!add) add = freshAdd();
         if (n > 1 && !add.f.name) { location.hash = '#add/1'; return; }
         crumbs([['Directory review', '#'], ['Add a listing']]);
