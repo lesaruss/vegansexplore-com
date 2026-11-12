@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Local Voices: from mention to reply — Vegans Explore</title>
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Walkthrough of the Local Voices campaign: everyone our shows mention, and people found in other podcasts and the news, reviewed, listed in the Directory and asked for their story. Illustrative, not built yet.">
+  <link rel="canonical" href="https://vegansexplore.com/mocks/local-voices/">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preload" href="/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2" as="font" type="font/woff2" crossorigin><style>/* Montserrat, self-hosted (site health 2026-11-11): the same faces Google served, without the blocking stylesheet */@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}</style>
+  <!-- Parent template: mocks/claims/index.html (the guided walkthrough on the white stage, /public/ve-guided.js), its panels, rows, tags
+       and side notes copied as they are; the screens are drawn as HQ Outreach > Campaigns draws a campaign. Sean, 2026-11-12: "we need to
+       mock this out first so I can see it visually before we push it anywhere... if it's being pulled from the RSS or... a news article...
+       it goes into a review. If it is being pulled from our content, it goes into the queued." Sunni and Carla are real (SoFlo 112); every
+       outside-source example is invented and stamped Sample. -->
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-border:rgba(0,0,0,0.09);}
+    body{font-family:"Montserrat",sans-serif;background:#fff;color:#1a1a1a;line-height:1.5;}
+    .dm-row{display:flex;flex-wrap:wrap;gap:18px 26px;align-items:flex-start;}
+    .dm-main{flex:1 1 640px;min-width:0;}
+    .dm-side{flex:1 1 280px;min-width:0;font-size:12.5px;line-height:1.5;}
+    .dm-side h3{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#2D5C27;margin:0 0 6px;}
+    .dm-side ul{list-style:none;display:grid;gap:5px;margin-bottom:12px;}
+    .dm-side li b{color:#2D5C27;}
+    .tg{display:inline-block;font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;border-radius:6px;padding:2px 7px;vertical-align:middle;line-height:1.4;white-space:nowrap;background:#eee;color:#444;}
+    .tg.live{background:#E8F5E9;color:#2D5C27;}
+    .tg.smp{background:#9a3412;color:#fff;}
+    .tg.soon{background:#FFF1DF;color:#8a4b00;}
+    .tg.warn{background:#FDECEC;color:#9b1c1c;}
+    .tg.blue{background:#DCEBF5;color:#0E4A70;}
+    .ui{position:relative;background:#fff;color:#1a1a1a;border-radius:10px;border:1px solid #e3e3e3;box-shadow:0 2px 10px rgba(0,0,0,.06);padding:14px 16px;font-size:12px;}
+    .ui-btn{display:inline-block;border-radius:6px;background:#2D5C27;color:#fff;font-weight:800;font-size:11px;padding:8px 12px;white-space:nowrap;text-decoration:none;border:0;font-family:inherit;cursor:pointer;}
+    .ui-btn.ghost{background:#fff;color:#2D5C27;border:1px solid #2D5C27;}
+    .ui-btn.or{background:#F69820;color:#1a1a1a;}
+    .ui-sec{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#888;margin:12px 0 7px;display:flex;align-items:center;gap:8px;}
+    .ui-sec:first-child{margin-top:0;}
+    .crumb{font-size:11px;color:#666;margin-bottom:8px;}
+    .crumb b{color:#1a1a1a;}
+    /* the campaign's tabs: one list, six places */
+    .tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+    .tabs b{font-size:10.5px;font-weight:800;border:1px solid #e3e3e3;border-radius:6px;padding:6px 10px;color:#555;background:#fff;}
+    .tabs b i{font-style:normal;display:inline-block;min-width:18px;margin-left:5px;border-radius:6px;background:#f1f1f1;padding:0 5px;text-align:center;}
+    .tabs b.on{background:#2D5C27;border-color:#2D5C27;color:#fff;}
+    .tabs b.on i{background:rgba(255,255,255,.2);}
+    .bar{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:1px dashed #c9c9c9;border-radius:8px;padding:7px 10px;margin-bottom:8px;font-size:11px;}
+    .bar .sp{flex:1;}
+    .rows{display:grid;gap:6px;}
+    .row{display:grid;grid-template-columns:18px 36px minmax(0,1fr) auto auto;align-items:center;gap:10px;border:1px solid #ececec;border-radius:8px;padding:7px 10px;}
+    .row.nochk{grid-template-columns:36px minmax(0,1fr) auto auto;}
+    .row .bx{width:16px;height:16px;border:2px solid #9a9a9a;border-radius:4px;}
+    .row .bx.on{background:#2D5C27;border-color:#2D5C27;box-shadow:inset 0 0 0 2px #fff;}
+    .row .lg{width:36px;height:36px;border-radius:8px;background:#E8F5E9 center/cover no-repeat;border:1px solid #e3e3e3;display:grid;place-items:center;font-weight:900;color:#2D5C27;}
+    .row b{display:block;font-size:12px;line-height:1.3;}
+    .row small{display:block;font-size:10.5px;color:#777;line-height:1.35;}
+    .row.hot{border-color:#F69820;background:#FFFBF3;}
+    /* slide 1: the line */
+    .flow{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-top:6px;}
+    .flow div{position:relative;border:1.5px solid #e3e3e3;border-radius:12px;padding:12px 11px;font-size:12px;line-height:1.45;background:#fff;}
+    .flow div em{display:block;font-style:normal;font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#2D5C27;margin-bottom:3px;}
+    .flow div b{display:block;font-size:14px;font-weight:900;margin-bottom:3px;}
+    .flow div.you{border-color:#F69820;background:#FFFBF3;}
+    .flow div:not(:last-child)::after{content:"\203A";position:absolute;right:-10px;top:50%;transform:translateY(-50%);font-size:20px;font-weight:900;color:#2D5C27;}
+    .doors{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;margin-bottom:12px;}
+    .door{border-radius:12px;padding:12px 14px;font-size:12.5px;}
+    .door b{display:block;font-size:15px;font-weight:900;margin-bottom:2px;}
+    .door.ours{background:#E8F5E9;}
+    .door.out{background:#FFF1DF;}
+    .key{display:flex;gap:14px;flex-wrap:wrap;font-size:11.5px;margin-top:12px;color:#555;}
+    /* slide 4: listing */
+    .lst{display:grid;grid-template-columns:120px minmax(0,1fr);gap:14px;align-items:start;}
+    .lst .ph{width:120px;height:120px;border-radius:12px;background:#fff center/cover no-repeat;border:1px solid #e3e3e3;}
+    .lst h4{font-size:20px;font-weight:900;line-height:1.1;margin:2px 0 4px;}
+    .chk{display:grid;gap:4px;margin-top:8px;font-size:11.5px;}
+    .chk span::before{content:"\2713  ";color:#2D5C27;font-weight:900;}
+    .chk span.no::before{content:"\25CB  ";color:#999;}
+    /* slide 5: drafts */
+    .dr{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:12px;}
+    .em{border:1px solid #e3e3e3;border-radius:10px;overflow:hidden;font-size:11.5px;}
+    .em-h{background:#f4f5f4;padding:7px 12px;font-size:10.5px;color:#555;border-bottom:1px solid #e3e3e3;}
+    .em-h b{color:#1a1a1a;}
+    .em-b{padding:10px 14px;line-height:1.5;}
+    .em-b p{margin:0 0 7px;}
+    .em-b .btn{display:inline-block;background:#2D5C27;color:#fff;font-weight:800;border-radius:6px;padding:6px 10px;font-size:10.5px;}
+    .bub{border-radius:10px;padding:9px 11px;font-size:11.5px;line-height:1.45;background:#F1F5F1;margin-bottom:6px;}
+    .bub small{display:block;font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#2D5C27;margin-bottom:2px;}
+    .nt{display:flex;gap:10px;align-items:flex-start;border:1px solid #e3e3e3;border-radius:10px;padding:9px 11px;font-size:11.5px;}
+    .nt i{flex:none;width:34px;height:34px;border-radius:8px;background:#fff center/cover no-repeat;border:1px solid #e3e3e3;}
+    .pl{display:flex;align-items:center;gap:8px;margin-top:6px;}
+    .pl{flex-wrap:wrap;}
+    /* slide 7: sent */
+    .tr{width:100%;border-collapse:collapse;font-size:11px;}
+    .tr th{font-size:9.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#888;text-align:left;padding:5px 6px;border-bottom:1px solid #eee;}
+    .tr td{padding:7px 6px;border-bottom:1px solid #f1f1f1;vertical-align:middle;}
+    .tr td.y{color:#2D5C27;font-weight:800;}
+    .tr td.n{color:#aaa;}
+    .who{display:flex;align-items:center;gap:8px;}
+    .who i{width:26px;height:26px;border-radius:6px;background:#E8F5E9 center/cover no-repeat;border:1px solid #e3e3e3;flex:none;}
+    .acts{display:flex;gap:4px;flex-wrap:wrap;}
+    .acts span{font-size:9.5px;font-weight:800;border:1px solid #d6d6d6;border-radius:6px;padding:3px 6px;white-space:nowrap;}
+    .acts span.x{border-color:#e7b4b4;color:#9b1c1c;}
+    @media (min-width:901px) and (max-height:820px){ .ui{padding:11px 14px;} .row{padding:5px 9px;} .flow div{padding:9px 10px;} .em-b{padding:8px 12px;} }
+    @media (max-width:900px){
+      .flow{grid-template-columns:repeat(2,minmax(0,1fr));}
+      .flow div::after{display:none;}
+      .doors,.dr{grid-template-columns:minmax(0,1fr);}
+      .row{grid-template-columns:18px 36px minmax(0,1fr);}
+      .row > :nth-child(4),.row > :nth-child(5){grid-column:3;}
+      .row.nochk{grid-template-columns:36px minmax(0,1fr);}
+      .row.nochk > :nth-child(3),.row.nochk > :nth-child(4){grid-column:2;}
+      .tr .hide,.tr .hide2{display:none;}
+      .who{flex-wrap:wrap;gap:4px 8px;}
+      .acts{flex-direction:column;}
+    }
+  </style>
+</head>
+<body>
+<div class="page-frame">
+  <script src="/public/nav.js"></script>
+  <div class="vg-note"><strong>Illustrative</strong>The Local Voices campaign as it would look in HQ Outreach, for Sean to see before it is built. Sunni and Carla are real, from SoFlo 112. Every name from another podcast or the news is made up and tagged <b>Sample</b>.</div>
+
+  <main class="vg-stage vg-light" aria-label="Local Voices: from mention to reply">
+
+    <section class="vg-slide" id="flow" data-title="The line">
+      <div class="vg-eyebrow">HQ Outreach · Podcast: Local Voices</div>
+      <h2 class="vg-h">Two ways in, one line out, and you OK every send</h2>
+      <div class="doors">
+        <div class="door ours"><b>From our shows: straight to Queued</b>Anyone SoFlo Vegans, the Vegans Explore Podcast, Pre-Vegan or a future show mentions. We already know them: we said their name on air.</div>
+        <div class="door out"><b>From outside: Review first</b>People in other podcasts' feeds (RSS) and in news articles. You pick who comes in, one at a time or many at once.</div>
+      </div>
+      <div class="flow">
+        <div class="you"><em>1 · You</em><b>Review</b>Outside finds only. Tick, then Add to Queued, Skip or Never contact.</div>
+        <div><em>2 · Us</em><b>Queued</b>Approved people. Anyone not in the Directory gets a listing made.</div>
+        <div><em>3 · Us</em><b>Listing ready</b>The tile shows their listing, checked and live, with a link.</div>
+        <div><em>4 · Us</em><b>Drafted</b>The claim email, the DM, your note and their story page, from what we know.</div>
+        <div class="you"><em>5 · You</em><b>Your OK</b>Read it, preview their link (never counted), add a note, approve.</div>
+        <div><em>6 · Both</em><b>Sent</b>Emails go on their day; DMs you copy and send. Then we watch for clicks and replies.</div>
+      </div>
+      <div class="key"><span><b style="color:#8a4b00">Orange</b> = your step</span><span>Nothing reaches anyone until your OK in step 5.</span><span>Already in the Directory? Steps 2 and 3 are skipped.</span></div>
+    </section>
+
+    <section class="vg-slide" id="review" data-title="1 · Review">
+      <div class="vg-eyebrow">1 · Review · outside sources only</div>
+      <h2 class="vg-h">Found in other podcasts and the news: you choose who comes in</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <div class="crumb">Outreach › Campaigns › <b>Podcast: Local Voices</b></div>
+          <div class="tabs"><b class="on">Review<i>14</i></b><b>Queued<i>6</i></b><b>Ready for your OK<i>4</i></b><b>Scheduled<i>3</i></b><b>Sent<i>11</i></b><b>Closed<i>2</i></b></div>
+          <div class="bar"><b>2 picked</b><span class="ui-btn">Add to Queued</span><span class="ui-btn ghost">Skip</span><span class="ui-btn ghost">Never contact</span><span class="sp"></span><span>Source: All ▾</span><span>City: South Florida ▾</span></div>
+          <div class="rows">
+            <div class="row"><span class="bx on"></span><span class="lg">M</span><span><b>Sample: Mango Grove Bakery <span class="tg smp">Sample</span></b><small>Podcast feed · "Plant Talk Weekly" ep. 88 · Wynwood, Miami · Not in the Directory</small></span><span class="tg soon">New</span><span class="ui-btn ghost">Open</span></div>
+            <div class="row"><span class="bx on"></span><span class="lg">R</span><span><b>Sample: Rosa Vidal, chef <span class="tg smp">Sample</span></b><small>News · "Miami's new plant-based chefs" · a person, not a business · Not in People</small></span><span class="tg soon">New</span><span class="ui-btn ghost">Open</span></div>
+            <div class="row"><span class="bx"></span><span class="lg" style="background-image:url('/business/sample/img/logo.jpg')"></span><span><b>Green Leaf Kitchen <span class="tg smp">Sample</span></b><small>Podcast feed · "Vegan Bites" ep. 12 · Fort Lauderdale · Already listed</small></span><span class="tg live">In the Directory</span><span class="ui-btn ghost">Open</span></div>
+            <div class="row"><span class="bx"></span><span class="lg">S</span><span><b>Sample: Sunrise Sanctuary <span class="tg smp">Sample</span></b><small>News · "Rescue farm opens its gates" · Homestead · Not in the Directory</small></span><span class="tg soon">New</span><span class="ui-btn ghost">Open</span></div>
+          </div>
+        </div></div>
+        <div class="dm-side">
+          <h3>What each row says</h3>
+          <ul>
+            <li><b>Where we found them</b>: the show and episode, or the article, with a link to it.</li>
+            <li><b>New or In the Directory</b>: already listed people skip the listing step.</li>
+            <li><b>Open</b>: what the source said about them, and what we found (site, Instagram, email).</li>
+          </ul>
+          <h3>Never here</h3>
+          <ul><li>Anyone on the do-not-contact list, anyone already asked, and anyone our shows mentioned (they go straight to Queued).</li></ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="vg-slide" id="queued" data-title="2 · Queued">
+      <div class="vg-eyebrow">2 · Queued · approved, being listed</div>
+      <h2 class="vg-h">Queued: we make the listing, and the tile shows when it's ready</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <div class="tabs"><b>Review<i>12</i></b><b class="on">Queued<i>6</i></b><b>Ready for your OK<i>4</i></b><b>Scheduled<i>3</i></b><b>Sent<i>11</i></b><b>Closed<i>2</i></b></div>
+          <div class="rows">
+            <div class="row nochk"><span class="lg" style="background-image:url('https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/logos/listings/sunnispeaksvegan-ig-2026-11-12.jpg')"></span><span><b>Sunni Speaks Vegan</b><small>Our show · SoFlo Vegans 112 · Miami</small></span><span class="tg live">Listing ready</span><span class="ui-btn ghost">See listing</span></div>
+            <div class="row nochk"><span class="lg" style="background-image:url('https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/logos/listings/rawchefcarla-ig-2026-11-12.jpg')"></span><span><b>Raw Chef Carla</b><small>Our show · SoFlo Vegans 112 · Miami</small></span><span class="tg live">Listing ready</span><span class="ui-btn ghost">See listing</span></div>
+            <div class="row nochk"><span class="lg">M</span><span><b>Sample: Mango Grove Bakery <span class="tg smp">Sample</span></b><small>From Review · Plant Talk Weekly · Wynwood</small></span><span class="tg blue">Making the listing</span><span class="ui-btn ghost">Open</span></div>
+            <div class="row nochk"><span class="lg">R</span><span><b>Sample: Rosa Vidal, chef <span class="tg smp">Sample</span></b><small>From Review · news · a person</small></span><span class="tg blue">Making the People page</span><span class="ui-btn ghost">Open</span></div>
+            <div class="row nochk hot"><span class="lg">E</span><span><b>Sample: Eastside Tacos <span class="tg smp">Sample</span></b><small>Our show · Pre-Vegan 4 · not fully Vegan</small></span><span class="tg warn">Needs you: is it Vegan?</span><span class="ui-btn ghost">Open</span></div>
+          </div>
+        </div></div>
+        <div class="dm-side">
+          <h3>What happens here</h3>
+          <ul>
+            <li><b>Not in the Directory</b>: we make the listing (or a People page for a person) with our usual checks: name, place, links, logo copied in, Vegan status.</li>
+            <li><b>Listing ready</b>: it is live and the tile links to it. Only then do we draft anything to them.</li>
+            <li><b>Needs you</b>: if we can't confirm something (is it Vegan? which location?), it waits for you instead of guessing.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="vg-slide" id="listing" data-title="3 · Listing ready">
+      <div class="vg-eyebrow">3 · Listing ready</div>
+      <h2 class="vg-h">Open the tile: their listing, and what we checked</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <div class="lst">
+            <span class="ph" style="background-image:url('https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/logos/listings/sunnispeaksvegan-ig-2026-11-12.jpg')"></span>
+            <div>
+              <div class="ui-sec">Catering · Miami, FL</div>
+              <h4>Sunni Speaks Vegan</h4>
+              <div style="font-size:11.5px;color:#555">100% Vegan caterer known for Smackin' Vegan Oxtails. Event catering, private chef, frozen oxtail tips shipped.</div>
+              <div class="chk"><span>Live at vegansexplore.com/directory/sunnispeaksvegan</span><span>Logo copied into our storage</span><span>Marked 100% Vegan</span><span>Instagram @sunnispeaksvegan</span><span class="no">No public email: reached by DM</span></div>
+              <div style="margin-top:10px;display:flex;gap:6px;flex-wrap:wrap"><span class="ui-btn ghost">See listing</span><span class="ui-btn ghost">Fix something</span></div>
+            </div>
+          </div>
+        </div></div>
+        <div class="dm-side">
+          <h3>Why wait for the listing</h3>
+          <ul><li>The claim email points at their page. If the page isn't ready, there is nothing to claim. So drafting starts the moment the tile says <b>Listing ready</b>.</li></ul>
+          <h3>How they'll be reached</h3>
+          <ul><li><b>Email</b> when they publish one: scheduled through the email system.</li><li><b>DM</b> otherwise: you copy and send (Instagram doesn't let us send for you).</li></ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="vg-slide" id="drafts" data-title="4 · Drafted">
+      <div class="vg-eyebrow">4 · Drafted · waiting for your OK</div>
+      <h2 class="vg-h">Everything that goes to them, in one place, as they'll see it</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <div class="tabs"><b>Review<i>12</i></b><b>Queued<i>4</i></b><b class="on">Ready for your OK<i>4</i></b><b>Scheduled<i>3</i></b><b>Sent<i>11</i></b><b>Closed<i>2</i></b></div>
+          <div class="dr">
+            <div>
+              <div class="em"><div class="em-h">To <b>hello@mangogrove.example</b> <span class="tg smp">Sample</span> · Subject <b>You're on Vegans Explore</b></div>
+                <div class="em-b"><p>Hi Ana, we heard Mango Grove on Plant Talk Weekly and added you to the Vegans Explore Directory. Your page is ready, and claiming it is free.</p><p>We'd also love your Vegan story for the SoFlo Vegans Podcast. A minute or two, recorded or typed.</p><span class="btn">See your page</span></div></div>
+              <div class="pl"><span class="ui-btn ghost">Preview their link</span><small style="font-size:10.5px;color:#777">Opens their page as they'll see it. Never counted.</small></div>
+            </div>
+            <div>
+              <div class="bub"><small>DM 1 · opener, no link</small>Hey Ana! Loved hearing about Mango Grove on Plant Talk Weekly...</div>
+              <div class="bub"><small>DM 2 · once they reply</small>Here's your page: vegansexplore.com/go/lv-mangogrove...</div>
+              <div class="nt"><i class="js-sean"></i><span><b>Your note on their page</b><br>Not added yet. <u>Add a note</u> · <u>Record it</u></span></div>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:10px"><span class="ui-btn or">Approve: send Tue 10 AM</span><span class="ui-btn ghost">Edit</span><span class="ui-btn ghost">Not now</span><span class="ui-btn ghost">Never contact</span></div>
+        </div></div>
+        <div class="dm-side">
+          <h3>Drafted from</h3>
+          <ul><li>Their listing, what the episode or article said about them, and your past notes. Our voice rules apply (Vegan capitalized, no prices, "plant-based (Pre-Vegan) options" for places that aren't Vegan).</li></ul>
+          <h3>One orange button</h3>
+          <ul><li><b>Approve</b> schedules an email for the next send window, or moves a DM to Ready to send. Select many in the list to approve them together.</li></ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="vg-slide" id="approve" data-title="5 · Your OK">
+      <div class="vg-eyebrow">5 · Your OK · one or many</div>
+      <h2 class="vg-h">Approve one, or tick many and approve them together</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <div class="tabs"><b>Review<i>12</i></b><b>Queued<i>4</i></b><b class="on">Ready for your OK<i>4</i></b><b>Scheduled<i>3</i></b><b>Sent<i>11</i></b><b>Closed<i>2</i></b></div>
+          <div class="bar"><b>3 picked</b><span class="ui-btn or">Approve 3</span><span class="ui-btn ghost">Not now</span><span class="sp"></span><span>Emails go weekdays 9 to 5 Eastern</span></div>
+          <div class="rows">
+            <div class="row"><span class="bx on"></span><span class="lg" style="background-image:url('https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/logos/listings/sunnispeaksvegan-ig-2026-11-12.jpg')"></span><span><b>Sunni Speaks Vegan</b><small>DM · your note in writing · story page ready</small></span><span class="tg soon">Note not recorded</span><span class="ui-btn ghost">Open</span></div>
+            <div class="row"><span class="bx on"></span><span class="lg" style="background-image:url('https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/logos/listings/rawchefcarla-ig-2026-11-12.jpg')"></span><span><b>Raw Chef Carla</b><small>DM · your note in writing · story page ready</small></span><span class="tg soon">Note not recorded</span><span class="ui-btn ghost">Open</span></div>
+            <div class="row"><span class="bx on"></span><span class="lg">M</span><span><b>Sample: Mango Grove Bakery <span class="tg smp">Sample</span></b><small>Email · no note</small></span><span class="tg">Email</span><span class="ui-btn ghost">Open</span></div>
+            <div class="row"><span class="bx"></span><span class="lg">R</span><span><b>Sample: Rosa Vidal, chef <span class="tg smp">Sample</span></b><small>Email · draft edited by you</small></span><span class="tg">Email</span><span class="ui-btn ghost">Open</span></div>
+          </div>
+        </div></div>
+        <div class="dm-side">
+          <h3>After Approve</h3>
+          <ul><li><b>Email</b> moves to <b>Scheduled</b> with its day and time; you can pull it back until it goes.</li><li><b>DM</b> moves to <b>Scheduled</b> as "Ready to send": open it, copy, send, tap I sent it.</li></ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="vg-slide" id="sent" data-title="6 · Sent">
+      <div class="vg-eyebrow">6 · Sent · an ongoing list</div>
+      <h2 class="vg-h">Who opened, who clicked, who replied, and who sent their story</h2>
+      <div class="ui">
+        <div class="tabs"><b>Review<i>12</i></b><b>Queued<i>4</i></b><b>Ready for your OK<i>1</i></b><b>Scheduled<i>3</i></b><b class="on">Sent<i>11</i></b><b>Closed<i>2</i></b></div>
+        <table class="tr">
+          <tr><th>Who</th><th class="hide">How</th><th class="hide">Opened</th><th class="hide2">Clicked</th><th class="hide">Story page</th><th>Replied</th><th>Story in</th><th class="hide">Claimed</th><th></th></tr>
+          <tr><td><span class="who"><i></i>Sample: Rosa Vidal <span class="tg smp">Sample</span></span></td><td class="hide">Email</td><td class="hide y">Yes</td><td class="hide2 y">Yes</td><td class="hide y">Opened 2x</td><td class=" y">Yes</td><td class=" y">Voice, 1:42</td><td class="hide n">n/a</td><td><span class="acts"><span>Thank</span><span class="x">Not interested</span></span></td></tr>
+          <tr><td><span class="who"><i></i>Sample: Sunrise Sanctuary <span class="tg smp">Sample</span></span></td><td class="hide">DM</td><td class="hide n">n/a</td><td class="hide2 n">No</td><td class="hide n">No</td><td class=" n">No</td><td class=" n">No</td><td class="hide n">No</td><td><span class="acts"><span>Nudge due</span><span class="x">Not interested</span></span></td></tr>
+          <tr><td><span class="who"><i></i>Sample: Mango Grove <span class="tg smp">Sample</span></span></td><td class="hide">Email</td><td class="hide y">Yes</td><td class="hide2 y">Yes</td><td class="hide y">Opened</td><td class=" n">No</td><td class=" n">No</td><td class="hide y">Claimed</td><td><span class="acts"><span>Thank</span><span class="x">Not interested</span></span></td></tr>
+        </table>
+        <div style="font-size:11px;color:#666;margin-top:8px">Not interested: closed, never asked again for this campaign · Not now: back in 90 days · Never contact: the do-not-contact list, every campaign.</div>
+      </div>
+    </section>
+
+    <section class="vg-slide" id="calls" data-title="Your calls">
+      <div class="vg-eyebrow">Your calls (my default if you don't change it)</div>
+      <h2 class="vg-h">What I'd build, and in what order</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <div class="ui-sec">Your calls</div>
+          <div class="rows">
+            <div class="row nochk"><span class="lg">1</span><span><b>One campaign for every show</b><small>With a Show filter, rather than a campaign per show. Default: yes.</small></span><span></span><span></span></div>
+            <div class="row nochk"><span class="lg">2</span><span><b>Outside sources start with podcast feeds</b><small>A short list of Vegan shows' RSS feeds you pick; news articles come through the web reader we already use. Default: you pick 5 shows to start.</small></span><span></span><span></span></div>
+            <div class="row nochk"><span class="lg">3</span><span><b>Asked once</b><small>Someone mentioned again next week is not asked again; anyone who answered or said no stays closed. Default: yes.</small></span><span></span><span></span></div>
+            <div class="row nochk"><span class="lg">4</span><span><b>One ask, two parts</b><small>The claim (their free page) and their story (the podcast) in the same message. Default: yes.</small></span><span></span><span></span></div>
+          </div>
+        </div></div>
+        <div class="dm-side">
+          <h3>Build order</h3>
+          <ul>
+            <li>1. The six tabs on Local Voices, Sunni and Carla moved in.</li>
+            <li>2. Our shows feed Queued when an episode's notes are published.</li>
+            <li>3. Listing ready on the tile, then drafts.</li>
+            <li>4. Approve one or many; emails scheduled, DMs ready to send.</li>
+            <li>5. The Sent list with clicks, replies and stories.</li>
+            <li>6. Outside sources into Review (podcast feeds, then news).</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/public/footer.js"></script>
+</div>
+<script src="/public/ve-guided.js"></script>
+<script>
+document.querySelectorAll('.js-sean').forEach(function (el) { el.style.backgroundImage = "url('/public/founder/sean-square.jpg')"; });
+</script>
+</body>
+</html>
