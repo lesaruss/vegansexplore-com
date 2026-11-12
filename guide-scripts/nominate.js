@@ -86,6 +86,8 @@
     '@media (max-width:900px){.nm-form.nm-q .wg-gs-pic{display:block;width:100%;height:auto;aspect-ratio:1;max-width:240px;flex:none;}}',
     '.nm-or{text-align:center;font-size:12px;font-weight:700;color:var(--ink55);margin:12px 0 2px;}',
     '@media (max-width:900px){.nm-mock{padding:8px 16px;}.nm-form .wg-gs-pic{display:none;}.nm-grid,.nm-modes{grid-template-columns:1fr;}.nm-rv{grid-template-columns:1fr;gap:2px;}.nm-rv dd{margin-bottom:8px;}}',
+    '.dg-maya .nm-kv-btn{top:10px;bottom:auto;}@media (max-width:900px){.dg-maya .nm-kv-btn{top:6px;left:6px;padding:6px 8px;font-size:11px;}}',
+    '.dg-maya .nm-kv{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;}.dg-maya.on .nm-kq-ic{width:10px;height:12px;border:0;border-left:3px solid #fff;border-right:3px solid #fff;}',
     '.nm-msg{min-height:20px;font-size:13.5px;font-weight:700;color:var(--g);margin:8px 0 0;}.nm-msg.bad{color:#b42318;}',
     '.nm-dot.live{animation:nmPulse 1.2s infinite;}@keyframes nmPulse{0%,100%{box-shadow:0 0 0 6px rgba(220,38,38,.12)}50%{box-shadow:0 0 0 12px rgba(220,38,38,.06)}}',
     '.nm-dot.idle{background:#fff;border:2px solid #dc2626;}.nm-dot.idle i{border-radius:50%;background:#dc2626;}',
@@ -97,11 +99,12 @@
 
   var ROLES = [['business_owner', 'Business owner'], ['content_creator', 'Content creator'], ['nonprofit', 'Works for a nonprofit'], ['activist', 'Activist']];
   var TABS = [
-    { k: 'overview', label: 'Overview', art: 'flowers', say: 'Hi, I\'m Kai. Somebody in your community deserves their flowers. Tell us who, and why, in your own words.' },
-    { k: 'who', label: 'Who', art: 'welcome', say: 'Who deserves their flowers? Their name and email are all we need to reach them.' },
-    { k: 'why', label: 'Why Them', art: 'listen', say: 'Now tell us why. Record it if you can. Your voice might be what we play when we tell their story.' },
-    { k: 'you', label: 'About You', art: 'phone', say: 'Just so we know who to thank. You choose whether we say it was you.' },
-    { k: 'send', label: 'Send', art: 'cheer', say: 'Read it over, then send. We review every nomination, and we let you know when we reach out to them.' }
+    // Kai's lines, approved by Sean 2026-11-09 ("lines are good, record them"); each say matches its recording word for word.
+    { k: 'overview', label: 'Overview', art: 'flowers', say: 'Hi, I\'m Kai. Somebody in your community deserves their flowers, and this is how you give them. Tell us who they are: a business owner, a creator, someone at a nonprofit, or an activist making Vegan life better near you. Then tell us why, in your own words. Record it if you can, because your voice might be what we play when we tell their story, on our podcast, on your city\'s page, and in the Daily Pulse. Our team reviews every nomination, and if we agree, I invite them to a short interview with me. It takes about two minutes. Let\'s give someone their flowers.' },
+    { k: 'who', label: 'Who', art: 'welcome', say: 'Who deserves their flowers? Give me their name and their email, so we can reach them. Then pick where they are and what they do. Pick as many as fit.' },
+    { k: 'why', label: 'Why Them', art: 'listen', say: 'Now tell me why. Record it if you can. You have up to two minutes, and you can listen back before you send. Prefer to type? That works too.' },
+    { k: 'you', label: 'About You', art: 'phone', say: 'Just so we know who to thank. Add your name and email, and tell us if it\'s okay to say it was you.' },
+    { k: 'send', label: 'Send', art: 'cheer', say: 'Read it over. If it looks right, tick the boxes and send it. Our team reviews every nomination, and we\'ll let you know when we reach out.' }
   ];
   var qs = new URLSearchParams(location.search);
   var SOURCE = /^(hub|pulse|show|listing)$/.test(qs.get('source') || '') ? qs.get('source') : 'direct';
@@ -255,7 +258,7 @@
       return crumb('Sent') + head('Thank you', 'Your Nomination Is In', '') +
         card('What happens next', 'We review every one', pic('thumb-passport.jpg'), lines([
           '<b>We look at it.</b> Our team reads and listens to every nomination.',
-          '<b>If we agree,</b> Kai invites ' + esc(S.name.split(' ')[0] || 'them') + ' to a short interview' + (S.youEmail ? ', and we email you when we reach out.' : '.'),
+          '<b>If we agree,</b> Kai invites ' + esc(S.name.replace(/^Sample:\s*/, '').split(' ')[0] || 'them') + ' to a short interview' + (S.youEmail ? ', and we email you when we reach out.' : '.'),
           '<b>If they are featured,</b> you hear about it, with a link to share.']),
           '<button type="button" class="dg-btn" id="nmAgain">Nominate someone else</button>') +
         (ME ? '' : cta('Not a member yet?', 'Become a Founder.', 'Free, about two minutes, with 250 points.', ['Become a Founder', '/passport#/founder']));
@@ -327,10 +330,37 @@
     var f = !railEl.classList.contains('dg-folded'); railEl.classList.toggle('dg-folded', f);
     foldBtn.textContent = f ? 'Show Kai' : 'Hide Kai'; foldBtn.setAttribute('aria-expanded', String(!f));
   });
+  // Kai speaks on every page (Sean, 2026-11-09: "this page should have narration of Kai on it, on each page"). The Overview is her video
+  // (the Welcome Guide's section-video recipe, captions on); Who, Why Them, About You and Send are lip-synced clips in that page's outfit.
+  // Nothing plays until pressed. Pressing Play lets the next page's clip play on its own; Pause stops that (the interview's rule).
+  var VID = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/kai/nominate/';
+  function auto() { try { return sessionStorage.getItem('nm_kai_auto') === '1'; } catch (e) { return false; } }
+  function setAuto(on) { try { sessionStorage.setItem('nm_kai_auto', on ? '1' : '0'); } catch (e) {} }
+  function drawVideo(t, noClip) {
+    var box = $('dgMaya'); box.style.backgroundImage = "url('" + KAI + t.art + ".jpg')";
+    var old = box.querySelector('video'); if (old) { old.pause(); }
+    if (noClip) { box.innerHTML = ''; $('dgPlay').hidden = true; return; }
+    var ov = t.k === 'overview';
+    box.innerHTML = '<video class="nm-kv" playsinline preload="metadata" crossorigin="anonymous" poster="' + (ov ? VID + 'overview-v1-poster.jpg' : KAI + t.art + '.jpg') + '" src="' + VID + t.k + '-v1.mp4?v=1">' +
+      (ov ? '<track kind="captions" srclang="en" label="English" src="' + VID + 'overview-v1.vtt?v=1" default>' : '') + '</video>' +
+      '<i class="nm-kq-bar"><b></b></i>';
+    // The template's own Play button (#dgPlay, under Kai's name; in the phone card's button row), never on her picture (nothing covers a face).
+    var v = box.querySelector('video'), btn = $('dgPlay'), bar = box.querySelector('.nm-kq-bar b');
+    btn.hidden = false; btn.innerHTML = '&#9654; Play Kai';
+    var lbl = { set textContent(x) { btn.innerHTML = (x === 'Pause' ? '&#10074;&#10074; ' : '&#9654; ') + x; } };
+    v.addEventListener('timeupdate', function () { bar.style.width = (v.duration ? v.currentTime / v.duration * 100 : 0) + '%'; });
+    v.addEventListener('play', function () { box.classList.add('on'); lbl.textContent = 'Pause'; });
+    v.addEventListener('pause', function () { box.classList.remove('on'); lbl.textContent = v.ended ? 'Play again' : 'Play Kai'; });
+    btn.onclick = function () {
+      if (v.paused) { if (v.ended) v.currentTime = 0; setAuto(true); var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); }
+      else { setAuto(false); v.pause(); }
+    };
+    if (auto()) { var pr = v.play(); if (pr && pr.catch) pr.catch(function () {}); }
+  }
   function drawKai(sayOverride) {
     var t = tab(curTab), i = TABS.indexOf(t);
     bubble.textContent = sayOverride || t.say;
-    $('dgMaya').style.backgroundImage = "url('" + KAI + t.art + ".jpg')";
+    drawVideo(t, !!sayOverride);
     tourEl.innerHTML = tourM.innerHTML = '<a class="dg-tnav" href="' + href(TABS[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Back</a><span>' + (i + 1) + ' of ' + TABS.length + '</span>' +
       '<a class="dg-tnav next" href="' + href(TABS[Math.min(TABS.length - 1, i + 1)].k) + '"' + (i < TABS.length - 1 ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Next</a>';
   }

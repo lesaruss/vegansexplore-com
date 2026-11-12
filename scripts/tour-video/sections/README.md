@@ -17,3 +17,10 @@ A long subject (more than about 3 shots) splits into two.
 **Fresh pictures per page (Sean, 2026-11-09: "we're using the same images over and over... focused more on media")**: each page's video gets its own
 Guide scenes about that page, made with the locked recipe (CLAUDE.md, Guide scenes), never the same Liz shot or illustration cards from earlier pages.
 Page 5's are `public/guides/welcome/liz-media-*.jpg` (studio, sofa, film, books, network, share, party; 14 Higgsfield credits).
+
+**Nominate Someone, Kai's Overview (2026-11-09, approved by Sean; playbook `ve-nominate-someone`)**: `cap-nominate.js` captures `/nominate?preview=1`
+(sample answers, so every capture shot carries the SAMPLE stamp, `c.stamp`); `render-nominate.py` is `render-city.py` with Kai's scenes
+(`public/guides/nominate/kai-*.jpg`) and the form's shots. Voice `vegan-media/media/kai/nominate/overview-v1.mp3` (stt matched), 0.5 s lead, bed 19 dB
+under, loudnorm then a limiter at -1.5 dBTP (-15.4 LUFS); files `overview-v1.mp4`, `.vtt`, `-poster.jpg` in the same folder. The four step clips
+(`who`, `why`, `you`, `send` `-v1.mp4`) are Higgsfield `wan2_7` lip sync from that page's Kai outfit, cut just after the last word on a frame with
+her eyes open and mouth closed.
