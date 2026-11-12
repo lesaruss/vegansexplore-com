@@ -332,12 +332,16 @@
     }
 
     // Location: the same remembered choice as today's Directory (localStorage ve_dir_loc), carried in the address as ?city=.
-    var LOC_KEY = 've_dir_loc', loc = null;
-    try { loc = JSON.parse(localStorage.getItem(LOC_KEY) || 'null'); } catch (e) { loc = null; }
-    if (typeof loc === 'string') loc = { chapter: loc };
+    var LOC_KEY = 've_dir_loc', loc = null, saved = null;
+    try { saved = JSON.parse(localStorage.getItem(LOC_KEY) || 'null'); } catch (e) { saved = null; }
+    if (typeof saved === 'string') saved = { chapter: saved };
+    loc = saved && saved.chapter ? saved : null;
     function hubBy(s) { return (window.VE_HUBS || []).filter(function (h) { return h.slug === s; })[0]; }
     if (q.get('city')) { var h0 = hubBy(q.get('city')); if (h0) loc = { continent: h0.continent, country: h0.country, chapter: h0.slug }; }
     if (!loc && me && me.home_community) { var h1 = hubBy(me.home_community); if (h1) loc = { continent: h1.continent, country: h1.country, chapter: h1.slug }; }
+    // North America > United States by default (playbook ve-near-me; Sean, 2026-11-12: "one less thing they have to click. And then
+    // they just choose the chapter"). A visitor's own saved pick wins, Everywhere included ({} saved); the address wins over both.
+    var LOC_INIT = loc || (saved && !saved.chapter ? saved : null) || { continent: 'North America', country: 'United States' };
     var sel = document.getElementById('fd-loc');
     sel.innerHTML = '<option value="">Everywhere</option>' + (window.VE_HUBS || []).map(function (h) { return '<option value="' + h.slug + '">Near ' + h.name + '</option>'; }).join('');
     sel.value = loc && loc.chapter ? loc.chapter : '';
@@ -350,7 +354,7 @@
     sel.addEventListener('change', function () {
       var h = hubBy(sel.value);
       loc = h ? { continent: h.continent, country: h.country, chapter: h.slug } : null;
-      try { if (loc) localStorage.setItem(LOC_KEY, JSON.stringify(loc)); else localStorage.removeItem(LOC_KEY); } catch (e) {}
+      try { localStorage.setItem(LOC_KEY, JSON.stringify(loc || {})); } catch (e) {}
       writeCity(); paintFront(); paintBar();
     });
 
@@ -469,9 +473,9 @@
       brand: { sections: DOORS, catMap: CATMAP, merge: MERGE },
       onData: function (rows) { DATA = rows; paintFront(); paintBar(); },
       onSection: function (key, label, subs) { secInfo = subs; if (key === cur) paintBar(); },
-      location: { initial: loc, onChange: function (l) {
+      location: { initial: LOC_INIT, onChange: function (l) {
         loc = l && l.chapter ? l : null; sel.value = loc ? loc.chapter : ''; INIT_LOC = loc ? loc.chapter : '';
-        try { if (loc) localStorage.setItem(LOC_KEY, JSON.stringify(loc)); } catch (e) {}
+        try { localStorage.setItem(LOC_KEY, JSON.stringify(l && (l.chapter || l.continent) ? { continent: l.continent || '', country: l.country || '', chapter: l.chapter || '' } : {})); } catch (e) {}
         if (window.VEAdRail) VEAdRail.chapter(rail, loc ? loc.chapter : '');
         paintBar();
       } } });

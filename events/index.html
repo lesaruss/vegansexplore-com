@@ -40,6 +40,7 @@
 <script src="/public/ve-auth.js"></script>
 <script src="/public/ve-hubs.js"></script>
 <script src="/public/ve-city-banner.js"></script>
+<script src="/public/ve-region-directory.js"></script>
 <script src="/public/ve-events.js"></script>
 
 <section id="ev-hero"><h1 class="vcb-ssr" style="margin:0;padding:28px 16px;font:900 26px Montserrat,sans-serif">Vegan Events</h1></section>
@@ -88,6 +89,8 @@
   var LOC_KEY = 've_ev_loc', loc0 = null;
   try { loc0 = JSON.parse(localStorage.getItem(LOC_KEY) || 'null'); } catch (e) { loc0 = null; }
   if (!loc0) { var me = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null; if (me && me.home_community) loc0 = { chapter: me.home_community }; }
+  // North America > United States by default (playbook ve-near-me; Sean, 2026-11-12); a visitor's own saved pick (Everywhere included) wins.
+  if (!loc0) loc0 = { continent: 'North America', country: 'US' };
   var q0 = new URLSearchParams(location.search);
   // The address carries the location (Sean, 2026-11-01: every view is a link to share), read ahead of the kept one.
   if (q0.get('city')) loc0 = { chapter: q0.get('city') };
@@ -101,7 +104,7 @@
   });
   banner.setChoices([{ value: '', label: 'All events' }], '', function () {}, 'Kind of event');
   cal = VEEvents.mount('ev-cal', {
-    key: 'events', filterMenu: true, location: loc0 || {}, onInteract: function () { banner.autoFold(); },
+    key: 'events', filterMenu: true, nearMe: true, location: loc0 || {}, onInteract: function () { banner.autoFold(); },
     onState: function (s) {
       banner.setChoices(s.kinds, s.cat, function (k) { banner.autoFold(); cal.setCat(k); }, 'Kind of event');
       banner.setLabel(s.catLabel + (s.location ? ' \u00b7 ' + s.location : ''));

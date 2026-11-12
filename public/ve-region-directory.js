@@ -451,7 +451,7 @@
     var first = cat.label;
     var searchIcon = '<svg class="vrd-search-icon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
     var searchHtml = '<div class="vrd-search-wrap">' + searchIcon +
-      '<input type="text" class="vrd-search-input" data-vrd-search placeholder="' + (hdrNewOn() ? 'Filter ' : 'Search ') + esc(first) + '&hellip;" aria-label="' + (hdrNewOn() ? 'Filter ' : 'Search ') + esc(first) + '">' +
+      '<input type="text" class="vrd-search-input" data-vrd-search placeholder="' + (hdrNewOn() ? 'Filter ' : 'Search ') + esc(first) + (nearSection(cat.key) ? ', or type a ZIP' : '') + '&hellip;" aria-label="' + (hdrNewOn() ? 'Filter ' : 'Search ') + esc(first) + '">' +
       '</div>';
 
     // The filters live behind an icon at the right of the search, under the tabs (Sean, 2026-10-27: "hide the filter options...
@@ -944,7 +944,7 @@
   // here in the browser: the visitor's position is never sent or stored anywhere but this tab's sessionStorage. The address carries
   // ?near=me (each viewer asks their own browser) or ?near=<zip> (shareable as is); the visit remembers it until the chip clears it.
   var NEAR_PLACE_SECTIONS = ['food', 'services', 'community', 'vetting'];
-  var NEAR = { cfg: null, active: false, origin: null, zip: '', want: '', zips: {}, zipsLoading: null, root: null, subs: [], pickCity: null };
+  var NEAR = { cfg: null, active: false, origin: null, zip: '', want: '', zips: {}, zipsLoading: null, root: null, subs: [], pickCity: null, cities: {} };
   var NEAR_PIN = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>';
   // Other components share this Near me through VERegionDirectory.near (playbook ve-near-me, 2026-11-12): each listens with onChange.
   function nearTell() { NEAR.subs.forEach(function (fn) { try { fn(nearState()); } catch (e) {} }); }
@@ -1068,6 +1068,25 @@
         nearSet({ lat: p.coords.latitude, lng: p.coords.longitude }, '');
       }, function () { clearTimeout(guard); fail(); }, { timeout: 8000, maximumAge: 600000 });
     } catch (e) { clearTimeout(guard); fail(); }
+  }
+  // A ZIP typed in a search box (Sean, 2026-11-12: "can they put a zip code... and it pulls up automatically what is in that area"):
+  // 5 digits (or ZIP+4) and nothing else turns on Near me from that ZIP and empties the box, so the words filter nothing; a ZIP we do
+  // not know stays in the box as typed. cb(true) once Near me is on.
+  function nearSearchZip(input, cb) {
+    var m = input && String(input.value || '').trim().match(/^(\d{5})(?:-\d{4})?$/);
+    if (!m) return false;
+    var z = m[1];
+    if (NEAR.active && NEAR.zip === z) { input.value = ''; if (cb) cb(true); return true; }
+    if (input._vrdZip === z) return true;
+    input._vrdZip = z;
+    zipCenter(z).then(function (c) {
+      input._vrdZip = '';
+      if (!c || String(input.value || '').trim().slice(0, 5) !== z) { if (cb) cb(false); return; }
+      input.value = '';
+      nearSet(c, z);
+      if (cb) cb(true);
+    });
+    return true;
   }
   function nearStartFromZip(z, cb) {
     zipCenter(z).then(function (c) { if (c) nearSet(c, z); if (cb) cb(!!c); });
@@ -1796,7 +1815,10 @@
     root.querySelectorAll('.board-panel').forEach(function (panel) {
       var searchInput = panel.querySelector('[data-vrd-search]');
       if (searchInput) {
-        searchInput.addEventListener('input', function () { applyPanelFilters(panel, null, true); });
+        searchInput.addEventListener('input', function () {
+          if (nearOn(panel) && nearSearchZip(searchInput, function (ok) { if (ok) applyPanelFilters(panel, null, true); })) return;
+          applyPanelFilters(panel, null, true);
+        });
       }
     });
 
@@ -2118,6 +2140,7 @@
     // listing's coordinates, else its ZIP's center; miles(point) from the visitor; format(miles) '2.3 mi'; pin, the map pin icon.
     near: {
       start: function (btn, opts) { injectStyleOnce(); NEAR.pickCity = (opts && opts.pickCity) || null; nearLocate(btn || null); },
+      searchZip: function (input, cb) { return nearSearchZip(input, cb); },
       zip: function (z) { injectStyleOnce(); return new Promise(function (res) { nearStartFromZip(String(z || ''), res); }); },
       clear: function () { nearClear(); },
       resume: function () {
@@ -2149,8 +2172,56 @@
               });
           });
       },
+      // places([{key, ids: [listing ids, best first], zip, after: [listing ids], city, state}]) resolves {key: {lat,lng}} for things with no
+      // coordinates of their own (Events): the first of ids with a point, else the ZIP's center, else the first of after (a host may be
+      // based elsewhere), else the city's (the middle of our listings there).
+      places: function (items) {
+        items = items || [];
+        var api = this, ids = [], zips = {}, cities = {};
+        items.forEach(function (it) { (it.ids || []).concat(it.after || []).forEach(function (id) { if (id) ids.push(id); }); });
+        return api.points(ids).then(function (lp) {
+          var out = {}, left = [];
+          items.forEach(function (it) {
+            var hit = (it.ids || []).filter(function (id) { return id && lp[id]; })[0];
+            if (hit) out[it.key] = lp[hit]; else left.push(it);
+          });
+          left.forEach(function (it) { var z = zip5(it.zip); if (z) zips[z] = 1; });
+          var zl = Object.keys(zips).filter(function (z) { return !NEAR.zips[z]; }), zc = [];
+          for (var i = 0; i < zl.length; i += 200) zc.push(zl.slice(i, i + 200));
+          return Promise.all(zc.map(function (c) { return restRows('ve_zip_centroids?select=zip,lat,lng&zip=in.(' + c.join(',') + ')'); })).then(function (zsets) {
+            zsets.forEach(function (rows) { (rows || []).forEach(function (r) { if (r && r.zip && okNum(r.lat) && okNum(r.lng)) NEAR.zips[r.zip] = { lat: +r.lat, lng: +r.lng }; }); });
+            var still = [];
+            left.forEach(function (it) {
+              var z = zip5(it.zip), h = (it.after || []).filter(function (id) { return id && lp[id]; })[0];
+              if (z && NEAR.zips[z]) out[it.key] = NEAR.zips[z]; else if (h) out[it.key] = lp[h]; else still.push(it);
+            });
+            var ck = function (c, st) { return String(c || '').trim().toLowerCase() + '|' + String(st || '').trim().toLowerCase(); };
+            still.forEach(function (it) { if (it.city && it.state && !NEAR.cities[ck(it.city, it.state)]) cities[ck(it.city, it.state)] = [String(it.city).trim(), String(it.state).trim()]; });
+            var keys = Object.keys(cities), cc = [];
+            for (var j = 0; j < keys.length; j += 15) cc.push(keys.slice(j, j + 15));
+            var q = function (v) { return '"' + String(v).replace(/["\\]/g, '') + '"'; };
+            return Promise.all(cc.map(function (c) {
+              var or = c.map(function (k) { return 'and(address_city.ilike.' + q(cities[k][0]) + ',address_state.ilike.' + q(cities[k][1]) + ')'; }).join(',');
+              return restRows('listings?select=address_city,address_state,latitude,longitude&status=eq.approved&latitude=not.is.null&or=(' + encodeURIComponent(or) + ')&limit=3000');
+            })).then(function (sets) {
+              var sum = {};
+              sets.forEach(function (rows) { (rows || []).forEach(function (l) {
+                var la = parseFloat(l.latitude), lo = parseFloat(l.longitude); if (!isFinite(la) || !isFinite(lo) || (la === 0 && lo === 0)) return;
+                var k = ck(l.address_city, l.address_state), a = sum[k] || (sum[k] = { la: [], lo: [] }); a.la.push(la); a.lo.push(lo);
+              }); });
+              // The middle (median) of our listings in that city, so one stray address does not pull it away.
+              var mid = function (v) { v.sort(function (x, y) { return x - y; }); return v[Math.floor(v.length / 2)]; };
+              keys.forEach(function (k) { NEAR.cities[k] = sum[k] ? { lat: mid(sum[k].la), lng: mid(sum[k].lo) } : null; });
+              // A city's middle is near enough to sort by, not to quote: it comes back marked approx.
+              still.forEach(function (it) { var p = it.city && it.state && NEAR.cities[ck(it.city, it.state)]; if (p) out[it.key] = { lat: p.lat, lng: p.lng, approx: true }; });
+              return out;
+            });
+          });
+        });
+      },
       miles: function (p) { return NEAR.active && NEAR.origin && p && okNum(p.lat) && okNum(p.lng) ? haversine(NEAR.origin, p) : null; },
-      format: function (mi) { return fmtDist(mi); },
+      // approx (a city's middle): rounded to 5, "About 5 mi".
+      format: function (mi, approx) { return approx ? 'About ' + fmtDist(Math.max(5, Math.round(mi / 5) * 5)).replace('.0 ', ' ') : fmtDist(mi); },
       pin: NEAR_PIN
     },
     FIELDS: 'id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds,cuisines,vetted_at,release_year:details->>release_year,book_type:details->>book_type,health_type:details->>health_type,person_member:details->person->>member_id'

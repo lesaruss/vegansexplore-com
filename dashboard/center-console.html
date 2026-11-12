@@ -3061,7 +3061,7 @@
       dashEvBanner.setChoices([{ value: '', label: 'All events' }], '', function () {}, 'Kind of event');
       dashEvCal = VEEvents.mount(mount, {
         // Its own address while the Events tab shows (Sean, 2026-11-01): /dashboard/events?cat=&when=past&event=<id>.
-        key: 'dash-events', url: '/dashboard/events', filterMenu: true, city: slug, onInteract: function () { dashEvBanner.autoFold(); },
+        key: 'dash-events', url: '/dashboard/events', filterMenu: true, nearMe: true, city: slug, onInteract: function () { dashEvBanner.autoFold(); },
         onState: function (s) {
           dashEvBanner.setChoices(s.kinds, s.cat, function (k) { dashEvBanner.autoFold(); dashEvCal.setCat(k); }, 'Kind of event');
           dashEvBanner.setLabel(s.catLabel + (s.location ? ' \u00b7 ' + s.location : ''));
