@@ -251,6 +251,9 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .give-cta-t span{display:block;font-size:13px;color:var(--ve-text-75,rgba(0,0,0,.75));margin-top:3px;line-height:1.45}
 .give-btn{display:inline-flex;align-items:center;justify-content:center;background:var(--vb-go,#2D5C27);color:#fff;font-weight:800;font-size:15px;padding:12px 26px;border-radius:6px;text-decoration:none;white-space:nowrap;flex-shrink:0}
 .give-btn:hover{background:var(--vb-go-hover,#234a1f)}
+.book-act{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+.book-tag{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ve-text-75,rgba(0,0,0,.75));border:1px solid var(--vb-line,#C8E6C9);background:#fff;border-radius:6px;padding:3px 8px}
+@media(max-width:600px){.book-act{align-items:stretch}.book-tag{align-self:flex-start}}
 .give-why .about-text{margin:0 0 14px}
 .give-why .give-src{font-size:12px;color:var(--ve-text-50,rgba(0,0,0,.6));margin:4px 0 14px}
 @media(max-width:600px){.give-cta{flex-direction:column;align-items:stretch}.give-btn{width:100%}}
@@ -2519,17 +2522,31 @@ function giveCta(l){
   return '<div class="give-cta"><div class="give-cta-t"><b>Support ' + esc(l.name) + '</b><span>Give on their own site. Your gift goes straight to them; Vegans Explore never handles donations.</span></div>' +
     '<a class="give-btn" href="' + esc(href) + '" target="_blank" rel="noopener" data-act="donate">Donate</a></div>';
 }
-// Book your stay (Sean, 2026-11-11: "Go Booking.com first"; docs/proposals/2026-11-11-travelpayouts-coverage.md): a Travel listing whose
-// booking site has a partner program shows one Book button, through our own tracked /go/ link (details.book_link_code, ve_links initiative
-// travel-booking) so every click is counted. Disclosed on the card; never the site-wide script, and what we list never depends on it.
-// details.book {provider, url} is the stay's page on that site. No book_link_code, no card.
+// Book your stay (Sean, 2026-11-11: "Go Booking.com first", then the BOSS and panel; playbook ve-travel). The booking order on a Travel
+// listing: (1) a direct partner, the business's own booking page with our code (details.book_direct {url, code, perk},
+// details.book_direct_link_code), labelled Partner link; (2) their own website (Contact & info, no card); (3) Booking.com through
+// Travelpayouts (details.book {provider, url}, details.book_link_code), labelled Paid link at the button (FTC 2023), only when there is
+// no direct partner. Every click goes through our own tracked /go/ link (ve_links initiative travel-booking). Booking.com allows its links
+// on our website only: never in the app (a webview whose user agent carries VegansExploreApp), email, social, video or coupons.
+// No link code, no card; what we list never depends on it.
 var BOOK_CATS = ['Stays', 'Retreats', 'Cruises'];
 function bookCta(l){
-  var d = l.details || {}, b = d.book || {};
-  if(!d.book_link_code || !b.provider) return '';
-  return '<div class="give-cta book-cta"><div class="give-cta-t"><b>Book your stay at ' + esc(l.name) + '</b><span>Book on ' + esc(b.provider) +
-    '. We may earn a small commission at no cost to you; it never decides what we list.</span></div>' +
-    '<a class="give-btn" href="/go/' + encodeURIComponent(d.book_link_code) + '" target="_blank" rel="noopener sponsored" data-act="book">Book on ' + esc(b.provider) + '</a></div>';
+  var d = l.details || {}, dir = d.book_direct || {}, b = d.book || {};
+  if(/VegansExploreApp/i.test(navigator.userAgent || '')) return '';
+  var t, why, tag, btn, code;
+  if(d.book_direct_link_code && dir.url){
+    code = d.book_direct_link_code; tag = 'Partner link'; btn = 'Book direct';
+    t = 'Book direct with ' + esc(l.name);
+    why = (dir.perk ? esc(dir.perk) + '. ' : '') + (dir.code ? 'Use code <strong class="book-code">' + esc(dir.code) + '</strong> on their own booking page. ' : '') +
+      'We earn a small referral fee from ' + esc(l.name) + ' at no cost to you; it never decides what we list.';
+  } else if(d.book_link_code && b.provider){
+    code = d.book_link_code; tag = 'Paid link'; btn = 'Book on ' + esc(b.provider);
+    t = 'Book your stay at ' + esc(l.name);
+    why = 'Book on ' + esc(b.provider) + '. We may earn a small commission at no cost to you; it never decides what we list.';
+  } else return '';
+  return '<div class="give-cta book-cta"><div class="give-cta-t"><b>' + t + '</b><span>' + why + '</span></div>' +
+    '<div class="book-act"><span class="book-tag">' + tag + '</span><a class="give-btn" href="/go/' + encodeURIComponent(code) +
+    '" target="_blank" rel="noopener sponsored" data-act="book">' + btn + '</a></div></div>';
 }
 function giveWhy(l){
   var s = (l.details || {}).support;
