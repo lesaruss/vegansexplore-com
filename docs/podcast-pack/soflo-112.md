@@ -38,10 +38,12 @@ Each link is theirs alone, so a click names them.
 **Raw Chef Carla** (@rawchefcarla) · [post](https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/social/soflo-112/kit-rawchefcarla-post.jpg) · [story](https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/social/soflo-112/kit-rawchefcarla-story.jpg)
 > Hi Carla, it's the Vegans Explore team! You're one of our new South Florida listings, and we shouted you out on this week's SoFlo Vegans Podcast, Episode 112: vegansexplore.com/go/sf112-kit-carla
 > We made a post and a story with your photo if you'd like to share them. Want to be a collaborator on our post? Totally up to you.
+> One more: we'd love you to be the local voice on next week's episode, 113. In a minute or two, tell South Florida how you went Vegan. You can record it or type it here: vegansexplore.com/go/sf113-voice-carla
 
 **Sunni Speaks Vegan** (@sunnispeaksvegan) · [post](https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/social/soflo-112/kit-sunnispeaksvegan-post.jpg) · [story](https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/social/soflo-112/kit-sunnispeaksvegan-story.jpg)
 > Hi Sunni, it's the Vegans Explore team! You're one of our new South Florida listings, and those Smackin' Vegan Oxtails got a shout-out on this week's SoFlo Vegans Podcast, Episode 112: vegansexplore.com/go/sf112-kit-sunni
 > We made a post and a story with your photo if you'd like to share them. Want to be a collaborator on our post? Totally up to you.
+> One more: we'd love you to be the local voice on next week's episode, 113. In a minute or two, tell South Florida how you went Vegan. You can record it or type it here: vegansexplore.com/go/sf113-voice-sunni
 
 **V Collective** (@v_collectiveofficial) · [post](https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/social/soflo-112/kit-v-collective-post.jpg) · [story](https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/social/soflo-112/kit-v-collective-story.jpg)
 > Hi Madai, it's the Vegans Explore team! You're this week's local voice on the SoFlo Vegans Podcast, Episode 112, telling your Vegan story: vegansexplore.com/go/sf112-kit-vcollective
@@ -51,4 +53,4 @@ Each link is theirs alone, so a click names them.
 No Instagram or email on file. Their kit waits until we find how to reach them (link: vegansexplore.com/go/sf112-kit-elnopalito).
 
 ## Tracked links (campaign soflo-112, on /dashboard/leads)
-sf112-bio, sf112-story, sf112-fb, sf112-holiday, sf112-bounty, and one per featured business above.
+sf112-bio, sf112-story, sf112-fb, sf112-holiday, sf112-bounty, and one per featured business above. For 113's local voice (campaign soflo-113): sf113-voice-carla and sf113-voice-sunni, each opening that person's comment request.
