@@ -324,6 +324,12 @@
     return '<li class="wg-art"><a href="' + esc(link) + '" tabindex="-1" aria-hidden="true"><span class="wg-art-img" style="background-image:url(&quot;' + esc(picUrl) + '&quot;)' + top + '"></span></a>' +
       '<div><a class="wg-art-t" href="' + esc(link) + '">' + esc(title) + '</a><p>' + esc(txt) + '</p><a class="wg-art-more" href="' + esc(link) + '">Read more &rsaquo;</a></div></li>';
   }
+  // The holiday still ahead (ThanksLiving until the day after it), named the way people search it.
+  function nearCta() {
+    var h = ['thanksliving', 'hanukkah', 'christmas'].filter(function (k) { return !holPast(k); })[0] || 'thanksliving';
+    var name = h === 'thanksliving' ? 'Thanksgiving' : holRow(h).name;
+    return '<a class="dg-btn hg-nearcta" href="#/' + HOLX[h].menus + '/near">' + (NM() ? NM().pin : '') + '<span>Find ' + esc(name) + ' near me</span></a>';
+  }
   function viewOverview() {
     var t = thanks(), d = daysUntil(onDay(t.holiday_on));
     // One paragraph, about as long as the gift sentence (Sean, 2026-11-10: "a bit more compact... especially as we start to shrink the site").
@@ -332,8 +338,9 @@
       : ['<b>The holidays are around the corner,</b> and Vegans Explore is back for the busy season with a free Holiday Guide: Vegan holiday menus near you, recipes, what to pick up at the store, events and ways to give back. It is our gift to you.' + (FOUNDING ? ' Founding Membership closes January 1.' : '')];
     var gs = '<section class="wg-gs" aria-label="Getting started"><span class="wg-gs-pic"><img src="' + PIC + 'start.jpg" alt="" decoding="async" width="640" height="640"></span>' +
       '<div class="wg-gs-b"><div class="vgi-k">A gift from Vegans Explore</div><h3 class="wg-gs-t">Your Free Holiday Guide</h3>' + ps.map(function (x) { return '<p>' + x + '</p>'; }).join('') +
-      '<div class="wg-gs-btns"><button type="button" class="dg-btn" data-hg-video>&#9654; Play the tour</button>' +
-      (member() ? '<a class="dg-btn dg-ghost" href="#/menus">Find a holiday menu</a>' : '<button type="button" class="dg-btn dg-ghost" data-hg-join>Claim membership</button>') + '</div></div></section>';
+      // The Guide opens on one button (playbook ve-near-me; Sean, 2026-11-12: "if I didn't know what it was, I wouldn't know where to find
+      // what I needed"): the nearest holiday's menus, Near me on. Play the tour stays on Theo's card; Join free stays in the banner.
+      '<div class="wg-gs-btns">' + nearCta() + '</div></div></section>';
     var rows = HOME_ROWS.filter(function (r) { return !((r[0] === 'hanukkah' || r[0] === 'christmas') && holPast(r[0])); });
     main.innerHTML = head('Free for everyone', 'Welcome to the Holiday Guide', '') + gs + '<div class="wg-arts"><div class="wg-grp"><h5>Your Holidays</h5><ol>' +
       rows.map(function (r) { return artRow(PIC + PILL_PIC[r[0]], r[1], r[2], href(r[0])); }).join('') + '</ol></div></div>';
@@ -644,14 +651,14 @@
 
   // ---------- Holiday menus ----------
   function money(s) { return s ? esc(s) : ''; }
-  function menuCard(m) {
+  function menuCard(m, mi) {
     var l = m.listing || {}, vegan = l.vegan_status === 'fully_vegan';
     var where = [l.address_city, l.address_state].filter(Boolean).join(', ');
     var saved = !!SAVED[l.id];
     return '<div class="hg-menu">' +
       // Every logo opens the place's listing (Sean, 2026-11-10: "Make all of their logos take them to their listing").
       '<div class="hg-mh"><a class="hg-logo" href="/directory/' + encodeURIComponent(l.slug) + '" aria-label="' + esc(l.name) + ', their listing"' + (l.logo_url ? ' style="background-image:url(\'' + esc(l.logo_url) + '\')"' : '') + '>' + (l.logo_url ? '' : esc((l.name || '?').charAt(0))) + '</a>' +
-      '<div><h3><a href="#/' + hx().menus + '/listing/' + encodeURIComponent(l.slug) + '">' + esc(l.name) + '</a></h3><small>' + esc(where || 'Online') + '</small></div>' +
+      '<div><h3><a href="#/' + hx().menus + '/listing/' + encodeURIComponent(l.slug) + '">' + esc(l.name) + '</a></h3><small>' + distTag(mi) + esc(where || 'Online') + '</small></div>' +
       // The kind of menu sits in the card's top right corner (Sean, 2026-11-10), as it does in the menu window.
       '<span class="hg-tag hg-tr' + (vegan ? '' : ' pv') + '">' + (vegan ? '100% Vegan' : 'Plant-based (Pre-Vegan)') + '</span></div>' +
       (m.summary ? '<p class="hg-sum">' + esc(m.summary) + '</p>' : '') +
@@ -690,7 +697,8 @@
   }
   function pills(ch) {
     var out = [];
-    if (ch !== 'all') out.push(['ch', chapterName(ch)]);
+    if (nearOn()) out.push(['near', NM().state().label]);
+    else if (ch !== 'all') out.push(['ch', chapterName(ch)]);
     ['type', 'order', 'sort'].forEach(function (k) { var v = MF[k]; if (MF_LABEL[k][v]) out.push([k, MF_LABEL[k][v]]); });
     return out;
   }
@@ -702,10 +710,16 @@
     if (/^listing\//.test(sub)) return viewListing(decodeURIComponent(sub.slice(8)), ['Holiday menus', '#/' + mk]);
     if (sub === 'tell') return viewTell();
     if (/^menu\//.test(sub)) { OPEN_MENU = decodeURIComponent(sub.slice(5)); sub = null; }
+    // Near me in the address (#/menus/near, #/menus/near/<zip>); a chapter in the address sets it aside; no chapter, the visit's own.
+    var wantNear = /^near(\/\d{5})?$/.test(sub || '') ? sub.slice(5) || 'me' : '';
+    if (wantNear) sub = null;
+    else if (sub && nearOn()) { NEAR_HUSH = true; NM().clear(); NEAR_HUSH = false; }
+    else if (!sub && !OPEN_MENU && NM() && !nearOn() && NM().resume()) wantNear = 'me';
     var ch = chapter(sub), t = hrow(), n = pills(ch).length, open = daysUntil(t.submit_close) > 0;
     main.innerHTML = head(t.name, 'Holiday menus near you', 'What Vegan places are cooking for ' + esc(t.name) + '. Every menu is checked by our team before it shows.') +
       '<div class="hg-tools2"><div class="hg-search"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#525252" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
       '<input type="search" id="hgQ" placeholder="Search places, dishes, cities..." aria-label="Search holiday menus" value="' + esc(MF.q) + '" autocomplete="off" data-dictate="off"></div>' +
+      (NM() ? '<button type="button" class="hg-fbtn hg-nearbtn" id="hgNearBtn" data-vrd-near aria-pressed="' + nearOn() + '" title="Sort by distance from you">' + NM().pin + '<span data-vrd-near-word>Near me</span></button>' : '') +
       '<button type="button" class="hg-fbtn" id="hgFbtn" aria-expanded="false" aria-controls="hgPop">Filters<span class="hg-fcount"' + (n ? '' : ' hidden') + '>' + n + '</span></button>' +
       '<button type="button" class="hg-subbtn" id="hgSubBtn" aria-expanded="false" aria-controls="hgSubmit">Submit a Menu</button>' +
       '<div class="hg-pop" id="hgPop" hidden><div class="hg-pgrid">' +
@@ -714,7 +728,7 @@
         sel('hgOrder', 'Ordering', MF.order, [['all', 'Any'], ['open', 'Still taking orders'], ['online', 'Order online']]) +
         sel('hgSort', 'Sort by', MF.sort, [['vegan', '100% Vegan first'], ['az', 'A to Z'], ['soon', 'Order by soonest']]) +
       '</div><div class="hg-pfoot"><button type="button" class="dg-btn dg-ghost" data-hg-reset>Reset filters</button><button type="button" class="dg-btn" data-hg-done>Done</button></div></div></div>' +
-      '<div class="hg-pills">' + pills(ch).map(function (p) { return '<button type="button" class="hg-pill" data-hg-unpill="' + p[0] + '">' + esc(p[1]) + ' <span aria-hidden="true">&times;</span></button>'; }).join('') + '</div>' +
+      '<div class="hg-pills">' + pillsHtml(ch) + '</div>' +
       // Sending a menu stays out of the way until asked for (Sean, 2026-11-10: "focus on the menus... a green button next to the filter").
       '<div class="hg-submit" id="hgSubmit" hidden><div class="hg-subgrid">' +
         (open ? '<div><b>Run a Vegan business?</b><p>Send us your holiday menu. Free for members, up after a quick check.</p><a class="dg-btn" href="#/business">Send your menu</a></div>' : '') +
@@ -724,6 +738,7 @@
     drawMenuList(ch);
     wireMenuTools(ch);
     wireAdminUpload();
+    if (wantNear) askNear(wantNear === 'me' ? '' : wantNear);
   }
   // Super admins upload any place's menu from here (Sean, 2026-11-08: "processed the same way as ideas"): pick the place, then the menu
   // form opens on it, where a photo or PDF of the menu is read for us, and it waits in Depot > Holiday menus for a check like any other.
@@ -753,7 +768,11 @@
   function drawMenuList(ch) {
     var box = document.getElementById('hgMenuList'); if (!box) return;
     if (MENUS === null) { box.innerHTML = '<div class="dg-loading">Loading the menus...</div>'; return; }
+    var near = nearOn();
+    if (near && needPoints().length) { box.innerHTML = '<div class="dg-loading">Finding the menus near you...</div>'; withPoints(function () { drawMenuList(ch); }); return; }
+    if (near) ch = 'all';
     var t = hrow(), open = daysUntil(t.submit_close) > 0, list = filtered(ch), any = MF.q || pills(ch).length, tips = tipsFiltered(ch);
+    if (near && (list.length || tips.length)) { box.innerHTML = nearList(list, tips); openPending(); return; }
     box.innerHTML = (list.length ? '<div class="hg-menus">' + list.map(menuCard).join('') + '</div>' : '') +
       (tips.length ? (list.length ? '<h3 style="margin:22px 0 10px;font-size:17px">Menus We Found</h3>' : '') + '<div class="hg-menus">' + tips.map(tipCard).join('') + '</div>' : '') +
       (list.length || tips.length ? '' : any && (MENUS.length || (TIPS || []).length) ? '<div class="hg-empty"><h3>Nothing Matches</h3><p>Try fewer words or reset the filters.</p><button type="button" class="dg-btn dg-ghost" data-hg-reset>Reset filters</button></div>' :
@@ -794,12 +813,12 @@
       return !q || !q.split(/\s+/).some(function (w) { return txt.indexOf(w) < 0; });
     });
   }
-  function tipCard(x) {
+  function tipCard(x, mi) {
     var l = x.listing, where = [x.city || (l && l.address_city), x.state || (l && l.address_state)].filter(Boolean).join(', ');
     var name = l ? '<a href="#/' + hx().menus + '/listing/' + encodeURIComponent(l.slug) + '">' + esc(l.name) + '</a>' : esc(x.place_name);
     var lg = (l && l.logo_url ? ' style="background-image:url(\'' + esc(l.logo_url) + '\')"' : '') + '>' + (l && l.logo_url ? '' : esc(String(x.place_name || '?').charAt(0)));
     return '<div class="hg-menu"><div class="hg-mh">' + (l ? '<a class="hg-logo" href="/directory/' + encodeURIComponent(l.slug) + '" aria-label="' + esc(l.name) + ', their listing"' + lg + '</a>' : '<div class="hg-logo"' + lg + '</div>') +
-      '<div><h3>' + name + '</h3><small>' + esc(where || 'Online') + '</small></div>' +
+      '<div><h3>' + name + '</h3><small>' + distTag(mi) + esc(where || 'Online') + '</small></div>' +
       (l && l.vegan_status ? '<span class="hg-tag hg-tr' + (l.vegan_status === 'fully_vegan' ? '' : ' pv') + '">' + (l.vegan_status === 'fully_vegan' ? '100% Vegan' : 'Plant-based (Pre-Vegan)') + '</span>' : '') + '</div>' + (x.note ? '<p class="hg-sum">' + esc(x.note) + '</p>' : '') +
       '<div class="hg-acts">' + menuBtn('t-' + x.id) +
       (l ? '<a class="dg-btn dg-ghost" href="/directory/' + encodeURIComponent(l.slug) + '">Their Listing</a><button type="button" class="dg-save' + (SAVED[l.id] ? ' on' : '') + '" data-hg-save="' + esc(l.id) + '" aria-pressed="' + !!SAVED[l.id] + '">' + (SAVED[l.id] ? 'Saved' : 'Save') + '</button>' : '') + '</div>' +
@@ -863,12 +882,71 @@
   function wireMenuTools(ch) {
     var q = document.getElementById('hgQ'), btn = document.getElementById('hgFbtn'), pop = document.getElementById('hgPop');
     var tq; q.addEventListener('input', function () { MF.q = q.value; clearTimeout(tq); tq = setTimeout(function () { drawMenuList(ch); }, 120); });
+    var nb = document.getElementById('hgNearBtn');
+    if (nb) nb.addEventListener('click', function () { var n = NM(); if (n.state().on) n.clear(); else n.start(nb, { pickCity: pickChapter }); });
     function show(on) { pop.hidden = !on; btn.setAttribute('aria-expanded', String(on)); }
     btn.addEventListener('click', function () { show(pop.hidden); });
     document.getElementById('hgChapter').addEventListener('change', function (e) { store('hg_chapter', e.target.value); location.hash = '#/' + hx().menus + '/' + e.target.value; });
     [['hgType', 'type'], ['hgOrder', 'order'], ['hgSort', 'sort']].forEach(function (x) {
       document.getElementById(x[0]).addEventListener('change', function (e) { MF[x[1]] = e.target.value; viewMenus(ch); var p2 = document.getElementById('hgPop'), b2 = document.getElementById('hgFbtn'); p2.hidden = false; b2.setAttribute('aria-expanded', 'true'); });
     });
+  }
+  // ---------- Near me on Holiday menus (playbook ve-near-me; Sean, 2026-11-12: "a near me for the menus would be very valuable. And that
+  // way they can just see who's doing Thanksgiving stuff near me") ----------
+  // The Directory's own Near me (VERegionDirectory.near in /public/ve-region-directory.js), never a copy: the browser's location, else a
+  // ZIP code, the distance worked out here in the browser, nothing stored but this tab's spot. A menu takes its point from its listing (its
+  // coordinates, else its ZIP's center); a menu we found takes its listing's, and one with no listing or no point goes under "Location not
+  // on the map yet". While it is on the chapter is set aside: every menu, closest first. The address carries it as #/menus/near (each
+  // viewer asks their own browser) or #/menus/near/<zip> (shareable as is); clearing the pill goes back to the chapter.
+  function NM() { return window.VERegionDirectory && VERegionDirectory.near; }
+  function nearOn() { var n = NM(); return !!(n && n.state().on); }
+  var PTS = {}, PTS_ASKED = {}, NEAR_HUSH = false;
+  function menuIds() {
+    return (MENUS || []).map(function (m) { return m.listing && m.listing.id; }).concat((TIPS || []).map(function (x) { return x.listing && x.listing.id; })).filter(Boolean);
+  }
+  function needPoints() { return menuIds().filter(function (id) { return !PTS_ASKED[id]; }); }
+  function withPoints(cb) {
+    var ids = needPoints(); if (!NM() || !ids.length) return cb();
+    ids.forEach(function (id) { PTS_ASKED[id] = 1; });
+    NM().points(ids).then(function (p) { Object.keys(p || {}).forEach(function (k) { PTS[k] = p[k]; }); }).catch(function () {}).then(cb);
+  }
+  function distTag(mi) { return mi == null ? '' : '<b class="hg-dist">' + esc(NM().format(mi)) + '</b>'; }
+  function nearList(list, tips) {
+    var all = list.map(function (m) { return { id: m.listing && m.listing.id, html: function (d) { return menuCard(m, d); } }; })
+      .concat(tips.map(function (x) { return { id: x.listing && x.listing.id, html: function (d) { return tipCard(x, d); } }; }));
+    var on = [], off = [];
+    all.forEach(function (it, i) { var d = it.id ? NM().miles(PTS[it.id]) : null; if (d == null) off.push(it); else on.push({ it: it, d: d, i: i }); });
+    on.sort(function (a, b) { return a.d - b.d || a.i - b.i; });
+    return (on.length ? '<div class="hg-menus">' + on.map(function (x) { return x.it.html(x.d); }).join('') + '</div>' : '') +
+      (off.length ? '<div class="hg-neardiv">Location not on the map yet</div><div class="hg-menus">' + off.map(function (it) { return it.html(null); }).join('') + '</div>' : '');
+  }
+  function pillsHtml(ch) {
+    return pills(ch).map(function (p) { return '<button type="button" class="hg-pill" data-hg-unpill="' + p[0] + '">' + (p[0] === 'near' ? NM().pin + ' ' : '') + esc(p[1]) + ' <span aria-hidden="true">&times;</span></button>'; }).join('');
+  }
+  function nearHash() { var z = NM().state().zip; return '#/' + hx().menus + '/near' + (z ? '/' + z : ''); }
+  // "or pick a city" in the ZIP pop-up opens Filters on the chapter.
+  function pickChapter() {
+    var b = document.getElementById('hgFbtn'), p = document.getElementById('hgPop'), sl = document.getElementById('hgChapter');
+    if (!b || !p) return;
+    p.hidden = false; b.setAttribute('aria-expanded', 'true'); if (sl) sl.focus();
+  }
+  function askNear(z) {
+    var n = NM(); if (!n) return;
+    var st = n.state(), btn = document.getElementById('hgNearBtn');
+    if (z) { if (st.on && st.zip === z) return nearChanged(st); n.zip(z).then(function (ok) { if (!ok) n.start(btn, { pickCity: pickChapter }); }); return; }
+    if (st.on) return nearChanged(st);
+    n.start(btn, { pickCity: pickChapter });
+  }
+  // On or off: the address, the button, the pills and the list follow, on whichever holiday's menus are open.
+  function nearChanged(st) {
+    if (NEAR_HUSH || !/menus$/.test(curView) || !document.getElementById('hgMenuList')) return;
+    var want = st.on ? nearHash() : '#/' + hx().menus;
+    if (location.hash !== want) history.replaceState(null, '', want);
+    var ch = chapter(null), b = document.getElementById('hgNearBtn'), pl = main.querySelector('.hg-pills'), fc = main.querySelector('.hg-fcount'), n = pills(ch).length;
+    if (b) { b.setAttribute('aria-pressed', String(st.on)); b.title = st.on ? 'Stop sorting by distance' : 'Sort by distance from you'; }
+    if (pl) pl.innerHTML = pillsHtml(ch);
+    if (fc) { fc.textContent = n; fc.hidden = !n; }
+    drawMenuList(ch);
   }
   function wireChapter(view) {
     var s = document.getElementById('hgChapter');
@@ -1551,6 +1629,7 @@
     if ((el = e.target.closest('[data-hg-unpill]'))) {
       var k = el.getAttribute('data-hg-unpill');
       if (k === 'ch') { store('hg_chapter', 'all'); location.hash = '#/' + hx().menus + '/all'; return; }
+      if (k === 'near') { NM().clear(); return; }
       MF[k] = k === 'sort' ? 'vegan' : 'all'; viewMenus(chapter(null)); return;
     }
     if ((el = e.target.closest('[data-hg-menu]'))) {
@@ -1636,6 +1715,7 @@
     document.documentElement.classList.add('dg-fit');
     var box = document.getElementById('dgMaya');
     if (window.VEGuideArt) { var art = VEGuideArt('theo', 'square'); if (art) box.style.backgroundImage = "url('" + art + "')"; }
+    if (NM()) NM().onChange(nearChanged);
     route();
     loadAll();
   }

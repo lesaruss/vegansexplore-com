@@ -757,6 +757,16 @@
     .hg-pf select{width:100%}
     .hg-pfoot{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
     .hg-pills{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+    /* Near me (playbook ve-near-me): the Directory's Near me, by Filters; the distance leads the card's line. */
+    .hg-nearbtn svg,.hg-pill svg,.hg-nearcta svg{flex:none}
+    .hg-pill{display:inline-flex;align-items:center;gap:6px}
+    .hg-nearbtn[aria-pressed="true"]{border-color:var(--g);color:var(--g);background:var(--gl)}
+    .hg-nearbtn[aria-busy="true"]{cursor:progress;opacity:.75}
+    .hg-dist{font-weight:800;color:var(--ink);white-space:nowrap}.hg-dist::after{content:"\00b7";margin:0 5px;font-weight:600;color:var(--ink55)}
+    .hg-neardiv{display:flex;align-items:center;gap:12px;margin:22px 0 10px;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--ink55)}
+    .hg-neardiv::before,.hg-neardiv::after{content:"";flex:1 1 0;height:1px;background:var(--line)}
+    #dgMain .wg-gs-btns .hg-nearcta{grid-column:1/-1;gap:8px;min-height:48px;padding:12px 24px;font-size:13px}
+    @media(max-width:600px){.hg-tools2 .hg-nearbtn{flex:1 1 100%}}
     .hg-pills:empty{display:none}
     .hg-pill{height:32px;padding:0 12px;border-radius:6px;border:1px solid var(--gm);background:var(--gl);color:var(--g);font-family:inherit;font-size:12px;font-weight:800;cursor:pointer}
     @media (max-width:560px){.hg-pgrid{grid-template-columns:1fr}.hg-fbtn{min-width:0;padding:0 14px}}
@@ -810,7 +820,7 @@
 <script src="/public/ve-episodes.js"></script>
 <script src="/public/ve-holiday-menu.js?v=9"></script>
 <script src="/public/ve-join-box.js?v=5"></script>
-<script src="/guide-scripts/holiday-guide.js?v=45"></script>
+<script src="/guide-scripts/holiday-guide.js?v=46"></script>
 <script src="/public/ve-guide-min.js"></script>
 </body>
 </html>
