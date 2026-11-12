@@ -1,0 +1,5 @@
+-- canon-ve-front-of-house v15 (2026-11-12, Logan): pricing_v9 status only, no rule change. Applied through the connector.
+update knowledge_records set body = jsonb_set(jsonb_set(body, '{pricing_v9,not_built}', '"The v9 Managed Marketing Agreement: a lawyer draft (docs/legal/managed-marketing-agreement-v9-draft.md); live terms stay 2026-10-31 and owner checkout waits on branddesk.terms_v9 until Sean approves it."'),
+ '{pricing_v9,built}', '"2026-11-12 (Logan): Stripe Prices by lookup key bd_site_v9, bd_managed_v9, bd_managed_setup_v9, bd_photos_v9, bd_video_v9 (live and test; bd_*_v1 kept); ve-branddesk v23 plan site|managed; /business/managed, the pitch page, /business Managed by us and the sample BrandDesk on v9. Managed = $500 a month plus the $250 setup (hot_labs_v12); photos and video on either plan; social and pause on Managed only."'),
+ version = version + 1, updated_at = now(), updated_by = 'Logan', change_summary = 'pricing_v9 status: built 2026-11-12; only the agreement waits on Sean'
+where slug = 'canon-ve-front-of-house' and version = 14;
