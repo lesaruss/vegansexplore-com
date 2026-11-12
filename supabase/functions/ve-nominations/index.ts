@@ -118,6 +118,8 @@ const CAMPAIGN = 'nominee-invitations';
 const KAI_VOICE = 'cgSgspJ2msm6clMCkdW9';
 const QKEYS = /^q[1-8](s[1-3])?$/;
 const firstOf = (n: string) => String(n || '').replace(/^Sample:\s*/, '').trim().split(/\s+/)[0] || 'there';
+// Names as Kai says them: bracketed markers such as [TEST] are not read aloud.
+const spoken = (t: string) => String(t || '').replace(/\[[^\]]*\]\s*/g, '').trim();
 const norm = (t: string) => String(t || '').toLowerCase().replace(/[^a-z0-9' ]+/g, ' ').replace(/\s+/g, ' ').trim();
 function newToken() { const b = crypto.getRandomValues(new Uint8Array(18)); return Array.from(b).map((x) => x.toString(16).padStart(2, '0')).join(''); }
 async function elMedia(payload: Record<string, unknown>) {
@@ -127,7 +129,7 @@ async function elMedia(payload: Record<string, unknown>) {
 }
 // Kai's personal opening, the template Sean approved once (2026-11-09: "approve the welcome video once"), names filled in per nominee.
 function welcomeLine(n: any) {
-  const first = firstOf(n.nominee_name), nom = String(n.nominator_name || '').trim(), named = n.credit_ok !== false && !n.self_nominated && nom;
+  const first = firstOf(spoken(n.nominee_name)), nom = spoken(n.nominator_name), named = n.credit_ok !== false && !n.self_nominated && nom;
   let t = named
     ? `Congratulations, ${first}! I'm Kai, from Vegans Explore. You're getting this because your friend ${nom} nominated you, and ${nom} thinks you deserve your flowers. Here's why, in their own words.`
     : `Congratulations, ${first}! I'm Kai, from Vegans Explore. You're getting this because someone in your community nominated you, and they think you deserve your flowers. Here's why, in their own words.`;
