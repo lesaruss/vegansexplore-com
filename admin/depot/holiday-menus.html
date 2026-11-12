@@ -112,6 +112,13 @@
       function kinds(on) {
         return '<nav class="tabs" aria-label="Kind" style="margin-bottom:6px"><a href="#list/pending" class="' + (on === 'menus' ? 'on' : '') + '">Sent by businesses</a><a href="#tips/pending" class="' + (on === 'tips' ? 'on' : '') + '">Spotted by members</a><a href="#add" class="' + (on === 'add' ? 'on' : '') + '">Add a menu we know</a></nav>';
       }
+      // Create listing (Sean, 2026-11-12: "Whenever that warning pops up, there should be a button that says create listing"): opens
+      // Directory review > Add a listing in a new tab, filled in with the place, city and menu link. Back here, put its slug in and Show it.
+      function createUrl(t) {
+        var q = new URLSearchParams({ q: t.place_name || '', where: [t.city, t.state].filter(Boolean).join(', '), url: t.link || '' });
+        return '/admin/depot/directory-review#add/1?' + q.toString();
+      }
+      function createBtn(t) { return '<a class="btn btn-ghost" href="' + esc(createUrl(t)) + '" target="_blank" rel="noopener">Create listing</a>'; }
       function tipCard(t) {
         var l = t.listing || { name: t.place_name }, who = t.member || {};
         var where = [t.city || l.address_city, t.state || l.address_state].filter(Boolean).join(', ');
@@ -120,7 +127,7 @@
           '<div class="excerpt"><a href="' + esc(t.link) + '" target="_blank" rel="noopener">' + esc(t.link) + '</a>' + (t.note ? '<br>' + esc(t.note) : '') + (t.team_note ? '<br><i>Team: ' + esc(t.team_note) + '</i>' : '') + '</div>' +
           '<label class="meta" style="display:block;margin-top:6px">Directory listing (slug, optional) <input data-tl="' + t.id + '" value="' + esc(t.listing ? t.listing.slug : '') + '" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font:inherit"></label>' +
           '<label class="meta" style="display:block;margin-top:6px">Note (needed to not use it) <input data-tn="' + t.id + '" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font:inherit"></label>' +
-          '<div class="acts">' + (t.status !== 'live' ? '<button type="button" class="btn" data-tip="approve" data-id="' + t.id + '">Show it</button>' : '') + (t.status !== 'declined' ? '<button type="button" class="btn btn-ghost" data-tip="decline" data-id="' + t.id + '">Don\'t use it</button>' : '') +
+          '<div class="acts">' + (t.status !== 'live' ? '<button type="button" class="btn" data-tip="approve" data-id="' + t.id + '">Show it</button>' : '') + (t.status !== 'declined' ? '<button type="button" class="btn btn-ghost" data-tip="decline" data-id="' + t.id + '">Don\'t use it</button>' : '') + (t.listing ? '' : createBtn(t)) +
           '<span class="meta">Sent ' + esc(when(t.created_at)) + '</span><span class="msg" data-tm="' + t.id + '"></span></div></div></div>';
       }
       function drawTips(r) {
@@ -138,7 +145,13 @@
             if (slug && !lid) throw { error: 'bad_listing' };
             return api({ action: 'tip_review', id: id, decision: d, note: note, listing_id: lid || '' });
           }).then(function (x) { if (x && x.ok) { tips = null; drawTips(route()); } else throw x; })
-            .catch(function (x) { b.disabled = false; msg.className = 'msg err'; msg.textContent = (x && x.error === 'bad_listing') ? 'No listing with that slug.' : 'That did not go through.'; });
+            .catch(function (x) {
+              b.disabled = false; msg.className = 'msg err';
+              if (x && x.error === 'bad_listing') {
+                var row = (tips && tips.rows || []).filter(function (r) { return r.id === id; })[0] || {};
+                msg.innerHTML = 'No live listing with that slug. If it is waiting in <a href="/admin/depot/directory-review" target="_blank" rel="noopener">Directory review</a>, approve it there; if not, ' + createBtn(row);
+              } else msg.textContent = 'That did not go through.';
+            });
         }; });
       }
       function lookup(slug) {
@@ -163,7 +176,11 @@
             if ($('aS').value.trim() && !lid) throw { error: 'bad_listing' };
             return api({ action: 'tip', holiday: $('aH').value, place_name: $('aP').value, listing_id: lid, city: $('aC').value, state: $('aSt').value, link: $('aL').value, note: $('aN').value });
           }).then(function (x) { if (x && x.ok) { tips = null; location.hash = '#tips/live'; } else throw x; })
-            .catch(function (x) { $('aGo').disabled = false; m.className = 'msg err'; m.textContent = ({ bad_listing: 'No listing with that slug.', link_needed: 'Add a working link.', place_needed: 'Add the place.' })[x && x.error] || 'That did not go through.'; });
+            .catch(function (x) {
+              $('aGo').disabled = false; m.className = 'msg err';
+              if (x && x.error === 'bad_listing') { m.innerHTML = 'No live listing with that slug. If it is waiting in <a href="/admin/depot/directory-review" target="_blank" rel="noopener">Directory review</a>, approve it there; if not, ' + createBtn({ place_name: $('aP').value.trim(), city: $('aC').value.trim(), state: $('aSt').value.trim(), link: $('aL').value.trim() }); return; }
+              m.textContent = ({ link_needed: 'Add a working link.', place_needed: 'Add the place.' })[x && x.error] || 'That did not go through.';
+            });
         };
       }
       function card(r) {
