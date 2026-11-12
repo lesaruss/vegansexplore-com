@@ -9,7 +9,10 @@ Florida law throughout unless noted. Contracting entity: LESARUSS Inc. (Vegans E
 1. **BrandDesk Managed Marketing Agreement**, version 2026-10-31.
    Where: `business/agreement.html` (live at vegansexplore.com/business/agreement).
    Needs a new version for the relocked prices (pricing_v9): BrandDesk Site $500 a quarter, no setup; photos $250; video $250;
-   Managed $500 a month as the step up; Community Manager onboarding $150 per client.
+   Managed $500 a month as the step up, plus a $250 setup done live on a Hot Lab call.
+   **The v9 draft is written** (2026-11-12): `docs/legal/managed-marketing-agreement-v9-draft.md`, every change marked and seven
+   questions for counsel at the end (send counsel that file with the live one). The Community Manager's $150 onboarding share is
+   internal and is not in the agreement.
    Ask: it has **no limitation of liability or indemnity clause**; is that acceptable? The 30-day notice after 12 months, the
    unpaid-setup-owed-on-early-end term, the 14-day work pause and 30-day termination for non-payment, Pause at $99 a month
    (up to 3 months a year), and "they own the assets" (we assign copyright in what we make once the setup is paid).
