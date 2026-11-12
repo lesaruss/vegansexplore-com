@@ -248,6 +248,16 @@
     .ms td:last-child{color:#2D5C27;font-weight:800;}
 
 
+    .pts{margin-left:auto;text-align:right;background:#FFF1DF;border-radius:8px;padding:6px 12px;}
+    .pts b{display:block;font-size:18px;font-weight:900;color:#8a4b00;line-height:1.1;}
+    .pts small{font-size:9.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#8a4b00;}
+    .tg.pt{background:#FFF1DF;color:#8a4b00;font-size:10px;}
+    .use{margin-top:10px;font-size:11.5px;background:#F2F8F2;border-radius:8px;padding:8px 10px;color:#1f4a1b;}
+    .wk-g{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin:4px 0 12px;}
+    .wk-g div{border-left:3px solid #2D5C27;padding:2px 0 2px 9px;font-size:11px;color:#555;line-height:1.4;}
+    .wk-g div.xp{border-color:#F69820;}
+    .wk-g small{display:block;font-size:9.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#888;}
+    .wk-g b{display:block;font-size:12.5px;color:#1a1a1a;}
     /* After the panel: the six changes */
     .pn{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
     .pn div{border:1px solid #e3e3e3;border-radius:10px;padding:12px 14px;font-size:12.5px;line-height:1.5;color:#444;background:#fff;}
@@ -280,14 +290,14 @@
     .pv p{font-size:11px;line-height:1.5;color:#333;margin:0;background:#F2F8F2;border-radius:6px;padding:6px 8px;}
 
     /* First sign-in: every part in view */
-    .dsh{display:grid;grid-template-columns:170px minmax(0,1fr);gap:14px;align-items:start;}
+    .dsh{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;align-items:start;}
+    /* The parts as one sliding row, copied from the listing page's .listing-tabs (Sean, 2026-11-12: "I've grown to be okay with the sliding feature... they can see the options versus having to do the drop down") */
+    .ptabs{display:flex;overflow-x:auto;scrollbar-width:none;gap:4px;border-bottom:2px solid rgba(0,0,0,.09);}
+    .ptabs::-webkit-scrollbar{display:none;}
+    .ptabs span{flex:none;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:800;padding:8px 12px;color:#444;border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;}
+    .ptabs span.on{color:#2D5C27;border-bottom-color:#2D5C27;}
+    .ptabs span em{font-style:normal;background:#F69820;color:#1a1a1a;border-radius:6px;font-size:10px;font-weight:900;padding:1px 6px;}
     @media (min-width:901px){.dsh .gs .row small{display:none;}}
-    .dmenu{display:grid;gap:3px;border-right:1px solid #eee;padding-right:12px;}
-    .dm-who{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px;line-height:1.2;}
-    .dm-who i{width:34px;height:34px;border-radius:8px;background:#fff center/cover no-repeat;border:1px solid #e3e3e3;flex:none;}
-    .dmenu span{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;padding:7px 10px;border-radius:6px;color:#333;}
-    .dmenu span.on{background:#2D5C27;color:#fff;}
-    .dmenu span em{font-style:normal;background:#F69820;color:#1a1a1a;border-radius:6px;font-size:10px;font-weight:900;padding:1px 6px;}
 
     /* Share your post: phone frames */
     .sh{display:grid;grid-template-columns:200px 120px minmax(0,1fr);gap:14px;align-items:start;}
@@ -323,6 +333,14 @@
       .gs{padding:9px 10px;}
       .gs h5{font-size:14px;margin:0 0 1px;}
       .gs p{margin:0 0 3px;}
+      #bounties .row small{display:none;}
+      #bounties .row{padding:4px 9px;}
+      #bounties .row .ic{width:28px;height:28px;}
+      #bounties .rows{gap:5px;}
+      .use{padding:6px 10px;margin-top:8px;}
+      .pts{padding:4px 10px;}
+      .pts b{font-size:15px;}
+      #bounties .kd-top{margin-bottom:8px;padding-bottom:8px;}
       .sh{grid-template-columns:160px 96px minmax(0,1fr);}
       .wait{max-width:140px;}
       .bt small{display:none;}
@@ -348,10 +366,10 @@
     }
     @media (max-width:900px){
       .pn{grid-template-columns:minmax(0,1fr);}
+      .wk-g{grid-template-columns:minmax(0,1fr);}
       .cf,.dsh{grid-template-columns:minmax(0,1fr);}
       .rail{border-left:0;padding-left:0;border-top:1px solid #eee;padding-top:10px;}
       .wait{max-width:240px;}
-      .dmenu{display:none;}
       .sh{grid-template-columns:minmax(0,1fr) 110px;}
       .sh-act{grid-column:1 / -1;}
     }
@@ -375,7 +393,7 @@
         <div><em>4</em><b>First sign-in</b>"You're a founding business." Getting Started, 60% done, all seven parts in view.</div>
         <div class="hero"><em>5</em><b>Share your post</b>Made before they arrive, shown in a phone feed, one tap to post.</div>
         <div><em>6</em><b>Day 2 note</b>A short, personal note from Sean.</div>
-        <div><em>7</em><b>The return loop</b>Every feature lands in the kit; their shares show up as visitors.</div>
+        <div><em>7</em><b>The return loop</b>Bounties, features and a weekly update with their community keep them coming back.</div>
       </div>
       <div class="facts">
         <div class="dash-stats-hero-tile"><div class="dash-stats-hero-value">9</div><div class="dash-stats-hero-label">Claims, ever</div><div class="dash-stats-hero-sub">7 waiting today, across 2 businesses</div></div>
@@ -392,8 +410,8 @@
         <div><em>2</em><b>Their page and post appear as they type</b>The gift moves from stage 5 to the first screen, stamped Preview.</div>
         <div><em>3</em><b>Three steps, not four</b>Is this you? · Describe it · Your keys. We stop asking for what the page already has.</div>
         <div><em>4</em><b>The voice check runs live</b>"We" or "I" is flagged as they type, with Liz's wording one tap away. Next waits until it's fixed.</div>
-        <div><em>5</em><b>They see all seven parts</b>A visible menu on the dashboard, so Media kit, Opportunities and Insights are never hidden.</div>
-        <div><em>6</em><b>Ask members to visit</b>Bounties for businesses: they invite the community in; proven visits and photos come back to them.</div>
+        <div><em>5</em><b>They see all seven parts</b>One sliding row, like a listing page's tabs, so Media kit and Opportunities are never hidden.</div>
+        <div><em>6</em><b>Bounties for businesses</b>They earn points in our campaigns, then spend them to invite the community in with bounties of their own.</div>
       </div>
     </section>
 
@@ -544,10 +562,8 @@
           <div class="stp"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
           <span class="tg smp smp-corner">Sample</span>
           <div class="dsh">
-            <nav class="dmenu" aria-label="Dashboard parts">
-              <div class="dm-who"><i class="js-logo"></i><b>Green Leaf Kitchen</b></div>
-              <span class="on">Home</span><span>Your page</span><span>Media kit <em>1</em></span><span>Opportunities</span><span>Messages</span><span>Insights</span><span>Your plan</span>
-            </nav>
+            <div class="kd-top" style="grid-column:1/-1;margin-bottom:0"><span class="kd-av js-logo"></span><div class="kd-who"><div class="dash-eyebrow">Business dashboard</div><div class="kd-name">Green Leaf Kitchen</div></div><span class="ui-btn ghost">View my page</span></div>
+            <nav class="ptabs" aria-label="Dashboard parts"><span class="on">Home</span><span>Your page</span><span>Media kit <em>1</em></span><span>Opportunities <em>2</em></span><span>Messages</span><span>Insights</span><span>Your plan</span></nav>
             <div class="gs">
               <span class="liz js-liz"></span>
               <div>
@@ -569,7 +585,7 @@
         <div class="dm-side">
           <h3>What changed</h3>
           <ul>
-            <li><b>All seven parts in view</b> on the left, so Media kit and Opportunities are never hidden. On phones, the dropdown stays. This is an exception to the more-than-five rule: <b>your call</b>.</li>
+            <li><b>All seven parts in one sliding row</b>, like the tabs on a listing page: all visible on desktop, a swipe on phones, no dropdown (you approved it today).</li>
             <li><b>The gift comes before the chores</b>: Share your post is second, Help shape launch third.</li>
             <li>The headline says what they are: a <b>founding business</b>, helping build it before January 1.</li>
             <li>Getting Started opens 60% done and folds away once finished. <span class="tg soon">Coming</span></li>
@@ -680,7 +696,7 @@
           <h3>How it works</h3>
           <ul>
             <li>Your week splits <b>visitors they sent</b> (their tracked link) from <b>visitors we sent</b>, so sharing visibly pays off. <span class="tg soon">Coming</span></li>
-            <li>The weekly email goes out <b>only when something happened</b>: a feature, visitors, an opportunity. A quiet week sends nothing.</li>
+            <li>A <b>weekly update</b> every Monday: what changed, new bounties, their community, the World Vegan Expo (two slides on).</li>
             <li>Every feature we already make (Holiday Guide, Pulse, podcast) drops into their kit as a database row, no code.</li>
           </ul>
         </div>
@@ -689,39 +705,70 @@
 
     <section class="vg-slide" id="bounties" data-title="Bounties for businesses">
       <div class="vg-eyebrow">New · Bounties for businesses</div>
-      <h2 class="vg-h">Ask our members to visit</h2>
+      <h2 class="vg-h">They earn by taking part in our campaigns</h2>
       <div class="dm-row">
         <div class="dm-main"><div class="ui">
           <div class="stp"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
           <span class="tg smp smp-corner">Sample</span>
-          <div class="kd-top"><div class="kd-who"><div class="dash-eyebrow">Business dashboard</div><div class="kd-crumb">Opportunities &rsaquo; <b>Ask members to visit</b></div></div></div>
-          <div class="cols2">
-            <div class="fm">
-              <div class="ui-sec">One template</div>
-              <div class="bt"><b>Visit, try a signature dish, post photos</b><small>Members prove the visit with their phone's location, shoot with our photo guide, and post.</small></div>
-              <label>Which dish?</label><div class="in">BBQ jackfruit bowl</div>
-              <label>Your thank-you <small style="font-weight:600;color:#888">(optional)</small></label><div class="in">A free cold brew with the bowl</div>
-              <label>When</label><div class="in">Nov 20 to Dec 20</div>
-              <div style="margin-top:12px"><span class="ui-btn go">Send it to our team</span></div>
-            </div>
-            <div>
-              <div class="ui-sec">What comes back</div>
-              <div class="dash-stats-hero" style="grid-template-columns:repeat(2,minmax(0,1fr))">
-                <div class="dash-stats-hero-tile"><div class="dash-stats-hero-value">12</div><div class="dash-stats-hero-label">Proven visits</div></div>
-                <div class="dash-stats-hero-tile"><div class="dash-stats-hero-value">31</div><div class="dash-stats-hero-label">Photos</div></div>
-              </div>
-              <div class="ph-grid js-photos" style="grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-top:10px"></div>
-              <div class="sh-note">Approved photos land in your Media kit, credited to the member.</div>
-            </div>
+          <div class="kd-top"><div class="kd-who"><div class="dash-eyebrow">Business dashboard</div><div class="kd-crumb">Opportunities &rsaquo; <b>Bounties</b></div></div><div class="pts"><b>1,350</b><small>Your points</small></div></div>
+          <div class="rows">
+            <div class="row hot"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="5" rx="1"/><path d="M12 8v13M5 13v8h14v-8"/></svg></span><div><b>Give $100 in gift cards to the December giveaway</b><small>Good at any of your locations. We feature you on your day.</small></div><span class="tg pt hide-m">+1,000</span><span class="ui-btn go">I'm in</span></div>
+            <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM8 9h8M8 13h8M8 17h5"/></svg></span><div><b>Send your Thanksgiving menu to the Holiday Guide</b><small>Closes Nov 22.</small></div><span class="tg pt hide-m">+250</span><span class="ui-btn ghost">Send it</span></div>
+            <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M17 11h4M19 9v4"/></svg></span><div><b>Recommend another business</b><small>Points when they claim their page.</small></div><span class="tg pt hide-m">+500</span><span class="ui-btn ghost">Invite</span></div>
+            <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span><div><b>Tell your story for the podcast</b><small>Answer Liz's questions by voice.</small></div><span class="tg pt hide-m">+100</span><span class="ui-btn ghost">Record</span></div>
+            <div class="row done"><span class="ic done-ic"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span><div><b>Share your post</b><small>Done Nov 14.</small></div><span class="tg live hide-m">+100 earned</span><span class="ui-btn ok">See it</span></div>
           </div>
+          <div class="use"><b>What points do</b> Spend them to invite the community: post your own bounty ("Try our new dish and share it"), and members earn your points for the visit and the content. <span class="tg soon">Coming</span></div>
         </div></div>
         <div class="dm-side">
           <h3>How it works</h3>
           <ul>
-            <li>The business <b>posts</b>; members do the bounty. All five panelists picked this direction first: it brings real people through the door and fresh photos back. <span class="tg soon">Coming</span></li>
-            <li>Our team approves each one, then it runs on the <b>member visit bounties we already have</b> for BrandDesk clients: location proof, a person approves, members earn our points. <span class="tg live">Live</span></li>
-            <li>The business's thank-you is its own (an item on the house). No money changes hands; points are given, never bought.</li>
-            <li>Later: businesses earning rewards for tasks. Getting Started covers that today.</li>
+            <li>Every campaign we run becomes <b>a bounty</b>: one row in our database, aimed at the businesses it fits. It shows on every dashboard it fits at once, and in the weekly email. No code for a new one.</li>
+            <li>They pick what fits them. A gift card bounty is <b>good at any of their locations</b>; a chain does it once.</li>
+            <li>Points land when our team confirms it's done, as member bounties work today. Points are given, never bought.</li>
+            <li><b>Points are the only way</b> a business posts its own bounty for members: a new dish to try, content to make. So they take part in our campaigns to earn them.</li>
+            <li>Member bounties open in a community <b>once its Community Manager is on board</b>. Later, on paid campaigns, we add to their bounty.</li>
+          </ul>
+          <h3>Your calls</h3>
+          <ul>
+            <li>The point values here are mine (Sample).</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="vg-slide" id="weekly" data-title="The weekly update">
+      <div class="vg-eyebrow">Every week</div>
+      <h2 class="vg-h">What changed, their community, and a front-row seat</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="bk-em">
+          <div class="stp"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <span class="tg smp smp-corner">Sample</span>
+          <div class="em-h"><b>Your week on Vegans Explore</b> · from Liz at Vegans Explore · Monday, 9:00 AM Eastern</div>
+          <div class="lg"><img src="/public/logo-ve-landscape-v2.svg" alt="Vegans Explore"></div>
+          <div class="bd wk">
+            <h4>Green Leaf Kitchen, <mark>38 people</mark> came from your link this week.</h4>
+            <div class="wk-g">
+              <div><small>Your page</small><b>146 visitors</b>38 you sent, 108 we sent</div>
+              <div><small>New bounties</small><b>2 for you</b>December giveaway, Thanksgiving menus</div>
+              <div><small>In Fort Lauderdale</small><b>3 new places, 2 events</b>And the week's top Daily Pulse story</div>
+              <div class="xp"><small>World Vegan Expo</small><b>Marisol Bay, Oct 15 and 16, 2027</b>Founding businesses hear first</div>
+            </div>
+            <span class="ui-btn go" style="font-size:12px;padding:10px 16px">Open your dashboard</span>
+          </div>
+          <div class="em-f">You get this because you claimed Green Leaf Kitchen on Vegans Explore. Unsubscribe · Our postal address</div>
+        </div></div>
+        <div class="dm-side">
+          <h3>How it works</h3>
+          <ul>
+            <li><b>Every Monday</b>, Eastern, from Liz: their numbers, what's new for them, and a summary of their community. With the community in it, there's always something worth reading. <span class="tg soon">Coming</span></li>
+            <li><b>Their community</b>: new places in their city, events, and the week's top Daily Pulse story, all from data we already have.</li>
+            <li><b>The World Vegan Expo</b> (Marisol Bay, Oct 15 and 16, 2027, with the Gala): founding businesses hear first about vendor spots and sponsorships. A standing slot until the Expo.</li>
+            <li>Each line links into the dashboard through their tracked link. It goes through <code>email-send</code> with the unsubscribe link and our address.</li>
+          </ul>
+          <h3>Your call</h3>
+          <ul>
+            <li>"Founding businesses hear first" is a promise. Say yes and it goes in.</li>
           </ul>
         </div>
       </div>
@@ -746,13 +793,13 @@
         <div class="dm-side">
           <h3>Your calls (my default if you don't change it)</h3>
           <ul>
-            <li><b>Dashboard menu</b>: all seven parts visible on desktop, dropdown on phones, for business dashboards only. <i>Default: yes.</i></li>
-            <li><b>The post</b>: "A founding business" on the band; their dish photo when they have a square one. <i>Default: yes.</i></li>
-            <li><b>Bounties</b>: businesses post "Ask members to visit" first. <i>Default: yes, built after the claim.</i></li>
+                        <li><b>The post</b>: "A founding business" on the band; their dish photo when they have a square one. <i>Default: yes.</i></li>
+            <li><b>Bounties</b>: businesses earn points for taking part (gift cards, Holiday Guide menus, recommending a business, their story), point values as shown; spending points on their own member bounties opens per community with its Community Manager. <i>Default: yes, earning built after the claim.</i></li>
+            <li><b>Weekly update</b> every Monday, with their community and "Founding businesses hear first" about the World Vegan Expo. <i>Default: yes.</i></li>
           </ul>
           <h3>Build order</h3>
           <ul>
-            <li>1. The claim: 3 steps, Liz, live preview, live voice check, Free. 2. Dashboard restyle with the menu. 3. Share your post. 4. Getting Started. 5. Liz's email and your note. 6. Ask members to visit.</li>
+            <li>1. The claim: 3 steps, Liz, live preview, live voice check, Free. 2. Dashboard restyle with the menu. 3. Share your post. 4. Getting Started. 5. Liz's email and your note. 6. Bounties for businesses. 7. The weekly update.</li>
           </ul>
         </div>
       </div>
