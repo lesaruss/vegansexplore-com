@@ -7,7 +7,7 @@
 --     and nominator-featured (to their nominator, their link to where the feature is live). Each row carries its own filled-in email.
 -- (4) Redraw requests from the featured person are kept and counted (Sean's watch). Safe to run twice.
 
-alter table ve_nominations add column if not exists photo_path text;                -- community-comments, nominations/photos/<id>/<uuid>.<ext>
+alter table ve_nominations add column if not exists photo_path text;                -- nomination-photos bucket, <id>/<uuid>.<ext>
 alter table ve_nominations add column if not exists photo_release_at timestamptz;   -- "You may use my photo" ticked
 alter table ve_nominations add column if not exists featured_places jsonb not null default '[]'::jsonb;  -- [{kind, label, url}]
 alter table ve_nominations add column if not exists feature_requested_at timestamptz;
@@ -39,3 +39,8 @@ values
   E'Hi {first_name},\n\nYour nomination made it happen: their story is live on Vegans Explore.\n\nSee it here: {link}\n\nThank you for shining a light on someone in your community.\n\nKai\nThe Creator Guide at Vegans Explore',
   0, now(), '72712a4a-ea0e-4ef4-a29e-d382496ef8da', now())
 on conflict (campaign_slug, step) do nothing;
+
+-- (5) Their photos get their own private bucket (community-comments takes audio only): images, up to 15 MB.
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('nomination-photos', 'nomination-photos', false, 15728640, array['image/jpeg','image/png','image/webp','image/heic','image/heif'])
+on conflict (id) do nothing;

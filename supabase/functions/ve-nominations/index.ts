@@ -31,6 +31,7 @@ const TEAM_EMAIL = 'contact@lesaruss.com';
 const FROM = 'VEGANS EXPLORE <hello@vegansexplore.com>';
 const BUCKET = 'community-comments';
 const PREFIX = 'nominations';
+const PHOTOS = 'nomination-photos';   // their photo (private; images only)
 const DAY_MS = 24 * 60 * 60 * 1000;
 const VOICE_MAX = 120;
 const ROLES: Record<string, string> = { business_owner: 'Business owner', content_creator: 'Content creator', nonprofit: 'Works for a nonprofit', activist: 'Activist' };
@@ -202,6 +203,11 @@ function kitOf(n: any) {
   const shapes: Record<string, string> = {}; SHAPES.forEach((s) => { shapes[s] = b + s + '.jpg' + v; });
   return { portrait: shapes['1x1'], shapes, post: b + 'post.jpg' + v, story: b + 'story.jpg' + v };
 }
+async function photoUrl(path: string | null) {
+  if (!path) return null;
+  const { data } = await db.storage.from(PHOTOS).createSignedUrl(path, 3600);
+  return data?.signedUrl || null;
+}
 async function featuredLink(n: any) {
   const { data } = await db.from('ve_outreach_campaign_members').select('link_code').eq('campaign_slug', FEATURED).eq('person_key', String(n.nominee_email).toLowerCase()).is('removed_at', null).maybeSingle();
   return data?.link_code ? `${SITE}/go/${data.link_code}` : `${SITE}/nominate`;
@@ -361,7 +367,7 @@ Deno.serve(async (req: Request) => {
         nominator: { named, name: named ? n.nominator_name : null, written: n.written || null, audio_url: await signed(n.audio_path) },
         welcome: { url: n.welcome_path ? `${SUPABASE_URL}/storage/v1/object/public/vegan-media/${n.welcome_path}` : null },
         answers: await answersOf(n.id), sent: !!n.interview_sent_at, joined: !!n.joined_at,
-        photo: { has: !!n.photo_path, url: await signed(n.photo_path) },
+        photo: { has: !!n.photo_path, url: await photoUrl(n.photo_path) },
         featured: n.featured_at ? { places: n.featured_places || [], kit: kitOf(n), link: await featuredLink(n), redraw_requested: !!n.redraw_requested_at } : null });
     }
     // The photo asked for at Set Up Your Account (or on You've Been Featured), with its release line.
@@ -369,21 +375,21 @@ Deno.serve(async (req: Request) => {
       const type = String(body.type || ''), size = Number(body.size) || 0;
       if (!/^image\/(jpeg|png|webp|heic|heif)$/.test(type) || size <= 0 || size > 15 * 1024 * 1024) return json({ error: 'bad_file', message: 'A photo (JPEG, PNG, WebP or HEIC) up to 15 MB, please.' }, 400);
       const ext = /png/.test(type) ? 'png' : /webp/.test(type) ? 'webp' : /hei/.test(type) ? 'heic' : 'jpg';
-      const path = `${PREFIX}/photos/${n.id}/${crypto.randomUUID()}.${ext}`;
-      const { data, error } = await db.storage.from(BUCKET).createSignedUploadUrl(path);
+      const path = `${n.id}/${crypto.randomUUID()}.${ext}`;
+      const { data, error } = await db.storage.from(PHOTOS).createSignedUploadUrl(path);
       if (error || !data) return json({ error: 'upload_failed', message: 'We could not start the upload. Try again in a minute.' }, 500);
-      return json({ ok: true, path, url: data.signedUrl, key: await uploadKey(path) });
+      return json({ ok: true, path, url: data.signedUrl, key: await uploadKey('photo:' + path) });
     }
     if (action === 'photo_save') {
       const path = String(body.path || '');
       if (body.release !== true) return json({ error: 'release', message: 'Tick the box to let us use your photo.' }, 400);
-      if (!path.startsWith(`${PREFIX}/photos/${n.id}/`) || String(body.key || '') !== (await uploadKey(path))) return json({ error: 'bad_photo' }, 400);
+      if (!path.startsWith(`${n.id}/`) || String(body.key || '') !== (await uploadKey('photo:' + path))) return json({ error: 'bad_photo' }, 400);
       const dir = path.slice(0, path.lastIndexOf('/')), file = path.slice(path.lastIndexOf('/') + 1);
-      const { data: f } = await db.storage.from(BUCKET).list(dir, { search: file });
+      const { data: f } = await db.storage.from(PHOTOS).list(dir, { search: file });
       if (!f || !f.length) return json({ error: 'missing_photo', message: 'Your photo did not finish uploading. Try again.' }, 400);
       await db.from('ve_nominations').update({ photo_path: path, photo_release_at: nowIso(), updated_at: nowIso() }).eq('id', n.id);
-      if (n.photo_path && n.photo_path !== path) await db.storage.from(BUCKET).remove([n.photo_path]);
-      return json({ ok: true, url: await signed(path) });
+      if (n.photo_path && n.photo_path !== path) await db.storage.from(PHOTOS).remove([n.photo_path]);
+      return json({ ok: true, url: await photoUrl(path) });
     }
     if (action === 'use_portrait') {
       const kit = n.featured_at ? kitOf(n) : null;
@@ -505,7 +511,7 @@ Deno.serve(async (req: Request) => {
       interview_url: n.invite_token ? `${SITE}/nominate/interview?t=${n.invite_token}` : null,
       welcome_url: n.welcome_path ? `${SUPABASE_URL}/storage/v1/object/public/vegan-media/${n.welcome_path}` : null,
       answers: await answersOf(n.id), invite: cm || null, note: await noteOf(n),
-      photo_url: await signed(n.photo_path), kit: kitOf(n), kit_folder: n.kit_slug ? `vegan-media/media/people/${n.kit_slug}/featured/` : null,
+      photo_url: await photoUrl(n.photo_path), kit: kitOf(n), kit_folder: n.kit_slug ? `vegan-media/media/people/${n.kit_slug}/featured/` : null,
       feature_sends: await featureSends(n) }, roles: ROLES, place_kinds: PLACE_KINDS });
   }
 
