@@ -175,7 +175,7 @@
   // ---- Home: Needs you, New for you, Your week
   function needs() {
     var out = [];
-    if (L.claim_status === 'pending') out.push(row('Waiting', 't-need', 'We are checking your claim', 'Most claims are approved within a day. Your page and menu are yours to edit now.', '<a class="btn btn-sm btn-ghost" href="' + esc(listingUrl()) + '" target="_top">See your page</a>'));
+    if (L.claim_status === 'pending') out.push(row('Waiting', 't-need', 'We\'re getting your page ready', 'Liz will email you the moment your claim is approved. Your page and menu are yours to edit now.', '<a class="btn btn-sm btn-ghost" href="' + esc(listingUrl()) + '" target="_top">See your page</a>'));
     (D.checklist || []).filter(function (c) { return !c.done && CHECK[c.k]; }).forEach(function (c) {
       var m = CHECK[c.k];
       var btn = c.k === 'menu' ? partBtn('Add it', 'page', 'menu') : c.k === 'audit' ? '<a class="btn btn-sm" href="/guides/vegan-restaurant-guide#/audit" target="_top">Run it</a>' : editBtn(m[2]);

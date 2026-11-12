@@ -1025,11 +1025,21 @@
         gift: '<svg viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="5" rx="1"/><path d="M12 8v13M5 13v8h14v-8"/></svg>'
       };
       var CLOCK_T = null;
+      // Claims sent before the clock existed (Chaska and Veggie Grill, held until the post-claim experience is ready) never had a
+      // 24-hour promise, so they get no countdown; and a clock never shows 0:00:00: past its time it says Liz is finishing.
+      var CLOCK_START = Date.parse('2026-11-12T23:30:00Z');
       function clockOn(sentAt) {
-        var due = sentAt + 24 * 3600e3, el = $('fd-cd'), by = $('fd-by');
+        var due = sentAt + 24 * 3600e3, el = $('fd-cd'), by = $('fd-by'), head = document.querySelector('.fd-clock b');
+        if (sentAt < CLOCK_START || due <= Date.now()) {
+          clearInterval(CLOCK_T); el.hidden = true;
+          head.textContent = sentAt < CLOCK_START ? 'We\'re getting your page ready' : 'Almost there';
+          by.textContent = sentAt < CLOCK_START ? 'Liz will email you the moment it\'s yours. Your post is waiting for you too.' : 'Liz is finishing your page now and will email you the moment it\'s yours.';
+          $('dgBubble').textContent = 'Your claim is in. I\'m getting your page ready, and I\'ll email you the moment it\'s yours. Your post will be waiting in your dashboard.';
+          return;
+        }
         var day = new Date(due).toDateString() === new Date().toDateString() ? 'today' : 'tomorrow';
         by.textContent = 'By ' + new Date(due).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }) + ' ' + day + ', at the latest.';
-        function tick() { var left = Math.max(0, due - Date.now()), h = Math.floor(left / 3600e3), m = Math.floor(left % 3600e3 / 60e3), x = Math.floor(left % 60e3 / 1e3);
+        function tick() { if (due <= Date.now()) return clockOn(sentAt); var left = Math.max(0, due - Date.now()), h = Math.floor(left / 3600e3), m = Math.floor(left % 3600e3 / 60e3), x = Math.floor(left % 60e3 / 1e3);
           el.textContent = h + ':' + (m < 10 ? '0' : '') + m + ':' + (x < 10 ? '0' : '') + x; }
         tick(); clearInterval(CLOCK_T); CLOCK_T = setInterval(tick, 1000);
       }
