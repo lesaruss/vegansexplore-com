@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><meta name="robots" content="noindex,nofollow"><title>Episode pack render — Vegans Explore</title>
+<link rel="stylesheet" href="pack.css"></head>
+<body><div id="a"></div>
+<script>
+/* Episode pack renderer (canon canon-ve-brand-kit-templates v2, locked 2026-11-12). Draws ONE asset at its true pixel size from a spec:
+   render.html?spec=soflo-112&asset=<id>. The frames are the locked mock's (/mocks/podcast-pack); only the words and pictures come from the spec.
+   Colors: green (the show, a business), orange (an event), pink (a person, a Guide, a commercial), bright (a bounty, news). */
+const Q = new URLSearchParams(location.search);
+const STP = '<div class="stp"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>';
+const C = { green: ['var(--dk)', '#fff', 'white'], orange: ['var(--or)', '#1a1a1a', 'ink'], pink: ['var(--pink)', '#1a1a1a', 'ink'], bright: ['var(--br)', '#1a1a1a', 'ink'] };
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const head = h => Array.isArray(h) ? h.map(esc).join('<br>') : `<span style="white-space:nowrap">${esc(h)}</span>`;
+const mark = k => `/public/logo-ve-mark-${k}.svg`;
+function art(a) {
+  if (!a) return '<div class="art"></div>';
+  if (a.type === 'logo') return `<div class="art lw"><img src="${a.src}" alt=""${a.fill ? ' style="width:100%;height:100%;border-radius:0"' : ''}></div>`;
+  if (a.type === 'tile') return `<div class="art tile" style="--tb:${a.bg || '#fff7ec'}"><div class="${a.kind === 'points' ? 'ptile' : 'dtile'}"><b>${esc(a.top)}</b><span>${esc(a.big)}</span><i>${esc(a.small)}</i></div></div>`;
+  return `<div class="art${a.type === 'photo' ? ' ph' : ''}"><img src="${a.src}" alt=""></div>`;
+}
+function band(b) { const [bg, t, m] = C[b.color || 'green']; return `<div class="band" style="--c:${bg};--t:${t}"><img class="bmark" src="${mark(m)}" alt=""><h5>${head(b.head)}</h5>${b.n ? `<span class="n">${esc(b.n)}</span>` : ''}</div>`; }
+const R = {
+  post: (x, S) => `<div class="tf s45">${art(x.art)}${x.feat ? `<span class="feat">${esc(x.feat)}</span>` : ''}${band(x)}${STP}</div>`,
+  end: (x, S) => `<div class="tf s45"><div class="endc2"><div class="city"><img src="${S.show.art['16x9']}" alt=""></div><div class="lo"><span class="shn"><img src="${mark('white')}" alt="">${esc(S.show.name)}</span><h5>Listen to<br><span>Episode ${esc(S.episode.number)}</span></h5><div class="plats"><b>Listen free on</b><div class="ic">${S.show.platforms.map(p => `<span><img src="/public/icons/platforms/${p}.svg" alt=""></span>`).join('')}</div><em>Link in bio</em></div></div></div>${STP}</div>`,
+  story: (x, S) => { const [bg, t, m] = C[x.color || 'green']; return `<div class="tf s916"><div class="top" style="--c:${bg};--t:${t}"><span class="sl">${esc(x.label)}</span><div class="tl2"><img src="${mark(m)}" alt=""><h5${Array.isArray(x.head) ? '' : ' class="one"'}>${head(x.head)}</h5></div></div>${x.art && x.art.type === 'logo' ? `<div class="art lw"><img src="${x.art.src}" alt=""></div>` : x.art && x.art.type === 'tile' ? `<div class="art" style="background:${x.art.bg || '#fff7ec'};display:grid;place-items:center"><div class="${x.art.kind === 'points' ? 'ptile' : 'dtile'}" style="width:62cqw"><b>${esc(x.art.top)}</b><span>${esc(x.art.big)}</span><i>${esc(x.art.small)}</i></div></div>` : `<div class="art"><img src="${x.art.src}" alt=""></div>`}</div>`; },
+  cover: (x, S) => `<div class="tf s11"><div class="pod2"><span class="e">${esc(S.show.day)}</span><h5>${S.show.short.map(esc).join('<br>')}</h5><span class="pp">Podcast</span><img class="pmk" src="${mark('white')}" alt=""><div class="art"><img src="${S.show.art['16x9']}" alt=""></div></div><div class="stp" style="--sth:1.6cqw"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>`,
+  thumb: (x, S) => `<div class="tf ${x.kind === 'share' ? 's191' : 's169'}"><div class="dr" style="--c:var(--dk)${x.kind === 'share' ? ';--hs:6.4cqw' : ''}"><div class="dt"><span class="dl">${esc(x.label)}</span><h5><span class="blk wh">${esc(x.head[0])}</span><br><span class="blk ${x.kind === 'share' ? 'gr' : 'ik'}">${esc(x.head[1])}</span></h5><span class="blk shw"><img src="${mark('ink')}" alt="">${esc(S.show.name)}</span></div><div class="dp" style="--k:.8"><img src="${S.show.art['4x5']}" alt=""></div></div><div class="stp" style="--sth:1.3cqw"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>`
+};
+const W = { post: 1080, end: 1080, story: 1080, cover: 3000, thumb: 1280, share: 1200 };
+(async () => {
+  const S = await (await fetch(`specs/${Q.get('spec')}.json`)).json();
+  const x = S.assets.find(a => a.id === Q.get('asset'));
+  if (!x) { document.body.textContent = 'no such asset'; return; }
+  const k = x.kind === 'share' ? 'thumb' : x.kind;
+  const el = document.getElementById('a');
+  el.style.width = (x.kind === 'share' ? W.share : W[x.kind]) + 'px';
+  el.innerHTML = R[k](x, S);
+  await Promise.all([...el.querySelectorAll('img')].map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; })));
+  await document.fonts.ready;
+  document.body.dataset.ready = '1';
+})();
+</script></body></html>

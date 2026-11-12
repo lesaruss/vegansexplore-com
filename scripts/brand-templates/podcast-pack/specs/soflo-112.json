@@ -1,0 +1,456 @@
+{
+ "show": {
+  "name": "SoFlo Vegans Podcast",
+  "short": [
+   "SoFlo",
+   "Vegans"
+  ],
+  "day": "Every Wednesday",
+  "art": {
+   "16x9": "/public/brand-kit/podcast/soflo/16x9.jpg",
+   "21x9": "/public/brand-kit/podcast/soflo/21x9.jpg",
+   "9x16": "/public/brand-kit/podcast/soflo/9x16.jpg",
+   "4x5": "/public/brand-kit/podcast/soflo/4x5.jpg",
+   "1x1": "/public/brand-kit/podcast/soflo/1x1.jpg"
+  },
+  "platforms": [
+   "spotify",
+   "apple-podcasts",
+   "amazon-music",
+   "youtube"
+  ],
+  "links": {
+   "spotify": "https://open.spotify.com/show/0AjEvjgjAWPWr8GsuyCkcz",
+   "apple": "https://podcasts.apple.com/us/podcast/soflo-vegans-podcast/id1368665222",
+   "amazon": "https://music.amazon.com/podcasts/36a26496-7ed5-455e-94d3-00ed1c14b5b5/soflo-vegans-podcast",
+   "youtube": "https://www.youtube.com/playlist?list=PL-UI3zSy3hJk0g1fs_SMO-Nwgu9WTzBu_"
+  }
+ },
+ "episode": {
+  "number": 112,
+  "title": "The SoFlo Vegans Podcast is back",
+  "aired": "2026-11-11",
+  "page": "/directory/soflo-vegans-podcast?ep=8d36a34d-c67b-42a0-917f-5206603bd29f"
+ },
+ "cleared": [
+  "vegan-cuban-cuisine",
+  "rawchefcarla",
+  "sunnispeaksvegan",
+  "el-nopalito-vegan-taqueria-hallandale-beach",
+  "v-collective"
+ ],
+ "never": [
+  "poderosa-minded"
+ ],
+ "assets": [
+  {
+   "id": "car-01",
+   "kind": "post",
+   "art": {
+    "type": "img",
+    "src": "/public/brand-kit/podcast/soflo/1x1.jpg"
+   },
+   "head": [
+    "SoFlo Vegans",
+    "is back"
+   ],
+   "color": "green"
+  },
+  {
+   "id": "car-02",
+   "kind": "post",
+   "art": {
+    "type": "logo",
+    "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/logos/listings/honestcuban-ig-2026-11-12.jpg"
+   },
+   "head": [
+    "Same kitchen,",
+    "new name"
+   ],
+   "color": "green",
+   "n": "2 / 10"
+  },
+  {
+   "id": "car-03",
+   "kind": "post",
+   "art": {
+    "type": "photo",
+    "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/logos/listings/rawchefcarla-ig-2026-11-12.jpg"
+   },
+   "head": [
+    "Raw Chef",
+    "Carla"
+   ],
+   "color": "green",
+   "n": "3 / 10"
+  },
+  {
+   "id": "car-04",
+   "kind": "post",
+   "art": {
+    "type": "photo",
+    "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/logos/listings/sunnispeaksvegan-ig-2026-11-12.jpg"
+   },
+   "head": [
+    "Sunni Speaks",
+    "Vegan"
+   ],
+   "color": "green",
+   "n": "4 / 10"
+  },
+  {
+   "id": "car-05",
+   "kind": "post",
+   "art": {
+    "type": "logo",
+    "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/listings/el-nopalito-vegan-taqueria-hallandale-beach/logo-2026-10-28-bce504a3.jpg"
+   },
+   "head": [
+    "El Nopalito",
+    "Vegan Taqueria"
+   ],
+   "color": "green",
+   "n": "5 / 10"
+  },
+  {
+   "id": "car-06",
+   "kind": "post",
+   "art": {
+    "type": "img",
+    "src": "/public/guides/holiday/r-pie.jpg"
+   },
+   "head": [
+    "ThanksLiving,",
+    "November 26"
+   ],
+   "color": "pink",
+   "n": "6 / 10"
+  },
+  {
+   "id": "car-07",
+   "kind": "post",
+   "art": {
+    "type": "img",
+    "src": "/public/guides/holiday/r-loaf.jpg"
+   },
+   "head": [
+    "Holiday menus",
+    "near you"
+   ],
+   "color": "pink",
+   "n": "7 / 10"
+  },
+  {
+   "id": "car-08",
+   "kind": "post",
+   "art": {
+    "type": "logo",
+    "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/logos/listings/v-collective-ig-2026-11-12.jpg"
+   },
+   "head": [
+    "Madai's",
+    "Vegan story"
+   ],
+   "color": "pink",
+   "n": "8 / 10"
+  },
+  {
+   "id": "car-09",
+   "kind": "post",
+   "art": {
+    "type": "tile",
+    "kind": "points",
+    "top": "Points",
+    "big": "50",
+    "small": "a stop",
+    "bg": "#eafbf0"
+   },
+   "head": [
+    "Is it still",
+    "open?"
+   ],
+   "color": "bright",
+   "n": "9 / 10"
+  },
+  {
+   "id": "car-10",
+   "kind": "end"
+  },
+  {
+   "id": "hol-01",
+   "kind": "post",
+   "art": {
+    "type": "img",
+    "src": "/public/guides/holiday/r-pie.jpg"
+   },
+   "head": [
+    "The Holiday Guide",
+    "is free"
+   ],
+   "color": "pink"
+  },
+  {
+   "id": "bty-01",
+   "kind": "post",
+   "art": {
+    "type": "tile",
+    "kind": "points",
+    "top": "Points",
+    "big": "50",
+    "small": "a stop",
+    "bg": "#eafbf0"
+   },
+   "head": [
+    "Is it still",
+    "open?"
+   ],
+   "color": "bright"
+  },
+  {
+   "id": "dir-01",
+   "kind": "post",
+   "art": {
+    "type": "img",
+    "src": "/public/brand-kit/podcast/soflo/1x1.jpg"
+   },
+   "head": [
+    "New in the",
+    "Directory"
+   ],
+   "color": "green"
+  },
+  {
+   "id": "st-new",
+   "kind": "story",
+   "label": "SoFlo Vegans \u00b7 112",
+   "head": "New episode",
+   "art": {
+    "type": "img",
+    "src": "/public/brand-kit/podcast/soflo/4x5.jpg"
+   },
+   "color": "green"
+  },
+  {
+   "id": "st-hol",
+   "kind": "story",
+   "label": "The Holiday Guide",
+   "head": [
+    "ThanksLiving,",
+    "November 26"
+   ],
+   "art": {
+    "type": "img",
+    "src": "/public/guides/holiday/theo-overview.jpg"
+   },
+   "color": "pink"
+  },
+  {
+   "id": "st-bty",
+   "kind": "story",
+   "label": "Bounty \u00b7 South Florida",
+   "head": [
+    "Is it still",
+    "open?"
+   ],
+   "art": {
+    "type": "tile",
+    "kind": "points",
+    "top": "Points",
+    "big": "50",
+    "small": "a stop",
+    "bg": "#eafbf0"
+   },
+   "color": "bright"
+  },
+  {
+   "id": "st-madai",
+   "kind": "story",
+   "label": "On SoFlo Vegans",
+   "head": [
+    "Madai's",
+    "Vegan story"
+   ],
+   "art": {
+    "type": "logo",
+    "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/logos/listings/v-collective-ig-2026-11-12.jpg"
+   },
+   "color": "pink"
+  },
+  {
+   "id": "st-dir",
+   "kind": "story",
+   "label": "New in the Directory",
+   "head": [
+    "Three new",
+    "Vegan spots"
+   ],
+   "art": {
+    "type": "img",
+    "src": "/public/brand-kit/podcast/soflo/4x5.jpg"
+   },
+   "color": "green"
+  },
+  {
+   "id": "cover",
+   "kind": "cover"
+  },
+  {
+   "id": "thumb-112",
+   "kind": "thumb",
+   "label": "Episode 112",
+   "head": [
+    "The show",
+    "is back"
+   ]
+  },
+  {
+   "id": "share-112",
+   "kind": "share",
+   "label": "Ep 112 \u00b7 Nov 11",
+   "head": [
+    "The show",
+    "is back"
+   ]
+  },
+  {
+   "id": "kit-honest-cuban-post",
+   "kind": "post",
+   "art": {
+    "type": "logo",
+    "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/logos/listings/honestcuban-ig-2026-11-12.jpg"
+   },
+   "feat": "Featured on SoFlo Vegans",
+   "head": [
+    "Hear us on",
+    "Episode 112"
+   ],
+   "color": "green"
+  },
+  {
+   "id": "kit-honest-cuban-story",
+   "kind": "story",
+   "label": "SoFlo Vegans \u00b7 112",
+   "head": [
+    "We're on",
+    "the show"
+   ],
+   "art": {
+    "type": "logo",
+    "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/logos/listings/honestcuban-ig-2026-11-12.jpg"
+   },
+   "color": "green"
+  },
+  {
+   "id": "kit-rawchefcarla-post",
+   "kind": "post",
+   "art": {
+    "type": "photo",
+    "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/logos/listings/rawchefcarla-ig-2026-11-12.jpg"
+   },
+   "feat": "Featured on SoFlo Vegans",
+   "head": [
+    "Hear us on",
+    "Episode 112"
+   ],
+   "color": "green"
+  },
+  {
+   "id": "kit-rawchefcarla-story",
+   "kind": "story",
+   "label": "SoFlo Vegans \u00b7 112",
+   "head": [
+    "We're on",
+    "the show"
+   ],
+   "art": {
+    "type": "img",
+    "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/logos/listings/rawchefcarla-ig-2026-11-12.jpg"
+   },
+   "color": "green"
+  },
+  {
+   "id": "kit-sunnispeaksvegan-post",
+   "kind": "post",
+   "art": {
+    "type": "photo",
+    "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/logos/listings/sunnispeaksvegan-ig-2026-11-12.jpg"
+   },
+   "feat": "Featured on SoFlo Vegans",
+   "head": [
+    "Hear us on",
+    "Episode 112"
+   ],
+   "color": "green"
+  },
+  {
+   "id": "kit-sunnispeaksvegan-story",
+   "kind": "story",
+   "label": "SoFlo Vegans \u00b7 112",
+   "head": [
+    "We're on",
+    "the show"
+   ],
+   "art": {
+    "type": "img",
+    "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/logos/listings/sunnispeaksvegan-ig-2026-11-12.jpg"
+   },
+   "color": "green"
+  },
+  {
+   "id": "kit-el-nopalito-post",
+   "kind": "post",
+   "art": {
+    "type": "logo",
+    "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/listings/el-nopalito-vegan-taqueria-hallandale-beach/logo-2026-10-28-bce504a3.jpg"
+   },
+   "feat": "Featured on SoFlo Vegans",
+   "head": [
+    "Hear us on",
+    "Episode 112"
+   ],
+   "color": "green"
+  },
+  {
+   "id": "kit-el-nopalito-story",
+   "kind": "story",
+   "label": "SoFlo Vegans \u00b7 112",
+   "head": [
+    "We're on",
+    "the show"
+   ],
+   "art": {
+    "type": "logo",
+    "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/listings/el-nopalito-vegan-taqueria-hallandale-beach/logo-2026-10-28-bce504a3.jpg"
+   },
+   "color": "green"
+  },
+  {
+   "id": "kit-v-collective-post",
+   "kind": "post",
+   "art": {
+    "type": "logo",
+    "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/logos/listings/v-collective-ig-2026-11-12.jpg"
+   },
+   "feat": "Featured on SoFlo Vegans",
+   "head": [
+    "Hear us on",
+    "Episode 112"
+   ],
+   "color": "green"
+  },
+  {
+   "id": "kit-v-collective-story",
+   "kind": "story",
+   "label": "SoFlo Vegans \u00b7 112",
+   "head": [
+    "We're on",
+    "the show"
+   ],
+   "art": {
+    "type": "logo",
+    "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/logos/listings/v-collective-ig-2026-11-12.jpg"
+   },
+   "color": "green"
+  }
+ ]
+}
