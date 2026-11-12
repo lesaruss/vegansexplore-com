@@ -223,6 +223,7 @@
     .gs .rows{gap:5px;}
     .gs .row{padding:5px 9px;}
     .gs .meter{margin:2px 0 8px;}
+    @media (min-width:901px){.gs .rows{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}.gs .row{grid-template-columns:30px minmax(0,1fr) auto;padding:6px 8px;gap:8px;}.gs .row .hide-m{display:none;}.gs .row .ic{width:30px;height:30px;}}
 
     /* Slide 5: Media kit with the real renders */
     .mk2{display:grid;grid-template-columns:150px 150px minmax(0,1fr);gap:14px;align-items:start;}
@@ -267,6 +268,10 @@
       .gs{padding:9px 10px;}
       .gs h5{font-size:14px;margin:0 0 1px;}
       .gs p{margin:0 0 3px;}
+      .plain .bd{font-size:12px;line-height:1.5;padding:10px 16px 12px;}
+      .plain .bd p{margin:0 0 6px;}
+      .bk-em .bd{padding-bottom:10px;}
+      .bk-em .lg{padding-top:10px;}
       .gs .rows{gap:4px;}
       .gs .row{padding:3px 8px;}
       .gs .ui-btn{padding:6px 10px;}
@@ -299,14 +304,14 @@
         <div><em>1</em><b>Claim</b>One form, free for members, written in the third person from the start.</div>
         <div><em>2</em><b>Review</b>Within one business day, one approval per business, not per location.</div>
         <div><em>3</em><b>Welcome email</b>Liz: "Your page is yours." One button into the dashboard.</div>
-        <div><em>4</em><b>Getting Started</b>Five rows, already partly done because we built their page.</div>
+        <div><em>4</em><b>Getting Started</b>Six rows, already partly done because we built their page. The last: tell us how to make it better.</div>
         <div class="hero"><em>5</em><b>Media kit</b>Their "Find us on Vegans Explore" post and story, made before they arrive.</div>
         <div><em>6</em><b>Day 2 note</b>A short, personal note from Sean.</div>
         <div><em>7</em><b>The return loop</b>Every feature lands in the kit; their shares show up as visitors.</div>
       </div>
       <div class="facts">
         <div class="dash-stats-hero-tile"><div class="dash-stats-hero-value">9</div><div class="dash-stats-hero-label">Claims, ever</div><div class="dash-stats-hero-sub">7 waiting today, across 2 businesses</div></div>
-        <div class="dash-stats-hero-tile"><div class="dash-stats-hero-value">0 to 3</div><div class="dash-stats-hero-label">Views a month</div><div class="dash-stats-hero-sub">On each page claimed this week, so raw numbers alone would disappoint</div></div>
+        <div class="dash-stats-hero-tile"><div class="dash-stats-hero-value">0 to 3</div><div class="dash-stats-hero-label">Views a month</div><div class="dash-stats-hero-sub">On each page claimed this week. We say it plainly: we're building toward the January 1 launch, with them</div></div>
         <div class="dash-stats-hero-tile"><div class="dash-stats-hero-value">5,991</div><div class="dash-stats-hero-label">Listings to reach</div><div class="dash-stats-hero-sub">Every outreach email lands on stage 1, once the first group proves it</div></div>
       </div>
     </section>
@@ -392,6 +397,7 @@
           <div class="bd">
             <h4>Your 3 pages are <mark>approved and yours</mark>.</h4>
             <p>Your words are already on them. Your dashboard has your post and story ready to share, and a short list of what to do first.</p>
+            <p>We launch January 1, and we're building it with businesses like yours. Tell us what would make it better: there's a Feedback button on every page.</p>
             <span class="ui-btn go" style="font-size:12px;padding:10px 16px">Open your dashboard</span>
             <div class="sig"><i class="js-liz"></i><span><b>Liz</b>The Explorer, Vegans Explore</span></div>
           </div>
@@ -422,7 +428,7 @@
             <span class="liz js-liz"></span>
             <div>
               <h5>Getting started with Liz</h5>
-              <p>Your page is 60% ready. We did the first part for you.</p>
+              <p>60% ready: we built the first part. We launch January 1, and we're building it with you.</p>
               <div class="meter"><i style="width:60%"></i></div>
               <div class="rows">
                 <div class="row done"><span class="ic done-ic"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span><div><b>Your page is built</b><small>Your words, logo and address. Done by us.</small></div><span class="tg live hide-m">Done</span><span class="ui-btn ok">See it</span></div>
@@ -430,6 +436,7 @@
                 <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg></span><div><b>Feature up to 3 signature dishes</b><small>They show first on your page</small></div><span class="tg soon hide-m">To do</span><span class="ui-btn ghost">Pick</span></div>
                 <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM8 9h8M8 13h8M8 17h5"/></svg></span><div><b>Add your holiday menu</b><small>Get into the free Holiday Guide</small></div><span class="tg soon hide-m">To do</span><span class="ui-btn ghost">Add</span></div>
                 <div class="row hot"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 12v7h16v-7M12 3v12M7 8l5-5 5 5"/></svg></span><div><b>Share your post</b><small>It's made. Post it, tag us, use your link.</small></div><span class="tg app hide-m">Ready</span><span class="ui-btn go">Share</span></div>
+                <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg></span><div><b>Tell us how to make it better</b><small>What would bring you back every day?</small></div><span class="tg soon hide-m">To do</span><span class="ui-btn ghost">Tell us</span></div>
               </div>
             </div>
           </div>
@@ -438,6 +445,7 @@
           <h3>How it works</h3>
           <ul>
             <li>Until it's done, <b>Getting Started is the top of Home</b>, above Needs you, New for you and Your week. Then it folds away. <span class="tg soon">Coming</span></li>
+            <li>The last row is <b>your ask</b>: tell us how to make it better. Founding businesses help shape the platform before launch.</li>
             <li>It opens <b>60% done</b>: we built the page, so they start ahead. People finish a list they're already part way through far more often (the endowed progress effect).</li>
             <li>It is copied from the Welcome Guide's Getting started card, Liz walking it (the template gate). One button per row, in the same place.</li>
             <li>The dashboard restyle to the new look comes first, so this is what they land on.</li>
@@ -486,16 +494,17 @@
     <!-- 6. Day 2 -->
     <section class="vg-slide" id="day2" data-title="6 · Sean's note">
       <div class="vg-eyebrow">6 · Day 2</div>
-      <h2 class="vg-h">A short note from Sean, the next day</h2>
+      <h2 class="vg-h">Sean's note: help us build it</h2>
       <div class="dm-row">
         <div class="dm-main"><div class="plain">
           <span class="tg smp smp-corner">Sample</span>
-          <div class="em-h"><b>Glad you're here</b> · from Sean A. Russell · Day 2, 10:00 AM Eastern</div>
+          <div class="em-h"><b>Help me build this</b> · from Sean A. Russell · Day 2, 10:00 AM Eastern</div>
           <div class="bd">
             <p>Hi Green Leaf Kitchen team,</p>
-            <p>I saw your pages went live yesterday and wanted to say thank you personally. Places like yours are why I started Vegans Explore.</p>
-            <p>Your post is waiting in your dashboard. If you share it, tag us and we'll share it too.</p>
-            <p>If there's anything you'd like to see from us, just reply. It comes straight to me.</p>
+            <p>I'm building a platform that brings all of us together, so we can do the things we've always wanted to do. It comes from more than 10 years on the ground and conversations with hundreds of business owners, activists, creators and nonprofits.</p>
+            <p>We launch January 1. Until then, all I'm asking is this: tell me how to make it better. What would make it something you'd want to come back to every day? Just reply. It comes straight to me.</p>
+            <p>If thousands of us do that, by launch we'll have a platform everyone wants to be part of, because the network is already built. I hope you see it too.</p>
+            <p>Your post is in your dashboard when you're ready to share it.</p>
             <p>Sean</p>
             <div class="sig" style="display:flex;align-items:center;gap:10px;font-size:11.5px;color:#555"><i class="js-sean" style="width:38px;height:38px;border-radius:9px;background:#eee center/cover no-repeat;flex:none"></i><span><b style="color:#1a1a1a;display:block">Sean A. Russell</b>Founder, Vegans Explore</span></div>
           </div>
@@ -504,12 +513,13 @@
           <h3>How it works</h3>
           <ul>
             <li>A <b>plain, personal email</b>, no banner, sent the morning after approval, Eastern. <span class="tg soon">Coming</span></li>
-            <li>Its one ask points back to stage 5: share the post. "We'll share it too" gives them a reason.</li>
-            <li>Replies come to you. You approve these words once; after that it sends on its own for every new business.</li>
+            <li><b>The ask is feedback</b>, in your words from today: come on board free, tell us how to make it better. Sharing the post comes second.</li>
+            <li>It says why traffic is small today: we're building toward the January 1 launch, with them.</li>
+            <li>Replies come to you and land in Feedback. You approve these words once; after that it sends on its own for every new business.</li>
           </ul>
           <h3>Draft</h3>
           <ul>
-            <li>This is a first draft in your voice. Change any line.</li>
+            <li>Drawn from your message today (saved word for word in the playbook). Change any line.</li>
           </ul>
         </div>
       </div>
@@ -537,7 +547,7 @@
             <div class="dash-stats-hero-tile"><div class="dash-stats-hero-value">22</div><div class="dash-stats-hero-label">Taps and clicks</div><div class="dash-stats-hero-sub">Menu, directions, order</div></div>
             <div class="dash-stats-hero-tile"><div class="dash-stats-hero-value">1</div><div class="dash-stats-hero-label">New feature</div><div class="dash-stats-hero-sub">In the Holiday Guide</div></div>
           </div>
-          <div class="empty"><b>Before the first share</b>, this space says: "Your first numbers arrive after your first share. Your post is ready." Never a row of zeros.</div>
+          <div class="empty"><b>Before the first share</b>, this space says: "We're building toward our January 1 launch, so the numbers start small and grow with every business that joins. Your first numbers arrive after your first share. Your post is ready." Never a row of zeros.</div>
         </div></div>
         <div class="dm-side">
           <h3>How it works</h3>
@@ -575,6 +585,7 @@
             <li>3. The Media kit with the share post (the renderer is done).</li>
             <li>4. Getting Started.</li>
             <li>5. Liz's welcome email, then your Day 2 note.</li>
+            <li>The same message (come on board free, help us make it better before January 1) leads the outreach to every listing.</li>
           </ul>
           <h3>The 7 waiting claims</h3>
           <ul>
