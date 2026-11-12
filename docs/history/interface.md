@@ -343,3 +343,11 @@ Mobile (Option B): flat scrim + frosted glass card.
   .hero-inner { background: rgba(0,0,0,0.62); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; margin: 0 16px 24px; padding: 28px 24px; max-width: calc(100% - 32px); border: 1px solid rgba(255,255,255,0.10); }
 }
 ```
+
+**No hidden scroll areas** (Sean, 2026-11-12: "whenever I'm over an element, I can't just scroll over it. It gets stuck"). A column or
+box never scrolls inside itself with a hidden scrollbar: the trackpad then moves the box, not the page, and it feels stuck. The listing's
+right column (`.listing-sidebar` in `directory/listing.html`) had `max-height:100vh; overflow-y:auto; scrollbar-width:none`; it is now
+sticky with a top that keeps its bottom on screen (a short column pins at the top, a tall one scrolls with the page and pins once its
+bottom arrives), measured on scroll and resize because the column is drawn again after the listing loads. Proven live: a wheel over the
+right column and over its ad moves the page 600 of 600 px (it was 240). Ad frames pass the scroll through to the page. A capped short
+list that scrolls inside its box (Interface defaults) shows its scrollbar.
