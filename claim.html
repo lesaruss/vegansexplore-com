@@ -276,7 +276,10 @@
         <div class="row2">
           <div><label class="f" for="c-name">Your name</label><input type="text" id="c-name" autocomplete="name" required></div>
           <div><label class="f" for="c-role">Your role <small>(owner, manager...)</small></label><input type="text" id="c-role" autocomplete="organization-title"></div>
-          <div><label class="f" for="c-email">Email</label><input type="email" id="c-email" autocomplete="email" required></div>
+          <div><label class="f" for="c-email" id="c-email-l">Email</label><input type="email" id="c-email" autocomplete="email" required>
+            <!-- Sean, 2026-11-12: "encourage them to use their business email address and give them an example... in quickly determining
+                 if you have rights to this." The domain matching their website is our fastest ownership check. -->
+            <p class="hint" id="c-email-hint" hidden style="margin:6px 0 0"></p><p class="note" id="c-email-free" hidden style="margin-top:6px">That works, it just takes us a little longer to confirm it's yours.</p></div>
           <div id="c-phone-w"><label class="f" for="c-phone">Phone <small>(optional)</small></label><input type="tel" id="c-phone" autocomplete="tel"></div>
         </div>
         <!-- Signed out: the account is made from this step (Sean, 2026-10-09: "couldn't it take the information from what
@@ -655,6 +658,16 @@
           return sen;
         }).join(' ');
       }
+      // The business's web address, for the email example (chaskaatl.com), else a plain stand-in.
+      function bizDomain() {
+        var w = (L && L.website) || ($('b-web') && $('b-web').value) || '';
+        var d = String(w).trim().replace(/^https?:\/\//i, '').replace(/^www\./i, '').split(/[\/?#]/)[0].toLowerCase();
+        return /^[a-z0-9.-]+\.[a-z]{2,}$/.test(d) ? d : 'yourbusiness.com';
+      }
+      // A personal email is fine, it only takes us longer to confirm (no block).
+      var FREE_MAIL = /@(gmail|googlemail|yahoo|ymail|hotmail|outlook|live|msn|aol|icloud|me|mac|proton|protonmail|gmx|mail|yandex|comcast|att|verizon)\./i;
+      function emailCheck() { $('c-email-free').hidden = !(FREE() && FREE_MAIL.test($('c-email').value)); }
+      $('c-email').addEventListener('input', emailCheck);
       function voiceCheck() {
         var t = $('b-desc').value, on = !VB && firstPerson(t);
         $('tp').hidden = !on;
@@ -684,6 +697,10 @@
         if (LIZ_KEY === 'describe') $('dgBubble').textContent = LINES.describe.say;
         $('you-h').textContent = free ? 'Your keys' : 'About you'; $('you-p').hidden = !free;
         $('c-phone-w').hidden = free; $('where').hidden = free && !add;
+        $('c-email-l').textContent = free ? 'Business email' : 'Email';
+        $('c-email-hint').hidden = !free;
+        if (free) $('c-email-hint').textContent = 'Use your business email, like you@' + bizDomain() + '. It\'s how we confirm the page is yours fast.';
+        emailCheck();
         var h1 = document.querySelector('.wrap h1');
         if (!VB) h1.textContent = free && L ? 'Claim ' + L.name + (/s$/i.test(L.name) ? "'" : "'s") + ' page. Free.' : free && add ? 'Add your business. Free.' : 'Join the Directory';
         if (free && name === 'find' && L && window.VERegionDirectory) {
