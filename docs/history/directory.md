@@ -1224,3 +1224,13 @@ the outreach pause lifted for three first contacts only (World Vegan Travel, Il 
 Sources: `docs/proposals/2026-11-11-travel-partnerships-boss.md`, `-travel-and-global-tour-panel.md`, `-travelpayouts-coverage.md`.
 Checked in a browser from the stored HTML (HQ needs a signed-in member): stage row, sections, Pending and Completed tabs, groups and
 Decision History work at 1440 and 390.
+
+**ve-travel queue, started 2026-11-11 (Sean: "Go ahead and start on the Logan queue").** `bookCta` follows the booking order: a direct
+partner first (`details.book_direct` {url, code, perk} and `details.book_direct_link_code`, labelled **Partner link**, "We earn a small
+referral fee"), then Booking.com (`details.book_link_code`, labelled **Paid link**), each label at its button; hidden when the user agent
+carries `VegansExploreApp` (the native app, when built, must never show a Booking.com link: its terms allow our website only). Previewed
+with browser-only test data on Beck Hall (direct) and Koukoumi (Booking.com) at 1440 and 390. `ve_travel_report(from, to)` (migration
+`20261111_ve_travel_report.sql`, service role only): views, visitors, website clicks and Book clicks per Travel listing and destination;
+first run 20 listings, 11 destinations. Drafts of the three first contacts: `docs/outreach/2026-11-11-ve-travel-first-contacts.md`, waiting
+on Sean. Travelpayouts: the LESARUSS account (contact@lesaruss.com) now has a Vegansexplore project, Booking.com applied for; Drive stays off.
+Note: three merge commits on main that day were authored "Claude" (the session's default identity); the repo's git config is now Sean.
