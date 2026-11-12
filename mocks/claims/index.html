@@ -247,6 +247,59 @@
     .ms td:first-child{font-weight:800;width:44%;}
     .ms td:last-child{color:#2D5C27;font-weight:800;}
 
+
+    /* After the panel: the six changes */
+    .pn{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+    .pn div{border:1px solid #e3e3e3;border-radius:10px;padding:12px 14px;font-size:12.5px;line-height:1.5;color:#444;background:#fff;}
+    .pn div b{display:block;font-size:14px;font-weight:900;color:#1a1a1a;margin:6px 0 3px;line-height:1.25;}
+    .pn div em{font-style:normal;display:inline-grid;place-items:center;width:26px;height:26px;border-radius:6px;background:#F69820;color:#1a1a1a;font-weight:900;font-size:13px;}
+
+    /* The claim, with Liz in the right rail (the Welcome Guide's rail) */
+    .cf{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:16px;align-items:start;}
+    .cf-h{font-size:17px;font-weight:900;line-height:1.2;margin:4px 0 10px;}
+    .fm-steps span.done{background:#E8F5E9;border-color:#cde8cf;color:#2D5C27;}
+    .rail{border-left:1px solid #eee;padding-left:14px;display:grid;gap:8px;}
+    .lz{display:flex;align-items:center;gap:9px;font-size:11px;color:#666;}
+    .lz i{width:46px;height:46px;border-radius:10px;background:#eee center/cover no-repeat;flex:none;}
+    .lz b{display:block;font-size:13px;color:#1a1a1a;}
+    .bub2{position:relative;background:#FFE3EE;border-radius:10px;padding:9px 11px;font-size:11.5px;line-height:1.5;color:#1a1a1a;}
+    .wait{position:relative;max-width:170px;margin:0 auto;width:100%;}
+    .wait img{display:block;width:100%;border-radius:8px;border:1px solid #e3e3e3;}
+    .tg.prev{position:absolute;top:8px;left:8px;background:#1a1a1a;color:#fff;}
+    .wait-l{font-size:10px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#2D5C27;text-align:center;}
+    .vrd-root .rank-grid{display:grid;grid-template-columns:minmax(0,340px);}
+    u.flag{text-decoration:underline wavy #d33;text-underline-offset:3px;background:#FDECEC;}
+    .fix{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:#FFFBF3;border:1.5px solid #F69820;border-radius:8px;padding:8px 10px;margin-top:8px;font-size:11.5px;line-height:1.45;}
+    .fix span:first-child{flex:1 1 220px;}
+    .ui-btn.lock{background:#e5e5e5;color:#999;cursor:not-allowed;}
+    .pv{border:1px solid #e3e3e3;border-radius:8px;padding:10px;background:#fff;}
+    .pv-top{display:flex;gap:8px;align-items:center;margin-bottom:6px;}
+    .pv-top i{width:34px;height:34px;border-radius:8px;background:#fff center/cover no-repeat;border:1px solid #eee;flex:none;}
+    .pv-top b{display:block;font-size:12px;}
+    .pv-top small{font-size:10px;color:#777;}
+    .pv p{font-size:11px;line-height:1.5;color:#333;margin:0;background:#F2F8F2;border-radius:6px;padding:6px 8px;}
+
+    /* First sign-in: every part in view */
+    .dsh{display:grid;grid-template-columns:170px minmax(0,1fr);gap:14px;align-items:start;}
+    @media (min-width:901px){.dsh .gs .row small{display:none;}}
+    .dmenu{display:grid;gap:3px;border-right:1px solid #eee;padding-right:12px;}
+    .dm-who{display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:12px;line-height:1.2;}
+    .dm-who i{width:34px;height:34px;border-radius:8px;background:#fff center/cover no-repeat;border:1px solid #e3e3e3;flex:none;}
+    .dmenu span{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;padding:7px 10px;border-radius:6px;color:#333;}
+    .dmenu span.on{background:#2D5C27;color:#fff;}
+    .dmenu span em{font-style:normal;background:#F69820;color:#1a1a1a;border-radius:6px;font-size:10px;font-weight:900;padding:1px 6px;}
+
+    /* Share your post: phone frames */
+    .sh{display:grid;grid-template-columns:200px 120px minmax(0,1fr);gap:14px;align-items:start;}
+    .ph{border:6px solid #1a1a1a;border-radius:18px;overflow:hidden;background:#fff;}
+    .ph img{display:block;width:100%;}
+    .ph-top{display:flex;align-items:center;gap:6px;padding:6px 8px;font-size:10px;}
+    .ph-top i{width:20px;height:20px;border-radius:50%;background:#fff center/cover no-repeat;border:1px solid #eee;}
+    .ph-cap{font-size:9.5px;line-height:1.4;padding:6px 8px 8px;color:#333;}
+    .ph.story{border-radius:16px;}
+    .sh-note{font-size:11.5px;color:#2D5C27;background:#F2F8F2;border-radius:6px;padding:7px 9px;margin-top:10px;}
+    .bt{border:1.5px solid #2D5C27;border-radius:8px;padding:8px 10px;background:#F6FBF6;font-size:11px;color:#444;}
+    .bt b{display:block;font-size:12.5px;color:#1a1a1a;}
     @media (min-width:901px) and (max-height:820px){
       .stages div{padding:8px 8px 9px;font-size:10.5px;}
       .gs{grid-template-columns:96px minmax(0,1fr);}
@@ -270,6 +323,10 @@
       .gs{padding:9px 10px;}
       .gs h5{font-size:14px;margin:0 0 1px;}
       .gs p{margin:0 0 3px;}
+      .sh{grid-template-columns:160px 96px minmax(0,1fr);}
+      .wait{max-width:140px;}
+      .bt small{display:none;}
+      .fm label{margin-top:6px;}
       .plain .bd{font-size:12px;line-height:1.5;padding:10px 16px 12px;}
       .plain .bd p{margin:0 0 6px;}
       .bk-em .bd{padding-bottom:10px;}
@@ -289,6 +346,15 @@
       .gs .liz{width:72px;}
       .diff{grid-template-columns:minmax(0,1fr);}
     }
+    @media (max-width:900px){
+      .pn{grid-template-columns:minmax(0,1fr);}
+      .cf,.dsh{grid-template-columns:minmax(0,1fr);}
+      .rail{border-left:0;padding-left:0;border-top:1px solid #eee;padding-top:10px;}
+      .wait{max-width:240px;}
+      .dmenu{display:none;}
+      .sh{grid-template-columns:minmax(0,1fr) 110px;}
+      .sh-act{grid-column:1 / -1;}
+    }
   </style>
 </head>
 <body>
@@ -303,11 +369,11 @@
       <div class="vg-eyebrow">The claims system · Locked Nov 12</div>
       <h2 class="vg-h">From claim to coming back, in seven stages</h2>
       <div class="stages">
-        <div><em>1</em><b>Claim</b>One form, free for members, written in the third person from the start.</div>
+        <div><em>1</em><b>Claim</b>Three steps with Liz. Their page and post appear as they type. Free.</div>
         <div><em>2</em><b>Review</b>Within one business day, one approval per business, not per location.</div>
         <div><em>3</em><b>Welcome email</b>Liz: "Your page is yours." One button into the dashboard.</div>
-        <div><em>4</em><b>Getting Started</b>Six rows, already partly done because we built their page. The last: tell us how to make it better.</div>
-        <div class="hero"><em>5</em><b>Media kit</b>Their "Find us on Vegans Explore" post and story, made before they arrive.</div>
+        <div><em>4</em><b>First sign-in</b>"You're a founding business." Getting Started, 60% done, all seven parts in view.</div>
+        <div class="hero"><em>5</em><b>Share your post</b>Made before they arrive, shown in a phone feed, one tap to post.</div>
         <div><em>6</em><b>Day 2 note</b>A short, personal note from Sean.</div>
         <div><em>7</em><b>The return loop</b>Every feature lands in the kit; their shares show up as visitors.</div>
       </div>
@@ -318,34 +384,87 @@
       </div>
     </section>
 
-    <!-- 1. Claim -->
-    <section class="vg-slide" id="claim" data-title="1 · Claim">
-      <div class="vg-eyebrow">1 · Claim</div>
-      <h2 class="vg-h">They write it the way a guide would, from the start</h2>
+    <section class="vg-slide" id="panel" data-title="What the panel changed">
+      <div class="vg-eyebrow">After the panel · 5 lenses, all agreed</div>
+      <h2 class="vg-h">Give first: they see what they get before they type a word</h2>
+      <div class="pn">
+        <div><em>1</em><b>Liz walks the claim</b>In the right rail on every step, one short line each. No prices, ever.</div>
+        <div><em>2</em><b>Their page and post appear as they type</b>The gift moves from stage 5 to the first screen, stamped Preview.</div>
+        <div><em>3</em><b>Three steps, not four</b>Is this you? · Describe it · Your keys. We stop asking for what the page already has.</div>
+        <div><em>4</em><b>The voice check runs live</b>"We" or "I" is flagged as they type, with Liz's wording one tap away. Next waits until it's fixed.</div>
+        <div><em>5</em><b>They see all seven parts</b>A visible menu on the dashboard, so Media kit, Opportunities and Insights are never hidden.</div>
+        <div><em>6</em><b>Ask members to visit</b>Bounties for businesses: they invite the community in; proven visits and photos come back to them.</div>
+      </div>
+    </section>
+
+    <section class="vg-slide" id="claim" data-title="1 · Is this you?">
+      <div class="vg-eyebrow">1 · Claim, step 1 of 3</div>
+      <h2 class="vg-h">Is this you? Their post is already waiting</h2>
       <div class="dm-row">
-        <div class="dm-main"><div class="ui fm">
+        <div class="dm-main"><div class="ui">
           <div class="stp"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
           <span class="tg smp smp-corner">Sample</span>
-          <div class="fm-steps"><span>1. Find it</span><span class="on">2. About the business</span><span>3. About you</span><span>4. Send</span></div>
-          <label>One line about Green Leaf Kitchen <small style="font-weight:600;color:#888">(optional)</small></label>
-          <div class="in">Green Leaf Kitchen serves 100% Vegan bowls, burritos and cheesecake all day.</div>
-          <div class="hint">Write it the way a guide would introduce them: "Green Leaf Kitchen serves Vegan comfort food," not "We serve..."</div>
-          <label>Tell the community about Green Leaf Kitchen</label>
-          <div class="in ta">Green Leaf Kitchen is a fully Vegan cafe in Fort Lauderdale. The BBQ jackfruit bowl and the cold brew are what regulars order first...</div>
-          <div class="hint">Write in the third person: "Green Leaf Kitchen serves..." or "Green Leaf Kitchen makes...", not "We" or "I." Say what it serves or makes, what sets it apart and what to try first.</div>
-          <div class="note">Every page in the Directory reads like a guide describing the place, so it is written in the third person. If something comes in as "we" or "I," we may adjust the wording to the third person. Your meaning stays the same; only the voice changes.</div>
-          <div class="free"><b>Free</b>Claiming your page is free for members.</div>
+          <div class="cf">
+            <div>
+              <div class="fm-steps"><span class="on">1. Is this you?</span><span>2. Describe it</span><span>3. Your keys</span></div>
+              <div class="cf-h">Claim Green Leaf Kitchen's page. Free.</div>
+              <div class="vrd-root"><div class="rank-grid" id="js-card"></div></div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px"><span class="ui-btn go">Yes, this is us</span><span class="ui-btn ghost">Not us? Add your business</span></div>
+            </div>
+            <aside class="rail">
+              <div class="lz"><i class="js-liz"></i><span><b>Liz</b>Your Guide</span></div>
+              <div class="bub2">Hi, I'm Liz. This takes about three minutes, and it's free. Your post is already waiting for you.</div>
+              <div class="wait"><img src="/mocks/claims/img/post.jpg" alt="Their Find us on Vegans Explore post, made from their logo"><span class="tg prev">Preview</span></div>
+              <div class="wait-l">This is waiting for you</div>
+            </aside>
+          </div>
         </div></div>
         <div class="dm-side">
-          <h3>What changes</h3>
+          <h3>What they see</h3>
           <ul>
-            <li>The guidance sits <b>at each field</b>, with their own name in the example, on the claim form, Add your business, and Edit your page. <span class="tg soon">Coming</span></li>
-            <li>The note tells them <b>why</b> we may change their words, before we ever do.</li>
-            <li>The claim only ever says <b>Free</b>: every price line comes off <code>claim.html</code> and the listing page, with no mention of what it used to cost (canon v12). <span class="tg soon">Coming</span></li>
+            <li>Their page as the <b>real Directory card</b>, the one visitors see. One tap: <b>Yes, this is us</b>.</li>
+            <li><b>Liz in the right rail</b>, as on every Guide, one line per step. On phones, the locked corner card. Her recorded lines about prices come out; new lines, recorded after you approve them. <span class="tg soon">Coming</span></li>
+            <li><b>Their post, made from their logo</b> the moment they pick their page, stamped Preview until approved. The gift comes first.</li>
+            <li>Never a price: the claim only says Free.</li>
           </ul>
-          <h3>Your call</h3>
+        </div>
+      </div>
+    </section>
+
+    <section class="vg-slide" id="describe" data-title="1 · Describe it">
+      <div class="vg-eyebrow">1 · Claim, step 2 of 3</div>
+      <h2 class="vg-h">Liz helps them say it the way a guide would</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <div class="stp"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <span class="tg smp smp-corner">Sample</span>
+          <div class="cf">
+            <div class="fm">
+              <div class="fm-steps"><span class="done">1. Is this you?</span><span class="on">2. Describe it</span><span>3. Your keys</span></div>
+              <div class="cf-h">How would a regular describe Green Leaf Kitchen?</div>
+              <div class="in ta"><u class="flag">We are proud to serve</u> Fort Lauderdale the best Vegan bowls in town.</div>
+              <div class="fix"><span><b>Say it like a guide would.</b> Liz's wording: "Green Leaf Kitchen serves Vegan bowls, burritos and cheesecake in Fort Lauderdale."</span><span class="ui-btn go">Use Liz's wording</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><span class="ui-btn ghost">Back</span><span class="ui-btn lock">Next</span></div>
+            </div>
+            <aside class="rail">
+              <div class="lz"><i class="js-liz"></i><span><b>Liz</b>Your Guide</span></div>
+              <div class="bub2">Readers trust a guide more than an ad, so every page reads like one: "Green Leaf Kitchen serves...", not "We serve...".</div>
+              <div class="pv">
+                <div class="pv-top"><i class="js-logo"></i><div><b>Green Leaf Kitchen</b><small>Restaurants · Fort Lauderdale</small></div></div>
+                <p>Green Leaf Kitchen serves Vegan bowls, burritos and cheesecake in Fort Lauderdale.</p>
+              </div>
+              <div class="wait-l">Your page, live as you type</div>
+            </aside>
+          </div>
+        </div></div>
+        <div class="dm-side">
+          <h3>What they see</h3>
           <ul>
-            <li>This is the wording from earlier, waiting on your approval. Approving the walkthrough approves it, unless you change a line.</li>
+            <li><b>One question, one field</b>, filled in from their page already. The one-line tagline goes; contact links are edited later in Your page.</li>
+            <li><b>The check runs as they type.</b> "We" or "I" is underlined, Liz's wording is one tap away, and <b>Next waits until it's fixed</b>. <span class="tg soon">Coming</span></li>
+            <li>Their page updates beside it as they type.</li>
+            <li><b>Step 3, Your keys</b>: name, role, email, password. Four fields, then <b>Claim my page, free</b>.</li>
+            <li>The "How Vegan is it?" choices are rewritten too (today they say "we" and "Vegan options").</li>
           </ul>
         </div>
       </div>
@@ -375,7 +494,7 @@
           <h3>How it works</h3>
           <ul>
             <li>Claims from one person at one business arrive as <b>one review</b>, so a chain with six locations is one decision and, later, one email. <span class="tg soon">Coming</span></li>
-            <li>The approve step <b>flags "we" and "I"</b> and shows the third-person rewrite beside it, so the rule never rests on memory. <span class="tg soon">Coming</span></li>
+            <li>The form already stops "we" and "I" (step 2); review <b>checks again</b> and shows the rewrite beside it, so the rule never rests on memory. <span class="tg soon">Coming</span></li>
             <li>Approving sets the owner and copies their text onto the page, as it does today. <span class="tg live">Live</span></li>
           </ul>
           <h3>The promise</h3>
@@ -417,77 +536,83 @@
       </div>
     </section>
 
-    <!-- 4. Getting Started -->
-    <section class="vg-slide" id="start" data-title="4 · Getting Started">
+    <section class="vg-slide" id="start" data-title="4 · First sign-in">
       <div class="vg-eyebrow">4 · First sign-in</div>
-      <h2 class="vg-h">They land on Getting Started, already 60% done</h2>
+      <h2 class="vg-h">Welcome, Green Leaf Kitchen. You're a founding business.</h2>
       <div class="dm-row">
         <div class="dm-main"><div class="ui">
           <div class="stp"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
           <span class="tg smp smp-corner">Sample</span>
-          <div class="kd-top"><span class="kd-av js-logo"></span><div class="kd-who"><div class="dash-eyebrow">Business dashboard</div><div class="kd-name">Green Leaf Kitchen</div><div class="kd-crumb">Dashboard &rsaquo; <b>Home</b></div></div><span class="kd-sel">1. Home</span><span class="ui-btn ghost">View my page</span></div>
-          <div class="gs">
-            <span class="liz js-liz"></span>
-            <div>
-              <h5>Getting started with Liz</h5>
-              <p>60% ready: we built the first part. We launch January 1, and we're building it with you.</p>
-              <div class="meter"><i style="width:60%"></i></div>
-              <div class="rows">
-                <div class="row done"><span class="ic done-ic"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span><div><b>Your page is built</b><small>Your words, logo and address. Done by us.</small></div><span class="tg live hide-m">Done</span><span class="ui-btn ok">See it</span></div>
-                <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 15l5-5 4 4 3-3 6 6"/></svg></span><div><b>Check your photos, hours and menu</b><small>About 3 minutes</small></div><span class="tg soon hide-m">To do</span><span class="ui-btn ghost">Check</span></div>
-                <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg></span><div><b>Feature up to 3 signature dishes</b><small>They show first on your page</small></div><span class="tg soon hide-m">To do</span><span class="ui-btn ghost">Pick</span></div>
-                <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM8 9h8M8 13h8M8 17h5"/></svg></span><div><b>Add your holiday menu</b><small>Get into the free Holiday Guide</small></div><span class="tg soon hide-m">To do</span><span class="ui-btn ghost">Add</span></div>
-                <div class="row hot"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 12v7h16v-7M12 3v12M7 8l5-5 5 5"/></svg></span><div><b>Share your post</b><small>It's made. Post it, tag us, use your link.</small></div><span class="tg app hide-m">Ready</span><span class="ui-btn go">Share</span></div>
-                <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg></span><div><b>Tell us how to make it better</b><small>What would bring you back every day?</small></div><span class="tg soon hide-m">To do</span><span class="ui-btn ghost">Tell us</span></div>
+          <div class="dsh">
+            <nav class="dmenu" aria-label="Dashboard parts">
+              <div class="dm-who"><i class="js-logo"></i><b>Green Leaf Kitchen</b></div>
+              <span class="on">Home</span><span>Your page</span><span>Media kit <em>1</em></span><span>Opportunities</span><span>Messages</span><span>Insights</span><span>Your plan</span>
+            </nav>
+            <div class="gs">
+              <span class="liz js-liz"></span>
+              <div>
+                <h5>Getting started with Liz</h5>
+                <p>60% ready: we built the first part. We launch January 1, and you're helping build it.</p>
+                <div class="meter"><i style="width:60%"></i></div>
+                <div class="rows">
+                  <div class="row done"><span class="ic done-ic"><svg viewBox="0 0 24 24"><path d="M4 12l5 5L20 6"/></svg></span><div><b>Your page is built</b><small>Your words, logo and address. Done by us.</small></div><span class="tg live hide-m">Done</span><span class="ui-btn ok">See it</span></div>
+                  <div class="row hot"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 12v7h16v-7M12 3v12M7 8l5-5 5 5"/></svg></span><div><b>Share your post</b><small>It's made. See how it looks.</small></div><span class="tg app hide-m">Ready</span><span class="ui-btn go">Share</span></div>
+                  <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4z"/></svg></span><div><b>Help shape launch</b><small>What would bring you back every day?</small></div><span class="tg soon hide-m">To do</span><span class="ui-btn ghost">Tell us</span></div>
+                  <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 15l5-5 4 4 3-3 6 6"/></svg></span><div><b>Check photos, hours, menu</b><small>About 3 minutes</small></div><span class="tg soon hide-m">To do</span><span class="ui-btn ghost">Check</span></div>
+                  <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg></span><div><b>Feature 3 signature dishes</b><small>They show first on your page</small></div><span class="tg soon hide-m">To do</span><span class="ui-btn ghost">Pick</span></div>
+                  <div class="row"><span class="ic"><svg viewBox="0 0 24 24"><path d="M4 4h16v16H4zM8 9h8M8 13h8M8 17h5"/></svg></span><div><b>Add your holiday menu</b><small>Get into the free Holiday Guide</small></div><span class="tg soon hide-m">To do</span><span class="ui-btn ghost">Add</span></div>
+                </div>
               </div>
             </div>
           </div>
         </div></div>
         <div class="dm-side">
-          <h3>How it works</h3>
+          <h3>What changed</h3>
           <ul>
-            <li>Until it's done, <b>Getting Started is the top of Home</b>, above Needs you, New for you and Your week. Then it folds away. <span class="tg soon">Coming</span></li>
-            <li>The last row is <b>your ask</b>: tell us how to make it better. Founding businesses help shape the platform before launch.</li>
-            <li>It opens <b>60% done</b>: we built the page, so they start ahead. People finish a list they're already part way through far more often (the endowed progress effect).</li>
-            <li>It is copied from the Welcome Guide's Getting started card, Liz walking it (the template gate). One button per row, in the same place.</li>
-            <li>The dashboard restyle to the new look comes first, so this is what they land on.</li>
+            <li><b>All seven parts in view</b> on the left, so Media kit and Opportunities are never hidden. On phones, the dropdown stays. This is an exception to the more-than-five rule: <b>your call</b>.</li>
+            <li><b>The gift comes before the chores</b>: Share your post is second, Help shape launch third.</li>
+            <li>The headline says what they are: a <b>founding business</b>, helping build it before January 1.</li>
+            <li>Getting Started opens 60% done and folds away once finished. <span class="tg soon">Coming</span></li>
           </ul>
         </div>
       </div>
     </section>
 
-    <!-- 5. Media kit -->
-    <section class="vg-slide" id="media" data-title="5 · Media kit">
-      <div class="vg-eyebrow">5 · The Media kit</div>
-      <h2 class="vg-h">A gift waiting for them: their post, already made</h2>
+    <section class="vg-slide" id="share" data-title="5 · Share your post">
+      <div class="vg-eyebrow">5 · When they tap Share</div>
+      <h2 class="vg-h">Their post, the way their followers will see it</h2>
       <div class="dm-row">
         <div class="dm-main"><div class="ui">
           <div class="stp"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
           <span class="tg smp smp-corner">Sample</span>
-          <div class="kd-top"><span class="kd-av js-logo"></span><div class="kd-who"><div class="dash-eyebrow">Business dashboard</div><div class="kd-crumb">Dashboard &rsaquo; <b>Media kit</b></div></div><span class="kd-sel">3. Media kit</span></div>
-          <div class="mk2">
-            <figure><img src="/mocks/claims/img/post.jpg" alt="Sample post, 4:5: Green Leaf Kitchen's logo on a white square, the band reads Find us on Vegans Explore"><figcaption>Post · 4:5</figcaption></figure>
-            <figure><img src="/mocks/claims/img/story.jpg" alt="Sample story, 9:16: Find us on Vegans Explore above Green Leaf Kitchen's logo"><figcaption>Story · 9:16</figcaption></figure>
-            <div>
-              <div class="ui-sec">Find us on Vegans Explore <span class="tg app">Ready</span></div>
-              <div style="font-size:12px;margin-bottom:8px">Made for you when your page was approved. Post it, tag @vegansexplore, and use your own link so you can see who it brings.</div>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px"><span class="ui-btn go">Download both</span></div>
-              <div class="lk"><code>vegansexplore.com/go/green-leaf</code><button type="button" class="ui-btn ghost js-copy" data-copy="link">Copy link</button></div>
+          <div class="kd-top"><div class="kd-who"><div class="dash-eyebrow">Business dashboard</div><div class="kd-crumb">Media kit &rsaquo; <b>Your post</b></div></div></div>
+          <div class="sh">
+            <div class="ph feed">
+              <div class="ph-top"><i class="js-logo"></i><b>greenleafkitchen</b></div>
+              <img src="/mocks/claims/img/post.jpg" alt="Their post in a phone feed">
+              <div class="ph-cap"><b>greenleafkitchen</b> Find us on @vegansexplore 🌱 Our menu, hours and signature dishes, all in one place. Link in bio.</div>
+            </div>
+            <div class="ph story"><img src="/mocks/claims/img/story.jpg" alt="Their story on a phone"></div>
+            <div class="sh-act">
+              <div class="ui-sec">Ready to post</div>
+              <span class="ui-btn go">Download post and story</span>
+              <div class="lk" style="margin-top:10px"><code>vegansexplore.com/go/green-leaf</code><button type="button" class="ui-btn ghost js-copy" data-copy="link">Copy my link</button></div>
               <div class="cap"><p>Find us on @vegansexplore 🌱 Our menu, hours and signature dishes, all in one place. Link in bio.</p><button type="button" class="ui-btn ghost js-copy" data-copy="caption">Copy caption</button></div>
+              <div class="sh-note">Every click on your link shows up in Your week as <b>visitors you sent</b>.</div>
             </div>
           </div>
         </div></div>
         <div class="dm-side">
-          <h3>How it works</h3>
+          <h3>What they see</h3>
           <ul>
-            <li>At approval, we render their post and story from the <b>locked brand kit templates</b>: their real logo on a white square, the band, the stripe, Directory green. These two are <b>real renders</b> from the new script. <span class="tg live">Live</span> (<code>find-us.js</code>)</li>
-            <li>Rendering happens at approval and lands in the Media kit automatically. <span class="tg soon">Coming</span></li>
-            <li>Their own tracked link counts every click, so stage 7 can show what sharing brought them.</li>
-            <li>The caption is theirs to post, so it speaks as them ("Our menu"); the rule for third person covers what <b>we</b> publish.</li>
+            <li>Their post in a <b>phone feed</b> and their story in a <b>phone frame</b>, with their name on it, before they download anything.</li>
+            <li>One orange button, then their link and the caption. On a phone, <b>Share</b> opens the phone's own share sheet. <span class="tg soon">Coming</span></li>
+            <li>A chain gets <b>one post per location</b>, each with its own link.</li>
+            <li>The post and story are real renders from <code>find-us.js</code>. <span class="tg live">Live</span></li>
           </ul>
-          <h3>Why it's the hero</h3>
+          <h3>Your call</h3>
           <ul>
-            <li>Google does this for every verified business (its free Marketing Kit). Arriving to a finished post is what gets a big chain to share.</li>
+            <li>The panel split on the post: lead with <b>their signature dish</b> when they have a square photo, and add <b>"A founding business"</b> on the band. Both touch the locked template.</li>
           </ul>
         </div>
       </div>
@@ -562,37 +687,72 @@
       </div>
     </section>
 
-    <!-- 8. Measures and next -->
-    <section class="vg-slide" id="next" data-title="How we'll know">
-      <div class="vg-eyebrow">How we'll know, and what's built first</div>
+    <section class="vg-slide" id="bounties" data-title="Bounties for businesses">
+      <div class="vg-eyebrow">New · Bounties for businesses</div>
+      <h2 class="vg-h">Ask our members to visit</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <div class="stp"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+          <span class="tg smp smp-corner">Sample</span>
+          <div class="kd-top"><div class="kd-who"><div class="dash-eyebrow">Business dashboard</div><div class="kd-crumb">Opportunities &rsaquo; <b>Ask members to visit</b></div></div></div>
+          <div class="cols2">
+            <div class="fm">
+              <div class="ui-sec">One template</div>
+              <div class="bt"><b>Visit, try a signature dish, post photos</b><small>Members prove the visit with their phone's location, shoot with our photo guide, and post.</small></div>
+              <label>Which dish?</label><div class="in">BBQ jackfruit bowl</div>
+              <label>Your thank-you <small style="font-weight:600;color:#888">(optional)</small></label><div class="in">A free cold brew with the bowl</div>
+              <label>When</label><div class="in">Nov 20 to Dec 20</div>
+              <div style="margin-top:12px"><span class="ui-btn go">Send it to our team</span></div>
+            </div>
+            <div>
+              <div class="ui-sec">What comes back</div>
+              <div class="dash-stats-hero" style="grid-template-columns:repeat(2,minmax(0,1fr))">
+                <div class="dash-stats-hero-tile"><div class="dash-stats-hero-value">12</div><div class="dash-stats-hero-label">Proven visits</div></div>
+                <div class="dash-stats-hero-tile"><div class="dash-stats-hero-value">31</div><div class="dash-stats-hero-label">Photos</div></div>
+              </div>
+              <div class="ph-grid js-photos" style="grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;margin-top:10px"></div>
+              <div class="sh-note">Approved photos land in your Media kit, credited to the member.</div>
+            </div>
+          </div>
+        </div></div>
+        <div class="dm-side">
+          <h3>How it works</h3>
+          <ul>
+            <li>The business <b>posts</b>; members do the bounty. All five panelists picked this direction first: it brings real people through the door and fresh photos back. <span class="tg soon">Coming</span></li>
+            <li>Our team approves each one, then it runs on the <b>member visit bounties we already have</b> for BrandDesk clients: location proof, a person approves, members earn our points. <span class="tg live">Live</span></li>
+            <li>The business's thank-you is its own (an item on the house). No money changes hands; points are given, never bought.</li>
+            <li>Later: businesses earning rewards for tasks. Getting Started covers that today.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="vg-slide" id="next" data-title="Your calls">
+      <div class="vg-eyebrow">How we'll know, and your calls</div>
       <h2 class="vg-h">Veggie Grill and Chaska are the first group</h2>
       <div class="dm-row">
         <div class="dm-main"><div class="ui">
           <div class="stp"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
           <div class="ui-sec">The measures</div>
           <table class="ms">
+            <tr><td>Finishes the claim</td><td>In about 3 minutes, 3 steps</td></tr>
             <tr><td>Claim reviewed</td><td>Within 1 business day</td></tr>
-            <tr><td>Owner signs in after approval</td><td>Within 7 days</td></tr>
-            <tr><td>Getting Started</td><td>3 of 5 done in 14 days</td></tr>
+            <tr><td>Signs in after approval</td><td>Within 7 days</td></tr>
             <tr><td>Shares the post</td><td>Within 14 days (their link gets clicks)</td></tr>
             <tr><td>Comes back on their own</td><td>2 or more visits in 30 days</td></tr>
             <tr><td>Veggie Grill</td><td>1 repost or share of their post</td></tr>
           </table>
         </div></div>
         <div class="dm-side">
+          <h3>Your calls (my default if you don't change it)</h3>
+          <ul>
+            <li><b>Dashboard menu</b>: all seven parts visible on desktop, dropdown on phones, for business dashboards only. <i>Default: yes.</i></li>
+            <li><b>The post</b>: "A founding business" on the band; their dish photo when they have a square one. <i>Default: yes.</i></li>
+            <li><b>Bounties</b>: businesses post "Ask members to visit" first. <i>Default: yes, built after the claim.</i></li>
+          </ul>
           <h3>Build order</h3>
           <ul>
-            <li>1. The claim form: third-person guidance, and it only ever says Free.</li>
-            <li>2. The dashboard restyle to the new look.</li>
-            <li>3. The Media kit with the share post (the renderer is done).</li>
-            <li>4. Getting Started.</li>
-            <li>5. Liz's welcome email, then your Day 2 note.</li>
-            <li>The same message (come on board free, help us make it better before January 1) leads the outreach to every listing.</li>
-          </ul>
-          <h3>The 7 waiting claims</h3>
-          <ul>
-            <li>Held until stages 3 to 5 are ready, then approved together. Veggie Grill also gets one brand page with every location under it.</li>
-            <li>Checked at 14 and 30 days; one change at a time if a measure misses. Then outreach to every listing lands on stage 1.</li>
+            <li>1. The claim: 3 steps, Liz, live preview, live voice check, Free. 2. Dashboard restyle with the menu. 3. Share your post. 4. Getting Started. 5. Liz's email and your note. 6. Ask members to visit.</li>
           </ul>
         </div>
       </div>
@@ -602,10 +762,15 @@
 
   <script src="/public/footer.js"></script>
 </div>
+<script src="/public/ve-region-directory.js"></script>
 <script src="/public/ve-guided.js"></script>
 <script>
 (function () {
   var LOGO = '/business/sample/img/logo.jpg';
+  var card = document.getElementById('js-card');
+  if (card && window.VERegionDirectory) { try { VERegionDirectory.css(); card.innerHTML = VERegionDirectory.card({ id: 'sample-glk', slug: 'green-leaf-kitchen', name: 'Green Leaf Kitchen', category: 'Restaurants', address_city: 'Fort Lauderdale', address_state: 'FL', logo_url: LOGO, vegan_status: 'fully_vegan', claim_status: 'verified', voter_count: 0 }, 0); } catch (e) {} }
+  var ph = ['photo-1.jpg', 'm-bbq.webp', 'm-coldbrew.webp', 'photo-2.jpg', 'm-burritobowl.webp', 'm-cheesecake.webp'];
+  document.querySelectorAll('.js-photos').forEach(function (el) { el.innerHTML = ph.map(function (p) { return '<i style="background-image:url(\'/business/sample/img/' + p + '\')"></i>'; }).join(''); });
   document.querySelectorAll('.js-logo').forEach(function (el) { el.style.backgroundImage = "url('" + LOGO + "')"; });
   var liz = (window.VEGuideArt && window.VEGuideArt('liz', 'square')) || '/public/brand-kit/avatars/liz-v2.jpg';
   document.querySelectorAll('.js-liz').forEach(function (el) { el.style.backgroundImage = "url('" + liz + "')"; });
