@@ -344,6 +344,41 @@ html.ve-cb.ve-cb-s-passport .dg-fold { border: 2px solid var(--cb-ink); color: v
   html.ve-cb.ve-cb-s-passport .dg-top { padding-bottom: 28px; }
 }
 
+/* ---------- /nominate: the Welcome Guide's frame in Guides pink (Sean, 2026-11-12: "apply the new style for the website on this") ---------- */
+/* The same rules as /passport above, in the section's own color: the pink block, ink type on it, the stripe under it, one orange button. */
+html.ve-cb.ve-cb-p-nominate .dg-top { position: relative; background: var(--cb-sec); color: var(--cb-ink); padding-bottom: 32px; }
+html.ve-cb.ve-cb-p-nominate .dg-top::after { content: ""; position: absolute; inset: auto 0 0 0; height: 8px; background: var(--cb-stripe); box-shadow: 0 -3px 0 #fff; }
+html.ve-cb.ve-cb-p-nominate .dg-eyebrow { color: var(--cb-ink); font-weight: 900; }
+html.ve-cb.ve-cb-p-nominate .dg-title { font-size: clamp(28px, 3.2vw, 44px); letter-spacing: -.025em; text-transform: none; }
+html.ve-cb.ve-cb-p-nominate .dg-joinbox { background: #fff; border: 2px solid var(--cb-ink); border-radius: 14px; box-shadow: 6px 6px 0 var(--cb-ink); -webkit-backdrop-filter: none; backdrop-filter: none; }
+html.ve-cb.ve-cb-p-nominate .dg-jb-price b { color: var(--cb-pinkd); }
+html.ve-cb.ve-cb-p-nominate .dg-jb-price small { color: var(--cb-ink); }
+html.ve-cb.ve-cb-p-nominate .dg-menu a { color: var(--cb-ink); }
+html.ve-cb.ve-cb-p-nominate .dg-menu a:hover { background: rgba(26,26,26,.08); color: var(--cb-ink); }
+html.ve-cb.ve-cb-p-nominate .dg-menu a[aria-current="page"] { background: #fff; color: var(--cb-ink); }
+html.ve-cb.ve-cb-p-nominate .dg-menu-select { border: 2px solid var(--cb-ink); }
+html.ve-cb.ve-cb-p-nominate .dg-btn { border: 2px solid var(--cb-ink); font-weight: 900; }
+html.ve-cb.ve-cb-p-nominate .dg-joinbox .dg-btn { background: var(--cb-or); color: var(--cb-ink); }
+html.ve-cb.ve-cb-p-nominate .dg-joinbox .dg-btn:hover { background: var(--cb-or-hi); }
+html.ve-cb.ve-cb-p-nominate .dg-btn.dg-ghost { background: #fff; color: var(--cb-ink); border-color: var(--cb-ink); }
+html.ve-cb.ve-cb-p-nominate .dg-k { color: var(--cb-eye); font-weight: 900; }
+html.ve-cb.ve-cb-p-nominate .wg-gs { border: 2px solid var(--cb-ink); box-shadow: 6px 6px 0 var(--cb-shadow); margin-right: 6px; }
+html.ve-cb.ve-cb-p-nominate .wg-gs-pic { border: 2px solid var(--cb-ink); }
+html.ve-cb.ve-cb-p-nominate .wg-gs-b .vgi-k,
+html.ve-cb.ve-cb-p-nominate .wg-grp h5 { color: var(--cb-eye); font-weight: 900; }
+html.ve-cb.ve-cb-p-nominate .wg-gs-t { font-size: 22px; }
+html.ve-cb.ve-cb-p-nominate .wg-art-img { border: 2px solid var(--cb-ink); }
+html.ve-cb.ve-cb-p-nominate .dg-maya { border: 2px solid var(--cb-ink); }
+html.ve-cb.ve-cb-p-nominate .dg-bubble { background: #FFE3EE; border: 2px solid var(--cb-ink); color: var(--cb-ink); }
+html.ve-cb.ve-cb-p-nominate .dg-play { border: 2px solid var(--cb-ink); font-weight: 900; }
+html.ve-cb.ve-cb-p-nominate .dg-play.go { background: var(--cb-br); border-color: var(--cb-ink); color: var(--cb-ink); }
+html.ve-cb.ve-cb-p-nominate .dg-tnav { border: 2px solid var(--cb-ink); font-weight: 900; }
+html.ve-cb.ve-cb-p-nominate .dg-tnav.next { background: var(--cb-dk); border-color: var(--cb-dk); color: #fff; }
+html.ve-cb.ve-cb-p-nominate .dg-fold { border: 2px solid var(--cb-ink); color: var(--cb-ink); }
+html.ve-cb.ve-cb-p-nominate .vxc { border: 2px solid var(--cb-ink); box-shadow: 6px 6px 0 var(--cb-shadow); }
+@media (max-width: 900px) { html.ve-cb.ve-cb-p-nominate .dg-top { padding-bottom: 28px; } }
+@media (max-width: 700px) { html.ve-cb.ve-cb-p-nominate .wg-gs, html.ve-cb.ve-cb-p-nominate .vxc { box-shadow: 5px 5px 0 var(--cb-shadow); } }
+
 /* ---------- Phones: shadows drop to 5px ---------- */
 @media (max-width: 700px) {
   html.ve-cb .vrd-root .rank-card,

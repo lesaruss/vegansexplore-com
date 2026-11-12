@@ -38,6 +38,7 @@
     if (/^\/pulse(\/(jobs|classifieds|fosters|rescues|suggest))?$/.test(p)) return 'pulse';
     if (p === '/media') return 'media';
     if (p === '/passport') return 'passport';
+    if (p === '/nominate') return 'nominate';
     return 'other';
   }
   var de = document.documentElement;
@@ -46,7 +47,7 @@
   var head = document.head || de;
   if (!document.getElementById('ve-look-css')) {
     var l = document.createElement('link');
-    l.id = 've-look-css'; l.rel = 'stylesheet'; l.href = '/public/ve-look.css?v=4';
+    l.id = 've-look-css'; l.rel = 'stylesheet'; l.href = '/public/ve-look.css?v=5';
     l.setAttribute('blocking', 'render');
     head.appendChild(l);
   }
