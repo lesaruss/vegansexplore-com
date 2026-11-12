@@ -189,6 +189,8 @@
       box.querySelector('.vgt-bubble').textContent = line().say || '';
       var p = box.querySelector('.vgt-play'); p.classList.toggle('go', !S.started); p.setAttribute('aria-pressed', String(S.playing));
       p.innerHTML = !S.started ? '&#9654; Hear from ' + esc(guide) : S.playing ? 'Pause ' + esc(guide) : '&#9654; ' + ((line().clip || {}).audio ? 'Hear ' : 'Watch ') + esc(guide);
+      // A line not recorded yet (its words written, waiting for Sean's approval before recording) has nothing to play.
+      var c = line().clip || {}; p.hidden = !(c.video || c.audio);
     }
     function play() { var m = cur(); if (!m.getAttribute('src')) return; m.play().then(function () { S.playing = true; draw(); }).catch(function () { S.playing = false; draw(); }); }
     function stop() { vid.pause(); aud.pause(); S.playing = false; draw(); }

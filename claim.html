@@ -26,7 +26,7 @@
     .biz span{font-size:13px;color:var(--ve-text-75);}
     label.f{display:block;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-green-deep);margin:14px 0 6px;}
     label.f small{font-weight:600;letter-spacing:0;text-transform:none;color:var(--ve-text-75);}
-    input[type=text],input[type=email],input[type=tel],input[type=url],input[type=search],input[type=number],select,textarea{width:100%;font:inherit;font-size:15px;padding:11px 13px;border:1px solid rgba(0,0,0,0.25);border-radius:6px;background:#fff;color:var(--ve-text);}
+    input[type=text],input[type=email],input[type=tel],input[type=url],input[type=search],input[type=number],input[type=password],select,textarea{width:100%;font:inherit;font-size:15px;padding:11px 13px;border:1px solid rgba(0,0,0,0.25);border-radius:6px;background:#fff;color:var(--ve-text);}
     textarea{min-height:96px;resize:vertical;}
     .row2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px;}
     @media (max-width:600px){.row2{grid-template-columns:1fr;}}
@@ -109,6 +109,28 @@
     .nx span{font-size:13.5px;line-height:1.5;color:var(--ve-text-75);}
     .nx.soon{border-style:dashed;background:#fbfdfb;}
     .tag{display:inline-block;font-size:9px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#2b1d00;background:#f3c86b;border-radius:4px;padding:2px 6px;margin-bottom:6px;}
+    /* The free claim (Sean, 2026-11-12, /mocks/claims): the voice check, the post preview in Liz's rail */
+    .hint{font-size:13px;line-height:1.5;color:var(--ve-green-deep,#2D5C27);background:#F2F8F2;border-left:3px solid var(--ve-green-deep,#2D5C27);border-radius:0 6px 6px 0;padding:7px 10px;margin:0 0 8px;}
+    .tp{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:#FFFBF3;border:1.5px solid #F69820;border-radius:8px;padding:10px 12px;margin-top:10px;font-size:13.5px;line-height:1.5;}
+    .tp span{flex:1 1 260px;}
+    .tp .btn{background:#F69820;color:#1a1a1a;}
+    #step-next.locked{background:#e5e5e5;color:#888;}
+    #isyou .rank-grid{display:grid;grid-template-columns:minmax(0,420px);}
+    .pp-w{margin-top:14px;}
+    .pp{position:relative;container-type:inline-size;aspect-ratio:4/5;border-radius:8px;overflow:hidden;border:1px solid var(--ve-border);background:#fff;}
+    .pp-art{position:absolute;left:0;top:0;width:100%;aspect-ratio:1;display:grid;place-items:center;background:#fff;}
+    .pp-art img{width:78%;height:78%;object-fit:contain;}
+    .pp-art .ini{width:62%;aspect-ratio:1;border-radius:12%;display:grid;place-items:center;color:#fff;font-weight:900;font-size:30cqw;}
+    .pp-band{position:absolute;left:0;right:0;top:100cqw;bottom:0;background:#2D5C27;color:#fff;display:flex;align-items:center;gap:3.4cqw;padding:0 5cqw 1.6cqw;}
+    .pp-band img{height:12cqw;width:auto;flex:none;}
+    .pp-band b{display:block;font-size:6.4cqw;font-weight:900;line-height:1.02;letter-spacing:-.03em;}
+    .pp-band small{display:block;font-size:2.6cqw;font-weight:900;letter-spacing:.14em;text-transform:uppercase;opacity:.85;margin-top:1.2cqw;}
+    .pp-stp{position:absolute;left:0;right:0;bottom:0;display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr 1fr 1fr;height:1.6cqw;}
+    .pp-stp i:nth-child(1){background:#2D5C27}.pp-stp i:nth-child(2){background:#F69820}.pp-stp i:nth-child(3){background:#FF9EC4}.pp-stp i:nth-child(4){background:#FFEBD1}.pp-stp i:nth-child(5){background:#22C55E}.pp-stp i:nth-child(6){background:#E8F5E9}.pp-stp i:nth-child(7){background:#3A9B3E}
+    .pp-tag{position:absolute;top:3cqw;left:3cqw;background:#1a1a1a;color:#fff;font-size:2.8cqw;font-weight:900;letter-spacing:.14em;text-transform:uppercase;padding:1.2cqw 2cqw;border-radius:1cqw;}
+    .pp-l{font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-green-deep,#2D5C27);text-align:center;margin:8px 0 0;}
+    /* On phones the aside sits above the form, so the post shows on the first step only, smaller. */
+    @media (max-width:900px){.pp-w{max-width:200px;margin:12px auto 0;}.pp-w.later{display:none;}}
   </style>
 </head>
 <body>
@@ -119,7 +141,7 @@
   <main class="wrap">
     <p class="eyebrow">For businesses</p>
     <h1>Join the Directory</h1>
-    <p class="lede" id="lede">Any Vegan business, anywhere. Find yours and claim it, or add it if it is not here yet. Join as a Partner and your page is yours to run, with your Partner Dashboard and a front-row seat on every campaign we run. Before January 1, 2027, Front Row Start puts the rest of 2026 on us.</p>
+    <p class="lede" id="lede">Any Vegan business, anywhere. Find yours and claim its page, or add it if it is not here yet. Free for members, and Liz walks you through it.</p>
 
     <div class="jl">
     <div class="jl-main">
@@ -131,6 +153,13 @@
       <input type="search" id="q" placeholder="Your business name" aria-label="Your business name">
       <div class="results" id="results"></div>
       <div class="add-row"><span>Don't see your business?</span><button type="button" class="btn btn-ghost" id="add-btn">Add it</button></div>
+    </section>
+
+    <!-- Is this you? (Sean, 2026-11-12, playbook ve-claims-onboarding; the walkthrough /mocks/claims): the page as visitors see it,
+         drawn with the shared Directory card, one tap to say yes. -->
+    <section class="card" id="isyou" hidden>
+      <div class="vrd-root"><div class="rank-grid" id="isyou-card"></div></div>
+      <p class="note" style="margin-top:12px">This is your page as visitors see it. <button type="button" class="linkbtn" data-search-again>Not yours? Search again</button></p>
     </section>
 
     <!-- The business being claimed -->
@@ -191,25 +220,31 @@
         <h2>About the business</h2>
         <label class="f" id="vs-l">How Vegan is it?</label>
         <div class="choice" role="radiogroup" aria-labelledby="vs-l">
-          <label><input type="radio" name="vs" value="fully_vegan"><span><b>Fully Vegan.</b> Everything we serve or sell is Vegan.</span></label>
+          <label><input type="radio" name="vs" value="fully_vegan"><span><b>Fully Vegan.</b> Everything it serves or sells is Vegan.</span></label>
           <label><input type="radio" name="vs" value="vegan_friendly"><span><b>Vegan-friendly.</b> A real Vegan menu or range alongside other food.</span></label>
-          <label><input type="radio" name="vs" value="vegan_options"><span><b>Vegan options.</b> A few Vegan dishes or products.</span></label>
+          <label><input type="radio" name="vs" value="vegan_options"><span><b>Pre-Vegan.</b> A few plant-based (Pre-Vegan) options alongside other food.</span></label>
         </div>
-        <label class="f" for="b-tag">One line about you <small>(optional)</small></label>
-        <input type="text" id="b-tag" maxlength="140">
-        <label class="f" for="b-desc">Tell the community about your business</label>
+        <div id="tag-wrap"><label class="f" for="b-tag">One line about it <small>(optional)</small></label>
+        <input type="text" id="b-tag" maxlength="140"></div>
+        <label class="f" for="b-desc" id="desc-l">Tell the community about the business</label>
+        <p class="hint" id="desc-hint">Write it the way a guide would: "<span class="js-nm">The business</span> serves...", not "We serve...". Say what it serves or makes, what sets it apart and what to try first.</p>
         <textarea id="b-desc" maxlength="2000" required></textarea>
+        <!-- The voice check (Sean, 2026-11-12: "So it checks it. They can't go on until they fix it."): "we" or "I" is flagged as they
+             type, Liz's third-person wording is one tap away, and Next waits until it reads like a guide wrote it. -->
+        <div class="tp" id="tp" hidden role="status"><span><b>Say it like a guide would.</b> Liz's wording: <q id="tp-new"></q></span><button type="button" class="btn btn-sm" id="tp-use">Use Liz's wording</button></div>
+        <p class="note" id="tp-note" style="margin-top:8px">Every page in the Directory reads like a guide describing the place. If something comes in as "we" or "I," we may adjust the wording to the third person. Your meaning stays the same; only the voice changes.</p>
       </section>
 
       </div>
       <div data-step="you">
       <section class="card">
-        <h2>About you</h2>
+        <h2 id="you-h">About you</h2>
+        <p class="note" id="you-p" hidden style="margin:-6px 0 6px">So we know it is really you. That's all we need: your page details are edited later in your dashboard.</p>
         <div class="row2">
           <div><label class="f" for="c-name">Your name</label><input type="text" id="c-name" autocomplete="name" required></div>
           <div><label class="f" for="c-role">Your role <small>(owner, manager...)</small></label><input type="text" id="c-role" autocomplete="organization-title"></div>
           <div><label class="f" for="c-email">Email</label><input type="email" id="c-email" autocomplete="email" required></div>
-          <div><label class="f" for="c-phone">Phone <small>(optional)</small></label><input type="tel" id="c-phone" autocomplete="tel"></div>
+          <div id="c-phone-w"><label class="f" for="c-phone">Phone <small>(optional)</small></label><input type="tel" id="c-phone" autocomplete="tel"></div>
         </div>
         <!-- Signed out: the account is made from this step (Sean, 2026-10-09: "couldn't it take the information from what
              they've completed... what's the easiest, simplest way to do that?"). One more field, no sign-in window. -->
@@ -218,11 +253,13 @@
           <input type="password" id="c-pw" autocomplete="new-password" minlength="8">
           <p class="note" style="margin-top:6px">With your name and email above, this makes your free Vegans Explore account, so the business is tied to you. Already have an account? <button type="button" class="linkbtn" id="acct-signin">Sign in instead</button></p>
         </div>
+        <div id="where">
         <h2 style="margin-top:22px">Where people find the business</h2>
         <div class="row2" style="margin-top:-8px">
           <div><label class="f" for="b-web">Website <small>(optional)</small></label><input type="url" id="b-web" placeholder="yourbusiness.com"></div>
           <div><label class="f" for="b-ig">Instagram <small>(optional)</small></label><input type="text" id="b-ig" placeholder="@yourbusiness"></div>
           <div><label class="f" for="b-phone">Business phone <small>(optional)</small></label><input type="tel" id="b-phone"></div>
+        </div>
         </div>
       </section>
 
@@ -258,20 +295,26 @@
       <button type="button" class="btn" id="step-next">Next</button>
       <button type="submit" form="claim" class="btn" id="go">Take my front-row seat</button>
     </div>
+    <p class="note" id="free-note" hidden style="margin-top:10px">Free for members. New to Vegans Explore? A two-minute survey makes you a member, then your claim goes in. Liz reviews every claim, most within one business day.</p>
     <p class="msg" id="msg" role="status"></p>
     </div>
-    <aside class="jl-side" aria-label="Liz, your Guide"><div id="liz"></div></aside>
+    <aside class="jl-side" aria-label="Liz, your Guide"><div id="liz"></div>
+      <!-- Give first (the panel, 2026-11-12): their post, made from their logo, stamped Preview until the page is approved. Drawn
+           on the locked post template (scripts/brand-templates/find-us.js renders the real one at approval). -->
+      <div class="pp-w" id="pp" hidden><div class="pp"><div class="pp-art" id="pp-art"></div><div class="pp-band"><img src="/public/logo-ve-mark-white.svg" alt=""><div><b>Find us on<br>Vegans Explore</b><small>A founding business</small></div></div><div class="pp-stp"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><span class="pp-tag">Preview</span></div><p class="pp-l">This is waiting for you</p></div>
+    </aside>
     </div>
   </main>
 
   <script src="/public/ve-auth.js"></script>
   <script src="/public/ve-guide-tour.js"></script>
+  <script src="/public/ve-region-directory.js"></script>
   <script>
     (function () {
       var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
       var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
       var FN = SB + '/functions/v1/ve-claims';
-      var COLS = 'id,slug,name,category,address_city,address_state,logo_url,color,tagline,description,website,phone,instagram,vegan_status,claim_status,tags';
+      var COLS = 'id,slug,name,category,address_city,address_state,logo_url,color,tagline,description,website,phone,instagram,vegan_status,claim_status,tags,voter_count,vote_count,extra_categories,communities,business_status';
       var $ = function (id) { return document.getElementById(id); };
       var qs = new URLSearchParams(location.search), L = null;
       // Depot > Preview journeys > Join the Directory opens any step here with sample details (?preview=<step>), signed
@@ -290,7 +333,7 @@
         return l.logo_url ? '<img class="biz-logo" src="' + esc(l.logo_url) + '" alt="" onerror="this.outerHTML=this.getAttribute(\'data-init\')" data-init="' + esc(init) + '">' : init;
       }
       function show(id, flow) {
-        ['find', 'biz-card', 'st-next', 'st-claimed', 'st-verified', 'claim', 'upgrade'].forEach(function (x) { $(x).hidden = id.indexOf(x) < 0; });
+        ['find', 'isyou', 'biz-card', 'st-next', 'st-claimed', 'st-verified', 'claim', 'upgrade'].forEach(function (x) { $(x).hidden = id.indexOf(x) < 0; });
         // The steps and their Back / Next belong to the form only; the other views (you're in, claimed, plans) stand alone.
         flow = !!flow;
         $('stepper').hidden = !flow; $('step-nav').hidden = !flow; if (!flow) $('msg').textContent = '';
@@ -316,6 +359,12 @@
       function isBrand() { return !!L && /^(Food Brands|Nutrition & Supplements|Brands)$/.test(L.category || ''); }
       // A podcast, channel or news outlet a member claims free (Sean, 2026-11-06, ve-outreach; ve-claims MEDIA_CATS, pay 'member').
       function isMedia() { return !!L && MODE !== 'add' && /^(Podcasts|YouTube|News Outlets)$/.test(L.category || ''); }
+      // The free claim (Sean, 2026-11-12, playbook ve-claims-onboarding): a member claims or adds a business free, in three steps,
+      // and the page never mentions a price. The paid paths keep How to join: a product brand (Brand Partner), a podcast or
+      // outlet (its own free card), another brand's site (VB), and a link that asks for a plan (?plan=brand|verified|plus).
+      var ASKED_PLAN = /^(verified|plus|brand)$/.test(qs.get('plan') || '');
+      function FREE() { return !VB && !ASKED_PLAN && !isBrand() && !isMedia(); }
+      function bizName() { return L ? L.name : ($('n-name') && $('n-name').value.trim()) || ''; }
       function isActiveMember() { var m = window.VEAuth && VEAuth.isLoggedIn() && VEAuth.getMember(); return !!(m && m.membership_status === 'active'); }
       function pName() { return isBrand() ? 'Brand Partner' : 'Partner'; }
       // The Partner plan's periods (LOCKED by Sean 2026-11-01, canon canon-branddesk-production-wing): $111 a period of 111 days,
@@ -423,7 +472,7 @@
         [['plan', keep], ['uplan', keepU]].forEach(function (k) { var r = k[1] && document.querySelector('input[name=' + k[0] + '][value="' + k[1] + '"]'); if (r) r.checked = true; });
         syncPlan();
       }
-      function plan() { var r = document.querySelector('input[name=plan]:checked'); return r ? r.value : 'brand'; }
+      function plan() { if (FREE()) return 'member'; var r = document.querySelector('input[name=plan]:checked'); return r ? r.value : 'brand'; }
       function uplan() { var r = document.querySelector('input[name=uplan]:checked'); return r ? r.value : 'brand'; }
       function checkoutNote(p, f) {
         if (VB) return 'You will finish on a secure Stripe page. We review every claim by hand before it is approved.';
@@ -505,8 +554,15 @@
       // ---- Liz, on the right (Sean, 2026-10-09: "I imagine still having Liz on the right hand corner"). Each say matches her
       // recording (VEGuideTour.LIZ_PARTNER).
       var C = window.VEGuideTour ? VEGuideTour.LIZ_PARTNER : {};
-      var liz = window.VEGuideTour ? VEGuideTour.narrator($('liz'), { guide: 'Liz', lines: {
+      // The free claim's lines (2026-11-12) are written and waiting for Sean's approval before they are recorded: until then they show
+      // as words with her picture, and nothing plays (ve-guide-tour.js hides Play for a line with no recording).
+      var STILL = C.j1 && C.j1.poster ? { poster: C.j1.poster } : null;
+      var LINES = {
         find: { say: 'Let\'s find your business. Search for it here, and if it\'s already in the Directory, just pick it.', clip: C.j1 },
+        isyou: { say: 'Hi, I\'m Liz. This takes about three minutes, and it\'s free. Your post is already waiting for you.', clip: STILL },
+        describe: { say: 'Readers trust a guide more than an ad, so every page reads like one: "The business serves...", not "We serve...".', clip: STILL },
+        keys: { say: 'Last step: who you are, so we know it\'s really you. I\'ll have your post ready the moment you\'re approved.', clip: STILL },
+        freedone: { say: 'Your claim is in. Most claims are approved within one business day, and your post will be waiting in your dashboard.', clip: STILL },
         claim: { say: 'That\'s the one? Great. Tell us a little about you, and check your details below.', clip: C.j2 },
         add: { say: 'Tell us about your business below. We review every application, and I\'ll be right here when you\'re in.', clip: C.pt6 },
         // New line 2026-11-01 (the plan now charges at sign-up): her voice over her still picture, no video (Sean: "picture and
@@ -514,17 +570,103 @@
         offer: { say: 'Join now, and every day until January is on us. $111 covers your first period, and your seat is saved for our campaigns.', clip: C.j5 ? { poster: C.j5.poster, audio: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/partner-tour/j-5-v2.mp3' } : null },
         lockin: { say: 'Eleven dollars locks it in, and makes you a Founding Member of Vegans Explore.', clip: C.j3 },
         done: { say: 'You\'re in! Now let\'s look at what\'s next: your dashboard, ads on our pages, and our campaigns.', clip: C.j4 }
-      } }) : { say: function () {} };
+      };
+      var liz = window.VEGuideTour ? VEGuideTour.narrator($('liz'), { guide: 'Liz', lines: LINES }) : { say: function () {} };
       // On How to join, Liz follows the choice: the Front Row Start offer, or the $11.
       function lizFor(p) { return p === 'claim' ? 'lockin' : p === 'brand' && frontRow() ? 'offer' : null; }
       window.__lizPlan = function (p) { if (STEP === 'join') liz.say(lizFor(p) || 'lockin'); };
+
+      // ---- The voice check (Sean, 2026-11-12, CLAUDE.md Writing: third person always). firstPerson finds "we", "our", "I", "my",
+      // "us" and "me" (not the country, US); toThird rewrites them the way a guide would: the business's name the first time in a
+      // sentence, "it" after, the verb agreeing ("We serve" becomes "Chaska serves", "our" becomes "its"). The owner can edit the
+      // result; the check runs again, and review checks once more.
+      var FP = /\b(we|our|ours|ourselves|us|i|my|mine|me|myself)\b|\b(we|i)'(re|ve|ll|d|m)\b/gi;
+      function plain(t) { return String(t || '').replace(/[‘’]/g, "'"); }
+      function firstPerson(t) { var m, re = new RegExp(FP.source, 'gi'); t = plain(t); while ((m = re.exec(t))) { if (m[0] === 'US') continue; return true; } return false; }
+      var IRREG = { are: 'is', am: 'is', were: 'was', have: 'has', do: 'does', go: 'goes', was: 'was', had: 'had', did: 'did', can: 'can', will: 'will', would: 'would', could: 'could', should: 'should', may: 'may', might: 'might', must: 'must', shall: 'shall' };
+      var ADV = /^(also|still|always|never|now|just|only|even|really|proudly|truly|often|usually|currently|already|lovingly|happily|simply|first)$/i;
+      function conj(v) {
+        var l = v.toLowerCase(), o;
+        if (IRREG[l]) o = IRREG[l];
+        else if (/ed$/.test(l)) o = l;
+        else if (/(s|sh|ch|x|z|o)$/.test(l)) o = l + 'es';
+        else if (/[^aeiou]y$/.test(l)) o = l.slice(0, -1) + 'ies';
+        else o = l + 's';
+        return v.charAt(0) === v.charAt(0).toUpperCase() && v.charAt(0) !== v.charAt(0).toLowerCase() ? o.charAt(0).toUpperCase() + o.slice(1) : o;
+      }
+      function toThird(text, name) {
+        name = name || 'The business';
+        var poss = /s$/i.test(name) ? name + "'" : name + "'s";
+        var C = { re: 'is', ve: 'has', ll: 'will', d: 'would', m: 'is' };
+        return (plain(text).match(/[^.!?]+(?:[.!?]+|$)/g) || [plain(text)]).map(function (sen) { sen = sen.trim();
+          var named = sen.indexOf(name) >= 0;
+          function start(off) { return /^\s*["(]?$/.test(sen.slice(0, off)); }
+          function cap(w, off) { return start(off) ? w.charAt(0).toUpperCase() + w.slice(1) : w; }
+          // "we" is the business: its name the first time in a sentence, "it" after. "I" is the person writing: "the owner".
+          function subj(p, off) { if (/^i$/i.test(p)) return cap('the owner', off); var w = named ? 'it' : name; named = true; return cap(w, off); }
+          sen = sen.replace(/\b(we|i)'(re|ve|ll|d|m)\b/gi, function (m0, p, c, off) { return subj(p, off) + ' ' + C[c.toLowerCase()]; });
+          sen = sen.replace(/\b(we|i)\s+([a-z]+)(\s+([a-z]+))?/gi, function (m0, p, w1, sp, w2, off) {
+            if (p === 'i') return m0;
+            var s0 = subj(p, off);
+            if (ADV.test(w1) && w2) return s0 + ' ' + w1 + ' ' + conj(w2);
+            return s0 + ' ' + conj(w1) + (sp || '');
+          });
+          sen = sen.replace(/\b(our)\b/gi, function (m0, p, off) { if (start(off) || !named) { named = true; return poss; } return 'its'; });
+          sen = sen.replace(/\bmy\b/gi, function (m0, off) { return cap("the owner's", off); });
+          sen = sen.replace(/\bours\b/gi, function () { return poss; });
+          sen = sen.replace(/\bmine\b/gi, function () { return "the owner's"; });
+          sen = sen.replace(/\bourselves\b/gi, 'itself').replace(/\bmyself\b/gi, 'the owner');
+          sen = sen.replace(/\b(us|Us)\b/g, function () { return name; });
+          sen = sen.replace(/\b(me|Me)\b/g, function (m0, p, off) { return cap('the owner', off); });
+          return sen;
+        }).join(' ');
+      }
+      function voiceCheck() {
+        var t = $('b-desc').value, on = !VB && firstPerson(t);
+        $('tp').hidden = !on;
+        if (on) $('tp-new').textContent = toThird(t, bizName() || 'The business');
+        $('step-next').classList.toggle('locked', on && STEP === 'business');
+        if (!on && /^Say it like a guide would/.test($('msg').textContent)) { $('msg').className = 'msg'; $('msg').textContent = ''; }
+      }
+      $('b-desc').addEventListener('input', voiceCheck);
+      $('tp-use').onclick = function () { $('b-desc').value = $('tp-new').textContent; voiceCheck(); $('b-desc').focus(); };
+
+      // The post they get at approval, drawn here from their logo (the walkthrough's "This is waiting for you").
+      function drawPost() {
+        var on = FREE() && !!bizName();
+        $('pp').hidden = !on; if (!on) return;
+        $('pp').classList.toggle('later', STEP !== 'find' && !$('st-next').offsetParent);
+        var lg = L && L.logo_url, col = (L && L.color) || '#3A9B3E';
+        $('pp-art').innerHTML = lg ? '<img src="' + esc(lg) + '" alt="">' : '<div class="ini" style="background:' + esc(col) + '">' + esc(bizName().charAt(0).toUpperCase()) + '</div>';
+        var im = $('pp-art').querySelector('img'); if (im) im.onerror = function () { $('pp-art').innerHTML = '<div class="ini" style="background:' + esc(col) + '">' + esc(bizName().charAt(0).toUpperCase()) + '</div>'; };
+      }
+      // Each step's words in the free claim: the business's own name in the questions, and only what the step needs.
+      function freeView(name) {
+        var free = FREE(), nm = bizName(), add = MODE === 'add';
+        $('tag-wrap').hidden = free;
+        $('desc-l').textContent = free ? 'How would a regular describe ' + (nm || 'the business') + '?' : 'Tell the community about the business';
+        $('desc-hint').hidden = !!VB; $('tp-note').hidden = !!VB;
+        [].forEach.call(document.querySelectorAll('.js-nm'), function (x) { x.textContent = nm || 'The business'; });
+        LINES.describe.say = 'Readers trust a guide more than an ad, so every page reads like one: "' + (nm || 'The business') + ' serves...", not "We serve...".';
+        $('you-h').textContent = free ? 'Your keys' : 'About you'; $('you-p').hidden = !free;
+        $('c-phone-w').hidden = free; $('where').hidden = free && !add;
+        var h1 = document.querySelector('.wrap h1');
+        if (!VB) h1.textContent = free && L ? 'Claim ' + L.name + (/s$/i.test(L.name) ? "'" : "'s") + ' page. Free.' : free && add ? 'Add your business. Free.' : 'Join the Directory';
+        if (free && name === 'find' && L && window.VERegionDirectory) {
+          try { VERegionDirectory.css(); $('isyou-card').innerHTML = VERegionDirectory.card(L, 0); VERegionDirectory.wire($('isyou'), function () {}); } catch (e) { $('isyou-card').innerHTML = ''; }
+        }
+        if (name === 'business') voiceCheck(); else $('step-next').classList.remove('locked');
+        drawPost();
+      }
 
       // ---- The steps (Sean, 2026-10-09: "paginated instead of a slide down... they click next, and then keep clicking next,
       // and then the final thing is choose how to join"; canon-sean-interface-defaults rule 14). One step per view, Back and
       // Next, Next checks the step first, and the address bar carries the step (?step=) so the browser's Back works.
       var STEP = 'find';
       var STEP_NAME = { find: 'Find it', newbiz: 'Your business', business: 'The details', you: 'About you', join: 'How to join' };
-      function stepList() { if (VB) return ['find', 'business', 'you', 'join']; return MODE === 'add' ? ['find', 'newbiz', 'business', 'you', 'join'] : !isBrand() ? ['find', 'business', 'you', 'join'] : ['find', 'you', 'join']; }
+      function stepName(k) { return !FREE() ? STEP_NAME[k] : { find: L ? 'Is this you?' : 'Find it', newbiz: 'Your business', business: 'Describe it', you: 'Your keys' }[k]; }
+      function stepList() { if (VB) return ['find', 'business', 'you', 'join'];
+        if (FREE()) return MODE === 'add' ? ['find', 'newbiz', 'business', 'you'] : ['find', 'business', 'you']; return MODE === 'add' ? ['find', 'newbiz', 'business', 'you', 'join'] : !isBrand() ? ['find', 'business', 'you', 'join'] : ['find', 'you', 'join']; }
       function stepUrl(name, push) {
         var u = new URL(location.href);
         if (name === 'find') u.searchParams.delete('step'); else u.searchParams.set('step', name);
@@ -534,20 +676,26 @@
         var list = stepList();
         if (list.indexOf(name) < 0 || (name !== 'find' && MODE === 'find')) name = 'find';
         STEP = name;
-        show(name === 'find' ? (L ? ['biz-card'] : ['find']) : (L && name === 'business' ? ['biz-card', 'claim'] : ['claim']), true);
+        var free = FREE(), last = list[list.length - 1];
+        show(name === 'find' ? (L ? [free ? 'isyou' : 'biz-card'] : ['find']) : (L && name === 'business' ? ['biz-card', 'claim'] : ['claim']), true);
         $('lede').hidden = name !== 'find';
         [].forEach.call(document.querySelectorAll('#claim [data-step]'), function (d) { d.hidden = d.getAttribute('data-step') !== name; });
         $('new-biz').hidden = MODE !== 'add';
         $('acct').hidden = !!VB || (VEAuth.isLoggedIn() && !PV);
         var at = list.indexOf(name);
-        $('stepper').innerHTML = list.map(function (k, n) { return '<li class="' + (n < at ? 'done' : n === at ? 'on' : '') + '">' + STEP_NAME[k] + '</li>'; }).join('');
+        $('stepper').innerHTML = list.map(function (k, n) { return '<li class="' + (n < at ? 'done' : n === at ? 'on' : '') + '">' + stepName(k) + '</li>'; }).join('');
         $('step-count').textContent = 'Step ' + (at + 1) + ' of ' + list.length;
         $('step-back').hidden = at === 0;
-        $('step-next').hidden = name === 'join' || (name === 'find' && !L);
-        $('go').hidden = name !== 'join';
+        $('step-next').hidden = name === last || (name === 'find' && !L);
+        $('step-next').textContent = free && name === 'find' && L ? 'Yes, this is us' : 'Next';
+        $('go').hidden = name !== last;
+        if (free) $('go').textContent = MODE === 'add' ? 'Add my business, free' : 'Claim my page, free';
+        $('free-note').hidden = !(free && name === last);
+        freeView(name);
         $('msg').className = 'msg'; $('msg').textContent = '';
         if (push !== undefined) stepUrl(name, push);
-        liz.say(name === 'find' ? (L ? 'claim' : 'find') : name === 'join' ? (lizFor(plan()) || 'lockin') : MODE === 'add' ? 'add' : 'claim');
+        liz.say(free ? (name === 'find' ? (L ? 'isyou' : 'find') : name === 'newbiz' ? 'add' : name === 'business' ? 'describe' : 'keys')
+          : name === 'find' ? (L ? 'claim' : 'find') : name === 'join' ? (lizFor(plan()) || 'lockin') : MODE === 'add' ? 'add' : 'claim');
         if (name === 'join') syncPlan();
         // Bring the top of the steps (Liz first, on a phone) just under the sticky menu bar, whose height differs by screen.
         var top = document.querySelector('.jl'), bar = document.querySelector('.ve-nav');
@@ -567,6 +715,7 @@
           // A product brand skips these (Sean, 2026-10-09): its page is built from our Guides, so we only need who they are.
           if (!VB && (add || !(isBrand() || isMedia())) && !vs) return bad('Please choose how Vegan the business is.');
           if ((add || !(isBrand() || isMedia())) && !$('b-desc').value.trim()) return bad('Please tell the community a little about the business.', $('b-desc'));
+          if (!VB && firstPerson($('b-desc').value)) { voiceCheck(); return bad('Say it like a guide would: use Liz\'s wording, or write it without "we" or "I".', $('b-desc')); }
         }
         if (name === 'you') {
           if (!$('c-name').value.trim()) return bad('Please add your name.', $('c-name'));
@@ -762,6 +911,7 @@
           }).join('');
           return show(L ? ['biz-card', 'st-next'] : ['st-next']);
         }
+        if (FREE() && (kind === 'claim-member' || (kind === 'applied' && MODE === 'add'))) return freeDone(MODE === 'add' ? (name || $('n-name').value.trim()) : '');
         var app = kind === 'applied' || kind === 'points', brand = !app && isBrand(), slug = L ? L.slug : '', joined = qs.get('joined') === 'partner';
         try { sessionStorage.removeItem(DRAFT); } catch (e) {}
         $('nx-h').textContent = joined ? 'You\'re in: your front-row seat is saved' : app ? 'You\'re in. Your application is locked in.' : 'You\'re in. Your claim is locked in.';
@@ -783,6 +933,19 @@
         cards.push('<div class="nx soon"><span class="tag">Coming</span><b>Campaigns and sponsorships</b><span>The Plant-Based Showcase on Miami Dolphins game day at Hard Rock Stadium, Sunday, November 29, 2026, and community nights from November.</span></div>');
         $('nx-grid').innerHTML = cards.join('');
         show(app || !L ? ['st-next'] : ['biz-card', 'st-next']); liz.say('done');
+      }
+
+      // The free claim, sent (Sean, 2026-11-12): no plans and no prices; what happens next, and the post again.
+      function freeDone(added) {
+        try { sessionStorage.removeItem(DRAFT); sessionStorage.removeItem('ve_claim_after_survey'); } catch (e) {}
+        var nm = added || (L ? L.name : 'your business');
+        $('nx-h').textContent = added ? 'Thank you for adding ' + nm + '.' : 'Your claim is in.';
+        $('nx-p').textContent = 'Liz is reviewing it. Most claims are approved within one business day. Then ' + nm + ' is yours to run, and your post is waiting in your dashboard.';
+        $('nx-grid').innerHTML = '<div class="nx"><small>Next</small><b>Your dashboard</b><span>It opens once we approve your claim: your page, your post ready to share, and Getting Started with Liz.</span></div>' +
+          '<div class="nx"><small>Waiting for you</small><b>Your post, ready to share</b><span>"Find us on Vegans Explore", made from your logo, with your own link to see who it brings.</span></div>' +
+          '<div class="nx soon"><span class="tag">Coming</span><b>Bounties for businesses</b><span>Take part in our campaigns and earn points, right from your dashboard.</span></div>';
+        show(L ? ['isyou', 'st-next'] : ['st-next']); $('isyou').hidden = true;
+        $('lede').hidden = true; liz.say('freedone'); drawPost();
       }
 
       // ---- A business picked (from the search, or ?listing= in the link).
@@ -824,7 +987,11 @@
             }
             // Claimed with the $11 and now joining as a Partner: the form again, with the Partner plan picked.
             if (c && (c.status === 'submitted' || c.status === 'approved') && qs.get('plan') !== 'brand') return nextStep('claim');
-            fill(L); renderPlans(); goStep(qs.get('step') || 'find');
+            fill(L); renderPlans();
+            // Back from the survey (they are a member now): what they wrote is restored, and they land on Your keys to send it.
+            var fromSurvey = false; try { fromSurvey = sessionStorage.getItem('ve_claim_after_survey') === L.slug && isActiveMember() && !!loadDraft(); } catch (e) {}
+            if (fromSurvey && FREE()) { goStep('you', false); $('msg').className = 'msg'; $('msg').textContent = 'Welcome back, you are a member now. Everything you wrote is here: send your claim when you are ready.'; return; }
+            goStep(qs.get('step') || 'find');
             var back = qs.get('claim') || qs.get('verified');
             if (back === 'cancelled' || back === 'unpaid') { loadDraft(); goStep('join'); $('msg').className = 'msg bad'; $('msg').textContent = 'Checkout was not completed, so nothing has gone through yet. Your details are still here when you are ready.'; }
             var asked = qs.get('plan'); if (/^(verified|plus|brand)$/.test(asked || '')) { var pr = document.querySelector('input[name=plan][value="' + asked + '"]'); if (pr) { pr.checked = true; syncPlan(); } }
@@ -893,6 +1060,9 @@
         if (applied && qs.get('claim') === 'submitted') { var nm = ''; try { nm = sessionStorage.getItem('ve_join_name') || ''; } catch (e) {} return nextStep('applied', nm); }
         if (qs.get('add') === '1') {
           var back0 = /^(cancelled|unpaid)$/.test(qs.get('claim') || qs.get('verified') || '');
+          // Back from the survey after adding a business: what they wrote is restored, on Your keys.
+          var fromSurvey0 = false; try { fromSurvey0 = sessionStorage.getItem('ve_claim_after_survey') === '_add_' && isActiveMember() && !!loadDraft(); } catch (e) {}
+          if (fromSurvey0) { addMode('you'); $('msg').className = 'msg'; $('msg').textContent = 'Welcome back, you are a member now. Everything you wrote is here: add your business when you are ready.'; return; }
           addMode(back0 ? 'join' : qs.get('step') || 'newbiz');
           if (back0) { loadDraft(); syncPlan(); $('msg').className = 'msg bad'; $('msg').textContent = 'Checkout was not completed, so nothing has gone through yet. Your details are still here when you are ready.'; }
           return;

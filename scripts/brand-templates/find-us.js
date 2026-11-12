@@ -4,6 +4,7 @@
 // beside a two-row headline on the band, the stripe), the story is "Stories and reels" (9:16, the section color on top with its label,
 // the mark and a two-row headline, the 4:5 picture whole below). Directory brand green, since the claim is a Directory page.
 // The post carries no name line: the logo on the square already names the business, so the two-row headline has the band's width.
+// "A founding business" sits under the headline on the post and leads the story's label (Sean approved, 2026-11-12: "go with your defaults").
 // A business shows its real logo on a white square (episode pack v2), never a cropped photo, so nothing is cut off. Words never on the picture.
 //
 // Usage (the site served at BASE, e.g. python3 -m http.server 8766 from the repo root):
@@ -29,14 +30,16 @@ const HEAD = 'Find us on<br>Vegans Explore';
 const C = '--c:var(--dk);--t:#fff';
 
 const post = `<div class="tf s45 fx" id="post"><div class="art lgo"><img src="${logo}" alt=""></div>
-  <div class="band" style="${C}"><img class="bmark" src="/public/logo-ve-mark-white.svg" alt=""><h5>${HEAD}</h5></div>${STRIPE}${STAMP}</div>`;
-const story = `<div class="tf s916 fx" id="story"><div class="top" style="${C}"><span class="sl">${esc(NAME)} &middot; ${esc(CITY)}</span>
+  <div class="band" style="${C}"><img class="bmark" src="/public/logo-ve-mark-white.svg" alt=""><div class="hd"><h5>${HEAD}</h5><span class="fb">A founding business</span></div></div>${STRIPE}${STAMP}</div>`;
+const story = `<div class="tf s916 fx" id="story"><div class="top" style="${C}"><span class="sl">A founding business &middot; ${esc(CITY)}</span>
   <div class="tl2"><img src="/public/logo-ve-mark-white.svg" alt=""><h5>${HEAD}</h5></div></div>
   <div class="art lgo"><img src="${logo}" alt=""></div>${STAMP}</div>`;
 
 const html = `<!doctype html><html><head><meta charset="utf-8"><base href="${BASE}/"><style>${css}
   body{background:#fff;padding:0;margin:0} .fx{width:1080px;border-radius:0!important;box-shadow:none!important}
   .s916 .top h5{font-size:7.2cqw!important}
+  .s45 .band .hd{display:flex;flex-direction:column;gap:1.2cqw}
+  .s45 .band .fb{font-size:2.6cqw;font-weight:900;letter-spacing:.14em;text-transform:uppercase;opacity:.85}
   .s916 .top .sl{white-space:nowrap;max-width:100%;overflow:hidden}
   .art.lgo{background:#fff;display:grid;place-items:center}
   .art.lgo img{width:78%!important;height:78%!important;object-fit:contain!important;object-position:center!important}
@@ -58,7 +61,7 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><base href="${BAS
     document.querySelectorAll('.n,.sl').forEach((e) => { const f0 = parseFloat(getComputedStyle(e).fontSize); let k = 1;
       while (!fits(e) && k > 0.6) { k -= 0.05; e.style.fontSize = (f0 * k) + 'px'; } });
   });
-  const over = await p.evaluate(() => [...document.querySelectorAll('h5,.n,.sl')].filter((e) => e.scrollWidth > e.clientWidth + 1
+  const over = await p.evaluate(() => [...document.querySelectorAll('h5,.n,.sl,.fb')].filter((e) => e.scrollWidth > e.clientWidth + 1
     || e.getBoundingClientRect().right > e.closest('.fx').getBoundingClientRect().right).map((e) => e.className || e.tagName));
   if (over.length) { console.error('text runs over, not written:', over.join(', ')); await b.close(); process.exit(2); }
   await (await p.$('#post')).screenshot({ path: path.join(OUT, 'post.jpg'), type: 'jpeg', quality: 88 });
