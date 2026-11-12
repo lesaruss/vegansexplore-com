@@ -28,6 +28,16 @@
   var KINDS = [['photo', 'Photos'], ['video', 'Videos'], ['logo', 'Logo files'], ['brand', 'Brand kit'], ['graphic', 'Graphics'], ['menu_board', 'Menu boards'], ['document', 'Documents'], ['archive', 'Your old website']];
   var KIND_WORD = {}; KINDS.forEach(function (k) { KIND_WORD[k[0]] = k[1]; });
   var PLAN = { full: 'Setup paid in full', '3': 'Setup in 3 monthly payments', '6': 'Setup in 6 monthly payments' };
+  // The plan in words: pricing_v9 (Site or Managed, canon canon-ve-front-of-house v9), the $1,500 setup plan before it (managed_v1),
+  // or the account's own line when it is billed on its own terms (plan_line, HQ client billing).
+  function planText(A) {
+    if (A.plan_line) return A.plan_line;
+    var adds = (A.addons || []).map(function (x) { return x === 'photos' ? 'photos' : x === 'video' ? 'a video' : x; });
+    var addW = adds.length ? ', with ' + adds.join(' and ') : '';
+    if (A.plan === 'site') return 'Site, $500 every 3 months' + addW;
+    if (A.plan === 'managed') return 'Managed, $500 a month' + (A.social ? ', plus $500 a month for social media' : '') + ', setup paid' + addW;
+    return (PLAN[A.setup_plan] || '') + ', then $500 a month' + (A.social ? ', plus $500 a month for social media' : '');
+  }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function day(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
   function size(b) { b = Number(b || 0); return b > 1048576 ? (b / 1048576).toFixed(1) + ' MB' : b > 1024 ? Math.round(b / 1024) + ' KB' : b ? b + ' B' : ''; }
@@ -200,7 +210,7 @@
           (s.done_at ? 'Done ' + esc(day(s.done_at)) + (s.by && D.admin ? ' by ' + esc(s.by) : '') + (s.auto && D.admin ? ' (on its own)' : '') + (s.note ? ' &middot; ' + esc(s.note) : '') : (s.how === 'auto' ? 'Happens on its own' : 'Coming up')) + '</small></div>' + tick + '</div>';
       }).join('');
       var arc = (D.archives || [])[0];
-      var plan = '<section class="vebd-card"><h4>' + (D.admin ? 'Their plan' : 'Your plan') + '</h4><p>' + esc(PLAN[A.setup_plan] || '') + ', then $500 a month' + (A.social ? ', plus $500 a month for social media' : '') + '. Since ' + esc(day(A.activated_at)) + '.' +
+      var plan = '<section class="vebd-card"><h4>' + (D.admin ? 'Their plan' : 'Your plan') + '</h4><p>' + esc(planText(A)) + '. Since ' + esc(day(A.activated_at)) + '.' +
         (A.pause_from ? ' Paused from ' + esc(day(A.pause_from)) + ' to ' + esc(day(A.pause_until)) + '.' : '') + '</p>' +
         '<p class="vebd-muted">' + (D.unlocked ? 'Your setup is paid in full, so every file in your Library downloads at full size.' : 'Full-size downloads of what we make open once your setup is paid in full. Your old website is always yours to download.') + '</p>' +
         (D.sample ? '<p><a class="vebd-btn o sm" href="/business/agreement" target="_blank" rel="noopener">The agreement</a> <a class="vebd-btn o sm" href="/business/sample/brand" target="_blank" rel="noopener">Your brand kit</a> <a class="vebd-btn o sm" href="/business/sample/site" target="_blank" rel="noopener">Your website</a></p>' :
@@ -654,10 +664,10 @@
       ((C.photos || {}).space || []).forEach(function (p) { if (p.src) add('photo', p.shot, p.src); });
       ((C.menu || {}).sections || []).forEach(function (sec) { (sec.items || []).forEach(function (it) { if (it.photo && it.photo.src) add('photo', it.name, it.photo.src, sec.name); }); });
       var steps = [['welcome', 'Your welcome call'], ['owner', 'We confirm you run the business'], ['archive', 'A copy of your current website, kept for you'], ['brand_kit', 'Your brand kit'],
-        ['google', 'Your Google profile, with us as a manager'], ['domain', 'Access to your domain settings (you keep the domain)'], ['socials', 'Access to your two social platforms'], ['shoot', 'Your starter photo shoot'], ['website', 'Your new website, live on your domain'], ['library', 'Your Library']]
+        ['google', 'Your Google profile, with us as a manager'], ['domain', 'Access to your domain settings (you keep the domain)'], ['socials', 'Access to your two social platforms'], ['shoot', 'Your photos'], ['website', 'Your new website, live on your domain'], ['library', 'Your Library']]
         .map(function (s, i) { return { key: s[0], client: s[1], team: s[1], how: 'team', done_at: ['2026-10-14', '2026-10-14', '2026-10-15', '2026-10-22', '2026-10-16', '2026-10-16', '2026-10-17', '2026-10-28', '2026-11-03', '2026-11-04'][i] + 'T16:00:00Z' }; });
       return { ok: true, admin: false, sample: true, unlocked: true, steps: steps, files: files, archives: [],
-        account: { id: 'sample', status: 'active', setup_plan: '3', social: true, activated_at: '2026-10-14' },
+        account: { id: 'sample', status: 'active', plan: 'managed', addons: ['photos'], setup_plan: 'full', social: true, activated_at: '2026-10-14' },
         listing: { name: (C.business || {}).name || 'Green Leaf Kitchen', slug: 'sample' }, cartridge: { status: 'locked', updated_at: (C.meta || {}).updated, data: C },
         reports: [sampleMonth()], campaigns: sampleCampaigns() };
     });

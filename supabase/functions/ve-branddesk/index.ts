@@ -1,8 +1,14 @@
 // ve-branddesk: signing a business up for managed marketing (BrandDesk, canon canon-ve-front-of-house; the contract and Stripe step,
 // Sean approved 2026-10-31: "approve both", then went live the same day: "go live, I was able to review it, and I'm okay with the terms").
 //
-// Money (canon): $1,500 setup, at once or as 3 x $500 or 6 x $250 a month; $500 a month; social +$500 a month for two platforms;
-// pause up to 3 months a year at $99 a month. 12 months, then month to month (the agreement, /business/agreement).
+// Money (canon canon-ve-front-of-house v9 pricing_v9 and v14 hot_labs_v12, Sean 2026-11-08 "Lock it"): two plans at checkout.
+//   Site: $500 every 3 months, no setup fee (bd_site_v9). Managed: $500 a month (bd_managed_v9) plus a $250 setup done live on a
+//   Hot Lab call (bd_managed_setup_v9); social +$500 a month for two platforms (bd_social_v1) and pause (bd_pause_v1) stay Managed only.
+//   Add-ons on either plan, one time: photos $250 (bd_photos_v9), video $250 (bd_video_v9).
+//   Before v9 (plan managed_v1): $1,500 setup, at once or as 3 x $500 or 6 x $250 a month, then $500 a month. Its bd_*_v1 prices
+//   stay for anyone on them. 12 months, then month to month (the agreement, /business/agreement).
+//   A v9 sign-up by anyone but a super admin waits for branddesk.terms_v9 (Sean approves the v9 agreement; until then the live
+//   agreement, 2026-10-31, still names the $1,500 setup, so nobody signs it for a v9 plan).
 // Stripe: one subscription per client, priced from reusable Prices found by lookup key (made once per Stripe account, BD below).
 // Installments ride on the subscription as their own monthly item and a subscription schedule takes that item off after 3 or 6
 // payments; a pause is a schedule too (from the next billing date, the $99 price for 1 to 3 months, then back). Live (the
@@ -77,8 +83,14 @@ const isId = (v: unknown) => typeof v === 'string' && /^[0-9a-f-]{36}$/.test(v);
 const esc = (s: string) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' } as any)[c]);
 
 // The prices, in cents. One place; the page reads them through `plan`.
-const AMOUNTS = { setup: 150000, setup3: 50000, setup6: 25000, monthly: 50000, social: 50000, pause: 9900 };
-const BD: Record<string, { name: string; amount: number; recurring: boolean }> = {
+const AMOUNTS = { setup: 150000, setup3: 50000, setup6: 25000, monthly: 50000, social: 50000, pause: 9900,
+  site: 50000, managed: 50000, managed_setup: 25000, photos: 25000, video: 25000 };
+const BD: Record<string, { name: string; amount: number; recurring: boolean; every?: number }> = {
+  bd_site_v9: { name: 'BrandDesk Site, every 3 months', amount: AMOUNTS.site, recurring: true, every: 3 },
+  bd_managed_v9: { name: 'Managed marketing, monthly', amount: AMOUNTS.managed, recurring: true },
+  bd_managed_setup_v9: { name: 'Managed marketing setup, done live on a Hot Lab call', amount: AMOUNTS.managed_setup, recurring: false },
+  bd_photos_v9: { name: 'Photos, up to 8 dishes', amount: AMOUNTS.photos, recurring: false },
+  bd_video_v9: { name: 'Video, a narrated photo slideshow', amount: AMOUNTS.video, recurring: false },
   bd_monthly_v1: { name: 'Managed marketing, monthly', amount: AMOUNTS.monthly, recurring: true },
   bd_social_v1: { name: 'Social media, two platforms, monthly', amount: AMOUNTS.social, recurring: true },
   bd_setup_v1: { name: 'Managed marketing setup', amount: AMOUNTS.setup, recurring: false },
@@ -105,10 +117,10 @@ async function secret(key: string): Promise<string | null> {
   const { data } = await db.from('lesaruss_secrets').select('value').eq('key', key).maybeSingle();
   const v = (data?.value as string) ?? null; return v && v !== 'pending' ? v : null;
 }
-async function settings(): Promise<{ live: boolean; allowed: string[]; social_chapters: string[] }> {
+async function settings(): Promise<{ live: boolean; allowed: string[]; social_chapters: string[]; terms_v9: boolean }> {
   const { data } = await db.from('ve_site_settings').select('value').eq('key', 'branddesk').maybeSingle();
   const v = (data?.value || {}) as any;
-  return { live: v.live === true, allowed: Array.isArray(v.allowed) ? v.allowed : [], social_chapters: Array.isArray(v.social_chapters) ? v.social_chapters : [] };
+  return { live: v.live === true, allowed: Array.isArray(v.allowed) ? v.allowed : [], social_chapters: Array.isArray(v.social_chapters) ? v.social_chapters : [], terms_v9: v.terms_v9 === true };
 }
 // Every write to the branddesk setting merges into what is there, so one key never wipes another.
 async function saveSettings(patch: Record<string, unknown>, by: string | null) {
@@ -140,6 +152,7 @@ async function price(test: boolean, key: string): Promise<string> {
   const prod = await stripe(test, 'POST', 'products', { name: 'Vegans Explore: ' + p.name, 'metadata[program]': 'branddesk' });
   const params: Record<string, string> = { product: prod.id, currency: 'usd', unit_amount: String(p.amount), lookup_key: key, 'metadata[program]': 'branddesk' };
   if (p.recurring) params['recurring[interval]'] = 'month';
+  if (p.recurring && p.every) params['recurring[interval_count]'] = String(p.every);
   const made = await stripe(test, 'POST', 'prices', params);
   return (priceCache[ck] = made.id);
 }
@@ -154,6 +167,22 @@ async function mail(to: string, subject: string, html: string, replyTo = TEAM_EM
 const money = (c: number) => '$' + (c / 100).toLocaleString('en-US', { minimumFractionDigits: c % 100 ? 2 : 0 });
 function phaseItems(ph: any): string[] { return (ph.items || ph.plans || []).map((i: any) => { const x = i.price ?? i.plan; return typeof x === 'string' ? x : x.id; }); }
 function installments(plan: string) { return plan === '3' ? 3 : plan === '6' ? 6 : 0; }
+const ADDONS = ['photos', 'video'];
+// The plan in words, for emails: v9 plans by name, managed_v1 by its setup.
+function planWords(a: any): { team: string; client: string } {
+  const add = (a.addons || []).filter((x: string) => ADDONS.includes(x));
+  const addW = add.length ? ' Add-ons, one time: ' + add.map((x: string) => (x === 'photos' ? 'photos ' : 'video ') + money(AMOUNTS[x as 'photos' | 'video'])).join(', ') + '.' : '';
+  if (a.plan === 'site') return { team: `Site, ${money(AMOUNTS.site)} every 3 months, no setup.${addW}`, client: `BrandDesk Site, ${money(AMOUNTS.site)} every 3 months, no setup fee.${addW}` };
+  if (a.plan === 'managed') {
+    const soc = a.social ? `, plus social ${money(AMOUNTS.social)} a month` : '';
+    return { team: `Managed, ${money(AMOUNTS.managed)} a month${soc}, setup ${money(AMOUNTS.managed_setup)} paid (book the setup Hot Lab).${addW}`,
+      client: `Managed, ${money(AMOUNTS.managed)} a month${a.social ? ', plus ' + money(AMOUNTS.social) + ' a month for social media' : ''}, and a ${money(AMOUNTS.managed_setup)} setup, done with you live on a Hot Lab call.${addW}` };
+  }
+  const n = installments(a.setup_plan);
+  const setupWords = n ? `${n} monthly payments of ${money(n === 3 ? AMOUNTS.setup3 : AMOUNTS.setup6)}` : 'paid in full';
+  return { team: `Setup: ${setupWords}. Monthly: ${money(AMOUNTS.monthly)}${a.social ? ' plus social ' + money(AMOUNTS.social) : ''}.`,
+    client: `setup ${setupWords}, then ${money(AMOUNTS.monthly)} a month${a.social ? ', plus ' + money(AMOUNTS.social) + ' a month for social media' : ''}.` };
+}
 
 async function who(req: Request, b: any) {
   const t = (req.headers.get('authorization') || '').replace(/^Bearer\s+/i, '');
@@ -196,20 +225,20 @@ async function activate(acct: any, customer: string, subId: string) {
   // Onboarding starts: the setup paid at once opens full-size downloads, and their current website is archived right away.
   const { data: lw } = await db.from('listings').select('website').eq('id', acct.listing_id).maybeSingle();
   await db.from('ve_branddesk_accounts').update({ setup_paid_at: n ? null : new Date().toISOString(), website_url: lw?.website || null }).eq('id', acct.id);
+  const pw = planWords(acct);
   if (lw?.website) { try { await startArchive({ ...data, website_url: null }, lw.website, null); } catch (e) { console.error('archive start', e); } }
   if (acct.note === 'ops test') return data; // ops_test_activate sends no email
   const { data: l } = await db.from('listings').select('name, slug').eq('id', acct.listing_id).maybeSingle();
   const { data: m } = await db.from('members').select('name, email').eq('id', acct.member_id).maybeSingle();
   const tag = test ? '[TEST] ' : '';
-  const setupWords = n ? `${n} monthly payments of ${money(n === 3 ? AMOUNTS.setup3 : AMOUNTS.setup6)}` : 'paid in full';
-  await mail(TEAM_EMAIL, `${tag}New managed marketing client: ${l?.name}`,
-    `<p><b>${esc(l?.name || '')}</b> signed up for managed marketing (BrandDesk).</p><p>Signed by ${esc(acct.agreed_name)} (${esc(m?.email || '')}) on agreement ${esc(acct.agreement_version)}.<br>` +
-    `Setup: ${setupWords}. Monthly: ${money(AMOUNTS.monthly)}${acct.social ? ' plus social ' + money(AMOUNTS.social) : ''}.</p>` +
+  await mail(TEAM_EMAIL, `${tag}New BrandDesk client (${acct.plan === 'site' ? 'Site' : 'Managed'}): ${l?.name}`,
+    `<p><b>${esc(l?.name || '')}</b> signed up for BrandDesk.</p><p>Signed by ${esc(acct.agreed_name)} (${esc(m?.email || '')}) on agreement ${esc(acct.agreement_version)}.<br>` +
+    `${esc(pw.team)}</p>` +
     `<p>Next: book the welcome call within 2 days. Their onboarding checklist, Library and website archive (started now) are in <a href="${SITE}/admin/depot/branddesk#a/${acct.id}">Depot &rsaquo; BrandDesk</a>; their brand kit is <a href="${SITE}/business/brand?listing=${esc(l?.slug || '')}">here</a>.</p>`);
   if (m?.email) await mail(m.email, `${tag}Welcome aboard, ${l?.name}`,
     `<p>Hi ${esc((m.name || acct.agreed_name).split(' ')[0])},</p><p>You are in. Thank you for trusting us with ${esc(l?.name || 'your business')}.</p>` +
     `<p>What happens next: someone from our team reaches out within a day to confirm the details and book your welcome call. Then we start on your brand kit, your Google profile and your website, and we aim to have everything we control done in two weeks.</p>` +
-    `<p>Your plan: setup ${setupWords}, then ${money(AMOUNTS.monthly)} a month${acct.social ? ', plus ' + money(AMOUNTS.social) + ' a month for social media' : ''}. Your agreement is at <a href="${SITE}/business/agreement">vegansexplore.com/business/agreement</a>.</p>` +
+    `<p>Your plan: ${esc(pw.client)} Your agreement is at <a href="${SITE}/business/agreement">vegansexplore.com/business/agreement</a>.</p>` +
     `<p>Everything we make for you lands in your Library, with your asset sheet, on your business dashboard: <a href="${SITE}/directory/${esc(l?.slug || '')}?tab=brand&pd=managed">your Managed by us page</a>. It is yours to keep.</p><p>Vegans Explore team</p>`);
   return data;
 }
@@ -237,12 +266,13 @@ async function plan(b: any, m: any) {
   const s = await settings();
   const l = await listingBySlug(b.slug);
   if (!l) return json({ error: 'not_found' }, 404);
-  const { data: accts } = await db.from('ve_branddesk_accounts').select('id, status, setup_plan, social, test, installments_left, pause_from, pause_until, activated_at, member_id')
+  const { data: accts } = await db.from('ve_branddesk_accounts').select('id, status, plan, addons, setup_plan, social, test, installments_left, pause_from, pause_until, activated_at, member_id')
     .eq('listing_id', l.id).in('status', LIVE_STATES).order('created_at', { ascending: false }).limit(1);
   const acct = accts?.[0] || null;
   const mine = acct && m && (acct.member_id === m.id || m.is_superadmin) ? acct : null;
   return json({ ok: true, test: !s.live, allowed: s.allowed.includes(l.slug) || !!m?.is_superadmin, listing: { name: l.name, slug: l.slug, city: l.address_city || '' },
-    managed: !!acct, account: mine, amounts: AMOUNTS, agreement_version: AGREEMENT_VERSION, social_open: await socialOpen(l.id, m, s) });
+    managed: !!acct, account: mine, amounts: AMOUNTS, agreement_version: AGREEMENT_VERSION, social_open: await socialOpen(l.id, m, s),
+    terms_open: s.terms_v9 || !!m?.is_superadmin });
 }
 
 async function checkout(req: Request, b: any, m: any) {
@@ -252,28 +282,37 @@ async function checkout(req: Request, b: any, m: any) {
   if (!l) return json({ error: 'not_found' }, 404);
   if (!s.allowed.includes(l.slug) && !m.is_superadmin) return json({ error: 'not_open', message: 'Managed marketing is not open for this business yet. Our team will reach out.' }, 403);
   if (l.owner_member_id && l.owner_member_id !== m.id && !m.is_superadmin) return json({ error: 'not_yours', message: 'This page belongs to another account. Sign in with the account that claimed it.' }, 403);
-  const setup = ['full', '3', '6'].includes(String(b.setup)) ? String(b.setup) : '';
+  // pricing_v9: plan site | managed. The older setup choice (full|3|6) is no longer sold.
+  const planKey = ['site', 'managed'].includes(String(b.plan)) ? String(b.plan) : '';
+  const addons = ADDONS.filter((x) => b[x] === true);
   const name = clean(b.agreed_name, 120);
-  if (!setup) return json({ error: 'setup' }, 400);
+  if (!planKey) return json({ error: 'plan', message: 'Pick Site or Managed. If this page is old, refresh it.' }, 400);
+  if (!s.terms_v9 && !m.is_superadmin) {
+    await mail(TEAM_EMAIL, `${l.name} tried to sign up for BrandDesk ${planKey === 'site' ? 'Site' : 'Managed'}`,
+      `<p>${esc(m.name || '')} (${esc(m.email || '')}) tried to sign up <b>${esc(l.name)}</b> for ${planKey === 'site' ? 'Site' : 'Managed'}${addons.length ? ' with ' + addons.join(' and ') : ''}. The v9 agreement is not approved yet (branddesk.terms_v9), so checkout stayed closed. Reach out within 24 hours.</p>`, m.email || TEAM_EMAIL);
+    return json({ error: 'terms_pending', message: 'Thank you. We are finishing the paperwork for this plan; our team will reach out within a day to get you started.' }, 409);
+  }
   if (b.agree !== true || name.length < 3) return json({ error: 'agree', message: 'Type your full name and tick the box to sign the agreement.' }, 400);
   const { data: live } = await db.from('ve_branddesk_accounts').select('id').eq('listing_id', l.id).in('status', LIVE_STATES).limit(1);
   if (live?.length) return json({ error: 'already_managed', message: 'This business is already with us.' }, 409);
-  if (b.social && !(await socialOpen(l.id, m, s))) return json({ error: 'social_not_open', message: 'Social media is not open in your city yet. Sign up without it and add it once it opens.' }, 403);
+  const social = planKey === 'managed' && !!b.social;
+  if (social && !(await socialOpen(l.id, m, s))) return json({ error: 'social_not_open', message: 'Social media is not open in your city yet. Sign up without it and add it once it opens.' }, 403);
   const test = !s.live;
   const origin = /^https:\/\/(vegansexplore\.com|vegansexplore-[a-z0-9-]+\.vercel\.app|localhost:\d+)$/.test(String(b.origin || '')) ? String(b.origin) : SITE;
   const backPath = /^\/business\/pitch\?c=[a-z0-9]{8,20}$/.test(String(b.back || '')) ? String(b.back) : '';
-  const { data: acct, error } = await db.from('ve_branddesk_accounts').insert({ listing_id: l.id, member_id: m.id, setup_plan: setup, social: !!b.social, test,
-    agreement_version: AGREEMENT_VERSION, agreed_name: name, agreed_ip: (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || null }).select('*').single();
+  const { data: acct, error } = await db.from('ve_branddesk_accounts').insert({ listing_id: l.id, member_id: m.id, plan: planKey, addons,
+    setup_plan: planKey === 'managed' ? 'full' : 'none', social, test, agreement_version: AGREEMENT_VERSION, agreed_name: name, agreed_ip: (req.headers.get('x-forwarded-for') || '').split(',')[0].trim() || null }).select('*').single();
   if (error) return json({ error: 'save_failed' }, 500);
   try {
-    const items = [await price(test, 'bd_monthly_v1')];
-    if (b.social) items.push(await price(test, 'bd_social_v1'));
-    items.push(await price(test, setup === 'full' ? 'bd_setup_v1' : setup === '3' ? 'bd_setup3_v1' : 'bd_setup6_v1'));
+    const items = [await price(test, planKey === 'site' ? 'bd_site_v9' : 'bd_managed_v9')];
+    if (social) items.push(await price(test, 'bd_social_v1'));
+    if (planKey === 'managed') items.push(await price(test, 'bd_managed_setup_v9'));
+    for (const x of addons) items.push(await price(test, `bd_${x}_v9`));
     const p = new URLSearchParams({ mode: 'subscription', success_url: `${FN_URL}?confirm={CHECKOUT_SESSION_ID}`,
       cancel_url: backPath ? `${origin}${backPath}&status=cancelled#su-pay` : `${origin}/business/managed?listing=${encodeURIComponent(l.slug)}&status=cancelled`,
       'metadata[type]': 've_branddesk', 'metadata[confirm_fn]': 've-branddesk', 'metadata[account_id]': acct.id, 'metadata[origin]': origin,
       'subscription_data[metadata][program]': 'branddesk', 'subscription_data[metadata][account_id]': acct.id, 'subscription_data[metadata][listing]': l.slug,
-      'subscription_data[description]': 'Managed marketing for ' + l.name });
+      'subscription_data[description]': (planKey === 'site' ? 'BrandDesk Site for ' : 'Managed marketing for ') + l.name });
     if (m.email) p.set('customer_email', m.email);
     if (test) p.set('metadata[test]', 'true');
     if (backPath) p.set('metadata[back]', backPath);
@@ -297,6 +336,7 @@ async function pause(b: any, m: any) {
   const a = await ownedAccount(b, m);
   if (!a || a.status !== 'active') return json({ error: 'not_found' }, 404);
   if (!a.stripe_subscription) return OUTSIDE();
+  if (a.plan === 'site') return json({ error: 'site_plan', message: 'A Site plan bills every 3 months; to stop, give notice before the next one.' }, 409);
   const months = Math.round(Number(b.months));
   if (!(months >= 1 && months <= 3)) return json({ error: 'months' }, 400);
   if (a.stripe_schedule) {
@@ -441,7 +481,7 @@ async function accountFor(b: any, m: any, needAdmin = false) {
 async function setupPaid(a: any): Promise<boolean> {
   if (a.setup_paid_at) return true;
   if (!a.stripe_subscription || a.status === 'checkout') return false;
-  let paid = a.setup_plan === 'full';
+  let paid = a.setup_plan === 'full' || a.setup_plan === 'none';
   if (!paid) {
     const n = installments(a.setup_plan);
     try {
@@ -508,7 +548,7 @@ async function client(b: any, m: any) {
   ]);
   const { data: owner } = admin ? await db.from('members').select('name, email').eq('id', a.member_id).maybeSingle() : { data: null };
   return json({ ok: true, admin,
-    account: { id: a.id, status: a.status, test: a.test, setup_plan: a.setup_plan, social: a.social, activated_at: a.activated_at, setup_paid_at: a.setup_paid_at,
+    account: { id: a.id, status: a.status, test: a.test, plan: a.plan || 'managed_v1', addons: a.addons || [], setup_plan: a.setup_plan, social: a.social, activated_at: a.activated_at, setup_paid_at: a.setup_paid_at,
       pause_from: a.pause_from, pause_until: a.pause_until, kind: a.kind || 'restaurant', plan_line: a.plan_line || null,
       billed_outside: !a.stripe_subscription, kit_url: a.kit_brand ? (admin ? `/business/brand?brand=${encodeURIComponent(a.kit_brand)}` : null) : `/business/brand?listing=${encodeURIComponent(l?.slug || '')}`,
       website_url: a.website_url || l?.website || null, agreement_version: a.agreement_version,
@@ -778,7 +818,7 @@ const PLAN = [
   { when: 'Day 1', title: 'A welcome call', text: 'We meet, you tell us what you want people to know, and we start your brand kit from what you already have.' },
   { when: 'Days 1 to 3', title: 'Your Google profile', text: 'Claimed, hours, photos, categories and the details people search for. Google\'s own verification can take longer; that part is theirs.' },
   { when: 'Days 2 to 5', title: 'Your logo and brand kit', text: 'A clean logo in every size, your colors, your type and your voice, written down so everything matches.' },
-  { when: 'Days 3 to 7', title: 'Your starter photo shoot', text: 'Up to 15 dishes and your space, shot to one standard, so every photo of your food looks like it belongs together.' },
+  { when: 'Days 3 to 7', title: 'Your photos', text: 'Upload your own, or add our photos: up to 8 dishes shot to one standard, so every photo of your food looks like it belongs together.' },
   { when: 'Days 5 to 10', title: 'Your new website', text: 'Built on our frame and fed by your Directory page: menu, hours, ordering and directions, ready for phones.' },
   { when: 'Days 10 to 14', title: 'Launch', text: 'Your site goes live, your Vegans Explore page and dashboard are ready, and we pick your first month\'s campaign together.' },
 ];
@@ -976,7 +1016,7 @@ async function pitchPublic(req: Request, b: any, m: any) {
         photos: (Array.isArray(l.gallery_urls) ? l.gallery_urls : []).filter((u: any) => typeof u === 'string').slice(0, 6) },
       contact: { name: p.contact_name || '', email: p.contact_email || '' }, note: p.note || '', look: p.look, look_name: (PITCH_LOOKS[p.look] || PITCH_LOOKS.fresh).name,
       summary: await auditSummary(p.audit_id), plan: Array.isArray(p.plan) && p.plan.length ? p.plan : PLAN,
-      prices: { setup: AMOUNTS.setup, setup3: AMOUNTS.setup3, setup6: AMOUNTS.setup6, monthly: AMOUNTS.monthly, social: AMOUNTS.social },
+      prices: { site: AMOUNTS.site, managed: AMOUNTS.managed, managed_setup: AMOUNTS.managed_setup, photos: AMOUNTS.photos, video: AMOUNTS.video, social: AMOUNTS.social },
       who: cm?.[0]?.name ? clean(cm[0].name, 60).split(' ')[0] : null, choice: p.choice, follow_up_on: p.follow_up_on, managed: `/business/managed?listing=${encodeURIComponent(l.slug)}` });
   }
   if (action === 'pitch_choice') {
@@ -1670,6 +1710,18 @@ Deno.serve(async (req) => {
       case 'social_decide': case 'social_post_save': case 'social_send': case 'social_posted': case 'social_skip': return await social(req, b, m);
       case 'site_public': case 'site_get': case 'site_start': case 'site_look': case 'site_send': case 'site_decide': case 'site_domain': case 'site_domain_check':
       case 'site_domain_remove': case 'site_check': case 'site_status': case 'sites_project': case 'site_old_scan': case 'site_old_save': case 'site_old_probe': return await sites(req, b, m);
+      case 'prices_ensure': {
+        // Super admin or ops: make (or find) every pricing_v9 Price by lookup key in the test and live accounts. Safe to run twice.
+        if (!ops && !m?.is_superadmin) return json({ error: 'admin_only' }, 403);
+        const out: Record<string, Record<string, string>> = {};
+        for (const test of [true, false]) {
+          const k = test ? 'test' : 'live'; out[k] = {};
+          for (const key of Object.keys(BD).filter((x) => x.endsWith('_v9'))) {
+            try { out[k][key] = await price(test, key); } catch (e) { out[k][key] = 'error: ' + (e as Error).message; }
+          }
+        }
+        return json({ ok: true, prices: out });
+      }
       case 'ops_test_activate': return ops ? await opsTestActivate(b, m) : json({ error: 'ops_only' }, 403);
       default: return json({ error: 'unknown_action' }, 400);
     }
