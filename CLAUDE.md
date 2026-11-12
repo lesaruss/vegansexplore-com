@@ -147,7 +147,7 @@ Sean: "I feel like I keep asking for the same thing over." The full checklist is
   No page that stacks every item, its editor and its children.
 - Every row in a list has the same fields and the same single action button in the same place. Status
   is a colored tag in plain words (Live, Waiting for approval, Not live yet), never an action word.
-- Full width (above). Cards four across, most urgent first. Short lists cap and scroll inside the box.
+- Full width (above). Cards four across, most urgent first. Short lists show five, then **Show N more** opens the rest in place; nothing scrolls inside itself (Sean, 2026-11-12: the trackpad got stuck over self-scrolling boxes; `docs/history/interface.md`).
   Summaries clamp to two rows. Queues filter, sort and search. New is a button to its own view.
 - **No window and no bottom bar** (Sean, 2026-11-01: "I don't like having everything wrapped together... no more universal frame,
   no more universal selector, just that apps button"). The dashboard is a plain page under a sticky top nav (no backdrop, title bar

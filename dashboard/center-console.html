@@ -281,13 +281,15 @@
   /* Home (Sean, 2026-10-04; renamed For you 2026-10-26): For you and the Leaderboard side by side. */
   .dash-home-split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start;margin-top:4px;}
   .dash-action-list{display:flex;flex-direction:column;gap:0;position:relative;}
-  /* Five For you tiles show; the rest scroll inside the box (Sean, 2026-10-26; three until then). The height is set
+  /* Five For you tiles show; Show N more opens the rest in place, never a scroll inside the box (Sean, 2026-10-26 and 2026-11-12). The height is set
      from the fifth tile, since tile heights vary, and the Leaderboard beside it is made the same height. */
-  .dash-action-list.is-capped{overflow-y:auto;overscroll-behavior:contain;padding-right:6px;}
+  /* No box scrolls inside itself (Sean, 2026-11-12: "Fix the dashboard boxes the same way"): five actions show, Show N more opens the rest in place. */
+  .dash-action-list.is-capped{overflow:hidden;}
+  #dash-action-more{cursor:pointer;background:none;border:0;padding:0;font:inherit;color:inherit;text-decoration:underline;text-underline-offset:3px;}
   .dash-action-more{font-size:11px;font-weight:700;color:var(--ve-text-50);margin:8px 0 0;}
   /* The Leaderboard shows five and scrolls the rest inside its column, up to 100 (Sean, 2026-10-04).
      renderLeaderboard() sets the height from the fifth row; 265px is about five rows until then. */
-  #dash-leaderboard-list{position:relative;max-height:265px;overflow-y:auto;overscroll-behavior:contain;padding-right:6px;}
+  #dash-leaderboard-list{position:relative;}
   .dash-action-list .dash-tour-prompt{width:100%;margin-bottom:12px;}
   #dash-tools-sections,#dash-tiles-flat,#dash-tiles-sectioned{display:none !important;}
   .dash-action-empty{font-size:13px;color:var(--ve-text-50);border:1.5px dashed var(--ve-border);border-radius:14px;padding:16px 18px;margin:0;}
@@ -345,7 +347,7 @@
   .rev-svg line{stroke:rgba(0,0,0,.08);}
   .rev-sum{font-size:12.5px;color:var(--ve-text-75);margin-top:6px;}
   .rev-latest h4{margin:0 0 8px;font-size:13px;font-weight:800;color:var(--ve-text);}
-  .rev-list{max-height:250px;overflow-y:auto;overscroll-behavior:contain;margin-right:-6px;padding-right:6px;}
+  .rev-list{}
   .rev-row{display:flex;gap:10px;align-items:baseline;padding:8px 0;border-bottom:1px solid rgba(0,0,0,.06);text-decoration:none;color:inherit;}
   .rev-row:last-child{border-bottom:0;}
   .rev-row:hover .rev-what{color:var(--ve-green-dark);}
@@ -390,7 +392,7 @@
   .dash-dv-crumb a{color:var(--ve-green-dark,#2D5C27);font-weight:800;text-decoration:none;}
   .dash-dv-crumb b{color:var(--ve-text);}
   .dash-dv-empty{margin-top:12px;font-size:14px;}
-  #dash-recent .dash-preview-body{height:268px;overflow-y:auto;overscroll-behavior:contain;padding-right:6px;margin-right:-6px;}
+  #dash-recent .dash-preview-body{}
   .dash-preview-who{width:32px;height:32px;border-radius:9px;flex-shrink:0;border:2px solid #fff;box-shadow:0 0 0 1.5px var(--ve-border);padding:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font:inherit;font-size:12px;font-weight:800;color:#fff;background:var(--ve-green);overflow:hidden;}
   .dash-preview-who img{width:100%;height:100%;object-fit:cover;}
   .dash-preview-who:hover,.dash-preview-who:focus-visible{box-shadow:0 0 0 2.5px var(--ve-green);outline:none;}
@@ -448,7 +450,7 @@
   .dash-ins-tabs{display:flex;gap:6px;margin:0 0 12px;}
   .dash-ins-tabs button{font:inherit;font-size:13px;font-weight:700;padding:7px 14px;border:1.5px solid var(--ve-border);border-radius:6px;background:#fff;color:var(--ve-text);cursor:pointer;}
   .dash-ins-tabs button[aria-selected="true"]{background:var(--ve-green-dark);border-color:var(--ve-green-dark);color:#fff;}
-  #dash-ins-body{position:relative;overflow-y:auto;overscroll-behavior:contain;padding-right:6px;max-height:330px;}
+  #dash-ins-body{position:relative;}
   .dash-ins-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0 0 12px;}
   .dash-ins-k{background:#fff;border:1.5px solid var(--ve-border);border-radius:10px;padding:10px 12px;}
   .dash-ins-k small{display:block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ve-text-50);}
@@ -459,7 +461,7 @@
   .dash-ins-row{display:flex;justify-content:space-between;gap:10px;font-size:13px;padding:5px 0;border-bottom:1px solid var(--ve-border);}
   .dash-ins-row span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .dash-ins-note{font-size:12px;color:var(--ve-text-50);margin:8px 0 0;}
-  #dash-depot-list{position:relative;max-height:330px;overflow-y:auto;overscroll-behavior:contain;padding-right:6px;}
+  #dash-depot-list{position:relative;}
   .dash-dp-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
   @media (max-width:420px){ .dash-dp-grid{grid-template-columns:minmax(0,1fr);} }
   .dash-dp-h{grid-column:1/-1;font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-green-dark);margin:6px 0 0;}
@@ -484,7 +486,7 @@
   .dash-inbox-tabs button span{color:var(--ve-text-50);font-weight:700;margin-left:4px;}
   .dash-inbox-tabs button[aria-selected="true"]{background:var(--ve-green-dark);border-color:var(--ve-green-dark);color:#fff;}
   .dash-inbox-tabs button[aria-selected="true"] span{color:rgba(255,255,255,.8);}
-  #dash-inbox-list{position:relative;max-height:330px;overflow-y:auto;overscroll-behavior:contain;padding-right:6px;}
+  #dash-inbox-list{position:relative;}
   /* A scrolling box clips anything past its left edge, including the 2.5px hover ring on a picture (Sean, 2026-11-03: "it's cut off on
      the left"). Every scrolling list gets 4px of room on the left, pulled back with a negative margin so nothing moves. */
   .dash-action-list.is-capped,#dash-leaderboard-list,#dash-recent .dash-preview-body,#dash-depot-list,#dash-inbox-list,.rev-list{padding-left:4px;margin-left:-4px;}
@@ -549,7 +551,7 @@
   .dash-mc-list a{color:var(--ve-green-dark);font-weight:700;text-decoration:none;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
   .dash-mc-list a:hover{text-decoration:underline;}
   .dash-mc-list span{color:var(--ve-text-50);white-space:nowrap;font-size:12px;}
-  .dash-mc-voters{max-height:232px;overflow-y:auto;overscroll-behavior:contain;padding-right:4px;}
+  .dash-mc-voters{}
   .dash-mc-voters li{align-items:center;}
   .dash-mc-voter{display:flex;align-items:center;gap:10px;min-width:0;flex:1;border:none;background:none;padding:0;font:inherit;text-align:left;cursor:pointer;color:inherit;}
   .dash-mc-voter:hover b,.dash-mc-voter:focus-visible b{text-decoration:underline;}
@@ -1102,7 +1104,7 @@
       </a>
       <p class="dash-action-empty" id="dash-action-empty" hidden>You're all caught up. New tasks show up here.</p>
       </div>
-      <p class="dash-action-more" id="dash-action-more" hidden></p>
+      <button type="button" class="dash-action-more" id="dash-action-more" hidden></button>
       </div>
 
 
@@ -2891,11 +2893,19 @@
           '<div class="dash-leaderboard-points">' + (row.points || 0).toLocaleString() + '</div>';
         list.appendChild(el);
       });
-      // Five rows show; the rest scroll. Measured once the tab is visible (offsetHeight is 0 while hidden).
+      // Five rows show; Show N more opens the rest in place, never a scroll inside the box (Sean, 2026-11-12). Measured once the tab is
+      // visible (offsetHeight is 0 while hidden).
       var tries = 0;
       function fitFive() {
         var r = list.querySelectorAll('.dash-leaderboard-row');
-        if (r.length > 5 && r[4].offsetHeight) { list.dataset.five = (r[4].offsetTop + r[4].offsetHeight) + 'px'; if (!list.style.height) list.style.maxHeight = list.dataset.five; if (window.veSyncHome) window.veSyncHome(); }
+        if (r.length > 5 && r[4].offsetHeight) {
+          var five = (r[4].offsetTop + r[4].offsetHeight) + 'px', btn = list.parentNode.querySelector('.dash-lb-more');
+          if (!btn) { btn = document.createElement('button'); btn.type = 'button'; btn.className = 'dash-action-more dash-lb-more'; list.parentNode.insertBefore(btn, list.nextSibling); }
+          var open = false;
+          function set() { list.style.overflow = 'hidden'; list.style.maxHeight = open ? 'none' : five; btn.textContent = open ? 'Show fewer' : 'Show ' + (r.length - 5) + ' more'; }
+          btn.onclick = function () { open = !open; set(); };
+          set();
+        }
         else if (r.length > 5 && ++tries < 30) setTimeout(fitFive, 500);
       }
       fitFive();
@@ -4277,20 +4287,23 @@
     var list = document.getElementById('dash-action-list'), empty = document.getElementById('dash-action-empty');
     var more = document.getElementById('dash-action-more');
     if (!list || !empty) return;
-    var SHOW = 5; // Five show; the rest scroll inside the box (Sean, 2026-10-26; three since 2026-10-04).
+    var SHOW = 5; // Five show (Sean, 2026-10-26; three since 2026-10-04); Show N more opens the rest in place, never a scroll inside the box (2026-11-12).
+    var open = false;
+    if (more) more.addEventListener('click', function () { open = !open; check(); });
     function check() {
       var cards = Array.prototype.filter.call(list.children, function (c) { return c !== empty && getComputedStyle(c).display !== 'none'; });
       var any = cards.length > 0;
       if (empty.hidden !== any) empty.hidden = any; // only on a real change, or the observer would loop
       // Cap the height at the bottom of the fifth card. Every write is guarded the same way.
-      var capped = cards.length > SHOW && cards[SHOW - 1].offsetHeight > 0;
+      var over = cards.length > SHOW && cards[SHOW - 1].offsetHeight > 0;
+      var capped = over && !open;
       var h = capped ? (cards[SHOW - 1].offsetTop + cards[SHOW - 1].offsetHeight) + 'px' : '';
       if (list.classList.contains('is-capped') !== capped) list.classList.toggle('is-capped', capped);
       if (list.style.maxHeight !== h) list.style.maxHeight = h;
       if (more) {
-        var txt = capped ? 'Scroll for ' + (cards.length - SHOW) + ' more' : '';
+        var txt = !over ? '' : open ? 'Show fewer' : 'Show ' + (cards.length - SHOW) + ' more';
         if (more.textContent !== txt) more.textContent = txt;
-        if (more.hidden !== !capped) more.hidden = !capped;
+        if (more.hidden !== !over) more.hidden = !over;
       }
       syncHome(cards, capped ? cards[SHOW - 1].offsetTop + cards[SHOW - 1].offsetHeight : 0);
     }
@@ -4303,11 +4316,10 @@
       var side = document.getElementById('dash-insights-block');
       var lb = side && !side.hidden ? document.getElementById('dash-ins-body') : document.getElementById('dash-leaderboard-list'); if (!lb) return;
       var wide = window.innerWidth > 900 && list.offsetHeight > 0 && lb.offsetHeight > 0;
+      // The box beside the actions sizes to its own rows (no fixed height, never a scroll inside it; Sean, 2026-11-12).
+      if (lb.style.height) lb.style.height = '';
       if (!wide) {
         if (list.style.minHeight) list.style.minHeight = '';
-        if (lb.style.height) lb.style.height = '';
-        var five = lb.dataset.five || '';
-        if (lb.style.maxHeight !== five) lb.style.maxHeight = five;
         return;
       }
       var own = capH;
@@ -4315,9 +4327,6 @@
       var H = Math.max(own, parseFloat(lb.dataset.five) || 265);
       var minH = Math.round(H) + 'px';
       if (list.style.minHeight !== minH) list.style.minHeight = minH;
-      var lbH = Math.round(list.getBoundingClientRect().top + H - lb.getBoundingClientRect().top) + 'px';
-      if (lb.style.maxHeight !== 'none') lb.style.maxHeight = 'none';
-      if (lb.style.height !== lbH) lb.style.height = lbH;
     }
     window.veSyncHome = function () { syncHome(); };
     if (window.MutationObserver) new MutationObserver(function (records) {
