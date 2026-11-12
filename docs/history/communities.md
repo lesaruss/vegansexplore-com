@@ -46,7 +46,16 @@ nomination approved (opening checked true), the whole interview walked in a brow
 active, entry by survey, Founding Member, 250 points (joining twice paid once), both badges. A test address (`test-%`, `@example.com`)
 is quarantined at signup by `classify_member_on_insert` and is not admitted, by design. An empty recording is caught on the page (record
 again) instead of failing the upload. All proof rows and files removed through `ve-once-nominee-proof` (now the 410 stub). Not built
-yet: the nominator's "we invited them" note and the featured kit (email, share graphics, the drawn portrait).
+yet: the featured kit (email, share graphics, the drawn portrait).
+
+**The note to the nominator, built 2026-11-12** (Sean: "yes, build the nominator note next"): Approve also adds the nominator to the
+BrandDesk people campaign **`nominator-notes`** (migration `20261112_nominator_notes.sql`, one email): "We invited <name>", thanks, they
+will hear why in your words (and, when every one of them was anonymous, that we did not say who), every nominee is considered, and their own
+tracked link to nominate someone else. One person who nominated several gets one note naming all of them while it has not gone out
+(`ve_nominations.nominator_note_member`). No note for a self-nomination, no nominator email, or the nominee's own address. Depot >
+Nominations shows the note and its status. **Held as a draft** (status draft, email not locked): nothing sends until Sean approves the
+wording; then the campaign goes active and the queued notes go out in the next window. Proven with two [TEST] nominees from one
+nominator (one note naming both, nothing due to send), test rows and recordings removed.
 
 ## Where should we go next? (Sean, 2026-11-09, playbook `ve-chapter-rankings`)
 
