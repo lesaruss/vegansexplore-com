@@ -311,7 +311,7 @@
       var name = esc(D.business.name);
       if (!P) { a.innerHTML = b.innerHTML = c.innerHTML = '<p class="vg-lede" style="padding-top:30px">Loading your plan...</p>'; return; }
       if (P.managed && !SAMPLE) {
-        var line = '<div class="vg-eyebrow">BrandDesk</div><h2 class="vg-h">' + name + ' is already with us</h2><p class="vg-lede">Sign in with the account that signed up to see your plan and your Library.</p><p><a class="vg-btn" href="/business/managed?listing=' + encodeURIComponent(D.business.slug) + '">See your plan</a></p>';
+        var line = '<div class="vg-eyebrow">Work with us</div><h2 class="vg-h">' + name + ' is already with us</h2><p class="vg-lede">Sign in with the account that signed up to see your plan and your Library.</p><p><a class="vg-btn" href="/business/managed?listing=' + encodeURIComponent(D.business.slug) + '">See your plan</a></p>';
         a.innerHTML = b.innerHTML = c.innerHTML = line; return;
       }
       var A = P.amounts, opts = [['site', 'Site', 'Your website, brand kit and Directory page. No setup fee.', money(A.site) + ' every 3 months'], ['managed', 'Managed', 'Everything in Site, plus Google and a campaign every month.', money(A.managed) + ' a month + ' + money(A.managed_setup) + ' setup']];

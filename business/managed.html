@@ -97,7 +97,7 @@
   window.addEventListener('popstate', function () { q = new URLSearchParams(location.search); draw(); });
 
   function head(lede) {
-    return '<div class="k">BrandDesk</div><h1>' + esc(P ? P.listing.name : 'Managed marketing') + '</h1>' + (lede ? '<p class="lede">' + lede + '</p>' : '') +
+    return '<div class="k">Work with us</div><h1>' + esc(P ? P.listing.name : 'Managed marketing') + '</h1>' + (lede ? '<p class="lede">' + lede + '</p>' : '') +
       (P && P.test ? '<div class="test"><b>Test mode.</b> No real card is charged. Use Stripe\'s test card 4242 4242 4242 4242, any future date and any CVC.</div>' : '');
   }
   function talk() { return '<button type="button" class="btn ghost" data-managed="business" data-business="' + esc(P ? P.listing.name : '') + '" data-listing="' + esc(SLUG) + '">Talk to our team</button>'; }
@@ -109,7 +109,7 @@
   }
   function summary() {
     var t = totals(), A = P.amounts;
-    return '<div class="sum">' + (site() ? '<div><span>BrandDesk Site, every 3 months</span><b>' + $(A.site) + '</b></div><div><span>Setup</span><b>None</b></div>' :
+    return '<div class="sum">' + (site() ? '<div><span>Site, every 3 months</span><b>' + $(A.site) + '</b></div><div><span>Setup</span><b>None</b></div>' :
         '<div><span>Managed, monthly</span><b>' + $(A.managed) + '</b></div>' + (C.social ? '<div><span>Social media, two platforms, monthly</span><b>' + $(A.social) + '</b></div>' : '') +
         '<div><span>Setup, done with you live on a Hot Lab call (one time)</span><b>' + $(A.managed_setup) + '</b></div>') +
       (C.photos ? '<div><span>Photos, up to 8 dishes (one time)</span><b>' + $(A.photos) + '</b></div>' : '') +
@@ -186,7 +186,7 @@
       app.innerHTML = head('Sign in with the account for your business to continue.') + '<button type="button" class="btn" data-signin>Sign in</button> ' + talk();
       return;
     }
-    if (!P.allowed) { app.innerHTML = head('BrandDesk is not open for ' + esc(P.listing.name) + ' yet. We are starting with a small group of restaurants, city by city. Tell us about yours and our team will reach out.') + talk(); return; }
+    if (!P.allowed) { app.innerHTML = head('Signing up is not open for ' + esc(P.listing.name) + ' yet. We are starting with a small group of restaurants, city by city. Tell us about yours and our team will reach out.') + talk(); return; }
     var s = step();
     if (s >= 2 && !C.plan) s = 1;
     if (s === 3 && !(C.agree && C.name.trim().length >= 3)) s = 2;

@@ -86,7 +86,7 @@ const esc = (s: string) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', 
 const AMOUNTS = { setup: 150000, setup3: 50000, setup6: 25000, monthly: 50000, social: 50000, pause: 9900,
   site: 50000, managed: 50000, managed_setup: 25000, photos: 25000, video: 25000 };
 const BD: Record<string, { name: string; amount: number; recurring: boolean; every?: number }> = {
-  bd_site_v9: { name: 'BrandDesk Site, every 3 months', amount: AMOUNTS.site, recurring: true, every: 3 },
+  bd_site_v9: { name: 'Site plan, every 3 months', amount: AMOUNTS.site, recurring: true, every: 3 },
   bd_managed_v9: { name: 'Managed marketing, monthly', amount: AMOUNTS.managed, recurring: true },
   bd_managed_setup_v9: { name: 'Managed marketing setup, done live on a Hot Lab call', amount: AMOUNTS.managed_setup, recurring: false },
   bd_photos_v9: { name: 'Photos, up to 8 dishes', amount: AMOUNTS.photos, recurring: false },
@@ -172,7 +172,7 @@ const ADDONS = ['photos', 'video'];
 function planWords(a: any): { team: string; client: string } {
   const add = (a.addons || []).filter((x: string) => ADDONS.includes(x));
   const addW = add.length ? ' Add-ons, one time: ' + add.map((x: string) => (x === 'photos' ? 'photos ' : 'video ') + money(AMOUNTS[x as 'photos' | 'video'])).join(', ') + '.' : '';
-  if (a.plan === 'site') return { team: `Site, ${money(AMOUNTS.site)} every 3 months, no setup.${addW}`, client: `BrandDesk Site, ${money(AMOUNTS.site)} every 3 months, no setup fee.${addW}` };
+  if (a.plan === 'site') return { team: `Site, ${money(AMOUNTS.site)} every 3 months, no setup.${addW}`, client: `Site, ${money(AMOUNTS.site)} every 3 months, no setup fee.${addW}` };
   if (a.plan === 'managed') {
     const soc = a.social ? `, plus social ${money(AMOUNTS.social)} a month` : '';
     return { team: `Managed, ${money(AMOUNTS.managed)} a month${soc}, setup ${money(AMOUNTS.managed_setup)} paid (book the setup Hot Lab).${addW}`,
@@ -312,7 +312,7 @@ async function checkout(req: Request, b: any, m: any) {
       cancel_url: backPath ? `${origin}${backPath}&status=cancelled#su-pay` : `${origin}/business/managed?listing=${encodeURIComponent(l.slug)}&status=cancelled`,
       'metadata[type]': 've_branddesk', 'metadata[confirm_fn]': 've-branddesk', 'metadata[account_id]': acct.id, 'metadata[origin]': origin,
       'subscription_data[metadata][program]': 'branddesk', 'subscription_data[metadata][account_id]': acct.id, 'subscription_data[metadata][listing]': l.slug,
-      'subscription_data[description]': (planKey === 'site' ? 'BrandDesk Site for ' : 'Managed marketing for ') + l.name });
+      'subscription_data[description]': (planKey === 'site' ? 'Site plan for ' : 'Managed marketing for ') + l.name });
     if (m.email) p.set('customer_email', m.email);
     if (test) p.set('metadata[test]', 'true');
     if (backPath) p.set('metadata[back]', backPath);
