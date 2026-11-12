@@ -439,7 +439,7 @@
   function featuredView() {
     var F = D.featured, K = F.kit || {}, nm = D.nominee.name.replace(/^Sample:\s*/, ''), slug = nm.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'me';
     var stamp = PREVIEW ? '<span class="nm-stamp">Sample</span>' : '';
-    var who = D.nominator.named ? D.nominator.name.replace(/^Sample:\s*/, '') : '';
+    var who = D.nominator.named ? D.nominator.name.replace(/^Sample:\s*/, '').replace(/\.+$/, '') : '';   // 'Dana P.' + '.' must not read 'Dana P..'
     return crumb('You\'ve Been Featured') + head('Your story is live', first() + ', You\'ve Been Featured', '') +
       card('Where you are', 'Your story is on Vegans Explore', pic('partner-community-manager.jpg'), lines([
         '<b>Meet the Vegans Explore you</b>, drawn in our style and our tee. <b>Share your graphics</b> and tag @vegansexplore' + (who ? ' and ' + esc(who) : '') + '. <b>Your link</b> is made for you, so we know your post brought people in.']),
@@ -497,7 +497,7 @@
     if (k === 'overview') sayText = 'Congratulations, ' + first() + '! I\'m Kai. Press Play to hear why you were nominated, then start your interview whenever you\'re ready.';
     if (k === 'interview') { var s = stepOf(); sayText = s >= 9 ? 'That\'s all eight. Read them over, then send it to our team.' : Q[s - 1][3]; }
     drawRail(t, sayText);
-    if (k === 'featured') bubble.textContent = first() + ', you\'re featured! I told you people don\'t get nominated by accident. Go share it' + (D.nominator.named ? ', and tag ' + D.nominator.name.replace(/^Sample:\s*/, '') + '.' : '.');
+    if (k === 'featured') bubble.textContent = first() + ', you\'re featured! I told you people don\'t get nominated by accident. Go share it' + (D.nominator.named ? ', and tag ' + D.nominator.name.replace(/^Sample:\s*/, '').replace(/\.+$/, '') + '.' : '.');
     if (k === 'account') setupGoogle();
     if (k === 'interview' && auto()) setTimeout(function () { var el = document.querySelector('.nm-kq'); if (el) kaiPlay(el, true, true); }, 60);
     window.scrollTo(0, 0);
