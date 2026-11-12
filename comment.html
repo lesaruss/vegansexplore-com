@@ -27,6 +27,14 @@
     .biz span{font-size:13px;color:var(--ve-text-75);}
     .ask{font-size:17px;font-weight:700;line-height:1.5;border-left:4px solid var(--ve-green);padding:4px 0 4px 14px;margin:4px 0 0;}
     .ctx{font-size:14px;color:var(--ve-text-75);margin-top:12px;}
+    /* A personal note from whoever asked (Sean, 2026-11-12: "so it doesn't feel like it's all auto generated"). */
+    .pnote-h{display:flex;gap:14px;align-items:center;margin-bottom:12px;}
+    .pnote-pic{width:56px;height:56px;min-width:56px;border-radius:10px;object-fit:cover;background:var(--ve-green);}
+    .pnote-h b{display:block;font-size:16px;font-weight:800;line-height:1.25;}
+    .pnote-h span{font-size:13px;color:var(--ve-text-75);}
+    .pnote audio{width:100%;margin:0 0 12px;}
+    .pnote p{margin:0 0 10px;font-size:15px;line-height:1.6;}
+    .pnote p:last-child{margin-bottom:0;}
     label.f{display:block;font-size:12px;font-weight:800;letter-spacing:0.08em;text-transform:uppercase;color:var(--ve-green-deep);margin:14px 0 6px;}
     label.f small{font-weight:600;letter-spacing:0;text-transform:none;color:var(--ve-text-75);}
     input[type=text],input[type=email],textarea{width:100%;font:inherit;font-size:16px;padding:11px 13px;border:1px solid rgba(0,0,0,0.25);border-radius:6px;background:#fff;color:var(--ve-text);}
@@ -91,6 +99,12 @@
     <p class="lede" id="lede"></p>
 
     <ol class="stepper" id="stepper" hidden></ol>
+
+    <section class="card pnote" id="pnote" hidden>
+      <div class="pnote-h"><img class="pnote-pic" id="pnotePic" src="/public/founder/sean-square.jpg" alt=""><div><b id="pnoteFrom"></b><span id="pnoteRole"></span></div></div>
+      <div id="pnoteAudio"></div>
+      <div id="pnoteText"></div>
+    </section>
 
     <section class="card" id="about" hidden>
       <div class="biz" id="biz" hidden></div>
@@ -194,6 +208,15 @@
           $('biz').hidden = false;
           $('biz').innerHTML = (L.logo_url ? '<img class="biz-logo" src="' + esc(L.logo_url) + '" alt="">' : '<span class="biz-logo">' + esc((L.name || '?')[0]) + '</span>') +
             '<div><b>' + esc(L.name) + '</b><span>' + esc(L.city || '') + '</span></div>';
+        }
+        if (R.personal_note) {
+          $('pnote').hidden = false;
+          $('pnoteFrom').textContent = 'A note from ' + (R.personal_note_from || 'Sean A. Russell');
+          $('pnoteRole').textContent = 'Founder, Vegans Explore';
+          $('pnoteText').innerHTML = String(R.personal_note).split(/\n\s*\n/).map(function (x) { return '<p>' + esc(x.trim()).replace(/\n/g, '<br>') + '</p>'; }).join('');
+          if (R.personal_note_audio_url && /^https:\/\/fwbhwfxpncrsfhttimna\.supabase\.co\/storage\/v1\/object\/public\//.test(R.personal_note_audio_url)) {
+            $('pnoteAudio').innerHTML = '<audio controls preload="none" src="' + esc(R.personal_note_audio_url) + '"></audio>';
+          }
         }
         $('ask').textContent = R.prompt;
         if (R.context) { $('ctx').hidden = false; $('ctx').textContent = R.context; }

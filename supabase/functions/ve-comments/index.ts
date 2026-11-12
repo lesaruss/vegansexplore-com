@@ -102,7 +102,7 @@ const FOOT = `<p style="font-size:12px;color:#777;margin:18px 0 0">Vegans Explor
 const wrap = (inner: string) => `<div style="font-family:sans-serif;font-size:15px;line-height:1.6;color:#1a1a1a;max-width:560px">${inner}${FOOT}</div>`;
 const btn = (href: string, label: string) => `<p style="margin:0 0 16px"><a href="${href}" style="display:inline-block;background:#2d7d31;color:#fff;font-weight:800;text-decoration:none;padding:12px 18px;border-radius:6px">${esc(label)}</a></p>`;
 
-const PUBLIC_FIELDS = 'id, code, kind, purpose, listing_id, to_name, title, prompt, context, allow_voice, allow_written, voice_max_seconds, multi, closes_at, status';
+const PUBLIC_FIELDS = 'id, code, kind, purpose, listing_id, to_name, title, prompt, context, allow_voice, allow_written, voice_max_seconds, multi, closes_at, status, personal_note, personal_note_from, personal_note_audio_url';
 async function listingOf(id: string | null) {
   if (!id) return null;
   const { data } = await db.from('listings').select('id, slug, name, logo_url, category, address_city, address_state, owner_member_id, status').eq('id', id).maybeSingle();
@@ -122,10 +122,11 @@ function fields(b: any) {
   if (b.kind !== undefined) { if (!KINDS.includes(b.kind)) throw new Error('bad_kind'); out.kind = b.kind; }
   if (b.purpose !== undefined) { if (!PURPOSES.includes(b.purpose)) throw new Error('bad_purpose'); out.purpose = b.purpose; }
   if (b.listing_id !== undefined) { if (b.listing_id !== null && !isId(b.listing_id)) throw new Error('bad_listing'); out.listing_id = b.listing_id; }
-  for (const [k, n] of [['to_name', 160], ['to_email', 200], ['title', 200], ['prompt', 1200], ['context', 2000], ['campaign', 80], ['note', 2000], ['person_key', 200]] as [string, number][]) {
+  for (const [k, n] of [['to_name', 160], ['to_email', 200], ['title', 200], ['prompt', 1200], ['context', 2000], ['campaign', 80], ['note', 2000], ['person_key', 200], ['personal_note', 4000], ['personal_note_from', 120], ['personal_note_audio_url', 500]] as [string, number][]) {
     if (b[k] !== undefined) out[k] = clean(b[k], n) || null;
   }
   if (out.to_email && !isEmail(String(out.to_email))) throw new Error('bad_email');
+  if (out.personal_note_audio_url && !String(out.personal_note_audio_url).startsWith(`${SUPABASE_URL}/storage/v1/object/public/`)) throw new Error('bad_audio_url');
   for (const k of ['allow_voice', 'allow_written', 'multi']) if (b[k] !== undefined) out[k] = !!b[k];
   if (b.voice_max_seconds !== undefined) out.voice_max_seconds = Math.max(15, Math.min(600, Math.round(Number(b.voice_max_seconds) || 120)));
   if (b.closes_at !== undefined) out.closes_at = b.closes_at ? new Date(b.closes_at).toISOString() : null;
