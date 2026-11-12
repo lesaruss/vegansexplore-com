@@ -76,6 +76,15 @@
     '.nm-kq-bar b{display:block;height:100%;width:0;background:#22C55E;}',
     '.nm-kq video{display:block;width:100%;height:100%;object-fit:cover;}',
     '.nm-hint{font-size:12.5px;color:var(--ink55);margin:8px 0 0;}',
+    // the featured kit (copied from the approved mock, /mocks/nominate/guide.js) and the photo
+    '.nm-gfx{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start;margin:8px 0 18px;}',
+    '.nm-stamp{position:absolute;top:10px;right:10px;z-index:2;font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#b45309;background:#fff;border:2px solid #b45309;border-radius:6px;padding:1px 7px;}',
+    '.nm-me{position:relative;width:min(260px,100%);aspect-ratio:1;border-radius:12px;overflow:hidden;border:1px solid var(--line);}.nm-me img{width:100%;height:100%;object-fit:cover;display:block;}',
+    '.nm-me-b{flex:1 1 280px;min-width:0;font-size:15px;line-height:1.55;color:var(--ink75);}.nm-me-b b{display:block;font-size:20px;font-weight:900;color:var(--ink);margin-bottom:4px;}',
+    '.nm-gi{position:relative;margin:0;display:flex;flex-direction:column;gap:8px;align-items:flex-start;}.nm-gi img{display:block;width:100%;border-radius:10px;border:1px solid var(--line);}.nm-gi.p{width:min(300px,100%);}.nm-gi.s{width:min(210px,100%);}.nm-gi figcaption{font-size:12.5px;font-weight:800;color:var(--ink55);}',
+    '.nm-redraw{margin-top:12px;font-size:13.5px;}.nm-redraw summary{cursor:pointer;font-weight:800;color:var(--ink55);}.nm-redraw textarea{margin-top:8px;}',
+    '.wg-art .wg-art-go{grid-column:2;justify-self:start;margin-top:6px;}',
+    '.nm-photo{margin:16px 0 4px;}.nm-photo-row{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:6px 0 4px;}.nm-photo-img{width:72px;height:72px;border-radius:10px;object-fit:cover;border:1px solid var(--line);}.nm-photo-btn{cursor:pointer;}',
     '.nm-sel{appearance:none;-webkit-appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2712%27 height=%278%27%3E%3Cpath d=%27M1 1l5 5 5-5%27 stroke=%27%231a1a1a%27 stroke-width=%272%27 fill=%27none%27/%3E%3C/svg%3E") no-repeat right 16px center;}',
     '.nm-spots{list-style:none;padding:0;margin:0;display:grid;gap:8px;}',
     '.nm-spots li{border:1px solid var(--line);border-radius:10px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:6px 14px;align-items:center;}',
@@ -153,6 +162,9 @@
   }
   function lines(ps) { return ps.map(function (x) { return '<p>' + x + '</p>'; }).join(''); }
   function artRow(picUrl, title, txt) { return '<li class="wg-art"><span class="wg-art-img" style="background-image:url(&quot;' + esc(picUrl) + '&quot;)"></span><div><span class="wg-art-t">' + esc(title) + '</span><p>' + esc(txt) + '</p></div></li>'; }
+  function artLink(picUrl, title, txt, url, go) { return '<li class="wg-art"><span class="wg-art-img" style="background-image:url(&quot;' + esc(picUrl) + '&quot;)"></span><div><span class="wg-art-t">' + esc(title) + '</span><p>' + esc(txt) + '</p></div><a class="dg-btn dg-ghost wg-art-go" href="' + esc(url) + '">' + esc(go) + '</a></li>'; }
+  var PLACE_PIC = { hub: 'partner-community-manager.jpg', episode: 'holiday/p-listen.jpg', pulse: 'restaurant-guide/t-pulse.jpg', other: 'welcome-guide.jpg' };
+  var PLACE_GO = { hub: 'See it', episode: 'Listen', pulse: 'Read it', other: 'Open' };
   function group(label, rows) { return '<div class="wg-grp"><h5>' + esc(label) + '</h5><ol>' + rows.join('') + '</ol></div>'; }
   function cta(k, title, text, go) {
     if (window.VEExplorerCard) VEExplorerCard.html({});
@@ -168,7 +180,13 @@
 
   var SAMPLE = { ok: true, nominee: { first_name: 'Maria', name: 'Sample: Maria Rodriguez', email: 'maria@example.com', area: 'South Florida', area_slug: 'south-florida' },
     nominator: { name: 'Sample: Dana P.', named: true, written: 'She feeds the whole block every Thursday and never asks for anything back. Half of us tried Vegan food for the first time at her table.', audio_url: null },
-    welcome: { url: null }, answers: {}, sent: false, joined: false };
+    welcome: { url: null }, answers: {}, sent: false, joined: false, photo: { has: false, url: null },
+    featured: { link: 'https://vegansexplore.com/go/sample', redraw_requested: false, places: [
+      { kind: 'hub', label: 'South Florida: Community Voices, your card on the city hub', url: '/communities/south-florida' },
+      { kind: 'pulse', label: 'The South Florida Daily Pulse: your story in the morning briefing', url: '/pulse' }],
+      kit: { portrait: '/mocks/nominate/img/maria-drawn-v2.jpg', shapes: { '1x1': '/mocks/nominate/img/maria-drawn-v2.jpg', '4x5': '/mocks/nominate/img/maria-drawn-45.jpg' },
+        post: '/mocks/nominate/img/maria-featured-post.jpg', story: '/mocks/nominate/img/maria-featured-story.jpg' } } };
+  var FEAT_TAB = { k: 'featured', label: 'You\'ve Been Featured', art: 'cheer' };
 
   // ---------- Kai's welcome on the Overview: her opening (with their names), the nominator's own voice, her closing (two clips) ----------
   function welcomeParts() {
@@ -372,8 +390,9 @@
           artRow(pic('thumb-bounties.jpg'), 'Points', 'Earn them by taking part, spend them on Guides, give them to the places and causes you love.'),
           artRow(pic('welcome-guide.jpg'), 'Your Guides', 'Ask your Guide anything, and open topic Guides with your points.')]) + '</div>';
     },
+    featured: function () { return D.featured ? featuredView() : VIEWS.overview(); },
     account: function () {
-      if (D.joined) return crumb('Set Up Your Account') + head('You\'re in', 'Welcome to Vegans Explore', '') + card('Your account', 'You are a member', pic('thumb-passport.jpg'), lines(['Your membership is ready. Liz shows you around next.']), '<a class="dg-btn" href="/passport?guide=welcome&amp;from=nominee">Open my Welcome Guide</a>');
+      if (D.joined) return crumb('Set Up Your Account') + head('You\'re in', 'Welcome to Vegans Explore', '') + card('Your account', 'You are a member', pic('thumb-passport.jpg'), lines(['Your membership is ready. Liz shows you around next.']) + photoBlock() + '<p class="nm-msg" id="nmMsg" role="status"></p>', '<a class="dg-btn" href="/passport?guide=welcome&amp;from=nominee">Open my Welcome Guide</a>', 'nm-form');
       var signed = !!tok() && !PREVIEW;
       return crumb('Set Up Your Account') + head('Last step', 'How Do You Want to Sign In?', '') +
         card('Your account', D.nominee.name, pic('thumb-passport.jpg'),
@@ -381,10 +400,67 @@
           '<div id="nmGoogle" style="min-height:44px"></div><div class="nm-or">or use your email</div>' +
           '<div class="nm-grid"><div><label class="nm-f" for="acEmail">Email</label><input class="nm-in" type="email" id="acEmail" autocomplete="email" value="' + esc(D.nominee.email) + '"></div>' +
           '<div><label class="nm-f" for="acPw">Choose a password <small>(8 or more characters)</small></label><input class="nm-in" type="password" id="acPw" autocomplete="new-password"></div></div>' +
-          '<p class="nm-hint">Already have an account? <a href="#" id="acSignIn" style="color:var(--g);font-weight:800">Sign in</a> instead.</p>'),
+          '<p class="nm-hint">Already have an account? <a href="#" id="acSignIn" style="color:var(--g);font-weight:800">Sign in</a> instead.</p>') + photoBlock(),
           '<button type="button" class="dg-btn" id="acJoin">' + (signed ? 'Finish joining' : 'Create my account') + '</button>', 'nm-form');
     }
   };
+
+  // The photo (approved in the 2026-11-09 mock): optional, for future features; the release line is the consent.
+  function photoBlock() {
+    var has = D.photo && D.photo.url;
+    return '<div class="nm-photo"><label class="nm-f" for="nmPhoto">A recent photo of you <small>(optional, for future features)</small></label>' +
+      '<div class="nm-photo-row">' + (has ? '<img src="' + esc(D.photo.url) + '" alt="Your photo" class="nm-photo-img">' : '') +
+      '<label class="dg-btn dg-ghost nm-photo-btn" for="nmPhoto">' + (has ? 'Change my photo' : 'Add a photo') + '</label><input type="file" id="nmPhoto" accept="image/jpeg,image/png,image/webp,image/heic,image/heif" hidden>' +
+      '<span class="nm-hint" style="margin:0">A clear, recent shot of your face works best.</span></div>' +
+      '<label class="nm-check"><input type="checkbox" id="nmPhotoOk"' + (has ? ' checked disabled' : '') + '> <span><b>You may use my photo.</b> Vegans Explore may use it in features, and if I am featured, draw me in its illustrated style, wearing a Vegans Explore tee. I can ask for either to come down at any time.</span></label></div>';
+  }
+  function photoPick(input) {
+    var f = input.files && input.files[0]; if (!f) return;
+    if (!$('nmPhotoOk').checked) { input.value = ''; say('Tick the box to let us use your photo, then add it again.', true); return; }
+    if (f.size > 15 * 1024 * 1024) { input.value = ''; say('That photo is over 15 MB. Try a smaller one.', true); return; }
+    if (PREVIEW) { D.photo = { has: true, url: URL.createObjectURL(f) }; route(); return; }
+    say('Uploading your photo...');
+    api({ action: 'photo_upload', t: T, type: f.type || 'image/jpeg', size: f.size }).then(function (d) {
+      if (!d || !d.ok) throw d || {};
+      return fetch(d.url, { method: 'PUT', headers: { 'Content-Type': f.type || 'image/jpeg', 'x-upsert': 'true' }, body: f }).then(function (r) {
+        if (!r.ok) throw { message: 'Your photo did not upload. Try again.' };
+        return api({ action: 'photo_save', t: T, path: d.path, key: d.key, release: true });
+      });
+    }).then(function (d) { if (!d || !d.ok) throw d || {}; D.photo = { has: true, url: d.url }; route(); })
+      .catch(function (x) { input.value = ''; say((x && x.message) || 'Your photo did not save. Try again.', true); });
+  }
+
+  // ---------- You've Been Featured (Sean, 2026-11-12: the featured kit) ----------
+  function dl(url, name) {
+    fetch(url).then(function (r) { return r.blob(); }).then(function (b) {
+      var a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = name; document.body.appendChild(a); a.click(); a.remove();
+    }).catch(function () { window.open(url, '_blank', 'noopener'); });
+  }
+  function featuredView() {
+    var F = D.featured, K = F.kit || {}, nm = D.nominee.name.replace(/^Sample:\s*/, ''), slug = nm.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'me';
+    var stamp = PREVIEW ? '<span class="nm-stamp">Sample</span>' : '';
+    var who = D.nominator.named ? D.nominator.name.replace(/^Sample:\s*/, '') : '';
+    return crumb('You\'ve Been Featured') + head('Your story is live', first() + ', You\'ve Been Featured', '') +
+      card('Where you are', 'Your story is on Vegans Explore', pic('partner-community-manager.jpg'), lines([
+        '<b>Meet the Vegans Explore you.</b> We drew you in our style, in our tee: your badge of honor, for your profile and your socials.',
+        '<b>Share it.</b> Your graphics are below, ready for your feed and your stories.',
+        '<b>Tag us</b> @vegansexplore' + (who ? ' and ' + esc(who) + ', so they see it too.' : ', so we see it too.'),
+        '<b>Your link</b> is made for you, so we know your post brought people in.']),
+        '<button type="button" class="dg-btn" id="ftCopy">Copy my link</button>') +
+      '<div class="wg-arts">' + group('Where you are featured', (F.places || []).map(function (p) {
+        return artLink(pic(PLACE_PIC[p.kind] || PLACE_PIC.other), p.label, ({ hub: 'Your card on the city hub, playing your answer in your own voice.', episode: 'Your story on the show.', pulse: 'Your story in your city\'s morning briefing.' })[p.kind] || 'Your feature on Vegans Explore.', p.url, PLACE_GO[p.kind] || 'Open');
+      })) + '</div>' +
+      '<div class="wg-grp"><h5>The Vegans Explore you</h5></div><div class="nm-gfx"><div class="nm-me">' + stamp + '<img src="' + esc(K.portrait || '') + '" alt="' + esc(nm) + ', drawn in the Vegans Explore style"></div>' +
+        '<div class="nm-me-b"><b>Your badge of honor</b><p>Only people we feature get one. It is yours to keep: use it as your profile picture here and on your socials.</p>' +
+        '<div class="wg-gs-btns"><button type="button" class="dg-btn" id="ftUse">Use as my profile picture</button><button type="button" class="dg-btn dg-ghost" data-dl="' + esc(K.portrait || '') + '" data-name="' + esc(slug) + '-vegans-explore.jpg">Download</button></div>' +
+        (F.redraw_requested ? '<p class="nm-hint">Thank you. We are drawing you again, and your page updates when it is ready.</p>' :
+        '<details class="nm-redraw"><summary>Not quite you? Tell us and we redraw it.</summary><textarea class="nm-in" id="ftNote" rows="3" maxlength="1000" placeholder="What should we change? Hair, glasses, anything."></textarea><button type="button" class="dg-btn dg-ghost" id="ftRedraw" style="margin-top:8px">Ask for a redraw</button></details>') +
+        '<p class="nm-msg" id="nmMsg" role="status"></p></div></div>' +
+      '<div class="wg-grp"><h5>Your graphics</h5></div><div class="nm-gfx">' +
+        '<figure class="nm-gi p">' + stamp + '<img src="' + esc(K.post || '') + '" alt="Post: I\'ve been featured, ' + esc(nm) + '"><figcaption>Post &middot; 4:5, for the feed</figcaption><button type="button" class="dg-btn dg-ghost" data-dl="' + esc(K.post || '') + '" data-name="' + esc(slug) + '-featured-post.jpg">Download</button></figure>' +
+        '<figure class="nm-gi s">' + stamp + '<img src="' + esc(K.story || '') + '" alt="Story: I\'ve been featured, ' + esc(nm) + '"><figcaption>Story &middot; 9:16</figcaption><button type="button" class="dg-btn dg-ghost" data-dl="' + esc(K.story || '') + '" data-name="' + esc(slug) + '-featured-story.jpg">Download</button></figure>' +
+      '</div>' + cta('Pay it forward', 'Who else deserves their flowers?', 'Nominate someone in your community, and their story could be next.', ['Nominate someone', '#/nominate/1']);
+  }
 
   function spotsView() {
     var have = spots(), n = have.length, open = W.spot !== null || (n < 3 && !have.length);
@@ -424,12 +500,34 @@
     if (k === 'overview') sayText = 'Congratulations, ' + first() + '! I\'m Kai. Press Play to hear why you were nominated, then start your interview whenever you\'re ready.';
     if (k === 'interview') { var s = stepOf(); sayText = s >= 9 ? 'That\'s all eight. Read them over, then send it to our team.' : Q[s - 1][3]; }
     drawRail(t, sayText);
+    if (k === 'featured') bubble.textContent = first() + ', you\'re featured! I told you people don\'t get nominated by accident. Go share it' + (D.nominator.named ? ', and tag ' + D.nominator.name.replace(/^Sample:\s*/, '') + '.' : '.');
     if (k === 'account') setupGoogle();
     if (k === 'interview' && auto()) setTimeout(function () { var el = document.querySelector('.nm-kq'); if (el) kaiPlay(el, true, true); }, 60);
     window.scrollTo(0, 0);
   }
 
   // ---------- events ----------
+  document.addEventListener('change', function (e) { if (e.target && e.target.id === 'nmPhoto') photoPick(e.target); });
+  document.addEventListener('click', function (e) {
+    var b;
+    if ((b = e.target.closest('[data-dl]'))) { dl(b.getAttribute('data-dl'), b.getAttribute('data-name')); return; }
+    if ((b = e.target.closest('#ftCopy'))) {
+      var link = D.featured.link; (navigator.clipboard ? navigator.clipboard.writeText(link) : Promise.reject()).then(function () { b.textContent = 'Copied'; }, function () { window.prompt('Your link', link); });
+      return;
+    }
+    if ((b = e.target.closest('#ftUse'))) {
+      if (PREVIEW) { b.textContent = 'Done: it is your picture'; return; }
+      if (!tok()) { if (window.VEAuth) VEAuth.showAuthModal('Sign in to use it as your picture.', function () { b.click(); }); return; }
+      b.disabled = true; api({ action: 'use_portrait', t: T }).then(function (d) { if (!d || !d.ok) throw d || {}; b.textContent = 'Done: it is your picture'; })
+        .catch(function (x) { b.disabled = false; say((x && x.message) || 'That did not work. Try again in a minute.', true); });
+      return;
+    }
+    if ((b = e.target.closest('#ftRedraw'))) {
+      if (PREVIEW) { D.featured.redraw_requested = true; route(); return; }
+      b.disabled = true; api({ action: 'redraw', t: T, note: ($('ftNote').value || '').trim() }).then(function (d) { if (!d || !d.ok) throw d || {}; D.featured.redraw_requested = true; route(); })
+        .catch(function (x) { b.disabled = false; say((x && x.message) || 'That did not send. Try again in a minute.', true); });
+    }
+  });
   document.addEventListener('input', function (e) {
     var el = e.target; if (el.closest && el.closest('.nm-form')) say('');
     if (el.id === 'nmText') cur().written = el.value;
@@ -566,6 +664,7 @@
     var d = r[0];
     if (!d || !d.ok) { loadErr = (d && d.message) || 'That link did not work. Ask us for a new one at contact@lesaruss.com.'; route(); return; }
     D = d; A = d.answers || {};
+    if (D.featured && TABS.indexOf(FEAT_TAB) < 0) TABS.push(FEAT_TAB);
     var h = $('nmFrom'); if (h) h.innerHTML = D.nominator.named ? 'nominated<br>by ' + esc(D.nominator.name.replace(/^Sample:\s*/, '')) : 'nominated by<br>your community';
     route();
   }).catch(function () { loadErr = 'We could not reach our server. Try again in a minute.'; route(); });

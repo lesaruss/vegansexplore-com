@@ -185,6 +185,53 @@ async function noteNominator(n: any, by: string | null): Promise<string> {
   await db.from('ve_nominations').update({ nominator_note_member: ins.id }).eq('id', n.id);
   return 'queued';
 }
+// ---------- the featured kit (Sean, 2026-11-12: "approved, build the featured kit") ----------
+// The portrait (five shapes) and the two share graphics are made by Logan (scripts/featured-kit/) and uploaded to
+// vegan-media/media/people/<kit_slug>/featured/; the team checks the likeness, then Send the feature emails the featured person and their
+// nominator through their own people campaigns.
+const FEATURED = 'featured-people', NOM_FEATURED = 'nominator-featured';
+const SHAPES = ['1x1', '4x5', '9x16', '16x9', '21x9'];
+const KIT_FILES = [...SHAPES.map((s) => s + '.jpg'), 'post.jpg', 'story.jpg'];
+const PLACE_KINDS: Record<string, string> = { hub: 'Community Voices card', episode: 'Podcast episode', pulse: 'Daily Pulse story', other: 'Other' };
+const displayName = (s: string) => String(s || '').replace(/^Sample:\s*/, '').trim();
+const slugify = (s: string) => String(s || '').toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'person';
+const kitBase = (n: any) => `${SUPABASE_URL}/storage/v1/object/public/vegan-media/media/people/${n.kit_slug}/featured/`;
+function kitOf(n: any) {
+  if (!n.kit_slug || !n.kit_ready_at) return null;
+  const b = kitBase(n), v = '?v=' + new Date(n.kit_ready_at).getTime();
+  const shapes: Record<string, string> = {}; SHAPES.forEach((s) => { shapes[s] = b + s + '.jpg' + v; });
+  return { portrait: shapes['1x1'], shapes, post: b + 'post.jpg' + v, story: b + 'story.jpg' + v };
+}
+async function featuredLink(n: any) {
+  const { data } = await db.from('ve_outreach_campaign_members').select('link_code').eq('campaign_slug', FEATURED).eq('person_key', String(n.nominee_email).toLowerCase()).is('removed_at', null).maybeSingle();
+  return data?.link_code ? `${SITE}/go/${data.link_code}` : `${SITE}/nominate`;
+}
+function linkCodeNew() {
+  const abc = 'abcdefghjkmnpqrstuvwxyz23456789';
+  return 'ft-' + Array.from(crypto.getRandomValues(new Uint8Array(7)), (b) => abc[b % abc.length]).join('');
+}
+// A tracked link made ahead of the send, so each person's one link goes where it should (the sender keeps a link_code already set).
+async function presetLink(campaign: string, email: string, name: string, dest: string) {
+  for (let i = 0; i < 4; i++) {
+    const code = linkCodeNew();
+    const { error } = await db.from('ve_links').insert({ code, label: (campaign + ': ' + name).slice(0, 120), destination: dest, initiative_slug: campaign,
+      tags: [campaign], channel: 'email', recipient_email: email.slice(0, 200), recipient_name: name.slice(0, 120), active: true });
+    if (!error) return code;
+  }
+  throw new Error('could not make a tracked link');
+}
+// The wording Sean approved (2026-11-12), filled in.
+function featuredEmail(n: any) {
+  const first = firstOf(n.nominee_name), nom = String(n.nominator_name || '').trim(), named = n.credit_ok !== false && !n.self_nominated && nom;
+  const places = (n.featured_places || []).map((p: any) => '- ' + String(p.label || PLACE_KINDS[p.kind] || 'Vegans Explore')).join('\n');
+  return { '1': { subject: `${first}, you've been featured`,
+    body: `Hi ${first},\n\nYou did it. Your story is live on Vegans Explore. Here's where you're featured:\n${places}\n\nWe also drew you in our style, wearing a Vegans Explore tee. It's your badge of honor: use it as your profile picture, here and on your socials. Not quite you? Tell us on your page and we'll redraw it.\n\nYour graphics are ready for your feed and your stories. Tag @vegansexplore${named ? ' and ' + nom : ''} so ${named ? 'they see' : 'we see'} it too.\n\nSee it all and share it: {link}\n\nKai\nThe Creator Guide at Vegans Explore` } };
+}
+function nominatorFeaturedEmail(n: any, names: string[]) {
+  const first = firstOf(n.nominator_name), who = joinNames(names);
+  return { '1': { subject: `${who} ${names.length > 1 ? 'have' : 'has'} been featured`,
+    body: `Hi ${first},\n\nYour nomination made it happen: ${who}${names.length > 1 ? '\'s stories are' : '\'s story is'} live on Vegans Explore.\n\nSee it here: {link}\n\nThank you for shining a light on someone in your community.\n\nKai\nThe Creator Guide at Vegans Explore` } };
+}
 async function byInvite(t: string) {
   if (!/^[0-9a-f]{36}$/.test(t)) return null;
   const { data } = await db.from('ve_nominations').select('*').eq('invite_token', t).maybeSingle();
@@ -300,7 +347,7 @@ Deno.serve(async (req: Request) => {
     return json({ ok: true, places: (data || []).map((x: any) => ({ name: x.name, slug: x.slug, city: x.address_city || '' })) });
   }
 
-  if (['interview_get', 'answer_upload', 'answer_save', 'interview_send', 'interview_join'].includes(action)) {
+  if (['interview_get', 'answer_upload', 'answer_save', 'interview_send', 'interview_join', 'photo_upload', 'photo_save', 'use_portrait', 'redraw'].includes(action)) {
     const n: any = action === 'interview_get' && !body.t && body.vl ? await byClick(String(body.vl)) : await byInvite(clean(body.t, 64));
     if (!n || !n.invite_token) return json({ error: 'not_found', message: 'That link did not work. Open the link in your invitation email, or write to us at contact@lesaruss.com.' }, 404);
     if (n.status === 'declined') return json({ error: 'closed', message: 'This interview is closed. Write to us at contact@lesaruss.com.' }, 409);
@@ -313,7 +360,47 @@ Deno.serve(async (req: Request) => {
         nominee: { first_name: firstOf(n.nominee_name), name: n.nominee_name, email: n.nominee_email, area, area_slug: n.community_slug || null },
         nominator: { named, name: named ? n.nominator_name : null, written: n.written || null, audio_url: await signed(n.audio_path) },
         welcome: { url: n.welcome_path ? `${SUPABASE_URL}/storage/v1/object/public/vegan-media/${n.welcome_path}` : null },
-        answers: await answersOf(n.id), sent: !!n.interview_sent_at, joined: !!n.joined_at });
+        answers: await answersOf(n.id), sent: !!n.interview_sent_at, joined: !!n.joined_at,
+        photo: { has: !!n.photo_path, url: await signed(n.photo_path) },
+        featured: n.featured_at ? { places: n.featured_places || [], kit: kitOf(n), link: await featuredLink(n), redraw_requested: !!n.redraw_requested_at } : null });
+    }
+    // The photo asked for at Set Up Your Account (or on You've Been Featured), with its release line.
+    if (action === 'photo_upload') {
+      const type = String(body.type || ''), size = Number(body.size) || 0;
+      if (!/^image\/(jpeg|png|webp|heic|heif)$/.test(type) || size <= 0 || size > 15 * 1024 * 1024) return json({ error: 'bad_file', message: 'A photo (JPEG, PNG, WebP or HEIC) up to 15 MB, please.' }, 400);
+      const ext = /png/.test(type) ? 'png' : /webp/.test(type) ? 'webp' : /hei/.test(type) ? 'heic' : 'jpg';
+      const path = `${PREFIX}/photos/${n.id}/${crypto.randomUUID()}.${ext}`;
+      const { data, error } = await db.storage.from(BUCKET).createSignedUploadUrl(path);
+      if (error || !data) return json({ error: 'upload_failed', message: 'We could not start the upload. Try again in a minute.' }, 500);
+      return json({ ok: true, path, url: data.signedUrl, key: await uploadKey(path) });
+    }
+    if (action === 'photo_save') {
+      const path = String(body.path || '');
+      if (body.release !== true) return json({ error: 'release', message: 'Tick the box to let us use your photo.' }, 400);
+      if (!path.startsWith(`${PREFIX}/photos/${n.id}/`) || String(body.key || '') !== (await uploadKey(path))) return json({ error: 'bad_photo' }, 400);
+      const dir = path.slice(0, path.lastIndexOf('/')), file = path.slice(path.lastIndexOf('/') + 1);
+      const { data: f } = await db.storage.from(BUCKET).list(dir, { search: file });
+      if (!f || !f.length) return json({ error: 'missing_photo', message: 'Your photo did not finish uploading. Try again.' }, 400);
+      await db.from('ve_nominations').update({ photo_path: path, photo_release_at: nowIso(), updated_at: nowIso() }).eq('id', n.id);
+      if (n.photo_path && n.photo_path !== path) await db.storage.from(BUCKET).remove([n.photo_path]);
+      return json({ ok: true, url: await signed(path) });
+    }
+    if (action === 'use_portrait') {
+      const kit = n.featured_at ? kitOf(n) : null;
+      if (!kit) return json({ error: 'not_featured' }, 400);
+      if (!me?.id) return json({ error: 'sign_in', message: 'Sign in first, then press it again.' }, 401);
+      if (n.member_id !== me.id) return json({ error: 'not_yours', message: 'Sign in with the account you joined with.' }, 403);
+      await db.from('members').update({ avatar_url: kit.portrait, updated_at: nowIso() }).eq('id', me.id);
+      return json({ ok: true, avatar_url: kit.portrait });
+    }
+    if (action === 'redraw') {
+      if (!n.featured_at) return json({ error: 'not_featured' }, 400);
+      const note = clean(body.note, 1000) || null;
+      await db.from('ve_nominations').update({ redraw_requested_at: nowIso(), redraw_note: note, redraw_count: (n.redraw_count || 0) + 1, updated_at: nowIso() }).eq('id', n.id);
+      if (!String(n.nominee_name).startsWith('[TEST]')) await sendOne(TEAM_EMAIL, `[Redraw] ${displayName(n.nominee_name)} asked for a new portrait`, wrap(
+        `<p><b>${esc(displayName(n.nominee_name))}</b> says their Vegans Explore portrait is not quite them.</p>` + (note ? `<blockquote style="margin:0 0 16px;padding:8px 14px;border-left:3px solid #2d7d31;color:#333">${esc(note)}</blockquote>` : '') +
+        btn(`${SITE}/admin/depot/nominations#n/${n.id}`, 'Open it in the Depot')));
+      return json({ ok: true });
     }
     if (action === 'answer_upload') {
       const q = clean(body.q, 8); if (!QKEYS.test(q)) return json({ error: 'bad_question' }, 400);
@@ -399,6 +486,12 @@ Deno.serve(async (req: Request) => {
       db.from('ve_outreach_campaigns').select('status, approved_at, paused_at').eq('slug', NOTE).maybeSingle()]);
     return m ? { ...m, campaign_live: !!(c && c.status === 'active' && c.approved_at && !c.paused_at) } : null;
   }
+  async function featureSends(n: any) {
+    if (!n.featured_at) return null;
+    const { data } = await db.from('ve_outreach_campaign_members').select('campaign_slug, person_key, step, send_status, stop_reason, last_sent_at')
+      .in('campaign_slug', [FEATURED, NOM_FEATURED]).in('person_key', [String(n.nominee_email).toLowerCase(), String(n.nominator_email || '').toLowerCase()]).is('removed_at', null);
+    return data || [];
+  }
   if (action === 'get') {
     if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
     const { data: n } = await db.from('ve_nominations').select('*').eq('id', body.id).maybeSingle();
@@ -411,7 +504,9 @@ Deno.serve(async (req: Request) => {
     return json({ ok: true, nomination: { ...n, audio_url, area: n.community_slug ? (names[n.community_slug] || n.community_slug) : (n.community_other || 'Somewhere else'), other_nominations: others || 0,
       interview_url: n.invite_token ? `${SITE}/nominate/interview?t=${n.invite_token}` : null,
       welcome_url: n.welcome_path ? `${SUPABASE_URL}/storage/v1/object/public/vegan-media/${n.welcome_path}` : null,
-      answers: await answersOf(n.id), invite: cm || null, note: await noteOf(n) }, roles: ROLES });
+      answers: await answersOf(n.id), invite: cm || null, note: await noteOf(n),
+      photo_url: await signed(n.photo_path), kit: kitOf(n), kit_folder: n.kit_slug ? `vegan-media/media/people/${n.kit_slug}/featured/` : null,
+      feature_sends: await featureSends(n) }, roles: ROLES, place_kinds: PLACE_KINDS });
   }
 
   if (action === 'set') {
@@ -442,6 +537,78 @@ Deno.serve(async (req: Request) => {
       welcome_path: w.path, welcome_text: w.text, welcome_checked: w.checked, updated_at: nowIso() }).eq('id', body.id);
     const note = invite.startsWith('failed') ? 'none' : await noteNominator({ ...cur, invited_at: nowIso() }, me?.id || null);
     return json({ ok: true, invite, note, welcome: { made: !!w.path, checked: w.checked, error: w.error || null }, interview_url: `${SITE}/nominate/interview?t=${token}` });
+  }
+
+  // Featuring (Sean, 2026-11-12). 1: the places it is live; this also asks Logan for the kit.
+  if (action === 'feature_places') {
+    if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+    const { data: n } = await db.from('ve_nominations').select('*').eq('id', body.id).maybeSingle();
+    if (!n) return json({ error: 'not_found' }, 404);
+    if (!n.joined_at) return json({ error: 'not_member', message: 'Feature someone after they have joined.' }, 400);
+    const raw = Array.isArray(body.places) ? body.places.slice(0, 6) : [];
+    const places = raw.map((p: any) => ({ kind: p && p.kind in PLACE_KINDS ? p.kind : 'other', label: clean(p?.label, 160), url: clean(p?.url, 500) }))
+      .filter((p: any) => p.label && /^(https:\/\/|\/)/.test(p.url));
+    if (!places.length) return json({ error: 'places', message: 'Add at least one place, with its name and its link.' }, 400);
+    const first = !n.feature_requested_at;
+    const kit_slug = n.kit_slug || `${slugify(displayName(n.nominee_name))}-${String(n.id).slice(0, 6)}`;
+    await db.from('ve_nominations').update({ featured_places: places, feature_requested_at: n.feature_requested_at || nowIso(), kit_slug, updated_at: nowIso() }).eq('id', n.id);
+    if (first) await db.from('stream_events').insert({ owner: 'Logan', station: 'vegans-explore', status: 'open', keywords: ['ve-nominate-someone', 'featured-kit'],
+      summary: `Featured kit requested: ${displayName(n.nominee_name)} (nomination ${n.id}). Draw the portrait and render the graphics with scripts/featured-kit, then Check the kit in Depot > Nominations.` });
+    return json({ ok: true, places, kit_folder: `vegan-media/media/people/${kit_slug}/featured/` });
+  }
+  // 2: the kit is uploaded (Logan); every file must be there.
+  if (action === 'feature_kit_check') {
+    if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+    const { data: n } = await db.from('ve_nominations').select('*').eq('id', body.id).maybeSingle();
+    if (!n?.kit_slug) return json({ error: 'no_kit', message: 'Save the places first.' }, 400);
+    const { data: files } = await db.storage.from('vegan-media').list(`media/people/${n.kit_slug}/featured`, { limit: 100 });
+    const have = new Set((files || []).map((f: any) => f.name)), missing = KIT_FILES.filter((f) => !have.has(f));
+    if (missing.length) return json({ ok: false, missing, message: 'Not there yet: ' + missing.join(', ') });
+    await db.from('ve_nominations').update({ kit_ready_at: nowIso(), redraw_requested_at: null, updated_at: nowIso() }).eq('id', n.id);
+    return json({ ok: true, kit: kitOf({ ...n, kit_ready_at: nowIso() }) });
+  }
+  // 3: the likeness is checked by eye; Send the feature emails the featured person and their nominator.
+  if (action === 'feature_send') {
+    if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
+    const { data: n } = await db.from('ve_nominations').select('*').eq('id', body.id).maybeSingle();
+    if (!n) return json({ error: 'not_found' }, 404);
+    if (n.featured_at) return json({ ok: true, already: true });
+    if (!n.joined_at || !n.invite_token) return json({ error: 'not_member', message: 'Feature someone after they have joined.' }, 400);
+    if (!(n.featured_places || []).length) return json({ error: 'places', message: 'Save where it is live first.' }, 400);
+    if (!n.kit_ready_at) return json({ error: 'kit', message: 'The portrait and graphics are not ready yet.' }, 400);
+    if (body.likeness !== true) return json({ error: 'likeness', message: 'Tick the box once you have checked the portrait looks like them.' }, 400);
+    const email = String(n.nominee_email).toLowerCase(), name = displayName(n.nominee_name);
+    const out: Record<string, string> = {};
+    try {
+      const { data: had } = await db.from('ve_outreach_campaign_members').select('id').eq('campaign_slug', FEATURED).eq('person_key', email).is('removed_at', null).maybeSingle();
+      if (had) await db.from('ve_outreach_campaign_members').update({ removed_at: nowIso() }).eq('id', had.id);
+      const code = await presetLink(FEATURED, email, name, `/nominate/interview?t=${n.invite_token}#/featured`);
+      const { error } = await db.from('ve_outreach_campaign_members').insert({ campaign_slug: FEATURED, person_key: email, person_name: name, step: 0, send_status: 'waiting',
+        link_code: code, personal_emails: featuredEmail(n), personal_at: nowIso(), personal_by: me?.id || null });
+      out.featured = error ? 'failed: ' + error.message : 'queued';
+    } catch (e) { out.featured = 'failed: ' + String(e); }
+    const nomEmail = String(n.nominator_email || '').trim().toLowerCase();
+    if (nomEmail.includes('@') && !n.self_nominated && nomEmail !== email) {
+      try {
+        const { data: row } = await db.from('ve_outreach_campaign_members').select('id, step, send_status, personal_emails').eq('campaign_slug', NOM_FEATURED).eq('person_key', nomEmail).is('removed_at', null).maybeSingle();
+        if (row && row.step === 0 && row.send_status === 'waiting') {
+          const { data: prev } = await db.from('ve_nominations').select('nominee_name').ilike('nominator_email', nomEmail).not('featured_at', 'is', null).gte('featured_at', new Date(Date.now() - 14 * DAY_MS).toISOString());
+          const names = [...new Set([...(prev || []).map((x: any) => displayName(x.nominee_name)), name])];
+          await db.from('ve_outreach_campaign_members').update({ personal_emails: nominatorFeaturedEmail(n, names), personal_at: nowIso() }).eq('id', row.id);
+          out.nominator = 'added';
+        } else {
+          if (row) await db.from('ve_outreach_campaign_members').update({ removed_at: nowIso() }).eq('id', row.id);
+          const dest = String(n.featured_places[0].url);
+          const code = await presetLink(NOM_FEATURED, nomEmail, displayName(n.nominator_name || ''), dest);
+          const { error } = await db.from('ve_outreach_campaign_members').insert({ campaign_slug: NOM_FEATURED, person_key: nomEmail, person_name: n.nominator_name || null, step: 0,
+            send_status: 'waiting', link_code: code, personal_emails: nominatorFeaturedEmail(n, [name]), personal_at: nowIso(), personal_by: me?.id || null });
+          out.nominator = error ? 'failed: ' + error.message : 'queued';
+        }
+      } catch (e) { out.nominator = 'failed: ' + String(e); }
+    } else out.nominator = 'none';
+    if (out.featured.startsWith('failed')) return json({ error: 'send_failed', message: out.featured, ...out }, 500);
+    await db.from('ve_nominations').update({ featured_at: nowIso(), status: 'featured', likeness_checked_by: me?.id || null, updated_at: nowIso() }).eq('id', n.id);
+    return json({ ok: true, ...out });
   }
 
   return json({ error: 'unknown_action' }, 400);
