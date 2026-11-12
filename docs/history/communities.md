@@ -54,7 +54,29 @@ will hear why in your words (and, when every one of them was anonymous, that we 
 tracked link to nominate someone else. One person who nominated several gets one note naming all of them while it has not gone out
 (`ve_nominations.nominator_note_member`). No note for a self-nomination, no nominator email, or the nominee's own address. Depot >
 Nominations shows the note and its status. **Held as a draft** (status draft, email not locked): nothing sends until Sean approves the
-wording; then the campaign goes active and the queued notes go out in the next window. **Turned on 2026-11-12** (Sean: "approved, turn it on"; migration `20261112_nominator_notes_on.sql`): active, the email locked. Proven with two [TEST] nominees from one
+wording; then the campaign goes active and the queued notes go out in the next window. **Turned on 2026-11-12** (Sean: "approved, turn it on"; migration `20261112_nominator_notes_on.sql`): active, the email locked.
+
+**The featured kit, built 2026-11-12** (Sean: "approved, build the featured kit"; the drafts in `docs/proposals/nominate-someone.md`
+approved as written; migration `20261112_featured_kit.sql`). **Their photo**: Set Up Your Account (and the page after) asks for a recent
+photo with the release line approved in the 11-09 mock (it had been left out of the step 2 build); photos live in their own private
+bucket `nomination-photos` (images only, 15 MB). **Feature them** (Depot > Nominations > a member, its own view `#n/<id>/feature`):
+1. where it is live (kind, what people see, its link; up to six; only our paths or https links), which asks Logan for the kit (a
+`stream_events` row); 2. the kit, made by Logan with `scripts/featured-kit/` (README: the portrait drawn from their photo with the locked
+recipe in all five shapes, the two graphics from `scripts/brand-templates/featured.js` on the locked templates, uploaded to
+`vegan-media/media/people/<kit_slug>/featured/`), then **Check the kit** (every file there); 3. the likeness checked by eye against their
+photo and **Send the feature**: `featured-people` emails them (each place listed, the portrait, the graphics; their own tracked link to
+You've Been Featured) and `nominator-featured` emails their nominator (their link to the first place it is live), weekdays 9 to 5
+Eastern. A link is made per person before the send (`ve_links`, code `ft-...`), and the sender keeps it. **You've Been Featured**
+(`/nominate/interview#/featured`, the sixth part, so the menu becomes the dropdown): where they are featured, the portrait (Use as my
+profile picture sets their member picture; Download; Not quite you? asks for a redraw, emailed to the team and counted per person for
+Sean's watch), the post and story (Download), Copy my link, Pay it forward; the header button reads See my feature. No server can draw,
+so the kit is a session step until an image API is set up server side. **Proven 2026-11-12** against the live function (deploy sha256
+matched): photo refused without the release and saved with it; places saved (a bad link dropped); Send refused before the kit; the kit
+made and uploaded with the runbook, checked, sent; both emails queued with the approved words and their own links (stopped at once,
+never sent); the page in a browser at 1440 and 390 (no sideways scroll, downloads named, redraw recorded); Use as my profile picture set
+the signed-in account's picture; the Depot's Feature view in all three states. Fixes found in the proof: the photo bucket (audio only),
+two message lines on one page, a card that would have scrolled inside itself. All proof rows and files removed through
+`ve-once-nominee-proof` (now the 410 stub). Proven with two [TEST] nominees from one
 nominator (one note naming both, nothing due to send), test rows and recordings removed.
 
 ## Where should we go next? (Sean, 2026-11-09, playbook `ve-chapter-rankings`)

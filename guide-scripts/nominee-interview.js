@@ -443,7 +443,7 @@
     return crumb('You\'ve Been Featured') + head('Your story is live', first() + ', You\'ve Been Featured', '') +
       card('Where you are', 'Your story is on Vegans Explore', pic('partner-community-manager.jpg'), lines([
         '<b>Meet the Vegans Explore you</b>, drawn in our style and our tee. <b>Share your graphics</b> and tag @vegansexplore' + (who ? ' and ' + esc(who) : '') + '. <b>Your link</b> is made for you, so we know your post brought people in.']),
-        '<button type="button" class="dg-btn" id="ftCopy">Copy my link</button>') +
+        '<button type="button" class="dg-btn" id="ftCopy">Copy my link</button>').replace('id="nmMsg"', 'id="nmMsgTop"') +   // one message line on this page: the portrait's
       '<div class="wg-arts">' + group('Where you are featured', (F.places || []).map(function (p) {
         return artLink(pic(PLACE_PIC[p.kind] || PLACE_PIC.other), p.label, ({ hub: 'Your card on the city hub, playing your answer in your own voice.', episode: 'Your story on the show.', pulse: 'Your story in your city\'s morning briefing.' })[p.kind] || 'Your feature on Vegans Explore.', p.url, PLACE_GO[p.kind] || 'Open');
       })) + '</div>' +
