@@ -87,8 +87,7 @@ picture; a long name shrinks to fit or the render stops. Sample: `/mocks/nominat
 >
 > See it here: {link}
 >
-> Thank you for shining a light on someone in your community. Know someone else who deserves their flowers? Nominate them on
-> vegansexplore.com/nominate.
+> Thank you for shining a light on someone in your community.
 >
 > Kai
 > The Creator Guide at Vegans Explore
