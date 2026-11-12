@@ -40,6 +40,7 @@
 <script src="/public/ve-auth.js"></script>
 <script src="/public/ve-hubs.js"></script>
 <script src="/public/ve-city-banner.js"></script>
+<script src="/public/ve-region-directory.js"></script>
 <script src="/public/ve-events.js"></script>
 
 <section id="ev-hero"><h1 class="vcb-ssr" style="margin:0;padding:28px 16px;font:900 26px Montserrat,sans-serif">Vegan Events</h1></section>
@@ -101,7 +102,7 @@
   });
   banner.setChoices([{ value: '', label: 'All events' }], '', function () {}, 'Kind of event');
   cal = VEEvents.mount('ev-cal', {
-    key: 'events', filterMenu: true, location: loc0 || {}, onInteract: function () { banner.autoFold(); },
+    key: 'events', filterMenu: true, nearMe: true, location: loc0 || {}, onInteract: function () { banner.autoFold(); },
     onState: function (s) {
       banner.setChoices(s.kinds, s.cat, function (k) { banner.autoFold(); cal.setCat(k); }, 'Kind of event');
       banner.setLabel(s.catLabel + (s.location ? ' \u00b7 ' + s.location : ''));

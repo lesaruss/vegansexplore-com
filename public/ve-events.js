@@ -188,6 +188,13 @@
     '.vev-fcount[hidden],.vev-ltag[hidden]{display:none;}',
     '.vev-ltag{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px 0 12px;border-radius:6px;border:1px solid var(--vb-line,#b6e5c8);background:var(--vb-soft,#f0faf4);color:var(--vb-accent-ink,#2d7a4f);font-family:inherit;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap;max-width:240px;overflow:hidden;text-overflow:ellipsis;}',
     '.vev-ltag:hover{border-color:var(--vb-accent-ink,#2d7a4f);}',
+    // Near me (playbook ve-near-me, 2026-11-12): the Directory's Near me by Filters, its chip by the search, the distance on each row.
+    '.vev-nearbtn svg{flex:none}.vev-nearbtn[aria-pressed="true"]{border-color:var(--vb-accent-ink,#2d7a4f);color:var(--vb-accent-ink,#2d7a4f);background:var(--vb-soft,#f0faf4);}',
+    '.vev-nearbtn[aria-busy="true"]{cursor:progress;opacity:.75;}',
+    '.vev-dist{font-weight:800;color:#1a1a1a;white-space:nowrap;}',
+    '.vev-neardiv{display:flex;align-items:center;gap:12px;margin:18px 0 10px;font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:#555;}',
+    '.vev-neardiv::before,.vev-neardiv::after{content:"";flex:1 1 0;height:1px;background:#ddd;}',
+    '@media(max-width:600px){.vev-bar .vev-nearbtn{flex:1 1 100%}}',
     '.vev-ltag .x{font-size:15px;line-height:1;margin-left:2px;}',
     '.vev-pop{position:absolute;top:calc(100% + 8px);right:0;z-index:40;width:min(820px,100%);background:#fff;border:1px solid #e3e3e3;border-radius:10px;box-shadow:0 14px 36px rgba(0,0,0,.16);overflow:hidden;}',
     '.vev-pop[hidden]{display:none;}',
@@ -391,7 +398,7 @@
       (!past && link ? '<div class="vev-cta"><a class="vev-go" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer" aria-label="Apply: ' + esc(e.title) + '">Apply</a></div>' : '') +
     '</article>';
   }
-  function tile(e, past, outLink) {
+  function tile(e, past, outLink, mi, approx) {
     if (e.listing_kind === 'funding') return fundTile(e, past);
     var dm = dayMon(e), link = safeUrl(e.ticket_url) || safeUrl(e.virtual_url), own = memberTix(e.ticket_url);
     var cta = past ? (safeUrl(e.recording_url) ? '<a class="vev-go" href="' + esc(e.recording_url) + '" target="_blank" rel="noopener noreferrer">Watch</a>' : '')
@@ -403,7 +410,7 @@
         '<p class="vev-kind">' + esc(catLabel(e.category)) + (e.is_featured && !past ? ' · Featured' : '') + '</p>' +
         // Another brand's calendar has no event view of its own yet: the name opens the official page.
         '<h3 class="vev-name">' + (outLink && link ? '<a href="' + esc(link) + '" target="_blank" rel="noopener noreferrer">' : '<a href="#event/' + esc(e.id) + '">') + esc(e.title) + '</a></h3>' +
-        '<div class="vev-details"><span>' + esc(place(e)) + '</span><span>' + esc(when(e)) + '</span>' + (e.rsvp_count && !past ? '<span>' + e.rsvp_count + ' going</span>' : '') + '</div>' +
+        '<div class="vev-details">' + (mi != null && window.VERegionDirectory ? '<span class="vev-dist">' + esc(VERegionDirectory.near.format(mi, approx)) + '</span>' : '') + '<span>' + esc(place(e)) + '</span><span>' + esc(when(e)) + '</span>' + (e.rsvp_count && !past ? '<span>' + e.rsvp_count + ' going</span>' : '') + '</div>' +
       '</div>' +
       (cta ? '<div class="vev-cta">' + cta + '</div>' : '') +
     '</article>';
@@ -437,6 +444,37 @@
     // rides in the address (?city=, or ?continent= and ?country=; syncUrl) and the page keeps it too (opts.onLocation).
     var menu = !!opts.filterMenu && !brandCal;
     st.loc = { continent: '', country: '' };
+    // Near me (playbook ve-near-me; Sean, 2026-11-12: "Same thing with the events. They can just hit near me and they don't have to do
+    // the whole choose the continent, choose that"). opts.nearMe, menu layout only: the Directory's own Near me (VERegionDirectory.near),
+    // never a copy. An event is placed by its venue listing, else the ZIP in its address, else its host listing, else its city (the
+    // middle of our listings there); online events follow under Online, the rest under "Location not on the map yet". While it is on
+    // the location is set aside and the rows run closest first. The address carries ?near=me or ?near=<zip>.
+    var NEARX = { pts: null, asking: null, hush: false };
+    function NM() { return menu && opts.nearMe && window.VERegionDirectory && VERegionDirectory.near; }
+    function nearOn() { var n = NM(); return !!(n && n.state().on); }
+    function isOnline(e) { return e.event_type === 'virtual' || continentOf(e) === 'Online'; }
+    function zipIn(a) { var m = String(a || '').match(/\b(\d{5})(?:-\d{4})?\b(?![\s\S]*\b\d{5}\b)/); return m ? m[1] : ''; }
+    function withPts(cb) {
+      if (NEARX.pts) return cb();
+      if (NEARX.asking) return NEARX.asking.then(cb);
+      var items = (all || []).filter(function (e) { return !isOnline(e); }).map(function (e) {
+        return { key: e.id, ids: [e.venue_listing_id], zip: norm(e.country) === 'US' || !e.country ? zipIn(e.address) : '', after: [e.host_listing_id], city: e.city, state: e.state };
+      });
+      NEARX.asking = NM().places(items).then(function (p) { NEARX.pts = p || {}; }).catch(function () { NEARX.pts = {}; }).then(function () { NEARX.asking = null; });
+      NEARX.asking.then(cb);
+    }
+    function nearMi(e) { return NM().miles(NEARX.pts && NEARX.pts[e.id]); }
+    function nearPick() { var fb = el.querySelector('[data-v="fbtn"]'), pop = el.querySelector('.vev-pop'); if (!fb || !pop) return; pop.hidden = false; fb.setAttribute('aria-expanded', 'true'); var f = pop.querySelector('select:not(:disabled)'); if (f) f.focus(); }
+    function nearStart(btn) { NM().start(btn, { pickCity: nearPick }); }
+    function nearPaint() {
+      var b = el.querySelector('[data-v="near"]'), t = el.querySelector('[data-v="ntag"]'), on = nearOn();
+      if (b) { b.setAttribute('aria-pressed', String(on)); b.title = on ? 'Stop sorting by distance' : 'Sort by distance from you'; }
+      if (t) { t.hidden = !on; t.querySelector('[data-v="nname"]').textContent = on ? NM().state().label : ''; }
+    }
+    if (NM()) NM().onChange(function () {
+      if (NEARX.hush || !document.contains(el) || !el.querySelector('[data-v="list"]')) return;
+      st.shown = 40; syncUrl(); paintLoc(); drawRows();
+    });
     function hubOf(slug) { return slug && window.VECityBanner ? VECityBanner.hubBySlug(slug) : null; }
     function locSetCity(slug) {
       var h = hubOf(slug);
@@ -469,8 +507,9 @@
       // The location rides in the address too (Sean, 2026-11-01: every view is a link to share): ?city=<chapter>, else
       // ?continent= and ?country=.
       if (menu) {
-        ['city', 'continent', 'country'].forEach(function (k) { q.delete(k); });
-        if (st.city) q.set('city', st.city);
+        ['city', 'continent', 'country', 'near'].forEach(function (k) { q.delete(k); });
+        if (nearOn()) q.set('near', NM().state().zip || 'me');
+        else if (st.city) q.set('city', st.city);
         else if (st.loc.continent) { q.set('continent', st.loc.continent); if (st.loc.country) q.set('country', st.loc.country); }
       }
       if (st.when === 'past') q.set('when', 'past'); else q.delete('when');
@@ -501,9 +540,10 @@
       var list = (all || []).filter(function (e) {
         var t = new Date(e.ends_at || e.starts_at).getTime();
         if (st.when === 'past' ? t >= now : t < now) return false;
-        if (!inCity(e)) return false;
-        if (menu && st.loc.continent && continentOf(e) !== st.loc.continent) return false;
-        if (menu && st.loc.country && norm(e.country) !== st.loc.country) return false;
+        var nr = nearOn();
+        if (!nr && !inCity(e)) return false;
+        if (!nr && menu && st.loc.continent && continentOf(e) !== st.loc.continent) return false;
+        if (!nr && menu && st.loc.country && norm(e.country) !== st.loc.country) return false;
         if (st.where) {
           if (st.where.indexOf('c:') === 0 ? continentOf(e) !== st.where.slice(2) : norm(e.country) !== st.where) return false;
         }
@@ -528,6 +568,13 @@
         var d = new Date(a.starts_at) - new Date(b.starts_at);
         return st.when === 'past' ? -d : d;
       });
+      // Near me: closest first (the date breaks a tie), then Online, then the ones not on the map yet, each in date order.
+      if (nearOn() && NEARX.pts) {
+        var near = [], online = [], off = [];
+        list.forEach(function (e) { var m = isOnline(e) ? null : nearMi(e); e._mi = m; (m != null ? near : isOnline(e) ? online : off).push(e); e._grp = m != null ? '' : isOnline(e) ? 'Online' : 'Location not on the map yet'; });
+        near.sort(function (a, b) { return a._mi - b._mi; });
+        list = near.concat(online, off);
+      }
       return list;
     }
 
@@ -561,7 +608,7 @@
       hubs.forEach(function (h) { if (h.countryCode === st.loc.country) out.push({ value: h.slug, label: h.name }); });
       return out;
     }
-    function locName() { var h = hubOf(st.city); return h ? h.name : st.loc.country ? countryName(st.loc.country) : st.loc.continent || ''; }
+    function locName() { if (nearOn()) return ''; var h = hubOf(st.city); return h ? h.name : st.loc.country ? countryName(st.loc.country) : st.loc.continent || ''; }
     function locNow() { return { continent: st.loc.continent, country: st.loc.country, chapter: st.city }; }
     function paintLoc() {
       if (!menu) return;
@@ -574,6 +621,7 @@
         sel.value = (lv === 'chapter' ? st.city : st.loc[lv]) || '';
         sel.disabled = waiting || (lv !== 'continent' && !list.length);
       });
+      nearPaint();
       var tag = el.querySelector('[data-v="ltag"]'), n = locName();
       if (tag) { tag.hidden = !n; tag.querySelector('[data-v="lname"]').textContent = n; tag.setAttribute('aria-label', 'Showing ' + n + '. Show every location'); }
       var cnt = el.querySelector('.vev-fcount');
@@ -599,7 +647,9 @@
           '<label class="vev-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="#666" stroke-width="2"/><path d="M20 20l-4-4" stroke="#666" stroke-width="2" stroke-linecap="round"/></svg>' +
             '<input type="search" data-v="q" placeholder="Search events, places, cities" aria-label="Search events" autocomplete="off" value="' + esc(st.q) + '"></label>' +
           '<button type="button" class="vev-ltag" data-v="ltag" hidden title="Show every location">' + pin + '<span data-v="lname"></span><span class="x" aria-hidden="true">&times;</span></button>' +
+          (NM() ? '<button type="button" class="vev-ltag" data-v="ntag" hidden title="Stop sorting by distance">' + NM().pin + '<span data-v="nname"></span><span class="x" aria-hidden="true">&times;</span></button>' : '') +
           '<div class="vev-chips" data-v="chips" role="group" aria-label="Filters on"></div>' +
+          (NM() ? '<button type="button" class="vev-fbtn vev-nearbtn" data-v="near" data-vrd-near aria-pressed="false" title="Sort by distance from you">' + NM().pin + '<span data-vrd-near-word>Near me</span></button>' : '') +
           '<button type="button" class="vev-fbtn" data-v="fbtn" aria-expanded="false" aria-controls="' + popId + '" title="Location and sort">' +
             '<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24" aria-hidden="true"><line x1="4" y1="6" x2="20" y2="6"></line><line x1="7" y1="12" x2="17" y2="12"></line><line x1="10" y1="18" x2="14" y2="18"></line></svg>' +
             '<span>Filters</span><span class="vev-fcount" hidden></span></button>' +
@@ -634,7 +684,11 @@
         else if (t) { var k2 = t.getAttribute('data-chip'); if (st.off[k2]) delete st.off[k2]; else st.off[k2] = true; st.shown = 40; paintLoc(); drawRows(); }
       });
       sortSel.addEventListener('change', function () { st.sort = sortSel.value; syncUrl(); paintLoc(); drawRows(); });
-      el.querySelectorAll('[data-loc]').forEach(function (sel) { sel.addEventListener('change', function () { setLevel(sel.getAttribute('data-loc'), sel.value); locChanged(); }); });
+      el.querySelectorAll('[data-loc]').forEach(function (sel) { sel.addEventListener('change', function () { if (nearOn()) { NEARX.hush = true; NM().clear(); NEARX.hush = false; } setLevel(sel.getAttribute('data-loc'), sel.value); locChanged(); }); });
+      var nbtn = el.querySelector('[data-v="near"]');
+      if (nbtn) nbtn.addEventListener('click', function () { if (nearOn()) NM().clear(); else nearStart(nbtn); });
+      var ntag = el.querySelector('[data-v="ntag"]');
+      if (ntag) ntag.addEventListener('click', function () { NM().clear(); });
       el.querySelector('[data-v="ltag"]').addEventListener('click', function () { setLevel('continent', ''); locChanged(); });
       var timer;
       el.querySelector('[data-v="q"]').addEventListener('input', function (ev) { clearTimeout(timer); timer = setTimeout(function () { st.q = ev.target.value.trim(); st.shown = 40; syncUrl(); drawRows(); }, 150); });
@@ -700,6 +754,7 @@
     }
     function drawRows() {
       if (!all) return;
+      if (nearOn() && !NEARX.pts) { var lb = el.querySelector('[data-v="list"]'); if (lb) lb.innerHTML = '<div class="vev-empty">Finding events near you…</div>'; withPts(drawRows); return; }
       var pills = el.querySelector('[data-v="pills"]'), cats = {};
       filtered(true).forEach(function (e) { cats[e.category || 'other'] = 1; });
       var keys = Object.keys(cats).sort(function (a, b) { return catLabel(a).localeCompare(catLabel(b)); });
@@ -707,7 +762,7 @@
       else if (st.cat && keys.indexOf(st.cat) < 0) keys.push(st.cat);
       if (menu) paintKinds(keys);
       var onK = menu ? onKinds() : [];
-      if (menu && opts.onState) opts.onState({ cat: onK.length === 1 ? onK[0] : '', catLabel: !onK.length ? 'All events' : onK.length === 1 ? catLabel(onK[0]) : onK.length + ' kinds', location: locName(), chapter: st.city,
+      if (menu && opts.onState) opts.onState({ cat: onK.length === 1 ? onK[0] : '', catLabel: !onK.length ? 'All events' : onK.length === 1 ? catLabel(onK[0]) : onK.length + ' kinds', location: nearOn() ? NM().state().label : locName(), chapter: nearOn() ? '' : st.city,
         kinds: [{ value: '', label: 'All events' }].concat(keys.map(function (k) { return { value: k, label: catLabel(k) }; })) });
       if (pills) pills.innerHTML = keys.length < 2 && !st.cat ? '' : ['<button type="button" class="vev-pill" data-cat="" aria-pressed="' + (!st.cat) + '">' + (fund() ? 'All funding' : 'All kinds') + '</button>'].concat(keys.map(function (k) {
         return '<button type="button" class="vev-pill" data-cat="' + esc(k) + '" aria-pressed="' + (st.cat === k) + '">' + esc(catLabel(k)) + '</button>';
@@ -717,6 +772,7 @@
       var wl = st.where ? (st.where.indexOf('c:') === 0 ? st.where.slice(2) : countryName(st.where)) : '';
       var whereTxt = hub ? ' in ' + hub.name : (wl ? ' in ' + wl : '');
       if (menu && locName()) whereTxt = ' in ' + locName();
+      if (nearOn()) whereTxt = ' ' + NM().state().label.toLowerCase();
       el.querySelector('[data-v="count"]').textContent = fund()
         ? list.length + (past ? ' closed' : ' open') + (list.length === 1 ? ' opportunity' : ' opportunities') + whereTxt
         : list.length + (past ? ' past' : ' upcoming') + (list.length === 1 ? ' event' : ' events') + whereTxt;
@@ -731,7 +787,13 @@
           ' Know of one? <a href="#submit/1" data-go="submit">Submit an event</a>' + (clear ? ', or ' + clear : '') + '.</div>';
       } else {
         var html = '', lastGroup = null;
+        var nearRows = nearOn();
         list.slice(0, st.shown).forEach(function (e) {
+          if (nearRows) {
+            if (e._grp && e._grp !== lastGroup) { html += '<div class="vev-neardiv">' + esc(e._grp) + '</div>'; lastGroup = e._grp; }
+            html += tile(e, past, brandCal, e._mi, !!(NEARX.pts[e.id] && NEARX.pts[e.id].approx));
+            return;
+          }
           if (st.sort === 'city') {
             var g = e.city ? e.city + (norm(e.country) === 'US' && e.state ? ', ' + e.state : (norm(e.country) && norm(e.country) !== 'US' ? ', ' + countryName(e.country) : '')) : 'Online';
             if (g !== lastGroup) { html += '<p class="vev-group">' + esc(g) + '</p>'; lastGroup = g; }
@@ -757,10 +819,11 @@
     }
 
     function load() {
-      return fetch(SUPABASE_URL + '/rest/v1/events?select=id,title,description,starts_at,ends_at,timezone,location_name,city,state,country,continent,category,event_type,ticket_url,virtual_url,is_featured,rsvp_count,recording_url,time_set,listing_kind,funding,host:listings!events_host_listing_id_fkey(communities)&status=eq.approved&tenant_id=eq.' + tenant + '&listing_kind=eq.' + st.kind + '&order=starts_at.asc&limit=2000', {
+      return fetch(SUPABASE_URL + '/rest/v1/events?select=id,title,description,starts_at,ends_at,timezone,location_name,city,state,country,continent,category,event_type,ticket_url,virtual_url,is_featured,rsvp_count,recording_url,time_set,listing_kind,funding,address,venue_listing_id,host_listing_id,host:listings!events_host_listing_id_fkey(communities)&status=eq.approved&tenant_id=eq.' + tenant + '&listing_kind=eq.' + st.kind + '&order=starts_at.asc&limit=2000', {
         headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY }
       }).then(function (r) { return r.ok ? r.json() : []; }).then(function (rows) {
         all = (rows || []).filter(function (e) { return e.starts_at; });
+        NEARX.pts = null;
       }).catch(function () { all = []; });
     }
 
@@ -1489,7 +1552,15 @@
     window.addEventListener('hashchange', route);
 
     route();
-    load().then(function () { if (!/^#(submit|mine|promote|event|guests|message|claim)/.test(location.hash) && !qEvent()) { drawList(); } });
+    load().then(function () { if (!/^#(submit|mine|promote|event|guests|message|claim)/.test(location.hash) && !qEvent()) { drawList(); } nearFromUrl(); });
+    // ?near=<zip> or ?near=me asks for Near me; with no location in the address, what this visit last had on comes back.
+    function nearFromUrl() {
+      var n = NM(); if (!n || !useUrl) return;
+      var q0 = new URLSearchParams(location.search), v = String(q0.get('near') || '').toLowerCase().trim(), btn = el.querySelector('[data-v="near"]');
+      if (/^\d{5}$/.test(v)) { if (!(nearOn() && n.state().zip === v)) n.zip(v).then(function (ok) { if (!ok) nearStart(btn); }); else drawRows(); return; }
+      if (v === 'me') { if (nearOn()) { syncUrl(); paintLoc(); drawRows(); } else nearStart(btn); return; }
+      if (!q0.get('city') && !q0.get('continent') && !q0.get('country')) n.resume();
+    }
 
     return {
       setCity: function (slug) {
