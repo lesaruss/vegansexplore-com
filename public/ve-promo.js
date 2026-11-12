@@ -8,7 +8,7 @@
  *                                                               (form: true, for People who are not creators, opens a short claim
  *                                                               request in the card instead: name, email, a link that shows it is
  *                                                               them, a note; ve-ambassador person_claim, promo 'profile-claim')
- *   VEPromo.guideCard(el, slug, ctx)    the same animated card for a Guide (GUIDE_ADS: the Airport, Dairy and Stadium & Arena Guides;
+ *   VEPromo.guideCard(el, slug, ctx)    the same animated card for a Guide (GUIDE_ADS: the Airport, Holiday and Stadium & Arena Guides, the Dairy Guide out of rotation until Christmas;
  *                                        Sean, 2026-10-31: "create that for other guides and sprinkle it throughout the website"), four
  *                                        scenes from the Guide's own art, tracked as promo 'guide-<slug>' (view, click) from ctx.page
  *   VEPromo.step(promo, step)          'landed' or 'started' on the destination, sent with where the visitor clicked
@@ -79,6 +79,8 @@
     '.vpc-ad{display:block;position:relative;border-radius:8px;overflow:hidden;text-decoration:none;color:#fff;background:#0f1f17;width:100%;aspect-ratio:4/5;max-height:440px;box-shadow:0 2px 10px rgba(0,0,0,.12)}' +
     // On phones the card runs the column's full width: Safari shrank its width to keep 4:5 under the 440px cap (2026-11-02).
     '@media(max-width:900px){.vpc-ad{max-height:none}}' +
+    '.vpc-frame{display:block;width:100%;aspect-ratio:4/5;max-height:440px;border:0;border-radius:8px;background:#FF9EC4}' +
+    '@media(max-width:900px){.vpc-frame{max-height:520px}}' +
     '.vpc-ad:focus-visible{outline:3px solid var(--vb-accent,#16a34a);outline-offset:2px}' +
     '.vpc-f{position:absolute;inset:0;background-size:cover;background-position:center 20%;opacity:0;animation:vpcF 16s infinite}' +
     '.vpc-f:nth-child(1){animation-delay:0s}.vpc-f:nth-child(2){animation-delay:4s}.vpc-f:nth-child(3){animation-delay:8s}.vpc-f:nth-child(4){animation-delay:12s}' +
@@ -104,9 +106,6 @@
     '.vpc-cancel{background:#fff;color:#333;border:1px solid #cfd8d2}' +
     '.vpc-msg{font-size:12px;color:#b42318;margin:6px 0 0}.vpc-done{font-size:12.5px;line-height:1.55;color:#14532d;margin:0}' +
     '@media(prefers-reduced-motion:reduce){.vpc-f,.vpc-lines b{animation:none}.vpc-f:first-child,.vpc-lines b:first-child{opacity:1}}';
-  var FRAMES = [['/gigs/sample/img/post-kitchen.webp', 'Cook for the camera'], ['/gigs/sample/img/post-event.webp', 'Host our events'],
-    ['/gigs/sample/img/post-market.webp', 'Tell local stories'], ['/gigs/sample/img/post-protein.webp', 'Work with Vegan brands']];
-
   function creatorCards(el, ctx) {
     if (!el || !ctx) return;
     if (!document.getElementById('vpc-css')) { var st = document.createElement('style'); st.id = 'vpc-css'; st.textContent = CSS; document.head.appendChild(st); }
@@ -120,11 +119,12 @@
       (ctx.claim && !ctx.form ? '<div class="vpc-claim" data-vpc="claim"><b>Is this you' + (first ? ', ' + esc(first) : '') + '?</b>' +
         '<p>Claim your profile. Once our team confirms it is you, keep it up to date, and get matched with paid work as one of our official creators.</p>' +
         '<a href="' + esc(claimHref) + '" data-vpc-go="claim">Claim your profile</a></div>' : '') +
-      '<a class="vpc-ad" href="' + (ctx.preview ? '/gigs/sample#overview' : '/go/ve-creator-banner') + '" data-vpc="ad" data-vpc-go="ad" aria-label="Become an official Vegans Explore creator">' +
-        FRAMES.map(function (f) { return '<span class="vpc-f" style="background-image:url(\'' + f[0] + '\')" aria-hidden="true"></span>'; }).join('') +
-        '<span class="vpc-copy"><small>Vegans Explore creators</small><span class="vpc-lines" aria-hidden="true">' +
-          FRAMES.map(function (f) { return '<b>' + esc(f[1]) + '</b>'; }).join('') + '</span>' +
-          '<p>Paid campaigns, collaborations and hosting with Vegan brands and events, in every city.</p><em>Become a creator</em></span></a></div>';
+      // The ad itself on the brand kit's ad template (Sean, 2026-11-12: "fix the Kai creator card"): /ads/guides/guide.html?g=creator,
+      // the words in the color block and Kai's posts whole in their frame, never words on the art. It opens its tracked link itself and
+      // posts {veAd:'click'}, counted below as before.
+      '<div class="vpc-adwrap" data-vpc="ad"><iframe class="vpc-frame" title="Become an official Vegans Explore creator" loading="lazy" scrolling="no"' +
+        ' sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"' +
+        ' src="/ads/guides/guide.html?g=creator&clickTag=' + encodeURIComponent('https://vegansexplore.com' + (ctx.preview ? '/gigs/sample#overview' : '/go/ve-creator-banner')) + '"></iframe></div></div>';
     var base = { page: page, listing_id: ctx.listing_id || null, claim_name: ctx.name || '' };
     el.querySelectorAll('[data-vpc]').forEach(function (card) {
       var cta = card.getAttribute('data-vpc');
@@ -132,6 +132,12 @@
       onScreen(card, function () { send(promo, 'view', Object.assign({ cta: cta }, base)); if (cta === 'ad' && !ctx.preview) adCount(HOUSE.people, HOUSE.creator, 'view'); });
     });
     if (ctx.form) claimForm(el.querySelector('.vpc-claim'), ctx, base);
+    var adFrame = el.querySelector('.vpc-frame');
+    window.addEventListener('message', function (e) {
+      if (!adFrame || !e.data || e.data.veAd !== 'click' || e.source !== adFrame.contentWindow) return;
+      click('creator-register', Object.assign({ cta: 'ad', claim: '' }, base));
+      if (!ctx.preview) adCount(HOUSE.people, HOUSE.creator, 'click');
+    });
     el.addEventListener('click', function (e) {
       var a = e.target.closest('[data-vpc-go]'); if (!a) return;
       var cta = a.getAttribute('data-vpc-go');
@@ -156,6 +162,11 @@
       line: 'The brands, swaps and recipes that replace dairy, and where to buy them, with Maya.',
       frames: [['/public/guides/vegan-dairy-guide.jpg?v=3', 'Life after dairy'], [SBM + 'dairy/s-milk-in-coffee.jpg', 'Swap the milk'],
         [SBM + 'dairy/s-butter-cooking.jpg', 'Swap the butter'], [SBM + 'dairy-guide-billboard.jpg', 'The brands worth buying']] },
+    // The Holiday Guide takes the Dairy Guide's place in the rotation (Sean, 2026-11-10), free and public, until Christmas.
+    'holiday-guide': { campaign: '7b1c4f2e-1a10-4d2e-9a51-0c0de5a13005', go: '/go/ve-guide-holiday', kicker: 'The Holiday Guide', href: '/guides/holiday-guide', cta: 'Open the Holiday Guide', free: true,
+      line: 'ThanksLiving ideas, recipes, holiday menus near you and ways to give back, with Theo.',
+      frames: [['/public/guides/holiday/theo-thanksliving.jpg', 'Your ThanksLiving table', 'background-position:50% 30%'], ['/public/guides/holiday/theo-menus.jpg', 'Holiday menus near you', 'background-position:50% 25%'],
+        ['/public/guides/holiday/r-loaf.jpg', 'Recipes for the table', 'background-position:50% 50%'], ['/public/guides/holiday/theo-giveback.jpg', 'Give back this season', 'background-position:50% 25%']] },
     'stadium-arena-guide': { campaign: '7b1c4f2e-1a10-4d2e-9a51-0c0de5a13003', go: '/go/ve-guide-stadium', kicker: 'The Stadium & Arena Guide', href: '/guides/stadium-arena-guide', cta: 'Get the Stadium Guide',
       line: 'Every Vegan stand at the stadiums and arenas near you, mapped by section.',
       frames: [['/public/guides/stadium-arena-guide.jpg?v=4', 'Vegan eats on game day'], ['/public/guides/venues/hard-rock-stadium.webp', 'Find your stand', 'background-size:auto 115%;background-position:50% 55%'],
@@ -175,14 +186,20 @@
     if (!document.getElementById('vpc-css')) { var st = document.createElement('style'); st.id = 'vpc-css'; st.textContent = CSS; document.head.appendChild(st); }
     var promo = 'guide-' + slug, base = { page: ctx.page || location.pathname, listing_id: ctx.listing_id || null, cta: 'ad' };
     var placement = ctx.placement || HOUSE.listing;
-    el.innerHTML = '<div class="vpc"><a class="vpc-ad" href="' + esc(ctx.preview ? g.href : g.go) + '" data-vpc="ad" aria-label="' + esc(g.cta) + '">' +
-      g.frames.map(function (f) { return '<span class="vpc-f" style="background-image:url(\'' + f[0] + '\')' + (f[2] ? ';' + f[2] : '') + '" aria-hidden="true"></span>'; }).join('') +
-      '<span class="vpc-copy"><small>' + esc(g.kicker) + '</small><span class="vpc-lines" aria-hidden="true">' +
-        g.frames.map(function (f) { return '<b>' + esc(f[1]) + '</b>'; }).join('') + '</span>' +
-        '<p>' + esc(g.line) + '</p><em>' + esc(g.cta) + ' &middot; $11</em></span></a></div>';
-    var a = el.querySelector('.vpc-ad');
-    onScreen(a, function () { send(promo, 'view', base); if (!ctx.preview) adCount(placement, g.campaign, 'view'); });
-    a.addEventListener('click', function () { click(promo, base); if (!ctx.preview) adCount(placement, g.campaign, 'click'); });
+    // The brand kit's ad template (Sean, 2026-11-11: "Fix the listing Guide banner"): the same creative as the ad rail,
+    // /ads/guides/guide.html, with the words in the color block and the Guide's scene whole in its own frame, never words on the
+    // art. The ad opens its tracked link itself and posts {veAd:'click'}; this card counts the view and the click as before.
+    var dest = ctx.preview ? g.href : g.go;
+    var tag = /^https:\/\//.test(dest) ? dest : 'https://vegansexplore.com' + dest;
+    el.innerHTML = '<div class="vpc"><iframe class="vpc-frame" title="' + esc(g.kicker + ': ' + g.cta) + '" loading="lazy" scrolling="no"' +
+      ' sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"' +
+      ' src="/ads/guides/guide.html?g=' + encodeURIComponent(slug) + '&clickTag=' + encodeURIComponent(tag) + '"></iframe></div>';
+    var fr = el.querySelector('.vpc-frame');
+    onScreen(fr, function () { send(promo, 'view', base); if (!ctx.preview) adCount(placement, g.campaign, 'view'); });
+    window.addEventListener('message', function (e) {
+      if (!e.data || e.data.veAd !== 'click' || e.source !== fr.contentWindow) return;
+      click(promo, base); if (!ctx.preview) adCount(placement, g.campaign, 'click');
+    });
   }
 
   // The short claim (Sean, 2026-10-31: "a short claim request for people who aren't creators"), in the card itself. A signed-in member's
@@ -231,5 +248,5 @@
     body.querySelector('.vpc-open').addEventListener('click', open);
   }
 
-  window.VEPromo = { creatorCards: creatorCards, guideCard: guideCard, guides: Object.keys(GUIDE_ADS), house: HOUSE, step: step, source: source, click: click };
+  window.VEPromo = { creatorCards: creatorCards, guideCard: guideCard, guides: Object.keys(GUIDE_ADS).filter(function (k) { return k !== 'vegan-dairy-guide'; }), house: HOUSE, step: step, source: source, click: click };
 })();

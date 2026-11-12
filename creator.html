@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    // The creator dashboard lives in the dashboard window. Opened on its own by someone signed in, the page moves into
+    // /dashboard/creator; signed out, it shows a sign-in gate.
+    (function () {
+      var alone = true; try { alone = window.self === window.top; } catch (e) { alone = false; }
+      var signedIn = false; try { signedIn = !!localStorage.getItem('ve_token'); } catch (e) {}
+      if (alone && signedIn) location.replace('/dashboard/creator' + location.search + location.hash);
+    })();
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Creator Dashboard | Vegans Explore</title>
+  <meta name="robots" content="noindex">
+  <link rel="preload" href="/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2" as="font" type="font/woff2" crossorigin><style>/* Montserrat, self-hosted (site health 2026-11-11): the same faces Google served, without the blocking stylesheet */@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}</style>
+  <!-- The creator dashboard (Sean, 2026-11-10: "this should be her dashboard, what she sees when she logs in. She now has a dashboard,
+       and only select people will get the dashboard"). Copied from levels.html (a page in the dashboard window, its views in the hash).
+       Views: #overview, #assets/<reel|story|carousel|avatar|captions> ("once you're in the asset section... tabs across... so she could
+       see her different assets and grab them from there"), #link. Data: ve-creator, from ve_creator_dashboards (one row per creator who
+       has one, switched on by Sean). Super admins preview any creator with ?as=<slug>. Kit: canon canon-ve-creator-kit. -->
+  <style>
+    :root{--g:#1f5f22;--g2:#16a34a;--gl:#e8f5e9;--ink:#1a1a1a;--ink75:rgba(26,26,26,.78);--ink55:rgba(26,26,26,.62);--line:rgba(0,0,0,.1);--warm:#fff7e8;--warmline:#f2d7a6;}
+    *,*::before,*::after{box-sizing:border-box;}
+    body{margin:0;background:#f7f8f7;color:var(--ink);font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;}
+    :focus-visible{outline:3px solid #F69820;outline-offset:2px;}
+    main{max-width:none;margin:0;padding:32px 40px 80px;}
+    @media (max-width:600px){main{padding:22px 16px 56px;}}
+    [hidden]{display:none !important;}
+    .k{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--g);}
+    h1{font-size:clamp(22px,2.4vw,30px);font-weight:900;margin:4px 0 6px;letter-spacing:-.01em;}
+    h2{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;margin:0 0 10px;}
+    .lede{font-size:15px;line-height:1.6;color:var(--ink75);margin:0 0 18px;max-width:860px;}
+    .tabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 18px;}
+    .tabs a{font-size:13px;font-weight:800;padding:9px 14px;border-radius:6px;border:1px solid rgba(0,0,0,.2);color:var(--ink);text-decoration:none;background:#fff;}
+    .tabs a.on{border-color:var(--g);box-shadow:inset 0 -3px 0 var(--g);}
+    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:0 0 16px;}
+    .preview{background:var(--warm);border:1px solid var(--warmline);border-radius:10px;padding:10px 14px;font-size:13.5px;font-weight:600;margin:0 0 16px;}
+    .now{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;align-items:center;}
+    .badge{width:84px;height:84px;border-radius:14px;background:var(--g);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;}
+    .badge small{font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.85;}
+    .badge b{font-size:34px;line-height:1;}
+    .now p{margin:0 0 6px;font-size:14.5px;line-height:1.55;color:var(--ink75);}
+    .bar{height:10px;border-radius:6px;background:#e3e7e3;overflow:hidden;margin:8px 0 4px;}
+    .bar i{display:block;height:100%;background:var(--g2);}
+    .ladder{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;}
+    @media (max-width:1100px){.ladder{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    @media (max-width:560px){.ladder{grid-template-columns:1fr;}}
+    .step{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:8px;}
+    .step.you{border-color:var(--g);box-shadow:0 0 0 2px var(--gl);}
+    .step .lv{font-size:12px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--g);}
+    .step .at{font-size:22px;font-weight:900;line-height:1.1;}
+    .step .at small{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink55);}
+    .step ul{margin:0;padding-left:18px;font-size:13.5px;line-height:1.55;color:var(--ink75);}
+    .step .you-tag{align-self:flex-start;font-size:10.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;background:var(--gl);color:var(--g);border-radius:4px;padding:3px 8px;}
+    .rate{font-size:28px;font-weight:900;color:var(--g);line-height:1;}
+    .rate small{font-size:12px;font-weight:700;color:var(--ink55);}
+    .list{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:10px;}
+    .item{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;justify-content:space-between;gap:12px;align-items:center;}
+    .item b{display:block;font-size:14.5px;}
+    .item span{font-size:13px;color:var(--ink75);}
+    .pts{font-size:18px;font-weight:900;white-space:nowrap;color:var(--g);}
+    .fine{font-size:13.5px;line-height:1.6;color:var(--ink75);margin:0;padding-left:18px;}
+    .fine li{margin:0 0 4px;}
+    .totals{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 0 14px;}
+    @media (max-width:800px){.totals{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    .tot{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;}
+    .tot b{display:block;font-size:24px;font-weight:900;line-height:1.1;}
+    .tot span{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink55);}
+    .rows{border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden;max-height:60vh;overflow-y:auto;}
+    .r{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:12px 14px;border-top:1px solid var(--line);font-size:13.5px;}
+    .r:first-child{border-top:0;}
+    .r b{display:block;font-size:14px;}
+    .r small{color:var(--ink55);}
+    .tag{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px;white-space:nowrap;}
+    .t-pending{background:#fff4e0;color:#8a5200}.t-ready{background:#e8f0fe;color:#1a4a9c}.t-paid,.t-given{background:var(--gl);color:var(--g)}.t-reversed{background:#f1f1f1;color:#555}
+    .linkbox{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:#f7f8f7;border-radius:8px;padding:10px 12px;font-size:13.5px;word-break:break-all;}
+    .btn{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 16px;min-height:42px;border-radius:6px;cursor:pointer;border:0;background:var(--g);color:#fff;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+    .btn-ghost{background:#fff;color:var(--ink);border:1px solid rgba(0,0,0,.25);}
+    .btn-sm{font-size:11px;padding:6px 12px;min-height:34px;}
+    .btn:disabled{opacity:.55;cursor:wait;}
+    .choice{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(320px,100%),1fr));gap:10px;margin:0 0 14px;}
+    .choice label{display:flex;gap:10px;align-items:flex-start;border:1px solid rgba(0,0,0,.2);border-radius:8px;padding:14px;cursor:pointer;font-size:13.5px;line-height:1.5;background:#fff;}
+    .choice label b{display:block;font-size:15px;}
+    .choice input{width:18px;height:18px;margin-top:2px;accent-color:var(--g);flex:none;}
+    .search{font:inherit;font-size:14px;padding:9px 11px;min-height:44px;border:1px solid rgba(0,0,0,.25);border-radius:6px;width:100%;max-width:520px;}
+    .orgs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:8px;margin-top:10px;max-height:420px;overflow-y:auto;}
+    .org{display:flex;gap:10px;align-items:center;text-align:left;font:inherit;font-size:13.5px;background:#fff;border:1px solid rgba(0,0,0,.18);border-radius:8px;padding:10px;cursor:pointer;color:var(--ink);}
+    .org[aria-pressed="true"]{border-color:var(--g);box-shadow:0 0 0 2px var(--gl);}
+    .org i{width:40px;height:40px;border-radius:8px;background:#e7efe7 center/cover no-repeat;flex:none;display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:900;color:var(--g);}
+    .org small{display:block;color:var(--ink55);}
+    .msg{font-size:13px;font-weight:700;color:var(--g);min-height:18px;margin-top:8px;}
+    .msg.err{color:#a61b1b;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:32px;text-align:center;}
+
+    /* Creator dashboard additions (Sean, 2026-11-10): assets as tabs, one kind at a time; the top-left picture is a rounded square. */
+    .who{display:flex;gap:16px;align-items:center;margin:0 0 18px;}
+    .av{width:72px;height:72px;border-radius:14px;background:#e7efe7 center/cover no-repeat;flex:none;border:1px solid var(--line);}
+    .who h1{margin:0 0 4px;}
+    .who p{margin:0;font-size:14px;color:var(--ink75);}
+    .crt{display:inline-block;font-size:10.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;background:var(--gl);color:var(--g);border-radius:4px;padding:3px 8px;margin-left:6px;vertical-align:middle;}
+    .sub{display:flex;flex-wrap:nowrap;gap:6px;margin:0 0 14px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
+    .sub::-webkit-scrollbar{display:none;}
+    .sub a{flex:none;font-size:12.5px;font-weight:800;padding:7px 12px;border-radius:6px;color:var(--ink75);text-decoration:none;background:#eef1ee;}
+    .sub a.on{background:var(--g);color:#fff;}
+    .asset{display:grid;grid-template-columns:minmax(0,340px) minmax(0,1fr);gap:22px;align-items:start;}
+    @media (max-width:760px){.asset{grid-template-columns:1fr;}}
+    .asset video,.asset .tall{display:block;width:100%;aspect-ratio:9/16;object-fit:cover;border-radius:12px;background:#111;border:1px solid var(--line);}
+    .asset .sq{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;border-radius:12px;border:1px solid var(--line);}
+    .asset p{margin:0 0 12px;font-size:14.5px;line-height:1.6;color:var(--ink75);}
+    .acts{display:flex;gap:8px;flex-wrap:wrap;}
+    .car{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(200px,100%),1fr));gap:12px;}
+    @media (max-width:560px){.car{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    .car a{position:relative;display:block;border-radius:10px;overflow:hidden;border:1px solid var(--line);background:#fff;}
+    .car img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;}
+    .car span{position:absolute;left:8px;top:8px;background:rgba(0,0,0,.62);color:#fff;font-size:11px;font-weight:800;border-radius:4px;padding:2px 7px;}
+    .caps{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(360px,100%),1fr));gap:12px;}
+    .cap{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:flex;flex-direction:column;gap:10px;}
+    .cap b{font-size:12px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--g);}
+    .cap p{margin:0;font-size:14.5px;line-height:1.55;}
+    .cap .btn{align-self:flex-start;}
+    .thumbrow{display:flex;gap:14px;align-items:center;margin:16px 0 0;}
+    .thumbrow img{width:96px;aspect-ratio:9/16;object-fit:cover;border-radius:8px;border:1px solid var(--line);flex:none;}
+    .thumbrow p{margin:0;font-size:13.5px;}
+    .steps{margin:0;padding-left:22px;font-size:14.5px;line-height:1.6;color:var(--ink75);}
+    .steps li{margin:0 0 6px;}
+    .car a .dli{position:absolute;right:8px;top:8px;width:32px;height:32px;border-radius:6px;background:rgba(255,255,255,.94);display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,.25);}
+    .car a .dli svg,.btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+    .car a .dli svg{stroke:#1f5f22;}
+    .car a:hover .dli{background:#fff;}
+    .who{position:relative;}
+    .fbk{position:absolute;right:0;top:0;}
+    @media (max-width:600px){.who{padding-right:46px}.fbk{font-size:0;gap:0;padding:0;width:38px;min-height:38px;justify-content:center}.fbk svg{width:17px;height:17px}}
+    @media (max-width:600px){.tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;}.tabs::-webkit-scrollbar{display:none;}.tabs a{flex:none;}}
+    .soon{display:inline-block;font-size:10.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;background:#FFF1DF;color:#8a4b00;border-radius:4px;padding:3px 8px;}
+  </style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+<main>
+  <div id="gate" class="gate" hidden></div>
+  <div id="app" hidden></div>
+</main>
+<script>try{if(window.top!==window&&window.top.VE_SAMPLE_MEMBER)document.write('<script src="/dashboard/sample/demo.js"><\/script>');}catch(e){}</script>
+<script src="/public/ve-auth.js"></script>
+<script>
+(function () {
+  var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-creator';
+  var $ = function (id) { return document.getElementById(id); };
+  var app = $('app'), D = null;
+  var AS = (new URLSearchParams(location.search).get('as') || '').toLowerCase().replace(/[^a-z0-9-]/g, '');
+  var DLI = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>';
+  var KINDS = [['reel', 'Reel'], ['story', 'Story'], ['carousel', 'Carousel'], ['avatar', 'Avatar'], ['captions', 'Captions']];
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function n(v) { return Number(v || 0).toLocaleString('en-US'); }
+  function day(d) { return d ? new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : ''; }
+  function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+  function dl(url, name) { return url + (url.indexOf('?') < 0 ? '?' : '&') + 'download=' + encodeURIComponent(name); }
+  function inFrame() { try { return window.self !== window.top; } catch (e) { return true; } }
+  function tellParent() {
+    if (!inFrame()) return;
+    try {
+      window.parent.postMessage({ type: 've-frame-url', path: '/creator' + location.search + location.hash }, location.origin);
+      window.parent.postMessage({ type: 've-frame-height', h: document.documentElement.scrollHeight }, location.origin);
+    } catch (e) {}
+  }
+  if (window.ResizeObserver) new ResizeObserver(tellParent).observe(document.body);
+  function copy(text, btn) {
+    var done = function () { var t = btn.textContent; btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = t; }, 1400); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () { window.prompt('Copy this', text); });
+    else window.prompt('Copy this', text);
+  }
+  function route() {
+    var h = location.hash.replace(/^#/, '').split('/');
+    var v = ['overview', 'assets', 'link', 'bounties'].indexOf(h[0]) >= 0 ? h[0] : 'overview';
+    var k = KINDS.map(function (x) { return x[0]; }).indexOf(h[1]) >= 0 ? h[1] : 'reel';
+    return { v: v, k: k };
+  }
+  function slug() { return String(D.slug || 'creator'); }
+  function head() {
+    var r = route();
+    var tabs = [['overview', 'Overview'], ['assets', 'Your assets'], ['link', 'Your link'], ['bounties', 'Bounties']];
+    return (D.preview ? '<p class="preview">Preview' + (D.enabled ? '' : ': not switched on yet. ' + esc(D.name) + ' does not see this until it is turned on.') + '</p>' : '') +
+      '<div class="who"><button type="button" class="btn btn-ghost btn-sm fbk" data-fbk><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/></svg>Feedback</button><span class="av" style="background-image:url(\'' + esc(D.kit.avatar || '') + '\')" role="img" aria-label="' + esc(D.name) + '"></span>' +
+      '<div><p class="k">Creator dashboard</p><h1>' + esc(D.name) + '<span class="crt">Official creator</span></h1><p>' + esc([D.handle, D.city].filter(Boolean).join(' · ')) + '</p></div></div>' +
+      '<nav class="tabs" aria-label="Creator dashboard">' + tabs.map(function (t) { return '<a href="#' + t[0] + '" class="' + (t[0] === r.v ? 'on' : '') + '">' + t[1] + '</a>'; }).join('') + '</nav>';
+  }
+  function linkBox() {
+    return '<div class="linkbox"><b>' + esc(D.link || '') + '</b><button type="button" class="btn btn-sm" data-copy="' + esc(D.link || '') + '">Copy your link</button></div>';
+  }
+  function drawOverview() {
+    app.innerHTML = head() +
+      '<div class="totals"><div class="tot"><b>' + n(D.clicks) + '</b><span>Clicks on your link</span></div><div class="tot"><b>' + n(D.clicks7) + '</b><span>In the last 7 days</span></div>' +
+      '<div class="tot"><b>' + n(D.joined.length) + '</b><span>Joined through you</span></div><div class="tot"><b>' + n(D.joined.length * D.points_per_join) + '</b><span>Points from your link</span></div></div>' +
+      '<section class="card"><h2>Share your link</h2><p class="lede">Every click counts for you, and every friend who joins through it earns you ' + n(D.points_per_join) + ' points.</p>' + linkBox() + '</section>' +
+      '<section class="card"><h2>Ready to post</h2><p class="lede">Your reel, your story, your carousel, your avatar and the words to go with them.</p><a class="btn" href="#assets/reel">Open your assets</a></section>' +
+      '<section class="card"><h2>Coming</h2><ul class="fine"><li>Traffic to your page, and where it came from <span class="soon">Coming</span></li><li>People who liked your page <span class="soon">Coming</span></li></ul>' +
+      (D.profile ? '<p style="margin:12px 0 0"><a class="btn btn-ghost btn-sm" href="' + esc(D.profile) + '" target="_top">See your profile</a></p>' : '') + '</section>';
+  }
+  function drawAssets() {
+    var r = route(), K = D.kit, s = slug(), body = '';
+    if (r.k === 'reel' && K.reel) body = '<div class="asset"><video src="' + esc(K.reel.file) + '" poster="' + esc(K.reel.thumb || K.reel.poster || '') + '" controls playsinline preload="metadata"></video>' +
+      '<div><h2>Your reel</h2><p>' + esc(K.reel.about) + '</p><div class="acts"><a class="btn" href="' + esc(dl(K.reel.file, s + '-reel.mp4')) + '">Download the reel</a>' +
+      (K.reel.thumb ? '<a class="btn btn-ghost" href="' + esc(dl(K.reel.thumb, s + '-reel-thumbnail.jpg')) + '">Download the thumbnail</a>' : '') + '</div>' +
+      (K.reel.thumb ? '<div class="thumbrow"><img src="' + esc(K.reel.thumb) + '" alt="Your reel thumbnail"><p>Your thumbnail, the cover people see before they press play. It is made so your profile grid shows all of it.</p></div>' : '') +
+      (K.reel.steps && K.reel.steps.length ? '<h2 style="margin-top:18px">How we recommend posting it</h2><ol class="steps">' + K.reel.steps.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ol>' : '') +
+      '</div></div>' +
+      (K.reel.captions && K.reel.captions.length ? '<h2 style="margin-top:22px">Captions you can use</h2><p class="lede">Written in your voice. Use one as it is, change it, or write your own: it is up to you.</p><div class="caps">' +
+        K.reel.captions.map(function (c) { return '<div class="cap"><b>' + esc(c.label) + '</b><p style="white-space:pre-line">' + esc(c.text) + '</p><button type="button" class="btn btn-ghost btn-sm" data-copy="' + esc(c.text) + '">Copy caption</button></div>'; }).join('') + '</div>' : '');
+    else if (r.k === 'story' && K.story) body = '<div class="asset"><img class="tall" src="' + esc(K.story.file) + '" alt="Your story">' +
+      '<div><h2>Your story</h2><p>' + esc(K.story.about) + '</p><p>Add a link sticker with your link.</p><div class="acts"><a class="btn" href="' + esc(dl(K.story.file, s + '-story.jpg')) + '">Download the story</a><button type="button" class="btn btn-ghost" data-copy="' + esc(D.link || '') + '">Copy your link</button></div></div></div>';
+    else if (r.k === 'carousel') body = '<h2>Your carousel, ' + K.carousel.length + ' slides</h2><p class="lede">Post them in order as one carousel. Download them all at once, or tap a slide to download just that one.</p>' +
+      (K.carousel_zip ? '<div class="acts" style="margin:0 0 14px"><a class="btn" href="' + esc(dl(K.carousel_zip, s + '-carousel.zip')) + '">' + DLI + 'Download all ' + K.carousel.length + '</a></div>' : '') + '<div class="car">' +
+      K.carousel.map(function (u, i) { return '<a href="' + esc(dl(u, s + '-carousel-' + (i < 9 ? '0' : '') + (i + 1) + '.jpg')) + '" title="Download slide ' + (i + 1) + '"><img src="' + esc(u) + '" alt="Carousel slide ' + (i + 1) + '" loading="lazy"><span>' + (i + 1) + '</span><em class="dli" aria-hidden="true">' + DLI + '</em></a>'; }).join('') + '</div>';
+    else if (r.k === 'avatar' && K.avatar) body = '<div class="asset"><img class="sq" src="' + esc(K.avatar) + '" alt="Your avatar">' +
+      '<div><h2>Your avatar</h2><p>Your Vegans Explore avatar, drawn in our style. It is already your picture on your profile; use it on your socials too.</p><div class="acts"><a class="btn" href="' + esc(dl(K.avatar, s + '-avatar.jpg')) + '">Download your avatar</a></div></div></div>';
+    else if (r.k === 'captions') body = '<h2>Words to post with</h2><p class="lede">Each one is ready to paste. Your link is already in the bio line.</p><div class="caps">' +
+      K.captions.map(function (c) { return '<div class="cap"><b>' + esc(c.label) + '</b><p>' + esc(c.text) + '</p><button type="button" class="btn btn-ghost btn-sm" data-copy="' + esc(c.text) + '">Copy</button></div>'; }).join('') + '</div>';
+    else body = '<p class="lede">Nothing here yet.</p>';
+    app.innerHTML = head() + '<nav class="sub" aria-label="Your assets">' + KINDS.map(function (x) { return '<a href="#assets/' + x[0] + '" class="' + (x[0] === r.k ? 'on' : '') + '">' + x[1] + '</a>'; }).join('') + '</nav>' +
+      '<section class="card">' + body + '</section>';
+  }
+  function drawLink() {
+    app.innerHTML = head() +
+      '<section class="card"><h2>Your link</h2><p class="lede">Put it in your bio and in every post. Clicks count for you (link previews and bots are left out), and everyone who joins through it is credited to you: ' + n(D.points_per_join) + ' points each.</p>' + linkBox() + '</section>' +
+      '<div class="totals"><div class="tot"><b>' + n(D.clicks) + '</b><span>Clicks</span></div><div class="tot"><b>' + n(D.clicks7) + '</b><span>Last 7 days</span></div><div class="tot"><b>' + n(D.joined.length) + '</b><span>Joined</span></div><div class="tot"><b>' + n(D.joined.length * D.points_per_join) + '</b><span>Points</span></div></div>' +
+      '<section class="card"><h2>Who joined through you</h2>' + (D.joined.length ? '<div class="rows">' + D.joined.map(function (j) { return '<div class="r"><b>' + esc(j.first) + '</b><small>' + esc(day(j.at)) + '</small><span class="pts">+' + n(D.points_per_join) + '</span></div>'; }).join('') + '</div>' :
+        '<p class="lede" style="margin:0">No one yet. Share your link and the first one shows up here.</p>') + '</section>';
+  }
+  function drawBounties() {
+    app.innerHTML = head() +
+      '<section class="card"><h2>Bounties <span class="soon">Coming soon</span></h2><p class="lede" style="margin:0">Jobs made for creators: a post, a video, a visit. When we have one for you, it shows up here with what it earns and what to make.</p></section>';
+  }
+  function draw() {
+    var r = route();
+    if (r.v === 'assets') drawAssets(); else if (r.v === 'link') drawLink(); else if (r.v === 'bounties') drawBounties(); else drawOverview();
+    tellParent();
+  }
+  app.addEventListener('click', function (e) { var fb = e.target.closest('[data-fbk]'); if (fb) { e.preventDefault(); if (window.VEFeedback) VEFeedback.open({ form: true, page: location.origin + '/dashboard/creator' + location.hash }); return; } });
+  app.addEventListener('click', function (e) { var b = e.target.closest('[data-copy]'); if (b) { e.preventDefault(); copy(b.getAttribute('data-copy'), b); } });
+  function admins(list) {
+    $('gate').hidden = false;
+    $('gate').innerHTML = '<p class="k">Creator dashboards</p><p>Only select creators have one. Preview any of them:</p>' + (list || []).map(function (c) {
+      return '<p><a class="btn btn-ghost" href="?as=' + esc(c.slug) + '#overview">' + esc(c.display_name) + (c.enabled ? '' : ' (not switched on)') + '</a></p>'; }).join('');
+  }
+  function start() {
+    if (!window.VEAuth) return setTimeout(start, 200);
+    if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<p>Sign in to see your creator dashboard.</p><p><a class="btn" href="/login?next=/dashboard/creator">Sign in</a></p>'; return; }
+    api(AS ? { action: 'me', as: AS } : { action: 'me' }).then(function (d) {
+      if (!d || !d.ok) { $('gate').hidden = false; $('gate').textContent = d && d.error === 'forbidden' ? 'This creator dashboard is not yours to see.' : 'This did not load. Refresh to try again.'; return; }
+      if (!d.has) { if (d.admin) return admins(d.creators); $('gate').hidden = false; $('gate').innerHTML = '<p>The creator dashboard is for our official content creators.</p><p><a class="btn" href="/dashboard" target="_top">Back to your dashboard</a></p>'; return; }
+      D = d; app.hidden = false;
+      window.addEventListener('hashchange', draw);
+      draw();
+    }).catch(function () { $('gate').hidden = false; $('gate').textContent = 'Could not reach the server. Refresh to try again.'; });
+  }
+  start();
+})();
+</script>
+<script src="/public/ve-feedback.js"></script>
+<script src="/public/footer.js"></script>
+</body>
+</html>

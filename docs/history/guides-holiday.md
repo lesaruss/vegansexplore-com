@@ -119,3 +119,9 @@ with a donation link (Piper's Pals and Nathans Family Farm show none on their si
 Facebook, Instagram and link-in-bio "websites" are skipped (`social_only`). 673 open organizations in all on 2026-11-08. **Sean approved the pilot
 the same day** ("I love it... I'm just approving it"). **The full run, 2026-11-08** (3:40 to 6:45 PM Eastern, a temporary wave job of 12 batches of 4 every 6 minutes, then one retry; dropped after): 558 of 673 have Why support, 480 with a tracked Donate link; 47 not written after a retry (sites that refuse, are gone or say too little; `support_try`), 68 with no website or a social one left alone. Batches of 4 or fewer finish inside the background limit; 25 do not. Handoff `docs/handoff/2026-11-08-ve-holiday-guide-give-back-full-run.md`. Handoff
 `docs/handoff/2026-11-08-ve-holiday-guide-give-back-pilot-approved.md`.
+
+**Compact rows, and the Guide in the Dairy Guide's spots** (Sean, 2026-11-10: "now do the same for the Holiday Guide"). The Overview's
+and each holiday's rows are about 75 characters, as in the Welcome Guide; the intros were already one paragraph. The same day the Holiday
+Guide took the Dairy Guide's places for the season: food listings' Resources tab, the listing Guide banner on every listing, the
+brand-page billboard (the Guide's rail ad, `/ads/guides/guide.html`), and the Dairy Guide's ad-rail slots (`docs/history/ads.md`).
+Everything listing-side switches back by itself on December 26 Eastern except the rail slots and the Resources tab (steps in ads.md).

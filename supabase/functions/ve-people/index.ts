@@ -106,7 +106,7 @@ sources. If the sources say little, write less.
 - bio: two or three short paragraphs, 90 to 200 words in all, third person, warm and plain. Who they are and what they do, what drives
   their work, and what they shared with Vegans Explore (name the show). No hype words (amazing, incredible, renowned), no em dashes,
   no lists. Write "Vegan" with a capital V.
-- title: their profession or role in one line of 70 characters or fewer, as the sources state it ("Cardiologist and author",
+- title: their profession or role in one line of 45 characters or fewer, as the sources state it ("Cardiologist and author",
   "Olympic cyclist and Vegan advocate"). Empty if the sources do not say.
 - speaker_names: the names the transcripts use for them (to find their quotes), at most three.
 - category: the one People section that fits best, by what the sources say they do: Activists (advocacy, rescue, education,
@@ -143,7 +143,7 @@ Deno.serve(async (req) => {
     const l: any = await person(body.listing_id);
     if (!l) return json({ error: 'not_a_person' }, 400);
     const details = { ...(l.details || {}) }, p = { ...(details.person || {}) }, edits: any[] = [];
-    if (body.title !== undefined) { const t = clean(body.title, 90); if ((p.title || '') !== t) { edits.push({ field: 'person.title', old_value: p.title ?? null, new_value: t || null }); if (t) p.title = t; else delete p.title; } }
+    if (body.title !== undefined) { const t = clean(body.title, 45); if ((p.title || '') !== t) { edits.push({ field: 'person.title', old_value: p.title ?? null, new_value: t || null }); if (t) p.title = t; else delete p.title; } }
     if (body.specialty !== undefined) {
       const s = String(body.specialty || '');
       if (s && !SPECIALTIES.includes(s)) return json({ error: 'bad_specialty' }, 400);
@@ -265,7 +265,7 @@ Deno.serve(async (req) => {
       return json({ error: String((e as Error).message || e).slice(0, 200) }, 502);
     }
     const bio = String(out.bio || '').replace(/—/g, ', ').replace(/\bvegan/g, 'Vegan').trim();
-    const title = clean(out.title, 70);
+    const title = clean(out.title, 45);
     const names = (out.speaker_names || []).map((x: unknown) => clean(x, 60)).filter(Boolean).slice(0, 3);
     if (body.save && bio) {
       const details = { ...(l.details || {}) }, p = { ...(details.person || {}) };

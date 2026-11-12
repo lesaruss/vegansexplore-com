@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script>
+    // The business dashboard lives in the dashboard window. Opened on its own by someone signed in, the page moves into
+    // /dashboard/business; signed out, it shows a sign-in gate.
+    (function () {
+      var alone = true; try { alone = window.self === window.top; } catch (e) { alone = false; }
+      var signedIn = false; try { signedIn = !!localStorage.getItem('ve_token'); } catch (e) {}
+      if (alone && signedIn) location.replace('/dashboard/business' + location.search + location.hash);
+    })();
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business Dashboard | Vegans Explore</title>
+  <meta name="robots" content="noindex">
+  <link rel="preload" href="/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2" as="font" type="font/woff2" crossorigin><style>/* Montserrat, self-hosted (site health 2026-11-11): the same faces Google served, without the blocking stylesheet */@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}</style>
+  <!-- The business dashboard (Sean, 2026-11-11: "a dashboard for businesses and organizations... everything they need to know...
+       ways that they can contribute... opportunities... notifications each week on what they've missed via email... reach out to them
+       directly through the platform"; the mock /mocks/business-dashboard approved the same day: "Approved, lock it in and start
+       building"). Parent: creator.html (a page in the dashboard window: the who bar with the rounded-square picture, its views in the
+       address, ve-frame-url / ve-frame-height to the window). The seven parts are one dropdown at every width (more than five):
+         home           Needs you, New for you, Your week (ve-claims owner_dashboard, 7 days)
+         page           Your page: what is left, Edit your page (the editor on the listing page), and the menu, dishes, audit,
+                        a group's events and announcements (VEPartnerDash, only those views)
+         media          Media kit: every feature, ready to share                                                      (step 2)
+         opportunities  our campaigns, ads, Guides (VEPartnerDash opps, ads, guides)
+         messages       our team, in the platform                                                                     (step 5)
+         insights       numbers, audience, check-ins or saves, a group's members (VEPartnerDash)
+         plan           Your plan, BrandDesk, a group's gifts and earnings (VEPartnerDash)
+       The address: /dashboard/business?l=<slug>&tab=<part>&pd=<view>. The owner's listings come from ve-dashboard home; a super admin
+       previews any listing with ?l=<slug>. The server checks ownership on every call. Template: CLAUDE.md template map, canon
+       canon-ve-business-dashboard v2. -->
+  <style>
+    :root{--g:#1f5f22;--g2:#16a34a;--gl:#e8f5e9;--ink:#1a1a1a;--ink75:rgba(26,26,26,.78);--ink55:rgba(26,26,26,.62);--line:rgba(0,0,0,.1);--warm:#fff7e8;--warmline:#f2d7a6;}
+    *,*::before,*::after{box-sizing:border-box;}
+    body{margin:0;background:#f7f8f7;color:var(--ink);font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;}
+    :focus-visible{outline:3px solid #F69820;outline-offset:2px;}
+    main{max-width:none;margin:0;padding:32px 40px 80px;}
+    @media (max-width:600px){main{padding:22px 16px 56px;}}
+    [hidden]{display:none !important;}
+    .k{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--g);}
+    h1{font-size:clamp(22px,2.4vw,30px);font-weight:900;margin:4px 0 6px;letter-spacing:-.01em;}
+    h2{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;margin:0 0 10px;}
+    .lede{font-size:15px;line-height:1.6;color:var(--ink75);margin:0 0 18px;max-width:860px;}
+    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:0 0 16px;}
+    .preview{background:var(--warm);border:1px solid var(--warmline);border-radius:10px;padding:10px 14px;font-size:13.5px;font-weight:600;margin:0 0 16px;}
+    .btn{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 16px;min-height:42px;border-radius:6px;cursor:pointer;border:0;background:var(--g);color:#fff;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;}
+    .btn-ghost{background:#fff;color:var(--ink);border:1px solid rgba(0,0,0,.25);}
+    .btn-sm{font-size:11px;padding:6px 12px;min-height:34px;}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:32px;text-align:center;}
+    .soon{display:inline-block;font-size:10.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;background:#FFF1DF;color:#8a4b00;border-radius:4px;padding:3px 8px;}
+    /* The who bar (creator.html): the picture top left is a square with rounded corners, never a circle (Sean, 2026-11-10). */
+    .who{position:relative;display:flex;gap:16px;align-items:center;margin:0 0 18px;}
+    .av{width:72px;height:72px;border-radius:14px;background:#fff center/contain no-repeat;flex:none;border:1px solid var(--line);display:grid;place-items:center;font-weight:900;font-size:28px;color:var(--g);}
+    .who h1{margin:0 0 4px;}
+    .who p{margin:0;font-size:14px;color:var(--ink75);}
+    .who-acts{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
+    .crt{display:inline-block;font-size:10.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;background:var(--gl);color:var(--g);border-radius:4px;padding:3px 8px;margin-left:6px;vertical-align:middle;}
+    .crt.wait{background:#fff4e0;color:#8a5200;}
+    .who-acts svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+    @media (max-width:760px){.who{flex-wrap:wrap}.who-acts{margin-left:0;width:100%;justify-content:flex-start}.av{width:56px;height:56px;font-size:22px}}
+    /* The parts: one dropdown at every width (more than five; Sean 2026-11-09, the BCPS rule). Our own arrow (canon rule 15). */
+    .parts{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 18px;}
+    .parts label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ink55);}
+    select{font:inherit;font-size:15px;font-weight:800;color:var(--ink);border:1px solid rgba(0,0,0,.25);border-radius:6px;padding:10px 14px;min-height:46px;-webkit-appearance:none;-moz-appearance:none;appearance:none;padding-right:46px;cursor:pointer;min-width:min(320px,100%);
+      background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%231f5f22' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center/14px 9px;}
+    select::-ms-expand{display:none;}
+    @media (max-width:600px){.parts select{width:100%}}
+    .crumb{font-size:13px;font-weight:700;color:var(--ink55);margin:0 0 8px;}
+    .crumb a{color:var(--g);text-decoration:none;}
+    /* Rows: the same fields, one button in the same place, status a colored tag in plain words (canon-sean-interface-defaults). */
+    .rows{border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden;margin:0 0 18px;}
+    .r{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:14px;align-items:center;padding:14px 16px;border-top:1px solid var(--line);}
+    .r:first-child{border-top:0;}
+    .r b{display:block;font-size:15px;}
+    .r p{margin:2px 0 0;font-size:13.5px;line-height:1.5;color:var(--ink75);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .r .btn{min-width:150px;}
+    @media (max-width:600px){.r{grid-template-columns:minmax(0,1fr) auto}.r .tag{grid-column:1;justify-self:start;grid-row:2}.r .btn{grid-column:2;grid-row:1 / span 2;min-width:0}}
+    .tag{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px;white-space:nowrap;}
+    .t-need{background:#fff4e0;color:#8a5200}.t-new{background:var(--gl);color:var(--g)}.t-flag{background:#fdecec;color:#9b1c1c}.t-tip{background:#e8f0fe;color:#1a4a9c}
+    .sec{display:flex;align-items:baseline;gap:10px;margin:22px 0 10px;}
+    .sec h2{margin:0;}
+    .sec .count{font-size:12px;font-weight:900;background:var(--g);color:#fff;border-radius:6px;padding:1px 8px;}
+    .totals{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 0 14px;}
+    @media (max-width:800px){.totals{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    .tot{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;}
+    .tot b{display:block;font-size:26px;font-weight:900;line-height:1.1;}
+    .tot span{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink55);}
+    .tot em{display:block;font-style:normal;font-size:12px;font-weight:700;margin-top:4px;color:var(--ink55);}
+    .tot em.up{color:#1f7a2a}.tot em.down{color:#a61b1b}
+    .empty{font-size:14px;color:var(--ink75);margin:0 0 6px;}
+    .pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:10px;}
+    .pick a{display:flex;gap:12px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;text-decoration:none;color:var(--ink);}
+    .pick i{width:48px;height:48px;border-radius:10px;background:#fff center/contain no-repeat;border:1px solid var(--line);flex:none;display:grid;place-items:center;font-style:normal;font-weight:900;color:var(--g);}
+    .pick small{display:block;color:var(--ink55);font-size:12.5px;}
+    .search{font:inherit;font-size:14px;padding:9px 11px;min-height:44px;border:1px solid rgba(0,0,0,.25);border-radius:6px;width:100%;max-width:420px;}
+  </style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+<main>
+  <div id="gate" class="gate" hidden></div>
+  <div id="app" hidden></div>
+</main>
+<script src="/public/ve-auth.js"></script>
+<script src="/public/ve-partner-dashboard.js"></script>
+<script>
+(function () {
+  var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  var $ = function (id) { return document.getElementById(id); };
+  var app = $('app'), L = null, MINE = [], D = null, ADMIN = false;
+  // The seven parts, in this order (the approved mock's slide 9), and the views each one hosts from VEPartnerDash.
+  var PARTS = [
+    ['home', 'Home'], ['page', 'Your page'], ['media', 'Media kit'], ['opportunities', 'Opportunities'],
+    ['messages', 'Messages'], ['insights', 'Insights'], ['plan', 'Your plan']
+  ];
+  var HOSTS = {
+    page: ['menu', 'dishes', 'audit', 'gevents', 'announce'],
+    opportunities: ['opps', 'ads', 'guides'],
+    insights: ['insights', 'audience', 'checkins', 'saves', 'gmembers'],
+    plan: ['plan', 'managed', 'gift', 'earnings']
+  };
+  var CHECK = { logo: ['Your logo', 'A clear, official logo instead of your first letter.', 'photos'],
+    description: ['Your story', 'A few lines on who you are and what to try first.', 'about'],
+    photos: ['Photos', 'Photos you own, so visitors can picture it.', 'photos'], hours: ['Your hours', 'Each day the way you want it shown.', 'hours'],
+    menu: ['Your menu', 'Menus are one of the first things people open.', 'menu'], audit: ['The free check', 'Ten things Google, your website and Instagram tell a visitor.', 'audit'] };
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function n(v) { return Number(v || 0).toLocaleString('en-US'); }
+  function q(k) { return new URLSearchParams(location.search).get(k); }
+  function post(fn, body) {
+    return fetch(SB + '/functions/v1/' + fn, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json(); }).catch(function () { return { error: 'network' }; });
+  }
+  function inFrame() { try { return window.self !== window.top; } catch (e) { return true; } }
+  function tellParent() {
+    if (!inFrame()) return;
+    try {
+      window.parent.postMessage({ type: 've-frame-url', path: '/business-dashboard' + location.search + location.hash }, location.origin);
+      window.parent.postMessage({ type: 've-frame-height', h: document.documentElement.scrollHeight }, location.origin);
+    } catch (e) {}
+  }
+  if (window.ResizeObserver) new ResizeObserver(tellParent).observe(document.body);
+  function part() { var t = q('tab'); return PARTS.some(function (p) { return p[0] === t; }) ? t : 'home'; }
+  function base(p) { return '?l=' + encodeURIComponent(L.slug) + '&tab=' + p; }
+  function go(p, pd) {
+    var u = base(p) + (pd ? '&pd=' + encodeURIComponent(pd) : '');
+    history.pushState(null, '', location.pathname + u);
+    draw(); window.scrollTo(0, 0);
+  }
+  function listingUrl(extra) { return '/directory/' + encodeURIComponent(L.slug) + (extra || ''); }
+  function place() { return [L.address_city, L.address_state].filter(Boolean).join(', ') || L.location || ''; }
+
+  function head() {
+    var p = part(), pic = L.logo_url ? '<span class="av" style="background-image:url(\'' + esc(L.logo_url) + '\')" role="img" aria-label="' + esc(L.name) + '"></span>'
+      : '<span class="av" aria-hidden="true">' + esc(String(L.name || '?').charAt(0)) + '</span>';
+    var waiting = L.claim_status === 'pending';
+    return (ADMIN && D && D.admin ? '<p class="preview">Viewing as admin: this is ' + esc(L.name) + '\'s dashboard as its owner sees it.</p>' : '') +
+      '<div class="who"><a href="' + esc(listingUrl()) + '" target="_top" title="See your page">' + pic + '</a>' +
+      '<div><p class="k">Business dashboard</p><h1>' + esc(L.name) + (waiting ? '<span class="crt wait">Waiting for our approval</span>' : '') + '</h1><p>' + esc([L.category, place()].filter(Boolean).join(' · ')) + '</p></div>' +
+      '<div class="who-acts"><a class="btn btn-ghost btn-sm" href="' + esc(listingUrl()) + '" target="_top">View my page</a>' +
+      '<button type="button" class="btn btn-ghost btn-sm" data-fbk><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/></svg>Feedback</button></div></div>' +
+      '<div class="parts"><label for="bdPart">Your dashboard</label><select id="bdPart" aria-label="Part of your dashboard">' +
+      PARTS.map(function (x, i) { return '<option value="' + x[0] + '"' + (x[0] === p ? ' selected' : '') + '>' + (i + 1) + '. ' + x[1] + '</option>'; }).join('') + '</select>' +
+      (MINE.length > 1 ? '<select id="bdListing" aria-label="Which listing">' + MINE.map(function (m) { return '<option value="' + esc(m.slug) + '"' + (m.slug === L.slug ? ' selected' : '') + '>' + esc(m.name) + '</option>'; }).join('') + '</select>' : '') +
+      '</div>';
+  }
+  function row(tag, cls, title, body, btn) {
+    return '<div class="r"><div><b>' + esc(title) + '</b>' + (body ? '<p>' + esc(body) + '</p>' : '') + '</div><span class="tag ' + cls + '">' + esc(tag) + '</span>' + btn + '</div>';
+  }
+  function partBtn(label, p, pd) { return '<a class="btn btn-sm" href="' + base(p) + (pd ? '&pd=' + pd : '') + '" data-part="' + p + '"' + (pd ? ' data-pd="' + pd + '"' : '') + '>' + esc(label) + '</a>'; }
+  function editBtn(step) { return '<a class="btn btn-sm" href="' + esc(listingUrl('?tab=brand&edit=' + step)) + '" target="_top">Add it</a>'; }
+
+  // ---- Home: Needs you, New for you, Your week
+  function needs() {
+    var out = [];
+    if (L.claim_status === 'pending') out.push(row('Waiting', 't-need', 'We are checking your claim', 'Most claims are approved within a day. Your page and menu are yours to edit now.', '<a class="btn btn-sm btn-ghost" href="' + esc(listingUrl()) + '" target="_top">See your page</a>'));
+    (D.checklist || []).filter(function (c) { return !c.done && CHECK[c.k]; }).forEach(function (c) {
+      var m = CHECK[c.k];
+      var btn = c.k === 'menu' ? partBtn('Add it', 'page', 'menu') : c.k === 'audit' ? '<a class="btn btn-sm" href="/guides/vegan-restaurant-guide#/audit" target="_top">Run it</a>' : editBtn(m[2]);
+      out.push(row('Needs you', 't-need', m[0], m[1], btn));
+    });
+    var h = D.health, flags = h && h.checks ? h.checks.filter(function (c) { return c.status === 'flag'; }) : [];
+    if (flags.length) out.push(row('Flagged', 't-flag', 'Your listing check flagged ' + flags.length + (flags.length === 1 ? ' thing' : ' things'), flags.slice(0, 3).map(function (f) { return f.label || f.title || f.k; }).filter(Boolean).join(', '), partBtn('See it', 'page', 'audit')));
+    return out;
+  }
+  function fresh() {
+    var out = [];
+    (D.cards || []).forEach(function (c) {
+      var url = c.cta_url || '', btn = '';
+      if (/^\?pd=/.test(url)) { var pd = url.slice(4), host = Object.keys(HOSTS).filter(function (k) { return HOSTS[k].indexOf(pd) >= 0; })[0]; btn = host ? partBtn(c.cta_label || 'Open', host, pd) : ''; }
+      else if (url) btn = '<a class="btn btn-sm" href="' + esc(url) + '" target="_top">' + esc(c.cta_label || 'Open') + '</a>';
+      out.push(row({ new: 'New', wizard: 'Try it', offer: 'Offer', tip: 'Tip' }[c.kind] || 'New', c.kind === 'tip' ? 't-tip' : 't-new', c.title, c.body, btn || '<span></span>'));
+    });
+    var seen = {};
+    (D.opportunities || []).filter(function (o) { var k = String(o.title || '').toLowerCase(); if (seen[k]) return false; seen[k] = 1; return true; }).slice(0, 6).forEach(function (o) {
+      out.push(row('Opportunity', 't-new', o.title, o.description, partBtn('See it', 'opportunities', 'opps')));
+    });
+    return out;
+  }
+  function week() {
+    if (!D.open) return '<div class="card"><p class="empty" style="margin:0 0 12px">Your numbers open when you become a member. Membership is free: take the short Explorer survey, about two minutes.</p><a class="btn" href="/survey?s=explorer" target="_top">Take the Explorer survey</a></div>';
+    var s = D.stats || {}, T = s.totals || {}, P = s.previous || {};
+    var taps = Object.keys(T).reduce(function (a, k) { return k === 'view' ? a : a + (+T[k] || 0); }, 0);
+    var ch = function (now, before) {
+      if (!before) return now ? '<em>New this week</em>' : '<em>&nbsp;</em>';
+      var d = now - before; return '<em class="' + (d > 0 ? 'up' : d < 0 ? 'down' : '') + '">' + (d > 0 ? 'Up ' + n(d) : d < 0 ? 'Down ' + n(-d) : 'Same as') + ' on last week</em>';
+    };
+    var ci = D.checkins && D.checkins.verified ? D.checkins : null;
+    return '<div class="totals"><div class="tot"><b>' + n(T.view) + '</b><span>Page views</span>' + ch(+T.view || 0, P.views) + '</div>' +
+      '<div class="tot"><b>' + n(s.visitors) + '</b><span>Visitors</span>' + ch(+s.visitors || 0, P.visitors) + '</div>' +
+      '<div class="tot"><b>' + n(taps) + '</b><span>Taps and clicks</span>' + ch(taps, P.actions) + '</div>' +
+      (ci ? '<div class="tot"><b>' + n(ci.last_30_days) + '</b><span>Check-ins</span><em>Last 30 days</em></div>'
+        : '<div class="tot"><b>' + n((D.ads || []).reduce(function (a, x) { return a + (x.impressions || 0); }, 0)) + '</b><span>Ad impressions</span><em>' + ((D.ads || []).length ? 'Your ads' : 'No ads yet') + '</em></div>') + '</div>' +
+      partBtn('See every number', 'insights', 'insights').replace('btn btn-sm', 'btn btn-ghost btn-sm');
+  }
+  function drawHome() {
+    var a = needs(), b = fresh();
+    return '<div class="sec"><h2>Needs you</h2>' + (a.length ? '<span class="count">' + a.length + '</span>' : '') + '</div>' +
+      (a.length ? '<div class="rows">' + a.join('') + '</div>' : '<p class="empty">Nothing is waiting on you. Your page is ready for visitors.</p>') +
+      '<div class="sec"><h2>New for you</h2></div>' +
+      (b.length ? '<div class="rows" style="max-height:60vh;overflow-y:auto">' + b.join('') + '</div>' : '<p class="empty">Nothing new this week. New opportunities show up here first.</p>') +
+      '<div class="sec"><h2>Your week</h2></div>' + week();
+  }
+  function drawPageTop() {
+    var todo = (D.checklist || []).filter(function (c) { return CHECK[c.k] && ['menu', 'audit'].indexOf(c.k) < 0; }), done = todo.filter(function (c) { return c.done; }).length;
+    var pct = todo.length ? Math.round(done / todo.length * 100) : 100;
+    return '<section class="card"><h2>Your page is ' + pct + '% ready</h2><p class="lede" style="margin:0 0 14px">You edit it on your page, so you see it the way visitors do. ' +
+      (todo.length && done < todo.length ? 'Still to add: ' + esc(todo.filter(function (c) { return !c.done; }).map(function (c) { return CHECK[c.k][0].replace(/^Your /, '').toLowerCase(); }).join(', ')) + '.' : 'Everything is in.') + '</p>' +
+      '<a class="btn" href="' + esc(listingUrl('?tab=brand&edit=about')) + '" target="_top">Edit your page</a></section>';
+  }
+  function drawSoon(title, body) {
+    return '<section class="card"><h2>' + esc(title) + ' <span class="soon">Coming</span></h2><p class="lede" style="margin:0">' + esc(body) + '</p></section>';
+  }
+  function draw() {
+    var p = part();
+    if (p !== q('tab') || q('l') !== L.slug) history.replaceState(null, '', location.pathname + base(p) + (q('pd') ? '&pd=' + encodeURIComponent(q('pd')) : ''));
+    var label = PARTS.filter(function (x) { return x[0] === p; })[0][1];
+    var html = head() + (p === 'home' ? '' : '<p class="crumb"><a href="' + base('home') + '" data-part="home">Home</a> &rsaquo; ' + esc(label) + '</p>');
+    if (p === 'home') html += drawHome();
+    else if (p === 'page') html += drawPageTop() + '<div id="bdHost"></div>';
+    else if (p === 'media') html += drawSoon('Media kit', 'Every time we feature you (a Guide, a Daily Pulse story, a podcast, a carousel), it lands here with what you need to share it: the story, a square post, your own link and a caption to copy.');
+    else if (p === 'messages') html += drawSoon('Messages', 'Messages from our team, and your replies, right here. Anything important is emailed to you too.');
+    else html += '<div id="bdHost"></div>';
+    app.innerHTML = html;
+    var host = $('bdHost');
+    if (host && HOSTS[p]) {
+      VEPartnerDash.mount(host, { id: L.id, name: L.name, slug: L.slug, category: L.category, claim_status: L.claim_status }, {
+        only: HOSTS[p], tab: p, base: base(p),
+        editPage: function (step) { window.top.location.href = listingUrl('?tab=brand&edit=' + (step || 'about')); }
+      });
+    }
+    tellParent();
+  }
+  app.addEventListener('click', function (e) {
+    var fb = e.target.closest('[data-fbk]');
+    if (fb) { e.preventDefault(); if (window.VEFeedback) VEFeedback.open({ form: true, page: location.origin + '/dashboard/business' + location.search }); return; }
+    var a = e.target.closest('[data-part]');
+    if (a && !(e.metaKey || e.ctrlKey || e.shiftKey)) { e.preventDefault(); go(a.getAttribute('data-part'), a.getAttribute('data-pd')); }
+  });
+  app.addEventListener('change', function (e) {
+    if (e.target.id === 'bdPart') go(e.target.value);
+    if (e.target.id === 'bdListing') { var m = MINE.filter(function (x) { return x.slug === e.target.value; })[0]; if (m) open(m.slug, 'home'); }
+  });
+  // A view the module drew on its own (Menu > item) keeps working after Back; a change of part redraws the page.
+  window.addEventListener('popstate', function () { if (L) { if (q('l') && q('l') !== L.slug) open(q('l'), part()); else draw(); } });
+
+  function fetchListing(slug) {
+    return fetch(SB + '/rest/v1/listings?slug=eq.' + encodeURIComponent(slug) + '&status=eq.approved&select=id,name,slug,category,logo_url,address_city,address_state,location,claim_status&limit=1',
+      { headers: { apikey: ANON, Authorization: 'Bearer ' + ANON } }).then(function (r) { return r.json(); }).then(function (rows) { return rows && rows[0]; });
+  }
+  function open(slug, p) {
+    app.hidden = false; app.innerHTML = '<p class="empty">Opening your dashboard...</p>';
+    fetchListing(slug).then(function (l) {
+      if (!l) return gateMsg('That listing is not in the Directory.');
+      return post('ve-claims', { action: 'owner_dashboard', listing_id: l.id, days: 7 }).then(function (d) {
+        if (!d || !d.ok) return gateMsg(d && d.error === 'not_owner' ? 'This dashboard belongs to the listing\'s owner.' : 'Your dashboard did not open. Refresh to try again.');
+        L = l; D = d; ADMIN = !!d.admin;
+        var u = location.pathname + '?l=' + encodeURIComponent(l.slug) + '&tab=' + (p || part()) + (q('pd') && q('l') === l.slug ? '&pd=' + encodeURIComponent(q('pd')) : '');
+        if (location.pathname + location.search !== u) history.replaceState(null, '', u);
+        $('gate').hidden = true; draw();
+      });
+    });
+  }
+  function gateMsg(t) { app.hidden = true; $('gate').hidden = false; $('gate').innerHTML = '<p>' + esc(t) + '</p><p><a class="btn" href="/dashboard" target="_top">Back to your dashboard</a></p>'; tellParent(); }
+  function pickOrClaim(admin) {
+    app.hidden = false;
+    app.innerHTML = '<p class="k">Business dashboard</p><h1>' + (MINE.length ? 'Choose a business' : 'Your business is not claimed yet') + '</h1>' +
+      (MINE.length ? '<div class="pick">' + MINE.map(function (m) {
+        return '<a href="?l=' + encodeURIComponent(m.slug) + '&tab=home" data-open="' + esc(m.slug) + '"><i' + (m.logo_url ? ' style="background-image:url(\'' + esc(m.logo_url) + '\')"' : '') + '>' + (m.logo_url ? '' : esc(String(m.name || '?').charAt(0))) + '</i><span><b>' + esc(m.name) + '</b><small>' + esc(m.category || '') + '</small></span></a>';
+      }).join('') + '</div>' :
+        '<p class="lede">Find your business in the Directory and claim it (free for members), or add it. Your dashboard opens as soon as it is yours.</p><a class="btn" href="/claim" target="_top">Claim or add your business</a>') +
+      (admin ? '<section class="card" style="margin-top:22px"><h2>Preview any dashboard</h2><p class="lede">Super admins only. Type the listing\'s address name (the part after /directory/).</p>' +
+        '<form id="bdAs" style="display:flex;gap:8px;flex-wrap:wrap"><input class="search" name="s" placeholder="love-life-cafe" aria-label="Listing" data-dictate="off"><button class="btn" type="submit">Open</button></form></section>' : '');
+    app.querySelectorAll('[data-open]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); open(a.getAttribute('data-open'), 'home'); }); });
+    var f = $('bdAs'); if (f) f.addEventListener('submit', function (e) { e.preventDefault(); var s = String(f.s.value || '').trim().toLowerCase().replace(/^.*\/directory\//, '').replace(/[^a-z0-9-]/g, ''); if (s) open(s, 'home'); });
+    tellParent();
+  }
+  function start() {
+    if (!window.VEAuth) return setTimeout(start, 200);
+    if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<p>Sign in to see your business dashboard.</p><p><a class="btn" href="/login?next=/dashboard/business">Sign in</a></p>'; return; }
+    var admin = VEAuth.isRealSuperAdmin && VEAuth.isRealSuperAdmin();
+    post('ve-dashboard', { action: 'home' }).then(function (d) {
+      MINE = (d && d.listings) || [];
+      var want = q('l');
+      if (want) return open(want, part());
+      if (MINE.length === 1) return open(MINE[0].slug, part());
+      pickOrClaim(admin);
+    });
+  }
+  start();
+})();
+</script>
+<script src="/public/ve-feedback.js"></script>
+<script src="/public/footer.js"></script>
+</body>
+</html>

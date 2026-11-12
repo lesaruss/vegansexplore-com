@@ -323,3 +323,60 @@ with us?... it's per event." Separate from Group Partners.
   3. Per-event ticketing.
   4. The sponsorship and extras checkout.
   5. The ad console's credit, booking and creative support.
+
+## The event gates and many at once (Sean, 2026-11-11)
+
+Sean, on 122 events waiting: "I am not going through all 122 of these... why can't we just approve them? Can we put in some
+gates?"; "If they are still active, if they have a link to register, it hasn't been canceled, it's not duplicated, I would say we
+can roll with it"; "We should automatically defer to the official organization's listing and not put up the meetup group... if
+they are two duplicate events, you can flag those and I can choose"; "select multiple and then have an action".
+
+- **The gates** (migration `20261111_event_gates.sql`, `ve-event-check` `gate`, cron `ve-event-gate` at :04, :19, :34, :49, 10 a
+  run). Every waiting event the crawl, a flyer or the team brought in (members' own still wait for a person: Logan's default,
+  Sean's to change) goes through: (1) duplicates (`ve_event_gate_dupes` over `ve_event_match`: the same local day, and the same link,
+  or a near-same name (`ve_event_title_key`, trigram 0.5) in the same city or by the same organizer). The same organizer twice
+  (`ve_event_same_org`: the same name, or one starting with the other; with no organizer named, the same link or the same own
+  website) is folded into the one we keep (the live one, else the organizer's own page over Eventbrite, Meetup and the like) and
+  turned down as "Duplicate of <id>". Two organizations listing one event wait for Sean (`gate_status` duplicate, `dupe_of`), the
+  official one recommended. (2) Its official page (the weekly check's `checkOne`): still this event -> live (`gate_status` passed,
+  `gate_note`); cancelled -> off; gone (404 or 410 on two checks) -> turned down; a page that loads without the event on it, a 404 once,
+  postponed or unreadable -> held, asked again the next day (first run: a Plant Powered Metro New York neoncrm portal page, built in
+  the browser, read as "not this event" and was turned down; fixed the same hour, the event put back to waiting).
+  Live duplicates are swept the same way each run (`ve_event_live_dupes`: same organizer folded, RSVPs moved to the one kept;
+  two organizations flagged, both stay live until Sean picks).
+- **The intake** refuses a near-same event by the same organizer on the same day (`ve_event_intake_dupe`), not only the exact name.
+- **A series on one link**: the weekly check no longer moves a waiting event's date to the page's next date when another waiting or
+  live event shares the link (the Vegan Toastmasters Meetup had three dates on one link).
+- **Depot > Events**: every queue has a checkbox per row, Select all shown, and Approve / Turn down for the selection (one reason
+  for all; it calls `ve-events` `review` per event, so members still get their email). **Duplicates** (`#dupes`): each pair side
+  by side, Keep this one (it goes live, the other is turned down as its duplicate) or Not the same event (`not_dupes`, never matched
+  again; the waiting one goes back through the gates). **Held** (`#held`): what the gates could not confirm, with why.
+- **Georgia VegFest**: the Atlanta Veggie Eats Meetup copy came down as a duplicate of the official listing (Farm of the Free), on
+  Sean's word. The one-time write ran through `ve-once-event-gates` (`scripts/supabase-once/event-gates.ts`), the connector having
+  held the second migration.
+
+### Supporting organizations (Sean, 2026-11-11, same day)
+
+Sean, on the pick-one pairs: "If we have an organization that is also hosting their meetup, let's put it underneath that listing.
+You know, we don't have to lose it completely, but we can show that these are the organizations that are supporting this event.
+And then they can see, click on it and see their listing. So somebody might want to register through DC Meetup... going is going,
+right? And it's almost like a referral." "Unless Polar Springs is a sponsor, then it's like, okay, maybe we don't have DC Meetup on
+there... But we're not there yet" (not built: a paid promotion hiding supporters).
+
+- Two organizations listing one event no longer wait for Sean (migration `20261111_event_supporters.sql`). The official one (its
+  own page over a ticketing or group site, then one tied to a Directory listing, then the live one) stays the event; the other
+  becomes a supporter under it: `status` 'supporting', `dupe_of` the event (`ve_event_attach_supporter`, RSVPs move to the event).
+  A supporter is off the calendar but readable by anyone (policy "Public can view supporting events").
+- **Which one is official** (`ve_event_official_pick`, after the first live run put Poplar Spring Animal Sanctuary's own event under
+  the Veg Society of DC Meetup post "VSDC Joins Poplar Spring Animal Sanctuary for Thanksgiving..."): (1) the one whose organizer the
+  other's title names; (2) the organizer's own site, then a ticketing page (Eventbrite and the like), then a group post (Meetup,
+  Partiful, Facebook, Instagram); (3) one tied to a Directory listing; (4) the live one, then the first in. Poplar Spring was put back
+  through the gate the same morning.
+- **The event's page** (`ve-events` `event` returns `supporters`; `public/ve-events.js`): under Hosted by and Held at, **Supporting
+  organizations**, "Going with one of them? Register through them.": each one's logo and name link to its Directory page, and
+  **Register with them** opens its own link.
+- **The supporter's own Directory page** (`directory/listing.html`) keeps the event with its own link; the name opens the main event.
+- The gate (`ve-event-check`): a waiting event whose official twin is already here goes under it; an official one that passes its
+  page check takes the other under it; an event turned down or cancelled releases its supporters back through the gates.
+- **Depot > Events > Supporting** (`#supporting`, replacing Duplicates): each event and its supporter, **Make this the main one**
+  (`support_swap`) and **Not the same event** (`ve_event_support_release`: back through the gates, never matched again).

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard, reorganized: mock — Vegans Explore</title>
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Mock of the reorganized member dashboard: Recent activity leads, Your business becomes one tile in the tile grid. Illustrative, not live.">
+  <link rel="canonical" href="https://vegansexplore.com/mocks/dashboard/">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preload" href="/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2" as="font" type="font/woff2" crossorigin><style>/* Montserrat, self-hosted (site health 2026-11-11): the same faces Google served, without the blocking stylesheet */@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}</style>
+  <!-- Parent template: mocks/creator-dashboard/index.html (itself from mocks/depot/: the /partners guided view on the white stage,
+       /public/ve-guided.js). Dashboard pieces copied from dashboard/center-console.html: dash-section-title, the Recent activity
+       boxes (dpRows: rounded-square member pictures, name, meta), dash-stat tiles, dash-biz rows.
+       Sean, 2026-11-10: "very jumbled"; Recent activity leads, Your business becomes one tile the same size as the others. -->
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-border:rgba(0,0,0,0.09);--ve-text-50:rgba(26,26,26,0.5);}
+    body{font-family:"Montserrat",sans-serif;background:#fff;color:#1a1a1a;line-height:1.5;}
+    .dm-row{display:flex;flex-wrap:wrap;gap:18px 26px;align-items:flex-start;}
+    .dm-main{flex:1 1 680px;min-width:0;}
+    .dm-side{flex:1 1 280px;min-width:0;font-size:12.5px;line-height:1.5;}
+    .dm-side h3{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:#2D5C27;margin:0 0 6px;}
+    .dm-side ul{list-style:none;display:grid;gap:5px;margin-bottom:12px;}
+    .dm-side li b{color:#2D5C27;}
+
+    .tg{display:inline-block;font-size:9px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;border-radius:6px;padding:2px 7px;vertical-align:middle;line-height:1.4;white-space:nowrap;}
+    .tg.smp{background:#9a3412;color:#fff;}
+    .tg.live{background:#E8F5E9;color:#2D5C27;}
+    .tg.soon{background:#FFF1DF;color:#8a4b00;}
+    .smp-corner{position:absolute;top:8px;right:8px;z-index:3;}
+
+    /* The dashboard panel */
+    .ui{position:relative;background:#fff;border-radius:10px;border:1px solid #e3e3e3;box-shadow:0 2px 10px rgba(0,0,0,.06);padding:12px 14px;font-size:11px;}
+    .ui-banner{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#f4f7f4;border:1px solid #e6ece6;border-radius:8px;padding:7px 12px;margin-bottom:10px;font-size:11.5px;}
+    .ui-banner b{font-weight:900;}
+    .ui-banner .city{color:#2d7d31;font-weight:800;}
+    .ui-banner .pick{margin-left:auto;border:1px solid #d6d6d6;border-radius:6px;padding:3px 30px 3px 9px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%232D5C27' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 10px center;font-weight:700;font-size:10.5px;}
+    .sec{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 7px;}
+    .sec-t{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#2d7d31;}
+    .sec .find{flex:0 1 260px;margin-left:auto;border:1px solid #d6d6d6;border-radius:6px;padding:4px 9px;color:#888;font-size:10.5px;}
+
+    /* Recent activity boxes (dpRows) */
+    .ra{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;}
+    .bx{border:1px solid #e6e6e6;border-radius:8px;padding:7px 8px;background:#fff;min-width:0;}
+    .bx-h{display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+    .bx-h b{font-size:9.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;}
+    .bx-h .n{font-size:9px;font-weight:800;background:#E8F5E9;color:#2D5C27;border-radius:6px;padding:0 5px;}
+    .bx-h .va{margin-left:auto;font-size:9px;font-weight:700;color:#2d7d31;white-space:nowrap;}
+    .bx-h .grip{color:#bbb;font-size:11px;letter-spacing:-2px;}
+    .r{display:flex;align-items:center;gap:6px;padding:3px 0;border-top:1px solid #f2f2f2;min-width:0;}
+    .r:first-of-type{border-top:0;}
+    .r i{flex:none;width:20px;height:20px;border-radius:6px;display:grid;place-items:center;font-style:normal;font-weight:900;font-size:9.5px;color:#fff;}
+    .r span{min-width:0;flex:1;}
+    .r span b,.r span small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .r span b{font-size:10.5px;}
+    .r span small{font-size:9.5px;color:#777;}
+    .r em{font-style:normal;font-size:8.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border-radius:5px;padding:1px 5px;background:#f0f0f0;color:#555;}
+    .r em.late{background:#fdecea;color:#a12a1f;}
+    .r em.open{background:#FFF1DF;color:#8a4b00;}
+    .flt{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px;}
+    .flt span{white-space:nowrap;font-size:8.5px;font-weight:800;border:1px solid #e3e3e3;border-radius:5px;padding:0 5px;color:#555;}
+    .flt span.on{background:#2D5C27;border-color:#2D5C27;color:#fff;}
+
+    /* Tiles: dash-stat, all one size */
+    .tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;}
+    .tl{position:relative;display:flex;flex-direction:column;gap:2px;border:1.5px solid var(--ve-border);border-radius:10px;padding:9px 10px;background:linear-gradient(180deg,#fff,#fafdfa);min-height:104px;min-width:0;}
+    .tl .lb{display:flex;align-items:center;gap:6px;font-size:9px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-text-50);}
+    .tl .lb svg{width:14px;height:14px;stroke:#2D5C27;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none;}
+    .tl .v{font-size:20px;font-weight:900;color:var(--ve-green-dark);line-height:1.15;}
+    .tl .v.warn{color:#a12a1f;}
+    .tl .v.amber{color:#7d4a00;}
+    .tl .s{font-size:9.5px;color:#555;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .tl .go{margin-top:auto;font-size:9.5px;font-weight:800;color:#2d7d31;}
+    .tl.hi{border-color:#F69820;box-shadow:0 0 0 3px rgba(246,152,32,.22);}
+    .logos{display:flex;gap:4px;margin:2px 0 1px;}
+    .logos i{width:20px;height:20px;border-radius:5px;display:grid;place-items:center;font-style:normal;font-weight:900;font-size:9px;color:#fff;background:#2D5C27;}
+
+    /* Slide 1: the two layouts as strips, drawn to scale */
+    .cmp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;}
+    .cmp h4{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px;}
+    .cmp h4 small{font-weight:600;letter-spacing:0;text-transform:none;color:#777;font-size:11px;margin-left:6px;}
+    .strip{position:relative;border:1px solid #e3e3e3;border-radius:8px;padding:4px;background:#fafafa;}
+    .blk{display:flex;align-items:center;justify-content:space-between;gap:6px;border-radius:5px;padding:0 9px;margin-bottom:3px;font-size:10.5px;font-weight:800;color:#1a1a1a;background:#eceff1;overflow:hidden;}
+    .blk:last-child{margin-bottom:0;}
+    .blk small{font-weight:600;color:#555;font-size:9.5px;white-space:nowrap;}
+    .blk.ra-b{background:#2D5C27;color:#fff;}
+    .blk.ra-b small{color:#d7efd8;}
+    .blk.biz{background:#FFE2BD;}
+    .fold{position:absolute;left:-4px;right:-4px;border-top:2px dashed #a12a1f;}
+    .fold span{position:absolute;right:6px;top:-17px;font-size:9px;font-weight:800;color:#a12a1f;background:#fff;padding:0 4px;border-radius:4px;}
+
+    /* Slide 4: an opened tile */
+    .crumb{font-size:10.5px;color:#666;margin-bottom:8px;}
+    .crumb b{color:#1a1a1a;}
+    .bz{display:flex;align-items:center;gap:10px;border:1px solid #ececec;border-radius:8px;padding:8px 10px;margin-bottom:6px;}
+    .bz i{flex:none;width:34px;height:34px;border-radius:8px;display:grid;place-items:center;font-style:normal;font-weight:900;color:#fff;background:#2D5C27;}
+    .bz span{flex:1;min-width:0;}
+    .bz b{display:block;font-size:12px;}
+    .bz small{display:block;font-size:10.5px;color:#666;}
+    .btn{display:inline-block;border-radius:6px;background:#2D5C27;color:#fff;font-weight:800;font-size:10px;padding:6px 10px;white-space:nowrap;}
+    .btn.o{background:#fff;color:#2D5C27;border:1px solid #2D5C27;}
+
+    /* Slide 5: phones */
+    .phones{display:flex;gap:22px;flex-wrap:wrap;justify-content:center;}
+    .ph{flex:0 0 250px;}
+    .ph h4{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;margin-bottom:6px;text-align:center;}
+    .ph-f{position:relative;height:470px;border:7px solid #1a1a1a;border-radius:28px;overflow:hidden;background:#fff;padding:22px 9px 9px;font-size:10px;}
+    .ph-f .nav{position:absolute;top:0;left:0;right:0;height:16px;background:#1a1a1a;}
+    .ph .ui-banner{font-size:9.5px;padding:5px 8px;margin-bottom:7px;}
+    .ph .bz{padding:6px 7px;gap:7px;margin-bottom:5px;flex-wrap:wrap;}
+    .ph .bz i{width:26px;height:26px;}
+    .ph .bz b{font-size:10.5px;}
+    .ph .bz small{font-size:9px;}
+    .ph .btn{font-size:8.5px;padding:4px 7px;flex:1 1 100%;text-align:center;}
+    .ph .bz span{flex:1 1 120px;}
+    .chips{display:flex;gap:4px;overflow:hidden;margin-bottom:5px;}
+    .chips span{flex:none;font-size:8.5px;font-weight:800;border:1px solid #e3e3e3;border-radius:5px;padding:1px 6px;color:#555;}
+    .chips span.on{background:#2D5C27;border-color:#2D5C27;color:#fff;}
+    .ph .tiles{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;}
+    .ph .tl{min-height:74px;padding:6px 7px;}
+    .ph .tl .v{font-size:15px;}
+    .ph .tl .s{font-size:8.5px;}
+
+    .dm-card{padding:14px 16px;font-size:12.5px;line-height:1.5;}
+    .dm-card b.t{display:block;font-size:13px;font-weight:800;margin-bottom:4px;color:#1a1a1a;}
+    .mv{list-style:none;display:grid;gap:7px;margin:6px 0 12px;}
+    .mv li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:start;}
+    .mv li .tg{margin-top:2px;}
+
+    @media (min-width:901px) and (max-height:820px){
+      .ui{padding:9px 11px;}
+      .r{padding:2px 0;}
+      .r i{width:17px;height:17px;}
+      .tl{min-height:88px;padding:7px 9px;}
+      .tl .v{font-size:17px;}
+      .dm-side{font-size:11.5px;}
+      .ph-f{height:370px;}
+      .r.x{display:none;}
+      .bx .r:nth-of-type(n+5){display:none;}
+      .bx .flt + .r ~ .r ~ .r{display:none;}
+      .flt{flex-wrap:nowrap;overflow:hidden;}
+      .ui-banner{padding:4px 10px;margin-bottom:6px;}
+      .sec{margin-bottom:5px;}
+      .bx{padding:5px 7px;}
+    }
+    @media (max-width:900px){
+      .ra{grid-template-columns:repeat(2,minmax(0,1fr));}
+      .tiles{grid-template-columns:repeat(2,minmax(0,1fr));}
+      .cmp{grid-template-columns:minmax(0,1fr);}
+      .sec .find{flex:1 1 100%;margin-left:0;}
+    }
+  </style>
+</head>
+<body>
+<div class="page-frame">
+  <script src="/public/nav.js"></script>
+  <div class="vg-note"><strong>Illustrative</strong>A mock of the dashboard reorganized, for review. Nothing on the real dashboard has changed. The layout is measured from your live dashboard on November 10, 2026; names in the boxes are Sample.</div>
+
+  <main class="vg-stage vg-light" aria-label="Dashboard, reorganized: mock">
+
+    <!-- 1. Today and proposed, to scale -->
+    <section class="vg-slide" id="compare" data-title="Today and proposed">
+      <div class="vg-eyebrow">1 · Today and proposed</div>
+      <h2 class="vg-h">Recent activity goes from the fifth thing you see to the first</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="cmp">
+          <div>
+            <h4>Today <small>your Dashboard tab, 1440 px, 3,883 px long</small></h4>
+            <div class="strip js-strip" data-scale="0.105">
+              <div class="blk" data-h="49">City banner</div>
+              <div class="blk biz" data-h="384">Your business <small>4 big rows, 384 px</small></div>
+              <div class="blk" data-h="140">Your role <small>3 tiles</small></div>
+              <div class="blk" data-h="715">For you + Insights <small>side by side, 715 px</small></div>
+              <div class="blk" data-h="559">Revenue <small>559 px</small></div>
+              <div class="blk ra-b" data-h="1151">Recent activity <small>starts 2,074 px down</small></div>
+              <div class="blk" data-h="432">The Depot <small>432 px</small></div>
+              <span class="fold js-fold" data-at="900"><span>First screen ends</span></span>
+            </div>
+          </div>
+          <div>
+            <h4>Proposed <small>about 1,100 px long</small></h4>
+            <div class="strip js-strip" data-scale="0.105">
+              <div class="blk" data-h="49">City banner</div>
+              <div class="blk ra-b" data-h="760">Recent activity <small>first, your box order kept</small></div>
+              <div class="blk biz" data-h="250">Your tiles <small>8, one size, Your business is one</small></div>
+              <span class="fold js-fold" data-at="900"><span>First screen ends</span></span>
+            </div>
+          </div>
+        </div></div>
+        <div class="dm-side">
+          <h3>What the measuring showed</h3>
+          <ul>
+            <li>Today you scroll past <b>Your business</b>, Your role, For you, Insights and Revenue (2,074 px, more than two screens) before <b>Recent activity</b> starts.</li>
+            <li>Your business alone is 384 px, taller than any Recent activity box.</li>
+          </ul>
+          <h3>Proposed</h3>
+          <ul>
+            <li><b>Recent activity</b> right under the banner, filling the first screen.</li>
+            <li>Everything else becomes one row of same-size <b>tiles</b>. A tile opens its full view, so nothing is lost, it is just one tap away.</li>
+            <li>The page is under a third as long.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Recent activity first -->
+    <section class="vg-slide" id="recent" data-title="Recent activity first">
+      <div class="vg-eyebrow">2 · Recent activity leads</div>
+      <h2 class="vg-h">The first screen is the part you use most</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <span class="tg smp smp-corner">Sample</span>
+          <div class="ui-banner"><b>Welcome back, Sean</b><span class="city">Central Florida</span><span class="pick">Central Florida</span></div>
+          <div class="sec"><span class="sec-t">Recent activity</span><span class="find">Find a member by name or email</span></div>
+          <div class="ra">
+            <div class="bx"><div class="bx-h"><span class="grip">⋮⋮</span><b>Inbox</b><span class="n">2 open</span></div>
+              <div class="flt"><span class="on">Open</span><span>Late</span><span>Not opened</span><span>Done</span><span>All</span></div>
+              <div class="r"><i style="background:#2b7a8a">M</i><span><b>Meeting request</b><small>Maya R. · Philadelphia · 3 h ago</small></span><em class="open">Open</em></div>
+              <div class="r"><i style="background:#7a4fb5">J</i><span><b>Listing claim</b><small>Jordan T. · Miami · 20 h ago</small></span><em class="late">4 h left</em></div>
+              <div class="r"><i style="background:#c04a2b">A</i><span><b>Creator application</b><small>Ari M. · Atlanta</small></span><em>Replied</em></div>
+              <div class="r x"><i style="background:#8a6d1f">D</i><span><b>Event submitted</b><small>Dee K. · New York</small></span><em>Closed</em></div>
+            </div>
+            <div class="bx"><div class="bx-h"><span class="grip">⋮⋮</span><b>Recent Votes</b><span class="n">100</span><span class="va">View all →</span></div>
+              <div class="r"><span><b>Vegans Explore Podcast</b><small>Renee W. · Nov 10, 6:27 AM</small></span><i style="background:#2b7a8a">R</i></div>
+              <div class="r"><span><b>Plant Based Mafia</b><small>Marcus L. · Nov 8, 5:13 PM</small></span><i style="background:#7a4fb5">M</i></div>
+              <div class="r"><span><b>House of Vegano</b><small>Marcus L. · Nov 8, 2:07 PM</small></span><i style="background:#7a4fb5">M</i></div>
+              <div class="r"><span><b>Zen Mystery</b><small>Tasha R. · Nov 8, 2:06 PM</small></span><i style="background:#3A9B3E">T</i></div>
+              <div class="r x"><span><b>Greens and Grains Boca Raton</b><small>Tasha R. · Nov 8</small></span><i style="background:#3A9B3E">T</i></div>
+            </div>
+            <div class="bx"><div class="bx-h"><span class="grip">⋮⋮</span><b>Recent Members</b><span class="n">17</span><span class="va">View all →</span></div>
+              <div class="r"><i style="background:#DB2777">K</i><span><b>Kim J.</b><small>Joined Nov 10</small></span></div>
+              <div class="r"><i style="background:#2D5C27">B</i><span><b>Ben H.</b><small>Joined Nov 8</small></span></div>
+              <div class="r"><i style="background:#c04a2b">S</i><span><b>Sam P.</b><small>Joined Nov 8</small></span></div>
+              <div class="r"><i style="background:#2b7a8a">A</i><span><b>Alex L.</b><small>Joined Nov 3</small></span></div>
+              <div class="r x"><i style="background:#8a6d1f">J</i><span><b>Jess A.</b><small>Joined Nov 2</small></span></div>
+            </div>
+            <div class="bx"><div class="bx-h"><span class="grip">⋮⋮</span><b>Recent Leads</b><span class="n">30</span><span class="va">View all →</span></div>
+              <div class="r"><i style="background:#DB2777">K</i><span><b>Kim J.</b><small>Clicked a link · Invite</small></span></div>
+              <div class="r"><i style="background:#2D5C27">B</i><span><b>Ben H.</b><small>Clicked a link · Reply</small></span></div>
+              <div class="r"><i style="background:#555">M</i><span><b>Morgan W.</b><small>Clicked a link · Founding cohort</small></span></div>
+              <div class="r"><i style="background:#7a4fb5">J</i><span><b>Jamie W.</b><small>Clicked a link · Founding cohort</small></span></div>
+              <div class="r x"><i style="background:#c04a2b">L</i><span><b>Lee M.</b><small>Clicked a link · Founding cohort</small></span></div>
+            </div>
+            <div class="bx"><div class="bx-h"><span class="grip">⋮⋮</span><b>Events waiting</b><span class="n">3</span><span class="va">View all →</span></div>
+              <div class="r"><i style="background:#2D5C27">P</i><span><b>Book Club &amp; Movie Afternoon</b><small>Philadelphia · Nov 14</small></span></div>
+              <div class="r"><i style="background:#2D5C27">N</i><span><b>Northern Vegan Festival</b><small>Manchester · Mar 27</small></span></div>
+              <div class="r"><i style="background:#2D5C27">L</i><span><b>Leicestershire Vegan Festival</b><small>Leicester · Mar 20</small></span></div>
+            </div>
+            <div class="bx"><div class="bx-h"><span class="grip">⋮⋮</span><b>Leaderboard</b><span class="va">View all →</span></div>
+              <div class="r"><i style="background:#2D5C27">1</i><span><b>Ben H.</b><small>2,735 points</small></span></div>
+              <div class="r"><i style="background:#2b7a8a">2</i><span><b>Rae A.</b><small>1,240 points</small></span></div>
+              <div class="r"><i style="background:#7a4fb5">3</i><span><b>Alex L.</b><small>1,200 points</small></span></div>
+            </div>
+            <div class="bx"><div class="bx-h"><span class="grip">⋮⋮</span><b>Guest Reviews</b><span class="va">View all →</span></div>
+              <div class="r"><span><small>Nothing here yet.</small></span></div>
+            </div>
+            <div class="bx" style="border-style:dashed;display:grid;place-items:center;color:#888;font-weight:700;font-size:10px;text-align:center">Your tiles start<br>right below ↓</div>
+          </div>
+        </div></div>
+        <div class="dm-side">
+          <h3>What's in it</h3>
+          <ul>
+            <li>The same seven boxes you have today: <b>Inbox</b>, Recent Votes, Recent Members, Recent Leads, Events waiting, Leaderboard, Guest Reviews, with <b>Find a member</b> in the header.</li>
+            <li>Four across, two rows, so all seven fit on the first screen. Each still scrolls inside and keeps its drag handle; the order you set is kept.</li>
+          </ul>
+          <h3>Unchanged</h3>
+          <ul>
+            <li>Every picture still opens who they are. The Inbox keeps its filters and 24-hour clock.</li>
+            <li>Names here are Sample; the counts (100 votes, 17 members, 30 leads, 3 events) are yours from today.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. Your tiles -->
+    <section class="vg-slide" id="tiles" data-title="Your tiles">
+      <div class="vg-eyebrow">3 · Your tiles</div>
+      <h2 class="vg-h">Your business is one tile, the same size as the others</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <span class="tg smp smp-corner">Sample</span>
+          <div class="sec"><span class="sec-t">Your tiles</span></div>
+          <div class="tiles">
+            <div class="tl hi"><div class="lb"><svg viewBox="0 0 24 24"><path d="M4 20V9l8-5 8 5v11"/><path d="M9 20v-6h6v6"/></svg>Your business</div>
+              <div class="logos"><i>P</i><i style="background:#2b7a8a">P</i><i style="background:#1a1a1a">S</i><i style="background:#3A9B3E">V</i></div>
+              <div class="s">4 listings · Pre-Vegans by Sean Russell: 2 of 4 checks passed</div><div class="go">Open →</div></div>
+            <div class="tl"><div class="lb"><svg viewBox="0 0 24 24"><path d="M12 3v18M17 7H9.5a3 3 0 0 0 0 6h5a3 3 0 0 1 0 6H6"/></svg>Revenue</div>
+              <div class="v">$22.00</div><div class="s">This month, 2 payments · $119 this year</div><div class="go">Open →</div></div>
+            <div class="tl"><div class="lb"><svg viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Insights</div>
+              <div class="v">726</div><div class="s">Visitors, last 30 days, up 172% · Web, Social, SEO</div><div class="go">Open →</div></div>
+            <div class="tl"><div class="lb"><svg viewBox="0 0 24 24"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>Platform health</div>
+              <div class="v warn">2 alerts</div><div class="s">Site and services: 1 of 7 checks failing</div><div class="go">Open →</div></div>
+            <div class="tl"><div class="lb"><svg viewBox="0 0 24 24"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>Submissions</div>
+              <div class="v amber">11</div><div class="s">6 Pulse drafts, 3 events · oldest 114 days</div><div class="go">Open →</div></div>
+            <div class="tl"><div class="lb"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M17 11a3 3 0 1 0 0-6M21.5 20a5 5 0 0 0-4-4.9"/></svg>This week</div>
+              <div class="v">3</div><div class="s">New members · 0 active Passports</div><div class="go">Open →</div></div>
+            <div class="tl"><div class="lb"><svg viewBox="0 0 24 24"><path d="M5 12l4 4 10-10"/></svg>For you</div>
+              <div class="v">12</div><div class="s">First: Lighthouse Thai Sushi listing request</div><div class="go">Open →</div></div>
+            <div class="tl"><div class="lb"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>The Depot</div>
+              <div class="v" style="font-size:14px">Directory review</div><div class="s">Your most used · search every Depot page</div><div class="go">Open →</div></div>
+          </div>
+        </div></div>
+        <div class="dm-side">
+          <h3>The tiles, in the order you reach for them</h3>
+          <ul>
+            <li><b>Your business</b> (highlighted here): its four logos, one line on the listing that needs a look, Open. No more four big rows on top.</li>
+            <li><b>Revenue</b> and <b>Insights</b>: the headline number on the tile; the chart, the payments and the Web, Social and SEO tabs open in the tile's own view.</li>
+            <li><b>Platform health, Submissions, This week</b>: today's Your role row, now the same tiles.</li>
+            <li><b>For you</b> and <b>The Depot</b>: the count and the first thing, each opening its full list with its search.</li>
+          </ul>
+          <h3>Numbers</h3>
+          <ul><li>Read from your live dashboard this morning, 7:28 AM Eastern.</li></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. A tile opened -->
+    <section class="vg-slide" id="open" data-title="A tile opened">
+      <div class="vg-eyebrow">4 · A tile opened</div>
+      <h2 class="vg-h">Tap Your business: everything it shows today, on its own view</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="ui">
+          <span class="tg smp smp-corner">Sample</span>
+          <div class="crumb">Dashboard &rsaquo; <b>Your business</b> &nbsp;·&nbsp; <code>/dashboard/business</code></div>
+          <div class="bz"><i>P</i><span><b>Pre-Vegans by Sean Russell</b><small>Yours · Listing check: 2 of 4 passed</small></span><span class="btn">Open your business dashboard</span><span class="btn o">Your listing check</span></div>
+          <div class="bz"><i style="background:#2b7a8a">P</i><span><b>Pre-Vegans Podcast</b><small>Yours · Listing check: 4 of 4 passed</small></span><span class="btn">Open your business dashboard</span><span class="btn o">Your listing check</span></div>
+          <div class="bz"><i style="background:#1a1a1a">S</i><span><b>SoFlo Vegans Podcast</b><small>Yours · Listing check: 3 of 4 passed</small></span><span class="btn">Open your business dashboard</span><span class="btn o">Your listing check</span></div>
+          <div class="bz"><i style="background:#3A9B3E">V</i><span><b>Vegans Explore Podcast</b><small>Yours · Listing check: 3 of 4 passed</small></span><span class="btn">Open your business dashboard</span><span class="btn o">Your listing check</span></div>
+          <div style="margin-top:8px;font-size:10.5px;color:#666">Back to Dashboard returns you to Recent activity, where you left it.</div>
+        </div></div>
+        <div class="dm-side">
+          <h3>How every tile works</h3>
+          <ul>
+            <li>One thing per view: the tile opens its own page under <b>Dashboard &rsaquo;</b>, with its own address (<code>/dashboard/business</code>, <code>/dashboard/revenue</code>, <code>/dashboard/insights</code>), so Back works and Share sends it.</li>
+            <li>This is the same Your business block you have today, word for word, moved off the top.</li>
+          </ul>
+          <h3>Business owners who are not you</h3>
+          <ul><li>A member who owns a listing gets the same Your business tile, first in their tiles, beside Your points and Your level.</li></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. On a phone -->
+    <section class="vg-slide" id="phone" data-title="On a phone">
+      <div class="vg-eyebrow">5 · On a phone</div>
+      <h2 class="vg-h">The first screen on a phone, today and proposed</h2>
+      <div class="dm-row">
+        <div class="dm-main"><div class="phones">
+          <div class="ph"><h4>Today <span style="color:#a12a1f;letter-spacing:0;text-transform:none">· Recent activity 4,840 px down</span></h4><div class="ph-f"><span class="nav"></span>
+            <div class="ui-banner"><b>Welcome back, Sean</b></div>
+            <div class="sec"><span class="sec-t">Your business</span></div>
+            <div class="bz"><i>P</i><span><b>Pre-Vegans by Sean Russell</b><small>Listing check: 2 of 4 passed</small></span><span class="btn">Open your business dashboard</span><span class="btn o">Your listing check</span></div>
+            <div class="bz"><i style="background:#2b7a8a">P</i><span><b>Pre-Vegans Podcast</b><small>Listing check: 4 of 4 passed</small></span><span class="btn">Open your business dashboard</span><span class="btn o">Your listing check</span></div>
+            <div class="bz"><i style="background:#1a1a1a">S</i><span><b>SoFlo Vegans Podcast</b><small>Listing check: 3 of 4 passed</small></span><span class="btn">Open your business dashboard</span><span class="btn o">Your listing check</span></div>
+          </div></div>
+          <div class="ph"><h4>Proposed</h4><div class="ph-f"><span class="nav"></span><span class="tg smp smp-corner" style="top:24px">Sample</span>
+            <div class="ui-banner"><b>Welcome back, Sean</b></div>
+            <div class="sec"><span class="sec-t">Recent activity</span></div>
+            <div class="chips"><span class="on">Inbox 2</span><span>Votes</span><span>Members</span><span>Leads</span><span>Events 3</span></div>
+            <div class="bx" style="margin-bottom:7px">
+              <div class="r"><i style="background:#2b7a8a">M</i><span><b>Meeting request</b><small>Maya R. · 3 h ago</small></span><em class="open">Open</em></div>
+              <div class="r"><i style="background:#7a4fb5">J</i><span><b>Listing claim</b><small>Jordan T. · 20 h ago</small></span><em class="late">4 h left</em></div>
+              <div class="r"><i style="background:#c04a2b">A</i><span><b>Creator application</b><small>Ari M.</small></span><em>Replied</em></div>
+            </div>
+            <div class="tiles">
+              <div class="tl hi"><div class="lb">Your business</div><div class="logos"><i>P</i><i style="background:#2b7a8a">P</i><i style="background:#1a1a1a">S</i><i style="background:#3A9B3E">V</i></div><div class="s">1 needs a look</div></div>
+              <div class="tl"><div class="lb">Revenue</div><div class="v">$22.00</div><div class="s">This month</div></div>
+              <div class="tl"><div class="lb">Insights</div><div class="v">726</div><div class="s">Visitors, 30 days</div></div>
+              <div class="tl"><div class="lb">Platform health</div><div class="v warn">2</div><div class="s">Alerts</div></div>
+            </div>
+          </div></div>
+        </div></div>
+        <div class="dm-side">
+          <h3>On a phone</h3>
+          <ul>
+            <li>Today the four Your business cards fill the first screen and Recent activity is about six screens down.</li>
+            <li>Proposed: Recent activity first as <b>one box at a time</b>, picked from a row of names (Inbox first), so it is not seven tall boxes stacked. Your tiles follow, two across.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. What moved, and your call -->
+    <section class="vg-slide" id="call" data-title="What moved, and your call">
+      <div class="vg-eyebrow">6 · What moved, and your call</div>
+      <h2 class="vg-h">What moved and why</h2>
+      <div class="dm-row">
+        <div class="vg-glass dm-card" style="flex:1 1 520px;min-width:0">
+          <b class="t">What moved</b>
+          <ul class="mv">
+            <li><span class="tg live">Up</span><span><b>Recent activity</b> to the top, under the banner. You told us it is what you use most and like.</span></li>
+            <li><span class="tg soon">Down</span><span><b>Your business</b> from four big rows on top to one tile, the same size as the rest: "I don't need it to be as big and to the top like that."</span></li>
+            <li><span class="tg soon">Down</span><span><b>Revenue and Insights</b> from two big blocks (1,274 px together) to two tiles with the headline number. Their charts open from the tile.</span></li>
+            <li><span class="tg soon">Down</span><span><b>Your role</b> (Platform health, Submissions, This week) joins the same tiles.</span></li>
+            <li><span class="tg soon">Down</span><span><b>For you</b> and <b>The Depot</b> become tiles that open their full lists.</span></li>
+          </ul>
+          <b class="t">How I ranked them</b>
+          <ul class="mv" style="margin-bottom:0">
+            <li><span class="tg smp">Note</span><span>There is no count of how often you use each dashboard section: nothing logs it in the database, and the only counter (the Depot's, Directory review used most) lives in one browser. So the order comes from your words and from measuring the page. If you want, I can add a counter on each tile so the order can follow real use later.</span></li>
+          </ul>
+        </div>
+        <div class="vg-glass dm-card" style="flex:1 1 300px;min-width:0">
+          <b class="t">What I'll go with unless you change it</b>
+          <ul style="list-style:none;display:grid;gap:6px;margin:6px 0 12px">
+            <li>Tile order: Your business, Revenue, Insights, Platform health, Submissions, This week, For you, The Depot.</li>
+            <li>For you shows on the dashboard only as its tile (the Lighthouse Thai Sushi request would wait one tap away).</li>
+            <li>Members who are not super admins: Your business (if they own one), Your points, Your level, then For you, with the Leaderboard where it is now.</li>
+            <li>The real dashboard stays as it is until you say go on this layout.</li>
+          </ul>
+          <p style="margin-top:10px"><b style="color:#b45309">Your call:</b> tell me what to move, add or drop on any slide.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="/public/footer.js"></script>
+</div>
+<script src="/public/ve-guided.js"></script>
+<script>
+(function () {
+  // Draw the two strips to scale: each block's height is its measured height on the live dashboard (1440 px wide).
+  document.querySelectorAll('.js-strip').forEach(function (s) {
+    var k = parseFloat(s.getAttribute('data-scale')) || 0.1;
+    s.querySelectorAll('.blk').forEach(function (b) { b.style.height = Math.max(16, Math.round(parseFloat(b.getAttribute('data-h')) * k)) + 'px'; });
+    var f = s.querySelector('.js-fold'); if (f) f.style.top = Math.round(4 + parseFloat(f.getAttribute('data-at')) * k) + 'px';
+  });
+})();
+</script>
+</body>
+</html>

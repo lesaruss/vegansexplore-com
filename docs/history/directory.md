@@ -1148,3 +1148,89 @@ two words and 9+ letters unless every word is generic, one-word names only from 
 city in the notes (a checked name counts in a title alone), a whole-domain or @handle match counts, 5+ notes-only mentions on one show is one
 "Show sponsor" row, and a show whose name contains the name never counts. Preview a rule change with `ve_listing_related_strict_elsewhere(id)`
 before it reaches the cache; a big preview times out over about 70 listings a call. Handoff `docs/handoff/2026-11-09-ve-community-directory-ve-holiday-guide-wrap.md`.
+
+**One call to action at the foot of the Directory** (Sean, 2026-11-10: "I'd rather there just be one call to action box at the bottom,
+the first one that's black, and then we could have three buttons in there... join free, claim your business, suggest the place").
+`directory/index.html`: the three boxes (Your votes rank them, Is your business in here?, Know a place we are missing?) are one black
+box, "Find your way in.", with Join free (orange), Claim your business and Suggest a place (the listing-request window). Members see it
+without Join free. Commit 1354c39.
+
+**Points only to claimed listings** (Sean, 2026-11-10: "only businesses that claim their listing can receive points... remove that
+feature until they've claimed... that becomes a perk for them"; "Anyone that's received points already, let's just leave it").
+`ve_listing_contribute` refuses an unclaimed listing (`not_claimed`, migration `20261110_holiday_for_dairy_and_points_claimed_only.sql`,
+applied live); an unclaimed listing's Community Support card shows the total and "Giving points opens once this business claims its page"
+with a claim link instead of Give. Points given before stay: Dina's Vegan Deli & Desserts 625, Love Life Cafe 500 (both unclaimed).
+
+**The Holiday Guide on food listings** (Sean, 2026-11-10: "wherever there's a dairy guide, let's put the holiday guide... come
+Christmas, the holiday guide is going to go on hiatus until Valentine's Day"). `public/ve-guide-tab.js` `FOOD_GUIDE = 'holiday-guide'`
+(food places' Resources tab, free, Theo); the right column banner shows the Holiday Guide on every listing through Christmas. After
+Christmas steps: `docs/history/ads.md`.
+
+## Travel, the full door (2026-11-11)
+
+Sean: "I want us to start filling up the travel directory. So I'm going to start feeding you some information." The Travel door now has
+the five sections from his Directory notes: Cruises, Retreats, Stays, Airlines, Travel Apps (`CAT_CONFIG` / `VE_CAT_MAP` in
+`/public/ve-region-directory.js`, `SECTIONS` in `ve-listing-admin.js`, `KINDS` in Directory review, `CATS` in `claim.html`, the doors preview,
+`CATEGORIES` in `ve-claims`, v54 deployed from d7e5b3a through `ve-function-deploy`, source sha256 matched). A travel card with no one address
+reads Sails worldwide (Cruises), Flies worldwide (Airlines), Online (Travel Apps) or Worldwide (Retreats, Stays). A hotel, B&B, villa or
+aparthotel is a Stay. First batch: 18 stays from myvegantravels.com/travel-tips/vegan-hotels (15 at 100% Vegan, 3 filed as plant-based
+(Pre-Vegan) options), migration `20261111_travel_stays_hotels.sql`, all **on hold** (status pending, Depot > Directory review) until each is
+checked on its own site; the session's network blocked the hotels' sites. Website is always the business's own site, never a source's
+affiliate link. The source URL is kept in `details.source_url`.
+
+**The first Stays batch, checked (2026-11-11, later the same day).** Read through `ve-web-reader` (below), no network change. Approved
+on their own sites (11): Agrivilla I Pini, Casa Albets, Koukoumi, Harmony Hill, Bluedothotel, Il Mansio (address_city Lake Garda), Kapuhala,
+Beck Hall, Casa Mauna, Mother Earth Vegan Hotel (Vegan in its own domain, booking and Facebook names), The House of AïA (plant-based
+(Pre-Vegan) options). Kept on hold with the reason in `admin_notes` (7): HOY (its site no longer says Vegan), Dreamers Welcome, Jean-Michel
+Cousteau Resort, Finca Victoria (only breakfast Vegan), Plantonia (later the same day listed as Vegan-friendly, Sean: "List Plantonia as Vegan-friendly"; migration `20261111_travel_plantonia_vegan_friendly.sql`), The Farm at
+San Benito (now a Marriott page that refused the read), Mikasa (no website). Migration `20261111_travel_stays_checked.sql`, written through
+`ve-once-travel-stays` (now the 410 stub). Proven live at 1440 and 390: Travel shows the five sections and "19 trips listed".
+
+## ve-web-reader: reading the sites Sean feeds (2026-11-11)
+
+Sean: "What can we do so you can easily access these websites I'm feeding you without me having to add it every single time?... I don't
+want to put us at risk. Can we put a safety net in?" (switching the session to full access offered to delete the 51 allowed domains). BOSS
+`docs/proposals/2026-11-11-web-reader-boss.md`. `supabase/functions/ve-web-reader` (admin token or super admin; Logan calls it from SQL
+through pg_net so the token stays in the database): `register` a link Sean sent (`ve_web_sources`), `read` (text and links, scripts,
+comments and hidden elements stripped, marked untrusted; `browser: true` opens it in Apify's browser), `unregister`, `log`. Scope: a
+source, a link found exactly on a source page (one hop), or any page of a listing's own website (approved or on hold); anything else is
+refused. Address guard: http(s) on 80/443, private, loopback, link-local, carrier, multicast and metadata addresses refused for literals and
+resolved hosts, at most 3 redirects each re-checked, 15 s, 2 MB, 300 reads a day. Every attempt is a `ve_web_reads` row (migration
+`20261111_ve_web_reader.sql`). Proven live: no token 403; an unrelated site, 127.0.0.1 and 169.254.169.254 refused as out of scope;
+registering the metadata address, localhost and localhost:8080 refused by the guard; a decimal loopback address stopped by Supabase's own
+firewall first (the reader's handling proven in a local test). Not proven live: a cross-host redirect into a private address (httpbin and
+httpbingo both refuse Supabase's servers); the code refuses it by scope before the guard. `ve-menu-reader`'s open `get` action is retired
+(410, "use ve-web-reader"), v13.
+
+## Booking.com first: the Book card (2026-11-11)
+
+Sean: "Go Booking.com first" (research `docs/proposals/2026-11-11-travelpayouts-coverage.md`). `bookCta` in `directory/listing.html`, copied
+from the Give card (`giveCta`): on a Stays, Retreats or Cruises listing, "Book your stay at <name>", a disclosure ("We may earn a small
+commission at no cost to you; it never decides what we list") and one Book button through our own tracked `/go/` link
+(`details.book_link_code`, a `ve_links` row, initiative `travel-booking`), `rel="sponsored"`. It shows only when `book_link_code` is set:
+nothing shows until Sean approves. `details.book` {provider, url} holds the stay's Booking.com page for 7 stays (migration
+`20261111_travel_book_booking_pages.sql`, through `ve-once-travel-stays`, now the 410 stub); Il Mansio's page is to be found in the
+Travelpayouts link tool. Previewed (browser-only test data on Beck Hall) at 1440 and 390 beside Farm Sanctuary's Donate card: same family.
+Waiting on Sean: Booking.com connected in the Travelpayouts account, and the account's partner marker for the links.
+
+## Playbook ve-travel (locked 2026-11-11, Eastern)
+
+Sean: "Go with your recommendations, lock it into the playbook." Playbook `ve-travel` (HQ BrandDesk, vegans-explore), built from the
+active playbook template (v3) by filling its placeholders in SQL (migration `20261111_playbook_ve_travel.sql`, run through
+`ve-once-travel-stays`, now the 410 stub); Decision History read from its six `playbook_records`. Locked: listed on merit, direct-first
+booking, every paid link labelled, data for destinations; Global Tour 2.0 pilot is one co-branded Europe departure in **September 2027**
+(Asia 2028) through a licensed operator who holds all traveler money; Sean's LESARUSS travel on its own budget with a dedicated host;
+the outreach pause lifted for three first contacts only (World Vegan Travel, Il Mansio, Beck Hall), each drafted for Sean's approval.
+Sources: `docs/proposals/2026-11-11-travel-partnerships-boss.md`, `-travel-and-global-tour-panel.md`, `-travelpayouts-coverage.md`.
+Checked in a browser from the stored HTML (HQ needs a signed-in member): stage row, sections, Pending and Completed tabs, groups and
+Decision History work at 1440 and 390.
+
+**ve-travel queue, started 2026-11-11 (Sean: "Go ahead and start on the Logan queue").** `bookCta` follows the booking order: a direct
+partner first (`details.book_direct` {url, code, perk} and `details.book_direct_link_code`, labelled **Partner link**, "We earn a small
+referral fee"), then Booking.com (`details.book_link_code`, labelled **Paid link**), each label at its button; hidden when the user agent
+carries `VegansExploreApp` (the native app, when built, must never show a Booking.com link: its terms allow our website only). Previewed
+with browser-only test data on Beck Hall (direct) and Koukoumi (Booking.com) at 1440 and 390. `ve_travel_report(from, to)` (migration
+`20261111_ve_travel_report.sql`, service role only): views, visitors, website clicks and Book clicks per Travel listing and destination;
+first run 20 listings, 11 destinations. Drafts of the three first contacts: `docs/outreach/2026-11-11-ve-travel-first-contacts.md`, waiting
+on Sean. Travelpayouts: the LESARUSS account (contact@lesaruss.com) now has a Vegansexplore project, Booking.com applied for; Drive stays off.
+Note: three merge commits on main that day were authored "Claude" (the session's default identity); the repo's git config is now Sean.

@@ -4,9 +4,10 @@
  *   VEFeedback.open({ page, form })  (a super admin gets the page's Guide chat, ve-page-guide.js; form: true forces this form)  ·  any element with data-ve-feedback opens it  ·  VEFeedback.button(cls) returns the button's markup
  *
  * A short form: what is it about (a page list, defaulting to this page), what kind (broken, wrong, confusing, missing, idea, praise, other), what happened,
- * an optional email for a reply. Sent to ve-feedback (a ve_feedback row and an email to the team). */
+ * an optional email for a reply, and a voice message where the browser can record (2026-11-10). Sent to ve-feedback (a ve_feedback row and an email to the team). */
 (function () {
   if (window.VEFeedback) return;
+  function canRecord() { return !!(window.MediaRecorder && navigator.mediaDevices && navigator.mediaDevices.getUserMedia); }
   var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-feedback';
   var KINDS = [['suggestion', 'A change to this page'], ['broken', 'Something is broken'], ['wrong', 'Wrong or out of date'], ['confusing', 'Confusing'], ['missing', 'Something is missing'], ['idea', 'An idea'], ['praise', 'Working well'], ['other', 'Something else']];
   var PAGES = [['Home', '/'], ['Directory', '/directory'], ['Events', '/events'], ['Daily Pulse', '/pulse'], ['Media', '/media'], ['Guides', '/guides'], ['Communities', '/communities'],
@@ -21,6 +22,7 @@
       '.vefb h3{margin:0 0 6px;font-size:22px;font-weight:900;line-height:1.15;}.vefb p.lead{margin:0 0 16px;font-size:14px;line-height:1.55;color:rgba(0,0,0,.7);}' +
       '.vefb label,.vefb .lb{display:block;font-size:13px;font-weight:700;margin:0 0 12px;}.vefb input,.vefb textarea,.vefb select{display:block;width:100%;box-sizing:border-box;margin-top:5px;min-height:42px;border:1px solid rgba(0,0,0,.22);border-radius:6px;padding:9px 12px;font:inherit;font-weight:500;font-size:14px;background:#fff;color:#14261a;}' +
       '.vefb select{appearance:none;-webkit-appearance:none;padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' width=\'12\' height=\'8\' viewBox=\'0 0 12 8\'%3E%3Cpath d=\'M1 1l5 5 5-5\' fill=\'none\' stroke=\'%2314261a\' stroke-width=\'2\'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;}' +
+      '.vefb-voice{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:-2px 0 14px;}.vefb-voice button{font:inherit;font-size:12px;font-weight:800;border-radius:6px;padding:8px 14px;border:1px solid #2d7d31;background:#fff;color:#2d7d31;cursor:pointer;}.vefb-voice button.on{background:#b42318;border-color:#b42318;color:#fff;}.vefb-voice .vv-state{font-size:12.5px;color:rgba(0,0,0,.6);}.vefb-voice audio{height:36px;max-width:100%;}' +
       '.vefb textarea{min-height:96px;resize:vertical;}.vefb .url{font-size:12px;font-weight:500;color:rgba(0,0,0,.55);margin:-6px 0 12px;word-break:break-all;}' +
       '.vefb .kinds{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0 14px;}.vefb .kinds button{border:1.5px solid rgba(0,0,0,.18);background:#fff;border-radius:6px;padding:8px 11px;font:700 12.5px/1.2 inherit;font-family:inherit;cursor:pointer;color:#14261a;}' +
       '.vefb .kinds button.on{background:var(--vb-accent,#1E7A3E);border-color:var(--vb-accent,#1E7A3E);color:#fff;}' +
@@ -65,6 +67,7 @@
       '<label data-other hidden>Which page, or where on the site?<input name="other" placeholder="For example: the Events filters"></label>' +
       '<div class="lb">What kind of feedback?</div><div class="kinds">' + KINDS.map(function (k) { return '<button type="button" data-k="' + k[0] + '">' + esc(k[1]) + '</button>'; }).join('') + '</div>' +
       '<label>What happened, or what would you like?<textarea name="message" placeholder="What did you do, what did you expect, what did you see instead?"></textarea></label>' +
+      (canRecord() ? '<div class="vefb-voice"><span class="lb" style="margin:0">Or leave a voice message</span><button type="button" class="vv-rec">Record</button><span class="vv-state" aria-live="polite"></span></div>' : '') +
       '<label>Your email (optional, only if you want a reply)<input name="email" type="email" autocomplete="email" value="' + esc(m && m.email || '') + '"></label>' +
       '<p class="err" aria-live="polite"></p><div class="acts"><button type="button" class="no">Not now</button><button type="submit" class="go">Send feedback</button></div></form></div>';
     document.body.appendChild(wrap);
@@ -78,22 +81,49 @@
       if (e.target === wrap || e.target.closest('.no')) { close(); return; }
       var k = e.target.closest('[data-k]'); if (k) { kind = kind === k.dataset.k ? '' : k.dataset.k; wrap.querySelectorAll('[data-k]').forEach(function (b) { b.classList.toggle('on', b.dataset.k === kind); }); }
     });
+    // Voice message (Sean, 2026-11-10): record up to two minutes, hear it back, send it with the feedback.
+    var rec = null, chunks = [], blob = null, timer = null, vbox = wrap.querySelector('.vefb-voice');
+    if (vbox) {
+      var rb = vbox.querySelector('.vv-rec'), st = vbox.querySelector('.vv-state');
+      var stopRec = function () { if (rec && rec.state === 'recording') rec.stop(); };
+      rb.addEventListener('click', function () {
+        if (rec && rec.state === 'recording') { stopRec(); return; }
+        if (blob) { blob = null; var old = vbox.querySelector('audio'); if (old) old.remove(); rb.textContent = 'Record'; st.textContent = ''; return; }
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(function (stream) {
+          chunks = []; rec = new MediaRecorder(stream);
+          rec.ondataavailable = function (ev) { if (ev.data && ev.data.size) chunks.push(ev.data); };
+          rec.onstop = function () {
+            clearInterval(timer); stream.getTracks().forEach(function (t) { t.stop(); });
+            blob = new Blob(chunks, { type: rec.mimeType || 'audio/webm' });
+            rb.classList.remove('on'); rb.textContent = 'Remove'; st.textContent = 'Recorded. It goes with your feedback.';
+            var au = document.createElement('audio'); au.controls = true; au.src = URL.createObjectURL(blob); vbox.appendChild(au);
+          };
+          rec.start(); var secs = 0; rb.classList.add('on'); rb.textContent = 'Stop'; st.textContent = 'Recording 0:00';
+          timer = setInterval(function () { secs++; st.textContent = 'Recording ' + Math.floor(secs / 60) + ':' + ('0' + secs % 60).slice(-2); if (secs >= 120) stopRec(); }, 1000);
+        }).catch(function () { st.textContent = 'The microphone is not available. You can type instead.'; });
+      });
+    }
+    function voiceData() {
+      if (!blob) return Promise.resolve(null);
+      if (blob.size > 3000000) return Promise.reject(new Error('long'));
+      return new Promise(function (ok, no) { var rd = new FileReader(); rd.onload = function () { ok(String(rd.result).split(',')[1] || ''); }; rd.onerror = no; rd.readAsDataURL(blob); });
+    }
     setTimeout(function () { f.message.focus(); }, 30);
     f.addEventListener('submit', function (e) {
       e.preventDefault();
       var msg = (f.message.value || '').trim(), em = (f.email.value || '').trim(), pg = chosen(), lab = f.page.value === '__other' ? (f.other.value || '').trim() : labelOf(pg);
       if (f.page.value === '__other') { if (!lab) { err.textContent = 'Tell us which page, please.'; f.other.focus(); return; } pg = location.origin + '/'; }
       if (!kind) { err.textContent = 'Pick what kind of feedback it is.'; return; }
-      if (msg.length < 5) { err.textContent = 'A few words about it, please.'; f.message.focus(); return; }
+      if (msg.length < 5 && !blob) { err.textContent = 'A few words about it, or a voice message, please.'; f.message.focus(); return; }
       if (em && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) { err.textContent = 'That email does not look right.'; f.email.focus(); return; }
       err.textContent = ''; var go = f.querySelector('.go'); go.disabled = true; go.textContent = 'Sending...';
-      fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ page_url: pg, page_label: lab, kind: kind, message: msg, email: em, name: m && m.name || '', visitor: vid(), signed_in: signedIn(), viewport: innerWidth + 'x' + innerHeight }) })
+      voiceData().then(function (v64) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ page_url: pg, page_label: lab, kind: kind, message: msg, voice: v64 || undefined, voice_type: blob ? blob.type : undefined, email: em, name: m && m.name || '', visitor: vid(), signed_in: signedIn(), viewport: innerWidth + 'x' + innerHeight }) }); })
         .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
         .then(function (x) {
-          if (!x.ok || !x.d.ok) { go.disabled = false; go.textContent = 'Send feedback'; err.textContent = x.d.error === 'daily_limit' ? 'You have sent a few already. Thank you, we have them.' : 'That did not go through. Try again in a moment.'; return; }
+          if (!x.ok || !x.d.ok) { go.disabled = false; go.textContent = 'Send feedback'; err.textContent = x.d.error === 'daily_limit' ? 'You have sent a few already. Thank you, we have them.' : x.d.error === 'voice_too_long' ? 'That voice message is too long. Keep it under two minutes.' : 'That did not go through. Try again in a moment.'; return; }
           wrap.querySelector('.vefb').innerHTML = '<h3>Thank you</h3><p class="lead">The team has it. ' + (em ? 'If we need more, we will write to ' + esc(em) + '.' : 'Every note like this makes the site better.') + '</p><div class="acts"><button type="button" class="go no" style="color:#fff">Close</button></div>';
         })
-        .catch(function () { go.disabled = false; go.textContent = 'Send feedback'; err.textContent = 'That did not go through. Try again in a moment.'; });
+        .catch(function (e2) { go.disabled = false; go.textContent = 'Send feedback'; err.textContent = e2 && e2.message === 'long' ? 'That voice message is too long. Keep it under two minutes.' : 'That did not go through. Try again in a moment.'; });
     });
   }
   // The page-guide script, loaded once. For a super admin it also puts "Talk to <Guide>" on the page's Guide panels (step 2).

@@ -7,6 +7,7 @@
     "remotePatterns": [
       {"protocol": "https", "hostname": "^fwbhwfxpncrsfhttimna\\.supabase\\.co$", "pathname": "^/storage/v1/object/public/.*$"},
       {"protocol": "https", "hostname": "^d3t3ozftmdmh3i\\.cloudfront\\.net$"},
+      {"protocol": "https", "hostname": "^d8j0ntlcm91z4\\.cloudfront\\.net$"},
       {"protocol": "https", "hostname": "^static\\.libsyn\\.com$"},
       {"protocol": "https", "hostname": "^artwork\\.captivate\\.fm$"},
       {"protocol": "https", "hostname": "^megaphone\\.imgix\\.net$"},
@@ -39,6 +40,18 @@
   "headers": [
     {
       "source": "/dashboard/sample",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
+      "source": "/communities/sample",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
+      "source": "/sponsors/sample/:path*",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
+      "source": "/sponsors/sample",
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
     },
     {
@@ -81,7 +94,7 @@
     {"source": "/directory/:a/:path+", "destination": "/api/gone?p=/directory/:a/:path+"},
     { "source": "/certified/:code([A-Za-z0-9]{4,16})", "destination": "/certified" },
     {
-      "source": "/communities/:city(south-florida|central-florida|north-florida|atlanta|washington-dc|delaware|maryland|virginia|west-virginia|new-york|philadelphia|los-angeles|london)",
+      "source": "/communities/:city(south-florida|central-florida|north-florida|atlanta|washington-dc|delaware|maryland|virginia|west-virginia|new-york|philadelphia|los-angeles|london|sample)",
       "destination": "/api/chapter?slug=:city"
     },
     {
@@ -165,7 +178,7 @@
       "destination": "/dashboard/center-console"
     },
     {
-      "source": "/dashboard/:tab(profile|directory|events|bounties|guide|campaigns|opportunities|pulse|guides|tools|communities|media|saves|depot|secret-shopper|levels|survey)",
+      "source": "/dashboard/:tab(profile|directory|events|bounties|guide|campaigns|opportunities|pulse|guides|tools|communities|media|saves|depot|secret-shopper|levels|creator|survey|business|revenue|insights|for-you|depot-pages)",
       "destination": "/dashboard/center-console"
     },
     {
@@ -179,6 +192,8 @@
     { "source": "/challenges", "destination": "/passport", "permanent": false },
     {"source": "/dashboard/directory/:slug", "destination": "/directory/:slug", "permanent": false},
     {"source": "/dashboard/directory", "destination": "/directory", "permanent": false},
+    {"source": "/directory-preview", "destination": "/directory", "permanent": false},
+    {"source": "/preview", "destination": "/", "permanent": false},
     {"source": "/dashboard/events", "destination": "/events", "permanent": false},
     {"source": "/dashboard/pulse", "destination": "/pulse", "permanent": false},
     {"source": "/dashboard/media", "destination": "/media", "permanent": false},
@@ -195,6 +210,11 @@
     {
       "source": "/communities/dmv",
       "destination": "/communities/washington-dc",
+      "permanent": false
+    },
+    {
+      "source": "/:p(prevegans|pre-vegans)",
+      "destination": "/directory/pre-vegans-podcast",
       "permanent": false
     },
     {

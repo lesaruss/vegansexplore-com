@@ -93,3 +93,29 @@ in a sandbox and passes the tracked link as `?clickTag=`; the ad opens that link
 Our guides (River, Maya, Nori and the rest) are always drawn in the GeekFon illustration style,
 never photographs, in ads and everywhere else. Example: `/ads/humble-cabbage/ve-tee.html`, River
 in the tee, then Shop now plays the tee, Maya and Nori in Black, the $5 donation, and Shop now.
+
+**The brand-page billboard slot is the Guide's rail ad** (Sean, 2026-11-10: "I like that style where the button is just at the bottom
+and you could see more of Theo... apply that as the updated look for that size"). `houseAd` in `directory/listing.html` fills
+`bb-ad-landscape-1` (6:5) with `/ads/guides/guide.html?g=<guide>&clickTag=<tracked /go/ link>`: the Guide's scenes full bleed, the kicker,
+headline and button on top. The old card (`.bb-house`, a picture over a text block) cut off the button with a longer line and is no longer
+drawn there. Through Christmas the slot shows the Holiday Guide (`/go/ve-guide-holiday`; Sean, 2026-11-10: "wherever there's a dairy
+guide, let's put the holiday guide"); from December 26 Eastern it returns by itself to the Guide the brand's products are in (the Dairy
+Guide, `/go/ve-dairy-guide`). The same day the Dairy Guide's rail slots moved to the Holiday rail campaign `...14008` (Washington DC hub's
+landscape slot kept, its skyscraper is already Holiday), the listing house banner got a Holiday campaign `...13005` with `...13002` paused
+(migration `20261110_holiday_for_dairy_and_points_claimed_only.sql`), and the rail ad wraps its headline on a 160-wide skyscraper.
+After Christmas: move the rail slots back to `...14001`, set `...14001` and `...13002` active, and point `FOOD_GUIDE` in
+`public/ve-guide-tab.js` back to the Dairy Guide. The listing Guide banner (`guideBanner`) shows the Holiday Guide on every listing,
+restaurants included, through Christmas (Sean, 2026-11-10: "show the Holiday Guide on restaurants too"), then leaves it out of the
+rotation from December 26 by itself.
+
+**Every house ad on the kit's ad template** (Sean, 2026-11-11: "Fix the banners", then "Fix the listing Guide banner next"). The
+brand kit's ad template (`/mocks/brand-kit/templates`, slide Ad banners) is the only layout: the section color with a label in an ink
+block and the big line, the art whole in a white frame of its own shape with an ink shadow, the logo and one orange button in a white bar,
+never words on the art. `ads/guides/guide.html` (every Guide ad, sized by its slot) and `ads/humble-cabbage/ve-tee.html` were rebuilt on it;
+the 14 Humble Cabbage campaigns moved off flat images that had Shop now and tags baked on (`20261111_house_ads_kit_template.sql`, stills
+archived in `ad_assets`). The listing Guide banner (`VEPromo.guideCard` in `public/ve-promo.js`, `#ve-house-banner` on listings) now
+frames the same `guide.html` instead of its own card that laid the copy over the scenes; it still counts the view on screen and the
+click (the ad posts `{veAd:'click'}`) as promo `guide-<slug>` and through `ve_house_ad_count`. `creatorCards` (People pages, Kai) moved
+the same way on 2026-11-12 (Sean: "fix the Kai creator card"): `guide.html?g=creator` (its own label, line and "Become a creator" button),
+the "Is this you?" claim box above it unchanged; promo `creator-register` and `ve_house_ad_count` still count the view and click.
+No house ad on the site lays words over its art any more.

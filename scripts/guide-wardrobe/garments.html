@@ -1,0 +1,109 @@
+<!doctype html>
+<!-- Guide wardrobe reference sheets (2026-11-11). The garment drawing is copied from the Guide tees review page
+     (artifact VLw5FQyYpEe2zCJkDRTAn6, garment()), drawn to scale in inches, with the real suitcase mark composited
+     at canon-front-print-placement: the TOP of the art 2.0 in under the front collar seam. The image model never draws the mark.
+     render.js opens this page once per garment (?g=<name>) and saves a 1600 x 2000 (4:5) JPEG. -->
+<html><head><meta charset="utf-8"><style>
+html,body{margin:0;background:#fff}
+#stage{width:1600px;height:2000px;display:flex;align-items:center;justify-content:center;background:#fff}
+#stage svg{width:1480px;height:1880px}
+</style></head><body><div id="stage"></div>
+<script>
+// The real mark files, cropped to the art (viewBox 165 41 1167 968 minus the 39 px padding on every side), so the image top is the art top.
+const MARK_VB='204 80 1089 890', MARK_RATIO=890/1089;
+const MARKS={green:'../../public/logo-ve-mark.svg', ink:'../../public/logo-ve-mark-ink.svg', white:'../../public/logo-ve-mark-white.svg'};
+// Garment colors: brand kit Foundations (canon-ve-brand-kit-foundations) where the kit has the color.
+const COL={pink:'#FF9EC4', white:'#FFFFFF', cream:'#F1E8D3', darkgreen:'#2D5C27', orange:'#F69820', brightgreen:'#22C55E',
+  denim:'#A9C4DE', mustard:'#D9A33A'};
+const U=10, SEAM=3.25, DROP=2.0, MARK_W=5.0;
+const s=v=>(v*U).toFixed(1);
+function shade(hex,amt){const n=parseInt(hex.slice(1),16);let r=n>>16,g=(n>>8)&255,b=n&255;const f=v=>Math.max(0,Math.min(255,Math.round(v+amt)));return `rgb(${f(r)},${f(g)},${f(b)})`}
+const dark=hex=>{const n=parseInt(hex.slice(1),16),r=n>>16,g=(n>>8)&255,b=n&255;return (0.299*r+0.587*g+0.114*b)<140};
+const edge=hex=>hex==='#FFFFFF'?'#9AA39C':shade(hex,dark(hex)?30:-38);
+const mir=pts=>{const r=pts.map(p=>`${s(p[0])},${s(p[1])}`);const l=pts.slice().reverse().map(p=>`${s(-p[0])},${s(p[1])}`);return 'M'+r.join(' L')+' L'+l.join(' L')+'Z'};
+function mark(color,cx,top,w=MARK_W){const h=w*MARK_RATIO;
+  return `<svg x="${s(cx-w/2)}" y="${s(top)}" width="${s(w)}" height="${s(h)}" viewBox="${MARK_VB}"><image href="${MARKS[color]}" x="165" y="41" width="1167" height="968"/></svg>`}
+
+// Tee: same outline as the review page (Bella+Canvas 3001 proportions, size L).
+function tee(hex,markColor){
+  const st=edge(hex), inside=shade(hex,dark(hex)?-18:-40), hw=10.5, len=29;
+  const pts=[[3.75,0],[9.4,1.3],[14.8,7.4],[12.2,9.6],[hw,8.9],[hw,len],[0.001,len+0.2]];
+  let g=`<path d="${mir(pts)}" fill="${hex}" stroke="${st}" stroke-width="2.2" stroke-linejoin="round"/>`;
+  g+=`<path d="M${s(-6)},${s(12)} q${s(1)},${s(8)} ${s(-.5)},${s(16)}" stroke="${st}" stroke-opacity=".3" fill="none" stroke-width="2"/><path d="M${s(6.5)},${s(13)} q${s(-1)},${s(7)} ${s(.4)},${s(15)}" stroke="${st}" stroke-opacity=".25" fill="none" stroke-width="2"/>`;
+  g+=`<path d="M${s(12.6)},${s(9.1)} L${s(14.4)},${s(7.0)}" stroke="${st}" stroke-opacity=".5" stroke-width="1.6"/><path d="M${s(-12.6)},${s(9.1)} L${s(-14.4)},${s(7.0)}" stroke="${st}" stroke-opacity=".5" stroke-width="1.6"/>`;
+  g+=`<path d="M${s(-3.75)},0 Q0,${s(1.1)} ${s(3.75)},0 Q0,${s(-0.2)} ${s(-3.75)},0Z" fill="${inside}"/>`+
+     `<path d="M${s(-3.75)},0 Q0,${s(1.1)} ${s(3.75)},0 Q${s(2.9)},${s(SEAM+0.05)} 0,${s(SEAM)} Q${s(-2.9)},${s(SEAM+0.05)} ${s(-3.75)},0Z" fill="${shade(hex,dark(hex)?8:-8)}" stroke="${st}" stroke-width="1.6"/>`+
+     `<path d="M${s(-3.75)},0 Q0,${s(1.1)} ${s(3.75)},0" fill="none" stroke="${st}" stroke-width="1.6"/>`;
+  if(markColor) g+=mark(markColor,0,SEAM+DROP);
+  return g;
+}
+// Open layer (denim jacket or overshirt): two front panels with a center gap wide enough to show the tee's mark.
+function openLayer(hex,kind){
+  const st=edge(hex), gap=3.3, hw=11.4, len=kind==='denim'?24.5:28;
+  const side=sg=>{const pts=[[3.9,-0.2],[9.9,1.0],[17.2,21.6],[14.4,22.8],[hw,9.4],[hw,len],[gap,len],[gap,6.2],[3.3,2.2]];
+    return 'M'+pts.map(p=>`${s(sg*p[0])},${s(p[1])}`).join(' L')+'Z'};
+  let g='';
+  for(const sg of [1,-1]){
+    g+=`<path d="${side(sg)}" fill="${hex}" stroke="${st}" stroke-width="2.2" stroke-linejoin="round"/>`;
+    g+=`<path d="M${s(sg*3.9)},${s(-0.2)} L${s(sg*6.6)},${s(0.4)} L${s(sg*4.6)},${s(4.8)} L${s(sg*3.3)},${s(2.2)}Z" fill="${shade(hex,dark(hex)?10:-14)}" stroke="${st}" stroke-width="1.8" stroke-linejoin="round"/>`;
+    g+=`<rect x="${s(sg>0?5.4:-9.4)}" y="${s(6.4)}" width="${s(4)}" height="${s(4.4)}" rx="3" fill="none" stroke="${st}" stroke-width="1.8"/>`;
+    g+=`<path d="M${s(sg>0?5.4:-9.4)},${s(7.8)} L${s(sg>0?9.4:-5.4)},${s(7.8)}" stroke="${st}" stroke-width="1.6"/>`;
+    g+=`<path d="M${s(sg*16.4)},${s(19.3)} L${s(sg*13.6)},${s(20.4)}" stroke="${st}" stroke-width="2"/>`;
+    if(kind==='denim'){
+      g+=`<path d="M${s(sg*gap)},${s(4.6)} L${s(sg*10.4)},${s(4.0)}" stroke="#C98A2E" stroke-width="1.6" stroke-dasharray="5 4"/>`;
+      g+=`<path d="M${s(sg*gap)},${s(len-2.4)} L${s(sg*hw)},${s(len-2.4)}" stroke="${st}" stroke-width="1.8"/>`;
+      g+=`<path d="M${s(sg*7.2)},${s(11)} L${s(sg*7.2)},${s(len-2.4)}" stroke="#C98A2E" stroke-width="1.4" stroke-dasharray="5 4"/>`;
+    }
+    if(sg>0) for(let y=7.5;y<len-1;y+=4.2) g+=`<circle cx="${s(gap+0.5)}" cy="${s(y)}" r="${kind==='denim'?5:4}" fill="${kind==='denim'?'#B7873B':shade(hex,-40)}"/>`;
+  }
+  return g;
+}
+// Long-sleeve white chef jacket, mandarin collar, double-breasted. No print: the mark is on the apron bib.
+function chefJacket(){
+  const hex='#FFFFFF', st='#9AA39C', hw=11.2, len=29;
+  const pts=[[3.6,0],[9.6,1.2],[17,21.6],[14.2,22.7],[hw,9.2],[hw,len],[0.001,len+0.2]];
+  let g=`<path d="${mir(pts)}" fill="${hex}" stroke="${st}" stroke-width="2.2" stroke-linejoin="round"/>`;
+  g+=`<path d="M${s(-3.6)},${s(0)} Q0,${s(1.3)} ${s(3.6)},${s(0)} L${s(3.7)},${s(-1.5)} Q0,${s(-0.4)} ${s(-3.7)},${s(-1.5)}Z" fill="#F2F4F2" stroke="${st}" stroke-width="1.8"/>`;
+  g+=`<path d="M${s(3.0)},${s(0.8)} L${s(3.0)},${s(len+0.1)}" stroke="${st}" stroke-width="1.8"/>`;
+  for(let y=4;y<len-2;y+=4.4){g+=`<circle cx="${s(-1.6)}" cy="${s(y)}" r="5" fill="#E3E6E3" stroke="${st}" stroke-width="1.4"/><circle cx="${s(5.0)}" cy="${s(y)}" r="5" fill="#E3E6E3" stroke="${st}" stroke-width="1.4"/>`;}
+  g+=`<path d="M${s(16.1)},${s(19.4)} L${s(13.3)},${s(20.5)}" stroke="${st}" stroke-width="2"/><path d="M${s(-16.1)},${s(19.4)} L${s(-13.3)},${s(20.5)}" stroke="${st}" stroke-width="2"/>`;
+  return g;
+}
+// Dark green bib apron. Mark centered on the bib, its top 3.1 in under the bib's top edge, where the real apron prints it.
+const BIB_TOP=3.2, APRON_DROP=3.1;
+function apron(withStraps=true){
+  const hex=COL.darkgreen, st=shade(hex,30);
+  const pts=[[5,BIB_TOP],[5,9.5],[Math.sin(0)+11.8,15],[11.8,37],[0.001,37.2]];
+  let g='';
+  if(withStraps) g+=`<path d="M${s(-4.6)},${s(BIB_TOP+0.2)} C${s(-6)},${s(-4)} ${s(6)},${s(-4)} ${s(4.6)},${s(BIB_TOP+0.2)}" fill="none" stroke="${shade(hex,-14)}" stroke-width="${U*0.9}" stroke-linecap="round"/>`+
+     `<path d="M${s(11.6)},${s(15.6)} q${s(3)},${s(.4)} ${s(5)},${s(4.5)} M${s(11.6)},${s(16.2)} q${s(2.4)},${s(1.6)} ${s(2.6)},${s(7)}" fill="none" stroke="${shade(hex,-14)}" stroke-width="${U*0.8}" stroke-linecap="round"/>`+
+     `<path d="M${s(-11.6)},${s(15.6)} q${s(-3)},${s(.4)} ${s(-5)},${s(4.5)} M${s(-11.6)},${s(16.2)} q${s(-2.4)},${s(1.6)} ${s(-2.6)},${s(7)}" fill="none" stroke="${shade(hex,-14)}" stroke-width="${U*0.8}" stroke-linecap="round"/>`;
+  g+=`<path d="${mir(pts)}" fill="${hex}" stroke="${st}" stroke-width="2.2" stroke-linejoin="round"/>`;
+  g+=`<path d="M${s(-4.4)},${s(BIB_TOP+0.6)} L${s(4.4)},${s(BIB_TOP+0.6)}" stroke="${st}" stroke-width="1.4" stroke-dasharray="5 4"/>`;
+  g+=`<rect x="${s(-6.5)}" y="${s(20)}" width="${s(13)}" height="${s(6.5)}" rx="4" fill="none" stroke="${st}" stroke-width="1.8"/><path d="M0,${s(20)} L0,${s(26.5)}" stroke="${st}" stroke-width="1.6"/>`;
+  // The real apron (Port Authority A900, Printify blueprint 5549) prints no higher than 3.1 in under the bib's top edge (measured on its mockup, 2026-11-11).
+  g+=mark('white',0,BIB_TOP+APRON_DROP);
+  return g;
+}
+
+const SHEETS={
+  'liz-pink-tee':     {vb:[-16,-3,32,40], draw:()=>tee(COL.pink,'green')},
+  'white-tee':        {vb:[-16,-3,32,40], draw:()=>tee(COL.white,'green')},
+  'theo-cream-tee':   {vb:[-16,-3,32,40], draw:()=>tee(COL.cream,'green')},
+  'nori-dark-green-tee':{vb:[-16,-3,32,40], draw:()=>tee(COL.darkgreen,'white')},
+  'dani-orange-tee':  {vb:[-16,-3,32,40], draw:()=>tee(COL.orange,'ink')},
+  'river-bright-green-tee':{vb:[-16,-3,32,40], draw:()=>tee(COL.brightgreen,'ink')},
+  'maya-denim-jacket':{vb:[-19.5,-4,39,48.75], draw:()=>openLayer(COL.denim,'denim')},
+  'kai-mustard-overshirt':{vb:[-19.5,-4,39,48.75], draw:()=>openLayer(COL.mustard,'overshirt')},
+  'pascal-chef-jacket':{vb:[-19.5,-4,39,48.75], draw:()=>chefJacket()},
+  'pascal-bib-apron': {vb:[-19.5,-5,39,48.75], draw:()=>apron()},
+  // Whole outfits, layers in the order they are worn, for the layered Guides.
+  'maya-outfit':      {vb:[-19.5,-4,39,48.75], draw:()=>tee(COL.white,'green')+openLayer(COL.denim,'denim')},
+  'kai-outfit':       {vb:[-19.5,-4,39,48.75], draw:()=>tee(COL.white,'green')+openLayer(COL.mustard,'overshirt')},
+  'pascal-outfit':    {vb:[-19.5,-4,39,48.75], draw:()=>chefJacket()+apron(false)},
+};
+const g=new URLSearchParams(location.search).get('g');
+const sh=SHEETS[g];
+document.getElementById('stage').innerHTML=`<svg viewBox="${sh.vb.map(v=>v*U).join(' ')}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">${sh.draw()}</svg>`;
+window.SHEETS=Object.keys(SHEETS);
+</script></body></html>

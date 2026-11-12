@@ -31,6 +31,9 @@
  *             /public/ve-branddesk-client.js, ve-branddesk client); on the sample business, Green Leaf Kitchen's
  *
  *   VEPartnerDash.mount(el, listing, { editPage: function (step) {}, call?: function (body) -> Promise, onJoin?: function () {} })
+ *   The business dashboard at /dashboard/business (business-dashboard.html, Sean 2026-11-11) mounts one part at a time with
+ *   { only: [views], tab: '<part>', base: '?l=<slug>&tab=<part>', data: <owner_dashboard answer> }: the views of that part only, its
+ *   links on that page's address, and no second load of what the page already read.
  *   call and onJoin stand in for ve-claims and the $11 checkout on the sample business (/business/sample, Sean 2026-10-27).
  */
 (function () {
@@ -178,7 +181,7 @@
     opts = opts || {};
     css();
     var api = opts.call || call, gapi = opts.call || callGroup;
-    var D = null, days = 30, sortBy = ['day', -1], menu = null, SV = null, AU = null, AUnote = '';
+    var D = opts.data || null, days = 30, sortBy = ['day', -1], menu = null, SV = null, AU = null, AUnote = '';
     var TK = {}, TKform = null, TKnote = '';
     var KIND = kindOf(l.category), ACTS_K = ACTS_BY[KIND] || ACTS, ACT_WORDS = ACTS_WORDS[KIND];
     // Get your page ready, in a group's or an organization's words.
@@ -186,7 +189,7 @@
       photos: ['Photos', 'Photos from your events, so people can picture showing up.', 'photos'] }) : CHECK;
     function go(view, extra) {
       var u = new URL(location.href);
-      u.searchParams.set('tab', 'brand'); u.searchParams.delete('edit'); u.searchParams.delete('item'); u.searchParams.delete('bd');
+      u.searchParams.set('tab', opts.tab || 'brand'); u.searchParams.delete('edit'); u.searchParams.delete('item'); u.searchParams.delete('bd');
       if (view && view !== 'home') u.searchParams.set('pd', view); else u.searchParams.delete('pd');
       if (extra) Object.keys(extra).forEach(function (k) { u.searchParams.set(k, extra[k]); });
       history.pushState(null, '', u.pathname + u.search + u.hash);
@@ -216,6 +219,7 @@
     function views() {
       var G = ['gmembers', 'gevents', 'earnings'];
       return VIEWS.filter(function (v) {
+        if (opts.only && opts.only.indexOf(v[0]) < 0) return false;
         // A nonprofit (the sample sanctuary): no earnings while cash commissions are paused (2026-11-07), and no managed marketing.
         if (D.group && D.group.nonprofit && (v[0] === 'earnings' || v[0] === 'managed')) return false;
         if (G.indexOf(v[0]) >= 0) return !!D.group;
@@ -234,8 +238,10 @@
     }
     function draw() {
       if (!D) return load(draw);
-      var view = q('pd') || 'home';
-      if (!views().some(function (v) { return v[0] === view; })) view = 'home';
+      var first = opts.only ? (views()[0] || [''])[0] : 'home';
+      if (!first) { el.innerHTML = ''; return; }
+      var view = q('pd') || first;
+      if (!views().some(function (v) { return v[0] === view; })) view = first;
       if (view === 'page') { if (opts.editPage) opts.editPage(q('edit') || 'about'); return; }
       var nav = '<nav class="vpd-nav" aria-label="Your dashboard">' + views().map(function (v) {
         return '<a href="?tab=brand' + (v[0] === 'home' ? '' : '&pd=' + v[0]) + '" data-vpd="' + v[0] + '" class="' + (v[0] === view ? 'on' : '') + '">' + esc(v[1]) +
@@ -243,8 +249,12 @@
       }).join('') + '</nav>';
       var admin = D.admin ? ' <span class="vpd-tag admin">Viewing as admin</span>' : '';
       var body = !D.open && MEMBERS.indexOf(view) >= 0 ? joinBox() : (VIEW_FN[view] || drawHome)();
-      el.innerHTML = '<div class="vpd">' + nav + '<div class="vpd-head"><h3>' + esc((VIEWS.filter(function (v) { return v[0] === view; })[0] || [])[1] || 'Home') + admin + '</h3>' +
+      if (opts.only && views().length < 2) nav = '';
+      var html = '<div class="vpd">' + nav + '<div class="vpd-head"><h3>' + esc((VIEWS.filter(function (v) { return v[0] === view; })[0] || [])[1] || 'Home') + admin + '</h3>' +
         '<span>' + esc(l.name) + (D.listing.claim_status === 'verified' ? '' : ' &middot; waiting for our approval') + '</span></div>' + body + '</div>';
+      // On the business dashboard page, every link keeps that page's address (?l=<slug>&tab=<part>).
+      if (opts.base) html = html.replace(/href="\?tab=brand(&amp;|&)?/g, function (m, amp) { return 'href="' + opts.base + (amp ? '&' : ''); });
+      el.innerHTML = html;
       wire(view);
     }
     function joinBox() {
@@ -1159,7 +1169,7 @@
         });
       });
     }
-    window.addEventListener('popstate', function () { if (new URLSearchParams(location.search).get('tab') === 'brand' && el.isConnected && !q('edit')) draw(); });
+    window.addEventListener('popstate', function () { if (new URLSearchParams(location.search).get('tab') === (opts.tab || 'brand') && el.isConnected && !q('edit')) draw(); });
     draw();
     return { redraw: draw };
   }

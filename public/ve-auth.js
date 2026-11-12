@@ -355,7 +355,7 @@ el.id='ve-auth-modal';el.setAttribute('role','dialog');el.setAttribute('aria-mod
 el.innerHTML=
 '<div id="ve-am-box">'+
 '<button id="ve-am-close" aria-label="Close">x</button>'+
-'<div id="ve-am-logo"><img src="/public/logo-ve-landscape-v1.svg" alt="VEGANS EXPLORE"></div>'+
+'<div id="ve-am-logo"><img src="/public/logo-ve-landscape-v2.svg" alt="VEGANS EXPLORE"></div>'+
 '<h2 id="ve-am-title">Welcome Back</h2>'+
 '<p id="ve-am-msg">Sign in to Vegans Explore.</p>'+
 '<div id="ve-am-tabs" role="tablist">'+

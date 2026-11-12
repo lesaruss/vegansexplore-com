@@ -42,6 +42,7 @@
     ['Services', ['Health and Wellness', 'Health Professionals', 'Coaches and Consultants', 'Animal Care', 'Studios', 'Event Venues', 'Marketing & Growth']],
     ['Media', ['Podcasts', 'YouTube', 'News Outlets', 'Documentaries & Films', 'Books', 'Media']],
     ['Community', ['Nonprofits', 'Rescues', 'Sanctuaries', 'Groups', 'Events']],
+    ['Travel', ['Cruises', 'Retreats', 'Stays', 'Airlines', 'Travel Apps']],
     // People (Sean, 2026-10-28). A person has no place: their profile, links and credits are saved by ve-people.
     ['People', ['Activists', 'Content Creators', 'Athletes', 'Physicians', 'Health Experts', 'Chefs', 'Founders', 'Promoters']]
   ];
@@ -262,7 +263,8 @@
       // A person (Sean, 2026-10-28): what they do, a physician's specialty, their bio (written from their interviews), where to find
       // them, links to their work, and what they did with us. No phone or address.
       '<div id="vla-p-person" hidden><h3>About them</h3>' +
-      '<label class="h" for="vla-ptitle">What they do, in a line</label><input type="text" id="vla-ptitle" maxlength="90" placeholder="Cardiologist and author" value="' + esc((l.person || {}).title || '') + '">' +
+      // 45 characters at most, so every People card's line fits two rows (Sean, 2026-11-10; Keya's 43-character line is the example).
+      '<label class="h" for="vla-ptitle">What they do, in a line <small id="vla-ptitle-n" style="font-weight:600;color:#888"></small></label><input type="text" id="vla-ptitle" maxlength="45" placeholder="Cardiologist and author" value="' + esc((l.person || {}).title || '') + '">' +
       '<div id="vla-spec-wrap"><label class="h">Specialty</label><div class="chips">' + SPECIALTIES.map(function (k) { return chip('radio', 'vla-spec', k[0], k[1], (l.person || {}).specialty === k[0]); }).join('') + '</div></div>' +
       '<label class="h" for="vla-pbio">Bio</label><textarea id="vla-pbio" rows="9" style="width:100%;font:13px/1.6 Montserrat,sans-serif;padding:10px;border:1px solid #ccc;border-radius:6px">' + esc(l.description || '') + '</textarea>' +
       '<div class="chips" style="margin-top:6px"><button type="button" class="cancel" id="vla-pbio-go">Write it from their interviews</button></div>' +
@@ -455,12 +457,14 @@
       people({ action: 'credit_add', listing_id: l.id, kind: $('#vla-pck').value, title: t, url: $('#vla-pcu').value.trim(), happened_on: $('#vla-pcd').value, role: $('#vla-pcrole').value.trim() })
         .then(function (d) { if (d && d.ok) { $('#vla-pct').value = $('#vla-pcu').value = $('#vla-pcd').value = $('#vla-pcrole').value = ''; drawCredits(); } else { msg.className = 'msg bad'; msg.textContent = 'That did not save. ' + ((d && d.error) || ''); } });
     };
+    var ptn = function () { var v = $('#vla-ptitle').value; $('#vla-ptitle-n').textContent = v.length + ' of 45'; };
+    $('#vla-ptitle').addEventListener('input', ptn); ptn();
     $('#vla-pbio-go').onclick = function () {
       var b = this, msg = $('#vla-msg'); b.disabled = true; msg.className = 'msg'; msg.textContent = 'Reading their interviews...';
       people({ action: 'bio_draft', listing_id: l.id }).then(function (d) {
         b.disabled = false;
         if (!d || !d.ok) { msg.className = 'msg bad'; msg.textContent = (d && d.message) || 'That did not work. Try again.'; return; }
-        $('#vla-pbio').value = d.bio; if (!$('#vla-ptitle').value.trim() && d.title) $('#vla-ptitle').value = d.title;
+        $('#vla-pbio').value = d.bio; if (!$('#vla-ptitle').value.trim() && d.title) { $('#vla-ptitle').value = d.title.slice(0, 45); $('#vla-ptitle').dispatchEvent(new Event('input')); }
         msg.textContent = 'Written from ' + (d.sources || []).length + ' episode(s). Read it, then Save.';
       }).catch(function () { b.disabled = false; msg.className = 'msg bad'; msg.textContent = 'Could not connect.'; });
     };

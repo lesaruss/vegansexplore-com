@@ -123,7 +123,10 @@
   ];
   // A real picture for each section tile and each kind of supplier (Higgsfield, 2026-11-06, illustrative: no words or logos).
   var PIC_BASE = '/public/guides/restaurant-guide/';
-  function pic(name) { return '<img src="' + PIC_BASE + name + '.jpg?v=2" alt="" loading="lazy" decoding="async" width="640" height="640" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">'; }
+  // Pictures go through Vercel's resizer (vercel.json images): the files are 640 px but a row icon shows at 30 px and a tile
+  // at most about 120, so 256 covers a 2x phone. Site health, 2026-11-11: this page lost speed to about 1 MB of oversized images.
+  function picUrl(name, w) { return '/_vercel/image?url=' + encodeURIComponent(PIC_BASE + name + '.jpg?v=2') + '&w=' + w + '&q=75'; }
+  function pic(name) { return '<img src="' + picUrl(name, 256) + '" alt="" loading="lazy" decoding="async" width="640" height="640" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">'; }
   var TILE = { audit: 'Your free check: what people find when they look you up.', fixes: 'The ten things owners run into most. Tick yours.',
     featured: 'Your page in the Directory. Claim it and keep it current.', dashboard: 'Who looks at your page, where they come from, what they do next.',
     demo: 'A sample restaurant to click around, nothing real touched.', sourcing: 'Who sells it ready-made, and Buy or make.',
@@ -1239,7 +1242,7 @@
     var o = { place: 'This Guide is for people who run a Vegan restaurant, or are about to.',
       why: ['You feed people. We help them find you.', 'Customers decide from what they see online before they ever walk in. Vegans Explore brings Vegan diners to your door: the Directory, the Daily Pulse, our events and our members.'],
       change: 'you will know how your restaurant looks to someone searching today, what to fix first, and how your page brings people in.',
-      how: howTo, pic: PIC_BASE + 't-start.jpg?v=2' };
+      how: howTo, pic: picUrl('t-start', 640) };
     return window.VEGuideIntro ? VEGuideIntro.html(o) : '';
   }
   function groupRows(open) {

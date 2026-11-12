@@ -26,7 +26,7 @@
   function pageUrl() { try { if (window.VEFeedback && VEFeedback.url) return VEFeedback.url(); } catch (e) {} return location.href; }
   var NAMES = { liz: 'Liz', maya: 'Maya', river: 'River', nori: 'Nori', dani: 'Dani', theo: 'Theo', kai: 'Kai', pascal: 'Pascal' };
   // The Resources tab's Guide per card (ve-guide-tab.js GUIDES).
-  var GT = { 'vegan-dairy-guide': 'maya', 'vegan-restaurant-guide': 'liz', 'creator-guide': 'kai', 'nonprofit-guide': 'dani', 'nutrition-guide': 'theo',
+  var GT = { 'holiday-guide': 'theo', 'vegan-dairy-guide': 'maya', 'vegan-restaurant-guide': 'liz', 'creator-guide': 'kai', 'nonprofit-guide': 'dani', 'nutrition-guide': 'theo',
     'supermarket-guide': 'pascal', 'vegan-events-guide': 'river', 'group-partner': 'dani', 'welcome': 'dani' };
   var G = 'liz';
   function slugOf(name) { var k = String(name || '').trim().toLowerCase(); return NAMES[k] ? k : null; }
@@ -39,7 +39,7 @@
   function key() { return 've_pg_' + G + '_' + location.pathname; }
   function load() { try { return JSON.parse(sessionStorage.getItem(key()) || '[]'); } catch (e) { return []; } }
   function save(t) { try { sessionStorage.setItem(key(), JSON.stringify(t.slice(-30))); } catch (e) {} }
-  function pic() { try { if (window.VEGuideArt) { var u = VEGuideArt(G, 'square'); if (u) return u; } } catch (e) {} return 'https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20261005_021226_51fc0dd1-aad1-45ee-ada3-f6cab13ed3a2_min.webp'; }
+  function pic() { try { if (window.VEGuideArt) { var u = VEGuideArt(G, 'square'); if (u) return u; } } catch (e) {} return '/public/brand-kit/avatars/liz-v2.jpg'; }
   function css() {
     if (document.getElementById('vepgStyle')) return;
     var st = document.createElement('style'); st.id = 'vepgStyle';

@@ -1,161 +1,484 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- The Directory's seven doors (Sean, 2026-11-11: "I want to apply what they recommended... I'm fine with where we landed on that";
+       BOSS docs/proposals/2026-11-11-directory-navigation-boss.md, mock /mocks/directory-nav). Live as /directory since 2026-11-11 (the Color Block go-live);
+       /directory-preview redirects here (vercel.json). -->
+  <meta name="ve-directory" content="doors">
+  <script>
+  // Before anything else reads the address: the path this page answers to (/directory or /directory-preview), and the door it opens.
+  // ?door= is accepted as a friendlier name (eat, shop, animals, watch, people, services, travel) and written as ?tab=, which is what
+  // the shared component, every listing's breadcrumb and every old link already use, so all of them land on the right door.
+  (function () {
+    var p = location.pathname.replace(/\/+$/, ''), q = new URLSearchParams(location.search);
+    var asDir = p === '/directory' || q.get('as') === 'directory';
+    var ALIAS = { eat: 'food', shop: 'products', animals: 'community', causes: 'community', watch: 'media', listen: 'media', read: 'media', people: 'people', groups: 'people', services: 'services', spaces: 'services', travel: 'travel' };
+    var d = (q.get('door') || '').toLowerCase();
+    if (d && !q.get('tab')) q.set('tab', ALIAS[d] || d.replace(/[^a-z]/g, ''));
+    q.delete('door'); q.delete('as');
+    window.VE_DOORS_BASE = '/directory';
+    var s = q.toString(), url = window.VE_DOORS_BASE + (s ? '?' + s : '') + location.hash;
+    if (url !== location.pathname + location.search + location.hash) history.replaceState(history.state, '', url);
+    document.documentElement.classList.add('ve-doors');
+    if (asDir) document.documentElement.classList.add('ve-doors-live');
+  })();
+  </script>
   <script src="/analytics.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vegan Directory — Vegans Explore</title>
-  <meta name="description" content="Every Vegan restaurant, product, service and organization Vegans Explore lists, in every city we serve, ranked by member votes.">
-  <!-- Search and share previews in the HTML the server sends (Signal, 2026-11-07). -->
+  <title>Vegan Directory &#8212; Vegans Explore</title>
+  <meta name="description" content="Everything Vegan near you: places to eat, animals to help, people to follow. Every listing Vegans Explore vets, in every city we serve, ranked by member votes.">
   <link rel="canonical" href="https://vegansexplore.com/directory">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Vegans Explore">
   <meta property="og:url" content="https://vegansexplore.com/directory">
-  <meta property="og:title" content="Vegan Directory — Vegans Explore">
-  <meta property="og:description" content="Every Vegan restaurant, product, service and organization Vegans Explore lists, in every city we serve, ranked by member votes.">
+  <meta property="og:title" content="Vegan Directory &#8212; Vegans Explore">
+  <meta property="og:description" content="Everything Vegan near you: places to eat, animals to help, people to follow.">
   <meta property="og:image" content="https://vegansexplore.com/public/og-default.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://vegansexplore.com/public/og-default.jpg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preload" href="/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2" as="font" type="font/woff2" crossorigin><style>/* Montserrat, self-hosted (site health 2026-11-11): the same faces Google served, without the blocking stylesheet */@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}</style>
   <style>
-    /* The main Directory (rebuilt 2026-10-04, Sean: "do an audit on the directory page and make
-       sure it's up to code"). Every city's listings through /public/ve-region-directory.js, the
-       same component the city hubs use, so the sections, badges, vegan filters, search, the
-       public vetting rule (/public/ve-trust.js) and votes match everywhere. The banner is the shared
-       city banner (/public/ve-city-banner.js, 2026-10-26); since 2026-10-30 its dropdown is the Directory's sections and the
-       location is picked in the filter (canon-ve-directory-navigation). */
+    /* The doors page. Parents (template gate): the live Directory (directory/index.html) for the page bar (the shared city banner,
+       /public/ve-city-banner.js), the listings (the shared component and its Directory card, /public/ve-region-directory.js) and
+       the join band at the foot (.vote-box, copied from it); the door tiles from the mock (/mocks/directory-nav) and, with the look on,
+       the Color Block concept (/mocks/directory-looks/bold). Stored categories never change: the doors are config.brand. */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --ve-green: #3A9B3E; --ve-green-dark: #2d7d31; --ve-green-light: #e8f5e9;
-      --ve-orange: #F69820; --ve-orange-dark: #d4800f;
-      --ve-text: #1a1a1a; --ve-text-75: rgba(26,26,26,0.75);
-    }
-    body { background: #fff; color: var(--ve-text); font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
+    body { background: #fff; color: #1a1a1a; font-family: 'Montserrat', sans-serif; -webkit-font-smoothing: antialiased; }
     .page-frame { width: 100%; background: #fff; display: flex; flex-direction: column; min-height: 100vh; }
+    main { flex: 1; max-width: none; margin: 0; padding: 28px 40px 80px; }
+    .pv-note { background: #FFF8EE; border-bottom: 1px solid #f3d9b5; font-size: 12.5px; padding: 9px 40px; color: #6b4300; }
+    .pv-note b { font-weight: 800; letter-spacing: .12em; text-transform: uppercase; font-size: 10.5px; color: #c46d00; margin-right: 8px; }
+    .pv-note a { color: #6b4300; font-weight: 700; }
+    html.ve-doors-live .pv-note { display: none; }
 
-    main { flex: 1; max-width: none; margin: 0; padding: 36px 40px 80px; }
+    /* the front page */
+    .fd-top { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 14px 24px; margin-bottom: 18px; }
+    .fd-eb { font-size: 11px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: #2D5C27; margin-bottom: 6px; }
+    .fd-h { font-size: clamp(22px, 2.6vw, 32px); font-weight: 900; line-height: 1.15; max-width: 900px; }
+    .fd-bar { display: flex; gap: 10px; flex-wrap: wrap; align-items: stretch; margin-bottom: 18px; }
+    .fd-search { flex: 1 1 320px; display: flex; border: 2px solid #22C55E; border-radius: 6px; overflow: hidden; min-width: 0; }
+    .fd-search input { flex: 1; min-width: 0; border: 0; font: inherit; font-size: 14px; padding: 12px 14px; outline: none; }
+    .fd-search button { border: 0; background: #2D5C27; color: #fff; font: inherit; font-weight: 800; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; padding: 0 18px; cursor: pointer; }
+    .fd-loc { position: relative; display: flex; }
+    .fd-loc select { appearance: none; -webkit-appearance: none; font: inherit; font-size: 13px; font-weight: 700; color: #1a1a1a; border: 1px solid #d6d6d6; border-radius: 6px; padding: 12px 44px 12px 14px; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23555' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 16px center; cursor: pointer; }
+    .fd-stripe { display: none; }
+    .fd-doors { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .fd-door { position: relative; display: flex; flex-direction: column; gap: 6px; border: 1px solid #e3e3e3; border-radius: 12px; padding: 16px; background: #fff; color: inherit; min-height: 128px; transition: border-color .15s, box-shadow .15s; }
+    .fd-door:hover { border-color: #2D5C27; box-shadow: 0 4px 14px rgba(0,0,0,.07); }
+    .fd-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+    .fd-door .ic { width: 40px; height: 40px; border-radius: 10px; background: #E8F5E9; display: grid; place-items: center; flex: none; }
+    .fd-door .ic svg { width: 22px; height: 22px; stroke: #2D5C27; fill: none; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+    .fd-door .fd-t { font-size: 17px; font-weight: 900; line-height: 1.2; color: inherit; text-decoration: none; }
+    .fd-door .fd-t::after { content: ""; position: absolute; inset: 0; border-radius: 12px; }
+    .fd-door .ex { font-size: 12px; color: #666; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .fd-door .ct { text-align: right; line-height: 1; font-size: 11.5px; font-weight: 800; background: #f1f1f1; border-radius: 6px; padding: 4px 8px; color: #333; }
+    .fd-door .ct b { font-weight: 900; }
+    .fd-door .ct small { display: block; font-size: 9.5px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; opacity: .7; margin-top: 3px; }
+    .fd-door .ct.all { background: #fff; border: 1px dashed #bbb; color: #555; }
+    .fd-door .go { margin-top: auto; padding-top: 4px; font-size: 12px; font-weight: 800; color: #2D5C27; }
+    .fd-door.lead { grid-column: span 2; background: #F4FAF4; border-color: #2D5C27; }
+    .fd-door .qp { position: relative; z-index: 2; display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+    .fd-door .qp a { font-size: 11px; font-weight: 800; border: 1px solid #2D5C27; color: #2D5C27; border-radius: 6px; padding: 4px 9px; background: #fff; text-decoration: none; }
+    .fd-door .qp a:hover { background: #2D5C27; color: #fff; }
+    .fd-door.members { border-style: dashed; }
+    .fd-sec { display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 6px 20px; margin: 26px 0 12px; }
+    .fd-sec h2 { font-size: 12px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: #2D5C27; }
+    .fd-sec p { font-size: 13px; color: #666; }
+    #fd-top .rank-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+    .fd-empty { font-size: 13px; color: #666; }
 
+    /* inside a door */
+    .dr-crumb { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; font-size: 13px; }
+    .dr-crumb a { color: #2D5C27; font-weight: 800; text-decoration: none; }
+    .dr-crumb b { font-weight: 900; font-size: 20px; }
+    .dr-crumb .n { color: #666; font-weight: 700; }
+    /* The doors stay visible as a row inside a door too (the BOSS: no door only in a dropdown); the sub-sections are the row under it. */
+    #door .vrd-root.vrd-menu-out .cat-tabs { display: flex; margin-bottom: 8px; }
+    #door .vrd-root .cat-tab { padding: 11px 13px; }
+    /* On the front page there is no open door, so the bar keeps only the door picker. */
+    html.ve-doors-front .vcb-bar .vcb-subsel { display: none !important; }
+    @media (max-width: 700px) { #door .vrd-root .cat-tabs { flex-wrap: nowrap; overflow-x: auto; } #door .vrd-root .cat-tab { white-space: nowrap; } .dr-crumb > span[aria-hidden] { display: none; } }
+
+    /* The join band at the foot of every view, copied from the live Directory (one box, three buttons; Sean, 2026-11-10). */
     .vote-box { margin-top: 40px; display: flex; align-items: center; gap: 28px; flex-wrap: wrap; background: #1a1a1a; color: #fff; border-radius: 14px; padding: 28px 32px; }
-    .vote-box[hidden] { display: none; }
-    .biz-strip { margin-top: 16px; display: flex; align-items: center; gap: 28px; flex-wrap: wrap; background: #f3faf5; border: 1px solid #b9dfc3; border-radius: 14px; padding: 24px 32px; }
-    .biz-strip .vote-box-copy strong { color: #1a1a1a; }
-    .biz-strip .vote-box-copy strong span { color: #1f7a3a; }
-    .biz-strip .vote-box-copy p { color: rgba(0,0,0,0.72); }
-    .btn-claim { display: inline-block; font-weight: 800; font-size: 14px; padding: 13px 22px; border-radius: 6px; background: #fff; color: #1a1a1a; border: 2px solid #1a1a1a; text-decoration: none; }
-    .btn-claim:hover { background: #1a1a1a; color: #fff; }
+    .vote-box-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn-alt { display: inline-flex; align-items: center; background: transparent; color: #fff; border: 2px solid rgba(255,255,255,0.7); font: inherit; font-size: 12px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; padding: 14px 24px; border-radius: 6px; text-decoration: none; cursor: pointer; transition: background 0.15s, color 0.15s; }
+    .btn-alt:hover { background: #fff; color: #1a1a1a; }
     .vote-box-copy { flex: 1; min-width: 240px; }
     .vote-box-copy strong { display: block; font-size: 20px; font-weight: 900; margin-bottom: 6px; }
     .vote-box-copy strong span { color: #5EC47A; }
     .vote-box-copy p { font-size: 14px; line-height: 1.6; color: rgba(255,255,255,0.78); max-width: 860px; }
-    .btn-join { display: inline-flex; align-items: center; background: var(--ve-orange); color: #1a1a1a; /* dark on orange, 8:1 (white was 2.2:1) */ font-size: 12px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; padding: 16px 30px; border-radius: 6px; text-decoration: none; transition: background 0.15s; }
-    .btn-join:hover { background: var(--ve-orange-dark); }
-    :focus-visible { outline: 3px solid var(--ve-orange); outline-offset: 3px; }
+    .btn-join { display: inline-flex; align-items: center; background: #F69820; color: #1a1a1a; font-size: 12px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; padding: 16px 30px; border-radius: 6px; text-decoration: none; transition: background 0.15s; }
+    .btn-join:hover { background: #d4800f; }
 
+    [hidden] { display: none !important; }
+    :focus-visible { outline: 3px solid #F69820; outline-offset: 3px; }
+
+    @media (max-width: 1100px) { .fd-doors, #fd-top .rank-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
     @media (max-width: 700px) {
-      main { padding: 28px 16px 64px; }
-      .vote-box, .biz-strip { padding: 24px 20px; }
+      main { padding: 20px 16px 64px; }
+      .pv-note { padding: 9px 16px; }
+      .fd-door { min-height: 0; padding: 12px; }
+      .fd-door .ex { display: none; }
+      .fd-door .fd-t { font-size: 15px; }
+      .fd-loc, .fd-loc select { width: 100%; }
+      #fd-top .rank-grid { grid-template-columns: 1fr; }
+      .vote-box { padding: 24px 20px; }
+      .vote-box-btns > * { flex: 1 1 100%; justify-content: center; }
     }
+
+    /* ================= The Color Block look (html.ve-cb, from /public/ve-look.js; canon canon-ve-look-color-block) =================
+       Tokens and the page bar, its stripe, the Directory card, the tabs and the join band come from /public/ve-look.css. Here: the
+       promise with its marker words, search and location in the ink outline, and the doors as color blocks (white type on brand green,
+       ink on every other color; Foundations), each with the ink outline and the solid offset shadow, Eat the wide lead tile. */
+    html.ve-cb .fd-top { margin-bottom: 22px; }
+    html.ve-cb .fd-eb { display: none; }
+    html.ve-cb .fd-h { font-size: clamp(30px, 3.6vw, 52px); line-height: 1.05; letter-spacing: -.025em; max-width: 1240px; }
+    html.ve-cb .hl { padding: 0 .08em; border-radius: 4px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+    html.ve-cb .hl.g { background: linear-gradient(transparent 56%, var(--cb-br) 56%, var(--cb-br) 92%, transparent 92%); }
+    html.ve-cb .hl.o { background: linear-gradient(transparent 56%, var(--cb-or) 56%, var(--cb-or) 92%, transparent 92%); }
+    html.ve-cb .hl.p { background: linear-gradient(transparent 56%, var(--cb-pink) 56%, var(--cb-pink) 92%, transparent 92%); }
+    html.ve-cb .fd-bar { gap: 12px; margin-bottom: 26px; }
+    html.ve-cb .fd-search { border: 3px solid var(--cb-ink); }
+    html.ve-cb .fd-search input { font-size: 15px; font-weight: 600; padding: 14px 16px; }
+    /* the search button is ink, not orange: Join is the one orange button on the page */
+    html.ve-cb .fd-search button { background: var(--cb-ink); color: #fff; border-left: 3px solid var(--cb-ink); font-weight: 900; font-size: 13px; letter-spacing: .12em; padding: 0 24px; }
+    html.ve-cb .fd-search button:hover { background: var(--cb-dk); }
+    html.ve-cb .fd-loc select { border: 3px solid var(--cb-ink); background-color: var(--cb-tint); font-weight: 800; font-size: 14px; padding: 13px 48px 13px 16px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231a1a1a' stroke-width='2.4'/%3E%3C/svg%3E"); }
+
+    html.ve-cb .fd-doors { gap: 18px; padding: 0 6px 6px 0; }
+    html.ve-cb .fd-door { --c: #fff; background: var(--c); color: var(--cb-ink); border: 2px solid var(--cb-ink); border-radius: 14px; box-shadow: 6px 6px 0 var(--cb-ink);
+      padding: 18px 18px 16px; gap: 8px; min-height: 176px; transition: transform .15s, box-shadow .15s; }
+    html.ve-cb .fd-door:hover { border-color: var(--cb-ink); transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--cb-ink); }
+    html.ve-cb .fd-door.d-food { --c: var(--cb-dk); color: #fff; }
+    html.ve-cb .fd-door.d-community { --c: var(--cb-or); }
+    html.ve-cb .fd-door.d-people { --c: var(--cb-pink); }
+    html.ve-cb .fd-door.d-products { --c: var(--cb-peach); }
+    html.ve-cb .fd-door.d-media { --c: var(--cb-br); }
+    html.ve-cb .fd-door.d-services { --c: var(--cb-tint); }
+    html.ve-cb .fd-door.d-travel { --c: var(--cb-md); }
+    html.ve-cb .fd-door.members { --c: #fff; border-style: dashed; box-shadow: none; }
+    html.ve-cb .fd-door .ic { width: 42px; height: 42px; border-radius: 10px; background: #fff; border: 2px solid var(--cb-ink); }
+    html.ve-cb .fd-door .ic svg { stroke: var(--cb-ink); stroke-width: 2.2; }
+    html.ve-cb .fd-door .fd-t { font-size: 23px; line-height: 1.08; letter-spacing: -.01em; margin-top: 6px; }
+    html.ve-cb .fd-door .fd-t::after { border-radius: 14px; }
+    html.ve-cb .fd-door .ex { color: inherit; opacity: .85; font-size: 12.5px; font-weight: 600; }
+    html.ve-cb .fd-door .ct, html.ve-cb .fd-door .ct.all { background: none; border: 0; padding: 0; color: inherit; }
+    html.ve-cb .fd-door .ct b { display: block; font-size: 38px; letter-spacing: -.03em; }
+    html.ve-cb .fd-door .ct small { font-size: 9.5px; font-weight: 900; letter-spacing: .14em; opacity: .8; margin-top: 4px; }
+    html.ve-cb .fd-door .go { color: inherit; font-weight: 900; font-size: 12.5px; }
+    html.ve-cb .fd-door .go::after { content: " \203A"; }
+    html.ve-cb .fd-door.lead { grid-column: span 2; background: var(--c); border-color: var(--cb-ink); }
+    html.ve-cb .fd-door.lead .fd-t { font-size: clamp(40px, 4.4vw, 64px); line-height: 1; }
+    html.ve-cb .fd-door.lead .ex { font-size: 14px; }
+    html.ve-cb .fd-door.lead .ct b { font-size: 52px; }
+    html.ve-cb .fd-door.lead .ic { background: #fff; border-color: #fff; }
+    html.ve-cb .fd-door .qp { gap: 8px; margin-top: 6px; }
+    html.ve-cb .fd-door .qp a { background: #fff; color: var(--cb-dk); border: 0; font-size: 12px; font-weight: 900; padding: 8px 12px; }
+    html.ve-cb .fd-door .qp a:hover { background: var(--cb-tint); color: var(--cb-ink); }
+
+    html.ve-cb .fd-sec { margin: 52px 0 18px; }
+    html.ve-cb .fd-sec h2 { font-size: clamp(26px, 3vw, 40px); font-weight: 900; letter-spacing: -.02em; line-height: 1.05; text-transform: none; color: var(--cb-ink); }
+    html.ve-cb .fd-sec h2 .hl { background: linear-gradient(transparent 58%, var(--cb-or) 58%, var(--cb-or) 92%, transparent 92%); }
+    html.ve-cb .fd-sec p { font-weight: 600; color: var(--cb-mute); }
+    html.ve-cb #fd-top .rank-grid { gap: 18px; }
+
+    html.ve-cb .dr-crumb { margin-bottom: 18px; }
+    html.ve-cb .dr-crumb a { color: var(--cb-dk); font-weight: 900; }
+    html.ve-cb .dr-crumb b { font-size: clamp(26px, 2.6vw, 36px); letter-spacing: -.02em; padding: 0 .08em; border-radius: 4px; background: linear-gradient(transparent 56%, var(--cb-br) 56%, var(--cb-br) 92%, transparent 92%); }
+    html.ve-cb .dr-crumb .n { color: var(--cb-mute); }
+    /* the doors as one row of outlined tabs (it scrolls sideways where it does not fit, a phone) */
+    html.ve-cb #door .vrd-root .cat-tabs { gap: 6px; border-bottom: 0; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; margin-bottom: 14px; padding-bottom: 2px; }
+    html.ve-cb #door .vrd-root .cat-tabs::-webkit-scrollbar { display: none; }
+    html.ve-cb #door .vrd-root .cat-tab { flex: none; border: 2px solid var(--cb-ink); border-radius: 6px; font-weight: 900; font-size: 10.5px; letter-spacing: .05em; color: var(--cb-ink); background: #fff; padding: 8px 10px; margin: 0; }
+    html.ve-cb #door .vrd-root .cat-tab:hover { background: var(--cb-tint); }
+    html.ve-cb #door .vrd-root .cat-tab.active { background: var(--cb-dk); border-color: var(--cb-dk); color: #fff; }
+    html.ve-cb #door .vrd-root .cat-tab.active svg { stroke: #fff; }
+
+    @media (max-width: 1100px) { html.ve-cb .fd-door.lead .fd-t { font-size: 44px; } }
+    @media (max-width: 700px) {
+      html.ve-cb .fd-h { font-size: 30px; }
+      html.ve-cb .fd-doors { gap: 12px; padding: 0 5px 5px 0; }
+      html.ve-cb .fd-door { min-height: 0; padding: 12px; gap: 6px; box-shadow: 5px 5px 0 var(--cb-ink); border-radius: 12px; }
+      html.ve-cb .fd-door .ic { width: 34px; height: 34px; }
+      html.ve-cb .fd-door .ic svg { width: 18px; height: 18px; }
+      html.ve-cb .fd-door .fd-t { font-size: 17px; margin-top: 2px; }
+      html.ve-cb .fd-door .ct b { font-size: 26px; }
+      html.ve-cb .fd-door .ct small { font-size: 8.5px; letter-spacing: .1em; }
+      html.ve-cb .fd-door .go { font-size: 11.5px; }
+      html.ve-cb .fd-door.lead .fd-t { font-size: 40px; }
+      html.ve-cb .fd-door.lead .ex { display: -webkit-box; font-size: 13px; }
+      html.ve-cb .fd-door.lead .ct b { font-size: 36px; }
+      html.ve-cb .fd-sec { margin: 36px 0 14px; }
+      html.ve-cb .fd-search button { padding: 0 16px; }
+    }
+    @media (prefers-reduced-motion: reduce) { html.ve-cb .fd-door { transition: none; } }
   </style>
 </head>
 <body>
   <div class="page-frame">
-
   <script src="/public/nav.js"></script>
   <script src="/public/ve-auth.js"></script>
   <script src="/public/ve-votes.js"></script>
   <script src="/public/ve-hubs.js"></script>
   <script src="/public/ve-region-directory.js"></script>
   <script src="/public/ve-ad-rail.js"></script>
-
   <script src="/public/ve-city-banner.js"></script>
   <script src="/public/ve-listing-request.js"></script>
   <section id="dir-hero"><h1 class="vcb-ssr" style="margin:0;padding:28px 16px;font:900 26px Montserrat,sans-serif">Vegan Directory</h1></section>
 
   <main id="main-content">
-    <!-- Three-fourths the Directory, one-fourth the chapter's two banners (Sean, 2026-10-26). public/ve-ad-rail.js -->
-    <div class="vear-layout"><div class="vear-main"><div id="ve-region-directory"></div></div><aside class="vear-rail" id="dir-ad-rail" data-ad-page="chapter"></aside></div>
-
-    <section class="vote-box" id="dir-vote-box" aria-label="Founding Membership">
-      <div class="vote-box-copy">
-        <strong>Your votes <span>rank them.</span></strong>
-        <p>Joining is free with a short survey: vote once a day for every business you love (the votes decide who leads each list) and get your own dashboard to build your Vegan world. Businesses join the same way and claim their page free.</p>
+    <!-- The front page: the promise, search and location, the doors, Top voted. -->
+    <section id="front" aria-label="Directory doors">
+      <div class="fd-top"><div><div class="fd-eb">Vegan Directory</div><h2 class="fd-h">Everything Vegan near you: <span class="hl g">places to eat</span>, <span class="hl o">animals to help</span>, <span class="hl p">people to follow</span>.</h2></div></div>
+      <div class="fd-bar">
+        <form class="fd-search" action="/search" method="get" role="search"><input type="search" name="q" placeholder='Search: "Vegan pizza in Atlanta"' aria-label="Search everything"><button type="submit">Search</button></form>
+        <label class="fd-loc"><select id="fd-loc" aria-label="Location"></select></label>
       </div>
-      <a class="btn-join" href="/survey?s=explorer">Join free</a>
+      <div class="fd-doors" id="fd-doors"></div>
+      <div class="fd-sec"><h2 id="fd-top-h"><span class="hl">Top voted</span></h2><p>Members vote. The best rise to the top.</p></div>
+      <div class="vrd-root" id="fd-top"><div class="rank-grid"><p class="fd-empty">Loading...</p></div></div>
     </section>
 
-    <!-- The Directory is the business front door (Sean, 2026-10-29): every business here can claim its page with the
-         Passport, members included, so this strip shows to everyone. -->
-    <section class="biz-strip" aria-label="Claim your business">
-      <div class="vote-box-copy">
-        <strong>Is your business <span>in here?</span></strong>
-        <p>Claim it free once you are a member (joining is free with a short survey): tell your story, keep your details right, see how many people find your page, and be first to hear about sponsorships and ads. Not listed yet? Add it the same way.</p>
-      </div>
-      <a class="btn-claim" href="/claim">Claim your business</a>
+    <!-- Inside a door: every door as a tab (all visible), then the door's pills, filters and listings. -->
+    <section id="door" hidden aria-label="Directory door">
+      <div class="dr-crumb"><a href="/directory" id="dr-home">‹ All doors</a><span aria-hidden="true">·</span><b id="dr-name">Directory</b><span class="n" id="dr-n"></span></div>
+      <div class="vear-layout"><div class="vear-main"><div id="ve-region-directory"></div></div><aside class="vear-rail" id="dir-ad-rail" data-ad-page="chapter"></aside></div>
     </section>
 
-    <!-- Suggest a place (2026-11-08, from Brion Hurley's feedback): for someone who knows a Vegan spot but does not run it. A name
-         and where is enough; a website or Instagram helps. Our team looks it up before it is listed (ve-listing-requests).
-         /directory?suggest=1 opens it straight away, for links in emails. -->
-    <section class="biz-strip" aria-label="Suggest a place">
+    <!-- One box at the foot of every view, as on the live Directory: Join free (the one orange button), Claim, Suggest. -->
+    <section class="vote-box" id="dir-vote-box" aria-label="Join, claim or suggest">
       <div class="vote-box-copy">
-        <strong>Know a place <span>we are missing?</span></strong>
-        <p>Tell us its name and where it is. A website or Instagram helps, but it is not required. Our team looks it up and checks it before it goes on the Directory, and a place with Vegan options waits for member votes like every other.</p>
+        <strong>Your vote moves <span>the list.</span></strong>
+        <p id="dir-vote-line"><b>Explorers:</b> join free with a short survey and vote once a day for the places, causes and people you love (the votes decide who leads each list). <b>Businesses:</b> claim your page free once you are a member. <b>Know a place we are missing?</b> Tell us, and our team checks it before it goes on.</p>
       </div>
-      <button type="button" class="btn-claim" data-ve-listing-request style="border:0;cursor:pointer;font:inherit">Suggest a place</button>
+      <div class="vote-box-btns">
+        <a class="btn-join" id="dir-join-btn" href="/survey?s=explorer">Join free</a>
+        <a class="btn-alt" href="/claim">Claim your business</a>
+        <button type="button" class="btn-alt" data-ve-listing-request>Suggest a place</button>
+      </div>
     </section>
   </main>
 
   <script>
   (function () {
-    // The banner's dropdown is the Directory's menu and the location is picked in the filter (LOCKED by Sean 2026-10-30, canon
-    // canon-ve-directory-navigation: "what should be in this drop down is the actual directory main navigation... the first
-    // thing in the filter would be choosing the city"). Every listing loads once; the filter's Continent > Country > Chapter
-    // narrows the cards, the line under the title reads "Local Food · South Florida", and the chapter's art and ads follow it.
-    // The location is kept across visits (localStorage ve_dir_loc) and written in the address (?city=), so a shared link opens
-    // on the same chapter. First visit: the link's, else a member's home chapter, else every location.
-    var LOC_KEY = 've_dir_loc', loc0 = null;
-    try { loc0 = JSON.parse(localStorage.getItem(LOC_KEY) || 'null'); } catch (e) { loc0 = null; }
-    if (!loc0) { try { var old = sessionStorage.getItem('ve_dir_city'); if (old) loc0 = old; } catch (e) {} }
-    if (!loc0) { var me = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null; if (me && me.home_community) loc0 = me.home_community; }
-    // The address carries the location now (?city=<chapter>, Sean 2026-11-01: every view is a link to share), and the
-    // component reads it ahead of the kept one.
-    var q0 = new URLSearchParams(location.search);
-    if (q0.get('city')) loc0 = q0.get('city');
-    var banner = VECityBanner.mount('dir-hero', {
-      key: 'dir', title: 'Vegan Directory', allTitle: 'Local Food', param: false, pickLabel: 'Section',
-      sub: 'Every Vegan spot we list, ranked by member votes. Pick a section, search it, and find the places worth knowing.',
-      // Directory home: the Directory as the menu's Directory opens it (Sean, 2026-10-27, in place of View community).
-      home: { label: 'Directory home', href: '/directory' },
-      // Submit your listing (Sean, 2026-10-27): Join the Directory's Add it, $11 or 1,100 points a listing.
-      actions: [{ label: 'Submit listing', href: '/claim?add=1', go: true },
-        // Suggest a place (2026-11-08, Brion Hurley: a member who knows a spot but does not own it): the listing-request window.
-        { label: 'Suggest a place', short: 'Suggest', onClick: function () { VEListingRequest.open({ page: location.href }); } }]
-    });
-    var rail = document.getElementById('dir-ad-rail');
-    // The section on show: the banner lists the sections with it picked, names it with its location, wears the chapter's art,
-    // and the rail runs that chapter's two banners (Media and People, which have no location, the all cities pair).
-    function onSection(key, label, subs) {
-      var L = subs.location || {}, chapter = L.applies ? L.chapter || '' : '';
-      banner.setChoices(subs.sections, key, function (k) { banner.autoFold(); subs.open(k); }, 'Section');
-      banner.setLabel(label + (L.applies && L.name ? ' \u00b7 ' + L.name : ''));
-      banner.setArt(chapter);
-      if (window.VEAdRail) VEAdRail.chapter(rail, chapter);
-    }
-    VERegionDirectory.init({ mount: 've-region-directory', hub: '', regions: true, matchListing: function () { return true; },
-      // url: each section and sub-section has its own address, ?tab=food&sub=markets (Sean, 2026-10-27).
-      url: '/directory', sectionMenu: true, onSection: onSection,
-      location: { initial: loc0, onChange: function (loc) { try { localStorage.setItem(LOC_KEY, JSON.stringify(loc)); } catch (e) {} } } });
-    document.getElementById('ve-region-directory').addEventListener('click', function (e) {
-      if (e.target.closest('[data-vrd-tab], [data-vrd-subcat]')) banner.autoFold();
-    });
-    // Arriving on a section (?tab=, a listing's breadcrumb) is not the landing: start folded.
-    if (new URLSearchParams(location.search).get('tab')) banner.autoFold();
-    if (q0.get('suggest') === '1' && window.VEListingRequest) VEListingRequest.open({ page: location.href });
+    var BASE = window.VE_DOORS_BASE || '/directory';
+    var IC = {
+      food: '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 002-2V2M7 2v20M21 15V2M18 2v4M21 8a3 3 0 01-6 0"/>',
+      community: '<path d="M20.8 4.6a5.5 5.5 0 00-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 00-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 000-7.8z"/>',
+      people: '<path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.9M16 3.1a4 4 0 010 7.8"/>',
+      products: '<path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0"/>',
+      media: '<rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0014 0M12 17v5"/>',
+      services: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2"/>',
+      travel: '<path d="M2 20c2 1 4 1 6 0s4-1 6 0 4 1 6 0M4 16l-1-5h18l-2 5M7 11V7h10v4M12 3v4"/>',
+      vetting: '<path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>',
+      review: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>'
+    };
+    function svg(k, w) { return '<svg fill="none" height="' + (w || 13) + '" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" viewBox="0 0 24 24" width="' + (w || 13) + '">' + IC[k] + '</svg>'; }
 
-    // Members already vote; the box is for everyone else.
-    var m = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null;
-    if (m && m.membership_status === 'active') document.getElementById('dir-vote-box').hidden = true;
+    // The doors (keys kept from today so links, location rules and ads still apply; only labels, order and pills change). Eat first and
+    // Animals second (the panel, Round 2). go: the tile's next step, in the visitor's words; unit: what its count counts.
+    var DOORS = [
+      { key: 'food', label: 'Eat', hasVF: true, ex: 'Restaurants, bakeries, food trucks, markets, catering', local: true, go: 'Find a place to eat', unit: 'places',
+        subcats: ['Restaurants', 'Bakeries & Cafes', 'Markets', 'Catering & Meal Prep', 'Food Trucks & Vendors'] },
+      { key: 'community', label: 'Animals & Causes', ex: 'Sanctuaries, rescues, nonprofits', local: true, go: 'Find a cause to help', unit: 'causes', subcats: ['Rescues', 'Sanctuaries', 'Nonprofits'] },
+      { key: 'people', label: 'People & Groups', ex: 'Founders, athletes, activists, groups', go: 'Find people to follow', unit: 'people and groups', subcats: ['Founders', 'Athletes', 'Activists', 'Health Experts', 'Chefs & Creators', 'Groups', 'Event Hosts'] },
+      { key: 'products', label: 'Shop', ex: 'Food and drink, supplements, clothing, beauty', everywhere: true, go: 'Shop Vegan brands', unit: 'brands', subcats: ['Food Brands', 'Nutrition & Supplements', 'Clothing and Fashion', 'Beauty and Personal Care', 'Marketplaces'] },
+      { key: 'media', label: 'Watch, Listen & Read', ex: 'Books, podcasts, films, YouTube, news', go: 'Find something to watch', unit: 'titles', subcats: ['Books', 'Podcasts', 'Documentaries & Films', 'YouTube', 'News Outlets'] },
+      { key: 'services', label: 'Services & Spaces', ex: 'Studios, event venues, health and coaching', local: true, go: 'Book a service or space', unit: 'services', subcats: ['Studios', 'Event Venues', 'Health & Coaching', 'More services'] },
+      { key: 'travel', label: 'Travel', ex: 'Cruises, retreats, stays, airlines and travel apps', go: 'Plan a Vegan trip', unit: 'trips', subcats: ['Cruises', 'Retreats', 'Stays', 'Airlines', 'Travel Apps'] },
+      { key: 'vetting', label: 'Being vetted', membersOnly: true, ex: 'Places waiting for member votes', local: true, go: 'Vote on new places', unit: 'places', subcats: ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Catering', 'Meal Prep'] },
+      { key: 'review', label: 'Review', adminOnly: true, frame: '/admin/depot/directory-review', subcats: [] }
+    ];
+    DOORS.forEach(function (d) { d.icon = svg(d.key); });
+    var MERGE = {
+      'Catering & Meal Prep': ['Catering', 'Meal Prep'], 'Food Trucks & Vendors': ['Food Trucks', 'Vendors'],
+      'Health Experts': ['Physicians'], 'Chefs & Creators': ['Chefs', 'Content Creators'], 'Event Hosts': ['Events', 'Promoters'],
+      'Health & Coaching': ['Health and Wellness', 'Health Professionals', 'Coaches and Consultants'], 'More services': ['Marketing & Growth', 'Animal Care']
+    };
+    var CATMAP = {
+      'Restaurants': 'food', 'Bakeries & Cafes': 'food', 'Food Trucks': 'food', 'Vendors': 'food', 'Food Trucks & Vendors': 'food', 'Markets': 'food', 'Catering': 'food', 'Meal Prep': 'food', 'Catering & Meal Prep': 'food',
+      'Food Brands': 'products', 'Nutrition & Supplements': 'products', 'Brands': 'products', 'Clothing and Fashion': 'products', 'Beauty and Personal Care': 'products', 'Marketplaces': 'products', 'Fitness and Athletics': 'products', 'E-Commerce & Marketplaces': 'products',
+      'Health and Wellness': 'services', 'Coaches and Consultants': 'services', 'Marketing & Growth': 'services', 'Branding & Creative Assets': 'services', 'Content Creation & Media': 'services', 'Web & Development': 'services', 'AI & Automation': 'services', 'Business Operations': 'services', 'Health Professionals': 'services', 'Animal Care': 'services', 'Studios': 'services', 'Event Venues': 'services', 'Health & Coaching': 'services', 'More services': 'services',
+      'Podcasts': 'media', 'YouTube': 'media', 'News Outlets': 'media', 'Documentaries & Films': 'media', 'Books': 'media', 'Media': 'media',
+      'Nonprofits': 'community', 'Rescues': 'community', 'Sanctuaries': 'community', 'Community Partner': 'community',
+      'Groups': 'people', 'Events': 'people', 'Event Hosts': 'people', 'Activists': 'people', 'Content Creators': 'people', 'Chefs & Creators': 'people', 'Athletes': 'people', 'Physicians': 'people', 'Health Experts': 'people', 'Chefs': 'people', 'Founders': 'people', 'Promoters': 'people',
+      'Cruises': 'travel', 'Retreats': 'travel', 'Stays': 'travel', 'Airlines': 'travel', 'Travel Apps': 'travel', 'Uncategorized': 'hidden'
+    };
+    var QUICK = { food: ['Restaurants', 'Bakeries & Cafes', 'Food Trucks & Vendors', 'Markets'] };
+    function slug(s) { return String(s || '').toLowerCase().replace(/&/g, 'and').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+    function href(tab, sub) { return BASE + '?tab=' + tab + (sub ? '&sub=' + slug(sub) : ''); }
+
+    // An old link to a sub-section that is now merged (a listing's breadcrumb, ?sub=catering) opens the merged pill (Catering & Meal Prep).
+    (function () {
+      var q0 = new URLSearchParams(location.search), sub0 = q0.get('sub');
+      if (!sub0) return;
+      Object.keys(MERGE).forEach(function (k) {
+        if (MERGE[k].some(function (c) { return slug(c) === slug(sub0); })) { q0.set('sub', slug(k)); history.replaceState(history.state, '', location.pathname + '?' + q0.toString() + location.hash); }
+      });
+    })();
+
+    var q = new URLSearchParams(location.search);
+    var front = document.getElementById('front'), door = document.getElementById('door');
+    var me = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null;
+    var member = !!(me && me.membership_status === 'active');
+    // Members already vote: the box keeps Claim and Suggest, without Join free (as on the live Directory).
+    if (member) {
+      var jb = document.getElementById('dir-join-btn'); if (jb) jb.remove();
+      document.getElementById('dir-vote-line').innerHTML = '<b>Run a Vegan business?</b> Claim your page free: tell your story, keep your details right and see how many people find you. <b>Know a place we are missing?</b> Tell us, and our team checks it before it goes on.';
+    }
+
+    // Location: the same remembered choice as today's Directory (localStorage ve_dir_loc), carried in the address as ?city=.
+    var LOC_KEY = 've_dir_loc', loc = null;
+    try { loc = JSON.parse(localStorage.getItem(LOC_KEY) || 'null'); } catch (e) { loc = null; }
+    if (typeof loc === 'string') loc = { chapter: loc };
+    function hubBy(s) { return (window.VE_HUBS || []).filter(function (h) { return h.slug === s; })[0]; }
+    if (q.get('city')) { var h0 = hubBy(q.get('city')); if (h0) loc = { continent: h0.continent, country: h0.country, chapter: h0.slug }; }
+    if (!loc && me && me.home_community) { var h1 = hubBy(me.home_community); if (h1) loc = { continent: h1.continent, country: h1.country, chapter: h1.slug }; }
+    var sel = document.getElementById('fd-loc');
+    sel.innerHTML = '<option value="">Everywhere</option>' + (window.VE_HUBS || []).map(function (h) { return '<option value="' + h.slug + '">Near ' + h.name + '</option>'; }).join('');
+    sel.value = loc && loc.chapter ? loc.chapter : '';
+    function writeCity() {
+      var u = new URLSearchParams(location.search);
+      if (loc && loc.chapter) u.set('city', loc.chapter); else u.delete('city');
+      var s = u.toString(), url = location.pathname + (s ? '?' + s : '') + location.hash;
+      if (url !== location.pathname + location.search + location.hash) history.replaceState(history.state, '', url);
+    }
+    sel.addEventListener('change', function () {
+      var h = hubBy(sel.value);
+      loc = h ? { continent: h.continent, country: h.country, chapter: h.slug } : null;
+      try { if (loc) localStorage.setItem(LOC_KEY, JSON.stringify(loc)); else localStorage.removeItem(LOC_KEY); } catch (e) {}
+      writeCity(); paintFront(); paintBar();
+    });
+
+    function doorOf(l) {
+      var ds = [];
+      VERegionDirectory.sectionsOf(l).forEach(function (c) { var d = CATMAP[c]; if (d && d !== 'hidden' && ds.indexOf(d) < 0) ds.push(d); });
+      return ds;
+    }
+    function near(l) { if (!loc || !loc.chapter) return true; var h = VERegionDirectory.hubsOf(l); return h === '*' || h.split('|').indexOf(loc.chapter) >= 0; }
+    function hubName() { var h = loc && hubBy(loc.chapter); return h ? h.name : ''; }
+    function fmt(n) { return n.toLocaleString('en-US'); }
+
+    // Counts that follow the location, with Everywhere when a door has fewer than five near you (the panel, Round 2).
+    var DATA = null;
+    function countOf(d) {
+      if (!DATA) return null;
+      var all = DATA.filter(function (l) { return doorOf(l).indexOf(d.key) >= 0; });
+      var here = d.local ? all.filter(near) : all;
+      if (d.local && loc && loc.chapter && here.length < 5) return { n: all.length, cap: 'everywhere', all: true };
+      return { n: here.length, cap: d.local && loc && loc.chapter ? 'near ' + hubName() : (d.local ? 'everywhere' : 'listed') };
+    }
+    function paintFront() {
+      var box = document.getElementById('fd-doors');
+      var shown = DOORS.filter(function (d) { return d.key !== 'review' && (!d.membersOnly || member); });
+      box.innerHTML = shown.map(function (d) {
+        var c = countOf(d);
+        var ct = c ? '<span class="ct' + (c.all ? ' all' : '') + '"><b>' + fmt(c.n) + '</b><small>' + c.cap + '</small></span>' : '<span class="ct"><b>...</b></span>';
+        var quick = QUICK[d.key] ? '<span class="qp">' + QUICK[d.key].map(function (s) { return '<a href="' + href(d.key, s) + '" data-door="' + d.key + '">' + s + '</a>'; }).join('') + '</span>' : '';
+        return '<div class="fd-door d-' + d.key + (d.key === 'food' ? ' lead' : '') + (d.membersOnly ? ' members' : '') + '">' +
+          '<div class="fd-head"><span class="ic">' + svg(d.key, 22) + '</span>' + ct + '</div>' +
+          '<a class="fd-t" href="' + href(d.key) + '" data-door="' + d.key + '">' + d.label + '</a><span class="ex">' + d.ex + '</span>' + quick +
+          '<span class="go">' + d.go + '</span></div>';
+      }).join('');
+      document.getElementById('fd-top-h').innerHTML = '<span class="hl">Top voted</span>' + (loc && loc.chapter ? ' near ' + hubName() : '');
+      paintTop();
+    }
+    // Top voted, mixed across doors: the best of Eat and Animals near you, then a podcast or book, then a person.
+    function paintTop() {
+      var grid = document.querySelector('#fd-top .rank-grid');
+      if (!DATA) return;
+      function best(key, local) {
+        return DATA.filter(function (l) { return doorOf(l)[0] === key && (!local || near(l)) && l.business_status !== 'CLOSED_PERMANENTLY'; })
+          .sort(function (a, b) { return (b.vote_count || 0) - (a.vote_count || 0) || String(a.name).localeCompare(b.name); })[0];
+      }
+      var picks = [best('food', true), best('community', true), best('media'), best('people')].filter(Boolean);
+      if (!picks.length) { grid.innerHTML = '<p class="fd-empty">Nothing voted here yet.</p>'; return; }
+      grid.innerHTML = picks.map(function (l, i) { return VERegionDirectory.card(l, i); }).join('');
+      VERegionDirectory.wire(document.getElementById('fd-top'));
+    }
+
+    // The page bar: the live Directory's banner (ve-city-banner.js), its picker the doors, its title the way back to All doors.
+    var cur = '', secInfo = null, ready = false;
+    var CHOICES = [{ value: '', label: 'All doors' }].concat(DOORS.filter(function (d) { return d.key !== 'review' && (!d.membersOnly || member); }).map(function (d) { return { value: d.key, label: d.label }; }));
+    var banner = VECityBanner.mount('dir-hero', {
+      key: 'dir', title: 'Vegan Directory', choices: CHOICES, param: false, pickLabel: 'Door',
+      sub: 'Everything Vegan near you, ranked by member votes.',
+      home: { label: 'Directory home', onClick: function () { go(''); } },
+      onChange: function (v) { if (ready) go(v); },
+      actions: [{ label: 'Suggest a place', short: 'Suggest', onClick: function () { VEListingRequest.open({ page: location.href }); } }]
+    });
+    banner.autoFold();
+    function paintBar() {
+      var d = DOORS.filter(function (x) { return x.key === cur; })[0];
+      var where = d ? (secInfo && secInfo.near ? secInfo.near : secInfo && secInfo.location && secInfo.location.applies ? secInfo.location.name : '') : hubName();
+      banner.setLabel((d ? d.label : 'All doors') + (where ? ' · ' + where : ''));
+      banner.setQuiet(cur);
+      var c = d && countOf(d);
+      // Near me sets the location aside, so the count is the door's whole list, by distance.
+      if (c && secInfo && secInfo.near && DATA) c = { n: DATA.filter(function (l) { return doorOf(l).indexOf(d.key) >= 0; }).length, cap: 'by distance' };
+      document.getElementById('dr-n').textContent = c ? fmt(c.n) + ' ' + d.unit + ' ' + c.cap : '';
+    }
+
+    function show(tab) {
+      var on = !!tab && DOORS.some(function (d) { return d.key === tab; });
+      front.hidden = on; door.hidden = !on; cur = on ? tab : '';
+      document.documentElement.classList.toggle('ve-doors-front', !on);
+      var d = DOORS.filter(function (x) { return x.key === tab; })[0];
+      document.getElementById('dr-name').textContent = d ? d.label : 'Directory';
+      document.title = (on && d ? d.label + ' \u00b7 ' : '') + 'Vegan Directory \u2014 Vegans Explore';
+      paintBar();
+      // The open door's tab in view when the row scrolls sideways (phones).
+      setTimeout(function () {
+        var t = on && document.querySelector('#door .cat-tab.active'), row = t && t.parentElement;
+        if (row && row.scrollWidth > row.clientWidth) row.scrollLeft = Math.max(0, t.offsetLeft - row.offsetLeft - 16);
+      }, 60);
+    }
+    // A door opens in place (the address carries ?tab= so Back and Share work); All doors comes back to the front page.
+    function go(tab, url) {
+      url = url || (tab ? href(tab) : BASE);
+      var city = loc && loc.chapter ? loc.chapter : '';
+      // The location was changed on the front page after the listings loaded: open the door fresh, set to it.
+      if (tab && city !== INIT_LOC) { location.href = url + '&city=' + city; return; }
+      if (city) url += (url.indexOf('?') < 0 ? '?' : '&') + 'city=' + city;
+      history.pushState({}, '', url);
+      show(new URLSearchParams(location.search).get('tab'));
+      if (tab) window.dispatchEvent(new PopStateEvent('popstate'));
+      window.scrollTo(0, 0);
+    }
+    document.addEventListener('click', function (e) {
+      var a = e.target.closest('a[data-door]');
+      if (!a || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      e.preventDefault();
+      go(a.getAttribute('data-door'), a.getAttribute('href'));
+    });
+    document.getElementById('dr-home').href = BASE;
+    document.getElementById('dr-home').addEventListener('click', function (e) { if (e.metaKey || e.ctrlKey) return; e.preventDefault(); go(''); });
+    window.addEventListener('popstate', function () { show(new URLSearchParams(location.search).get('tab')); });
+
+    var rail = document.getElementById('dir-ad-rail'), INIT_LOC = loc && loc.chapter || '';
+    VERegionDirectory.init({ mount: 've-region-directory', hub: '', regions: true, matchListing: function () { return true; },
+      // sectionMenu: the door's sub-sections are the tab row under the bar (and, on phones, a picker in the bar), as on the live Directory.
+      url: BASE, sectionMenu: true,
+      // Near me (Sean, 2026-11-11): on the doors whose listings are places (Eat, Animals & Causes, Services & Spaces, and Being vetted
+      // for members); never on Shop, Watch Listen & Read, People & Groups or Travel. Only this page turns it on.
+      nearMe: ['food', 'community', 'services', 'vetting'],
+      brand: { sections: DOORS, catMap: CATMAP, merge: MERGE },
+      onData: function (rows) { DATA = rows; paintFront(); paintBar(); },
+      onSection: function (key, label, subs) { secInfo = subs; if (key === cur) paintBar(); },
+      location: { initial: loc, onChange: function (l) {
+        loc = l && l.chapter ? l : null; sel.value = loc ? loc.chapter : ''; INIT_LOC = loc ? loc.chapter : '';
+        try { if (loc) localStorage.setItem(LOC_KEY, JSON.stringify(loc)); } catch (e) {}
+        if (window.VEAdRail) VEAdRail.chapter(rail, loc ? loc.chapter : '');
+        paintBar();
+      } } });
+    show(q.get('tab'));
+    writeCity();
+    paintFront();
+    ready = true;
   })();
   </script>
 

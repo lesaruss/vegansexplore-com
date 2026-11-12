@@ -142,6 +142,13 @@ Classes currently under the rule:
   intro (`ve_board_posts.body`) is the summary there.
 - `.pulse-link-excerpt` — the "In the Pulse" section on a listing's page (`loadInPulse`
   in `directory/listing.html`), each article's summary (`ve_pulse_content.summary`).
+- `.ml-card-tagline` — Saved listings, `/account/my-list.html` (2026-11-10 sweep; the Remove button sits at the card's foot so rows stay flush)
+- **People titles are 45 characters at most** (Sean, 2026-11-10: rows change with the screen, so the cap is characters; Keya's line,
+  "Educator and Vegans Explore content creator", 43 characters, is the example). The line under a person's name on the Directory card is
+  `details.person.title`. Capped in the Edit listing field (`#vla-ptitle`, maxlength 45 with a live count), the Ambassador door
+  (`#pTitle`), `ve-people` (save and the bio writer's prompt) and `ve-ambassador` (every write). The 38 longer titles were rewritten that day
+  (migration `20261110_people_titles_45.sql`). Restaurant and media cards carry no description line.
+- Already clamped, checked in the same sweep: `.tl` (`/search.html` results), `.hg-sum` (Holiday Guide menu cards), `.vpg-tagline` (`/public/partner-guide.js`). The shared Directory card (`ve-region-directory.js`) shows no description.
 
 **Directory cards in the Pulse (Sean, 2026-11-02).** Every Pulse article carries **In this story** above **On this episode** (one section, grouped by pills: People, Media,
 Places, Organizations; each card keeps its vote and opens the listing): the Directory cards of the people, restaurants, brands and groups it names (`api/pulse-article.js`, loaded from `ve_content_mentions`). A listing's page
@@ -336,3 +343,14 @@ Mobile (Option B): flat scrim + frosted glass card.
   .hero-inner { background: rgba(0,0,0,0.62); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border-radius: 8px; margin: 0 16px 24px; padding: 28px 24px; max-width: calc(100% - 32px); border: 1px solid rgba(255,255,255,0.10); }
 }
 ```
+
+**No hidden scroll areas** (Sean, 2026-11-12: "whenever I'm over an element, I can't just scroll over it. It gets stuck"). A column or
+box never scrolls inside itself with a hidden scrollbar: the trackpad then moves the box, not the page, and it feels stuck. The listing's
+right column (`.listing-sidebar` in `directory/listing.html`) had `max-height:100vh; overflow-y:auto; scrollbar-width:none`; it is now
+sticky with a top that keeps its bottom on screen (a short column pins at the top, a tall one scrolls with the page and pins once its
+bottom arrives), measured on scroll and resize because the column is drawn again after the listing loads. Proven live: a wheel over the
+right column and over its ad moves the page 600 of 600 px (it was 240). Ad frames pass the scroll through to the page. A capped short
+list that scrolls inside its box (Interface defaults) shows its scrollbar. Same day, the second trap Sean found ("when I get to With Vegans Explore, that's where it gets stuck"): the listing's episode
+lists (`.pp-scroll`, With Vegans Explore and On other podcasts) were capped at 880 px with `overflow-y:auto; overscroll-behavior:contain`,
+which never hands the scroll to the page; the cap is gone and they run the full page (proven live: a wheel over the tiles moves the page
+600 of 600 px at 1440 and 390). `overscroll-behavior:contain` is only for a box that is meant to scroll on its own and shows it.

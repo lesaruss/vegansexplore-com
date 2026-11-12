@@ -61,7 +61,7 @@ New scenes for this page's video: Liz earning and using points (checking in at a
 
 Made: `liz-pts-{checkin,bounty,give,level,guide,share,door}.jpg` (level-up redrawn once to remove readable text). v2 (Sean, 2026-11-09): the phone in the share scene shows its back, nonprofits show the nonprofit directory, the sanctuary shirt says Volunteer with no logo, the Vault shows no empty list, and every picture is used once (the render script asserts it). New scenes: `liz-pts-{share-v2,give-v2,shape,survey,friends}.jpg`. Video `sec-points-v2.mp4` in vegan-media, captions `public/guides/welcome/sec-points-v2.vtt`, scripts `scripts/tour-video/sections/cap-points.js` and `render-points.py`.
 
-## 8. Your Path and Badges (draft v1 for Sean)
+## 8. Your Path and Badges (approved 2026-11-09; recorded sec-paths-v1; video sec-paths-v2 approved and live 2026-11-09)
 
 About 60 seconds. The page is on the section template (how to use, the paths and their badges, one call to action: See your paths).
 
@@ -69,6 +69,32 @@ About 60 seconds. The page is on the section template (how to use, the paths and
 
 New scenes for this page's video: Liz with each path's world (a restaurant kitchen pass, an event setup, a creator filming, a rescue, a small shop adding plant-based items) and a badge moment, not earlier pictures.
 
-## 9 to 11
+Made: `liz-pth-{trail,kitchen,event,creator,rescue,shop,badge,meetup,link}.jpg` (the shop scene redrawn: Liz was off-model, then Sean asked for Liz and Theo with a straight shelf, v2). Every picture used once. Video `sec-paths-v2.mp4` in vegan-media (73 s), captions `public/guides/welcome/sec-paths-v2.vtt`, scripts `scripts/tour-video/sections/cap-paths.js` and `render-paths.py`.
 
-Written one at a time after page 7 is approved.
+## 9. Make It Better (approved 2026-11-09 with Nominate them; video sec-better-v1 approved and live 2026-11-10)
+
+About 70 seconds. The page is on the section template (how to use, seven ways to tell us, one call to action: Send feedback now, which opens the Feedback form).
+
+> This is the part that matters most. Use Vegans Explore in your day to day, and tell us what is working, what is not, and what you wish you could do. The Feedback button is on every page, and it starts with the page you are on. Ask your Guide anything, and if your Guide does not know, members can ask a person on our team, free. Search for something we do not have yet, and it goes straight into our team's queue. Know a place, a person or a group we should list? Tell us, and we check it. Every city's board has Suggest a Topic for the Daily Pulse. Know someone in your community who should be spotlighted? Nominate them. We are real people, supported by technology, and we build from what you send every day. We want to hear from you. As a member, you shape what we fix and what we build next, so let us know if something needs to be fixed. Membership is free. We ask for a short survey so we know real people are joining, and that keeps this community worth your time. Bring people with you: invite your friends, your community, new Vegans and Pre-Vegans. And you earn points for everybody who joins using your link. That is the easiest way to grow your experience and open new doors in our community. Tell us one thing today.
+
+New scenes for this page's video: Liz listening, noting, fixing and building with the team and members (not earlier pictures); every picture used once.
+
+Made (2026-11-10, after Sean's Higgsfield top-up, stills only): `liz-bet-{note,team,cafe,spotlight,build,fix,potluck,card}.jpg`, no redraws (16 credits). Video `sec-better-v1.mp4` (82 s), captions `sec-better-v1.vtt`.
+
+## 10. For the Animals (approved 2026-11-10; video sec-animals-v1 approved and live 2026-11-10)
+
+About 75 seconds. The page is on the section template (how to use, six ways to show up, one call to action: Find nonprofits and rescues).
+
+> This is the reason we are all here. With a network of businesses, people and nonprofits that actually show up, we can run campaigns that move the needle for the animals. The Directory's Community section lists nonprofits, rescues and sanctuaries in every chapter. Every city has a Fosters board and a Rescues board, so animals find help close by. Events has sanctuary days and fundraisers, and every morning the Daily Pulse has news for the animals. You can give your points to a nonprofit, rescue or sanctuary, right from its page. We want to hear from you. As a member, you shape what we take on together: tell us which causes matter most to you, post on the boards, and let us know if something needs to be fixed. Membership is free. We ask for a short survey so we know real people are joining, and that keeps this community worth your time. Bring people with you: invite your friends, your community, new Vegans and Pre-Vegans. And you earn points for everybody who joins using your link. That is the easiest way to grow your experience and open new doors in our community. Show up for the animals today.
+
+New scenes (Higgsfield budget: about 7 stills, 14 credits): Liz at a sanctuary, with a foster, at a rescue adoption day, at a fundraiser, reading the morning Pulse, giving points, and a close with animals. Not earlier pictures.
+
+Made: `liz-ani-{sanct,foster,adopt,fund,pulse,causes,walk}.jpg` (the adoption day was refused once by a false content flag and redrawn with new words; 16 credits). Video `sec-animals-v1.mp4` (72 s), captions `sec-animals-v1.vtt`.
+
+## 11. Become a Founder (approved 2026-11-10; video sec-founder-v1 approved and live 2026-11-10)
+
+About 72 seconds. The page keeps its own sign-up layout (the countdown and the Explorer card), with Play Liz added.
+
+> You made it to the end, and you are early. That is rare. Becoming a Founder takes a few quick questions, about two minutes, and you are in, free, with 250 points to use across the platform. Join before midnight Eastern on January 1, 2027, and Founding Member stays on your profile for good. Founders unlock some really cool things in 2027, and the only way to hear about them, and lock them in for yourself, is to join today. Once you are in, start simple: vote for three places you love, check in when you visit a Vegan place, and tell us one thing. Then pick your path. We want to hear from you. As a member, you shape what Vegans Explore becomes, so let us know if something needs to be fixed. Membership is free. We ask for a short survey so we know real people are joining, and that keeps this community worth your time. Bring people with you: invite your friends, your community, new Vegans and Pre-Vegans. And you earn points for everybody who joins using your link. That is the easiest way to grow your experience and open new doors in our community. Become a Founder today.
+
+Made: `liz-fnd-{hill,window,nye,gift,bakery,picnic,welcome}.jpg` (14 credits, no redraws; the close in Liz's pink tee). Video `sec-founder-v1.mp4` (74 s), captions `sec-founder-v1.vtt`, every picture used once.

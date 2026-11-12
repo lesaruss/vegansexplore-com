@@ -427,7 +427,18 @@ async function publicAction(action: string, body: any, memberId: string | null) 
     // The signed-in member's own claim on it, so the page says it is waiting rather than asking again.
     let claim = null;
     if (memberId) { const { data: c } = await db.from('ve_event_claims').select('status').eq('event_id', ev.id).eq('member_id', memberId).order('created_at', { ascending: false }).limit(1).maybeSingle(); claim = c?.status || null; }
-    return json({ event: { ...out, host, venue, people, cancelled: evStatus === 'cancelled' }, viewer: { ...(viewer || {}), claim }, signed_in: !!memberId, member_tickets: !!mt });
+    // Supporting organizations (Sean, 2026-11-11: "we can show that these are the organizations that are supporting this event...
+    // If people want to go through DC Meetup, let them go through DC Meetup"): another organization's listing of this same event,
+    // kept under it (status 'supporting', dupe_of), each with its Directory page and its own link to register.
+    const { data: sups } = await db.from('events').select('organizer_name, ticket_url, host_listing_id').eq('dupe_of', ev.id).eq('status', 'supporting').limit(12);
+    const sl = [...new Set((sups || []).map((x: any) => x.host_listing_id).filter(Boolean))];
+    const { data: sls } = sl.length ? await db.from('listings').select('id, slug, name, logo_url').in('id', sl).eq('status', 'approved') : { data: [] };
+    const byL: Record<string, any> = {}; (sls || []).forEach((l: any) => { byL[l.id] = l; });
+    const supporters = (sups || []).map((x: any) => {
+      const l = x.host_listing_id ? byL[x.host_listing_id] : null;
+      return { name: l?.name || x.organizer_name || null, slug: l?.slug || null, logo_url: l?.logo_url || null, url: /^https?:\/\//.test(x.ticket_url || '') ? x.ticket_url : null };
+    }).filter((x: any) => x.name && (x.slug || x.url) && (!host || x.slug !== host.slug));
+    return json({ event: { ...out, host, venue, people, supporters, cancelled: evStatus === 'cancelled' }, viewer: { ...(viewer || {}), claim }, signed_in: !!memberId, member_tickets: !!mt });
   }
   if (action === 'claim') {
     if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
