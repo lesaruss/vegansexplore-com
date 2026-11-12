@@ -524,6 +524,14 @@
     .wm em { font-style: normal; color: #0e9aa7; }
     .covers { display: flex; gap: 12px; flex-wrap: wrap; }
     .covers > div { width: min(150px, 19vh); }
+
+    /* the end card says where to listen: nothing in a feed picture can be tapped */
+    .endc2 .plats { margin-top: auto; margin-bottom: 2cqw; display: flex; flex-direction: column; gap: 2.4cqw; }
+    .endc2 .plats b { font-size: 3.4cqw; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
+    .endc2 .plats .ic { display: flex; gap: 2.6cqw; }
+    .endc2 .plats .ic span { width: 15cqw; height: 15cqw; background: #fff; border-radius: 3cqw; display: grid; place-items: center; border: .7cqw solid var(--ink); box-shadow: .8cqw .8cqw 0 var(--or); }
+    .endc2 .plats .ic img { width: 9cqw; height: 9cqw; }
+    .endc2 .plats em { font-style: normal; align-self: flex-start; background: var(--or); color: var(--ink); font-size: 3cqw; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; padding: 1.4cqw 2.4cqw; border-radius: 1cqw; border: .6cqw solid var(--ink); }
   </style>
 </head>
 <body>
@@ -620,13 +628,13 @@
         <div style="width:min(205px,27vh)"><div class="tf s45" style="--sh:var(--dk)"><div class="art ph" data-sw="Their photo"><img src="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/logos/listings/sunnispeaksvegan-ig-2026-11-12.jpg" alt="Sunni of Sunni Speaks Vegan"></div><div class="band" style="--c:var(--dk);--t:#fff" data-sw="Story"><img class="bmark" src="/public/logo-ve-mark-white.svg" alt="Vegans Explore"><h5>Sunni Speaks<br>Vegan</h5><span class="n">4 / 10</span></div><div class="stp"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="lab">A person <span>· their own photo, square, face whole</span></div></div>
         <div style="width:min(205px,27vh)"><div class="tf s45" style="--sh:var(--pinkd)"><div class="art" data-sw="Guide picture"><img src="/public/guides/holiday/r-pie.jpg" alt="A Vegan pumpkin pie, drawn"></div><div class="band" style="--c:var(--pink)" data-sw="Story"><img class="bmark" src="/public/logo-ve-mark-ink.svg" alt="Vegans Explore"><h5>ThanksLiving,<br>November 26</h5><span class="n">6 / 10</span></div><div class="stp"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="lab">6 to 7 · The Holiday Guide <span>· this week's big push</span></div></div>
         <div style="width:min(205px,27vh)"><div class="tf s45" style="--sh:var(--pinkd)"><div class="art" data-sw="Guide scene"><img src="/public/guides/holiday/r-loaf.jpg" alt="A Vegan holiday loaf, drawn"></div><div class="band" style="--c:var(--pink)" data-sw="Story"><img class="bmark" src="/public/logo-ve-mark-ink.svg" alt="Vegans Explore"><h5>Holiday menus<br>near you</h5><span class="n">7 / 10</span></div><div class="stp"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="lab">7 · The Holiday Guide <span>· pink, its Guide's color</span></div></div>
-        <div style="width:min(205px,27vh)"><div class="tf s45" style="--sh:var(--or)"><div class="endc2"><div class="city" data-sw="City pack"><img src="/public/brand-kit/podcast/soflo/16x9.jpg" alt="South Florida, drawn 16:9"></div><div class="lo"><img class="lg" src="/public/logo-ve-landscape-v2-white.svg" alt="Vegans Explore"><h5>Listen to<br><span data-sw="Episode">Episode 112</span></h5><p>Search SoFlo Vegans on vegansexplore.com, or wherever you listen.</p><span class="b">Listen now</span></div></div><div class="stp"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="lab">10 · End card <span>· the show's city, Listen now</span></div></div>
+        <div style="width:min(205px,27vh)"><div class="tf s45" style="--sh:var(--or)"><div class="endc2"><div class="city" data-sw="City pack"><img src="/public/brand-kit/podcast/soflo/16x9.jpg" alt="South Florida, drawn 16:9"></div><div class="lo"><img class="lg" src="/public/logo-ve-landscape-v2-white.svg" alt="Vegans Explore"><h5>Listen to<br><span data-sw="Episode">Episode 112</span></h5><div class="plats"><b>Listen free on</b><div class="ic"><span><img src="/public/icons/platforms/spotify.svg" alt="Spotify"></span><span><img src="/public/icons/platforms/apple-podcasts.svg" alt="Apple Podcasts"></span><span><img src="/public/icons/platforms/amazon-music.svg" alt="Amazon Music"></span><span><img src="/public/icons/platforms/youtube.svg" alt="YouTube"></span></div><em>Link in bio</em></div></div></div><div class="stp"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div><div class="lab">10 · End card <span>· where to listen, link in bio</span></div></div>
         <div class="bk-rules" style="flex:1 1 220px;min-width:200px"><h3>Colors by kind of story</h3><ul>
           <li><span class="chipc" style="background:var(--dk)"></span>Directory green: a business or new listing.</li>
           <li><span class="chipc" style="background:var(--or)"></span>Events orange: an event, its date as the picture until it has its own image (none this week).</li>
           <li><span class="chipc" style="background:var(--pink)"></span>Pink: a person, a Guide or a commercial.</li>
           <li><span class="chipc" style="background:var(--br)"></span>Pulse green: a bounty or a news item.</li>
-          <li><span class="chipc" style="background:var(--peach)"></span>Peach: the show itself, cover and close.</li>
+          <li><span class="chipc" style="background:var(--peach)"></span>Peach: the show itself, cover and close.</li><li class="no">No buttons or QR codes on feed pictures: nothing in a post can be tapped. The end card names where to listen and points to the link in bio; real links ride the story sticker, the caption on Facebook and YouTube, and the email. QR codes are for print and big screens only.</li>
         </ul></div>
       </div>
     </section>
