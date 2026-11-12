@@ -996,6 +996,9 @@
           '<div class="nx"><small>Waiting for you</small><b>Your post, ready to share</b><span>"Find us on Vegans Explore", made from your logo, with your own link to see who it brings.</span></div>' +
           '<div class="nx soon"><span class="tag">Coming</span><b>Bounties for businesses</b><span>Take part in our campaigns and earn points, right from your dashboard.</span></div>';
         show(['st-next']); $('st-next').appendChild($('pp'));
+        $('free-note').hidden = true; $('stepper').hidden = true;
+        document.querySelector('.wrap h1').textContent = added ? 'Thank you for adding ' + nm + '.' : 'Your claim is in, ' + nm + '.';
+        $('nx-h').textContent = 'What happens next';
         $('lede').hidden = true; liz.say('freedone'); drawPost();
       }
 
