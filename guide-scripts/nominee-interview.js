@@ -442,10 +442,7 @@
     var who = D.nominator.named ? D.nominator.name.replace(/^Sample:\s*/, '') : '';
     return crumb('You\'ve Been Featured') + head('Your story is live', first() + ', You\'ve Been Featured', '') +
       card('Where you are', 'Your story is on Vegans Explore', pic('partner-community-manager.jpg'), lines([
-        '<b>Meet the Vegans Explore you.</b> We drew you in our style, in our tee: your badge of honor, for your profile and your socials.',
-        '<b>Share it.</b> Your graphics are below, ready for your feed and your stories.',
-        '<b>Tag us</b> @vegansexplore' + (who ? ' and ' + esc(who) + ', so they see it too.' : ', so we see it too.'),
-        '<b>Your link</b> is made for you, so we know your post brought people in.']),
+        '<b>Meet the Vegans Explore you</b>, drawn in our style and our tee. <b>Share your graphics</b> and tag @vegansexplore' + (who ? ' and ' + esc(who) : '') + '. <b>Your link</b> is made for you, so we know your post brought people in.']),
         '<button type="button" class="dg-btn" id="ftCopy">Copy my link</button>') +
       '<div class="wg-arts">' + group('Where you are featured', (F.places || []).map(function (p) {
         return artLink(pic(PLACE_PIC[p.kind] || PLACE_PIC.other), p.label, ({ hub: 'Your card on the city hub, playing your answer in your own voice.', episode: 'Your story on the show.', pulse: 'Your story in your city\'s morning briefing.' })[p.kind] || 'Your feature on Vegans Explore.', p.url, PLACE_GO[p.kind] || 'Open');
@@ -665,6 +662,10 @@
     if (!d || !d.ok) { loadErr = (d && d.message) || 'That link did not work. Ask us for a new one at contact@lesaruss.com.'; route(); return; }
     D = d; A = d.answers || {};
     if (D.featured && TABS.indexOf(FEAT_TAB) < 0) TABS.push(FEAT_TAB);
+    if (TABS.length > 5) document.documentElement.classList.add('dg-dd');   // more than five parts: the menu is a dropdown at every width (Sean, 2026-11-09)
+    var hb = document.querySelector('.dg-jb-price + .dg-btn');   // the header's button follows where they are
+    if (hb && D.featured) { hb.textContent = 'See my feature'; hb.setAttribute('href', '#/featured'); }
+    else if (hb && D.sent) { hb.textContent = 'My answers'; hb.setAttribute('href', '#/interview/9'); }
     var h = $('nmFrom'); if (h) h.innerHTML = D.nominator.named ? 'nominated<br>by ' + esc(D.nominator.name.replace(/^Sample:\s*/, '')) : 'nominated by<br>your community';
     route();
   }).catch(function () { loadErr = 'We could not reach our server. Try again in a minute.'; route(); });
