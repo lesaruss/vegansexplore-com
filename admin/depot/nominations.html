@@ -129,7 +129,13 @@
         return '<h3>Invitation</h3><dl><dt>Status</dt><dd>' + esc(st) + '</dd>' +
           '<dt>Kai\'s opening</dt><dd>' + (n.welcome_url ? '<audio controls preload="none" src="' + esc(n.welcome_url) + '"></audio><br>' + esc(n.welcome_text || '') + '<br>' + (n.welcome_checked ? '<span class="tag approved">Checked word for word</span>' : '<span class="tag new">Words did not match: listen before it sends</span>') : '<span class="tag new">Not made</span>') + '</dd>' +
           '<dt>Their interview</dt><dd><a href="' + esc(n.interview_url) + '" target="_blank" rel="noopener">Open their interview</a> (their private link; only for checking)</dd>' +
-          (n.interview_sent_at ? '<dt>Sent</dt><dd>' + esc(when(n.interview_sent_at)) + '</dd>' : '') + (n.joined_at ? '<dt>Joined</dt><dd>' + esc(when(n.joined_at)) + '</dd>' : '') + '</dl>';
+          noteLine(n) + (n.interview_sent_at ? '<dt>Sent</dt><dd>' + esc(when(n.interview_sent_at)) + '</dd>' : '') + (n.joined_at ? '<dt>Joined</dt><dd>' + esc(when(n.joined_at)) + '</dd>' : '') + '</dl>';
+      }
+      function noteLine(n) {
+        var t = n.note; if (!t) return '<dt>Note to the nominator</dt><dd>' + (n.self_nominated || !n.nominator_email ? 'None (self-nomination or no email)' : 'None') + '</dd>';
+        var st = t.step ? 'Sent ' + esc(when(t.last_sent_at)) : t.send_status === 'waiting' ? (t.campaign_live ? 'Waiting to send (weekdays, 9 to 5 Eastern)' : 'Held: the note waits for Sean to approve its wording') : esc(t.stop_reason || t.send_status);
+        var e = (t.personal_emails || {})['1'] || {};
+        return '<dt>Note to the nominator</dt><dd>' + st + ' &middot; ' + esc(t.person_key) + (e.subject ? '<br><b>' + esc(e.subject) + '</b><br><span style="white-space:pre-line">' + esc(e.body || '') + '</span>' : '') + '</dd>';
       }
       function answers(n) {
         var a = n.answers || {}, ks = Object.keys(QN).filter(function (k) { return a[k]; });

@@ -157,6 +157,34 @@ function inviteEmails(n: any, area: string | null) {
       body: `Hi ${first},\n\nYour interview is still waiting for you, ${first}. It takes about ten minutes.\n\nStart your interview: {link}${sign}` },
   };
 }
+// The note to the nominator (Sean, 2026-11-12: "build the nominator note next"): whom we invited, in the Nominator notes campaign.
+const NOTE = 'nominator-notes';
+const joinNames = (a: string[]) => a.length < 2 ? (a[0] || '') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
+function noteEmails(n: any, invited: any[]) {
+  const first = firstOf(n.nominator_name), names = joinNames(invited.map((x) => String(x.nominee_name || '').replace(/^Sample:\s*/, '').trim()));
+  const hidden = invited.every((x) => x.credit_ok === false);
+  return { '1': { subject: `We invited ${names}`,
+    body: `Hi ${first},\n\nThank you for your nomination. We loved it, and we just invited ${names} to an interview with me. ${invited.length > 1 ? 'They\'ll each' : 'They\'ll'} hear why you nominated them, in your words.${hidden ? ' We did not tell them who nominated them, just as you asked.' : ''}\n\nEvery nominee is considered, and their story could be featured on our podcast, on your city's page and in the Daily Pulse.\n\nKnow someone else who deserves their flowers? Nominate them here: {link}\n\nKai\nThe Creator Guide at Vegans Explore` } };
+}
+async function noteNominator(n: any, by: string | null): Promise<string> {
+  const email = String(n.nominator_email || '').trim().toLowerCase();
+  if (!email.includes('@') || n.self_nominated || email === String(n.nominee_email || '').trim().toLowerCase()) return 'none';
+  const { data: row } = await db.from('ve_outreach_campaign_members').select('id, step, send_status').eq('campaign_slug', NOTE).eq('person_key', email).is('removed_at', null).maybeSingle();
+  if (row && row.step === 0 && row.send_status === 'waiting') {
+    // Their note has not gone out yet: one note names everyone we invited.
+    const { data: prev } = await db.from('ve_nominations').select('nominee_name, credit_ok').eq('nominator_note_member', row.id).neq('id', n.id).order('invited_at');
+    const { error } = await db.from('ve_outreach_campaign_members').update({ personal_emails: noteEmails(n, [...(prev || []), n]), personal_at: nowIso(), personal_by: by }).eq('id', row.id);
+    if (error) return 'failed: ' + error.message;
+    await db.from('ve_nominations').update({ nominator_note_member: row.id }).eq('id', n.id);
+    return 'added';
+  }
+  if (row) await db.from('ve_outreach_campaign_members').update({ removed_at: nowIso() }).eq('id', row.id);   // their earlier note is done
+  const { data: ins, error } = await db.from('ve_outreach_campaign_members').insert({ campaign_slug: NOTE, person_key: email, person_name: n.nominator_name || null,
+    step: 0, send_status: 'waiting', personal_emails: noteEmails(n, [n]), personal_at: nowIso(), personal_by: by }).select('id').single();
+  if (error) return 'failed: ' + error.message;
+  await db.from('ve_nominations').update({ nominator_note_member: ins.id }).eq('id', n.id);
+  return 'queued';
+}
 async function byInvite(t: string) {
   if (!/^[0-9a-f]{36}$/.test(t)) return null;
   const { data } = await db.from('ve_nominations').select('*').eq('invite_token', t).maybeSingle();
@@ -364,6 +392,13 @@ Deno.serve(async (req: Request) => {
     return json({ ok: true, nominations: (data || []).map((n: any) => ({ ...n, area: n.community_slug ? (names[n.community_slug] || n.community_slug) : (n.community_other || 'Somewhere else') })), roles: ROLES });
   }
 
+  async function noteOf(n: any) {
+    if (!n.nominator_note_member) return null;
+    const [{ data: m }, { data: c }] = await Promise.all([
+      db.from('ve_outreach_campaign_members').select('step, send_status, stop_reason, last_sent_at, person_key, personal_emails').eq('id', n.nominator_note_member).maybeSingle(),
+      db.from('ve_outreach_campaigns').select('status, approved_at, paused_at').eq('slug', NOTE).maybeSingle()]);
+    return m ? { ...m, campaign_live: !!(c && c.status === 'active' && c.approved_at && !c.paused_at) } : null;
+  }
   if (action === 'get') {
     if (!isId(body.id)) return json({ error: 'bad_id' }, 400);
     const { data: n } = await db.from('ve_nominations').select('*').eq('id', body.id).maybeSingle();
@@ -376,7 +411,7 @@ Deno.serve(async (req: Request) => {
     return json({ ok: true, nomination: { ...n, audio_url, area: n.community_slug ? (names[n.community_slug] || n.community_slug) : (n.community_other || 'Somewhere else'), other_nominations: others || 0,
       interview_url: n.invite_token ? `${SITE}/nominate/interview?t=${n.invite_token}` : null,
       welcome_url: n.welcome_path ? `${SUPABASE_URL}/storage/v1/object/public/vegan-media/${n.welcome_path}` : null,
-      answers: await answersOf(n.id), invite: cm || null }, roles: ROLES });
+      answers: await answersOf(n.id), invite: cm || null, note: await noteOf(n) }, roles: ROLES });
   }
 
   if (action === 'set') {
@@ -405,7 +440,8 @@ Deno.serve(async (req: Request) => {
     }
     await db.from('ve_nominations').update({ invite_token: token, invited_at: nowIso(), status: invite.startsWith('failed') ? 'approved' : 'invited',
       welcome_path: w.path, welcome_text: w.text, welcome_checked: w.checked, updated_at: nowIso() }).eq('id', body.id);
-    return json({ ok: true, invite, welcome: { made: !!w.path, checked: w.checked, error: w.error || null }, interview_url: `${SITE}/nominate/interview?t=${token}` });
+    const note = invite.startsWith('failed') ? 'none' : await noteNominator({ ...cur, invited_at: nowIso() }, me?.id || null);
+    return json({ ok: true, invite, note, welcome: { made: !!w.path, checked: w.checked, error: w.error || null }, interview_url: `${SITE}/nominate/interview?t=${token}` });
   }
 
   return json({ error: 'unknown_action' }, 400);
