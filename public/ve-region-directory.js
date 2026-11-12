@@ -451,7 +451,7 @@
     var first = cat.label;
     var searchIcon = '<svg class="vrd-search-icon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
     var searchHtml = '<div class="vrd-search-wrap">' + searchIcon +
-      '<input type="text" class="vrd-search-input" data-vrd-search placeholder="' + (hdrNewOn() ? 'Filter ' : 'Search ') + esc(first) + '&hellip;" aria-label="' + (hdrNewOn() ? 'Filter ' : 'Search ') + esc(first) + '">' +
+      '<input type="text" class="vrd-search-input" data-vrd-search placeholder="' + (hdrNewOn() ? 'Filter ' : 'Search ') + esc(first) + (nearSection(cat.key) ? ', or type a ZIP' : '') + '&hellip;" aria-label="' + (hdrNewOn() ? 'Filter ' : 'Search ') + esc(first) + '">' +
       '</div>';
 
     // The filters live behind an icon at the right of the search, under the tabs (Sean, 2026-10-27: "hide the filter options...
@@ -1068,6 +1068,25 @@
         nearSet({ lat: p.coords.latitude, lng: p.coords.longitude }, '');
       }, function () { clearTimeout(guard); fail(); }, { timeout: 8000, maximumAge: 600000 });
     } catch (e) { clearTimeout(guard); fail(); }
+  }
+  // A ZIP typed in a search box (Sean, 2026-11-12: "can they put a zip code... and it pulls up automatically what is in that area"):
+  // 5 digits (or ZIP+4) and nothing else turns on Near me from that ZIP and empties the box, so the words filter nothing; a ZIP we do
+  // not know stays in the box as typed. cb(true) once Near me is on.
+  function nearSearchZip(input, cb) {
+    var m = input && String(input.value || '').trim().match(/^(\d{5})(?:-\d{4})?$/);
+    if (!m) return false;
+    var z = m[1];
+    if (NEAR.active && NEAR.zip === z) { input.value = ''; if (cb) cb(true); return true; }
+    if (input._vrdZip === z) return true;
+    input._vrdZip = z;
+    zipCenter(z).then(function (c) {
+      input._vrdZip = '';
+      if (!c || String(input.value || '').trim().slice(0, 5) !== z) { if (cb) cb(false); return; }
+      input.value = '';
+      nearSet(c, z);
+      if (cb) cb(true);
+    });
+    return true;
   }
   function nearStartFromZip(z, cb) {
     zipCenter(z).then(function (c) { if (c) nearSet(c, z); if (cb) cb(!!c); });
@@ -1796,7 +1815,10 @@
     root.querySelectorAll('.board-panel').forEach(function (panel) {
       var searchInput = panel.querySelector('[data-vrd-search]');
       if (searchInput) {
-        searchInput.addEventListener('input', function () { applyPanelFilters(panel, null, true); });
+        searchInput.addEventListener('input', function () {
+          if (nearOn(panel) && nearSearchZip(searchInput, function (ok) { if (ok) applyPanelFilters(panel, null, true); })) return;
+          applyPanelFilters(panel, null, true);
+        });
       }
     });
 
@@ -2118,6 +2140,7 @@
     // listing's coordinates, else its ZIP's center; miles(point) from the visitor; format(miles) '2.3 mi'; pin, the map pin icon.
     near: {
       start: function (btn, opts) { injectStyleOnce(); NEAR.pickCity = (opts && opts.pickCity) || null; nearLocate(btn || null); },
+      searchZip: function (input, cb) { return nearSearchZip(input, cb); },
       zip: function (z) { injectStyleOnce(); return new Promise(function (res) { nearStartFromZip(String(z || ''), res); }); },
       clear: function () { nearClear(); },
       resume: function () {

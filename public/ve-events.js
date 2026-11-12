@@ -645,7 +645,7 @@
         '<div class="vev-tabs" role="group" aria-label="When"><button type="button" data-when="upcoming" aria-pressed="' + (st.when === 'upcoming') + '">Upcoming</button><button type="button" data-when="past" aria-pressed="' + (st.when === 'past') + '">Past</button></div>' +
         '<div class="vev-bar">' +
           '<label class="vev-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="#666" stroke-width="2"/><path d="M20 20l-4-4" stroke="#666" stroke-width="2" stroke-linecap="round"/></svg>' +
-            '<input type="search" data-v="q" placeholder="Search events, places, cities" aria-label="Search events" autocomplete="off" value="' + esc(st.q) + '"></label>' +
+            '<input type="search" data-v="q" placeholder="' + (NM() ? 'Search events, places, cities or a ZIP' : 'Search events, places, cities') + '" aria-label="Search events" autocomplete="off" value="' + esc(st.q) + '"></label>' +
           '<button type="button" class="vev-ltag" data-v="ltag" hidden title="Show every location">' + pin + '<span data-v="lname"></span><span class="x" aria-hidden="true">&times;</span></button>' +
           (NM() ? '<button type="button" class="vev-ltag" data-v="ntag" hidden title="Stop sorting by distance">' + NM().pin + '<span data-v="nname"></span><span class="x" aria-hidden="true">&times;</span></button>' : '') +
           '<div class="vev-chips" data-v="chips" role="group" aria-label="Filters on"></div>' +
@@ -691,7 +691,13 @@
       if (ntag) ntag.addEventListener('click', function () { NM().clear(); });
       el.querySelector('[data-v="ltag"]').addEventListener('click', function () { setLevel('continent', ''); locChanged(); });
       var timer;
-      el.querySelector('[data-v="q"]').addEventListener('input', function (ev) { clearTimeout(timer); timer = setTimeout(function () { st.q = ev.target.value.trim(); st.shown = 40; syncUrl(); drawRows(); }, 150); });
+      // A ZIP in the search turns on Near me from it (VERegionDirectory.near.searchZip; Sean, 2026-11-12).
+      el.querySelector('[data-v="q"]').addEventListener('input', function (ev) {
+        clearTimeout(timer);
+        var inp = ev.target;
+        if (NM() && NM().searchZip(inp, function (ok) { if (!ok) { st.q = inp.value.trim(); st.shown = 40; syncUrl(); drawRows(); } })) { st.q = ''; return; }
+        timer = setTimeout(function () { st.q = inp.value.trim(); st.shown = 40; syncUrl(); drawRows(); }, 150);
+      });
       el.querySelectorAll('[data-when]').forEach(function (b) {
         b.addEventListener('click', function () {
           st.when = b.getAttribute('data-when'); st.shown = 40;

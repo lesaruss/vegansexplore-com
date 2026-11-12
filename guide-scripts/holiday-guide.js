@@ -729,7 +729,7 @@
     var ch = chapter(sub), t = hrow(), n = pills(ch).length, open = daysUntil(t.submit_close) > 0;
     main.innerHTML = head(t.name, 'Holiday menus near you', 'What Vegan places are cooking for ' + esc(t.name) + '. Every menu is checked by our team before it shows.') +
       '<div class="hg-tools2"><div class="hg-search"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#525252" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
-      '<input type="search" id="hgQ" placeholder="Search places, dishes, cities..." aria-label="Search holiday menus" value="' + esc(MF.q) + '" autocomplete="off" data-dictate="off"></div>' +
+      '<input type="search" id="hgQ" placeholder="Search places, dishes, cities or a ZIP..." aria-label="Search holiday menus" value="' + esc(MF.q) + '" autocomplete="off" data-dictate="off"></div>' +
       (NM() ? '<button type="button" class="hg-fbtn hg-nearbtn" id="hgNearBtn" data-vrd-near aria-pressed="' + nearOn() + '" title="Sort by distance from you">' + NM().pin + '<span data-vrd-near-word>Near me</span></button>' : '') +
       '<button type="button" class="hg-fbtn" id="hgFbtn" aria-expanded="false" aria-controls="hgPop">Filters<span class="hg-fcount"' + (n ? '' : ' hidden') + '>' + n + '</span></button>' +
       '<button type="button" class="hg-subbtn" id="hgSubBtn" aria-expanded="false" aria-controls="hgSubmit">Submit a Menu</button>' +
@@ -892,7 +892,12 @@
   }
   function wireMenuTools(ch) {
     var q = document.getElementById('hgQ'), btn = document.getElementById('hgFbtn'), pop = document.getElementById('hgPop');
-    var tq; q.addEventListener('input', function () { MF.q = q.value; clearTimeout(tq); tq = setTimeout(function () { drawMenuList(ch); }, 120); });
+    // A ZIP in the search turns on Near me from it (VERegionDirectory.near.searchZip; Sean, 2026-11-12).
+    var tq; q.addEventListener('input', function () {
+      clearTimeout(tq);
+      if (NM() && NM().searchZip(q, function (ok) { if (!ok) { MF.q = q.value; drawMenuList(ch); } })) { MF.q = ''; return; }
+      MF.q = q.value; tq = setTimeout(function () { drawMenuList(ch); }, 120);
+    });
     var nb = document.getElementById('hgNearBtn');
     if (nb) nb.addEventListener('click', function () { var n = NM(); if (n.state().on) n.clear(); else n.start(nb, { pickCity: pickChapter }); });
     function show(on) { pop.hidden = !on; btn.setAttribute('aria-expanded', String(on)); }
