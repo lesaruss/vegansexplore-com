@@ -54,7 +54,7 @@ will hear why in your words (and, when every one of them was anonymous, that we 
 tracked link to nominate someone else. One person who nominated several gets one note naming all of them while it has not gone out
 (`ve_nominations.nominator_note_member`). No note for a self-nomination, no nominator email, or the nominee's own address. Depot >
 Nominations shows the note and its status. **Held as a draft** (status draft, email not locked): nothing sends until Sean approves the
-wording; then the campaign goes active and the queued notes go out in the next window. Proven with two [TEST] nominees from one
+wording; then the campaign goes active and the queued notes go out in the next window. **Turned on 2026-11-12** (Sean: "approved, turn it on"; migration `20261112_nominator_notes_on.sql`): active, the email locked. Proven with two [TEST] nominees from one
 nominator (one note naming both, nothing due to send), test rows and recordings removed.
 
 ## Where should we go next? (Sean, 2026-11-09, playbook `ve-chapter-rankings`)
