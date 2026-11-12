@@ -4,3 +4,9 @@
 alter table ve_comment_requests add column if not exists personal_note text;
 alter table ve_comment_requests add column if not exists personal_note_from text;
 alter table ve_comment_requests add column if not exists personal_note_audio_url text;
+
+-- The flow reading (HQ only, never on the page) and which comment request a campaign DM points to (HQ Outreach > the DM's note).
+alter table ve_comment_requests add column if not exists personal_note_guide_url text;
+alter table ve_campaign_dms add column if not exists comment_code text;
+update ve_campaign_dms set comment_code = case handle when 'sunnispeaksvegan' then 'sunni-soflo-113' when 'rawchefcarla' then 'carla-soflo-113' end
+  where program_slug = 'podcast-local-voices' and comment_code is null;
