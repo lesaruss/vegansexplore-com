@@ -696,7 +696,7 @@
     .wg-gs-b p{margin:0 0 8px;font-size:15px;line-height:1.55;color:var(--ink75)}
     .wg-gs-b p b{color:var(--ink)}
     .wg-gs-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
-    @media (min-width:901px){.wg-gs-b{height:240px;overflow-y:auto;overscroll-behavior:contain;padding-right:6px}}
+    @media (min-width:901px){.wg-gs-b{min-height:240px;padding-right:6px}/* grows to fit its text, never scrolls inside itself (Sean, 2026-11-12) */}
     @media (max-width:600px){.wg-gs{flex-direction:column}.wg-gs-pic{width:100%;height:auto;aspect-ratio:1/1;flex-basis:auto}}
     .wg-grp{margin:0 0 20px}
     .wg-grp h5{margin:0 0 12px;padding-bottom:6px;border-bottom:1px solid #e3efe3}
