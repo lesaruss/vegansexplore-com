@@ -202,7 +202,40 @@ html.ve-cb .vem-head p, html.ve-cb .lane-intro p { color: var(--cb-mute); font-w
 
 /* ================= Page by page ================= */
 
+/* ---------- Episode rows (ve-episodes.js: a listing's With Vegans Explore and On other podcasts, Media, episode pages) ----------
+   Sean, 2026-11-12: "from With Vegans Explore down, even the In their words looks like the old style". Same card as the Directory card. */
+html.ve-cb .vep-row {
+  border: 2px solid var(--cb-ink); border-radius: 14px; box-shadow: 6px 6px 0 var(--cb-shadow); margin: 0 6px 6px 0;
+  transition: transform .15s, box-shadow .15s;
+}
+html.ve-cb .vep-row:hover, html.ve-cb .vep-row:focus-within { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--cb-shadow); }
+html.ve-cb .vep-img { border: 2px solid var(--cb-ink); border-radius: 10px; }
+html.ve-cb .vep-t { font-weight: 900; color: var(--cb-ink); }
+html.ve-cb .vep-btn { border-radius: 6px; font-weight: 900; }
+html.ve-cb .vep-btn:not(.go) { border: 2px solid var(--cb-ink); background: #fff; color: var(--cb-ink); }
+html.ve-cb .vep-bar input { border: 2px solid var(--cb-ink); border-radius: 6px; }
+@media (max-width: 600px) { html.ve-cb .vep-row { box-shadow: 5px 5px 0 var(--cb-shadow); } }
+
 /* ---------- /directory/<slug>: the listing ---------- */
+/* Section headings inside the page (About, Their shows, With Vegans Explore, In their words...): big and heavy with the section's marker,
+   in place of the old small gray capitals. */
+html.ve-cb.ve-cb-p-listing .section > .section-title {
+  display: inline-block; margin: 0 0 14px; padding: 0 .08em; border: 0; border-radius: 4px;
+  font-size: clamp(22px, 2vw, 28px); font-weight: 900; letter-spacing: -.02em; line-height: 1.1; text-transform: none; color: var(--cb-ink);
+  background: linear-gradient(transparent 56%, var(--cb-mark) 56%, var(--cb-mark) 92%, transparent 92%);
+}
+html.ve-cb.ve-cb-p-listing .pp-sub { color: var(--cb-mute); font-weight: 600; }
+html.ve-cb.ve-cb-p-listing .pp-group { color: var(--cb-eye); font-weight: 900; letter-spacing: .14em; }
+/* In their words: each moment is its own card, two or more across, the quote the big line. */
+html.ve-cb.ve-cb-p-listing .pp-list:has(> .pp-moment) { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(420px, 100%), 1fr)); gap: 16px; }
+html.ve-cb.ve-cb-p-listing .pp-moment {
+  border: 2px solid var(--cb-ink); border-radius: 14px; box-shadow: 6px 6px 0 var(--cb-shadow); background: #fff;
+  padding: 18px 20px 16px; margin: 0 6px 6px 0; display: flex; flex-direction: column;
+}
+html.ve-cb.ve-cb-p-listing .pp-moment blockquote { font-size: 17px; font-weight: 800; font-style: normal; line-height: 1.4; color: var(--cb-ink); }
+html.ve-cb.ve-cb-p-listing .pp-moment > p { font-size: 13px; color: var(--cb-ink); opacity: .78; margin-top: 10px; }
+html.ve-cb.ve-cb-p-listing .pp-mmeta { margin-top: auto; padding-top: 12px; border-top: 2px solid var(--cb-line); }
+@media (max-width: 600px) { html.ve-cb.ve-cb-p-listing .pp-moment { box-shadow: 5px 5px 0 var(--cb-shadow); } }
 /* The header is the Directory's block, brand green with white type, never words over a picture (canon canon-ve-brand-kit-imagery). */
 html.ve-cb.ve-cb-p-listing .listing-hero { position: relative; background: var(--cb-dk) !important; background-image: none !important; border-bottom: 0; padding-bottom: 46px; }
 html.ve-cb.ve-cb-p-listing .listing-hero.city-bg::before { display: none; }
