@@ -38,7 +38,7 @@
     if (/^\/pulse(\/(jobs|classifieds|fosters|rescues|suggest))?$/.test(p)) return 'pulse';
     if (p === '/media') return 'media';
     if (p === '/passport') return 'passport';
-    if (p === '/nominate') return 'nominate';
+    if (p === '/nominate' || p === '/nominate/interview') return 'nominate';
     return 'other';
   }
   var de = document.documentElement;

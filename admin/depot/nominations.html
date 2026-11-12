@@ -90,7 +90,7 @@
     (function () {
       var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-nominations';
       var $ = function (id) { return document.getElementById(id); };
-      var ST = [['new', 'Waiting for review'], ['approved', 'Approved'], ['declined', 'Not now'], ['all', 'All']];
+      var ST = [['new', 'Waiting for review'], ['invited', 'Invited'], ['interviewing', 'Interviewing'], ['member', 'Members'], ['declined', 'Not now'], ['all', 'All']];
       var LABEL = { new: 'Waiting for review', approved: 'Approved, ready to invite', declined: 'Not now', invited: 'Invited', interviewing: 'Interviewing', member: 'Member', featured: 'Featured' };
       var SRC = { hub: 'City hub', pulse: 'Daily Pulse', show: 'Show page', listing: 'Directory listing', interview: 'Interview', direct: 'Direct' };
       var ROLES = {}, rows = [], loaded = false;
@@ -121,12 +121,30 @@
         }
         $('q').oninput = fill; $('area').onchange = fill; $('sort').onchange = fill; fill();
       }
+      // Step 2 (2026-11-12): the invitation (Kai's personal opening, checked word for word; the campaign's state) and the interview's answers.
+      var QN = { q1: 'Who you are', q2: 'Where you live', q3: 'Your Vegan origin story', q4: 'What you are building', q5: 'Your shout-out', q6s1: 'Favorite spot 1', q6s2: 'Favorite spot 2', q6s3: 'Favorite spot 3', q7: 'Your advice', q8: 'What is next' };
+      function invited(n) {
+        if (!n.invite_token) return '';
+        var iv = n.invite || {}, st = iv.send_status === 'waiting' && !iv.step ? 'Invitation waiting to send (weekdays, 9 to 5 Eastern)' : iv.step ? 'Invitation sent' + (iv.stop_reason ? ', reminder stopped: ' + iv.stop_reason : iv.send_status === 'finished' ? ', reminder sent' : '') : (iv.stop_reason || 'Not in the campaign');
+        return '<h3>Invitation</h3><dl><dt>Status</dt><dd>' + esc(st) + '</dd>' +
+          '<dt>Kai\'s opening</dt><dd>' + (n.welcome_url ? '<audio controls preload="none" src="' + esc(n.welcome_url) + '"></audio><br>' + esc(n.welcome_text || '') + '<br>' + (n.welcome_checked ? '<span class="tag approved">Checked word for word</span>' : '<span class="tag new">Words did not match: listen before it sends</span>') : '<span class="tag new">Not made</span>') + '</dd>' +
+          '<dt>Their interview</dt><dd><a href="' + esc(n.interview_url) + '" target="_blank" rel="noopener">Open their interview</a> (their private link; only for checking)</dd>' +
+          (n.interview_sent_at ? '<dt>Sent</dt><dd>' + esc(when(n.interview_sent_at)) + '</dd>' : '') + (n.joined_at ? '<dt>Joined</dt><dd>' + esc(when(n.joined_at)) + '</dd>' : '') + '</dl>';
+      }
+      function answers(n) {
+        var a = n.answers || {}, ks = Object.keys(QN).filter(function (k) { return a[k]; });
+        if (!ks.length) return '';
+        return '<h3>Their answers</h3>' + ks.map(function (k) { var x = a[k], e = x.extra || {};
+          return '<div class="resp"><b>' + esc(QN[k]) + (e.name ? ': ' + esc(e.name) : '') + (e.chapter_name ? ': ' + esc(e.chapter_name) + (e.years ? ', ' + esc(e.years) : '') : '') + '</b>' +
+            (x.audio_url ? '<audio controls preload="none" src="' + esc(x.audio_url) + '"></audio><span class="meta">' + secs(x.audio_seconds) + ' &middot; <a href="' + esc(x.audio_url) + '" download>Download</a></span>' : '') +
+            (x.written ? '<div class="full">' + esc(x.written) + '</div>' : '') + '</div>'; }).join('');
+      }
       function drawOne(id) {
         $('view').innerHTML = '<p class="sub">Loading...</p>';
         api({ action: 'get', id: id }).then(function (d) {
           if (!d || !d.ok) { $('view').innerHTML = '<p class="sub">That one did not load.</p>'; return; }
           ROLES = d.roles || ROLES; var n = d.nomination;
-          var acts = [['approved', 'Approve, ready to invite', ''], ['declined', 'Not now', ' btn-ghost'], ['new', 'Back to waiting', ' btn-quiet']].filter(function (a) { return a[0] !== n.status; });
+          var acts = (n.invite_token ? [] : [['approved', 'Approve and invite', '']]).concat([['declined', 'Not now', ' btn-ghost'], ['new', 'Back to waiting', ' btn-quiet']]).filter(function (a) { return a[0] !== n.status && !(n.invite_token && a[0] === 'new'); });
           $('view').innerHTML = '<p class="crumb"><a href="#list/' + (['new', 'approved', 'declined'].indexOf(n.status) > -1 ? n.status : 'all') + '">Nominations</a> / ' + esc(n.nominee_name) + '</p><div class="item">' +
             '<div><span class="kind">' + esc(n.area) + ' &middot; ' + esc(SRC[n.source] || 'Direct') + '</span> <span class="tag ' + esc(n.status) + '">' + esc(LABEL[n.status] || n.status) + '</span></div>' +
             '<h3 style="font-size:22px">' + esc(n.nominee_name) + '</h3><div class="roles">' + roles(n.roles) + (n.self_nominated ? ' <span class="tag">Self-nominated</span>' : '') + '</div>' +
@@ -136,12 +154,13 @@
             '<dt>Area</dt><dd>' + esc(n.area) + '</dd>' +
             '<dt>Nominated by</dt><dd>' + esc(n.nominator_name) + (n.nominator_email ? ' &middot; <a href="mailto:' + esc(n.nominator_email) + '">' + esc(n.nominator_email) + '</a>' : '') + (n.nominator_member_id ? ' &middot; a member' : '') + (n.credit_ok ? ' &middot; may be named' : ' &middot; <b>keep their name private</b>') + '</dd>' +
             '<dt>Sent</dt><dd>' + esc(when(n.created_at)) + ', release ticked, 18 or over</dd>' + (n.reviewed_at ? '<dt>Reviewed</dt><dd>' + esc(when(n.reviewed_at)) + '</dd>' : '') + '</dl>' +
+            invited(n) + answers(n) +
             '<textarea id="tnote" placeholder="Team note" data-dictate="off">' + esc(n.team_note || '') + '</textarea>' +
             '<div class="acts">' + acts.map(function (a) { return '<button type="button" class="btn' + a[2] + '" data-st="' + a[0] + '">' + a[1] + '</button>'; }).join('') + '<button type="button" class="btn btn-quiet" data-st="">Save note</button><span class="msg" id="msg"></span></div></div>';
           [].forEach.call(document.querySelectorAll('[data-st]'), function (b) { b.onclick = function () {
             var p = { action: 'set', id: id, team_note: $('tnote').value }; if (b.getAttribute('data-st')) p.status = b.getAttribute('data-st');
-            $('msg').textContent = 'Saving...';
-            api(p).then(function (x) { if (x && x.ok) { loaded = false; drawOne(id); } else $('msg').textContent = 'That did not save.'; });
+            $('msg').textContent = p.status === 'approved' ? 'Inviting: making Kai\'s opening in her voice (about 20 seconds)...' : 'Saving...';
+            api(p).then(function (x) { if (x && x.ok) { loaded = false; drawOne(id); if (x.invite) setTimeout(function () { var m = $('msg'); if (m) m.textContent = x.invite === 'queued' ? 'Invited. Kai\'s email goes out in the next send window.' : 'Saved: ' + x.invite; }, 600); } else $('msg').textContent = (x && x.message) || 'That did not save.'; });
           }; });
         });
       }
