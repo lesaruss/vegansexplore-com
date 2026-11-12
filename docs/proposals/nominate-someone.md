@@ -46,6 +46,60 @@ featured on Vegans Explore... that's how we can get sticky")
   their **You've Been Featured** page.
 - The podcast gets the same kit later (Sean: "we'll talk about that later").
 
+## The featured kit, drafted 2026-11-12 (Sean: "yes, draft the featured kit"; waiting for his approval)
+
+**In the Depot.** On a nomination that has joined, **Mark featured** opens one step: the places it is live (pick any, each with its link:
+the city hub's Community Voices card, a podcast episode, a Daily Pulse story) and Draw the portrait. Drawing uses their account photo with
+the locked scene recipe, in all five shapes (asset packs rule), saved at `vegan-media/media/people/<slug>/featured/<shape>.jpg`; the team
+checks the likeness by eye, then **Send the feature**. Nothing goes out before that press.
+
+**The graphics** (`scripts/brand-templates/featured.js`, the first render script from the locked brand kit templates, reading the
+template page's own CSS): a 4:5 post (the square portrait on top; the pink band with the mark, "I've been / featured", their name and city)
+and a 9:16 story (pink top with the label "Name · City", the mark and the headline; the 4:5 portrait whole below). Words never on the
+picture; a long name shrinks to fit or the render stops. Sample: `/mocks/nominate/img/maria-featured-post.jpg`, `-story.jpg`.
+
+**Email to the featured person** (campaign `featured-people`, their tracked link to their own You've Been Featured page):
+
+> Subject: {first}, you've been featured
+>
+> Hi {first},
+>
+> You did it. Your story is live on Vegans Explore. Here's where you're featured:
+> {each place, one line: South Florida: Community Voices, your card on the city hub}
+>
+> We also drew you in our style, wearing a Vegans Explore tee. It's your badge of honor: use it as your profile picture, here and on your
+> socials. Not quite you? Tell us on your page and we'll redraw it.
+>
+> Your graphics are ready for your feed and your stories. Tag @vegansexplore and {nominator, when we may name them} so they see it too.
+>
+> See it all and share it: {link}
+>
+> Kai
+> The Creator Guide at Vegans Explore
+
+**Note to the nominator** (campaign `nominator-notes`, step 2 of the same program; their tracked link to the first place it is live):
+
+> Subject: {nominee} has been featured
+>
+> Hi {first},
+>
+> Your nomination made it happen: {nominee}'s story is live on Vegans Explore.
+>
+> See it here: {link}
+>
+> Thank you for shining a light on someone in your community. Know someone else who deserves their flowers? Nominate them on
+> vegansexplore.com/nominate.
+>
+> Kai
+> The Creator Guide at Vegans Explore
+
+**You've Been Featured** (`/nominate/interview#/featured`, the mock's page, now with the rendered graphics): where they are featured, the
+drawn portrait (Use as my profile picture, Download, Not quite you? Tell us and we redraw it), the two graphics (Download each), Copy my
+link (their tracked link), and Pay it forward. Redraw and take-down requests are counted in the Depot (Sean's watch).
+
+**Fix carried in**: the photo ask approved in the mock (Set Up Your Account: a recent photo and the photo release line) was left out of the
+live build on 2026-11-12. It goes in with this build; nominees who joined before it are asked on You've Been Featured.
+
 ## Sign in with Apple on the website
 
 The backend already verifies Apple tokens (`ve-auth` action `apple`, built for the app 2026-11-08). The website needs an Apple **Services ID**
