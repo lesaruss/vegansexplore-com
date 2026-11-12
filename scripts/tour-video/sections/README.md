@@ -21,6 +21,6 @@ Page 5's are `public/guides/welcome/liz-media-*.jpg` (studio, sofa, film, books,
 **Nominate Someone, Kai's Overview (2026-11-09, approved by Sean; playbook `ve-nominate-someone`)**: `cap-nominate.js` captures `/nominate?preview=1`
 (sample answers, so every capture shot carries the SAMPLE stamp, `c.stamp`); `render-nominate.py` is `render-city.py` with Kai's scenes
 (`public/guides/nominate/kai-*.jpg`) and the form's shots. Voice `vegan-media/media/kai/nominate/overview-v1.mp3` (stt matched), 0.5 s lead, bed 19 dB
-under, loudnorm then a limiter at -1.5 dBTP (-15.4 LUFS); files `overview-v1.mp4`, `.vtt`, `-poster.jpg` in the same folder. The four step clips
+under, loudnorm then a limiter at -1.5 dBTP (-15.4 LUFS); files `overview-v1.mp4` (old look), `overview-v2.mp4` and `-v2-poster.jpg` (2026-11-12, recaptured in the Color Block look; same voice, captions `overview-v1.vtt`) in the same folder. The four step clips
 (`who`, `why`, `you`, `send` `-v1.mp4`) are Higgsfield `wan2_7` lip sync from that page's Kai outfit, cut just after the last word on a frame with
 her eyes open and mouth closed.

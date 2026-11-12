@@ -341,7 +341,7 @@
     var old = box.querySelector('video'); if (old) { old.pause(); }
     if (noClip) { box.innerHTML = ''; $('dgPlay').hidden = true; return; }
     var ov = t.k === 'overview';
-    box.innerHTML = '<video class="nm-kv" playsinline preload="metadata" crossorigin="anonymous" poster="' + (ov ? VID + 'overview-v1-poster.jpg' : KAI + t.art + '.jpg') + '" src="' + VID + t.k + '-v1.mp4?v=1">' +
+    box.innerHTML = '<video class="nm-kv" playsinline preload="metadata" crossorigin="anonymous" poster="' + (ov ? VID + 'overview-v2-poster.jpg' : KAI + t.art + '.jpg') + '" src="' + VID + t.k + (ov ? '-v2' : '-v1') + '.mp4?v=1">' +
       (ov ? '<track kind="captions" srclang="en" label="English" src="' + VID + 'overview-v1.vtt?v=1" default>' : '') + '</video>' +
       '<i class="nm-kq-bar"><b></b></i>';
     // The template's own Play button (#dgPlay, under Kai's name; in the phone card's button row), never on her picture (nothing covers a face).
