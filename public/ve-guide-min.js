@@ -52,4 +52,27 @@
   new MutationObserver(sync).observe(rail, { attributes: true, attributeFilter: ['class'] });
   new MutationObserver(function () { if (!/^(Show|Hide) me$/.test(fold.textContent)) sync(); }).observe(fold, { childList: true, characterData: true, subtree: true });
   sync();
+
+  // Keep the Guide hidden (Sean, 2026-11-12: "I want the guides default to be hidden, because I only need the guides when I need it... maybe
+  // there's a way that people can set this as an option"). Hide me / Show me is now remembered on this device for every Guide page and
+  // every visit (ve_guide_hidden), not just the visit. A member whose account says so (member_hidden_modules 'guide-rail', which comes
+  // with their session as hidden_modules) starts hidden on any device until they press Show me. Everyone else still meets their Guide.
+  var KEY = 've_guide_hidden', auto = false;
+  function device() { try { var v = localStorage.getItem(KEY); return v === '1' ? true : v === '0' ? false : null; } catch (e) { return null; } }
+  function account() {
+    try { var m = window.VEAuth && VEAuth.getRealMember && VEAuth.getRealMember(); return !!(m && (m.hidden_modules || []).indexOf('guide-rail') !== -1); }
+    catch (e) { return false; }
+  }
+  fold.addEventListener('click', function () {
+    if (auto) return;
+    setTimeout(function () { try { localStorage.setItem(KEY, rail.classList.contains('dg-folded') ? '1' : '0'); } catch (e) {} }, 0);
+  });
+  // The saved choice wins both ways, over a page's own per-visit memory too (shown on one Guide page means shown on the next).
+  function apply() {
+    var dev = device(), want = dev === null ? account() : dev, folded = rail.classList.contains('dg-folded');
+    if (want === folded || (!want && dev === null)) return;
+    auto = true; try { fold.click(); } finally { auto = false; }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { setTimeout(apply, 0); });
+  else setTimeout(apply, 0);
 })();
