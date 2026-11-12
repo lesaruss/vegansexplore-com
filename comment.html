@@ -175,6 +175,8 @@
     var parts = location.pathname.split('/').filter(Boolean);
     var CODE = (parts[0] === 'comment' && parts[1] ? parts[1] : (qs.get('c') || '')).toLowerCase();
     var PREVIEW = qs.get('preview') === '1' || CODE === 'sample';
+    // ?look=1: the real page, as the team checks it from HQ, without counting an open (Sean, 2026-11-12).
+    var LOOK = qs.get('look') === '1';
     var R = null, L = null, S = { mode: '', blob: null, type: '', seconds: 0, url: '' };
     var rec = null, chunks = [], t0 = 0, tick = null;
     var $ = function (id) { return document.getElementById(id); };
@@ -198,7 +200,7 @@
 
     function load() {
       if (!CODE) { closed('This link is missing its code. Ask whoever sent it for a new one.'); return; }
-      (PREVIEW ? Promise.resolve(SAMPLE) : api({ action: 'get', code: CODE })).then(function (d) {
+      (PREVIEW ? Promise.resolve(SAMPLE) : api({ action: 'get', code: CODE, preview: LOOK })).then(function (d) {
         if (!d || !d.request) { closed((d && d.message) || 'This link is not right. Ask whoever sent it for a new one.'); return; }
         R = d.request; L = d.listing;
         document.title = R.title + ' — Vegans Explore';
