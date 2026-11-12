@@ -1212,3 +1212,15 @@ nothing shows until Sean approves. `details.book` {provider, url} holds the stay
 `20261111_travel_book_booking_pages.sql`, through `ve-once-travel-stays`, now the 410 stub); Il Mansio's page is to be found in the
 Travelpayouts link tool. Previewed (browser-only test data on Beck Hall) at 1440 and 390 beside Farm Sanctuary's Donate card: same family.
 Waiting on Sean: Booking.com connected in the Travelpayouts account, and the account's partner marker for the links.
+
+## Playbook ve-travel (locked 2026-11-11, Eastern)
+
+Sean: "Go with your recommendations, lock it into the playbook." Playbook `ve-travel` (HQ BrandDesk, vegans-explore), built from the
+active playbook template (v3) by filling its placeholders in SQL (migration `20261111_playbook_ve_travel.sql`, run through
+`ve-once-travel-stays`, now the 410 stub); Decision History read from its six `playbook_records`. Locked: listed on merit, direct-first
+booking, every paid link labelled, data for destinations; Global Tour 2.0 pilot is one co-branded Europe departure in **September 2027**
+(Asia 2028) through a licensed operator who holds all traveler money; Sean's LESARUSS travel on its own budget with a dedicated host;
+the outreach pause lifted for three first contacts only (World Vegan Travel, Il Mansio, Beck Hall), each drafted for Sean's approval.
+Sources: `docs/proposals/2026-11-11-travel-partnerships-boss.md`, `-travel-and-global-tour-panel.md`, `-travelpayouts-coverage.md`.
+Checked in a browser from the stored HTML (HQ needs a signed-in member): stage row, sections, Pending and Completed tabs, groups and
+Decision History work at 1440 and 390.
