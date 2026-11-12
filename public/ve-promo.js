@@ -106,9 +106,6 @@
     '.vpc-cancel{background:#fff;color:#333;border:1px solid #cfd8d2}' +
     '.vpc-msg{font-size:12px;color:#b42318;margin:6px 0 0}.vpc-done{font-size:12.5px;line-height:1.55;color:#14532d;margin:0}' +
     '@media(prefers-reduced-motion:reduce){.vpc-f,.vpc-lines b{animation:none}.vpc-f:first-child,.vpc-lines b:first-child{opacity:1}}';
-  var FRAMES = [['/gigs/sample/img/post-kitchen.webp', 'Cook for the camera'], ['/gigs/sample/img/post-event.webp', 'Host our events'],
-    ['/gigs/sample/img/post-market.webp', 'Tell local stories'], ['/gigs/sample/img/post-protein.webp', 'Work with Vegan brands']];
-
   function creatorCards(el, ctx) {
     if (!el || !ctx) return;
     if (!document.getElementById('vpc-css')) { var st = document.createElement('style'); st.id = 'vpc-css'; st.textContent = CSS; document.head.appendChild(st); }
@@ -122,11 +119,12 @@
       (ctx.claim && !ctx.form ? '<div class="vpc-claim" data-vpc="claim"><b>Is this you' + (first ? ', ' + esc(first) : '') + '?</b>' +
         '<p>Claim your profile. Once our team confirms it is you, keep it up to date, and get matched with paid work as one of our official creators.</p>' +
         '<a href="' + esc(claimHref) + '" data-vpc-go="claim">Claim your profile</a></div>' : '') +
-      '<a class="vpc-ad" href="' + (ctx.preview ? '/gigs/sample#overview' : '/go/ve-creator-banner') + '" data-vpc="ad" data-vpc-go="ad" aria-label="Become an official Vegans Explore creator">' +
-        FRAMES.map(function (f) { return '<span class="vpc-f" style="background-image:url(\'' + f[0] + '\')" aria-hidden="true"></span>'; }).join('') +
-        '<span class="vpc-copy"><small>Vegans Explore creators</small><span class="vpc-lines" aria-hidden="true">' +
-          FRAMES.map(function (f) { return '<b>' + esc(f[1]) + '</b>'; }).join('') + '</span>' +
-          '<p>Paid campaigns, collaborations and hosting with Vegan brands and events, in every city.</p><em>Become a creator</em></span></a></div>';
+      // The ad itself on the brand kit's ad template (Sean, 2026-11-12: "fix the Kai creator card"): /ads/guides/guide.html?g=creator,
+      // the words in the color block and Kai's posts whole in their frame, never words on the art. It opens its tracked link itself and
+      // posts {veAd:'click'}, counted below as before.
+      '<div class="vpc-adwrap" data-vpc="ad"><iframe class="vpc-frame" title="Become an official Vegans Explore creator" loading="lazy" scrolling="no"' +
+        ' sandbox="allow-scripts allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation"' +
+        ' src="/ads/guides/guide.html?g=creator&clickTag=' + encodeURIComponent('https://vegansexplore.com' + (ctx.preview ? '/gigs/sample#overview' : '/go/ve-creator-banner')) + '"></iframe></div></div>';
     var base = { page: page, listing_id: ctx.listing_id || null, claim_name: ctx.name || '' };
     el.querySelectorAll('[data-vpc]').forEach(function (card) {
       var cta = card.getAttribute('data-vpc');
@@ -134,6 +132,12 @@
       onScreen(card, function () { send(promo, 'view', Object.assign({ cta: cta }, base)); if (cta === 'ad' && !ctx.preview) adCount(HOUSE.people, HOUSE.creator, 'view'); });
     });
     if (ctx.form) claimForm(el.querySelector('.vpc-claim'), ctx, base);
+    var adFrame = el.querySelector('.vpc-frame');
+    window.addEventListener('message', function (e) {
+      if (!adFrame || !e.data || e.data.veAd !== 'click' || e.source !== adFrame.contentWindow) return;
+      click('creator-register', Object.assign({ cta: 'ad', claim: '' }, base));
+      if (!ctx.preview) adCount(HOUSE.people, HOUSE.creator, 'click');
+    });
     el.addEventListener('click', function (e) {
       var a = e.target.closest('[data-vpc-go]'); if (!a) return;
       var cta = a.getAttribute('data-vpc-go');

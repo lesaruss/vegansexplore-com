@@ -142,6 +142,12 @@
       line: 'ThanksLiving ideas, recipes, holiday menus near you and ways to give back, with Theo.',
       frames: [[SITE + '/public/guides/holiday/theo-thanksliving.jpg', 'Your ThanksLiving table'], [SITE + '/public/guides/holiday/theo-menus.jpg', 'Holiday menus near you'],
         [SITE + '/public/guides/holiday/r-loaf.jpg', 'Recipes for the table'], [SITE + '/public/guides/holiday/theo-giveback.jpg', 'Give back this season']] },
+    // The creator ad on People pages (VEPromo.creatorCards; Sean, 2026-11-12: "fix the Kai creator card"): not a Guide, so its own
+    // label, button and short line; Kai's posts from the sample Gig Board.
+    'creator': { label: 'Vegans Explore creators', cta: 'Become a Vegans Explore creator', btn: 'Become a creator', st: 'Paid work with Vegan brands', href: '/gigs/sample#overview',
+      line: 'Paid campaigns, collaborations and hosting with Vegan brands and events.',
+      frames: [[SITE + '/gigs/sample/img/post-kitchen.webp', 'Cook for the camera'], [SITE + '/gigs/sample/img/post-event.webp', 'Host our events'],
+        [SITE + '/gigs/sample/img/post-market.webp', 'Tell local stories'], [SITE + '/gigs/sample/img/post-protein.webp', 'Work with Vegan brands']] },
     'creator-guide': { label: 'Creator Guide', cta: 'Get the Creator Guide', href: '/guides/creator-guide',
       line: 'Ten tips for Vegan creators, and the way into paid work with Vegans Explore, with Kai.',
       frames: [[SITE + '/public/guides/creator-guide.jpg?v=3', 'Create Vegan content?'], [SITE + '/gigs/sample/img/post-kitchen.webp', 'Cook for the camera'],
@@ -154,15 +160,15 @@
   var clickTag = q.get('clickTag') || '';
   if (!/^https:\/\//.test(clickTag)) clickTag = SITE + g.href;
   var a = document.getElementById('ad');
-  a.href = clickTag; a.setAttribute('aria-label', g.cta + (g.free ? ', free' : ', $11'));
-  var btn = g.free ? 'Open it &middot; Free' : 'Get it &middot; $11';
+  a.href = clickTag; a.setAttribute('aria-label', g.btn ? g.cta : g.cta + (g.free ? ', free' : ', $11'));
+  var btn = g.btn ? esc(g.btn) : g.free ? 'Open it &middot; Free' : 'Get it &middot; $11';
   a.innerHTML =
     '<span class="dl">' + esc(g.label) + '</span>' +
     '<span class="h" aria-hidden="true">' + g.frames.map(function (f) { return '<b>' + esc(f[1]) + '</b>'; }).join('') + '</span>' +
     '<span class="p">' + esc(g.line) + '</span>' +
     '<span class="pic">' + g.frames.map(function (f) { return '<span class="fr"><img src="' + esc(f[0]) + '" alt=""></span>'; }).join('') + '</span>' +
     '<img class="mk" src="' + SITE + '/public/logo-ve-mark.svg" alt="">' +
-    '<span class="st">' + esc('The ' + g.label + ', ' + (g.free ? 'free' : 'with Vegans Explore')) + '</span>' +
+    '<span class="st">' + esc(g.st || ('The ' + g.label + ', ' + (g.free ? 'free' : 'with Vegans Explore'))) + '</span>' +
     '<span class="so"><img class="lg" src="' + SITE + '/public/logo-ve-landscape-v2.svg" alt="Vegans Explore"><span class="bt">' + btn + '</span></span>' +
     '<span class="stp" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>';
 
