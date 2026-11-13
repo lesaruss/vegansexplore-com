@@ -231,3 +231,18 @@ and whether posting can be switched off. Defaults standing unless Sean changes t
   (`listings.owner_member_id`, `ve_listing_claims`) or a member credited through `ve-links` `claim`.
 - **Her questions:** a thread per card on the `ve_bounty_messages` pattern (thread key, member, body, staff).
 - Mock slide: "Her queue" in `/mocks/positions/`; the manual tally is gone (finished cards are her check-in).
+
+## Sean (2026-11-13): follow first, and the spot check
+
+Sean: "one of the first things we should do is follow those accounts... as soon as they follow us back, that person jumps to the top of the
+queue... we'll have her follow only the recommended amount per day so that we don't get flagged for spam... she can leave notes on the
+accounts... note the last time they made a post... I could even support the audit as well."
+- **Two cards per account:** (1) Follow and look: she follows and notes the last post (this week, this month, 1 to 6 months, 6+ months,
+  no posts, account not found, looks closed). (2) A few days later: "Did they follow back?" Yes moves them to the top; then the message card.
+  A DM to someone who follows us lands in their main inbox; to a non-follower it lands in Requests, one message until they accept (research).
+- **Follow-back is her tap, not automatic:** Instagram's official interface gives our follower count, not who follows us.
+- **Limits:** Meta publishes no follow limit; a following list is capped at 7,500 accounts (Directory handles plus the backlog can pass that,
+  so unfollow inactive or closed accounts over time). Daily follow cap set conservatively and confirmed in a pacing check before KJ starts.
+- **The spot check feeds the Directory:** her note is saved on the listing with the date; 6+ months, no posts or looks closed goes to
+  Directory review (`admin/depot/directory-review.html`). `ve_listing_posts.posted_at` (the listing-posts scraper) already knows the last
+  post for listings it reads; her look covers the rest and confirms it.
