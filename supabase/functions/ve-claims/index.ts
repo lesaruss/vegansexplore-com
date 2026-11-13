@@ -727,6 +727,53 @@ async function standingBlocked(db: any, memberId: string | null): Promise<boolea
 }
 const NOT_IN_GOOD_STANDING = { error: 'account_not_in_good_standing', message: 'Your account is on hold. Write to contact@lesaruss.com and we will help.' };
 
+// ---- Approval checks (Sean, 2026-11-12, locked claims system stage 2: "flags first-person text, email domain vs website,
+// duplicates"; the 24-hour promise with a 2-hour target). Run when a claim comes in (the results ride in Sean's email) and on
+// every Depot > Claims load. Each check is pass, or flag with a plain reason. The website compared is the one the listing ALREADY
+// has; a website typed into the claim never counts, or anyone could make it match their own email.
+const FREE_MAIL = /^(gmail|googlemail|yahoo|ymail|hotmail|outlook|live|msn|aol|icloud|me|mac|proton|protonmail|pm|gmx|mail|yandex|comcast|att|verizon|sbcglobal|bellsouth|cox|charter)\./i;
+const FIRST_PERSON = /\b(we|our|ours|ourselves|us|i|my|mine|me|myself)\b|\b(we|i)'(re|ve|ll|d|m)\b/gi;
+function firstPersonWords(t: unknown): string[] {
+  const s = String(t ?? '').replace(/[‘’]/g, "'"), out: string[] = [];
+  for (const m of s.matchAll(FIRST_PERSON)) { if (m[0] === 'US') continue; if (!out.includes(m[0].toLowerCase())) out.push(m[0].toLowerCase()); }
+  return out;
+}
+const hostOf = (u: unknown) => { try { return new URL(webUrl(u)).hostname.toLowerCase().replace(/^www\./, ''); } catch { return ''; } };
+const sameSite = (a: string, b: string) => !!a && !!b && (a === b || a.endsWith('.' + b) || b.endsWith('.' + a));
+type Check = { key: string; label: string; pass: boolean; note: string };
+async function claimChecks(claim: any): Promise<{ all_pass: boolean; checks: Check[] }> {
+  const p = claim.proposed || {}, checks: Check[] = [];
+  const { data: l } = await db.from('listings').select('id, name, website, address_city, owner_member_id, claim_status, status').eq('id', claim.listing_id).maybeSingle();
+  // 1. Business email: its domain is the listing's own website.
+  const em = String(claim.contact_email || '').toLowerCase(), dom = em.split('@')[1] || '', site = hostOf(l?.website), typed = hostOf(p.website);
+  if (FREE_MAIL.test(dom)) checks.push({ key: 'domain', label: 'Business email', pass: false, note: `${dom} is a personal email, so we confirm another way` });
+  else if (!site) checks.push({ key: 'domain', label: 'Business email', pass: false, note: `The listing has no website on file to match ${dom}` + (typed ? ` (they gave ${typed})` : '') });
+  else if (sameSite(dom, site)) checks.push({ key: 'domain', label: 'Business email', pass: true, note: `${dom} matches ${site}` });
+  else checks.push({ key: 'domain', label: 'Business email', pass: false, note: `${dom} does not match the listing's website, ${site}` });
+  // 2. Duplicates: someone else already holds it or has an open claim on it; a new business already listed.
+  const dup: string[] = [];
+  if (l?.claim_status === 'verified' && l.owner_member_id && l.owner_member_id !== claim.member_id) dup.push('it already has a confirmed owner');
+  const { data: others } = await db.from('ve_listing_claims').select('member_id, status').eq('listing_id', claim.listing_id).neq('id', claim.id).in('status', ['submitted', 'approved']);
+  const rivals = (others || []).filter((o: any) => o.member_id !== claim.member_id);
+  if (rivals.some((o: any) => o.status === 'approved')) dup.push("another person's claim was approved");
+  else if (rivals.length) dup.push(`${rivals.length} other ${rivals.length === 1 ? 'person has' : 'people have'} a claim waiting`);
+  if (p.application && l?.name) {
+    const { data: same } = await db.from('listings').select('slug').ilike('name', l.name).ilike('address_city', l.address_city || '').eq('status', 'approved').neq('id', l.id).limit(1);
+    if (same?.length) dup.push(`a business with this name is already listed (/directory/${same[0].slug})`);
+  }
+  checks.push({ key: 'duplicate', label: 'No duplicates', pass: !dup.length, note: dup.length ? dup.join('; ') : 'Nobody else has claimed it' });
+  // 3. Third person (CLAUDE.md Writing): nothing in "we" or "I" goes on the page.
+  const fp = [...firstPersonWords(p.tagline), ...firstPersonWords(p.description)].filter((w, i, a) => a.indexOf(w) === i);
+  checks.push({ key: 'third_person', label: 'Third person', pass: !fp.length, note: fp.length ? `Rewrite before approving: "${fp.join('", "')}"` : 'Written in the third person' });
+  // 4. The claimant's account is in good standing (abuse watch).
+  const blocked = await standingBlocked(db, claim.member_id);
+  checks.push({ key: 'standing', label: 'Good standing', pass: !blocked, note: blocked ? 'The account is on hold' : 'Account in good standing' });
+  return { all_pass: checks.every((c) => c.pass), checks };
+}
+const checksHtml = (r: { all_pass: boolean; checks: Check[] }) =>
+  `<p><b>${r.all_pass ? 'All checks pass: approve it in one tap.' : 'Needs a look before approving.'}</b></p><ul>` +
+  r.checks.map((c) => `<li>${c.pass ? '&#10003;' : '&#9888;'} <b>${esc(c.label)}</b>: ${esc(c.note)}</li>`).join('') + '</ul>';
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   const url = new URL(req.url);
@@ -1132,16 +1179,6 @@ Deno.serve(async (req) => {
       listing = l; claimId = c.id;
     }
     if (!listing) return json({ error: 'save_failed' }, 500);
-    if (free) {
-      const now = new Date().toISOString();
-      await db.from('ve_listing_claims').update({ status: 'submitted', proposed: { ...proposed, paid_with: 'membership' }, updated_at: now }).eq('id', claim.id);
-      await db.from('listings').update({ claim_status: 'pending', claim_submitted_at: now }).eq('id', id).neq('claim_status', 'verified');
-      await mail(`${test ? '[TEST] ' : ''}Listing claim: ${listing.name}, free with membership`,
-        `<p><b>${esc(listing.name)}</b> (${esc(listing.category || '')}) was claimed free by a member.</p>` +
-        `<p>${esc(contact_name)}${row.contact_role ? ', ' + esc(row.contact_role) : ''}<br>${esc(contact_email)}${row.contact_phone ? '<br>' + esc(row.contact_phone) : ''}</p>` +
-        `<p>Check it is really them, then review it in the Depot: <a href="https://vegansexplore.com/admin/depot/claims">vegansexplore.com/admin/depot/claims</a></p>`, contact_email);
-      return json({ ok: true, paid_with: 'membership', slug: listing.slug });
-    }
     if (points) {
       const { data: spent } = await db.rpc('ve_listing_submit_points', { p_member: memberId, p_claim: claimId });
       if (!spent || spent.error) return json({ error: spent?.error || 'points_failed', balance: spent?.balance }, 400);
@@ -1154,10 +1191,13 @@ Deno.serve(async (req) => {
       return json({ ok: true, slug: listing.slug, paid_with: 'points', balance: spent.balance });
     }
     if (free) {
-      await mailTo([SEAN_EMAIL], `New business wants to be listed: ${name}`,
+      // A member's free application (2026-11-13: this path used to throw "claim is not defined" from a block meant for 'start').
+      const ck = await claimChecks({ ...claimRow, id: claimId, listing_id: listing.id }).catch(() => null);
+      await mailTo([SEAN_EMAIL], `${test ? '[TEST] ' : ''}New business wants to be listed: ${name}${ck?.all_pass ? ' (all checks pass)' : ''}`,
         `<p><b>${esc(name)}</b> (${esc(category)}, ${esc([city, state].filter(Boolean).join(', '))}) applied to be listed on Vegans Explore.</p><p>${esc(description)}</p>` +
-        `<p>${esc(contact_name)} &middot; ${esc(contact_email)}</p><p>Review it in <a href="https://vegansexplore.com/admin/depot/claims">Depot &gt; Claims</a>. Approving lists it and makes them the owner.</p>`, contact_email);
-      return json({ ok: true, slug: listing.slug });
+        `<p>${esc(contact_name)} &middot; ${esc(contact_email)}</p>` + (ck ? checksHtml(ck) : '') +
+        `<p>Review it in <a href="https://vegansexplore.com/admin/depot/claims">Depot &gt; Claims</a>. Approving lists it and makes them the owner.</p>`, contact_email);
+      return json({ ok: true, slug: listing.slug, paid_with: 'membership' });
     }
     const back = backTo(body.return_url, 'https://vegansexplore.com/claim?add=1');
     if (partner) {
@@ -1425,6 +1465,19 @@ Deno.serve(async (req) => {
       ? await db.from('ve_listing_claims').update(row).eq('id', open.id).select('id').single()
       : await db.from('ve_listing_claims').insert(row).select('id').single();
     if (error || !claim) return json({ error: 'save_failed', message: error?.message }, 500);
+    if (free) {
+      // Free for members (canon-ve-door-guides v12). Until 2026-11-13 this fell through to a $0 Stripe checkout, which Stripe refuses.
+      const now = new Date().toISOString();
+      await db.from('ve_listing_claims').update({ status: 'submitted', proposed: { ...proposed, paid_with: 'membership' }, updated_at: now }).eq('id', claim.id);
+      await db.from('listings').update({ claim_status: 'pending', claim_submitted_at: now }).eq('id', id).neq('claim_status', 'verified');
+      const ck = await claimChecks({ ...row, id: claim.id, proposed }).catch(() => null);
+      await mail(`${test ? '[TEST] ' : ''}Listing claim: ${listing.name}, free with membership${ck?.all_pass ? ' (all checks pass)' : ''}`,
+        `<p><b>${esc(listing.name)}</b> (${esc(listing.address_city || '')}) was claimed free by a member. We promised them an answer within 24 hours.</p>` +
+        `<p>${esc(contact_name)}${row.contact_role ? ', ' + esc(row.contact_role) : ''}<br>${esc(contact_email)}${row.contact_phone ? '<br>' + esc(row.contact_phone) : ''}</p>` +
+        (ck ? checksHtml(ck) : '') +
+        `<p>Review it in the Depot: <a href="https://vegansexplore.com/admin/depot/claims">vegansexplore.com/admin/depot/claims</a></p>`, contact_email);
+      return json({ ok: true, paid_with: 'membership', slug: listing.slug });
+    }
     if (points) {
       const { data: spent } = await db.rpc('ve_listing_submit_points', { p_member: memberId, p_claim: claim.id });
       if (!spent || spent.error) return json({ error: spent?.error || 'points_failed', balance: spent?.balance }, 400);
@@ -1519,6 +1572,10 @@ Deno.serve(async (req) => {
       .select('id, status, tier, contact_name, contact_role, contact_email, contact_phone, proposed, contribution_cents, paid_cents, paid_at, test, review_note, reviewed_at, created_at, listing:listings(id, name, slug, address_city, vegan_status, logo_url, claim_status), member:members(id, name, email)')
       .neq('status', 'cancelled').order('created_at', { ascending: false }).limit(300);
     if (error) return json({ error: 'list_failed', message: error.message }, 500);
+    // The approval checks on every claim still waiting (the Depot shows them on the card).
+    const { data: raw } = await db.from('ve_listing_claims').select('id, listing_id, member_id, contact_email, proposed').eq('status', 'submitted');
+    const ck = new Map(await Promise.all((raw || []).map(async (c: any) => [c.id, await claimChecks(c).catch(() => null)] as const)));
+    for (const c of (claims || []) as any[]) if (ck.get(c.id)) c.checks = ck.get(c.id);
     const { data: trust } = await db.from('ve_site_settings').select('value').eq('key', 'directory_trust').maybeSingle();
     return json({ claims: claims || [], trust: trust?.value || { enabled: false, min_voters: 10 } });
   }
