@@ -1,140 +1,113 @@
 # Vegans Explore entity: the decision and the checklist (2026-11-13)
 
-V, concept mode. Nothing has been filed, sent or changed. Every form, fee and statute below was read live today from Sunbiz
-(dos.fl.gov), the 2026 Florida Statutes (leg.state.fl.us) and irs.gov through `ve-web-reader`. The session network was not
-changed. Lines marked **Unverified** could not be read today and need a person to confirm them.
+## Decision (Sean, 2026-11-13): Vegans Explore is a DBA of LESARUSS Inc.
 
-## What changed since the Nov 5 recommendation
+Sean: "I feel good about making it a DBA under LESARUSS Inc. Yeah, let's go ahead and do that... we do want people to buy into
+LESARUSS. That's the whole point. Every brand that we put out is just the proof of concept for the system that we've created...
+we can always spin off any type of brand we want."
 
-**Converting the nonprofit straight into an LLC is probably closed.** A new 2026 section, read today:
+So no Vegans Explore LLC. Investors buy into LESARUSS Inc., and any brand can be spun off later. Vegans Explore Inc. (Florida
+nonprofit corporation N24000008839) is dissolved once its money and business have moved to LESARUSS Inc.
 
-> **617.18041 Limitation on conversion.** A domestic corporation that holds property for a charitable purpose is prohibited from
-> becoming a domestic eligible entity or a foreign eligible entity, except by domestication to become a foreign corporation.
-> (s. 114, ch. 2026-168)
+Every form, fee and statute below was read live on 2026-11-13 from Sunbiz (dos.fl.gov), the 2026 Florida Statutes
+(leg.state.fl.us) and irs.gov through `ve-web-reader`. Nothing has been filed, sent or changed. Lines marked **Unverified**
+could not be read today and need a person to confirm them.
 
-Vegans Explore Inc. was set up as a nonprofit, presented itself as one ("Vegans Explore Inc. is a Florida nonprofit corporation"
-on the homepage), and a "Tax-Deductible Sponsorship" offer went out in the Global Tour deck. An attorney may well say it holds
-property for a charitable purpose. If so, conversion is barred. Separately, 617.1405(6) says charitable property cannot be
-diverted by dissolution either, except under Florida's cy pres and nondiversion laws.
+Why the earlier "convert to an LLC" idea is gone: 617.18041 (new in 2026, ch. 2026-168) says a nonprofit corporation "that holds
+property for a charitable purpose is prohibited from becoming" another kind of entity. A DBA avoids the question.
 
-The Nov 5 hope ("convert and keep Stripe") also no longer depends on converting. Stripe's help article on moving an account to a
-different entity after a sale says to contact Support first, and that the legal business name and tax ID can be changed.
-**Unverified:** read through search results only; support.stripe.com would not load here.
+## The ordered checklist
 
-## 1. The decision
+### Step 0. Before anything is filed (Sean sends these to V)
+1. **Vegans Explore Inc.'s articles of incorporation and bylaws** (Sunbiz record N24000008839, document images). They answer: does
+   it have voting members (this decides who votes), what does its purpose clause say, and does a dissolution clause say where
+   assets go?
+2. **What Vegans Explore Inc. holds**: the Stripe balance, the bank account (and its balance), live subscriptions and their
+   customers, any money received as a donation or under the "Tax-Deductible Sponsorship" offer, and whose name the domain and
+   other accounts are in.
+3. **LESARUSS Inc.'s Sunbiz document number and EIN**, and confirmation it is **Active** on Sunbiz (865.09(3)(a)4 requires it).
+4. **Fictitious-name search**: is "Vegans Explore" already registered to anyone, LESARUSS Inc. included? (Sunbiz, Search Records,
+   Fictitious Name.)
+5. **The county of LESARUSS Inc.'s principal place of business** (sets which newspaper carries the notice).
 
-| Option | What it is | For | Against |
-|---|---|---|---|
-| A. Convert VE Inc. to an LLC (617.1804 to 617.18046) | Same entity, keeps its 2024 date, contracts and property | No asset transfer | Likely barred by 617.18041. Only works if an attorney finds VE Inc. holds nothing for a charitable purpose. |
-| **B. New Vegans Explore LLC, then dissolve VE Inc.** | A clean for-profit entity | Investor-ready, clean books from day one, no nonprofit history in the entity | Takes a name consent, an asset transfer approved by the board, and a Stripe entity change |
-| C. DBA of LESARUSS Inc. | Fictitious name "Vegans Explore" for LESARUSS Inc. ($50) | Fastest; the contracts already say this | Investors would be buying into LESARUSS Inc., not Vegans Explore. Moving it into its own LLC later is a second move. |
+### Step 1. Register the DBA (Sean can do this himself)
+1. **Advertise** the intent to register "Vegans Explore" **once in a newspaper** (as defined in chapter 50) in the county of
+   LESARUSS Inc.'s principal place of business. This comes **before** filing, because the registration certifies it was done
+   (865.09(3)(a)5).
+2. **File the Fictitious Name Registration**: Sunbiz form CR4E001 or online ("Start E-Filing > Fictitious Name Registration").
+   **$50.** Registrant: LESARUSS Inc., with its Florida document number and EIN. Valid until December 31 of the fifth calendar
+   year after registration (865.09(5)).
+3. Florida law says a business may not trade under a fictitious name until it is registered (865.09(3)(a)). The contracts
+   already say "LESARUSS Inc. d/b/a Vegans Explore", so this goes first.
 
-**Recommendation: B.** Form Vegans Explore LLC now, owned by LESARUSS Inc., so Vegans Explore can take investors on its own
-while LESARUSS stays the parent. Move payments into it, then dissolve VE Inc. Keep A only as a question for the attorney
-("does 617.18041 apply to us?"). If the answer is no, conversion is cheaper, and the LLC filing waits a week for that answer.
-Skip C as an end state.
-
-**Default if Sean does not override:** B, with the LLC owned by LESARUSS Inc.
-
-One note for later: priced venture rounds usually want a corporation. A Florida LLC can convert to a corporation later
-(Sunbiz form "Florida LLC into Florida Profit Corporation", cr2e105). LLC now does not close that door.
-
-## 2. The ordered checklist
-
-### Step 0. Before anything is filed (this week)
-1. Download VE Inc.'s **articles of incorporation and bylaws** (Sunbiz record N24000008839, document images). Look for three
-   things: whether it has **voting members** (this decides who votes), the **purpose clause**, and any **dissolution clause**
-   saying where assets go.
-2. List what VE Inc. holds: the Stripe balance, the bank account, subscriptions, any money received as a donation or under the
-   "tax-deductible" offer, and the name, domain and content (check whose name the domain is in).
-3. Attorney: does 617.18041 apply? Can the operating business (customers, subscriptions, the name) move to an LLC owned by
-   LESARUSS Inc.? (See section 3.)
-
-### Step 1. Form the LLC (Sean can file himself)
-- **Articles of Organization**, Sunbiz form cr2e047, or file online at Sunbiz "Start E-Filing > Limited Liability Company".
-  **$125** ($100 filing + $25 registered agent). Certificate of status $5 and certified copy $30 are optional.
-- **The name.** Section 605.0112(1)(b): an LLC name must be distinguishable from every entity on file, and a different suffix does
-  not count. While VE Inc. is active, "Vegans Explore LLC" is **not** distinguishable. Allowed: register it with the other
-  entity's **written consent filed with the articles**, as long as the names are not identical. So the VE Inc. board signs a
-  consent letter first (Step 2, item 1), and it goes in with the articles.
-- Write an operating agreement (attorney). Its member is LESARUSS Inc. if B goes ahead as recommended.
-
-### Step 2. VE Inc. board meeting (one meeting, minutes signed)
-Voting rule, from 617.1402 and 617.1406 (read today): **with no voting members, a majority of the directors then in office**
-adopts each resolution at a board meeting. With voting members, the board recommends and the members vote, a majority of votes
-cast at a noticed meeting. The articles and bylaws from Step 0 decide which applies.
-1. Resolution consenting to "Vegans Explore LLC" using the name (for the Sunbiz filing).
-2. Resolution approving the move of the operating business to the LLC on terms the attorney sets. Sean is on both sides, so
-   Ella should vote as the disinterested director, and the minutes should say why the terms are fair. 617.0505 bars
-   distributions to members, directors and officers except as the dissolution rules allow.
-3. Resolution to dissolve (617.1402).
-4. **Plan of distribution of assets** (617.1406(3)), which must provide, in this order: (a) pay or provide for every liability;
+### Step 2. Vegans Explore Inc. board meeting (one meeting, minutes signed)
+Voting rule (617.1402 and 617.1406): **if there are no voting members, a majority of the directors then in office** adopts each
+resolution at a board meeting. If there are voting members, the board recommends and the members vote (a majority of votes cast
+at a meeting called with notice). The bylaws from Step 0 decide which applies.
+1. Approve moving the operating business (customers, subscriptions, the Stripe account, the name) to LESARUSS Inc. on terms the
+   attorney sets. Sean controls both sides, so Ella votes as the disinterested director and the minutes say why the terms are
+   fair. 617.0505 bars distributions to members, directors and officers except as the dissolution rules allow.
+2. Resolution to dissolve (617.1402).
+3. **Plan of distribution of assets** (617.1406(3)), which must provide, in this order: (a) pay or provide for every liability;
    (b) return assets that must be returned on dissolution; (c) send **assets restricted to charitable, educational or similar
    use** to an organization doing substantially similar work; (d) distribute other assets as the articles or bylaws say;
-   (e) anything left goes to whoever the plan names, which can be a for-profit. An officer signs a certificate of compliance,
-   and **the plan is filed with Sunbiz** (617.1406(4)).
+   (e) anything left goes to whoever the plan names, which can be a for-profit such as LESARUSS Inc. An officer signs a
+   certificate of compliance, and **the plan is filed with Sunbiz** (617.1406(4)). 617.1405(6): property dedicated to a charitable
+   purpose cannot be diverted by dissolution.
 
-### Step 3. Move the money (before dissolving)
-1. **EIN for the LLC.** irs.gov says to get a new EIN when you get a new charter from the Secretary of State. VE Inc.'s EIN
-   99-4445734 cannot be reused by the LLC.
-2. **Bank account** in the LLC's name.
-3. **Stripe**: contact Stripe Support to move the Vegans Explore account from VE Inc. to the LLC (legal name, EIN, bank,
-   representative). If Support says no, open a new account under the LLC and ask Support to move the data.
-   **Unverified** (see above).
-4. **Stripe 1099 setup** (paused at "Business information", totals set to Payouts only): **do not finish it until the payer is
-   fixed.** The payer's name and tax ID go on the 1099-NEC. Whichever entity pays KJ in 2026 issues KJ's 2026 1099. The CPA
-   confirms which.
-5. **KJ (first payday Fri Dec 4, 2026).** The contract names LESARUSS Inc., and the payer must match it. If Stripe is not on the
-   LLC by Dec 1, LESARUSS Inc. pays KJ's Dec 4 payment directly and the contract stays as it is. Once Stripe is on the LLC,
-   assign or re-sign the contract to the LLC (Positions build: branch `claude/elegant-archimedes-e2id0v`).
-6. Update `policies.html`, the homepage nonprofit line and the contract templates to the new entity once it exists.
+### Step 3. Move the money to LESARUSS Inc. (before dissolving)
+1. **No new EIN.** LESARUSS Inc. uses its own. A DBA is a name, not a new entity.
+2. **Bank**: payouts go to a LESARUSS Inc. account (a separate one for Vegans Explore is cleaner for showing the brand's numbers;
+   CPA call).
+3. **Stripe**: contact Stripe Support to change the Vegans Explore account's legal entity from Vegans Explore Inc. to LESARUSS
+   Inc. (legal name LESARUSS Inc., doing business as Vegans Explore; LESARUSS Inc.'s EIN, bank account and representative).
+   If Support will not do it, open a new account under LESARUSS Inc. and ask Support to move the data. **Unverified:** Stripe's
+   article on transferring to a different entity was read through search results only.
+4. **Stripe 1099 setup** (paused at "Business information", totals on Payouts only): finish it with **LESARUSS Inc.'s** name and
+   EIN, **after** the account is on LESARUSS Inc. CPA confirms which entity issues KJ's 2026 1099.
+5. **KJ (first payday Fri Dec 4, 2026)**: the contract names LESARUSS Inc., and with this path the contract and the payer finally
+   match. If Stripe is not on LESARUSS Inc. by Tue Dec 1, LESARUSS Inc. pays KJ directly from its own account for Dec 4.
+   Nothing changes in KJ's agreement (Positions build: branch `claude/elegant-archimedes-e2id0v`).
+6. Site copy: the homepage line "Vegans Explore Inc. is a Florida nonprofit corporation" and `policies.html` change to
+   "Vegans Explore is a DBA of LESARUSS Inc." (Logan, once the DBA is registered).
 
-### Step 4. Dissolve VE Inc. (after money has stopped landing there)
-- **Non-Profit Articles of Dissolution (Has Commenced to Conduct its Affairs)**, Sunbiz form cr2e059, or file online at
-  "File Corporation Dissolution". **$35.** Contents (617.1403): the name; then either the date of the members' meeting and that
-  the votes were enough, or (no voting members) that fact, the date the board adopted it, directors in office, and the vote.
-- File the **plan of distribution** (Step 2, item 4) with Sunbiz.
-- After dissolution the corporation winds up only (617.1405): collect, pay, distribute under the plan. Directors and officers
-  take on no personal liability just because it dissolved. The name stays reserved for 120 days unless an affidavit releases it.
+### Step 4. Dissolve Vegans Explore Inc. (after money stops landing there)
+- **Non-Profit Articles of Dissolution (Has Commenced to Conduct its Affairs)**, Sunbiz form cr2e059 or online ("File Corporation
+  Dissolution"). **$35.** It states (617.1403) the name and either the members' meeting date and that the votes were enough, or
+  (no voting members) that fact, the date the board adopted it, the directors in office, and the vote.
+- File the plan of distribution (Step 2, item 3) with Sunbiz.
+- After dissolution the corporation only winds up (617.1405): it collects, pays, and distributes under the plan. Directors and
+  officers take on no personal liability just because it dissolved.
 - **Known claims** (617.1408), optional but protective: written notice to known claimants with a deadline of at least 120 days.
-  Claims not sent by the deadline are barred.
+  Claims not received by the deadline are barred.
 
-### Step 5. IRS and state closing (CPA)
-VE Inc. is not a 501(c)(3), so it is taxed as a C corporation (CPA confirms). irs.gov "Closing a business", read today:
+### Step 5. IRS and state closing for Vegans Explore Inc. (CPA)
+It is not a 501(c)(3), so it is taxed as a C corporation (CPA confirms). From irs.gov "Closing a business":
 - **Form 966**, Corporate Dissolution or Liquidation, when the board adopts the plan to dissolve. **Unverified:** the 30-day
-  deadline comes from the form's instructions, which were not read today.
-- **Final Form 1120**, "final return" box checked.
-- **1099-NEC** for any contractor paid $600 or more in the closing year (Form 1096 for paper copies). Forms 941/W-2 only if
-  VE Inc. ran payroll.
-- **EIN**: the IRS cannot cancel an EIN, only deactivate it, by letter (EIN, legal name, address, the EIN assignment notice if
-  you have it, the reason). It will not close the account until all returns are filed and all taxes paid.
-- Florida corporate income tax and any Department of Revenue accounts. **Unverified:** not read today (CPA).
-- Florida charitable solicitation registration, if the "tax-deductible" offer counted as a solicitation. **Unverified** (attorney).
+  deadline is in the form's instructions, which were not read today.
+- **Final Form 1120**, with the "final return" box checked.
+- **1099-NEC** for any contractor Vegans Explore Inc. paid $600 or more in its closing year.
+- **EIN 99-4445734**: the IRS cannot cancel it, only deactivate it, by letter (EIN, legal name, address, the assignment notice if
+  you have it, the reason). The IRS will not close the account until every return is filed and every tax paid.
+- Florida corporate income tax and Department of Revenue accounts. **Unverified** (CPA).
+- Charitable solicitation exposure from the "tax-deductible" offer. **Unverified** (attorney).
 
-## 3. Who does what
+## Who does what
 
-| Sean can file himself, today | Attorney | CPA |
+| Sean can do himself | Attorney | CPA |
 |---|---|---|
-| Fictitious-name and entity search for "Vegans Explore" on Sunbiz | Does 617.18041 bar conversion? (decides A or B) | Tax treatment of VE Inc.'s revenue to date; final Form 1120, Form 966 timing |
-| Pull VE Inc.'s articles and bylaws from Sunbiz | The terms for moving the business from VE Inc. to the LLC, with Sean on both sides (617.0505, conflict vote) | Which entity issues KJ's 2026 1099; finish Stripe 1099 setup only after that |
-| LLC Articles of Organization ($125), but only after the board's name consent is signed | Plan of distribution: are any assets restricted or charitable (617.1406(3)(c), 617.1405(6))? | LLC owned by LESARUSS Inc.: disregarded entity treatment, books, bank |
-| EIN for the LLC, once the LLC is on file | The fix for the "Tax-Deductible Sponsorship" offer; charitable solicitation exposure | Florida DOR accounts and the final state return |
-| Contact Stripe Support about the entity change | Operating agreement; reassigning KJ's agreement and the client contracts | |
-| Board meeting and minutes (attorney drafts the resolutions) | | |
+| Step 0 items 1 to 5 (send them to V) | Terms for moving the business to LESARUSS Inc. with Sean on both sides (617.0505, Ella's vote) | Tax on Vegans Explore Inc.'s revenue to date; final Form 1120; Form 966 timing |
+| The newspaper notice, then the Fictitious Name Registration ($50) | The board resolutions and the plan of distribution: is anything restricted or charitable (617.1406(3)(c), 617.1405(6))? | Which entity issues KJ's 2026 1099; then finish the Stripe 1099 setup |
+| Contact Stripe Support about the entity change | Fixing the "Tax-Deductible Sponsorship" offer; charitable solicitation exposure | Separate bank account and books for Vegans Explore inside LESARUSS Inc. |
+| Hold the board meeting (attorney drafts) | | Florida Department of Revenue accounts and the final state return |
 | Articles of Dissolution ($35), last | | |
 
-**State fees if B goes ahead:** LLC $125 + Articles of Dissolution $35 = **$160** (plus optional certificates). If A is allowed:
-Certificate of Conversion $35 (corporate fee schedule) or $25 (LLC fee schedule), plus new-entity filing fees if they apply. The
-attorney or Sunbiz confirms which schedule applies. Option C: $50 fictitious name.
+**State fees:** $50 fictitious name + $35 dissolution = **$85**, plus the newspaper notice (price set by the paper) and optional
+certificates.
 
-## Sources read today
-- Sunbiz Corporate Fees: https://dos.fl.gov/sunbiz/forms/fees/corporate-fees/
-- Sunbiz LLC Fees: https://dos.fl.gov/sunbiz/forms/fees/llc-fees/
-- Sunbiz fees (fictitious name): https://dos.fl.gov/sunbiz/forms/fees/
-- Sunbiz corporation forms: https://dos.fl.gov/sunbiz/forms/corporations/
-- Sunbiz LLC forms: https://dos.fl.gov/sunbiz/forms/limited-liability-company/
-- Florida Statutes 2026, Chapter 617: 617.0505, 617.1402, 617.1403, 617.1405, 617.1406, 617.1408, 617.1804, 617.18041,
-  617.18042, 617.18043, 617.18044, 617.18046 (http://www.leg.state.fl.us/statutes/, Chapter 617 index)
-- Florida Statutes 2026, 605.0112 (Chapter 605 index)
+## Sources read 2026-11-13
+- Florida Statutes 2026, 865.09 Fictitious Name Act
+- Florida Statutes 2026, Chapter 617: 617.0505, 617.1402, 617.1403, 617.1405, 617.1406, 617.1408, 617.1804, 617.18041 to 617.18046
+- Sunbiz fees (corporate, LLC, fictitious name) and forms (corporations, fictitious name): https://dos.fl.gov/sunbiz/forms/
 - IRS: Closing a business; Do you need a new EIN; About Form 966; Canceling an EIN (irs.gov)
 - Stripe (search results only): https://support.stripe.com/questions/transfer-a-stripe-account-to-a-different-entity-due-to-a-business-sale-or-acquisition
