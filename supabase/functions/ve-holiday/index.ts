@@ -225,10 +225,20 @@ Deno.serve(async (req) => {
   if (action === 'gift_card') {
     const slug = String(b.slug || '');
     if (!/^[a-z0-9][a-z0-9-]{0,120}$/.test(slug)) return json({ error: 'bad_slug' }, 400);
-    const { data: l } = await db.from('listings').select('id, slug, name, logo_url, owner_member_id').eq('slug', slug).eq('status', 'approved').maybeSingle();
+    const { data: l } = await db.from('listings').select('id, slug, name, logo_url, owner_member_id, claim_status, category, tags').eq('slug', slug).eq('status', 'approved').maybeSingle();
     if (!l) return json({ error: 'not_found' }, 404);
-    const { data: gs } = await db.from('ve_holiday_gifts').select('id, section, title, brand, link, amazon_link, image_url, note, source_name').eq('listing_id', l.id).eq('status', 'live').order('sort');
-    return json({ ok: true, listing: { id: l.id, slug: l.slug, name: l.name, logo_url: l.logo_url, claimed: !!l.owner_member_id }, gifts: gs || [] });
+    // What the Holiday Guide features for them (Sean, 2026-11-13: one confirm page for all three groups): a gift, a holiday menu, or a
+    // place in Kosher Places and Brands. The page asks them to confirm it and claims their listing in the same step.
+    const [{ data: gs }, { data: ms }] = await Promise.all([
+      db.from('ve_holiday_gifts').select('id, section, title, brand, link, amazon_link, image_url, note, source_name').eq('listing_id', l.id).eq('status', 'live').order('sort'),
+      db.from('ve_holiday_menus').select('id, holiday_slug, summary, items, order_url, order_by').eq('listing_id', l.id).eq('status', 'live').order('holiday_slug'),
+    ]);
+    const menus = (ms || []).map((m: any) => ({ id: m.id, holiday: m.holiday_slug, summary: m.summary, order_url: m.order_url, order_by: m.order_by,
+      dishes: (Array.isArray(m.items) ? m.items : []).slice(0, 4).map((i: any) => clean(i?.name, 80)).filter(Boolean) }));
+    const kosher = (l.tags || []).includes('kosher');
+    const kind = (gs || []).length ? 'gift' : menus.length ? 'menu' : kosher ? 'kosher' : '';
+    return json({ ok: true, kind, listing: { id: l.id, slug: l.slug, name: l.name, logo_url: l.logo_url, category: l.category,
+      claimed: !!l.owner_member_id, claim_pending: l.claim_status === 'pending' }, gifts: gs || [], menus, kosher });
   }
 
   // ---- Signed in ----
@@ -387,8 +397,11 @@ Deno.serve(async (req) => {
       if (error || !up) return json({ error: 'upload_failed' }, 500);
       return json({ ok: true, upload_url: up.signedUrl, url: PUBLIC_BASE + path });
     }
-    const change = ['keep', 'item', 'photo'].includes(String(b.change)) ? String(b.change) : '';
+    // fix: something to correct or add (a menu's order link, a kosher listing's details), in the note (2026-11-13).
+    const change = ['keep', 'item', 'photo', 'fix'].includes(String(b.change)) ? String(b.change) : '';
     if (!change) return json({ error: 'bad_change' }, 400);
+    const kind = ['gift', 'menu', 'kosher'].includes(String(b.kind)) ? String(b.kind) : 'gift';
+    if (change === 'fix' && clean(b.note, 600).length < 3) return json({ error: 'note_needed' }, 400);
     const gid = UUID.test(String(b.gift_id || '')) ? String(b.gift_id) : null;
     if (gid && !(await db.from('ve_holiday_gifts').select('id').eq('id', gid).eq('listing_id', lid).maybeSingle()).data) return json({ error: 'not_their_gift' }, 400);
     const rawLink = clean(b.link, 500), link = rawLink ? cleanUrl(rawLink) : null;
@@ -402,7 +415,7 @@ Deno.serve(async (req) => {
     const { count } = await db.from('ve_holiday_gift_requests').select('id', { count: 'exact', head: true }).eq('member_id', me).gte('created_at', since);
     if (!admin && (count || 0) >= 10) return json({ error: 'rate_limited' }, 429);
     const giveaway = b.giveaway === 'yes' || b.giveaway === 'no' ? b.giveaway : null;
-    const { data: saved, error } = await db.from('ve_holiday_gift_requests').insert({ listing_id: lid, gift_id: gid, member_id: me, change,
+    const { data: saved, error } = await db.from('ve_holiday_gift_requests').insert({ listing_id: lid, gift_id: gid, member_id: me, change, kind,
       title: change === 'item' ? title : null, link: change === 'item' ? link : null, note: clean(b.note, 600) || null, image_url: img || null,
       giveaway, giveaway_note: giveaway === 'yes' ? clean(b.giveaway_note, 300) || null : null }).select('id').single();
     if (error || !saved) return json({ error: 'save_failed' }, 500);

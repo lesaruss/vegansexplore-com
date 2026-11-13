@@ -4,11 +4,11 @@
   <script src="/analytics.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>You're in our Gift Guide — Vegans Explore</title>
-  <meta name="description" content="Your gift is in the Vegans Explore Holiday Gift Guide. Keep it, swap the item or the photo, and claim your page free.">
+  <title>Confirm your spot in our Holiday Guide — Vegans Explore</title>
+  <meta name="description" content="You are featured in the Vegans Explore Holiday Guide. Confirm your feature and claim your Directory page, free, in the same step.">
   <meta name="robots" content="noindex">
-  <meta property="og:title" content="You're in our Gift Guide — Vegans Explore">
-  <meta property="og:description" content="Your gift is in the Vegans Explore Holiday Gift Guide.">
+  <meta property="og:title" content="Confirm your spot in our Holiday Guide — Vegans Explore">
+  <meta property="og:description" content="You are featured in the Vegans Explore Holiday Guide.">
   <meta property="og:image" content="https://vegansexplore.com/public/og-default.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="/public/favicon.ico">
@@ -18,7 +18,11 @@
        just goes automatically to you... a specific one for this campaign that matches the business one we created"). Parent: /hello?b=business
        (template gate): the words on the left, one line for the audience, the picture on the right in the same 4:5 frame (here the brand's own
        gift), the doors under the words. The intake is a two-step form under the doors (ve-holiday gift_request), checked by the team on the
-       Gift Guide's team queue before it touches the card. Every link we send is a tracked /go/ link that lands here with ?l=<listing slug>. */
+       Gift Guide's team queue before it touches the card. Every link we send is a tracked /go/ link that lands here with ?l=<listing slug>.
+       2026-11-13 (Sean, after BOSS and the panel: "What if we ask them to confirm their listing? That's the action... it could be one
+       process"): the confirm page for all three groups the Holiday Guide features (a gift, a holiday menu, Kosher Places and Brands). Step 1
+       confirms or changes the feature; step 2 claims their Directory listing free (ve-claims start pay 'featured'). One ask: the giveaway
+       question is gone from here, it waits for the dashboard (11 Days of Giving). */
 
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
     :root{--ve-green:#3A9B3E;--ve-green-dark:#2d7d31;--ve-green-deep:#1f5f22;--ve-green-light:#EAF7EA;--ve-orange:#F69820;--ve-text:#1a1a1a;--ve-text-75:rgba(26,26,26,0.75);--ve-border:rgba(0,0,0,0.09);}
@@ -66,7 +70,7 @@
     .choice label:has(input:checked){border-color:var(--ve-green-deep);background:var(--ve-green-light)}
     .f{display:block;font-size:13px;font-weight:700;color:var(--ve-text-75);margin:12px 0 6px}
     .f small{font-weight:600}
-    .intake input[type=text],.intake input[type=url],.intake textarea{width:100%;font:inherit;font-size:15px;padding:11px 12px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff}
+    .intake input[type=text],.intake input[type=url],.intake input[type=email],.intake textarea{width:100%;font:inherit;font-size:15px;padding:11px 12px;border:1px solid rgba(0,0,0,.25);border-radius:6px;background:#fff}
     .intake textarea{min-height:84px;resize:vertical}
     .ph{display:flex;gap:14px;align-items:center;margin-top:4px}
     .ph .pv{width:92px;height:92px;border-radius:10px;border:1px dashed rgba(0,0,0,.25);background:#f6f6f4 center/cover no-repeat;flex:none}
@@ -74,6 +78,11 @@
     .step-nav .step-count{flex:1;text-align:center;font-size:13px;font-weight:800;color:var(--ve-text-75);}
     .done-box{max-width:640px;margin-top:22px;border:1px solid rgba(58,155,62,.35);background:var(--ve-green-light);border-radius:12px;padding:20px}
     .done-box h2{font-size:20px;font-weight:900;margin:0 0 6px}
+    .done-box p{margin:0 0 8px}
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+    .check{display:flex;gap:10px;align-items:flex-start;font-size:14px;font-weight:700;margin:4px 0 6px;cursor:pointer}
+    .check input{width:18px;height:18px;margin-top:2px;flex:none}
+    .hint{font-size:13px;color:var(--ve-text-75);margin:0 0 10px}
 
     @media (max-width:900px){
       main{padding:28px 16px 64px;}
@@ -82,6 +91,7 @@
       .media{max-height:none;}
       .cta-row .btn{flex:1 1 100%}
       .intake{padding:16px}
+      .row2{grid-template-columns:1fr}
     }
   </style>
 </head>
@@ -91,29 +101,29 @@
   <main>
     <section class="split" id="page">
       <div>
-        <div class="eyebrow">The Vegans Explore Holiday Gift Guide</div>
-        <h1>You're in our Gift Guide.</h1>
-        <p class="reason" id="line">Our team picked your gift for this year's Holiday Gift Guide.</p>
+        <div class="eyebrow">The Vegans Explore Holiday Guide</div>
+        <h1>You're in our Holiday Guide.</h1>
+        <p class="reason" id="line">Congratulations: you are featured in the Vegans Explore Holiday Guide.</p>
         <div class="said">
-          <p>It's a free guide that helps people shop for the Vegans in their lives, and for anyone who loves a gift that does no harm. Your card has your photo, a link to buy it and your page in our Directory.</p>
-          <p>We started you off with one of our favorites. Would you like us to feature a different item, or use a different photo? Tell us below and our team updates your card.</p>
+          <p id="about">It's a free guide that helps people celebrate the holidays the Vegan way, with gifts, holiday menus and places to go. We start promoting it on Friday, November 20, and we want it as complete as possible before then.</p>
+          <p>Please take a minute to confirm your feature. You can keep it as it is or change it, and claim your Directory page, free, in the same step.</p>
         </div>
         <div class="cta-row">
-          <button type="button" class="btn btn-primary" id="open">Update my gift</button>
-          <a class="btn btn-ghost" id="see" href="/guides/holiday-guide#/xm-gifts">See it in the Gift Guide</a>
-          <a class="btn btn-ghost" id="claim" href="/claim">Claim my page, free</a>
+          <button type="button" class="btn btn-primary" id="open">Confirm my feature</button>
+          <a class="btn btn-ghost" id="see" href="/guides/holiday-guide">See it in the Holiday Guide</a>
         </div>
-        <p class="fine" id="fine">Brands that claim their page by Friday, November 20 get first pick of a few things we are planning for December.</p>
+        <p class="fine" id="fine">Please confirm by Wednesday, November 18.</p>
 
         <section class="intake" id="intake" hidden aria-labelledby="in-h">
-          <h2 id="in-h">Update your gift</h2>
-          <p class="sub">Our team checks every change before it goes on your card.</p>
+          <h2 id="in-h">Confirm your feature</h2>
+          <p class="sub">Our team checks every change before it goes in the guide.</p>
           <ol class="stepper" id="stepper"></ol>
           <div data-step="card">
-            <div class="choice" role="radiogroup" aria-label="What to change">
-              <label><input type="radio" name="change" value="keep" checked><span>Keep it as is<small>Your card stays the way it is now.</small></span></label>
-              <label><input type="radio" name="change" value="item"><span>Feature a different item<small>Tell us what it is and where people buy it.</small></span></label>
-              <label><input type="radio" name="change" value="photo"><span>Use a different photo<small>Upload the photo you would like us to use.</small></span></label>
+            <div class="choice" role="radiogroup" aria-label="Your feature">
+              <label data-kinds="gift menu kosher"><input type="radio" name="change" value="keep" checked><span>Looks good, keep it<small id="keep-s">Your feature stays the way it is now.</small></span></label>
+              <label data-kinds="gift kosher"><input type="radio" name="change" value="item"><span id="item-l">Feature a different item<small id="item-s">Tell us what it is and where people buy it. One item per business.</small></span></label>
+              <label data-kinds="gift"><input type="radio" name="change" value="photo"><span>Use a different photo<small>Upload the photo you would like us to use.</small></span></label>
+              <label data-kinds="menu kosher"><input type="radio" name="change" value="fix"><span>Something to update<small id="fix-s">Tell us what to change and our team fixes it.</small></span></label>
             </div>
             <div id="item-f" hidden>
               <label class="f" for="title">The item</label>
@@ -125,18 +135,19 @@
               <label class="f">The photo <small>(a clear product photo; we show it square)</small></label>
               <div class="ph"><span class="pv" id="pv"></span><label class="btn btn-ghost" style="cursor:pointer">Choose a photo<input type="file" id="file" accept="image/jpeg,image/png,image/webp" hidden></label></div>
             </div>
-            <label class="f" for="note">Anything our team should know <small>(optional)</small></label>
+            <label class="f" for="note" id="note-l">Anything our team should know <small>(optional)</small></label>
             <textarea id="note" maxlength="600" placeholder="A line about it, a discount code, or anything else"></textarea>
           </div>
-          <div data-step="giveaway" hidden>
-            <p style="font-size:15px;margin:0 0 12px"><b>Our holiday giveaway starts in December.</b> Every day we give something to our community. Is there an item you would like to give to it? (optional)</p>
-            <div class="choice" role="radiogroup" aria-label="Giveaway">
-              <label><input type="radio" name="giveaway" value="yes"><span>Yes, I would like to</span></label>
-              <label><input type="radio" name="giveaway" value="no"><span>Not this time</span></label>
-            </div>
-            <div id="ga-f" hidden>
-              <label class="f" for="ga">What would you give, and how many? <small>(optional)</small></label>
-              <input type="text" id="ga" maxlength="300" placeholder="Two gift boxes">
+          <div data-step="claim" hidden>
+            <label class="check"><input type="checkbox" id="do-claim" checked><span>Claim my Directory page, free</span></label>
+            <p class="hint">So we know it is really you. That's all we need: your page details are edited later in your dashboard. Our team confirms it within a day.</p>
+            <div id="claim-f">
+              <div class="row2">
+                <div><label class="f" for="c-name">Your name</label><input type="text" id="c-name" maxlength="120" autocomplete="name"></div>
+                <div><label class="f" for="c-role">Your role <small>(owner, manager...)</small></label><input type="text" id="c-role" maxlength="120" autocomplete="organization-title"></div>
+              </div>
+              <label class="f" for="c-email">Email <small>(your business email confirms it fastest)</small></label>
+              <input type="email" id="c-email" maxlength="200" autocomplete="email">
             </div>
           </div>
           <p class="msg" id="msg" role="status"></p>
@@ -144,13 +155,13 @@
             <button type="button" class="btn btn-ghost" id="back">Back</button>
             <span class="step-count" id="count"></span>
             <button type="button" class="btn btn-primary" id="next">Next</button>
-            <button type="button" class="btn btn-primary" id="send" hidden>Send it</button>
+            <button type="button" class="btn btn-primary" id="send" hidden>Confirm</button>
           </div>
         </section>
-        <section class="done-box" id="done" hidden><h2>Thank you. We have it.</h2><p>Our team checks it and updates your card, usually within a day. We will be in touch if we have a question.</p></section>
+        <section class="done-box" id="done" hidden><h2>You're confirmed. Thank you.</h2><p id="done-1">Our team checks it, usually within a day, and we will be in touch if we have a question.</p><p id="done-2" hidden>Your claim is in too. Once our team confirms it's you, your business dashboard opens: sign in with the email you gave us.</p></section>
       </div>
       <div class="side">
-        <a class="media" id="media" href="/guides/holiday-guide#/xm-gifts" aria-label="Your gift in the Gift Guide"><img id="pic" src="/public/og-default.jpg" alt=""></a>
+        <a class="media" id="media" href="/guides/holiday-guide" aria-label="Your feature in the Holiday Guide"><img id="pic" src="/public/og-default.jpg" alt=""></a>
         <div class="cap" id="cap" hidden><a class="lg" id="lg" href="#" aria-label="Your page in the Directory"></a><div><span id="ct"></span><small id="cb"></small></div></div>
       </div>
     </section>
@@ -164,51 +175,96 @@
     var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
     var $ = function (id) { return document.getElementById(id); };
     var slug = (new URLSearchParams(location.search).get('l') || '').toLowerCase();
-    var L = null, G = null, PHOTO = '', at = 0, STEPS = ['card', 'giveaway'], NAME = { card: 'Your card', giveaway: 'The giveaway' };
+    var L = null, G = null, M = null, KIND = 'gift', PHOTO = '', at = 0, STEPS = ['card', 'claim'], NAME = { card: 'Your feature', claim: 'Claim your page' };
+    var CL = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-claims';
+    // Each kind: where it lives in the Holiday Guide, its picture when it has no photo of its own, and its words.
+    var K = {
+      gift: { see: '#/xm-gifts', pic: '', thing: 'gift', about: 'It’s a free guide that helps people shop for the Vegans in their lives, and for anyone who loves a gift that does no harm. We start promoting it on Friday, November 20, and we want it as complete as possible before then.' },
+      menu: { see: '#/menus', pic: '/public/guides/holiday/r-wellington.jpg', thing: 'menu', about: 'It’s a free guide that helps people find Vegan holiday menus near them. We start promoting it on Friday, November 20, and we want it as complete as possible before then.',
+        fix: 'An order link, an order-by date, a dish: tell us what to change.' },
+      kosher: { see: '#/hk-kosher', pic: '/public/guides/holiday/r-latkes.jpg', thing: 'listing', about: 'Kosher Places and Brands helps people who keep kosher find Vegan and plant-based places and brands for Hanukkah. We start promoting the guide on Friday, November 20, and we want it as complete as possible before then.',
+        fix: 'Anything we have wrong, your certification included.', item: 'Feature one item for Hanukkah', itemS: 'Tell us what it is and where people buy or order it. One item per business.' }
+    };
     function tok() { return window.VEAuth && VEAuth.getToken ? VEAuth.getToken() : ''; }
     function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: ANON, Authorization: 'Bearer ' + (tok() || ANON) }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+    function claimApi(body) { return fetch(CL, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
     function val(n) { var e = document.querySelector('input[name=' + n + ']:checked'); return e ? e.value : ''; }
     function bad(t) { $('msg').className = 'msg err'; $('msg').textContent = t; return false; }
+    function plain(t) { return String(t || '').replace(/^\w/, function (c) { return c.toUpperCase(); }); }
 
-    // The brand and its card
+    // The business and what we feature for it
     if (slug) api({ action: 'gift_card', slug: slug }).then(function (d) {
       if (!d || !d.ok) return;
-      L = d.listing; G = (d.gifts || [])[0] || null;
-      $('claim').href = '/claim?listing=' + encodeURIComponent(L.slug);
-      if (L.claimed) $('claim').hidden = true;
+      L = d.listing; G = (d.gifts || [])[0] || null; M = (d.menus || [])[0] || null; KIND = d.kind || 'gift';
+      var k = K[KIND] || K.gift;
+      $('see').href = '/guides/holiday-guide' + k.see; $('media').href = $('see').href;
+      $('about').textContent = k.about;
+      $('in-h').textContent = 'Confirm your ' + k.thing;
+      if (k.fix) $('fix-s').textContent = k.fix;
+      if (k.item) { $('item-l').firstChild.textContent = k.item; $('item-s').textContent = k.itemS; }
+      [].forEach.call(document.querySelectorAll('[data-kinds]'), function (x) { x.hidden = x.getAttribute('data-kinds').split(' ').indexOf(KIND) < 0; });
+      // Claimed already, or a claim waiting: no claim step.
+      if (L.claimed || L.claim_pending) { STEPS = ['card']; }
       $('lg').href = '/directory/' + encodeURIComponent(L.slug);
       if (L.logo_url) $('lg').style.backgroundImage = "url('" + L.logo_url + "')";
-      if (G) {
-        $('line').textContent = L.name + ', our team picked your ' + G.title + ' for this year’s Holiday Gift Guide.';
+      if (KIND === 'gift' && G) {
+        $('line').textContent = 'Congratulations, ' + L.name + ': our team picked your ' + G.title + ' for the Vegans Explore Holiday Guide.';
         if (G.image_url) { $('pic').src = G.image_url; $('pic').alt = G.title; }
         $('ct').textContent = G.title; $('cb').textContent = (G.brand || L.name) + (G.section ? ' · ' + G.section : '');
-        $('cap').hidden = false;
-      } else $('line').textContent = L.name + ', you are in our Holiday Gift Guide.';
+      } else if (KIND === 'menu' && M) {
+        $('line').textContent = 'Congratulations, ' + L.name + ': your ' + (M.holiday === 'thanksliving' ? 'ThanksLiving' : plain(M.holiday)) + ' menu is in the Vegans Explore Holiday Guide.';
+        $('pic').src = k.pic; $('pic').alt = '';
+        $('ct').textContent = L.name; $('cb').textContent = (M.dishes || []).slice(0, 3).join(', ');
+      } else {
+        $('line').textContent = KIND === 'kosher' ? 'Congratulations, ' + L.name + ': you are in Kosher Places and Brands, part of the Vegans Explore Holiday Guide.' : 'Congratulations, ' + L.name + ': you are in the Vegans Explore Holiday Guide.';
+        if (k.pic) { $('pic').src = k.pic; $('pic').alt = ''; }
+        $('ct').textContent = L.name; $('cb').textContent = KIND === 'kosher' ? 'Kosher Places and Brands' : 'The Holiday Guide';
+      }
+      $('cap').hidden = false;
     }).catch(function () {});
 
-    // The intake (two steps)
+    // Who is confirming, from their account when signed in
+    function prefill() {
+      var m = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null;
+      if (!m) return;
+      if (!$('c-name').value && m.name) $('c-name').value = m.name;
+      if (!$('c-email').value && m.email) $('c-email').value = m.email;
+    }
+
+    // The two steps
     function go(n) {
       at = n;
       [].forEach.call(document.querySelectorAll('#intake [data-step]'), function (d) { d.hidden = d.getAttribute('data-step') !== STEPS[n]; });
       $('stepper').innerHTML = STEPS.map(function (k, i) { return '<li class="' + (i < n ? 'done' : i === n ? 'on' : '') + '">' + NAME[k] + '</li>'; }).join('');
-      $('count').textContent = 'Step ' + (n + 1) + ' of ' + STEPS.length;
+      $('count').textContent = STEPS.length > 1 ? 'Step ' + (n + 1) + ' of ' + STEPS.length : '';
       $('back').hidden = n === 0; $('next').hidden = n === STEPS.length - 1; $('send').hidden = n !== STEPS.length - 1;
-      $('msg').textContent = '';
+      if (STEPS[n] === 'claim') prefill();
+      sendLabel(); $('msg').textContent = '';
     }
-    function check() {
+    function claiming() { return STEPS.indexOf('claim') >= 0 && $('do-claim').checked; }
+    function sendLabel() { $('send').textContent = claiming() ? 'Confirm and claim' : 'Confirm'; $('claim-f').hidden = !$('do-claim').checked; }
+    function checkCard() {
       var c = val('change');
       if (c === 'item' && $('title').value.trim().length < 2) { $('title').focus(); return bad('Tell us the item.'); }
       if (c === 'photo' && !PHOTO) return bad('Choose a photo first.');
+      if (c === 'fix' && $('note').value.trim().length < 3) { $('note').focus(); return bad('Tell us what to update.'); }
+      return true;
+    }
+    function checkClaim() {
+      if (!claiming()) return true;
+      if ($('c-name').value.trim().length < 2) { $('c-name').focus(); return bad('Add your name.'); }
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test($('c-email').value.trim())) { $('c-email').focus(); return bad('Add an email we can reach you at.'); }
       return true;
     }
     function sync() {
-      var c = val('change'); $('item-f').hidden = c !== 'item'; $('photo-f').hidden = c !== 'photo' && c !== 'item';
-      $('ga-f').hidden = val('giveaway') !== 'yes';
+      var c = val('change'); $('item-f').hidden = c !== 'item'; $('photo-f').hidden = c !== 'photo' && !(c === 'item' && KIND === 'gift') && !(c === 'item' && KIND === 'kosher');
+      $('note-l').innerHTML = c === 'fix' ? 'What should we update?' : 'Anything our team should know <small>(optional)</small>';
+      sendLabel();
     }
     document.addEventListener('change', sync);
     $('open').onclick = function () { $('intake').hidden = false; go(0); sync(); $('intake').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
     $('back').onclick = function () { go(at - 1); };
-    $('next').onclick = function () { if (check()) go(at + 1); };
+    $('next').onclick = function () { if (checkCard()) go(at + 1); };
 
     // A photo: squared to at most 1200 px as a JPEG, then uploaded to our storage (gift_photo_url).
     $('file').onchange = function () {
@@ -231,21 +287,28 @@
 
     // Registration first (Sean: every submission comes from a registered account; quick registration is enough).
     function needAccount(then) {
-      if (window.VEJoinBox) { VEJoinBox.open({ guide: 'Holiday Guide', character: 'Theo', pic: '/public/guides/holiday/theo-xm-gifts.jpg', reason: 'Update Your Gift', line: 'So we know who is asking, register in a few seconds. Then your change goes straight to our team.', mode: '', onDone: then }); return; }
-      if (window.VEAuth) VEAuth.showAuthModal('Register to update your gift.', then, 'signup');
+      if (window.VEJoinBox) { VEJoinBox.open({ guide: 'Holiday Guide', character: 'Theo', pic: '/public/guides/holiday/theo-xm-gifts.jpg', reason: 'Confirm Your Feature', line: 'So we know who is confirming, register in a few seconds. Then it goes straight to our team.', mode: '', onDone: then }); return; }
+      if (window.VEAuth) VEAuth.showAuthModal('Register to confirm your feature.', then, 'signup');
     }
     $('send').onclick = function () {
       if (!L) return bad('We could not find your page. Open the link from our message again.');
-      if (!check()) { go(0); return; }
+      if (!checkCard()) { go(0); return; }
+      if (!checkClaim()) return;
       if (!tok()) { needAccount(function () { $('send').onclick(); }); return; }
-      var c = val('change'), ga = val('giveaway') || null;
+      var c = val('change'), withClaim = claiming();
       $('send').disabled = true; $('msg').className = 'msg'; $('msg').textContent = 'Sending...';
-      api({ action: 'gift_request', listing_id: L.id, gift_id: G ? G.id : null, change: c, title: $('title').value.trim(), link: $('link').value.trim(),
-        image_url: PHOTO, note: $('note').value.trim(), giveaway: ga, giveaway_note: ga === 'yes' ? $('ga').value.trim() : '' }).then(function (d) {
+      api({ action: 'gift_request', kind: KIND, listing_id: L.id, gift_id: KIND === 'gift' && G ? G.id : null, change: c, title: $('title').value.trim(), link: $('link').value.trim(),
+        image_url: PHOTO, note: $('note').value.trim() }).then(function (d) {
         if (!d || !d.ok) throw d;
-        $('intake').hidden = true; $('done').hidden = false; $('open').hidden = true;
+        if (!withClaim) return { ok: true };
+        return claimApi({ action: 'start', listing_id: L.id, pay: 'featured', contact_name: $('c-name').value.trim(), contact_role: $('c-role').value.trim(),
+          contact_email: $('c-email').value.trim(), proposed: {} }).then(function (r) { return { ok: true, claimed: !!(r && r.ok), claimErr: r && r.error }; });
+      }).then(function (r) {
+        $('intake').hidden = true; $('done').hidden = false; $('open').hidden = true; $('fine').hidden = true;
+        $('done-2').hidden = !r.claimed;
+        if (withClaim && !r.claimed) { $('done-2').hidden = false; $('done-2').textContent = r.claimErr === 'already_claimed' ? 'This page is already claimed.' : 'Your claim did not go through. Reply to our message and we will sort it out.'; }
       }).catch(function (d) {
-        bad(d && d.error === 'bad_link' ? 'That link does not look right. Paste the full address.' : d && d.error === 'rate_limited' ? 'That is a lot for one day. Try again tomorrow.' : 'That did not send. Try again in a minute.');
+        bad(d && d.error === 'bad_link' ? 'That link does not look right. Paste the full address.' : d && d.error === 'rate_limited' ? 'That is a lot for one day. Try again tomorrow.' : d && d.error === 'note_needed' ? 'Tell us what to update.' : 'That did not send. Try again in a minute.');
       }).then(function () { $('send').disabled = false; });
     };
   })();

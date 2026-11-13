@@ -13,7 +13,7 @@ const lan = fs.readFileSync(R + '/public/logo-ve-landscape-v2.svg', 'utf8');
 const KIND = {
   gift: { bg: '/public/guides/holiday/r-gingerbread.jpg', what: 'In our Christmas Gift Guide' },
   menu: { bg: '/public/guides/holiday/p-menus.jpg', what: 'In our Holiday Menus' },
-  kosher: { bg: '/public/guides/holiday/r-sufganiyot.jpg', what: 'In Kosher Places for Hanukkah' },
+  kosher: { bg: '/public/guides/holiday/r-sufganiyot.jpg', what: 'In Kosher Places and Brands for Hanukkah' },
 };
 const IG = '<svg viewBox="0 0 24 24" width="1em" height="1em" style="vertical-align:-0.14em;margin-right:.3em"><rect x="2" y="2" width="20" height="20" rx="6" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="12" cy="12" r="4.6" fill="none" stroke="currentColor" stroke-width="2.2"/><circle cx="17.6" cy="6.4" r="1.4" fill="currentColor"/></svg>';
 const css = `*{box-sizing:border-box;margin:0}body{font-family:Montserrat,sans-serif}

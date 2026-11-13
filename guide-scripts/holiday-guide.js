@@ -69,7 +69,7 @@
     { k: 'hanukkah', label: 'Hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hanukkah.jpg', say: 'Hanukkah starts at sundown on December fourth, eight nights of light. On this page are a few easy ideas for a plant-based Hanukkah: latkes, sufganiyot and the people around the menorah.' },
     { k: 'hk-ideas', parent: 'hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hk-ideas.jpg', label: 'Ideas', say: 'A few easy ideas for a plant-based Hanukkah: something fried, the candles with the people you love, eight nights of kindness, and gifts that do no harm.' },
     { k: 'hk-recipes', parent: 'hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hk-recipes.jpg', label: 'Recipes', say: 'Here is a plant-based Hanukkah table you can make at home: crispy latkes with a cashew sour cream, applesauce, carrot tzimmes and jelly doughnuts.' },
-    { k: 'hk-kosher', parent: 'hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hk-kosher.jpg', label: 'Kosher Places', say: 'Keeping kosher this Hanukkah? These Vegan and plant-based places describe themselves as kosher or kosher certified. Ask each one about its certification before you go.' },
+    { k: 'hk-kosher', parent: 'hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hk-kosher.jpg', label: 'Kosher Places and Brands', say: 'Keeping kosher this Hanukkah? These Vegan and plant-based places describe themselves as kosher or kosher certified. Ask each place about its certification before you go.' },
     { k: 'hk-menus', parent: 'hanukkah', hol: 'hanukkah', pic: '/public/guides/holiday/theo-hk-menus.jpg', label: 'Holiday Menus', say: 'Rather order in? Pick your chapter and see which Vegan places are cooking for Hanukkah. Our team checks every menu before it shows.' },
     { k: 'christmas', label: 'Christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-christmas.jpg', say: 'Christmas, the plant-based way. On this page are a few easy ideas: a centerpiece for the table, cookies to share, and gifts that do no harm.' },
     { k: 'xm-gifts', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-xm-gifts.jpg', label: 'Gift Guide', say: 'Shopping for a Vegan, or for anyone? Here are gifts our team picked. Save the ones you love to your wish list and share it with your family.' },
@@ -313,7 +313,7 @@
       how: '<b>What you can do here.</b> Pick up a few easy ideas, fry latkes from our recipes, find kosher places, or order from a Vegan place cooking for the holiday.',
       rows: [['hk-ideas', 'Ideas', 'Something fried, the candles, eight nights of kindness and kind gifts.'],
         ['hk-recipes', 'Recipes', 'Crispy latkes, applesauce, carrot tzimmes and jelly doughnuts, plant-based.'],
-        ['hk-kosher', 'Kosher Places', 'Vegan and plant-based places that describe themselves as kosher.'],
+        ['hk-kosher', 'Kosher Places and Brands', 'Vegan and plant-based places and brands that describe themselves as kosher.'],
         ['hk-menus', 'Holiday Menus', 'Vegan places cooking for Hanukkah, with the date to order by.']] },
     christmas: { pic: 'r-wellington.jpg', cta: ['Gift Guide', '#/xm-gifts'],
       intro: '<b>Christmas, December 25,</b> is the biggest day of family and giving of the year, and the easiest time to give gifts that do no harm. Here are our Gift Guide, a wish list to share, recipes, the store, Vegan menus and events.',
@@ -421,15 +421,15 @@
       d.notes.map(function (n) { return '<div class="hg-note">' + n + '</div>'; }).join('');
   }
 
-  // ---------- Kosher Places (Hanukkah) ----------
+  // ---------- Kosher Places and Brands (Hanukkah; renamed from Kosher Places, Sean 2026-11-13: a food brand is not a place) ----------
   // Sean, 2026-11-10: "we could show restaurants that are kosher". Listings tagged `kosher` (migration 20261110_kosher_places_tag.sql: their
   // own description says kosher, kosher certified or a kosher kitchen), 100% Vegan first, in the shared Directory card (vote, save), a search,
   // and Suggest a Place to the right of it.
   var KOSHER = null;
   function viewKosher() {
-    main.innerHTML = head('Hanukkah', 'Kosher Places', 'Vegan and plant-based places that describe themselves as kosher or kosher certified. Ask each place about its certification before you go.') +
+    main.innerHTML = head('Hanukkah', 'Kosher Places and Brands', 'Vegan and plant-based places and brands that describe themselves as kosher or kosher certified. Ask each one about its certification before you go.') +
       '<div class="hg-tools2"><div class="hg-search"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#525252" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
-      '<input type="search" id="hgKq" placeholder="Search places and cities..." aria-label="Search kosher places" autocomplete="off" data-dictate="off"></div>' +
+      '<input type="search" id="hgKq" placeholder="Search places, brands and cities..." aria-label="Search kosher places and brands" autocomplete="off" data-dictate="off"></div>' +
       '<button type="button" class="hg-subbtn" data-hg-open="hgKosPanel" aria-expanded="false" aria-controls="hgKosPanel">Suggest a Place</button></div>' +
       '<div class="hg-submit" id="hgKosPanel" hidden>' + storeSuggest().replace('Suggest an Item', 'Suggest a Kosher Place').replace('Found a plant-based roast, gravy or pie on a shelf near you that is not here? Tell us. Our team checks it, and the good ones go on the list for everyone.', 'Know a kosher place with Vegan food that is not here? Tell us its name and city. Our team checks it and adds it.').replace('What is it? (brand and item)', 'The place').replace('Brand and item', 'Its name').replace('Where you saw it (optional)', 'City').replace('Store and city', 'City and state') + '</div>' +
       '<div id="hgKosList"><div class="dg-loading">Loading the places...</div></div>';
@@ -538,9 +538,9 @@
     var drawReq = function () {
       var box = document.getElementById('hgGiftReq'); if (!box) return;
       holA('gift_requests', {}).then(function (d) {
-        var rows = (d && d.rows) || [], CH = { keep: 'Keep it as is', item: 'A different item', photo: 'A different photo' };
+        var rows = (d && d.rows) || [], CH = { keep: 'Confirmed as is', item: 'A different item', photo: 'A different photo', fix: 'Something to fix' }, KN = { gift: 'Gift', menu: 'Holiday menu', kosher: 'Kosher Places and Brands' };
         box.innerHTML = '<section class="hg-shelf"><h3 class="hg-shelf-h">Card Changes from Brands (' + rows.length + ', team only)</h3>' + (rows.length ? '<div class="hg-mlist">' + rows.map(function (r) {
-          var w = { title: (r.listing ? r.listing.name : '') + ': ' + CH[r.change] + (r.title ? ', ' + r.title : ''), link: r.link, image_url: r.image_url || (r.gift && r.gift.image_url), note: [r.note, r.giveaway ? 'Giveaway: ' + (r.giveaway === 'yes' ? 'yes' + (r.giveaway_note ? ' (' + r.giveaway_note + ')' : '') : 'no') : '', r.member ? 'From ' + (r.member.name || '') + ' ' + (r.member.email || '') : ''].filter(Boolean).join(' \u00b7 ') };
+          var w = { title: (r.listing ? r.listing.name : '') + (r.kind && r.kind !== 'gift' ? ' (' + KN[r.kind] + ')' : '') + ': ' + CH[r.change] + (r.title ? ', ' + r.title : ''), link: r.link, image_url: r.image_url || (r.gift && r.gift.image_url), note: [r.note, r.giveaway ? 'Giveaway: ' + (r.giveaway === 'yes' ? 'yes' + (r.giveaway_note ? ' (' + r.giveaway_note + ')' : '') : 'no') : '', r.member ? 'From ' + (r.member.name || '') + ' ' + (r.member.email || '') : ''].filter(Boolean).join(' \u00b7 ') };
           return wishRow(w, (r.change === 'keep' || !r.gift_id ? '' : '<button type="button" class="hg-wx" data-greq-ok="' + esc(r.id) + '">Apply</button>') + '<button type="button" class="hg-wx" data-greq-no="' + esc(r.id) + '">' + (r.change === 'keep' || !r.gift_id ? 'Done' : 'Decline') + '</button>');
         }).join('') + '</div>' : '<p class="dg-srow-p">Nothing waiting.</p>') + '</section>';
       }).catch(function () {});

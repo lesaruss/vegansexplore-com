@@ -250,6 +250,16 @@ async function stripeKey(test: boolean): Promise<string> {
   if (!String(data?.value || '').startsWith('sk_test_')) throw new Error('test key missing');
   return data!.value;
 }
+// The Holiday Guide's featured businesses (program gift-guide-2026): in one of its email campaigns or its DMs.
+async function holidayFeatured(listingId: string): Promise<boolean> {
+  const { data: cs } = await db.from('ve_outreach_campaigns').select('slug').eq('program_slug', 'gift-guide-2026');
+  const slugs = (cs || []).map((c: any) => c.slug);
+  const [m, d] = await Promise.all([
+    slugs.length ? db.from('ve_outreach_campaign_members').select('listing_id', { count: 'exact', head: true }).eq('listing_id', listingId).in('campaign_slug', slugs) : Promise.resolve({ count: 0 }),
+    db.from('ve_campaign_dms').select('listing_id', { count: 'exact', head: true }).eq('listing_id', listingId).eq('program_slug', 'gift-guide-2026'),
+  ]);
+  return ((m as any).count || 0) + ((d as any).count || 0) > 0;
+}
 async function mail(subject: string, html: string, replyTo?: string) {
   if (!RESEND_KEY) return;
   try {
@@ -1614,9 +1624,13 @@ Deno.serve(async (req) => {
     const points = !tier && body.pay === 'points';
     if (points && Number(member.lesars_balance || 0) < 1100) return json({ error: 'not_enough_points', balance: Number(member.lesars_balance || 0) }, 400);
     const media = MEDIA_CATS.test(listing.category || '');
-    const free = !tier && body.pay === 'member';
+    // A business the Holiday Guide features claims free while it confirms its feature (Sean, 2026-11-13: "we might as well have them claim
+    // their listing as well... it could be one process"), with no membership first. Only a listing in the program's campaigns or DMs.
+    const featured = !tier && body.pay === 'featured';
+    if (featured && !(await holidayFeatured(id))) return json({ error: 'not_featured' }, 403);
+    const free = !tier && (body.pay === 'member' || featured);
     // Sean, 2026-11-07 (canon-ve-door-guides v12): claiming any listing is free for members (it was media only since 2026-11-06).
-    if (free && !(member.membership_status === 'active' && member.membership_tier !== 'guest')) return json({ error: 'membership_needed' }, 403);
+    if (free && !featured && !(member.membership_status === 'active' && member.membership_tier !== 'guest')) return json({ error: 'membership_needed' }, 403);
     const cents = points || free ? 0 : tier ? TIERS[tier].cents : Math.round(Number(body.amount_cents));
     if (!points && !free && (!Number.isFinite(cents) || cents < MIN_CENTS || cents > MAX_CENTS)) return json({ error: 'invalid_amount', min_cents: MIN_CENTS }, 400);
     const contact_name = plain(body.contact_name, 120), contact_email = plain(body.contact_email, 200).toLowerCase();
@@ -1629,7 +1643,8 @@ Deno.serve(async (req) => {
     };
     // A product brand (Brand Partner) is not asked how Vegan it is or to describe itself: its page is built from our Guides.
     // Join the Directory (Sean, 2026-10-09): a brand can also claim with the $11 lock-in, without the restaurant questions.
-    if (!BRAND_CATS.test(listing.category || '') && !media && (!proposed.vegan_status || !proposed.description)) return json({ error: 'missing_details' }, 400);
+    // A featured business is not asked to describe itself here: its page details are edited later in its dashboard.
+    if (!featured && !BRAND_CATS.test(listing.category || '') && !media && (!proposed.vegan_status || !proposed.description)) return json({ error: 'missing_details' }, 400);
     const test = await isTestAccount(member.email);
     const back = backTo(body.return_url, `https://vegansexplore.com/claim?listing=${encodeURIComponent(listing.slug)}`);
     const row = { listing_id: id, member_id: memberId, status: 'awaiting_contribution', contact_name, contact_role: plain(body.contact_role, 120),
@@ -1643,18 +1658,19 @@ Deno.serve(async (req) => {
     if (free) {
       // Free for members (canon-ve-door-guides v12). Until 2026-11-13 this fell through to a $0 Stripe checkout, which Stripe refuses.
       const now = new Date().toISOString();
-      await db.from('ve_listing_claims').update({ status: 'submitted', proposed: { ...proposed, paid_with: 'membership' }, updated_at: now }).eq('id', claim.id);
+      const paidWith = featured ? 'holiday_feature' : 'membership';
+      await db.from('ve_listing_claims').update({ status: 'submitted', proposed: { ...proposed, paid_with: paidWith }, updated_at: now }).eq('id', claim.id);
       await db.from('listings').update({ claim_status: 'pending', claim_submitted_at: now }).eq('id', id).neq('claim_status', 'verified');
       const ck = await claimChecks({ ...row, id: claim.id, proposed }).catch(() => null);
       // Every check passes: it approves itself and Liz's email goes out (Sean, 2026-11-13, "Agreed"). Anything flagged waits for Sean.
       const auto = !!ck?.all_pass && !(await setting('claims_auto_approve'))?.off
-        && !(await approveClaim({ ...row, id: claim.id, proposed: { ...proposed, paid_with: 'membership' } }, null, 'Approved by itself: every check passed.'));
-      await mail(`${test ? '[TEST] ' : ''}Listing claim: ${listing.name}, free with membership${auto ? ' (approved by itself, all checks pass)' : ck?.all_pass ? ' (all checks pass)' : ''}`,
-        `<p><b>${esc(listing.name)}</b> (${esc(listing.address_city || '')}) was claimed free by a member. ${auto ? 'Every check passed, so it approved itself and Liz\'s email is queued (weekdays 9 AM to 5 PM Eastern). To undo, write to Logan.' : 'We promised them an answer within 24 hours.'}</p>` +
+        && !(await approveClaim({ ...row, id: claim.id, proposed: { ...proposed, paid_with: paidWith } }, null, 'Approved by itself: every check passed.'));
+      await mail(`${test ? '[TEST] ' : ''}Listing claim: ${listing.name}, free ${featured ? 'from the Holiday Guide' : 'with membership'}${auto ? ' (approved by itself, all checks pass)' : ck?.all_pass ? ' (all checks pass)' : ''}`,
+        `<p><b>${esc(listing.name)}</b> (${esc(listing.address_city || '')}) was claimed free ${featured ? 'while confirming its Holiday Guide feature' : 'by a member'}. ${auto ? 'Every check passed, so it approved itself and Liz\'s email is queued (weekdays 9 AM to 5 PM Eastern). To undo, write to Logan.' : 'We promised them an answer within 24 hours.'}</p>` +
         `<p>${esc(contact_name)}${row.contact_role ? ', ' + esc(row.contact_role) : ''}<br>${esc(contact_email)}${row.contact_phone ? '<br>' + esc(row.contact_phone) : ''}</p>` +
         (ck ? checksHtml(ck) : '') +
         `<p>Review it in the Depot: <a href="https://vegansexplore.com/admin/depot/claims">vegansexplore.com/admin/depot/claims</a></p>`, contact_email);
-      return json({ ok: true, paid_with: 'membership', slug: listing.slug, approved: auto });
+      return json({ ok: true, paid_with: paidWith, slug: listing.slug, approved: auto });
     }
     if (points) {
       const { data: spent } = await db.rpc('ve_listing_submit_points', { p_member: memberId, p_claim: claim.id });
