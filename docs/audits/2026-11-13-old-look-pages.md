@@ -35,7 +35,13 @@
   (`center-console`, checked through `/dashboard/sample`) was already on the kit; its 17 own pages now carry `data-look="plain"`
   (every sign-in gate's one orange button, script-drawn gates `[id$="-gate"] > button` too, outlined cards; Advertising's and
   Opportunities' gradient bands solid kit blocks). Signed-in content was previewed locally as a stand-in admin with every data call
-  answered empty (no real session, nothing written). **Next: the Depot (57).** Mocks and the archive stay as they are (reference and retired pages).
+  answered empty (no real session, nothing written).
+- **The Depot (b0b8816, live 4:51 PM Eastern):** `data-look="plain"` on all 58 Depot pages (the five redirect stubs left alone): white page,
+  sentence-case titles, ink-outlined cards and buttons, gates' one orange button, tabs and pills on 6px corners. Found on the way and fixed
+  (b10f0f1): Depot Ambassadors and Invites had not loaded since 2026-11-11 (an apostrophe in "the Passport's 1,100" broke the script).
+- **Left as they are, on purpose:** the mocks (reference pages Sean approved as they are) and the archive (retired pages); the pitch decks,
+  ads, app and offline pages that skip nav.js by design keep their own styles. Printable pieces inside tools (the Passport Challenge
+  sticker and staff sheet) keep their print type. **The old-look sweep is done.** Mocks and the archive stay as they are (reference and retired pages).
   **Left in this group, next pass:** the dinner invitations (`/dinners/host`, `/dinners/palm-beach`: dark guided pages, built like the pitch
   decks), the certified page's photo header, the Dolphins game night event page and the news article page's all-caps headline.
 
