@@ -869,6 +869,19 @@ async function startFindUs(listingId: string): Promise<boolean> {
   if (error) { console.error('find us row', l.slug, error.message); return false; }
   return true;
 }
+// Start the workflow now instead of waiting for its 5-minute schedule (Sean, 2026-11-13, "Let's go with your recommendation": the vault
+// GITHUB_TOKEN gets Actions read and write on this repo). Until the token has it, GitHub answers 403 and the schedule picks the post up.
+async function kickFindUs(): Promise<number> {
+  try {
+    const { data: t } = await db.from('lesaruss_secrets').select('value').eq('key', 'GITHUB_TOKEN').maybeSingle();
+    if (!t?.value) return 0;
+    const r = await fetch('https://api.github.com/repos/lesaruss/vegansexplore-com/actions/workflows/find-us-post.yml/dispatches', {
+      method: 'POST', headers: { Authorization: `Bearer ${t.value}`, Accept: 'application/vnd.github+json', 'User-Agent': 've-claims', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ref: 'main' }) });
+    if (r.status !== 204) console.log('find us workflow not started by ve-claims (the schedule will run it):', r.status);
+    return r.status;
+  } catch (e) { console.error('find us kick', String(e)); return 0; }
+}
 async function isLiveImage(path: string): Promise<boolean> {
   try { const r = await fetch(`https://vegansexplore.com${path}?v=${Date.now()}`, { method: 'HEAD' }); return r.ok && /^image\//.test(r.headers.get('content-type') || ''); }
   catch { return false; }
@@ -945,7 +958,7 @@ async function approveClaim(claim: any, reviewerId: string | null, note: string 
   const { error: e2 } = await db.from('ve_listing_claims').update({ status: 'approved', review_note: note, reviewed_by: reviewerId, reviewed_at: now, updated_at: now }).eq('id', claim.id);
   if (e2) return e2.message;
   // Liz's email to every owner who is not a product brand on the Partner plan (those get the confirmation above).
-  if (claim.tier !== 'brand') await startFindUs(claim.listing_id).catch((e) => console.error('find us start', claim.listing_id, String(e)));
+  if (claim.tier !== 'brand' && await startFindUs(claim.listing_id).catch((e) => { console.error('find us start', claim.listing_id, String(e)); return false; })) await kickFindUs();
   if (claim.tier !== 'brand') { const r = await lizApprovalEmail(claim).catch((e) => 'failed: ' + String(e)); if (r.startsWith('failed')) console.error('liz approval email', claim.id, r); }
   return null;
 }
