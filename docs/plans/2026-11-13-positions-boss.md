@@ -214,3 +214,20 @@ and whether posting can be switched off. Defaults standing unless Sean changes t
 - **Check-in is automatic**: completed queue tasks are the proof of work and appear in the payday notice (Sean: "Daily tally, boom, boom").
 - **Logan answers her questions**, looping Sean in for decisions.
 - **Contractor-safe wording kept** (Sean: "make sure all that's good"): the queue is the scope of work; she picks her hours and her words.
+
+## Her queue: what the code already gives us (code map, 2026-11-13; counts from docs, not live)
+
+- **Instagram is the main channel, not the follow-up.** Docs from 2026-11-04 record 2,384 approved listings and only 79 to 219 contacts with
+  an email; the 2026-11-08 scan found 885 Instagram handles on approved listings, plus about 2,386 handle-only rows in `ve_businesses`.
+  Live counts when the connector is back.
+- **Parent for the queue: `ve_campaign_dms`** (migration `20261110_gift_guide_program_dms.sql`), already an Instagram DM list (handle,
+  opener, follow_up, nudge; to_send, sent, replied, done) shown in HQ `OutreachDesk.tsx`. Her queue extends it with an owner (the position
+  holder), a priority and Sean's note, rather than a new table. (`admin/depot/social.html`, named as the queue parent in CLAUDE.md, is now a
+  redirect stub.)
+- **Sources:** `listings.ig_handle || instagram`; no reply in 5 days from `ve_outreach_roster()` (cold, `last_sent_at`), with
+  `owner_member_id is null`; no email = `listings.email` and `ve_outreach_contacts.email` both null; mentions from `ve_content_mentions`
+  joined to listings; hot leads added by Logan.
+- **Personal links:** `ve_links` rows inserted per card (the `hg-<slug>` pattern, tag `instagram-dm`, channel dm); the card closes on a claim
+  (`listings.owner_member_id`, `ve_listing_claims`) or a member credited through `ve-links` `claim`.
+- **Her questions:** a thread per card on the `ve_bounty_messages` pattern (thread key, member, body, staff).
+- Mock slide: "Her queue" in `/mocks/positions/`; the manual tally is gone (finished cards are her check-in).
