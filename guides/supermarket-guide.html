@@ -120,6 +120,8 @@
     .dg-door{border:1px solid var(--warmline);background:var(--warm);border-radius:14px;padding:22px 24px;max-width:860px;}
     .dg-door p{font-size:15px;line-height:1.65;margin:0 0 16px;}
     .dg-btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:11px 20px;border-radius:6px;font-family:inherit;font-size:12px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;text-decoration:none;border:none;cursor:pointer;background:#22C55E;color:#03170a;white-space:nowrap;}
+    /* A store's name can be long ("Try it: Publix Super Market at Brickell..."): on phones the button wraps instead of pushing the page sideways. */
+    @media (max-width:600px){.dg-btns .dg-btn{white-space:normal;max-width:100%;text-align:center;line-height:1.35}}
     .dg-btn:hover{background:#4ade80;}
     .dg-btn.dg-ghost{background:#fff;color:var(--ink);border:1.5px solid var(--line);}
     .dg-btns{display:flex;flex-wrap:wrap;gap:12px;align-items:center;}
