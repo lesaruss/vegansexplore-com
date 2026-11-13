@@ -32,3 +32,12 @@ Follows `2026-11-13-ve-front-of-house-pricing-v9-to-lesaruss-shop.md` (checkpoin
 
 ## Next
 The coach frame and its sample coach demo (playbook `lesaruss-ai-professional-frames`).
+
+## Update, same day: photographer outreach loaded (Sean: "Yes.")
+Program `photographer-bench-2026` in HQ Outreach > Campaigns
+(https://hq.lesaruss.ai/branddesk/brands/vegans-explore?view=people&p=campaigns&prog=photographer-bench-2026): the C&I Studios email
+(campaign `photographer-bench-2026-email`, **draft**), Instagram DMs to @gonzcasa and @phillyvegans, contact forms for Riguel Dorta and
+Jason Varney, five personal `/go/pb-*` links. Contacts confirmed through ve-web-reader; the rest of the first list is parked (see
+`docs/outreach/2026-11-13-photographer-bench.md`). The Gig Board takes `?city=` and its signed-out gate returns to the shared job.
+Proof clicks: Logan opened `/go/pb-varney` twice (headless browser) on 2026-11-13 to check the redirect; discount them if they show.
+Waiting on Sean: his final look, then turn the campaign on; the DMs and forms are sent by hand from the program page.
