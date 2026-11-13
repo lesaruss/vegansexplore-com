@@ -674,3 +674,10 @@ Stripe: cancelling a client's old subscription is Sean's. First use: Brooke Sell
   Proof: two [TEST] live Checkout Sessions (Site with photos and video; Managed with photos) read back from Stripe through
   `ve-once-pricing-v9` (both $1,000 due today, intervals right), then expired; rows removed; the once function is the 410 stub. Pages
   checked live at 1440 and 390. The $150 Community Manager onboarding fee on Site is internal and appears nowhere public.
+
+## The LESARUSS.ai shop live (2026-11-13, Logan)
+Sean, 2026-11-13: "Vegans Explore advertises, LESARUSS.ai sells" (canon v16 `sales_route_v16`). lesaruss.ai/shop (lesaruss-ai-site) lists
+`lr_shop_items` (lesaruss-hq migration 109); `lesaruss-shop` charges the LESARUSS Inc. account (acct ...HzdnUn). Photos, video and press
+release buy now; Site, Managed, social and PR outreach take a request until the v9 agreement. /business/managed, the pitch page, /business
+and the Business Guide hand off to the shop; the VE `bd_*_v9` Prices are inactive. Photographer jobs live in Fort Lauderdale and
+Philadelphia. Handoff `docs/handoff/2026-11-13-lesaruss-shop-live.md`.
