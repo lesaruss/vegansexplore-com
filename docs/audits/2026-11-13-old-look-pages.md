@@ -31,8 +31,11 @@
   scene with the kit on top (sentence-case titles, Next and each cover's call the one orange action, the second button white, step dots
   orange): `/partners`, the dinner invitations, the Plant Based Showcase, World Vegan Expo, the Dolphins pitch, and the shared guided
   shell (`ve-guided.js`: the brand kit, mocks; only the slide bar's Next orange). `/business/tour` and `/groups/welcome` (the Welcome
-  Guide's frame) join the Guides section and wear its pink header. **Next: the dashboard (18 views, checked through `/dashboard/sample`),
-  then the Depot (57).** Mocks and the archive stay as they are (reference and retired pages).
+  Guide's frame) join the Guides section and wear its pink header. **The dashboard (81d7adf, 9f5f0bf, live 4:36 PM Eastern):** the member dashboard itself
+  (`center-console`, checked through `/dashboard/sample`) was already on the kit; its 17 own pages now carry `data-look="plain"`
+  (every sign-in gate's one orange button, script-drawn gates `[id$="-gate"] > button` too, outlined cards; Advertising's and
+  Opportunities' gradient bands solid kit blocks). Signed-in content was previewed locally as a stand-in admin with every data call
+  answered empty (no real session, nothing written). **Next: the Depot (57).** Mocks and the archive stay as they are (reference and retired pages).
   **Left in this group, next pass:** the dinner invitations (`/dinners/host`, `/dinners/palm-beach`: dark guided pages, built like the pitch
   decks), the certified page's photo header, the Dolphins game night event page and the news article page's all-caps headline.
 
