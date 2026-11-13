@@ -174,6 +174,8 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .loc-row{display:block;padding:9px 0;border-top:1px solid rgba(0,0,0,.07);text-decoration:none;color:inherit;font-size:13px;line-height:1.4}
 .loc-row:first-of-type{border-top:0}
 .loc-row strong{color:var(--vb-go-hover,#1f5f22)}
+.loc-all{display:block;margin-top:12px;padding:11px 14px;border:1.5px solid var(--vb-go-hover,#1f5f22);border-radius:6px;text-align:center;font:800 12px Montserrat,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--vb-go-hover,#1f5f22);text-decoration:none}
+.loc-all:hover{background:var(--vb-go-hover,#1f5f22);color:#fff}
 .loc-row:hover strong{text-decoration:underline}
 .loc-row span:not(.loc-closed){display:block;color:rgba(26,26,26,.7);font-size:12.5px}
 .loc-closed{display:inline-block;font-size:10.5px;font-weight:800;color:#8a1c12;background:#FDE7E7;border-radius:6px;padding:1px 7px;margin-left:4px}
@@ -1640,25 +1642,80 @@ function workedWith(l, rows){
   }).join('') + '</div>';
 }
 
+// Locations (Sean, 2026-11-13, on Next Level Veggie Grill's 19: "we need to build in on the profiles... that they can find multiple
+// locations... it can get, maybe it's a scroll... internal scroll that messes up the full scroll"). The side card shows the five
+// nearest to this one and See all; the Locations tab (?tab=locations) is every location on the shared Directory card, with search
+// and Near me, 12 at a time with Show more in place. Nothing scrolls inside itself.
 function loadLocations(l){
   var mainId = l.parent_id || l.id;
-  var url = SUPABASE_URL + '/rest/v1/listings?or=(id.eq.' + mainId + ',parent_id.eq.' + mainId + ')&status=eq.approved&select=id,slug,name,location_label,address_street,address_city,address_state,business_status&order=address_state.asc,address_city.asc';
-  fetch(url, { headers:{ apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.json(); }).then(function(rows){
-    rows = (rows || []).filter(function(x){ return x.id !== l.id; });
+  var url = SUPABASE_URL + '/rest/v1/listings?or=(id.eq.' + mainId + ',parent_id.eq.' + mainId + ')&status=eq.approved&select=id,slug,name,location_label,address_street,address_city,address_state,business_status,latitude,longitude&order=address_state.asc,address_city.asc';
+  fetch(url, { headers:{ apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function(r){ return r.json(); }).then(function(all){
+    all = Array.isArray(all) ? all : [];
+    var rows = all.filter(function(x){ return x.id !== l.id; });
     if(!rows.length) return;
-    // Open ones first, closed ones last (kept for memory).
-    rows.sort(function(a, b){ return (a.business_status === 'CLOSED_PERMANENTLY') - (b.business_status === 'CLOSED_PERMANENTLY'); });
+    function km(a, b){ if(a.lat == null || b.lat == null) return 1e9; var R = 6371, t = Math.PI / 180, x = (b.lat - a.lat) * t, y = (b.lng - a.lng) * t;
+      var h = Math.sin(x/2) * Math.sin(x/2) + Math.cos(a.lat * t) * Math.cos(b.lat * t) * Math.sin(y/2) * Math.sin(y/2); return 2 * R * Math.asin(Math.sqrt(h)); }
+    function pt(x){ return { lat: x.latitude == null ? null : +x.latitude, lng: x.longitude == null ? null : +x.longitude }; }
+    var here = pt(l), closed = function(x){ return x.business_status === 'CLOSED_PERMANENTLY'; };
+    // Open ones first, nearest to this one first, closed ones last (kept for memory).
+    rows.sort(function(a, b){ return (closed(a) - closed(b)) || (km(here, pt(a)) - km(here, pt(b))); });
     var side = document.querySelector('.listing-page-grid .listing-sidebar'); if(!side) return;
+    var total = all.length, SIDE = 5, many = rows.length > SIDE;
     var card = document.createElement('div'); card.className = 'side-card'; card.id = 've-locations';
-    card.innerHTML = '<div class="side-card-title">' + (rows.length === 1 ? 'Another location' : 'More locations (' + rows.length + ')') + '</div>' +
-      rows.map(function(x){
-        var closed = x.business_status === 'CLOSED_PERMANENTLY';
+    card.innerHTML = '<div class="side-card-title">' + (rows.length === 1 ? 'Another location' : (many ? 'Nearest locations' : 'More locations (' + rows.length + ')')) + '</div>' +
+      rows.slice(0, SIDE).map(function(x){
         var title = x.location_label || x.address_city || x.name;
         var where = [x.address_street, x.address_city, x.address_state].filter(Boolean).join(', ');
-        return '<a class="loc-row" href="/directory/' + encodeURIComponent(x.slug) + '"><strong>' + esc(title) + '</strong>' + (closed ? ' <span class="loc-closed">Closed</span>' : '') + (where ? '<span>' + esc(where) + '</span>' : '') + '</a>';
-      }).join('');
+        return '<a class="loc-row" href="/directory/' + encodeURIComponent(x.slug) + '"><strong>' + esc(title) + '</strong>' + (closed(x) ? ' <span class="loc-closed">Closed</span>' : '') + (where ? '<span>' + esc(where) + '</span>' : '') + '</a>';
+      }).join('') +
+      (many ? '<a class="loc-all" href="?tab=locations" data-loc-all>See all ' + total + ' locations</a>' : '');
     var first = side.querySelector('.side-card');
     if(first && first.nextSibling) side.insertBefore(card, first.nextSibling); else side.appendChild(card);
+    if(!many) return;
+    // The Locations tab, only for a business with more than six places.
+    var btn = document.getElementById('tab-btn-locations'), panel = document.getElementById('tab-locations');
+    if(!btn || !panel) return;
+    btn.hidden = false;
+    card.querySelector('[data-loc-all]').addEventListener('click', function(e){ e.preventDefault(); showListingTab('locations'); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+    var ready = window.VERegionDirectory ? Promise.resolve() : new Promise(function(res){
+      var sc = document.createElement('script'); sc.src = '/public/ve-region-directory.js'; sc.onload = res; sc.onerror = res; document.head.appendChild(sc);
+    });
+    ready.then(function(){
+      if(!window.VERegionDirectory) return;
+      VERegionDirectory.css();
+      return fetch(SUPABASE_URL + '/rest/v1/listings?status=eq.approved&or=(id.eq.' + mainId + ',parent_id.eq.' + mainId + ')&select=' + encodeURIComponent(VERegionDirectory.FIELDS + ',location_label,address_street,latitude,longitude'), { headers:{ apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
+        .then(function(r){ return r.json(); }).then(function(full){
+          full = (Array.isArray(full) ? full : []).filter(function(x){ return !closed(x); });
+          // Each card names its place (the location's name, then the chain's), so 19 cards are not 19 of the same title.
+          full.forEach(function(x){ var lbl = x.location_label || x.address_city; var base = String(x.name || '').replace(/\s+-\s+[^-]+$/, ''); x._base = base; if(lbl) x.name = base + ' · ' + lbl; });
+          full.sort(function(a, b){ return String(a.address_state || '').localeCompare(String(b.address_state || '')) || String(a.address_city || '').localeCompare(String(b.address_city || '')); });
+          var S = { q: '', near: null, shown: 12 };
+          var base = (full[0] && full[0]._base) || l.name;
+          panel.innerHTML = '<div class="aisle"><p class="aisle-lede">' + full.length + ' ' + esc(base) + ' locations. Search a city, state or ZIP, or find the one nearest you.</p>' +
+            '<div class="aisle-tools"><input type="search" id="locQ" placeholder="City, state or ZIP" aria-label="Search locations"><button type="button" class="aisle-more" id="locNear" style="margin:0">Near me</button><span class="aisle-count" id="locCount"></span></div>' +
+            '<div class="vrd-root"><div class="rank-grid" id="locGrid"></div></div><button type="button" class="aisle-more" id="locMore" hidden></button></div>';
+          function draw(){
+            var q = S.q.trim().toLowerCase();
+            var list = full.filter(function(x){ return !q || [x.name, x.location_label, x.address_street, x.address_city, x.address_state, x.address_zip].join(' ').toLowerCase().indexOf(q) >= 0; });
+            if(S.near) list = list.slice().sort(function(a, b){ return km(S.near, pt(a)) - km(S.near, pt(b)); });
+            document.getElementById('locCount').textContent = list.length + (list.length === 1 ? ' location' : ' locations');
+            var grid = document.getElementById('locGrid');
+            grid.innerHTML = list.slice(0, S.shown).map(function(x, i){ return VERegionDirectory.card(x, i); }).join('') || '<p class="aisle-lede">No location matches that.</p>';
+            VERegionDirectory.wire(grid);
+            var more = document.getElementById('locMore'), left = list.length - S.shown; more.hidden = left <= 0; more.textContent = 'Show ' + left + ' more';
+          }
+          document.getElementById('locQ').addEventListener('input', function(e){ S.q = e.target.value; S.shown = 12; draw(); });
+          document.getElementById('locMore').addEventListener('click', function(){ S.shown = 1e6; draw(); });
+          document.getElementById('locNear').addEventListener('click', function(){
+            var b = this; if(!navigator.geolocation){ b.textContent = 'Location not available'; return; }
+            b.disabled = true; b.textContent = 'Finding you...';
+            navigator.geolocation.getCurrentPosition(function(p){ S.near = { lat: p.coords.latitude, lng: p.coords.longitude }; S.shown = 12; b.disabled = false; b.textContent = 'Nearest first'; draw(); },
+              function(){ b.disabled = false; b.textContent = 'Near me'; }, { timeout: 15000, maximumAge: 300000 });
+          });
+          draw();
+          try { if(new URLSearchParams(location.search).get('tab') === 'locations') showListingTab('locations'); } catch(e){}
+        });
+    }).catch(function(){});
   }).catch(function(){});
 }
 
@@ -4791,6 +4848,7 @@ function renderListing(l){
         // Tab nav — Menu tab hidden until items confirmed; Video + Pulse require claimed status
         '<nav class="listing-tabs" role="tablist">'+
           '<button class="tab-btn active" data-tab="overview" role="tab" aria-selected="true">Overview</button>'+
+          (isGroceryStore(l) ? '' : '<button class="tab-btn" data-tab="locations" role="tab" aria-selected="false" id="tab-btn-locations" hidden>Locations</button>')+
           (l._campaign ? '<button class="tab-btn" data-tab="campaign" role="tab" aria-selected="false">Campaign<span class="tab-live" aria-hidden="true"></span></button>' : '')+
           (isGroceryStore(l) ? '<button class="tab-btn" data-tab="aisle" role="tab" aria-selected="false">Vegan aisle</button>' : '')+
           (isGroceryStore(l) ? '<button class="tab-btn" data-tab="stores" role="tab" aria-selected="false" hidden>Find a store</button>' : '')+
@@ -4820,6 +4878,7 @@ function renderListing(l){
         (l._campaign ? '<div class="tab-panel" id="tab-campaign" role="tabpanel">'+campaignTab(l._campaign)+'</div>' : '')+
         (isGroceryStore(l) ? '<div class="tab-panel" id="tab-aisle" role="tabpanel"><div class="aisle"><div class="aisle-empty">Loading the Vegan aisle...</div></div></div>' : '')+
         (isGroceryStore(l) ? '<div class="tab-panel" id="tab-stores" role="tabpanel"><div class="aisle"><div class="aisle-empty">Loading stores...</div></div></div>' : '')+
+        (isGroceryStore(l) ? '' : '<div class="tab-panel" id="tab-locations" role="tabpanel"><div class="aisle"><div class="aisle-empty">Loading locations...</div></div></div>')+
         (l._brandSite ? '<div class="tab-panel" id="tab-products" role="tabpanel"><div class="bsite-pad" id="bsite-products"><div class="aisle-empty">Loading the products...</div></div></div>' +
           '<div class="tab-panel" id="tab-brand" role="tabpanel"><div class="bsite-pad" id="bsite-door"><div class="aisle-empty">Loading...</div></div></div>' +
           ['insights', 'myproducts', 'opps', 'media', 'ask', 'ads'].map(function(t){ return '<div class="tab-panel" id="tab-' + t + '" role="tabpanel"><div class="bsite-pad" id="bp-' + t + '"></div></div>'; }).join('')
