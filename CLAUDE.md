@@ -120,7 +120,7 @@ Each file holds the full, dated record of decisions, tables, functions and proof
 | `docs/history/membership.md` | Registration, points and levels, Earn your Passport, three doors, the Explorer path and badges, the survey door, the Welcome Guide, invites, referrals, abuse watch, the homepage |
 | `docs/history/partner-programs.md` | Ambassadors, Founding Member invitations, Nonprofit and Group Partners, pathways, the talent shop, member profiles and partner windows |
 | `docs/history/branddesk.md` | BrandDesk (production wing and managed marketing), the sample business and demo showroom, Brooke Sellers, client billing |
-| `docs/history/outreach.md` | Business outreach, Depot > Outreach (removed), moving to BrandDesk, people campaigns, orientation, media drafts |
+| `docs/history/outreach.md` | Business outreach, Depot > Outreach (removed), moving to BrandDesk, people campaigns, orientation, media drafts, Media outlets (the private PR list) |
 | `docs/history/depot-ideas-feedback.md` | The Depot home, Ideas, Blueprint, feedback, Talk to Liz, playbooks index, analytics, Signal |
 | `docs/history/dashboard.md` | Dashboard versions, revenue, money-in emails, Sign In As |
 | `docs/history/lesaruss-ai.md` | One framework with LESARUSS.ai, Continue with LESARUSS |
