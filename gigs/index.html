@@ -68,10 +68,14 @@
       }
       function start() {
         if (!(window.VEAuth && VEAuth.isLoggedIn())) {
-          el.innerHTML = '<div class="gate"><p><b>The Gig Board is for members.</b> Sign in to see the gigs in your city, or open the sample to see how it works.</p><a href="/gigs/sample">See the sample board</a><a class="ghost" href="/login?next=/gigs">Sign in</a></div>';
+          // A shared job link (/gigs?city=<chapter>#gig/<id>) comes back to that job after signing in or joining free.
+          var back = encodeURIComponent(location.pathname + location.search + location.hash);
+          el.innerHTML = '<div class="gate"><p><b>The Gig Board is for members.</b> ' + (/^#gig\//.test(location.hash) ? 'Sign in, or join free with a short survey, to see this job and apply.' : 'Sign in to see the gigs in your city, or open the sample to see how it works.') + '</p><a href="/login?next=' + back + '">Sign in or join free</a><a class="ghost" href="/gigs/sample">See the sample board</a></div>';
           return;
         }
-        VEGigs.live(el, { onView: sync }).catch(function () { el.innerHTML = '<div class="gate"><p>The board could not load. Refresh to try again.</p></div>'; });
+        // ?city= opens a shared job's chapter (a photographer in Philadelphia whose home chapter is not set yet).
+        var CITY = (new URLSearchParams(location.search).get('city') || '').replace(/[^a-z-]/g, '');
+        VEGigs.live(el, { onView: sync, city: CITY || undefined }).catch(function () { el.innerHTML = '<div class="gate"><p>The board could not load. Refresh to try again.</p></div>'; });
       }
       if (window.VEAuth) start(); else window.addEventListener('load', start);
     })();

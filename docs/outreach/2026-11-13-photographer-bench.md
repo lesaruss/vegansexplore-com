@@ -1,4 +1,29 @@
-# The photographer bench: list and drafts (waiting on Sean's yes)
+# The photographer bench: list and drafts
+
+**Sean said yes (2026-11-13).** Loaded for his final look in HQ Outreach > Campaigns, program `photographer-bench-2026`
+(https://hq.lesaruss.ai/branddesk/brands/vegans-explore?view=people&p=campaigns&prog=photographer-bench-2026), migration
+`supabase/migrations/20261113_photographer_bench_program.sql`. The email campaign `photographer-bench-2026-email` is **draft**: nothing
+sends until Sean turns it on.
+
+## Confirmed 2026-11-13 (read through ve-web-reader)
+
+| Who | City | Confirmed | Channel | Tracked link |
+|---|---|---|---|---|
+| C&I Studios | Fort Lauderdale | Photography studio; contact page publishes contact@c-istudios.com | Email (draft) | `/go/pb-cistudios` |
+| Carlos, Miami Profile (gonza.co) | Miami, covers South Florida | Food photography page: restaurants, chefs and menus | Instagram @gonzcasa (DM) | `/go/pb-gonzcasa` |
+| Photography by Riguel (Riguel Dorta) | Miami, covers Broward | Food, beverage and menu photography for restaurants; no email published | Contact form, pasted by hand | `/go/pb-riguel` |
+| Jason Varney | Philadelphia | Food, travel and lifestyle photographer since 2007 (Drexel profile, varneyphoto.com) | Contact form on varneyphoto.com | `/go/pb-varney` |
+| Philly Vegans | Philadelphia | Instagram @phillyvegans, on Philly Mag's Vegan scene story | DM for referrals | `/go/pb-phillyvegans` |
+
+Dropped or parked: SoFlo Vegans now redirects to our own Vegans Explore South Florida page (not an outside channel). Limestar
+Photography, TYE Studios, Neal Santos, Courtney Apple, K.C. Tinari, Michael Miville, Paul S. Bartholomew and Philippe Lesaux could not
+be confirmed with a contact through the reader (pages blocked, empty or no contact published); parked until a link to them turns up.
+
+The job links open `/gigs?city=<chapter>#gig/<id>`; signed out, the Gig Board's gate now says "Sign in or join free" and brings them
+back to that job (`gigs/index.html`).
+
+## The original list (2026-11-13, before confirming)
+
 
 Playbook `ve-front-of-house`, canon `canon-ve-front-of-house` v16 `sales_route_v16` (talent: "Start finding photographers now: a
 paid job on the Opportunities board and a city-by-city list... drafts go to Sean first"). Nothing here has been sent.
