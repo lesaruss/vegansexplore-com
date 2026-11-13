@@ -126,6 +126,15 @@
   function catsFor() { return CAT_CONFIG.filter(function (c) { return (!c.membersOnly || memberNow()) && (!c.adminOnly || adminNow()); }); }
 
   var CSS = ''
+    // The Which one? box under a search (nearPickShow), on any page that shares Near me.
+    + '.vrd-place-pick{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:40;background:#fff;border:2px solid #1a1a1a;border-radius:6px;box-shadow:4px 4px 0 #E8F5E9;padding:12px;font-family:Montserrat,sans-serif;text-align:left;min-width:220px}'
+    + '.vrd-place-pick .vrd-pp-h{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px;font-size:14px;color:#1a1a1a}'
+    + '.vrd-place-pick .vrd-pp-x{border:0;background:none;font-size:20px;line-height:1;cursor:pointer;color:#1a1a1a;padding:0 4px}'
+    + '.vrd-place-pick .vrd-pp-list{display:flex;flex-wrap:wrap;gap:6px}'
+    + '.vrd-place-pick [data-pp]{font:inherit;font-size:13px;font-weight:700;color:#1a1a1a;background:#fff;border:2px solid #1a1a1a;border-radius:6px;padding:8px 12px;cursor:pointer;display:inline-flex;align-items:center;gap:6px}'
+    + '.vrd-place-pick [data-pp]:hover{background:#E8F5E9}'
+    + '.vrd-place-pick [data-pp][aria-pressed=true]{background:#E8F5E9;border-color:#2D5C27;color:#2D5C27}'
+    + '.vrd-place-pick [data-pp] small{font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase}'
     + '.vrd-root{font-family:Montserrat,sans-serif}'
     + '.vrd-root .cat-tabs{display:flex;gap:0;border-bottom:2px solid #e8e8e8;flex-wrap:wrap}'
     + /* Muted text is #666 (5.7:1 on white, WCAG AA); #888 and #aaa failed. */ '.vrd-root .cat-tab{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:11px 20px;border:none;background:transparent;color:#666;cursor:pointer;font-family:Montserrat,sans-serif;border-bottom:2px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;white-space:nowrap}'
@@ -1057,6 +1066,7 @@
       if (document.contains(inp) && String(inp.value || '').trim().toLowerCase() === typed) { inp.value = ''; setTimeout(function () { inp.dispatchEvent(new Event('input', { bubbles: true })); }, 0); }
     });
     NEAR.active = false; NEAR.origin = null; NEAR.zip = ''; NEAR.want = ''; NEAR.place = ''; NEAR.placeQ = ''; NEAR.radius = null;
+    nearPickDrop();
     nearSave(); nearRepaint(); nearTell();
   }
   function nearBusy(on) {
@@ -1104,7 +1114,7 @@
     clearTimeout(input._vrdCityT);
     NEAR.cityInputs = (NEAR.cityInputs || []).filter(function (x) { return document.contains(x); });
     if (NEAR.cityInputs.indexOf(input) < 0) NEAR.cityInputs.push(input);
-    if (NEAR.active && NEAR.placeQ && k !== NEAR.placeQ) { nearClear(); }
+    if (NEAR.active && NEAR.placeQ && k !== NEAR.placeQ) { nearPickDrop(); nearClear(); }
     if (!v || (NEAR.active && NEAR.placeQ === k)) return;
     input._vrdCityT = setTimeout(function () {
       if (String(input.value || '').trim().toLowerCase() !== k) return;
@@ -1113,8 +1123,55 @@
         if (!pl || String(input.value || '').trim().toLowerCase() !== k) return;
         nearSet({ lat: pl.lat, lng: pl.lng }, '', pl.label, k);
         if (cb) cb(true);
+        // More than one city by that name: ask which, the biggest showing until they pick.
+        placeChoices(k).then(function (list) {
+          if (list.length > 1 && NEAR.active && NEAR.placeQ === k && String(input.value || '').trim().toLowerCase() === k) nearPickShow(input, list);
+        });
       });
     }, 450);
+  }
+  // Which one? (Sean, 2026-11-13: "If there's two locations that conflict, could we give them the option of picking the right one, so
+  // we could show the city with the state and they choose that one?"). A bare city name that is more than one city
+  // (rpc ve_search_place_choices: "Decatur" is IL, AL and GA) opens a small box under the search: the biggest shows first, a tap on
+  // another turns the 50 miles to it and writes "Decatur, GA" in the box (so the address, ?near=decatur, ga, opens the same one).
+  var CHOICE_CACHE = {};
+  function placeChoices(k) {
+    if (k in CHOICE_CACHE) return Promise.resolve(CHOICE_CACHE[k]);
+    return fetch(SUPABASE_URL + '/rest/v1/rpc/ve_search_place_choices', { method: 'POST', headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_q: k }) })
+      .then(function (r) { return r.ok ? r.json() : []; })
+      .then(function (d) { return (CHOICE_CACHE[k] = Array.isArray(d) ? d.filter(function (c) { return c && c.label && okNum(c.lat) && okNum(c.lng); }) : []); })
+      .catch(function () { return []; });
+  }
+  function nearPickDrop() {
+    document.querySelectorAll('.vrd-place-pick').forEach(function (n) { n.remove(); });
+    if (NEAR.pickOff) { NEAR.pickOff(); NEAR.pickOff = null; }
+  }
+  function nearPickShow(input, list) {
+    injectStyleOnce(); nearPickDrop();
+    var host = input.parentElement; if (!host) return;
+    if (getComputedStyle(host).position === 'static') host.style.position = 'relative';
+    var box = document.createElement('div');
+    box.className = 'vrd-place-pick'; box.setAttribute('role', 'group'); box.setAttribute('aria-label', 'Which ' + list[0].name + '?');
+    box.innerHTML = '<div class="vrd-pp-h"><b>Which ' + esc(list[0].name) + '?</b><button type="button" class="vrd-pp-x" aria-label="Close">&times;</button></div>' +
+      '<div class="vrd-pp-list">' + list.map(function (c, i) {
+        var on = c.label === NEAR.place;
+        return '<button type="button" data-pp="' + i + '" aria-pressed="' + on + '">' + esc(c.label) + (on ? '<small>Showing</small>' : '') + '</button>';
+      }).join('') + '</div>';
+    host.appendChild(box);
+    box.addEventListener('click', function (e) {
+      if (e.target.closest('.vrd-pp-x')) { nearPickDrop(); return; }
+      var b = e.target.closest('[data-pp]'); if (!b) return;
+      var c = list[+b.getAttribute('data-pp')]; nearPickDrop();
+      if (c.label === NEAR.place) return;
+      nearSet({ lat: +c.lat, lng: +c.lng }, '', c.label, c.label);
+      input.value = c.label;
+      input.dispatchEvent(new Event('input', { bubbles: true }));
+    });
+    var out = function (e) { if (!box.contains(e.target) && e.target !== input) nearPickDrop(); };
+    var key = function (e) { if (e.key === 'Escape') nearPickDrop(); };
+    setTimeout(function () { document.addEventListener('click', out); document.addEventListener('keydown', key); }, 0);
+    NEAR.pickOff = function () { document.removeEventListener('click', out); document.removeEventListener('keydown', key); };
   }
   // A ZIP typed in a search box (Sean, 2026-11-12: "can they put a zip code... and it pulls up automatically what is in that area"):
   // 5 digits (or ZIP+4) and nothing else turns on Near me from that ZIP and empties the box, so the words filter nothing; a ZIP we do
