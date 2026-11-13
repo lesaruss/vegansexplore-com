@@ -263,3 +263,21 @@ accounts... note the last time they made a post... I could even support the audi
   Positions are stackable: one person can hold several, each its own fee and checklist; her record (cards done, joined, accuracy of her
   notes) shows on her person view, with **Offer another position** (the direct-assign path). Public copy about Community Managers still never
   quotes an amount (canon); the amount appears only in a position's own posting and invite.
+
+## Sean's review of the mock (2026-11-13): "Everything looks good. Those are my notes."
+
+- **One pay calendar for everyone, with catch-up pay.** Sean: "you usually have to wait a cycle to get paid, to get caught up with everyone
+  else, and then you get the back pay with that." Periods run Monday to Sunday, 14 days, anchored Mon 2026-11-16; payday is the Friday after
+  a period ends (Nov 16 to 29 pays Fri Dec 4; Nov 30 to Dec 13 pays Fri Dec 18). A holder who starts mid-period earns $125 / 14 = $8.93 a day
+  (the stub rounded to the cent) from their start date, paid with their first full period. Example: starts Fri Nov 13, first payday Fri Dec 4,
+  $125 + $26.79 = $151.79. Pay notice two days before payday (Wednesday). The last period is prorated the same way to the end date.
+- **W-9 is in the checklist**: step 4, Payouts, through Stripe (confirmed with Sean).
+- **TikTok**: open its round when Sean is ready.
+- **Social Media Manager (Facebook)** (was "Community Inbox"): manage our groups, keep content flowing there, interact with other groups,
+  keep the page current. Measured by followers and a tracked link of its own. Not called Community Manager (that is the city role).
+- **Which roles we post** (Sean): "things that... if AI were to do it, it would take more time fixing it than it would just having a human being
+  do it... And a lot of that is one-to-one interaction with people."
+- **Later, not now: Event Captain**, boots on the ground leading one event, tied to that one event.
+- **Each position sets its own application**: "we want to give them an opportunity to show us what they got... It's not going to be the same for
+  everybody." Examples of work where it matters; for the Instagram role it is admin work, so a few plain questions.
+- **The three result emails are approved as written.**
