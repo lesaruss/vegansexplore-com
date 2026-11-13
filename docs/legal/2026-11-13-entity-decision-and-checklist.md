@@ -18,21 +18,25 @@ property for a charitable purpose is prohibited from becoming" another kind of e
 
 ## The ordered checklist
 
-### Step 0. Before anything is filed (Sean sends these to V)
-1. **Vegans Explore Inc.'s articles of incorporation and bylaws** (Sunbiz record N24000008839, document images). They answer: does
-   it have voting members (this decides who votes), what does its purpose clause say, and does a dissolution clause say where
-   assets go?
-2. **What Vegans Explore Inc. holds**: the Stripe balance, the bank account (and its balance), live subscriptions and their
-   customers, any money received as a donation or under the "Tax-Deductible Sponsorship" offer, and whose name the domain and
-   other accounts are in.
-3. **LESARUSS Inc.'s Sunbiz document number and EIN**, and confirmation it is **Active** on Sunbiz (865.09(3)(a)4 requires it).
-4. **Fictitious-name search**: is "Vegans Explore" already registered to anyone, LESARUSS Inc. included? (Sunbiz, Search Records,
-   Fictitious Name.)
-5. **The county of LESARUSS Inc.'s principal place of business** (sets which newspaper carries the notice).
+### Step 0. What is already on file, and the one thing still needed
+Read from the database 2026-11-13 (these were in the records; the first draft of this checklist missed them):
+- **Board**: Sean and Claudia Russell. Ella Magers resigned 2026-10-21 (`foundation_board_consents`, choice resign), effective when
+  delivered (617.0807).
+- **The 2026-10-08 consents** (Sean and Claudia approved) were for renaming VE Inc. to LESARUSS Foundation, Inc., **not** for
+  dissolving it. Claudia has agreed to dissolve (Sean, 2026-11-13), and that now needs her signature on the new consent (Step 2).
+- **Money** (`finance_entities`, `finance_stripe_txns`): VE Inc. Stripe `acct_1Q8MzdP0w5C9oZhv`, gross 2025 $11,533.02 (78 charges:
+  vendor booth fees, subscriptions, a community partner registration), 2026 $2,494 through Nov 11 (a live subscription still bills
+  here). **None labeled a donation** (the open check from the 2026-11-12 BOSS run, done). Sean: "Vegans Explore is making no
+  money... all that's come in has come in for services LESARUSS has rendered."
+- **LESARUSS Inc.**: Sunbiz P20000048978, Active (2026 annual report filed May 1, 2026), 300 SW 1st Ave, Suite 155, Fort Lauderdale,
+  FL 33301 (Broward County). It already has its own Stripe account (`acct_17uJd8JqP8HzdnUn`).
+- **Still needed from Sean**: the VE Inc. articles from Sunbiz (Sean is sending them) to confirm there are no voting members and
+  that the articles and bylaws do not forbid acting by written consent. Also LESARUSS Inc.'s EIN for the DBA form, if it is not
+  already in HQ.
 
 ### Step 1. Register the DBA (Sean can do this himself)
 1. **Advertise** the intent to register "Vegans Explore" **once in a newspaper** (as defined in chapter 50) in the county of
-   LESARUSS Inc.'s principal place of business. This comes **before** filing, because the registration certifies it was done
+   LESARUSS Inc.'s principal place of business: **Broward County** (Fort Lauderdale address on its 2026 annual report). This comes **before** filing, because the registration certifies it was done
    (865.09(3)(a)5).
 2. **File the Fictitious Name Registration**: Sunbiz form CR4E001 or online ("Start E-Filing > Fictitious Name Registration").
    **$50.** Registrant: LESARUSS Inc., with its Florida document number and EIN. Valid until December 31 of the fifth calendar
@@ -40,24 +44,25 @@ property for a charitable purpose is prohibited from becoming" another kind of e
 3. Florida law says a business may not trade under a fictitious name until it is registered (865.09(3)(a)). The contracts
    already say "LESARUSS Inc. d/b/a Vegans Explore", so this goes first.
 
-### Step 2. Vegans Explore Inc. board meeting (one meeting, minutes signed)
-Voting rule (617.1402 and 617.1406): **if there are no voting members, a majority of the directors then in office** adopts each
-resolution at a board meeting. If there are voting members, the board recommends and the members vote (a majority of votes cast
-at a meeting called with notice). The bylaws from Step 0 decide which applies.
-1. Approve moving the operating business (customers, subscriptions, the Stripe account, the name) to LESARUSS Inc. on terms the
-   attorney sets. Sean controls both sides, so Ella votes as the disinterested director and the minutes say why the terms are
-   fair. 617.0505 bars distributions to members, directors and officers except as the dissolution rules allow.
-2. Resolution to dissolve (617.1402).
-3. **Plan of distribution of assets** (617.1406(3)), which must provide, in this order: (a) pay or provide for every liability;
-   (b) return assets that must be returned on dissolution; (c) send **assets restricted to charitable, educational or similar
-   use** to an organization doing substantially similar work; (d) distribute other assets as the articles or bylaws say;
-   (e) anything left goes to whoever the plan names, which can be a for-profit such as LESARUSS Inc. An officer signs a
-   certificate of compliance, and **the plan is filed with Sunbiz** (617.1406(4)). 617.1405(6): property dedicated to a charitable
-   purpose cannot be diverted by dissolution.
+### Step 2. One written consent, signed by Sean and Claudia (replaces a meeting)
+617.0821: unless the articles or bylaws say otherwise, the board can act without a meeting by a written consent **signed by every
+director**; it counts as a meeting vote. With Ella gone, that is Sean and Claudia. The consent (built like the 2026-10-08 one,
+signed by link) covers:
+1. **Ella's resignation**, effective 2026-10-21, noted for the record.
+2. **Dissolution** of Vegans Explore Inc. (617.1402(2): no voting members, so the directors in office decide). It replaces the
+   2026-10-08 rename to LESARUSS Foundation, which is not going ahead.
+3. **The Vegans Explore name, website, accounts and subscriptions move to LESARUSS Inc.**, which already provided the services
+   behind that revenue.
+4. **Plan of distribution of assets** (617.1406(3)): pay every liability first; no donations or restricted assets were found;
+   whatever is left (a small Stripe and bank balance) goes to LESARUSS Inc. An officer signs a certificate of compliance, and the
+   plan is filed with Sunbiz (617.1406(4)).
+
+Attorney check, light: both directors are related to the receiving company's owner, so the consent should state why the move is
+fair (LESARUSS Inc. rendered the services, and VE Inc. holds almost nothing).
 
 ### Step 3. Move the money to LESARUSS Inc. (before dissolving)
 1. **No new EIN.** LESARUSS Inc. uses its own. A DBA is a name, not a new entity.
-2. **Bank**: payouts go to a LESARUSS Inc. account (a separate one for Vegans Explore is cleaner for showing the brand's numbers;
+2. **Bank**: payouts go to a LESARUSS Inc. account. Stop topping up the VE Inc. account once Stripe has moved (a separate one for Vegans Explore is cleaner for showing the brand's numbers;
    CPA call).
 3. **Stripe**: contact Stripe Support to change the Vegans Explore account's legal entity from Vegans Explore Inc. to LESARUSS
    Inc. (legal name LESARUSS Inc., doing business as Vegans Explore; LESARUSS Inc.'s EIN, bank account and representative).
@@ -96,7 +101,7 @@ It is not a 501(c)(3), so it is taxed as a C corporation (CPA confirms). From ir
 
 | Sean can do himself | Attorney | CPA |
 |---|---|---|
-| Step 0 items 1 to 5 (send them to V) | Terms for moving the business to LESARUSS Inc. with Sean on both sides (617.0505, Ella's vote) | Tax on Vegans Explore Inc.'s revenue to date; final Form 1120; Form 966 timing |
+| Send the VE Inc. articles from Sunbiz | A light read of the written consent (both directors related to LESARUSS Inc.'s owner) | Tax on Vegans Explore Inc.'s revenue to date; final Form 1120; Form 966 timing |
 | The newspaper notice, then the Fictitious Name Registration ($50) | The board resolutions and the plan of distribution: is anything restricted or charitable (617.1406(3)(c), 617.1405(6))? | Which entity issues KJ's 2026 1099; then finish the Stripe 1099 setup |
 | Contact Stripe Support about the entity change | Fixing the "Tax-Deductible Sponsorship" offer; charitable solicitation exposure | Separate bank account and books for Vegans Explore inside LESARUSS Inc. |
 | Hold the board meeting (attorney drafts) | | Florida Department of Revenue accounts and the final state return |
