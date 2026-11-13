@@ -172,3 +172,22 @@ Changes adopted (they override the sections above where they differ):
    2FA on Sean's phone, Sean's email and phone, she declines Accounts Center, weekly checks, same-day offboarding).
 
 Mock: `/mocks/positions/` (copied from `/mocks/claims/`).
+
+## Follow-up BOSS (2026-11-13): starting DMs without handing over the account
+
+Sean asked whether we had checked industry best practice for a manager who starts conversations, and whether there is app access that
+cannot lock him out. Findings (Meta sources read through search extracts; confirm in the app):
+- **Instagram Shared Access** (rolled out about July 2025): the owner invites up to 3 people in the Instagram app, no password. They work in
+  the real app; the inbox only if the owner allows it; they cannot change the password, username or profile, deactivate, or invite others;
+  the owner sees an activity log and revokes any time. Unknowns: eligibility (may need Meta Verified), whether posting can be switched off,
+  and starting new threads (very likely, since it is the native app). Sources: meta.com/help/subscriptions/1092771219974826/,
+  help.instagram.com/iphone-app/5861247717337470.
+- Business Portfolio task access and every third-party tool (Metricool, Sprout, Agorapulse, Hootsuite, Later, ManyChat) cannot start a new
+  DM (Meta's API rule; Agorapulse and Sprout say so in their docs).
+- Password managers' "hidden password" sharing is not a real barrier (1Password and Bitwarden say so). Instagram's terms bar sharing a login.
+- With a shared login, a full lockout is unlikely under authenticator 2FA and owner-only email and phone (password change needs the current
+  password; email change sends an undo link to the old address), but the realistic worst case is posts, deletions or bad DMs before removal.
+
+**Revised order:** 1. Shared Access with the inbox allowed (Sean checks his app; pay for Meta Verified if that is what unlocks it). 2. If it is
+not available: a company phone that stays logged in to the account, the device approved once by Sean, the contractor never sees the password.
+3. Either way, Business Suite (or Metricool, if it passes the inbox-only test) for replies and comments, traced to her. Never the raw password.
