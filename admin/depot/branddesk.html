@@ -330,7 +330,7 @@
       // ---- The pitch list: the presence-gap ranking (ve_branddesk_ranking) and one pitch page per business (ve-branddesk pitch_*).
       var PST = { draft: 'Draft', ready: 'Ready to send', sent: 'Sent', viewed: 'Opened it', chose: 'Answered', client: 'Client', closed: 'Closed' };
       var CHOICE = { ready: 'Ready to start', think: 'Thinking it over', talk: 'Wants to talk', no: 'Not now' };
-      var CHAPTERS = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', atlanta: 'Atlanta', 'washington-dc': 'Washington, D.C.', delaware: 'Delaware', maryland: 'Maryland', virginia: 'Virginia', 'west-virginia': 'West Virginia', 'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', london: 'London' };
+      var CHAPTERS = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', atlanta: 'Atlanta', 'washington-dc': 'Washington, D.C.', delaware: 'Delaware', maryland: 'Maryland', virginia: 'Virginia', 'west-virginia': 'West Virginia', 'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', 'seattle': 'Seattle', london: 'London' };
       var rank = null, pf = { ch: '', show: 'all', q: '' };
       try { pf = Object.assign(pf, JSON.parse(sessionStorage.getItem('ve_bd_pitch_filter') || '{}')); } catch (e) {}
       function pstatus(r) { return r.choice ? CHOICE[r.choice] : r.pitch_status ? PST[r.pitch_status] : 'Not prepared'; }

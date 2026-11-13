@@ -78,7 +78,7 @@ async function verifyToken(token: string): Promise<{ sub: string; brand: string 
 const todayEastern = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
 const DAY_MS = 24 * 60 * 60 * 1000;
 const CHAPTERS = ['south-florida', 'central-florida', 'north-florida', 'atlanta', 'washington-dc', 'delaware', 'maryland',
-  'virginia', 'west-virginia', 'new-york', 'philadelphia', 'los-angeles', 'london'];
+  'virginia', 'west-virginia', 'new-york', 'philadelphia', 'los-angeles', 'seattle', 'london'];
 const RESEND_KEY = Deno.env.get('RESEND_API_KEY') ?? '';
 const esc = (x: string) => x.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] as string));
 async function memberOk(id: string) {

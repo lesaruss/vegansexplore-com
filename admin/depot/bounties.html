@@ -146,14 +146,14 @@
       var $ = function (id) { return document.getElementById(id); };
       function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
       function api(body) { return fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
-      var TZ = { london: 'Europe/London', 'los-angeles': 'America/Los_Angeles' };
+      var TZ = { london: 'Europe/London', 'los-angeles': 'America/Los_Angeles', seattle: 'America/Los_Angeles' };
       function day(iso, city) { return iso ? new Date(iso).toLocaleString('en-US', { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: TZ[city] || 'America/New_York', timeZoneName: 'short' }) : ''; }
       function size(n) { return n > 1073741824 ? (n / 1073741824).toFixed(1) + ' GB' : n > 1048576 ? Math.round(n / 1048576) + ' MB' : Math.max(1, Math.round((n || 0) / 1024)) + ' KB'; }
       function local(iso) { if (!iso) return ''; var d = new Date(iso); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 16); }
       function iso(v) { return v ? new Date(v).toISOString() : null; }
       var LABEL = { submitted: 'To review', changes: 'Changes asked', approved: 'Approved', rejected: 'Declined', claimed: 'Claimed', no_show: 'Missed', released: 'Released' };
       var REASON = { no_show: 'No-show', late_release: 'Released after claims closed', violation: 'Violation' };
-      var CITY = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', atlanta: 'Atlanta', 'washington-dc': 'Washington, D.C.', delaware: 'Delaware', maryland: 'Maryland', virginia: 'Virginia', 'west-virginia': 'West Virginia', 'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', london: 'London', sandbox: 'Sandbox (test)' };
+      var CITY = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', atlanta: 'Atlanta', 'washington-dc': 'Washington, D.C.', delaware: 'Delaware', maryland: 'Maryland', virginia: 'Virginia', 'west-virginia': 'West Virginia', 'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', 'seattle': 'Seattle', london: 'London', sandbox: 'Sandbox (test)' };
       var KIND = { event: 'Event', place: 'Restaurant night', ongoing: 'Ongoing' };
       var EXTRA = { photo_shoot: 'Photo shoot ($150)', reel: 'Reel ($200)', social_post: 'Social feature post ($75)', event_table: 'Sampling table ($100)', challenge_month: 'Passport Challenge stop ($100)' };
       // Plain words for status, one look for every status tag.

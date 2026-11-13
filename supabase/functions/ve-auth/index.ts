@@ -15,7 +15,7 @@ const corsHeaders = {
 const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 
 // The DMV became Washington, D.C., Maryland and Virginia, and North Florida joined (Sean, 2026-10-27; same slugs as /public/ve-hubs.js).
-const VALID_COMMUNITIES = ['atlanta','central-florida','north-florida','washington-dc','delaware','maryland','virginia','west-virginia','london','los-angeles','new-york','philadelphia','south-florida'];
+const VALID_COMMUNITIES = ['atlanta','central-florida','north-florida','washington-dc','delaware','maryland','virginia','west-virginia','london','los-angeles','seattle','new-york','philadelphia','south-florida'];
 
 // Tenant the Vegans Explore front door writes to (2026-09-09, Sean, Fieldy
 // field note behind dashboard items 5-7). Both signup paths below used to
@@ -517,7 +517,7 @@ function isPlausibleCityName(raw: string): boolean {
 
 const COMMUNITY_DISPLAY: Record<string, string> = {
   'atlanta': 'Atlanta', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', 'washington-dc': 'Washington, D.C.', 'delaware': 'Delaware', 'maryland': 'Maryland', 'virginia': 'Virginia', 'west-virginia': 'West Virginia',
-  'london': 'London', 'los-angeles': 'Los Angeles', 'new-york': 'New York',
+  'london': 'London', 'los-angeles': 'Los Angeles', 'seattle': 'Seattle', 'new-york': 'New York',
   'philadelphia': 'Philadelphia', 'south-florida': 'South Florida',
 };
 
@@ -552,6 +552,10 @@ const CITY_ALIASES: Record<string, string> = {
   'santa-monica': 'los-angeles', 'pasadena': 'los-angeles', 'long-beach': 'los-angeles',
   'burbank': 'los-angeles', 'glendale': 'los-angeles', 'culver-city': 'los-angeles',
   'west-hollywood': 'los-angeles', 'venice': 'los-angeles', 'inglewood': 'los-angeles',
+  // seattle (all of Washington State; 'washington' alone stays D.C. below; Kent and Everett match only with the state, CITY_STATE_ALIASES)
+  'washington-state': 'seattle', 'bellevue': 'seattle', 'redmond': 'seattle', 'kirkland': 'seattle', 'tacoma': 'seattle',
+  'lynnwood': 'seattle', 'renton': 'seattle', 'bothell': 'seattle', 'shoreline': 'seattle', 'issaquah': 'seattle',
+  'sammamish': 'seattle', 'edmonds': 'seattle', 'federal-way': 'seattle', 'olympia': 'seattle', 'spokane': 'seattle',
   // london
   'camden': 'london', 'hackney': 'london', 'brixton': 'london', 'croydon': 'london',
   'greenwich': 'london', 'islington': 'london', 'shoreditch': 'london',
@@ -589,6 +593,15 @@ const CITY_STATE_ALIASES: Record<string, string> = {
   'charleston|west-virginia': 'west-virginia',
   'huntington|wv': 'west-virginia',
   'huntington|west-virginia': 'west-virginia',
+  'kent|wa': 'seattle',
+  'kent|washington': 'seattle',
+  'everett|wa': 'seattle',
+  'everett|washington': 'seattle',
+  // Arlington and Long Beach, WA would otherwise fall to the Virginia and Los Angeles aliases.
+  'arlington|wa': 'seattle',
+  'arlington|washington': 'seattle',
+  'long-beach|wa': 'seattle',
+  'long-beach|washington': 'seattle',
 };
 
 // City names known to collide across launched-chapter metro areas. When one
@@ -606,7 +619,7 @@ const STATE_QUALIFIERS = new Set([
   'md','ma','mi','mn','ms','mo','mt','ne','nv','nh','nj','nm','ny','nc','nd','oh','ok','or','pa',
   'ri','sc','sd','tn','tx','ut','vt','va','wa','wv','wi','wy','dc',
   'usa','us','uk','gb','england','scotland','wales','united-kingdom','united-states','d-c',
-  'florida','california','georgia','pennsylvania','maryland','virginia','delaware','west-virginia','texas','new-york',
+  'florida','california','georgia','pennsylvania','maryland','virginia','delaware','west-virginia','texas','new-york','washington',
 ]);
 
 function splitTrailingQualifier(slug: string): { base: string; qualifier: string | null } {

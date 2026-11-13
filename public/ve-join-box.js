@@ -20,7 +20,7 @@
   var PULSE = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-pulse-subscribe';
   var CITIES = [['south-florida', 'South Florida'], ['central-florida', 'Central Florida'], ['north-florida', 'North Florida'], ['atlanta', 'Atlanta'],
     ['washington-dc', 'Washington, D.C.'], ['delaware', 'Delaware'], ['maryland', 'Maryland'], ['virginia', 'Virginia'], ['west-virginia', 'West Virginia'],
-    ['new-york', 'New York'], ['philadelphia', 'Philadelphia'], ['los-angeles', 'Los Angeles'], ['london', 'London'], ['', 'Somewhere else']];
+    ['new-york', 'New York'], ['philadelphia', 'Philadelphia'], ['los-angeles', 'Los Angeles'], ['seattle', 'Seattle'], ['london', 'London'], ['', 'Somewhere else']];
   var FOUNDING = Date.now() < Date.parse('2027-01-01T05:00:00Z');
   var CSS = '' +
     '.vjb-back{position:fixed;inset:0;z-index:100001;background:rgba(15,23,15,.6);display:flex;align-items:flex-start;justify-content:center;padding:5vh 16px 0;overflow:auto}' +

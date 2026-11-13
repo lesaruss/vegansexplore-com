@@ -41,11 +41,12 @@ const CENTERS: Record<string, [number, number][]> = {
   'new-york': [[40.71, -74.0]],
   'philadelphia': [[39.95, -75.16], [40.44, -80.0]],
   'los-angeles': [[34.05, -118.24]],
+  'seattle': [[47.61, -122.33], [47.25, -122.44], [47.66, -117.43]],
   'london': [[51.51, -0.13]],
 };
 const CHAPTER_STATE: Record<string, string | null> = {
   'south-florida': 'FL', 'central-florida': 'FL', 'north-florida': 'FL', 'atlanta': 'GA', 'washington-dc': 'DC', 'maryland': 'MD', 'virginia': 'VA',
-  'delaware': 'DE', 'west-virginia': 'WV', 'new-york': 'NY', 'philadelphia': 'PA', 'los-angeles': 'CA', 'london': null,
+  'delaware': 'DE', 'west-virginia': 'WV', 'new-york': 'NY', 'philadelphia': 'PA', 'los-angeles': 'CA', 'seattle': 'WA', 'london': null,
 };
 // A Meetup group counts only when it is about Vegan or plant-based living by its own name or description.
 const VEG = /\bvegan|plant[- ]?based|\bveg\*?n\b|vegetarian|\bveggie|\bveg\b|\bvegfest|cruelty[- ]free|animal rights/i;

@@ -54,7 +54,7 @@ const KINDS = ['instagram', 'tiktok', 'youtube', 'facebook', 'podcast'];
 const RATE_KEYS = ['post', 'reel', 'story', 'appearance', 'hosting', 'social_day'];
 const SKILLS = ['recipes', 'fitness', 'hosting', 'speaking', 'ugc', 'photo', 'video_edit', 'design', 'social', 'writing', 'outreach'];
 const CHAPTERS = ['south-florida', 'central-florida', 'north-florida', 'atlanta', 'dc', 'delaware', 'maryland', 'virginia', 'west-virginia',
-  'new-york', 'philadelphia', 'los-angeles', 'london'];
+  'new-york', 'philadelphia', 'los-angeles', 'seattle', 'london'];
 const BIO_MIN = 80;
 const STORY_KINDS: Record<string, string> = { intro: 'An introduction', interview: 'Their own story', host: 'Hosting', report: 'From their community' };
 const REMIND_MAX = 10;
@@ -69,7 +69,7 @@ const APPLY_PLATS: [string, string][] = [['instagram', 'Instagram'], ['tiktok', 
 const APPLY_REQUIRED = ['name', 'email', 'chapter', 'city', 'main', 'topics', 'formats', 'best_work', 'gig_kinds', 'bio'];
 const CHAPTER_WORDS: Record<string, string> = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', atlanta: 'Atlanta',
   dc: 'Washington, D.C.', maryland: 'Maryland', virginia: 'Virginia', delaware: 'Delaware', 'west-virginia': 'West Virginia', philadelphia: 'Philadelphia',
-  'new-york': 'New York', 'los-angeles': 'Los Angeles', london: 'London', other: 'Somewhere else' };
+  'new-york': 'New York', 'los-angeles': 'Los Angeles', seattle: 'Seattle', london: 'London', other: 'Somewhere else' };
 const CREATOR_STATUS = ['new', 'reviewing', 'accepted', 'declined'];
 // The creator ad and "Is this you?" on People pages (Sean, 2026-10-30; /public/ve-promo.js, migration 20261030_promo_funnel.sql).
 const PROMO = 'creator-register';
