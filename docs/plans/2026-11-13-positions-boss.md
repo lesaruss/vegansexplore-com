@@ -199,3 +199,18 @@ now, and I have all of my accounts are verified." Decision 1 is Shared Access wi
 Instagram step changes: Sean invites her in the Instagram app (Shared Access), allows the inbox; Business Suite task access stays only for
 comments and replies being traced, optional. First proof with KJ: she starts one new DM to a followed account; Sean checks the activity log
 and whether posting can be switched off. Defaults standing unless Sean changes them: Guide Kai; no second admin until Sean names one.
+
+## Sean's calls (2026-11-13): her queue, and outreach resumes
+
+- **Outreach unpaused**: "You can unpause outreach... we can still do checks and make sure everything looks good. And fix things on the fly."
+  Migration `20261113_resume_campaigns_after_brand_lock.sql` (the 12 campaigns the 2026-11-11 pause stopped).
+- **No end-of-month deadline**: "don't worry about the end of the month thing... let's be aggressive... reaching out in many different places."
+  Sean reached out to El Napolito himself; they are interested and have the link.
+- **Her dashboard is her queue** ("use this dashboard to see the next person you need to reach out to. It's that simple"): one card at a
+  time (who, why, Sean's note, the opener, suggested replies; Sent, They replied, Can't reach them, Ask a question). Sources: Directory
+  listings with no email or no reply after **5 days** (Sean: "Yeah, automatic joins her queue"), people who mention our content with no
+  email, hot leads Sean pins to number one, one-off Instagram jobs, and "check whether these creators follow us" tasks (the API gives a
+  follower count, not the list). Each person gets their own tracked link; the card closes itself when they register.
+- **Check-in is automatic**: completed queue tasks are the proof of work and appear in the payday notice (Sean: "Daily tally, boom, boom").
+- **Logan answers her questions**, looping Sean in for decisions.
+- **Contractor-safe wording kept** (Sean: "make sure all that's good"): the queue is the scope of work; she picks her hours and her words.
