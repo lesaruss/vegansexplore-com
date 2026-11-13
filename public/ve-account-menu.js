@@ -93,6 +93,8 @@
     '.vam-opt.on .vam-dot{border-color:#16A34A;background:radial-gradient(#16A34A 0 3px,#fff 4px);}' +
     '.vam-sw img,.vam-sw .vam-ini{width:28px;height:28px;border-radius:6px;object-fit:cover;flex-shrink:0;background:#DCFCE7;color:#15803D;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;}' +
     '.vam-sw small{display:block;font-size:11px;font-weight:600;color:rgba(26,26,26,0.6);}' +
+    '.vam-swq{width:100%;box-sizing:border-box;font:inherit;font-size:13px;padding:8px 10px;margin:4px 0 6px;border:1px solid rgba(0,0,0,.2);border-radius:6px;}' +
+    '.vam-swfind:not(:empty){border-bottom:1px solid rgba(0,0,0,.08);padding-bottom:6px;margin-bottom:6px;}' +
     '.vam-note{padding:8px 16px 12px;font-size:12px;color:rgba(26,26,26,0.68);}' +
     '.vam .vam-out{color:#b91c1c;}' +
     '.vam .vam-out:hover{background:#fef2f2;}' +
@@ -118,6 +120,23 @@
       .then(function (r) { return r.json(); })
       .then(function (d) { swCache = (d && d.accounts) || []; draw(swCache); })
       .catch(function () { box.innerHTML = '<div class="vam-note">Could not load the accounts.</div>'; });
+  }
+  var swT = null;
+  function findAccounts(input, box) {
+    clearTimeout(swT); var q = input.value.trim();
+    if (q.length < 2) { box.innerHTML = ''; return; }
+    swT = setTimeout(function () {
+      box.innerHTML = '<div class="vam-note">Searching...</div>';
+      fetch(SW_URL, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token() }, body: JSON.stringify({ action: 'list', q: q }) })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          var rows = (d && d.results) || [];
+          box.innerHTML = rows.length ? rows.map(function (a) {
+            var pic = a.avatar_url ? '<img src="' + esc(a.avatar_url) + '" alt="">' : '<span class="vam-ini">' + esc((a.label || '?').charAt(0)) + '</span>';
+            return '<button type="button" class="vam-sw" data-sw="' + esc(a.member_id) + '">' + pic + '<span>' + esc(a.label) + '<small>' + esc(a.note || '') + '</small></span></button>';
+          }).join('') : '<div class="vam-note">No member matches that.</div>';
+        }).catch(function () { box.innerHTML = '<div class="vam-note">Could not search.</div>'; });
+    }, 300);
   }
   function switchInto(btn) {
     var own = token(), me = realMember();
@@ -155,7 +174,10 @@
         VIEWS.map(function (v) {
           return '<button type="button" class="vam-opt' + (v.key === k ? ' on' : '') + '" role="menuitemradio" aria-checked="' + (v.key === k) + '" data-view="' + v.key + '"><span class="vam-dot" aria-hidden="true"></span>' + v.label + '</button>';
         }).join('') + '</div>' +
-        '<div class="vam-sec" role="group" aria-label="Sign in as"><div class="vam-label">Sign in as</div><div class="vam-swlist"><div class="vam-note">Loading accounts...</div></div></div>';
+        '<div class="vam-sec" role="group" aria-label="Sign in as"><div class="vam-label">Sign in as</div>' +
+        // Any member (Sean, 2026-11-12: "Same way on BCPS Marcom, I can log in as any user"): by name, email or a business they own.
+        '<input type="search" class="vam-swq" placeholder="Find any member or business" aria-label="Find any member or business" data-dictate="off" autocomplete="off"><div class="vam-swfind"></div>' +
+        '<div class="vam-swlist"><div class="vam-note">Loading accounts...</div></div></div>';
     }
     if (sw) h += '<div class="vam-sec"><div class="vam-label">Signed in as ' + esc(m.name) + '</div><button type="button" data-back="1" role="menuitem">Back to my account</button></div>';
     h += '<div class="vam-sec"><button type="button" class="vam-out" data-out="1" role="menuitem">Sign out</button></div>';
@@ -195,6 +217,8 @@
     menu.innerHTML = build();
     var list = menu.querySelector('.vam-swlist');
     if (list) loadSwitchList(list);
+    var swq = menu.querySelector('.vam-swq'), swf = menu.querySelector('.vam-swfind');
+    if (swq && swf) { swq.addEventListener('input', function () { findAccounts(swq, swf); }); swq.addEventListener('click', function (e) { e.stopPropagation(); }); }
     owner = btn;
     menu.hidden = false;
     place(btn);

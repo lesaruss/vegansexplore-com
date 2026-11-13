@@ -259,7 +259,9 @@
       '<button type="button" class="btn btn-ghost btn-sm" data-fbk><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/></svg>Feedback</button></div></div>' +
       '<nav class="ptabs" aria-label="Your dashboard">' + PARTS.map(function (x) { var b = x[0] === 'media' && POST_OK[L.slug] ? 1 : 0;
         return '<a href="' + base(x[0]) + '" data-part="' + x[0] + '" class="' + (x[0] === p ? 'on' : '') + '"' + (x[0] === p ? ' aria-current="page"' : '') + '>' + esc(x[1]) + (b ? ' <em>' + b + '</em>' : '') + '</a>'; }).join('') + '</nav>' +
-      (MINE.length > 1 ? '<div class="loc"><label for="bdListing">Location</label><select id="bdListing" aria-label="Which location">' + MINE.map(function (m) { return '<option value="' + esc(m.slug) + '"' + (m.slug === L.slug ? ' selected' : '') + '>' + esc(m.name + (m.address_city ? ', ' + m.address_city : '')) + '</option>'; }).join('') + '</select></div>' : '');
+      // The switcher lists the signed-in owner's own locations; a super admin previewing someone else's dashboard does not see theirs
+      // (Sean, 2026-11-12: "Is that because it's showing my locations and not Chaska's?").
+      (MINE.length > 1 && !ADMIN && MINE.some(function (m) { return m.slug === L.slug; }) ? '<div class="loc"><label for="bdListing">Location</label><select id="bdListing" aria-label="Which location">' + MINE.map(function (m) { return '<option value="' + esc(m.slug) + '"' + (m.slug === L.slug ? ' selected' : '') + '>' + esc(m.name + (m.address_city ? ', ' + m.address_city : '')) + '</option>'; }).join('') + '</select></div>' : '');
   }
   function row(tag, cls, title, body, btn) {
     return '<div class="r"><div><b>' + esc(title) + '</b>' + (body ? '<p>' + esc(body) + '</p>' : '') + '</div><span class="tag ' + cls + '">' + esc(tag) + '</span>' + btn + '</div>';

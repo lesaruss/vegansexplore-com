@@ -189,6 +189,14 @@ each switch logged to `stream_events`). The super admin's own session waits in `
 `ve_checkins`, `ve_listing_point_contributions`). Anything posted while signed in as a Guide is live and, until the Guide
 badge is built, reads like any member's post. Migration `20261026_ve_switch_accounts.sql`.
 
+**Any member, 2026-11-12** (Sean: "I need a view as this business. Same way on BCPS Marcom, I can log in as any user. I would like to be
+able to do that to help diagnose and fix things"): `ve-switch-account` v2 (deployed 2026-11-12, source in the repo) switches into any member
+who is not a super admin; `ve_switch_accounts` stays the short list shown first (Chaska and Next Level Veggie Grill added, kind member), and the
+account menu's **Find any member or business** box (`list` with `q`) finds anyone by name, email or a business they own. Every switch is
+still logged to `stream_events`, 8 hours, never chained, and Back to my account returns. A switched session is a real sign-in: anything
+done there is done as that member. Also: a super admin previewing a business dashboard (`?l=`) no longer sees their own locations in the
+Location switcher, and a super admin or an owner looking at their own listing page is never counted as a visitor.
+
 ## Money in: an email for every payment (Sean, 2026-11-01)
 
 "John registered as a creator and made a payment, and I didn't get any notification that he made a payment... Is there something that

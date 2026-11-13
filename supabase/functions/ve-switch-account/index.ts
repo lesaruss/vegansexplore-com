@@ -1,13 +1,16 @@
 // ve-switch-account: a super admin signs in as another account to see the site as it does (Sean, 2026-10-26: "the same way
 // I do view as, I want to have that option to choose from the super admin... so I can log in and see that experience").
 // View As only paints the page over Sean's own session; a switch is a real sign-in, so the server treats every action as that
-// member. Only accounts in ve_switch_accounts (migration 20261026_ve_switch_accounts.sql: Logan Russell, the six Guides) can be
-// switched into, and only from a super admin signed in as themselves (a switched token carries switched_by and is refused
+// member. Since 2026-11-12 (Sean: "I need a view as this business. Same way on BCPS Marcom, I can log in as any user") any member
+// who is not a super admin can be switched into; ve_switch_accounts is the short list shown first (Logan, the Guides, approved
+// businesses), and a search finds anyone else by name, email or a business they own. Only from a super admin signed in as themselves (a switched token carries switched_by and is refused
 // here, so a switch never chains). The way back is the super admin's own token, kept in their browser by nav.js.
 // Playbook ve-guide-accounts.
 //
 // POST { action: 'list' }                 a super admin: { accounts: [{ member_id, label, kind, guide_slug, note, avatar_url,
 //                                          membership_status, points }] }
+// POST { action: 'list', q }              a super admin: { results: [{ member_id, label, note, avatar_url }] } for any member
+//                                          (not a super admin) whose name or email, or a business they own, matches q
 // POST { action: 'switch', member_id }    a super admin: { token, member } in the same shape as ve-auth login; 8 hours
 //
 // verify_jwt is false: the VE app token is HMAC-checked here the same way ve-auth checks it.
@@ -74,6 +77,26 @@ Deno.serve(async (req) => {
   const { data: admin } = await db.from('members').select('id, name, is_superadmin').eq('id', claims.sub).maybeSingle();
   if (!admin?.is_superadmin) return json({ error: 'forbidden' }, 403);
 
+  if (body.action === 'list' && String(body.q || '').trim().length >= 2) {
+    const term = String(body.q).trim().slice(0, 60).replace(/[%,()*]/g, ' ');
+    const [{ data: byName }, { data: byBiz }] = await Promise.all([
+      db.from('members').select('id').or(`name.ilike.%${term}%,email.ilike.%${term}%`).eq('is_superadmin', false).limit(12),
+      db.from('listings').select('owner_member_id').ilike('name', `%${term}%`).not('owner_member_id', 'is', null).limit(12),
+    ]);
+    const ids = [...new Set([...(byBiz || []).map((r: any) => r.owner_member_id), ...(byName || []).map((r: any) => r.id)])].slice(0, 12);
+    if (!ids.length) return json({ results: [] });
+    const [{ data: ms }, { data: owns }] = await Promise.all([
+      db.from('members').select('id, name, email, avatar_url, is_superadmin').in('id', ids),
+      db.from('listings').select('name, address_city, owner_member_id').in('owner_member_id', ids).limit(60),
+    ]);
+    const ownsOf = (id: string) => [...new Set((owns || []).filter((o: any) => o.owner_member_id === id).map((o: any) => o.name))];
+    return json({ results: (ms || []).filter((m: any) => !m.is_superadmin).map((m: any) => {
+      const biz = ownsOf(m.id);
+      return { member_id: m.id, label: m.name || m.email, avatar_url: m.avatar_url || null,
+        note: biz.length ? 'Owns ' + biz.slice(0, 2).join(', ') + (biz.length > 2 ? ' and more' : '') + ' · ' + m.email : m.email };
+    }) });
+  }
+
   if (body.action === 'list') {
     const { data: rows, error } = await db.from('ve_switch_accounts')
       .select('member_id, label, kind, guide_slug, note, sort, members!inner(avatar_url, membership_status)').order('sort');
@@ -91,9 +114,11 @@ Deno.serve(async (req) => {
   if (body.action === 'switch') {
     if (!isId(body.member_id)) return json({ error: 'member_id' }, 400);
     const { data: allowed } = await db.from('ve_switch_accounts').select('label').eq('member_id', body.member_id).maybeSingle();
-    if (!allowed) return json({ error: 'not_switchable' }, 403);
     const { data: member } = await db.from('members').select(MEMBER_FIELDS).eq('id', body.member_id).maybeSingle();
     if (!member) return json({ error: 'not_found' }, 404);
+    // Any member, never another super admin.
+    if (member.is_superadmin) return json({ error: 'not_switchable', message: 'Super admin accounts cannot be switched into.' }, 403);
+    const label = allowed?.label || member.name || member.email;
     const [{ data: comms }, { data: hidden }] = await Promise.all([
       db.from('member_communities').select('community_slug').eq('member_id', member.id),
       db.from('member_hidden_modules').select('module_key').eq('member_id', member.id),
@@ -101,7 +126,7 @@ Deno.serve(async (req) => {
     const switched = await signToken({ sub: member.id, email: member.email, tier: member.membership_tier, brand: 'vegans-explore', switched_by: admin.id });
     await db.from('stream_events').insert({
       owner: 'logan', station: 'vegans-explore', status: 'completed',
-      summary: `${admin.name || 'A super admin'} switched into ${allowed.label} (ve-switch-account).`,
+      summary: `${admin.name || 'A super admin'} switched into ${label} (ve-switch-account).`,
       keywords: ['vegans-explore', 'switch-account'],
     });
     return json({
