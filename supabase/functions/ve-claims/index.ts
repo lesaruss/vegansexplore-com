@@ -774,6 +774,96 @@ const checksHtml = (r: { all_pass: boolean; checks: Check[] }) =>
   `<p><b>${r.all_pass ? 'All checks pass: approve it in one tap.' : 'Needs a look before approving.'}</b></p><ul>` +
   r.checks.map((c) => `<li>${c.pass ? '&#10003;' : '&#9888;'} <b>${esc(c.label)}</b>: ${esc(c.note)}</li>`).join('') + '</ul>';
 
+// ---- Liz's approval email, sent by itself (Sean, 2026-11-13: "Agreed, build Liz's automatic approval email next"). Approving a claim
+// enrolls the owner in the people campaign claims-approved-liz (program claims-approved-2026-11, approved by Sean 2026-11-12), the way
+// ve-nominations enrolls nominators: one member per owner, its own words, its own tracked link to /dashboard/business, sent by
+// ve-outreach in weekday sending hours (9 AM to 5 PM Eastern). The words are the two Sean approved on 2026-11-12 (one location, as
+// Chaska's; several, as Next Level Veggie Grill's). A chain approved location by location gets ONE email naming every location still
+// waiting to send. The "Find us" post is promised only when the business's post exists (ve_media_kit), never before it is made.
+const APPROVED_CAMPAIGN = 'claims-approved-liz';
+const GENERIC_NAME = /^(marketing|team|info|hello|contact|admin|office|owner|manager|management|sales|support|general|the team)$/i;
+const andList = (a: string[]) => a.length < 2 ? (a[0] || '') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
+async function approvalWords(listingIds: string[], contactName: string) {
+  const { data: ls } = await db.from('listings').select('id, name, address_city').in('id', listingIds);
+  const rows = (ls || []).sort((a: any, b: any) => listingIds.indexOf(a.id) - listingIds.indexOf(b.id));
+  const biz = String(rows[0]?.name || 'Your business').replace(/^\[TEST\]\s*/, '[TEST] ');
+  const first = String(contactName || '').trim().split(/\s+/)[0] || '';
+  const hi = first && !GENERIC_NAME.test(String(contactName).trim()) ? `Hi ${first}` : `Hi ${biz} team`;
+  let post = false;
+  for (const r of rows) { const { data: k } = await db.rpc('ve_media_kit', { p_listing: r.id }); if ((k || []).some((x: any) => x.kind === 'find_us' && x.ready)) post = true; }
+  const launch = Date.now() < PERIOD1 ? "We launch January 1, and you're one of our founding businesses. " : "You're one of our founding businesses. ";
+  const close = `${launch}Tell us what would make it better: there's a Feedback button on every page.\n\nLiz\nThe Explorer, Vegans Explore`;
+  if (rows.length < 2) {
+    return { subject: `${biz} is approved and yours on Vegans Explore`,
+      body: `${hi}, Liz here. Your ${biz} page on Vegans Explore is approved, and it's yours to run. Your words are already on it.\n\n` +
+        `Sign in and your dashboard opens right away.${post ? ' A "Find us on Vegans Explore" post made from your logo is waiting there, ready to share, and' : ''} I'll walk you through a few quick steps to make the page your own.\n\n` +
+        `Open your dashboard:\n{link}\n\n${close}` };
+  }
+  const places = andList(rows.map((r: any) => String(r.address_city || r.name)));
+  return { subject: `${biz} is approved and yours on Vegans Explore`,
+    body: `${hi}, Liz here. Your ${rows.length} locations on Vegans Explore are approved, and they're yours to run: ${places}. Your words are already on every page.\n\n` +
+      `Sign in and your dashboard opens right away, with all ${rows.length} locations in one place.${post ? ' A "Find us on Vegans Explore" post for each location is waiting there, ready to share, and' : ''} I'll walk you through a few quick steps to make the pages your own.\n\n` +
+      `Open your dashboard:\n{link}\n\n${close}` };
+}
+async function lizApprovalEmail(claim: any): Promise<string> {
+  const email = String(claim.contact_email || '').trim().toLowerCase();
+  if (!email.includes('@')) return 'no email';
+  const { data: cp } = await db.from('ve_outreach_campaigns').select('status').eq('slug', APPROVED_CAMPAIGN).maybeSingle();
+  if (cp?.status !== 'active') return 'campaign not active';
+  const { data: row } = await db.from('ve_outreach_campaign_members').select('id, step, send_status, personal_note').eq('campaign_slug', APPROVED_CAMPAIGN).eq('person_key', email).is('removed_at', null).maybeSingle();
+  const now = new Date().toISOString();
+  if (row && row.step === 0 && row.send_status === 'waiting') {
+    // Not sent yet: one email names every location approved for this owner.
+    const ids: string[] = [...new Set([...(String(row.personal_note || '').match(/[0-9a-f-]{36}/g) || []), claim.listing_id])];
+    const { error } = await db.from('ve_outreach_campaign_members').update({ personal_emails: { '1': await approvalWords(ids, claim.contact_name) },
+      personal_note: 'listings: ' + ids.join(','), personal_at: now }).eq('id', row.id);
+    return error ? 'failed: ' + error.message : 'added';
+  }
+  if (row) await db.from('ve_outreach_campaign_members').update({ removed_at: now }).eq('id', row.id);   // their earlier email went out
+  const { error } = await db.from('ve_outreach_campaign_members').insert({ campaign_slug: APPROVED_CAMPAIGN, person_key: email, person_name: claim.contact_name || null,
+    step: 0, send_status: 'waiting', personal_emails: { '1': await approvalWords([claim.listing_id], claim.contact_name) },
+    personal_note: 'listings: ' + claim.listing_id, personal_at: now });
+  return error ? 'failed: ' + error.message : 'queued';
+}
+
+// Approving a claim (Depot > Claims, or by itself when every check passes). Returns an error message, or null.
+async function approveClaim(claim: any, reviewerId: string | null, note: string | null): Promise<string | null> {
+  const now = new Date().toISOString();
+  const p = claim.proposed || {};
+  const patch: Record<string, unknown> = {
+  claim_status: 'verified', claimed_by_member_id: claim.member_id, owner_member_id: claim.member_id, updated_at: now,
+  ve_contact_name: claim.contact_name, ve_contact_email: claim.contact_email, ve_contact_phone: claim.contact_phone || null,
+  };
+  for (const k of ['tagline', 'description', 'website', 'phone', 'instagram', 'vegan_status']) if (p[k]) patch[k] = p[k];
+  // An application to be listed goes live when approved.
+  if (p.application) { patch.status = 'approved'; patch.tags = ['ve-application-approved']; }
+  const { error } = await db.from('listings').update(patch).eq('id', claim.listing_id);
+  if (error) return error.message;
+  // A Brand Partner hears that its dashboard is open (Sean, 2026-10-09: "what happens to the Oatly rep once they sign up?"). A business
+  // that is not a product brand goes to the business dashboard (2026-11-13, outreach wording audit); a product brand keeps Maya's brand door.
+  if (claim.tier === 'brand' && claim.contact_email && !BRAND_CATS.test((await db.from('listings').select('category').eq('id', claim.listing_id).maybeSingle()).data?.category || '')) {
+    const { data: pl } = await db.from('listings').select('name, slug').eq('id', claim.listing_id).maybeSingle();
+    await mailTo([claim.contact_email], `${pl?.name || 'Your business'}: your page is confirmed`,
+      `<p>Hi ${esc(claim.contact_name || '')},</p><p>We confirmed it is you, so ${esc(pl?.name || 'your')}'s business dashboard is open: <a href="https://vegansexplore.com/dashboard/business?l=${encodeURIComponent(pl?.slug || '')}">vegansexplore.com/dashboard/business</a> (sign in with this email). Liz walks you through Getting started.</p>` +
+      `<p>You have a front-row seat on our campaigns: we send each one to you before it opens, so you can choose where you fit. Questions? Reply to this email.</p><p>The Vegans Explore team</p>`, 'hello@vegansexplore.com');
+  } else if (claim.tier === 'brand' && claim.contact_email) {
+    const { data: bl } = await db.from('listings').select('name, slug').eq('id', claim.listing_id).maybeSingle();
+    await mailTo([claim.contact_email], `${bl?.name || 'Your brand'}: your page is confirmed`,
+      `<p>Hi ${esc(claim.contact_name || '')},</p><p>We confirmed it is you, so ${esc(bl?.name || 'your')}'s full dashboard is open: views, visitors, the products people open and the store aisles they look for you in.</p>` +
+      `<p>Your page is your home with us. Maya walks you through Getting Started, then Opportunities, Media and Ask Maya: <a href="https://vegansexplore.com/directory/${encodeURIComponent(bl?.slug || '')}?tab=brand">vegansexplore.com/directory/${esc(bl?.slug || '')}</a> (sign in with this email).</p>` +
+      `<p>Questions? Reply to this email.</p><p>The Vegans Explore team</p>`, 'hello@vegansexplore.com');
+  }
+  // Anyone else waiting on the same listing is turned down, with the reason.
+  await db.from('ve_listing_claims').update({ status: 'rejected', review_note: 'Another claim for this listing was approved.', reviewed_by: reviewerId, reviewed_at: now, updated_at: now })
+      .eq('listing_id', claim.listing_id).neq('id', claim.id).in('status', ['awaiting_contribution', 'submitted']);
+  const { error: e2 } = await db.from('ve_listing_claims').update({ status: 'approved', review_note: note, reviewed_by: reviewerId, reviewed_at: now, updated_at: now }).eq('id', claim.id);
+  if (e2) return e2.message;
+  // Liz's email to every owner who is not a product brand on the Partner plan (those get the confirmation above).
+  if (claim.tier !== 'brand') { const r = await lizApprovalEmail(claim).catch((e) => 'failed: ' + String(e)); if (r.startsWith('failed')) console.error('liz approval email', claim.id, r); }
+  return null;
+}
+
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   const url = new URL(req.url);
@@ -1471,12 +1561,15 @@ Deno.serve(async (req) => {
       await db.from('ve_listing_claims').update({ status: 'submitted', proposed: { ...proposed, paid_with: 'membership' }, updated_at: now }).eq('id', claim.id);
       await db.from('listings').update({ claim_status: 'pending', claim_submitted_at: now }).eq('id', id).neq('claim_status', 'verified');
       const ck = await claimChecks({ ...row, id: claim.id, proposed }).catch(() => null);
-      await mail(`${test ? '[TEST] ' : ''}Listing claim: ${listing.name}, free with membership${ck?.all_pass ? ' (all checks pass)' : ''}`,
-        `<p><b>${esc(listing.name)}</b> (${esc(listing.address_city || '')}) was claimed free by a member. We promised them an answer within 24 hours.</p>` +
+      // Every check passes: it approves itself and Liz's email goes out (Sean, 2026-11-13, "Agreed"). Anything flagged waits for Sean.
+      const auto = !!ck?.all_pass && !(await setting('claims_auto_approve'))?.off
+        && !(await approveClaim({ ...row, id: claim.id, proposed: { ...proposed, paid_with: 'membership' } }, null, 'Approved by itself: every check passed.'));
+      await mail(`${test ? '[TEST] ' : ''}Listing claim: ${listing.name}, free with membership${auto ? ' (approved by itself, all checks pass)' : ck?.all_pass ? ' (all checks pass)' : ''}`,
+        `<p><b>${esc(listing.name)}</b> (${esc(listing.address_city || '')}) was claimed free by a member. ${auto ? 'Every check passed, so it approved itself and Liz\'s email is queued (weekdays 9 AM to 5 PM Eastern). To undo, write to Logan.' : 'We promised them an answer within 24 hours.'}</p>` +
         `<p>${esc(contact_name)}${row.contact_role ? ', ' + esc(row.contact_role) : ''}<br>${esc(contact_email)}${row.contact_phone ? '<br>' + esc(row.contact_phone) : ''}</p>` +
         (ck ? checksHtml(ck) : '') +
         `<p>Review it in the Depot: <a href="https://vegansexplore.com/admin/depot/claims">vegansexplore.com/admin/depot/claims</a></p>`, contact_email);
-      return json({ ok: true, paid_with: 'membership', slug: listing.slug });
+      return json({ ok: true, paid_with: 'membership', slug: listing.slug, approved: auto });
     }
     if (points) {
       const { data: spent } = await db.rpc('ve_listing_submit_points', { p_member: memberId, p_claim: claim.id });
@@ -1817,33 +1910,9 @@ Deno.serve(async (req) => {
     if (!claim) return json({ error: 'not_found' }, 404);
     const now = new Date().toISOString();
     if (decision === 'approve') {
-      const p = claim.proposed || {};
-      const patch: Record<string, unknown> = {
-        claim_status: 'verified', claimed_by_member_id: claim.member_id, owner_member_id: claim.member_id, updated_at: now,
-        ve_contact_name: claim.contact_name, ve_contact_email: claim.contact_email, ve_contact_phone: claim.contact_phone || null,
-      };
-      for (const k of ['tagline', 'description', 'website', 'phone', 'instagram', 'vegan_status']) if (p[k]) patch[k] = p[k];
-      // An application to be listed goes live when approved.
-      if (p.application) { patch.status = 'approved'; patch.tags = ['ve-application-approved']; }
-      const { error } = await db.from('listings').update(patch).eq('id', claim.listing_id);
-      if (error) return json({ error: 'save_failed', message: error.message }, 500);
-      // A Brand Partner hears that its dashboard is open (Sean, 2026-10-09: "what happens to the Oatly rep once they sign up?"). A business
-      // that is not a product brand goes to the business dashboard (2026-11-13, outreach wording audit); a product brand keeps Maya's brand door.
-      if (claim.tier === 'brand' && claim.contact_email && !BRAND_CATS.test((await db.from('listings').select('category').eq('id', claim.listing_id).maybeSingle()).data?.category || '')) {
-        const { data: pl } = await db.from('listings').select('name, slug').eq('id', claim.listing_id).maybeSingle();
-        await mailTo([claim.contact_email], `${pl?.name || 'Your business'}: your page is confirmed`,
-          `<p>Hi ${esc(claim.contact_name || '')},</p><p>We confirmed it is you, so ${esc(pl?.name || 'your')}'s business dashboard is open: <a href="https://vegansexplore.com/dashboard/business?l=${encodeURIComponent(pl?.slug || '')}">vegansexplore.com/dashboard/business</a> (sign in with this email). Liz walks you through Getting started.</p>` +
-          `<p>You have a front-row seat on our campaigns: we send each one to you before it opens, so you can choose where you fit. Questions? Reply to this email.</p><p>The Vegans Explore team</p>`, 'hello@vegansexplore.com');
-      } else if (claim.tier === 'brand' && claim.contact_email) {
-        const { data: bl } = await db.from('listings').select('name, slug').eq('id', claim.listing_id).maybeSingle();
-        await mailTo([claim.contact_email], `${bl?.name || 'Your brand'}: your page is confirmed`,
-          `<p>Hi ${esc(claim.contact_name || '')},</p><p>We confirmed it is you, so ${esc(bl?.name || 'your')}'s full dashboard is open: views, visitors, the products people open and the store aisles they look for you in.</p>` +
-          `<p>Your page is your home with us. Maya walks you through Getting Started, then Opportunities, Media and Ask Maya: <a href="https://vegansexplore.com/directory/${encodeURIComponent(bl?.slug || '')}?tab=brand">vegansexplore.com/directory/${esc(bl?.slug || '')}</a> (sign in with this email).</p>` +
-          `<p>Questions? Reply to this email.</p><p>The Vegans Explore team</p>`, 'hello@vegansexplore.com');
-      }
-      // Anyone else waiting on the same listing is turned down, with the reason.
-      await db.from('ve_listing_claims').update({ status: 'rejected', review_note: 'Another claim for this listing was approved.', reviewed_by: memberId, reviewed_at: now, updated_at: now })
-        .eq('listing_id', claim.listing_id).neq('id', id).in('status', ['awaiting_contribution', 'submitted']);
+      const err = await approveClaim(claim, memberId, plain(body.note, 500) || null);
+      if (err) return json({ error: 'save_failed', message: err }, 500);
+      return json({ ok: true });
     } else {
       const { count } = await db.from('ve_listing_claims').select('id', { count: 'exact', head: true }).eq('listing_id', claim.listing_id).eq('status', 'submitted').neq('id', id);
       if (!count) await db.from('listings').update({ claim_status: 'unclaimed', updated_at: now }).eq('id', claim.listing_id).eq('claim_status', 'pending');
