@@ -380,3 +380,14 @@ there... But we're not there yet" (not built: a paid promotion hiding supporters
   page check takes the other under it; an event turned down or cancelled releases its supporters back through the gates.
 - **Depot > Events > Supporting** (`#supporting`, replacing Duplicates): each event and its supporter, **Make this the main one**
   (`support_swap`) and **Not the same event** (`ve_event_support_release`: back through the gates, never matched again).
+
+## Near me on Events, United States by default (playbook `ve-near-me`, 2026-11-12)
+
+Sean: "Same thing with the events. They can just hit near me and they don't have to do the whole choose the continent". `opts.nearMe` on
+`/events` (which now loads `ve-region-directory.js`) and the dashboard mount, menu layout only, through the shared `VERegionDirectory.near`.
+Events have no coordinates, so `places()` puts each one at its venue listing, else the ZIP in its address, else its host listing, else its
+city (the median of our listings there, shown as "About N mi" so it never reads as exact). Closest first, then Online, then "Location not on
+the map yet"; a typed city keeps only what is within 50 miles. `?near=me|<zip>|<city>`; picking a location sets Near me aside. The `load()`
+select adds `address, venue_listing_id, host_listing_id`. **United States by default**: `events/index.html` starts on North America > US
+when `ve_ev_loc` is empty; any saved pick wins. Of 254 upcoming events on 2026-11-12: 53 had a listing point, 66 an address ZIP, 79 a city
+only, 32 no city.

@@ -63,4 +63,5 @@ Source files: `mocks/brand-kit/*.html`, `preview/index.html`.
   `/public/ve-look.css`. Put a page's look rules there under `html.ve-cb` (city hubs: `ve-look-hubs.css`). `?look=off` turns it
   off for one browser while checking; `?look=on` clears that.
 - The homepage (`index.html`), the Directory's seven doors (`directory/index.html`, with Near me) and the house ads (`ads/`) are built on the kit.
+- Every Guide (the Dairy Guide family, `/business-guide` and `/nominate`) wears the Guides pink rules in `ve-look.css` (`html.ve-cb.ve-cb-s-guides`, 2026-11-12); the Welcome Guide wears Passport mint.
 - **Outreach:** paused until Sean lifts it.

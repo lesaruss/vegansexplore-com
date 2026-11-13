@@ -125,3 +125,20 @@ and each holiday's rows are about 75 characters, as in the Welcome Guide; the in
 Guide took the Dairy Guide's places for the season: food listings' Resources tab, the listing Guide banner on every listing, the
 brand-page billboard (the Guide's rail ad, `/ads/guides/guide.html`), and the Dairy Guide's ad-rail slots (`docs/history/ads.md`).
 Everything listing-side switches back by itself on December 26 Eastern except the rail slots and the Resources tab (steps in ads.md).
+
+## Near me on Holiday menus and Find Thanksgiving near me (playbook `ve-near-me`, 2026-11-12)
+
+Sean: "I could imagine if I didn't know what it was, I wouldn't know where to find what I needed... a near me for the menus would be very
+valuable." Live 2026-11-12 (merge bae7687). The Overview's Getting started card has one button, **Find Thanksgiving near me** (`nearCta`:
+the next holiday not yet past, ThanksLiving named Thanksgiving), to `#/menus/near`. Holiday menus has **Near me** by Filters (the shared
+`VERegionDirectory.near`): the chapter set aside, every menu closest first, a menu placed by its listing (`near.points`: coordinates, else
+the ZIP's center), a found menu by its listing, the rest under "Location not on the map yet"; `#/menus/near`, `#/menus/near/<zip>`,
+`#/menus/near/<city>`; the pill clears it. The search takes a ZIP or a city (50 miles). The chapter list starts on **North America >
+United States** (`us`, `inUS()` from the address's state; Give back shares it); a saved pick, Everywhere included, wins.
+
+## Every Guide in the Color Block look (playbook `ve-brand-kit`, 2026-11-12)
+
+Sean: "the holiday guide, as well as all the other guides, need to be in the new style." Live 2026-11-12 (merge f610685). `/nominate`'s
+approved rules in `public/ve-look.css` were widened to `html.ve-cb.ve-cb-s-guides`, so every Guide in the Dairy Guide family wears them
+(pink block and stripe, white join box with the one orange button, ink borders with pink shadows, pink bubble). Added: the join box's
+Member? Sign in in ink and deep pink; the Supermarket Guide's Try it button wraps on phones.

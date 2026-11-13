@@ -1234,3 +1234,24 @@ with browser-only test data on Beck Hall (direct) and Koukoumi (Booking.com) at 
 first run 20 listings, 11 destinations. Drafts of the three first contacts: `docs/outreach/2026-11-11-ve-travel-first-contacts.md`, waiting
 on Sean. Travelpayouts: the LESARUSS account (contact@lesaruss.com) now has a Vegansexplore project, Booking.com applied for; Drive stays off.
 Note: three merge commits on main that day were authored "Claude" (the session's default identity); the repo's git config is now Sean.
+
+## Near me everywhere, a ZIP or a city in the search, United States by default (playbook `ve-near-me`, 2026-11-12)
+
+Sean, 2026-11-12: "I like the near me feature we've put onto the restaurants page... a near me for the menus would be very valuable", then
+"can they put a zip code or a city, and it pulls up automatically what is in that area?" and "based off the city, we should have like a
+50-mile radius". Handoff `docs/handoff/2026-11-12-ve-near-me.md`.
+- **One Near me, shared**: `VERegionDirectory.near` in `/public/ve-region-directory.js` (start, zip, city, clear, resume, onChange, state,
+  points, places, miles, inside, format, searchZip, searchCity, pin). The Directory's own Near me is the same code; Holiday menus and Events
+  call it. Never copy it. Distances are worked out in the browser; only the tab's spot is kept (`sessionStorage` `ve_near`).
+- **A ZIP in the search** (5 digits or ZIP+4, nothing else) turns on Near me from it and empties the box; a ZIP we do not know stays as typed.
+- **A city in the search**: after a 450 ms pause, a whole city name is read the way universal search reads it (`rpc/ve_search_core`,
+  `interpretation.place` from `ve_search_places`, only with no words left over) and shows everything within 50 miles (`NEAR_CITY_MI`),
+  closest first; the box keeps the text, the chip reads "Within 50 mi of Hialeah, FL"; places with no point are left out; a name on the
+  page that is exactly the text wins; clearing the chip empties the box; `?near=<city>` shares it. A bare name in several states takes the
+  largest ("Decatur" is Decatur, IL; "Decatur, GA" works).
+- **On the Directory**: Eat, Animals & Causes, Services & Spaces, Being vetted (`nearMe` in `directory/index.html`); not Shop, People,
+  Media or Travel. The dashboard's Directory and Events tabs open the public pages (`PUBLIC_TABS` in `dashboard/center-console.html`), so
+  they have it; the embedded mounts there are never shown.
+- **United States by default**: the Directory's Location filter starts on North America > United States when nothing is saved; every pick
+  is now saved in `ve_dir_loc`, Everywhere included (`{}`), and wins next visit; the address wins over both.
+- Known, not changed: the doors header's "N places everywhere" counts by chapter only, so it says everywhere while the filter is on a country.
