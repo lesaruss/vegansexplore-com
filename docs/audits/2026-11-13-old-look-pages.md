@@ -8,6 +8,16 @@
   The five `ve-path-*` pages already redirect to `/passport`; the roster and chat prototypes (`ve-guides-roster-v1`, `ve-guide-chat-v1`:
   "Five paths", a $11 Passport stat, a Guide named June not on the roster) now redirect to `/guides` and `/pulse`. The scan below still
   lists the Guides' files because their own styles keep the old greens under the overrides; they are done.
+- **Member and public pages (2026-11-13):** already on the kit, checked live: `/claim`, `/business-guide`, `/communities` and the city hubs,
+  the listing page, `/nominate`, `/passport`, `/pulse`. 28 pages built on the old shared pattern now opt in with `<html data-look="plain">`
+  and wear the plain-page kit layer in `ve-look.css` (white page, ink-outlined cards with the solid shadow, buttons white with an ink outline,
+  a sign-in gate's one button orange, sentence-case titles with the green word as a marker): ambassadors door and welcome, board consent,
+  bounties, comment, creator, invite, levels, listen, messages, news/local, partner dashboard, Pulse preferences, secret shopper, survey,
+  search, directory/product, the Passport Challenge and its scan, certified, case studies, contact, explore, hello, policies, paths.
+  `/unsubscribe` (no nav on purpose) is on the kit in its own styles with the real logo. `/communities/find` (linked from nowhere, "8 regions,
+  3 partner orgs" in its copy) redirects to `/communities`.
+  **Left in this group, next pass:** the dinner invitations (`/dinners/host`, `/dinners/palm-beach`: dark guided pages, built like the pitch
+  decks), the certified page's photo header, the Dolphins game night event page and the news article page's all-caps headline.
 
 Sean, 2026-11-13: "I'm giving you approval to fix every part of the website, 100% of the website that still has the old look. There is no scenario where I want any part of the website to have the old look... Apply the new look."
 
