@@ -197,3 +197,11 @@ This agreement is between LESARUSS Inc., doing business as Vegans Explore ("Vega
 where slug = 'social-media-manager-instagram' and (agreement_text is null or agreement_version = 'v1' and agreement_sha256 is null);
 update public.ve_positions set agreement_sha256 = encode(sha256(convert_to(agreement_text, 'UTF8')), 'hex')
 where slug = 'social-media-manager-instagram' and agreement_text is not null and agreement_sha256 is null;
+
+-- The daily pay run: 8:23 AM Eastern (13:23 UTC). Rows on the calendar, notices two days before payday, pay on payday (behind positions_pay.live).
+select cron.unschedule(j.jobid) from cron.job j where j.jobname = 've-positions-daily';
+select cron.schedule('ve-positions-daily', '23 13 * * *', $c$
+  select net.http_post(url := 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-positions',
+    headers := jsonb_build_object('Content-Type', 'application/json', 'x-cron-secret', (select value from lesaruss_secrets where key = 'CRON_SECRET')),
+    body := '{"action":"cron"}'::jsonb, timeout_milliseconds := 60000);
+$c$);
