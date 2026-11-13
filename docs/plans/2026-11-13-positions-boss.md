@@ -191,3 +191,11 @@ cannot lock him out. Findings (Meta sources read through search extracts; confir
 **Revised order:** 1. Shared Access with the inbox allowed (Sean checks his app; pay for Meta Verified if that is what unlocks it). 2. If it is
 not available: a company phone that stays logged in to the account, the device approved once by Sean, the contractor never sees the password.
 3. Either way, Business Suite (or Metricool, if it passes the inbox-only test) for replies and comments, traced to her. Never the raw password.
+
+## Sean's call (2026-11-13): Instagram Shared Access
+
+Sean: "I think that's the perfect solution... it's good that we wouldn't want to have any more than three at a time anyhow... we have access
+now, and I have all of my accounts are verified." Decision 1 is Shared Access with the inbox allowed (Meta Verified is on). The intake's
+Instagram step changes: Sean invites her in the Instagram app (Shared Access), allows the inbox; Business Suite task access stays only for
+comments and replies being traced, optional. First proof with KJ: she starts one new DM to a followed account; Sean checks the activity log
+and whether posting can be switched off. Defaults standing unless Sean changes them: Guide Kai; no second admin until Sean names one.
