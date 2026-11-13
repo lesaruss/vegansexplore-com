@@ -493,3 +493,6 @@ HQ `lib/podcastStudio.ts` (`SHOWS` day/season/first/chapter, `CITY_TEMPLATE`, `s
 message, Nominate someone), each a multi comment request (`/comment/soflo-line`, `/comment/soflo-nominate`). **Sean's voice** (Higgsfield
 seed_audio, element Sean A. Russell) glitches: two takes, reword a tripped line, rebuild from stt word timings with capped pauses, check word
 for word before sending. Handoff `docs/handoff/2026-11-09-ve-city-shows-soflo-vegans-relaunch.md`.
+
+
+**Local Voices and People > Intake** (2026-11-12 to 13, Sean: "Approved, keep the names, start building it"). Every lead lands in People > Intake (ve_intake); Local Voices draws its good fits into a pipeline in HQ Outreach (Queued, the picture check, drafts, Sean's OK, Sent). Comment pages carry Sean's personal note and recording. Full record: `docs/handoff/2026-11-13-local-voices-and-branddesk-sweep.md`, mock `/mocks/local-voices`.
