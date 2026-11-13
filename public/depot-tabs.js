@@ -62,6 +62,8 @@
     { group: 'Content', href: '/admin/depot/content-index', label: 'Content index' },
     { group: 'Content', href: '/admin/depot/books', label: 'Books' },
     { group: 'Content', href: '/admin/depot/mentions', label: 'In this story' },
+    // The private media list (Sean, 2026-11-13): outlets from the Google Alert - Vegan emails and the News Desk, scored.
+    { group: 'Content', href: '/admin/depot/media-outlets', label: 'Media outlets' },
     { group: 'Content', href: '/admin/depot/listing-posts', label: 'Social posts' },
     { group: 'Content', href: '/admin/depot/cookbook', label: 'Cookbook' },
     { group: 'Content', href: '/admin/depot/search-questions', label: 'Search questions' },

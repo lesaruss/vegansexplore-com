@@ -221,3 +221,18 @@ Full record in `docs/handoff/2026-11-11-holiday-launch-and-brand-lock.md` and pl
 Review leave group lists and counts until Sean decides; a duplicate person has one primary email and backups that send only if the primary
 bounces (personal address over a business one); every launch email says who we are and how we know them; all campaigns paused 2026-11-11
 until the Color Block brand is live (welcome-community excepted).
+
+## 2026-11-13: Media outlets, the private PR list
+Sean: "collect all the media outlets into one location. I don't necessarily want to put them on the directory, public facing... another
+service we can offer... we still treat them like they're directory listings, but not everyone, we can designate which ones we want to have
+facing the public." Filled from the "Google Alert - Vegan" emails in srussell@lesaruss.com (read server-side with
+`GMAIL_REFRESH_TOKEN_SRUSSELL`, read-only; the Claude Gmail connector is NOT the path, error registry `GMAIL-INBOX-AGENT-NO-CONNECTOR`) since
+2026-01-01, plus the News Desk (`ve_news_leads`). Tables `ve_media_outlets` (one row per website domain, listing-shaped, `is_public` off by
+default, `notes` written by the rollup, `team_notes` ours) and `ve_media_coverage` (one row per article: stance flattering / neutral /
+critical toward the Vegan community, topic, a reason when critical), function `ve_media_outlets_rollup()`; migration
+`20261113_ve_media_outlets.sql`. Social platforms (YouTube, Facebook, Instagram and so on) are left out. News Desk rows whose link is a
+`news.google.com` redirect (about 2,800) are not in yet: the real site is not in the link. Depot > Content > Media outlets
+(`/admin/depot/media-outlets`, function `ve-media-outlets`, super admins only): filter by how they cover us, kind, reach, Public / Private,
+one outlet per view (`#/outlet/<slug>`) with its articles, Make public / Make private and our notes. Backfill ran through the one-time
+`ve-once-media-outlets` (back to the 410 stub after). Next: a daily feed of new alerts, reporter contacts per outlet, and the BrandDesk PR
+service (a client's own alert topic builds their list).
