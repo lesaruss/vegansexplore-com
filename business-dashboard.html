@@ -32,117 +32,209 @@
        previews any listing with ?l=<slug>. The server checks ownership on every call. Template: CLAUDE.md template map, canon
        canon-ve-business-dashboard v2. -->
   <style>
-    :root{--g:#1f5f22;--g2:#16a34a;--gl:#e8f5e9;--ink:#1a1a1a;--ink75:rgba(26,26,26,.78);--ink55:rgba(26,26,26,.62);--line:rgba(0,0,0,.1);--warm:#fff7e8;--warmline:#f2d7a6;}
+    /* On the brand kit (Sean, 2026-11-12: restyle before going on; canon canon-ve-look-color-block, canon-ve-brand-kit-foundations,
+       reference /mocks/brand-kit). Tokens copied from docs/brand-kit/README.md. The who bar is the dark green band with the stripe under
+       it; cards and lists wear the ink outline and the solid offset shadow; headings carry the marker; one orange action button per view
+       (.btn-go), every other button white with an ink outline. */
+    :root{--dk:#2D5C27;--md:#3A9B3E;--br:#22C55E;--tint:#E8F5E9;--or:#F69820;--orh:#ffad40;--peach:#FFEBD1;--pink:#FF9EC4;--pinkt:#FFE3EE;--pinkd:#C2185B;
+      --ink:#1a1a1a;--mute:#5c5c5c;--line:#e7e7e7;--r:6px;--sh:6px;
+      --stripe:linear-gradient(90deg,#2D5C27 0 25%,#F69820 25% 37.5%,#FF9EC4 37.5% 50%,#FFEBD1 50% 62.5%,#22C55E 62.5% 75%,#E8F5E9 75% 87.5%,#3A9B3E 87.5% 100%);}
+    @media (max-width:600px){:root{--sh:5px;}}
     *,*::before,*::after{box-sizing:border-box;}
-    body{margin:0;background:#f7f8f7;color:var(--ink);font-family:'Montserrat',sans-serif;-webkit-font-smoothing:antialiased;}
-    :focus-visible{outline:3px solid #F69820;outline-offset:2px;}
+    body{margin:0;background:#fff;color:var(--ink);font-family:'Montserrat',sans-serif;line-height:1.45;-webkit-font-smoothing:antialiased;}
+    :focus-visible{outline:3px solid var(--or);outline-offset:2px;}
     main{max-width:none;margin:0;padding:32px 40px 80px;}
     @media (max-width:600px){main{padding:22px 16px 56px;}}
     [hidden]{display:none !important;}
-    .k{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--g);}
-    h1{font-size:clamp(22px,2.4vw,30px);font-weight:900;margin:4px 0 6px;letter-spacing:-.01em;}
-    h2{font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.04em;margin:0 0 10px;}
-    .lede{font-size:15px;line-height:1.6;color:var(--ink75);margin:0 0 18px;max-width:860px;}
-    .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:0 0 16px;}
-    .preview{background:var(--warm);border:1px solid var(--warmline);border-radius:10px;padding:10px 14px;font-size:13.5px;font-weight:600;margin:0 0 16px;}
-    .btn{font:inherit;font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:9px 16px;min-height:42px;border-radius:6px;cursor:pointer;border:0;background:var(--g);color:#fff;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;}
-    .btn-ghost{background:#fff;color:var(--ink);border:1px solid rgba(0,0,0,.25);}
-    .btn-sm{font-size:11px;padding:6px 12px;min-height:34px;}
-    .gate{max-width:520px;margin:40px auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:32px;text-align:center;}
-    .soon{display:inline-block;font-size:10.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;background:#FFF1DF;color:#8a4b00;border-radius:4px;padding:3px 8px;}
-    /* The who bar (creator.html): the picture top left is a square with rounded corners, never a circle (Sean, 2026-11-10). */
-    .who{position:relative;display:flex;gap:16px;align-items:center;margin:0 0 18px;}
-    .av{width:72px;height:72px;border-radius:14px;background:#fff center/contain no-repeat;flex:none;border:1px solid var(--line);display:grid;place-items:center;font-weight:900;font-size:28px;color:var(--g);}
-    .who h1{margin:0 0 4px;}
-    .who p{margin:0;font-size:14px;color:var(--ink75);}
-    .who-acts{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
-    .crt{display:inline-block;font-size:10.5px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;background:var(--gl);color:var(--g);border-radius:4px;padding:3px 8px;margin-left:6px;vertical-align:middle;}
-    .crt.wait{background:#fff4e0;color:#8a5200;}
+    .k{font-size:11px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:var(--dk);margin:0;}
+    h1{font-size:clamp(28px,3.2vw,44px);font-weight:900;line-height:1.04;letter-spacing:-.025em;margin:4px 0 8px;}
+    h2{font-size:18px;font-weight:900;letter-spacing:-.01em;margin:0 0 10px;}
+    .lede{font-size:15px;font-weight:600;line-height:1.55;color:var(--mute);margin:0 0 18px;max-width:860px;}
+    .hl{padding:0 .08em;border-radius:4px;-webkit-box-decoration-break:clone;box-decoration-break:clone;}
+    .hl.g{background:linear-gradient(transparent 56%,var(--br) 56%,var(--br) 92%,transparent 92%);}
+    .hl.o{background:linear-gradient(transparent 56%,var(--or) 56%,var(--or) 92%,transparent 92%);}
+    .hl.p{background:linear-gradient(transparent 56%,var(--pink) 56%,var(--pink) 92%,transparent 92%);}
+    .card{--c:var(--dk);background:#fff;border:2px solid var(--ink);border-radius:14px;padding:20px 22px;margin:0 var(--sh) 22px 0;box-shadow:var(--sh) var(--sh) 0 var(--c);}
+    .card.block{border:0;box-shadow:none;background:var(--c);margin-right:0;}
+    .card.block .lede{color:var(--ink);}
+    .preview{background:var(--peach);border-radius:var(--r);padding:10px 14px;font-size:13.5px;font-weight:700;margin:0 0 18px;}
+    /* Buttons (Foundations 9): white with an ink outline; the one action of the view is orange; on the dark band, white and outlined white. */
+    .btn{font:inherit;font-size:12px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:10px 16px;min-height:44px;border-radius:var(--r);cursor:pointer;border:2px solid var(--ink);background:#fff;color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;}
+    .btn:hover{background:var(--tint);}
+    .btn-go{background:var(--or);border-color:var(--ink);box-shadow:3px 3px 0 var(--ink);}
+    .btn-go:hover{background:var(--orh);}
+    .btn-sm{font-size:11px;padding:7px 12px;min-height:38px;}
+    .btn-wh{background:#fff;color:var(--dk);border-color:#fff;}
+    .btn-wh:hover{background:var(--tint);}
+    .btn-gh{background:transparent;color:#fff;border-color:#fff;}
+    .btn-gh:hover{background:rgba(255,255,255,.12);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:2px solid var(--ink);border-radius:14px;padding:32px;text-align:center;box-shadow:var(--sh) var(--sh) 0 var(--dk);font-weight:600;}
+    .soon{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;background:#fff;color:var(--ink);border-radius:var(--r);padding:5px 8px;vertical-align:middle;margin-left:6px;}
+    .soon::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--or);}
+    /* The who bar (parent creator.html: the picture top left a square with rounded corners, never a circle; Sean, 2026-11-10), now the
+       dark green band (Foundations: brand green, white type), the stripe under it, edge to edge. */
+    .band{position:relative;background:var(--dk);color:#fff;margin:-32px -40px 26px;padding:30px 40px 34px;}
+    .band::after{content:"";position:absolute;left:0;right:0;bottom:0;height:8px;background:var(--stripe);}
+    @media (max-width:600px){.band{margin:-22px -16px 22px;padding:22px 16px 28px;}}
+    .who{position:relative;display:flex;gap:18px;align-items:center;}
+    .av{width:84px;height:84px;border-radius:14px;background:#fff center/contain no-repeat;flex:none;border:3px solid #fff;display:grid;place-items:center;font-weight:900;font-size:32px;color:var(--dk);}
+    .who a:has(.av){display:block;border-radius:14px;}
+    .band .k{color:var(--br);}
+    .who h1{margin:4px 0 6px;color:#fff;}
+    .who p{margin:0;font-size:14px;font-weight:600;color:#d9ead7;}
+    .who-acts{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
+    .crt{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;background:var(--peach);color:#8a4d00;border-radius:var(--r);padding:5px 8px;margin-left:10px;vertical-align:middle;}
+    .crt::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--or);}
     .who-acts svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
-    @media (max-width:760px){.who{flex-wrap:wrap}.who-acts{margin-left:0;width:100%;justify-content:flex-start}.av{width:56px;height:56px;font-size:22px}}
-    /* The parts: one dropdown at every width (more than five; Sean 2026-11-09, the BCPS rule). Our own arrow (canon rule 15). */
-    .parts{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 18px;}
-    .parts label{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ink55);}
-    select{font:inherit;font-size:15px;font-weight:800;color:var(--ink);border:1px solid rgba(0,0,0,.25);border-radius:6px;padding:10px 14px;min-height:46px;-webkit-appearance:none;-moz-appearance:none;appearance:none;padding-right:46px;cursor:pointer;min-width:min(320px,100%);
-      background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%231f5f22' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center/14px 9px;}
+    @media (max-width:760px){.who{flex-wrap:wrap}.who-acts{margin-left:0;width:100%;justify-content:flex-start}.av{width:64px;height:64px;font-size:24px}}
+    /* The parts: one dropdown at every width (more than five; Sean 2026-11-09, the BCPS rule). The main picker: 3px ink outline, mint,
+       our own chevron 16px from the edge (canon rule 15). */
+    .parts{display:flex;gap:10px 14px;align-items:center;flex-wrap:wrap;margin:0 0 22px;}
+    .parts label{font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--dk);}
+    select{font:inherit;font-size:15px;font-weight:800;color:var(--ink);border:3px solid var(--ink);border-radius:var(--r);padding:10px 14px;min-height:50px;-webkit-appearance:none;-moz-appearance:none;appearance:none;padding-right:48px;cursor:pointer;min-width:min(320px,100%);
+      background:var(--tint) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%231a1a1a' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center/14px 9px;}
     select::-ms-expand{display:none;}
     @media (max-width:600px){.parts select{width:100%}}
-    .crumb{font-size:13px;font-weight:700;color:var(--ink55);margin:0 0 8px;}
-    .crumb a{color:var(--g);text-decoration:none;}
-    /* Rows: the same fields, one button in the same place, status a colored tag in plain words (canon-sean-interface-defaults). */
-    .rows{border:1px solid var(--line);border-radius:12px;background:#fff;overflow:hidden;margin:0 0 18px;}
-    .r{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:14px;align-items:center;padding:14px 16px;border-top:1px solid var(--line);}
+    .crumb{font-size:13px;font-weight:700;color:var(--mute);margin:0 0 10px;}
+    .crumb a{color:var(--dk);text-decoration:underline;text-underline-offset:3px;}
+    /* Rows: the same fields, one button in the same place, status a tag in plain words with a dot (canon-sean-interface-defaults). */
+    .rows{--c:var(--dk);border:2px solid var(--ink);border-radius:14px;background:#fff;overflow:hidden;margin:0 var(--sh) 26px 0;box-shadow:var(--sh) var(--sh) 0 var(--c);}
+    .rows.need{--c:var(--or);}
+    .rows.new{--c:var(--pink);}
+    .r{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:14px;align-items:center;padding:14px 18px;border-top:1px solid var(--line);}
     .r:first-child{border-top:0;}
-    .r b{display:block;font-size:15px;}
-    .r p{margin:2px 0 0;font-size:13.5px;line-height:1.5;color:var(--ink75);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .r[data-more]{display:none;}
+    .rows.open .r[data-more]{display:grid;}
+    .r b{display:block;font-size:15.5px;font-weight:900;}
+    .r p{margin:2px 0 0;font-size:13.5px;font-weight:600;line-height:1.5;color:var(--mute);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
     .r .btn{min-width:150px;}
-    @media (max-width:600px){.r{grid-template-columns:minmax(0,1fr) auto}.r .tag{grid-column:1;justify-self:start;grid-row:2}.r .btn{grid-column:2;grid-row:1 / span 2;min-width:0}}
-    .tag{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px;white-space:nowrap;}
-    .t-need{background:#fff4e0;color:#8a5200}.t-new{background:var(--gl);color:var(--g)}.t-flag{background:#fdecec;color:#9b1c1c}.t-tip{background:#e8f0fe;color:#1a4a9c}
-    .sec{display:flex;align-items:baseline;gap:10px;margin:22px 0 10px;}
-    .sec h2{margin:0;}
-    .sec .count{font-size:12px;font-weight:900;background:var(--g);color:#fff;border-radius:6px;padding:1px 8px;}
-    .totals{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:0 0 14px;}
-    @media (max-width:800px){.totals{grid-template-columns:repeat(2,minmax(0,1fr));}}
-    .tot{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;}
-    .tot b{display:block;font-size:26px;font-weight:900;line-height:1.1;}
-    .tot span{display:block;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink55);}
-    .tot em{display:block;font-style:normal;font-size:12px;font-weight:700;margin-top:4px;color:var(--ink55);}
-    .tot em.up{color:#1f7a2a}.tot em.down{color:#a61b1b}
-    .empty{font-size:14px;color:var(--ink75);margin:0 0 6px;}
-    .pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:10px;}
-    .pick a{display:flex;gap:12px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;text-decoration:none;color:var(--ink);}
-    .pick i{width:48px;height:48px;border-radius:10px;background:#fff center/contain no-repeat;border:1px solid var(--line);flex:none;display:grid;place-items:center;font-style:normal;font-weight:900;color:var(--g);}
-    .pick small{display:block;color:var(--ink55);font-size:12.5px;}
-    .search{font:inherit;font-size:14px;padding:9px 11px;min-height:44px;border:1px solid rgba(0,0,0,.25);border-radius:6px;width:100%;max-width:420px;}
-    /* The new look (Color Block, Sean 2026-11-12: "what I want them to land on is what you showed me earlier with Liz"; /mocks/claims
-       slides 7 and 8): a white page, the stripe on every card, one orange action, the parts as one sliding row. */
-    body{background:#fff;}
-    .card,.rows{position:relative;}
-    .card::before{content:"";position:absolute;left:0;right:0;top:0;height:5px;border-radius:14px 14px 0 0;background:linear-gradient(90deg,#2D5C27 0 25%,#F69820 25% 37.5%,#FF9EC4 37.5% 50%,#FFEBD1 50% 62.5%,#22C55E 62.5% 75%,#E8F5E9 75% 87.5%,#3A9B3E 87.5%);}
-    .btn.go{background:#F69820;color:#1a1a1a;}
-    .rows .btn:not(.go),.card .btn:not(.go){background:#fff;color:var(--ink);border:1.5px solid rgba(0,0,0,.25);}
-    .btn.ok{background:var(--gl);color:var(--g);}
-    /* The parts as one sliding row, copied from the listing page's .listing-tabs (Sean, 2026-11-12: "I've grown to be okay with the
-       sliding feature... they can see the options versus having to do the drop down"). */
-    .ptabs{display:flex;overflow-x:auto;scrollbar-width:none;gap:4px;border-bottom:2px solid var(--line);margin:0 0 20px;}
+    .more{display:block;width:100%;font:inherit;font-size:12px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;background:#fff;color:var(--ink);border:0;border-top:1px solid var(--line);padding:13px 18px;cursor:pointer;text-align:left;}
+    .more:hover{background:var(--tint);}
+    @media (max-width:600px){.r{grid-template-columns:minmax(0,1fr) auto;padding:14px}.r .tag{grid-column:1;justify-self:start;grid-row:2}.r .btn{grid-column:2;grid-row:1 / span 2;min-width:0}}
+    .tag{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:5px 8px;border-radius:var(--r);white-space:nowrap;}
+    .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.8;flex:none;}
+    .t-need{background:var(--peach);color:#8a4d00}.t-new{background:var(--pinkt);color:var(--pinkd)}.t-flag{background:#fde2e0;color:#a3221b}.t-tip{background:var(--tint);color:var(--dk)}
+    .sec{display:flex;align-items:center;gap:12px;margin:30px 0 14px;}
+    .sec h2{margin:0;font-size:clamp(24px,2.4vw,32px);line-height:1.04;letter-spacing:-.025em;}
+    .sec .count{font-size:13px;font-weight:900;background:var(--or);color:var(--ink);border-radius:var(--r);padding:3px 9px;}
+    .totals{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;margin:0 var(--sh) 22px 0;}
+    @media (max-width:800px){.totals{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}}
+    .tot{background:#fff;border:2px solid var(--ink);border-radius:14px;padding:14px 16px;box-shadow:var(--sh) var(--sh) 0 var(--dk);}
+    .tot b{display:block;font-size:40px;font-weight:900;line-height:1;letter-spacing:-.03em;}
+    .tot span{display:block;font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-top:6px;}
+    .tot em{display:block;font-style:normal;font-size:12px;font-weight:800;margin-top:6px;color:var(--mute);}
+    .tot em.up{color:var(--dk)}.tot em.down{color:#a3221b}
+    @media (max-width:600px){.tot b{font-size:32px}}
+    .empty{font-size:14px;font-weight:600;color:var(--mute);margin:0 0 10px;}
+    .pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:18px;margin:0 var(--sh) 0 0;}
+    .pick a{display:flex;gap:12px;align-items:center;background:#fff;border:2px solid var(--ink);border-radius:14px;padding:12px;text-decoration:none;color:var(--ink);box-shadow:var(--sh) var(--sh) 0 var(--dk);transition:transform .15s,box-shadow .15s;}
+    .pick a:hover{transform:translate(-2px,-2px);box-shadow:calc(var(--sh) + 2px) calc(var(--sh) + 2px) 0 var(--dk);}
+    .pick i{width:52px;height:52px;border-radius:12px;background:#fff center/contain no-repeat;border:2px solid var(--ink);flex:none;display:grid;place-items:center;font-style:normal;font-weight:900;color:var(--dk);}
+    .pick b{font-weight:900;}
+    .pick small{display:block;color:var(--mute);font-size:12.5px;font-weight:600;}
+    .search{font:inherit;font-size:14px;font-weight:600;padding:9px 11px;min-height:46px;border:2px solid var(--ink);border-radius:var(--r);width:100%;max-width:420px;}
+    /* The hosted views (public/ve-partner-dashboard.js) on the kit. Scoped to .bd-host so the listing page's own ?tab=brand dashboard is
+       untouched; the higher specificity wins over the module's injected CSS. Lists never scroll inside themselves (Sean, 2026-11-12). */
+    .bd-host .vpd-nav{gap:8px;margin:0 0 22px;}
+    .bd-host .vpd-nav a{background:#fff;color:var(--dk);border:2px solid var(--dk);font-weight:800;padding:7px 12px;}
+    .bd-host .vpd-nav a.on{background:var(--dk);color:#fff;}
+    .bd-host .vpd-head h3{font-size:clamp(24px,2.4vw,32px);letter-spacing:-.025em;line-height:1.04;}
+    .bd-host .vpd-head span,.bd-host .vpd-empty{color:var(--mute);font-weight:600;}
+    .bd-host .vpd-crumb a{color:var(--dk);}
+    .bd-host .vpd h4{font-size:11px;font-weight:900;letter-spacing:.16em;color:var(--dk);margin:26px 0 12px;}
+    .bd-host .vpd-tag{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:900;letter-spacing:.1em;padding:5px 8px;background:var(--tint);color:var(--dk);align-self:flex-start;}
+    .bd-host .vpd-tag::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.8;flex:none;}
+    .bd-host .vpd-tag.warn{background:var(--peach);color:#8a4d00}.bd-host .vpd-tag.off{background:#efefef;color:#555}
+    .bd-host .vpd-tiles{gap:18px;margin:0 var(--sh) 22px 0;}
+    .bd-host .vpd-tiles>div,.bd-host .vpd-card,.bd-host .vpd-list,.bd-host .vpd-hc,.bd-host .vpd-hc-strip,.bd-host .vpd-table-wrap{border:2px solid var(--ink);border-radius:14px;box-shadow:var(--sh) var(--sh) 0 var(--dk);}
+    .bd-host .vpd-list,.bd-host .vpd-hc,.bd-host .vpd-hc-strip,.bd-host .vpd-table-wrap{margin-right:var(--sh);margin-bottom:24px;}
+    .bd-host .vpd-tiles b{font-size:40px;letter-spacing:-.03em;line-height:1;}
+    .bd-host .vpd-tiles span{font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-top:6px;}
+    .bd-host .vpd-tiles em.up{color:var(--dk)}.bd-host .vpd-tiles em.down{color:#a3221b}
+    .bd-host .vpd-grid{gap:18px;margin:0 var(--sh) 24px 0;}
+    .bd-host .vpd-card{padding:16px 18px;gap:8px;}
+    .bd-host .vpd-card b{font-weight:900;}
+    .bd-host .vpd-card p{color:var(--mute);font-weight:600;}
+    .bd-host .vpd-card.done{background:var(--tint);}
+    .bd-host .vpd-card.done b::before{color:var(--dk);}
+    .bd-host .vpd-btn{background:#fff;color:var(--ink);border:2px solid var(--ink);font-weight:900;letter-spacing:.1em;}
+    .bd-host .vpd-btn:hover{background:var(--tint);}
+    .bd-host .vpd-btn.o{background:#fff;color:var(--ink);border:2px solid var(--ink);}
+    .bd-host [data-vpd-int].o{background:var(--dk);color:#fff;border-color:var(--dk);}
+    .bd-host .vpd-bar .vpd-btn:not(.o),.bd-host .vpd-join .vpd-btn{background:var(--or);color:var(--ink);border-color:var(--ink);box-shadow:3px 3px 0 var(--ink);}
+    .bd-host .vpd-range button{border:2px solid var(--dk);color:var(--dk);font-weight:800;}
+    .bd-host .vpd-range button.on{background:var(--dk);border-color:var(--dk);color:#fff;}
+    .bd-host .vpd-chart i{background:var(--md);}
+    .bd-host .vpd-rows div{border-bottom:1px solid var(--line);font-weight:600;}
+    .bd-host .vpd-table-wrap,.bd-host .vpd-scroll{max-height:none;overflow:visible;}
+    .bd-host .vpd-table-wrap{overflow-x:auto;}
+    .bd-host .vpd-table th{background:var(--tint);color:var(--ink);font-weight:900;}
+    .bd-host .vpd-table td{border-top:1px solid var(--line);}
+    .bd-host .vpd-ladder div{border:2px solid var(--ink);}
+    .bd-host .vpd-ladder .past{background:var(--tint);}
+    .bd-host .vpd-ladder .on{background:var(--dk);border-color:var(--dk);}
+    .bd-host .vpd-prog{background:var(--line);}
+    .bd-host .vpd-prog i{background:var(--br);}
+    .bd-host .vpd-row{border-top:1px solid var(--line);}
+    .bd-host .vpd-row b{font-weight:900;}
+    .bd-host .vpd-cat{background:var(--tint);color:var(--dk);border-top:1px solid var(--line);}
+    .bd-host .vpd-f input,.bd-host .vpd-f textarea,.bd-host .vpd-f select,.bd-host .vpd-form input,.bd-host .vpd-form textarea{border:2px solid var(--ink);}
+    .bd-host .vpd-checks input{accent-color:var(--dk);}
+    .bd-host .vpd-msg{color:var(--dk);}
+    .bd-host .vpd-join{background:var(--dk);border-radius:14px;}
+    .bd-host .vpd-join p{color:#d9ead7;}
+    .bd-host .vpd-hc-ic.pass{background:var(--dk);}
+    .bd-host .vpd-hc-area{background:var(--tint);color:var(--dk);}
+    .bd-host .vpd-hc-next{background:var(--peach);}
+    .bd-host .vpd-hc-sw button{border:2px solid var(--dk);color:var(--dk);}
+    .bd-host .vpd-hc-sw button.on{background:var(--dk);color:#fff;border-color:var(--dk);}
+    /* Older names the Getting started and Your post code still uses, mapped onto the kit. */
+    :root{--g:var(--dk);--gl:var(--tint);--ink75:var(--mute);--ink55:var(--mute);}
+    .btn.go{background:var(--or);border-color:var(--or);color:var(--ink);}
+    .btn.go:hover{background:var(--orh);border-color:var(--orh);}
+    .btn.ok{background:var(--tint);color:var(--dk);border-color:var(--dk);}
+    /* The parts as one sliding row (Sean, 2026-11-12: "I've grown to be okay with the sliding feature... they can see the options versus
+       having to do the drop down"), copied from the listing page's .listing-tabs; on the kit the current part is underlined in brand green. */
+    .ptabs{display:flex;overflow-x:auto;scrollbar-width:none;gap:4px;border-bottom:2px solid var(--line);margin:0 0 22px;}
     .ptabs::-webkit-scrollbar{display:none;}
-    .ptabs a{flex:none;display:flex;align-items:center;gap:6px;font-size:13px;font-weight:800;padding:10px 14px;color:var(--ink75);border-bottom:3px solid transparent;margin-bottom:-2px;white-space:nowrap;text-decoration:none;}
-    .ptabs a.on{color:var(--g);border-bottom-color:var(--g);}
-    .ptabs a em{font-style:normal;background:#F69820;color:#1a1a1a;border-radius:6px;font-size:10.5px;font-weight:900;padding:1px 7px;}
-    .loc{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:-8px 0 18px;font-size:13px;font-weight:700;color:var(--ink55);}
-    /* Getting Started with Liz (the Welcome Guide's Getting started card): her picture, the meter, one button per row. */
-    .welcome{font-size:clamp(20px,2.2vw,26px);font-weight:900;margin:0 0 12px;letter-spacing:-.01em;}
-    .gs{position:relative;display:grid;grid-template-columns:160px minmax(0,1fr);gap:18px;align-items:start;border:1.5px solid #F69820;background:#FFFBF3;border-radius:14px;padding:18px;margin:0 0 22px;}
-    .gs .liz{width:160px;aspect-ratio:1;border-radius:12px;background:#f3f6f3 center 18%/cover no-repeat;}
-    .gs h3{font-size:18px;font-weight:900;margin:0 0 4px;}
-    .gs .gsp{font-size:14px;color:var(--ink75);margin:0 0 8px;line-height:1.5;}
-    .meter{height:10px;border-radius:6px;background:#eee;overflow:hidden;margin:0 0 12px;}
-    .meter i{display:block;height:100%;background:#2D5C27;border-radius:6px;}
-    .gsr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;}
-    .gr{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:12px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:10px;padding:10px 12px;}
-    .gr .ic{width:40px;height:40px;border-radius:9px;background:var(--gl);display:grid;place-items:center;}
-    .gr .ic svg{width:20px;height:20px;stroke:#2D5C27;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;}
-    .gr b{display:block;font-size:14px;line-height:1.3;}
-    .gr small{display:block;font-size:12px;color:var(--ink55);line-height:1.35;}
-    .gr.done .ic{background:#2D5C27;}.gr.done .ic svg{stroke:#fff;}
-    .gr.done b{text-decoration:line-through;text-decoration-color:rgba(45,92,39,.45);color:var(--ink55);}
-    .gr.hot{border-color:#F69820;}
-    .gr .btn{min-height:38px;padding:8px 14px;}
+    .ptabs a{flex:none;display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:800;padding:11px 14px;color:var(--mute);border-bottom:4px solid transparent;margin-bottom:-2px;white-space:nowrap;text-decoration:none;}
+    .ptabs a:hover{color:var(--ink);}
+    .ptabs a.on{color:var(--ink);font-weight:900;border-bottom-color:var(--dk);}
+    .ptabs a em{font-style:normal;background:var(--or);color:var(--ink);border-radius:var(--r);font-size:10.5px;font-weight:900;padding:1px 7px;}
+    .loc{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:-8px 0 20px;}
+    .loc label{font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--dk);}
+    /* Getting started with Liz (the Welcome Guide's Getting started card), on the kit: a card in the Guides pink, her picture framed. */
+    .welcome{font-size:clamp(24px,2.4vw,32px);font-weight:900;line-height:1.04;letter-spacing:-.025em;margin:0 0 16px;}
+    .gs{position:relative;display:grid;grid-template-columns:160px minmax(0,1fr);gap:20px;align-items:start;border:2px solid var(--ink);background:#fff;border-radius:14px;padding:20px;margin:0 var(--sh) 26px 0;box-shadow:var(--sh) var(--sh) 0 var(--pink);}
+    .gs .liz{width:160px;aspect-ratio:1;border-radius:12px;border:2px solid var(--ink);background:var(--pinkt) center 18%/cover no-repeat;}
+    .gs h3{font-size:20px;font-weight:900;letter-spacing:-.01em;margin:0 0 4px;}
+    .gs .gsp{font-size:14px;font-weight:600;color:var(--mute);margin:0 0 10px;line-height:1.5;}
+    .meter{height:10px;border-radius:var(--r);background:var(--line);overflow:hidden;margin:0 0 14px;}
+    .meter i{display:block;height:100%;background:var(--br);border-radius:var(--r);}
+    .gsr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+    .gr{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:12px;align-items:center;background:#fff;border:2px solid var(--line);border-radius:12px;padding:10px 12px;}
+    .gr .ic{width:40px;height:40px;border-radius:10px;background:var(--tint);display:grid;place-items:center;}
+    .gr .ic svg{width:20px;height:20px;stroke:var(--dk);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;}
+    .gr b{display:block;font-size:14px;font-weight:900;line-height:1.3;}
+    .gr small{display:block;font-size:12px;font-weight:600;color:var(--mute);line-height:1.35;}
+    .gr.done .ic{background:var(--dk);}.gr.done .ic svg{stroke:#fff;}
+    .gr.done b{text-decoration:line-through;text-decoration-color:rgba(45,92,39,.45);color:var(--mute);}
+    .gr.hot{border-color:var(--or);}
+    .gr .btn{min-height:38px;padding:7px 14px;}
     @media (max-width:900px){.gsr{grid-template-columns:minmax(0,1fr);}}
-    @media (max-width:600px){.gs{grid-template-columns:minmax(0,1fr);}.gs .liz{width:96px;}}
+    @media (max-width:600px){.gs{grid-template-columns:minmax(0,1fr);padding:16px}.gs .liz{width:96px;}}
     /* Your post (Media kit): the post in a phone feed, the story in a phone frame, then download, the link and the caption. */
     .sh{display:grid;grid-template-columns:260px 160px minmax(0,1fr);gap:22px;align-items:start;}
-    .ph{border:7px solid #1a1a1a;border-radius:22px;overflow:hidden;background:#fff;}
+    .ph{border:7px solid var(--ink);border-radius:22px;overflow:hidden;background:#fff;}
     .ph img{display:block;width:100%;}
     .ph-top{display:flex;align-items:center;gap:7px;padding:7px 9px;font-size:11px;font-weight:800;}
     .ph-top i{width:22px;height:22px;border-radius:50%;background:#fff center/cover no-repeat;border:1px solid #eee;}
     .ph-cap{font-size:10.5px;line-height:1.45;padding:7px 9px 10px;color:#333;}
-    .lk{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:1.5px solid #2D5C27;border-radius:10px;padding:9px 11px;background:#F6FBF6;margin:12px 0 0;}
-    .lk code{flex:1 1 200px;font:800 15px Montserrat,sans-serif;color:#1a1a1a;}
-    .cap{border:1px dashed #c9c9c9;border-radius:10px;padding:11px 13px;font-size:13.5px;color:#333;margin-top:10px;}
+    .lk{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:2px solid var(--ink);border-radius:var(--r);padding:9px 11px;background:var(--tint);margin:14px 0 0;}
+    .lk code{flex:1 1 200px;font:800 15px Montserrat,sans-serif;color:var(--ink);}
+    .cap{border:2px dashed #c9c9c9;border-radius:var(--r);padding:11px 13px;font-size:13.5px;font-weight:600;color:#333;margin-top:10px;}
     .cap p{margin:0 0 10px;line-height:1.5;}
-    .shn{font-size:13px;color:#2D5C27;background:#F2F8F2;border-radius:8px;padding:9px 11px;margin-top:12px;}
+    .shn{font-size:13px;font-weight:700;color:var(--dk);background:var(--tint);border-radius:var(--r);padding:9px 11px;margin-top:12px;}
     @media (max-width:900px){.sh{grid-template-columns:minmax(0,1fr) 120px;}.sh-act{grid-column:1 / -1;}}
   </style>
 </head>
@@ -208,7 +300,7 @@
   // Media kit > Your post: their post and story as their followers will see them (Sean, 2026-11-12, /mocks/claims slide 8).
   function drawPost() {
     var code = POST_OK[L.slug];
-    if (!code) return drawSoon('Media kit', 'Your "Find us on Vegans Explore" post and story are being made from your logo. They land here with your own link and a caption to copy.');
+    if (!code) return drawSoon('Media kit', 'Your "Find us on Vegans Explore" post and story are being made from your logo. They land here with your own link and a caption to copy.', 'var(--peach)');
     var dir = '/public/claims/' + encodeURIComponent(L.slug) + '/', link = 'vegansexplore.com/go/' + code, handle = String(L.instagram || L.name || '').replace(/^.*instagram\.com\//i, '').replace(/[\/?#].*$/, '').replace(/^@/, '') || L.name;
     return '<section class="card"><h2>Find us on Vegans Explore <span class="tag t-new">Ready</span></h2><p class="lede" style="margin:0 0 16px">Made for you when your page was approved. Post it, tag @vegansexplore, and use your own link so you can see who it brings.</p>' +
       '<div class="sh"><div class="ph"><div class="ph-top"><i' + (L.logo_url ? ' style="background-image:url(\'' + esc(L.logo_url) + '\')"' : '') + '></i>' + esc(handle) + '</div><img src="' + dir + 'post.jpg" alt="Your post, Find us on Vegans Explore, with your logo"><div class="ph-cap"><b>' + esc(handle) + '</b> ' + esc(CAPTION) + '</div></div>' +
@@ -252,11 +344,11 @@
     var p = part(), pic = L.logo_url ? '<span class="av" style="background-image:url(\'' + esc(L.logo_url) + '\')" role="img" aria-label="' + esc(L.name) + '"></span>'
       : '<span class="av" aria-hidden="true">' + esc(String(L.name || '?').charAt(0)) + '</span>';
     var waiting = L.claim_status === 'pending';
-    return (ADMIN && D && D.admin ? '<p class="preview">Viewing as admin: this is ' + esc(L.name) + '\'s dashboard as its owner sees it.</p>' : '') +
-      '<div class="who"><a href="' + esc(listingUrl()) + '" target="_top" title="See your page">' + pic + '</a>' +
+    return '<header class="band"><div class="who"><a href="' + esc(listingUrl()) + '" target="_top" title="See your page">' + pic + '</a>' +
       '<div><p class="k">Business dashboard</p><h1>' + esc(L.name) + (waiting ? '<span class="crt wait">Waiting for our approval</span>' : '') + '</h1><p>' + esc([L.category, place()].filter(Boolean).join(' · ')) + '</p></div>' +
-      '<div class="who-acts"><a class="btn btn-ghost btn-sm" href="' + esc(listingUrl()) + '" target="_top">View my page</a>' +
-      '<button type="button" class="btn btn-ghost btn-sm" data-fbk><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/></svg>Feedback</button></div></div>' +
+      '<div class="who-acts"><a class="btn btn-wh btn-sm" href="' + esc(listingUrl()) + '" target="_top">View my page</a>' +
+      '<button type="button" class="btn btn-gh btn-sm" data-fbk><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/></svg>Feedback</button></div></div></header>' +
+      (ADMIN && D && D.admin ? '<p class="preview">Viewing as admin: this is ' + esc(L.name) + '\'s dashboard as its owner sees it.</p>' : '') +
       '<nav class="ptabs" aria-label="Your dashboard">' + PARTS.map(function (x) { var b = x[0] === 'media' && POST_OK[L.slug] ? 1 : 0;
         return '<a href="' + base(x[0]) + '" data-part="' + x[0] + '" class="' + (x[0] === p ? 'on' : '') + '"' + (x[0] === p ? ' aria-current="page"' : '') + '>' + esc(x[1]) + (b ? ' <em>' + b + '</em>' : '') + '</a>'; }).join('') + '</nav>' +
       // The switcher lists the signed-in owner's own locations; a super admin previewing someone else's dashboard does not see theirs
@@ -297,7 +389,7 @@
     return out;
   }
   function week() {
-    if (!D.open) return '<div class="card"><p class="empty" style="margin:0 0 12px">Your numbers open when you become a member. Membership is free: take the short Explorer survey, about two minutes.</p><a class="btn" href="/survey?s=explorer" target="_top">Take the Explorer survey</a></div>';
+    if (!D.open) return '<div class="card"><p class="empty" style="margin:0 0 12px">Your numbers open when you become a member. Membership is free: take the short Explorer survey, about two minutes.</p><a class="btn btn-go" href="/survey?s=explorer" target="_top">Take the Explorer survey</a></div>';
     var s = D.stats || {}, T = s.totals || {}, P = s.previous || {};
     var taps = Object.keys(T).reduce(function (a, k) { return k === 'view' ? a : a + (+T[k] || 0); }, 0);
     var ch = function (now, before) {
@@ -310,25 +402,35 @@
       '<div class="tot"><b>' + n(taps) + '</b><span>Taps and clicks</span>' + ch(taps, P.actions) + '</div>' +
       (ci ? '<div class="tot"><b>' + n(ci.last_30_days) + '</b><span>Check-ins</span><em>Last 30 days</em></div>'
         : '<div class="tot"><b>' + n((D.ads || []).reduce(function (a, x) { return a + (x.impressions || 0); }, 0)) + '</b><span>Ad impressions</span><em>' + ((D.ads || []).length ? 'Your ads' : 'No ads yet') + '</em></div>') + '</div>' +
-      partBtn('See every number', 'insights', 'insights').replace('btn btn-sm', 'btn btn-ghost btn-sm');
+      partBtn('See every number', 'insights', 'insights');
+  }
+  // One orange button on Home: Getting started's Share when it is showing, else the first thing that needs the owner, else the first
+  // thing new. A list shows five, then Show N more opens the rest in place; nothing scrolls inside itself (Sean, 2026-11-12).
+  function go1(r) { return r.replace('class="btn btn-sm', 'class="btn btn-go btn-sm'); }
+  function list(cls, rows) {
+    var more = rows.length - 5;
+    return '<div class="rows ' + cls + '">' + rows.map(function (r, i) { return i < 5 ? r : r.replace('<div class="r">', '<div class="r" data-more>'); }).join('') +
+      (more > 0 ? '<button type="button" class="more" data-more-btn>Show ' + more + ' more</button>' : '') + '</div>';
   }
   function drawHome() {
-    var a = needs(), b = fresh();
-    return gettingStarted() + '<div class="sec"><h2>Needs you</h2>' + (a.length ? '<span class="count">' + a.length + '</span>' : '') + '</div>' +
-      (a.length ? '<div class="rows">' + a.join('') + '</div>' : '<p class="empty">Nothing is waiting on you. Your page is ready for visitors.</p>') +
-      '<div class="sec"><h2>New for you</h2></div>' +
-      (b.length ? '<div class="rows" style="max-height:60vh;overflow-y:auto">' + b.join('') + '</div>' : '<p class="empty">Nothing new this week. New opportunities show up here first.</p>') +
-      '<div class="sec"><h2>Your week</h2></div>' + week();
+    var a = needs(), b = fresh(), gs = gettingStarted();
+    if (gs.indexOf('btn-sm go') < 0) { if (a.length) a[0] = go1(a[0]); else if (b.length) b[0] = go1(b[0]); }
+    return gs + '<div class="sec"><h2>Needs <span class="hl o">you</span></h2>' + (a.length ? '<span class="count">' + a.length + '</span>' : '') + '</div>' +
+      (a.length ? list('need', a) : '<p class="empty">Nothing is waiting on you. Your page is ready for visitors.</p>') +
+      '<div class="sec"><h2>New <span class="hl p">for you</span></h2></div>' +
+      (b.length ? list('new', b) : '<p class="empty">Nothing new this week. New opportunities show up here first.</p>') +
+      '<div class="sec"><h2>Your <span class="hl g">week</span></h2></div>' + week();
   }
   function drawPageTop() {
     var todo = (D.checklist || []).filter(function (c) { return CHECK[c.k] && ['menu', 'audit'].indexOf(c.k) < 0; }), done = todo.filter(function (c) { return c.done; }).length;
     var pct = todo.length ? Math.round(done / todo.length * 100) : 100;
-    return '<section class="card"><h2>Your page is ' + pct + '% ready</h2><p class="lede" style="margin:0 0 14px">You edit it on your page, so you see it the way visitors do. ' +
+    return '<section class="card"><h2 style="font-size:clamp(24px,2.4vw,32px);letter-spacing:-.025em">Your page is <span class="hl g">' + pct + '% ready</span></h2><p class="lede" style="margin:0 0 14px">You edit it on your page, so you see it the way visitors do. ' +
       (todo.length && done < todo.length ? 'Still to add: ' + esc(todo.filter(function (c) { return !c.done; }).map(function (c) { return CHECK[c.k][0].replace(/^Your /, '').toLowerCase(); }).join(', ')) + '.' : 'Everything is in.') + '</p>' +
-      '<a class="btn" href="' + esc(listingUrl('?tab=brand&edit=about')) + '" target="_top">Edit your page</a></section>';
+      '<a class="btn btn-go" href="' + esc(listingUrl('?tab=brand&edit=about')) + '" target="_top">Edit your page</a></section>';
   }
-  function drawSoon(title, body) {
-    return '<section class="card"><h2>' + esc(title) + ' <span class="soon">Coming</span></h2><p class="lede" style="margin:0">' + esc(body) + '</p></section>';
+  // A part not built yet: a solid block in its section color (Media peach, the rest mint), with a Coming tag.
+  function drawSoon(title, body, color) {
+    return '<section class="card block" style="--c:' + (color || 'var(--tint)') + '"><h2>' + esc(title) + ' <span class="soon">Coming</span></h2><p class="lede" style="margin:0">' + esc(body) + '</p></section>';
   }
   function draw() {
     var p = part();
@@ -336,10 +438,10 @@
     var label = PARTS.filter(function (x) { return x[0] === p; })[0][1];
     var html = head() + (p === 'home' ? '' : '<p class="crumb"><a href="' + base('home') + '" data-part="home">Home</a> &rsaquo; ' + esc(label) + '</p>');
     if (p === 'home') html += drawHome();
-    else if (p === 'page') html += drawPageTop() + '<div id="bdHost"></div>';
-    else if (p === 'media') html += drawPost() + drawSoon('Every feature, ready to share', 'Every time we feature you (a Guide, a Daily Pulse story, a podcast, a carousel), it lands here with what you need to share it: the story, a square post, your own link and a caption to copy.');
+    else if (p === 'page') html += drawPageTop() + '<div id="bdHost" class="bd-host"></div>';
+    else if (p === 'media') html += drawPost() + drawSoon('Every feature, ready to share', 'Every time we feature you (a Guide, a Daily Pulse story, a podcast, a carousel), it lands here with what you need to share it: the story, a square post, your own link and a caption to copy.', 'var(--peach)');
     else if (p === 'messages') html += drawSoon('Messages', 'Messages from our team, and your replies, right here. Anything important is emailed to you too.');
-    else html += '<div id="bdHost"></div>';
+    else html += '<div id="bdHost" class="bd-host"></div>';
     app.innerHTML = html;
     var host = $('bdHost');
     if (host && HOSTS[p]) {
@@ -351,6 +453,8 @@
     tellParent();
   }
   app.addEventListener('click', function (e) {
+    var mb = e.target.closest('[data-more-btn]');
+    if (mb) { mb.parentNode.classList.add('open'); mb.remove(); tellParent(); return; }
     var g = e.target.closest('[data-gs]'); if (g && L) mark(g.getAttribute('data-gs'));
     var cp = e.target.closest('[data-copy]');
     if (cp) { e.preventDefault(); var t = cp.getAttribute('data-copy'), o = cp.textContent;
@@ -384,23 +488,23 @@
       });
     });
   }
-  function gateMsg(t) { app.hidden = true; $('gate').hidden = false; $('gate').innerHTML = '<p>' + esc(t) + '</p><p><a class="btn" href="/dashboard" target="_top">Back to your dashboard</a></p>'; tellParent(); }
+  function gateMsg(t) { app.hidden = true; $('gate').hidden = false; $('gate').innerHTML = '<p>' + esc(t) + '</p><p><a class="btn btn-go" href="/dashboard" target="_top">Back to your dashboard</a></p>'; tellParent(); }
   function pickOrClaim(admin) {
     app.hidden = false;
-    app.innerHTML = '<p class="k">Business dashboard</p><h1>' + (MINE.length ? 'Choose a business' : 'Your business is not claimed yet') + '</h1>' +
+    app.innerHTML = '<p class="k">Business dashboard</p><h1>' + (MINE.length ? 'Choose a <span class="hl g">business</span>' : 'Your business is <span class="hl o">not claimed</span> yet') + '</h1>' +
       (MINE.length ? '<div class="pick">' + MINE.map(function (m) {
         return '<a href="?l=' + encodeURIComponent(m.slug) + '&tab=home" data-open="' + esc(m.slug) + '"><i' + (m.logo_url ? ' style="background-image:url(\'' + esc(m.logo_url) + '\')"' : '') + '>' + (m.logo_url ? '' : esc(String(m.name || '?').charAt(0))) + '</i><span><b>' + esc(m.name) + '</b><small>' + esc(m.category || '') + '</small></span></a>';
       }).join('') + '</div>' :
-        '<p class="lede">Find your business in the Directory and claim it (free for members), or add it. Your dashboard opens as soon as it is yours.</p><a class="btn" href="/claim" target="_top">Claim or add your business</a>') +
+        '<p class="lede">Find your business in the Directory and claim it (free for members), or add it. Your dashboard opens as soon as it is yours.</p><a class="btn btn-go" href="/claim" target="_top">Claim or add your business</a>') +
       (admin ? '<section class="card" style="margin-top:22px"><h2>Preview any dashboard</h2><p class="lede">Super admins only. Type the listing\'s address name (the part after /directory/).</p>' +
-        '<form id="bdAs" style="display:flex;gap:8px;flex-wrap:wrap"><input class="search" name="s" placeholder="love-life-cafe" aria-label="Listing" data-dictate="off"><button class="btn" type="submit">Open</button></form></section>' : '');
+        '<form id="bdAs" style="display:flex;gap:8px;flex-wrap:wrap"><input class="search" name="s" placeholder="love-life-cafe" aria-label="Listing" data-dictate="off"><button class="btn' + (MINE.length ? ' btn-go' : '') + '" type="submit">Open</button></form></section>' : '');
     app.querySelectorAll('[data-open]').forEach(function (a) { a.addEventListener('click', function (e) { e.preventDefault(); open(a.getAttribute('data-open'), 'home'); }); });
     var f = $('bdAs'); if (f) f.addEventListener('submit', function (e) { e.preventDefault(); var s = String(f.s.value || '').trim().toLowerCase().replace(/^.*\/directory\//, '').replace(/[^a-z0-9-]/g, ''); if (s) open(s, 'home'); });
     tellParent();
   }
   function start() {
     if (!window.VEAuth) return setTimeout(start, 200);
-    if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<p>Sign in to see your business dashboard.</p><p><a class="btn" href="/login?next=/dashboard/business">Sign in</a></p>'; return; }
+    if (!VEAuth.isLoggedIn()) { $('gate').hidden = false; $('gate').innerHTML = '<p>Sign in to see your business dashboard.</p><p><a class="btn btn-go" href="/login?next=/dashboard/business">Sign in</a></p>'; return; }
     var admin = VEAuth.isRealSuperAdmin && VEAuth.isRealSuperAdmin();
     post('ve-dashboard', { action: 'home' }).then(function (d) {
       MINE = (d && d.listings) || [];
