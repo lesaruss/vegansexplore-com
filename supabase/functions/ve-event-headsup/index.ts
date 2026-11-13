@@ -126,14 +126,14 @@ async function render(c: any, events: any[], opts: { track: boolean }) {
   const subject = fill(String(tpl.subject));
   const textEvents = events.map((e, i) => `- ${e.title}\n  ${when(e)}${where(e) ? ', ' + where(e) : ''}\n  ${links[i]}`).join('\n\n');
   const htmlEvents = `<ul style="padding-left:20px;margin:6px 0 16px">` + events.map((e, i) =>
-    `<li style="margin:0 0 12px"><a href="${links[i]}" style="color:#1f5f22;font-weight:700">${esc(e.title)}</a><br><span style="color:#444">${esc(when(e))}${where(e) ? ', ' + esc(where(e)) : ''}</span></li>`).join('') + `</ul>`;
+    `<li style="margin:0 0 12px"><a href="${links[i]}" style="color:#2D5C27;font-weight:700">${esc(e.title)}</a><br><span style="color:#444">${esc(when(e))}${where(e) ? ', ' + esc(where(e)) : ''}</span></li>`).join('') + `</ul>`;
   const body = fill(String(tpl.body));
   const text = body.replace('{events}', textEvents);
   const paras = body.split(/\n{2,}/).map((p) => p.trim() === '{events}' ? htmlEvents
     : `<p style="margin:0 0 16px">${esc(p).replace(/\{events\}/g, '').replace(/\n/g, '<br>')}</p>`).join('');
   const reason = `${esc(host)}'s events are listed on the Vegans Explore calendar`;
-  const html = `<div style="font-family:Montserrat,Arial,sans-serif;max-width:560px;font-size:15px;line-height:1.6;color:#1a1a1a">` +
-    `<p style="margin:0 0 18px"><img src="${SITE}/public/logo-ve-landscape-v1.svg" alt="Vegans Explore" width="150" style="display:block;border:0"></p>${paras}` +
+  const html = `<div style="font-family:Montserrat,Arial,sans-serif;max-width:560px;font-size:15px;line-height:1.6;color:#1a1a1a"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 18px;border-collapse:collapse"><tr><td width="25%" style="background:#2D5C27;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="13%" style="background:#F69820;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="12%" style="background:#FF9EC4;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="13%" style="background:#FFEBD1;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="12%" style="background:#22C55E;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="13%" style="background:#E8F5E9;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="12%" style="background:#3A9B3E;height:6px;line-height:6px;font-size:0">&nbsp;</td></tr></table>` +
+    `<p style="margin:0 0 18px"><img src="${SITE}/public/logo-ve-landscape-v2.png" alt="Vegans Explore" width="150" style="display:block;border:0"></p>${paras}` +
     `<p style="margin-top:28px;font-size:12px;line-height:1.5;color:#777">You are getting this because ${reason}. <a href="{{unsubscribe_url}}" style="color:#777">Stop these emails</a>. {{postal_address}}.</p></div>`;
   return { subject, html, text: `${text}\n\n--\nYou are getting this because ${host}'s events are listed on the Vegans Explore calendar.\nStop these emails: {{unsubscribe_url}}\n{{postal_address}}`,
     status: tpl.status, signed_by: sig.cm ? 'chapter' : 'team', enabled: !!list?.enabled };

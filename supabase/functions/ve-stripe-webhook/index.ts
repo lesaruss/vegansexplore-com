@@ -160,11 +160,12 @@ function buildContributionThanksEmail(amountCents: number): string {
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="padding:32px 16px;">
   <tr><td align="center">
     <table width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:8px;overflow:hidden;">
-      <tr><td style="background:#1a1a1a;padding:28px 32px;"><span style="color:#3A9B3E;font-size:18px;font-weight:700;letter-spacing:0.05em;">VEGANS EXPLORE</span></td></tr>
+      <tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse"><tr><td width="25%" style="background:#2D5C27;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="13%" style="background:#F69820;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="12%" style="background:#FF9EC4;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="13%" style="background:#FFEBD1;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="12%" style="background:#22C55E;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="13%" style="background:#E8F5E9;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="12%" style="background:#3A9B3E;height:6px;line-height:6px;font-size:0">&nbsp;</td></tr></table></td></tr>
+      <tr><td style="padding:26px 32px 0;"><img src="https://vegansexplore.com/public/logo-ve-landscape-v2.png" alt="Vegans Explore" width="150" style="display:block;border:0;width:150px;height:auto"></td></tr>
       <tr><td style="padding:32px;">
         <h1 style="margin:0 0 12px;font-size:22px;font-weight:800;color:#111;">Thank you for your contribution</h1>
         <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#444;">Your $${dollars} helps us build faster: Community Nights, events, and support for local Vegan businesses and organizations. It is a contribution to our community, not a tax-deductible donation. A 25-point thank-you is in your account.</p>
-        <a href="https://vegansexplore.com/dashboard" style="display:inline-block;background:#3A9B3E;color:#fff;font-weight:700;padding:12px 24px;border-radius:6px;text-decoration:none;font-size:14px;">Back to your dashboard</a>
+        <a href="https://vegansexplore.com/dashboard" style="display:inline-block;background:#F69820;color:#1a1a1a;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:13px 24px;border-radius:6px;text-decoration:none;font-size:13px;">Back to your dashboard</a>
       </td></tr>
       <tr><td style="background:#f9f9f9;padding:14px 32px;border-top:1px solid #eee;"><p style="margin:0;font-size:11px;color:#aaa;">VEGANS EXPLORE &nbsp;|&nbsp; vegansexplore.com</p></td></tr>
     </table>
@@ -174,8 +175,10 @@ function buildContributionThanksEmail(amountCents: number): string {
 </html>`
 }
 
-// Branded receipt for the Passport, used by the $11 one-time join (entry_contribution) and the
+// Branded receipt for the Passport, used by the $11 one-time give (entry_contribution) and the
 // legacy monthly subscription's signup and renewals. Since 2026-11-07 no welcome points (the survey pays its 250).
+// 2026-11-13 (outreach wording audit): membership is free and the survey is the way in, so the $11 receipt thanks them for the
+// contribution and never says it made them a member; the brand kit email look (stripe, landscape v2 logo, orange button).
 function buildPassportReceiptEmail(opts: { renewal: boolean }): string {
   const { renewal } = opts
   return `<!DOCTYPE html>
@@ -185,12 +188,13 @@ function buildPassportReceiptEmail(opts: { renewal: boolean }): string {
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="padding:32px 16px;">
   <tr><td align="center">
     <table width="560" cellpadding="0" cellspacing="0" border="0" style="max-width:560px;width:100%;background:#ffffff;border-radius:8px;overflow:hidden;">
-      <tr><td style="background:#1a1a1a;padding:28px 32px;"><span style="color:#3A9B3E;font-size:18px;font-weight:700;letter-spacing:0.05em;">VEGANS EXPLORE</span></td></tr>
+      <tr><td><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse"><tr><td width="25%" style="background:#2D5C27;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="13%" style="background:#F69820;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="12%" style="background:#FF9EC4;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="13%" style="background:#FFEBD1;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="12%" style="background:#22C55E;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="13%" style="background:#E8F5E9;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="12%" style="background:#3A9B3E;height:6px;line-height:6px;font-size:0">&nbsp;</td></tr></table></td></tr>
+      <tr><td style="padding:26px 32px 0;"><img src="https://vegansexplore.com/public/logo-ve-landscape-v2.png" alt="Vegans Explore" width="150" style="display:block;border:0;width:150px;height:auto"></td></tr>
       <tr><td style="padding:32px;">
-        <h1 style="margin:0 0 12px;font-size:22px;font-weight:800;color:#111;">${renewal ? 'Your Passport renewed' : 'Your membership is active'}</h1>
-        <p style="margin:0 0 18px;font-size:14px;line-height:1.6;color:#444;">${renewal ? 'Your Passport renewed. Thank you for being part of the community.' : 'Thank you for joining Vegans Explore. Your membership is active: vote for your favorite listings in the Directory and build your Vegan world from your dashboard.'}</p>
-        <p style="margin:0 0 24px;font-size:13px;line-height:1.6;color:#444;">More points come from what you do in the community: Bounties, competitions and taking part on the site. Your lifetime points move you up through Level 1, 2 and 3.</p>
-        <a href="https://vegansexplore.com/guides" style="display:inline-block;background:#3A9B3E;color:#fff;font-weight:700;padding:12px 24px;border-radius:6px;text-decoration:none;font-size:14px;">Pick your Guide</a>
+        <h1 style="margin:0 0 12px;font-size:22px;font-weight:800;color:#111;">${renewal ? 'Your Passport renewed' : 'Thank you for your contribution'}</h1>
+        <p style="margin:0 0 18px;font-size:14px;line-height:1.6;color:#444;">${renewal ? 'Your Passport renewed. Thank you for being part of the community.' : 'Your contribution helps us build Vegans Explore: Community Nights, events, and support for local Vegan businesses and organizations. It is a contribution to our community, not a tax-deductible donation.'}</p>
+        <p style="margin:0 0 24px;font-size:13px;line-height:1.6;color:#444;">${renewal ? 'More points come from what you do in the community: Bounties, competitions and taking part on the site.' : 'Membership itself is free. If you have not taken the short survey yet, it opens your membership and starts you with 250 points.'}</p>
+        <a href="https://vegansexplore.com/dashboard" style="display:inline-block;background:#F69820;color:#1a1a1a;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:13px 24px;border-radius:6px;text-decoration:none;font-size:13px;">Open your dashboard</a>
       </td></tr>
       <tr><td style="background:#f9f9f9;padding:14px 32px;border-top:1px solid #eee;"><p style="margin:0;font-size:11px;color:#aaa;">VEGANS EXPLORE &nbsp;|&nbsp; vegansexplore.com</p></td></tr>
     </table>
@@ -845,7 +849,7 @@ Deno.serve(async (req: Request) => {
             body: JSON.stringify({
               from: 'VEGANS EXPLORE <hello@vegansexplore.com>',
               to: member.email,
-              subject: 'Your Passport is active',
+              subject: 'Thank you for your contribution to Vegans Explore',
               html: buildPassportReceiptEmail({ renewal: false })
             })
           })
@@ -1224,7 +1228,7 @@ Deno.serve(async (req: Request) => {
             body: JSON.stringify({
               from: 'VEGANS EXPLORE <hello@vegansexplore.com>',
               to: member.email,
-              subject: repeat ? 'Thank you for your contribution to Vegans Explore' : 'Your Vegans Explore membership is active',
+              subject: 'Thank you for your contribution to Vegans Explore',
               html: repeat ? buildContributionThanksEmail(points) : buildPassportReceiptEmail({ renewal: false })
             })
           })
