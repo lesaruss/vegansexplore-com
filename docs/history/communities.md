@@ -181,3 +181,24 @@ its Directory rule is `VE_HUBS[].match`. A new city is a `VE_HUBS` entry, its ar
   every city (members through ve-rewards with their application status, anyone else by public read).
 - Members shows real members ranked by points (the leaderboard) to members; signed out, a plain
   outline behind the Passport gate. Never sample people.
+
+
+## Seattle, the first city opened for a business (2026-11-13)
+
+Sean, 2026-11-13: "each place we open up into is another opportunity for us to swing momentum in our favor" (Next Level Veggie Grill has
+locations in cities with no chapter). Then "start the Seattle city page", "go wide on all of them" and "open Seattle". Fourteen chapters now.
+- **Seattle** (slug `seattle`, all of Washington State by state WA): 69 listings from a Google search first
+  (`20261113_seattle_restaurant_search.sql`), then the chapter (`20261113_chapter_seattle.sql`: home community constraints, six pinned board
+  posts, outreach city off, three ad slots like Los Angeles, Nori on the Humble Cabbage tee; at opening the Daily Pulse, the next-chapter board
+  marked opened, and three database functions). Banner from the next-chapters art already made (`communities/next/seattle`).
+- **Every place a chapter is listed** (a new chapter changes all of them): `public/ve-hubs.js`, `vercel.json` rewrite, `api/sitemap.js`,
+  `public/ve-chapters.js` (state name), 19 pages and scripts (name maps beside `los-angeles`), 21 edge functions (deployed from the commit through
+  `ve-function-deploy`, every source sha256 matched), and the database: `ve_outreach_cities` (drives `ve_chapter_of`), `ve_chapter_stats`,
+  `ve_pulse_auto_queue`, `ve_creator_application_link`, and the two community check constraints. Missing the three functions left the city
+  card blank until patched.
+- **Deploying from main shipped earlier merged work that was never deployed** (found before the deploy and checked: every RPC and table
+  existed): abuse watch in ve-board, ve-challenge and ve-group; LESARUSS.ai Pulse topics in ve-board; the Find us post started at claim
+  approval in ve-claims; the newer chapters in ve-tours and ve-media-library; the kit-look email in ve-pulse-subscribe.
+- **Wide city art on every city** (Sean, 2026-11-13: "I would prefer to see the horizontal image... even on mobile"): `VE_HUBS[].page.wide`
+  (`communities/<slug>/wide.jpg`, 16:9, 1920 wide) is what the city banner shows first, on every screen; `page.banner` (3:4) stays for the
+  chapter cards and dashboards. The 13 older chapters' wide pictures were extended from their banners in Higgsfield (outpaint, city art only).

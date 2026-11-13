@@ -57,3 +57,19 @@ made as (
   returning id
 )
 insert into public.ad_campaign_placements (campaign_id, placement_id) select made.id, tgt.id from made, tgt;
+
+-- 5. At the opening (Sean, 2026-11-13: "open Seattle"): the local Daily Pulse, the next-chapter board, and the three database
+--    functions that list chapters by hand (the chapter cards' numbers, the Pulse queue's names, a creator application's state).
+update public.lesaruss_dispatch_settings set value = jsonb_set(value::jsonb, '{communities}', (value::jsonb->'communities') || '["seattle"]'::jsonb)::text
+  where key = 'pulse_auto' and not (value::jsonb->'communities') ? 'seattle';
+update public.ve_next_chapters set status = 'opened', opened_hub = 'seattle' where slug = 'seattle' and status <> 'opened';
+do $$
+declare d text;
+begin
+  d := pg_get_functiondef('public.ve_chapter_stats'::regproc);
+  if position('''seattle''' in d) = 0 then execute replace(d, '''los-angeles'',''london'']', '''los-angeles'',''seattle'',''london'']'); end if;
+  d := pg_get_functiondef('public.ve_pulse_auto_queue'::regproc);
+  if position('"seattle"' in d) = 0 then execute replace(d, '"los-angeles":"Los Angeles Pulse",', '"los-angeles":"Los Angeles Pulse","seattle":"Seattle Pulse",'); end if;
+  d := pg_get_functiondef('public.ve_creator_application_link'::regproc);
+  if position('''seattle''' in d) = 0 then execute replace(d, 'when ''los-angeles'' then ''CA''', 'when ''los-angeles'' then ''CA'' when ''seattle'' then ''WA'''); end if;
+end $$;
