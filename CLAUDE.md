@@ -24,6 +24,13 @@ When summarizing this conversation, always keep: the playbook slug and task; the
 last commit; every decision, approval or rejection Sean gave this session, in his words where possible; anything built but not yet proven
 live; and what waits on Sean, with its link.
 
+## Working with Sean: one next step (Sean, 2026-11-13, canon `canon-sean-one-next-step`, always loaded)
+
+"I don't want to be overwhelmed with a lot of information. I need to know what's the next step and keep me focused on the next step."
+Every reply: where we are (one line), what was done (one line), **one** next step for Sean. Everything else is parked in the playbook or
+Depot > Ideas, never piled into the reply. One decision per message, with a recommendation. Finish the open playbook before starting
+anything new. Say clearly when something is done and close it.
+
 ## The template gate (Sean, 2026-11-02): never build from a blank file
 
 "It's like you just made something up. Not following any templates, not using any previous examples... We need a system. That's why

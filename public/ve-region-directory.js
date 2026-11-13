@@ -409,7 +409,7 @@
     // How Vegan (Sean, 2026-09-27): let people keep to 100% Vegan places without asking anyone.
     var veganHtml = '<span class="sb-f"><span class="geo-label">Vegan</span>' +
       '<select aria-label="Filter by how Vegan" class="sort-select" data-vrd-vegan="' + cat.key + '">' +
-      '<option value="">All</option><option value="fully">100% Vegan only</option><option value="friendly">Vegan-friendly</option><option value="options">Vegan options</option></select></span>';
+      '<option value="">All</option><option value="fully">100% Vegan only</option><option value="friendly">Vegan-friendly</option><option value="options">Pre-Vegan options</option></select></span>';
     // No Online choice (Sean, 2026-11-01): a card never says Online, and where a business sells is on its own page.
     var typeOptions = '<option value="">All</option>' +
       '<option value="closed">Closed</option>';
@@ -586,7 +586,7 @@
   function vendsTag(l) { return vendsAt(l) ? ' <span class="vrd-vends" title="Also sells at markets, festivals and events">Markets &amp; events</span>' : ''; }
   // How Vegan, as a filter key and a label on the card (fully Vegan also covers the older 'vegan').
   var VEGAN_KEY = { fully_vegan: 'fully', vegan: 'fully', vegan_friendly: 'friendly', vegan_options: 'options' };
-  var VEGAN_LABEL = { fully: '100% Vegan', friendly: 'Vegan-friendly', options: 'Vegan options' };
+  var VEGAN_LABEL = { fully: '100% Vegan', friendly: 'Vegan-friendly', options: 'Pre-Vegan options' };
   function veganTag(l) {
     if (BRAND.vegan === false) return '';
     var k = VEGAN_KEY[l.vegan_status]; if (!k) return '';

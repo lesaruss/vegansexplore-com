@@ -93,7 +93,7 @@
   var FOOD_PLACES = ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Catering', 'Meal Prep'];
   // At a Glance belongs to places you sit down in.
   var DINING = ['Restaurants', 'Bakeries & Cafes'];
-  var VEGAN = [['fully_vegan', '100% Vegan'], ['vegan_friendly', 'Vegan-friendly'], ['vegan_options', 'Vegan options']];
+  var VEGAN = [['fully_vegan', '100% Vegan'], ['vegan_friendly', 'Vegan-friendly'], ['vegan_options', 'Pre-Vegan options']];
   var OPEN = [['OPERATIONAL', 'Open'], ['CLOSED_TEMPORARILY', 'Temporarily closed'], ['CLOSED_PERMANENTLY', 'Permanently closed']];
   // What kind of listing a sub-section is, and so which parts of the editor it needs. Keep the words in step with STATUS_WORDS in
   // /public/ve-region-directory.js and statusWords in /directory/listing.html.
