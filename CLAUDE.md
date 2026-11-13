@@ -31,6 +31,11 @@ Every reply: where we are (one line), what was done (one line), **one** next ste
 Depot > Ideas, never piled into the reply. One decision per message, with a recommendation. Finish the open playbook before starting
 anything new. Say clearly when something is done and close it.
 
+**Outreach is the last step** (Sean, 2026-11-13: "I don't even know what we're sending to them. Did we lock it in? Let's finish it before we
+start talking about outreach. Outreach should be the last thing we do."). Before any list, message, DM or campaign is built, the thing
+it sends people to (the page, the job, the offer and its terms) is shown to Sean as they will see it and locked by him. A yes to a
+draft message is not a lock on what it links to.
+
 ## The template gate (Sean, 2026-11-02): never build from a blank file
 
 "It's like you just made something up. Not following any templates, not using any previous examples... We need a system. That's why
