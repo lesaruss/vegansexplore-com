@@ -496,3 +496,22 @@ for word before sending. Handoff `docs/handoff/2026-11-09-ve-city-shows-soflo-ve
 
 
 **Local Voices and People > Intake** (2026-11-12 to 13, Sean: "Approved, keep the names, start building it"). Every lead lands in People > Intake (ve_intake); Local Voices draws its good fits into a pipeline in HQ Outreach (Queued, the picture check, drafts, Sean's OK, Sent). Comment pages carry Sean's personal note and recording. Full record: `docs/handoff/2026-11-13-local-voices-and-branddesk-sweep.md`, mock `/mocks/local-voices`.
+
+## 2026-11-13: Episode 146 and the studio fixes (playbook ve-podcast-studio)
+
+**Episode 146** ("Chaka Khan's Café, Cleansed and the Nutrients Every Vegan Needs") scheduled on Captivate by Sean from the desk, Nov 12,
+11:39 PM Eastern; checked on Captivate: Sun Nov 15, 7:00 AM Eastern, episode 146 season 1. Finished mix `episode-final-v1.mp3` (14:04,
+-16.2 LUFS, true peak -1.8), script HQ `scripts/podcast-mix/mix_vep_146.py`. Nori sat out; Kai's Cleansed (Kip Andersen) took the slot.
+First Question of the Day: Dr. Michael Klaper from VEP 59, seven pieces cut from Sean's full interview file. Never "pet food": food for
+companion animals (Sean, on Dani's story).
+
+**Studio changes** (HQ, all on main; canon `canon-podcast-mix-standard` v4):
+- Clean the sound, never the words (60beced): Record it here had matched takes to the script and cut 64 off-script words from Sean's outro.
+  Takes are kept whole; cleaning is a low cut, gentle compression and the level. A bad line is re-voiced alone and spliced (Dani's ending).
+- Every voice leveled to -16 LUFS when voiced; Make it louder / Make it softer in More options; feedback that says a take is too low or
+  too loud fixes the level, not the script (af75e2b, `lib/levelAudio.ts`, `lib/levelRules.ts`). Dani had come back at -33 LUFS.
+- The theme under Sean's intro and outro on every new episode (a5fe324).
+- Show notes in Send to Captivate as HTML | Preview | Episode page tabs; the episode page block moved in (3fa5d2f, df1012e).
+- Play the full episode crossfades the music like the finished mix, two players, Web Audio gain so it works on iPhone (8afb330).
+- Earlier in the session: guides hidden by default, "Approve as heard", BrandDesk in each brand's kit, music under every commercial,
+  Drive links for audio, microphone picker, Plantbaed said plant-bayed. Handoff `docs/handoff/2026-11-13-ve-podcast-146.md`.
