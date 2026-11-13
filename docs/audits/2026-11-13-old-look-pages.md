@@ -1,5 +1,14 @@
 # The old look, page by page (2026-11-13)
 
+## Done
+- **The Guides (2026-11-13, d6988d9):** every Guide on the Welcome Guide's frame was already on the kit through `ve-look.css` (the 2026-11-12
+  merge Sean approved: pink header, stripe, outlined cards, the one orange button in the header). Their green Play, dark green Next and
+  green in-page buttons match the Welcome Guide, the template every Guide copies, so they stay. What was left: the topic tiles (mint, a thin
+  line) and the Start here box (a thin line), now the kit card in `ve-look.css` (`.dg-tile`, `.vgi`, every Guide and the Welcome Guide).
+  The five `ve-path-*` pages already redirect to `/passport`; the roster and chat prototypes (`ve-guides-roster-v1`, `ve-guide-chat-v1`:
+  "Five paths", a $11 Passport stat, a Guide named June not on the roster) now redirect to `/guides` and `/pulse`. The scan below still
+  lists the Guides' files because their own styles keep the old greens under the overrides; they are done.
+
 Sean, 2026-11-13: "I'm giving you approval to fix every part of the website, 100% of the website that still has the old look. There is no scenario where I want any part of the website to have the old look... Apply the new look."
 
 Found by two checks: pages that never load `/public/nav.js` (so `ve-look.js` never turns the look on), and pages whose own styles still hard-code the old greens (`#1f5f22`, `#16a34a`, `#2d7d31`). Order: what members and businesses see first, the Depot last.
