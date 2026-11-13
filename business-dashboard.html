@@ -132,6 +132,7 @@
     .pick i{width:52px;height:52px;border-radius:12px;background:#fff center/contain no-repeat;border:2px solid var(--ink);flex:none;display:grid;place-items:center;font-style:normal;font-weight:900;color:var(--dk);}
     .pick b{font-weight:900;}
     .pick small{display:block;color:var(--mute);font-size:12.5px;font-weight:600;}
+    .empty a{color:var(--dk);font-weight:800;text-underline-offset:3px;}
     .search{font:inherit;font-size:14px;font-weight:600;padding:9px 11px;min-height:46px;border:2px solid var(--ink);border-radius:var(--r);width:100%;max-width:420px;}
     /* The hosted views (public/ve-partner-dashboard.js) on the kit. Scoped to .bd-host so the listing page's own ?tab=brand dashboard is
        untouched; the higher specificity wins over the module's injected CSS. Lists never scroll inside themselves (Sean, 2026-11-12). */
@@ -263,12 +264,17 @@
     insights: ['insights', 'audience', 'checkins', 'saves', 'gmembers'],
     plan: ['plan', 'managed', 'gift', 'earnings']
   };
-  // Their Find us on Vegans Explore post and story (scripts/brand-templates/find-us.js, rendered at approval into /public/claims/<slug>/)
-  // and their own tracked link (ve_links, initiative ve-claims-onboarding). First group 2026-11-12; next: served by owner_dashboard.
-  var POST_OK = { 'chaska': 'chaska', 'next-level-veggie-grill': 'nlvg-pasadena', 'next-level-veggie-grill-burbank-d55b': 'nlvg-burbank',
-    'next-level-veggie-grill-long-beach-b4fc': 'nlvg-long-beach', 'next-level-veggie-grill-los-angeles-9f8d': 'nlvg-sunset',
-    'next-level-veggie-grill-tustin': 'nlvg-tustin', 'veggie-grill': 'nlvg-ucla' };
-  var CAPTION = 'Find us on @vegansexplore \uD83C\uDF31 Our menu, hours and signature dishes, all in one place. Link in bio.';
+  // The Media kit (Sean, 2026-11-13, build step 2): every time we feature them, from the database (ve_media_kit: the Holiday Guide,
+  // podcast and Pulse mentions, their Find us post), each with its share kit (ve_media_kit_items: post, story, their own tracked link,
+  // a caption) once it is made and approved. Never a list in this page.
+  var KIT = [];
+  function kitFetch(id) {
+    return fetch(SB + '/rest/v1/rpc/ve_media_kit', { method: 'POST', headers: { apikey: ANON, Authorization: 'Bearer ' + ANON, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_listing: id }) })
+      .then(function (r) { return r.json(); }).then(function (k) { KIT = Array.isArray(k) ? k : []; }).catch(function () { KIT = []; });
+  }
+  function kitItem(key) { if (key === 'post') key = 'find-us'; return KIT.filter(function (k) { return k.key === key; })[0]; }
+  function kitReady() { return KIT.filter(function (k) { return k.ready; }); }
+  function when(t) { return t ? new Date(t).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) : ''; }
   function did(k) { try { return localStorage.getItem('ve_gs_' + k + '_' + L.slug) === '1'; } catch (e) { return false; } }
   function mark(k) { try { localStorage.setItem('ve_gs_' + k + '_' + L.slug, '1'); } catch (e) {} }
   var IC = { done: '<path d="M4 12l5 5L20 6"/>', share: '<path d="M4 12v7h16v-7M12 3v12M7 8l5-5 5 5"/>', talk: '<path d="M4 5h16v11H8l-4 4z"/>',
@@ -281,7 +287,7 @@
     var basics = ['photos', 'hours', 'menu'].every(function (k) { return ck[k] !== false; });
     var rows = [
       { k: 'built', ic: 'done', t: 'Your page is built', s: 'Your words, logo and address. Done by us.', done: true, btn: '<a class="btn btn-sm ok" href="' + esc(listingUrl()) + '" target="_top">See it</a>' },
-      { k: 'share', ic: 'share', t: 'Share your post', s: 'It\'s made. See how it looks.', done: did('share'), hot: true, btn: POST_OK[L.slug] ? '<a class="btn btn-sm go" href="' + base('media') + '&pd=post" data-part="media" data-pd="post">Share</a>' : '' },
+      { k: 'share', ic: 'share', t: 'Share your post', s: 'It\'s made. See how it looks.', done: did('share'), hot: true, btn: (kitItem('find-us') || {}).ready ? '<a class="btn btn-sm go" href="' + base('media') + '&pd=post" data-part="media" data-pd="post">Share</a>' : '' },
       { k: 'talk', ic: 'talk', t: 'Help shape launch', s: 'What would bring you back every day?', done: did('talk'), btn: '<button type="button" class="btn btn-sm btn-ghost" data-fbk data-gs="talk">Tell us</button>' },
       { k: 'basics', ic: 'photo', t: 'Check photos, hours and menu', s: 'About 3 minutes', done: basics, btn: '<a class="btn btn-sm btn-ghost" href="' + esc(listingUrl('?tab=brand&edit=photos')) + '" target="_top">Check</a>' },
       { k: 'dishes', ic: 'star', t: 'Feature 3 signature dishes', s: 'They show first on your page', done: did('dishes'), btn: '<a class="btn btn-sm btn-ghost" href="' + base('page') + '&pd=dishes" data-part="page" data-pd="dishes" data-gs="dishes">Pick</a>' },
@@ -297,18 +303,32 @@
         return '<div class="gr' + (r.done ? ' done' : '') + (r.hot && !r.done ? ' hot' : '') + '"><span class="ic"><svg viewBox="0 0 24 24">' + IC[r.done ? 'done' : r.ic] + '</svg></span>' +
           '<div><b>' + esc(r.t) + '</b><small>' + esc(r.s) + '</small></div>' + (r.btn || '<span></span>') + '</div>'; }).join('') + '</div></div></section>';
   }
-  // Media kit > Your post: their post and story as their followers will see them (Sean, 2026-11-12, /mocks/claims slide 8).
-  function drawPost() {
-    var code = POST_OK[L.slug];
-    if (!code) return drawSoon('Media kit', 'Your "Find us on Vegans Explore" post and story are being made from your logo. They land here with your own link and a caption to copy.', 'var(--peach)');
-    var dir = '/public/claims/' + encodeURIComponent(L.slug) + '/', link = 'vegansexplore.com/go/' + code, handle = String(L.instagram || L.name || '').replace(/^.*instagram\.com\//i, '').replace(/[\/?#].*$/, '').replace(/^@/, '') || L.name;
-    return '<section class="card"><h2>Find us on Vegans Explore <span class="tag t-new">Ready</span></h2><p class="lede" style="margin:0 0 16px">Made for you when your page was approved. Post it, tag @vegansexplore, and use your own link so you can see who it brings.</p>' +
-      '<div class="sh"><div class="ph"><div class="ph-top"><i' + (L.logo_url ? ' style="background-image:url(\'' + esc(L.logo_url) + '\')"' : '') + '></i>' + esc(handle) + '</div><img src="' + dir + 'post.jpg" alt="Your post, Find us on Vegans Explore, with your logo"><div class="ph-cap"><b>' + esc(handle) + '</b> ' + esc(CAPTION) + '</div></div>' +
-      '<div class="ph"><img src="' + dir + 'story.jpg" alt="Your story, Find us on Vegans Explore"></div>' +
-      '<div class="sh-act"><a class="btn go" href="' + dir + 'post.jpg" download="' + esc(L.slug) + '-post.jpg" data-gs="share">Download the post</a> <a class="btn btn-ghost" href="' + dir + 'story.jpg" download="' + esc(L.slug) + '-story.jpg" data-gs="share">Download the story</a>' +
-      '<div class="lk"><code>' + esc(link) + '</code><button type="button" class="btn btn-sm btn-ghost" data-copy="https://' + esc(link) + '" data-gs="share">Copy my link</button></div>' +
-      '<div class="cap"><p>' + esc(CAPTION) + '</p><button type="button" class="btn btn-sm btn-ghost" data-copy="' + esc(CAPTION) + '" data-gs="share">Copy caption</button></div>' +
-      '<div class="shn">Every click on your link shows up in Your week as <b>visitors you sent</b>.</div></div></div></section>';
+  // Media kit: the list (every feature, newest first, the Find us post on top), then one kit on its own (?pd=<key>).
+  function drawKit() {
+    var rows = KIT.map(function (k) {
+      var body = [k.where_label, when(k.featured_at)].filter(Boolean).join(' \u00b7 ');
+      var btn = k.ready ? partBtn('Share it', 'media', k.key) : (k.where_url ? '<a class="btn btn-sm" href="' + esc(k.where_url) + '" target="_top">See it</a>' : '<span></span>');
+      return row(k.ready ? 'Ready to share' : 'Kit coming', k.ready ? 't-new' : 't-tip', k.title, body, btn);
+    });
+    if (rows.length && KIT[0].ready) rows[0] = go1(rows[0]);
+    return '<div class="sec" style="margin-top:4px"><h2>Every time we <span class="hl o">feature you</span></h2>' + (rows.length ? '<span class="count">' + rows.length + '</span>' : '') + '</div>' +
+      '<p class="lede">A Guide, a podcast, a Daily Pulse story: each one lands here. When its kit is ready, it has a post, a story, your own link and a caption to copy.</p>' +
+      (rows.length ? list('kit', rows) : '<p class="empty">Nothing yet. The first time we feature you, it shows up here.</p>');
+  }
+  function drawKitItem(k) {
+    var link = k.link_code ? 'vegansexplore.com/go/' + k.link_code : '', cap = k.caption || '';
+    var handle = String(L.instagram || L.name || '').replace(/^.*instagram\.com\//i, '').replace(/[\/?#].*$/, '').replace(/^@/, '') || L.name;
+    var why = k.kind === 'find_us' ? 'Made for you when your page was approved.' : 'Made for you because ' + (k.where_label || 'Vegans Explore') + ' featured you.';
+    return '<section class="card"><h2>' + esc(k.title) + ' <span class="tag t-new">Ready</span></h2><p class="lede" style="margin:0 0 16px">' + esc(why) +
+      ' Post it, tag @vegansexplore, and use your own link so you can see who it brings.</p>' +
+      '<div class="sh">' + (k.post_url ? '<div class="ph"><div class="ph-top"><i' + (L.logo_url ? ' style="background-image:url(\'' + esc(L.logo_url) + '\')"' : '') + '></i>' + esc(handle) + '</div><img src="' + esc(k.post_url) + '" alt="Your post: ' + esc(k.title) + '"><div class="ph-cap"><b>' + esc(handle) + '</b> ' + esc(cap) + '</div></div>' : '<span></span>') +
+      (k.story_url ? '<div class="ph"><img src="' + esc(k.story_url) + '" alt="Your story: ' + esc(k.title) + '"></div>' : '<span></span>') +
+      '<div class="sh-act">' + (k.post_url ? '<a class="btn go" href="' + esc(k.post_url) + '" download="' + esc(L.slug) + '-post.jpg" data-gs="share">Download the post</a> ' : '') +
+      (k.story_url ? '<a class="btn" href="' + esc(k.story_url) + '" download="' + esc(L.slug) + '-story.jpg" data-gs="share">Download the story</a>' : '') +
+      (link ? '<div class="lk"><code>' + esc(link) + '</code><button type="button" class="btn btn-sm" data-copy="https://' + esc(link) + '" data-gs="share">Copy my link</button></div>' : '') +
+      (cap ? '<div class="cap"><p>' + esc(cap) + '</p><button type="button" class="btn btn-sm" data-copy="' + esc(cap) + '" data-gs="share">Copy caption</button></div>' : '') +
+      (link ? '<div class="shn">Every click on your link shows up in Your week as <b>visitors you sent</b>.</div>' : '') +
+      (k.where_url ? '<p class="empty" style="margin-top:14px">See it where it is live: <a href="' + esc(k.where_url) + '" target="_top">' + esc(k.where_label || 'Vegans Explore') + '</a></p>' : '') + '</div></div></section>';
   }
   var CHECK = { logo: ['Your logo', 'A clear, official logo instead of your first letter.', 'photos'],
     description: ['Your story', 'A few lines on who you are and what to try first.', 'about'],
@@ -349,7 +369,7 @@
       '<div class="who-acts"><a class="btn btn-wh btn-sm" href="' + esc(listingUrl()) + '" target="_top">View my page</a>' +
       '<button type="button" class="btn btn-gh btn-sm" data-fbk><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 01-11.6 7.1L4 20l1-4.6A8 8 0 1121 12z"/></svg>Feedback</button></div></div></header>' +
       (ADMIN && D && D.admin ? '<p class="preview">Viewing as admin: this is ' + esc(L.name) + '\'s dashboard as its owner sees it.</p>' : '') +
-      '<nav class="ptabs" aria-label="Your dashboard">' + PARTS.map(function (x) { var b = x[0] === 'media' && POST_OK[L.slug] ? 1 : 0;
+      '<nav class="ptabs" aria-label="Your dashboard">' + PARTS.map(function (x) { var b = x[0] === 'media' ? kitReady().length : 0;
         return '<a href="' + base(x[0]) + '" data-part="' + x[0] + '" class="' + (x[0] === p ? 'on' : '') + '"' + (x[0] === p ? ' aria-current="page"' : '') + '>' + esc(x[1]) + (b ? ' <em>' + b + '</em>' : '') + '</a>'; }).join('') + '</nav>' +
       // The switcher lists the signed-in owner's own locations; a super admin previewing someone else's dashboard does not see theirs
       // (Sean, 2026-11-12: "Is that because it's showing my locations and not Chaska's?").
@@ -436,10 +456,13 @@
     var p = part();
     if (p !== q('tab') || q('l') !== L.slug) history.replaceState(null, '', location.pathname + base(p) + (q('pd') ? '&pd=' + encodeURIComponent(q('pd')) : ''));
     var label = PARTS.filter(function (x) { return x[0] === p; })[0][1];
-    var html = head() + (p === 'home' ? '' : '<p class="crumb"><a href="' + base('home') + '" data-part="home">Home</a> &rsaquo; ' + esc(label) + '</p>');
+    var kit = p === 'media' && q('pd') ? kitItem(q('pd')) : null;
+    if (kit && !kit.ready) kit = null;
+    var html = head() + (p === 'home' ? '' : '<p class="crumb"><a href="' + base('home') + '" data-part="home">Home</a> &rsaquo; ' +
+      (kit ? '<a href="' + base('media') + '" data-part="media">' + esc(label) + '</a> &rsaquo; ' + esc(kit.title) : esc(label)) + '</p>');
     if (p === 'home') html += drawHome();
     else if (p === 'page') html += drawPageTop() + '<div id="bdHost" class="bd-host"></div>';
-    else if (p === 'media') html += drawPost() + drawSoon('Every feature, ready to share', 'Every time we feature you (a Guide, a Daily Pulse story, a podcast, a carousel), it lands here with what you need to share it: the story, a square post, your own link and a caption to copy.', 'var(--peach)');
+    else if (p === 'media') html += kit ? drawKitItem(kit) : drawKit();
     else if (p === 'messages') html += drawSoon('Messages', 'Messages from our team, and your replies, right here. Anything important is emailed to you too.');
     else html += '<div id="bdHost" class="bd-host"></div>';
     app.innerHTML = html;
@@ -479,7 +502,8 @@
     app.hidden = false; app.innerHTML = '<p class="empty">Opening your dashboard...</p>';
     fetchListing(slug).then(function (l) {
       if (!l) return gateMsg('That listing is not in the Directory.');
-      return post('ve-claims', { action: 'owner_dashboard', listing_id: l.id, days: 7 }).then(function (d) {
+      return Promise.all([post('ve-claims', { action: 'owner_dashboard', listing_id: l.id, days: 7 }), kitFetch(l.id)]).then(function (all) {
+        var d = all[0];
         if (!d || !d.ok) return gateMsg(d && d.error === 'not_owner' ? 'This dashboard belongs to the listing\'s owner.' : 'Your dashboard did not open. Refresh to try again.');
         L = l; D = d; ADMIN = !!d.admin;
         var u = location.pathname + '?l=' + encodeURIComponent(l.slug) + '&tab=' + (p || part()) + (q('pd') && q('l') === l.slug ? '&pd=' + encodeURIComponent(q('pd')) : '');
