@@ -5273,6 +5273,10 @@ function veTrack(l, kind, ref){
   try{
     // ?preview=1: a page shown inside a brand's tour, not a visit.
     if(!l || !l.id || DEMO || navigator.webdriver || new URLSearchParams(location.search).get('preview')) return;
+    // Our own looks never count (Sean, 2026-11-12: "view how it looks without impacting the view count"): a super admin, or the owner
+    // on their own page, is not a visitor.
+    var me = null; try { me = window.VEAuth && VEAuth.isLoggedIn() ? (VEAuth.getRealMember ? VEAuth.getRealMember() : VEAuth.getMember()) : null; } catch(e){}
+    if(me && (me.is_superadmin || (me.id && (me.id === l.owner_member_id || me.id === l.claimed_by_member_id)))) return;
     var vid = null;
     try{ vid = localStorage.getItem('ve_vid'); if(!vid){ vid = Math.random().toString(36).slice(2) + Date.now().toString(36); localStorage.setItem('ve_vid', vid); } }catch(e){}
     var via = document.documentElement.classList.contains('ve-embedded') ? 'guide' : (new URLSearchParams(location.search).get('vl') ? 'link' : 'page');
