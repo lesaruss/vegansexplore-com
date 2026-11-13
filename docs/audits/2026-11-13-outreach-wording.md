@@ -69,3 +69,10 @@ email (`ve-business-weekly`), Liz's claims emails.
 - Held for Sean's re-approval: `ve-nurture` (items 8 and 10). Its dish-slot and Events door tracks are approved by the hash of their exact
   email; the new look and the dashboard links change that hash, so deploying it before he re-approves would stop both tracks.
 - Not changed: the `/hello` video (Sean's own recording, before the brand lock), the other brands' em-dashes (item 12, not Vegans Explore).
+
+## Still waiting on Sean: ve-nurture (items 8 and 10)
+The kit look and the business dashboard links for `ve-nurture` are ready in commit 340a3c7 (branch `claude/exciting-heisenberg-r2gnrr`), not on
+main and not deployed, so main matches what is live. Logan's attempt to deploy it and re-approve the dish-slot and Events door emails in one
+step was blocked on 2026-11-13: the approval is Sean's to press. The steps, in order: deploy 340a3c7 through `ve-function-deploy`; Sean
+re-approves both (Depot > Challenges > Emails has the Events door button; the dish-slot reminder has no button yet, `ve-nurture` settings
+`{ dish_approve: true }`). Between the deploy and the press, both tracks pause.
