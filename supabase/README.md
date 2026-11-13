@@ -656,6 +656,11 @@ typed name and the e-signature box. `verify_jwt` is off: the token is the creden
 in the database and given to Sean once; they are never committed. Migration
 `20261008_foundation_board_consents.sql`.
 
+2026-11-13: a second consent, dissolving Vegans Explore Inc. Page `/board-consent-dissolution?k=<token>` (Sean and
+Claudia), table `ve_inc_dissolution_consents` (same shape, choices approve | talk), the page sends `doc:
+'dissolution-2026-11-13'`; with no `doc` the function serves the 2026-10-08 consent unchanged. Migration
+`20261113_ve_inc_dissolution_consents.sql`.
+
 ## ve-cookbook: the Cookbook, Phase 1 (2026-10-10)
 
 Recipes for the Guides' Cookbook (first the Vegan Dairy Guide). Deployed with `verify_jwt: false`: the VE app token is

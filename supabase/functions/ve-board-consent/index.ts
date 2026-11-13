@@ -16,6 +16,14 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 //            answer is refused (already_responded); Sean changes it by hand if asked.
 //
 // verify_jwt stays OFF: the token in the body is the credential.
+//
+// 2026-11-13: a second consent, dissolving Vegans Explore Inc. (page /board-consent-dissolution,
+// table ve_inc_dissolution_consents, choices approve | talk). The page sends doc
+// 'dissolution-2026-11-13'; with no doc the 2026-10-08 consent is used, unchanged.
+const DOCS: Record<string, { table: string; choices: string[] }> = {
+  'foundation-2026-10-08': { table: 'foundation_board_consents', choices: ['approve', 'resign', 'talk'] },
+  'dissolution-2026-11-13': { table: 've_inc_dissolution_consents', choices: ['approve', 'talk'] },
+};
 
 const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
 
@@ -51,9 +59,11 @@ serve(async (req: Request) => {
     const body = await req.json().catch(() => ({}));
     const k = typeof body.k === 'string' ? body.k.trim() : '';
     if (!/^[0-9a-f]{32}$/.test(k)) return json({ error: 'bad_link' }, 400);
+    const doc = DOCS[typeof body.doc === 'string' && body.doc ? body.doc : 'foundation-2026-10-08'];
+    if (!doc) return json({ error: 'bad_doc' }, 400);
 
     const { data: row } = await supabase
-      .from('foundation_board_consents')
+      .from(doc.table)
       .select('director, full_name, choice, signed_name, responded_at')
       .eq('token_hash', await sha256Hex(k))
       .maybeSingle();
@@ -66,14 +76,14 @@ serve(async (req: Request) => {
     if (action === 'respond') {
       if (row.choice) return json({ error: 'already_responded', response: publicResponse(row) }, 409);
       const choice = body.choice;
-      if (!['approve', 'resign', 'talk'].includes(choice)) return json({ error: 'bad_choice' }, 400);
+      if (!doc.choices.includes(choice)) return json({ error: 'bad_choice' }, 400);
       const signed = typeof body.signed_name === 'string' ? body.signed_name.trim().slice(0, 120) : '';
       const needsSign = choice === 'approve' || choice === 'resign';
       if (needsSign && (signed.length < 3 || body.agreed !== true)) return json({ error: 'signature_required' }, 400);
       const note = typeof body.note === 'string' ? body.note.trim().slice(0, 1000) : '';
 
       const { data: saved, error } = await supabase
-        .from('foundation_board_consents')
+        .from(doc.table)
         .update({
           choice,
           signed_name: needsSign ? signed : null,
