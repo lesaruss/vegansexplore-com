@@ -53,3 +53,19 @@ the Guide roster, the business dashboard (live 2026-11-13), the brand kit email 
 The business outreach templates (`ve_outreach_templates` business-outreach), the event heads-up, the Daily Pulse confirm, the Restaurant Guide
 and topic Guide prices ($11 or 1,100 points), the Founding Member deadline everywhere (midnight Eastern, January 1, 2027), the weekly business
 email (`ve-business-weekly`), Liz's claims emails.
+
+## Fixed, 2026-11-13 (Sean: "go with your defaults, fix them all")
+- Campaign copy (migration `20261113_outreach_wording_fixes.sql`, checked with reads): 3 "on us" out; 4 "(Pre-Vegan)" in; 2 the vault and its
+  "first pick" line out of all four drafts (the claimed email is now "Two ways in for December"); 1 the Holiday Launch's five emails lead with
+  the holidays (the Gift Guide, menus, recipes, giving back), the three Founding Cohort follow-ups too, no ThanksLiving date left; 5 the 18
+  orientation emails signed by their Guide (Maya, Kai, River, Dani, Liz), the restaurant one to the business dashboard, the nonprofit one not
+  seasonal; 7 the creator and group leader welcomes. Nothing resumed or approved: paused stays paused.
+- Code, deployed from acc0bc9 through `ve-function-deploy`, every source sha256 matched, every function answering: 8 the kit email look
+  (the stripe, the landscape v2 PNG logo, the orange button, brand green links) in `ve-holiday`, `ve-badges`, `ve-event-headsup`,
+  `ve-mission-survey`, `ve-pulse-subscribe`; 9 `ve-claims`: a business that is not a product brand goes to `/dashboard/business` with Liz.
+  **Correction to item 9:** a product brand keeps Maya's brand door on its listing page; that is still where its products and store aisles
+  live, so its email stays as it was. 11 `ve-stripe-webhook`: the $11 receipt thanks them for the contribution, says membership itself is
+  free with the survey, and wears the kit look; the subject is "Thank you for your contribution to Vegans Explore".
+- Held for Sean's re-approval: `ve-nurture` (items 8 and 10). Its dish-slot and Events door tracks are approved by the hash of their exact
+  email; the new look and the dashboard links change that hash, so deploying it before he re-approves would stop both tracks.
+- Not changed: the `/hello` video (Sean's own recording, before the brand lock), the other brands' em-dashes (item 12, not Vegans Explore).
