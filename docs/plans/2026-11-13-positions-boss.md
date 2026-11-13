@@ -246,3 +246,20 @@ accounts... note the last time they made a post... I could even support the audi
 - **The spot check feeds the Directory:** her note is saved on the listing with the date; 6+ months, no posts or looks closed goes to
   Directory review (`admin/depot/directory-review.html`). `ve_listing_posts.posted_at` (the listing-posts scraper) already knows the last
   post for listings it reads; her look covers the rest and confirms it.
+
+## Sean (2026-11-13): the card is a checklist; the ladder
+
+- **One card per profile, a checklist, Submit, the next card.** Sean: "1, make sure that we're following them. 2, note if they're following
+  us. 3, check to see... the last time that they posted... when she hits submit, boom, it goes off her queue. She could see things that she's
+  done in the past in case she needs to go and fix it, but it just shows her the next thing." Fields: following them (followed now, already
+  following), following us (yes, not yet), last post (this week, this month, 1 to 6 months, 6+ months, no posts, account not found, looks
+  closed), a note. Not following yet: a follow-up card comes back in a few days; following us: jumps to the top for a message. A Done list
+  for fixes.
+- **No daily quota from us**: "If she wants to be an overachiever and knock them all out in one day, I'm not going to stop her. It's going to
+  be the same amount either way." The only limit is Instagram's: follows and new messages stop at the safe daily cap (protects the account);
+  past it she gets look-only cards and replies.
+- **The ladder** (Sean): "I would be able to say... move you into a community manager role... the income potential is based off of your
+  responsibilities... you break it up, have you do just one piece... now we need you to do this piece... another 250. Now you're making 500."
+  Positions are stackable: one person can hold several, each its own fee and checklist; her record (cards done, joined, accuracy of her
+  notes) shows on her person view, with **Offer another position** (the direct-assign path). Public copy about Community Managers still never
+  quotes an amount (canon); the amount appears only in a position's own posting and invite.
