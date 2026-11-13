@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-look="plain">
 <head>
   <script src="/analytics.js"></script>
   <meta charset="UTF-8">
@@ -48,7 +48,7 @@
     .said p{margin:0 0 10px}
     .side{display:flex;flex-direction:column;align-self:start}
     .media{border-radius:16px;overflow:hidden;background:#f6f6f4;aspect-ratio:4/5;max-height:calc(100vh - 180px);box-shadow:0 18px 40px rgba(0,0,0,0.18);display:block}
-    .media img{width:100%;height:100%;object-fit:cover;display:block;}
+    .media img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;}
     .cap{display:flex;align-items:center;gap:10px;margin-top:14px;font-size:14px;font-weight:700}
     .cap .lg{width:36px;height:36px;border-radius:8px;border:1px solid var(--ve-border);background:#fff center/contain no-repeat;flex:none}
     .cap small{display:block;font-weight:600;color:var(--ve-text-75);font-size:12.5px}
@@ -212,7 +212,8 @@
         if (G.image_url) { $('pic').src = G.image_url; $('pic').alt = G.title; }
         $('ct').textContent = G.title; $('cb').textContent = (G.brand || L.name) + (G.section ? ' · ' + G.section : '');
       } else if (KIND === 'menu' && M) {
-        $('line').textContent = 'Congratulations, ' + L.name + ': your ' + (M.holiday === 'thanksliving' ? 'ThanksLiving' : plain(M.holiday)) + ' menu is in the Vegans Explore Holiday Guide.';
+        var hol = (d.menus || []).length > 1 ? 'holiday menus are' : (M.holiday === 'thanksliving' ? 'ThanksLiving' : plain(M.holiday)) + ' menu is';
+        $('line').textContent = 'Congratulations, ' + L.name + ': your ' + hol + ' in the Vegans Explore Holiday Guide.';
         $('pic').src = k.pic; $('pic').alt = '';
         $('ct').textContent = L.name; $('cb').textContent = (M.dishes || []).slice(0, 3).join(', ');
       } else {
@@ -259,6 +260,7 @@
     function sync() {
       var c = val('change'); $('item-f').hidden = c !== 'item'; $('photo-f').hidden = c !== 'photo' && !(c === 'item' && KIND === 'gift') && !(c === 'item' && KIND === 'kosher');
       $('note-l').innerHTML = c === 'fix' ? 'What should we update?' : 'Anything our team should know <small>(optional)</small>';
+      $('note').placeholder = c === 'fix' ? (KIND === 'menu' ? 'An order link, an order-by date, a dish' : 'What is wrong, and what it should say') : 'A line about it, a discount code, or anything else';
       sendLabel();
     }
     document.addEventListener('change', sync);
