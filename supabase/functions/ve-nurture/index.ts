@@ -117,12 +117,14 @@ async function secret(key: string) {
 }
 
 // ---------- The email ----------
+// The brand kit email look (2026-11-13, outreach wording audit): the stripe on top, the landscape v2 logo as PNG (mail apps do not show SVG),
+// the orange button; owners' links go to the business dashboard. Changes the approval hashes: deploy only after Sean re-approves.
 function shell(body: string, foot: string) {
-  return `<div style="font-family:Montserrat,Arial,sans-serif;max-width:560px;font-size:15px;line-height:1.65;color:#1a1a1a">` +
-    `<p style="margin:0 0 18px"><img src="${SITE}/public/logo-ve-landscape-v1.svg" alt="Vegans Explore" width="150" style="display:block;border:0"></p>${body}` +
+  return `<div style="font-family:Montserrat,Arial,sans-serif;max-width:560px;font-size:15px;line-height:1.65;color:#1a1a1a"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 18px;border-collapse:collapse"><tr><td width="25%" style="background:#2D5C27;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="13%" style="background:#F69820;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="12%" style="background:#FF9EC4;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="13%" style="background:#FFEBD1;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="12%" style="background:#22C55E;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="13%" style="background:#E8F5E9;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="12%" style="background:#3A9B3E;height:6px;line-height:6px;font-size:0">&nbsp;</td></tr></table>` +
+    `<p style="margin:0 0 18px"><img src="${SITE}/public/logo-ve-landscape-v2.png" alt="Vegans Explore" width="150" style="display:block;border:0"></p>${body}` +
     `<p style="margin-top:28px;font-size:12px;line-height:1.5;color:#777">${foot} <a href="{{unsubscribe_url}}" style="color:#777">Stop these emails</a>. {{postal_address}}.</p></div>`;
 }
-const btn = (href: string, label: string) => `<p style="margin:22px 0"><a href="${href}" style="display:inline-block;background:#1f5f22;color:#fff;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:13px;padding:13px 24px;border-radius:6px;text-decoration:none">${esc(label)}</a></p>`;
+const btn = (href: string, label: string) => `<p style="margin:22px 0"><a href="${href}" style="display:inline-block;background:#F69820;color:#1a1a1a;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:13px;padding:13px 24px;border-radius:6px;text-decoration:none">${esc(label)}</a></p>`;
 const P = (s: string) => `<p>${s}</p>`;
 const sign = P('Vegans Explore team');
 const list = (items: string[]) => items.length ? `<ul style="padding-left:20px;margin:10px 0">${items.map((i) => `<li style="margin:4px 0">${i}</li>`).join('')}</ul>` : '';
@@ -205,12 +207,12 @@ async function tasterEmail(kind: string, t: any) {
   const challenges = utm(`${SITE}/challenges?t=${encodeURIComponent(key)}`, kind);
   if (kind === 'day-3') {
     const { data: w } = await db.rpc('ve_nurture_city_week', { p_chapter: chapter });
-    const ev = ((w as any)?.events || []).map((e: any) => `<a href="${utm(`${SITE}/events?event=${e.id}`, kind)}" style="color:#1f5f22">${esc(e.title)}</a>, ${esc(new Date(e.starts_at).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'America/New_York' }))}${e.city ? ', ' + esc(e.city) : ''}`);
-    const pl = ((w as any)?.places || []).map((p: any) => `<a href="${utm(`${SITE}/directory/${p.slug}`, kind)}" style="color:#1f5f22">${esc(p.name)}</a>${p.city ? ', ' + esc(p.city) : ''} (new to the Directory)`);
-    const tp = (w as any)?.topic ? [`Today's Daily Pulse: <a href="${utm(`${SITE}/pulse?city=${(w as any).topic.community}&post=${(w as any).topic.id}`, kind)}" style="color:#1f5f22">${esc((w as any).topic.title)}</a>`] : [];
+    const ev = ((w as any)?.events || []).map((e: any) => `<a href="${utm(`${SITE}/events?event=${e.id}`, kind)}" style="color:#2D5C27">${esc(e.title)}</a>, ${esc(new Date(e.starts_at).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'America/New_York' }))}${e.city ? ', ' + esc(e.city) : ''}`);
+    const pl = ((w as any)?.places || []).map((p: any) => `<a href="${utm(`${SITE}/directory/${p.slug}`, kind)}" style="color:#2D5C27">${esc(p.name)}</a>${p.city ? ', ' + esc(p.city) : ''} (new to the Directory)`);
+    const tp = (w as any)?.topic ? [`Today's Daily Pulse: <a href="${utm(`${SITE}/pulse?city=${(w as any).topic.community}&post=${(w as any).topic.id}`, kind)}" style="color:#2D5C27">${esc((w as any).topic.title)}</a>`] : [];
     const items = [...ev, ...pl, ...tp];
     return { subject: chapter === 'national' ? 'This week on Vegans Explore' : `This week in ${city}`, unsub, html: shell(
-      P(`Hi ${first},`) + (items.length ? P(`Here's what's happening ${chapter === 'national' ? 'on Vegans Explore' : 'near you'}:`) + list(items) : P(`Here's where to look this week: our <a href="${utm(`${SITE}/events`, kind)}" style="color:#1f5f22">events calendar</a> and the <a href="${utm(`${SITE}/pulse`, kind)}" style="color:#1f5f22">Daily Pulse</a>.`)) +
+      P(`Hi ${first},`) + (items.length ? P(`Here's what's happening ${chapter === 'national' ? 'on Vegans Explore' : 'near you'}:`) + list(items) : P(`Here's where to look this week: our <a href="${utm(`${SITE}/events`, kind)}" style="color:#2D5C27">events calendar</a> and the <a href="${utm(`${SITE}/pulse`, kind)}" style="color:#2D5C27">Daily Pulse</a>.`)) +
       P(`<b>Want in?</b> You can earn your Passport instead of paying for it: check in at three Vegan places, bring three friends, or stand up for the animals. Finish one challenge in 30 days and your membership is yours.`) +
       btn(challenges, 'See the challenges') + sign, foot) };
   }
@@ -219,20 +221,20 @@ async function tasterEmail(kind: string, t: any) {
     const st: any = s || null;
     const body = st ? P(`You told us you're here for ${esc(WHY[t.why] || 'Vegan living')}, so we thought you'd like this one${st.show ? ` from ${esc(st.show_name || st.show)}` : ''}: <b>${esc(st.title)}</b>.`) + (st.summary ? P(esc(st.summary.replace(/\s+\S*$/, '')) + '...') : '') + btn(utm(`${SITE}/listen?show=${st.show_slug}&ep=${encodeURIComponent(st.guid)}`, kind), 'Play the episode') + P(`It plays right on the page, where you can save it and vote for the show.`)
       : P(`You told us you're here for ${esc(WHY[t.why] || 'Vegan living')}. Our shows have ten years of conversations about it.`) + btn(utm(`${SITE}/media`, kind), 'Listen');
-    return { subject: st ? String(st.title).slice(0, 90) : 'A story for you', unsub, html: shell(P(`Hi ${first},`) + body + P(`More like it is in the <a href="${utm(`${SITE}/pulse`, kind)}" style="color:#1f5f22">Daily Pulse</a>.`) + sign, foot) };
+    return { subject: st ? String(st.title).slice(0, 90) : 'A story for you', unsub, html: shell(P(`Hi ${first},`) + body + P(`More like it is in the <a href="${utm(`${SITE}/pulse`, kind)}" style="color:#2D5C27">Daily Pulse</a>.`) + sign, foot) };
   }
   if (kind === 'day-14') {
     const g = GUIDES[t.suggested_guide] ? t.suggested_guide : 'vegan-dairy-guide', name = GUIDES[g];
     const optin = `${SITE}/guides/taste?pulse=${encodeURIComponent(key)}`;
-    const pulseAsk = t.pulse_opt_in_at ? '' : P(`<b>Want your city's Daily Pulse every Thursday?</b> It's the week's top conversations ${chapter === 'national' ? 'on Vegans Explore' : 'in ' + esc(city)}, once a week. <a href="${optin}" style="color:#1f5f22;font-weight:700">Yes, send it</a>. If you don't tap it, we won't send it.`);
+    const pulseAsk = t.pulse_opt_in_at ? '' : P(`<b>Want your city's Daily Pulse every Thursday?</b> It's the week's top conversations ${chapter === 'national' ? 'on Vegans Explore' : 'in ' + esc(city)}, once a week. <a href="${optin}" style="color:#2D5C27;font-weight:700">Yes, send it</a>. If you don't tap it, we won't send it.`);
     return { subject: `${name}: picked from your answers`, unsub, html: shell(
       P(`Hi ${first},`) + P(`When you signed up for A Taste of Vegans Explore, you told us you're here for ${esc(WHY[t.why] || 'Vegan living')}. That points to ${esc(name)}.`) +
       P(`${esc(GUIDE_LINE[g] || 'It takes one part of Vegan living and makes it easy, with a Guide walking you through it.')} You tried a piece of it in your Taste. The full Guide is $11, one time, or 1,100 points, and it's yours to keep.`) +
-      btn(utm(`${SITE}/guides/${g}`, kind), 'See the Guide') + P(`Or <a href="${challenges}" style="color:#1f5f22">earn your Passport free through a challenge</a>, and its points cover the Guide.`) + pulseAsk + sign, foot) };
+      btn(utm(`${SITE}/guides/${g}`, kind), 'See the Guide') + P(`Or <a href="${challenges}" style="color:#2D5C27">earn your Passport free through a challenge</a>, and its points cover the Guide.`) + pulseAsk + sign, foot) };
   }
   if (kind.startsWith('pulse-')) {
     const { data: p } = await db.rpc('ve_nurture_pulse', { p_chapter: chapter });
-    const items = ((p as any) || []).map((x: any) => `<a href="${utm(`${SITE}/pulse?city=${x.community}&post=${x.id}`, 'pulse')}" style="color:#1f5f22">${esc(x.title)}</a>`);
+    const items = ((p as any) || []).map((x: any) => `<a href="${utm(`${SITE}/pulse?city=${x.community}&post=${x.id}`, 'pulse')}" style="color:#2D5C27">${esc(x.title)}</a>`);
     return { subject: `The Daily Pulse: ${chapter === 'national' ? 'this week' : city}`, unsub, html: shell(
       P(`Hi ${first},`) + (items.length ? P(`This week's top topics${chapter === 'national' ? '' : ' in ' + esc(city)}:`) + list(items) : P(`The conversations this week are on the Daily Pulse.`)) +
       btn(utm(`${SITE}/pulse${chapter === 'national' ? '' : '?city=' + chapter}`, 'pulse'), 'Read the Daily Pulse') + sign, foot) };
@@ -330,8 +332,8 @@ function rgEmail(kind: string, x: { first: string; founding: boolean; biz: { nam
   const first = esc(x.first || 'there'), biz = x.biz, bn = biz ? esc(biz.name) : 'your business';
   const guide = (hash: string) => utm(`${SITE}/guides/${RG_GUIDE}${biz?.code ? '?b=' + encodeURIComponent(biz.code) : ''}`, kind) + hash;
   const claim = biz?.slug ? utm(`${SITE}/claim?listing=${encodeURIComponent(biz.slug)}`, kind) : guide('#/featured');
-  const dash = biz?.slug ? utm(`${SITE}/directory/${encodeURIComponent(biz.slug)}?tab=brand`, kind) : guide('#/dashboard');
-  const a = (href: string, t: string) => `<a href="${href}" style="color:#1f5f22">${t}</a>`;
+  const dash = biz?.slug ? utm(`${SITE}/dashboard/business?l=${encodeURIComponent(biz.slug)}`, kind) : guide('#/dashboard');
+  const a = (href: string, t: string) => `<a href="${href}" style="color:#2D5C27">${t}</a>`;
   const foot = `You are getting this because you took the restaurant survey in the Vegan Restaurant Guide.`;
   if (kind === 'door-rg-in') return { subject: `You're in, ${x.first || 'welcome'}`, unsub: '', html: shell(P(`Hi ${first},`) +
     P(`You finished the survey, so you are a member of Vegans Explore. Thank you for taking the time. It helps us serve ${bn} better.`) +
@@ -398,7 +400,7 @@ const DISH_SAMPLE = { first: 'Alex', slot: 4, ends: '2026-12-06T18:00:00Z', biz:
 const fmtDay = (t: string) => new Date(t).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', timeZone: 'America/New_York' });
 function dishEmail(x: { first: string; slot: number; ends: string; biz: { name: string; slug: string }; off: string[] }) {
   const first = esc(x.first || 'there'), bn = esc(x.biz.name), day = esc(fmtDay(x.ends));
-  const dash = utm(`${SITE}/directory/${encodeURIComponent(x.biz.slug)}?tab=brand&pd=dishes`, DISH_KIND);
+  const dash = utm(`${SITE}/dashboard/business?l=${encodeURIComponent(x.biz.slug)}&tab=page&pd=dishes`, DISH_KIND);
   const off = x.off.map((d) => `<b>${esc(d)}</b>`), offWords = off.length > 1 ? off.slice(0, -1).join(', ') + ' and ' + off[off.length - 1] : off[0] || 'one of your dishes';
   const foot = `You are getting this because you added a signature dish slot for ${bn} on Vegans Explore.`;
   return { subject: `Your dish slot ${x.slot} for ${x.biz.name} ends ${fmtDay(x.ends).split(',')[0]}`, unsub: '', html: shell(P(`Hi ${first},`) +
