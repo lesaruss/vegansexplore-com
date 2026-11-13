@@ -210,9 +210,12 @@
     var current = '', chosen = null, label = '';
 
     // A chapter's art is its VE_HUBS page.banner (a new chapter needs no entry here); ART is the fallback by file name.
+    // The wide picture first, on every screen (Sean, 2026-11-13: "I would prefer to see the horizontal image... even on mobile"):
+    // VE_HUBS page.wide is the city art at 16:9; page.banner (3:4) stays for the spots made for it (chapter cards, dashboards).
     function art(slug) {
+      var h = hubBySlug(slug); if (h && h.page && h.page.wide) return h.page.wide;
       if (mobile.matches && MOBILE_ART[slug]) return '/communities/' + slug + '/' + MOBILE_ART[slug];
-      var h = hubBySlug(slug); if (h && h.page && h.page.banner) return h.page.banner;
+      if (h && h.page && h.page.banner) return h.page.banner;
       return '/communities/' + slug + '/' + (ART[slug] || 'banner.jpg');
     }
     // On another brand's site (window.VE_BRAND.assetOrigin, e.g. https://vegansexplore.com) the city art comes from here.
