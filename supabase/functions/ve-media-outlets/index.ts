@@ -5,7 +5,7 @@
 // notes list its critical pieces. Private: super admins only. is_public only marks the ones Sean picks to show later.
 //
 // POST { action: 'list' }                                   every outlet with its counts (no coverage)
-// POST { action: 'get', slug }                              one outlet and all its coverage, newest first
+// POST { action: 'get', slug }                              one outlet, its coverage (newest first) and its contacts (ve_media_contacts)
 // POST { action: 'set', id, is_public?, team_notes? }       Public / Private, and our own notes
 // verify_jwt is off: the VE token (an HMAC session, as ve-mentions) is checked inside.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
@@ -44,7 +44,7 @@ async function verifyToken(token: string): Promise<string | null> {
   }
 }
 
-const LIST_COLS = 'id, slug, name, domain, website, kind, scope, region, is_public, articles_count, flattering_count, neutral_count, critical_count, stance_score, stance_label, topics, first_seen, last_seen';
+const LIST_COLS = 'id, slug, name, domain, website, kind, scope, region, is_public, articles_count, flattering_count, neutral_count, critical_count, stance_score, stance_label, topics, first_seen, last_seen, program';
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
@@ -78,7 +78,10 @@ Deno.serve(async (req) => {
     const { data: coverage } = await db.from('ve_media_coverage')
       .select('id, url, title, snippet, published_on, origin, stance, topic, stance_reason')
       .eq('outlet_id', (outlet as any).id).order('published_on', { ascending: false, nullsFirst: false }).limit(500);
-    return json({ outlet, coverage: coverage ?? [] });
+    const { data: contacts } = await db.from('ve_media_contacts')
+      .select('id, kind, name, role, beat, email, profile_url, source_url, status, found_at')
+      .eq('outlet_id', (outlet as any).id).neq('status', 'do_not_contact').order('kind').order('name');
+    return json({ outlet, coverage: coverage ?? [], contacts: contacts ?? [] });
   }
 
   if (body.action === 'set') {

@@ -67,6 +67,7 @@
     .tag.critical{background:#fde2e0;color:var(--red);}
     .tag.public{background:var(--tint);color:var(--dk);}
     .tag.private{background:#f1f1f1;color:#555;}
+    .tag.founding{background:var(--or);color:var(--ink);}
     .name{font-size:17px;font-weight:900;line-height:1.25;letter-spacing:-.01em;}
     .domain{font-size:13px;font-weight:600;color:var(--mute);}
     .bar{display:flex;height:10px;border-radius:4px;overflow:hidden;background:var(--line);border:2px solid var(--ink);}
@@ -92,6 +93,7 @@
     .art .t a:hover{text-decoration-color:var(--ink);}
     .art .s{font-size:13px;font-weight:600;color:var(--mute);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
     .art .why{font-size:12.5px;color:var(--red);font-weight:800;}
+    .art .s a{color:var(--dk);font-weight:800;text-underline-offset:3px;}
     .msg{font-size:13px;font-weight:800;color:var(--red);}
     .ok{color:var(--dk);}
     .empty{font-size:14px;font-weight:600;color:var(--mute);padding:24px 0;}
@@ -127,7 +129,7 @@
         <input type="search" id="q" placeholder="Search outlets or websites" aria-label="Search outlets or websites">
         <select id="kind" aria-label="Kind"><option value="">Every kind</option></select>
         <select id="scope" aria-label="Reach"><option value="">Every reach</option></select>
-        <select id="vis" aria-label="Public or private"><option value="">Public and private</option><option value="public">Public</option><option value="private">Private</option></select>
+        <select id="vis" aria-label="Public or private"><option value="">Public and private</option><option value="public">Public</option><option value="private">Private</option><option value="founding">Founding Press</option></select>
         <select id="sort" aria-label="Sort"><option value="articles">Most articles</option><option value="score">Most flattering</option><option value="critical">Most critical</option><option value="recent">Most recent</option><option value="name">Name</option></select>
       </div>
       <p class="count" id="count"></p>
@@ -171,7 +173,19 @@
           (o.kind ? '<span class="tag">' + esc(KINDS[o.kind] || o.kind) + '</span>' : '') +
           (o.scope ? '<span class="tag">' + esc(SCOPES[o.scope] || o.scope) + (o.region ? ', ' + esc(o.region) : '') + '</span>' : '');
       }
-      function visTag(o) { return o.is_public ? '<span class="tag public">Public</span>' : '<span class="tag private">Private</span>'; }
+      function visTag(o) { return (o.program === 'founding_press' ? '<span class="tag founding">Founding Press</span> ' : '') + (o.is_public ? '<span class="tag public">Public</span>' : '<span class="tag private">Private</span>'); }
+      // Who to contact (ve_media_contacts): found only on the outlet's own pages, each with the page it came from; an email is never guessed.
+      function contactsHtml(list) {
+        if (!list.length) return '<p class="notes">No contacts yet. They are found on the outlet\'s own contact, staff and article pages, and an email is only kept when it is written there.</p>';
+        return '<div class="grid">' + list.map(function (c) {
+          return '<article class="art"><div class="meta"><span class="tag ' + (c.kind === 'desk' ? 'plain' : 'friendly') + '">' + (c.kind === 'desk' ? 'Newsroom inbox' : 'Person') + '</span>' +
+            (c.beat ? '<span class="tag plain">' + esc(c.beat) + '</span>' : '') + '</div>' +
+            '<p class="t">' + esc(c.name || c.email || '') + '</p>' +
+            (c.role ? '<p class="s">' + esc(c.role) + '</p>' : '') +
+            (c.email ? '<p class="s"><a href="mailto:' + esc(c.email) + '">' + esc(c.email) + '</a></p>' : '<p class="s">No email on their pages</p>') +
+            '<p class="s"><a href="' + esc(c.profile_url || c.source_url) + '" target="_blank" rel="noopener">' + (c.profile_url ? 'Their page' : 'Where we found this') + '</a></p></article>';
+        }).join('') + '</div>';
+      }
 
       function filtered() {
         var p = params(), q = (p.get('q') || '').toLowerCase(), label = p.get('label') || '', kind = p.get('kind') || '', scope = p.get('scope') || '', vis = p.get('vis') || '', sort = p.get('sort') || 'articles';
@@ -181,6 +195,7 @@
           if (scope && o.scope !== scope) return false;
           if (vis === 'public' && !o.is_public) return false;
           if (vis === 'private' && o.is_public) return false;
+          if (vis === 'founding' && o.program !== 'founding_press') return false;
           return !q || (o.name + ' ' + o.domain + ' ' + (o.region || '')).toLowerCase().indexOf(q) >= 0;
         });
         var by = {
@@ -222,7 +237,7 @@
         box.innerHTML = '<p class="crumbs"><a href="#/">Media outlets</a></p><p class="empty">Loading...</p>';
         api({ action: 'get', slug: slug }).then(function (d) {
           if (!d.outlet) throw new Error(d.error || 'failed');
-          var o = d.outlet, cov = d.coverage || [], filter = '';
+          var o = d.outlet, cov = d.coverage || [], contacts = d.contacts || [], filter = '';
           function covHtml() {
             var list = cov.filter(function (c) { return !filter || c.stance === filter; });
             if (!list.length) return '<p class="empty">Nothing here.</p>';
@@ -243,6 +258,7 @@
             '<div class="row-end" style="justify-content:flex-start;margin-bottom:22px"><button type="button" class="btn primary" id="vis-btn">' + (o.is_public ? 'Make private' : 'Make public') + '</button><span class="msg" id="vis-msg" role="status"></span></div>' +
             '<div class="two"><div class="panel"><h2>Our notes</h2><textarea id="team-notes" aria-label="Our notes" placeholder="Who to contact, what they like to cover, how a pitch went">' + esc(o.team_notes || '') + '</textarea><div class="row-end" style="justify-content:flex-start"><button type="button" class="btn" id="notes-btn">Save notes</button><span class="msg" id="notes-msg" role="status"></span></div></div>' +
             '<div class="panel' + (o.critical_count ? ' need' : '') + '"><h2>From their coverage</h2><p class="notes">' + esc(o.notes || 'No flattering or critical pieces yet.') + '</p></div></div>' +
+            '<h2>Who to contact</h2>' + contactsHtml(contacts) +
             '<h2>Their articles</h2><div class="tabs" role="group" aria-label="Articles" id="cov-tabs">' +
               [['', 'All'], ['flattering', 'Flattering'], ['neutral', 'Neutral'], ['critical', 'Critical']].map(function (t) {
                 var n = t[0] ? cov.filter(function (c) { return c.stance === t[0]; }).length : cov.length;
