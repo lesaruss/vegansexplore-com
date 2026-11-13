@@ -1527,6 +1527,11 @@
       "permanent": true
     },
     {
+      "source": "/communities/find",
+      "destination": "/communities",
+      "permanent": false
+    },
+    {
       "source": "/guides/ve-guides-roster-v1",
       "destination": "/guides",
       "permanent": false
