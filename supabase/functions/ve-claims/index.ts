@@ -812,20 +812,94 @@ async function lizApprovalEmail(claim: any): Promise<string> {
   if (!email.includes('@')) return 'no email';
   const { data: cp } = await db.from('ve_outreach_campaigns').select('status').eq('slug', APPROVED_CAMPAIGN).maybeSingle();
   if (cp?.status !== 'active') return 'campaign not active';
-  const { data: row } = await db.from('ve_outreach_campaign_members').select('id, step, send_status, personal_note').eq('campaign_slug', APPROVED_CAMPAIGN).eq('person_key', email).is('removed_at', null).maybeSingle();
+  const { data: row } = await db.from('ve_outreach_campaign_members').select('id, step, send_status, stop_reason, personal_note').eq('campaign_slug', APPROVED_CAMPAIGN).eq('person_key', email).is('removed_at', null).maybeSingle();
   const now = new Date().toISOString();
-  if (row && row.step === 0 && row.send_status === 'waiting') {
+  // While a Find us post for any of their locations is being made, the email waits (findUsTick releases it with the post in it).
+  const making = async (ids: string[]) => ((await db.from('ve_media_kit_items').select('id', { count: 'exact', head: true }).in('listing_id', ids).eq('key', 'find-us').eq('status', 'draft')).count || 0) > 0;
+  const hold = async (ids: string[]) => (await making(ids)) ? { send_status: 'stopped', stop_reason: HOLD_REASON } : { send_status: 'waiting', stop_reason: null };
+  if (row && row.step === 0 && (row.send_status === 'waiting' || (row.send_status === 'stopped' && row.stop_reason === HOLD_REASON))) {
     // Not sent yet: one email names every location approved for this owner.
     const ids: string[] = [...new Set([...(String(row.personal_note || '').match(/[0-9a-f-]{36}/g) || []), claim.listing_id])];
     const { error } = await db.from('ve_outreach_campaign_members').update({ personal_emails: { '1': await approvalWords(ids, claim.contact_name) },
-      personal_note: 'listings: ' + ids.join(','), personal_at: now }).eq('id', row.id);
+      personal_note: 'listings: ' + ids.join(','), personal_at: now, ...(await hold(ids)) }).eq('id', row.id);
     return error ? 'failed: ' + error.message : 'added';
   }
   if (row) await db.from('ve_outreach_campaign_members').update({ removed_at: now }).eq('id', row.id);   // their earlier email went out
   const { error } = await db.from('ve_outreach_campaign_members').insert({ campaign_slug: APPROVED_CAMPAIGN, person_key: email, person_name: claim.contact_name || null,
-    step: 0, send_status: 'waiting', personal_emails: { '1': await approvalWords([claim.listing_id], claim.contact_name) },
+    step: 0, ...(await hold([claim.listing_id])), personal_emails: { '1': await approvalWords([claim.listing_id], claim.contact_name) },
     personal_note: 'listings: ' + claim.listing_id, personal_at: now });
   return error ? 'failed: ' + error.message : 'queued';
+}
+
+// ---- The Find us post, made at approval (Sean, 2026-11-13: "Build the Find us post at approval next"). Approving a business that has a
+// logo adds a draft Find us row to its Media kit (ve_media_kit_items, key find-us) with its own tracked link. The GitHub workflow
+// .github/workflows/find-us-post.yml asks find_us_queue every 5 minutes, renders the post and story with the locked find-us.js template
+// and commits them to public/claims/<slug>/. findUsTick (cron=find_us, every 5 minutes) marks the row ready once both files are live
+// (Sean locked the Find us words 2026-11-12) and releases Liz's approval email, held until then so it can promise the post. A post not
+// live within FIND_US_WAIT_MIN is hidden, Sean hears, and Liz's email goes out without the post.
+const FIND_US_WAIT_MIN = 90, HOLD_REASON = 'waiting for the Find us post';
+const FIND_US_CAPTION = 'Find us on @vegansexplore \u{1F331} Our menu, hours and signature dishes, all in one place. Link in bio.';
+async function startFindUs(listingId: string): Promise<boolean> {
+  const { data: l } = await db.from('listings').select('id, slug, name, address_city, logo_url, category').eq('id', listingId).maybeSingle();
+  if (!l?.slug || !l.logo_url || !String(l.logo_url).startsWith(`${SUPABASE_URL}/storage/v1/object/public/`)) return false;
+  if (BRAND_CATS.test(l.category || '') || MEDIA_CATS.test(l.category || '')) return false;
+  const { data: have } = await db.from('ve_media_kit_items').select('status').eq('listing_id', l.id).eq('key', 'find-us').maybeSingle();
+  if (have) return have.status === 'draft';
+  let code = '';
+  const base = l.slug.slice(0, 40);
+  for (let k = 1; k < 20 && !code; k++) {
+    const c = k === 1 ? base : `${base}-${k}`;
+    const { error } = await db.from('ve_links').insert({ code: c, label: `${l.name}: Find us on Vegans Explore post`.slice(0, 120), destination: `https://vegansexplore.com/directory/${l.slug}`,
+      initiative_slug: 've-claims-onboarding', tags: ['find-us-post', l.slug], channel: 'social', active: true });
+    if (!error) code = c;
+  }
+  const { error } = await db.from('ve_media_kit_items').insert({ listing_id: l.id, key: 'find-us', kind: 'find_us', title: 'Find us on Vegans Explore',
+    where_label: 'Your page', where_url: `/directory/${l.slug}`, post_url: `/public/claims/${l.slug}/post.jpg`, story_url: `/public/claims/${l.slug}/story.jpg`,
+    link_code: code || null, caption: FIND_US_CAPTION, status: 'draft', featured_at: new Date().toISOString() });
+  if (error) { console.error('find us row', l.slug, error.message); return false; }
+  return true;
+}
+async function isLiveImage(path: string): Promise<boolean> {
+  try { const r = await fetch(`https://vegansexplore.com${path}?v=${Date.now()}`, { method: 'HEAD' }); return r.ok && /^image\//.test(r.headers.get('content-type') || ''); }
+  catch { return false; }
+}
+// Public (the workflow has no secret): the posts waiting to be made. Name, city and logo are already on each listing's public page.
+async function findUsQueue() {
+  const since = new Date(Date.now() - FIND_US_WAIT_MIN * 6e4).toISOString();
+  const { data: rows } = await db.from('ve_media_kit_items').select('listing_id, post_url, story_url, listing:listings(slug, name, address_city, logo_url)')
+    .eq('key', 'find-us').eq('status', 'draft').gte('made_at', since).limit(10);
+  const queue = [];
+  for (const r of (rows || []) as any[]) {
+    if (!r.listing?.logo_url) continue;
+    if (await isLiveImage(r.post_url) && await isLiveImage(r.story_url)) continue;
+    queue.push({ slug: r.listing.slug, name: r.listing.name, city: r.listing.address_city || '', logo_url: r.listing.logo_url });
+  }
+  return queue;
+}
+async function findUsTick() {
+  const out: Record<string, string[]> = { ready: [], gave_up: [], released: [] };
+  const now = new Date().toISOString(), cutoff = Date.now() - FIND_US_WAIT_MIN * 6e4;
+  const { data: drafts } = await db.from('ve_media_kit_items').select('id, listing_id, post_url, story_url, made_at, listing:listings(name, slug)').eq('key', 'find-us').eq('status', 'draft');
+  for (const d of (drafts || []) as any[]) {
+    if (await isLiveImage(d.post_url) && await isLiveImage(d.story_url)) {
+      await db.from('ve_media_kit_items').update({ status: 'ready', approved_by: 'Locked Find us template (Sean, 2026-11-12), made at approval', approved_at: now }).eq('id', d.id);
+      out.ready.push(d.listing?.slug);
+    } else if (Date.parse(d.made_at) < cutoff) {
+      await db.from('ve_media_kit_items').update({ status: 'hidden' }).eq('id', d.id);
+      out.gave_up.push(d.listing?.slug);
+      await mail(`Find us post not made: ${d.listing?.name || ''}`, `<p>The Find us post for <b>${esc(d.listing?.name || '')}</b> was not live ${FIND_US_WAIT_MIN} minutes after approval, so Liz's email goes out without it. Check the Find us post workflow's runs on GitHub (Actions), then make it with scripts/brand-templates/find-us.js.</p>`);
+    }
+  }
+  const { data: held } = await db.from('ve_outreach_campaign_members').select('id, person_name, personal_note').eq('campaign_slug', APPROVED_CAMPAIGN)
+    .eq('send_status', 'stopped').eq('stop_reason', HOLD_REASON).is('removed_at', null);
+  for (const m of (held || []) as any[]) {
+    const ids: string[] = String(m.personal_note || '').match(/[0-9a-f-]{36}/g) || [];
+    const { count } = ids.length ? await db.from('ve_media_kit_items').select('id', { count: 'exact', head: true }).in('listing_id', ids).eq('key', 'find-us').eq('status', 'draft') : { count: 0 };
+    if (count) continue;
+    await db.from('ve_outreach_campaign_members').update({ personal_emails: { '1': await approvalWords(ids, m.person_name || '') }, send_status: 'waiting', stop_reason: null, personal_at: now }).eq('id', m.id);
+    out.released.push(m.id);
+  }
+  return out;
 }
 
 // Approving a claim (Depot > Claims, or by itself when every check passes). Returns an error message, or null.
@@ -861,6 +935,7 @@ async function approveClaim(claim: any, reviewerId: string | null, note: string 
   const { error: e2 } = await db.from('ve_listing_claims').update({ status: 'approved', review_note: note, reviewed_by: reviewerId, reviewed_at: now, updated_at: now }).eq('id', claim.id);
   if (e2) return e2.message;
   // Liz's email to every owner who is not a product brand on the Partner plan (those get the confirmation above).
+  if (claim.tier !== 'brand') await startFindUs(claim.listing_id).catch((e) => console.error('find us start', claim.listing_id, String(e)));
   if (claim.tier !== 'brand') { const r = await lizApprovalEmail(claim).catch((e) => 'failed: ' + String(e)); if (r.startsWith('failed')) console.error('liz approval email', claim.id, r); }
   return null;
 }
@@ -894,9 +969,17 @@ Deno.serve(async (req) => {
     if (!sec?.value || req.headers.get('x-cron-secret') !== sec.value) return json({ error: 'forbidden' }, 403);
     return json({ ok: true, sheets: await runResultsCron() });
   }
+  if (url.searchParams.get('cron') === 'find_us') {
+    const { data: sec } = await db.from('lesaruss_secrets').select('value').eq('key', 'CRON_SECRET').maybeSingle();
+    if (!sec?.value || req.headers.get('x-cron-secret') !== sec.value) return json({ error: 'forbidden' }, 403);
+    return json({ ok: true, ...(await findUsTick()) });
+  }
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
   let body: any = {};
   try { body = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
+
+  // Public: the Find us posts waiting to be made (the GitHub workflow asks; see startFindUs).
+  if (body.action === 'find_us_queue') return json({ queue: await findUsQueue() });
 
   // Public: what a listing can take today (founding spot or a paid quarter) and this quarter's extra.
   if (body.action === 'offer') {

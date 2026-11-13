@@ -1,18 +1,14 @@
-# The "Find us on Vegans Explore" post and story, made the moment a claim is approved (playbook ve-claims-onboarding, Sean 2026-11-13:
-# "Build the Find us post at approval next"). ve-claims sends a repository_dispatch (find-us-post) with the listing's slug, name, city and
-# logo; this renders it with scripts/brand-templates/find-us.js (the locked brand kit template, unchanged) and commits it to
-# public/claims/<slug>/, where the first posts live. Vercel deploys it; the ve-claims find_us check sees it live, marks the Media kit row
-# ready and releases Liz's approval email. No secret is needed here: the logo is public and the commit uses this workflow's own token.
+# The "Find us on Vegans Explore" post and story, made after a claim is approved (playbook ve-claims-onboarding, Sean 2026-11-13:
+# "Build the Find us post at approval next"). Approval in ve-claims adds a draft Find us row to the Media kit; every 5 minutes this asks
+# ve-claims (find_us_queue, public: name, city and logo, all already on the listing's public page) which posts are waiting, renders each
+# with scripts/brand-templates/find-us.js (the locked brand kit template, unchanged) and commits it to public/claims/<slug>/, where the
+# first posts live. Vercel deploys it; the ve-claims find_us check sees it live, marks the row ready and releases Liz's approval email.
+# No secret is needed here: the queue and the logos are public and the commit uses this workflow's own token.
 name: Find us post
 on:
-  repository_dispatch:
-    types: [find-us-post]
+  schedule:
+    - cron: '*/5 * * * *'
   workflow_dispatch:
-    inputs:
-      slug: { description: 'Listing slug', required: true }
-      name: { description: 'Business name', required: true }
-      city: { description: 'City', required: true }
-      logo_url: { description: 'Logo URL (vegan-media storage)', required: true }
 permissions:
   contents: write
 concurrency:
@@ -21,43 +17,50 @@ concurrency:
 jobs:
   render:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
-    env:
-      SLUG: ${{ github.event.client_payload.slug || inputs.slug }}
-      NAME: ${{ github.event.client_payload.name || inputs.name }}
-      CITY: ${{ github.event.client_payload.city || inputs.city }}
-      LOGO_URL: ${{ github.event.client_payload.logo_url || inputs.logo_url }}
+    timeout-minutes: 20
     steps:
+      - name: Ask what is waiting
+        id: q
+        run: |
+          curl -sSf -X POST https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-claims -H 'Content-Type: application/json' \
+            -d '{"action":"find_us_queue"}' -o "$RUNNER_TEMP/queue.json"
+          N=$(jq '.queue | length' "$RUNNER_TEMP/queue.json"); echo "waiting: $N"; echo "n=$N" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v4
+        if: steps.q.outputs.n != '0'
         with:
           ref: main
       - uses: actions/setup-node@v4
+        if: steps.q.outputs.n != '0'
         with:
           node-version: '20'
-      - name: Check the request
-        run: |
-          [[ "$SLUG" =~ ^[a-z0-9][a-z0-9-]{0,99}$ ]] || { echo "bad slug"; exit 1; }
-          [[ "$LOGO_URL" == https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/* ]] || { echo "logo must be in our storage"; exit 1; }
-          [ -n "$NAME" ] && [ ${#NAME} -le 120 ] && [ -n "$CITY" ] && [ ${#CITY} -le 80 ] || { echo "bad name or city"; exit 1; }
       - name: Install the renderer
+        if: steps.q.outputs.n != '0'
         run: |
           npm install --no-save --no-package-lock playwright@1.48.2
           npx playwright install --with-deps chromium
       - name: Render
+        if: steps.q.outputs.n != '0'
         run: |
-          mkdir -p "$RUNNER_TEMP/logo"
-          TYPE=$(curl -sSfL -o "$RUNNER_TEMP/logo/raw" -w '%{content_type}' "$LOGO_URL")
-          case "$TYPE" in image/png*) EXT=png;; image/svg*) EXT=svg;; image/webp*) EXT=webp;; image/jpeg*|image/jpg*) EXT=jpg;; *) echo "not an image: $TYPE"; exit 1;; esac
-          mv "$RUNNER_TEMP/logo/raw" "$RUNNER_TEMP/logo/logo.$EXT"
           python3 -m http.server 8766 >/dev/null 2>&1 &
           sleep 1
-          node scripts/brand-templates/find-us.js --name "$NAME" --city "$CITY" --logo "$RUNNER_TEMP/logo/logo.$EXT" --out "public/claims/$SLUG"
+          jq -c '.queue[]' "$RUNNER_TEMP/queue.json" | while read -r row; do
+            SLUG=$(jq -r .slug <<<"$row"); NAME=$(jq -r .name <<<"$row"); CITY=$(jq -r .city <<<"$row"); LOGO_URL=$(jq -r .logo_url <<<"$row")
+            [[ "$SLUG" =~ ^[a-z0-9][a-z0-9-]{0,99}$ ]] || { echo "bad slug, skipped"; continue; }
+            [ -f "public/claims/$SLUG/post.jpg" ] && [ -f "public/claims/$SLUG/story.jpg" ] && { echo "$SLUG: already made, waiting for the deploy"; continue; }
+            [[ "$LOGO_URL" == https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/* ]] || { echo "$SLUG: logo not in our storage, skipped"; continue; }
+            D="$RUNNER_TEMP/logo-$SLUG"; mkdir -p "$D"
+            TYPE=$(curl -sSfL -o "$D/raw" -w '%{content_type}' "$LOGO_URL") || { echo "$SLUG: logo did not load"; continue; }
+            case "$TYPE" in image/png*) EXT=png;; image/svg*) EXT=svg;; image/webp*) EXT=webp;; image/jpeg*|image/jpg*) EXT=jpg;; *) echo "$SLUG: not an image ($TYPE)"; continue;; esac
+            mv "$D/raw" "$D/logo.$EXT"
+            node scripts/brand-templates/find-us.js --name "$NAME" --city "$CITY" --logo "$D/logo.$EXT" --out "public/claims/$SLUG" || echo "$SLUG: render failed"
+          done
       - name: Commit
+        if: steps.q.outputs.n != '0'
         run: |
           git config user.name "Sean A. Russell"
           git config user.email "contact@lesaruss.com"
-          git add "public/claims/$SLUG/post.jpg" "public/claims/$SLUG/story.jpg"
-          git diff --cached --quiet && { echo "unchanged"; exit 0; }
-          git commit -m "Find us post: $SLUG (made at approval, ve-claims-onboarding)"
+          git add public/claims
+          git diff --cached --quiet && { echo "nothing new"; exit 0; }
+          git commit -m "Find us posts made at approval (ve-claims-onboarding)"
           for i in 1 2 3 4; do git pull --rebase -q origin main && git push -q origin HEAD:main && exit 0; sleep $((i * 5)); done
           exit 1
