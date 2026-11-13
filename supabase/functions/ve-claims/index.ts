@@ -1770,11 +1770,12 @@ Deno.serve(async (req) => {
       if (p.application) { patch.status = 'approved'; patch.tags = ['ve-application-approved']; }
       const { error } = await db.from('listings').update(patch).eq('id', claim.listing_id);
       if (error) return json({ error: 'save_failed', message: error.message }, 500);
-      // A Brand Partner hears that its dashboard is open (Sean, 2026-10-09: "what happens to the Oatly rep once they sign up?").
+      // A Brand Partner hears that its dashboard is open (Sean, 2026-10-09: "what happens to the Oatly rep once they sign up?"). A business
+      // that is not a product brand goes to the business dashboard (2026-11-13, outreach wording audit); a product brand keeps Maya's brand door.
       if (claim.tier === 'brand' && claim.contact_email && !BRAND_CATS.test((await db.from('listings').select('category').eq('id', claim.listing_id).maybeSingle()).data?.category || '')) {
         const { data: pl } = await db.from('listings').select('name, slug').eq('id', claim.listing_id).maybeSingle();
         await mailTo([claim.contact_email], `${pl?.name || 'Your business'}: your page is confirmed`,
-          `<p>Hi ${esc(claim.contact_name || '')},</p><p>We confirmed it is you, so ${esc(pl?.name || 'your')}'s Partner Dashboard is open on your page: <a href="https://vegansexplore.com/directory/${encodeURIComponent(pl?.slug || '')}?tab=brand">vegansexplore.com/directory/${esc(pl?.slug || '')}</a> (sign in with this email).</p>` +
+          `<p>Hi ${esc(claim.contact_name || '')},</p><p>We confirmed it is you, so ${esc(pl?.name || 'your')}'s business dashboard is open: <a href="https://vegansexplore.com/dashboard/business?l=${encodeURIComponent(pl?.slug || '')}">vegansexplore.com/dashboard/business</a> (sign in with this email). Liz walks you through Getting started.</p>` +
           `<p>You have a front-row seat on our campaigns: we send each one to you before it opens, so you can choose where you fit. Questions? Reply to this email.</p><p>The Vegans Explore team</p>`, 'hello@vegansexplore.com');
       } else if (claim.tier === 'brand' && claim.contact_email) {
         const { data: bl } = await db.from('listings').select('name, slug').eq('id', claim.listing_id).maybeSingle();

@@ -92,11 +92,11 @@ async function settings() {
 
 // ---------- The emails ----------
 function shell(body: string, foot: string) {
-  return `<div style="font-family:Montserrat,Arial,sans-serif;max-width:600px;font-size:15px;line-height:1.6;color:#1a1a1a">` +
-    `<p style="margin:0 0 18px"><img src="${SITE}/public/logo-ve-landscape-v1.svg" alt="Vegans Explore" width="150" style="display:block;border:0"></p>${body}` +
+  return `<div style="font-family:Montserrat,Arial,sans-serif;max-width:600px;font-size:15px;line-height:1.6;color:#1a1a1a"><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 18px;border-collapse:collapse"><tr><td width="25%" style="background:#2D5C27;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="13%" style="background:#F69820;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="12%" style="background:#FF9EC4;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="13%" style="background:#FFEBD1;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="12%" style="background:#22C55E;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="13%" style="background:#E8F5E9;height:6px;line-height:6px;font-size:0">&nbsp;</td><td width="12%" style="background:#3A9B3E;height:6px;line-height:6px;font-size:0">&nbsp;</td></tr></table>` +
+    `<p style="margin:0 0 18px"><img src="${SITE}/public/logo-ve-landscape-v2.png" alt="Vegans Explore" width="150" style="display:block;border:0"></p>${body}` +
     `<p style="margin-top:28px;font-size:12px;line-height:1.5;color:#777">${foot} <a href="{{unsubscribe_url}}" style="color:#777">Unsubscribe from all Vegans Explore emails</a>. {{postal_address}}.</p></div>`;
 }
-const btn = (href: string, label: string) => `<p style="margin:20px 0"><a href="${href}" style="display:inline-block;background:#1f5f22;color:#fff;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:13px;padding:13px 24px;border-radius:6px;text-decoration:none">${esc(label)}</a></p>`;
+const btn = (href: string, label: string) => `<p style="margin:20px 0"><a href="${href}" style="display:inline-block;background:#F69820;color:#1a1a1a;font-weight:800;letter-spacing:.06em;text-transform:uppercase;font-size:13px;padding:13px 24px;border-radius:6px;text-decoration:none">${esc(label)}</a></p>`;
 const abs = (u: string) => (u.startsWith('http') ? u : SITE + (u.startsWith('/') ? '' : '/') + u);
 const clip = (s: string, n: number) => { s = String(s || '').replace(/\s+/g, ' ').trim(); return s.length > n ? s.slice(0, n - 1).replace(/\s+\S*$/, '') + '…' : s; };
 const prefsUrl = (token: string, extra = '') => `${SITE}/pulse-preferences?t=${encodeURIComponent(token)}${extra}`;
@@ -120,13 +120,13 @@ function cityBlock(city: string, posts: any[], utm: string) {
   const news = stories.filter((s) => !own(s)).slice(0, 5);
   const feat = stories.filter(own);
   const tag = (u: string) => abs(u) + (u.includes('?') ? '&' : '?') + utm;
-  const li = (s: any) => `<p style="margin:0 0 14px"><a href="${esc(tag(s.url || '/pulse'))}" style="color:#1f5f22;font-weight:800;text-decoration:none">${esc(clip(s.title, 120))}</a><br><span style="color:#444">${esc(clip(s.take || s.summary || '', 170))}</span></p>`;
-  const html = `<h2 style="font-size:18px;margin:26px 0 12px;color:#1f5f22">${esc(CITY[city] || city)}</h2>` + (news.length ? news.map(li).join('') : `<p style="color:#444">${esc(clip(post.title, 140))}</p>`) +
-    `<p style="margin:0"><a href="${esc(tag('/pulse?city=' + city))}" style="color:#1f5f22;font-weight:700">Read today's ${esc(CITY[city] || city)} Pulse</a></p>`;
+  const li = (s: any) => `<p style="margin:0 0 14px"><a href="${esc(tag(s.url || '/pulse'))}" style="color:#2D5C27;font-weight:800;text-decoration:none">${esc(clip(s.title, 120))}</a><br><span style="color:#444">${esc(clip(s.take || s.summary || '', 170))}</span></p>`;
+  const html = `<h2 style="font-size:18px;margin:26px 0 12px;color:#2D5C27">${esc(CITY[city] || city)}</h2>` + (news.length ? news.map(li).join('') : `<p style="color:#444">${esc(clip(post.title, 140))}</p>`) +
+    `<p style="margin:0"><a href="${esc(tag('/pulse?city=' + city))}" style="color:#2D5C27;font-weight:700">Read today's ${esc(CITY[city] || city)} Pulse</a></p>`;
   const h = post.house || {};
   const ours: string[] = feat.map(li);
-  if (h.spotlight?.url) ours.push(`<p style="margin:0 0 14px"><b>Spotlight:</b> <a href="${esc(tag(h.spotlight.url))}" style="color:#1f5f22;font-weight:800;text-decoration:none">${esc(h.spotlight.name)}</a>${h.spotlight.city ? ' in ' + esc(h.spotlight.city) : ''}<br><span style="color:#444">${esc(clip(h.spotlight.line || '', 150))}</span></p>`);
-  if (h.episode?.url) ours.push(`<p style="margin:0 0 14px"><b>Listen:</b> <a href="${esc(tag(h.episode.url))}" style="color:#1f5f22;font-weight:800;text-decoration:none">${esc(clip(h.episode.title, 110))}</a><br><span style="color:#444">${esc(h.episode.show || '')}</span></p>`);
+  if (h.spotlight?.url) ours.push(`<p style="margin:0 0 14px"><b>Spotlight:</b> <a href="${esc(tag(h.spotlight.url))}" style="color:#2D5C27;font-weight:800;text-decoration:none">${esc(h.spotlight.name)}</a>${h.spotlight.city ? ' in ' + esc(h.spotlight.city) : ''}<br><span style="color:#444">${esc(clip(h.spotlight.line || '', 150))}</span></p>`);
+  if (h.episode?.url) ours.push(`<p style="margin:0 0 14px"><b>Listen:</b> <a href="${esc(tag(h.episode.url))}" style="color:#2D5C27;font-weight:800;text-decoration:none">${esc(clip(h.episode.title, 110))}</a><br><span style="color:#444">${esc(h.episode.show || '')}</span></p>`);
   return { html, ours: ours.join('') };
 }
 
@@ -142,8 +142,8 @@ function issueEmail(t: any, token: string, byCity: Record<string, any[]>, dateSt
   const names = cities.map((c) => CITY[c] || c);
   const body = (first && !/subscriber/i.test(first) ? `<p>Hi ${first}, here is your ${weekly ? 'week' : 'day'} in Vegan ${esc(names.join(' and '))}.</p>` : `<p>Here is your ${weekly ? 'week' : 'day'} in Vegan ${esc(names.join(' and '))}.</p>`) +
     blocks.map((b) => b.html).join('') +
-    (ours ? `<h2 style="font-size:18px;margin:30px 0 12px;color:#1f5f22">From Vegans Explore</h2>${ours}` : '') +
-    (showMembership ? `<p style="margin-top:26px;padding:14px 16px;background:#e8f5e9;border-radius:8px">Members vote for their favorite Vegan places, check in, and earn points as they take part. Joining is free with a short survey. <a href="${esc(SITE + '/survey?s=explorer&' + utm)}" style="color:#1f5f22;font-weight:800">Join free</a>.</p>` : '');
+    (ours ? `<h2 style="font-size:18px;margin:30px 0 12px;color:#2D5C27">From Vegans Explore</h2>${ours}` : '') +
+    (showMembership ? `<p style="margin-top:26px;padding:14px 16px;background:#e8f5e9;border-radius:8px">Members vote for their favorite Vegan places, check in, and earn points as they take part. Joining is free with a short survey. <a href="${esc(SITE + '/survey?s=explorer&' + utm)}" style="color:#2D5C27;font-weight:800">Join free</a>.</p>` : '');
   const foot = `You are getting this because you subscribed to the Daily Pulse for ${esc(names.join(', '))}. <a href="${prefsUrl(token)}" style="color:#777">Change cities or how often</a> or <a href="${prefsUrl(token, '&unsub=1')}" style="color:#777">stop these emails</a>.`;
   const subject = weekly ? `Your week in Vegan ${names.join(' and ')}` : clip(`${names[0]}: ${byCity[cities[0]][0]?.title || 'the Daily Pulse'}`, 90);
   return { subject, html: shell(body, foot) };
