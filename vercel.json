@@ -1532,6 +1532,11 @@
       "permanent": false
     },
     {
+      "source": "/index-guide-hero",
+      "destination": "/",
+      "permanent": false
+    },
+    {
       "source": "/guides/ve-guides-roster-v1",
       "destination": "/guides",
       "permanent": false
