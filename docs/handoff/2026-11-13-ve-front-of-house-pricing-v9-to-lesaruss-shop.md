@@ -32,14 +32,13 @@ an idea of what it would be like... we should be reaching out from now to find t
    Checked 2026-11-13 (read-only `GET /v1/account`, `ve-once-stripe-accounts`, now the 410 stub): `ve-branddesk` charges with
    `STRIPE_SECRET_KEY` = `acct_1Q8MzdP0w5C9oZhv`, registered as **Vegans Explore Inc.** (statement "VEGANS EXPLORE"; the entity
    being dissolved). `STRIPE_SECRET_KEY_ACCT_LESARUSS` and `STRIPE_SECRET_KEY_LESARUSS` are `acct_17uJd8JqP8HzdnUn` (charges on;
-   Stripe returns no name for it). Sean confirms in Stripe that the account ID ending `HzdnUn` is LESARUSS Inc. before money moves there.
+   Stripe returns no name for it). **Confirmed by Sean 2026-11-13**: there are only two accounts, so `HzdnUn` is LESARUSS Inc. Sell through it.
 4. **Photographers**: a paid photographer job on the Opportunities board and a city-by-city list (Fort Lauderdale and Philly first).
    Outreach is paused: drafts only, nothing sends until Sean approves them.
 Then: the coach frame and its sample coach demo (playbook `lesaruss-ai-professional-frames`).
 
 ## Waiting on Sean (do not act without his yes)
 - Approve the v9 agreement (send the draft with the live one to the lawyer); which subscription lawyer service.
-- Confirm the LESARUSS Inc. Stripe account.
 - Whether Managed keeps the 15-dish shoot, photo nights every two months, the ad allowance (the draft leaves them out).
 - Sending any photographer outreach.
 - Still open from before: the pace rule (`canon-video-shot-pace`), V's three line changes, check-ins every two weeks on the Community
