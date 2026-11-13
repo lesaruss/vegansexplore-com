@@ -121,6 +121,16 @@
     setTimeout(function () { if (document.activeElement !== btn && document.activeElement !== field) hide(); }, 120);
   });
   addEventListener('scroll', function () { if (field) place(); }, true);
+  // The field can move or change width while it has focus (a chip appears beside a search and narrows it, a box opens above it):
+  // the mic follows it, checked each frame while a field has it, so it never floats over something else (Sean, 2026-11-13).
+  var lastRect = '';
+  (function follow() {
+    if (field && btn.style.display !== 'none') {
+      var r = field.getBoundingClientRect(), k = Math.round(r.left) + ',' + Math.round(r.top) + ',' + Math.round(r.width) + ',' + Math.round(r.height);
+      if (k !== lastRect) { lastRect = k; place(); }
+    } else lastRect = '';
+    requestAnimationFrame(follow);
+  })();
   addEventListener('resize', function () { if (field) place(); });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && rec) stop(); });
 
