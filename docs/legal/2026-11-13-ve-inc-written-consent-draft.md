@@ -48,7 +48,7 @@ RESOLVED, that the following plan of distribution of assets is adopted:
     similar purposes. The payments it received were for services (podcast hosting, vendor booths, subscriptions), including payments
     once labeled "donation" in error.
 (d) The articles of incorporation and bylaws do not provide for distribution to members or others.
-(e) All remaining assets are distributed to **Animal Hero**, an organization engaged in Vegan and humane education.
+(e) All remaining assets are distributed to **LESARUSS Inc.**, which provided the services the Corporation was paid for.
 
 RESOLVED FURTHER, that an officer of the Corporation authenticates a copy of this plan, certifies that it was adopted under section
 617.1406(2), and files it with the Florida Department of State.
@@ -73,9 +73,9 @@ the final distribution.
 - **Not donations** (Sean, 2026-11-13): "they weren't technically donations. They're hosting for the podcast... there wasn't
   [no] services rendered. I made the mistake of calling it a donation at the time." So 5(c) says nothing is restricted. The CPA
   should know these were service income under a wrong label.
-- **The leftover cash** (about $198 in Stripe on Oct 6, 2026, plus the bank balance on closing day) goes to Animal Hero under 5(e).
-  It could go to LESARUSS Inc. instead. V recommends Animal Hero anyway: it is a small amount, and it leaves nothing for anyone who
-  saw the word "donation" or the old "Tax-Deductible Sponsorship" offer to question. LESARUSS Inc. gets the business (resolution 4).
+- **The leftover cash** (about $198 in Stripe on Oct 6, 2026, plus the bank balance on closing day) goes to LESARUSS Inc. under 5(e).
+  Sean, 2026-11-13: "I'm not giving anything to anything. The whole nature of our organization is to give back to these groups.
+  We'll give back in other ways."
 - **Claudia.** The 2026 annual report lists her as an officer. Signing here works either way: if she is a director, both signatures
   are needed; if not, Sean's alone carries it and hers confirms.
 - **John Thomas.** Sean, 2026-11-13: "John is not a director. I removed him from the paperwork."
