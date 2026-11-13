@@ -1,5 +1,13 @@
 # The old look, page by page (2026-11-13)
 
+## In the queue
+- **The Guide art audit** (Sean, 2026-11-13: "look at all of the graphics we have of the guides on the page and make sure that there's
+  consistency across the board... we've gone through different generations of how they look... even on the Explore page, that's the old
+  version of the characters... put them in one page and then take a look at it"). The review page is `/mocks/brand-kit/guide-art-audit`:
+  each Guide's approved picture on top (`VE_GUIDE_ART`), then 294 drawn pictures numbered, from the code and from the main pages loaded in
+  a browser, each with the pages that use it. Sean names the numbers that are out of step; each is redrawn on the locked Guide scenes recipe
+  (CLAUDE.md), in the shape of its spot, and swapped in.
+
 ## Done
 - **The Guides (2026-11-13, d6988d9):** every Guide on the Welcome Guide's frame was already on the kit through `ve-look.css` (the 2026-11-12
   merge Sean approved: pink header, stripe, outlined cards, the one orange button in the header). Their green Play, dark green Next and
