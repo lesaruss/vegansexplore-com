@@ -477,3 +477,12 @@ html.ve-cb .vg-btn { background: #fff !important; color: var(--cb-ink) !importan
 html.ve-cb .vg-btn:hover { background: var(--cb-tint) !important; }
 html.ve-cb .vg-btn:is(.vg-next, [data-signin]) { background: var(--cb-or) !important; border-color: var(--cb-or) !important; }
 html.ve-cb .vg-btn:is(.vg-next, [data-signin]):hover { background: var(--cb-or-hi) !important; border-color: var(--cb-or-hi) !important; }
+
+/* The dashboard's own pages (2026-11-13, blanket approval; data-look="plain" on the 17 views): the picture bands are solid kit blocks
+   with the ink outline, never a gradient; Advertising's Community Partnership box is a kit card with its link the one orange action. */
+html.ve-cb[data-look="plain"] :is(.ad-hero, .gi-hero) { background: var(--cb-peach) !important; border: 2px solid var(--cb-ink); box-shadow: 6px 6px 0 var(--cb-shadow); }
+html.ve-cb[data-look="plain"] .gi-hero { background: var(--cb-tint) !important; }
+html.ve-cb[data-look="plain"] .ad-anchor { background: #fff !important; border: 2px solid var(--cb-ink) !important; border-radius: 14px; box-shadow: 6px 6px 0 var(--cb-shadow); }
+html.ve-cb[data-look="plain"] .ad-anchor h2 { color: var(--cb-dk); }
+html.ve-cb[data-look="plain"] .ad-anchor a { background: var(--cb-or) !important; color: var(--cb-ink) !important; border: 2px solid var(--cb-or); border-radius: 6px; font-weight: 900; }
+html.ve-cb[data-look="plain"] .ad-card { border: 2px solid var(--cb-ink) !important; border-radius: 14px; }
