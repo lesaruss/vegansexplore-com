@@ -377,6 +377,13 @@ html.ve-cb.ve-cb-s-guides .dg-play { border: 2px solid var(--cb-ink); font-weigh
 html.ve-cb.ve-cb-s-guides .dg-play.go { background: var(--cb-br); border-color: var(--cb-ink); color: var(--cb-ink); }
 html.ve-cb.ve-cb-s-guides .dg-tnav { border: 2px solid var(--cb-ink); font-weight: 900; }
 html.ve-cb.ve-cb-s-guides .dg-tnav.next { background: var(--cb-dk); border-color: var(--cb-dk); color: #fff; }
+/* The cards the frame rules missed (2026-11-13, the old-look sweep; Sean: "There is no scenario where I want any part of the website to have the
+   old look"): a Guide's topic tiles (mint with a thin line) and its Start here box (a thin line) wear the kit card, the ink outline and the
+   solid shadow in the section's color, like the Welcome Guide's Getting started card. Every Guide and the Welcome Guide's own frame. */
+html.ve-cb .dg-tile { background: #fff; border: 2px solid var(--cb-ink); box-shadow: 5px 5px 0 var(--cb-shadow); margin: 0 5px 5px 0; }
+html.ve-cb .dg-tile:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 var(--cb-shadow); }
+html.ve-cb .dg-tile .dg-ic { border: 2px solid var(--cb-ink); }
+html.ve-cb .vgi { border: 2px solid var(--cb-ink); box-shadow: 6px 6px 0 var(--cb-shadow); margin-right: 6px; }
 html.ve-cb.ve-cb-s-guides .dg-fold { border: 2px solid var(--cb-ink); color: var(--cb-ink); }
 html.ve-cb.ve-cb-s-guides .vxc { border: 2px solid var(--cb-ink); box-shadow: 6px 6px 0 var(--cb-shadow); }
 @media (max-width: 900px) { html.ve-cb.ve-cb-s-guides .dg-top { padding-bottom: 28px; } }

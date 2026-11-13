@@ -1527,6 +1527,16 @@
       "permanent": true
     },
     {
+      "source": "/guides/ve-guides-roster-v1",
+      "destination": "/guides",
+      "permanent": false
+    },
+    {
+      "source": "/guides/ve-guide-chat-v1",
+      "destination": "/pulse",
+      "permanent": false
+    },
+    {
       "source": "/guides/ve-path-creator",
       "destination": "/passport",
       "permanent": false
