@@ -687,8 +687,10 @@
   var MF_LABEL = { type: { vegan: '100% Vegan', pv: 'Plant-based (Pre-Vegan)' }, order: { open: 'Still taking orders', online: 'Order online' }, sort: { az: 'A to Z', soon: 'Order by soonest' } };
   function today() { return new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }); }
   function menuText(m) { var l = m.listing || {}; return [l.name, l.address_city, l.address_state, m.summary, m.pickup].concat((m.items || []).map(function (x) { return x.name + ' ' + (x.desc || ''); })).join(' ').toLowerCase(); }
+  // The words to match: a typed city that Near me is using as its radius is not words.
+  function words() { var q = MF.q.trim().toLowerCase(), st = NM() && NM().state(); return st && st.on && st.placeQ === q ? '' : q; }
   function filtered(ch) {
-    var q = MF.q.trim().toLowerCase(), t = today();
+    var q = words(), t = today();
     var list = (MENUS || []).filter(function (m) {
       var l = m.listing || {}, vegan = l.vegan_status === 'fully_vegan';
       if (!inChapter(l, ch)) return false;
@@ -722,14 +724,14 @@
     if (sub === 'tell') return viewTell();
     if (/^menu\//.test(sub)) { OPEN_MENU = decodeURIComponent(sub.slice(5)); sub = null; }
     // Near me in the address (#/menus/near, #/menus/near/<zip>); a chapter in the address sets it aside; no chapter, the visit's own.
-    var wantNear = /^near(\/\d{5})?$/.test(sub || '') ? sub.slice(5) || 'me' : '';
+    var wantNear = /^near(\/.+)?$/.test(sub || '') ? decodeURIComponent(sub.slice(5)) || 'me' : '';
     if (wantNear) sub = null;
     else if (sub && nearOn()) { NEAR_HUSH = true; NM().clear(); NEAR_HUSH = false; }
     else if (!sub && !OPEN_MENU && NM() && !nearOn() && NM().resume()) wantNear = 'me';
     var ch = chapter(sub), t = hrow(), n = pills(ch).length, open = daysUntil(t.submit_close) > 0;
     main.innerHTML = head(t.name, 'Holiday menus near you', 'What Vegan places are cooking for ' + esc(t.name) + '. Every menu is checked by our team before it shows.') +
       '<div class="hg-tools2"><div class="hg-search"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#525252" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
-      '<input type="search" id="hgQ" placeholder="Search places, dishes, cities or a ZIP..." aria-label="Search holiday menus" value="' + esc(MF.q) + '" autocomplete="off" data-dictate="off"></div>' +
+      '<input type="search" id="hgQ" placeholder="Search places, dishes, a city or a ZIP..." aria-label="Search holiday menus" value="' + esc(MF.q) + '" autocomplete="off" data-dictate="off"></div>' +
       (NM() ? '<button type="button" class="hg-fbtn hg-nearbtn" id="hgNearBtn" data-vrd-near aria-pressed="' + nearOn() + '" title="Sort by distance from you">' + NM().pin + '<span data-vrd-near-word>Near me</span></button>' : '') +
       '<button type="button" class="hg-fbtn" id="hgFbtn" aria-expanded="false" aria-controls="hgPop">Filters<span class="hg-fcount"' + (n ? '' : ' hidden') + '>' + n + '</span></button>' +
       '<button type="button" class="hg-subbtn" id="hgSubBtn" aria-expanded="false" aria-controls="hgSubmit">Submit a Menu</button>' +
@@ -782,8 +784,10 @@
     var near = nearOn();
     if (near && needPoints().length) { box.innerHTML = '<div class="dg-loading">Finding the menus near you...</div>'; withPoints(function () { drawMenuList(ch); }); return; }
     if (near) ch = 'all';
-    var t = hrow(), open = daysUntil(t.submit_close) > 0, list = filtered(ch), any = MF.q || pills(ch).length, tips = tipsFiltered(ch);
-    if (near && (list.length || tips.length)) { box.innerHTML = nearList(list, tips); openPending(); return; }
+    var t = hrow(), open = daysUntil(t.submit_close) > 0, list = filtered(ch), any = words() || pills(ch).length, tips = tipsFiltered(ch);
+    var nl = near && (list.length || tips.length) ? nearList(list, tips) : '';
+    if (nl) { box.innerHTML = nl; openPending(); return; }
+    if (near && NM().state().place) { box.innerHTML = '<div class="hg-empty"><h3>' + esc(tc('Nothing within ' + NM().state().radius + ' miles of ' + NM().state().place + ' yet')) + '</h3><p>Menus are coming in now. Clear the search to see every menu.</p></div>'; return; }
     box.innerHTML = (list.length ? '<div class="hg-menus">' + list.map(function (m) { return menuCard(m); }).join('') + '</div>' : '') +
       (tips.length ? (list.length ? '<h3 style="margin:22px 0 10px;font-size:17px">Menus We Found</h3>' : '') + '<div class="hg-menus">' + tips.map(function (x) { return tipCard(x); }).join('') + '</div>' : '') +
       (list.length || tips.length ? '' : any && (MENUS.length || (TIPS || []).length) ? '<div class="hg-empty"><h3>Nothing Matches</h3><p>Try fewer words or reset the filters.</p><button type="button" class="dg-btn dg-ghost" data-hg-reset>Reset filters</button></div>' :
@@ -816,7 +820,7 @@
   // Menus members spotted (Sean, 2026-11-08): a place and a link to its own holiday menu, checked by our team, never copied.
   function tipPlace(x) { return x.listing || { address_city: x.city, address_state: x.state, communities: [] }; }
   function tipsFiltered(ch) {
-    var q = MF.q.trim().toLowerCase();
+    var q = words();
     if (MF.type === 'vegan' || MF.order === 'open') return [];
     return (TIPS || []).filter(function (x) {
       if (!inChapter(tipPlace(x), ch)) return false;
@@ -896,6 +900,11 @@
     var tq; q.addEventListener('input', function () {
       clearTimeout(tq);
       if (NM() && NM().searchZip(q, function (ok) { if (!ok) { MF.q = q.value; drawMenuList(ch); } })) { MF.q = ''; return; }
+      // A whole city name: everything within 50 miles of it (Sean, 2026-11-12), unless a place here has exactly that name.
+      if (NM()) NM().searchCity(q, { nameHit: function (k) {
+        return (MENUS || []).some(function (m) { return String((m.listing || {}).name || '').trim().toLowerCase() === k; }) ||
+          (TIPS || []).some(function (x) { return String(x.listing ? x.listing.name : x.place_name || '').trim().toLowerCase() === k; });
+      } });
       MF.q = q.value; tq = setTimeout(function () { drawMenuList(ch); }, 120);
     });
     var nb = document.getElementById('hgNearBtn');
@@ -931,7 +940,12 @@
     var all = list.map(function (m) { return { id: m.listing && m.listing.id, html: function (d) { return menuCard(m, d); } }; })
       .concat(tips.map(function (x) { return { id: x.listing && x.listing.id, html: function (d) { return tipCard(x, d); } }; }));
     var on = [], off = [];
-    all.forEach(function (it, i) { var d = it.id ? NM().miles(PTS[it.id]) : null; if (d == null) off.push(it); else on.push({ it: it, d: d, i: i }); });
+    var rad = NM().state().radius;
+    all.forEach(function (it, i) {
+      var d = it.id ? NM().miles(PTS[it.id]) : null;
+      if (rad) { if (NM().inside(d)) on.push({ it: it, d: d, i: i }); return; } // a typed city: only what is inside its radius
+      if (d == null) off.push(it); else on.push({ it: it, d: d, i: i });
+    });
     on.sort(function (a, b) { return a.d - b.d || a.i - b.i; });
     return (on.length ? '<div class="hg-menus">' + on.map(function (x) { return x.it.html(x.d); }).join('') + '</div>' : '') +
       (off.length ? '<div class="hg-neardiv">Location not on the map yet</div><div class="hg-menus">' + off.map(function (it) { return it.html(null); }).join('') + '</div>' : '');
@@ -939,7 +953,7 @@
   function pillsHtml(ch) {
     return pills(ch).map(function (p) { return '<button type="button" class="hg-pill" data-hg-unpill="' + p[0] + '">' + (p[0] === 'near' ? NM().pin + ' ' : '') + esc(p[1]) + ' <span aria-hidden="true">&times;</span></button>'; }).join('');
   }
-  function nearHash() { var z = NM().state().zip; return '#/' + hx().menus + '/near' + (z ? '/' + z : ''); }
+  function nearHash() { var st = NM().state(), k = st.zip || st.placeQ; return '#/' + hx().menus + '/near' + (k ? '/' + encodeURIComponent(k) : ''); }
   // "or pick a city" in the ZIP pop-up opens Filters on the chapter.
   function pickChapter() {
     var b = document.getElementById('hgFbtn'), p = document.getElementById('hgPop'), sl = document.getElementById('hgChapter');
@@ -949,6 +963,7 @@
   function askNear(z) {
     var n = NM(); if (!n) return;
     var st = n.state(), btn = document.getElementById('hgNearBtn');
+    if (z && !/^\d{5}$/.test(z)) { if (st.on && st.placeQ === z.toLowerCase()) return nearChanged(st); n.city(z.toLowerCase()).then(function (ok) { if (!ok) n.start(btn, { pickCity: pickChapter }); }); return; }
     if (z) { if (st.on && st.zip === z) return nearChanged(st); n.zip(z).then(function (ok) { if (!ok) n.start(btn, { pickCity: pickChapter }); }); return; }
     if (st.on) return nearChanged(st);
     n.start(btn, { pickCity: pickChapter });

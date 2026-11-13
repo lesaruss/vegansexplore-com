@@ -451,7 +451,7 @@
     var first = cat.label;
     var searchIcon = '<svg class="vrd-search-icon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>';
     var searchHtml = '<div class="vrd-search-wrap">' + searchIcon +
-      '<input type="text" class="vrd-search-input" data-vrd-search placeholder="' + (hdrNewOn() ? 'Filter ' : 'Search ') + esc(first) + (nearSection(cat.key) ? ', or type a ZIP' : '') + '&hellip;" aria-label="' + (hdrNewOn() ? 'Filter ' : 'Search ') + esc(first) + '">' +
+      '<input type="text" class="vrd-search-input" data-vrd-search placeholder="' + (hdrNewOn() ? 'Filter ' : 'Search ') + esc(first) + (nearSection(cat.key) ? ', a city or a ZIP' : '') + '&hellip;" aria-label="' + (hdrNewOn() ? 'Filter ' : 'Search ') + esc(first) + '">' +
       '</div>';
 
     // The filters live behind an icon at the right of the search, under the tabs (Sean, 2026-10-27: "hide the filter options...
@@ -944,11 +944,14 @@
   // here in the browser: the visitor's position is never sent or stored anywhere but this tab's sessionStorage. The address carries
   // ?near=me (each viewer asks their own browser) or ?near=<zip> (shareable as is); the visit remembers it until the chip clears it.
   var NEAR_PLACE_SECTIONS = ['food', 'services', 'community', 'vetting'];
-  var NEAR = { cfg: null, active: false, origin: null, zip: '', want: '', zips: {}, zipsLoading: null, root: null, subs: [], pickCity: null, cities: {} };
+  var NEAR = { cfg: null, active: false, origin: null, zip: '', want: '', zips: {}, zipsLoading: null, root: null, subs: [], pickCity: null, cities: {}, place: '', placeQ: '', radius: null };
+  // A city typed in a search (Sean, 2026-11-12: "based off the city, we should have like a 50-mile radius... if it doesn't pick up
+  // anything specifically for Hialeah, it should trigger from cities nearby"): everything within this many miles of it, closest first.
+  var NEAR_CITY_MI = 50;
   var NEAR_PIN = '<svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 22s7-6.2 7-12a7 7 0 10-14 0c0 5.8 7 12 7 12z"></path><circle cx="12" cy="10" r="2.5"></circle></svg>';
   // Other components share this Near me through VERegionDirectory.near (playbook ve-near-me, 2026-11-12): each listens with onChange.
   function nearTell() { NEAR.subs.forEach(function (fn) { try { fn(nearState()); } catch (e) {} }); }
-  function nearState() { return { on: NEAR.active && !!NEAR.origin, origin: NEAR.origin, zip: NEAR.zip, label: nearLabel() }; }
+  function nearState() { return { on: NEAR.active && !!NEAR.origin, origin: NEAR.origin, zip: NEAR.zip, place: NEAR.place, placeQ: NEAR.placeQ, radius: NEAR.radius, label: nearLabel() }; }
   function okNum(v) { return v !== null && v !== '' && v !== undefined && isFinite(v); }
   function nearSection(key) { return !!NEAR.cfg && NEAR.cfg.indexOf(key) >= 0; }
   function nearOn(panel) { return !!panel && nearSection(panel.id.replace(/^board-/, '')); }
@@ -961,17 +964,19 @@
     return ' data-lat="' + (ok ? la : '') + '" data-lng="' + (ok ? lo : '') + '" data-zip="' + zip5(l.address_zip) + '"';
   }
   function distSlot() { return NEAR.cfg ? '<span class="vrd-dist" hidden></span>' : ''; }
-  function nearLabel() { return NEAR.zip ? 'Near ' + NEAR.zip : 'Near you'; }
+  function nearLabel() { return NEAR.place ? 'Within ' + NEAR.radius + ' mi of ' + NEAR.place : NEAR.zip ? 'Near ' + NEAR.zip : 'Near you'; }
+  // Inside the radius a typed city sets (no radius: anywhere with a point).
+  function nearInside(mi) { return mi != null && (!NEAR.radius || mi <= NEAR.radius); }
   function nearRead(k) { try { var v = JSON.parse(sessionStorage.getItem(k) || 'null'); return v && typeof v === 'object' ? v : null; } catch (e) { return null; } }
   function nearSave() {
     try {
-      if (NEAR.active && NEAR.origin) sessionStorage.setItem('ve_near', JSON.stringify({ on: true, zip: NEAR.zip, lat: NEAR.origin.lat, lng: NEAR.origin.lng }));
+      if (NEAR.active && NEAR.origin) sessionStorage.setItem('ve_near', JSON.stringify({ on: true, zip: NEAR.zip, place: NEAR.place, placeQ: NEAR.placeQ, radius: NEAR.radius, lat: NEAR.origin.lat, lng: NEAR.origin.lng }));
       else sessionStorage.removeItem('ve_near');
     } catch (e) {}
   }
   // The visit's own spot (not a ZIP): ours first, then the one universal search found (/public/ve-search.js, ve_geo).
   function nearSavedMe() {
-    var n = nearRead('ve_near'); if (n && n.on && !n.zip && okNum(n.lat) && okNum(n.lng)) return { lat: +n.lat, lng: +n.lng };
+    var n = nearRead('ve_near'); if (n && n.on && !n.zip && !n.place && okNum(n.lat) && okNum(n.lng)) return { lat: +n.lat, lng: +n.lng };
     var g = nearRead('ve_geo'); if (g && okNum(g.lat) && okNum(g.lng)) return { lat: +g.lat, lng: +g.lng };
     return null;
   }
@@ -1037,15 +1042,21 @@
     if (VRD_CFG) tellSection(root, VRD_CFG);
     writeState(null);
   }
-  function nearSet(origin, zip) {
+  function nearSet(origin, zip, place, placeQ) {
     NEAR.active = true; NEAR.origin = origin; NEAR.zip = zip || ''; NEAR.want = '';
+    NEAR.place = place || ''; NEAR.placeQ = place ? String(placeQ || place).trim().toLowerCase() : ''; NEAR.radius = place ? NEAR_CITY_MI : null;
     nearSave();
     nearRepaint();
     if (NEAR.cfg) nearZips().then(function () { if (NEAR.active) nearRepaint(); });
     nearTell();
   }
   function nearClear() {
-    NEAR.active = false; NEAR.origin = null; NEAR.zip = ''; NEAR.want = '';
+    // A typed city leaves its search box empty too, so its name does not go on filtering as words.
+    var typed = NEAR.placeQ;
+    if (typed) (NEAR.cityInputs || []).forEach(function (inp) {
+      if (document.contains(inp) && String(inp.value || '').trim().toLowerCase() === typed) { inp.value = ''; setTimeout(function () { inp.dispatchEvent(new Event('input', { bubbles: true })); }, 0); }
+    });
+    NEAR.active = false; NEAR.origin = null; NEAR.zip = ''; NEAR.want = ''; NEAR.place = ''; NEAR.placeQ = ''; NEAR.radius = null;
     nearSave(); nearRepaint(); nearTell();
   }
   function nearBusy(on) {
@@ -1068,6 +1079,42 @@
         nearSet({ lat: p.coords.latitude, lng: p.coords.longitude }, '');
       }, function () { clearTimeout(guard); fail(); }, { timeout: 8000, maximumAge: 600000 });
     } catch (e) { clearTimeout(guard); fail(); }
+  }
+  // A city's point, read the way universal search reads it (ve_search_core's own place, from the gazetteer ve_search_places), never a
+  // second lookup: only when the whole text is the place (no words left over). Resolves {lat, lng, name, label} or null.
+  var PLACE_CACHE = {};
+  function placeOf(text) {
+    var k = String(text || '').trim().toLowerCase();
+    if (k.length < 3 || /^\d/.test(k)) return Promise.resolve(null);
+    if (k in PLACE_CACHE) return Promise.resolve(PLACE_CACHE[k]);
+    return fetch(SUPABASE_URL + '/rest/v1/rpc/ve_search_core', { method: 'POST', headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_q: k, p_limit: 1 }) })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        var it = d && d.interpretation, pl = it && it.place;
+        var ok = pl && okNum(pl.lat) && okNum(pl.lng) && !String(it.terms || '').trim() && !(it.labels || []).length && !it.near_me;
+        return (PLACE_CACHE[k] = ok ? { lat: +pl.lat, lng: +pl.lng, name: pl.name, label: pl.name + (pl.state ? ', ' + pl.state : '') } : null);
+      }).catch(function () { return null; });
+  }
+  // A city typed in a search: after a short pause, if the whole text is a place and no name on the page is exactly that text,
+  // everything within NEAR_CITY_MI of it shows, closest first; the box keeps what was typed (the page reads it as no words). Typing
+  // something else, or emptying the box, lets that city go. opts.nameHit(text) says a name on the page is exactly the text.
+  function nearSearchCity(input, cb, opts) {
+    var v = String(input.value || '').trim(), k = v.toLowerCase();
+    clearTimeout(input._vrdCityT);
+    NEAR.cityInputs = (NEAR.cityInputs || []).filter(function (x) { return document.contains(x); });
+    if (NEAR.cityInputs.indexOf(input) < 0) NEAR.cityInputs.push(input);
+    if (NEAR.active && NEAR.placeQ && k !== NEAR.placeQ) { nearClear(); }
+    if (!v || (NEAR.active && NEAR.placeQ === k)) return;
+    input._vrdCityT = setTimeout(function () {
+      if (String(input.value || '').trim().toLowerCase() !== k) return;
+      if (opts && opts.nameHit && opts.nameHit(k)) return;
+      placeOf(k).then(function (pl) {
+        if (!pl || String(input.value || '').trim().toLowerCase() !== k) return;
+        nearSet({ lat: pl.lat, lng: pl.lng }, '', pl.label, k);
+        if (cb) cb(true);
+      });
+    }, 450);
   }
   // A ZIP typed in a search box (Sean, 2026-11-12: "can they put a zip code... and it pulls up automatically what is in that area"):
   // 5 digits (or ZIP+4) and nothing else turns on Near me from that ZIP and empties the box, so the words filter nothing; a ZIP we do
@@ -1152,13 +1199,19 @@
       return nearStartFromZip(v, function (ok) { if (!ok) { NEAR.want = ''; nearAsk(null); } });
     }
     if (v === 'me') {
-      if (NEAR.active && !NEAR.zip) return;
+      if (NEAR.active && !NEAR.zip && !NEAR.place) return;
       NEAR.want = 'me'; return nearLocate(null);
+    }
+    // ?near=<city>: everything within NEAR_CITY_MI of it (a typed city's shared link).
+    if (v) {
+      if (NEAR.active && NEAR.placeQ === v) return;
+      NEAR.want = v;
+      return placeOf(v).then(function (pl) { if (pl) nearSet({ lat: pl.lat, lng: pl.lng }, '', pl.label, v); else { NEAR.want = ''; writeState(null); } });
     }
     if (NEAR.active) { writeState(null); return; } // Back to an address from before: Near me stays on for the visit
     if (initial) {
       var n = nearRead('ve_near');
-      if (n && n.on && okNum(n.lat) && okNum(n.lng)) nearSet({ lat: +n.lat, lng: +n.lng }, zip5(n.zip));
+      if (n && n.on && okNum(n.lat) && okNum(n.lng)) nearSet({ lat: +n.lat, lng: +n.lng }, zip5(n.zip), n.place, n.placeQ);
     }
   }
   // Sort the matched cards by distance, closest first; those without a point keep their order after them.
@@ -1450,6 +1503,7 @@
     // correction) -- each panel has its own [data-vrd-search] input now.
     var searchInput = panel.querySelector('[data-vrd-search]');
     var searchTerm = searchInput ? searchInput.value.trim().toLowerCase() : '';
+    if (near && NEAR.placeQ && searchTerm === NEAR.placeQ) searchTerm = ''; // the typed city is the radius, not words to match
     var cards = Array.prototype.slice.call(grid.querySelectorAll('.rank-card'));
     var matched = [];
     cards.forEach(function (card) {
@@ -1484,7 +1538,11 @@
 
     var nearCut = -1, oldDiv = grid.querySelector('.vrd-near-div');
     if (oldDiv) oldDiv.remove();
-    if (near) { var ns = nearSort(grid, matched); matched = ns.list; nearCut = ns.firstOff; panel._nearSorted = true; }
+    if (near) {
+      var ns = nearSort(grid, matched); matched = ns.list; nearCut = ns.firstOff; panel._nearSorted = true;
+      // A typed city: only what is inside its radius (the places with no point are not known to be there).
+      if (NEAR.radius) { matched = matched.filter(function (c, i) { var ok = i < nearCut && nearInside(+c.dataset.dist); if (!ok) c.style.display = 'none'; return ok; }); nearCut = matched.length; }
+    }
     if (resetPage) vrdPageState[catKey] = 1;
     var totalPages = Math.max(1, Math.ceil(matched.length / perpage));
     var page = Math.min(Math.max(vrdPageState[catKey] || 1, 1), totalPages);
@@ -1502,7 +1560,7 @@
     }
 
     if (cards.length) {
-      var emptyText = { online: 'No online-only listings for this region yet.', closed: 'No closed listings recorded.' }[type] || 'No listings match this filter yet.';
+      var emptyText = { online: 'No online-only listings for this region yet.', closed: 'No closed listings recorded.' }[type] || (near && NEAR.place ? 'Nothing within ' + NEAR.radius + ' miles of ' + NEAR.place + ' yet.' : 'No listings match this filter yet.');
       var msg = grid.querySelector('.vrd-empty-dynamic');
       if (matched.length === 0) {
         if (!msg) { msg = document.createElement('p'); msg.className = 'vrd-empty vrd-empty-dynamic'; grid.appendChild(msg); }
@@ -1624,7 +1682,7 @@
     panel = panel || activePanel(root);
     var q = new URLSearchParams(location.search);
     VRD_FKEYS.concat(['city', 'continent', 'country']).forEach(function (k) { q.delete(k); });
-    if (NEAR.cfg) { q.delete('near'); var nv = NEAR.active ? (NEAR.zip || 'me') : NEAR.want; if (nv) q.set('near', nv); }
+    if (NEAR.cfg) { q.delete('near'); var nv = NEAR.active ? (NEAR.zip || NEAR.placeQ || 'me') : NEAR.want; if (nv) q.set('near', nv); }
     if (LOCCFG) {
       if (LOC.chapter) q.set('city', LOC.chapter);
       else if (LOC.continent) { q.set('continent', LOC.continent); if (LOC.country) q.set('country', LOC.country); }
@@ -1817,6 +1875,9 @@
       if (searchInput) {
         searchInput.addEventListener('input', function () {
           if (nearOn(panel) && nearSearchZip(searchInput, function (ok) { if (ok) applyPanelFilters(panel, null, true); })) return;
+          if (nearOn(panel)) nearSearchCity(searchInput, null, { nameHit: function (k) {
+            return Array.prototype.some.call(panel.querySelectorAll('.rank-card'), function (c) { return String(c.dataset.name || '').trim().toLowerCase() === k; });
+          } });
           applyPanelFilters(panel, null, true);
         });
       }
@@ -2097,7 +2158,7 @@
       NEAR.cfg = config.nearMe ? (Array.isArray(config.nearMe) ? config.nearMe.slice() : NEAR_PLACE_SECTIONS.slice()) : null;
       NEAR.root = NEAR.cfg ? root : null;
       // Held until the listings are drawn, so the address keeps ?near= meanwhile.
-      if (NEAR.cfg) { var nv0 = (new URLSearchParams(location.search).get('near') || '').toLowerCase().trim(); NEAR.want = /^(me|\d{5})$/.test(nv0) ? nv0 : ''; }
+      if (NEAR.cfg) { var nv0 = (new URLSearchParams(location.search).get('near') || '').toLowerCase().trim(); NEAR.want = /^(me|\d{5})$/.test(nv0) || (nv0.length >= 3 && nv0.length <= 60) ? nv0 : ''; }
       if (config.url) VRD_CFG = config;
       if (LOCCFG) locFrom((urlHere(config) && locFromUrl()) || config.location.initial);
       root.innerHTML = renderSkeleton(config);
@@ -2141,12 +2202,17 @@
     near: {
       start: function (btn, opts) { injectStyleOnce(); NEAR.pickCity = (opts && opts.pickCity) || null; nearLocate(btn || null); },
       searchZip: function (input, cb) { return nearSearchZip(input, cb); },
+      // searchCity(input, {nameHit}) after every keystroke the ZIP check did not take: a whole city name turns on its radius.
+      searchCity: function (input, opts) { nearSearchCity(input, null, opts); },
+      // city('hialeah') starts the radius from a city (an address's ?near=); resolves true when it is a place.
+      city: function (text) { injectStyleOnce(); return placeOf(text).then(function (pl) { if (!pl) return false; nearSet({ lat: pl.lat, lng: pl.lng }, '', pl.label, text); return true; }); },
+      inside: function (mi) { return nearInside(mi); },
       zip: function (z) { injectStyleOnce(); return new Promise(function (res) { nearStartFromZip(String(z || ''), res); }); },
       clear: function () { nearClear(); },
       resume: function () {
         if (NEAR.active) return true;
         var n = nearRead('ve_near');
-        if (n && n.on && okNum(n.lat) && okNum(n.lng)) { nearSet({ lat: +n.lat, lng: +n.lng }, zip5(n.zip)); return true; }
+        if (n && n.on && okNum(n.lat) && okNum(n.lng)) { nearSet({ lat: +n.lat, lng: +n.lng }, zip5(n.zip), n.place, n.placeQ); return true; }
         return false;
       },
       onChange: function (fn) { if (typeof fn === 'function' && NEAR.subs.indexOf(fn) < 0) NEAR.subs.push(fn); },

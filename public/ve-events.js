@@ -508,7 +508,7 @@
       // ?continent= and ?country=.
       if (menu) {
         ['city', 'continent', 'country', 'near'].forEach(function (k) { q.delete(k); });
-        if (nearOn()) q.set('near', NM().state().zip || 'me');
+        if (nearOn()) q.set('near', NM().state().zip || NM().state().placeQ || 'me');
         else if (st.city) q.set('city', st.city);
         else if (st.loc.continent) { q.set('continent', st.loc.continent); if (st.loc.country) q.set('country', st.loc.country); }
       }
@@ -536,7 +536,9 @@
       return VECityBanner.matches(VECityBanner.hubBySlug(st.city), { city: e.city, state: e.state, online: e.event_type === 'virtual', hubs: e.host && e.host.communities });
     }
     function filtered(skipCat) {
-      var now = Date.now(), words = st.q.toLowerCase().split(/\s+/).filter(Boolean);
+      var qx = st.q.toLowerCase().trim(), nst = NM() && NM().state();
+      if (nst && nst.on && nst.placeQ === qx) qx = ''; // a typed city is the radius, not words to match
+      var now = Date.now(), words = qx.split(/\s+/).filter(Boolean);
       var list = (all || []).filter(function (e) {
         var t = new Date(e.ends_at || e.starts_at).getTime();
         if (st.when === 'past' ? t >= now : t < now) return false;
@@ -571,7 +573,12 @@
       // Near me: closest first (the date breaks a tie), then Online, then the ones not on the map yet, each in date order.
       if (nearOn() && NEARX.pts) {
         var near = [], online = [], off = [];
-        list.forEach(function (e) { var m = isOnline(e) ? null : nearMi(e); e._mi = m; (m != null ? near : isOnline(e) ? online : off).push(e); e._grp = m != null ? '' : isOnline(e) ? 'Online' : 'Location not on the map yet'; });
+        var rad = NM().state().radius;
+        list.forEach(function (e) {
+          var m = isOnline(e) ? null : nearMi(e); e._mi = m;
+          if (rad && !NM().inside(m)) return; // a typed city: only the events inside its radius
+          (m != null ? near : isOnline(e) ? online : off).push(e); e._grp = m != null ? '' : isOnline(e) ? 'Online' : 'Location not on the map yet';
+        });
         near.sort(function (a, b) { return a._mi - b._mi; });
         list = near.concat(online, off);
       }
@@ -645,7 +652,7 @@
         '<div class="vev-tabs" role="group" aria-label="When"><button type="button" data-when="upcoming" aria-pressed="' + (st.when === 'upcoming') + '">Upcoming</button><button type="button" data-when="past" aria-pressed="' + (st.when === 'past') + '">Past</button></div>' +
         '<div class="vev-bar">' +
           '<label class="vev-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7" fill="none" stroke="#666" stroke-width="2"/><path d="M20 20l-4-4" stroke="#666" stroke-width="2" stroke-linecap="round"/></svg>' +
-            '<input type="search" data-v="q" placeholder="' + (NM() ? 'Search events, places, cities or a ZIP' : 'Search events, places, cities') + '" aria-label="Search events" autocomplete="off" value="' + esc(st.q) + '"></label>' +
+            '<input type="search" data-v="q" placeholder="' + (NM() ? 'Search events, places, a city or a ZIP' : 'Search events, places, cities') + '" aria-label="Search events" autocomplete="off" value="' + esc(st.q) + '"></label>' +
           '<button type="button" class="vev-ltag" data-v="ltag" hidden title="Show every location">' + pin + '<span data-v="lname"></span><span class="x" aria-hidden="true">&times;</span></button>' +
           (NM() ? '<button type="button" class="vev-ltag" data-v="ntag" hidden title="Stop sorting by distance">' + NM().pin + '<span data-v="nname"></span><span class="x" aria-hidden="true">&times;</span></button>' : '') +
           '<div class="vev-chips" data-v="chips" role="group" aria-label="Filters on"></div>' +
@@ -696,6 +703,8 @@
         clearTimeout(timer);
         var inp = ev.target;
         if (NM() && NM().searchZip(inp, function (ok) { if (!ok) { st.q = inp.value.trim(); st.shown = 40; syncUrl(); drawRows(); } })) { st.q = ''; return; }
+        // A whole city name: every event within 50 miles of it (Sean, 2026-11-12), unless an event has exactly that title.
+        if (NM()) NM().searchCity(inp, { nameHit: function (k) { return (all || []).some(function (e) { return String(e.title || '').trim().toLowerCase() === k; }); } });
         timer = setTimeout(function () { st.q = inp.value.trim(); st.shown = 40; syncUrl(); drawRows(); }, 150);
       });
       el.querySelectorAll('[data-when]').forEach(function (b) {
@@ -778,7 +787,7 @@
       var wl = st.where ? (st.where.indexOf('c:') === 0 ? st.where.slice(2) : countryName(st.where)) : '';
       var whereTxt = hub ? ' in ' + hub.name : (wl ? ' in ' + wl : '');
       if (menu && locName()) whereTxt = ' in ' + locName();
-      if (nearOn()) whereTxt = ' ' + NM().state().label.toLowerCase();
+      if (nearOn()) whereTxt = NM().state().place ? ' within ' + NM().state().radius + ' miles of ' + NM().state().place : ' ' + NM().state().label.toLowerCase();
       el.querySelector('[data-v="count"]').textContent = fund()
         ? list.length + (past ? ' closed' : ' open') + (list.length === 1 ? ' opportunity' : ' opportunities') + whereTxt
         : list.length + (past ? ' past' : ' upcoming') + (list.length === 1 ? ' event' : ' events') + whereTxt;
@@ -1565,6 +1574,7 @@
       var q0 = new URLSearchParams(location.search), v = String(q0.get('near') || '').toLowerCase().trim(), btn = el.querySelector('[data-v="near"]');
       if (/^\d{5}$/.test(v)) { if (!(nearOn() && n.state().zip === v)) n.zip(v).then(function (ok) { if (!ok) nearStart(btn); }); else drawRows(); return; }
       if (v === 'me') { if (nearOn()) { syncUrl(); paintLoc(); drawRows(); } else nearStart(btn); return; }
+      if (v) { if (nearOn() && n.state().placeQ === v) { syncUrl(); paintLoc(); drawRows(); } else n.city(v).then(function (ok) { if (!ok) nearStart(btn); }); return; }
       if (!q0.get('city') && !q0.get('continent') && !q0.get('country')) n.resume();
     }
 
