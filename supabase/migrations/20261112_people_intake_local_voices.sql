@@ -135,6 +135,7 @@ select cron.schedule('ve-intake-refresh', '17 * * * *', $c$select ve_intake_refr
 where not exists (select 1 from cron.job where jobname = 've-intake-refresh');
 
 -- The picture comes first (Sean, 2026-11-12: "a scan of logos for the items that are in the queue... so they take priority").
+-- (ve-logo-hunt marks "nothing found" as pick -1: never read it as an index.)
 -- Every 15 minutes: a finished ve-logo-hunt pick (already copied into our storage) waits on the row for Sean's check; nothing found
 -- says none; anyone still looking with no hunt in 30 days gets one started.
 create or replace function ve_voices_pictures() returns jsonb language plpgsql security definer set search_path = public as $$
@@ -146,13 +147,13 @@ begin
   ), up as (
     update ve_campaign_dms d set picture_status = 'found', picture_url = h.candidates -> h.pick ->> 'stored'
     from h where h.listing_id = d.listing_id and d.program_slug = 'podcast-local-voices' and d.picture_status = 'looking'
-      and h.pick is not null and coalesce(h.candidates -> h.pick ->> 'stored', '') <> '' returning 1)
+      and h.pick is not null and h.pick >= 0 and coalesce(h.candidates -> h.pick ->> 'stored', '') <> '' returning 1)
   select count(*) into n_sync from up;
   with h as (
     select distinct on (lh.listing_id) lh.listing_id, lh.pick from ve_logo_hunts lh where lh.status = 'done' order by lh.listing_id, lh.done_at desc nulls last
   ), up as (
     update ve_campaign_dms d set picture_status = 'none' from h
-    where h.listing_id = d.listing_id and d.program_slug = 'podcast-local-voices' and d.picture_status = 'looking' and h.pick is null returning 1)
+    where h.listing_id = d.listing_id and d.program_slug = 'podcast-local-voices' and d.picture_status = 'looking' and (h.pick is null or h.pick < 0) returning 1)
   select count(*) into n_none from up;
   select array_agg(d.listing_id) into ids from ve_campaign_dms d
   where d.program_slug = 'podcast-local-voices' and d.picture_status = 'looking' and d.listing_id is not null
