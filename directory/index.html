@@ -396,9 +396,12 @@
 
     // Counts that follow the location, with Everywhere when a door has fewer than five near you (the panel, Round 2).
     var DATA = null;
+    // A door's count is its All list: supermarket chains (tag ve-grocery-store) show only under Markets, never under All
+    // (applyPanelFilters in ve-region-directory.js), so they are not counted (Sean, 2026-11-13: "make the count match All too").
+    function inDoor(l, key) { return doorOf(l).indexOf(key) >= 0 && (l.tags || []).indexOf('ve-grocery-store') < 0; }
     function countOf(d) {
       if (!DATA) return null;
-      var all = DATA.filter(function (l) { return doorOf(l).indexOf(d.key) >= 0; });
+      var all = DATA.filter(function (l) { return inDoor(l, d.key); });
       var here = d.local ? all.filter(near) : all;
       if (d.local && area && here.length < 5) return { n: all.length, cap: 'everywhere', all: true };
       return { n: here.length, cap: d.local ? areaCap() : 'listed' };
@@ -450,9 +453,9 @@
       banner.setQuiet(cur);
       var c = d && countOf(d);
       // Near me sets the location aside, so the count is the door's whole list, by distance.
-      if (c && secInfo && secInfo.near && DATA) c = { n: DATA.filter(function (l) { return doorOf(l).indexOf(d.key) >= 0; }).length, cap: 'by distance' };
+      if (c && secInfo && secInfo.near && DATA) c = { n: DATA.filter(function (l) { return inDoor(l, d.key); }).length, cap: 'by distance' };
       // A sub-section the location does not apply to (online, ships everywhere) lists the door's whole list.
-      else if (c && d.local && secInfo && secInfo.location && !secInfo.location.applies && DATA) c = { n: DATA.filter(function (l) { return doorOf(l).indexOf(d.key) >= 0; }).length, cap: 'everywhere' };
+      else if (c && d.local && secInfo && secInfo.location && !secInfo.location.applies && DATA) c = { n: DATA.filter(function (l) { return inDoor(l, d.key); }).length, cap: 'everywhere' };
       document.getElementById('dr-n').textContent = c ? fmt(c.n) + ' ' + d.unit + ' ' + c.cap : '';
     }
 
