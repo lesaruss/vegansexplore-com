@@ -1254,4 +1254,7 @@ Sean, 2026-11-12: "I like the near me feature we've put onto the restaurants pag
   they have it; the embedded mounts there are never shown.
 - **United States by default**: the Directory's Location filter starts on North America > United States when nothing is saved; every pick
   is now saved in `ve_dir_loc`, Everywhere included (`{}`), and wins next visit; the address wins over both.
-- Known, not changed: the doors header's "N places everywhere" counts by chapter only, so it says everywhere while the filter is on a country.
+- **The doors header follows the country** (2026-11-13, Sean: "go ahead, fix the header"; merge deb8e07): the doors' counts, the door
+  header, the bar and Top voted count by `area` (chapter, country or continent; the same chapters as the door's `locSet`) in
+  `directory/index.html`: "459 places in United States", "near Philadelphia", "everywhere". The front picker has All of <Country> per
+  country and the address carries `?continent=&country=`. Known: under All the Eat list hides supermarket chains the count includes.
