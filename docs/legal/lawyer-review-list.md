@@ -68,3 +68,4 @@ Florida law throughout unless noted. Contracting entity: LESARUSS Inc. (Vegans E
 ## What to send the reviewer
 
 Items 1 and 2 first (they block revenue). Send each as a PDF of the live page plus this list's questions for it.
+- Positions contractor agreement v1 (supabase/migrations/20261113_positions.sql, ve_positions.agreement_text): independent contractor terms for the Social Media Manager (Instagram) role; check classification wording and before any California contractor (2026-11-13).
