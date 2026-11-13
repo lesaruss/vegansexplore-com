@@ -28,9 +28,11 @@ an idea of what it would be like... we should be reaching out from now to find t
    LESARUSS.ai. VE stops taking money for Site, Managed, photos and video (`/business/managed` and the pitch sign-up hand off).
 2. **The shop on LESARUSS.ai** (`lesaruss-hq`, the canon talent shop: "one price list for every brand"): one shopping list, each item
    with its price, what you get, a real example (photography shows the Green Leaf Kitchen photos), and Buy, paid to LESARUSS Inc.
-3. **Move the Prices** to the LESARUSS Inc. Stripe account (confirm which account that is first: `ve-branddesk` live charges with
-   `STRIPE_SECRET_KEY`, "the Vegans Explore key"; the test key is `STRIPE_SECRET_KEY_ACCT_LESARUSS_TEST`), then deactivate the
-   VE `bd_*_v9` Prices. Nobody has bought on them.
+3. **Move the Prices** to the LESARUSS Inc. Stripe account, then deactivate the VE `bd_*_v9` Prices. Nobody has bought on them.
+   Checked 2026-11-13 (read-only `GET /v1/account`, `ve-once-stripe-accounts`, now the 410 stub): `ve-branddesk` charges with
+   `STRIPE_SECRET_KEY` = `acct_1Q8MzdP0w5C9oZhv`, registered as **Vegans Explore Inc.** (statement "VEGANS EXPLORE"; the entity
+   being dissolved). `STRIPE_SECRET_KEY_ACCT_LESARUSS` and `STRIPE_SECRET_KEY_LESARUSS` are `acct_17uJd8JqP8HzdnUn` (charges on;
+   Stripe returns no name for it). Sean confirms in Stripe that the account ID ending `HzdnUn` is LESARUSS Inc. before money moves there.
 4. **Photographers**: a paid photographer job on the Opportunities board and a city-by-city list (Fort Lauderdale and Philly first).
    Outreach is paused: drafts only, nothing sends until Sean approves them.
 Then: the coach frame and its sample coach demo (playbook `lesaruss-ai-professional-frames`).
