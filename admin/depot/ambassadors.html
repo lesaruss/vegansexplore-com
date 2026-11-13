@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-look="plain">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -339,7 +339,7 @@
           '<div class="lbl">Level they start at' + levelSeg('f-level', 1) + '<span class="hint">They keep it, and still climb with points.</span></div>' +
           '<div class="lbl wide">Their profile' + profSeg('f-prof', '') + '</div>' +
           '<label>Points<input id="f-points" type="number" min="0" max="100000" step="1" value="1100" required><span class="chips">' +
-            [0, 1100, 2500, 5000, 10000].map(function (p) { return '<button type="button" class="chip" data-pts="' + p + '">' + (p ? n(p) : 'None') + '</button>'; }).join('') + '</span><span class="hint">Spendable, on top of the Passport's 1,100: theirs when they become an Ambassador (when they accept, or when their $11 is paid).</span></label>' +
+            [0, 1100, 2500, 5000, 10000].map(function (p) { return '<button type="button" class="chip" data-pts="' + p + '">' + (p ? n(p) : 'None') + '</button>'; }).join('') + '</span><span class="hint">Spendable, on top of the Passport&#39;s 1,100: theirs when they become an Ambassador (when they accept, or when their $11 is paid).</span></label>' +
           noteField('f-reason', '') +
           '<div class="wide acts"><button type="submit" class="btn" id="mk">See the draft</button><span class="msg" id="msg" role="status"></span></div>' +
           '</form></section>';
