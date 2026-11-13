@@ -45,11 +45,11 @@ RESOLVED, that the following plan of distribution of assets is adopted:
 (a) All liabilities and obligations of the Corporation are paid and discharged, or adequate provision is made for them.
 (b) The Corporation holds no assets on a condition requiring their return, transfer or conveyance on dissolution.
 (c) Any assets received and held subject to a limitation permitting their use only for charitable, educational or similar purposes
-    are transferred to **Animal Hero Kids**, an organization engaged in Vegan and humane education, activities substantially similar
+    are transferred to **Animal Hero**, an organization engaged in Vegan and humane education, activities substantially similar
     to the Corporation's.
 (d) The articles of incorporation and bylaws do not provide for distribution to members or others.
-(e) All remaining assets are also distributed to Animal Hero Kids, so that the Corporation's entire remaining cash balance goes to
-    Animal Hero Kids.
+(e) All remaining assets are also distributed to Animal Hero, so that the Corporation's entire remaining cash balance goes to
+    Animal Hero.
 
 RESOLVED FURTHER, that an officer of the Corporation authenticates a copy of this plan, certifies that it was adopted under section
 617.1406(2), and files it with the Florida Department of State.
@@ -71,7 +71,7 @@ the final distribution.
 
 ## Notes for Sean (not part of the consent)
 
-- **Animal Hero Kids** (Sean, 2026-11-13). **The amount: everything left in VE Inc.'s Stripe and bank accounts after its bills are
+- **Animal Hero** (Sean, 2026-11-13). **The amount: everything left in VE Inc.'s Stripe and bank accounts after its bills are
   paid** (5(c) and 5(e) both go there). Stripe showed $197.92 available on Oct 6, 2026; the bank balance is whatever Sean's top-ups
   leave. The donation-labeled money ($2,500 from the two "Vegans Who Lift" subscriptions plus a $30 "LIVE Donation") is more than
   what is left, so sending all of it is the simple, clean answer: nobody can say charitable money went to LESARUSS. LESARUSS Inc.
