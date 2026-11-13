@@ -1247,8 +1247,14 @@ Sean, 2026-11-12: "I like the near me feature we've put onto the restaurants pag
 - **A city in the search**: after a 450 ms pause, a whole city name is read the way universal search reads it (`rpc/ve_search_core`,
   `interpretation.place` from `ve_search_places`, only with no words left over) and shows everything within 50 miles (`NEAR_CITY_MI`),
   closest first; the box keeps the text, the chip reads "Within 50 mi of Hialeah, FL"; places with no point are left out; a name on the
-  page that is exactly the text wins; clearing the chip empties the box; `?near=<city>` shares it. A bare name in several states takes the
-  largest ("Decatur" is Decatur, IL; "Decatur, GA" works).
+  page that is exactly the text wins; clearing the chip empties the box; `?near=<city>` shares it.
+- **Which one?** (2026-11-13, Sean: "If there's two locations that conflict, could we give them the option of picking the right one, so
+  we could show the city with the state and they choose that one?"; merge 470884f): a bare name that is more than one city
+  (rpc `ve_search_place_choices`: population 20,000+, US or UK, at least 5% of the biggest, one place within 30 miles counts once)
+  opens a "Which Decatur?" box under the search (`nearPickShow`); the biggest shows first, a tap moves the 50 miles to the city picked
+  and writes "Decatur, GA" in the box and the address. Directory, Events and Holiday menus. Miami, Austin and Atlanta ask nothing.
+- **The mic follows its field** (2026-11-13, 5b54281): `ve-dictate.js` re-places the mic whenever the focused field moves or changes
+  size; it had floated over the Near me chip when the chip narrowed the search.
 - **On the Directory**: Eat, Animals & Causes, Services & Spaces, Being vetted (`nearMe` in `directory/index.html`); not Shop, People,
   Media or Travel. The dashboard's Directory and Events tabs open the public pages (`PUBLIC_TABS` in `dashboard/center-console.html`), so
   they have it; the embedded mounts there are never shown.
