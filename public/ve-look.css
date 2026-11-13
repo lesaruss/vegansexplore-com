@@ -456,3 +456,24 @@ html.ve-cb[data-look="plain"] .gc-btn { border-radius: 6px; font-weight: 900; le
 html.ve-cb[data-look="plain"] .gc-btn-primary { background: #fff; color: var(--cb-ink); border: 2px solid var(--cb-ink); }
 html.ve-cb[data-look="plain"] .gc-btn-primary:hover { background: var(--cb-tint); }
 html.ve-cb[data-look="plain"] .gc-banner { border: 2px solid var(--cb-ink); }
+
+/* ---------- Guided walkthroughs (2026-11-13, blanket approval): the /partners stage, the dinner invitations, the wizard pages
+   (the Plant Based Showcase, World Vegan Expo, the Dolphins pitch). The dark scene behind stays (CLAUDE.md: the dark stage for the
+   pages built on it); the kit's parts go on top: titles in sentence case, the one orange action (Next, the cover's call),
+   the second button white on the scene, the step dots in ink and orange, 6px corners. ---------- */
+html.ve-cb main.stage h1, html.ve-cb :is(.wiz-body, .wiz-cover-text, .wiz-banner) :is(h1, h2), html.ve-cb #pbs-live-headline { text-transform: none !important; letter-spacing: -.025em; line-height: 1.04; }
+html.ve-cb main.stage :is(.btn-primary, .btn-dark),
+html.ve-cb .wiz-btn-next { background: var(--cb-or) !important; color: var(--cb-ink) !important; border: 2px solid var(--cb-or) !important; border-radius: 6px !important; font-weight: 900; box-shadow: none; }
+html.ve-cb main.stage :is(.btn-primary, .btn-dark):hover,
+html.ve-cb .wiz-btn-next:hover { background: var(--cb-or-hi) !important; border-color: var(--cb-or-hi) !important; }
+html.ve-cb main.stage .btn-ghost { background: #fff !important; color: var(--cb-ink) !important; border: 2px solid #fff !important; border-radius: 6px !important; font-weight: 900; }
+html.ve-cb .wiz-btn-back { border-radius: 6px !important; font-weight: 900; }
+html.ve-cb .wiz-dot.active { background: var(--cb-or) !important; }
+html.ve-cb .wiz-cover-wordmark { text-transform: none !important; letter-spacing: -.02em; }
+/* The shared guided shell (/public/ve-guided.js: the brand kit, mocks, walkthroughs): titles in sentence case; the slide bar's Next and a
+   gate's Sign in are the one orange action; every other button white with an ink outline. */
+html.ve-cb .vg-h { text-transform: none !important; letter-spacing: -.025em; }
+html.ve-cb .vg-btn { background: #fff !important; color: var(--cb-ink) !important; border: 2px solid var(--cb-ink) !important; border-radius: 6px !important; font-weight: 900; }
+html.ve-cb .vg-btn:hover { background: var(--cb-tint) !important; }
+html.ve-cb .vg-btn:is(.vg-next, [data-signin]) { background: var(--cb-or) !important; border-color: var(--cb-or) !important; }
+html.ve-cb .vg-btn:is(.vg-next, [data-signin]):hover { background: var(--cb-or-hi) !important; border-color: var(--cb-or-hi) !important; }
