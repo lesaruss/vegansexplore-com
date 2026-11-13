@@ -24,6 +24,15 @@
   search, directory/product, the Passport Challenge and its scan, certified, case studies, contact, explore, hello, policies, paths.
   `/unsubscribe` (no nav on purpose) is on the kit in its own styles with the real logo. `/communities/find` (linked from nowhere, "8 regions,
   3 partner orgs" in its copy) redirects to `/communities`.
+- **Business, campaign and guided pages (2026-11-13 afternoon, 5c91816 and f6565f9, live 2:29 PM Eastern):** the plain-page layer on
+  business/challenge, holiday-menu, stops, results, campaigns and the Dolphins showcase gates, gigs, the Dolphins game night page and the
+  Aguacate article (every sign-in gate's one button orange, the event page's buttons on the kit); `/certified` wears the listing page's
+  header (`pageOf` in `ve-look.js`); `/index-guide-hero` ("Five paths", retired) redirects to `/`. Guided walkthroughs keep their dark
+  scene with the kit on top (sentence-case titles, Next and each cover's call the one orange action, the second button white, step dots
+  orange): `/partners`, the dinner invitations, the Plant Based Showcase, World Vegan Expo, the Dolphins pitch, and the shared guided
+  shell (`ve-guided.js`: the brand kit, mocks; only the slide bar's Next orange). `/business/tour` and `/groups/welcome` (the Welcome
+  Guide's frame) join the Guides section and wear its pink header. **Next: the dashboard (18 views, checked through `/dashboard/sample`),
+  then the Depot (57).** Mocks and the archive stay as they are (reference and retired pages).
   **Left in this group, next pass:** the dinner invitations (`/dinners/host`, `/dinners/palm-beach`: dark guided pages, built like the pitch
   decks), the certified page's photo header, the Dolphins game night event page and the news article page's all-caps headline.
 
