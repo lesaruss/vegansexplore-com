@@ -782,6 +782,8 @@ const checksHtml = (r: { all_pass: boolean; checks: Check[] }) =>
 // waiting to send. The "Find us" post is promised only when the business's post exists (ve_media_kit), never before it is made.
 const APPROVED_CAMPAIGN = 'claims-approved-liz';
 const GENERIC_NAME = /^(marketing|team|info|hello|contact|admin|office|owner|manager|management|sales|support|general|the team)$/i;
+const NUM = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'];
+const numWord = (n: number) => NUM[n] || String(n);
 const andList = (a: string[]) => a.length < 2 ? (a[0] || '') : a.slice(0, -1).join(', ') + ' and ' + a[a.length - 1];
 async function approvalWords(listingIds: string[], contactName: string) {
   const { data: ls } = await db.from('listings').select('id, name, address_city').in('id', listingIds);
@@ -801,8 +803,8 @@ async function approvalWords(listingIds: string[], contactName: string) {
   }
   const places = andList(rows.map((r: any) => String(r.address_city || r.name)));
   return { subject: `${biz} is approved and yours on Vegans Explore`,
-    body: `${hi}, Liz here. Your ${rows.length} locations on Vegans Explore are approved, and they're yours to run: ${places}. Your words are already on every page.\n\n` +
-      `Sign in and your dashboard opens right away, with all ${rows.length} locations in one place.${post ? ' A "Find us on Vegans Explore" post for each location is waiting there, ready to share, and' : ''} I'll walk you through a few quick steps to make the pages your own.\n\n` +
+    body: `${hi}, Liz here. Your ${numWord(rows.length)} locations on Vegans Explore are approved, and they're yours to run: ${places}. Your words are already on every page.\n\n` +
+      `Sign in and your dashboard opens right away, with ${rows.length === 2 ? 'both' : 'all ' + numWord(rows.length)} locations in one place.${post ? ' A "Find us on Vegans Explore" post for each location is waiting there, ready to share, and' : ''} I'll walk you through a few quick steps to make the pages your own.\n\n` +
       `Open your dashboard:\n{link}\n\n${close}` };
 }
 async function lizApprovalEmail(claim: any): Promise<string> {
