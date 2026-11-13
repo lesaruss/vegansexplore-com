@@ -132,3 +132,43 @@ Full reports (Meta access, payouts and tax, code map) were gathered 2026-11-13 b
 facebook.com/business/help/2169003770027706, developers.facebook.com/documentation/business-messaging/instagram-messaging/overview,
 help.instagram.com/436248864916865, docs.stripe.com/connect/tax-reporting, docs.stripe.com/connect/top-ups, stripe.com/connect/pricing,
 irs.gov/pub/irs-pdf/i1099mec.pdf, irs.gov/businesses/small-businesses-self-employed/independent-contractor-self-employed-or-employee.
+
+## Panel (2026-11-13): back end, payments and security, front end, design
+
+Changes adopted (they override the sections above where they differ):
+1. **Applications live in the position tables, not `ve_bounty_submissions`.** `ve-bounties` `applicant_decide` emails each decision at
+   once, and its hourly cron marks booked work `no_show` and writes `ve_bounty_strikes`: a hire would get a strike. The Gig Board shows a
+   Positions card fed by `ve-positions` `open_list`; applying happens at `/positions/<slug>`.
+2. **Schema** (RLS on, no policies, service role only): `ve_positions`, `ve_position_people` (decision held while `decision_notified_at` is
+   null), `ve_position_agreements` (text snapshot, sha256, name, IP, browser; copy emailed; no PDF in phase 1), `ve_position_checkins`
+   (unique person, day), `ve_position_payouts` (unique person, period_start; unique idempotency key and transfer id; statuses scheduled,
+   held, sending, sent, failed, skipped), `ve_position_events` (append-only audit; update and delete revoked).
+3. **Stages:** invited, role_read, agreed, payouts_ready, awaiting_access, trial, active, paused, ended; applicants applied, shortlisted,
+   then the held decision. "Opened" is read from `universe_invites`. One `advance(id, from[], to)` with a conditional update; 409 on no-op.
+4. **One Stripe account per member** (`ve_member_payout_accounts`, filled from `ve_ambassador_door`): one 1099, one monthly fee. Fix
+   `ve-ambassador` account creation: `business_type=individual`, an `Idempotency-Key` per member (a double tap makes two accounts today);
+   "ready" means `capabilities.transfers = active` and no `requirements.disabled_reason`. **The W-9 is collected only when 1099 tax
+   reporting is on in the Stripe dashboard (Connect > Tax forms): switch it on in live mode before KJ starts.**
+5. **Pay run:** claim the row atomically (`status='notified' -> 'sending'`), live checks at send time (stage, check-ins, Stripe account,
+   balance, kill switch), key `vepos-<payout_id>-a<attempt>` with `transfer_group`; insufficient balance is not retried by Stripe, so mark
+   `failed`, alert, and list transfers by group before any retry. If the notice email fails, the payment waits.
+6. **Webhooks:** connected-account events need a separate Stripe endpoint and secret; a new small `ve-stripe-connect` function, not the
+   1,700-line `ve-stripe-webhook`.
+7. **Stop link:** signed, one-time, expiring; opening it only shows a page; the hold happens on the button. Releasing a hold needs sign-in.
+8. **ve-invites:** `points_to='position'`, `universe_invites.position_id`, exempt from the "already a member" skip, `accept` returns
+   `/positions/<slug>/start`; the survey gets a same-origin `next=` hand-back. Recreate the points_to check from the live definition (the
+   repo copy has drifted).
+9. **Front end:** console `admin/depot/positions.html` (router and gate copied from `ambassadors.html`, the look and `.ptabs`, `.r`, `.tag`
+   from `business-dashboard.html`; no self-scrolling lists; Positions in a live Depot tab group, not "Moving to BrandDesk"); five parts:
+   Posting, People, Applicants, Pay, Settings; a person is its own view. Intake copied from `claim.html`. Shared `/public/ve-positions.js`
+   (stage map, tag, checklist, pay line). Routes: `#list`, `#p/<slug>/<part>`, `#p/<slug>/invite`, `#person/<id>`, `#payout/<id>`;
+   `/positions/<slug>/start?step=role|check|agreement|payouts|instagram|toolkit|done`; `/dashboard/position?p=&tab=`.
+10. **Design:** section color Communities mid green; status colors: mint moving, peach waiting on Sean, bright green active, pink
+   shortlisted, grey ended. The Guide is Sean's pick (front end flagged Kai, the Creator Guide, who runs the Gig Board).
+11. **Phasing:** phase 1 for KJ (Stripe fixes, pay engine, checklist, console assign and person views); phase 2 rounds, the Gig Board card,
+   the result emails, the position builder.
+12. **Instagram (security engineer):** a shared login breaks Instagram's terms and gives full control; test first whether Business Suite
+   can start a DM (Sean's second account with partial access), then Instagram's account sharing; only then the guarded login (authenticator
+   2FA on Sean's phone, Sean's email and phone, she declines Accounts Center, weekly checks, same-day offboarding).
+
+Mock: `/mocks/positions/` (copied from `/mocks/claims/`).
