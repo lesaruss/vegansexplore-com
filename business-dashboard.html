@@ -61,8 +61,8 @@
     /* Buttons (Foundations 9): white with an ink outline; the one action of the view is orange; on the dark band, white and outlined white. */
     .btn{font:inherit;font-size:12px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:10px 16px;min-height:44px;border-radius:var(--r);cursor:pointer;border:2px solid var(--ink);background:#fff;color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;}
     .btn:hover{background:var(--tint);}
-    .btn-go{background:var(--or);border-color:var(--ink);box-shadow:3px 3px 0 var(--ink);}
-    .btn-go:hover{background:var(--orh);}
+    .btn-go{background:var(--or);border-color:var(--or);}
+    .btn-go:hover{background:var(--orh);border-color:var(--orh);}
     .btn-sm{font-size:11px;padding:7px 12px;min-height:38px;}
     .btn-wh{background:#fff;color:var(--dk);border-color:#fff;}
     .btn-wh:hover{background:var(--tint);}
@@ -73,9 +73,10 @@
     .soon::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--or);}
     /* The who bar (parent creator.html: the picture top left a square with rounded corners, never a circle; Sean, 2026-11-10), now the
        dark green band (Foundations: brand green, white type), the stripe under it, edge to edge. */
-    .band{position:relative;background:var(--dk);color:#fff;margin:-32px -40px 26px;padding:30px 40px 34px;}
+    /* the stripe sits under the band with a thin white gap, as the live page bar does it (ve-look.css .vcb-bar): its first band is brand green too */
+    .band{position:relative;background:#fff linear-gradient(var(--dk),var(--dk)) 0 0/100% calc(100% - 11px) no-repeat;color:#fff;margin:-32px -40px 26px;padding:30px 40px 41px;}
     .band::after{content:"";position:absolute;left:0;right:0;bottom:0;height:8px;background:var(--stripe);}
-    @media (max-width:600px){.band{margin:-22px -16px 22px;padding:22px 16px 28px;}}
+    @media (max-width:600px){.band{margin:-22px -16px 22px;padding:22px 16px 35px;}}
     .who{position:relative;display:flex;gap:18px;align-items:center;}
     .av{width:84px;height:84px;border-radius:14px;background:#fff center/contain no-repeat;flex:none;border:3px solid #fff;display:grid;place-items:center;font-weight:900;font-size:32px;color:var(--dk);}
     .who a:has(.av){display:block;border-radius:14px;}
@@ -108,13 +109,18 @@
     .r b{display:block;font-size:15.5px;font-weight:900;}
     .r p{margin:2px 0 0;font-size:13.5px;font-weight:600;line-height:1.5;color:var(--mute);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
     .r .btn{min-width:150px;}
+    .btn-on{background:var(--dk);border-color:var(--dk);color:#fff;}
+    .btn-on:hover{background:var(--dk);}
+    .msg{font-size:13.5px;font-weight:800;color:var(--dk);min-height:20px;margin:0;}
     .more{display:block;width:100%;font:inherit;font-size:12px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;background:#fff;color:var(--ink);border:0;border-top:1px solid var(--line);padding:13px 18px;cursor:pointer;text-align:left;}
     .more:hover{background:var(--tint);}
-    @media (max-width:600px){.r{grid-template-columns:minmax(0,1fr) auto;padding:14px}.r .tag{grid-column:1;justify-self:start;grid-row:2}.r .btn{grid-column:2;grid-row:1 / span 2;min-width:0}}
+    /* phones: the words take the full width, the tag and the button share the line under them */
+    @media (max-width:600px){.r{grid-template-columns:minmax(0,1fr) auto;gap:10px 12px;padding:14px}.r>div{grid-column:1 / -1}.r .tag{grid-column:1;justify-self:start;grid-row:2}.r .btn{grid-column:2;grid-row:2;min-width:0}}
     .tag{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:5px 8px;border-radius:var(--r);white-space:nowrap;}
     .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.8;flex:none;}
     .t-need{background:var(--peach);color:#8a4d00}.t-new{background:var(--pinkt);color:var(--pinkd)}.t-flag{background:#fde2e0;color:#a3221b}.t-tip{background:var(--tint);color:var(--dk)}
-    .sec{display:flex;align-items:center;gap:12px;margin:30px 0 14px;}
+    .sec{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:30px 0 14px;}
+    @media (max-width:600px){.sec select{width:100%;margin-left:0 !important}}
     .sec h2{margin:0;font-size:clamp(24px,2.4vw,32px);line-height:1.04;letter-spacing:-.025em;}
     .sec .count{font-size:13px;font-weight:900;background:var(--or);color:var(--ink);border-radius:var(--r);padding:3px 9px;}
     .totals{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;margin:0 var(--sh) 22px 0;}
@@ -162,7 +168,7 @@
     .bd-host .vpd-btn:hover{background:var(--tint);}
     .bd-host .vpd-btn.o{background:#fff;color:var(--ink);border:2px solid var(--ink);}
     .bd-host [data-vpd-int].o{background:var(--dk);color:#fff;border-color:var(--dk);}
-    .bd-host .vpd-bar .vpd-btn:not(.o),.bd-host .vpd-join .vpd-btn{background:var(--or);color:var(--ink);border-color:var(--ink);box-shadow:3px 3px 0 var(--ink);}
+    .bd-host .vpd-bar .vpd-btn:not(.o),.bd-host .vpd-join .vpd-btn{background:var(--or);color:var(--ink);border-color:var(--or);}
     .bd-host .vpd-range button{border:2px solid var(--dk);color:var(--dk);font-weight:800;}
     .bd-host .vpd-range button.on{background:var(--dk);border-color:var(--dk);color:#fff;}
     .bd-host .vpd-chart i{background:var(--md);}
@@ -260,7 +266,7 @@
   ];
   var HOSTS = {
     page: ['menu', 'dishes', 'audit', 'gevents', 'announce'],
-    opportunities: ['opps', 'ads', 'guides'],
+    opportunities: ['ads'],
     insights: ['insights', 'audience', 'checkins', 'saves', 'gmembers'],
     plan: ['plan', 'managed', 'gift', 'earnings']
   };
@@ -302,6 +308,44 @@
       '<div class="meter"><i style="width:' + pct + '%"></i></div><div class="gsr">' + rows.map(function (r) {
         return '<div class="gr' + (r.done ? ' done' : '') + (r.hot && !r.done ? ' hot' : '') + '"><span class="ic"><svg viewBox="0 0 24 24">' + IC[r.done ? 'done' : r.ic] + '</svg></span>' +
           '<div><b>' + esc(r.t) + '</b><small>' + esc(r.s) + '</small></div>' + (r.btn || '<span></span>') + '</div>'; }).join('') + '</div></div></section>';
+  }
+  // Opportunities (Sean, 2026-11-13, build step 3; the approved mock's slide 5): ways in, each one row in ve_dashboard_cards aimed at the
+  // listing's kind (ve_business_opportunities), what it is, when it closes, one button; a filter picks one kind (?k=). "I'm in" logs
+  // interest for our team (ve-claims partner_interest: ve_initiative_interest, and an email to the account manager and Sean).
+  var OPPS = [], OPP_KIND = { holiday: ['Holiday Guide', 't-new'], contribute: ['Contribute', 't-tip'], feature: ['Feature', 't-need'], sponsor: ['Sponsor', 't-tip'], ads: ['Ads', 't-need'] };
+  function oppFetch(kind) {
+    return fetch(SB + '/rest/v1/rpc/ve_business_opportunities', { method: 'POST', headers: { apikey: ANON, Authorization: 'Bearer ' + ANON, 'Content-Type': 'application/json' }, body: JSON.stringify({ p_kind: kind || 'service' }) })
+      .then(function (r) { return r.json(); }).then(function (o) { OPPS = Array.isArray(o) ? o : []; }).catch(function () { OPPS = []; });
+  }
+  function closes(t) {
+    if (!t) return '';
+    var d = new Date(Date.parse(t) - 60000);   // a close at midnight Eastern is the day before's last minute
+    return 'Closes ' + d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'America/New_York' }) + '.';
+  }
+  function oppBtn(o) {
+    if (o.interest_slug) {
+      var on = (D.interests || []).indexOf(o.interest_slug) >= 0;
+      return '<button type="button" class="btn btn-sm' + (on ? ' btn-on' : '') + '" data-int="' + esc(o.interest_slug) + '" data-label="' + esc(o.title) + '"' + (on ? ' aria-pressed="true"' : '') + '>' + (on ? 'You\'re in' : 'I\'m in') + '</button>';
+    }
+    var url = o.cta_url || '';
+    if (/^\?pd=/.test(url)) return partBtn(o.cta_label || 'Open', 'opportunities', url.slice(4));
+    if (url === '/business/holiday-menu') url += '?listing=' + encodeURIComponent(L.slug);
+    return url ? '<a class="btn btn-sm" href="' + esc(url) + '" target="_top">' + esc(o.cta_label || 'Open') + '</a>' : '<span></span>';
+  }
+  function drawOpps() {
+    var k = q('k'), kinds = Object.keys(OPP_KIND).filter(function (x) { return OPPS.some(function (o) { return o.opp_kind === x; }); });
+    if (kinds.indexOf(k) < 0) k = '';
+    var list1 = OPPS.filter(function (o) { return !k || o.opp_kind === k; });
+    var rows = list1.map(function (o) { var t = OPP_KIND[o.opp_kind] || ['Opportunity', 't-tip'];
+      return row(t[0], t[1], o.title, [o.body, closes(o.ends_at)].filter(Boolean).join(' '), oppBtn(o)); });
+    var first = list1.findIndex ? list1.findIndex(function (o) { return !(o.interest_slug && (D.interests || []).indexOf(o.interest_slug) >= 0); }) : 0;
+    if (first >= 0 && rows[first]) rows[first] = go1(rows[first]);
+    return '<div class="sec" style="margin-top:4px"><h2>Ways <span class="hl o">in</span></h2>' + (list1.length ? '<span class="count">' + list1.length + '</span>' : '') +
+      (kinds.length > 1 ? '<select id="bdKind" aria-label="Kind of opportunity" style="margin-left:auto;min-width:min(240px,100%)"><option value="">All kinds</option>' +
+        kinds.map(function (x) { return '<option value="' + x + '"' + (x === k ? ' selected' : '') + '>' + OPP_KIND[x][0] + '</option>'; }).join('') + '</select>' : '') + '</div>' +
+      '<p class="lede">What you can take part in, soonest to close first. Press I\'m in and our team reaches out with the details; nothing is booked until you say yes.</p>' +
+      (rows.length ? list('opps', rows) : '<p class="empty">Nothing open for you right now. New ways in show up here first, and on your Home.</p>') +
+      '<p class="msg" id="bdOppMsg" role="status"></p>';
   }
   // Media kit: the list (every feature, newest first, the Find us post on top), then one kit on its own (?pd=<key>).
   function drawKit() {
@@ -398,14 +442,13 @@
     var out = [];
     (D.cards || []).forEach(function (c) {
       var url = c.cta_url || '', btn = '';
-      if (/^\?pd=/.test(url)) { var pd = url.slice(4), host = Object.keys(HOSTS).filter(function (k) { return HOSTS[k].indexOf(pd) >= 0; })[0]; btn = host ? partBtn(c.cta_label || 'Open', host, pd) : ''; }
+      if (url === '?tab=opportunities') btn = partBtn(c.cta_label || 'See it', 'opportunities');
+      else if (/^\?pd=/.test(url)) { var pd = url.slice(4), host = Object.keys(HOSTS).filter(function (k) { return HOSTS[k].indexOf(pd) >= 0; })[0]; btn = host ? partBtn(c.cta_label || 'Open', host, pd) : ''; }
       else if (url) btn = '<a class="btn btn-sm" href="' + esc(url) + '" target="_top">' + esc(c.cta_label || 'Open') + '</a>';
       out.push(row({ new: 'New', wizard: 'Try it', offer: 'Offer', tip: 'Tip' }[c.kind] || 'New', c.kind === 'tip' ? 't-tip' : 't-new', c.title, c.body, btn || '<span></span>'));
     });
-    var seen = {};
-    (D.opportunities || []).filter(function (o) { var k = String(o.title || '').toLowerCase(); if (seen[k]) return false; seen[k] = 1; return true; }).slice(0, 6).forEach(function (o) {
-      out.push(row('Opportunity', 't-new', o.title, o.description, partBtn('See it', 'opportunities', 'opps')));
-    });
+    // The opportunities table holds roles and volunteering for members (Community Manager, Vegan Explorer), not ways in for a
+    // business, so it no longer feeds a business's Home; a business's ways in are the cards above and Opportunities (2026-11-13).
     return out;
   }
   function week() {
@@ -454,16 +497,18 @@
   }
   function draw() {
     var p = part();
-    if (p !== q('tab') || q('l') !== L.slug) history.replaceState(null, '', location.pathname + base(p) + (q('pd') ? '&pd=' + encodeURIComponent(q('pd')) : ''));
+    if (p !== q('tab') || q('l') !== L.slug) history.replaceState(null, '', location.pathname + base(p) + (q('pd') ? '&pd=' + encodeURIComponent(q('pd')) : '') + (q('k') ? '&k=' + encodeURIComponent(q('k')) : ''));
     var label = PARTS.filter(function (x) { return x[0] === p; })[0][1];
     var kit = p === 'media' && q('pd') ? kitItem(q('pd')) : null;
     if (kit && !kit.ready) kit = null;
     var html = head() + (p === 'home' ? '' : '<p class="crumb"><a href="' + base('home') + '" data-part="home">Home</a> &rsaquo; ' +
-      (kit ? '<a href="' + base('media') + '" data-part="media">' + esc(label) + '</a> &rsaquo; ' + esc(kit.title) : esc(label)) + '</p>');
+      (kit ? '<a href="' + base('media') + '" data-part="media">' + esc(label) + '</a> &rsaquo; ' + esc(kit.title)
+        : p === 'opportunities' && q('pd') === 'ads' ? '<a href="' + base('opportunities') + '" data-part="opportunities">' + esc(label) + '</a> &rsaquo; Ads' : esc(label)) + '</p>');
     if (p === 'home') html += drawHome();
     else if (p === 'page') html += drawPageTop() + '<div id="bdHost" class="bd-host"></div>';
     else if (p === 'media') html += kit ? drawKitItem(kit) : drawKit();
     else if (p === 'messages') html += drawSoon('Messages', 'Messages from our team, and your replies, right here. Anything important is emailed to you too.');
+    else if (p === 'opportunities' && q('pd') !== 'ads') html += drawOpps();
     else html += '<div id="bdHost" class="bd-host"></div>';
     app.innerHTML = html;
     var host = $('bdHost');
@@ -476,6 +521,17 @@
     tellParent();
   }
   app.addEventListener('click', function (e) {
+    var ib = e.target.closest('[data-int]');
+    if (ib) {
+      e.preventDefault(); var slug = ib.getAttribute('data-int'), on = (D.interests || []).indexOf(slug) < 0;
+      ib.disabled = true;
+      post('ve-claims', { action: 'partner_interest', listing_id: L.id, campaign: slug, label: ib.getAttribute('data-label'), on: on }).then(function (r) {
+        if (!r || !r.ok) { ib.disabled = false; var m = $('bdOppMsg'); if (m) m.textContent = 'That did not go through. Try again in a moment.'; return; }
+        D.interests = on ? (D.interests || []).concat(slug) : (D.interests || []).filter(function (x) { return x !== slug; });
+        draw(); var m2 = $('bdOppMsg'); if (m2 && on) m2.textContent = 'You\'re in. Our team will reach out with the details.';
+      });
+      return;
+    }
     var mb = e.target.closest('[data-more-btn]');
     if (mb) { mb.parentNode.classList.add('open'); mb.remove(); tellParent(); return; }
     var g = e.target.closest('[data-gs]'); if (g && L) mark(g.getAttribute('data-gs'));
@@ -489,6 +545,7 @@
   });
   app.addEventListener('change', function (e) {
     if (e.target.id === 'bdPart') go(e.target.value);
+    if (e.target.id === 'bdKind') { history.replaceState(null, '', location.pathname + base('opportunities') + (e.target.value ? '&k=' + e.target.value : '')); draw(); }
     if (e.target.id === 'bdListing') { var m = MINE.filter(function (x) { return x.slug === e.target.value; })[0]; if (m) open(m.slug, 'home'); }
   });
   // A view the module drew on its own (Menu > item) keeps working after Back; a change of part redraws the page.
@@ -506,9 +563,11 @@
         var d = all[0];
         if (!d || !d.ok) return gateMsg(d && d.error === 'not_owner' ? 'This dashboard belongs to the listing\'s owner.' : 'Your dashboard did not open. Refresh to try again.');
         L = l; D = d; ADMIN = !!d.admin;
-        var u = location.pathname + '?l=' + encodeURIComponent(l.slug) + '&tab=' + (p || part()) + (q('pd') && q('l') === l.slug ? '&pd=' + encodeURIComponent(q('pd')) : '');
+        var u = location.pathname + '?l=' + encodeURIComponent(l.slug) + '&tab=' + (p || part()) + (q('pd') && q('l') === l.slug ? '&pd=' + encodeURIComponent(q('pd')) : '') +
+          (q('k') && q('l') === l.slug ? '&k=' + encodeURIComponent(q('k')) : '');
         if (location.pathname + location.search !== u) history.replaceState(null, '', u);
-        $('gate').hidden = true; draw();
+        $('gate').hidden = true;
+        return oppFetch((d.listing || {}).kind).then(draw);
       });
     });
   }
