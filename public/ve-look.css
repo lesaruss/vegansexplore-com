@@ -486,3 +486,5 @@ html.ve-cb[data-look="plain"] .ad-anchor { background: #fff !important; border: 
 html.ve-cb[data-look="plain"] .ad-anchor h2 { color: var(--cb-dk); }
 html.ve-cb[data-look="plain"] .ad-anchor a { background: var(--cb-or) !important; color: var(--cb-ink) !important; border: 2px solid var(--cb-or); border-radius: 6px; font-weight: 900; }
 html.ve-cb[data-look="plain"] .ad-card { border: 2px solid var(--cb-ink) !important; border-radius: 14px; }
+/* A gate drawn by script (#ph-gate, #gr-gate, #i-gate, #m-gate, #sb-gate...): its button is the one action of the view. */
+html.ve-cb[data-look="plain"] [id$="-gate"] > button { background: var(--cb-or) !important; color: var(--cb-ink) !important; border: 2px solid var(--cb-or) !important; border-radius: 6px !important; font-weight: 900; }
