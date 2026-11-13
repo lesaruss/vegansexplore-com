@@ -236,3 +236,8 @@ critical toward the Vegan community, topic, a reason when critical), function `v
 one outlet per view (`#/outlet/<slug>`) with its articles, Make public / Make private and our notes. Backfill ran through the one-time
 `ve-once-media-outlets` (back to the 410 stub after). Next: a daily feed of new alerts, reporter contacts per outlet, and the BrandDesk PR
 service (a client's own alert topic builds their list).
+Daily upkeep since 2026-11-13: `ve-media-alerts` (cron `ve-media-alerts-daily`, 12:17 UTC) reads the last 3 days of alerts and the
+News Desk's new Vegans Explore stories, adds, sorts and scores new articles and outlets, and rolls up; our own sites are never outlets.
+News Desk stories behind `news.google.com` links are filed by matching outlet name (120 recovered; migration
+`20261113_ve_media_alerts_daily.sql`, run through `ve-once-media-cleanup`, now the 410 stub). Sean approves every pitch until a paid
+person takes it on. The Pitch Gate is canon `canon-lesaruss-pitch-gate`; the Media Room plan is playbook `ve-newsroom`.
