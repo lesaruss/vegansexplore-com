@@ -339,8 +339,8 @@
         (paid ? '<h2 class="vg-h">Welcome aboard</h2><p class="vg-lede" id="suDone">Payment received. Setting things up...</p>'
           : '<h2 class="vg-h">Review and pay</h2>' + (note ? '<p class="pt-msg err">' + note + '</p>' : '') + summary() +
             '<div class="su-sign">Signed by <b>' + esc(C.name || 'you') + '</b>. Our team confirms you run ' + name + ' before work starts; if not, we refund you in full.</div>' +
-            '<p style="margin-top:14px"><button type="button" class="vg-btn" data-pay>' + (SAMPLE || D.team || token() ? 'Continue to secure checkout' : 'Sign in to continue') + '</button></p>' +
-            '<p class="pt-cap">The next screen is Stripe\'s secure checkout. You come back here when you are done.</p><div class="pt-msg" id="suPayMsg" role="status"></div>') +
+            '<p style="margin-top:14px"><button type="button" class="vg-btn" data-pay>Continue on LESARUSS.ai</button></p>' +
+            '<p class="pt-cap">Our plans are sold and billed by LESARUSS.ai, the marketing company behind Vegans Explore. The next screen is your plan there.</p><div class="pt-msg" id="suPayMsg" role="status"></div>') +
         '</div><div><div class="vg-eyebrow">' + name + ', as we\'ll build it</div>' + still('ptStill3') + '<p class="pt-cap">Your home page on our frame. After your brand kit and your shoot it wears your colors and your food.</p></div></div>';
       scaleStill();
       if (paid) pollDone();
@@ -364,14 +364,12 @@
     }
     function pay(btn) {
       var m = document.getElementById('suPayMsg');
-      if (SAMPLE || D.team) { m.className = 'pt-msg'; m.textContent = 'Preview: here they go on to Stripe\'s secure checkout and come back to this page. Nothing is charged.'; return; }
-      if (!token()) { VEAuth.showAuthModal('Sign in, or make your account, to sign up ' + D.business.name + '.', function () { P = null; drawSignup(); loadPlan(); }, 'login'); return; }
-      btn.disabled = true; btn.textContent = 'Opening checkout...';
-      var fail = function (msg) { btn.disabled = false; btn.textContent = 'Continue to secure checkout'; m.className = 'pt-msg err'; m.textContent = msg || 'Checkout did not open. Try again in a minute.'; };
-      // Record the choice first (it also opens checkout for this business), then open Stripe.
-      api({ action: 'pitch_choice', code: CODE, choice: 'ready', name: C.name.trim(), email: (D.contact || {}).email || '', preview: false }).catch(function () {}).then(function () {
-        return api({ action: 'checkout', slug: D.business.slug, plan: C.plan, photos: C.photos, video: C.video, social: !isSite() && C.social, agreed_name: C.name.trim(), agree: C.agree, origin: location.origin, back: '/business/pitch?c=' + CODE });
-      }).then(function (d) { if (d && d.url) { location.href = d.url; return; } fail(d && d.message); }, function () { fail(); });
+      if (SAMPLE || D.team) { m.className = 'pt-msg'; m.textContent = 'Preview: here they go on to LESARUSS.ai to sign up. Nothing is charged.'; return; }
+      // Vegans Explore advertises, LESARUSS.ai sells (Sean, 2026-11-13, canon canon-ve-front-of-house v16 sales_route_v16): record I'm ready
+      // in the Inbox as before, then hand off to the LESARUSS.ai shop, which signs them up and bills them. No checkout opens here.
+      btn.disabled = true; btn.textContent = 'One moment...';
+      var shop = 'https://lesaruss.ai/shop/' + (isSite() ? 'site' : 'managed') + '?from=' + encodeURIComponent('vegansexplore.com/business/pitch?c=' + CODE + (C.photos ? '&photos=1' : '') + (C.video ? '&video=1' : '') + (C.social ? '&social=1' : ''));
+      api({ action: 'pitch_choice', code: CODE, choice: 'ready', name: C.name.trim(), email: (D.contact || {}).email || '', preview: false }).catch(function () {}).then(function () { location.href = shop; });
     }
     function readAgreement() {
       var w = document.createElement('div'); w.className = 'su-modal'; w.innerHTML = '<div class="su-doc" role="dialog" aria-label="Managed Marketing Agreement"><button class="su-close" type="button">Close</button><p>Loading...</p></div>';

@@ -244,11 +244,18 @@
       });
 
       // A la carte.
-      post(SERVICES, { action: 'catalog' }).then(function (d) {
+      // Photos and video are sold by LESARUSS.ai (Sean, 2026-11-13, canon canon-ve-front-of-house v16 sales_route_v16): those two cards
+      // show the LESARUSS.ai shop's price and send the owner there. Vegans Explore keeps what is promotion (the Challenge stop, a feature
+      // post, a sampling table).
+      var SHOPPED = { photo_shoot: 'photos', reel: 'video' }, shop = {};
+      Promise.all([post(SERVICES, { action: 'catalog' }), post(SB + '/functions/v1/lesaruss-shop', { action: 'catalog' }).catch(function () { return {}; })]).then(function (r) {
+        var d = r[0]; (r[1].items || []).forEach(function (i) { shop[i.slug] = i; });
         (d.services || []).forEach(function (s) { catalog[s.id] = s; });
         var order = ['challenge_month', 'photo_shoot', 'reel', 'social_post', 'event_table'];
         $('svc-list').innerHTML = order.filter(function (k) { return catalog[k]; }).map(function (k) {
-          var s = catalog[k];
+          var s = catalog[k], it = shop[SHOPPED[k]];
+          if (SHOPPED[k]) return '<div class="svc"><h3>' + esc(it ? it.name : s.name) + '</h3>' + (it ? '<div class="p">$' + Math.round(it.price_cents / 100) + '</div><p>' + esc(it.summary) + '</p>' : '<p>' + esc(s.desc) + '</p>') +
+            '<a class="btn btn-ghost" href="https://lesaruss.ai/shop/' + SHOPPED[k] + '?from=' + encodeURIComponent('vegansexplore.com/business') + '">See it on LESARUSS.ai</a></div>';
           return '<div class="svc' + (k === 'challenge_month' ? ' trial' : '') + '">' + (k === 'challenge_month' ? '<span class="pill" style="align-self:flex-start">The easy way to try it</span>' : '') +
             '<h3>' + esc(s.name) + '</h3><div class="p">$' + Math.round(s.cents / 100) + '</div><p>' + esc(s.desc) + '</p>' +
             '<button type="button" class="btn btn-ghost" data-book="' + esc(k) + '">' + (k === 'challenge_month' ? 'Start with one month' : 'Book this') + '</button></div>';
