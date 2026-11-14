@@ -70,7 +70,7 @@ function replyHtml(to: string, message: string, signed: string, about: string) {
 }
 const CHAPTER_SLUG: Record<string, string> = { 'South Florida': 'south-florida', 'Central Florida': 'central-florida', 'North Florida': 'north-florida',
   'Atlanta': 'atlanta', 'Washington, D.C.': 'washington-dc', 'Maryland': 'maryland', 'Virginia': 'virginia', 'Delaware': 'delaware', 'West Virginia': 'west-virginia',
-  'New York': 'new-york', 'Philadelphia': 'philadelphia', 'Los Angeles': 'los-angeles', 'Seattle': 'seattle', 'London': 'london' };
+  'New York': 'new-york', 'Philadelphia': 'philadelphia', 'Los Angeles': 'los-angeles', 'Seattle': 'seattle', 'Portland': 'portland', 'London': 'london' };
 // People profile photo first, then the account picture.
 async function pictures(ids: string[]): Promise<Map<string, string>> {
   const out = new Map<string, string>();

@@ -78,7 +78,7 @@ const KINDS = ['none', 'dinner', 'community_manager', 'ambassador', 'founding', 
 const BRANDS: Record<string, string> = { 'vegans-explore': 'Vegans Explore' };
 const CITIES: Record<string, string> = {
   'atlanta': 'Atlanta', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', 'washington-dc': 'Washington, D.C.', 'delaware': 'Delaware', 'maryland': 'Maryland', 'virginia': 'Virginia', 'west-virginia': 'West Virginia', 'london': 'London',
-  'los-angeles': 'Los Angeles', 'seattle': 'Seattle', 'new-york': 'New York', 'philadelphia': 'Philadelphia', 'south-florida': 'South Florida',
+  'los-angeles': 'Los Angeles', 'seattle': 'Seattle', 'portland': 'Portland', 'new-york': 'New York', 'philadelphia': 'Philadelphia', 'south-florida': 'South Florida',
   'orlando-north-central-florida': 'Orlando and North Central Florida',
 };
 

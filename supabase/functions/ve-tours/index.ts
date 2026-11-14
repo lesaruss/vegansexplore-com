@@ -37,7 +37,7 @@ const HUBS: Record<string, { tz: string; state: string | null; country: string }
   'north-florida': { tz: 'America/New_York', state: 'FL', country: 'US' }, atlanta: { tz: 'America/New_York', state: 'GA', country: 'US' },
   'washington-dc': { tz: 'America/New_York', state: 'DC', country: 'US' }, maryland: { tz: 'America/New_York', state: 'MD', country: 'US' }, virginia: { tz: 'America/New_York', state: 'VA', country: 'US' }, delaware: { tz: 'America/New_York', state: 'DE', country: 'US' }, 'west-virginia': { tz: 'America/New_York', state: 'WV', country: 'US' },
   'new-york': { tz: 'America/New_York', state: 'NY', country: 'US' }, philadelphia: { tz: 'America/New_York', state: 'PA', country: 'US' },
-  'los-angeles': { tz: 'America/Los_Angeles', state: 'CA', country: 'US' }, seattle: { tz: 'America/Los_Angeles', state: 'WA', country: 'US' }, london: { tz: 'Europe/London', state: null, country: 'GB' },
+  'los-angeles': { tz: 'America/Los_Angeles', state: 'CA', country: 'US' }, seattle: { tz: 'America/Los_Angeles', state: 'WA', country: 'US' }, portland: { tz: 'America/Los_Angeles', state: 'OR', country: 'US' }, london: { tz: 'Europe/London', state: null, country: 'GB' },
 };
 const hub = (slug: string) => HUBS[slug] || HUBS['south-florida'];
 

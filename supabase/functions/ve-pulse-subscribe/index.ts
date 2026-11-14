@@ -37,7 +37,7 @@ function fromB64u(s: string) { const pad = s.length % 4 ? '='.repeat(4 - (s.leng
 
 const CITY: Record<string, string> = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', atlanta: 'Atlanta',
   'washington-dc': 'Washington, D.C.', delaware: 'Delaware', maryland: 'Maryland', virginia: 'Virginia', 'west-virginia': 'West Virginia', 'new-york': 'New York',
-  philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', seattle: 'Seattle', london: 'London' };
+  philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', seattle: 'Seattle', portland: 'Portland', london: 'London' };
 const MAX_CITIES = 3;
 
 // The subscriber's key: the Taster key (bytes 32 to 64 of the service key), so no member function takes it for a member session.

@@ -143,7 +143,7 @@ const MEET_FIELDS: [string, string][] = [['name', 'Name'], ['email', 'Email'], [
   ['times', 'Good days and times'], ['topic', 'What they would like to talk about']];
 const CHAPTER_SLUG: Record<string, string> = { 'South Florida': 'south-florida', 'Central Florida': 'central-florida', 'North Florida': 'north-florida',
   'Atlanta': 'atlanta', 'Washington, D.C.': 'washington-dc', 'Maryland': 'maryland', 'Virginia': 'virginia', 'Delaware': 'delaware', 'West Virginia': 'west-virginia',
-  'New York': 'new-york', 'Philadelphia': 'philadelphia', 'Los Angeles': 'los-angeles', 'Seattle': 'seattle', 'London': 'london' };
+  'New York': 'new-york', 'Philadelphia': 'philadelphia', 'Los Angeles': 'los-angeles', 'Seattle': 'seattle', 'Portland': 'portland', 'London': 'london' };
 const APPLY_REQUIRED = ['group_name', 'chapter', 'city', 'events_link', 'size', 'turnout', 'frequency', 'kinds', 'paid', 'platforms', 'team', 'name', 'email', 'role',
   'host_here', 'share_link', 'worth_it'];
 const FOOT = `<p style="font-size:12px;color:#777;margin:18px 0 0">Vegans Explore, a LESARUSS brand. 300 SW 1st Ave, Suite 155, Fort Lauderdale, FL 33301.</p>`;

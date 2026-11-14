@@ -197,7 +197,7 @@
     rate: { name: 'Rate and dates', label: 'Your rate and when you can do it', help: 'The fee is the brand\'s; say if you need more and why, and the dates that work.' }
   };
   var CHAPTER_NAMES = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', atlanta: 'Atlanta', dc: 'Washington, D.C.',
-    maryland: 'Maryland', virginia: 'Virginia', delaware: 'Delaware', 'west-virginia': 'West Virginia', philadelphia: 'Philadelphia', 'new-york': 'New York', 'los-angeles': 'Los Angeles', 'seattle': 'Seattle', london: 'London' };
+    maryland: 'Maryland', virginia: 'Virginia', delaware: 'Delaware', 'west-virginia': 'West Virginia', philadelphia: 'Philadelphia', 'new-york': 'New York', 'los-angeles': 'Los Angeles', 'seattle': 'Seattle', 'portland': 'Portland', london: 'London' };
   var PLAT = { instagram: 'Instagram', tiktok: 'TikTok', youtube: 'YouTube', facebook: 'Facebook', podcast: 'a podcast' };
 
   var SVG = '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">';

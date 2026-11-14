@@ -15,7 +15,7 @@ const corsHeaders = {
 const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 
 // The DMV became Washington, D.C., Maryland and Virginia, and North Florida joined (Sean, 2026-10-27; same slugs as /public/ve-hubs.js).
-const VALID_COMMUNITIES = ['atlanta','central-florida','north-florida','washington-dc','delaware','maryland','virginia','west-virginia','london','los-angeles','seattle','new-york','philadelphia','south-florida'];
+const VALID_COMMUNITIES = ['atlanta','central-florida','north-florida','washington-dc','delaware','maryland','virginia','west-virginia','london','los-angeles','seattle','portland','new-york','philadelphia','south-florida'];
 
 // Tenant the Vegans Explore front door writes to (2026-09-09, Sean, Fieldy
 // field note behind dashboard items 5-7). Both signup paths below used to
@@ -517,7 +517,7 @@ function isPlausibleCityName(raw: string): boolean {
 
 const COMMUNITY_DISPLAY: Record<string, string> = {
   'atlanta': 'Atlanta', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', 'washington-dc': 'Washington, D.C.', 'delaware': 'Delaware', 'maryland': 'Maryland', 'virginia': 'Virginia', 'west-virginia': 'West Virginia',
-  'london': 'London', 'los-angeles': 'Los Angeles', 'seattle': 'Seattle', 'new-york': 'New York',
+  'london': 'London', 'los-angeles': 'Los Angeles', 'seattle': 'Seattle', 'portland': 'Portland', 'new-york': 'New York',
   'philadelphia': 'Philadelphia', 'south-florida': 'South Florida',
 };
 
@@ -556,6 +556,10 @@ const CITY_ALIASES: Record<string, string> = {
   'washington-state': 'seattle', 'bellevue': 'seattle', 'redmond': 'seattle', 'kirkland': 'seattle', 'tacoma': 'seattle',
   'lynnwood': 'seattle', 'renton': 'seattle', 'bothell': 'seattle', 'shoreline': 'seattle', 'issaquah': 'seattle',
   'sammamish': 'seattle', 'edmonds': 'seattle', 'federal-way': 'seattle', 'olympia': 'seattle', 'spokane': 'seattle',
+  // portland (all of Oregon; Salem and Medford match only with the state, CITY_STATE_ALIASES; Portland, Maine is kept out in resolveExactCommunity)
+  'oregon': 'portland', 'beaverton': 'portland', 'hillsboro': 'portland', 'gresham': 'portland', 'lake-oswego': 'portland',
+  'tigard': 'portland', 'milwaukie': 'portland', 'tualatin': 'portland', 'happy-valley': 'portland', 'eugene': 'portland',
+  'corvallis': 'portland', 'bend': 'portland',
   // london
   'camden': 'london', 'hackney': 'london', 'brixton': 'london', 'croydon': 'london',
   'greenwich': 'london', 'islington': 'london', 'shoreditch': 'london',
@@ -602,6 +606,10 @@ const CITY_STATE_ALIASES: Record<string, string> = {
   'arlington|washington': 'seattle',
   'long-beach|wa': 'seattle',
   'long-beach|washington': 'seattle',
+  'salem|or': 'portland',
+  'salem|oregon': 'portland',
+  'medford|or': 'portland',
+  'medford|oregon': 'portland',
 };
 
 // City names known to collide across launched-chapter metro areas. When one
@@ -619,7 +627,7 @@ const STATE_QUALIFIERS = new Set([
   'md','ma','mi','mn','ms','mo','mt','ne','nv','nh','nj','nm','ny','nc','nd','oh','ok','or','pa',
   'ri','sc','sd','tn','tx','ut','vt','va','wa','wv','wi','wy','dc',
   'usa','us','uk','gb','england','scotland','wales','united-kingdom','united-states','d-c',
-  'florida','california','georgia','pennsylvania','maryland','virginia','delaware','west-virginia','texas','new-york','washington',
+  'florida','california','georgia','pennsylvania','maryland','virginia','delaware','west-virginia','texas','new-york','washington','oregon',
 ]);
 
 function splitTrailingQualifier(slug: string): { base: string; qualifier: string | null } {
@@ -647,6 +655,8 @@ function stripCitySuffix(slug: string): string | null {
 // it's a known-ambiguous name with no state (or an unrecognized state) to
 // disambiguate it -- safe default is "unlaunched", never a guess.
 function resolveExactCommunity(citySlug: string, stateSlug?: string | null): string | null {
+  // Portland is the Oregon chapter: "Portland, ME" (or any other state) is not it.
+  if (citySlug === 'portland' && stateSlug && !['or', 'oregon'].includes(stateSlug)) return null;
   if (VALID_COMMUNITIES.includes(citySlug)) return citySlug;
 
   if (stateSlug) {

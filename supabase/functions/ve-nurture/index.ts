@@ -59,7 +59,7 @@ const GUIDE_LINE: Record<string, string> = {
   'nonprofit-guide': 'It is ten lessons for people who run Vegan nonprofits, rescues and sanctuaries.' };
 const WHY: Record<string, string> = { food: 'finding Vegan food and places', going: 'going Vegan, or eating more Vegan', vegan: 'your Vegan community', animals: 'helping animals', business: 'your business', creator: 'creating content' };
 const CHAPTER_NAME: Record<string, string> = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', atlanta: 'Atlanta', 'washington-dc': 'Washington, D.C.',
-  delaware: 'Delaware', maryland: 'Maryland', virginia: 'Virginia', 'west-virginia': 'West Virginia', 'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', seattle: 'Seattle', london: 'London' };
+  delaware: 'Delaware', maryland: 'Maryland', virginia: 'Virginia', 'west-virginia': 'West Virginia', 'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', seattle: 'Seattle', portland: 'Portland', london: 'London' };
 
 // ---------- Time, Eastern ----------
 function eastern(d = new Date()) {

@@ -85,6 +85,7 @@ const HUBS: { slug: string; name: string; terms: string[] }[] = [
   { slug: 'philadelphia', name: 'Philadelphia', terms: ['Philadelphia', 'Philly'] },
   { slug: 'los-angeles', name: 'Los Angeles', terms: ['Los Angeles', 'West Hollywood', 'Silver Lake', 'Echo Park', 'Santa Monica', 'Venice Beach', 'Pasadena', 'Burbank', 'Long Beach', 'Culver City', 'Koreatown'] },
   { slug: 'seattle', name: 'Seattle', terms: ['Seattle', 'Bellevue, WA', 'Tacoma', 'Spokane', 'Washington State'] },
+  { slug: 'portland', name: 'Portland', terms: ['Portland, Oregon', 'Eugene', 'Salem, Oregon', 'Bend, Oregon', 'Oregon'] },
   { slug: 'london', name: 'London', terms: ['London'] },
 ];
 const HUB_SLUGS = HUBS.map((h) => h.slug);
@@ -271,7 +272,7 @@ const COVER_PREFIX = `${SUPABASE_URL}/storage/v1/object/public/vegan-media/libra
 const RESEND_KEY = Deno.env.get('RESEND_API_KEY') ?? '';
 // Replies reach Sean: the Vegans Explore inbox and the address the site already sends his notices to.
 const REPLY_TO = ['hello@vegansexplore.com', 'contact@lesaruss.com'];
-const CITY_TZ: Record<string, string> = { 'los-angeles': 'America/Los_Angeles', seattle: 'America/Los_Angeles', london: 'Europe/London' };
+const CITY_TZ: Record<string, string> = { 'los-angeles': 'America/Los_Angeles', seattle: 'America/Los_Angeles', portland: 'America/Los_Angeles', london: 'Europe/London' };
 const tzFor = (city: string | null) => CITY_TZ[city || ''] || 'America/New_York';
 const OUT_COLS = 'id, pulse_id, brand_slug, business_listing_id, contact_name, contact_email, contact_channel, contact_url, contact_source, subject, body, status, sent_at, resend_id, error, reply_note, created_at, updated_at';
 // The wall-clock parts of an instant in a time zone.

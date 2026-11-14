@@ -1436,8 +1436,8 @@
 <script>
   var SUPABASE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
-  var VE_CITY_NAMES = {'atlanta':'ATL Vegans','central-florida':'Central Florida Vegans','north-florida':'North Florida Vegans','washington-dc':'DC Vegans','delaware':'Delaware Vegans','maryland':'Maryland Vegans','virginia':'Virginia Vegans','west-virginia':'West Virginia Vegans','london':'London Vegans','los-angeles':'LA Vegans','seattle':'Seattle Vegans','new-york':'NYC Vegans','philadelphia':'Philly Vegans','south-florida':'South Florida Vegans'};
-  var VE_CITY_BANNER = {'atlanta':'/communities/atlanta/banner.jpg','central-florida':'/communities/central-florida/banner.jpg','washington-dc':'/communities/washington-dc/banner.jpg','maryland':'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/communities/maryland/banner.jpg','virginia':'/communities/virginia/banner.jpg','delaware':'/communities/delaware/banner.jpg','west-virginia':'/communities/west-virginia/banner.jpg','north-florida':'/communities/north-florida/banner.jpg','london':'/communities/london/banner.jpg','los-angeles':'/communities/los-angeles/banner.jpg','seattle':'/communities/seattle/banner.jpg','new-york':'/communities/new-york/banner.jpg','philadelphia':'/communities/philadelphia/banner.jpg','south-florida':'/communities/south-florida/banner.jpg'};
+  var VE_CITY_NAMES = {'atlanta':'ATL Vegans','central-florida':'Central Florida Vegans','north-florida':'North Florida Vegans','washington-dc':'DC Vegans','delaware':'Delaware Vegans','maryland':'Maryland Vegans','virginia':'Virginia Vegans','west-virginia':'West Virginia Vegans','london':'London Vegans','los-angeles':'LA Vegans','seattle':'Seattle Vegans','portland':'Portland Vegans','new-york':'NYC Vegans','philadelphia':'Philly Vegans','south-florida':'South Florida Vegans'};
+  var VE_CITY_BANNER = {'atlanta':'/communities/atlanta/banner.jpg','central-florida':'/communities/central-florida/banner.jpg','washington-dc':'/communities/washington-dc/banner.jpg','maryland':'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/communities/maryland/banner.jpg','virginia':'/communities/virginia/banner.jpg','delaware':'/communities/delaware/banner.jpg','west-virginia':'/communities/west-virginia/banner.jpg','north-florida':'/communities/north-florida/banner.jpg','london':'/communities/london/banner.jpg','los-angeles':'/communities/los-angeles/banner.jpg','seattle':'/communities/seattle/banner.jpg','portland':'/communities/portland/banner.jpg','new-york':'/communities/new-york/banner.jpg','philadelphia':'/communities/philadelphia/banner.jpg','south-florida':'/communities/south-florida/banner.jpg'};
 
   // A listing link (/dashboard/directory/<slug>) opened signed out goes to the public listing page instead.
   function listingSlugFromPath() {
@@ -2837,6 +2837,7 @@
     'london': ['London', 'Camden', 'Hackney', 'Brixton', 'Croydon', 'Greenwich', 'Islington', 'Shoreditch'],
     'los-angeles': ['Los Angeles', 'LA', 'Santa Monica', 'Pasadena', 'Long Beach', 'Burbank', 'Glendale', 'Culver City', 'West Hollywood', 'Venice', 'Inglewood'],
     'seattle': ['Seattle', 'Bellevue', 'Redmond', 'Kirkland', 'Tacoma', 'Everett', 'Lynnwood', 'Renton', 'Bothell', 'Spokane'],
+    'portland': ['Portland', 'Beaverton', 'Hillsboro', 'Gresham', 'Lake Oswego', 'Tigard', 'Milwaukie', 'Salem', 'Eugene', 'Bend'],
     'new-york': ['New York', 'NYC', 'Brooklyn', 'Queens', 'Bronx', 'Manhattan', 'Staten Island', 'Jersey City', 'Hoboken'],
     'philadelphia': ['Philadelphia', 'Philly', 'King of Prussia', 'Norristown', 'Upper Darby'],
     'south-florida': ['Miami', 'Fort Lauderdale', 'South Florida', 'Broward', 'Palm Beach', 'Pompano Beach', 'Boca Raton', 'Hialeah', 'Coral Springs', 'Davie', 'Plantation', 'Sunrise', 'Miramar', 'Pembroke Pines', 'Homestead', 'Aventura', 'Doral', 'Coral Gables', 'Delray Beach', 'Boynton Beach'],
@@ -5208,7 +5209,7 @@
           return;
         }
         scroll.innerHTML = list.map(function (b) {
-          var zone = city === 'london' ? 'Europe/London' : (city === 'los-angeles' || city === 'seattle') ? 'America/Los_Angeles' : 'America/New_York';
+          var zone = city === 'london' ? 'Europe/London' : (city === 'los-angeles' || city === 'seattle' || city === 'portland') ? 'America/Los_Angeles' : 'America/New_York';
           var held = b.mine && b.mine.status !== 'released';
           var at = held ? b.due_at : b.claims_close_at;
           var due = at ? new Date(at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: zone }) : '';
@@ -5260,7 +5261,7 @@
       }).catch(function () {});
   }
 
-  var CM_CITY_NAMES = { 'south-florida': 'South Florida', 'orlando-north-central-florida': 'Orlando and North Central Florida', 'philadelphia': 'Philadelphia', 'new-york': 'New York', 'los-angeles': 'Los Angeles', 'seattle': 'Seattle' };
+  var CM_CITY_NAMES = { 'south-florida': 'South Florida', 'orlando-north-central-florida': 'Orlando and North Central Florida', 'philadelphia': 'Philadelphia', 'new-york': 'New York', 'los-angeles': 'Los Angeles', 'seattle': 'Seattle', 'portland': 'Portland' };
   function renderCmApplication(member) {
     var card = document.getElementById('dash-cm-app-prompt');
     var token = window.VEAuth && VEAuth.getToken();

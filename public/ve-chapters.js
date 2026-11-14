@@ -15,7 +15,7 @@
   if (window.VEChapters) return;
   var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-votes';
   var WHERE = { FL: 'Florida', GA: 'Georgia', DC: 'Washington, D.C.', DE: 'Delaware', MD: 'Maryland', VA: 'Virginia', WV: 'West Virginia',
-    NY: 'New York', PA: 'Pennsylvania', CA: 'California', WA: 'Washington', GB: 'United Kingdom' };
+    NY: 'New York', PA: 'Pennsylvania', CA: 'California', WA: 'Washington', OR: 'Oregon', GB: 'United Kingdom' };
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function token() { try { return window.VEAuth && VEAuth.isLoggedIn() ? VEAuth.getToken() : null; } catch (e) { return null; } }

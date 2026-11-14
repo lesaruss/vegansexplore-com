@@ -30,7 +30,7 @@ function fromB64u(s: string) { const pad = s.length % 4 ? '='.repeat(4 - (s.leng
 const likeEsc = (s: string) => s.replace(/[\\%_]/g, (c) => '\\' + c);
 const WHY = ['food', 'going', 'vegan', 'animals', 'business', 'creator'];
 const JOURNEY = ['curious', 'flexitarian', 'vegetarian', 'new', 'years'];
-const CHAPTERS = ['south-florida', 'central-florida', 'north-florida', 'atlanta', 'washington-dc', 'delaware', 'maryland', 'virginia', 'west-virginia', 'new-york', 'philadelphia', 'los-angeles', 'seattle', 'london', 'elsewhere'];
+const CHAPTERS = ['south-florida', 'central-florida', 'north-florida', 'atlanta', 'washington-dc', 'delaware', 'maryland', 'virginia', 'west-virginia', 'new-york', 'philadelphia', 'los-angeles', 'seattle', 'portland', 'london', 'elsewhere'];
 // The Guide we suggest, from what brought them here and where they are on their journey.
 function suggest(why: string, journey: string) {
   if (why === 'business') return 'vegan-restaurant-guide';

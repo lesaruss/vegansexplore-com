@@ -16,7 +16,7 @@ const SITE = 'https://vegansexplore.com';
 const PAGES = ['/', '/explore', '/passport', '/welcome', '/directory', '/events', '/pulse', '/media', '/guides', '/paths', '/nominate', '/communities',
   '/business', '/policies', '/contact', '/vault'];
 const CHAPTERS = ['south-florida', 'central-florida', 'north-florida', 'atlanta', 'washington-dc', 'delaware', 'maryland', 'virginia',
-  'west-virginia', 'new-york', 'philadelphia', 'los-angeles', 'seattle', 'london'];
+  'west-virginia', 'new-york', 'philadelphia', 'los-angeles', 'seattle', 'portland', 'london'];
 const GUIDES = ['vegan-dairy-guide', 'vegan-restaurant-guide', 'stadium-arena-guide', 'airport-guide', 'nonprofit-guide', 'creator-guide', 'nutrition-guide', 'vegan-events-guide', 'theme-park-guide', 'pre-vegan-business-guide', 'holiday-guide'];
 
 async function all(table, query) {

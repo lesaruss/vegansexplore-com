@@ -187,6 +187,7 @@ const HUBS: Record<string, { name: string; cities?: string[]; states?: string[] 
   atlanta: { name: 'Atlanta', states: ['GA'] }, 'washington-dc': { name: 'Washington, D.C.', states: ['DC'] }, maryland: { name: 'Maryland', states: ['MD'] }, virginia: { name: 'Virginia', states: ['VA'] }, delaware: { name: 'Delaware', states: ['DE'] }, 'west-virginia': { name: 'West Virginia', states: ['WV'] }, 'new-york': { name: 'New York', states: ['NY'] },
   philadelphia: { name: 'Philadelphia', states: ['PA'] }, 'los-angeles': { name: 'Los Angeles', cities: ['Los Angeles','West Hollywood','North Hollywood','Reseda','Canoga Park','Beverly Hills','Burbank','Glendale','Pasadena','Santa Monica','Culver City','Marina del Rey','Long Beach','East Los Angeles','Cerritos','Pomona','Santa Clarita','Fullerton'] },
   seattle: { name: 'Seattle', states: ['WA'] },
+  portland: { name: 'Portland', states: ['OR'] },
   london: { name: 'London', cities: ['London'] },
 };
 function hubOf(l: any): string | null {
