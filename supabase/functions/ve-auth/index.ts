@@ -1652,7 +1652,11 @@ serve(async (req: Request) => {
       if (!isPlausibleCityName(raw)) {
         return new Response(JSON.stringify({ error: 'invalid_city' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       }
-      return new Response(JSON.stringify({ status: 'new', community_slug: slug, display_name: raw }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      // A city that shares a launched chapter's name in another state (Portland, ME beside the Portland chapter) keeps its state in the
+      // slug, so its requests never count toward the chapter (2026-11-14).
+      const split = splitTrailingQualifier(slug);
+      const newSlug = VALID_COMMUNITIES.includes(split.base) ? `${split.base}-${stateSlug || split.qualifier || 'elsewhere'}` : slug;
+      return new Response(JSON.stringify({ status: 'new', community_slug: newSlug, display_name: raw }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
     // ---- Guide front door: join_city -----------------------------------
@@ -1679,7 +1683,8 @@ serve(async (req: Request) => {
       const rawSlug = slugifyCity(rawCity);
       if (!rawSlug) return new Response(JSON.stringify({ error: 'Unrecognized city.' }), { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
       const launchedSlug = resolveLaunchedCommunity(rawSlug, stateSlug);
-      const slug = launchedSlug ?? rawSlug;
+      const rawSplit = splitTrailingQualifier(rawSlug);
+      const slug = launchedSlug ?? (VALID_COMMUNITIES.includes(rawSplit.base) ? `${rawSplit.base}-${stateSlug || rawSplit.qualifier || 'elsewhere'}` : rawSlug);
 
       // 2026-09-06 (Sean stress-test find, defense-in-depth): city_status
       // already rejects gibberish before the client gets here, but this is
