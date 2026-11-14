@@ -127,7 +127,7 @@
           '<span class="vch-av" style="background-image:url(\'' + esc(window.VEImg ? VEImg((h.page && h.page.banner) || '', 160) : ((h.page && h.page.banner) || '')) + '\')" aria-hidden="true"></span>' +
           '<span class="vch-info"><span class="vch-name"><a class="vch-link" href="/communities/' + esc(h.slug) + '">' + esc(h.name) + '</a>' + (on ? ' <span class="vch-mine">Saved</span>' : '') + '</span>' +
           '<span class="vch-meta" style="display:block">' + esc(where) + '</span>' +
-          '<span class="vch-nums">' + (s.places != null ? '<span>' + n(s.places) + ' places</span><span>' + n(s.events) + ' events coming up</span>' +
+          '<span class="vch-nums">' + (s.places != null ? '<span>' + n(s.places) + (s.places === 1 ? ' place' : ' places') + '</span><span>' + n(s.events) + (s.events === 1 ? ' event' : ' events') + ' coming up</span>' +
             (s.members ? '<span>' + n(s.members) + (s.members === 1 ? ' member' : ' members') + '</span>' : '') : '<span>&nbsp;</span>') + '</span></span>' +
           '<span class="vch-right"><span class="vch-count">' + n(v) + '</span>' +
           '<button type="button" class="vch-btn' + (voted ? ' on' : '') + '" data-vch-vote="' + esc(h.slug) + '" aria-label="Vote for ' + esc(h.name) + '">' + (voted ? 'Voted' : (v === 1 ? 'Vote' : 'Votes')) + '</button>' +

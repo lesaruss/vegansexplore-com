@@ -60,7 +60,8 @@ made as (
 insert into public.ad_campaign_placements (campaign_id, placement_id) select made.id, tgt.id from made, tgt;
 
 -- 5. At the opening (on Sean's "open"; not run until then): the local Daily Pulse, the next-chapter board, and the three
---    database functions that list chapters by hand.
+--    database functions that list chapters by hand. ve_chapter_stats (read-only numbers) was run early, 2026-11-14, so the
+--    preview shown to Sean had real counts instead of dashes; its step below then does nothing.
 update public.lesaruss_dispatch_settings set value = jsonb_set(value::jsonb, '{communities}', (value::jsonb->'communities') || '["portland"]'::jsonb)::text
   where key = 'pulse_auto' and not (value::jsonb->'communities') ? 'portland';
 update public.ve_next_chapters set status = 'opened', opened_hub = 'portland' where slug = 'oregon' and status <> 'opened';
