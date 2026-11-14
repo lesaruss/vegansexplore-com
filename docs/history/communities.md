@@ -202,3 +202,21 @@ locations in cities with no chapter). Then "start the Seattle city page", "go wi
 - **Wide city art on every city** (Sean, 2026-11-13: "I would prefer to see the horizontal image... even on mobile"): `VE_HUBS[].page.wide`
   (`communities/<slug>/wide.jpg`, 16:9, 1920 wide) is what the city banner shows first, on every screen; `page.banner` (3:4) stays for the
   chapter cards and dashboards. The 13 older chapters' wide pictures were extended from their banners in Higgsfield (outpaint, city art only).
+
+## Portland, the second Next Level city (2026-11-14)
+
+Sean, 2026-11-14: "open the next Vegans Explore chapters with the Seattle recipe, Portland first", then "open Portland". Fifteen chapters now.
+- **Portland** (slug `portland`, all of Oregon by state OR): 97 listings from the search (`20261114_portland_restaurant_search.sql`, 16 searches,
+  once:portland-restaurants), 32 fully Vegan public and 65 to Being vetted; four then corrected to 100% Vegan from their own websites through
+  `ve-web-reader` (Doe Donuts, Epif, Face Plant, Petunia's). Next Level Veggie Grill's Downtown Portland and Hawthorne were already listed.
+  Chapter `20261114_chapter_portland.sql` (same steps as Seattle; ve_chapter_stats run before opening so the preview had real numbers). Art from
+  `communities/next/oregon`; the 4:5 for the story drawn new in Higgsfield (`communities/portland/tall45.jpg`). Launch post and story
+  `public/chapters/portland/`, `/go/portland-open`, parked in `ve-social-schedule`.
+- **Same-name cities**: `ve-auth` keeps Portland, Maine out of the Oregon chapter (a bare "Portland" or Portland, OR is the chapter; Portland
+  with any other state is filed as `portland-me` etc., never counted toward it). Oregon aliases: Beaverton, Hillsboro, Gresham, Lake Oswego,
+  Tigard, Milwaukie, Tualatin, Happy Valley, Eugene, Corvallis, Bend, and Salem and Medford only with the state.
+- **Compare every live function with main before deploying, line by line, not by date** (the API's updated_at did not move with Seattle's
+  deploys; live ve-hunt had no Seattle at all). Live `ve-auth` held the app's `delete_account` (Apple 5.1.1(v)) from the unmerged branch
+  `claude/elegant-mayer-r6z3p0`; deploying main would have removed it. It is on main now with `20261108_member_delete.sql`. 21 functions
+  deployed through `ve-function-deploy`, every source sha256 matched; proven live at 1440 and 390 beside Los Angeles
+  (`docs/audits/2026-11-14-portland-live-beside-la-*.jpg`).
