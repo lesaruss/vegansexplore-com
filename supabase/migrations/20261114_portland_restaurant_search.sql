@@ -59,3 +59,15 @@ select left(fname, 140), slug, cat, '', '', 'approved', coalesce(p->>'websiteUri
         coalesce(p->>'primaryType', 'none') || '); change them in the listing editor if they are wrong.'))),
   now()
 from h;
+
+-- Checked against the businesses' own websites (ve-web-reader, 2026-11-14): four Google had as Vegan options say they are 100% Vegan.
+-- Doe Donuts ("artisanal vegan donuts and ice creams"), Epif ("Vegan Brunch"), Face Plant ("100% plant-based, 100% vegan"), Petunia's
+-- ("gluten-free & vegan bakery", a bakery, not a restaurant). Sweetpea, Memento Mori, DC Vegetarian, Kure, Darlene's, Harlow, Van Hanh
+-- and Yuan Su did not say so on their home pages and stay in Being vetted.
+update listings set vegan_status = 'fully_vegan',
+  category = case when slug = 'petunia-s-pies-pastries' then 'Bakeries & Cafes' else category end,
+  details = jsonb_set(details, '{admin_notes}', coalesce(details->'admin_notes', '[]'::jsonb) || jsonb_build_array(jsonb_build_object('at', now(), 'by', 'Logan', 'kind', 'note',
+    'text', 'Changed to 100% Vegan on 2026-11-14: the business''s own website says so (read through ve-web-reader).'))),
+  updated_at = now()
+where address_state = 'OR' and crawl_source = 'restaurant-search' and vegan_status = 'vegan_options'
+  and slug in ('doe-donuts-ice-cream', 'epif', 'face-plant', 'petunia-s-pies-pastries');
