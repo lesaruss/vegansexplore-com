@@ -106,7 +106,7 @@ Passport, part 3).
 
 **Claude calls.** On 5.x models give `max_tokens` 16000 and treat any `stop_reason` but `end_turn` as an error; never save half an answer.
 
-**Edge functions.** Before deploying a function from `main`, check that no unmerged branch deployed a newer version (diff live source against the file), and check `ve-outreach` still has `campaignTick`. Large functions deploy through `ve-function-deploy` `{slug, sha}`; confirm the returned source sha256. Type-check (`tsc --noEmit`) before deploying.
+**Edge functions.** Before deploying a function from `main`, check that no unmerged branch deployed a newer version (diff live source against the file), and check `ve-outreach` still has `campaignTick`. Large functions deploy through `ve-function-deploy` `{slug, sha}`; confirm the returned source sha256. Type-check (`tsc --noEmit`) before deploying. **One at a time, then read the live version back** from the Management API (2026-11-14: 21 deploys fired together all answered ok, 14 never went live; canon `canon-ve-chapter-launch` `deploy_one_at_a_time`).
 
 **Google spend** (canon `canon-ve-spend-budget`): a hard $50 a month at list price. A one-time scan is approved with `ve_google_approve('once:<task>', searches, details, note)` and runs only if it fits; report weekly. History: `docs/history/ops.md`.
 
