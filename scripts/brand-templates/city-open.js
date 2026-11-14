@@ -51,6 +51,13 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><base href="${BAS
   await p.goto(BASE + '/mocks/brand-kit/templates', { waitUntil: 'domcontentloaded' });   // same origin, so the fonts and logos load
   await p.setContent(html, { waitUntil: 'networkidle' });
   await p.evaluate(() => document.fonts.ready);
+  // Headlines are always two rows (Sean, 2026-11-10): a long city ("Vegan San Francisco is open") shrinks to 70 percent at most until it
+  // fits in two; a headline still on three rows is refused below.
+  const rows = () => p.evaluate(() => [...document.querySelectorAll('h5')].map((h) => { const c = h.cloneNode(); c.textContent = 'X';
+    h.parentNode.appendChild(c); const one = c.offsetHeight; c.remove(); return Math.round(h.offsetHeight / one); }));
+  await p.evaluate(() => document.querySelectorAll('h5').forEach((h) => { const f0 = parseFloat(getComputedStyle(h).fontSize); let k = 1;
+    const lines = () => { const c = h.cloneNode(); c.textContent = 'X'; h.parentNode.appendChild(c); const one = c.offsetHeight; c.remove(); return Math.round(h.offsetHeight / one); };
+    while (lines() > 2 && k > 0.7) { k -= 0.04; h.style.setProperty('font-size', (f0 * k) + 'px', 'important'); } }));
   // A long name or city: the small type shrinks (to 60 percent at most) until the headline and it fit side by side.
   await p.evaluate(() => {
     const fits = (e) => e.scrollWidth <= e.clientWidth + 1 && e.getBoundingClientRect().right <= e.closest('.fx').getBoundingClientRect().right
@@ -60,6 +67,7 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><base href="${BAS
   });
   const over = await p.evaluate(() => [...document.querySelectorAll('h5,.n,.sl,.fb')].filter((e) => e.scrollWidth > e.clientWidth + 1
     || e.getBoundingClientRect().right > e.closest('.fx').getBoundingClientRect().right).map((e) => e.className || e.tagName));
+  if ((await rows()).some((n) => n > 2)) { console.error('headline over two rows, not written'); await b.close(); process.exit(2); }
   if (over.length) { console.error('text runs over, not written:', over.join(', ')); await b.close(); process.exit(2); }
   await (await p.$('#post')).screenshot({ path: path.join(OUT, 'post.jpg'), type: 'jpeg', quality: 88 });
   await (await p.$('#story')).screenshot({ path: path.join(OUT, 'story.jpg'), type: 'jpeg', quality: 88 });

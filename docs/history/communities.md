@@ -220,3 +220,22 @@ Sean, 2026-11-14: "open the next Vegans Explore chapters with the Seattle recipe
   `claude/elegant-mayer-r6z3p0`; deploying main would have removed it. It is on main now with `20261108_member_delete.sql`. 21 functions
   deployed through `ve-function-deploy`, every source sha256 matched; proven live at 1440 and 390 beside Los Angeles
   (`docs/audits/2026-11-14-portland-live-beside-la-*.jpg`).
+
+## San Francisco, Austin, Denver and Boston, the rest of the Next Level cities (2026-11-14)
+
+Sean, 2026-11-14: "go" on building the four as one batch, then "open them". Nineteen chapters now.
+- **Listings**: 56 searches (`20261114_batch4_restaurant_search.sql`) added 288: San Francisco 127, Boston 67, Denver 51, Austin 43 (95 fully
+  Vegan, 193 to Being vetted). Next Level's six locations there were already listed.
+- **Reach**: San Francisco is the Bay Area by city list in California, Austin is Central Texas by city list (the rest of Texas left for
+  Houston and others), Denver all of Colorado, Boston all of Massachusetts. A city-list chapter now checks the state too: `VE_HUBS`
+  `match {states, cities}`, `ve-claims` `HUBS`, `ve_outreach_cities`, and `ve_chapter_of` (`20261114_chapters_sf_austin_denver_boston.sql`).
+  `ve-auth`: shared town names (Concord, Richmond, Aurora, Cambridge...) map only with the state; `CHAPTER_OWN_STATE` keeps Austin, MN or
+  Boston, GA out (filed as `austin-mn`).
+- **Art**: San Francisco and Austin from `communities/next`; Denver and Boston drawn new in Higgsfield in every shape (16:9 first, then 3:4,
+  1:1 and 4:5 from it); the 4:5 drawn new for all four. Launch posts `public/chapters/<slug>/`, `/go/<slug>-open`, parked in
+  `ve-social-schedule`. `city-open.js` now keeps headlines to two rows (found on "Vegan San Francisco is open").
+- **Bulk deploys did not stick.** The Portland deploy (21 functions fired at once through pg_net) answered ok with matching sha256 for all
+  21, but only 7 stayed live; 14 kept their old versions (as Seattle's had). Deploy one at a time with the synchronous `http` extension
+  and read each live version back from the Management API (canon `canon-ve-chapter-launch` `deploy_one_at_a_time`). All 21 deployed that
+  way from 40cccb8, every version and sha256 confirmed. Proven live at 1440 and 390 beside Los Angeles
+  (`docs/audits/2026-11-14-batch4-live-beside-la-*.jpg`).
