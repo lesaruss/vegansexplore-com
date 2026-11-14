@@ -188,6 +188,10 @@ const HUBS: Record<string, { name: string; cities?: string[]; states?: string[] 
   philadelphia: { name: 'Philadelphia', states: ['PA'] }, 'los-angeles': { name: 'Los Angeles', cities: ['Los Angeles','West Hollywood','North Hollywood','Reseda','Canoga Park','Beverly Hills','Burbank','Glendale','Pasadena','Santa Monica','Culver City','Marina del Rey','Long Beach','East Los Angeles','Cerritos','Pomona','Santa Clarita','Fullerton'] },
   seattle: { name: 'Seattle', states: ['WA'] },
   portland: { name: 'Portland', states: ['OR'] },
+  'san-francisco': { name: 'San Francisco', states: ['CA'], cities: ['San Francisco', 'Oakland', 'Berkeley', 'San Jose', 'Palo Alto', 'Mountain View', 'Santa Clara', 'Sunnyvale', 'Fremont', 'Hayward', 'Walnut Creek', 'Concord', 'San Mateo', 'Redwood City', 'San Rafael', 'Alameda', 'Emeryville', 'Richmond', 'Daly City', 'South San Francisco', 'Burlingame', 'Menlo Park', 'Cupertino', 'Campbell', 'Los Gatos', 'Milpitas', 'Pleasanton', 'Livermore', 'Dublin', 'San Leandro', 'Albany', 'El Cerrito', 'Mill Valley', 'Sausalito', 'Novato', 'Petaluma', 'Santa Rosa', 'Napa', 'Vallejo', 'Danville', 'San Ramon', 'Lafayette', 'Orinda', 'Union City', 'Newark', 'Saratoga', 'Los Altos', 'Half Moon Bay', 'Pacifica', 'San Bruno', 'Millbrae', 'Belmont', 'San Carlos', 'Foster City', 'Pittsburg', 'Antioch', 'Martinez', 'Pleasant Hill', 'Castro Valley', 'Larkspur', 'Corte Madera', 'Fairfax', 'San Anselmo', 'Morgan Hill', 'Gilroy', 'Sebastopol'] },
+  'austin': { name: 'Austin', states: ['TX'], cities: ['Austin', 'Round Rock', 'Cedar Park', 'Pflugerville', 'Georgetown', 'Leander', 'San Marcos', 'Kyle', 'Buda', 'Lakeway', 'Bee Cave', 'Dripping Springs', 'Hutto', 'Manor', 'Bastrop', 'Wimberley', 'New Braunfels', 'Taylor', 'Liberty Hill', 'Lago Vista', 'West Lake Hills', 'Sunset Valley', 'Elgin', 'Lockhart', 'Spicewood', 'Del Valle', 'Canyon Lake'] },
+  'denver': { name: 'Denver', states: ['CO'] },
+  'boston': { name: 'Boston', states: ['MA'] },
   london: { name: 'London', cities: ['London'] },
 };
 function hubOf(l: any): string | null {

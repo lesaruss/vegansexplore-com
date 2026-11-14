@@ -52,7 +52,7 @@ const APPLY_FIELDS: [string, string][] = [
 const APPLY_REQUIRED = ['event_name', 'event_date', 'chapter', 'city', 'kind', 'crowd', 'past', 'vegan', 'venue_vegan', 'why', 'ask', 'booth', 'meals', 'logo', 'host_name', 'host_email'];
 const CHAPTER_WORDS: Record<string, string> = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', atlanta: 'Atlanta',
   'washington-dc': 'Washington, D.C.', maryland: 'Maryland', virginia: 'Virginia', delaware: 'Delaware', 'west-virginia': 'West Virginia', philadelphia: 'Philadelphia',
-  'new-york': 'New York', 'los-angeles': 'Los Angeles', seattle: 'Seattle', portland: 'Portland', london: 'London', other: 'Somewhere else' };
+  'new-york': 'New York', 'los-angeles': 'Los Angeles', seattle: 'Seattle', portland: 'Portland', 'san-francisco': 'San Francisco', 'austin': 'Austin', 'denver': 'Denver', 'boston': 'Boston', london: 'London', other: 'Somewhere else' };
 const GIG_DEFAULTS = { points: 150, slots: 1 };   // Logan's defaults, Sean's to change.
 const SURVEY = 'vegan-events-guide';              // the event survey (ve_surveys); step one of every sponsorship application
 const MONTH_CAP = 2;                              // sponsorships approved a chapter a month (canon)

@@ -70,7 +70,7 @@ const db = createClient(SUPABASE_URL, SERVICE_KEY);
 
 const SITE = 'https://vegansexplore.com';
 const SEAN_EMAIL = 'contact@lesaruss.com';
-const COMMUNITIES = ['south-florida', 'central-florida', 'north-florida', 'atlanta', 'washington-dc', 'delaware', 'maryland', 'virginia', 'west-virginia', 'new-york', 'philadelphia', 'los-angeles', 'seattle', 'portland', 'london'];
+const COMMUNITIES = ['south-florida', 'central-florida', 'north-florida', 'atlanta', 'washington-dc', 'delaware', 'maryland', 'virginia', 'west-virginia', 'new-york', 'philadelphia', 'los-angeles', 'seattle', 'portland', 'san-francisco', 'austin', 'denver', 'boston', 'london'];
 // Hub slug -> ve_partner_cities slug, where the two differ.
 const MANAGER_CITY: Record<string, string> = { 'central-florida': 'orlando-north-central-florida' };
 const LANES: Record<string, { kinds: string[]; categories: string[] }> = {
@@ -98,7 +98,7 @@ const LR_SITE = 'https://lesaruss.ai';
 const HUB_FOR_CITY: Record<string, string> = Object.fromEntries(Object.entries(MANAGER_CITY).map(([hub, city]) => [city, hub]));
 const SCOPE_NAME: Record<string, string> = {
   'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', atlanta: 'Atlanta', 'washington-dc': 'Washington, D.C.', delaware: 'Delaware', maryland: 'Maryland', virginia: 'Virginia', 'west-virginia': 'West Virginia', 'new-york': 'New York',
-  philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', seattle: 'Seattle', portland: 'Portland', london: 'London', national: 'National',
+  philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', seattle: 'Seattle', portland: 'Portland', 'san-francisco': 'San Francisco', 'austin': 'Austin', 'denver': 'Denver', 'boston': 'Boston', london: 'London', national: 'National',
   'lr-ai': 'AI', 'lr-funding': 'Funding', 'lr-marketing': 'Marketing', 'lr-leadership': 'Leadership', 'lr-creators': 'Creators',
   'lr-operations': 'Business operations', 'lr-events': 'Events',
 };

@@ -86,7 +86,7 @@
   ];
   var CHAPTERS = [['south-florida', 'South Florida'], ['central-florida', 'Central Florida'], ['north-florida', 'North Florida'], ['atlanta', 'Atlanta'],
     ['washington-dc', 'Washington, D.C.'], ['delaware', 'Delaware'], ['maryland', 'Maryland'], ['virginia', 'Virginia'], ['west-virginia', 'West Virginia'],
-    ['new-york', 'New York'], ['philadelphia', 'Philadelphia'], ['los-angeles', 'Los Angeles'], ['seattle', 'Seattle'], ['portland', 'Portland'], ['london', 'London'], ['other', 'Somewhere else']];
+    ['new-york', 'New York'], ['philadelphia', 'Philadelphia'], ['los-angeles', 'Los Angeles'], ['seattle', 'Seattle'], ['portland', 'Portland'], ['san-francisco', 'San Francisco'], ['austin', 'Austin'], ['denver', 'Denver'], ['boston', 'Boston'], ['london', 'London'], ['other', 'Somewhere else']];
 
   // The tabs, in tour order, and what River says on each (text drafts for Sean; no recordings yet). `say` is for visitors (why get it),
   // `sayMember` walks an owner through what they have.

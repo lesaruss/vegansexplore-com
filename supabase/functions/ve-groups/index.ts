@@ -43,11 +43,15 @@ const CENTERS: Record<string, [number, number][]> = {
   'los-angeles': [[34.05, -118.24]],
   'seattle': [[47.61, -122.33], [47.25, -122.44], [47.66, -117.43]],
   'portland': [[45.52, -122.68], [44.05, -123.09], [44.06, -121.31]],
+  'san-francisco': [[37.77, -122.42], [37.80, -122.27], [37.34, -121.89]],
+  'austin': [[30.27, -97.74], [30.51, -97.68], [29.88, -97.94]],
+  'denver': [[39.74, -104.99], [40.01, -105.27], [38.83, -104.82], [40.59, -105.08]],
+  'boston': [[42.36, -71.06], [42.27, -71.80], [42.10, -72.59]],
   'london': [[51.51, -0.13]],
 };
 const CHAPTER_STATE: Record<string, string | null> = {
   'south-florida': 'FL', 'central-florida': 'FL', 'north-florida': 'FL', 'atlanta': 'GA', 'washington-dc': 'DC', 'maryland': 'MD', 'virginia': 'VA',
-  'delaware': 'DE', 'west-virginia': 'WV', 'new-york': 'NY', 'philadelphia': 'PA', 'los-angeles': 'CA', 'seattle': 'WA', 'portland': 'OR', 'london': null,
+  'delaware': 'DE', 'west-virginia': 'WV', 'new-york': 'NY', 'philadelphia': 'PA', 'los-angeles': 'CA', 'seattle': 'WA', 'portland': 'OR', 'san-francisco': 'CA', 'austin': 'TX', 'denver': 'CO', 'boston': 'MA', 'london': null,
 };
 // A Meetup group counts only when it is about Vegan or plant-based living by its own name or description.
 const VEG = /\bvegan|plant[- ]?based|\bveg\*?n\b|vegetarian|\bveggie|\bveg\b|\bvegfest|cruelty[- ]free|animal rights/i;

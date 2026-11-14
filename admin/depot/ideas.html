@@ -298,7 +298,7 @@
       }
 
       // Send to (branddesk-production-wing M, 2026-11-08): drafts only, Sean approves each one.
-      var CH_NAMES = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', atlanta: 'Atlanta', 'washington-dc': 'Washington, D.C.', delaware: 'Delaware', maryland: 'Maryland', virginia: 'Virginia', 'west-virginia': 'West Virginia', 'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', 'seattle': 'Seattle', 'portland': 'Portland', london: 'London' };
+      var CH_NAMES = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', atlanta: 'Atlanta', 'washington-dc': 'Washington, D.C.', delaware: 'Delaware', maryland: 'Maryland', virginia: 'Virginia', 'west-virginia': 'West Virginia', 'new-york': 'New York', philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', 'seattle': 'Seattle', 'portland': 'Portland', 'san-francisco': 'San Francisco', 'austin': 'Austin', 'denver': 'Denver', 'boston': 'Boston', london: 'London' };
       function chName(c) { return c === 'all' ? 'Every chapter' : (CH_NAMES[c] || c); }
       function dayName(d) { return new Date(d + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }); }
       function chSel(id, cur, list) { return '<select id="' + id + '" aria-label="Chapter">' + ['all'].concat(list).map(function (c) { return '<option value="' + c + '"' + (c === cur ? ' selected' : '') + '>' + esc(chName(c)) + '</option>'; }).join('') + '</select>'; }

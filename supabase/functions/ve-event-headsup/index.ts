@@ -38,7 +38,7 @@ const isId = (v: unknown) => typeof v === 'string' && /^[0-9a-f-]{36}$/i.test(v)
 const isEmail = (v: unknown) => typeof v === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
 const CHAPTER_NAME: Record<string, string> = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', atlanta: 'Atlanta',
   'washington-dc': 'Washington, D.C.', delaware: 'Delaware', maryland: 'Maryland', virginia: 'Virginia', 'west-virginia': 'West Virginia', 'new-york': 'New York',
-  philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', seattle: 'Seattle', portland: 'Portland', london: 'London' };
+  philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', seattle: 'Seattle', portland: 'Portland', 'san-francisco': 'San Francisco', 'austin': 'Austin', 'denver': 'Denver', 'boston': 'Boston', london: 'London' };
 
 function eastern(d = new Date()) {
   const p = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', weekday: 'short', hour12: false })

@@ -13,7 +13,7 @@
   var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-pulse-subscribe';
   var CITIES = [['south-florida', 'South Florida'], ['central-florida', 'Central Florida'], ['north-florida', 'North Florida'], ['atlanta', 'Atlanta'],
     ['washington-dc', 'Washington, D.C.'], ['delaware', 'Delaware'], ['maryland', 'Maryland'], ['virginia', 'Virginia'], ['west-virginia', 'West Virginia'],
-    ['new-york', 'New York'], ['philadelphia', 'Philadelphia'], ['los-angeles', 'Los Angeles'], ['seattle', 'Seattle'], ['portland', 'Portland'], ['london', 'London']];
+    ['new-york', 'New York'], ['philadelphia', 'Philadelphia'], ['los-angeles', 'Los Angeles'], ['seattle', 'Seattle'], ['portland', 'Portland'], ['san-francisco', 'San Francisco'], ['austin', 'Austin'], ['denver', 'Denver'], ['boston', 'Boston'], ['london', 'London']];
   var MAX = 3, THIRTY_DAYS = 30 * 864e5;
   function ls(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) {} return null; }
   function ss(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); sessionStorage.setItem(k, v); } catch (e) {} return null; }

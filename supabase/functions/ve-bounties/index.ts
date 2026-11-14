@@ -57,13 +57,13 @@ const db = createClient(SUPABASE_URL, SERVICE_KEY);
 
 const SITE = 'https://vegansexplore.com';
 const BUCKET = 've-bounty-uploads';
-const COMMUNITIES = ['south-florida', 'central-florida', 'north-florida', 'atlanta', 'washington-dc', 'delaware', 'maryland', 'virginia', 'west-virginia', 'new-york', 'philadelphia', 'los-angeles', 'seattle', 'portland', 'london'];
+const COMMUNITIES = ['south-florida', 'central-florida', 'north-florida', 'atlanta', 'washington-dc', 'delaware', 'maryland', 'virginia', 'west-virginia', 'new-york', 'philadelphia', 'los-angeles', 'seattle', 'portland', 'san-francisco', 'austin', 'denver', 'boston', 'london'];
 // A test city only superadmins see, for trying a campaign end to end. Never listed for members, and a
 // sandbox host is never featured.
 const SANDBOX = 'sandbox';
 const cityOk = (v: { admin: boolean } | null, c: string) => COMMUNITIES.includes(c) || (c === SANDBOX && !!v?.admin);
 const HUB_FOR_CITY: Record<string, string> = { 'orlando-north-central-florida': 'central-florida' };
-const TZ: Record<string, string> = { london: 'Europe/London', 'los-angeles': 'America/Los_Angeles', seattle: 'America/Los_Angeles', portland: 'America/Los_Angeles' };
+const TZ: Record<string, string> = { london: 'Europe/London', 'los-angeles': 'America/Los_Angeles', seattle: 'America/Los_Angeles', portland: 'America/Los_Angeles', 'san-francisco': 'America/Los_Angeles', 'austin': 'America/Chicago', 'denver': 'America/Denver', 'boston': 'America/New_York' };
 const MAX_FILES = 120;
 const MAX_BYTES = 2 * 1024 * 1024 * 1024;
 const HOUR = 3600 * 1000, DAY = 24 * HOUR;
