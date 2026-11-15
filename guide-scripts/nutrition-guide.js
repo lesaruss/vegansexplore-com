@@ -406,7 +406,43 @@
   // certified. We could put the T. Colin Campbell course on there as well and find other plant-based courses"). Each one checked on the
   // provider's own page (date in `checked`); open to everyone; the one button goes to the provider. Not an endorsement (the note says so).
   var COURSE_SUBS = [['All', ''], ['Nutrition', 'nutrition'], ['Cooking', 'cooking'], ['Coaching', 'coaching']];
-  var COURSES = [];
+  // Read through ve-web-reader 2026-11-15 (Sean approved adding these pages to the reader). `until`: a dated event drops off after that day.
+  var COURSES = [
+    { kind: 'nutrition', by: 'T. Colin Campbell Center for Nutrition Studies', title: 'Plant-Based Nutrition Certificate', href: 'https://nutritionstudies.org/courses/plant-based-nutrition/',
+      desc: 'The T. Colin Campbell Center\'s online certificate in the science of whole-food, plant-based eating, in three parts: Nutrition and Society, Nutrition and Chronic Disease, and Plant-Based in Practice.',
+      earn: 'A certificate. Continuing education credits for health professionals and coaches are an extra $125.', format: 'Online, on demand, at your own pace', length: '15 modules, 50+ hours plus assignments', price: '$949, or 4 monthly payments of $237.25' },
+    { kind: 'coaching', by: 'Food Revolution Network', title: 'Free Nutrition & Lifestyle Coaching Workshop', href: 'https://certificate.foodrevolution.org/workshop/', until: '2026-11-19',
+      desc: 'A free three-part live workshop from Food Revolution Network on becoming a nutrition and lifestyle coach.',
+      earn: 'Free; no certificate', format: 'Live online, 9 AM PT / 12 PM ET each day; replays available', length: 'November 17 to 19, 2026, about three hours a day', price: 'Free' },
+    { kind: 'coaching', by: 'Food Revolution Network', title: 'Nutrition & Lifestyle Coaching Certificate', href: 'https://certificate.foodrevolution.org/',
+      desc: 'Food Revolution Network\'s coaching certificate trains coaches to guide people toward plant-forward eating and lasting lifestyle change, with a final exam to become a certified coach.',
+      earn: 'Food Revolution Network-Certified Nutrition & Lifestyle Coach', format: '100% online and self-paced, with a year of live support', length: 'About 53 hours of required lessons, plus optional ones', price: '$3,997, or 6 payments of $674, or 12 payments of $349' },
+    { kind: 'coaching', by: 'Physicians Committee for Responsible Medicine', title: 'Food for Life Nutrition and Cooking Instructor Training', href: 'https://www.pcrm.org/good-nutrition/plant-based-diets/ffl/become-an-instructor',
+      desc: 'The Physicians Committee trains instructors to teach Food for Life plant-based nutrition and cooking classes in person and online in their own communities.',
+      earn: 'Licensed Food for Life instructor', format: 'Online, self-paced, with weekly required live Zoom sessions', length: '8 weeks. Spring 2027: April 20 to June 15', price: '$1,099 (institutions $1,349)',
+      tip: 'Apply by Dec. 28 for early acceptance, or Jan. 18.' },
+    { kind: 'nutrition', by: 'Physicians Committee for Responsible Medicine', title: 'Nutrition for Clinicians', href: 'https://www.pcrm.org/good-nutrition/nutrition-for-clinicians',
+      desc: 'Free online continuing education from the Physicians Committee on nutrition for doctors, nurses, health coaches and other clinicians, with free CME credits from select chapters.',
+      earn: 'Free continuing education credits from select chapters', format: 'Online', length: 'Course by course', price: 'Free' },
+    { kind: 'nutrition', by: 'The Plantrician Project', title: 'Plant-Based Nutrition Certificate', href: 'https://plantricianproject.org/plant-based-nutrition-certificate',
+      desc: 'The Plantrician Project\'s self-paced certificate in plant-based nutrition, made for health ambassadors, fitness coaches and anyone who wants the science.',
+      earn: 'A certificate', format: 'Online, self-paced, with self-check quizzes', length: '8 modules, over 10 hours', price: 'Not listed on the course page' },
+    { kind: 'cooking', by: 'Rouxbe', title: 'Professional Plant-Based Certification', href: 'https://rouxbe.com/site/plant-based-certification-course/',
+      desc: 'Rouxbe\'s online course trains cooks and food professionals in plant-based cooking technique, from stocks and grains to a final assessment.',
+      earn: 'Certificate of Completion', format: 'Online video lessons, lifetime access', length: 'At your own pace', price: '$1,999' },
+    { kind: 'cooking', by: 'Auguste Escoffier School of Culinary Arts', title: 'Online Plant-Based Culinary Arts Diploma', href: 'https://www.escoffier.edu/plant-based-programs/',
+      desc: 'Escoffier\'s online plant-based diploma trains professional plant-based cooks and sends each student to a real kitchen for a hands-on industry externship.',
+      earn: 'A diploma; its credits carry over to the associate degree', format: '100% online with one industry externship', length: '60 weeks', price: '$24,688' },
+    { kind: 'cooking', by: 'Auguste Escoffier School of Culinary Arts', title: 'Online Associate Degree in Plant-Based Culinary Arts', href: 'https://www.escoffier.edu/plant-based-programs/',
+      desc: 'Escoffier\'s plant-based associate degree covers everything in the diploma plus business skills, with two industry externships.',
+      earn: 'An associate degree', format: '100% online with two industry externships', length: '84 weeks', price: '$37,305' },
+    { kind: 'cooking', by: 'Institute of Culinary Education (Natural Gourmet Center)', title: 'Health-Centered Culinary Arts', href: 'https://www.ice.edu/campus-programs/health-centered-culinary-arts',
+      desc: 'ICE\'s Natural Gourmet Center trains chefs to cook innovative, plant-forward food in its New York and Los Angeles kitchens.',
+      earn: 'A diploma, or an associate degree', format: 'In person in New York or Los Angeles', length: 'Diploma in as little as 8 months, degree in as little as 15', price: 'Not listed on the program page' },
+    { kind: 'cooking', by: 'Institute of Culinary Education (Natural Gourmet Center)', title: 'Online Health-Centered Culinary Arts & Food Operations', href: 'https://www.ice.edu/online-programs/health-centered-culinary-arts',
+      desc: 'The online version of ICE\'s health-centered, plant-forward culinary program, taught by chefs from its New York and Los Angeles campuses, with an externship.',
+      earn: 'A diploma', format: 'Online, with an externship', length: '16 months, about 18 hours a week', price: 'Not listed on the program page' }
+  ].filter(function (c) { return !c.until || new Date(c.until + 'T23:59:59-05:00') >= new Date(); });
   function viewCourses(sub) {
     var kind = String(sub || '').split('/')[0], cur = COURSE_SUBS.filter(function (x) { return x[1] === kind; })[0] || COURSE_SUBS[0];
     var t = toggles(COURSE_SUBS.map(function (x) { return [x[0], '#/courses' + (x[1] ? '/' + x[1] : '')]; }), cur[0]);
