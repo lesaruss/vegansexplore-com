@@ -51,7 +51,7 @@ const extra = `
   .plate .p{font-size:var(--pf,42px);font-weight:900;line-height:1.08;letter-spacing:-.02em}
   .plate .p i{font-style:normal;color:var(--pink)}
   .hero{flex-direction:row;align-items:center;gap:40px;padding:48px}
-  .hgd{height:auto;width:560px;aspect-ratio:4/5}
+  .hgd{height:auto;width:620px;aspect-ratio:4/5}
   .hcol{flex:1;display:flex;flex-direction:column;gap:14px;align-items:flex-start}
   .hcol .pill{background:var(--dk);color:#fff;font-size:24px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;padding:14px 18px;border-radius:8px;margin-bottom:14px;line-height:1.2}
   .hcol b{font-size:var(--hf,50px);font-weight:900;line-height:1;letter-spacing:-.03em;color:var(--ink);background:#fff;border:5px solid var(--ink);border-radius:10px;padding:14px 18px;box-shadow:8px 8px 0 var(--ink)}
@@ -68,7 +68,7 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><base href="${BAS
   await p.evaluate(() => {
     document.querySelectorAll('.plate').forEach((pl) => { let f = 46; const fits = () => [...pl.querySelectorAll('.p')].every((e) => e.scrollWidth <= e.clientWidth + 1) && pl.scrollHeight <= pl.clientHeight + 1;
       pl.style.setProperty('--pf', f + 'px'); while (f > 24 && !fits()) { f -= 1; pl.style.setProperty('--pf', f + 'px'); } });
-    document.querySelectorAll('.hcol').forEach((c) => { let f = 54; const fits = () => [...c.querySelectorAll('b')].every((e) => e.getBoundingClientRect().right <= c.closest('.pa').getBoundingClientRect().right - 40);
+    document.querySelectorAll('.hcol').forEach((c) => { let f = 54; const fits = () => [...c.querySelectorAll('b')].every((e) => e.getBoundingClientRect().right <= c.closest('.pa').getBoundingClientRect().right - 58);
       c.style.setProperty('--hf', f + 'px'); while (f > 28 && !fits()) { f -= 1; c.style.setProperty('--hf', f + 'px'); } });
   });
   const bad = await p.evaluate(() => {
