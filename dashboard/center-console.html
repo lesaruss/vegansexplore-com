@@ -359,6 +359,7 @@
   @media (max-width:1100px){.rev-body{grid-template-columns:1fr;}}
   @media (max-width:760px){.rev-tiles{grid-template-columns:repeat(2,minmax(0,1fr));}.rev-tile b{font-size:21px;}}
   /* Recent activity (Sean, 2026-10-30): every feed the same size, the latest 100 scrolling inside the box. */
+  #dash-profile-section:not(.dash-laid){visibility:hidden;}
   #dash-recent{margin-bottom:28px;}
   /* Your tiles and Recent activity first (Sean, 2026-11-10, approved mock /mocks/dashboard). */
   #dash-recent .dash-preview-grid{grid-template-columns:repeat(4,minmax(0,1fr));}
@@ -4451,8 +4452,12 @@
       sub: top ? 'Your most used &middot; search every Depot page' : 'Search every Depot page, admin page and demo' });
   }
   function dashTilesLayout() { clearTimeout(dlTimer); dlTimer = setTimeout(dashLayoutNow, 60); }
+  // The Dashboard tab stays hidden until its first full layout (tiles built, Recent activity in place), so it never shows the plain rows
+  // first and then rearranges (Sean, 2026-11-15: "it starts off on the old version of the dashboard and then changes"); 4 s at most.
+  setTimeout(function () { var s0 = document.getElementById('dash-profile-section'); if (s0) s0.classList.add('dash-laid'); }, 4000);
   function dashLayoutNow() {
     var sec = document.getElementById('dash-profile-section'), wrap = document.getElementById('dash-tiles-wrap'), grid = document.getElementById('dash-tiles');
+    if (sec && window.__dashReady) setTimeout(function () { sec.classList.add('dash-laid'); }, 0);
     if (!sec || !wrap || !grid) return;
     var recent = document.getElementById('dash-recent'), sa = !!(recent && !recent.hidden), biz = DASH_BIZ.length > 0;
     sec.classList.toggle('dash-tiled-sa', sa);
@@ -4956,6 +4961,9 @@
       // Community Board and Guides left (the Daily Pulse and Guides are in the menu).
       ['dash-tools-title', 'dash-tools-bar', 'dash-tools-cats', 'dash-tools-none'].forEach(function (id) { var x = document.getElementById(id); if (x) x.hidden = true; });
       host.innerHTML = '';
+      // The Recent activity choices on phones answer taps for super admins too (Sean, 2026-11-15: "it's stuck on inbox"; this early
+      // return used to skip dashWatch, so the chips were drawn but never listened).
+      window.__dashReady = true; dashWatch(); dashTilesLayout();
       return;
     }
     ['dash-tools-title', 'dash-tools-bar'].forEach(function (id) { var x = document.getElementById(id); if (x) x.hidden = false; });
@@ -4976,7 +4984,7 @@
     var access = memberTools(member, false);
     var first = DASH_TOOLS_FIRST[DASH_VERSION] || [], rank = function (c) { var i = first.indexOf(c.title); return i < 0 ? 99 : i; };
     renderToolGrid(grid, access.map(function (c, i) { return [rank(c), i, c]; }).sort(function (a, b) { return a[0] - b[0] || a[1] - b[1]; }).map(function (x) { return x[2]; }));
-    dashWatch(); dashTilesLayout();
+    window.__dashReady = true; dashWatch(); dashTilesLayout();
   }
 
   function renderDirectory(member) {

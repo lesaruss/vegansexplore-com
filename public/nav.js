@@ -29,6 +29,20 @@ window.VEImg = window.VEImg || function (u, w) {
   window.__veLookLoad = true;
   var s = document.createElement('script'); s.src = '/public/ve-look.js?v=3'; s.setAttribute('blocking', 'render');
   (document.head || document.documentElement).appendChild(s);
+  // iPhone Safari does not hold the first paint for blocking="render", so a page showed the old look and then switched (Sean, 2026-11-15,
+  // on the dashboard). Where the browser lacks it, the page stays invisible until /public/ve-look.css has loaded, 1.5 s at most.
+  try {
+    var lookOff = false; try { lookOff = localStorage.getItem('ve_look') === 'off' || /[?&]look=off\b/.test(location.search); } catch (e) {}
+    if (!lookOff && window.HTMLLinkElement && !('blocking' in HTMLLinkElement.prototype)) {
+      var de = document.documentElement, st = document.createElement('style');
+      st.textContent = 'html.ve-look-wait body{opacity:0!important}';
+      (document.head || de).appendChild(st); de.classList.add('ve-look-wait');
+      var done = function () { de.classList.remove('ve-look-wait'); };
+      document.addEventListener('load', function (e) { if (e.target && e.target.id === 've-look-css') done(); }, true);
+      document.addEventListener('error', function (e) { if (e.target && e.target.id === 've-look-css') done(); }, true);
+      setTimeout(done, 1500);
+    }
+  } catch (e) {}
 })();
 
 /* ---- Installable website (playbook ve-mobile-app, step D, 2026-11-07) ----

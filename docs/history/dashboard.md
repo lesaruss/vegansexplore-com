@@ -249,3 +249,11 @@ client services $6,500 from 40 payments; Vegans Explore $6,416.02 all time from 
 how to tell Brooke), and the CPA's answers. Proven live
 2026-11-02 as Sean through a one-time function (`ve-once-rev-proof`, now the 410 stub): $12,916.02 all time from 97 payments, $2,358
 this year, $11 today; cached 0.3 s; a member who is not a super admin refused (403).
+
+**Stuck on Inbox, and the flash (2026-11-15)** (Sean: "it starts off on the old version of the dashboard and then changes to the new version...
+when I go to select... recent members, recent votes, recent leads, it's stuck on inbox"): on phones the Recent activity boxes are chips; the
+super admin branch of `renderDashboardPreviews` returned before `dashWatch()`, so the chips never listened. Both paths now call it. The Dashboard
+tab (`#dash-profile-section`) stays hidden until its first full layout (`window.__dashReady`, `dash-laid`, 4 s at most), so it no longer shows
+the plain rows and then rearranges. Site-wide, `nav.js` keeps a page invisible until `/public/ve-look.css` loads where the browser does not
+support `blocking="render"` (iPhone Safari; 1.5 s at most), so no page paints in the old look first. Checked locally with Chromium made to lack
+`blocking` (hidden until the CSS, then shown) and as itself (no wait); not yet seen signed in as a super admin.
