@@ -1,0 +1,6 @@
+{ "shots": [
+ { "color": "dk", "label": "Vegans Explore, in 30 seconds", "head": "Meet Vegans<br><span style=\"color:var(--br)\">Explore</span>", "art": "art/r1-hook.jpg", "z0": 1.22, "z1": 1.0, "fx": 0.45, "fy": 0.15 },
+ { "color": "dk", "label": "The Directory", "head": "Vegan places<br>near you", "art": "art/r2-directory.jpg", "z0": 1.0, "z1": 1.16, "fx": 0.5, "fy": 0.1 },
+ { "color": "dk", "label": "Every listing", "head": "Every place,<br>its own page", "art": "art/r3-listing.jpg", "z0": 1.0, "z1": 1.16, "fx": 0.6, "fy": 0.05 },
+ { "color": "or", "label": "Events", "head": "Vegan events<br>in your city", "art": "art/r4-events.jpg", "z0": 1.0, "z1": 1.16, "fx": 0.6, "fy": 0.1 }
+] }

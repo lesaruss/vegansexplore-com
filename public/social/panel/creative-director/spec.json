@@ -1,0 +1,9 @@
+{"slides":[
+{"kind":"cover","art":"public/social/panel/creative-director/art/cover.jpg","color":"dk","head":"What is Vegans<br><span style=\"color:var(--br)\">Explore</span>?"},
+{"kind":"inside","art":"public/social/panel/creative-director/art/directory.jpg","color":"dk","head":"Vegan places<br>near you"},
+{"kind":"inside","art":"public/social/panel/creative-director/art/listing.jpg","color":"dk","head":"Every place,<br>its own page"},
+{"kind":"inside","art":"public/social/panel/creative-director/art/events.jpg","color":"or","head":"Vegan events<br>in your city"},
+{"kind":"inside","art":"public/social/panel/creative-director/art/guides.jpg","color":"pink","head":"Guides for<br>every step"},
+{"kind":"inside","art":"public/social/panel/creative-director/art/community.jpg","color":"md","head":"Your Vegan<br>community"},
+{"kind":"end","city":"communities/new-york/wide.jpg","head":"Become a<br><span>Founding Member</span>","line":"Free. Join by midnight Eastern, January 1.","button":"Join free"}
+]}

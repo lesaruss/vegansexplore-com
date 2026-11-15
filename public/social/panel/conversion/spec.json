@@ -1,0 +1,8 @@
+{ "slides": [
+ { "kind": "cover", "art": "art/cover.jpg", "color": "dk", "head": "Everything Vegan,<br><span style=\"color:var(--br)\">near you. Free.</span>" },
+ { "kind": "inside", "art": "art/directory.jpg", "color": "dk", "head": "Food, causes<br>and people" },
+ { "kind": "inside", "art": "art/listing.jpg", "color": "dk", "head": "Menus, votes<br>and check-ins" },
+ { "kind": "inside", "art": "art/events.jpg", "color": "or", "head": "Vegan events<br>near you" },
+ { "kind": "inside", "art": "art/community.jpg", "color": "md", "head": "Your city's<br>Vegan hub" },
+ { "kind": "end", "city": "communities/new-york/wide.jpg", "head": "Join free, be a<br><span>Founding Member</span>", "line": "Before midnight Eastern, January 1. It stays on your profile for good.", "button": "Join free: link in bio" }
+]}
