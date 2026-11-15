@@ -106,6 +106,57 @@
   var HEART = '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.1 4.3 2.4.7-1.3 2.2-2.4 4.3-2.4 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg>';
   var BOOKMARK = '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 3h12a1 1 0 011 1v17l-7-4.5L5 21V4a1 1 0 011-1z"/></svg>';
 
+  // ---------- the Welcome Guide's shapes (Sean, 2026-11-15: "it doesn't have a lot of visuals... it still looks kind of like the old format"):
+  // the Overview's Getting started card and picture rows, each section's How to use this page card and one call to action, Theo's own
+  // scene on every page (the locked scene recipe), the numbered dropdown for more than five tabs. Copied from guide-scripts/food-photographer-guide.js.
+  var NPIC = '/public/guides/nutrition/';
+  var SCENE = { overview: 'theo-overview.jpg', nutrients: 'theo-nutrients.jpg', plate: 'theo-plate.jpg', supplements: 'theo-supplements.jpg',
+    experts: 'theo-experts.jpg', courses: 'theo-courses.jpg', pulse: 'theo-pulse.jpg' };
+  var CARD = { overview: 'card-overview.jpg', nutrients: 'scene-market.webp', plate: 'scene-plate.webp', supplements: 'card-supplements.jpg',
+    experts: 'card-experts.jpg', courses: 'card-courses.jpg', pulse: 'scene-podcast.webp' };
+  var PAGE = {
+    nutrients: { title: 'Eight nutrients, one at a time', how: '<b>Start with vitamin B12.</b> Tap a nutrient to see how much you need, the foods that have it, when a supplement makes sense, and a short checklist for this week. Save the ones you are working on.',
+      go: ['Start with B12', '#/nutrients/b12'], cta: ['Next: Your plate', '#/plate'], ctaT: 'Put it on your plate.', ctaX: 'Turn the eight nutrients into one simple plate at every meal.' },
+    plate: { title: 'One plate, every meal', how: '<b>Half vegetables and fruit, a quarter whole grains, a quarter plant protein.</b> Use the picture at every meal and tick off the every-day list. No counting.',
+      go: ['See the every-day list', '#/plate'], cta: ['Next: Supplements', '#/supplements'], ctaT: 'Cover the rest with a supplement.', ctaX: 'What most Vegans take, and what to look for on the label.' },
+    supplements: { title: 'What to take, and what to look for', how: '<b>Most Vegans take B12, and many take vitamin D, an algae omega-3 or iodine.</b> Read what to check on the label, then look at the brands in our Directory. Members vote for the ones they trust.',
+      go: ['See the brands', '/directory?tab=products&sub=nutrition-and-supplements'], cta: ['Next: Experts', '#/experts'], ctaT: 'Ask someone who knows.', ctaX: 'Physicians and dietitians from our shows, and health professionals near you.' },
+    experts: { title: 'Find someone to ask', how: '<b>Hear a physician or a dietitian on our shows first, then find one near you.</b> Switch between On our shows and Near you, and pick your chapter.',
+      go: ['Find one near you', '#/experts/pros'], cta: ['Next: Courses', '#/courses'], ctaT: 'Want to go deeper?', ctaX: 'Plant-based nutrition, cooking and coaching courses and certificates.' },
+    courses: { title: 'Learn more, or make it your work', how: '<b>Pick Nutrition, Cooking or Coaching at the top.</b> Each course shows what you earn, how long it takes and what it costs, and the button goes to the school\'s own page to sign up.',
+      go: ['See the free workshop', '#/courses/coaching'], cta: ['Next: The Pulse', '#/pulse'], ctaT: 'Hear it from the experts.', ctaX: 'Our episodes with physicians and health experts, played right here.' },
+    pulse: { title: 'Listen to the experts', how: '<b>Play any episode right here.</b> Physicians and health experts from our shows, on food and health. Members vote for the ones that helped them most.',
+      go: ['Hear the physicians', '#/pulse'], cta: ['Back to the Overview', '#/'], ctaT: 'You have the whole map.', ctaX: 'Nutrients, your plate, supplements, experts, courses and the Pulse, all in one Guide.' }
+  };
+  function npic(f) { return NPIC + f; }
+  function howTo(k) {
+    var o = PAGE[k]; if (!o) return '';
+    return '<section class="wg-gs" aria-label="How to use this page"><span class="wg-gs-pic"><img src="' + npic(CARD[k]) + '" alt="" decoding="async" width="640" height="640"></span>' +
+      '<div class="wg-gs-b"><div class="vgi-k">How to use this page</div><h3 class="wg-gs-t">' + esc(o.title) + '</h3><p>' + o.how + '</p>' +
+      '<div class="wg-gs-btns"><a class="dg-btn" href="' + esc(o.go[1]) + '">' + esc(o.go[0]) + '</a></div></div></section>';
+  }
+  function ctaCard(k) {
+    var o = PAGE[k]; if (!o) return '';
+    if (window.VEExplorerCard) VEExplorerCard.html({}); // loads the card's styles, as welcome-guide.js does
+    var go = k === 'pulse' && !member() ? ['Get the whole Guide', '#/join'] : o.cta;
+    return '<section class="vxc" aria-label="' + esc(go[0]) + '"><div class="vxc-b"><div class="vxc-k">See it for yourself</div><h3>' + esc(o.ctaT) + '</h3><p>' + esc(o.ctaX) + '</p></div>' +
+      '<a class="vxc-go" href="' + esc(go[1]) + '">' + esc(go[0]) + '</a></section>';
+  }
+  function artRow(picUrl, title, txt, link, more) {
+    return '<li class="wg-art"><a href="' + esc(link) + '" tabindex="-1" aria-hidden="true"><span class="wg-art-img" style="background-image:url(&quot;' + esc(picUrl) + '&quot;)"></span></a>' +
+      '<div><a class="wg-art-t" href="' + esc(link) + '">' + esc(title) + '</a><p>' + esc(txt) + '</p><a class="wg-art-more" href="' + esc(link) + '">' + esc(more || 'Open') + ' &rsaquo;</a></div></li>';
+  }
+  // A section's list view gets the crumb, the How to use this page card under its title, and one call to action at the end.
+  function dressSection(k) {
+    if (!PAGE[k]) return;
+    var h = main.querySelector('.dg-head'); if (!h) return;
+    var after = h.nextElementSibling && h.nextElementSibling.classList.contains('dg-lede') ? h.nextElementSibling : h;
+    after.insertAdjacentHTML('afterend', howTo(k));
+    h.insertAdjacentHTML('beforebegin', crumb([[tab(k).label]]));
+    var n = main.querySelector('.nt-note'), c = ctaCard(k);
+    if (n) n.insertAdjacentHTML('beforebegin', c); else main.insertAdjacentHTML('beforeend', c);
+  }
+
   var main = document.getElementById('dgMain');
   var menuEl = document.getElementById('dgMenu'), menuSel = document.getElementById('dgMenuSelect');
   var qEl = document.getElementById('dgQ');
@@ -138,7 +189,8 @@
       return '<a href="' + href(t.k) + '"' + (t.k === cur ? ' aria-current="page"' : '') + (t.guest ? ' class="dg-join-tab"' : '') + '>' + esc(t.label) +
         (locked && t.lock ? ' <span class="dg-lk" aria-label="locked">' + LOCK_SVG + '</span>' : '') + '</a>';
     }).join('');
-    menuSel.innerHTML = tabs().map(function (t) { return '<option value="' + t.k + '"' + (t.k === cur ? ' selected' : '') + '>' + esc(t.label) + (locked && t.lock ? ' (locked)' : '') + '</option>'; }).join('') +
+    document.documentElement.classList.toggle('dg-dd', tabs().length > 5);
+    menuSel.innerHTML = tabs().map(function (t, n) { return '<option value="' + t.k + '"' + (t.k === cur ? ' selected' : '') + '>' + (n + 1) + '. ' + esc(t.label) + (locked && t.lock ? ' (locked)' : '') + '</option>'; }).join('') +
       (cur === 'search' ? '<option value="search" selected>Search results</option>' : '');
   }
   menuSel.addEventListener('change', function () { location.hash = href(menuSel.value); });
@@ -537,22 +589,26 @@
 
   // ---------- Overview ----------
   function viewOverview() {
-    var tiles = [
-      ['nutrients', 'Nutrients', 'B12, protein, iron, calcium, vitamin D, omega-3s, iodine and zinc: how much, and where to get it.'],
-      ['plate', 'Your plate', 'Build a Vegan plate at every meal, and check off the basics every day.'],
-      ['supplements', 'Supplements', 'What to look for on the label, and the brands in our Directory.', 1],
-      ['experts', 'Experts', 'Physicians and health experts from our shows, and health professionals near you.', 1],
-      ['courses', 'Courses', 'Plant-based nutrition, cooking and coaching courses and certificates.', 1],
-      ['pulse', 'Pulse', 'Our episodes with Dr. Barnard, Dr. Klaper, Dr. Bulsiewicz and more.']
+    var GROUPS = [
+      { label: 'Eat Well', kids: [['nutrients', 'B12, protein, iron, calcium, vitamin D, omega-3s, iodine and zinc: how much, and where to get it.'],
+        ['plate', 'Build a Vegan plate at every meal, and check off the basics every day.']] },
+      { label: 'Find Help', kids: [['supplements', 'What to look for on the label, and the brands in our Directory.', 1],
+        ['experts', 'Physicians and health experts from our shows, and health professionals near you.', 1],
+        ['courses', 'Plant-based nutrition, cooking and coaching courses and certificates.', 1]] },
+      { label: 'Listen', kids: [['pulse', 'Our episodes with Dr. Barnard, Dr. Klaper, Dr. Bulsiewicz and more.']] }
     ];
-    main.innerHTML = head('Vegans Explore Guides for your health', 'Eat Vegan, and cover the basics',
-      'What a Vegan plate needs, nutrient by nutrient, every number from the source named under it, with our physicians and the experts in our Directory built in.') +
-      '<div class="dg-tiles">' + tiles.map(function (t) {
-        return '<a class="dg-tile" href="' + href(t[0]) + '"><div class="dg-ic">' + ICON[t[0]] + '</div><div><b>' + esc(t[1]) + '</b><span>' + esc(t[2]) + '</span>' +
-          (!member() && !t[3] ? '<span class="dg-mlock">' + LOCK_SVG + ' In the full Guide</span>' : !member() && t[3] ? '<span class="dg-mlock" style="color:#1f5f22 !important">Open to everyone</span>' : '') + '</div></a>';
-      }).join('') + '</div>' +
-      '<div class="dg-start"><a class="dg-btn" href="#/nutrients/' + PUB.example.id + '">' + (member() ? 'Start with B12' : 'Try B12, free') + '</a><a class="dg-btn dg-ghost" href="#/experts">Meet the experts</a>' +
-      (member() ? '<p>The whole Guide is yours. Pick a tab, or follow Theo with Next.</p>' : '') + '</div>' + note();
+    var open = function (x) { return member() || x[2]; };
+    main.innerHTML = head(member() ? 'The whole Guide is yours' : 'Vegans Explore Guides for your health', 'Eat Vegan, and Cover the Basics') +
+      '<section class="wg-gs" aria-label="Getting started"><span class="wg-gs-pic"><img src="' + npic(CARD.overview) + '" alt="" decoding="async" width="640" height="640"></span>' +
+      '<div class="wg-gs-b"><div class="vgi-k">Getting started</div><h3 class="wg-gs-t">How to use this Guide</h3>' +
+      '<p><b>This Guide covers what a Vegan plate needs, nutrient by nutrient,</b> with every number from the source named under it. Start with vitamin B12, build your plate, check your supplements, then find an expert or a course when you want to go deeper.</p>' +
+      (member() ? '' : '<p>Supplements, Experts and Courses are open to everyone, and B12 is free to try. The rest comes with the full Guide.</p>') +
+      '<div class="wg-gs-btns"><a class="dg-btn" href="#/nutrients/' + PUB.example.id + '">' + (member() ? 'Start with B12' : 'Try B12, free') + '</a><a class="dg-btn dg-ghost" href="#/experts">Meet the experts</a></div></div></section>' +
+      '<div class="wg-arts wg-arts-ov">' + GROUPS.map(function (g) {
+        return '<div class="wg-grp"><h5>' + esc(g.label) + '</h5><ol>' + g.kids.map(function (x) {
+          return artRow(npic(CARD[x[0]]), tab(x[0]).label, x[1] + (open(x) ? '' : ' In the full Guide.'), href(x[0]), open(x) ? 'Open' : 'See what is inside');
+        }).join('') + '</ol></div>';
+      }).join('') + '</div>' + note();
   }
 
   // ---------- search (members) ----------
@@ -603,6 +659,8 @@
   var bubble = document.getElementById('dgBubble'), tourEl = document.getElementById('dgTour');
   function drawTheo() {
     var t = tab(curTab), list = tabs(), i = 0;
+    var box = document.getElementById('dgMaya'), sc = SCENE[curTab] ? npic(SCENE[curTab]) : (window.VEGuideArt ? VEGuideArt('theo', 'square') : '');
+    if (box && sc) box.style.backgroundImage = "url('" + sc + "')";
     list.forEach(function (x, n) { if (x.k === curTab) i = n; });
     bubble.textContent = member() && t.sayMember ? t.sayMember : t.say;
     tourEl.innerHTML = tourM.innerHTML = '<a class="dg-tnav" href="' + href(list[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Back</a><span>' + (i + 1) + ' of ' + list.length + '</span>' +
@@ -630,6 +688,7 @@
        experts: function () { viewExperts(sub); }, courses: function () { viewCourses(sub); }, pulse: function () { viewPulse(sub); }, mylist: function () { viewMyList(sub); }, join: viewJoin,
        search: function () { viewSearch(decodeURIComponent(sub)); } })[view]();
     keepPlayer(bar);
+    if (view !== 'search' && !sub) dressSection(view);
     curTab = key;
     drawTheo();
     if (view !== 'search') { main.scrollTop = 0; if (!document.documentElement.classList.contains('dg-fit') || window.innerWidth <= 900) window.scrollTo(0, 0); }
@@ -761,8 +820,6 @@
   function init() {
     if (window.VERegionDirectory) VERegionDirectory.css();
     document.documentElement.classList.add('dg-fit');
-    var box = document.getElementById('dgMaya');
-    if (window.VEGuideArt) { var art = VEGuideArt('theo', 'square'); if (art) box.style.backgroundImage = "url('" + art + "')"; }
     var params = new URLSearchParams(location.search);
     route();
     loadPublic();

@@ -484,6 +484,78 @@
     .nt-key b{display:block;font-size:14.5px;font-weight:900;}
     .nt-key p{margin:2px 0 0;font-size:13.5px;line-height:1.55;color:var(--ink75);}
     @media (max-width:900px){.nt-plate{grid-template-columns:minmax(0,1fr);}.nt-plate svg{max-width:280px;}}
+    /* Copied 2026-11-15 from the Welcome Guide's files (through the Food Photographer Guide): the Welcome Guide (playbook ve-explorer-path, Sean 2026-11-08): copied from the Holiday Guide (the template gate). Our About us and the free
+       front door. Liz hosts. Code: /guide-scripts/welcome-guide.js; the Explorer card is /public/ve-explorer-card.js. */
+    .wg-tour{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:#fff;margin:6px 0 16px}
+    .wg-tour-h{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
+    .wg-tour-h h3{margin:2px 0 4px;font-size:20px;font-weight:900}
+    .wg-tour-h p{margin:0;font-size:13.5px;color:var(--ink75)}
+    .wg-vid{margin:14px 0 6px}
+    .wg-vid .vv{margin:0 0 8px}
+    .wg-chs{margin-top:12px}
+    .wg-chs summary{cursor:pointer;font-size:13px;font-weight:800;color:var(--g)}
+    .wg-chs ol{margin:10px 0 0;padding-left:20px}
+    /* The Overview (Sean, 2026-11-09): Getting started, then every section as a short article, read like the Pulse (its .vep-pic rows: a
+       small picture left, the title, the text). Desktop: Getting started's picture is 240 px and its text box as tall, scrolling inside. */
+    .wg-gs{display:flex;gap:18px;align-items:flex-start;border:1px solid var(--line);border-radius:14px;background:#fff;padding:16px;margin:14px 0 22px}
+    .wg-gs-pic{flex:0 0 240px;width:240px;height:240px;border-radius:12px;overflow:hidden;background:var(--gl)}
+    .wg-gs-pic img{display:block;width:100%;height:100%;object-fit:cover}
+    .wg-gs-b{min-width:0;flex:1}
+    .wg-gs-b .vgi-k,.wg-grp h5{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--g)}
+    .wg-gs-t{margin:4px 0 6px;font-size:20px;font-weight:900;color:var(--ink)}
+    .wg-gs-b p{margin:0 0 8px;font-size:15px;line-height:1.55;color:var(--ink75)}
+    .wg-gs-b p b{color:var(--ink)}
+    .wg-gs-btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    @media (min-width:901px){.wg-gs-b{min-height:240px;padding-right:6px}/* grows to fit its text, never scrolls inside itself (Sean, 2026-11-12) */}
+    @media (max-width:600px){.wg-gs{flex-direction:column}.wg-gs-pic{width:100%;height:auto;aspect-ratio:1/1;flex-basis:auto}}
+    .wg-grp{margin:0 0 20px}
+    .wg-grp h5{margin:0 0 12px;padding-bottom:6px;border-bottom:1px solid #e3efe3}
+    .wg-grp ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:16px}
+    .wg-art{display:grid;grid-template-columns:132px minmax(0,1fr);gap:14px;align-items:start}
+    .wg-art>a{display:block}
+    .wg-art-img{display:block;width:132px;height:99px;border-radius:10px;background:#eef3ee center/cover no-repeat}
+    .wg-art-t{display:block;font-size:16px;font-weight:800;color:var(--ink);text-decoration:none;margin:0 0 4px}
+    .wg-art-t:hover{color:var(--g)}
+    .wg-art p{margin:0;font-size:14.5px;line-height:1.55;color:var(--ink75)}
+    .wg-art-more{display:inline-block;margin-top:6px;font-size:13px;font-weight:800;color:var(--g);text-decoration:none}
+    @media (max-width:560px){.wg-art{grid-template-columns:96px minmax(0,1fr);gap:12px}.wg-art-img{width:96px;height:96px}}
+    /* More than 5 tabs: the menu is a dropdown at every width (Sean, 2026-11-09, the BCPS rule). */
+    html.dg-dd .dg-menu{display:none}
+    html.dg-dd .dg-menu-select{display:block;margin-top:12px;width:100%;max-width:420px;font-family:inherit;font-size:14px;font-weight:800;padding:12px 44px 12px 14px;border-radius:6px;border:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23525252' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center/10px 6px;-webkit-appearance:none;appearance:none;color:var(--ink)}
+    html.dg-dd .dg-top{padding-bottom:18px}
+    @media (max-width:900px){html.dg-dd .dg-menu-select{max-width:none}html.dg-dd .dg-top{padding-bottom:14px}}
+    .wg-now{font-size:13px;font-weight:700;color:var(--muted,#525252)}
+    .wg-chplay{font-size:12px;font-weight:800;color:var(--g);text-decoration:none;white-space:nowrap;margin-left:4px}
+    .wg-chs li{font-size:14.5px;line-height:1.6;color:var(--ink75);margin-bottom:8px}
+    .wg-chs li b{color:var(--ink)}
+    .wg-lead{display:flex;align-items:center;gap:10px;margin:0 0 14px;font-size:13.5px;color:var(--ink75)}
+    .wg-lead b{color:var(--ink)}
+    .wg-lead-pic{flex:0 0 44px;height:44px;border-radius:10px;background:var(--gl) center 18%/cover no-repeat}
+    .wg-cols{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:14px}
+    .wg-ways{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:14px}
+    .wg-box{border:1px solid var(--line);border-radius:12px;padding:16px 18px;background:#fff}
+    .wg-box.wg-mem{background:var(--gl);border-color:var(--gm)}
+    .wg-box h3{margin:0 0 8px;font-size:15px;font-weight:900}
+    .wg-box p{margin:0;font-size:14px;line-height:1.6;color:var(--ink75)}
+    .wg-box a{display:inline-block;margin-top:8px;font-size:13px;font-weight:800;color:var(--g)}
+    .wg-steps,.wg-list{margin:0;padding-left:20px}
+    .wg-steps li,.wg-list li{font-size:14px;line-height:1.55;color:var(--ink75);margin-bottom:6px}
+    .wg-steps b,.wg-list b{color:var(--ink)}
+    /* The Overview's and the section pages' rows sit two across, as in the Welcome Guide (passport.html; Sean, 2026-11-10). */
+    @media (min-width:901px){.wg-arts .wg-grp ol{display:grid;grid-template-columns:1fr 1fr;gap:18px 28px}}
+    .wg-paths{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:12px}
+    .wg-path{display:flex;gap:14px;align-items:flex-start;border:1px solid var(--line);border-radius:12px;padding:14px;background:#fff;color:inherit;text-decoration:none;transition:border-color .15s}
+    .wg-path:hover{border-color:var(--g2)}
+    .wg-path-pic{flex:0 0 72px;height:72px;border-radius:12px;background:var(--gl) center 18%/cover no-repeat}
+    .wg-path b{display:block;font-size:16px;font-weight:900;margin:2px 0 4px}
+    .wg-path small{display:block;font-size:13.5px;line-height:1.5;color:var(--ink75)}
+    .wg-path em{display:inline-block;margin-top:6px;font-style:normal;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--g);background:var(--gl);border-radius:6px;padding:3px 8px}
+    .wg-cd{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:6px 0 4px;padding:12px 16px;border:1px solid var(--warmline);background:var(--warm);border-radius:12px}
+    .wg-cd-l{font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#8a5a00}
+    .wg-cd-r{display:flex;gap:12px}
+    .wg-cd-r div{text-align:center;min-width:52px}
+    .wg-cd-r b{display:block;font-size:24px;font-weight:900;color:var(--ink)}
+    .wg-cd-r span{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink55)}
   </style>
 <script src="/public/ve-guide-corner.js"></script>
 </head>
@@ -538,7 +610,8 @@
 <script src="/public/ve-votes.js"></script>
 <script src="/public/ve-region-directory.js"></script>
 <script src="/public/ve-episodes.js"></script>
-<script src="/guide-scripts/nutrition-guide.js"></script>
+<script src="/public/ve-explorer-card.js"></script>
+<script src="/guide-scripts/nutrition-guide.js?v=2"></script>
 <script src="/public/ve-guide-min.js"></script>
 </body>
 </html>
