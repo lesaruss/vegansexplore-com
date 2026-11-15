@@ -42,3 +42,8 @@ so it sells and opens; Sean holds a comp copy (migration `20261031_nutrition_gui
 - **Theo's first recorded lines** (Sean approved 2026-11-15): Courses, `theo-courses-v1.mp3` (visitors) and `theo-courses-member-v1.mp3`, el-media
   tts in his voice `aFyw0oiXW7dzKF4o7woX`, stt-checked word for word (7.4 s and 8.9 s), in `TAB_AUDIO`; Play shows only on a tab with a clip.
   The other tabs' lines are still text.
+- **Every tab recorded** (Sean: "lines are good", 2026-11-15): 14 more clips in `vegan-media/media/voices/nutrition-guide/` (`theo-<tab>-v1.mp3`
+  for visitors, `theo-<tab>-member-v1.mp3` for members; My list members only, Get access visitors only), each 3.7 to 7.9 s, stt-checked word for
+  word. Two lines were trimmed to fit a clip (Overview and Nutrients for visitors; Sean approved the trims). Pulse is `theo-pulse-v2.mp3`: v1 said
+  "Bulzowicz"; v2 is voiced "Bull-SEV-itch" (Dr. Will Bulsiewicz) while the page keeps the real spelling. el-media takes two tts at a time
+  (more answers 429 concurrent_limit_exceeded).

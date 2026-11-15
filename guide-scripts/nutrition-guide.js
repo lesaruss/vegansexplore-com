@@ -64,9 +64,9 @@
   // The tabs, in tour order, and what Theo says on each (text drafts for Sean; no recordings yet). `say` is for visitors (why get it),
   // `sayMember` walks an owner through what they have.
   var TABS = [
-    { k: 'overview', label: 'Overview', say: 'I\'m Theo. I\'ve been Vegan a long time, and here\'s what I wish someone had told me on day one: what your plate needs, and where to get it.',
+    { k: 'overview', label: 'Overview', say: 'I\'m Theo. I\'ve been Vegan a long time. Here\'s what I wish I\'d known on day one: what your plate needs, and where to get it.',
       sayMember: 'Welcome in. Start with the nutrients, build your plate, then check what you take against the supplement list.' },
-    { k: 'nutrients', label: 'Nutrients', lock: 1, say: 'Eight nutrients, one at a time: how much you need, where to get it from food, and when a supplement makes sense. B12 is open for you to try.',
+    { k: 'nutrients', label: 'Nutrients', lock: 1, say: 'Eight nutrients, one at a time: how much you need, which foods have it, and when to take a supplement. Try B12 free.',
       sayMember: 'Here are all eight. Each has a short checklist for this week. Tick it off as you go, and save the ones you\'re working on.' },
     { k: 'plate', label: 'Your plate', lock: 1, say: 'A simple way to build a Vegan plate at every meal, and a short list to check off every day.',
       sayMember: 'Use the plate at every meal, and the every-day list to cover the basics without counting anything.' },
@@ -658,10 +658,15 @@
   foldBtn.addEventListener('click', function () { setFold(!railEl.classList.contains('dg-folded')); });
   try { if (sessionStorage.getItem('nt_theo_folded')) setFold(true); } catch (e) {}
   var bubble = document.getElementById('dgBubble'), tourEl = document.getElementById('dgTour');
-  // Theo's recorded lines (Sean approved the Courses lines 2026-11-15: "approved"; el-media tts in his voice, stt-checked word for word).
+  // Theo's recorded lines (Sean approved the Courses lines 2026-11-15: "approved", every other tab: "lines are good"; el-media tts in his voice, stt-checked word for word).
   // [visitor, member]; a tab without a clip shows no Play. Nothing plays until pressed.
   var VB = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/nutrition-guide/';
-  var TAB_AUDIO = { courses: [VB + 'theo-courses-v1.mp3', VB + 'theo-courses-member-v1.mp3'] };
+  var TAB_AUDIO = {
+    overview: [VB + 'theo-overview-v1.mp3', VB + 'theo-overview-member-v1.mp3'], nutrients: [VB + 'theo-nutrients-v1.mp3', VB + 'theo-nutrients-member-v1.mp3'],
+    plate: [VB + 'theo-plate-v1.mp3', VB + 'theo-plate-member-v1.mp3'], supplements: [VB + 'theo-supplements-v1.mp3', VB + 'theo-supplements-member-v1.mp3'],
+    experts: [VB + 'theo-experts-v1.mp3', VB + 'theo-experts-member-v1.mp3'], courses: [VB + 'theo-courses-v1.mp3', VB + 'theo-courses-member-v1.mp3'],
+    pulse: [VB + 'theo-pulse-v2.mp3', VB + 'theo-pulse-member-v1.mp3'], mylist: ['', VB + 'theo-mylist-member-v1.mp3'], join: [VB + 'theo-join-v1.mp3', '']
+  };
   var aud = new Audio(), playBtn = document.getElementById('dgPlay'), playing = false;
   function clip() { var c = TAB_AUDIO[curTab]; return c ? (member() ? c[1] : c[0]) : ''; }
   function paintPlay() { if (!playBtn) return; playBtn.hidden = !clip(); playBtn.innerHTML = playing ? 'Pause Theo' : '&#9654; Play Theo'; }
