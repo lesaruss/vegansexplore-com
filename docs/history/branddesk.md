@@ -681,3 +681,13 @@ Sean, 2026-11-13: "Vegans Explore advertises, LESARUSS.ai sells" (canon v16 `sal
 release buy now; Site, Managed, social and PR outreach take a request until the v9 agreement. /business/managed, the pitch page, /business
 and the Business Guide hand off to the shop; the VE `bd_*_v9` Prices are inactive. Photographer jobs live in Fort Lauderdale and
 Philadelphia. Handoff `docs/handoff/2026-11-13-lesaruss-shop-live.md`.
+
+**The Social kit, usable (2026-11-15)** (Sean: "copy the logo... all the things that I would need in order to update the page on its edit
+profile... I'd be able to find it there"; then "I need also the story highlight images", "when I click save, it's going to save to my photo
+library", "Go with your list and merge it"): BrandDesk > Brand kit > Social kit (`components/newhq/KitSheet.tsx` `SocialProfiles`, lesaruss-hq
+main 89a7151) reads `ve_brand_cartridges` `vegans-explore` `data.social`: `profiles` (Instagram, TikTok, Facebook, YouTube, X, Threads,
+LinkedIn: name, handle, bio within each platform's limit, category, a tracked bio link `/go/ve-bio-<platform>`, its files; X, Threads and
+LinkedIn marked not linked from the site yet), `links` (the 11 profile links in order, `/go/ve-link-<key>`, initiative `ve-social-profiles`)
+and `files`. The files are `public/brand-kit/social/` (profile icon 1080, YouTube 2560 x 1440, Facebook 1640 x 624, X 1500 x 500, LinkedIn
+1584 x 396, five highlight covers 1080 x 1920), rendered from `/mocks/brand-kit/social` with Playwright. Each file's Save opens the phone's
+share sheet (Save Image puts it in Photos), downloads on a computer. Migrations `20261115_ve_social_profile_kit.sql`, `_highlights`, `_link_list`.
