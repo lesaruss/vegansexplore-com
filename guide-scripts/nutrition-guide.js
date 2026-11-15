@@ -74,6 +74,8 @@
       sayMember: 'Here\'s what to look for before you buy, and the brands in our Directory. Members vote for the ones they trust.' },
     { k: 'experts', label: 'Experts', say: 'The physicians and health experts we\'ve had on our shows, and the health professionals near you in our Directory.',
       sayMember: 'Find a physician, a dietitian or a health expert, and hear them on the podcast first.' },
+    { k: 'courses', label: 'Courses', say: 'Want to go deeper? These are courses and certificates in plant-based nutrition, cooking and coaching, for yourself or for your work.',
+      sayMember: 'Thinking about a certificate? Here are the plant-based nutrition, cooking and coaching courses we know, what each one gives you, and what it costs.' },
     { k: 'pulse', label: 'Pulse', lock: 1, say: 'Our episodes with Dr. Barnard, Dr. Klaper, Dr. Bulsiewicz and more, on food and health. Play them right here.',
       sayMember: 'Every health episode we\'ve recorded is right here. Start with Dr. Barnard\'s answers to the questions beginners ask.' },
     { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you saved is here: nutrients, episodes and experts.' },
@@ -97,7 +99,8 @@
     plate: ic('<circle cx="12" cy="12" r="8"/><path d="M12 4v16M12 12h8"/>'),
     supplements: ic('<rect x="4" y="9" width="16" height="7" rx="3.5"/><path d="M12 9v7"/>'),
     experts: ic('<path d="M6 4v5a4 4 0 008 0V4"/><path d="M10 13v3a4 4 0 008 0v-2"/><circle cx="18" cy="12" r="2"/>'),
-    pulse: ic('<path d="M3 12h4l2-6 4 12 2-6h6"/>')
+    pulse: ic('<path d="M3 12h4l2-6 4 12 2-6h6"/>'),
+    courses: ic('<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c0 1.5 2.7 3 6 3s6-1.5 6-3v-5"/><path d="M22 9v6"/>')
   };
   var LOCK_SVG = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>';
   var HEART = '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.1 4.3 2.4.7-1.3 2.2-2.4 4.3-2.4 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg>';
@@ -399,6 +402,63 @@
     var sel = document.getElementById('ntProCh'); if (sel) sel.addEventListener('change', function () { store('nt_chapter', sel.value); viewExperts('pros'); });
   }
 
+  // ---------- Courses: plant-based nutrition, cooking and coaching (Sean, 2026-11-14: "we have a section where people want to get
+  // certified. We could put the T. Colin Campbell course on there as well and find other plant-based courses"). Each one checked on the
+  // provider's own page (date in `checked`); open to everyone; the one button goes to the provider. Not an endorsement (the note says so).
+  var COURSE_SUBS = [['All', ''], ['Nutrition', 'nutrition'], ['Cooking', 'cooking'], ['Coaching', 'coaching']];
+  // Read through ve-web-reader 2026-11-15 (Sean approved adding these pages to the reader). `until`: a dated event drops off after that day.
+  var COURSES = [
+    { kind: 'nutrition', by: 'T. Colin Campbell Center for Nutrition Studies', title: 'Plant-Based Nutrition Certificate', href: 'https://nutritionstudies.org/courses/plant-based-nutrition/',
+      desc: 'The T. Colin Campbell Center\'s online certificate in the science of whole-food, plant-based eating, in three parts: Nutrition and Society, Nutrition and Chronic Disease, and Plant-Based in Practice.',
+      earn: 'A certificate. Continuing education credits for health professionals and coaches are an extra $125.', format: 'Online, on demand, at your own pace', length: '15 modules, 50+ hours plus assignments', price: '$949, or 4 monthly payments of $237.25' },
+    { kind: 'coaching', by: 'Food Revolution Network', title: 'Free Nutrition & Lifestyle Coaching Workshop', href: 'https://certificate.foodrevolution.org/workshop/', until: '2026-11-19',
+      desc: 'A free three-part live workshop from Food Revolution Network on becoming a nutrition and lifestyle coach.',
+      earn: 'Free; no certificate', format: 'Live online, 9 AM PT / 12 PM ET each day; replays available', length: 'November 17 to 19, 2026, about three hours a day', price: 'Free' },
+    { kind: 'coaching', by: 'Food Revolution Network', title: 'Nutrition & Lifestyle Coaching Certificate', href: 'https://certificate.foodrevolution.org/',
+      desc: 'Food Revolution Network\'s coaching certificate trains coaches to guide people toward plant-forward eating and lasting lifestyle change, with a final exam to become a certified coach.',
+      earn: 'Food Revolution Network-Certified Nutrition & Lifestyle Coach', format: '100% online and self-paced, with a year of live support', length: 'About 53 hours of required lessons, plus optional ones', price: '$3,997, or 6 payments of $674, or 12 payments of $349' },
+    { kind: 'coaching', by: 'Physicians Committee for Responsible Medicine', title: 'Food for Life Nutrition and Cooking Instructor Training', href: 'https://www.pcrm.org/good-nutrition/plant-based-diets/ffl/become-an-instructor',
+      desc: 'The Physicians Committee trains instructors to teach Food for Life plant-based nutrition and cooking classes in person and online in their own communities.',
+      earn: 'Licensed Food for Life instructor', format: 'Online, self-paced, with weekly required live Zoom sessions', length: '8 weeks. Spring 2027: April 20 to June 15', price: '$1,099 (institutions $1,349)',
+      tip: 'Apply by Dec. 28 for early acceptance, or Jan. 18.' },
+    { kind: 'nutrition', by: 'Physicians Committee for Responsible Medicine', title: 'Nutrition for Clinicians', href: 'https://www.pcrm.org/good-nutrition/nutrition-for-clinicians',
+      desc: 'Free online continuing education from the Physicians Committee on nutrition for doctors, nurses, health coaches and other clinicians, with free CME credits from select chapters.',
+      earn: 'Free continuing education credits from select chapters', format: 'Online', length: 'Course by course', price: 'Free' },
+    { kind: 'nutrition', by: 'The Plantrician Project', title: 'Plant-Based Nutrition Certificate', href: 'https://plantricianproject.org/plant-based-nutrition-certificate',
+      desc: 'The Plantrician Project\'s self-paced certificate in plant-based nutrition, made for health ambassadors, fitness coaches and anyone who wants the science.',
+      earn: 'A certificate', format: 'Online, self-paced, with self-check quizzes', length: '8 modules, over 10 hours', price: 'Not listed on the course page' },
+    { kind: 'cooking', by: 'Rouxbe', title: 'Professional Plant-Based Certification', href: 'https://rouxbe.com/site/plant-based-certification-course/',
+      desc: 'Rouxbe\'s online course trains cooks and food professionals in plant-based cooking technique, from stocks and grains to a final assessment.',
+      earn: 'Certificate of Completion', format: 'Online video lessons, lifetime access', length: 'At your own pace', price: '$1,999' },
+    { kind: 'cooking', by: 'Auguste Escoffier School of Culinary Arts', title: 'Online Plant-Based Culinary Arts Diploma', href: 'https://www.escoffier.edu/plant-based-programs/',
+      desc: 'Escoffier\'s online plant-based diploma trains professional plant-based cooks and sends each student to a real kitchen for a hands-on industry externship.',
+      earn: 'A diploma; its credits carry over to the associate degree', format: '100% online with one industry externship', length: '60 weeks', price: '$24,688' },
+    { kind: 'cooking', by: 'Auguste Escoffier School of Culinary Arts', title: 'Online Associate Degree in Plant-Based Culinary Arts', href: 'https://www.escoffier.edu/plant-based-programs/',
+      desc: 'Escoffier\'s plant-based associate degree covers everything in the diploma plus business skills, with two industry externships.',
+      earn: 'An associate degree', format: '100% online with two industry externships', length: '84 weeks', price: '$37,305' },
+    { kind: 'cooking', by: 'Institute of Culinary Education (Natural Gourmet Center)', title: 'Health-Centered Culinary Arts', href: 'https://www.ice.edu/campus-programs/health-centered-culinary-arts',
+      desc: 'ICE\'s Natural Gourmet Center trains chefs to cook innovative, plant-forward food in its New York and Los Angeles kitchens.',
+      earn: 'A diploma, or an associate degree', format: 'In person in New York or Los Angeles', length: 'Diploma in as little as 8 months, degree in as little as 15', price: 'Not listed on the program page' },
+    { kind: 'cooking', by: 'Institute of Culinary Education (Natural Gourmet Center)', title: 'Online Health-Centered Culinary Arts & Food Operations', href: 'https://www.ice.edu/online-programs/health-centered-culinary-arts',
+      desc: 'The online version of ICE\'s health-centered, plant-forward culinary program, taught by chefs from its New York and Los Angeles campuses, with an externship.',
+      earn: 'A diploma', format: 'Online, with an externship', length: '16 months, about 18 hours a week', price: 'Not listed on the program page' }
+  ].filter(function (c) { return !c.until || new Date(c.until + 'T23:59:59-05:00') >= new Date(); });
+  function viewCourses(sub) {
+    var kind = String(sub || '').split('/')[0], cur = COURSE_SUBS.filter(function (x) { return x[1] === kind; })[0] || COURSE_SUBS[0];
+    var t = toggles(COURSE_SUBS.map(function (x) { return [x[0], '#/courses' + (x[1] ? '/' + x[1] : '')]; }), cur[0]);
+    var list = COURSES.filter(function (c) { return !cur[1] || c.kind === cur[1]; });
+    main.innerHTML = head('Courses', 'Courses and certificates', 'Plant-based nutrition, cooking and coaching courses, for yourself or for your work: what each one gives you, how long it takes and what it costs. Every one goes to the school\'s own page to sign up.', t) +
+      (list.length ? '<div class="dg-srows">' + list.map(function (c) {
+        return row({ title: c.title, pre: '<div class="dg-k" style="margin:0">' + esc(c.by) + '</div>',
+          body: '<p class="dg-srow-p">' + esc(c.desc) + '</p><dl>' +
+            [['You earn', c.earn], ['Format', c.format], ['Length', c.length], ['Cost', c.price]].filter(function (x) { return x[1]; }).map(function (x) { return '<dt>' + x[0] + '</dt><dd>' + esc(x[1]) + '</dd>'; }).join('') +
+            '</dl>' + (c.tip ? '<p class="dg-tip">' + esc(c.tip) + '</p>' : '') +
+            '<div class="dg-btns" style="margin-top:12px"><a class="dg-btn" href="' + esc(c.href) + '" target="_blank" rel="noopener">See the course</a></div>' });
+      }).join('') + '</div>' : '<p class="dg-empty">None listed here yet.</p>') +
+      '<p class="dg-lede" style="margin-top:14px">Know a plant-based course we should add? <a href="#" data-ve-feedback>Tell us</a>, and we will check it.</p>' +
+      '<p class="nt-note">A course listed here is not a recommendation or a medical credential. Prices and dates are from each school\'s own page when we checked; confirm them with the school before you enroll.</p>';
+  }
+
   // ---------- the Pulse: our physicians and health experts ----------
   function podCard(p) {
     var ep = p.ep;
@@ -471,7 +531,7 @@
           : 'Get the Guide for $11, one time, and it is yours to keep' + '.') + '</p>' +
         '<button type="button" class="dg-btn" data-join>' + esc(ctaLabel()) + '</button>' + status +
         (m === 'buy' ? '<p class="dg-pp">Or ' + pts(ST.cost) + ' points: you have ' + pts(ST.balance) + '. Earn more with <a href="/bounties">bounties</a>.</p>' : '');
-    main.innerHTML = head('Get access', 'Open the whole Nutrition Guide', 'Every Vegans Explore Guide is $11, or 1,100 points, and yours to keep. Vitamin B12, the supplement brands and the experts stay open to everyone.') + list;
+    main.innerHTML = head('Get access', 'Open the whole Nutrition Guide', 'Every Vegans Explore Guide is $11, or 1,100 points, and yours to keep. Vitamin B12, the supplement brands, the experts and the courses stay open to everyone.') + list;
     main.querySelector('.dg-access').insertAdjacentHTML('beforeend', '<div class="dg-pricebox">' + box + '</div>');
   }
 
@@ -482,6 +542,7 @@
       ['plate', 'Your plate', 'Build a Vegan plate at every meal, and check off the basics every day.'],
       ['supplements', 'Supplements', 'What to look for on the label, and the brands in our Directory.', 1],
       ['experts', 'Experts', 'Physicians and health experts from our shows, and health professionals near you.', 1],
+      ['courses', 'Courses', 'Plant-based nutrition, cooking and coaching courses and certificates.', 1],
       ['pulse', 'Pulse', 'Our episodes with Dr. Barnard, Dr. Klaper, Dr. Bulsiewicz and more.']
     ];
     main.innerHTML = head('Vegans Explore Guides for your health', 'Eat Vegan, and cover the basics',
@@ -501,6 +562,7 @@
     allNutrients().forEach(function (t) { out.push({ t: 'Nutrients', title: t.title, text: [t.short, t.why, t.supplement, t.tip].concat(t.foods || []).concat(t.week || []).join(' '), href: '#/nutrients/' + t.id }); });
     (PODS || []).forEach(function (p) { out.push({ t: 'Pulse', title: p.title, text: (p.podcast_show || '') + '. ' + (p.summary || ''), href: '#/pulse/listen/' + encodeURIComponent(p.slug) }); });
     (PEOPLE || []).concat(PROS || []).forEach(function (l) { out.push({ t: 'Experts', title: l.name, text: [l.category, l.address_city, l.address_state].filter(Boolean).join(', '), href: '#/experts/listing/' + encodeURIComponent(l.slug) }); });
+    COURSES.forEach(function (c) { out.push({ t: 'Courses', title: c.title, text: [c.by, c.desc, c.earn].join('. '), href: '#/courses' + (c.kind ? '/' + c.kind : '') }); });
     (SUPP || []).forEach(function (l) { out.push({ t: 'Supplements', title: l.name, text: l.category || '', href: '#/supplements/listing/' + encodeURIComponent(l.slug) }); });
     return out;
   }
@@ -510,7 +572,7 @@
     var hits = index().filter(function (h) { var hay = (h.title + ' ' + h.text).toLowerCase(); return words.every(function (w) { return hay.indexOf(w) >= 0; }); });
     var groups = {}; hits.forEach(function (h) { (groups[h.t] = groups[h.t] || []).push(h); });
     var html = crumb([['Search']]) + '<h2 class="dg-h1">' + hits.length + (hits.length === 1 ? ' result' : ' results') + ' for &ldquo;' + esc(q) + '&rdquo;</h2><div class="dg-res">';
-    ['Nutrients', 'Pulse', 'Experts', 'Supplements'].forEach(function (g) {
+    ['Nutrients', 'Pulse', 'Experts', 'Courses', 'Supplements'].forEach(function (g) {
       if (!groups[g]) return;
       html += '<h2>' + esc(g) + ' (' + groups[g].length + ')</h2><div class="dg-grid">' + groups[g].slice(0, 24).map(function (h) {
         return '<a class="dg-card dg-hit" href="' + h.href + '"><h3>' + esc(h.title) + '</h3><p>' + esc(h.text.length > 160 ? h.text.slice(0, 157) + '...' : h.text) + '</p></a>';
@@ -552,7 +614,7 @@
     var parts = (location.hash || '').replace(/^#\/?/, '').split('/');
     var view = parts[0] || 'overview', sub = parts.slice(1).join('/');
     if (view === 'search' && (!sub || !member())) view = 'overview';
-    var known = { overview: 1, nutrients: 1, plate: 1, supplements: 1, experts: 1, pulse: 1, mylist: 1, join: 1, search: 1 };
+    var known = { overview: 1, nutrients: 1, plate: 1, supplements: 1, experts: 1, courses: 1, pulse: 1, mylist: 1, join: 1, search: 1 };
     if (!known[view]) view = 'overview';
     document.body.classList.toggle('dg-member', member());
     drawJoinbox();
@@ -565,7 +627,7 @@
     if (view !== 'search' && qEl.value && document.activeElement !== qEl) qEl.value = '';
     var bar = document.getElementById('vep-player');
     ({ overview: viewOverview, nutrients: function () { viewNutrients(sub); }, plate: viewPlate, supplements: function () { viewSupplements(sub); },
-       experts: function () { viewExperts(sub); }, pulse: function () { viewPulse(sub); }, mylist: function () { viewMyList(sub); }, join: viewJoin,
+       experts: function () { viewExperts(sub); }, courses: function () { viewCourses(sub); }, pulse: function () { viewPulse(sub); }, mylist: function () { viewMyList(sub); }, join: viewJoin,
        search: function () { viewSearch(decodeURIComponent(sub)); } })[view]();
     keepPlayer(bar);
     curTab = key;
