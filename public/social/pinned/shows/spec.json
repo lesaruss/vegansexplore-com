@@ -2,25 +2,25 @@
 "slides": [
 {
 "kind": "cover",
-"art": "public/social/pinned/art/media-sq.jpg",
+"art": "public/social/pinned/art/s-cover-sq.jpg",
 "color": "peach",
 "head": "Our shows,<br>every week"
 },
 {
 "kind": "inside",
-"art": "public/social/pinned/art/vepod-sq.jpg",
+"art": "public/social/pinned/art/s-vepod-sq.jpg",
 "color": "peach",
 "head": "Every Sunday,<br>the Podcast"
 },
 {
 "kind": "inside",
-"art": "public/social/pinned/art/soflo-sq.jpg",
+"art": "public/social/pinned/art/s-soflo-sq.jpg",
 "color": "peach",
 "head": "Wednesdays,<br>SoFlo Vegans"
 },
 {
 "kind": "inside",
-"art": "public/social/pinned/art/line-sq.jpg",
+"art": "public/social/pinned/art/s-line-sq.jpg",
 "color": "pink",
 "head": "Be on<br>the show"
 },

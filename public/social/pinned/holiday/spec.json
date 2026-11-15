@@ -2,55 +2,55 @@
 "slides": [
 {
 "kind": "cover",
-"art": "public/social/pinned/art/hol-sq.jpg",
+"art": "public/social/pinned/art/h-cover-sq.jpg",
 "color": "pink",
 "head": "The Holiday<br>Guide is here"
 },
 {
 "kind": "inside",
-"art": "public/social/pinned/art/hol-ideas-sq.jpg",
+"art": "public/social/pinned/art/h-ideas-sq.jpg",
 "color": "pink",
 "head": "ThanksLiving,<br>November 26"
 },
 {
 "kind": "inside",
-"art": "public/social/pinned/art/hol-menus-sq.jpg",
+"art": "public/social/pinned/art/h-menus-sq.jpg",
 "color": "pink",
 "head": "Holiday menus<br>to order"
 },
 {
 "kind": "inside",
-"art": "public/social/pinned/art/hol-recipes-sq.jpg",
+"art": "public/social/pinned/art/h-recipes-sq.jpg",
 "color": "pink",
 "head": "Recipes for<br>the table"
 },
 {
 "kind": "inside",
-"art": "public/social/pinned/art/hol-store-sq.jpg",
+"art": "public/social/pinned/art/h-store-sq.jpg",
 "color": "pink",
 "head": "What to buy<br>at the store"
 },
 {
 "kind": "inside",
-"art": "public/social/pinned/art/hol-events-sq.jpg",
+"art": "public/social/pinned/art/h-events-sq.jpg",
 "color": "or",
 "head": "Holiday events<br>near you"
 },
 {
 "kind": "inside",
-"art": "public/social/pinned/art/hol-hk-sq.jpg",
+"art": "public/social/pinned/art/h-hk-sq.jpg",
 "color": "pink",
 "head": "Hanukkah,<br>made Vegan"
 },
 {
 "kind": "inside",
-"art": "public/social/pinned/art/hol-gifts-sq.jpg",
+"art": "public/social/pinned/art/h-gifts-sq.jpg",
 "color": "pink",
 "head": "A Vegan<br>Gift Guide"
 },
 {
 "kind": "inside",
-"art": "public/social/pinned/art/hol-give-sq.jpg",
+"art": "public/social/pinned/art/h-give-sq.jpg",
 "color": "md",
 "head": "Give back<br>this season"
 },

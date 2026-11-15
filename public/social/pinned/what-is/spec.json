@@ -2,49 +2,49 @@
 "slides": [
 {
 "kind": "cover",
-"art": "public/social/pinned/art/home-sq.jpg",
+"art": "public/social/pinned/art/w-home-sq.jpg",
 "color": "dk",
 "head": "What is Vegans<br><span style=\"color:var(--br)\">Explore</span>?"
 },
 {
 "kind": "inside",
-"art": "public/social/pinned/art/directory-sq.jpg",
+"art": "public/social/pinned/art/w-directory-sq.jpg",
 "color": "dk",
 "head": "Vegan places<br>near you"
 },
 {
 "kind": "inside",
-"art": "public/social/pinned/art/listing-sq.jpg",
+"art": "public/social/pinned/art/w-listing-sq.jpg",
 "color": "dk",
 "head": "Every place,<br>its own page"
 },
 {
 "kind": "inside",
-"art": "public/social/pinned/art/events-sq.jpg",
+"art": "public/social/pinned/art/w-events-sq.jpg",
 "color": "or",
 "head": "Vegan events<br>in your city"
 },
 {
 "kind": "inside",
-"art": "public/social/pinned/art/guides-sq.jpg",
+"art": "public/social/pinned/art/w-guides-sq.jpg",
 "color": "pink",
 "head": "Guides for<br>every step"
 },
 {
 "kind": "inside",
-"art": "public/social/pinned/art/seattle-sq.jpg",
+"art": "public/social/pinned/art/w-seattle-sq.jpg",
 "color": "md",
 "head": "Your Vegan<br>community"
 },
 {
 "kind": "inside",
-"art": "public/social/pinned/art/media-sq.jpg",
+"art": "public/social/pinned/art/w-media-sq.jpg",
 "color": "peach",
 "head": "Podcasts and<br>shows, free"
 },
 {
 "kind": "inside",
-"art": "public/social/pinned/art/nominate-sq.jpg",
+"art": "public/social/pinned/art/w-nominate-sq.jpg",
 "color": "pink",
 "head": "Nominate<br>someone"
 },

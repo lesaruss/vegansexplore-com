@@ -231,3 +231,19 @@ carousels. And then the 3rd could be our current programming... each slide is go
   Be on the show), Dani (Nominate, SoFlo Vegans, Give back). The group shot is gone. What is Vegans Explore is 9 slides (Directory, a listing page,
   Events, Guides, Communities, Media, Nominate); Passport and the Pulse are out (no strong page to show; the Pulse is stale). The twelve Liz
   scenes from round 1 were removed. Migration `20261115_social_week_platform_art.sql`; storage files replaced under the same names, 26 checked.
+- **Round 3, the same day: Guides in scenes, mixed layouts** (Sean: "let's show them in a scene... doing something other than just waving";
+  "for the holiday guide is one rare thing where it can be the same person because Theo is the guide of that"; "some that are the full image
+  cut off by the bottom part, the full phone image that's sliced off. Some of it doesn't even need to be the phone"; on the reel: "Maybe the first
+  one has it, but the rest could just be the full"). `screen-art.js` now has three layouts: `side` (phone whole beside a Guide scene card),
+  `slice` (a big phone sliced off by the band, Sean's explicit OK to cut the screenshot here; a scene card optional) and `browser` (a desktop
+  capture, 1280 x 800 at 2x, whole in a browser frame, no Guide). `cardShape: 45` keeps a 4:5 scene whole. New scenes in
+  `public/social/pinned/scenes/`: Liz showing a friend the site, Maya ordering from a menu, River with festival wristbands, Theo with a guidebook,
+  Kai recording, Kai taking a voice message at a market, Dani giving flowers. The Holiday Guide uses Theo's own non-waving Holiday scenes
+  (cooking, packing an order, a holiday market, the goats). The reel: the Guide only on the first shot, the rest full screenshots.
+- **Theo and Maya back to their original looks** (Sean: "I believe I asked for you to update Theo and Maya so their skin complexion's lighter, so
+  they match with everything else we've created for them... match their original look, and let's keep that look"). The request had not been saved
+  anywhere (incident in playbook `signal-context-efficiency`). New roster squares `public/brand-kit/avatars/theo-v3.jpg` (warm light brown, short gray
+  hair, gray beard, round glasses, as in every Holiday Guide scene) and `maya-v4.jpg` (warm light brown, free curls, no headband, as in
+  `public/guides/maya.jpg`); `VE_GUIDE_ART` in `footer.js` and `/mocks/brand-kit/roster` point at them. The 9:16 `tall` pictures are unchanged (no
+  9:16 spot uses them today). Every new Theo or Maya picture uses these looks. Higgsfield references: original Theo `ddc4b75d-6f3c-4f4d-93d2-27365c01d10b`,
+  original Maya `75c28848-a667-41d1-858a-1c1dc6032b6a`.
