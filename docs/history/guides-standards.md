@@ -437,3 +437,16 @@ phone or card one of our chapters' tall city pictures, **one city per subject** 
 a long subject splits once), slowly zooming in, drawn at 2x so it is smooth; the Guide's own scenes full bleed between subjects; captions from the word timings;
 web encode crf 26, faststart. How: `scripts/tour-video/sections/README.md`; reference `sec-city-v2`. Next (Sean): finish the Welcome Guide's pages 4 to 11, then
 inventory the other Guides and apply the Welcome Guide's template to each.
+
+## Theo and Maya keep their original looks (Sean, 2026-11-15)
+
+"Update Theo and Maya so their skin complexion's lighter, so they match with everything else we've created for them at this point... match their
+original look, and let's keep that look, that same color, so that way we don't have to redo all of the assets on the page." Theo: warm light brown
+skin, short gray hair, trimmed gray beard, round glasses (every Holiday Guide scene). Maya: warm light brown skin, big free curls, no headband
+(`public/guides/maya.jpg`). Roster squares `theo-v3.jpg` and `maya-v4.jpg` replace `theo-v2` and `maya-v1` to `v3`, which had drifted darker.
+Pass the original as the first reference for every new picture of them (Higgsfield `ddc4b75d-6f3c-4f4d-93d2-27365c01d10b` Theo,
+`75c28848-a667-41d1-858a-1c1dc6032b6a` Maya) and compare the skin against it before it ships.
+
+**2026-11-15, later:** that section and `theo-v3`/`maya-v4` sat on the unmerged branch `claude/sweet-ritchie-oiq411`, so the Nutrition Guide chat drew
+76 Theo pictures from `theo-v2` the same day and they were thrown out. The rule now lives in CLAUDE.md (the Guide scenes recipe) and canon
+`canon-ve-guide-roster` `looks_locked_v1`, and the squares and `VE_GUIDE_ART` came over on `claude/keen-knuth-234ob9`.
