@@ -77,7 +77,10 @@
     '.nm-or{text-align:center;font-size:12px;font-weight:700;color:var(--ink55);margin:12px 0 2px;}',
     '@media (max-width:900px){.nm-mock{padding:8px 16px;}.nm-form .wg-gs-pic{display:none;}.nm-grid,.nm-modes{grid-template-columns:1fr;}.nm-rv{grid-template-columns:1fr;gap:2px;}.nm-rv dd{margin-bottom:8px;}}',
     '.mr-tag{display:inline-block;font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;border-radius:6px;padding:2px 7px;margin-right:6px;vertical-align:2px;border:2px solid #1a1a1a;}',
-    '.mr-tag.pitch{background:#FFEBD1;}.mr-tag.research{background:#E8F5E9;}.mr-tag.lead{background:#FFE3EE;}.mr-tag.ours{background:#fff;}',
+    '.mr-tag.pitch{background:#FFEBD1;}.mr-tag.research{background:#E8F5E9;}.mr-tag.lead{background:#FFE3EE;}.mr-tag.ours{background:#fff;}.mr-tag.guest{background:#F69820;}',
+    '.mr-meta{font-size:12.5px;font-weight:800;color:#5c5c5c;margin:2px 0 4px;}',
+    '.mr-facts{display:grid;grid-template-columns:120px minmax(0,1fr);gap:6px 14px;font-size:14px;margin:8px 0 12px;}.mr-facts dt{font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:#5c5c5c;padding-top:2px;}.mr-facts dd{margin:0;}',
+    '@media (max-width:600px){.mr-facts{grid-template-columns:1fr;gap:2px;}.mr-facts dd{margin-bottom:6px;}}',
     '.mr-kit{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:6px 0 10px;}.mr-kit i{display:block;aspect-ratio:1;border-radius:10px;border:2px solid #1a1a1a;background:#eee center/cover no-repeat;}',
     '.mr-link{display:flex;align-items:center;gap:10px;flex-wrap:wrap;border:2px solid #1a1a1a;border-radius:10px;padding:10px 12px;background:#FFEBD1;margin:6px 0 10px;}.mr-link code{flex:1 1 220px;font:800 15px Montserrat,sans-serif;}',
   ].join('');
@@ -91,11 +94,11 @@
   var CONF = {
     root: 'The Media Room',
     tabs: [
-      { k: 'overview', label: 'Overview', say: 'Hi, I\'m Liz. This is the Media Room: stories from inside the Vegan community, sent to the people who tell them, before anyone else has them.' },
-      { k: 'feed', label: 'Your Feed', say: 'This is your feed. Only your beats, and every item says what it is: a pitch, our research, a lead from the community, or news about us.' },
-      { k: 'cover', label: 'Cover This', say: 'See a story you want? Tap Cover this. The kit opens: the facts, the person to talk to, and pictures you are free to use.' },
-      { k: 'settings', label: 'Your Settings', say: 'You choose your beats and how often you hear from us: each story as it is posted, a daily digest, or a weekly one.' },
-      { k: 'join', label: 'Join', say: 'Joining is free for press. A short survey about what you cover, then your work email, and you are in.' }
+      { k: 'overview', label: 'Overview', say: 'Hi, I\'m Liz. This is the Media Room: stories, data and people from inside the Vegan community, for the people who tell them.' },
+      { k: 'feed', label: 'Your Feed', say: 'Only your beats, and every item says what it is, what it is tied to, and whether anyone else has it.' },
+      { k: 'cover', label: 'A Story Kit', say: 'Opening a kit is private: nobody is told. When you want to go ahead, request the interview and our press desk answers the same day.' },
+      { k: 'settings', label: 'Your Settings', say: 'Your beats, how far ahead you plan, and how often you hear from us. Nothing outside your beats ever reaches you.' },
+      { k: 'join', label: 'Join', say: 'Joining is free for press. Journalists use their work email; podcasters add a link to their show.' }
     ]
   };
   var TABS = CONF.tabs;
@@ -131,83 +134,87 @@
       '<a class="vxc-go" href="' + esc(go[1]) + '">' + esc(go[0]) + '</a></section>';
   }
   function next(k) { var i = idx(k); return TABS[Math.min(TABS.length - 1, i + 1)]; }
-  function tag(kind) { var t = { pitch: 'Pitch', research: 'Research', lead: 'Community lead', ours: 'Our news' }[kind]; return '<span class="mr-tag ' + kind + '">' + t + '</span>'; }
-  function feedRow(kind, picUrl, title, txt, sample) {
+  function tag(kind) { var t = { pitch: 'Pitch', research: 'Research', lead: 'Community lead', ours: 'Our news', guest: 'Guest' }[kind]; return '<span class="mr-tag ' + kind + '">' + t + '</span>'; }
+  // Every item carries the facts its kind of outlet runs on (the Pitch Gate's type checks) and its ties to us (panel, 2026-11-15).
+  function facts(list) { return '<dl class="mr-facts">' + list.map(function (f) { return '<dt>' + esc(f[0]) + '</dt><dd>' + esc(f[1]) + '</dd>'; }).join('') + '</dl>'; }
+  function feedRow(kind, picUrl, title, txt, meta, sample) {
     return '<li class="wg-art"><a href="#/cover" tabindex="-1" aria-hidden="true"><span class="wg-art-img" style="background-image:url(&quot;' + esc(picUrl) + '&quot;)"></span></a>' +
-      '<div>' + tag(kind) + (sample ? '<span class="mr-tag ours">Sample</span>' : '') + '<a class="wg-art-t" href="#/cover">' + esc(title) + '</a><p>' + esc(txt) + '</p><a class="wg-art-more" href="#/cover">Cover this &rsaquo;</a></div></li>';
+      '<div>' + tag(kind) + (sample ? '<span class="mr-tag ours">Sample</span>' : '') + '<a class="wg-art-t" href="#/cover">' + esc(title) + '</a><p>' + esc(txt) + '</p>' +
+      '<p class="mr-meta">' + esc(meta) + '</p><a class="wg-art-more" href="#/cover">Open the kit &rsaquo;</a></div></li>';
   }
   function chips(list, on) { return '<div class="nm-chips">' + list.map(function (c) { return '<button type="button" class="nm-chip" aria-pressed="' + (on.indexOf(c) >= 0) + '">' + esc(c) + '</button>'; }).join('') + '</div>'; }
+  var RESEARCH_T = 'How the Press Covered Vegan Life in 2026';
+  var RESEARCH_X = '3,600 articles from 980 outlets, by topic and tone, at outlet level. The method, the codebook and the data come with it. No reporter is named or scored.';
 
   var VIEWS = {
     overview: function () {
-      return head('Free for verified press', 'Stories From Inside the Vegan Community', '') +
-        card('Getting started', 'How the Media Room works', pic('welcome-guide.jpg'), lines([
-          '<b>Tell us what you cover.</b> A short survey sets your beats, and how often you want to hear from us.',
-          '<b>We send you stories worth telling.</b> Our own pitches, our research, and people to interview, never someone else\'s story passed along.',
-          '<b>Tap Cover this.</b> The kit opens, and our team follows up.']),
-          '<a class="dg-btn" href="#/join">Join the Media Room</a><a class="dg-btn dg-ghost" href="#/feed">See a sample feed</a>') +
+      return head('New this week', RESEARCH_T, '') +
+        card('Research', 'Our own data, with the method attached', pic('restaurant-guide/t-pulse.jpg'),
+          '<p>' + esc(RESEARCH_X) + '</p>' +
+          facts([['Data', 'Download, spreadsheet'], ['Method', 'How we did it, two pages'], ['Window', 'Early January, before Veganuary'], ['Exclusive', 'No, every member'], ['Contact', 'Our press desk, same-day reply']]),
+          '<a class="dg-btn" href="#/cover">Open the kit</a><a class="dg-btn dg-ghost" href="#/feed">See your feed</a>') +
         '<div class="wg-arts">' +
-        group('What you get', [
-          artRow(pic('holiday/w-say.jpg'), 'Stories We Pitch', 'Written for your beat, with the facts on one page, a person to talk to and pictures cleared to use.', '#/cover', 'See one'),
-          artRow(pic('restaurant-guide/t-pulse.jpg'), 'Our Research, First', 'Our own numbers before anyone else: surveys, the Directory, and a year of Vegan headlines, scored.', '#/feed', 'See it'),
-          artRow(pic('partner-community-manager.jpg'), 'People to Interview', 'Business owners, creators and neighbors from inside the community, ready to talk.'),
-          artRow(pic('partner-official-creator.jpg'), 'An Early Look', 'What we are building, before it launches, so you never have to guess.')]) +
+        group('How the Media Room works', [
+          artRow(pic('holiday/w-say.jpg'), 'Tell Us What You Cover', 'A short survey sets your beats, how far ahead you plan, and how often you hear from us.', '#/settings', 'Your settings'),
+          artRow(pic('thumb-community.jpg'), 'Get Stories, Data and People', 'Our own pitches, our research, guests for your show and people to interview. Never someone else\'s story passed along.', '#/feed', 'See a sample feed'),
+          artRow(pic('partner-community-manager.jpg'), 'Open the Kit, Privately', 'Read everything first. Nobody is told until you request an interview or book a guest.', '#/cover', 'See a kit')]) +
         group('Our promise', [
-          artRow(pic('thumb-passport.jpg'), 'Every Item Labelled', 'Pitch, Research, Community lead or Our news. Anything about us says so.'),
-          artRow(pic('thumb-community.jpg'), 'Only Your Beats', 'You choose them, and change them any time. Nothing outside them reaches you.'),
-          artRow(pic('creator-guide.jpg'), 'A Person Approves Every Pitch', 'Every pitch passes our checks for your kind of outlet, then a person signs off.'),
-          artRow(pic('welcome-ensemble.jpg'), 'One Click to Leave', 'On every email, whenever you want.')]) +
+          artRow(pic('thumb-passport.jpg'), 'Every Item Labelled', 'Pitch, Research, Community lead, Guest or Our news. Anything about us says so.'),
+          artRow(pic('creator-guide.jpg'), 'Ties Shown on Every Item', 'Whether a business or person pays us, and whether a story is exclusive or offered to every member.'),
+          artRow(pic('welcome-ensemble.jpg'), 'Only Your Beats, One Click to Leave', 'Nothing outside your beats reaches you, and every email has a one-click way out.'),
+          artRow(pic('partner-official-creator.jpg'), 'Who Funds Us', 'Vegans Explore is part of LESARUSS. Our funding and partners, on one page. (Coming)')]) +
         '</div>' + cta('Covering Vegan life?', 'Join the Media Room.', 'Free for verified press: journalists, podcasters and publicists.', ['Join the Media Room', '#/join']);
     },
     feed: function () {
-      return crumb('Your Feed') + head('A sample feed', 'New for Your Beats', 'Food and dining, local business. Newest first.') +
+      return crumb('Your Feed') + head('A sample feed', 'New for Your Beats', 'Food and dining, local business. Planning: now. Newest first.') +
         '<div class="wg-arts">' +
         group('This week', [
-          feedRow('research', pic('restaurant-guide/t-pulse.jpg'), 'Who\'s Kind to Vegans? A Year of Headlines, Scored', '3,600 articles from 980 outlets in 2026, each scored flattering, neutral or critical, with how we did it. Out before Veganuary.'),
-          feedRow('pitch', SAMPLE + 'photo-1.jpg', 'A Fort Lauderdale Kitchen Turns Its ThanksLiving Menu Into a Food Drive', 'One holiday meal to a neighbor for every menu ordered. The owner is free to talk this week.', true),
-          feedRow('lead', pic('partner-community-manager.jpg'), 'Three Families Going Vegan for the Holidays', 'Our local members, happy to be interviewed about their first Vegan ThanksLiving.', true),
-          feedRow('ours', pic('welcome-guide.jpg'), 'Vegans Explore Opens Its Next Chapter', 'News about us: a new city hub, with local businesses and members ready to talk.', true)]) +
+          feedRow('research', pic('restaurant-guide/t-pulse.jpg'), RESEARCH_T, RESEARCH_X, 'Data and method attached · Not exclusive · No ties to us'),
+          feedRow('pitch', SAMPLE + 'photo-1.jpg', 'A Fort Lauderdale Kitchen Turns Its ThanksLiving Menu Into a Food Drive', 'One holiday meal to a neighbor for every menu ordered. Orders close November 22.', 'Thu Nov 20, 10:30 am · Fort Lauderdale · Owner on camera · Shots: the line packing meals · Not exclusive · Not a paying partner', true),
+          feedRow('lead', pic('partner-community-manager.jpg'), 'Three Families Going Vegan for the Holidays', 'Members happy to be interviewed about their first Vegan ThanksLiving.', 'Free Nov 18 to 24 · South Florida · Members of Vegans Explore', true),
+          feedRow('guest', pic('creator-guide.jpg'), 'A Chef Who Turned a Food Truck Into Three Restaurants', 'For podcasts: a 60-second clip, three episode ideas, and dates over the next eight weeks.', 'Evergreen · Free to record from December · Not a paying partner', true),
+          feedRow('ours', pic('welcome-guide.jpg'), 'Vegans Explore Opens Its Next Chapter', 'News about us: a new city hub, with local businesses and members ready to talk.', 'Our news · About us', true)]) +
         '</div>' + cta('Want this in your inbox?', 'Join the Media Room.', 'Pick your beats and how often. Free for verified press.', ['Join the Media Room', '#/join']);
     },
     cover: function () {
-      return crumb('Cover This') + head('Pitch · Sample', 'A Fort Lauderdale Kitchen Turns Its ThanksLiving Menu Into a Food Drive', '') +
+      return crumb('A Story Kit') + head('Pitch · Sample', 'A Fort Lauderdale Kitchen Turns Its ThanksLiving Menu Into a Food Drive', 'Opening this kit is private. Nobody is told.') +
         card('The kit', 'Everything you need to tell it', SAMPLE + 'logo.jpg',
-          lines([
-            '<b>The story.</b> Green Leaf Kitchen gives one holiday meal to a neighbor for every ThanksLiving menu ordered. Orders close November 22.',
-            '<b>Talk to.</b> The owner, Tuesday to Thursday, by phone or in the kitchen.',
-            '<b>The facts, on one page.</b> Numbers checked, sources linked.']) +
-          '<div class="vgi-k">Pictures cleared for you to use</div><div class="mr-kit"><i style="background-image:url(\'' + SAMPLE + 'photo-1.jpg\')"></i><i style="background-image:url(\'' + SAMPLE + 'photo-2.jpg\')"></i><i style="background-image:url(\'' + SAMPLE + 'photo-3.jpg\')"></i></div>',
-          '<a class="dg-btn" href="#/cover">Cover this</a><a class="dg-btn dg-ghost" href="#/feed">Back to your feed</a>') +
-        '<div class="wg-arts">' + group('When you tap Cover this', [
-          artRow(pic('thumb-passport.jpg'), 'Our Team Is Told', 'We know you want the story, and we follow up the same week.'),
-          artRow(pic('restaurant-guide/t-pulse.jpg'), 'We See When It Runs', 'Our daily media feed finds your story when it is published, so we can thank you and share it.')]) +
+          '<p>Green Leaf Kitchen gives one holiday meal to a neighbor for every ThanksLiving menu ordered. Orders close November 22.</p>' +
+          facts([['When', 'Thursday, November 20, 10:30 am'], ['Where', 'The kitchen, Fort Lauderdale'], ['On camera', 'The owner, and a family receiving a meal'], ['Shots', 'The line packing meals; the hand-off at the door'], ['Lead time', 'Now. A follow-up is possible in the spring'], ['Exclusive', 'No, offered to every member on this beat'], ['Ties to us', 'Not a paying partner'], ['Facts', 'One page, sources linked']]) +
+          '<div class="vgi-k">Pictures, with their rights</div><div class="mr-kit"><i style="background-image:url(\'' + SAMPLE + 'photo-1.jpg\')"></i><i style="background-image:url(\'' + SAMPLE + 'photo-2.jpg\')"></i><i style="background-image:url(\'' + SAMPLE + 'photo-3.jpg\')"></i></div>' +
+          '<p class="nm-hint">Photos by the restaurant. Editorial use, print and web, credit: Green Leaf Kitchen. Full size on download. Rights unclear? Ask the press desk.</p>',
+          '<a class="dg-btn" href="#/cover">Request an interview</a><a class="dg-btn dg-ghost" href="#/feed">Back to your feed</a>') +
+        '<div class="wg-arts">' + group('If you go ahead', [
+          artRow(pic('thumb-passport.jpg'), 'Our Press Desk Answers the Same Day', 'A named person with a direct phone sets up the interview, and nothing else.'),
+          artRow(pic('creator-guide.jpg'), 'For Podcasts: Book This Guest', 'A guest kit instead: a 60-second clip, three episode ideas, questions they answer well, and open dates.')]) +
         '</div>';
     },
     settings: function () {
-      return crumb('Your Settings') + head('Yours to change', 'Your Beats, Your Desks, How Often', '') +
+      return crumb('Your Settings') + head('Yours to change', 'Your Beats, Your Planning, How Often', '') +
         card('Your settings', 'What reaches you, and when', pic('thumb-passport.jpg'),
-          '<span class="nm-f">Your beats</span>' + chips(['Food and dining', 'Local business', 'Health', 'Travel', 'Culture', 'Research'], ['Food and dining', 'Local business']) +
-          '<span class="nm-f">Desks</span>' + chips(['Vegans Explore', 'More desks (Coming)'], ['Vegans Explore']) +
+          '<span class="nm-f">Your beats</span>' + chips(['Food and dining', 'Local business', 'Health', 'Travel', 'Culture', 'Research and data', 'Industry and funding', 'Retail and grocery', 'Restaurant business', 'Alt-protein'], ['Food and dining', 'Local business']) +
+          '<span class="nm-f">How far ahead you plan</span>' + chips(['Now', 'About a month', '3 to 6 months'], ['Now']) +
+          '<span class="nm-f">Timely or evergreen</span>' + chips(['Timely', 'Evergreen'], ['Timely', 'Evergreen']) +
           '<span class="nm-f">How often</span>' + chips(['As it is posted', 'Daily digest', 'Weekly digest'], ['Weekly digest']) +
-          '<p class="nm-hint">Big stories reach everyone who chose that beat, whatever the setting. One click to leave, on every email.</p>',
+          '<span class="nm-f">Desks</span>' + chips(['Vegans Explore', 'More desks (Coming)'], ['Vegans Explore']) +
+          '<p class="nm-hint">Nothing outside your beats reaches you. One click to leave, on every email.</p>',
           '<a class="dg-btn" href="#/settings">Save my settings</a>', 'nm-form');
     },
     join: function () {
-      return crumb('Join') + head('Free for verified press', 'Join the Media Room', 'A short survey, then your work email.') +
-        '<div class="nm-steps"><span class="dn">1 &middot; Who you are</span><span class="dn">2 &middot; What you cover</span><span class="dn">3 &middot; How often</span><span class="on">4 &middot; Your work email</span></div>' +
-        card('Step 4 of 4', 'Your work email', pic('partner-group-partner.jpg'),
+      return crumb('Join') + head('Free for verified press', 'Join the Media Room', 'A short survey, then how we know you are press.') +
+        '<div class="nm-steps"><span class="dn">1 &middot; Who you are</span><span class="dn">2 &middot; What you cover</span><span class="dn">3 &middot; How often</span><span class="on">4 &middot; How we know you</span></div>' +
+        card('Step 4 of 4', 'How we know you are press', pic('partner-group-partner.jpg'),
           '<div class="nm-grid"><div><label class="nm-f">Your name</label><input class="nm-in" value="Jordan Lee" data-dictate="off"></div>' +
-          '<div><label class="nm-f">Your outlet</label><input class="nm-in" value="Your Paper" data-dictate="off"></div></div>' +
+          '<div><label class="nm-f">Your outlet or show</label><input class="nm-in" value="Your Paper" data-dictate="off"></div></div>' +
           '<span class="nm-f">You are a</span>' + chips(['Journalist', 'Podcaster', 'Publicist'], ['Journalist']) +
-          '<label class="nm-f">Work email <small>(at your outlet, so we know you are press)</small></label><input class="nm-in" type="email" value="jordan@yourpaper.com">' +
-          '<p class="nm-hint">We send a link to this address. No outlet email? Freelancers and podcasters are checked by our team.</p>',
+          '<label class="nm-f">Journalists: your work email <small>(at your outlet)</small></label><input class="nm-in" type="email" value="jordan@yourpaper.com">' +
+          '<label class="nm-f">Podcasters: a link to your show <small>(Apple, Spotify or RSS; checked on the spot)</small></label><input class="nm-in" placeholder="https://podcasts.apple.com/...">' +
+          '<p class="nm-hint">Freelancers and publicists without either are checked by our press desk, usually the same day.</p>',
           '<a class="dg-btn dg-ghost" href="#/settings">Back</a><a class="dg-btn" href="#/join">Join</a>', 'nm-form') +
-        '<div class="wg-arts">' + group('Pass it on', []) + '</div>' +
-        '<div class="mr-link"><code>vegansexplore.com/go/media-jordan</code><a class="dg-btn dg-ghost" href="#/join">Copy link</a></div>' +
-        '<p class="nm-hint">Every member gets a link of their own to recommend a colleague, who joins the same way.</p>';
+        '<div class="wg-arts">' + group('Pass it on', [
+          artRow(pic('welcome-ensemble.jpg'), 'Recommend a Colleague', 'Every member gets a link to share with a colleague, who joins the same way.')]) + '</div>';
     }
   };
-
   // ---------- menu and Liz, from welcome-guide.js ----------
   function drawMenu(cur) {
     menuEl.innerHTML = TABS.map(function (t) { return '<a href="' + href(t.k) + '"' + (t.k === cur ? ' aria-current="page"' : '') + '>' + esc(t.label) + '</a>'; }).join('');
@@ -242,6 +249,7 @@
   });
   window.addEventListener('hashchange', route);
   tourM.addEventListener('click', function (e) { if (e.target.closest('.dg-tnav')) setTimeout(function () { railEl.scrollIntoView({ block: 'start' }); }, 0); });
-  function start() { if (!window.VEGuideArt) return setTimeout(start, 60); route(); }
+  // Press-first (Sean, 2026-11-15, after the journalist panel): Liz starts folded on the Media Room; one tap shows her.
+  function start() { if (!window.VEGuideArt) return setTimeout(start, 60); route(); setFold(true); }
   start();
 })();
