@@ -20,6 +20,6 @@ Tap the link in bio to claim your city's spot.
 4. Picture: Seattle art; plate "Near me, a ZIP or a city / SEATTLE / Find Vegan places to eat near you, then vote for the ones you love and save them." Band: "Every Vegan spot near you." 4 / 9
 5. Picture: tag "Los Angeles", a Los Angeles listing (Vote, Save, Check in +10); "Check in at the places you visit, answer "Is it still open?" and earn points to give to people and causes." Band: "Check in. Earn points." 5 / 9
 6. Picture: London art; plate "Local pride / LONDON / Nominate someone in your city to be featured, or record your story for the podcast." Band: "Put your people on the map." 6 / 9
-7. Picture: Theo with a guidebook (scene). Band: "Free Guides for every step." 7 / 9
+7. Picture: Pascal with a guidebook (scene). Band: "Free Guides for every step." 7 / 9
 8. Picture: card "FOUNDING MEMBER / Stays on your profile for good." then "Join by midnight Eastern, January 1, 2027. Then it's gone." / "From South Florida to Seattle to London, every city's Founding Members are being counted now." Band: "Be one of your city's first." 8 / 9
 9. End: Atlanta, Seattle, London and South Florida art; logo; "Your city is counting now." / "Join free with a short survey before January 1 and be a Founding Member for good." / button "JOIN FREE: LINK IN BIO"

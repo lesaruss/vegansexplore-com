@@ -15,13 +15,13 @@ Tap the link in bio to join free. The clock is on.
 # On-slide words
 
 1. Picture area: "A title you can only claim now" / card: "Vegans Explore · Founding Member · Since 2026 · Yours for good" / stamp "Closes Jan 1" / "Free to join". Band: "This title ends / January 1."
-2. Band: "Yours for good, / if you're early." (Liz, a badge on her phone)
-3. Band: "Find Vegan food / near you." (Liz finding a cafe)
-4. Band: "Earn points / just by going." (Liz checking in)
+2. Band: "Yours for good, / if you're early." (Maya, a badge glowing on her phone)
+3. Band: "Find Vegan food / near you." (Pascal finding a cafe)
+4. Band: "Earn points / just by going." (Dani checking in at a bakery)
 5. Picture area: "Vegans Explore is in" + South Florida, Central Florida, North Florida, Atlanta, Washington, D.C., Maryland, Virginia, West Virginia, Delaware, New York, Philadelphia, Boston, Los Angeles, San Francisco, Seattle, Portland, Austin, Denver, London. Band: "Your city is / already here."
-6. Band: "Vegan events, / near you." (Liz at a market stall)
-7. Band: "A free Guide / for every step." (Liz with a Guide on a tablet)
-8. Band: "Free shows, / every week." (Theo listening)
+6. Band: "Vegan events, / near you." (Nori at a food festival)
+7. Band: "A free Guide / for every step." (Kai with a Guide at the library)
+8. Band: "Free shows, / every week." (River listening on the bus)
 9. Picture area: "Join now: Founding Member, on your profile for good" vs "Join after Jan 1: Member, ~~Founding Member~~ gone". Band: "After January 1, / it's gone."
 10. End card (South Florida): "Become a / Founding Member" / "Free, with a short survey. Ends midnight Eastern, January 1, 2027. Tap the link in bio." / button "Join free"
 

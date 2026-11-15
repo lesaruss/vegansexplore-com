@@ -11,7 +11,7 @@ const css = [...tpl.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => m[1
 const STRIPE = '<div class="stp"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>';
 const SPEC = JSON.parse(fs.readFileSync(path.join(HERE, 'spec.json'), 'utf8')).slides, N = SPEC.length;
 const DARK = { dk: 1, md: 1 };
-const TICK = '<div class="tick"><b>Founding Member</b><i></i><span>Free until Jan 1</span></div>';
+const TICK = '<div class="tick"><b>Founding Member</b><i></i><span>Ends Jan 1</span></div>';
 
 const pic = (s) => {
   const bg = `background:var(--${s.bg})`, ink = DARK[s.bg] ? '#fff' : 'var(--ink)';

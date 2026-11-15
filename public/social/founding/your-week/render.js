@@ -18,12 +18,12 @@ const S = [
     body: `<div class="ty" style="background:var(--peach)"><span class="tg">A week in your life</span>
       <div class="big">Monday.<br>6:47 PM.<br><em>Nothing<br>to eat.</em></div>
       <div class="wrow">${DAYS.map((d,i)=>`<i class="${i?'':'now'}">${d}</i>`).join('')}</div><div class="swipe">Swipe through your week <b>&rarr;</b></div></div>` },
-  { kind: 'day', day: 0, time: '6:48 PM', art: 'public/guides/welcome/liz-directory.jpg', color: 'br', head: 'Tap Near me.<br>Dinner, found.' },
-  { kind: 'day', day: 1, time: '12:30 PM', art: 'public/guides/welcome/liz-pts-checkin.jpg', color: 'tint', head: 'Check in.<br>Plus 10 points.' },
-  { kind: 'day', day: 2, time: '6:15 PM', art: 'public/guides/welcome/liz-media-sofa.jpg', color: 'peach', head: 'Wednesday:<br>a free show' },
-  { kind: 'day', day: 4, time: '5:00 PM', art: 'public/guides/welcome/liz-pts-friends.jpg', color: 'pink', head: 'Friday plans,<br>already saved' },
-  { kind: 'day', day: 5, time: '11:00 AM', art: 'public/guides/welcome/liz-events.jpg', color: 'br', head: 'A Vegan event<br>near you' },
-  { kind: 'day', day: 6, time: '2:00 PM', art: 'public/guides/welcome/liz-pts-give-v2.jpg', color: 'tint', head: 'Give back<br>with points' },
+  { kind: 'day', day: 0, time: '6:48 PM', art: 'public/social/founding/scenes/b-theo-monday.jpg', color: 'br', head: 'Tap Near me.<br>Dinner, found.' },
+  { kind: 'day', day: 1, time: '12:30 PM', art: 'public/social/founding/scenes/b-maya-tuesday.jpg', color: 'tint', head: 'Check in.<br>Plus 10 points.' },
+  { kind: 'day', day: 2, time: '6:15 PM', art: 'public/social/founding/scenes/b-liz-wednesday.jpg', color: 'peach', head: 'Wednesday:<br>a free show' },
+  { kind: 'day', day: 4, time: '5:00 PM', art: 'public/social/founding/scenes/b-river-friday.jpg', color: 'pink', head: 'Friday plans,<br>already saved' },
+  { kind: 'day', day: 5, time: '11:00 AM', art: 'public/social/founding/scenes/b-kai-saturday.jpg', color: 'br', head: 'A Vegan event<br>near you' },
+  { kind: 'day', day: 6, time: '2:00 PM', art: 'public/social/founding/scenes/b-nori-sunday.jpg', color: 'tint', head: 'Give back<br>with points' },
   { kind: 'type', color: 'dk', head: 'Wherever<br>you live',
     body: `<div class="ty" style="background:var(--tint)"><span class="tg">Every week, in</span><div class="cities">${
       ['South Florida', 'Central Florida', 'North Florida', 'Atlanta', 'Washington, D.C.', 'Maryland', 'Virginia', 'West Virginia', 'Delaware',

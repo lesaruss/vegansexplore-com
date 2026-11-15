@@ -57,13 +57,13 @@
   {
    "bg": "tint",
    "color": "dk",
-   "head": "Free now. Yours<br>for good.",
+   "head": "Claim it now.<br>Yours for good.",
    "type": "<div class=\"badge\"><img src=\"/public/logo-ve-mark-white.svg\" alt=\"\"><div><small>On your profile</small><b>Founding Member</b></div></div><div class=\"facts\"><div>Stays on your profile for good</div><div>250 welcome points to start</div><div>A short survey. No payment.</div></div>"
   },
   {
    "bg": "pink",
    "color": "br",
-   "head": "The door closes<br>January 1",
+   "head": "Founding closes<br>January 1",
    "type": "<div class=\"eb\">The clock is running</div><div class=\"big\" style=\"font-size:12cqw\">Gone at <em>midnight</em>.</div><div class=\"clock\"><div><b>Jan 1</b><small>2027</small></div><div><b>12 AM</b><small>Eastern time</small></div></div><div class=\"sub\">After that, no new Founding Members. No exceptions.</div>"
   },
   {

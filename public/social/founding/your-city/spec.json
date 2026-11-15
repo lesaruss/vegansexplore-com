@@ -14,7 +14,7 @@
  { "kind": "inside", "color": "pink", "head": "Put your people<br>on the map.",
    "art": { "type": "city", "src": "communities/london/wide.jpg", "color": "dk", "tag": "Local pride", "name": "London", "line": "Nominate someone in your city to be featured, or record your story for the podcast." } },
  { "kind": "inside", "color": "md", "head": "Free Guides for<br>every step.",
-   "art": { "type": "scene", "src": "public/social/pinned/scenes/theo-guidebook.jpg" } },
+   "art": { "type": "scene", "src": "public/social/founding/scenes/d-pascal-guide.jpg" } },
  { "kind": "inside", "color": "dk", "head": "Be one of your<br>city's first.",
    "art": { "type": "badge", "sub": "Stays on your profile for good.", "when": "Join by midnight Eastern, January 1, 2027.<br>Then it's gone.", "cities": "From South Florida to Seattle to London, every city's Founding Members are being counted now." } },
  { "kind": "end", "cities": ["communities/atlanta/wide.jpg", "communities/seattle/wide.jpg", "communities/london/wide.jpg", "communities/south-florida/wide.jpg"],

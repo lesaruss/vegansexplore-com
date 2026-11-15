@@ -446,3 +446,14 @@ skin, short gray hair, trimmed gray beard, round glasses (every Holiday Guide sc
 (`public/guides/maya.jpg`). Roster squares `theo-v3.jpg` and `maya-v4.jpg` replace `theo-v2` and `maya-v1` to `v3`, which had drifted darker.
 Pass the original as the first reference for every new picture of them (Higgsfield `ddc4b75d-6f3c-4f4d-93d2-27365c01d10b` Theo,
 `75c28848-a667-41d1-858a-1c1dc6032b6a` Maya) and compare the skin against it before it ships.
+
+## Social art: current look, unique scenes, a mixed cast (Sean, 2026-11-15)
+
+On the Founding Member carousels: "I don't think these graphics are using our new style... we would need to generate it. So moving forward, we
+have images that stay consistent with our brand... if it's not a guide, let's mix up the characters, because people want to see themselves in these
+characters. So if it's all Liz, black people might not be as attached to it as if we had a little bit of mixture where they feel represented."
+- Every scene in a post is drawn new for that post in the current look (the Guide scenes recipe, the Guide's current picture and wardrobe sheet),
+  never an older Welcome Guide or Holiday scene reused.
+- When a slide is not about one Guide's own page (the Holiday Guide is Theo's, so Theo stays there), the cast rotates across the roster
+  (Liz, Maya, Theo, Nori, Dani, River, Kai, Pascal) so no one face carries a post. One post, many faces.
+- First: the four Founding Member carousels (`public/social/founding/`, scenes in `public/social/founding/scenes/`).
