@@ -77,9 +77,9 @@
     liz:   { square: '/public/brand-kit/avatars/liz-v2.jpg',
              tall:   ART + 'hf_20261005_021230_e7e80a66-1335-48aa-9765-3cb2f90dd979_min.webp' }, // version 2, extended to 9:16
     // Square: the mid shot like Liz's (waving, head to waist). Tall: version 1 of 2 until Sean picks.
-    maya:   { square: '/public/brand-kit/avatars/maya-v3.jpg',
+    maya:   { square: '/public/brand-kit/avatars/maya-v4.jpg',
               tall:   ART + 'hf_20261005_021228_c4d6da03-4abc-477b-886b-7b2fb8427a9f_min.webp' },
-    theo:   { square: '/public/brand-kit/avatars/theo-v2.jpg',
+    theo:   { square: '/public/brand-kit/avatars/theo-v3.jpg',
               tall:   ART + 'hf_20261005_021227_af42b1d0-8e0b-42b7-821a-a6ea8e5585f0_min.webp' },
     nori:   { square: '/public/brand-kit/avatars/nori-v2.jpg',
               tall:   ART + 'hf_20261005_021228_7539346c-a5aa-44a9-8a44-2a6cb463e378_min.webp' },
