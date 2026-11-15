@@ -44,7 +44,7 @@ a = screen('listing', 160, 1080, 1350)
 save(inset(a, 'maya-menu', 36, 770, 290, (120, 0, 1040, 920)), 'r3-listing.jpg')
 # 04 Events: the event cards big, River inset.
 a = screen('events', 278, 1080, 1350)
-save(inset(a, 'river-festival', 36, 800, 290, (140, 0, 1080, 940)), 'r4-events.jpg')
+save(inset(a, 'river-festival', 30, 700, 260, (140, 0, 1080, 940)), 'r4-events.jpg')
 # Carousel inside slide art, 1:1: the Directory doors full bleed, Theo inset bottom right (no app UI on a feed post's picture).
-a = screen('directory', 330, 1080, 1080)
-save(inset(a, 'theo-guidebook', 690, 660, 330, (140, 0, 1080, 940)), 'c-directory-sq.jpg')
+a = screen('directory', 1125, 1080, 1080)
+save(inset(a, 'theo-guidebook', 716, 716, 300, (140, 0, 1080, 940)), 'c-directory-sq.jpg')
