@@ -86,10 +86,10 @@
   barCss.textContent =
     '.ve-tabbar{display:none}' +
     '@media (max-width:860px){' +
-    'body.ve-has-tabbar{padding-bottom:calc(80px + env(safe-area-inset-bottom,0px))}' +
-    'body.ve-has-tabbar #ve-inst{bottom:calc(94px + env(safe-area-inset-bottom,0px))}' +
+    'body.ve-has-tabbar{padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))}' +
+    'body.ve-has-tabbar #ve-inst{bottom:calc(100px + env(safe-area-inset-bottom,0px))}' +
     '.ve-tabbar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:9000;background:#fff;border-top:3px solid #1A1A1A;' +
-    'padding:6px 4px calc(16px + env(safe-area-inset-bottom,0px));font-family:Montserrat,system-ui,sans-serif}' +
+    'padding:6px 4px calc(22px + env(safe-area-inset-bottom,0px));font-family:Montserrat,system-ui,sans-serif}' +
     '.ve-tabbar a{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;font-size:11px;font-weight:800;text-decoration:none;color:#1A1A1A;padding:4px 0;min-height:48px;-webkit-tap-highlight-color:transparent}' +
     '.ve-tabbar svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}' +
     '.ve-tabbar a[aria-current="page"]{color:#2D5C27}.ve-tabbar a[aria-current="page"] span{box-shadow:inset 0 -3px 0 #22C55E}' +
