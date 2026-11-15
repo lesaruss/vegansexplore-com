@@ -59,6 +59,7 @@
     { group: 'Content', href: '/admin/depot/inbox', label: 'Inbox' },
     { group: 'Content', href: '/admin/depot/sources', label: 'Sources' },
     { group: 'Content', href: '/admin/depot/pulse-subscribers', label: 'Pulse subscribers' },
+    { group: 'Content', href: '/admin/depot/giving', label: '11 Days of Giving' },
     { group: 'Content', href: '/admin/depot/content-index', label: 'Content index' },
     { group: 'Content', href: '/admin/depot/books', label: 'Books' },
     { group: 'Content', href: '/admin/depot/mentions', label: 'In this story' },

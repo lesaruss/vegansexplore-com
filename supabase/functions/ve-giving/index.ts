@@ -3,12 +3,22 @@
 // random in the open. POST { action, ... }. verify_jwt off; the Vegans Explore token is checked here (the same check as ve-holiday).
 // Public:  status  -> { open, rules_reviewed (the rules link shows only once the attorney has read them), starts_on, ends_on, prizes (live ones, with the business), entries (count), me? { member, entered } }
 // Member:  enter   -> one free entry per member per giveaway, only while entries_open (a super admin may enter while closed, to test)
-// Admin:   entries -> who entered, newest first (super admins only)
+// Owner:   my_prizes {listing_id}, prize_photo_url {listing_id, content_type, bytes}, prize_save {listing_id, title, value_cents, quantity,
+//          image_url?, note?}, prize_withdraw {listing_id, id}: the prize form in the business dashboard (Sean, 2026-11-15). Up to $100 per
+//          business, $5,000 across the giveaway, until the end of Friday, November 27 Eastern; a prize waits as pledged for our check.
+// Admin:   entries -> who entered, newest first (super admins only); prize_queue, prize_review {id, decision: live | withdrawn | pledged}
+//          (live grants the giver 250 points per prize, once)
 // Nothing here takes money, a share, a tag or a follow: entering is free and open to every member in good standing.
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 const db = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!);
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type', 'Access-Control-Allow-Methods': 'POST, OPTIONS' };
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const PUBLIC_BASE = `${Deno.env.get('SUPABASE_URL')}/storage/v1/object/public/vegan-media/`;
+const PER_BUSINESS = 10000;                                   // $100 in prizes per business
+const TOTAL_CAP = 500000;                                     // $5,000 across the giveaway (Florida and New York register above it)
+const PRIZES_CLOSE = Date.parse('2026-11-28T05:00:00Z');      // the end of Friday, November 27, Eastern
+const clean = (v: unknown, n: number) => String(v ?? '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '').trim().slice(0, n);
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
 
 function b64d(s: string): Uint8Array { const pad = s.length % 4 === 0 ? '' : '='.repeat(4 - (s.length % 4)); const bin = atob(s.replace(/-/g, '+').replace(/_/g, '/') + pad); const o = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) o[i] = bin.charCodeAt(i); return o; }
@@ -77,6 +87,89 @@ Deno.serve(async (req) => {
       { onConflict: 'campaign,member_id', ignoreDuplicates: true });
     if (error) return json({ error: 'save_failed' }, 500);
     return json({ ok: true, entered: true });
+  }
+
+  // ---- The prize form (Sean, 2026-11-15: "build the prize form"): a business's owner gives prizes from its dashboard ----
+  if (['my_prizes', 'prize_photo_url', 'prize_save', 'prize_withdraw'].includes(action)) {
+    const lid = String(b.listing_id || '');
+    if (!UUID.test(lid)) return json({ error: 'bad_listing' }, 400);
+    const { data: l } = await db.from('listings').select('id, slug, name, owner_member_id').eq('id', lid).maybeSingle();
+    if (!l) return json({ error: 'not_found' }, 404);
+    if (l.owner_member_id !== mm.id && !mm.is_superadmin) return json({ error: 'not_owner' }, 403);
+    const mine = async () => (await db.from('ve_giving_prizes').select('id, title, value_cents, quantity, image_url, note, status, created_at')
+      .eq('campaign', s.campaign).eq('listing_id', lid).order('created_at')).data || [];
+    const given = (ps: any[]) => ps.filter((p) => p.status !== 'withdrawn').reduce((a, p) => a + p.value_cents * p.quantity, 0);
+    const closed = Date.now() >= PRIZES_CLOSE;
+
+    if (action === 'my_prizes') {
+      const ps = await mine();
+      return json({ ok: true, prizes: ps, given_cents: given(ps), per_business_cents: PER_BUSINESS, closes_at: new Date(PRIZES_CLOSE).toISOString(), closed });
+    }
+    if (closed && !mm.is_superadmin) return json({ error: 'prizes_closed' }, 409);
+
+    if (action === 'prize_photo_url') {
+      const type = String(b.content_type || '');
+      const ext = ({ 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp' } as Record<string, string>)[type];
+      if (!ext) return json({ error: 'bad_type' }, 400);
+      if (!(Number(b.bytes) > 0 && Number(b.bytes) <= 8 * 1024 * 1024)) return json({ error: 'too_big' }, 400);
+      const path = `media/giving/${l.slug}/${crypto.randomUUID()}.${ext}`;
+      const { data: up, error } = await db.storage.from('vegan-media').createSignedUploadUrl(path);
+      if (error || !up) return json({ error: 'upload_unavailable' }, 500);
+      return json({ ok: true, signed_url: up.signedUrl, public_url: `${PUBLIC_BASE}${path}` });
+    }
+    if (action === 'prize_save') {
+      const title = clean(b.title, 120);
+      const value = Math.round(Number(b.value_cents));
+      const qty = Math.round(Number(b.quantity) || 1);
+      const img = clean(b.image_url, 500);
+      if (title.length < 2) return json({ error: 'title_needed' }, 400);
+      if (!(value >= 100 && value <= PER_BUSINESS)) return json({ error: 'bad_value' }, 400);
+      if (!(qty >= 1 && qty <= 10)) return json({ error: 'bad_quantity' }, 400);
+      if (img && !img.startsWith(`${PUBLIC_BASE}media/giving/${l.slug}/`)) return json({ error: 'bad_photo' }, 400);
+      const ps = await mine();
+      if (given(ps) + value * qty > PER_BUSINESS) return json({ error: 'over_business_limit', left_cents: Math.max(0, PER_BUSINESS - given(ps)) }, 409);
+      const { data: all } = await db.from('ve_giving_prizes').select('value_cents, quantity').eq('campaign', s.campaign).neq('status', 'withdrawn');
+      const total = (all || []).reduce((a: number, p: any) => a + p.value_cents * p.quantity, 0);
+      if (total + value * qty > TOTAL_CAP) return json({ error: 'giveaway_full' }, 409);
+      const { error } = await db.from('ve_giving_prizes').insert({ campaign: s.campaign, listing_id: lid, title, value_cents: value, quantity: qty,
+        image_url: img || null, note: clean(b.note, 500) || null, status: 'pledged', created_by: mm.id });
+      if (error) return json({ error: 'save_failed' }, 500);
+      // Our team sees who gave a prize where it sees every other interest (Leads), as well as in Depot > 11 Days of Giving.
+      await db.from('ve_initiative_interest').insert({ initiative_slug: s.campaign, member_id: mm.id, action_type: 'sponsor_tier', tier_label: 'Prize',
+        status: 'new', source: 'form', name: l.name.slice(0, 120), note: `${title}, $${Math.round(value / 100)} x ${qty}`.slice(0, 500), tags: ['11-days-of-giving', l.slug] });
+      const fresh = await mine();
+      return json({ ok: true, prizes: fresh, given_cents: given(fresh) });
+    }
+    if (action === 'prize_withdraw') {
+      const id = String(b.id || '');
+      if (!UUID.test(id)) return json({ error: 'bad_id' }, 400);
+      const { error } = await db.from('ve_giving_prizes').update({ status: 'withdrawn' }).eq('id', id).eq('listing_id', lid).eq('status', 'pledged');
+      if (error) return json({ error: 'save_failed' }, 500);
+      const fresh = await mine();
+      return json({ ok: true, prizes: fresh, given_cents: given(fresh) });
+    }
+  }
+
+  // ---- Our check (super admins, Depot > 11 Days of Giving) ----
+  if (action === 'prize_queue') {
+    if (!mm.is_superadmin) return json({ error: 'forbidden' }, 403);
+    const { data } = await db.from('ve_giving_prizes').select('id, title, value_cents, quantity, image_url, note, status, created_at, reviewed_at, listing:listings(slug, name, logo_url)')
+      .eq('campaign', s.campaign).order('created_at', { ascending: false }).limit(500);
+    const rows = data || [];
+    const total = rows.filter((p: any) => p.status !== 'withdrawn').reduce((a: number, p: any) => a + p.value_cents * p.quantity, 0);
+    return json({ ok: true, prizes: rows, total_cents: total, cap_cents: TOTAL_CAP });
+  }
+  if (action === 'prize_review') {
+    if (!mm.is_superadmin) return json({ error: 'forbidden' }, 403);
+    const id = String(b.id || ''), decision = String(b.decision || '');
+    if (!UUID.test(id) || !['live', 'withdrawn', 'pledged'].includes(decision)) return json({ error: 'bad_request' }, 400);
+    const { data: p } = await db.from('ve_giving_prizes').select('id, quantity, created_by, status').eq('id', id).maybeSingle();
+    if (!p) return json({ error: 'not_found' }, 404);
+    const { error } = await db.from('ve_giving_prizes').update({ status: decision, reviewed_at: new Date().toISOString(), reviewed_by: mm.id }).eq('id', id);
+    if (error) return json({ error: 'save_failed' }, 500);
+    // 250 points per prize to the owner who gave it, once (the ref keeps a second approval from paying twice).
+    if (decision === 'live' && p.created_by) await db.rpc('ve_points_grant', { p_member: p.created_by, p_amount: 250 * p.quantity, p_reason: 'admin_adjust', p_ref: `giving-prize:${id}` });
+    return json({ ok: true });
   }
 
   if (action === 'entries') {
