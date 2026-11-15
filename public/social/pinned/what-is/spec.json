@@ -1,12 +1,59 @@
-{"slides":[
-{"kind":"cover","art":"public/brand-kit/group-square.jpg","color":"dk","head":"What is Vegans<br><span style=\"color:var(--br)\">Explore</span>?"},
-{"kind":"inside","art":"public/social/pinned/liz-directory.jpg","color":"dk","head":"Vegan places<br>near you"},
-{"kind":"inside","art":"public/social/pinned/liz-events.jpg","color":"or","head":"Vegan events<br>in your city"},
-{"kind":"inside","art":"public/social/pinned/liz-guides.jpg","color":"pink","head":"Guides for<br>every step"},
-{"kind":"inside","art":"public/social/pinned/liz-community.jpg","color":"md","head":"Your Vegan<br>community"},
-{"kind":"inside","art":"public/social/pinned/liz-pulse.jpg","color":"br","head":"Vegan news<br>near you"},
-{"kind":"inside","art":"public/social/pinned/liz-media.jpg","color":"peach","head":"Podcasts and<br>shows, free"},
-{"kind":"inside","art":"public/social/pinned/liz-points.jpg","color":"tint","head":"Earn points<br>as you explore"},
-{"kind":"inside","art":"public/guides/nominate/kai-ask.jpg","color":"pink","head":"Nominate<br>someone"},
-{"kind":"end","city":"communities/new-york/wide.jpg","head":"Become a<br><span>Founding Member</span>","line":"Free. Join by midnight Eastern, January 1.","button":"Join free"}
-]}
+{
+"slides": [
+{
+"kind": "cover",
+"art": "public/social/pinned/art/home-sq.jpg",
+"color": "dk",
+"head": "What is Vegans<br><span style=\"color:var(--br)\">Explore</span>?"
+},
+{
+"kind": "inside",
+"art": "public/social/pinned/art/directory-sq.jpg",
+"color": "dk",
+"head": "Vegan places<br>near you"
+},
+{
+"kind": "inside",
+"art": "public/social/pinned/art/listing-sq.jpg",
+"color": "dk",
+"head": "Every place,<br>its own page"
+},
+{
+"kind": "inside",
+"art": "public/social/pinned/art/events-sq.jpg",
+"color": "or",
+"head": "Vegan events<br>in your city"
+},
+{
+"kind": "inside",
+"art": "public/social/pinned/art/guides-sq.jpg",
+"color": "pink",
+"head": "Guides for<br>every step"
+},
+{
+"kind": "inside",
+"art": "public/social/pinned/art/seattle-sq.jpg",
+"color": "md",
+"head": "Your Vegan<br>community"
+},
+{
+"kind": "inside",
+"art": "public/social/pinned/art/media-sq.jpg",
+"color": "peach",
+"head": "Podcasts and<br>shows, free"
+},
+{
+"kind": "inside",
+"art": "public/social/pinned/art/nominate-sq.jpg",
+"color": "pink",
+"head": "Nominate<br>someone"
+},
+{
+"kind": "end",
+"city": "communities/new-york/wide.jpg",
+"head": "Become a<br><span>Founding Member</span>",
+"line": "Free. Join by midnight Eastern, January 1.",
+"button": "Join free"
+}
+]
+}

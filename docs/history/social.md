@@ -221,3 +221,13 @@ carousels. And then the 3rd could be our current programming... each slide is go
 - **Fact checks that changed copy**: the Daily Pulse has published nothing since June (newest `ve_pulse_posts` 2026-06-21), so no slide says
   "every day/morning"; the shows carousel dropped its Pulse slide.
 - Open: Facebook gets the same caption (with "Link in bio"); its tracked links (`/go/pin-*-fb`) are in each slot's By hand step.
+- **Round 2, the same day: the platform is the picture** (Sean: "We're leaning too much on Liz in these photos, and I would like to actually see
+  some real screenshots... the real point of this is to show off the platform, not our guides, but the guides will anchor it. And I'm not a big fan
+  of the groups shot."). Every slide and reel shot is now a live phone screenshot (390 x 844 at 3x, the install prompt dismissed through
+  `ve_pwa_dismissed`; `scripts/brand-templates/capture.js`, scroll offsets past Guide rails) whole in a phone frame, beside the section's Guide
+  (the roster's square mid shot) in the kit's white frame with an ink shadow, on a light tint of the section color (`screen-art.js`, drawn
+  natively at 1:1 and 4:5, nothing overlapping the screenshot). The Guides rotate: Liz (home, the Podcast, Holiday menus), Pascal (Directory,
+  recipes), Maya (a listing page, the store), River (events), Theo (Guides, the Holiday Guide), Nori (Communities, Hanukkah), Kai (Media, gifts,
+  Be on the show), Dani (Nominate, SoFlo Vegans, Give back). The group shot is gone. What is Vegans Explore is 9 slides (Directory, a listing page,
+  Events, Guides, Communities, Media, Nominate); Passport and the Pulse are out (no strong page to show; the Pulse is stale). The twelve Liz
+  scenes from round 1 were removed. Migration `20261115_social_week_platform_art.sql`; storage files replaced under the same names, 26 checked.

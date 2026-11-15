@@ -4,61 +4,55 @@
 "color": "dk",
 "label": "Vegans Explore, in 30 seconds",
 "head": "What is<br>this place?",
-"art": "public/guides/welcome/liz-overview.jpg"
+"art": "public/social/pinned/art/home-45.jpg"
 },
 {
 "color": "dk",
 "label": "The Directory",
 "head": "Vegan places<br>near you",
-"art": "public/guides/welcome/liz-directory.jpg"
+"art": "public/social/pinned/art/directory-45.jpg"
+},
+{
+"color": "dk",
+"label": "Every listing",
+"head": "Every place,<br>its own page",
+"art": "public/social/pinned/art/listing-45.jpg"
 },
 {
 "color": "or",
 "label": "Events",
 "head": "Vegan events<br>in your city",
-"art": "public/guides/welcome/liz-events.jpg"
+"art": "public/social/pinned/art/events-45.jpg"
 },
 {
 "color": "pink",
 "label": "Guides",
 "head": "Guides for<br>every step",
-"art": "public/guides/welcome/liz-guides.jpg"
+"art": "public/social/pinned/art/guides-45.jpg"
 },
 {
 "color": "md",
 "label": "Communities",
 "head": "Your Vegan<br>community",
-"art": "public/guides/welcome/liz-city.jpg"
-},
-{
-"color": "br",
-"label": "The Daily Pulse",
-"head": "Vegan news<br>near you",
-"art": "public/guides/welcome/liz-ani-pulse.jpg"
+"art": "public/social/pinned/art/seattle-45.jpg"
 },
 {
 "color": "peach",
 "label": "Media",
 "head": "Podcasts and<br>shows, free",
-"art": "public/guides/welcome/liz-media-studio.jpg"
-},
-{
-"color": "tint",
-"label": "Passport",
-"head": "Earn points<br>as you go",
-"art": "public/guides/welcome/liz-pts-checkin.jpg"
+"art": "public/social/pinned/art/media-45.jpg"
 },
 {
 "color": "pink",
 "label": "Nominate Someone",
 "head": "Nominate<br>someone",
-"art": "public/guides/nominate/kai-cheer.jpg"
+"art": "public/social/pinned/art/nominate-45.jpg"
 },
 {
 "color": "dk",
 "label": "Free \u00b7 by January 1 \u00b7 link in bio",
 "head": "Founding<br><span style=\"color:var(--br)\">Member</span>",
-"art": "public/guides/welcome/liz-fnd-nye.jpg"
+"art": "public/social/pinned/art/passport-45.jpg"
 }
 ]
 }

@@ -1,0 +1,200 @@
+[
+{
+"name": "home",
+"shot": "public/social/pinned/cap/home.jpg",
+"guide": "liz",
+"color": "dk",
+"shapes": [
+"sq",
+"45"
+]
+},
+{
+"name": "directory",
+"shot": "public/social/pinned/cap/directory.jpg",
+"guide": "pascal",
+"color": "dk",
+"shapes": [
+"sq",
+"45"
+]
+},
+{
+"name": "listing",
+"shot": "public/social/pinned/cap/listing.jpg",
+"guide": "maya",
+"color": "dk",
+"shapes": [
+"sq",
+"45"
+]
+},
+{
+"name": "events",
+"shot": "public/social/pinned/cap/events.jpg",
+"guide": "river",
+"color": "or",
+"shapes": [
+"sq",
+"45"
+]
+},
+{
+"name": "guides",
+"shot": "public/social/pinned/cap/guides.jpg",
+"guide": "theo",
+"color": "pink",
+"shapes": [
+"sq",
+"45"
+]
+},
+{
+"name": "seattle",
+"shot": "public/social/pinned/cap/seattle.jpg",
+"guide": "nori",
+"color": "md",
+"shapes": [
+"sq",
+"45"
+]
+},
+{
+"name": "media",
+"shot": "public/social/pinned/cap/media.jpg",
+"guide": "kai",
+"color": "peach",
+"shapes": [
+"sq",
+"45"
+]
+},
+{
+"name": "nominate",
+"shot": "public/social/pinned/cap/nominate.jpg",
+"guide": "dani",
+"color": "pink",
+"shapes": [
+"sq",
+"45"
+]
+},
+{
+"name": "vepod",
+"shot": "public/social/pinned/cap/vepod.jpg",
+"guide": "liz",
+"color": "peach",
+"shapes": [
+"sq"
+]
+},
+{
+"name": "soflo",
+"shot": "public/social/pinned/cap/soflo.jpg",
+"guide": "dani",
+"color": "peach",
+"shapes": [
+"sq"
+]
+},
+{
+"name": "line",
+"shot": "public/social/pinned/cap/line.jpg",
+"guide": "kai",
+"color": "pink",
+"shapes": [
+"sq"
+]
+},
+{
+"name": "hol",
+"shot": "public/social/pinned/cap/hol.jpg",
+"guide": "theo",
+"color": "pink",
+"shapes": [
+"sq",
+"45"
+]
+},
+{
+"name": "hol-ideas",
+"shot": "public/social/pinned/cap/hol-ideas.jpg",
+"guide": "theo",
+"color": "pink",
+"shapes": [
+"sq"
+]
+},
+{
+"name": "hol-menus",
+"shot": "public/social/pinned/cap/hol-menus.jpg",
+"guide": "liz",
+"color": "pink",
+"shapes": [
+"sq"
+]
+},
+{
+"name": "hol-recipes",
+"shot": "public/social/pinned/cap/hol-recipes.jpg",
+"guide": "pascal",
+"color": "pink",
+"shapes": [
+"sq"
+]
+},
+{
+"name": "hol-store",
+"shot": "public/social/pinned/cap/hol-store.jpg",
+"guide": "maya",
+"color": "pink",
+"shapes": [
+"sq"
+]
+},
+{
+"name": "hol-events",
+"shot": "public/social/pinned/cap/hol-events.jpg",
+"guide": "river",
+"color": "or",
+"shapes": [
+"sq"
+]
+},
+{
+"name": "hol-hk",
+"shot": "public/social/pinned/cap/hol-hk.jpg",
+"guide": "nori",
+"color": "pink",
+"shapes": [
+"sq"
+]
+},
+{
+"name": "hol-gifts",
+"shot": "public/social/pinned/cap/hol-gifts.jpg",
+"guide": "kai",
+"color": "pink",
+"shapes": [
+"sq"
+]
+},
+{
+"name": "hol-give",
+"shot": "public/social/pinned/cap/hol-give.jpg",
+"guide": "dani",
+"color": "md",
+"shapes": [
+"sq"
+]
+},
+{
+"name": "passport",
+"shot": "public/social/pinned/cap/passport.jpg",
+"guide": "theo",
+"color": "dk",
+"shapes": [
+"45"
+]
+}
+]
