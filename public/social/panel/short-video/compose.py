@@ -37,13 +37,13 @@ a.paste(screen('home', 0, 1080, 270), (0, 1080))
 save(a, 'r1-hook.jpg')
 # 02 Directory: the headline, search and the Eat door big, all above the caption zone.
 # (no Guide here: the doors are the point, and Sean asked for some frames without one)
-a = screen('directory', 520, 1080, 1350)
+a = screen('directory', 590, 1080, 1350)
 save(a, 'r2-directory.jpg')
 # 03 Listing: the listing head big, Maya inset.
 a = screen('listing', 160, 1080, 1350)
-save(inset(a, 'maya-menu', 36, 690, 290, (120, 0, 1040, 920)), 'r3-listing.jpg')
+save(inset(a, 'maya-menu', 36, 770, 290, (120, 0, 1040, 920)), 'r3-listing.jpg')
 # 04 Events: the event cards big, River inset.
-a = screen('events', 300, 1080, 1350)
+a = screen('events', 240, 1080, 1350)
 save(inset(a, 'river-festival', 36, 700, 290, (140, 0, 1080, 940)), 'r4-events.jpg')
 # Carousel inside slide art, 1:1: the Directory doors full bleed, Theo inset bottom right (no app UI on a feed post's picture).
 a = screen('directory', 330, 1080, 1080)

@@ -1,6 +1,6 @@
 { "slides": [
  { "kind": "cover", "art": "art/cover.jpg", "color": "dk", "head": "Everything Vegan,<br><span style=\"color:var(--br)\">near you. Free.</span>" },
- { "kind": "inside", "art": "art/directory.jpg", "color": "dk", "head": "Food, causes<br>and people" },
+ { "kind": "inside", "art": "art/directory.jpg", "color": "dk", "head": "Find Vegan food<br>in any city" },
  { "kind": "inside", "art": "art/listing.jpg", "color": "dk", "head": "Menus, votes<br>and check-ins" },
  { "kind": "inside", "art": "art/events.jpg", "color": "or", "head": "Vegan events<br>near you" },
  { "kind": "inside", "art": "art/community.jpg", "color": "md", "head": "Your city's<br>Vegan hub" },
