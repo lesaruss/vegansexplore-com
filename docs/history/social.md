@@ -262,8 +262,8 @@ carousels. And then the 3rd could be our current programming... each slide is go
   registration until January 1st", four designers, four proofs on our brand. Proofs in `public/social/founding/` (brief `BRIEF.md`): A Be one of
   the first (scarcity, a clock rail), B Your week (story), C Straight to the point (direct response), D Your city (place). Sean locked all four
   ("We can lock that in as a post for founding members"), asked for the current look and a mixed cast (rule in `docs/history/guides-standards.md`),
-  then approved them with one exception, River on the bus showing his phone's screen (redrawn twice: screen hidden, then the shirt mark kept
-  clear). Thirteen new scenes in `public/social/founding/scenes/`. Copy corrections by Logan: B's calendar read Jan 1 11:59 PM ET (24 h late, now
+  then approved them with one exception, River on the bus showing his phone's screen (redrawn three times: screen hidden, the shirt mark kept
+  clear, then wireless earbuds after Sean: "His cable is not in his phone. What is it plugged into?"). Thirteen new scenes in `public/social/founding/scenes/`. Copy corrections by Logan: B's calendar read Jan 1 11:59 PM ET (24 h late, now
   12:00 AM ET); C's "Free until Jan 1" and "The door closes January 1" implied joining ends (joining stays free; Founding Member closes), now "Ends
   Jan 1", "Founding closes January 1", "Claim it now. Yours for good."; #PlantBased dropped. **Scheduled** (migration
   `20261115_founding_member_series.sql`, batch `founding-series`, files in `vegan-media/media/social/founding/<slug>/`, 39 checked): Mondays 9 AM ET,
