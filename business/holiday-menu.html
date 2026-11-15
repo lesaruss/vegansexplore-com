@@ -251,7 +251,9 @@
       function draftKey() { return 've_hmenu_' + SEL.listing + '_' + SEL.holiday; }
 
       function countdown(list) {
-        var h = (list || []).filter(function (x) { return x.open; })[0], c = $('countdown');
+        // A link that names the holiday (?holiday=christmas, the Christmas Menus email, Sean 2026-11-15) counts down to that one; else the soonest open.
+        var open = (list || []).filter(function (x) { return x.open; }), want = new URLSearchParams(location.search).get('holiday');
+        var h = open.filter(function (x) { return x.slug === want; })[0] || open[0], c = $('countdown');
         if (!h) { c.hidden = false; c.className = 'countdown shut'; c.innerHTML = 'Holiday menus are closed right now. The next holiday opens soon.'; return; }
         c.hidden = false; c.className = 'countdown';
         c.innerHTML = '<span>Send it early: your menu goes up as soon as our team checks it. ' + esc(h.name) + ' menus close at 11:59 PM Eastern on ' + esc(closeText(h.submit_close)) + '.</span><b>' + (h.days_left <= 1 ? 'Last day' : h.days_left + ' days left') + '</b>';
