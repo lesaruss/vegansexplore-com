@@ -1,0 +1,9 @@
+{"slides":[
+{"kind": "cover", "art": "communities/new-york/square.jpg", "color": "dk", "head": "5 Vegan spots in<br><span style=\"color:var(--br)\">New York</span>"},
+{"kind": "inside", "art": "public/social/week-2026-11-23/cities/new-york/anixi.jpg", "color": "dk", "head": "Anixi<br>Chelsea"},
+{"kind": "inside", "art": "public/social/week-2026-11-23/cities/new-york/next-stop-vegan.jpg", "color": "dk", "head": "Next Stop Vegan<br>Brooklyn"},
+{"kind": "inside", "art": "public/social/week-2026-11-23/cities/new-york/al-andalus.jpg", "color": "dk", "head": "Al-Andalus<br>East Village"},
+{"kind": "inside", "art": "public/social/week-2026-11-23/cities/new-york/beyond-sushi.jpg", "color": "dk", "head": "Beyond Sushi<br>Midtown"},
+{"kind": "inside", "art": "public/social/week-2026-11-23/cities/new-york/hangawi.jpg", "color": "dk", "head": "Hangawi<br>Koreatown"},
+{"kind": "end", "city": "communities/new-york/wide.jpg", "head": "Find more in<br><span>New York</span>", "line": "Joining is free. Founding Member closes January 1. Link in bio.", "button": "Join free"}
+]}
