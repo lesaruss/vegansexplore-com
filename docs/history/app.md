@@ -76,3 +76,11 @@ shout-out, bounties). Proven live at phone size; a real check-in as the Vegans E
 removed through `ve-once-app-checkin` (now 410). **V** is `.github/workflows/eas-build.yml` in the app repo; GitHub runs it only from the default branch,
 so it waits on Sean merging the app branch and adding its six secrets from Key Room.
 **Merged 2026-11-08** (Sean: "merge"): app main 2268abe carries the new app and the workflow (the branch had its own history, so main keeps Sapphire's history and its tree is the branch). V now waits only on the six Actions secrets.
+
+**The site as an app (2026-11-15)** (Sean: "I clicked to get an image... It came up full screen... I didn't have a way of going back because I
+don't have navigation because it's a web app... let people know they can use it as a web app"): `public/ve-app-shell.js` (from `nav.js` on
+every page): opened from the home screen, a Back button sits beside the logo on every page but the homepage, and a link to a picture or PDF on
+our sites opens in a viewer over the page with Close ("press and hold, then Save to Photos"), only in the app; in a browser pages keep their own
+viewers. The phone menu has **Get the app** (`data-ve-install`, not once installed), which opens the Add to home screen steps (`VEInstall.show`),
+beside the existing prompt from the 3rd page. BrandDesk's Social kit does the same for its files (lesaruss-hq `SkFile`). Checked as an iPhone 14
+installed and in Safari: Back, the viewer and Close, Get the app and its steps, no script errors.

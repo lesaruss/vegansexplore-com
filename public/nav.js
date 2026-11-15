@@ -55,6 +55,8 @@ window.VEImg = window.VEImg || function (u, w) {
   if ('serviceWorker' in navigator && !framed) {
     window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function () {}); });
   }
+  // The site as an app: Back in the top bar and pictures in a viewer when opened from the home screen, Get the app in the menu.
+  if (!framed) { var sh = document.createElement('script'); sh.src = '/public/ve-app-shell.js?v=1'; sh.async = true; h.appendChild(sh); }
   if (!framed && (/[?&]install=1\b/.test(location.search) || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches))) {
     var s = document.createElement('script'); s.src = '/public/ve-install.js'; s.async = true; h.appendChild(s);
   }
@@ -472,6 +474,8 @@ window.VEImg = window.VEImg || function (u, w) {
           MENU.map(function (m) { return '<a href="' + m[1] + '"' + (inSection(m[1]) ? ' aria-current="page"' : '') + '>' + m[0] + '</a>'; }).join('') +
           (p.indexOf('/directory') === 0 ? '<a href="/claim?add=1">Submit a listing</a>' : '') +
           (loggedIn ? '' : '<a class="ve-bm-login" href="/login">Log In</a>') +
+          // Get the app (Sean, 2026-11-15): on phones, not once it is installed; opens the Add to home screen steps.
+          ((window.matchMedia && matchMedia('(pointer: coarse)').matches && !matchMedia('(display-mode: standalone)').matches && navigator.standalone !== true) ? '<a href="?install=1" data-ve-install>Get the app</a>' : '') +
         '</div>' +
       '</nav>';
   }
