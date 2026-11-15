@@ -1,7 +1,7 @@
 // ve-giving: 11 Days of Giving (Sean, 2026-11-15: "build the entry page"; plan locked 2026-11-13, playbook ve-holiday-guide; migration
 // 20261115_eleven_days_of_giving_entries.sql). December 1 to 11, members enter free for prizes Vegan businesses give; winners are drawn at
 // random in the open. POST { action, ... }. verify_jwt off; the Vegans Explore token is checked here (the same check as ve-holiday).
-// Public:  status  -> { open, starts_on, ends_on, prizes (live ones, with the business), entries (count), me? { member, entered } }
+// Public:  status  -> { open, rules_reviewed (the rules link shows only once the attorney has read them), starts_on, ends_on, prizes (live ones, with the business), entries (count), me? { member, entered } }
 // Member:  enter   -> one free entry per member per giveaway, only while entries_open (a super admin may enter while closed, to test)
 // Admin:   entries -> who entered, newest first (super admins only)
 // Nothing here takes money, a share, a tag or a follow: entering is free and open to every member in good standing.
@@ -24,11 +24,11 @@ async function verifyToken(token: string): Promise<string | null> {
   } catch { return null; }
 }
 
-type Settings = { campaign: string; entries_open: boolean; starts_on: string; ends_on: string; fulfill_by: string };
+type Settings = { campaign: string; entries_open: boolean; rules_reviewed: boolean; starts_on: string; ends_on: string; fulfill_by: string };
 async function settings(): Promise<Settings> {
   const { data } = await db.from('ve_site_settings').select('value').eq('key', 'giving_2026').maybeSingle();
   const v = (data?.value || {}) as Partial<Settings>;
-  return { campaign: v.campaign || '11-days-of-giving-2026', entries_open: v.entries_open === true, starts_on: v.starts_on || '2026-12-01', ends_on: v.ends_on || '2026-12-11', fulfill_by: v.fulfill_by || '2027-01-10' };
+  return { campaign: v.campaign || '11-days-of-giving-2026', entries_open: v.entries_open === true, rules_reviewed: v.rules_reviewed === true, starts_on: v.starts_on || '2026-12-01', ends_on: v.ends_on || '2026-12-11', fulfill_by: v.fulfill_by || '2027-01-10' };
 }
 // Entries close at the end of the last day, Eastern (midnight Eastern is 05:00 UTC in December).
 const closedByDate = (s: Settings) => Date.now() >= Date.parse(s.ends_on + 'T05:00:00Z') + 864e5;
@@ -62,7 +62,7 @@ Deno.serve(async (req) => {
       const { data: e } = await db.from('ve_giving_entries').select('entered_at').eq('campaign', s.campaign).eq('member_id', mm.id).maybeSingle();
       me = { member: !!mm.is_superadmin || mm.membership_status === 'active', entered: !!e, entered_at: e?.entered_at || null, admin: !!mm.is_superadmin };
     }
-    return json({ ok: true, open, starts_on: s.starts_on, ends_on: s.ends_on, fulfill_by: s.fulfill_by, prizes: prizes || [], entries: count || 0, me });
+    return json({ ok: true, open, rules_reviewed: s.rules_reviewed, starts_on: s.starts_on, ends_on: s.ends_on, fulfill_by: s.fulfill_by, prizes: prizes || [], entries: count || 0, me });
   }
 
   const mm = await whoAmI(req, b);

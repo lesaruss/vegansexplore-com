@@ -85,6 +85,8 @@
   ];
   // Theo's recordings (Sean approved the script v2, 2026-11-08): one per video chapter, roster voice aFyw0oiXW7dzKF4o7woX, each checked with stt.
   // The Overview plays the whole tour back to back; every other tab plays its own chapter (canon-ve-guide-tour-standard: Summarize this page).
+  // A page with Theo's recorded line but no video yet plays the line alone (11 Days of Giving, Sean approved and recorded 2026-11-15).
+  var TAB_AUDIO = { giving: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/holiday-guide/theo-giving-v1.mp3' };
   var AUDIO_BASE = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/holiday-guide/theo-tour-';
   var CHAPTER_LINES = ["Welcome to the Holiday Guide. I'm Theo. You're the one setting the table this year, and I'm here to help you do it your way.", "Vegans Explore has been bringing the Vegan community together since 2016, city by city. We know the places cooking near you and the groups doing good. This Guide puts all of it in one spot for the holidays, free.", "ThanksLiving is Thanksgiving with a fully plant-based table. Same family, same gratitude, nobody harmed. On this page you'll find a few easy ideas to make it yours, whether you host or bring one dish.", "Don't want to cook it all? Pick your chapter and see which Vegan places are cooking for the holiday, what they're offering, and when to order by. Our team checks every menu before it shows. Save one to find it again. Know a place we missed? Tell us, and we'll check it.", "Rather be at someone else's table? Find sanctuary dinners, potlucks and Thanksgiving events on our calendar. Hosting one? Add it, so people can find you.", "Giving is part of the season. Here are the nonprofits, rescues and sanctuaries doing the work, in your city and beyond. Giving Tuesday is December first.", "Run a Vegan business? Send us your holiday menu and we'll feature it here, free for members. ThanksLiving menus close at the end of November eighteenth.", "This Guide keeps growing. Each holiday opens here as it gets close, so be on the lookout for the next one. Come back often, and share it with whoever's at your table this year. Happy holidays."];
   var TAB_CH = { overview: [1, 2, 3, 4, 5, 6, 7, 8], thanksliving: [3], ideas: [3], menus: [4], events: [5], giveback: [6], business: [7] };
@@ -1476,7 +1478,11 @@
   }
   function givingLoad() { return givingA('status').then(function (d) { GIVING = d && d.ok ? d : { ok: false, prizes: [], entries: 0 }; }).catch(function () { GIVING = { ok: false, prizes: [], entries: 0 }; }); }
   function viewGiving(sub) {
-    if (sub === 'rules') return viewGivingRules();
+    if (sub === 'rules') {
+      if (!GIVING) { main.innerHTML = '<div class="dg-loading">Loading...</div>'; givingLoad().then(function () { if (curView === 'giving') route(); }); return; }
+      if (!GIVING.rules_reviewed && !(GIVING.me && GIVING.me.admin)) { main.innerHTML = crumb([['11 Days of Giving', '#/giving'], ['Official Rules']]) + head('11 Days of Giving', 'Official Rules', 'The official rules are posted here before entries open.'); return; }
+      return viewGivingRules();
+    }
     var lede = 'Vegan businesses are giving prizes this season, and members enter free. Enter once and you are in every draw, December 1 to 11. Winners are drawn at random, in the open, and each business sends its prize straight to the winner.';
     if (!GIVING) { main.innerHTML = head('December 1 to 11', '11 Days of Giving', lede) + '<div class="dg-loading">Loading...</div>'; givingLoad().then(function () { if (curView === 'giving') route(); }); return; }
     var g = GIVING, me = g.me || null, prizes = g.prizes || [];
@@ -1502,7 +1508,7 @@
       '<div class="hg-facts" style="margin-top:14px"><span><b>Draws</b> December 1 to 11</span><span><b>' + (g.entries || 0) + '</b> ' + (g.entries === 1 ? 'member has' : 'members have') + ' entered</span><span><b>Prizes sent</b> by January 10</span></div>' +
       '<h3 style="margin:22px 0 10px;font-size:16px">The Prizes</h3>' + prizeRows +
       '<div class="dg-btns" style="margin-top:18px">' + btn + '</div><p class="msg" id="hgGivingMsg" role="status" style="margin:8px 0 0;font-weight:700"></p>' +
-      '<div class="hg-note">No purchase necessary. Free to enter. Drawn in the open. <a href="#/giving/rules">Official rules</a>.</div>';
+      '<div class="hg-note">No purchase necessary. Free to enter. Drawn in the open. ' + (g.rules_reviewed || (me && me.admin) ? '<a href="#/giving/rules">Official rules</a>.' : 'The official rules are posted here before entries open.') + '</div>';
     var j = main.querySelectorAll('[data-giving-join]');
     for (var i = 0; i < j.length; i++) j[i].addEventListener('click', function () { try { sessionStorage.setItem('ve_after_survey', '/guides/holiday-guide#/giving'); } catch (e) {} });
     var b = document.getElementById('hgGivingEnter');
@@ -1534,7 +1540,7 @@
       ['Law', 'These rules are governed by the laws of Florida. For the list of winners, write to us after January 10, 2027.']
     ];
     main.innerHTML = crumb([['11 Days of Giving', '#/giving'], ['Official Rules']]) + head('11 Days of Giving', 'Official Rules', '') +
-      '<div class="hg-note" style="margin:0 0 14px;background:#FFF3E0"><b>Draft.</b> Our attorney reads these rules before entries open. Text in [brackets] is still to be confirmed.</div>' +
+      (GIVING && GIVING.rules_reviewed ? '' : '<div class="hg-note" style="margin:0 0 14px;background:#FFF3E0"><b>Draft (super admins only).</b> Our attorney reads these rules before entries open. Text in [brackets] is still to be confirmed.</div>') +
       '<div class="dg-srows">' + r.map(function (x, i) { return row({ title: (i + 1) + '. ' + x[0], body: '<p class="dg-srow-p">' + esc(x[1]) + '</p>' }); }).join('') + '</div>';
   }
 
@@ -1609,7 +1615,7 @@
     var me = vid; vid.addEventListener('pause', function () { if (vid === me) ov.hidden = false; });
   }
   function paintPlay() {
-    var list = TAB_CH[curTab] || (VIDEO[curTab] ? [0] : null);
+    var list = TAB_CH[curTab] || (VIDEO[curTab] || TAB_AUDIO[curTab] ? [0] : null);
     playBtn.hidden = !list;
     playBtn.classList.toggle('go', !PLAY.started);
     playBtn.innerHTML = PLAY.playing ? 'Pause Theo' : '&#9654; ' + (curTab === 'overview' ? 'Play the tour' : 'Play Theo');
@@ -1618,6 +1624,12 @@
     if (PLAY.playing) { stopTheo(); paintPlay(); return; }
     PLAY.started = true;
     if (VIDEO[curTab] && vid) { try { aud.pause(); } catch (e) {} vid.play().catch(function () {}); return; }
+    if (TAB_AUDIO[curTab] && !TAB_CH[curTab]) {
+      if (aud.src !== TAB_AUDIO[curTab]) aud.src = TAB_AUDIO[curTab];
+      PLAY.tab = curTab; PLAY.list = []; PLAY.at = 0; bubble.textContent = tab(curTab).say || '';
+      aud.play().then(function () { PLAY.playing = true; paintPlay(); }).catch(function () { PLAY.playing = false; paintPlay(); });
+      return;
+    }
     if (PLAY.tab !== curTab || !PLAY.list.length) { PLAY.tab = curTab; PLAY.list = TAB_CH[curTab] || []; PLAY.at = 0; }
     if (!PLAY.list.length) return;
     if (aud.src && PLAY.tab === curTab && aud.currentTime > 0 && !aud.ended) aud.play().then(function () { PLAY.playing = true; paintPlay(); }).catch(function () {});
