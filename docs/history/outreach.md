@@ -241,3 +241,12 @@ News Desk's new Vegans Explore stories, adds, sorts and scores new articles and 
 News Desk stories behind `news.google.com` links are filed by matching outlet name (120 recovered; migration
 `20261113_ve_media_alerts_daily.sql`, run through `ve-once-media-cleanup`, now the 410 stub). Sean approves every pitch until a paid
 person takes it on. The Pitch Gate is canon `canon-lesaruss-pitch-gate`; the Media Room plan is playbook `ve-newsroom`.
+
+## 2026-11-15: Campaigns take turns, one email per address, Opted out
+Sean: "when there's one person who's running multiple accounts, we just send them one communication" and "I would like to know people
+who don't want to hear from us." `ve_outreach_campaign_due` is round robin across campaigns (on Nov 13 Businesses took every slot and the
+other Holiday Launch groups sent nothing) and skips a member whose address already got that campaign's step. A second sender run
+(`ve-outreach-send-b`, :05 past each ten minutes) adds room for higher paces; every rule stays in the sender. HQ Outreach > Roster >
+Opted out lists spam reports and unsubscribes with the email that did it (`ve_opted_out_people`). Holiday Launch Everyone Else goes 125 to
+195 a day from Wed Nov 18 if Mon/Tue are clean (Sean: "yes, step it up Wednesday"). Canon `canon-ve-outreach-roster-campaigns` v4.
+Handoff `docs/handoff/2026-11-15-ve-outreach-christmas-and-11-days-of-giving.md`.

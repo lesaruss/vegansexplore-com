@@ -148,3 +148,12 @@ Vegan Junkie, Follow Your Heart Market & Cafe, Nana's Rooted; Blondies' Hanukkah
 for Sean; Sean: "I gave them to you... Why all of a sudden I have to intervene and be a middleman?" So the five places without a listing got
 one and every tip went live the same hour (migration `20261115_holiday_batch3_listings_and_live.sql`). Rule since: what Sean hands over goes
 live, listings included (CLAUDE.md). Left out for no confirmable link: Mattie's Mindful Meals, the panaderia, the Pompano Fruitluck.
+
+## 2026-11-15: Christmas is the push; 11 Days of Giving live
+Sean: "shift to how to Christmas... the secondary is we still have a few days... for Thanksgiving." Christmas Menus (`christmas-menus-2026`,
+copied from ThanksLiving Menus) approved, from Tue Nov 17; the menu form's countdown follows `?holiday=`. 11 Days of Giving: the business
+dashboard opportunity ("Give a prize", the prize form, up to $100 per business, $5,000 in all, closes end of Fri Nov 27), Depot > 11 Days of
+Giving (Approve = live on the page + 250 points per prize), the Holiday Guide section `#/giving` (Theo's scene and recorded line; entries
+closed and rules hidden until the attorney's read), function `ve-giving`. The brands walkthrough `/partners/giving` (Liz) waits for Sean's
+lock before any brand is contacted. Attorney doc https://claude.ai/artifact/PQMHdQxyCKabWFw7ysdimV. Handoff
+`docs/handoff/2026-11-15-ve-outreach-christmas-and-11-days-of-giving.md`.
