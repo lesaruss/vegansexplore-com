@@ -307,7 +307,7 @@
         card('The Directory', 'Browse by section and city, and open any page. <a href="/directory">Open the Directory</a>.', 'Everyone') +
         card('Media', 'Podcasts, documentaries and books, ranked by member votes. <a href="/media">See Media</a>.', 'Everyone') +
         card('Share any page', 'The Share button in the top bar copies the page you are on, just as you see it, so a friend lands in the same place.', 'Everyone') +
-        card('Vote every day', 'Vote for each place you love once every 24 hours. The votes are real, and every Directory sorts by them.', 'Members') +
+        card('Vote for what you love', 'Vote once for each place you love, and take it back any time. Each vote is one real person, and every Directory sorts by them.', 'Members') +
         card('Save and check in', 'Save the places you want to try. Check in when you are there for 10 points a visit. You can also give some of your points to a business or nonprofit you believe in.', 'Members') +
         '</div>' + joinBtns();
     },
@@ -407,7 +407,7 @@
       return head('Your page', 'Your page in the Directory', 'Every business in the Directory has a page. Claim yours, or add it if it is not there yet, and it is yours to keep up to date.') +
         '<div class="dg-grid">' +
         card('Your story, your way', 'Your about, hours, links, menu, logo and photos, changed by you and live right away.', 'Yours') +
-        card('Votes', 'Members vote for the places they love once a day. The Directory sorts by those votes.', 'Members') +
+        card('Votes', 'Members vote once for each place they love. The Directory sorts by how many people vote for it.', 'Members') +
         card('Saves and check-ins', 'Members save you for later and check in when they visit, 10 points a visit. You see who comes back.', 'Members') +
         card('Reviewed by our team', 'Before anything is approved, our team carefully reviews each claim to make sure it is accurate.', 'Trust') +
         '</div>' + sampleBtns();
@@ -484,7 +484,7 @@
   var OPEN = Date.now() < Date.parse('2027-01-01T05:00:00Z');
   // A members-only prompt (vote, save, check in...) lands on the overview with its note, not the join step (Sean, 2026-11-01).
   function gateNote() {
-    var w = fromVote ? ['Voting is for members.', 'vote every day for the places you love'] : fromSave ? ['Saving is for members.', 'keep the places you love on My list'] :
+    var w = fromVote ? ['Voting is for members.', 'vote for the places you love'] : fromSave ? ['Saving is for members.', 'keep the places you love on My list'] :
       fromCheckin ? ['Check-ins are for members.', 'earn 10 points every time you visit a place'] : fromGive ? ['Giving points is for members.', 'give your points to the places you love'] :
       fromTickets ? ['This is a members-only event.', 'we take you straight to the tickets'] : fromBoard ? ['Posting and comments are for members.', 'join the conversation on the Daily Pulse in every city'] : null;
     if (fromOld && !w) return '<p class="dg-note"><b>That page has moved.</b> Vegans Explore has a new home, and this is the best place to start: see how it works, then come in free with a short survey. ' + (isMember() ? '<a href="/dashboard" style="color:var(--g);font-weight:800">Open your dashboard</a>.' : '<a href="' + href('join') + '" style="color:var(--g);font-weight:800">See how to join</a>.') + '</p>';

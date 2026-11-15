@@ -1,11 +1,14 @@
-// ve-votes: directory votes (Sean, 2026-09-27). Any signed-in member votes for a listing once
-// every 24 hours, counted from their last vote for it; the vote sticks and the count is real.
+// ve-votes: directory votes (Sean, 2026-09-27). Since 2026-11-15 a vote is a vouch: one per member per listing, and it can be taken
+// back (Sean: "only count my vote once for each listing that I voted for... make it so somebody can unvote as well"; playbook
+// ve-vouch-points: vouches decide rankings, the daily habit is earning points to give). listings.vote_count is the number of people.
+// Before 2026-11-15 a member could vote for a listing once every 24 hours.
 // Before this, the + Vote buttons on /directory and the city hubs only changed the number on
 // screen.
 //
 // POST { action: 'vote', listing_id }   Authorization: Bearer <ve_token>
 //   -> { ok, vote_count, next_vote_at }
-//   |  409 { error: 'already_voted', next_vote_at }   within 24 hours of their last vote for it
+//   |  409 { error: 'already_voted', next_vote_at }   they already vouch for it (next_vote_at a year on, so clients keep "Voted")
+// POST { action: 'unvote', listing_id }  Authorization: Bearer <ve_token>  -> { ok, vote_count }  takes their vote back
 //   |  402 payment_required (not a member yet)
 // POST { action: 'today' }              Authorization: Bearer <ve_token>
 //   -> { listing_ids, next: { listing_id: next_vote_at } }  votes still inside their 24 hours
@@ -75,6 +78,8 @@ async function verifyToken(token: string): Promise<{ sub: string; brand: string 
     return typeof d.sub === 'string' && d.exp >= Math.floor(Date.now() / 1000) ? { sub: d.sub, brand: typeof d.brand === 'string' ? d.brand : 'vegans-explore' } : null;
   } catch { return null; }
 }
+// A vouch reads as Voted for a year from when it was given (clients show Voted while next_vote_at is in the future).
+const vouchUntil = (iso: string) => new Date(new Date(iso).getTime() + 365 * DAY_MS).toISOString();
 const todayEastern = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
 const DAY_MS = 24 * 60 * 60 * 1000;
 const CHAPTERS = ['south-florida', 'central-florida', 'north-florida', 'atlanta', 'washington-dc', 'delaware', 'maryland',
@@ -280,12 +285,21 @@ Deno.serve(async (req) => {
   }
 
   if (body.action === 'today') {
-    const since = new Date(Date.now() - DAY_MS).toISOString();
-    const { data, error } = await db.from('listing_daily_votes').select('listing_id, created_at').eq('member_id', memberId).gt('created_at', since);
+    // Every listing they vouch for (a vouch does not run out after a day any more).
+    const { data, error } = await db.from('listing_daily_votes').select('listing_id, created_at').eq('member_id', memberId);
     if (error) return json({ error: 'list_failed', message: error.message }, 500);
     const next: Record<string, string> = {};
-    for (const r of data || []) { const n = nextAt(r.created_at); if (!next[r.listing_id] || n > next[r.listing_id]) next[r.listing_id] = n; }
+    for (const r of data || []) { const n = vouchUntil(r.created_at); if (!next[r.listing_id] || n > next[r.listing_id]) next[r.listing_id] = n; }
     return json({ listing_ids: Object.keys(next), next });
+  }
+
+  if (body.action === 'unvote') {
+    const id = String(body.listing_id || '');
+    if (!/^[0-9a-f-]{36}$/.test(id)) return json({ error: 'bad_id' }, 400);
+    const { error } = await db.from('listing_daily_votes').delete().eq('member_id', memberId).eq('listing_id', id);
+    if (error) return json({ error: 'unvote_failed', message: error.message }, 500);
+    const { data: counted } = await db.from('listings').select('vote_count').eq('id', id).maybeSingle();
+    return json({ ok: true, vote_count: counted?.vote_count ?? null });
   }
 
   if (body.action === 'vote') {
@@ -305,26 +319,26 @@ Deno.serve(async (req) => {
         return json({ error: 'account_not_in_good_standing', message: 'Your account is on hold. Write to contact@lesaruss.com and we will help.' }, 403);
       }
       if (!member || member.membership_status !== 'active') {
-        return json({ error: 'payment_required', message: 'Join free with a short survey to vote for the places you love every day.' }, 402);
+        return json({ error: 'payment_required', message: 'Join free with a short survey to vote for the places you love.' }, 402);
       }
       const { data: listing } = await db.from('listings').select('id').eq('id', id).eq('status', 'approved').maybeSingle();
       if (!listing) return json({ error: 'not_found' }, 404);
     }
-    // Once every 24 hours, from their last vote for this listing.
+    // One vote per member per listing (a vouch); Undo takes it back.
     const { data: last } = await db.from('listing_daily_votes').select('created_at').eq('member_id', memberId).eq('listing_id', id)
-      .order('created_at', { ascending: false }).limit(1).maybeSingle();
-    if (last && Date.now() - new Date(last.created_at).getTime() < DAY_MS) return json({ error: 'already_voted', next_vote_at: nextAt(last.created_at) }, 409);
+      .order('created_at', { ascending: true }).limit(1).maybeSingle();
+    if (last) return json({ error: 'already_voted', next_vote_at: vouchUntil(last.created_at) }, 409);
     const { data: row, error } = await db.from('listing_daily_votes').insert({ member_id: memberId, listing_id: id, vote_date: todayEastern() }).select('created_at').single();
     if (error) {
       // The date backstop, or two taps landing at once: report the vote that is already there.
       if (error.code === '23505') {
         const { data: again } = await db.from('listing_daily_votes').select('created_at').eq('member_id', memberId).eq('listing_id', id).order('created_at', { ascending: false }).limit(1).maybeSingle();
-        return json({ error: 'already_voted', next_vote_at: again ? nextAt(again.created_at) : null }, 409);
+        return json({ error: 'already_voted', next_vote_at: again ? vouchUntil(again.created_at) : null }, 409);
       }
       return json({ error: 'vote_failed', message: error.message }, 500);
     }
     const { data: counted } = await db.from('listings').select('vote_count').eq('id', id).maybeSingle();
-    return json({ ok: true, vote_count: counted?.vote_count ?? null, next_vote_at: nextAt(row.created_at) });
+    return json({ ok: true, vote_count: counted?.vote_count ?? null, next_vote_at: vouchUntil(row.created_at) });
   }
 
   return json({ error: 'unknown_action' }, 400);

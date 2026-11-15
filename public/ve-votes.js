@@ -59,7 +59,7 @@
     return (day(t) === day(new Date()) ? 'later today at ' : 'tomorrow at ') + at;
   }
   function tooSoon(iso) { return !!iso && new Date(iso).getTime() > Date.now(); }
-  function onceMessage(iso) { return "You're only allowed to vote once a day for each business. Please try again " + nextText(iso) + '.'; }
+  function onceMessage(iso) { return "You already voted for this place. Tap Voted to take your vote back."; }
 
   // A small note that floats at the bottom of the screen for a few seconds.
   var noteEl = null, noteTimer = null;
@@ -150,11 +150,11 @@
   // A members-only action, signed out: why, then Explore the Passport (from= tells the Passport Guide which note to show).
   var GATES = {
     vote: { icon: 'heart', title: 'Voting is for members',
-      body: 'Member votes decide which places lead every list. Join free with a short survey and you can vote for the places you love every day, check in, earn points and unlock the Guides.' },
+      body: 'Member votes decide which places lead every list. Join free with a short survey and you can vote for the places you love, check in, earn points and unlock the Guides.' },
     save: { icon: 'bookmark', title: 'Saving is for members',
-      body: 'Save the places you love to My list and find them again from your dashboard. Join free with a short survey and you can also vote every day, check in, earn points and unlock the Guides.' },
+      body: 'Save the places you love to My list and find them again from your dashboard. Join free with a short survey and you can also vote for the places you love, check in, earn points and unlock the Guides.' },
     checkin: { icon: 'pin', title: 'Check-ins are for members',
-      body: 'Check in when you visit a place and earn <b>10 points</b> a visit, and your check-ins show the community the place is open. Join free with a short survey and you can also vote every day, save places and unlock the Guides.' },
+      body: 'Check in when you visit a place and earn <b>10 points</b> a visit, and your check-ins show the community the place is open. Join free with a short survey and you can also vote for the places you love, save places and unlock the Guides.' },
     // The Daily Pulse board (Sean, 2026-10-26: "you have to be a member in order to reply or comment... it should give
     // them that pop-up"), from=board on the Passport Guide.
     post: { icon: 'chat', from: 'board', title: 'Posting is for members',
@@ -226,11 +226,26 @@
       actions: '<button type="button" class="ve-vm-btn ve-vm-go" data-vm-close>Got it</button>'
     });
   }
-  function votedPrompt(iso) {
+  // A vote is a vouch since 2026-11-15 (Sean: "only count my vote once for each listing... make it so somebody can unvote as well"):
+  // one per member per business, kept until they take it back. o.listingId shows Undo my vote; o.onUndo(d) gets { vote_count } after.
+  function unvote(id) { return call({ action: 'unvote', listing_id: id }); }
+  function votedPrompt(iso, o) {
+    o = o || {};
     openModal({
-      icon: 'clock', eyebrow: 'Thanks for voting', title: "You've voted for this one today",
-      body: 'Each business gets one vote a day from you, so every list reflects the whole community. Your next vote for this one opens <b>' + nextText(iso) + '</b>.',
-      actions: '<button type="button" class="ve-vm-btn ve-vm-go" data-vm-close>Got it</button>'
+      icon: 'heart', eyebrow: 'Thanks for voting', title: 'You voted for this place',
+      body: 'Each member votes for a business once, so every count is the number of people who stand behind it. Made a mistake? You can take your vote back.',
+      actions: (o.listingId ? '<button type="button" class="ve-vm-btn ve-vm-alt" id="ve-vm-undo">Undo my vote</button>' : '') +
+        '<button type="button" class="ve-vm-btn ve-vm-go" data-vm-close>Got it</button>'
+    });
+    var u = document.getElementById('ve-vm-undo');
+    if (u) u.addEventListener('click', function () {
+      u.disabled = true; u.textContent = 'Taking it back...';
+      unvote(o.listingId).then(function (d) {
+        if (d && d.ok) {
+          if (recent) recent.then(function (m) { delete m[o.listingId]; });
+          closeModal(); if (o.onUndo) o.onUndo(d); else location.reload();
+        } else { u.disabled = false; u.textContent = 'Undo my vote'; }
+      }).catch(function () { u.disabled = false; u.textContent = 'Undo my vote'; });
     });
   }
 
@@ -241,8 +256,16 @@
   // Voted stays clickable, so a second click can say when the next vote opens.
   function paint(btn, nextIso) {
     btn.dataset.voted = '1'; btn.dataset.next = nextIso || ''; btn.disabled = false; btn.textContent = 'Voted';
-    btn.title = nextIso ? 'You can vote for this one again ' + nextText(nextIso) + '.' : '';
+    btn.title = 'You voted for this place. Tap to take your vote back.';
     btn.style.background = '#5EC47A'; btn.style.color = '#000'; btn.style.borderColor = '#5EC47A';
+  }
+  // After Undo: the button reads Vote again and the count drops.
+  function undoFor(btn) {
+    var id = btn.getAttribute('data-listing-id');
+    return { listingId: id, onUndo: function (d) {
+      delete btn.dataset.voted; btn.dataset.next = ''; btn.title = ''; btn.textContent = btn.dataset.label || '+ Vote';
+      btn.style.background = ''; btn.style.color = ''; btn.style.borderColor = ''; setCount(btn, d.vote_count);
+    } };
   }
   function setCount(btn, n) {
     if (n == null) return;
@@ -251,7 +274,7 @@
   }
   function vote(btn) {
     if (btn.dataset.busy) return;
-    if (btn.dataset.voted && tooSoon(btn.dataset.next)) { votedPrompt(btn.dataset.next); return; }
+    if (btn.dataset.voted && tooSoon(btn.dataset.next)) { votedPrompt(btn.dataset.next, undoFor(btn)); return; }
     // No Vegans Explore sign-in on this page (another brand's site, window.VE_BRAND): the members window, with that brand's links.
     if (!window.VEAuth || !VEAuth.isLoggedIn()) { passportPrompt(); return; }
     var id = btn.getAttribute('data-listing-id'), label = btn.textContent;
@@ -263,7 +286,7 @@
         if (recent) recent.then(function (m) { m[id] = d.next_vote_at; });
         return;
       }
-      if (d && (d.error === 'already_voted' || d.error === 'already_voted_today')) { paint(btn, d.next_vote_at); votedPrompt(d.next_vote_at); return; }
+      if (d && (d.error === 'already_voted' || d.error === 'already_voted_today')) { paint(btn, d.next_vote_at); votedPrompt(d.next_vote_at, undoFor(btn)); return; }
       // payment_required: call() has already opened the $11 box. Anything else: let them retry.
       btn.disabled = false; btn.textContent = label;
     }).catch(function () { delete btn.dataset.busy; btn.disabled = false; btn.textContent = label; });
@@ -273,7 +296,7 @@
     var btns = Array.prototype.slice.call(root.querySelectorAll('.vote-btn[data-listing-id]'));
     btns.forEach(function (btn) {
       if (btn.dataset.veVote) return;
-      btn.dataset.veVote = '1';
+      btn.dataset.veVote = '1'; if (!btn.dataset.label) btn.dataset.label = btn.textContent;
       btn.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); vote(btn); });
     });
     if (btns.length) votedRecently().then(function (m) {
@@ -282,5 +305,5 @@
   }
   window.VEVotes = { wire: wire, cast: cast, today: listToday, tooSoon: tooSoon, nextText: nextText, onceMessage: onceMessage, notice: notice,
     memberPrompt: memberPrompt, passportPrompt: passportPrompt, savePrompt: savePrompt, checkinPrompt: checkinPrompt, givePrompt: givePrompt, votedPrompt: votedPrompt,
-    checkedInPrompt: checkedInPrompt };
+    checkedInPrompt: checkedInPrompt, unvote: unvote };
 })();
