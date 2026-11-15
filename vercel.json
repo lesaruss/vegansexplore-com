@@ -1532,6 +1532,11 @@
       "permanent": false
     },
     {
+      "source": "/partners/pitches/vegans-explore-dolphins-pitch-v1(\\.html)?",
+      "destination": "/partners/pitches/vegans-explore-dolphins-pitch",
+      "permanent": false
+    },
+    {
       "source": "/index-guide-hero",
       "destination": "/",
       "permanent": false
