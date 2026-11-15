@@ -24,6 +24,7 @@
 (function () {
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   var HOLIDAY_FN = SB + '/functions/v1/ve-holiday';
+  var GIVING_FN = SB + '/functions/v1/ve-giving';   // 11 Days of Giving (Sean, 2026-11-15)
   var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
   var VE_TENANT = '00000000-0000-4000-a000-000000000002';
   var HOLIDAY = 'thanksliving';
@@ -79,6 +80,7 @@
     { k: 'xm-menus', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-xm-menus.jpg', label: 'Holiday Menus', say: 'Don\'t want to cook Christmas dinner? Pick your chapter and see which Vegan places are cooking for the holiday and when to order by.' },
     { k: 'xm-events', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-xm-events.jpg', label: 'Events', say: 'Vegan Christmas festivals, cookie swaps and holiday lights. Here is what is on our calendar. Hosting one? Add it, so people can find you.' },
     { k: 'giveback', label: 'Give Back', pic: '/public/guides/holiday/theo-giveback.jpg', say: 'Giving is part of the season. Here are the nonprofits, rescues and sanctuaries doing the work, in your city and beyond. Giving Tuesday is December first.' },
+    { k: 'giving', label: '11 Days of Giving', pic: '/public/guides/holiday/theo-giving.jpg', say: 'From December first to the eleventh, Vegan businesses are giving prizes, and members enter free. Enter once and you are in every draw. Here is how it works, and the prizes so far.' },
     { k: 'business', label: 'For Businesses', pic: '/public/guides/holiday/theo-business.jpg', say: 'Run a Vegan business? Send us your holiday menu and we\'ll feature it here, free for members. ThanksLiving menus close at the end of November eighteenth.' }
   ];
   // Theo's recordings (Sean approved the script v2, 2026-11-08): one per video chapter, roster voice aFyw0oiXW7dzKF4o7woX, each checked with stt.
@@ -123,6 +125,7 @@
     menus: ic('<path d="M7 3v8a2 2 0 002 2v8M5 3v5M9 3v5M16 3c-1.7 0-3 2-3 5s1.3 4 3 4v9"/>'),
     events: ic('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>'),
     giveback: ic('<rect x="3" y="8" width="18" height="5" rx="1"/><path d="M12 8v13M5 13v8h14v-8M12 8c-2-4-6-4-6-1s6 1 6 1zm0 0c2-4 6-4 6-1s-6 1-6 1z"/>'),
+    giving: ic('<rect x="3" y="9" width="18" height="12" rx="1"/><path d="M3 13h18M12 9v12M12 9c-2-4-6-4-6-1s6 1 6 1zm0 0c2-4 6-4 6-1s-6 1-6 1z"/>'),
     business: ic('<path d="M3 9l1.5-5h15L21 9M3 9h18v2a3 3 0 01-6 0 3 3 0 01-6 0 3 3 0 01-6 0zM5 13v8h14v-8"/>')
   };
 
@@ -269,10 +272,11 @@
     { label: 'Hanukkah · Begins December 4', hol: 'hanukkah', line: 'Latkes, sufganiyot and the people around the menorah: ideas, recipes, kosher places and a Vegan place to order from.', kids: ['hanukkah', 'hk-recipes', 'hk-menus'] },
     { label: 'Christmas · December 25', hol: 'christmas', line: 'A centerpiece, cookies to share, nog, and gifts that do no harm: ideas, recipes, the store, menus and events.', kids: ['christmas', 'xm-recipes', 'xm-store', 'xm-menus', 'xm-events'] },
     { label: 'Give Back', line: 'The nonprofits, rescues and sanctuaries doing the work. Giving Tuesday is December 1.', kids: ['giveback'] },
+    { label: '11 Days of Giving · December 1 to 11', line: 'Vegan businesses give prizes and members enter free, drawn at random in the open.', kids: ['giving'] },
     { label: 'Run a Business?', line: 'Send your holiday menu and we feature it here, free for members.', kids: ['business'] }
   ];
   var PILL_PIC = { hanukkah: 'theo-hanukkah.jpg', 'hk-recipes': 'r-latkes.jpg', 'hk-menus': 'p-menus.jpg', 'hk-events': 'p-events.jpg',
-    christmas: 'theo-christmas.jpg', 'xm-recipes': 'r-wellington.jpg', 'xm-store': 'r-nog.jpg', 'xm-menus': 'p-menus.jpg', 'xm-events': 'p-events.jpg', recipes: 'r-loaf.jpg', ideas: 'p-thanks.jpg', 'hk-ideas': 'r-sufganiyot.jpg', 'hk-kosher': 'r-latkes.jpg', 'xm-ideas': 'r-gingerbread.jpg', 'xm-wish': 'w-give.jpg', 'xm-gifts': 'r-gingerbread.jpg', store: 'p-store.jpg', listen: 'p-listen.jpg', thanksliving: 'p-thanks.jpg', events: 'p-events.jpg', menus: 'p-menus.jpg', giveback: 'p-giveback.jpg', business: 'p-business.jpg' };
+    christmas: 'theo-christmas.jpg', 'xm-recipes': 'r-wellington.jpg', 'xm-store': 'r-nog.jpg', 'xm-menus': 'p-menus.jpg', 'xm-events': 'p-events.jpg', recipes: 'r-loaf.jpg', ideas: 'p-thanks.jpg', 'hk-ideas': 'r-sufganiyot.jpg', 'hk-kosher': 'r-latkes.jpg', 'xm-ideas': 'r-gingerbread.jpg', 'xm-wish': 'w-give.jpg', 'xm-gifts': 'r-gingerbread.jpg', store: 'p-store.jpg', listen: 'p-listen.jpg', thanksliving: 'p-thanks.jpg', events: 'p-events.jpg', menus: 'p-menus.jpg', giveback: 'p-giveback.jpg', giving: 'theo-giving.jpg', business: 'p-business.jpg' };
   function groupRows() {
     return GROUPS.filter(function (g) { return !g.hol || !holPast(g.hol); }).map(function (g) {
       return '<section class="rg-grow"><h3>' + esc(g.label) + '</h3><p>' + esc(g.line) + '</p><div class="rg-pills">' + g.kids.map(function (k) {
@@ -292,6 +296,7 @@
     ['hanukkah', 'Hanukkah · Begins December 4', 'Eight nights of light, plant-based: ideas, recipes, kosher places, menus.'],
     ['christmas', 'Christmas · December 25', 'A centerpiece, cookies to share and gifts that do no harm, plus a wish list.'],
     ['giveback', 'Give Back', 'Nonprofits, rescues and sanctuaries doing the work, each easy to give to.'],
+    ['giving', '11 Days of Giving · December 1 to 11', 'Enter free to win prizes from Vegan businesses, drawn in the open.'],
     ['business', 'Run a Business?', 'Send your holiday menu and we feature it here and on your listing, free.']
   ];
   var HOL_OV = {
@@ -1457,6 +1462,82 @@
     });
   }
 
+  // ---------- 11 Days of Giving ----------
+  // Sean, 2026-11-15: "build the entry page" (plan locked 2026-11-13, playbook ve-holiday-guide). Copied from For Businesses: the heading,
+  // the steps as rows, the facts, one button, the note. December 1 to 11, Vegan businesses give prizes (the Prize Vault, ve_giving_prizes)
+  // and members enter free, once, for every draw (ve-giving). Entries stay closed until the official rules have had the attorney's read
+  // (ve_site_settings giving_2026.entries_open). The rules are #/giving/rules, a draft until then. Nothing here asks for money, a share,
+  // a tag or a follow.
+  var GIVING = null, GIVING_BUSY = false;
+  function givingA(action) {
+    var a = auth();
+    return fetch(GIVING_FN, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: ANON_KEY, Authorization: 'Bearer ' + (a && a.getToken ? a.getToken() : '') }, body: JSON.stringify({ action: action, source: 'holiday-guide' }) })
+      .then(function (r) { return r.json(); });
+  }
+  function givingLoad() { return givingA('status').then(function (d) { GIVING = d && d.ok ? d : { ok: false, prizes: [], entries: 0 }; }).catch(function () { GIVING = { ok: false, prizes: [], entries: 0 }; }); }
+  function viewGiving(sub) {
+    if (sub === 'rules') return viewGivingRules();
+    var lede = 'Vegan businesses are giving prizes this season, and members enter free. Enter once and you are in every draw, December 1 to 11. Winners are drawn at random, in the open, and each business sends its prize straight to the winner.';
+    if (!GIVING) { main.innerHTML = head('December 1 to 11', '11 Days of Giving', lede) + '<div class="dg-loading">Loading...</div>'; givingLoad().then(function () { if (curView === 'giving') route(); }); return; }
+    var g = GIVING, me = g.me || null, prizes = g.prizes || [];
+    var btn;
+    if (me && me.entered) btn = '<span class="dg-btn" aria-disabled="true" style="opacity:.75;cursor:default">You\'re in</span>';
+    else if (!registered()) btn = '<a class="dg-btn" href="/survey?s=explorer" data-giving-join>Join free to enter</a>';
+    else if (me && !me.member) btn = '<a class="dg-btn" href="/survey?s=explorer" data-giving-join>Finish the free survey to enter</a>';
+    else if (g.open || (me && me.admin)) btn = '<button type="button" class="dg-btn" id="hgGivingEnter">' + (g.open ? 'Enter free' : 'Test entry (super admin)') + '</button>';
+    else btn = '<span class="dg-btn" aria-disabled="true" style="opacity:.75;cursor:default">Entries open soon</span>';
+    var prizeRows = prizes.length ? '<div class="dg-srows">' + prizes.map(function (p) {
+      var l = p.listing || {}, logo = l.logo_url ? '<a href="/directory/' + encodeURIComponent(l.slug) + '" style="flex:0 0 56px;width:56px;height:56px;border-radius:10px;border:1px solid #e5e5e5;background:#fff center/cover no-repeat;background-image:url(\'' + esc(l.logo_url) + '\')" aria-label="' + esc(l.name) + '"></a>' : '';
+      var val = '$' + Math.round((p.value_cents || 0) / 100) + (p.quantity > 1 ? ' each, ' + p.quantity + ' prizes' : '');
+      var day = p.draw_on ? ' &middot; drawn ' + esc(dayFmt(p.draw_on + 'T17:00:00Z', { weekday: 'short', month: 'short', day: 'numeric' })) : '';
+      return '<div class="dg-srow" style="display:flex;gap:14px;align-items:center">' + logo + '<div class="dg-srow-b"><h3>' + esc(p.title) + '</h3><p class="dg-srow-p">From <a href="/directory/' + encodeURIComponent(l.slug || '') + '">' + esc(l.name || 'a Vegan business') + '</a> &middot; ' + esc(val) + day + '</p></div></div>';
+    }).join('') + '</div>'
+      : '<div class="hg-empty"><h3>Prizes Are Coming In</h3><p>Vegan businesses are giving their prizes now, and each one shows here as it is confirmed. Run a business? Give a prize from <a href="/dashboard/business?tab=opportunities">your dashboard</a>.</p></div>';
+    main.innerHTML = head('December 1 to 11', '11 Days of Giving', lede) +
+      '<div class="dg-srows">' +
+      row({ icon: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4.4-7 8-7s7 2.5 8 7"/>', title: '1. Join free', body: '<p class="dg-srow-p">A short survey makes you a member. No charge, ever, to enter.</p>' }) +
+      row({ icon: '<path d="M5 12l5 5L20 7"/>', title: '2. Enter once', body: '<p class="dg-srow-p">One free entry puts you in every draw. No purchase, and no share, tag or follow.</p>' }) +
+      row({ icon: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>', title: '3. Watch the draws', body: '<p class="dg-srow-p">From December 1 to 11, winners are drawn at random, in the open. Coming: the live draw on this page.</p>' }) +
+      '</div>' +
+      '<div class="hg-facts" style="margin-top:14px"><span><b>Draws</b> December 1 to 11</span><span><b>' + (g.entries || 0) + '</b> ' + (g.entries === 1 ? 'member has' : 'members have') + ' entered</span><span><b>Prizes sent</b> by January 10</span></div>' +
+      '<h3 style="margin:22px 0 10px;font-size:16px">The Prizes</h3>' + prizeRows +
+      '<div class="dg-btns" style="margin-top:18px">' + btn + '</div><p class="msg" id="hgGivingMsg" role="status" style="margin:8px 0 0;font-weight:700"></p>' +
+      '<div class="hg-note">No purchase necessary. Free to enter. Drawn in the open. <a href="#/giving/rules">Official rules</a>.</div>';
+    var j = main.querySelectorAll('[data-giving-join]');
+    for (var i = 0; i < j.length; i++) j[i].addEventListener('click', function () { try { sessionStorage.setItem('ve_after_survey', '/guides/holiday-guide#/giving'); } catch (e) {} });
+    var b = document.getElementById('hgGivingEnter');
+    if (b) b.addEventListener('click', function () {
+      if (GIVING_BUSY) return; GIVING_BUSY = true; b.disabled = true;
+      givingA('enter').then(function (r) {
+        GIVING_BUSY = false;
+        if (r && r.ok) { GIVING = null; givingLoad().then(function () { if (curView === 'giving') route(); var m = document.getElementById('hgGivingMsg'); if (m) m.textContent = 'You\'re in. Good luck: we will email you if you win.'; }); return; }
+        b.disabled = false;
+        var m = document.getElementById('hgGivingMsg');
+        if (m) m.textContent = r && r.error === 'entries_closed' ? 'Entries are not open yet.' : r && r.error === 'member_needed' ? 'Finish the free survey first, then come back to enter.' : 'That did not go through. Try again.';
+      }).catch(function () { GIVING_BUSY = false; b.disabled = false; });
+    });
+  }
+  // The official rules (BOSS 2026-11-13). A DRAFT until the attorney has read it once (legal_questions); entries stay closed until then.
+  function viewGivingRules() {
+    var r = [
+      ['Sponsor', 'LESARUSS Inc., doing business as Vegans Explore. [Address to confirm.]'],
+      ['No purchase necessary', 'You never have to buy anything to enter or win, and buying something does not improve your chances. Void where prohibited.'],
+      ['Who can enter', 'Legal residents of the 50 United States and Washington, D.C., 18 or older, who are Vegans Explore members. Membership is free. Employees of the Sponsor and of the businesses giving prizes, and the people in their households, cannot win. [Members outside the US: to confirm.]'],
+      ['How to enter', 'While signed in, press Enter free on the 11 Days of Giving page from the day entries open until 11:59 PM Eastern on December 11, 2026. One entry per person; more than one account per person is not allowed. Entering never asks for a payment, a share, a tag or a follow.'],
+      ['The draws', 'Each day from December 1 to 11, 2026, the winners of that day\'s prizes are picked at random from all eligible entries. Before entries close we publish a fingerprint of the random number used for the draws, and after the draws we publish the number itself, so anyone can check that the results were not changed. One prize per person. [To confirm.]'],
+      ['The prizes', 'Each prize is given and sent by the business named with it, up to $100 in prizes per business. The total value of all prizes is capped at $5,000. Each business sends its prize straight to the winner by January 10, 2027. If a business does not, the Sponsor replaces the prize with one of equal value. No cash instead of a prize unless the Sponsor chooses.'],
+      ['Winners', 'We tell winners by email and in their account. A winner who does not answer within 7 days loses the prize, and another winner is drawn. We may show a winner\'s first name and city.'],
+      ['Odds', 'The odds of winning depend on how many eligible entries there are.'],
+      ['Taxes', 'Any taxes on a prize are the winner\'s.'],
+      ['Privacy', 'We use what you give us to run the giveaway, as our privacy policy describes.'],
+      ['Not run by social media', 'This giveaway is not sponsored, endorsed or run by Instagram, Facebook, Meta or any other platform.'],
+      ['Law', 'These rules are governed by the laws of Florida. For the list of winners, write to us after January 10, 2027.']
+    ];
+    main.innerHTML = crumb([['11 Days of Giving', '#/giving'], ['Official Rules']]) + head('11 Days of Giving', 'Official Rules', '') +
+      '<div class="hg-note" style="margin:0 0 14px;background:#FFF3E0"><b>Draft.</b> Our attorney reads these rules before entries open. Text in [brackets] is still to be confirmed.</div>' +
+      '<div class="dg-srows">' + r.map(function (x, i) { return row({ title: (i + 1) + '. ' + x[0], body: '<p class="dg-srow-p">' + esc(x[1]) + '</p>' }); }).join('') + '</div>';
+  }
+
   // ---------- For businesses ----------
   function viewBusiness() {
     var t = thanks(), open = daysUntil(t.submit_close) > 0;
@@ -1601,7 +1682,7 @@
       'hk-ideas': function () { viewHoliday('hanukkah'); }, 'xm-ideas': function () { history.replaceState(null, '', '#/xm-gifts'); route(); }, 'hk-kosher': viewKosher, 'xm-wish': function () { viewWish(sub); }, 'xm-gifts': function () { viewGifts(sub); }, recipes: function () { viewRecipes(sub); }, store: viewStore, listen: viewListen, menus: function () { viewMenus(sub); }, events: function () { viewEvents(sub); },
       hanukkah: function () { viewHolOverview('hanukkah'); }, christmas: function () { viewHolOverview('christmas'); },
       'hk-recipes': function () { viewRecipes(sub); }, 'hk-menus': function () { viewMenus(sub); }, 'hk-events': function () { history.replaceState(null, '', '#/hanukkah'); route(); },
-      'xm-recipes': function () { viewRecipes(sub); }, 'xm-store': viewStore, 'xm-menus': function () { viewMenus(sub); }, 'xm-events': function () { viewEvents(sub); }, giveback: function () { viewGiveBack(sub); }, business: viewBusiness };
+      'xm-recipes': function () { viewRecipes(sub); }, 'xm-store': viewStore, 'xm-menus': function () { viewMenus(sub); }, 'xm-events': function () { viewEvents(sub); }, giveback: function () { viewGiveBack(sub); }, giving: function () { viewGiving(sub); }, business: viewBusiness };
     if (!V[view]) view = 'overview';
     document.body.classList.toggle('dg-member', member());
     drawJoinbox(); drawMenu(view);
