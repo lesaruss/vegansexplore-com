@@ -3,6 +3,7 @@
 // random in the open. POST { action, ... }. verify_jwt off; the Vegans Explore token is checked here (the same check as ve-holiday).
 // Public:  status  -> { open, rules_reviewed (the rules link shows only once the attorney has read them), starts_on, ends_on, prizes (live ones, with the business), entries (count), me? { member, entered } }
 // Member:  enter   -> one free entry per member per giveaway, only while entries_open (a super admin may enter while closed, to test)
+// Public:  brand_interest {brand, name, email, quantity, pack, page} -> a brand's I'm in from /partners/giving, into Leads (one a day per email)
 // Owner:   my_prizes {listing_id}, prize_photo_url {listing_id, content_type, bytes}, prize_save {listing_id, title, value_cents, quantity,
 //          image_url?, note?}, prize_withdraw {listing_id, id}: the prize form in the business dashboard (Sean, 2026-11-15). Up to $100 per
 //          business, $5,000 across the giveaway, until the end of Friday, November 27 Eastern; a prize waits as pledged for our check.
@@ -73,6 +74,22 @@ Deno.serve(async (req) => {
       me = { member: !!mm.is_superadmin || mm.membership_status === 'active', entered: !!e, entered_at: e?.entered_at || null, admin: !!mm.is_superadmin };
     }
     return json({ ok: true, open, rules_reviewed: s.rules_reviewed, starts_on: s.starts_on, ends_on: s.ends_on, fulfill_by: s.fulfill_by, prizes: prizes || [], entries: count || 0, me });
+  }
+
+  // A brand says I'm in from /partners/giving (Sean, 2026-11-15: brands give holiday packs; "a good entry point for them to start working
+  // with us"). No account needed: it lands in Leads (ve_initiative_interest, tier Brand pack) for our team to confirm. One note per email a day.
+  if (action === 'brand_interest') {
+    const brand = clean(b.brand, 120), name = clean(b.name, 120), email = clean(b.email, 200).toLowerCase(), pack = clean(b.pack, 600);
+    const qty = Math.min(4, Math.max(1, Math.round(Number(b.quantity) || 1)));
+    if (!brand || !name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json({ error: 'missing' }, 400);
+    const { count } = await db.from('ve_initiative_interest').select('id', { count: 'exact', head: true }).eq('initiative_slug', s.campaign)
+      .eq('email', email).gte('created_at', new Date(Date.now() - 864e5).toISOString());
+    if ((count || 0) > 0) return json({ error: 'too_many' }, 429);
+    const { error } = await db.from('ve_initiative_interest').insert({ initiative_slug: s.campaign, action_type: 'sponsor_tier', tier_label: 'Brand pack', status: 'new',
+      source: 'form', name: `${name}, ${brand}`.slice(0, 120), email, note: `${qty} pack${qty > 1 ? 's' : ''}: ${pack || '(no details yet)'}`.slice(0, 1000),
+      tags: ['11-days-of-giving', 'brand-pack', clean(b.page, 120) || '/partners/giving'] });
+    if (error) return json({ error: 'save_failed' }, 500);
+    return json({ ok: true });
   }
 
   const mm = await whoAmI(req, b);
