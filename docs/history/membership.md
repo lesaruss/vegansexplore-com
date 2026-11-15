@@ -688,3 +688,13 @@ payments by member or email, Guides, paid tickets, services and audits, test ord
 check-ins, ve-checkin as before); **Sign out**. The old stat cards, Passport perks, Get Involved forms, Guides Unlocked and Recent Activity
 left (they had stopped loading: the page sent the ve token where the database wants its own key). Checked at 390 and 1440 with a stand-in
 member and a sample answer; ve-account refuses a missing or forged token; Sean's own account reads 6 purchases.
+
+**The homepage, play button and new doors (2026-11-15)** (Sean: "it's not clear to me that there's a video in the center. I would expect to see
+a play button... the graphics that we're using are older graphics... it should reflect the new standards"; approved: "approved, take it live"):
+the hero video carries a play badge over its poster (`.hv-badge` inside `#heroVideoPlay`: "Play the video · 1 min" on a white plate at the
+bottom center on desktop, the round button alone in the bottom-right corner on phones so it never covers the poster's line). Five doors have
+new pictures drawn with the locked Guide scenes recipe, all 16:9 like Media's: Directory (Liz shows friends a Vegan cafe on her phone map),
+Events (River at a night market), Guides (all eight Guides at a market table, each from their own reference), Daily Pulse (Theo shares the
+news at a cafe), Passport (Maya checks in at a restaurant), `public/home/doors/<name>-16x9.jpg`. Maya and Theo drawn from their original
+references (canon `looks_locked_v1`) and compared beside them; the first drafts used the retired maya-v3 and theo-v2 and were redrawn.
+Communities and Media & Podcast kept. Asset packs (1:1, 4:5, 9:16, 21:9) for the five follow.

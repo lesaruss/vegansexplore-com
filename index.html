@@ -78,6 +78,16 @@
     .vframe video { display: block; width: 100%; height: 100%; object-fit: contain; background: #000; }
     .hv-play { position: absolute; inset: 0; border: 0; background: transparent; cursor: pointer; }
     .hv-play[hidden] { display: none; }
+    /* The play mark (Sean, 2026-11-15: "it's not clear to me that there's a video... I would expect to see a play button"): bottom center,
+       under the poster's logo card, on its own white plate so it reads on any frame. */
+    .hv-badge { position: absolute; left: 50%; bottom: 7%; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 10px;
+      background: #fff; color: var(--ink); border: 2px solid var(--ink); border-radius: 999px; padding: 6px 16px 6px 6px; box-shadow: 4px 4px 0 var(--ink);
+      font: 900 14px/1 Montserrat, system-ui, sans-serif; white-space: nowrap; transition: transform .15s ease; }
+    .hv-badge i { width: 40px; height: 40px; border-radius: 50%; background: var(--ink); display: flex; align-items: center; justify-content: center; }
+    .hv-badge svg { width: 16px; height: 16px; margin-left: 3px; fill: #fff; }
+    .hv-play:hover .hv-badge, .hv-play:focus-visible .hv-badge { transform: translateX(-50%) scale(1.06); }
+    /* Phones: the round button alone in the bottom-right corner, so it never covers the poster's line. */
+    @media (max-width: 600px) { .hv-badge { left: auto; right: 8px; bottom: 8px; transform: none; padding: 4px; font-size: 0; gap: 0; } .hv-badge i { width: 44px; height: 44px; } .hv-play:hover .hv-badge { transform: scale(1.06); } }
     .vcap { display: flex; align-items: center; gap: 12px; }
     .vcap img { height: 34px; width: auto; flex: none; }
     .vcap p { font-size: 14px; font-weight: 600; line-height: 1.4; }
@@ -258,7 +268,7 @@
             <source src="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/home/launch-v5.mp4" type="video/mp4">
             <track kind="captions" srclang="en" label="English" src="/public/home/launch-v4.vtt" default>
           </video>
-          <button type="button" class="hv-play" id="heroVideoPlay" aria-label="Play the one minute video about Vegans Explore"></button>
+          <button type="button" class="hv-play" id="heroVideoPlay" aria-label="Play the one minute video about Vegans Explore"><span class="hv-badge" aria-hidden="true"><i><svg viewBox="0 0 24 24"><polygon points="6,4 20,12 6,20"/></svg></i>Play the video &middot; 1 min</span></button>
         </div>
         <div class="vcap">
           <img src="/public/logo-ve-mark-white.svg" alt="" width="34" height="34">
@@ -286,19 +296,19 @@
             <a href="/claim?add=1">Add a place</a>
           </div>
         </div>
-        <span class="frame"><img src="/public/guides/thumb-directory.jpg" width="1280" height="714" alt="An Explorer pointing friends toward a Vegan spot on a city street" loading="lazy"></span>
+        <span class="frame"><img src="/public/home/doors/directory-16x9.jpg" width="1600" height="900" alt="Liz, drawn, showing two friends a Vegan cafe on her phone map" loading="lazy"></span>
       </div>
       <div class="door" style="--c:#F69820">
         <span class="num">Events</span>
         <h3><a href="/events">Events</a></h3>
         <p class="ex">Festivals, potlucks, meetups and pop-ups near you.</p>
-        <span class="frame"><img src="/public/guides/vegan-events-guide.jpg" width="1200" height="750" alt="A smiling host at an evening Vegan market" loading="lazy"></span>
+        <span class="frame"><img src="/public/home/doors/events-16x9.jpg" width="1600" height="900" alt="River, drawn, laughing with friends at an evening Vegan night market" loading="lazy"></span>
       </div>
       <div class="door" style="--c:#FF9EC4">
         <span class="num">Guides</span>
         <h3><a href="/guides">Guides</a></h3>
         <p class="ex">Our Guides walk you through eating out, travel, holidays and more.</p>
-        <span class="frame"><img src="/public/guides/welcome-guide.jpg" width="1200" height="750" alt="The Vegans Explore Guides together at a market" loading="lazy"></span>
+        <span class="frame"><img src="/public/home/doors/guides-16x9.jpg" width="1600" height="900" alt="The eight Vegans Explore Guides, drawn, around a table of Guides at a market" loading="lazy"></span>
       </div>
       <div class="door" style="--c:#3A9B3E">
         <span class="num">Communities</span>
@@ -310,7 +320,7 @@
         <span class="num">Daily Pulse</span>
         <h3><a href="/pulse">Daily Pulse</a></h3>
         <p class="ex">The news, openings and stories from the Vegan community, every day.</p>
-        <span class="frame"><img src="/public/guides/thumb-community.jpg" width="1280" height="714" alt="A big outdoor Vegan community dinner" loading="lazy"></span>
+        <span class="frame"><img src="/public/home/doors/pulse-16x9.jpg" width="1600" height="900" alt="Theo, drawn, sharing the day's community news on his phone at a cafe" loading="lazy"></span>
       </div>
       <div class="door" style="--c:#FFEBD1">
         <span class="num">Media &amp; Podcast</span>
@@ -322,7 +332,7 @@
         <span class="num">Passport</span>
         <h3><a href="/passport">Passport</a></h3>
         <p class="ex">Free membership: earn points, badges and your Founding Member mark.</p>
-        <span class="frame"><img src="/public/guides/thumb-passport.jpg" width="1280" height="714" alt="An Explorer checking in on her phone at a Vegan restaurant" loading="lazy"></span>
+        <span class="frame"><img src="/public/home/doors/passport-16x9.jpg" width="1600" height="900" alt="Maya, drawn, checking in on her phone at a Vegan restaurant" loading="lazy"></span>
       </div>
     </div>
 
