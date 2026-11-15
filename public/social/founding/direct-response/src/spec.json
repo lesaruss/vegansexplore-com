@@ -58,7 +58,7 @@
    "bg": "tint",
    "color": "dk",
    "head": "Free now. Yours<br>for good.",
-   "type": "<div class=\"badge\"><img src=\"/public/logo-ve-mark-white.svg\" alt=\"\"><div><small>On your profile</small><b>Founding Member</b></div></div><div class=\"facts\"><div>Stays on your profile for good</div><div>250 welcome points when you join</div><div>Free. A short survey. No payment.</div></div>"
+   "type": "<div class=\"badge\"><img src=\"/public/logo-ve-mark-white.svg\" alt=\"\"><div><small>On your profile</small><b>Founding Member</b></div></div><div class=\"facts\"><div>Stays on your profile for good</div><div>250 welcome points to start</div><div>A short survey. No payment.</div></div>"
   },
   {
    "bg": "pink",
