@@ -80,13 +80,16 @@
     ['Explore', '/directory', '<circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/>', function (p) { return /^\/(directory|search|explore)(\/|$)/.test(p); }],
     ['Menu', '#menu', '<rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/>', function () { return false; }],
     ['Saves', '/dashboard/saves', '<path d="M6 3h12v18l-6-4-6 4z"/>', function (p) { return /^\/dashboard\/saves/.test(p); }],
-    ['Profile', '/dashboard/profile', '<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>', function (p) { return /^\/(dashboard\/profile|account)(\/|$)/.test(p); }]
+    // Profile is the member's account (name, email, password, purchases), not the dashboard (Sean, 2026-11-15).
+    ['Profile', '/account', '<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>', function (p) { return /^\/account(\/|$|\.html)/.test(p); }]
   ];
   var barCss = document.createElement('style');
   barCss.textContent =
     '.ve-tabbar{display:none}' +
     '@media (max-width:860px){' +
     'body.ve-has-tabbar{padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))}' +
+    // The bottom bar's Menu replaces the top bar's hamburger on phones (Sean, 2026-11-15).
+    'body.ve-has-tabbar .ve-burger,body.ve-has-tabbar .ve-burger-menu{display:none!important}' +
     'body.ve-has-tabbar{--ve-tabbar-h:calc(76px + env(safe-area-inset-bottom,0px))}' +
     'body.ve-has-tabbar #ve-inst{bottom:calc(100px + env(safe-area-inset-bottom,0px))}' +
     '.ve-tabbar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:9000;background:#fff;border-top:3px solid #1A1A1A;' +
@@ -110,7 +113,9 @@
     comm: '<circle cx="9" cy="8" r="3.5"/><circle cx="17" cy="9" r="2.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M15 14.6c2.6 0 4.6 1.6 5.5 4.4"/>',
     pass: '<rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M9 16h6"/>',
     save: '<path d="M6 3h12v18l-6-4-6 4z"/>',
-    dash: '<rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/>',
+    // A gauge, not four squares: the four squares are Menu and Apps (Sean, 2026-11-15).
+    dash: '<path d="M4 17a8 8 0 1 1 16 0"/><path d="M12 17l4-5"/><circle cx="12" cy="17" r="1.2"/>',
+    bd: '<rect x="3.5" y="7" width="17" height="13" rx="2"/><path d="M9 7V5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 5v2M3.5 12.5h17"/>',
     add: '<path d="M12 5v14M5 12h14"/>',
     app: '<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>',
     user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',
@@ -122,10 +127,12 @@
     var t = [
       ['Directory', '/directory', '#2D5C27', '#fff', 'dir'], ['Events', '/events', '#F69820', '#1a1a1a', 'ev'], ['Daily Pulse', '/pulse', '#22C55E', '#1a1a1a', 'pulse'],
       ['Media', '/media', '#FFEBD1', '#1a1a1a', 'media'], ['Guides', '/guides', '#FF9EC4', '#1a1a1a', 'guides'], ['Communities', '/communities', '#3A9B3E', '#fff', 'comm'],
-      ['Passport', '/passport', '#E8F5E9', '#1a1a1a', 'pass'], ['My Saves', '/dashboard/saves', '#fff', '#1a1a1a', 'save'], ['Dashboard', '/dashboard', '#fff', '#1a1a1a', 'dash'],
-      ['Add a place', '/claim?add=1', '#fff', '#1a1a1a', 'add']
+      ['Passport', '/passport', '#E8F5E9', '#1a1a1a', 'pass']
     ];
-    if (sa) t.push(['Depot', '/admin/depot', '#fff', '#1a1a1a', 'depot']);
+    // Saves is in the bottom bar, so not here; super admins get the Depot and BrandDesk in its place (Sean, 2026-11-15: "the only reason I've
+    // been going to the depot is to access Brand Desk").
+    if (sa) t.push(['Depot', '/admin/depot', '#fff', '#1a1a1a', 'depot'], ['BrandDesk', 'https://hq.lesaruss.ai/new/branddesk/vegans-explore', '#fff', '#1a1a1a', 'bd']);
+    t.push(['Dashboard', '/dashboard', '#fff', '#1a1a1a', 'dash'], ['Add a place', '/claim?add=1', '#fff', '#1a1a1a', 'add']);
     if (!standalone) t.push(['Get the app', '?install=1', '#fff', '#1a1a1a', 'app', 'install']);
     t.push(inn ? ['Log out', '#signout', '#fff', '#1a1a1a', 'out', 'signout'] : ['Log in', '/login?back=' + encodeURIComponent(location.pathname + location.search), '#fff', '#1a1a1a', 'user']);
     return t;

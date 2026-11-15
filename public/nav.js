@@ -70,7 +70,7 @@ window.VEImg = window.VEImg || function (u, w) {
     window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function () {}); });
   }
   // The site as an app: Back in the top bar and pictures in a viewer when opened from the home screen, Get the app in the menu.
-  if (!framed) { var sh = document.createElement('script'); sh.src = '/public/ve-app-shell.js?v=6'; sh.async = true; h.appendChild(sh); }
+  if (!framed) { var sh = document.createElement('script'); sh.src = '/public/ve-app-shell.js?v=7'; sh.async = true; h.appendChild(sh); }
   if (!framed && (/[?&]install=1\b/.test(location.search) || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches))) {
     var s = document.createElement('script'); s.src = '/public/ve-install.js'; s.async = true; h.appendChild(s);
   }

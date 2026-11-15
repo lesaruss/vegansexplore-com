@@ -97,3 +97,9 @@ rounded square with the solid green shadow (orange on the page you are on): Dire
 in their section colors and fixed type colors, then My Saves, Dashboard, Add a place, Depot (super admins), Get the app (not in the app), Log
 in or Log out on white. A tap outside, Escape or Menu again closes it (`tileMenu` in `ve-app-shell.js`). The hamburger in the top bar stays as
 it was. The app's Menu tab (vegansexplore-app `src/app/(tabs)/menu.tsx`, still a placeholder) copies this in 1.0.1.
+**Navigation pass (2026-11-15)** (Sean: "get rid of my saves, put the depot where my saves is, put Brand Desk after that... That's what I
+would expect to see when you click profile... should we even have on mobile the hamburger menu... the dashboard icon is sharing the same
+thing as the universal icon"): the tile menu drops My Saves (it is in the bar); super admins get Depot then BrandDesk
+(`hq.lesaruss.ai/new/branddesk/vegans-explore`) after Passport; Dashboard's tile is a gauge, since four squares are Menu and Apps. Profile in
+the bar opens My Account (`/account`), not the dashboard. On phones with the bottom bar the top bar's hamburger and its panel are hidden
+(the tiles carry Add a place, Log in and Get the app). Next: My Account as Sean described it (name, email, password, purchases).
