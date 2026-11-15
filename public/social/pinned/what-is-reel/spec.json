@@ -1,0 +1,64 @@
+{
+"shots": [
+{
+"color": "dk",
+"label": "Vegans Explore, in 30 seconds",
+"head": "What is<br>this place?",
+"art": "public/guides/welcome/liz-overview.jpg"
+},
+{
+"color": "dk",
+"label": "The Directory",
+"head": "Vegan places<br>near you",
+"art": "public/guides/welcome/liz-directory.jpg"
+},
+{
+"color": "or",
+"label": "Events",
+"head": "Vegan events<br>in your city",
+"art": "public/guides/welcome/liz-events.jpg"
+},
+{
+"color": "pink",
+"label": "Guides",
+"head": "Guides for<br>every step",
+"art": "public/guides/welcome/liz-guides.jpg"
+},
+{
+"color": "md",
+"label": "Communities",
+"head": "Your Vegan<br>community",
+"art": "public/guides/welcome/liz-city.jpg"
+},
+{
+"color": "br",
+"label": "The Daily Pulse",
+"head": "Vegan news<br>near you",
+"art": "public/guides/welcome/liz-ani-pulse.jpg"
+},
+{
+"color": "peach",
+"label": "Media",
+"head": "Podcasts and<br>shows, free",
+"art": "public/guides/welcome/liz-media-studio.jpg"
+},
+{
+"color": "tint",
+"label": "Passport",
+"head": "Earn points<br>as you go",
+"art": "public/guides/welcome/liz-pts-checkin.jpg"
+},
+{
+"color": "pink",
+"label": "Nominate Someone",
+"head": "Nominate<br>someone",
+"art": "public/guides/nominate/kai-cheer.jpg"
+},
+{
+"color": "dk",
+"label": "Free \u00b7 by January 1 \u00b7 link in bio",
+"head": "Founding<br><span style=\"color:var(--br)\">Member</span>",
+"art": "public/guides/welcome/liz-fnd-nye.jpg"
+}
+]
+}

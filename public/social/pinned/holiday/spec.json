@@ -1,0 +1,12 @@
+{"slides":[
+{"kind":"cover","art":"public/guides/holiday/theo-thanksliving.jpg","color":"pink","head":"The Holiday<br>Guide is here"},
+{"kind":"inside","art":"public/guides/holiday/w-table.jpg","color":"pink","head":"ThanksLiving,<br>November 26"},
+{"kind":"inside","art":"public/guides/holiday/p-menus.jpg","color":"pink","head":"Holiday menus<br>to order"},
+{"kind":"inside","art":"public/guides/holiday/r-wellington.jpg","color":"pink","head":"Recipes for<br>the table"},
+{"kind":"inside","art":"public/guides/holiday/p-store.jpg","color":"pink","head":"What to buy<br>at the store"},
+{"kind":"inside","art":"public/guides/holiday/p-events.jpg","color":"or","head":"Holiday events<br>near you"},
+{"kind":"inside","art":"public/guides/holiday/r-latkes.jpg","color":"pink","head":"Hanukkah,<br>made Vegan"},
+{"kind":"inside","art":"public/guides/holiday/r-gingerbread.jpg","color":"pink","head":"Christmas,<br>made Vegan"},
+{"kind":"inside","art":"public/guides/holiday/p-giveback.jpg","color":"md","head":"Give back<br>this season"},
+{"kind":"end","city":"communities/los-angeles/wide.jpg","head":"Open the<br><span>Holiday Guide</span>","line":"Free for everyone. Link in bio.","button":"Open it free"}
+]}

@@ -195,3 +195,29 @@ things that we're not using"): the Plan (By day, a day, the Calendar view) and e
 shows only them (`inFilt` in `admin/depot/social.html`). A skipped slot has **Delete it** (an editor of the brand; `ve-social` `delete`,
 refused with `not_skipped` for anything not skipped): the row goes, its notes and history with it (`ON DELETE CASCADE`), and a story made
 from it keeps its own slot. Proven 2026-11-01 on a [TEST] slot (refused while waiting, skipped, deleted, its history gone).
+
+## The week of Nov 16 and the three pinned posts (Sean, 2026-11-15, playbook `ve-social-schedule`)
+
+Sean: "Let's lock in our social media schedule for this week, create the assets and get them scheduled so we don't have to think about it...
+3 posts that we can lock at the top. That one for the holiday guide, 2, what Vegans Explore is, and the January 1st deadline, which could be
+carousels. And then the 3rd could be our current programming... each slide is going to explain a different feature... each one could be video as well."
+
+- **Loaded**: 17 slots, batch `week-2026-11-16`, status proposed (Waiting for approval) in Depot > Social; migration
+  `20261115_social_week_2026_11_16.sql` (run through the one-time `ve-once-social-week`, now the 410 stub). Approving pushes each to Metricool.
+  Mon to Wed 9 AM ET the three pinned carousels; the six city launches (Seattle, Portland, San Francisco 3 PM ET; Austin 1 PM; Denver 2 PM;
+  Boston Sat 12:30 PM), each post with @nextlevelvg as collaborator (Next Level has a location in all six) and its story 15 minutes later;
+  Thu 6 PM the What is Vegans Explore reel (IG, FB, TikTok, YouTube); Sun 12:30 PM a "ThanksLiving is Thursday" story. The nine stale
+  SoFlo Vegans 112 proposals (Nov 12 to 16) were skipped. The Nov 9 Philadelphia carousel stays proposed (waits on Sean's carousel calls).
+- **Pinned**: Pinned 1 What is Vegans Explore (10 slides, one feature a slide, end card Become a Founding Member by January 1), Pinned 2
+  The Holiday Guide (10 slides from its live sections), Pinned 3 Our shows (5 slides: the Vegans Explore Podcast Sundays, SoFlo Vegans
+  Wednesdays, Be on the show). Pinning is by hand (Metricool cannot pin): each slot's By hand step says so, with the order (Holiday first).
+  One Instagram bio link all week: `/go/bio-nov16` to `/hello?b=explore` (it carries the Holiday Guide and Founding Member).
+- **The video**: `scripts/brand-templates/reel.js`, the "Stories and reels" template as a reel: the band switches each shot, only the 4:5
+  picture moves (slow zoom drawn at 2x), a shot every 3 s, the launch bed under it. 30 s, from Liz's Welcome Guide scenes.
+- **Renderers**: `scripts/brand-templates/carousel.js` (posts and carousels, reads the template page's CSS like `featured.js`, refuses a
+  headline past two rows), `reel.js`. Specs in `public/social/pinned/<name>/spec.json`; files in `vegan-media/media/social/week-2026-11-16/`
+  (41 checked byte for byte). Twelve new square Liz scenes (locked recipe, wardrobe reference; two redrawn for a cut head and a sign with words,
+  one for a laptop logo) in `public/social/pinned/`. Not drawn in the other four shapes yet (asset pack rule): open item.
+- **Fact checks that changed copy**: the Daily Pulse has published nothing since June (newest `ve_pulse_posts` 2026-06-21), so no slide says
+  "every day/morning"; the shows carousel dropped its Pulse slide.
+- Open: Facebook gets the same caption (with "Link in bio"); its tracked links (`/go/pin-*-fb`) are in each slot's By hand step.
