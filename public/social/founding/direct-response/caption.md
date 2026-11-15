@@ -8,7 +8,7 @@ Join before midnight Eastern on January 1, 2027 and you are a Founding Member. I
 
 Free. A short survey. 250 welcome points. Tap the link in bio to register.
 
-#Vegan #VeganFood #VeganCommunity #PlantBased #VegansExplore #FoundingMember
+#Vegan #VeganFood #VeganCommunity #VegansExplore #FoundingMember
 
 # On-slide words
 

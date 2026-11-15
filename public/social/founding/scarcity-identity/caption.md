@@ -10,7 +10,7 @@ From South Florida to Seattle, Atlanta to London, your city is already here.
 
 Tap the link in bio to join free. The clock is on.
 
-#Vegan #VegansExplore #FoundingMember #VeganCommunity #VeganFood #PlantBased
+#Vegan #VegansExplore #FoundingMember #VeganCommunity #VeganFood
 
 # On-slide words
 

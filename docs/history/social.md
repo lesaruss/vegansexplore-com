@@ -257,3 +257,15 @@ carousels. And then the 3rd could be our current programming... each slide is go
   word by stt; the last frame holds 1 s so the Founding Member line finishes (28.4 s, -13.3 LUFS). Line, files and mix in
   `public/social/pinned/what-is-reel/voiceover.md`; the reel in storage replaced (sha matched); the slot's By hand note says to leave the Instagram
   song empty so it does not cover her.
+- **The Founding Member series, locked and scheduled (Sean, 2026-11-15)**. After the strategist panel, Sean reset the brief: "We need to have a
+  carousel with each carousel explaining why someone should become a founding member... it has to be about them... at the end, it's free
+  registration until January 1st", four designers, four proofs on our brand. Proofs in `public/social/founding/` (brief `BRIEF.md`): A Be one of
+  the first (scarcity, a clock rail), B Your week (story), C Straight to the point (direct response), D Your city (place). Sean locked all four
+  ("We can lock that in as a post for founding members"), asked for the current look and a mixed cast (rule in `docs/history/guides-standards.md`),
+  then approved them with one exception, River on the bus showing his phone's screen (redrawn twice: screen hidden, then the shirt mark kept
+  clear). Thirteen new scenes in `public/social/founding/scenes/`. Copy corrections by Logan: B's calendar read Jan 1 11:59 PM ET (24 h late, now
+  12:00 AM ET); C's "Free until Jan 1" and "The door closes January 1" implied joining ends (joining stays free; Founding Member closes), now "Ends
+  Jan 1", "Founding closes January 1", "Claim it now. Yours for good."; #PlantBased dropped. **Scheduled** (migration
+  `20261115_founding_member_series.sql`, batch `founding-series`, files in `vegan-media/media/social/founding/<slug>/`, 39 checked): Mondays 9 AM ET,
+  B Nov 16 (TikTok song Take Me (To The Moon)), C Nov 23, A Nov 30, D Dec 7, each pinned as it posts in the Founding spot (the Holiday Guide stays
+  first). The What is Vegans Explore carousel and reel are paused (skipped). Before C posts: retake its slides 2, 3 and 5 (live counts, event dates).
