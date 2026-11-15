@@ -449,11 +449,11 @@
     var list = COURSES.filter(function (c) { return !cur[1] || c.kind === cur[1]; });
     main.innerHTML = head('Courses', 'Courses and certificates', 'Plant-based nutrition, cooking and coaching courses, for yourself or for your work: what each one gives you, how long it takes and what it costs. Every one goes to the school\'s own page to sign up.', t) +
       (list.length ? '<div class="dg-srows">' + list.map(function (c) {
-        return row({ icon: ICON.courses, title: c.title, pre: '<div class="dg-k" style="margin:0">' + esc(c.by) + '</div>',
+        return row({ title: c.title, pre: '<div class="dg-k" style="margin:0">' + esc(c.by) + '</div>',
           body: '<p class="dg-srow-p">' + esc(c.desc) + '</p><dl>' +
             [['You earn', c.earn], ['Format', c.format], ['Length', c.length], ['Cost', c.price]].filter(function (x) { return x[1]; }).map(function (x) { return '<dt>' + x[0] + '</dt><dd>' + esc(x[1]) + '</dd>'; }).join('') +
-            '</dl>' + (c.tip ? '<p class="dg-tip">' + esc(c.tip) + '</p>' : ''),
-          acts: '<a class="dg-btn" href="' + esc(c.href) + '" target="_blank" rel="noopener">See the course</a>' });
+            '</dl>' + (c.tip ? '<p class="dg-tip">' + esc(c.tip) + '</p>' : '') +
+            '<div class="dg-btns" style="margin-top:12px"><a class="dg-btn" href="' + esc(c.href) + '" target="_blank" rel="noopener">See the course</a></div>' });
       }).join('') + '</div>' : '<p class="dg-empty">None listed here yet.</p>') +
       '<p class="dg-lede" style="margin-top:14px">Know a plant-based course we should add? <a href="#" data-ve-feedback>Tell us</a>, and we will check it.</p>' +
       '<p class="nt-note">A course listed here is not a recommendation or a medical credential. Prices and dates are from each school\'s own page when we checked; confirm them with the school before you enroll.</p>';
