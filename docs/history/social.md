@@ -247,3 +247,9 @@ carousels. And then the 3rd could be our current programming... each slide is go
   `public/guides/maya.jpg`); `VE_GUIDE_ART` in `footer.js` and `/mocks/brand-kit/roster` point at them. The 9:16 `tall` pictures are unchanged (no
   9:16 spot uses them today). Every new Theo or Maya picture uses these looks. Higgsfield references: original Theo `ddc4b75d-6f3c-4f4d-93d2-27365c01d10b`,
   original Maya `75c28848-a667-41d1-858a-1c1dc6032b6a`.
+- **Round 4, audio** (Sean: "yes, go with the audio plan"; the plan: a TikTok song on each carousel through the scheduler, Instagram carousels
+  silent unless a song is added by hand in the app, a short Liz voiceover on the reel over the bed, its line approved by Sean before recording).
+  TikTok songs from Metricool's top-100 trending tracks (read through the one-time `ve-once-social-week`, back to the 410 stub; migration
+  `20261115_social_week_tiktok_songs.sql`): What is Vegans Explore "Take Me (To The Moon)" (Ian Asher & D A N N Y, #6), the Holiday Guide
+  "Upbeat Yet Bittersweet Acoustic Guitar" (Meat Pie 25, #68), Our shows "What More Can I Say" (Teddy Swims, #40). Most of the list is sound
+  effects and stock cues; swap any in the slot's Music panel. The reel's Liz line waits on Sean (playbook `ve-social-schedule`).
