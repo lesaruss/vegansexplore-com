@@ -142,3 +142,9 @@ Sean: "the holiday guide, as well as all the other guides, need to be in the new
 approved rules in `public/ve-look.css` were widened to `html.ve-cb.ve-cb-s-guides`, so every Guide in the Dairy Guide family wears them
 (pink block and stripe, white join box with the one orange button, ink borders with pink shadows, pink bubble). Added: the join box's
 Member? Sign in in ink and deep pink; the Supermarket Guide's Try it button wraps on phones.
+
+**Menus We Found batch 3, 2026-11-15** (Drive "Ideas 111526"): eight menu tips (Peacefood, Wong Way Veg, Loving Hut Glendora, Vegan Airyy,
+Vegan Junkie, Follow Your Heart Market & Cafe, Nana's Rooted; Blondies' Hanukkah) and The People's Harvest event. First queued as pending
+for Sean; Sean: "I gave them to you... Why all of a sudden I have to intervene and be a middleman?" So the five places without a listing got
+one and every tip went live the same hour (migration `20261115_holiday_batch3_listings_and_live.sql`). Rule since: what Sean hands over goes
+live, listings included (CLAUDE.md). Left out for no confirmable link: Mattie's Mindful Meals, the panaderia, the Pompano Fruitluck.
