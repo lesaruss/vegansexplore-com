@@ -84,3 +84,10 @@ our sites opens in a viewer over the page with Close ("press and hold, then Save
 viewers. The phone menu has **Get the app** (`data-ve-install`, not once installed), which opens the Add to home screen steps (`VEInstall.show`),
 beside the existing prompt from the 3rd page. BrandDesk's Social kit does the same for its files (lesaruss-hq `SkFile`). Checked as an iPhone 14
 installed and in Safari: Back, the viewer and Close, Get the app and its steps, no script errors.
+**The app's bottom bar on phones (2026-11-15)** (Sean: "the app has a bottom menu... is that something we should bring to the mobile version?
+... go, build the bottom menu"): `ve-app-shell.js` adds the app's five tabs in its order (`vegansexplore-app` `src/components/TabBar.tsx`) at
+860 px and under on every page with the site's nav: Home (/), Explore (/directory), Menu (raised brand green circle, opens the site's menu),
+Saves (/dashboard/saves), Profile (/dashboard/profile), the app's own icons, styled after HQ's phone bar (white, 3 px ink line, the raised center).
+The page gets bottom padding and the Add to home screen prompt sits above it; desktop unchanged. Checked as an iPhone 14 on the homepage, the
+Directory, Guides, Events and the claim form: the right tab lit, Menu opens the menu, no sideways scroll, no script errors; beside HQ's bar.
+Next for the app (own chat, playbook ve-mobile-app): iOS 1.0.0 (13) was sent to App Review 2026-11-08 in the old look; 1.0.1 in Color Block.
