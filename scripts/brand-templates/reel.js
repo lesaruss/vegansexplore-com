@@ -34,6 +34,7 @@ const frame = (s, i, withArt) => { const dark = DARK[s.color];
   await p.goto(BASE + '/mocks/brand-kit/templates', { waitUntil: 'domcontentloaded' });
   const page = (withArt) => `<!doctype html><html><head><meta charset="utf-8"><base href="${BASE}/"><style>${css}
     html,body{background:transparent!important;padding:0;margin:0} .fx{width:1080px;border-radius:0!important;box-shadow:none!important;margin:0}
+    .s916 .top{padding-top:17cqw!important} /* headroom between the label and the headline, matched to the bounty story (Sean, 2026-11-15) */
     .s916 .art,.fx,.tf{background:transparent!important}</style></head><body>${SPEC.shots.map((s, i) => frame(s, i, withArt)).join('')}</body></html>`;
   // 1. Each shot's frame with the picture (for review and the cover), then the same frame with an empty picture box (the overlay).
   for (const withArt of [true, false]) {

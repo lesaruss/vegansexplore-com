@@ -38,6 +38,7 @@ const story = `<div class="tf s916 fx" id="story"><div class="top" style="${C}">
 const html = `<!doctype html><html><head><meta charset="utf-8"><base href="${BASE}/"><style>${css}
   body{background:#fff;padding:0;margin:0} .fx{width:1080px;border-radius:0!important;box-shadow:none!important}
   .s916 .top h5{font-size:7.2cqw!important}
+  .s916 .top{padding-top:17cqw!important} /* headroom between the label and the headline, matched to the bounty story (Sean, 2026-11-15) */
   .s45 .band{display:grid!important;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:3.4cqw;row-gap:2.2cqw;
     align-content:center;padding:2.6cqw 5cqw 3.8cqw!important}
   .s45 .band .bmark{height:12cqw!important;grid-row:1;align-self:center}
