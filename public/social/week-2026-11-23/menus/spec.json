@@ -1,0 +1,21 @@
+{
+ "slides": [
+  {
+   "kind": "cover",
+   "color": "pink",
+   "head": "Holiday menus<br>near you",
+   "art": {
+    "type": "hero",
+    "scene": "public/guides/holiday/theo-menus.jpg",
+    "tint": "pink",
+    "pill": "Holiday Menus",
+    "list": [
+     "Pick a city",
+     "Order-by dates",
+     "Save one"
+    ],
+    "cardw": 560
+   }
+  }
+ ]
+}
