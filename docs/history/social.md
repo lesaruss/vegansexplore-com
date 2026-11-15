@@ -195,3 +195,16 @@ things that we're not using"): the Plan (By day, a day, the Calendar view) and e
 shows only them (`inFilt` in `admin/depot/social.html`). A skipped slot has **Delete it** (an editor of the brand; `ve-social` `delete`,
 refused with `not_skipped` for anything not skipped): the row goes, its notes and history with it (`ON DELETE CASCADE`), and a story made
 from it keeps its own slot. Proven 2026-11-01 on a [TEST] slot (refused while waiting, skipped, deleted, its history gone).
+
+## "Approve the N waiting" did nothing (2026-11-15)
+
+Sean approved the 19 waiting posts for the week of Nov 16 and nothing landed, with no message. Depot > Social is a redirect to
+HQ BrandDesk > Social; the button lives in HQ's `public/branddesk/social.html` (the frame BrandDesk shows), which calls HQ's
+`/api/branddesk/social`, which calls `ve-social` as the signed-in person. The click never reached `ve-social`: HQ's route last
+ran at 11:12 UTC, and the two `ve-social` 200s at 12:34 and 12:36 were the VE dashboard's Insights `report` reads. The page
+hid the refusal: it ignored an error on the whole call (an expired HQ sign-in answers `401 Unauthorized.`) and wrote per-post
+errors on a 600 ms timer that the redraw wiped. Fixed in lesaruss-hq `e106855` (live): any non-2xx answer is an error, the
+page says "Nothing was approved: <why>" and keeps the button, per-post results show after the redraw, and the route logs
+every refusal and every change with counts (maxDuration 300). HQ's `social.html` is now the only source of that page (the
+VE Depot original is a stub), so `scripts/sync-branddesk-social.py` in HQ no longer applies. Handoff:
+`docs/handoff/2026-11-15-branddesk-social-approve.md`.
