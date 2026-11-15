@@ -79,8 +79,8 @@ Deno.serve(async (req) => {
       .select('id, url, title, snippet, published_on, origin, stance, topic, stance_reason')
       .eq('outlet_id', (outlet as any).id).order('published_on', { ascending: false, nullsFirst: false }).limit(500);
     const { data: contacts } = await db.from('ve_media_contacts')
-      .select('id, kind, name, role, beat, email, profile_url, source_url, status, found_at')
-      .eq('outlet_id', (outlet as any).id).neq('status', 'do_not_contact').order('kind').order('name');
+      .select('id, kind, name, role, beat, email, profile_url, source_url, status, found_at, is_best, best_reason')
+      .eq('outlet_id', (outlet as any).id).neq('status', 'do_not_contact').order('is_best', { ascending: false }).order('kind').order('name');
     return json({ outlet, coverage: coverage ?? [], contacts: contacts ?? [] });
   }
 
