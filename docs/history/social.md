@@ -285,3 +285,10 @@ carousels. And then the 3rd could be our current programming... each slide is go
   (`public/social/week-2026-11-16/philly/`, the real food photos kept, words moved off the pictures onto the band; the pilot for the other city
   carousels). Recycled: the SoFlo Vegans 112 set re-dated Mon to Fri (before Episode 113 airs Wednesday it promotes last week's show), back to proposed.
   The Nov 1 Guide reels were not recycled (old look, words on the pictures). Week sheet `public/social/week-2026-11-16/week-lookbook.jpg`.
+- **Grid spacing (Sean, 2026-11-15: "I wouldn't want to have two cityscapes back to back just for the grid's sake... Vegan Seattle could go after episode 146
+  and just keep that same thought process")**. The week's 9 cityscape posts and 8 others could not alternate, so a ThanksLiving is Thursday post (Sat 9 AM,
+  `public/social/week-2026-11-16/thanksliving/`) was added; 14 slots moved through `ve-social` `slot_save` (the scheduled city launches re-sent to Metricool
+  at their new times). Feed order: Mon Founding, SoFlo, Ep 146, Seattle; Tue Holiday, SoFlo Directory, Restaurant Guide, Portland; Wed Shows, San
+  Francisco, Events Guide; Thu Philadelphia, Holiday Guide is free, Austin; Fri bounty, Denver; Sat ThanksLiving, Boston. No two cityscapes touch on the
+  3-across grid, side by side or stacked. Rule for every week: alternate cityscapes with anything else on the grid. Views for Sean: `grid-preview.jpg`
+  (feed only, newest top left) and `stories-preview.jpg` (stories by day) in `public/social/week-2026-11-16/`.
