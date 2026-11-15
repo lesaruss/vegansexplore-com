@@ -1497,7 +1497,7 @@
       '<div class="dg-srows">' +
       row({ icon: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4.4-7 8-7s7 2.5 8 7"/>', title: '1. Join free', body: '<p class="dg-srow-p">A short survey makes you a member. No charge, ever, to enter.</p>' }) +
       row({ icon: '<path d="M5 12l5 5L20 7"/>', title: '2. Enter once', body: '<p class="dg-srow-p">One free entry puts you in every draw. No purchase, and no share, tag or follow.</p>' }) +
-      row({ icon: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>', title: '3. Watch the draws', body: '<p class="dg-srow-p">From December 1 to 11, winners are drawn at random, in the open. Coming: the live draw on this page.</p>' }) +
+      row({ icon: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>', title: '3. Watch the draws', body: '<p class="dg-srow-p">Winners are drawn at random, in the open, each day from December 1 to 11.</p>' }) +
       '</div>' +
       '<div class="hg-facts" style="margin-top:14px"><span><b>Draws</b> December 1 to 11</span><span><b>' + (g.entries || 0) + '</b> ' + (g.entries === 1 ? 'member has' : 'members have') + ' entered</span><span><b>Prizes sent</b> by January 10</span></div>' +
       '<h3 style="margin:22px 0 10px;font-size:16px">The Prizes</h3>' + prizeRows +
