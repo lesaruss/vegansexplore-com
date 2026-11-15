@@ -676,3 +676,15 @@ Points, Path, Make It Better, For the Animals, Become a Founder), two columns ("
 guide"), each row about 75 characters ("let's go with 75 characters"). Section pages: the How to use this page card is one blurb ("fold those
 into one blurb too") and the rows are two across at about 75 characters ("do the section pages at 75 too"). Text sizes match the Holiday
 Guide (15px card, 14.5px rows); Sean kept them. `guide-scripts/welcome-guide.js` v30, `passport.html`.
+
+**My Account, rebuilt (2026-11-15)** (Sean: "a my accounts page that should show their purchases, that should do their password, all of
+that... their email address... That's what I would expect to see when you click profile"): `/account` (`account.html`) is what Profile in the
+phone bottom bar opens. In Color Block: Hi, <first name>; **Your details** (name, email, membership with the Founding Member tag, member since,
+points to spend and earned in all, a link to edit name, picture and city on the dashboard); **Password** (Change my password sends the ve-auth
+`forgot_password` link, one hour; a Google, Apple or LESARUSS sign-in with no password is told how they sign in instead); **Purchases**
+(newest first, date, what, kind, amount in dollars or points or Free, five then Show N more) from the new `ve-account` `account` (verify_jwt
+off, the ve token checked as in ve-votes) and `ve_member_purchases` (migration `20261115_member_account_purchases.sql`: Vegans Explore card
+payments by member or email, Guides, paid tickets, services and audits, test orders left out; service role only); **Privacy** (show my
+check-ins, ve-checkin as before); **Sign out**. The old stat cards, Passport perks, Get Involved forms, Guides Unlocked and Recent Activity
+left (they had stopped loading: the page sent the ve token where the database wants its own key). Checked at 390 and 1440 with a stand-in
+member and a sample answer; ve-account refuses a missing or forged token; Sean's own account reads 6 purchases.
