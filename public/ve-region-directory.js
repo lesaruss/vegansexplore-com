@@ -797,7 +797,11 @@
   // Online and in every chapter only when no chapters are named either. A listing with no address that names its chapters
   // (a grocery chain's footprint, a group known by its chapter) shows only there (Sean, 2026-11-01: "make sure that the markets
   // are only showing in chapters where they are actually located").
-  function everywhere(l) { var c = l.communities || []; return isOnline(l) && (!c.length || c.indexOf('all') >= 0); }
+  // A local food business (a bakery, a caterer, a truck) is never everywhere, even with no street address: selling online is
+  // not delivering nationwide (Sean, 2026-11-15, a Decatur, GA bakery listed Online showed in Seattle). It shows only where its
+  // address or its named chapters put it.
+  var LOCAL_ONLY = ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Food Trucks & Vendors', 'Catering'];
+  function everywhere(l) { var c = l.communities || []; return isOnline(l) && LOCAL_ONLY.indexOf(l.category) < 0 && (!c.length || c.indexOf('all') >= 0); }
   // A listing shows in a chapter when its address puts it there, it is online, or it serves that chapter
   // too (listings.communities: hub slugs, or 'all' for every chapter; Sean, 2026-10-24, migration
   // 20261024_listing_communities.sql). config.hub is the chapter's slug; /directory's Every City has none.
