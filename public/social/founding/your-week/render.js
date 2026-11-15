@@ -32,7 +32,7 @@ const S = [
     }</div><div class="foot">Near me works anywhere: a ZIP or a city.</div></div>` },
   { kind: 'type', color: 'pink', head: 'Gone after<br>January 1',
     body: `<div class="ty dline" style="background:var(--dk);color:#fff"><span class="tg pk">The catch</span>
-      <div class="cal"><div class="m">JAN</div><div class="d">1</div><div class="t">11:59 PM ET</div></div>
+      <div class="cal"><div class="m">JAN</div><div class="d">1</div><div class="t">12:00 AM ET</div></div>
       <div class="big sm">That whole week?<br>Free. Always.</div>
       <p>Founding Member is not forever. Join before midnight Eastern, January 1, 2027, and it stays on your profile for good. After that, it is gone.</p></div>` },
   { kind: 'end', city: 'communities/new-york/wide.jpg', head: 'Become a<br><span>Founding Member</span>',

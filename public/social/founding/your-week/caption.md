@@ -12,7 +12,7 @@ South Florida, Central Florida, North Florida, Atlanta, Washington, D.C., Maryla
 
 Tap the link in bio to join free.
 
-#Vegan #VeganCommunity #VeganFood #PlantBased #VegansExplore #FoundingMember
+#Vegan #VeganCommunity #VeganFood #VegansExplore #FoundingMember
 
 # On-slide words
 
@@ -24,5 +24,5 @@ Tap the link in bio to join free.
 6. Rail: SAT 11:00 AM. Band: A Vegan event near you
 7. Rail: SUN 2:00 PM. Band: Give back with points
 8. Tag: EVERY WEEK, IN. The city list (as in the caption). Foot: Near me works anywhere: a ZIP or a city. Band: Wherever you live
-9. Tag: THE CATCH. Calendar: JAN 1, 11:59 PM ET. Big: That whole week? Free. Always. Body: Founding Member is not forever. Join before midnight Eastern, January 1, 2027, and it stays on your profile for good. After that, it is gone. Band: Gone after January 1
+9. Tag: THE CATCH. Calendar: JAN 1, 12:00 AM ET. Big: That whole week? Free. Always. Body: Founding Member is not forever. Join before midnight Eastern, January 1, 2027, and it stays on your profile for good. After that, it is gone. Band: Gone after January 1
 10. End card (New York). Logo. Become a Founding Member. Free to join. Tap the link in bio. Ends midnight Eastern, January 1. Button: JOIN FREE
