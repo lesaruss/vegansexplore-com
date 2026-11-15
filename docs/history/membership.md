@@ -698,3 +698,7 @@ Events (River at a night market), Guides (all eight Guides at a market table, ea
 news at a cafe), Passport (Maya checks in at a restaurant), `public/home/doors/<name>-16x9.jpg`. Maya and Theo drawn from their original
 references (canon `looks_locked_v1`) and compared beside them; the first drafts used the retired maya-v3 and theo-v2 and were redrawn.
 Communities and Media & Podcast kept. Asset packs (1:1, 4:5, 9:16, 21:9) for the five follow.
+The asset packs (2026-11-15): each of the five door scenes in all five shapes, drawn for each shape (never cropped) from the approved 16:9 and
+the Guide's original reference, checked for faces, skin and words (four redrawn: the Directory and Events strips, the Guides 9:16 and 21:9),
+at `vegan-media/media/home/doors/<directory|events|guides|pulse|passport>/<1x1|4x5|9x16|16x9|21x9>.jpg` (uploaded through a one-time
+function, back to the 410 stub after).
