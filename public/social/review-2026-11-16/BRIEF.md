@@ -23,3 +23,8 @@ and `stories-preview.jpg`; captions are in the migrations named below)
    file name, and say so in the review. Do not overwrite anything outside your folder.
 3. Report back in under 200 words: counts of SHIP and FIX, the fixes you rendered, and anything that needs new art or Sean's call.
 Do not commit, no database, no live systems.
+
+## Stories never depend on a link sticker (Sean, 2026-11-15)
+
+Everything we schedule posts itself through Metricool, which cannot add stickers, and Instagram does not allow adding one after a story is up.
+A story points to the link in bio ("Link in bio" in its label when it needs one) and never says "tap the link". Nothing we make needs a person to post it.

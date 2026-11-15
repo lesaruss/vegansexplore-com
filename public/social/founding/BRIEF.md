@@ -61,3 +61,8 @@ installed) as long as it reads the template's CSS and the result matches the kit
 4. Check every slide yourself: open it, and look at it scaled to 360 px wide (feed size). Nothing overflows, every word readable, no cut faces.
 Do not edit anything outside your folder, do not commit, no database, no live systems. Report back in under 200 words: the strategy, the slide
 list in one line each, and your files.
+
+## Stories never depend on a link sticker (Sean, 2026-11-15)
+
+Everything we schedule posts itself through Metricool, which cannot add stickers, and Instagram does not allow adding one after a story is up.
+A story points to the link in bio ("Link in bio" in its label when it needs one) and never says "tap the link". Nothing we make needs a person to post it.
