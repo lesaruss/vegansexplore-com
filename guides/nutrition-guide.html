@@ -556,6 +556,14 @@
     .wg-cd-r div{text-align:center;min-width:52px}
     .wg-cd-r b{display:block;font-size:24px;font-weight:900;color:var(--ink)}
     .wg-cd-r span{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink55)}
+    /* Play Theo and Talk to Theo share one row, equal halves (copied from the Holiday Guide, Sean 2026-11-08). When there is nothing to play, Talk takes the row. */
+    @media (min-width:901px){
+      .dg-rail{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-auto-rows:max-content;align-content:start;column-gap:10px;}
+      .dg-rail>*{grid-column:1 / -1;}
+      .dg-rail>#dgPlay:not([hidden]){grid-column:1;}
+      .dg-rail>#dgPlay:not([hidden])~.vepg-talk{grid-column:2;}
+      .dg-rail>#dgPlay,.dg-rail>.vepg-talk{margin:0 !important;height:44px;justify-content:center;align-self:stretch !important;width:100%;box-sizing:border-box;font-size:12.5px;letter-spacing:.02em;white-space:nowrap;padding-left:6px !important;padding-right:6px !important;overflow:hidden;text-overflow:ellipsis;}
+    }
   </style>
 <script src="/public/ve-guide-corner.js"></script>
 </head>
@@ -595,6 +603,7 @@
     <div class="dg-namebar"><div class="dg-maya-name"><b>Theo</b> &middot; Your Guide for Vegan nutrition</div>
       <button type="button" class="dg-fold" id="dgFold" aria-expanded="true">Hide Theo</button></div>
     <div class="dg-bubble" id="dgBubble"></div>
+    <button type="button" class="dg-play go" id="dgPlay" hidden>&#9654; Play Theo</button>
     <div class="dg-tour" id="dgTour"></div>
   </aside>
 </div>
@@ -611,7 +620,7 @@
 <script src="/public/ve-region-directory.js"></script>
 <script src="/public/ve-episodes.js"></script>
 <script src="/public/ve-explorer-card.js"></script>
-<script src="/guide-scripts/nutrition-guide.js?v=2"></script>
+<script src="/guide-scripts/nutrition-guide.js?v=3"></script>
 <script src="/public/ve-guide-min.js"></script>
 </body>
 </html>

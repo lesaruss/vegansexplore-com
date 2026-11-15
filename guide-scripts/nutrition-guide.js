@@ -658,7 +658,24 @@
   foldBtn.addEventListener('click', function () { setFold(!railEl.classList.contains('dg-folded')); });
   try { if (sessionStorage.getItem('nt_theo_folded')) setFold(true); } catch (e) {}
   var bubble = document.getElementById('dgBubble'), tourEl = document.getElementById('dgTour');
+  // Theo's recorded lines (Sean approved the Courses lines 2026-11-15: "approved"; el-media tts in his voice, stt-checked word for word).
+  // [visitor, member]; a tab without a clip shows no Play. Nothing plays until pressed.
+  var VB = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/nutrition-guide/';
+  var TAB_AUDIO = { courses: [VB + 'theo-courses-v1.mp3', VB + 'theo-courses-member-v1.mp3'] };
+  var aud = new Audio(), playBtn = document.getElementById('dgPlay'), playing = false;
+  function clip() { var c = TAB_AUDIO[curTab]; return c ? (member() ? c[1] : c[0]) : ''; }
+  function paintPlay() { if (!playBtn) return; playBtn.hidden = !clip(); playBtn.innerHTML = playing ? 'Pause Theo' : '&#9654; Play Theo'; }
+  aud.addEventListener('ended', function () { playing = false; paintPlay(); });
+  aud.addEventListener('pause', function () { playing = false; paintPlay(); });
+  if (playBtn) playBtn.addEventListener('click', function () {
+    if (playing) { aud.pause(); return; }
+    var c = clip(); if (!c) return;
+    if (aud.src !== c) aud.src = c;
+    aud.play().then(function () { playing = true; paintPlay(); }).catch(function () { playing = false; paintPlay(); });
+  });
   function drawTheo() {
+    if (aud.src && aud.src !== clip()) { aud.pause(); aud.removeAttribute('src'); playing = false; }
+    paintPlay();
     var t = tab(curTab), list = tabs(), i = 0;
     var box = document.getElementById('dgMaya'), sc = SCENE[curTab] ? npic(SCENE[curTab]) : (window.VEGuideArt ? VEGuideArt('theo', 'square') : '');
     if (box && sc) box.style.backgroundImage = "url('" + sc + "')";
