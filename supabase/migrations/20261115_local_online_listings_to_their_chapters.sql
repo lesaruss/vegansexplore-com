@@ -8,5 +8,5 @@ update listings set address_city='Los Angeles', address_state='CA', communities=
  where id='6527fcaa-6a9c-4a6c-b537-3d88568f4472'; -- Vegan Healing Arts
 update listings set communities=array['north-florida','central-florida','south-florida']
  where id='b6282724-19c5-4f02-8ab3-45dc18a88a20'; -- Vegan Squad, a Florida meetup crew
-update listings set communities=array['none']
- where id='b1251654-2e59-4d06-bdc1-5f03ad777c3c'; -- Amy's Lil Chunks of Love: location unknown, in no chapter until placed
+update listings set communities=array['south-florida'], location='South Florida'
+ where id='b1251654-2e59-4d06-bdc1-5f03ad777c3c'; -- Amy's Lil Chunks of Love: South Florida (Sean, 2026-11-15)
