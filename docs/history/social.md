@@ -253,3 +253,7 @@ carousels. And then the 3rd could be our current programming... each slide is go
   `20261115_social_week_tiktok_songs.sql`): What is Vegans Explore "Take Me (To The Moon)" (Ian Asher & D A N N Y, #6), the Holiday Guide
   "Upbeat Yet Bittersweet Acoustic Guitar" (Meat Pie 25, #68), Our shows "What More Can I Say" (Teddy Swims, #40). Most of the list is sound
   effects and stock cues; swap any in the slot's Music panel. The reel's Liz line waits on Sean (playbook `ve-social-schedule`).
+- **Round 5, the reel's voice** (Sean approved the line: "yes, record it"). Nine phrases in Liz's voice, one per 3 s shot, each matched word for
+  word by stt; the last frame holds 1 s so the Founding Member line finishes (28.4 s, -13.3 LUFS). Line, files and mix in
+  `public/social/pinned/what-is-reel/voiceover.md`; the reel in storage replaced (sha matched); the slot's By hand note says to leave the Instagram
+  song empty so it does not cover her.
