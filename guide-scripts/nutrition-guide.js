@@ -111,7 +111,7 @@
   // scene on every page (the locked scene recipe), the numbered dropdown for more than five tabs. Copied from guide-scripts/food-photographer-guide.js.
   var NPIC = '/public/guides/nutrition/';
   var SCENE = { overview: 'theo-overview.jpg', nutrients: 'theo-nutrients.jpg', plate: 'theo-plate.jpg', supplements: 'theo-supplements.jpg',
-    experts: 'theo-experts.jpg', courses: 'theo-courses.jpg', pulse: 'theo-pulse.jpg' };
+    experts: 'theo-experts.jpg', courses: 'theo-courses.jpg', pulse: 'theo-pulse.jpg', mylist: 'theo-mylist.jpg', join: 'theo-join.jpg' };
   var CARD = { overview: 'card-overview.jpg', nutrients: 'scene-market.webp', plate: 'scene-plate.webp', supplements: 'card-supplements.jpg',
     experts: 'card-experts.jpg', courses: 'card-courses.jpg', pulse: 'scene-podcast.webp' };
   var PAGE = {
