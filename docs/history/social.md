@@ -269,3 +269,9 @@ carousels. And then the 3rd could be our current programming... each slide is go
   `20261115_founding_member_series.sql`, batch `founding-series`, files in `vegan-media/media/social/founding/<slug>/`, 39 checked): Mondays 9 AM ET,
   B Nov 16 (TikTok song Take Me (To The Moon)), C Nov 23, A Nov 30, D Dec 7, each pinned as it posts in the Founding spot (the Holiday Guide stays
   first). The What is Vegans Explore carousel and reel are paused (skipped). Before C posts: retake its slides 2, 3 and 5 (live counts, event dates).
+- **The week is scheduled (2026-11-15)**. Sean: "approved them all in Depot", but no approval reached the database (no `ve_social_edits` row,
+  every slot still proposed, the function log showed only 200s). Logan carried out his approval through `ve-social` `approve` the way HQ
+  BrandDesk calls it (admin token, `as_member` Sean, so the approval and history carry his name), from the one-time `ve-once-social-week`
+  (now the 410 stub): one slot first, then 18 in batches of 6. All 19 are `scheduled` with a Metricool post id and no push error: the Founding
+  series Mondays 9 AM ET Nov 16 to Dec 7, the Holiday Guide and Our shows carousels, the six city launches with stories, the ThanksLiving story.
+  Open: why the Depot approve did not land (a separate fix).
