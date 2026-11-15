@@ -1,0 +1,168 @@
+{
+ "show": {
+  "name": "SoFlo Vegans Podcast",
+  "short": [
+   "SoFlo",
+   "Vegans"
+  ],
+  "day": "Every Wednesday",
+  "art": {
+   "16x9": "/public/brand-kit/podcast/soflo/16x9.jpg",
+   "21x9": "/public/brand-kit/podcast/soflo/21x9.jpg",
+   "9x16": "/public/brand-kit/podcast/soflo/9x16.jpg",
+   "4x5": "/public/brand-kit/podcast/soflo/4x5.jpg",
+   "1x1": "/public/brand-kit/podcast/soflo/1x1.jpg"
+  },
+  "platforms": [
+   "spotify",
+   "apple-podcasts",
+   "amazon-music",
+   "youtube"
+  ],
+  "links": {
+   "spotify": "https://open.spotify.com/show/0AjEvjgjAWPWr8GsuyCkcz",
+   "apple": "https://podcasts.apple.com/us/podcast/soflo-vegans-podcast/id1368665222",
+   "amazon": "https://music.amazon.com/podcasts/36a26496-7ed5-455e-94d3-00ed1c14b5b5/soflo-vegans-podcast",
+   "youtube": "https://www.youtube.com/playlist?list=PL-UI3zSy3hJk0g1fs_SMO-Nwgu9WTzBu_"
+  }
+ },
+ "episode": {
+  "number": 112,
+  "title": "The SoFlo Vegans Podcast is back",
+  "aired": "2026-11-11",
+  "page": "/directory/soflo-vegans-podcast?ep=8d36a34d-c67b-42a0-917f-5206603bd29f"
+ },
+ "assets": [
+  {
+   "id": "car-02",
+   "kind": "post",
+   "art": {
+    "type": "logo",
+    "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/logos/listings/honestcuban-ig-2026-11-12.jpg"
+   },
+   "head": [
+    "VCC is now",
+    "Honest Cuban"
+   ],
+   "color": "green",
+   "n": "2 / 10"
+  },
+  {
+   "id": "car-09",
+   "kind": "post",
+   "art": {
+    "type": "tile",
+    "kind": "points",
+    "top": "Points",
+    "big": "50",
+    "small": "a place",
+    "bg": "#eafbf0"
+   },
+   "head": [
+    "Is it still",
+    "open?"
+   ],
+   "color": "bright",
+   "n": "9 / 10"
+  },
+  {
+   "id": "bty-01",
+   "kind": "post",
+   "art": {
+    "type": "tile",
+    "kind": "points",
+    "top": "Points",
+    "big": "50",
+    "small": "a place",
+    "bg": "#eafbf0"
+   },
+   "head": [
+    "Is it still",
+    "open?"
+   ],
+   "color": "bright"
+  },
+  {
+   "id": "dir-01",
+   "kind": "post",
+   "art": {
+    "type": "img",
+    "src": "/public/social/review-2026-11-16/your-week/assets/dir-collage.jpg"
+   },
+   "head": [
+    "New in the",
+    "Directory"
+   ],
+   "color": "green"
+  },
+  {
+   "id": "hol-01",
+   "kind": "post",
+   "art": {
+    "type": "img",
+    "src": "/public/guides/holiday/theo-thanksliving.jpg"
+   },
+   "head": [
+    "The Holiday Guide",
+    "is free"
+   ],
+   "color": "pink"
+  },
+  {
+   "id": "st-dir",
+   "kind": "story",
+   "label": "New in the Directory",
+   "head": [
+    "Three new in",
+    "the Directory"
+   ],
+   "art": {
+    "type": "img",
+    "src": "/public/social/review-2026-11-16/your-week/assets/card-dir.jpg"
+   },
+   "color": "green"
+  },
+  {
+   "id": "st-bty",
+   "kind": "story",
+   "label": "Bounty \u00b7 South Florida",
+   "head": [
+    "Is it still",
+    "open?"
+   ],
+   "art": {
+    "type": "img",
+    "src": "/public/social/review-2026-11-16/your-week/assets/card-bty.jpg"
+   },
+   "color": "bright"
+  },
+  {
+   "id": "st-madai",
+   "kind": "story",
+   "label": "On SoFlo Vegans",
+   "head": [
+    "Madai's",
+    "Vegan story"
+   ],
+   "art": {
+    "type": "img",
+    "src": "/public/social/review-2026-11-16/your-week/assets/card-madai.jpg"
+   },
+   "color": "pink"
+  },
+  {
+   "id": "st-hol",
+   "kind": "story",
+   "label": "The free Holiday Guide",
+   "head": [
+    "Order your",
+    "ThanksLiving"
+   ],
+   "art": {
+    "type": "img",
+    "src": "/public/guides/holiday/theo-menus.jpg"
+   },
+   "color": "pink"
+  }
+ ]
+}
