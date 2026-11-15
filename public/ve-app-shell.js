@@ -97,6 +97,76 @@
     '.ve-tabbar .vt-mid svg{width:24px;height:24px;color:#fff;background:#2D5C27;border:3px solid #1A1A1A;border-radius:50%;padding:10px;box-sizing:content-box;margin-top:-24px}' +
     '}';
   (document.head || document.documentElement).appendChild(barCss);
+  /* Menu is a sheet of tiles, four across like an iPhone (LOCKED, Sean 2026-11-15: "Lock it in and build it", from the mock beside the
+   * Directory): the sections in their own colors and fixed type colors (brand kit Foundations), then the member's own things on white.
+   * Every tile is an ink-outlined rounded square with the solid green shadow; the bottom bar stays under it; a tap outside, Escape or Menu
+   * again closes it. The app's Menu tab copies this. */
+  var TI = {
+    dir: '<path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/>',
+    ev: '<rect x="3.5" y="5" width="17" height="15" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+    pulse: '<path d="M3 12h4l3-7 4 14 3-7h4"/>',
+    media: '<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/>',
+    guides: '<path d="M4 5.5C6.5 4 9.5 4 12 5.5v14C9.5 18 6.5 18 4 19.5zM20 5.5C17.5 4 14.5 4 12 5.5v14c2.5-1.5 5.5-1.5 8 0z"/>',
+    comm: '<circle cx="9" cy="8" r="3.5"/><circle cx="17" cy="9" r="2.5"/><path d="M2.5 20c.8-3.6 3.4-5.5 6.5-5.5s5.7 1.9 6.5 5.5M15 14.6c2.6 0 4.6 1.6 5.5 4.4"/>',
+    pass: '<rect x="5" y="3" width="14" height="18" rx="2"/><circle cx="12" cy="10" r="3"/><path d="M9 16h6"/>',
+    save: '<path d="M6 3h12v18l-6-4-6 4z"/>',
+    dash: '<rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/>',
+    add: '<path d="M12 5v14M5 12h14"/>',
+    app: '<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><path d="M11 18.5h2"/>',
+    user: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/>',
+    out: '<path d="M15 4h4v16h-4"/><path d="M10 8l-4 4 4 4M6 12h10"/>',
+    depot: '<path d="M3 9l9-5 9 5v10H3z"/><path d="M9 19v-6h6v6"/>'
+  };
+  function tileItems() {
+    var A = window.VEAuth, inn = !!(A && A.isLoggedIn && A.isLoggedIn()), sa = !!(A && A.isRealSuperAdmin && A.isRealSuperAdmin());
+    var t = [
+      ['Directory', '/directory', '#2D5C27', '#fff', 'dir'], ['Events', '/events', '#F69820', '#1a1a1a', 'ev'], ['Daily Pulse', '/pulse', '#22C55E', '#1a1a1a', 'pulse'],
+      ['Media', '/media', '#FFEBD1', '#1a1a1a', 'media'], ['Guides', '/guides', '#FF9EC4', '#1a1a1a', 'guides'], ['Communities', '/communities', '#3A9B3E', '#fff', 'comm'],
+      ['Passport', '/passport', '#E8F5E9', '#1a1a1a', 'pass'], ['My Saves', '/dashboard/saves', '#fff', '#1a1a1a', 'save'], ['Dashboard', '/dashboard', '#fff', '#1a1a1a', 'dash'],
+      ['Add a place', '/claim?add=1', '#fff', '#1a1a1a', 'add']
+    ];
+    if (sa) t.push(['Depot', '/admin/depot', '#fff', '#1a1a1a', 'depot']);
+    if (!standalone) t.push(['Get the app', '?install=1', '#fff', '#1a1a1a', 'app', 'install']);
+    t.push(inn ? ['Log out', '#signout', '#fff', '#1a1a1a', 'out', 'signout'] : ['Log in', '/login?back=' + encodeURIComponent(location.pathname + location.search), '#fff', '#1a1a1a', 'user']);
+    return t;
+  }
+  var tmCss = document.createElement('style');
+  tmCss.textContent =
+    '#ve-tm-scrim{position:fixed;inset:0;background:rgba(17,17,17,.5);z-index:8990}' +
+    '#ve-tm{position:fixed;left:0;right:0;bottom:var(--ve-tabbar-h,0px);z-index:8995;background:#fff;border-top:3px solid #1A1A1A;border-radius:16px 16px 0 0;' +
+    'padding:18px 16px 20px;font-family:Montserrat,system-ui,sans-serif;max-height:calc(100vh - var(--ve-tabbar-h,0px) - 40px);overflow-y:auto}' +
+    '#ve-tm h2{margin:0 0 14px;font-size:22px;font-weight:900;letter-spacing:-.02em;color:#1A1A1A}' +
+    '#ve-tm .vtm-g{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 10px}' +
+    '#ve-tm a{display:flex;flex-direction:column;align-items:center;gap:6px;text-decoration:none;color:#1A1A1A;font-size:11.5px;font-weight:800;text-align:center;line-height:1.2;-webkit-tap-highlight-color:transparent}' +
+    '#ve-tm i{width:62px;height:62px;border-radius:16px;border:2px solid #1A1A1A;box-shadow:3px 3px 0 #2D5C27;display:flex;align-items:center;justify-content:center}' +
+    '#ve-tm a[aria-current="page"] i{box-shadow:3px 3px 0 #F69820}' +
+    '#ve-tm svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}' +
+    '.ve-tabbar .vt-mid[aria-expanded="true"] svg{background:#1A1A1A}';
+  (document.head || document.documentElement).appendChild(tmCss);
+  function tmEsc(e) { if (e.key === 'Escape') tileMenu(false); }
+  function tileMenu(open) {
+    var btn = document.querySelector('.ve-tabbar [data-ve-menu]');
+    ['ve-tm', 've-tm-scrim'].forEach(function (id) { var x = document.getElementById(id); if (x) x.remove(); });
+    document.removeEventListener('keydown', tmEsc);
+    if (btn) btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (!open) return;
+    var p = location.pathname;
+    var sc = document.createElement('div'); sc.id = 've-tm-scrim'; sc.addEventListener('click', function () { tileMenu(false); });
+    var m = document.createElement('div'); m.id = 've-tm'; m.setAttribute('role', 'dialog'); m.setAttribute('aria-label', 'Menu');
+    m.innerHTML = '<h2>Menu</h2><div class="vtm-g">' + tileItems().map(function (t) {
+      var here = t[1].charAt(0) === '/' && t[1] !== '/' && (p === t[1] || p.indexOf(t[1] + '/') === 0) && !(t[1] === '/dashboard' && /^\/dashboard\/saves/.test(p));
+      return '<a href="' + t[1] + '"' + (t[5] === 'install' ? ' data-ve-install' : t[5] === 'signout' ? ' data-ve-signout' : '') + (here ? ' aria-current="page"' : '') + '>' +
+        '<i style="background:' + t[2] + ';color:' + t[3] + '"><svg viewBox="0 0 24 24" aria-hidden="true">' + TI[t[4]] + '</svg></i>' + t[0] + '</a>';
+    }).join('') + '</div>';
+    m.addEventListener('click', function (e) {
+      var a = e.target.closest('a'); if (!a) return;
+      if (a.hasAttribute('data-ve-signout')) { e.preventDefault(); tileMenu(false); if (window.VEAuth && VEAuth.signOut) VEAuth.signOut(); return; }
+      if (a.hasAttribute('data-ve-install')) { setTimeout(function () { tileMenu(false); }, 0); return; }
+    });
+    document.body.appendChild(sc); document.body.appendChild(m);
+    document.addEventListener('keydown', tmEsc);
+  }
+
   function addBar() {
     if (window.VE_BRAND || document.querySelector('.ve-tabbar') || !document.querySelector('.ve-nav')) return;
     var framed = false; try { framed = window.self !== window.top; } catch (e) { framed = true; }
@@ -110,9 +180,7 @@
     }).join('');
     nav.querySelector('[data-ve-menu]').addEventListener('click', function (e) {
       e.preventDefault(); e.stopPropagation();
-      var b = document.getElementById('ve-burger');
-      // After this tap has finished, so the menu's own tap-outside-to-close does not shut it again at once.
-      if (b) { window.scrollTo({ top: 0, behavior: 'smooth' }); setTimeout(function () { b.click(); }, 0); } else location.href = '/directory';
+      tileMenu(!document.getElementById('ve-tm'));
     });
     document.body.appendChild(nav); document.body.classList.add('ve-has-tabbar');
   }

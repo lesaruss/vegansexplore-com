@@ -91,3 +91,9 @@ Saves (/dashboard/saves), Profile (/dashboard/profile), the app's own icons, sty
 The page gets bottom padding and the Add to home screen prompt sits above it; desktop unchanged. Checked as an iPhone 14 on the homepage, the
 Directory, Guides, Events and the claim form: the right tab lit, Menu opens the menu, no sideways scroll, no script errors; beside HQ's bar.
 Next for the app (own chat, playbook ve-mobile-app): iOS 1.0.0 (13) was sent to App Review 2026-11-08 in the old look; 1.0.1 in Color Block.
+**Menu is a sheet of tiles (LOCKED 2026-11-15)** (Sean: "a menu button that were tiles going across, almost like an iPhone... Lock it in and
+build it", from the mock beside the Directory): the bottom bar's Menu opens a sheet above the bar, four tiles across, each an ink-outlined
+rounded square with the solid green shadow (orange on the page you are on): Directory, Events, Daily Pulse, Media, Guides, Communities, Passport
+in their section colors and fixed type colors, then My Saves, Dashboard, Add a place, Depot (super admins), Get the app (not in the app), Log
+in or Log out on white. A tap outside, Escape or Menu again closes it (`tileMenu` in `ve-app-shell.js`). The hamburger in the top bar stays as
+it was. The app's Menu tab (vegansexplore-app `src/app/(tabs)/menu.tsx`, still a placeholder) copies this in 1.0.1.
