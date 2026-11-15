@@ -25,7 +25,7 @@
     if (/^\/(business\/tour|groups\/welcome)(\.html)?$/.test(p)) return 'guides'; // Guides on the Welcome Guide's frame (BrandDesk tour, Group Partner Guide)
     if (/^\/communities(\/|$)/.test(p)) return 'communities';
     if (/^\/pulse(\/|$)/.test(p)) return 'pulse';
-    if (/^\/(media|podcast|listen)(\/|$)/.test(p)) return 'media';
+    if (/^\/(media|podcast|listen|media-room|mocks\/media-room)(\/|$)/.test(p)) return 'media';
     if (/^\/(passport|levels|survey|join|welcome)(\/|$)/.test(p)) return 'passport';
     return 'home';
   }
@@ -49,7 +49,7 @@
   var head = document.head || de;
   if (!document.getElementById('ve-look-css')) {
     var l = document.createElement('link');
-    l.id = 've-look-css'; l.rel = 'stylesheet'; l.href = '/public/ve-look.css?v=14';
+    l.id = 've-look-css'; l.rel = 'stylesheet'; l.href = '/public/ve-look.css?v=15';
     l.setAttribute('blocking', 'render');
     head.appendChild(l);
   }
