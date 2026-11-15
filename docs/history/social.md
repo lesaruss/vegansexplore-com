@@ -275,3 +275,13 @@ carousels. And then the 3rd could be our current programming... each slide is go
   (now the 410 stub): one slot first, then 18 in batches of 6. All 19 are `scheduled` with a Metricool post id and no push error: the Founding
   series Mondays 9 AM ET Nov 16 to Dec 7, the Holiday Guide and Our shows carousels, the six city launches with stories, the ThanksLiving story.
   Open: why the Depot approve did not land (a separate fix).
+- **The fuller week (Sean, 2026-11-15: "sprinkling in some other content... the SoFlo Vegans podcast from last week, the Vegans Explore podcast that went
+  out today... guides... the holiday guide... each individual cities... recycle" what he had not approved)**. Added as proposed (migration
+  `20261115_social_week_mix.sql`, batch `week-2026-11-16-mix`, files `vegan-media/media/social/week-2026-11-16/`, 19 checked): Episode 146 carousel and
+  story (the locked podcast pack: renderer `scripts/brand-templates/podcast-pack/` brought over from the unmerged `claude/exciting-wozniak-5nm6kr`, spec
+  `specs/vegans-explore-podcast-146.json`; end card names only Apple Podcasts and Amazon Music, the platforms on record); the Vegan Restaurant Guide and
+  the Vegan Events Guide, each a post and a story (both are for business owners and hosts, so the copy says so; new Liz and River art; the Airport and
+  Nutrition Guides were skipped because they cost $11); the Philadelphia "5 Vegan spots" carousel rebuilt from the Canva version on our carousel template
+  (`public/social/week-2026-11-16/philly/`, the real food photos kept, words moved off the pictures onto the band; the pilot for the other city
+  carousels). Recycled: the SoFlo Vegans 112 set re-dated Mon to Fri (before Episode 113 airs Wednesday it promotes last week's show), back to proposed.
+  The Nov 1 Guide reels were not recycled (old look, words on the pictures). Week sheet `public/social/week-2026-11-16/week-lookbook.jpg`.
