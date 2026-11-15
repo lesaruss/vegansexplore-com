@@ -1265,3 +1265,11 @@ Sean, 2026-11-12: "I like the near me feature we've put onto the restaurants pag
   `directory/index.html`: "459 places in United States", "near Philadelphia", "everywhere". The front picker has All of <Country> per
   country and the address carries `?continent=&country=`. The counts are each door's All list: supermarket chains (`ve-grocery-store`) show only under Markets, so they are not counted
   (`inDoor`; Sean, 2026-11-13: "make the count match All too"; merge 91ca4c9).
+
+**Votes are vouches (LOCKED 2026-11-15, playbook `ve-vouch-points`)** (Sean: "only count my vote once for each listing that I voted for...
+make it so somebody can unvote as well"): one vote per member per listing, kept until they take it back. `ve-votes` v12 (from b63e9d6, source
+sha256 matched): a repeat is 409 `already_voted` with `next_vote_at` a year on (so every client keeps showing Voted), `today` lists every
+listing they vote for, `unvote` deletes their rows. `fn_listing_vote_count` sets `vote_count` and `voter_count` to the distinct members
+(migration `20261115_votes_are_vouches.sql`; 884 votes became 711 people). Tapping Voted opens "You voted for this place" with **Undo my
+vote** (`VEVotes.votedPrompt(iso, { listingId, onUndo })`). The daily habit moves to earning points to give to businesses, spent on Vegans
+Explore's own promotion; owners may give to their own; the public count is outside supporters only (to build; the playbook has the open list).
