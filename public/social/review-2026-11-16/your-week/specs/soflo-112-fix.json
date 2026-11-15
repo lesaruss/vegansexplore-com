@@ -100,7 +100,7 @@
    "kind": "post",
    "art": {
     "type": "img",
-    "src": "/public/guides/holiday/theo-thanksliving.jpg"
+    "src": "/public/guides/holiday/r-stuffing.jpg"
    },
    "head": [
     "The Holiday Guide",
@@ -156,11 +156,11 @@
    "label": "The free Holiday Guide",
    "head": [
     "Order your",
-    "ThanksLiving"
+    "holiday menu"
    ],
    "art": {
     "type": "img",
-    "src": "/public/guides/holiday/theo-menus.jpg"
+    "src": "/public/guides/holiday/theo-xm-menus.jpg"
    },
    "color": "pink"
   }

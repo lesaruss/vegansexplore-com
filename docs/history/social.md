@@ -292,3 +292,15 @@ carousels. And then the 3rd could be our current programming... each slide is go
   Francisco, Events Guide; Thu Philadelphia, Holiday Guide is free, Austin; Fri bounty, Denver; Sat ThanksLiving, Boston. No two cityscapes touch on the
   3-across grid, side by side or stacked. Rule for every week: alternate cityscapes with anything else on the grid. Views for Sean: `grid-preview.jpg`
   (feed only, newest top left) and `stories-preview.jpg` (stories by day) in `public/social/week-2026-11-16/`.
+- **Design team locked and the week's once-over applied (2026-11-15)**. Sean (relayed from the Depot fix session): "lock in that design team that created
+  those graphics... anything that hasn't gotten a once over from that panel, let's do that" (canon `canon-ve-design-team`). Also from him: Theo's fridge
+  (redrawn twice; final: both doors shut, his hand on the handle; Founding 1 re-pushed, Metricool 428905127), the podcast end card's Link in bio under the
+  stripe (fixed in `podcast-pack/pack.css` for every end card), detail-free episode stories (rundown cards, `podcast-pack/episode-card.js`). The four
+  designers reviewed the rest (`public/social/review-2026-11-16/<slug>/review.md`): city launches 12 FIX (Join free and Founding Member ends January 1 on every
+  post, the story label, captions now say tap the link in bio and carry the Founding line), podcasts 14 FIX (rundown cards on every story, tighter
+  headlines, a place not a stop), Guides/Philly/holiday 6 FIX (headlines that name the offer, lettering retouched off River's wristbands, Philadelphia's end
+  line true about joining), the Holiday Guide and Our shows carousels rebuilt (big phone crops, fresh captures, no past dates, Shows end line true).
+  Creative director corrections on top: duplicate pictures removed across the week (stuffing on Thursday's Holiday post, cranberry on Saturday's, Theo with
+  takeout orders on Thursday's story, Theo at his counter on Sunday's; the store scene was rejected for readable labels). 46 files replaced in storage (all
+  checked), city and Philadelphia captions updated, every changed scheduled post re-pushed (cities, their stories, the Holiday and Shows carousels, Sunday's
+  story). State: 16 scheduled, 17 waiting, no push errors. Views: `public/social/week-2026-11-16/grid-preview.jpg`, `stories-preview.jpg`.
