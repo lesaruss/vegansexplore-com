@@ -1,0 +1,51 @@
+{
+ "show": {
+  "name": "SoFlo Vegans Podcast",
+  "short": [
+   "SoFlo",
+   "Vegans"
+  ],
+  "day": "Every Wednesday",
+  "art": {
+   "16x9": "/public/brand-kit/podcast/soflo/16x9.jpg",
+   "21x9": "/public/brand-kit/podcast/soflo/21x9.jpg",
+   "9x16": "/public/brand-kit/podcast/soflo/9x16.jpg",
+   "4x5": "/public/brand-kit/podcast/soflo/4x5.jpg",
+   "1x1": "/public/brand-kit/podcast/soflo/1x1.jpg"
+  },
+  "platforms": [
+   "spotify",
+   "apple-podcasts",
+   "amazon-music",
+   "youtube"
+  ],
+  "links": {
+   "spotify": "https://open.spotify.com/show/0AjEvjgjAWPWr8GsuyCkcz",
+   "apple": "https://podcasts.apple.com/us/podcast/soflo-vegans-podcast/id1368665222",
+   "amazon": "https://music.amazon.com/podcasts/36a26496-7ed5-455e-94d3-00ed1c14b5b5/soflo-vegans-podcast",
+   "youtube": "https://www.youtube.com/playlist?list=PL-UI3zSy3hJk0g1fs_SMO-Nwgu9WTzBu_"
+  }
+ },
+ "episode": {
+  "number": 112,
+  "title": "The SoFlo Vegans Podcast is back",
+  "aired": "2026-11-11",
+  "page": "/directory/soflo-vegans-podcast?ep=8d36a34d-c67b-42a0-917f-5206603bd29f"
+ },
+ "cleared": [
+  "vegan-cuban-cuisine",
+  "rawchefcarla",
+  "sunnispeaksvegan",
+  "el-nopalito-vegan-taqueria-hallandale-beach",
+  "v-collective"
+ ],
+ "never": [
+  "poderosa-minded"
+ ],
+ "assets": [
+  {
+   "id": "car-10",
+   "kind": "end"
+  }
+ ]
+}

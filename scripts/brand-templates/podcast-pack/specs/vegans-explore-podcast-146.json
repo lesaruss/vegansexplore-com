@@ -125,11 +125,14 @@
   {
    "id": "st-new",
    "kind": "story",
-   "label": "Vegans Explore Podcast \u00b7 146",
-   "head": "Out now",
+   "label": "Vegans Explore Podcast \u00b7 out now",
+   "head": [
+    "New episode,",
+    "Episode 146"
+   ],
    "art": {
     "type": "img",
-    "src": "/public/social/pinned/scenes/kai-studio.jpg"
+    "src": "/public/brand-kit/podcast/cards/vep-146.jpg"
    },
    "color": "green"
   }

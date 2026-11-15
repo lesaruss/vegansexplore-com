@@ -545,3 +545,11 @@ html,body{margin:0;background:#fff}
 .ptile b{display:block;background:var(--br);font-size:6.4cqw;font-weight:900;letter-spacing:.12em;text-transform:uppercase;padding:2.4cqw 0;border-bottom:1.2cqw solid var(--ink)}
 .ptile span{display:block;font-size:24cqw;font-weight:900;line-height:1.05;letter-spacing:-.04em}
 .ptile i{display:block;font-style:normal;font-size:5cqw;font-weight:800;padding-bottom:3cqw;color:var(--mute)}
+
+/* 2026-11-15, Sean: "It looks like the link in bio is getting cut off by the bottom". The end card's Listen free block ran under the stripe;
+   tighter spacing above it keeps the Link in bio tag fully clear of the stripe (the 16:9 city stays whole). */
+.endc2 .lo { padding-bottom: 12cqw !important; }
+.endc2 h5 { margin-top: 2.6cqw !important; }
+.endc2 .plats { gap: 1.8cqw !important; margin-bottom: 0 !important; }
+.endc2 .plats .ic span { width: 13cqw !important; height: 13cqw !important; }
+.endc2 .plats .ic img { width: 8cqw !important; height: 8cqw !important; }
