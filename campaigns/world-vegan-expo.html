@@ -234,8 +234,7 @@
 <div id="wizardFrame" class="cover-mode">
 
   <div id="coverBg" aria-hidden="true">
-    <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260718_223111_a12e5b88-7573-484c-a462-d0895d0ac6f2.png" alt="">
-    <div class="cover-bg-scrim"></div>
+    <div class="cover-bg-scrim" style="background:var(--cb-dk,#2D5C27)"></div>
   </div>
 
   <div class="wiz-banner"><span>Vegans Explore &middot; World Vegan Expo &middot; Founding Chapter &middot; Vote For Your City</span></div>
@@ -266,7 +265,7 @@
       </div>
       <div class="guide-rail">
         <div class="guide-card">
-          <div class="guide-avatar"><img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260718_223111_a12e5b88-7573-484c-a462-d0895d0ac6f2.png" alt="Theo" style="width:100%;height:100%;object-fit:cover;"></div>
+          <div class="guide-avatar"><img data-guide-art="theo" alt="Theo" style="width:100%;height:100%;object-fit:cover;"></div>
           <div class="guide-body">
             <div class="guide-name">Theo</div>
             <div class="guide-role">Seasoned Vegan Guide</div>
@@ -435,7 +434,6 @@
 <div id="pbs-dashboard" style="display:none;">
   <div class="wiz-banner"><span>Vegans Explore &middot; World Vegan Expo &middot; Founding Chapter &middot; Your Experience</span></div>
   <div style="max-width:640px;margin:0 auto;padding:64px 24px 140px;text-align:center;">
-    <img src="https://d8j0ntlcm91z4.cloudfront.net/user_3CDGnUNmLloVUBJsrfOxR8cZFdv/hf_20260718_223111_a12e5b88-7573-484c-a462-d0895d0ac6f2.png" alt="" style="width:100%;max-width:420px;border-radius:16px;margin:0 auto 28px;display:block;box-shadow:0 12px 40px rgba(0,0,0,0.12);object-fit:cover;aspect-ratio:16/10;">
     <div class="wiz-eyebrow" style="justify-content:center;">Your Spot Is Confirmed</div>
     <h1 id="pbs-dashboard-headline" style="font-size:clamp(24px,3.4vw,34px);font-weight:900;letter-spacing:-0.01em;line-height:1.15;text-transform:uppercase;margin-bottom:14px;">You&rsquo;re In.</h1>
     <p id="pbs-dashboard-body" style="font-size:15px;color:var(--ve-text-75);line-height:1.7;"></p>
@@ -444,6 +442,8 @@
 </div>
 
 <script src="/public/footer.js"></script>
+<script>/* The Guide's approved picture (VE_GUIDE_ART), never a page's own copy (Guide art audit, 2026-11-13). */
+document.querySelectorAll('img[data-guide-art]').forEach(function (i) { if (window.VEGuideArt) i.src = VEGuideArt(i.getAttribute('data-guide-art'), 'square'); });</script>
 </div>
 
 <script>
