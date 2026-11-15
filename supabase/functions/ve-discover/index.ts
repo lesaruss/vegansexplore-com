@@ -924,7 +924,11 @@ Deno.serve(async (req) => {
       google_place_id: placeId || null, business_status: 'OPERATIONAL', google_hours_json: Object.keys(hours).length ? hours : null,
       vegan_status: body.vegan_status ? body.vegan_status : null, initials: initialsOf(name), updated_at: at,
     };
-    if (online) row.communities = ['all'];
+    // An online listing serves the chapters picked for it (Sean, 2026-11-15: online is not nationwide); Every chapter is 'all'.
+    if (online) {
+      const picked = Array.isArray(body.communities) ? (body.communities as unknown[]).map((c) => clean(c, 40)).filter((c) => /^[a-z0-9-]+$/.test(c)).slice(0, 40) : [];
+      row.communities = picked.includes('all') ? ['all'] : picked.length ? picked : ['all'];
+    }
     const note = { at, by, kind: 'note', text: 'Added by hand in Directory review' + (placeId ? ', from Google.' : '.') };
     // The same Google place waiting in the backlog is listed in its place, so there is one listing, not two.
     const { data: waiting } = placeId ? await db.from('ve_backlog_checks').select('listing_id').is('decision', null).eq('place->>id', placeId).limit(1) : { data: [] };

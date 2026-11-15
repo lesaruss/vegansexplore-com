@@ -190,6 +190,7 @@
   <script src="/public/ve-auth.js"></script>
   <script src="/public/depot-tabs.js"></script>
   <script src="/public/ve-logo-editor.js"></script>
+  <script src="/public/ve-hubs.js"></script>
   <script>
     (function () {
       var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-outreach';
@@ -451,7 +452,8 @@
         ['vegan_friendly', 'Vegan-friendly', 'A few Vegan choices.'], ['', 'Not a Vegan business', 'A store or a service, not Vegan itself.']];
       var DAYS_ALL = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
       var add = null;
-      function freshAdd() { return { q: '', where: '', url: '', shots: [], found: null, foundPics: [], read: [], places: null, f: { name: '', street: '', city: '', state: '', zip: '', country: '', phone: '', website: '', instagram: '', facebook: '', tiktok: '', logo: null, hours: {}, online: false, category: '', vegan_status: null, about: '' } }; }
+      function chapterList() { return window.VE_HUBS ? VE_HUBS.map(function (h) { return [h.slug, h.name]; }) : []; }
+      function freshAdd() { return { q: '', where: '', url: '', shots: [], found: null, foundPics: [], read: [], places: null, f: { name: '', street: '', city: '', state: '', zip: '', country: '', phone: '', website: '', instagram: '', facebook: '', tiktok: '', logo: null, hours: {}, online: false, communities: [], category: '', vegan_status: null, about: '' } }; }
       function stepHead(n) {
         return '<div class="steps">' + ADD_STEPS.map(function (t, i) { return '<span class="' + (i + 1 === n ? 'on' : i + 1 < n ? 'done' : '') + '">' + (i + 1) + '. ' + t + '</span>'; }).join('') + '</div>';
       }
@@ -524,7 +526,13 @@
           html += '<h2>The details</h2><p class="hint" style="margin:0 0 10px">' + (f.place_id ? 'From Google: check it and change anything that is wrong.' : 'Fill in what you know; the nightly pass fills in more once it has an address.') + '</p>' +
             '<div class="fix" id="ad-fix">' +
               '<div class="wide"><label for="ad-name">Name</label><input id="ad-name" data-a="name" type="text" value="' + esc(f.name) + '"></div>' +
-              '<div><label>Where</label><label class="check"><input type="checkbox" id="ad-online"' + (f.online ? ' checked' : '') + '> Online only, no storefront</label><p class="hint">It shows in every chapter, with no street or hours.</p></div>' +
+              '<div><label>Where</label><label class="check"><input type="checkbox" id="ad-online"' + (f.online ? ' checked' : '') + '> Online only, no storefront</label><p class="hint">No street or hours. Pick where it serves below.</p></div>' +
+              // Online is not nationwide (Sean, 2026-11-15, Blondies: a caterer that only serves South Florida): an online
+              // listing names the chapters it serves, or Every chapter for one that ships anywhere.
+              '<div class="wide online-ch"><label>Chapters it serves</label><div class="radios" style="display:flex;flex-wrap:wrap;gap:6px 14px">' +
+                '<label class="check"><input type="checkbox" id="ad-ch-all"' + (f.communities.indexOf('all') >= 0 ? ' checked' : '') + '> Every chapter (ships or serves anywhere)</label>' +
+                chapterList().map(function (c) { return '<label class="check"><input type="checkbox" name="ad-ch" value="' + esc(c[0]) + '"' + (f.communities.indexOf(c[0]) >= 0 ? ' checked' : '') + '> ' + esc(c[1]) + '</label>'; }).join('') +
+              '</div><p class="hint">A local caterer or bakery serves its own area only. Every chapter is for brands that ship anywhere.</p></div>' +
               '<div class="store"><label>Street</label><input data-a="street" type="text" value="' + esc(f.street) + '" placeholder="123 Main St"></div>' +
               '<div class="store"><label>City</label><input data-a="city" type="text" value="' + esc(f.city) + '" placeholder="Miami"></div>' +
               '<div class="store"><label>State</label><input data-a="state" type="text" value="' + esc(f.state) + '" placeholder="FL"></div>' +
@@ -559,7 +567,7 @@
           var hrs = DAYS_ALL.filter(function (d) { return f.hours[d]; }).map(function (d) { return d.slice(0, 3) + ' ' + f.hours[d]; }).join(', ');
           html += '<h2>Add it</h2><dl class="facts">' +
             '<dt>Name</dt><dd>' + esc(f.name) + '</dd><dt>Kind</dt><dd>' + esc(f.category) + '</dd><dt>How Vegan</dt><dd>' + esc(vl ? vl[1] : '') + '</dd>' +
-            '<dt>Where</dt><dd>' + (f.online ? 'Online only, every chapter' : esc([f.street, f.city, f.state, f.zip].filter(Boolean).join(', '))) + '</dd>' +
+            '<dt>Where</dt><dd>' + (f.online ? 'Online only, ' + (f.communities.indexOf('all') >= 0 ? 'every chapter' : esc(f.communities.map(function (c) { return (chapterList().filter(function (x) { return x[0] === c; })[0] || [0, c])[1]; }).join(', '))) : esc([f.street, f.city, f.state, f.zip].filter(Boolean).join(', '))) + '</dd>' +
             '<dt>Logo</dt><dd>' + (f.logo ? '<img class="logo-sum" src="' + esc(add.logoPreview) + '" alt="">' : 'The first letter') + '</dd>' +
             '<dt>Phone</dt><dd>' + esc(f.phone || '') + '</dd><dt>Website</dt><dd>' + esc(f.website || '') + '</dd>' +
             '<dt>Socials</dt><dd>' + esc([f.instagram && 'Instagram ' + f.instagram, f.facebook && 'Facebook ' + f.facebook.replace(/^https?:\/\/(www\.)?/, ''), f.tiktok && 'TikTok ' + f.tiktok].filter(Boolean).join(' · ') || 'None') + '</dd>' +
@@ -569,7 +577,9 @@
         }
         V().innerHTML = html + '</section>';
         if (n === 1) wireFind();
-        if (n === 2) { var sync = function () { Array.prototype.forEach.call(V().querySelectorAll('.store'), function (x) { x.hidden = $('ad-online').checked; }); }; $('ad-online').addEventListener('change', sync); sync(); readSite(); }
+        if (n === 2) { var sync = function () { var on = $('ad-online').checked; Array.prototype.forEach.call(V().querySelectorAll('.store'), function (x) { x.hidden = on; }); Array.prototype.forEach.call(V().querySelectorAll('.online-ch'), function (x) { x.hidden = !on; }); };
+          var syncAll = function () { var all = $('ad-ch-all').checked; Array.prototype.forEach.call(V().querySelectorAll('input[name=ad-ch]'), function (i) { i.disabled = all; }); };
+          $('ad-ch-all').addEventListener('change', syncAll); syncAll(); $('ad-online').addEventListener('change', sync); sync(); readSite(); }
         if (n === 3) wireLogo();
         if (n === 4) {
           if ($('ad-sug-kind')) $('ad-sug-kind').addEventListener('click', function () { $('ad-kind').value = add.found.kind; });
@@ -706,9 +716,16 @@
           Array.prototype.forEach.call(V().querySelectorAll('#ad-fix [data-day]'), function (x) { if (x.value.trim()) f.hours[x.dataset.day] = x.value.trim(); });
           if (f.name.length < 2) { msg.textContent = 'Give it a name.'; return; }
           if (!f.online && !f.city) { msg.textContent = 'Give it a city, or tick Online only.'; return; }
+          f.communities = !f.online ? [] : $('ad-ch-all').checked ? ['all'] : Array.prototype.map.call(V().querySelectorAll('input[name=ad-ch]:checked'), function (i) { return i.value; });
+          if (f.online && !f.communities.length) { msg.textContent = 'Pick the chapters it serves, or Every chapter if it ships anywhere.'; return; }
           location.hash = '#add/3';
         } else if (n === 3) {
-          if (!add.editor || !add.editor.ready()) { f.logo = null; add.logoBlob = null; add.logoPreview = ''; location.hash = '#add/4'; return; }
+          // An empty square is said out loud before going on (Sean, 2026-11-15: "I put in the logo... it didn't have anything"):
+          // the first Next with no picture in the square stops and says so; a second Next goes on with the first letter.
+          if (!add.editor || !add.editor.ready()) {
+            if (!add.noLogoOk) { add.noLogoOk = true; msg.className = 'msg err'; msg.textContent = 'There is no logo in the square yet, so it would show the first letter. If you picked one, wait for it to appear in the square. Press Next again to go on without a logo.'; return; }
+            f.logo = null; add.logoBlob = null; add.logoPreview = ''; location.hash = '#add/4'; return;
+          }
           var bt = $('ad-next'); bt.disabled = true; msg.className = 'msg'; msg.textContent = 'Saving the logo...';
           add.editor.toBlob().then(function (blob) {
             return uploadSquare(blob).then(function (path) {
