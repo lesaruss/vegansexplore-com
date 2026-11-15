@@ -37,5 +37,5 @@ Re-crop every screenshot to fill 65 to 70 percent of the picture width, cropped 
 - `sample-05.jpg` Guides, Theo (card kept clear of the Guides group picture in the screenshot)
 - `sample-06.jpg` Seattle community, browser cropped to the hero
 - `sample-07.jpg` end card (unchanged template)
-- `before-after-360.jpg` current Events slide beside the redesign at 360 px
+- `before-after-360.jpg` current cover beside the redesigned cover at 360 px
 - `art.js`, `art.json`, `art/` the picture-area compositor, its crops, and the 1080 squares; `spec.json` the slide spec
