@@ -1,0 +1,4 @@
+-- Bio link 3 opens ThanksLiving until Thanksgiving (Sean, 2026-11-15: "Yes to both"); on Nov 27 it returns to the Holiday Guide
+-- (a reminder is set in the ve-social-schedule chat). Safe to run twice.
+update ve_links set destination = 'https://vegansexplore.com/guides/holiday-guide#/thanksliving', label = 'Vegans Explore profile link: ThanksLiving Guide (Holiday Guide from Nov 27)' where code = 've-link-holiday';
+update ve_brand_cartridges set data = jsonb_set(data, '{social,links}', (select jsonb_agg(case when l->>'url' like '%/ve-link-holiday' then l || '{"title":"ThanksLiving Guide","note":"On Instagram. Opens ThanksLiving until Thanksgiving; on Nov 27 the same link opens the Holiday Guide (title: The Holiday Guide), then the next seasonal Guide after Christmas."}'::jsonb else l end order by ord) from jsonb_array_elements(data->'social'->'links') with ordinality t(l, ord))), updated_at = now() where brand_slug = 'vegans-explore';
