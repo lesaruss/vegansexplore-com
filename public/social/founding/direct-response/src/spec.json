@@ -1,0 +1,77 @@
+{
+ "slides": [
+  {
+   "bg": "pink",
+   "color": "dk",
+   "head": "Join free. Be a<br>Founding Member",
+   "type": "<div class=\"eb\">You know the feeling</div><div class=\"big\">Where can I eat <em>Vegan</em> near me?</div><div class=\"sub\">Every trip. Every Friday night. Every new town.</div><span class=\"swipe\">Swipe for the fix</span>"
+  },
+  {
+   "bg": "tint",
+   "color": "br",
+   "head": "Find Vegan food<br>near you, fast",
+   "kicker": "Stop guessing.<br><em>487 places</em> to eat.",
+   "img": "p-dir.jpg",
+   "w": 82
+  },
+  {
+   "bg": "peach",
+   "color": "md",
+   "head": "Check in and<br>earn points",
+   "kicker": "Your check-ins<br><em>earn you points</em>.",
+   "img": "p-list.jpg",
+   "w": 86
+  },
+  {
+   "bg": "dk",
+   "color": "tint",
+   "head": "Find your Vegan<br>crew nearby",
+   "type": "<div class=\"eb\">Your city, your people</div><div class=\"big\" style=\"font-size:10cqw\">Your city has a hub.</div><div class=\"cities\"><span>South Florida</span><span>Central Florida</span><span>North Florida</span><span>Atlanta</span><span>Washington, D.C.</span><span>Maryland</span><span>Virginia</span><span>West Virginia</span><span>Delaware</span><span>New York</span><span>Philadelphia</span><span>Boston</span><span>Los Angeles</span><span>San Francisco</span><span>Seattle</span><span>Portland</span><span>Austin</span><span>Denver</span><span>London</span></div>"
+  },
+  {
+   "bg": "pink",
+   "color": "peach",
+   "head": "Never miss a<br>Vegan event",
+   "kicker": "<em>174 Vegan events</em><br>coming up.",
+   "img": "p-events.jpg",
+   "w": 86
+  },
+  {
+   "bg": "peach",
+   "color": "pink",
+   "head": "Free Guides for<br>every step",
+   "kicker": "New or seasoned?<br>A <em>free Guide</em> for you.",
+   "img": "public/social/pinned/scenes/theo-guidebook.jpg",
+   "square": true,
+   "w": 60
+  },
+  {
+   "bg": "tint",
+   "color": "md",
+   "head": "Your voice on<br>our podcast",
+   "kicker": "Got a story?<br><em>Record it for us.</em>",
+   "img": "public/social/pinned/scenes/kai-voice.jpg",
+   "square": true,
+   "w": 60
+  },
+  {
+   "bg": "tint",
+   "color": "dk",
+   "head": "Free now. Yours<br>for good.",
+   "type": "<div class=\"badge\"><img src=\"/public/logo-ve-mark-white.svg\" alt=\"\"><div><small>On your profile</small><b>Founding Member</b></div></div><div class=\"facts\"><div>Stays on your profile for good</div><div>250 welcome points when you join</div><div>Free. A short survey. No payment.</div></div>"
+  },
+  {
+   "bg": "pink",
+   "color": "br",
+   "head": "The door closes<br>January 1",
+   "type": "<div class=\"eb\">The clock is running</div><div class=\"big\" style=\"font-size:12cqw\">Gone at <em>midnight</em>.</div><div class=\"clock\"><div><b>Jan 1</b><small>2027</small></div><div><b>12 AM</b><small>Eastern time</small></div></div><div class=\"sub\">After that, no new Founding Members. No exceptions.</div>"
+  },
+  {
+   "kind": "end",
+   "city": "communities/south-florida/wide.jpg",
+   "head": "Join free before<br><span>January 1</span>",
+   "line": "Tap the link in bio. A short survey, 250 points, Founding Member for good.",
+   "button": "Register free"
+  }
+ ]
+}

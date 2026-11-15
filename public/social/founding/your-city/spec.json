@@ -1,0 +1,22 @@
+{ "slides": [
+ { "kind": "cover", "color": "pink", "head": "Find your city.<br>It's on here.",
+   "art": { "type": "wall", "eyebrow": "Vegans Explore is in", "hi": ["Atlanta", "Seattle", "London"],
+     "names": ["South Florida", "Central Florida", "North Florida", "Atlanta", "Washington, D.C.", "Maryland", "Virginia", "West Virginia", "Delaware", "New York", "Philadelphia", "Los Angeles", "Seattle", "Portland", "San Francisco", "Austin", "Denver", "Boston", "London"],
+     "foot": "Swipe to see what's waiting there for you" } },
+ { "kind": "inside", "color": "md", "head": "Your city has<br>a Vegan home.",
+   "art": { "type": "city", "src": "communities/atlanta/wide.jpg", "color": "dk", "tag": "Your community hub", "name": "Atlanta", "line": "Your city's own hub: its places, its events, its people, all in one spot." } },
+ { "kind": "inside", "color": "br", "head": "Meet the Vegans<br>near you.",
+   "art": { "type": "scene", "src": "public/social/pinned/scenes/river-festival.jpg" } },
+ { "kind": "inside", "color": "dk", "head": "Every Vegan<br>spot near you.",
+   "art": { "type": "city", "src": "communities/seattle/wide.jpg", "color": "br", "tag": "Near me, a ZIP or a city", "name": "Seattle", "line": "Find Vegan places to eat near you, then vote for the ones you love and save them." } },
+ { "kind": "inside", "color": "tint", "head": "Check in. Earn<br>points.",
+   "art": { "type": "shot", "src": "public/social/founding/your-city/listing-crop.jpg", "color": "peach", "tag": "Los Angeles", "line": "Check in at the places you visit, answer \"Is it still open?\" and earn points to give to people and causes." } },
+ { "kind": "inside", "color": "pink", "head": "Put your people<br>on the map.",
+   "art": { "type": "city", "src": "communities/london/wide.jpg", "color": "dk", "tag": "Local pride", "name": "London", "line": "Nominate someone in your city to be featured, or record your story for the podcast." } },
+ { "kind": "inside", "color": "md", "head": "Free Guides for<br>every step.",
+   "art": { "type": "scene", "src": "public/social/pinned/scenes/theo-guidebook.jpg" } },
+ { "kind": "inside", "color": "dk", "head": "Be one of your<br>city's first.",
+   "art": { "type": "badge", "sub": "Stays on your profile for good.", "when": "Join by midnight Eastern, January 1, 2027.<br>Then it's gone.", "cities": "From South Florida to Seattle to London, every city's Founding Members are being counted now." } },
+ { "kind": "end", "cities": ["communities/atlanta/wide.jpg", "communities/seattle/wide.jpg", "communities/london/wide.jpg", "communities/south-florida/wide.jpg"],
+   "head": "Your city is<br><span>counting now.</span>", "line": "Join free with a short survey before January 1 and be a Founding Member for good.", "button": "Join free: link in bio" }
+] }
