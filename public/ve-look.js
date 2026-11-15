@@ -49,7 +49,7 @@
   var head = document.head || de;
   if (!document.getElementById('ve-look-css')) {
     var l = document.createElement('link');
-    l.id = 've-look-css'; l.rel = 'stylesheet'; l.href = '/public/ve-look.css?v=13';
+    l.id = 've-look-css'; l.rel = 'stylesheet'; l.href = '/public/ve-look.css?v=14';
     l.setAttribute('blocking', 'render');
     head.appendChild(l);
   }

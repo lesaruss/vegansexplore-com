@@ -257,3 +257,11 @@ tab (`#dash-profile-section`) stays hidden until its first full layout (`window.
 the plain rows and then rearranges. Site-wide, `nav.js` keeps a page invisible until `/public/ve-look.css` loads where the browser does not
 support `blocking="render"` (iPhone Safari; 1.5 s at most), so no page paints in the old look first. Checked locally with Chromium made to lack
 `blocking` (hidden until the CSS, then shown) and as itself (no wait); not yet seen signed in as a super admin.
+**The dashboard in Color Block (2026-11-15)** (Sean: "is this using the updated styling, the dashboard and everything? I don't think it's using
+the updated styling... Your titles. I don't know what your titles means... Could we do a little loading screen"): the 2026-11-13 sweep had
+called center-console done, but only its header and stripe were on the kit. `ve-look.css` (v14) now puts its own parts on the kit: every
+card and tile (`.dash-stat`, `.dash-preview-card`, `.dash-tour-prompt`, `.dash-tile`, `.rev-tile` and the rest) in the 2 px ink outline with
+the solid brand green shadow, every `.dash-section-title` in sentence case at 900 (Your badges moved onto that class), labels in ink, the
+Recent activity chips and revenue tabs ink-outlined with ink selected, Show N more and the small buttons white with an ink outline. Your tiles
+is now **Shortcuts**. Until its first layout the tab shows a spinner and "Loading your dashboard" instead of a blank. The sample's Sample
+stamp and toast sit above the phone bottom bar (`--ve-tabbar-h`). Checked on `/dashboard/sample` locally at 390 and 1440, no script errors.

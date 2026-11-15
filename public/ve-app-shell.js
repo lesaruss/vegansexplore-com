@@ -87,6 +87,7 @@
     '.ve-tabbar{display:none}' +
     '@media (max-width:860px){' +
     'body.ve-has-tabbar{padding-bottom:calc(86px + env(safe-area-inset-bottom,0px))}' +
+    'body.ve-has-tabbar{--ve-tabbar-h:calc(76px + env(safe-area-inset-bottom,0px))}' +
     'body.ve-has-tabbar #ve-inst{bottom:calc(100px + env(safe-area-inset-bottom,0px))}' +
     '.ve-tabbar{display:grid;grid-template-columns:repeat(5,1fr);position:fixed;left:0;right:0;bottom:0;z-index:9000;background:#fff;border-top:3px solid #1A1A1A;' +
     'padding:6px 4px calc(22px + env(safe-area-inset-bottom,0px));font-family:Montserrat,system-ui,sans-serif}' +

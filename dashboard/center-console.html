@@ -359,7 +359,11 @@
   @media (max-width:1100px){.rev-body{grid-template-columns:1fr;}}
   @media (max-width:760px){.rev-tiles{grid-template-columns:repeat(2,minmax(0,1fr));}.rev-tile b{font-size:21px;}}
   /* Recent activity (Sean, 2026-10-30): every feed the same size, the latest 100 scrolling inside the box. */
-  #dash-profile-section:not(.dash-laid){visibility:hidden;}
+  /* Until its first layout the tab shows one loading line, not a blank (Sean, 2026-11-15: "Could we do a little loading screen"). */
+  #dash-profile-section:not(.dash-laid){position:relative;min-height:240px;}
+  #dash-profile-section:not(.dash-laid) > *{visibility:hidden;}
+  #dash-profile-section:not(.dash-laid)::before{content:"Loading your dashboard";position:absolute;left:0;right:0;top:48px;text-align:center;font-weight:900;font-size:16px;color:#1a1a1a;
+    padding-top:52px;background:no-repeat center top/40px 40px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='16' fill='none' stroke='%23E8F5E9' stroke-width='5'/%3E%3Cpath d='M20 4a16 16 0 0 1 16 16' fill='none' stroke='%232D5C27' stroke-width='5' stroke-linecap='round'%3E%3CanimateTransform attributeName='transform' type='rotate' from='0 20 20' to='360 20 20' dur='.8s' repeatCount='indefinite'/%3E%3C/path%3E%3C/svg%3E");}
   #dash-recent{margin-bottom:28px;}
   /* Your tiles and Recent activity first (Sean, 2026-11-10, approved mock /mocks/dashboard). */
   #dash-recent .dash-preview-grid{grid-template-columns:repeat(4,minmax(0,1fr));}
@@ -1001,7 +1005,7 @@
       <div id="dash-biz" style="display:none;"></div>
       <!-- Your tiles (Sean, 2026-11-10: "very jumbled"; approved mock /mocks/dashboard). A tile opens its own view under Dashboard ›
            (/dashboard/business, /revenue, /insights, /for-you, /depot-pages) showing the block it stands for. dashTilesLayout(). -->
-      <div id="dash-tiles-wrap" hidden><p class="dash-section-title">Your tiles</p><div class="dash-tiles" id="dash-tiles"></div></div>
+      <div id="dash-tiles-wrap" hidden><p class="dash-section-title">Shortcuts</p><div class="dash-tiles" id="dash-tiles"></div></div>
 
       <!-- Dashboard preview hub (Sean, 2026-09-22): a preview of the member's
            tools. Superadmins see the 5 most recent Members, Event Submissions,
@@ -4585,7 +4589,7 @@
       '<select id="dash-main-badge" style="appearance:none;-webkit-appearance:none;font:600 13px Montserrat,sans-serif;padding:8px 40px 8px 12px;border:1px solid rgba(0,0,0,.18);border-radius:6px;background:#fff url(&quot;data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%2710%27 height=%276%27%3E%3Cpath d=%27M1 1l4 4 4-4%27 fill=%27none%27 stroke=%27%231a1a1a%27 stroke-width=%271.6%27/%3E%3C/svg%3E&quot;) no-repeat right 16px center">' +
       paths.map(function (b) { return '<option value="' + esc(b.key) + '"' + (b.main ? ' selected' : '') + '>' + esc(b.badge) + '</option>'; }).join('') + '</select>' +
       '<span id="dash-main-badge-msg" style="font-weight:600;color:rgba(0,0,0,.6)"></span></label>' : '';
-    host.innerHTML = h ? '<p style="margin:0;font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--ve-text-50,rgba(0,0,0,.6))">Your badges</p>' + h + pick : '';
+    host.innerHTML = h ? '<p class="dash-section-title" style="margin:0">Your badges</p>' + h + pick : '';
     host.style.display = h ? '' : 'none';
     var sel = document.getElementById('dash-main-badge');
     if (sel) sel.addEventListener('change', function () {

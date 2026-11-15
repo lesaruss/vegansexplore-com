@@ -490,3 +490,26 @@ html.ve-cb[data-look="plain"] .ad-card { border: 2px solid var(--cb-ink) !import
 html.ve-cb[data-look="plain"] [id$="-gate"] > button { background: var(--cb-or) !important; color: var(--cb-ink) !important; border: 2px solid var(--cb-or) !important; border-radius: 6px !important; font-weight: 900; }
 /* The Depot's tabs, pills and chips on plain pages (2026-11-13): the kit's 6px corners and ink outline, never a round pill. */
 html.ve-cb[data-look="plain"] :is(.tabs > button, .tabs > a, .pill, .chip) { border-radius: 6px !important; }
+
+/* ---------- The member dashboard (/dashboard, center-console) in Color Block (2026-11-15, Sean: "is this using the updated styling, the
+   dashboard and everything? I don't think it's using the updated styling. It's still the old version"; blanket approval 2026-11-13).
+   Its header and stripe were on the kit; its own parts were not. Here: every card and tile in the ink outline with the solid shadow,
+   section titles in sentence case at 900, labels in ink, the Recent activity chips and the revenue tabs ink-outlined with ink selected,
+   buttons white with an ink outline. ---------- */
+html.ve-cb .dash-section-title {
+  text-transform: none !important; letter-spacing: -.02em !important; font-size: 22px !important; font-weight: 900 !important; color: var(--cb-ink) !important; }
+html.ve-cb :is(.dash-stat, .dash-stats-hero-tile, .dash-mini-stat, .dash-preview-card, .dash-tour-prompt, .dash-tile, .dash-saves-box, .dash-biz-card,
+  .rev-tile, .rev-chart, .rev-latest, .dash-ins-k) {
+  background: #fff !important; border: 2px solid var(--cb-ink) !important; border-radius: 14px !important; box-shadow: 5px 5px 0 var(--cb-dk) !important; }
+html.ve-cb :is(.dash-tour-prompt, .dash-tile):hover { box-shadow: 7px 7px 0 var(--cb-dk) !important; }
+html.ve-cb :is(.dash-stat-label, .dash-stats-hero-label, .dash-mini-stat-label, .dash-preview-title, .rev-tile small, .dash-ins-h, .dash-eyebrow, .dash-tool-cat) {
+  color: var(--cb-ink) !important; font-weight: 900 !important; }
+html.ve-cb .dash-lb-more { background: #fff !important; color: var(--cb-ink) !important; border: 2px solid var(--cb-ink) !important; border-radius: 6px !important; font: inherit !important; font-size: 13px !important; font-weight: 900 !important; padding: 8px 14px !important; cursor: pointer; }
+html.ve-cb .dash-action-empty { border: 2px dashed var(--cb-ink) !important; color: var(--cb-ink) !important; }
+html.ve-cb :is(.dash-recent-chips button, .rev-tabs button) { border: 2px solid var(--cb-ink) !important; color: var(--cb-ink) !important; background: #fff !important; font-weight: 900 !important; }
+html.ve-cb :is(.dash-recent-chips button, .rev-tabs button)[aria-selected="true"] { background: var(--cb-ink) !important; color: #fff !important; }
+html.ve-cb :is(.dash-biz-btn, .rev-btn) { background: #fff !important; color: var(--cb-ink) !important; border: 2px solid var(--cb-ink) !important; border-radius: 6px !important; font-weight: 900 !important; }
+html.ve-cb :is(.dash-biz-btn, .rev-btn):hover { background: var(--cb-tint, #E8F5E9) !important; }
+html.ve-cb .dash-preview-viewall, html.ve-cb .dash-tour-prompt-arrow { color: var(--cb-ink) !important; font-weight: 900 !important; }
+@media (max-width: 600px) { html.ve-cb :is(.dash-stat, .dash-stats-hero-tile, .dash-mini-stat, .dash-preview-card, .dash-tour-prompt, .dash-tile, .dash-saves-box, .dash-biz-card,
+  .rev-tile, .rev-chart, .rev-latest, .dash-ins-k) { box-shadow: 4px 4px 0 var(--cb-dk) !important; } }

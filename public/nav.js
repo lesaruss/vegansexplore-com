@@ -27,7 +27,7 @@ window.VEImg = window.VEImg || function (u, w) {
 (function () {
   if (window.VE_BRAND || window.__veLookLoad) return;
   window.__veLookLoad = true;
-  var s = document.createElement('script'); s.src = '/public/ve-look.js?v=3'; s.setAttribute('blocking', 'render');
+  var s = document.createElement('script'); s.src = '/public/ve-look.js?v=4'; s.setAttribute('blocking', 'render');
   (document.head || document.documentElement).appendChild(s);
   // iPhone Safari does not hold the first paint for blocking="render", so a page showed the old look and then switched (Sean, 2026-11-15,
   // on the dashboard). Where the browser lacks it, the page stays invisible until /public/ve-look.css has loaded, 1.5 s at most.
@@ -70,7 +70,7 @@ window.VEImg = window.VEImg || function (u, w) {
     window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function () {}); });
   }
   // The site as an app: Back in the top bar and pictures in a viewer when opened from the home screen, Get the app in the menu.
-  if (!framed) { var sh = document.createElement('script'); sh.src = '/public/ve-app-shell.js?v=4'; sh.async = true; h.appendChild(sh); }
+  if (!framed) { var sh = document.createElement('script'); sh.src = '/public/ve-app-shell.js?v=5'; sh.async = true; h.appendChild(sh); }
   if (!framed && (/[?&]install=1\b/.test(location.search) || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches))) {
     var s = document.createElement('script'); s.src = '/public/ve-install.js'; s.async = true; h.appendChild(s);
   }
