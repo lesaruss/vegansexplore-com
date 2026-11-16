@@ -6,7 +6,8 @@
 // Public:  brand_interest {brand, name, email, quantity, pack, page} -> a brand's I'm in from /partners/giving, into Leads (one a day per email)
 // Owner:   my_prizes {listing_id}, prize_photo_url {listing_id, content_type, bytes}, prize_save {listing_id, title, value_cents, quantity,
 //          image_url?, note?}, prize_withdraw {listing_id, id}: the prize form in the business dashboard (Sean, 2026-11-15). Up to $100 per
-//          business, $5,000 across the giveaway, until the end of Friday, November 27 Eastern; a prize waits as pledged for our check.
+//          business; a brand (Food Brands, or a listing that sells products) gives 1 to 4 holiday packs up to $150 retail each (Sean,
+//          2026-11-16: "lock it at $150 per pack"); $5,000 across the giveaway, until the end of Friday, November 27 Eastern; a prize waits as pledged for our check.
 // Admin:   entries -> who entered, newest first (super admins only); prize_queue, prize_review {id, decision: live | withdrawn | pledged}
 //          (live grants the giver 250 points per prize, once)
 // Nothing here takes money, a share, a tag or a follow: entering is free and open to every member in good standing.
@@ -17,6 +18,8 @@ const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const PUBLIC_BASE = `${Deno.env.get('SUPABASE_URL')}/storage/v1/object/public/vegan-media/`;
 const PER_BUSINESS = 10000;                                   // $100 in prizes per business
+const PACK_MAX = 15000;                                       // a brand's holiday pack: up to $150 retail (Sean, 2026-11-16)
+const PACKS_MAX = 4;                                          // one to four packs per brand
 const TOTAL_CAP = 500000;                                     // $5,000 across the giveaway (Florida and New York register above it)
 const PRIZES_CLOSE = Date.parse('2026-11-28T05:00:00Z');      // the end of Friday, November 27, Eastern
 const clean = (v: unknown, n: number) => String(v ?? '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '').trim().slice(0, n);
@@ -110,17 +113,20 @@ Deno.serve(async (req) => {
   if (['my_prizes', 'prize_photo_url', 'prize_save', 'prize_withdraw'].includes(action)) {
     const lid = String(b.listing_id || '');
     if (!UUID.test(lid)) return json({ error: 'bad_listing' }, 400);
-    const { data: l } = await db.from('listings').select('id, slug, name, owner_member_id').eq('id', lid).maybeSingle();
+    const { data: l } = await db.from('listings').select('id, slug, name, owner_member_id, category, product_kinds').eq('id', lid).maybeSingle();
     if (!l) return json({ error: 'not_found' }, 404);
     if (l.owner_member_id !== mm.id && !mm.is_superadmin) return json({ error: 'not_owner' }, 403);
     const mine = async () => (await db.from('ve_giving_prizes').select('id, title, value_cents, quantity, image_url, note, status, created_at')
       .eq('campaign', s.campaign).eq('listing_id', lid).order('created_at')).data || [];
     const given = (ps: any[]) => ps.filter((p) => p.status !== 'withdrawn').reduce((a, p) => a + p.value_cents * p.quantity, 0);
     const closed = Date.now() >= PRIZES_CLOSE;
+    // A brand gives packs: up to $150 each, up to four, so up to $600 in all; every other business up to $100.
+    const brand = l.category === 'Food Brands' || (Array.isArray(l.product_kinds) && l.product_kinds.length > 0);
+    const perPrize = brand ? PACK_MAX : PER_BUSINESS, perBiz = brand ? PACK_MAX * PACKS_MAX : PER_BUSINESS;
 
     if (action === 'my_prizes') {
       const ps = await mine();
-      return json({ ok: true, prizes: ps, given_cents: given(ps), per_business_cents: PER_BUSINESS, closes_at: new Date(PRIZES_CLOSE).toISOString(), closed });
+      return json({ ok: true, prizes: ps, given_cents: given(ps), per_business_cents: perBiz, per_prize_cents: perPrize, brand, closes_at: new Date(PRIZES_CLOSE).toISOString(), closed });
     }
     if (closed && !mm.is_superadmin) return json({ error: 'prizes_closed' }, 409);
 
@@ -140,11 +146,11 @@ Deno.serve(async (req) => {
       const qty = Math.round(Number(b.quantity) || 1);
       const img = clean(b.image_url, 500);
       if (title.length < 2) return json({ error: 'title_needed' }, 400);
-      if (!(value >= 100 && value <= PER_BUSINESS)) return json({ error: 'bad_value' }, 400);
+      if (!(value >= 100 && value <= perPrize)) return json({ error: 'bad_value', per_prize_cents: perPrize }, 400);
       if (!(qty >= 1 && qty <= 10)) return json({ error: 'bad_quantity' }, 400);
       if (img && !img.startsWith(`${PUBLIC_BASE}media/giving/${l.slug}/`)) return json({ error: 'bad_photo' }, 400);
       const ps = await mine();
-      if (given(ps) + value * qty > PER_BUSINESS) return json({ error: 'over_business_limit', left_cents: Math.max(0, PER_BUSINESS - given(ps)) }, 409);
+      if (given(ps) + value * qty > perBiz) return json({ error: 'over_business_limit', left_cents: Math.max(0, perBiz - given(ps)) }, 409);
       const { data: all } = await db.from('ve_giving_prizes').select('value_cents, quantity').eq('campaign', s.campaign).neq('status', 'withdrawn');
       const total = (all || []).reduce((a: number, p: any) => a + p.value_cents * p.quantity, 0);
       if (total + value * qty > TOTAL_CAP) return json({ error: 'giveaway_full' }, 409);
