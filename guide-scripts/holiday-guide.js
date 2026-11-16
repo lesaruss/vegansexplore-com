@@ -195,11 +195,11 @@
   function drawMenu(cur) {
     var top = topOf(cur);
     menuEl.innerHTML = TABS.filter(function (t) { return !t.parent && !(t.hol && holPast(t.hol) && t.k !== top); }).map(function (t) { return '<a href="' + href(t.k) + '"' + (t.k === top ? ' aria-current="page"' : '') + '>' + esc(t.label) + '</a>'; }).join('');
-    menuSel.innerHTML = TABS.filter(function (t) { return !t.parent; }).map(function (t) {
-      var kids = TABS.filter(function (c) { return c.parent === t.k; });
-      function opt(o, label) { return '<option value="' + o.k + '"' + (o.k === cur ? ' selected' : '') + '>' + esc(label || o.label) + '</option>'; }
-      if (!kids.length) return opt(t);
-      return '<optgroup label="' + esc(t.label) + '">' + opt(t, t.k === 'new-years-eve' ? t.label : t.label + ' Ideas') + kids.map(function (c) { return opt(c); }).join('') + '</optgroup>';
+    // One way to get around (Phase A, Sean 2026-11-16: "yes, go ahead with Phase A"; the panel): the Guide's dropdown lists the
+    // holidays and the Guide's other parts, each holiday with its date; a holiday's own pages are its section row, never repeated here.
+    var NAMED = {}; HOME_ROWS.forEach(function (r) { NAMED[r[0]] = r[1]; });
+    menuSel.innerHTML = TABS.filter(function (t) { return !t.parent && !(t.hol && holPast(t.hol) && t.k !== top); }).map(function (t) {
+      return '<option value="' + t.k + '"' + (t.k === top ? ' selected' : '') + '>' + esc(NAMED[t.k] || t.label) + '</option>';
     }).join('');
   }
   menuSel.addEventListener('change', function () { location.hash = href(menuSel.value); });
@@ -351,7 +351,7 @@
         ['xm-store', 'At the Store', 'Plant-based roasts, nogs, butters and treats this season, by brand.'],
         ['xm-menus', 'Holiday Menus', 'Vegan places cooking for Christmas, with the date to order by.'],
         ['xm-events', 'Events', 'Vegan Christmas festivals, cookie swaps, holiday lights and parties.']] },
-    'new-years-eve': { pic: 'theo-new-years-eve.jpg', cta: ['Find a menu', '#/ny-menus'],
+    'new-years-eve': { pic: 'theo-new-years-eve.jpg', cta: ['Find it near me', '#/ny-menus/near'], line: 'Where to ring in the new year, and food everyone at your table can eat.',
       intro: '<b>New Year\'s Eve, December 31,</b> is the night to look back on the year and ring in the next one with the people you love. Here are Vegan places cooking for the night, and parties and countdowns near you.',
       rows: [['ny-menus', 'Holiday Menus', 'Vegan places cooking for New Year\'s Eve, with the date to order by.'],
         ['ny-events', 'Events', 'Vegan New Year\'s Eve parties, dinners and countdowns near you.']] }
@@ -386,14 +386,38 @@
   }
   // Each holiday opens on its own Overview (Sean, 2026-11-10: "what is Thanksgiving? why is it important... what they can do in this
   // section"): the Welcome Guide's Getting started card, then the holiday's sections as article rows.
+  // A holiday's page lands on content (Phase A, Sean 2026-11-16, the panel): the date and days to go, the title, one line, the one orange
+  // action, then the holiday's sections; Theo's picture is in the rail only, never twice. New Year's Eve holds its content on this page.
   function viewHolOverview(h) {
     var o = HOL_OV[h], t = holRow(h), left = daysUntil(onDay(t.holiday_on));
-    var gs = '<section class="wg-gs" aria-label="About ' + esc(t.name) + '"><span class="wg-gs-pic"><img src="' + PIC + o.pic + '" alt="" decoding="async" width="640" height="640"' + (/^theo-/.test(o.pic) ? ' style="object-position:center top"' : '') + '></span>' +
-      '<div class="wg-gs-b"><div class="vgi-k">' + (left ? left + ' days to go' : 'This season') + '</div><h3 class="wg-gs-t">' + esc(tc('About ' + (h === 'thanksliving' ? 'ThanksLiving' : t.name))) + '</h3>' +
-      '<p>' + o.intro + '</p>' +
-      '<div class="wg-gs-btns">' + (VIDEO[h] || TAB_CH[h] || TAB_AUDIO[h] ? '<button type="button" class="dg-btn dg-ghost" data-hg-video>&#9654; Play Theo</button>' : '') + '<a class="dg-btn dg-ghost" href="' + o.cta[1] + '">' + esc(o.cta[0]) + '</a></div></div></section>';
-    main.innerHTML = head(HOLX[h] && h !== 'thanksliving' ? IDEAS[h].k : 'November 26', h === 'thanksliving' ? 'ThanksLiving' : t.name, '') + gs +
-      '<div class="wg-arts"><div class="wg-grp"><h5>In This Section</h5><ol>' + o.rows.map(function (r) { return artRow(PIC + PILL_PIC[r[0]], r[1], r[2], href(r[0])); }).join('') + '</ol></div></div>';
+    var k = (HOLX[h] && h !== 'thanksliving' ? IDEAS[h].k : 'November 26') + (left ? ' · ' + left + ' days to go' : '');
+    // Play lives with Theo (the rail on desktop, the strip on phones), not beside the page's action (Phase A).
+    var btns = '<div class="dg-btns hg-ovbtns"><a class="dg-btn dg-cta" href="' + o.cta[1] + '">' + esc(o.cta[0]) + '</a></div>';
+    main.innerHTML = head(k, h === 'thanksliving' ? 'ThanksLiving' : t.name, o.line || o.intro) + btns +
+      (h === 'new-years-eve' ? nyeBody() : '<div class="wg-arts"><div class="wg-grp"><h5>In This Section</h5><ol>' + o.rows.map(function (r) { return artRow(PIC + PILL_PIC[r[0]], r[1], r[2], href(r[0])); }).join('') + '</ol></div></div>');
+  }
+  // New Year's Eve on one page (the approved mock /mocks/guide-page/): where to celebrate, the feasts to order, what is coming, and a
+  // doorway for businesses. Events and menus load the first time and the page draws again.
+  function nyeBody() {
+    var h = 'new-years-eve', ev = EVS[h], live = LIVE[h];
+    if (ev === undefined) { EVS[h] = null; rest(eventsUrl(h)).then(function (d) { EVS[h] = Array.isArray(d) ? d : []; }).catch(function () { EVS[h] = []; }).then(function () { if (curView === h) route(); }); }
+    if (!live) loadLive(h).then(function () { if (curView === h) route(); });
+    var evHtml = !ev ? '<div class="dg-loading">Loading events...</div>' : ev.length ? '<div class="hg-evs">' + ev.slice(0, 5).map(function (e) {
+        var dm = dayMonth(e), where = e.event_type === 'virtual' ? 'Online' : [e.location_name, e.city, e.state].filter(Boolean).join(', ');
+        return '<a class="hg-ev" href="/events?event=' + e.id + '"><span class="hg-evd" aria-hidden="true"><b>' + esc(dm[0]) + '</b><small>' + esc(dm[1]) + '</small></span><span class="hg-evb"><b>' + esc(e.title) + '</b><span>' + esc(where) + '</span></span></a>';
+      }).join('') + '</div>'
+      : '<div class="hg-empty hg-empty-row"><div><h3>No New Year\'s Eve Parties Posted Yet</h3><p>Hosting a dinner, a party or a countdown? Add it and people near you will find it.</p></div>' +
+        '<div class="dg-btns"><a class="dg-btn dg-ghost" href="/events#submit/1">Add Your Event</a><a class="dg-btn dg-ghost" href="/events">See All December Events</a></div></div>';
+    var menus = live ? live.menus : null;
+    var mHtml = !menus ? '<div class="dg-loading">Loading the menus...</div>' : menus.length ? '<div class="hg-menus">' + groupMenus(menus).slice(0, 4).map(chainCard).join('') + '</div>'
+      : '<div class="hg-empty"><h3>No New Year\'s Eve Menus Yet</h3><p>Vegan places are sending theirs now.</p></div>';
+    return '<section class="hg-nye"><h3 class="hg-sh">Ring In the New Year</h3><p class="hg-shl">Vegan dinners, parties and countdowns on December 31.</p>' + evHtml + '</section>' +
+      '<section class="hg-nye"><h3 class="hg-sh">Order a New Year\'s Eve Feast</h3><p class="hg-shl">Vegan places cooking for the night. One card per business; pick the location nearest you.</p>' + mHtml + '</section>' +
+      '<section class="hg-nye"><h3 class="hg-sh">Coming in December</h3><div class="hg-coming">' +
+        '<div><b>Your First Vegan Year</b><span>Starting the new year plant-based: simple first steps, and a Guide to walk you through them.</span><em>Coming</em></div>' +
+        '<div><b>The Year in Review</b><span>The top moments of the year in the Vegan movement. Vote for the one that mattered most.</span><em>Coming</em></div></div></section>' +
+      '<section class="hg-nye hg-door"><div><b>Run a Vegan business?</b><span>Add your New Year\'s Eve menu or event. It\'s free for members.</span></div>' +
+        '<div class="dg-btns"><a class="dg-btn dg-ghost" href="#/business">Send Your Menu</a><a class="dg-btn dg-ghost" href="/events#submit/1">Add Your Event</a></div></section>';
   }
   function others() { return (HOLS || []).some(function (h) { return daysUntil(h.submit_close) > 0; }); }
 
@@ -692,6 +716,27 @@
 
   // ---------- Holiday menus ----------
   function money(s) { return s ? esc(s) : ''; }
+  // One card per business (Phase A, Sean 2026-11-16, the panel: one chain shown 19 times read as padding). Menus with the same logo and
+  // the same words are one business; the card names it once with its location count, and Near me picks the nearest location.
+  function brandName(n) { return String(n || '').replace(/\s+[-–]\s+.*$/, '').trim(); }
+  function groupMenus(list) {
+    var by = {}, order = [];
+    // The same menu words mean the same business (each location keeps its own copy of the logo, so the logo cannot be the key).
+    list.forEach(function (m) { var l = m.listing || {}, sum = String(m.summary || ''), key = sum.length >= 60 ? sum.slice(0, 160) : 'one|' + l.slug;
+      if (!by[key]) { by[key] = []; order.push(key); } by[key].push(m); });
+    return order.map(function (key) { return by[key]; });
+  }
+  function chainCard(g) {
+    if (g.length < 2) return menuCard(g[0]);
+    var counts = {}; g.forEach(function (m) { var n = brandName(m.listing.name); counts[n] = (counts[n] || 0) + 1; });
+    var name = Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a]; })[0], m = g[0], l = m.listing;
+    var vegan = g.every(function (x) { return x.listing.vegan_status === 'fully_vegan'; });
+    return '<div class="hg-menu hg-chain"><div class="hg-mh"><a class="hg-logo" href="/directory/' + encodeURIComponent(l.slug) + '" aria-label="' + esc(name) + ', their listing"' + (l.logo_url ? ' style="background-image:url(\'' + esc(l.logo_url) + '\')"' : '') + '>' + (l.logo_url ? '' : esc(name.charAt(0))) + '</a>' +
+      '<div><h3>' + esc(name) + '</h3><small>' + g.length + ' locations</small></div><span class="hg-tag hg-tr' + (vegan ? '' : ' pv') + '">' + (vegan ? '100% Vegan' : 'Plant-based (Pre-Vegan)') + '</span></div>' +
+      (m.summary ? '<p class="hg-sum">' + esc(m.summary) + '</p>' : '') +
+      '<div class="hg-facts">' + (m.pickup ? '<span class="hg-pick"><b>Pickup</b> ' + esc(String(m.pickup).replace(/^pickup (on |only\. )?/i, '')) + '</span>' : '') + '</div>' +
+      '<div class="hg-acts"><a class="dg-btn" href="#/' + hx().menus + '/near">See Locations Near Me</a>' + menuBtn('m-' + l.slug).replace('class="dg-btn"', 'class="dg-btn dg-ghost"') + '</div></div>';
+  }
   function menuCard(m, mi) {
     var l = m.listing || {}, vegan = l.vegan_status === 'fully_vegan';
     var where = [l.address_city, l.address_state].filter(Boolean).join(', ');
@@ -820,7 +865,7 @@
     var nl = near && (list.length || tips.length) ? nearList(list, tips) : '';
     if (nl) { box.innerHTML = nl; openPending(); return; }
     if (near && NM().state().place) { box.innerHTML = '<div class="hg-empty"><h3>' + esc(tc('Nothing within ' + NM().state().radius + ' miles of ' + NM().state().place + ' yet')) + '</h3><p>Menus are coming in now. Clear the search to see every menu.</p></div>'; return; }
-    box.innerHTML = (list.length ? '<div class="hg-menus">' + list.map(function (m) { return menuCard(m); }).join('') + '</div>' : '') +
+    box.innerHTML = (list.length ? '<div class="hg-menus">' + groupMenus(list).map(chainCard).join('') + '</div>' : '') +
       (tips.length ? (list.length ? '<h3 style="margin:22px 0 10px;font-size:17px">Menus We Found</h3>' : '') + '<div class="hg-menus">' + tips.map(function (x) { return tipCard(x); }).join('') + '</div>' : '') +
       (list.length || tips.length ? '' : any && (MENUS.length || (TIPS || []).length) ? '<div class="hg-empty"><h3>Nothing Matches</h3><p>Try fewer words or reset the filters.</p><button type="button" class="dg-btn dg-ghost" data-hg-reset>Reset filters</button></div>' :
       '<div class="hg-empty"><h3>No Holiday Menus ' + (ch === 'all' ? '' : 'in ' + esc(chapterName(ch)) + ' ') + 'Yet</h3><p>' + (open ? 'Menus are coming in now, and each one shows here once our team has checked it.' : 'Menus for this holiday are closed.') + '</p></div>');
@@ -1700,8 +1745,8 @@
       box.insertAdjacentHTML('beforeend', '<button type="button" class="hg-expand" aria-label="Expand Theo">Expand</button>');
       box.querySelector('.hg-expand').addEventListener('click', function (e) { e.stopPropagation(); expand(); });
     }
-    tourEl.innerHTML = tourM.innerHTML = '<a class="dg-tnav" href="' + href(TABS[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Back</a><span>' + (i + 1) + ' of ' + TABS.length + '</span>' +
-      '<a class="dg-tnav next" href="' + href(TABS[Math.min(TABS.length - 1, i + 1)].k) + '"' + (i < TABS.length - 1 ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Next</a>';
+    // The Back / N of M / Next pager is gone from Guide pages (Phase A, Sean 2026-11-16, the panel: a third way to get around).
+    tourEl.innerHTML = tourM.innerHTML = '';
   }
 
   // ---------- the header box ----------
