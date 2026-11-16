@@ -1273,3 +1273,12 @@ listing they vote for, `unvote` deletes their rows. `fn_listing_vote_count` sets
 (migration `20261115_votes_are_vouches.sql`; 884 votes became 711 people). Tapping Voted opens "You voted for this place" with **Undo my
 vote** (`VEVotes.votedPrompt(iso, { listingId, onUndo })`). The daily habit moves to earning points to give to businesses, spent on Vegans
 Explore's own promotion; owners may give to their own; the public count is outside supporters only (to build; the playbook has the open list).
+
+**The Find us post maker stays on watch (Sean, 2026-11-16: "go ahead, make the post maker reliable").** GitHub ran
+`.github/workflows/find-us-post.yml` on its `*/5` schedule only every 3 to 7 hours, so Dina's Vegan Deli & Desserts (claimed and approved
+by itself 9:07 AM from the Featured: Holiday Menus email) had no post until it was run by hand at 9:31, and Liz's approval email
+(`claims-approved-liz`, held for the post, 90 minutes at most) waited with it. The stored `GITHUB_TOKEN` is dead by design, so nothing
+on our side can start the workflow. Now one run is a watch: it asks `ve-claims` `find_us_queue` every 2 minutes for up to 5 h 45 min,
+installs the renderer only when something waits, renders, commits and pushes; a run starts on the schedule, on every push to `main` and
+by hand, and the `find-us-post` concurrency group keeps one watching and one queued, so a new watch starts when the last one ends. The
+repo is public, so the runner minutes are free. If the Actions tab ever shows no run in progress, run it by hand (Run workflow).
