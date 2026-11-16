@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en" data-kit-parent="welcome-guide">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guide Page, Option B: App-Like — Vegans Explore</title>
+  <meta name="description" content="Design panel option B for every Guide page: app-like and action-first, shown on the Holiday Guide's New Year's Eve page. Mock, not live.">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="canonical" href="https://vegansexplore.com/mocks/guide-options/b/">
+  <link rel="stylesheet" href="/public/ve-kit.css">
+  <style>
+    /* Design panel option B (Sean, 2026-11-16: "a panel of design experts... 4 different options that I can choose from using our
+       branding guideline style"). App-like, action-first: holidays are app tabs, a holiday's parts are one segmented control that
+       keeps its choice in the address (?part=), every card has one clear button, Theo is a small assistant row under the title.
+       Built from /public/ve-kit.css. The page scrolls as a page; nothing scrolls inside its own box. */
+    body { margin: 0; background: #fff; color: var(--k-ink); font-family: 'Montserrat', system-ui, sans-serif; }
+    .mk-note { background: var(--k-peach); font-size: 13px; font-weight: 700; line-height: 1.45; padding: 10px 40px; }
+    .mk-note b { color: #8a4d00; letter-spacing: .08em; text-transform: uppercase; margin-right: 6px; }
+
+    /* App bar: the Guide's name, the free line, then holidays as app tabs (one sliding row) */
+    .ob-bar { background: var(--k-pink); padding: 14px 40px 0; }
+    .ob-id { display: flex; align-items: center; justify-content: space-between; gap: 8px 20px; flex-wrap: wrap; margin-bottom: 12px; }
+    .ob-id h1 { font-size: 20px; font-weight: 900; letter-spacing: -.02em; margin: 0; line-height: 1.1; }
+    .ob-id h1 a { color: inherit; text-decoration: none; }
+    .ob-free { font-size: 12.5px; font-weight: 800; }
+    .ob-free a { color: var(--k-ink); text-decoration: underline; text-underline-offset: 2px; margin-left: 8px; }
+    .ob-hol { padding-bottom: 12px; }
+    .ob-hol > a { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; line-height: 1.15; padding: 8px 14px; }
+    .ob-hol > a small { font-size: 10.5px; font-weight: 800; letter-spacing: .02em; opacity: .75; }
+    .ob-hol > a.on small { opacity: .85; }
+    .ob-stripe { margin: 0; border-radius: 0; }
+
+    main { padding: 26px 40px 64px; }
+
+    /* Now: the holiday title, its line and its one orange action; Theo as a small assistant beside it */
+    .ob-now { display: grid; grid-template-columns: minmax(0, 1fr) minmax(380px, 520px); gap: 20px 40px; align-items: end; }
+    .ob-now .k-eb { margin-bottom: 10px; }
+    .ob-now .k-h1 { margin-bottom: 10px; }
+    .ob-now .k-lede { margin-bottom: 18px; }
+    .ob-go { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .ob-go .k-cta { font-size: 13px; padding: 14px 22px; }
+    .ob-theo { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 12px; align-items: center; border: 2px solid var(--k-ink); border-radius: var(--k-rc); background: var(--k-pinkt); padding: 10px 12px; box-shadow: 4px 4px 0 var(--k-pink); }
+    .ob-theo img { width: 64px; height: 64px; border-radius: 10px; border: 2px solid var(--k-ink); object-fit: cover; object-position: center top; display: block; }
+    .ob-theo b { display: block; font-size: 12px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; }
+    .ob-theo p { margin: 3px 0 0; font-size: 13px; font-weight: 600; line-height: 1.45; }
+    .ob-theo .k-btn { padding: 6px 10px; }
+
+    /* The segmented control: a holiday's parts, with honest counts; it sticks under the site nav while the page scrolls */
+    .ob-seg-wrap { position: sticky; top: var(--ob-navh, 64px); z-index: 50; background: #fff; margin: 28px -40px 0; padding: 10px 40px; border-bottom: 2px solid var(--k-ink); }
+    .ob-seg { display: inline-flex; max-width: 100%; border: 2px solid var(--k-ink); border-radius: var(--k-r); overflow: hidden; background: #fff; }
+    .ob-seg button { font: inherit; font-size: 12.5px; font-weight: 900; color: var(--k-ink); background: #fff; border: 0; border-left: 2px solid var(--k-ink); padding: 10px 16px; cursor: pointer; display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
+    .ob-seg button:first-child { border-left: 0; }
+    .ob-seg button[aria-selected="true"] { background: var(--k-ink); color: #fff; }
+    .ob-seg i { font-style: normal; font-size: 10.5px; min-width: 20px; height: 20px; border-radius: 5px; display: inline-grid; place-items: center; background: var(--k-tint); color: var(--k-dk); padding: 0 5px; }
+    .ob-seg i.z { background: #efefef; color: #666; }
+    .ob-seg button[aria-selected="true"] i { background: var(--k-pink); color: var(--k-ink); }
+
+    /* Parts: full width, two across on desktop */
+    .ob-parts { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(520px, 100%), 1fr)); gap: 28px 32px; margin-top: 26px; align-items: start; }
+    .ob-part[hidden] { display: none; }
+    .ob-part.wide { grid-column: 1 / -1; }
+    .ob-ph { display: flex; align-items: baseline; justify-content: space-between; gap: 6px 14px; flex-wrap: wrap; margin-bottom: 12px; }
+    .ob-ph h2 { font-size: clamp(20px, 1.7vw, 26px); font-weight: 900; letter-spacing: -.02em; margin: 0; }
+    .ob-ph span { font-size: 12.5px; font-weight: 700; color: var(--k-mute); }
+
+    .ob-biz { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 14px; }
+    .ob-logo { width: 72px; height: 72px; border-radius: 12px; border: 2px solid var(--k-ink); background: #fff center/cover no-repeat; display: block; }
+    .ob-biz h3 { margin: 0 0 6px; font-size: 18px; font-weight: 900; line-height: 1.2; }
+    .ob-biz h3 a { color: inherit; text-decoration: none; }
+    .ob-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; }
+    .ob-days { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 0 0 10px; font-size: 11px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+    .ob-days span { border: 2px solid var(--k-ink); border-radius: 6px; padding: 4px 8px; letter-spacing: .02em; background: #fff; }
+    .ob-days span.ny { background: var(--k-pink); }
+    .ob-biz p { font-size: 13.5px; font-weight: 600; line-height: 1.5; margin: 0 0 12px; }
+    .ob-act { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .ob-act a.ob-link { font-size: 12.5px; font-weight: 800; color: var(--k-dk); }
+
+    .ob-empty { border: 2px dashed var(--k-ink); border-radius: var(--k-rc); padding: 18px 20px; background: #fff; }
+    .ob-empty b { display: block; font-size: 16px; font-weight: 900; margin-bottom: 4px; }
+    .ob-empty p { font-size: 13.5px; font-weight: 600; color: var(--k-mute); margin: 0 0 12px; line-height: 1.5; }
+    .ob-coming .k-row { border-style: dashed; }
+    .ob-bizband { display: flex; gap: 12px 24px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+    .ob-bizband b { font-size: 16px; font-weight: 900; }
+
+    @media (max-width: 900px) {
+      .mk-note { padding: 8px 16px; font-size: 12px; }
+      .ob-bar { padding: 10px 16px 0; }
+      .ob-id { margin-bottom: 8px; }
+      .ob-id h1 { font-size: 17px; }
+      .ob-free { font-size: 11.5px; }
+      .ob-hol { padding-bottom: 10px; margin-right: -16px; padding-right: 16px; }
+      .ob-hol > a { padding: 7px 11px; }
+      main { padding: 16px 16px 48px; }
+      .ob-now { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+      .ob-now .k-eb { margin-bottom: 8px; }
+      .ob-now .k-h1 { font-size: 34px; margin-bottom: 8px; }
+      .ob-now .k-lede { font-size: 14px; margin-bottom: 14px; }
+      .ob-go .k-cta { width: 100%; padding: 15px 18px; }
+      .ob-theo { grid-template-columns: 48px minmax(0, 1fr) auto; padding: 8px 10px; box-shadow: 3px 3px 0 var(--k-pink); }
+      .ob-theo img { width: 48px; height: 48px; border-radius: 8px; }
+      .ob-theo p { margin: 2px 0 0; font-size: 12.5px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+      .ob-theo b { font-size: 11px; }
+      .ob-theo .k-btn { align-self: center; }
+      .ob-seg-wrap { margin: 20px -16px 0; padding: 8px 16px; }
+      .ob-seg { display: grid; grid-template-columns: repeat(5, auto); width: 100%; }
+      .ob-seg button { padding: 10px 4px; font-size: 11.5px; justify-content: center; gap: 4px; flex-direction: column; }
+      .ob-seg i { height: 18px; min-width: 18px; }
+      .ob-parts { margin-top: 18px; gap: 24px; }
+      .ob-biz { grid-template-columns: 56px minmax(0, 1fr); gap: 12px; }
+      .ob-logo { width: 56px; height: 56px; }
+      .ob-act .k-btn { width: 100%; }
+      .ob-empty .k-btn, .ob-bizband .k-btn { flex: 1 1 140px; }
+    }
+  </style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+
+<div class="mk-note"><b>Mock</b> Option B: App-like. Real content, nothing here is live; the buttons go to today's pages.</div>
+
+<!-- App bar: the Guide, the free line, holidays as app tabs (each holiday is its own link) -->
+<header class="ob-bar" data-k-section="guides">
+  <div class="ob-id">
+    <h1><a href="/guides/holiday-guide">The Holiday Guide</a></h1>
+    <span class="ob-free">Free for everyone. <a href="/welcome">Join free</a><a href="/login">Member? Sign in</a></span>
+  </div>
+  <nav class="k-tabs ob-hol" aria-label="Holidays">
+    <a href="/guides/holiday-guide">Overview<small>All holidays</small></a>
+    <a href="/guides/holiday-guide">ThanksLiving<small>November 26</small></a>
+    <a href="/guides/holiday-guide">Hanukkah<small>Begins December 4</small></a>
+    <a href="/guides/holiday-guide">Christmas<small>December 25</small></a>
+    <a class="on" aria-current="page" aria-selected="true" href="?h=new-years-eve">New Year's Eve<small>December 31</small></a>
+    <a href="/guides/holiday-guide">Give Back<small>Year round</small></a>
+    <a href="/guides/holiday-guide">11 Days of Giving<small>December 1 to 11</small></a>
+    <a href="/guides/holiday-guide#/business">For Businesses<small>Add yours</small></a>
+  </nav>
+</header>
+<div class="k-stripe ob-stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+<main>
+  <section class="ob-now">
+    <div>
+      <span class="k-eb pk">December 31 · 45 days to go</span>
+      <h2 class="k-h1">New Year's Eve</h2>
+      <p class="k-lede">Where to ring in the new year, and food everyone at your table can eat.</p>
+      <div class="ob-go"><a class="k-btn k-cta" href="/guides/holiday-guide#/ny-menus/near">Find New Year's food near me</a></div>
+    </div>
+    <aside class="ob-theo" aria-label="Theo, your Guide for the holidays">
+      <img src="/public/guides/holiday/theo-new-years-eve.jpg" alt="Theo raising a glass at a New Year's Eve party">
+      <div>
+        <b>Theo · Your Guide</b>
+        <p>Ringing in the new year? On this page are the Vegan places cooking for New Year's Eve and the parties to ring it in.</p>
+      </div>
+      <button type="button" class="k-btn k-sm" data-hear aria-label="Play Theo">&#9654; Play</button>
+    </aside>
+  </section>
+
+  <!-- A holiday's parts: one segmented control, its choice in the address (?part=) -->
+  <div class="ob-seg-wrap">
+    <div class="ob-seg" role="tablist" aria-label="Parts of New Year's Eve">
+      <button type="button" role="tab" data-part="all" aria-selected="true">All</button>
+      <button type="button" role="tab" data-part="order" aria-selected="false">Order in <i>1</i></button>
+      <button type="button" role="tab" data-part="go" aria-selected="false">Go out <i class="z">0</i></button>
+      <button type="button" role="tab" data-part="coming" aria-selected="false">Coming <i class="z">2</i></button>
+      <button type="button" role="tab" data-part="biz" aria-selected="false">Businesses</button>
+    </div>
+  </div>
+
+  <div class="ob-parts">
+    <section class="ob-part" data-part="order" aria-labelledby="p-order">
+      <div class="ob-ph"><h2 id="p-order">Order a New Year's Eve feast</h2><span>Vegan places cooking for the night</span></div>
+      <article class="k-card k-c-pk ob-biz">
+        <a class="ob-logo" href="/directory/next-level-veggie-grill-tustin" aria-label="Next Level Veggie Grill, their listing" style="background-image:url('https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/listings/next-level-veggie-grill/logo-2026-10-28-d0b8ba12.jpg')"></a>
+        <div>
+          <h3><a href="/directory/next-level-veggie-grill-tustin">Next Level Veggie Grill</a></h3>
+          <div class="ob-tags"><span class="k-tag live">100% Vegan</span><span class="k-tag">19 locations</span></div>
+          <div class="ob-days">Pickup <span>Dec 26</span><span>Dec 27</span><span class="ny">Dec 31</span><span>Jan 1</span></div>
+          <p class="k-clamp">The Holiday Feast: comfort food for 6 to 8 guests, ordered as a full Feast, gluten free, with dessert added, or a la carte.</p>
+          <div class="ob-act"><a class="k-btn k-on" href="/guides/holiday-guide#/ny-menus/near">Locations near me</a><a class="ob-link" href="/guides/holiday-guide#/ny-menus">See the menu</a></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="ob-part" data-part="go" aria-labelledby="p-go">
+      <div class="ob-ph"><h2 id="p-go">Go out on December 31</h2><span>Vegan dinners, parties and countdowns</span></div>
+      <div class="ob-empty">
+        <b>No New Year's Eve parties posted yet.</b>
+        <p>Hosting a dinner, a party or a countdown? Add it and people near you will find it.</p>
+        <div class="k-btns"><a class="k-btn" href="/events#submit/1">Add your event</a><a class="ob-link" style="font-size:12.5px;font-weight:800;color:var(--k-dk)" href="/events">See the whole calendar</a></div>
+      </div>
+    </section>
+
+    <section class="ob-part ob-coming" data-part="coming" aria-labelledby="p-coming">
+      <div class="ob-ph"><h2 id="p-coming">Coming in December</h2><span>Not live yet</span></div>
+      <div class="k-rows">
+        <div class="k-row"><span class="k-num pk">1</span><span class="k-row-t"><b>Your First Vegan Year</b><small>Starting the new year plant-based: simple first steps.</small></span><span class="k-tag wait">Coming</span></div>
+        <div class="k-row"><span class="k-num or">2</span><span class="k-row-t"><b>The Year in Review</b><small>The top moments of the year in the Vegan movement. Vote for the one that mattered most.</small></span><span class="k-tag wait">Coming</span></div>
+      </div>
+    </section>
+
+    <section class="ob-part" data-part="biz" aria-labelledby="p-biz">
+      <div class="ob-ph"><h2 id="p-biz">For businesses</h2><span>Free for members</span></div>
+      <div class="k-block k-tint ob-bizband">
+        <div><span class="k-label">Run a Vegan business?</span><b>Add your New Year's Eve menu or event. It's free for members.</b></div>
+        <div class="k-btns"><a class="k-btn" href="/guides/holiday-guide#/business">Send your menu</a><a class="k-btn" href="/events#submit/1">Add your event</a></div>
+      </div>
+    </section>
+  </div>
+</main>
+
+<script>
+  (function () {
+    // Play Theo: only when pressed
+    var a = new Audio('https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/holiday-guide/theo-new-years-eve-v1.mp3');
+    a.preload = 'none';
+    [].forEach.call(document.querySelectorAll('[data-hear]'), function (b) {
+      b.addEventListener('click', function () {
+        if (a.paused) { a.currentTime = 0; a.play().catch(function () {}); b.innerHTML = '&#10073;&#10073; Pause'; }
+        else { a.pause(); b.innerHTML = '&#9654; Play'; }
+      });
+      a.addEventListener('ended', function () { b.innerHTML = '&#9654; Play'; });
+    });
+
+    // The segmented control: one part at a time (or All), kept in the address so Share sends the view
+    var tabs = [].slice.call(document.querySelectorAll('.ob-seg [data-part]'));
+    var parts = [].slice.call(document.querySelectorAll('.ob-part'));
+    function show(p, push) {
+      if (!tabs.some(function (t) { return t.dataset.part === p; })) p = 'all';
+      tabs.forEach(function (t) { t.setAttribute('aria-selected', t.dataset.part === p ? 'true' : 'false'); });
+      parts.forEach(function (s) { s.hidden = p !== 'all' && s.dataset.part !== p; s.classList.toggle('wide', p !== 'all'); });
+      if (push) {
+        var u = new URL(location.href);
+        if (p === 'all') u.searchParams.delete('part'); else u.searchParams.set('part', p);
+        history.replaceState(null, '', u);
+        var w = document.querySelector('.ob-seg-wrap');
+        if (w.getBoundingClientRect().top < 0 || window.scrollY > w.offsetTop) window.scrollTo({ top: w.offsetTop - navH(), behavior: 'smooth' });
+      }
+    }
+    tabs.forEach(function (t) { t.addEventListener('click', function () { show(t.dataset.part, true); }); });
+    show(new URL(location.href).searchParams.get('part') || 'all', false);
+
+    // The current holiday tab is in view on phones
+    var on = document.querySelector('.ob-hol .on'), row = document.querySelector('.ob-hol');
+    if (on && row.scrollWidth > row.clientWidth) row.scrollLeft = Math.max(0, on.offsetLeft - row.offsetLeft - 16);
+
+    // The control sticks just under the site's sticky nav
+    function navH() { var n = document.querySelector('.ve-nav, nav.ve-nav, #ve-nav, header.ve-nav'); return n ? Math.round(n.getBoundingClientRect().height) : 0; }
+    function setTop() { document.documentElement.style.setProperty('--ob-navh', navH() + 'px'); }
+    setTop(); window.addEventListener('load', setTop); window.addEventListener('resize', setTop);
+  })();
+</script>
+<script src="/public/footer.js"></script>
+</body>
+</html>

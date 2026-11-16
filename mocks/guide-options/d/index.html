@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en" data-kit-parent="welcome-guide">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guide Page, Option D: Search First | Vegans Explore</title>
+  <meta name="description" content="Option D for the shared Guide page frame, shown on the Holiday Guide's New Year's Eve page: one promise, one search, one list. Mock, not live.">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="canonical" href="https://vegansexplore.com/mocks/guide-options/d/">
+  <link rel="stylesheet" href="/public/ve-kit.css">
+  <style>
+    /* Design panel, option D: Minimal, search-first (brief: /mocks/guide-options/BRIEF.md, Sean 2026-11-16).
+       The pattern: a thin Guide bar (name + one holiday switcher), then one promise and one search box, then one list of
+       everything for this holiday (menus and events together, each labelled), then what is coming and the business doorway.
+       Theo is one small, optional line. One orange action per view: Search. Built from /public/ve-kit.css. */
+    body { margin: 0; background: #fff; color: var(--k-ink); font-family: 'Montserrat', system-ui, sans-serif; }
+    .mk-note { background: var(--k-peach); font-size: 13px; font-weight: 700; line-height: 1.45; padding: 9px 40px; }
+    .mk-note b { color: #8a4d00; letter-spacing: .08em; text-transform: uppercase; margin-right: 6px; }
+
+    /* 1. The Guide bar: as small as it can be. Name on the left, the holiday switcher on the right. */
+    .gd-bar { background: var(--k-pink); padding: 10px 40px; display: flex; align-items: center; justify-content: space-between; gap: 10px 20px; flex-wrap: wrap; }
+    .gd-name { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; min-width: 0; }
+    .gd-name a { font-size: 17px; font-weight: 900; letter-spacing: -.02em; color: var(--k-ink); text-decoration: none; }
+    .gd-name span { font-size: 12px; font-weight: 800; }
+    .gd-name span a { font-size: 12px; font-weight: 900; color: var(--k-ink); text-decoration: underline; letter-spacing: 0; }
+    .gd-switch { display: flex; align-items: center; gap: 8px; }
+    .gd-switch label { font-size: 10.5px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
+    .gd-switch .k-select { width: auto; min-width: 250px; background-color: #fff; padding-top: 8px; padding-bottom: 8px; font-size: 13.5px; }
+    .gd-stripe { margin: 0; border-radius: 0; height: 6px; }
+
+    main { padding: 26px 40px 64px; }
+
+    /* 2. The promise and the search */
+    .gd-hero .k-eb { margin-bottom: 8px; }
+    .gd-hero .k-h1 { margin-bottom: 8px; }
+    .gd-hero .k-lede { margin-bottom: 18px; }
+    .gd-ask { color: var(--k-ink); margin-bottom: 8px; }
+    .gd-search { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 10px; max-width: 860px; }
+    .gd-search .gd-q { position: relative; }
+    .gd-search input { font: inherit; font-size: 16px; font-weight: 700; width: 100%; box-sizing: border-box; border: 3px solid var(--k-ink); border-radius: var(--k-r); padding: 13px 14px 13px 42px; background: #fff; color: var(--k-ink); }
+    .gd-search input:focus { outline: none; box-shadow: 4px 4px 0 var(--k-or); }
+    .gd-search .gd-q svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+    .gd-search .k-btn { padding: 14px 20px; font-size: 12.5px; }
+    .gd-found { font-size: 13px; font-weight: 700; color: var(--k-mute); margin: 12px 0 0; min-height: 18px; }
+    .gd-found b { color: var(--k-ink); }
+
+    /* Theo: one small, optional line */
+    .gd-theo { display: flex; align-items: center; gap: 10px; margin-top: 16px; max-width: 860px; font-size: 13px; font-weight: 600; line-height: 1.4; color: var(--k-mute); }
+    .gd-theo img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; object-position: center top; border: 2px solid var(--k-ink); flex: none; }
+    .gd-theo span { flex: 1; min-width: 0; }
+    .gd-theo span b { color: var(--k-ink); }
+    .gd-theo .k-btn { flex: none; }
+
+    /* 3. One list: the holiday's parts as a filter row, then rows of results */
+    .gd-results { margin-top: 30px; }
+    .gd-head { display: flex; align-items: end; justify-content: space-between; gap: 10px 20px; flex-wrap: wrap; border-bottom: 2px solid var(--k-ink); padding-bottom: 10px; margin-bottom: 14px; }
+    .gd-head .k-h2 { font-size: clamp(22px, 2vw, 28px); margin: 0; }
+    .gd-head .k-tabs { padding: 0; }
+    .gd-head .k-tabs > a { padding: 7px 12px; font-size: 12px; }
+    .gd-head .k-tabs em { font-style: normal; opacity: .65; margin-left: 4px; }
+    .gd-list { display: grid; gap: 10px; }
+    .gd-item { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 14px; align-items: center; border: 2px solid var(--k-ink); border-radius: 12px; padding: 12px 14px; background: #fff; box-shadow: 4px 4px 0 var(--k-c); }
+    .gd-item[hidden] { display: none; }
+    .gd-logo { width: 56px; height: 56px; border-radius: 10px; border: 2px solid var(--k-ink); background: #fff center/cover no-repeat; display: block; }
+    .gd-kind { display: inline-block; font-size: 10px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; padding: 3px 7px; border-radius: 4px; margin-right: 6px; vertical-align: 2px; }
+    .gd-kind.menu { background: var(--k-pink); }
+    .gd-kind.event { background: var(--k-or); }
+    .gd-item h3 { display: inline; font-size: 16px; font-weight: 900; margin: 0; }
+    .gd-item h3 a { color: inherit; text-decoration: none; }
+    .gd-meta { font-size: 12.5px; font-weight: 700; margin: 5px 0 4px; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; }
+    .gd-item p { font-size: 13px; font-weight: 600; line-height: 1.45; color: var(--k-mute); margin: 0; }
+    .gd-empty { grid-template-columns: 56px minmax(0, 1fr) auto; border-style: dashed; box-shadow: none; }
+    .gd-empty .gd-ico { width: 56px; height: 56px; border-radius: 10px; border: 2px dashed var(--k-ink); display: grid; place-items: center; font-size: 22px; font-weight: 900; }
+    .gd-acts { display: flex; flex-direction: column; gap: 6px; align-items: stretch; }
+    .gd-more { font-size: 12.5px; font-weight: 800; margin: 12px 0 0; }
+    .gd-more a { color: var(--k-dk); }
+
+    /* 4. Everything else, lower down */
+    .gd-lower { margin-top: 40px; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 24px 32px; align-items: start; }
+    .gd-lower .k-h3 { margin-bottom: 10px; }
+    .gd-lower .k-row { border-style: dashed; }
+    .gd-biz { display: grid; gap: 12px; }
+    .gd-biz b { font-size: 15px; font-weight: 900; line-height: 1.35; display: block; }
+    .gd-member { margin-top: 26px; font-size: 13px; font-weight: 700; color: var(--k-mute); }
+    .gd-member a { color: var(--k-pinkd); font-weight: 900; }
+
+    @media (max-width: 900px) {
+      .mk-note { padding: 8px 16px; font-size: 12px; }
+      .gd-bar { padding: 8px 16px; }
+      .gd-name span { display: none; }
+      .gd-switch { flex: 1; justify-content: flex-end; }
+      .gd-switch label { display: none; }
+      .gd-name a { font-size: 15px; }
+      .gd-switch .k-select { min-width: 0; width: 100%; max-width: 232px; font-size: 12.5px; padding-left: 10px; padding-right: 44px; background-position: right 16px center; }
+      main { padding: 16px 16px 48px; }
+      .gd-hero .k-h1 { font-size: 34px; }
+      .gd-hero .k-lede { font-size: 14px; margin-bottom: 14px; }
+      .gd-search { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+      .gd-search .gd-q { grid-column: 1 / -1; }
+      .gd-theo { font-size: 12.5px; }
+      .gd-theo span { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+      .gd-results { margin-top: 24px; }
+      .gd-head .k-tabs { width: 100%; }
+      .gd-item, .gd-empty { grid-template-columns: 48px minmax(0, 1fr); gap: 12px; }
+      .gd-logo, .gd-empty .gd-ico { width: 48px; height: 48px; }
+      .gd-acts { grid-column: 1 / -1; flex-direction: row; flex-wrap: wrap; }
+      .gd-lower { grid-template-columns: minmax(0, 1fr); }
+    }
+  </style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+
+<div class="mk-note"><b>Mock</b> Option D: Search first. Real content, nothing here is live.</div>
+
+<header class="gd-bar" data-k-section="guides">
+  <div class="gd-name">
+    <a href="/guides/holiday-guide">The Holiday Guide</a>
+    <span>Free for everyone. <a href="/welcome">Join free</a></span>
+  </div>
+  <div class="gd-switch">
+    <label for="gdHoliday">Holiday</label>
+    <select class="k-select" id="gdHoliday" aria-label="Go to a holiday or part of the Guide">
+      <option value="overview">Overview</option>
+      <option value="thanksliving">ThanksLiving · Nov 26</option>
+      <option value="hanukkah">Hanukkah · Begins Dec 4</option>
+      <option value="christmas">Christmas · Dec 25</option>
+      <option value="nye" selected>New Year's Eve · Dec 31</option>
+      <option value="give">Give Back</option>
+      <option value="giving">11 Days of Giving · Dec 1 to 11</option>
+      <option value="business">For Businesses</option>
+    </select>
+  </div>
+</header>
+<div class="k-stripe gd-stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+<main data-k-section="guides">
+  <section class="gd-hero">
+    <span class="k-eb pk">December 31 · 45 days to go</span>
+    <h1 class="k-h1">New Year's Eve</h1>
+    <p class="k-lede">Where to ring in the new year, and food everyone at your table can eat.</p>
+
+    <label class="k-label gd-ask" for="gdQ">Find New Year's Eve near you</label>
+    <form class="gd-search" id="gdSearch" role="search" aria-label="Find New Year's Eve near you">
+      <div class="gd-q">
+        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="7" fill="none" stroke="#1a1a1a" stroke-width="3"/><path d="M16 16l6 6" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/></svg>
+        <input type="text" id="gdQ" name="q" placeholder="City or ZIP" aria-label="City or ZIP" autocomplete="postal-code" data-dictate="off">
+      </div>
+      <button type="button" class="k-btn" id="gdNear">&#9737; Near me</button>
+      <button type="submit" class="k-btn k-cta">Search</button>
+    </form>
+    <p class="gd-found" id="gdFound" aria-live="polite"><b>2 results</b> for New Year's Eve, everywhere: 1 menu, no events yet.</p>
+
+    <div class="gd-theo">
+      <img src="/public/guides/holiday/theo-new-years-eve.jpg" alt="Theo, your Guide for the holidays">
+      <span><b>Theo, your Guide for the holidays:</b> Ringing in the new year? On this page are the Vegan places cooking for New Year's Eve and the parties to ring it in.</span>
+      <button type="button" class="k-btn k-sm" id="gdHear" aria-label="Play Theo">&#9654; Play Theo</button>
+    </div>
+  </section>
+
+  <section class="gd-results" id="results" aria-label="Results">
+    <div class="gd-head">
+      <h2 class="k-h2">Ring in the new year</h2>
+      <nav class="k-tabs" id="gdShow" aria-label="Show">
+        <a href="?show=all#results" data-show="all" class="on" aria-selected="true">All<em>2</em></a>
+        <a href="?show=menu#results" data-show="menu">Menus<em>1</em></a>
+        <a href="?show=event#results" data-show="event">Events<em>0</em></a>
+      </nav>
+    </div>
+
+    <div class="gd-list">
+      <article class="gd-item" data-kind="menu" style="--k-c: var(--k-pink)">
+        <a class="gd-logo" href="/directory/next-level-veggie-grill-tustin" aria-label="Next Level Veggie Grill, their listing" style="background-image:url('https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/listings/next-level-veggie-grill/logo-2026-10-28-d0b8ba12.jpg')"></a>
+        <div>
+          <span class="gd-kind menu">Menu</span><h3><a href="/directory/next-level-veggie-grill-tustin">Next Level Veggie Grill</a></h3>
+          <div class="gd-meta"><span class="k-tag live">100% Vegan</span><span>19 locations</span><span>Pickup Dec 26, 27, 31 and Jan 1</span></div>
+          <p class="k-clamp">The Holiday Feast: comfort food for 6 to 8 guests, ordered as a full Feast, gluten free, with dessert added, or a la carte.</p>
+        </div>
+        <div class="gd-acts">
+          <a class="k-btn k-on k-sm" href="/guides/holiday-guide#/ny-menus/near">Nearest location</a>
+          <a class="k-btn k-sm" href="/guides/holiday-guide#/ny-menus">See the menu</a>
+        </div>
+      </article>
+
+      <article class="gd-item gd-empty" data-kind="event">
+        <span class="gd-ico" aria-hidden="true">+</span>
+        <div>
+          <span class="gd-kind event">Events</span><h3>No New Year's Eve parties posted yet.</h3>
+          <p style="margin-top:5px">Hosting a dinner, a party or a countdown? Add it and people near you will find it.</p>
+        </div>
+        <div class="gd-acts">
+          <a class="k-btn k-sm" href="/events#submit/1">Add your event</a>
+          <a class="k-btn k-sm" href="/events">The whole calendar</a>
+        </div>
+      </article>
+    </div>
+    <p class="gd-more">That is everything posted for December 31 so far. New menus and events show up here as soon as they are added.</p>
+  </section>
+
+  <div class="gd-lower">
+    <section aria-label="Coming in December">
+      <h2 class="k-h3">Coming in December</h2>
+      <div class="k-rows">
+        <div class="k-row"><span class="k-num pk">1</span><span class="k-row-t"><b>Your First Vegan Year</b><small>Starting the new year plant-based: simple first steps.</small></span><span class="k-tag wait">Coming</span></div>
+        <div class="k-row"><span class="k-num or">2</span><span class="k-row-t"><b>The Year in Review</b><small>The top moments of the year in the Vegan movement. Vote for the one that mattered most.</small></span><span class="k-tag wait">Coming</span></div>
+      </div>
+    </section>
+    <section aria-label="For businesses">
+      <h2 class="k-h3">For businesses</h2>
+      <div class="k-block k-tint gd-biz">
+        <span class="k-label" style="margin:0">Run a Vegan business?</span>
+        <b>Add your New Year's Eve menu or event. It's free for members.</b>
+        <div class="k-btns"><a class="k-btn k-sm" href="/guides/holiday-guide#/business">Send your menu</a><a class="k-btn k-sm" href="/events#submit/1">Add your event</a></div>
+      </div>
+    </section>
+  </div>
+
+  <p class="gd-member">The Holiday Guide is free for everyone. <a href="/welcome">Join free</a> · Member? <a href="/login">Sign in</a></p>
+</main>
+
+<script>
+  (function () {
+    // Theo plays only when pressed.
+    var audio = new Audio('https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/holiday-guide/theo-new-years-eve-v1.mp3');
+    var hear = document.getElementById('gdHear');
+    hear.addEventListener('click', function () {
+      if (audio.paused) { audio.currentTime = 0; audio.play(); hear.innerHTML = '&#10073;&#10073; Pause'; }
+      else { audio.pause(); hear.innerHTML = '&#9654; Play Theo'; }
+    });
+    audio.addEventListener('ended', function () { hear.innerHTML = '&#9654; Play Theo'; });
+
+    // Every view is a link: ?holiday= &show= &q= live in the address.
+    var params = new URLSearchParams(location.search);
+    function setUrl() { history.replaceState(null, '', '?' + params.toString() + location.hash); }
+
+    // Between holidays: one switcher. In the mock the other holidays stay on this page.
+    document.getElementById('gdHoliday').addEventListener('change', function () {
+      params.set('holiday', this.value); setUrl();
+    });
+
+    // Between a holiday's parts: one filter row over one list.
+    var tabs = [].slice.call(document.querySelectorAll('#gdShow a'));
+    var items = [].slice.call(document.querySelectorAll('.gd-list > [data-kind]'));
+    function show(kind) {
+      tabs.forEach(function (t) { var on = t.dataset.show === kind; t.classList.toggle('on', on); t.setAttribute('aria-selected', on ? 'true' : 'false'); });
+      items.forEach(function (i) { i.hidden = !(kind === 'all' || i.dataset.kind === kind); });
+    }
+    tabs.forEach(function (t) {
+      t.addEventListener('click', function (e) { e.preventDefault(); params.set('show', t.dataset.show); setUrl(); show(t.dataset.show); });
+    });
+    show(params.get('show') || 'all');
+
+    // Search: honest about what it found. One business with 19 locations, no events yet.
+    var found = document.getElementById('gdFound'), q = document.getElementById('gdQ');
+    function report(where) {
+      found.innerHTML = '<b>Near ' + where.replace(/[<>&"]/g, '') + ':</b> Next Level Veggie Grill (pick the nearest of 19 locations). No New Year\'s Eve events posted yet.';
+    }
+    document.getElementById('gdSearch').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var v = q.value.trim();
+      if (!v) { q.focus(); return; }
+      params.set('q', v); setUrl(); report(v);
+    });
+    document.getElementById('gdNear').addEventListener('click', function () {
+      params.set('q', 'near'); setUrl(); report('you');
+    });
+    if (params.get('q')) { var pv = params.get('q'); if (pv !== 'near') q.value = pv; report(pv === 'near' ? 'you' : pv); }
+  })();
+</script>
+<script src="/public/footer.js"></script>
+</body>
+</html>

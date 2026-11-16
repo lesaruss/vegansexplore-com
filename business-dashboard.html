@@ -357,6 +357,7 @@
   }
   // 11 Days of Giving: the prize form (Sean, 2026-11-15: "build the prize form"). Opportunities > 11 Days of Giving (?pd=giving): the prizes
   // this business has given, each with its status, then the form (what it is, its value, how many, a photo, a note). Up to $100 per business;
+  // a brand gives 1 to 4 holiday packs up to $150 retail each (Sean, 2026-11-16: "lock it at $150 per pack"; ve-giving returns brand, per_prize_cents);
   // a prize waits for our check, then shows on the Holiday Guide's 11 Days of Giving page. ve-giving my_prizes / prize_save / prize_withdraw.
   var GV = null, GV_FOR = null, GV_PHOTO = '';
   function gvMoney(c) { return '$' + (Math.round(c) / 100).toFixed(c % 100 ? 2 : 0); }
@@ -364,9 +365,12 @@
     GV_FOR = L.id; GV = null;
     post('ve-giving', { action: 'my_prizes', listing_id: L.id }).then(function (r) { GV = r && r.ok ? r : { error: (r && r.error) || 'failed', prizes: [] }; if (part() === 'opportunities' && q('pd') === 'giving') draw(); });
   }
+  function gvCap() { return (GV && GV.per_business_cents) || 10000; }
+  function gvLimitLine() { return GV && GV.brand ? 'the four packs at up to $150 each' : 'the $100 per business'; }
   function drawGiving() {
+    var brand = !!(GV && GV.brand);
     var intro = '<section class="card"><h2>Give a prize for <span class="hl o">11 Days of Giving</span></h2><p class="lede" style="margin:0">December 1 to 11, our members enter free for a chance to win prizes from Vegan businesses, drawn at random in the open. ' +
-      'Give up to $100 in prizes (four $25 prizes work best). Nothing to pay or ship now: you send each prize straight to its winner by January 10, 2027. Your business is shown with your prize on the Holiday Guide, and you earn 250 points for each prize once our team checks it.</p></section>';
+      (brand ? 'Give one to four holiday packs of your products, worth up to $150 retail each; each pack goes to a different winner.' : 'Give up to $100 in prizes (four $25 prizes work best).') + ' Nothing to pay or ship now: you send each prize straight to its winner by January 10, 2027. Your business is shown with your prize on the Holiday Guide, and you earn 250 points for each prize once our team checks it.</p></section>';
     if (GV_FOR !== L.id || !GV) { if (GV_FOR !== L.id) gvLoad(); return intro + '<p class="empty">Loading your prizes...</p>'; }
     if (GV.error) return intro + '<p class="empty">Your prizes did not load. Refresh to try again.</p>';
     var ST = { pledged: ['Waiting for our check', 't-need'], live: ['Live', 't-new'], withdrawn: ['Taken back', 't-tip'] };
@@ -375,16 +379,17 @@
       var btn = p.status === 'pledged' ? '<button type="button" class="btn btn-sm btn-ghost" data-gv-take="' + esc(p.id) + '">Take back</button>' : '<span></span>';
       return row(st[0], st[1], p.title, gvMoney(p.value_cents) + (p.quantity > 1 ? ' each, ' + p.quantity + ' prizes' : '') + (p.note ? ' · ' + p.note : ''), btn);
     });
-    var left = Math.max(0, (GV.per_business_cents || 10000) - (GV.given_cents || 0));
+    var left = Math.max(0, gvCap() - (GV.given_cents || 0));
+    var each = Math.min(left, (GV.per_prize_cents || gvCap()));
     var list1 = '<div class="sec"><h2>Your <span class="hl g">prizes</span></h2>' + (rows.length ? '<span class="count">' + rows.length + '</span>' : '') + '</div>' +
       (rows.length ? list('gv', rows) : '<p class="empty">No prizes yet. Add your first one below.</p>');
     var form;
     if (GV.closed) form = '<p class="empty">Prizes closed at the end of Friday, November 27. Thank you for giving.</p>';
-    else if (left < 100) form = '<p class="empty">You have given the full $100. Thank you. To change a prize, take it back and add it again.</p>';
+    else if (left < 100) form = '<p class="empty">You have given the full ' + gvMoney(gvCap()) + '. Thank you. To change a prize, take it back and add it again.</p>';
     else form = '<div class="sec"><h2>Add a <span class="hl p">prize</span></h2></div><section class="card"><div class="gv-f">' +
-      '<div class="wide"><label for="gvTitle">What the prize is</label><input id="gvTitle" maxlength="120" placeholder="A $25 gift card, or a gift box of our cookies"><small>Shown on the Holiday Guide just as you write it.</small></div>' +
-      '<div><label for="gvValue">Value of each prize ($)</label><input id="gvValue" type="number" inputmode="decimal" min="1" max="' + Math.floor(left / 100) + '" step="1" value="25"><small>You have ' + gvMoney(left) + ' left to give.</small></div>' +
-      '<div><label for="gvQty">How many</label><input id="gvQty" type="number" inputmode="numeric" min="1" max="10" step="1" value="1"><small>Each one goes to a different winner.</small></div>' +
+      '<div class="wide"><label for="gvTitle">What the prize is</label><input id="gvTitle" maxlength="120" placeholder="' + (brand ? 'Our holiday pack: six flavors and a tote' : 'A $25 gift card, or a gift box of our cookies') + '"><small>Shown on the Holiday Guide just as you write it.</small></div>' +
+      '<div><label for="gvValue">' + (brand ? 'Retail value of each pack ($)' : 'Value of each prize ($)') + '</label><input id="gvValue" type="number" inputmode="decimal" min="1" max="' + Math.floor(each / 100) + '" step="1" value="' + (brand ? Math.min(150, Math.floor(each / 100)) : 25) + '"><small>You have ' + gvMoney(left) + ' left to give.</small></div>' +
+      '<div><label for="gvQty">How many</label><input id="gvQty" type="number" inputmode="numeric" min="1" max="' + (brand ? 4 : 10) + '" step="1" value="1"><small>Each one goes to a different winner.</small></div>' +
       '<div class="wide"><label for="gvPhoto">A photo of the prize (optional)</label><div style="display:flex;gap:12px;align-items:center"><span class="gv-ph" id="gvPh"' + (GV_PHOTO ? ' style="background-image:url(\'' + esc(GV_PHOTO) + '\')"' : '') + '></span><input id="gvPhoto" type="file" accept="image/jpeg,image/png,image/webp" style="min-height:0;border-width:2px"></div><small>JPEG, PNG or WebP, up to 8 MB. Without one, we show your logo.</small></div>' +
       '<div class="wide"><label for="gvNote">Anything we should know (optional)</label><textarea id="gvNote" maxlength="500" placeholder="Pickup only in Miami, or ships anywhere in the US"></textarea></div>' +
       '</div><button type="button" class="btn btn-go" id="gvSave">Give this prize</button><p class="msg" id="gvMsg" role="status" style="margin:10px 0 0;font-weight:700"></p></section>';
@@ -394,12 +399,13 @@
     var m = $('gvMsg'), b = $('gvSave'), title = ($('gvTitle').value || '').trim(), val = Math.round(parseFloat($('gvValue').value) * 100), qty = parseInt($('gvQty').value, 10) || 1;
     if (title.length < 2) { m.textContent = 'Say what the prize is.'; return; }
     if (!(val >= 100)) { m.textContent = 'Give each prize a value of at least $1.'; return; }
-    if (val * qty > Math.max(0, (GV.per_business_cents || 10000) - (GV.given_cents || 0))) { m.textContent = 'That is more than the $100 per business. Lower the value or how many.'; return; }
+    if (GV.per_prize_cents && val > GV.per_prize_cents) { m.textContent = 'Each ' + (GV.brand ? 'pack' : 'prize') + ' can be worth up to ' + gvMoney(GV.per_prize_cents) + '.'; return; }
+    if (val * qty > Math.max(0, gvCap() - (GV.given_cents || 0))) { m.textContent = 'That is more than ' + gvLimitLine() + '. Lower the value or how many.'; return; }
     b.disabled = true; m.textContent = 'Saving...';
     post('ve-giving', { action: 'prize_save', listing_id: L.id, title: title, value_cents: val, quantity: qty, image_url: GV_PHOTO || '', note: ($('gvNote').value || '').trim() }).then(function (r) {
       if (r && r.ok) { GV.prizes = r.prizes; GV.given_cents = r.given_cents; GV_PHOTO = ''; draw(); var m2 = $('gvMsg') || $('bdOppMsg'); var e = document.querySelector('.rows.gv'); if (e) e.scrollIntoView({ block: 'center' }); setTimeout(function () { var mm = $('gvMsg'); if (mm) mm.textContent = 'Thank you. Your prize is waiting for a quick check by our team.'; }, 50); return; }
       b.disabled = false;
-      m.textContent = r && r.error === 'over_business_limit' ? 'That is more than the $100 per business.' : r && r.error === 'giveaway_full' ? 'The giveaway is full: we have reached our $5,000 limit. Thank you.' : r && r.error === 'prizes_closed' ? 'Prizes have closed.' : 'That did not go through. Try again in a moment.';
+      m.textContent = r && r.error === 'over_business_limit' ? 'That is more than ' + gvLimitLine() + '.' : r && r.error === 'bad_value' ? 'Each ' + (GV.brand ? 'pack' : 'prize') + ' can be worth up to ' + gvMoney(r.per_prize_cents || gvCap()) + '.' : r && r.error === 'giveaway_full' ? 'The giveaway is full: we have reached our $5,000 limit. Thank you.' : r && r.error === 'prizes_closed' ? 'Prizes have closed.' : 'That did not go through. Try again in a moment.';
     });
   }
   function gvPhoto(file) {
