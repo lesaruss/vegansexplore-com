@@ -163,9 +163,10 @@
     'humane-education/susan-hargreaves': function () {
       return crumb('Humane Education', 'Susan Hargreaves') + head('Humane education', 'Teaching With Susan Hargreaves', '') +
         '<p class="ag-about">Susan Hargreaves founded Be an Animal Hero and has been a humane educator for more than 40 years. She has written children\'s books and educational resource books, performs at schools with giveaways for students and people in need, and regularly works with PETA and other organizations to hand out items. Her documentary on humane education, <i>The Heart Whisperer</i>, was directed by the director of <i>Earthlings</i>. Our founder credits her as his personal Vegan mentor.</p>' +
-        // The Heart Whisperer, spotlighted (Sean, 2026-11-16: "that needs to be spotlighted"). Its link goes in when Sean sends it.
+        // The Heart Whisperer, spotlighted (Sean, 2026-11-16: "that needs to be spotlighted"). Link from Sean, 2026-11-16.
         '<div class="ag-sec"><h3>The Heart Whisperer</h3><div class="ag-vids"><article class="ag-vid"><div class="ag-vid-b"><div class="ag-vid-k">Her documentary</div><b>The Heart Whisperer</b>' +
-        '<p>Susan\'s documentary on humane education, directed by the director of <i>Earthlings</i>. It is streaming on Jane Unchained.</p></div></article></div></div>' +
+        '<p>Susan\'s documentary on humane education, directed by the director of <i>Earthlings</i>. It is streaming on Jane Unchained.</p>' +
+        '<a class="dg-btn" href="https://watch.unchainedtv.com/videos/the-heart-whisperer" target="_blank" rel="noopener" style="display:inline-block;margin-top:10px;text-decoration:none">Watch on Jane Unchained</a></div></article></div></div>' +
         '<div class="ag-sec"><h3>Listen</h3><div class="ag-vids"><article class="ag-vid"><div class="ag-vid-b"><div class="ag-vid-k">Our episode</div><b>Susan Hargreaves: Founder of Animal Hero Kids</b>' +
         '<p>Susan on Vegan living, animal rights and making the change, on the SoFlo Vegans Podcast.</p><span class="ag-len">36 minutes \u00b7 the SoFlo Vegans Podcast, part of the Vegans Explore Network</span>' +
         '<audio controls preload="none" src="' + SUSAN_AUDIO + '" style="width:100%;margin-top:10px"></audio></div></article></div></div>' +
