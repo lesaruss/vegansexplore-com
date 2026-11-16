@@ -81,10 +81,11 @@
     { k: 'humane-education/susan-hargreaves', art: 'susan-hargreaves', say: 'Meet Susan Hargreaves. She has been teaching people to care about animals for more than 40 years. Press play to hear her story on our podcast.' },
     { k: 'humane-education/james-wildman', art: 'james-wildman', say: 'Meet James Wildman. He gives around 500 free talks a year. Start with our interview, then watch the talk that made him known.' },
     // Draft for Sean (2026-11-16, "Go ahead with the speeches").
-    { k: 'speeches', art: 'speeches', say: 'Sometimes one talk is all it takes. These six are some of the most watched and shared talks on Veganism anywhere. Start with a short one tonight, and save the long ones for when you have the time.' }
+    { k: 'speeches', art: 'speeches', say: 'Sometimes one talk is all it takes. These are some of the most watched and shared talks on Veganism anywhere, and the list keeps growing. Start with a short one tonight, save the long ones for when you have the time, and tell us which talk changed your mind.' }
   ];
   // The videos: ours first, then the talk (YouTube, loaded only when pressed).
-  // The six speeches Sean shared (2026-11-16), shortest first so anyone can start tonight. Every one has subtitles in many languages.
+  // Talks That Changed Minds: an ongoing list (Sean, 2026-11-16: "just change it to talks that changed minds... an ongoing list"), shortest first.
+  // Start: the six Sean shared. Every one has subtitles in many languages. Suggestions come in through #/speeches/suggest.
   var SPEECHES = [
     { id: 'uQCe4qEexjc', k: 'Philip Wollen', t: 'Should Animals Be Off the Menu?', len: '10 minutes',
       p: 'Philip Wollen\'s opening in a public debate. Short, direct and famous for good reason: it asks everyone to look at what their choices cost animals.' },
@@ -121,7 +122,7 @@
   function step(k) { for (var i = 0; i < STEPS.length; i++) if (STEPS[i].k === k) return STEPS[i]; return STEPS[0]; }
   function href(k) { return '#/' + (k === 'overview' ? '' : k); }
   function head(k, h, lede) { return '<div class="dg-head"><div><div class="dg-k">' + esc(k) + '</div><h2 class="dg-h1">' + esc(h) + '</h2></div></div>' + (lede ? '<p class="dg-lede">' + lede + '</p>' : ''); }
-  function crumb(label, sub) { return '<div class="dg-crumb"><a href="#/">The Vegan Activism Guide</a> &rsaquo; ' + (sub ? '<a href="#/humane-education">' + esc(label) + '</a> &rsaquo; ' + esc(sub) : esc(label)) + '</div>'; }
+  function crumb(label, sub, up) { return '<div class="dg-crumb"><a href="#/">The Vegan Activism Guide</a> &rsaquo; ' + (sub ? '<a href="' + (up || '#/humane-education') + '">' + esc(label) + '</a> &rsaquo; ' + esc(sub) : esc(label)) + '</div>'; }
   function card(kicker, title, picUrl, body, btns) {
     return '<section class="wg-gs"><span class="wg-gs-pic"><img src="' + esc(picUrl) + '" alt="" decoding="async" width="640" height="640"></span>' +
       '<div class="wg-gs-b"><div class="vgi-k">' + esc(kicker) + '</div><h3 class="wg-gs-t">' + esc(title) + '</h3>' + body +
@@ -169,7 +170,7 @@
           '<a class="dg-btn" href="#/humane-education">Start with humane education</a>') +
         '<div class="ag-sec"><h3>The ways to act</h3><p class="ag-sub">No way is ranked above another. Each part opens as it is ready.</p>' +
         '<ul class="ag-ways">' + WAYS.map(way).join('') + '</ul></div>' +
-        '<div class="ag-sec"><h3>The speeches</h3><p class="ag-sub">Six talks that changed minds around the world, shortest first.</p><ul class="ag-ways"><li><a class="ag-way" href="#/speeches"><span class="ag-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span><span><b>The Speeches</b><small>Philip Wollen, Joey Carbstrong, Earthling Ed, James Aspey, James Wildman and Gary Yourofsky.</small><span class="ag-tag live">Open now</span></span></a></li></ul></div>' +
+        '<div class="ag-sec"><h3>The speeches</h3><p class="ag-sub">Talks that changed minds around the world, shortest first. Know one we should add? Suggest it.</p><ul class="ag-ways"><li><a class="ag-way" href="#/speeches"><span class="ag-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span><span><b>Talks That Changed Minds</b><small>Philip Wollen, Joey Carbstrong, Earthling Ed, James Aspey, James Wildman and Gary Yourofsky.</small><span class="ag-tag live">Open now</span></span></a></li></ul></div>' +
         '<div class="ag-sec"><h3>Also coming</h3><p class="ag-sub">Campaign news, and a place to rally and talk with other activists.</p></div>';
     },
     'humane-education': function () {
@@ -195,10 +196,22 @@
         '<div id="agSusanGo"></div>';
     },
     speeches: function () {
-      return crumb('The Speeches') + head('The speeches', 'Six Talks That Changed Minds', '') +
-        '<p class="ag-about">Some of the most watched and shared speeches on Veganism and animal rights, shortest first. Every one has subtitles in many languages: turn them on in the player.</p>' +
+      return crumb('The Speeches') + head('The speeches', 'Talks That Changed Minds', '') +
+        '<p class="ag-about">Some of the most watched and shared speeches on Veganism and animal rights, shortest first. Every one has subtitles in many languages: turn them on in the player. The list keeps growing.</p>' +
         '<div class="ag-sec"><div class="ag-vids">' + SPEECHES.map(vid).join('') + '</div></div>' +
-        '<div class="ag-sec"><h3>Meet them</h3><p class="ag-sub">The speakers in our Directory.</p><div id="agSpk"><p class="ag-sub">Their Directory pages are on the way.</p></div></div>';
+        '<div class="ag-sec"><h3>Meet them</h3><p class="ag-sub">The speakers in our Directory.</p><div id="agSpk"><p class="ag-sub">Their Directory pages are on the way.</p></div></div>' +
+        cta('Talks That Changed Minds', 'Know a talk we should add?', 'Tell us the talk that changed your mind, or someone else\'s. We watch every one.', ['Suggest a talk', '#/speeches/suggest']);
+    },
+    'speeches/suggest': function () {
+      return crumb('The Speeches', 'Suggest a talk', '#/speeches') + head('The speeches', 'Suggest a Talk', '') +
+        '<p class="ag-about">Which talk should be on this list? Send us the link and a line on why. We watch every suggestion before it goes up.</p>' +
+        '<form class="k-form" id="agSug" novalidate>' +
+        '<div class="k-f wide"><label for="agSugLink">The talk\'s link</label><input id="agSugLink" type="url" required placeholder="https://www.youtube.com/watch?v=..."></div>' +
+        '<div class="k-f"><label for="agSugWho">Who gives it</label><input id="agSugWho" type="text" maxlength="120"></div>' +
+        '<div class="k-f"><label for="agSugEmail">Your email (optional)</label><input id="agSugEmail" type="email" maxlength="200" placeholder="Only if we have a question"></div>' +
+        '<div class="k-f wide"><label for="agSugWhy">Why it belongs here</label><textarea id="agSugWhy" maxlength="1500"></textarea></div>' +
+        '<div class="k-f wide"><button type="submit" class="dg-btn" id="agSugGo">Send my suggestion</button><p class="k-msg" id="agSugMsg" role="status"></p></div>' +
+        '</form>';
     },
     'humane-education/james-wildman': function () {
       return crumb('Humane Education', 'James Wildman') + head('Humane education', 'Teaching With James Wildman', '') +
@@ -222,7 +235,7 @@
     foldBtn.textContent = f ? 'Show Dani' : 'Hide Dani'; foldBtn.setAttribute('aria-expanded', String(!f));
   });
   function drawDani() {
-    var t = step(curTab), i = STEPS.indexOf(t);
+    var t = step(curTab === 'speeches/suggest' ? 'speeches' : curTab), i = STEPS.indexOf(t);
     bubble.textContent = t.say;
     var box = $('dgMaya'); box.innerHTML = ''; box.style.backgroundImage = "url('" + ART + t.art + ".jpg')";
     $('dgPlay').hidden = true;   // no recording yet: the Play button shows once Dani's lines are recorded
@@ -250,6 +263,26 @@
     var box = b.parentNode, id = box.getAttribute('data-yt');
     box.innerHTML = '<iframe src="https://www.youtube-nocookie.com/embed/' + encodeURIComponent(id) + '?autoplay=1&rel=0" title="' + esc(b.getAttribute('aria-label')) + '" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>';
     try { if (window.gtag) gtag('event', 'video_start', { video_title: 'activism-' + id }); } catch (x) {}
+  });
+  // Suggest a talk: to the team as a suggestion (ve-feedback, as the Guide's visitor suggestions are sent).
+  document.addEventListener('submit', function (e) {
+    if (!e.target || e.target.id !== 'agSug') return;
+    e.preventDefault();
+    var link = $('agSugLink').value.trim(), who = $('agSugWho').value.trim(), em = $('agSugEmail').value.trim(), why = $('agSugWhy').value.trim(), msg = $('agSugMsg'), go = $('agSugGo');
+    if (!/^https?:\/\/\S+\.\S+/.test(link)) { msg.className = 'k-msg err'; msg.textContent = 'Add the talk\'s link, starting with https://'; return; }
+    if (em && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) { msg.className = 'k-msg err'; msg.textContent = 'That email does not look right.'; return; }
+    go.disabled = true; go.textContent = 'Sending...'; msg.className = 'k-msg'; msg.textContent = '';
+    var vid = ''; try { vid = localStorage.getItem('ve_visitor') || ''; } catch (x) {}
+    fetch(SB + '/functions/v1/ve-feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ page_url: location.href.split('#')[0] + '#/speeches', page_label: 'Talks That Changed Minds', kind: 'suggestion',
+        message: 'Suggested talk for Talks That Changed Minds: ' + link + (who ? '\nWho gives it: ' + who : '') + (why ? '\nWhy: ' + why : ''),
+        email: em, name: 'A visitor (via Dani, Suggest a talk)', visitor: vid, signed_in: false, viewport: innerWidth + 'x' + innerHeight }) })
+      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (x) {
+        if (!x.ok || !x.d || !x.d.ok) throw x.d || {};
+        $('agSug').outerHTML = '<p class="ag-about"><b>Thank you.</b> We have your suggestion and will watch it' + (em ? ', and we will write to ' + esc(em) + ' when it is added' : '') + '.</p><a class="dg-btn" href="#/speeches">Back to the talks</a>';
+      })
+      .catch(function (d) { go.disabled = false; go.textContent = 'Send my suggestion'; msg.className = 'k-msg err'; msg.textContent = d && d.error === 'daily_limit' ? 'You have sent a few already. Thank you, we have them.' : 'That did not go through. Try again in a moment.'; });
   });
   if (window.VERegionDirectory) VERegionDirectory.css();   // the Directory card's own styles
   window.addEventListener('hashchange', route);
