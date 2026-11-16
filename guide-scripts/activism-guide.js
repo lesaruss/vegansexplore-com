@@ -24,7 +24,7 @@
   var ZOE_NAMES = ['Zoe Weil', 'Institute for Humane Education'];
   // Street outreach (Sean, 2026-11-16: "Go ahead with street outreach"): the groups and people known for it that we list.
   // Direct action (Sean, 2026-11-16: "Go ahead with direct action"): groups known for it that we list (The Save Movement and Surge show once listed).
-  var ACTION_NAMES = ['Direct Action Everywhere', 'The Save Movement', 'Surge', 'Animal Equality', 'Mercy For Animals', 'The Humane League', 'PETA'];
+  var ACTION_NAMES = ['Direct Action Everywhere', 'Animal Save Movement', 'Surge', 'Animal Equality', 'Mercy For Animals', 'The Humane League', 'PETA'];
   var OUTREACH_NAMES = ['Anonymous for the Voiceless', 'Vegan Outreach', 'Earthling Ed', 'Joey Carbstrong', 'Revolution Philadelphia'];
   // More humane educators (Sean, 2026-11-16: "find out who the community would consider humane educators"); each shows once its listing is approved.
   var MORE_EDU_NAMES = ['TeachKind', 'LivingKind', 'Ruby Roth', 'Factory Farming Awareness Coalition', 'Institute for Humane Education'];
