@@ -12,7 +12,7 @@ never from memory or a blank file (CLAUDE.md, template gate).
 | 2. Imagery: illustration style, shapes, faces never cut, asset packs | https://vegansexplore.com/mocks/brand-kit/imagery | `canon-ve-brand-kit-imagery` |
 | 3. Templates: posts, stories, thumbnails, video, podcast, email, ads | https://vegansexplore.com/mocks/brand-kit/templates | `canon-ve-brand-kit-templates` |
 | 4. The Guide roster: eight Guides, bios, voices, avatars | https://vegansexplore.com/mocks/brand-kit/roster | `canon-ve-guide-roster` |
-| 5. Web: every page part (header, buttons, tags, blocks, cards, rows, steps, forms, tabs), which parent each page copies, the check | https://vegansexplore.com/mocks/brand-kit/web ; stylesheet `/public/ve-kit.css` | `canon-ve-brand-kit-web` |
+| 5. Web (home: HQ BrandDesk > Vegans Explore > Brand kit > Web, https://hq.lesaruss.ai/new/branddesk/vegans-explore?view=kit#kit-web; data `ve_brand_cartridges.data.web`): every page part (header, buttons, tags, blocks, cards, rows, steps, forms, tabs), which parent each page copies, the check | https://vegansexplore.com/mocks/brand-kit/web ; stylesheet `/public/ve-kit.css` | `canon-ve-brand-kit-web` |
 | Social kit: profile icon, headers, podcast covers, client pack | https://vegansexplore.com/mocks/brand-kit/social | |
 | The look on a real page (the homepage) | https://vegansexplore.com/preview | |
 
