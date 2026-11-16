@@ -382,7 +382,7 @@
   // section"): the Welcome Guide's Getting started card, then the holiday's sections as article rows.
   function viewHolOverview(h) {
     var o = HOL_OV[h], t = holRow(h), left = daysUntil(onDay(t.holiday_on));
-    var gs = '<section class="wg-gs" aria-label="About ' + esc(t.name) + '"><span class="wg-gs-pic"><img src="' + PIC + o.pic + '" alt="" decoding="async" width="640" height="640"></span>' +
+    var gs = '<section class="wg-gs" aria-label="About ' + esc(t.name) + '"><span class="wg-gs-pic"><img src="' + PIC + o.pic + '" alt="" decoding="async" width="640" height="640"' + (/^theo-/.test(o.pic) ? ' style="object-position:center top"' : '') + '></span>' +
       '<div class="wg-gs-b"><div class="vgi-k">' + (left ? left + ' days to go' : 'This season') + '</div><h3 class="wg-gs-t">' + esc(tc('About ' + (h === 'thanksliving' ? 'ThanksLiving' : t.name))) + '</h3>' +
       '<p>' + o.intro + '</p>' +
       '<div class="wg-gs-btns">' + (VIDEO[h] || TAB_CH[h] || TAB_AUDIO[h] ? '<button type="button" class="dg-btn" data-hg-video>&#9654; Play Theo</button>' : '') + '<a class="dg-btn dg-ghost" href="' + o.cta[1] + '">' + esc(o.cta[0]) + '</a></div></div></section>';
