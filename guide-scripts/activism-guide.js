@@ -22,6 +22,8 @@
   var SUSAN_NAMES = ['Susan Hargreaves', 'Be an Animal Hero'];
   var JAMES_NAMES = ['James Wildman', 'Animal Rights Foundation of Florida'];
   var ZOE_NAMES = ['Zoe Weil', 'Institute for Humane Education'];
+  // Street outreach (Sean, 2026-11-16: "Go ahead with street outreach"): the groups and people known for it that we list.
+  var OUTREACH_NAMES = ['Anonymous for the Voiceless', 'Vegan Outreach', 'Earthling Ed', 'Joey Carbstrong', 'Revolution Philadelphia'];
   // More humane educators (Sean, 2026-11-16: "find out who the community would consider humane educators"); each shows once its listing is approved.
   var MORE_EDU_NAMES = ['TeachKind', 'LivingKind', 'Ruby Roth', 'Factory Farming Awareness Coalition', 'Institute for Humane Education'];
   var SUSAN_AUDIO = 'https://podcasts.captivate.fm/media/0809b3b7-51b2-47b5-84c8-aad59bbe7fa0/sfv-podcast-episode-007.mp3';
@@ -98,14 +100,14 @@
   // The ways to act, in no order of rank (Sean, 2026-11-16: "a balance of humane education and direct action and all that").
   var WAYS = [
     ['humane-education', 'teach', 'Humane education', 'Helping people, often students, think through how their choices affect animals, people and the planet.'],
-    ['', 'outreach', 'Street outreach', 'Conversations with people on the street, often with footage, so they can see for themselves.'],
+    ['street-outreach', 'outreach', 'Street outreach', 'Conversations with people on the street, often with footage, so they can see for themselves.'],
     ['', 'direct', 'Direct action', 'Protests, vigils and peaceful public actions that bring attention to what animals go through.'],
     ['', 'law', 'Legal and policy work', 'Changing laws, rules and the way companies and schools do things.'],
     ['sanctuaries', 'sanctuary', 'Sanctuaries and rescue', 'Giving animals a safe home for life, and showing visitors who they really are.'],
     ['', 'digital', 'Digital activism', 'Videos, posts, petitions and campaigns that reach people where they scroll.']
   ];
   // The parts in the menu, and every page the rail walks (each page its own Dani scene).
-  var TABS = [{ k: 'overview', label: 'Overview' }, { k: 'humane-education', label: 'Humane Education' }, { k: 'speeches', label: 'The Speeches' }, { k: 'sanctuaries', label: 'Sanctuaries' }, { k: 'history', label: 'History' }];
+  var TABS = [{ k: 'overview', label: 'Overview' }, { k: 'humane-education', label: 'Humane Education' }, { k: 'street-outreach', label: 'Street Outreach' }, { k: 'speeches', label: 'The Speeches' }, { k: 'sanctuaries', label: 'Sanctuaries' }, { k: 'history', label: 'History' }];
   var STEPS = [
     // Dani's lines, approved by Sean 2026-11-16 (the Humane Education line updated for Susan the same day); text until recorded.
     { k: 'overview', art: 'overview', say: 'Hi, I\'m Dani. Every animal we\'ve ever helped was helped by someone who decided to speak up. There\'s no single right way to do it. Some people teach, some march, some build sanctuaries, some change laws. This Guide walks you through all of it, so you can find the way that fits you. Let\'s start with one of the gentlest and most powerful: teaching.' },
@@ -115,6 +117,8 @@
     { k: 'humane-education/james-wildman', art: 'james-wildman', say: 'Meet James Wildman. He gives around 500 free talks a year. Start with our interview, then watch the talk that made him known.' },
     // Draft for Sean (2026-11-16).
     { k: 'humane-education/zoe-weil', art: 'zoe-weil', say: 'Meet Zoe Weil. She helped turn humane education into a field of its own, and she teaches the teachers. If you have ever wanted to bring this work into a classroom, start here.' },
+    // Draft for Sean (2026-11-16, "Go ahead with street outreach").
+    { k: 'street-outreach', art: 'street-outreach', say: 'Street outreach is just a conversation, on a sidewalk, with someone who has never been asked to think about animals this way. You do not need all the answers. You need to listen, ask good questions and be kind. Start by joining a group near you.' },
     // Draft for Sean (2026-11-16, "Go ahead with the speeches").
     { k: 'speeches', art: 'speeches', say: 'Sometimes one talk is all it takes. These are some of the most watched and shared talks on Veganism anywhere, and the list keeps growing. Start with a short one tonight, save the long ones for when you have the time, and tell us which talk changed your mind.' },
     // Draft for Sean (2026-11-16, "Go ahead with sanctuaries and rescue").
@@ -280,6 +284,34 @@
         '<div class="k-f wide"><button type="submit" class="dg-btn" id="agSugGo">Send my suggestion</button><p class="k-msg" id="agSugMsg" role="status"></p></div>' +
         '</form>';
     },
+    'street-outreach': function () {
+      var forms = [
+        ['outreach', 'The Cube of Truth', 'Volunteers in masks stand in a square holding screens that show footage from farms and slaughterhouses, while others talk with the people who stop to watch. Started by Anonymous for the Voiceless.'],
+        ['teach', 'Tabling and leafleting', 'A table or a stack of leaflets on a busy street or campus, handing people something to read and answering their questions. Vegan Outreach is known for it.'],
+        ['digital', 'Street conversations on camera', 'Talking with people on the street about why we treat some animals as friends and others as food, and sharing the conversations online. Earthling Ed and Joey Carbstrong are known for it.'],
+        ['sanctuary', 'Food giveaways and tastings', 'Handing out free Vegan food so people can taste how easy it is, like Susan Hargreaves and the Veganza Animal Heroes giving away Vegan roasts before Thanksgiving.'],
+        ['direct', 'Chalking and visual displays', 'Facts, art and messages in chalk or on boards where people walk by, often next to a team ready to talk.']
+      ];
+      var steps = [
+        ['Find a group near you', 'Most outreach happens in teams. Joining one means training, support and people to learn from.'],
+        ['Watch before you talk', 'Go to an event and stand with the team first. Listen to how experienced activists open a conversation.'],
+        ['Learn the conversation', 'Ask questions, listen to the answers and help people reach their own conclusions. Arguing to win rarely changes a mind.'],
+        ['Take care of yourself', 'Outreach can be heavy. Take breaks, lean on your team and remember that every conversation plants a seed.']
+      ];
+      return crumb('Street Outreach') + head('Street outreach', 'Start a Conversation', '') +
+        '<div class="ag-sec"><h3>What is street outreach?</h3>' +
+        '<p class="ag-about">Street outreach means talking with people face to face in public places, on sidewalks, campuses and at events, about how animals are treated and why so many people are choosing to go Vegan. It isn\'t shouting or shaming. The best outreach is a calm, honest conversation that leaves someone thinking.</p></div>' +
+        '<div class="ag-sec"><h3>The ways it is done</h3><ul class="ag-ways">' + forms.map(function (w) {
+          return '<li><div class="ag-way"><span class="ag-ic"><svg viewBox="0 0 24 24" aria-hidden="true">' + IC[w[0]] + '</svg></span><span><b>' + esc(w[1]) + '</b><small>' + esc(w[2]) + '</small></span></div></li>';
+        }).join('') + '</ul></div>' +
+        '<div class="ag-sec"><h3>How to get started</h3><ol class="ag-tl" style="--ag-c:#FF9EC4">' + steps.map(function (x) {
+          return '<li class="ag-ev"><details open><summary><b>' + esc(x[0]) + '</b></summary><div class="ag-evb"><p>' + esc(x[1]) + '</p></div></details></li>';
+        }).join('') + '</ol>' +
+        '<div class="wg-gs-btns"><a class="dg-btn" href="/directory?tab=community&amp;sub=groups">Groups near me</a> <a class="dg-btn dg-ghost" href="/events?cat=activism">Activism events</a></div></div>' +
+        '<div class="ag-sec"><h3>Who does it</h3><p class="ag-sub">Groups and people known for street outreach, in our Directory.</p><div id="agOut"><p class="ag-sub">Loading...</p></div></div>' +
+        '<div class="ag-sec" id="agOutBooksSec" hidden><h3>Books</h3><p class="ag-sub">For learning the conversation.</p><div id="agOutBooks"></div></div>' +
+        cta('Street outreach', 'Hear how the best do it.', 'Some of the most shared talks on Veganism come from people who learned on the street.', ['Talks That Changed Minds', '#/speeches']);
+    },
     sanctuaries: function () {
       var ways = [
         ['sanctuary', 'Visit', 'Many sanctuaries host tours and open days. Meeting the animals face to face is often what changes a mind. Check each one\'s visiting hours before you go.'],
@@ -388,6 +420,7 @@
     if (k === 'humane-education/james-wildman') loadBooks('James Wildman', 'agJamesBooksSec', 'agJamesBooks', 'agJamesBooksGrid');
     if (k === 'humane-education') { loadCards(MORE_EDU_NAMES, 'agMoreEdu', 'agMoreEduGrid'); loadBooks(['Susan Hargreaves', 'Zoe Weil', 'Ruby Roth'], 'agTeachBooksSec', 'agTeachBooks', 'agTeachBooksGrid'); }
     if (k === 'speeches') loadCards(SPEAKER_NAMES, 'agSpk', 'agSpkGrid');
+    if (k === 'street-outreach') { loadCards(OUTREACH_NAMES, 'agOut', 'agOutGrid'); loadBooks(['Ed Winters'], 'agOutBooksSec', 'agOutBooks', 'agOutBooksGrid'); }
     if (k === 'sanctuaries') { loadTop('Sanctuaries', 'agSan', 'agSanGrid'); loadTop('Rescues', 'agRes', 'agResGrid'); }
     if (k === 'humane-education/susan-hargreaves') loadCards(SUSAN_NAMES, 'agSusan', 'agSusanGrid', function (rows) {
       // Bring Susan to your school shows once her People page is live, and links to it.
