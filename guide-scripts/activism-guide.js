@@ -49,6 +49,36 @@
     '.ag-vid-b p{margin:0;font-size:14px;line-height:1.55;color:var(--ink75);}',
     '.ag-vid-b .ag-len{display:block;margin-top:6px;font-size:12px;font-weight:800;color:var(--ink55);}',
     '.ag-more{display:inline-block;margin-top:8px;font-size:13px;font-weight:800;color:var(--g);text-decoration:underline;}',
+    '.ag-eras{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:14px;}',
+    '.ag-era{display:block;border:3px solid #1a1a1a;border-radius:10px;padding:16px;color:inherit;text-decoration:none;box-shadow:5px 5px 0 #1a1a1a;transition:transform .12s;}',
+    'a.ag-era:hover{transform:translate(-2px,-2px);}',
+    '.ag-era small{display:block;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;}',
+    '.ag-era b{display:block;font-size:20px;font-weight:900;margin:6px 0;}',
+    '.ag-era p{margin:0 0 10px;font-size:14px;line-height:1.5;}',
+    '.ag-era em{font-style:normal;font-size:11px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;border-bottom:2px solid #1a1a1a;}',
+    '.ag-band{border:3px solid #1a1a1a;border-radius:10px;padding:14px 16px;margin:6px 0 18px;}',
+    '.ag-band small{font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;}',
+    '.ag-band p{margin:6px 0 0;font-size:15px;line-height:1.55;}',
+    '.ag-eranav{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px;}',
+    '.ag-eranav a{font-size:11px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;border:2px solid #1a1a1a;border-radius:6px;padding:7px 10px;color:#1a1a1a;text-decoration:none;background:#fff;}',
+    '.ag-eranav a[aria-current=page]{background:#1a1a1a;color:#fff;}',
+    '.ag-tl{list-style:none;margin:0;padding:0 0 0 28px;position:relative;}',
+    '.ag-tl::before{content:"";position:absolute;left:9px;top:6px;bottom:6px;width:4px;border-radius:2px;background:#1a1a1a;}',
+    '.ag-ev{position:relative;margin:0 0 14px;}',
+    '.ag-ev::before{content:"";position:absolute;left:-26px;top:16px;width:16px;height:16px;border-radius:50%;border:3px solid #1a1a1a;background:var(--ag-c,#FF9EC4);}',
+    '.ag-ev details{border:2px solid #1a1a1a;border-radius:10px;background:#fff;}',
+    '.ag-ev summary{list-style:none;cursor:pointer;padding:12px 14px;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;}',
+    '.ag-ev summary::-webkit-details-marker{display:none;}',
+    '.ag-ev summary span{font-size:12px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:#C2185B;min-width:120px;}',
+    '.ag-ev summary b{font-size:16px;font-weight:900;flex:1 1 240px;}',
+    '.ag-ev summary i{font-style:normal;font-size:12px;font-weight:800;color:var(--ink55);}',
+    '.ag-ev details[open] summary i{display:none;}',
+    '.ag-ev .ag-evb{padding:0 14px 14px;font-size:15px;line-height:1.6;color:var(--ink75);}',
+    '.ag-ev .ag-evb p{margin:0;max-width:860px;}',
+    '.ag-chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}',
+    '.ag-chips a{font-size:12px;font-weight:800;border:2px solid #1a1a1a;border-radius:6px;padding:5px 9px;color:#1a1a1a;text-decoration:none;background:#FFF7EC;}',
+    '.ag-eranext{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0;}',
+    '.ag-credit{font-size:13px;color:var(--ink55);margin:18px 0 0;max-width:860px;}',
     '.ag-about{font-size:15px;line-height:1.6;color:var(--ink75);max-width:860px;margin:0 0 12px;}'
   ].join('');
   var st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
@@ -72,7 +102,7 @@
     ['', 'digital', 'Digital activism', 'Videos, posts, petitions and campaigns that reach people where they scroll.']
   ];
   // The parts in the menu, and every page the rail walks (each page its own Dani scene).
-  var TABS = [{ k: 'overview', label: 'Overview' }, { k: 'humane-education', label: 'Humane Education' }, { k: 'speeches', label: 'The Speeches' }];
+  var TABS = [{ k: 'overview', label: 'Overview' }, { k: 'humane-education', label: 'Humane Education' }, { k: 'speeches', label: 'The Speeches' }, { k: 'history', label: 'History' }];
   var STEPS = [
     // Dani's lines, approved by Sean 2026-11-16 (the Humane Education line updated for Susan the same day); text until recorded.
     { k: 'overview', art: 'overview', say: 'Hi, I\'m Dani. Every animal we\'ve ever helped was helped by someone who decided to speak up. There\'s no single right way to do it. Some people teach, some march, some build sanctuaries, some change laws. This Guide walks you through all of it, so you can find the way that fits you. Let\'s start with one of the gentlest and most powerful: teaching.' },
@@ -81,7 +111,9 @@
     { k: 'humane-education/susan-hargreaves', art: 'susan-hargreaves', say: 'Meet Susan Hargreaves. She has been teaching people to care about animals for more than 40 years. Press play to hear her story on our podcast.' },
     { k: 'humane-education/james-wildman', art: 'james-wildman', say: 'Meet James Wildman. He gives around 500 free talks a year. Start with our interview, then watch the talk that made him known.' },
     // Draft for Sean (2026-11-16, "Go ahead with the speeches").
-    { k: 'speeches', art: 'speeches', say: 'Sometimes one talk is all it takes. These are some of the most watched and shared talks on Veganism anywhere, and the list keeps growing. Start with a short one tonight, save the long ones for when you have the time, and tell us which talk changed your mind.' }
+    { k: 'speeches', art: 'speeches', say: 'Sometimes one talk is all it takes. These are some of the most watched and shared talks on Veganism anywhere, and the list keeps growing. Start with a short one tonight, save the long ones for when you have the time, and tell us which talk changed your mind.' },
+    // Draft for Sean (2026-11-16, the history of the movement).
+    { k: 'history', art: 'history', say: 'Every Vegan today stands on the shoulders of people who spoke up long before us, some of them more than two thousand years ago. Walk through the story one era at a time, and if you know a moment we missed, tell us.' }
   ];
   // The videos: ours first, then the talk (YouTube, loaded only when pressed).
   // Talks That Changed Minds: an ongoing list (Sean, 2026-11-16: "just change it to talks that changed minds... an ongoing list"), shortest first.
@@ -171,6 +203,7 @@
         '<div class="ag-sec"><h3>The ways to act</h3><p class="ag-sub">No way is ranked above another. Each part opens as it is ready.</p>' +
         '<ul class="ag-ways">' + WAYS.map(way).join('') + '</ul></div>' +
         '<div class="ag-sec"><h3>The speeches</h3><p class="ag-sub">Talks that changed minds around the world, shortest first. Know one we should add? Suggest it.</p><ul class="ag-ways"><li><a class="ag-way" href="#/speeches"><span class="ag-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span><span><b>Talks That Changed Minds</b><small>Philip Wollen, Joey Carbstrong, Earthling Ed, James Aspey, James Wildman and Gary Yourofsky.</small><span class="ag-tag live">Open now</span></span></a></li></ul></div>' +
+        '<div class="ag-sec"><h3>History</h3><p class="ag-sub">From ancient teachers to today\'s activists.</p><ul class="ag-ways"><li><a class="ag-way" href="#/history"><span class="ag-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span><b>A History of the Vegan Movement</b><small>A timeline from the earliest records to today, one era at a time.</small><span class="ag-tag live">Open now</span></span></a></li></ul></div>' +
         '<div class="ag-sec"><h3>Also coming</h3><p class="ag-sub">Campaign news, and a place to rally and talk with other activists.</p></div>';
     },
     'humane-education': function () {
@@ -213,6 +246,28 @@
         '<div class="k-f wide"><button type="submit" class="dg-btn" id="agSugGo">Send my suggestion</button><p class="k-msg" id="agSugMsg" role="status"></p></div>' +
         '</form>';
     },
+    history: function () {
+      var H = window.VE_ACTIVISM_HISTORY || [];
+      return crumb('History') + head('History', 'A History of the Vegan Movement', '') +
+        '<p class="ag-about">From ancient teachers to today\'s activists, the people who decided animals matter. Pick an era to walk through it, and open any moment for the story.</p>' +
+        '<ul class="ag-eras">' + H.map(function (e) {
+          return '<li><a class="ag-era" href="#/history/' + e.k + '" style="background:' + e.color + '"><small>' + esc(e.range) + '</small><b>' + esc(e.label) + '</b><p>' + esc(e.blurb) + '</p><em>' + e.events.length + ' moments</em></a></li>';
+        }).join('') + '</ul>' +
+        '<p class="ag-credit">Started from the timeline in <i>Pre-Vegans</i> by Sean Russell, then researched and carried to today. History is still being written: tell us what to add.</p>' +
+        cta('History', 'Know a moment we missed?', 'A person, a group, a law, a film or a first. Tell us and we will look into it.', ['Suggest a moment', '#/history/suggest']);
+    },
+    'history/suggest': function () {
+      return crumb('History', 'Suggest a moment', '#/history') + head('History', 'Suggest a Moment', '') +
+        '<p class="ag-about">What belongs in the history of the Vegan movement? Tell us what happened, when, and where we can read about it. We check every suggestion before it goes up.</p>' +
+        '<form class="k-form" id="agHis" novalidate>' +
+        '<div class="k-f wide"><label for="agHisWhat">What happened</label><input id="agHisWhat" type="text" maxlength="200" required></div>' +
+        '<div class="k-f"><label for="agHisWhen">When</label><input id="agHisWhen" type="text" maxlength="60" placeholder="A year, or about when"></div>' +
+        '<div class="k-f"><label for="agHisLink">Where to read about it (optional)</label><input id="agHisLink" type="url" maxlength="500" placeholder="https://"></div>' +
+        '<div class="k-f wide"><label for="agHisWhy">Why it matters</label><textarea id="agHisWhy" maxlength="1500"></textarea></div>' +
+        '<div class="k-f"><label for="agHisEmail">Your email (optional)</label><input id="agHisEmail" type="email" maxlength="200" placeholder="Only if we have a question"></div>' +
+        '<div class="k-f wide"><button type="submit" class="dg-btn" id="agHisGo">Send my suggestion</button><p class="k-msg" id="agHisMsg" role="status"></p></div>' +
+        '</form>';
+    },
     'humane-education/james-wildman': function () {
       return crumb('Humane Education', 'James Wildman') + head('Humane education', 'Teaching With James Wildman', '') +
         '<p class="ag-about">James Wildman is a humane educator with the Animal Rights Foundation of Florida. He has worked there for more than 13 years, gives around 500 free presentations a year in schools, universities and communities, and has spoken to more than 100,000 people.</p>' +
@@ -221,6 +276,23 @@
         cta('Humane education', 'Bring a talk like this to your school.', 'James gives free presentations in schools, universities and communities. Reach him through his page.', ['Bring a talk like this to your school', '/directory/james-wildman']);
     }
   };
+
+  function eraView(k) {
+    var H = window.VE_ACTIVISM_HISTORY || [], i = -1;
+    for (var n = 0; n < H.length; n++) if (H[n].k === k) i = n;
+    if (i < 0) return VIEWS.history();
+    var e = H[i], prev = H[i - 1], next = H[i + 1];
+    return crumb('History', e.label, '#/history') + head(e.range, e.label, '') +
+      '<nav class="ag-eranav" aria-label="Eras">' + H.map(function (x) { return '<a href="#/history/' + x.k + '"' + (x.k === k ? ' aria-current="page"' : '') + '>' + esc(x.label) + '</a>'; }).join('') + '</nav>' +
+      '<div class="ag-band" style="background:' + e.color + '"><small>' + esc(e.range) + '</small><p>' + esc(e.blurb) + '</p></div>' +
+      '<ol class="ag-tl" style="--ag-c:' + e.color + '">' + e.events.map(function (v, m) {
+        return '<li class="ag-ev"><details' + (m === 0 ? ' open' : '') + '><summary><span>' + esc(v.y) + '</span><b>' + esc(v.t) + '</b><i>Open</i></summary><div class="ag-evb"><p>' + esc(v.p) + '</p>' +
+          (v.links && v.links.length ? '<div class="ag-chips">' + v.links.map(function (l) { return '<a href="/directory/' + esc(l[0]) + '">' + esc(l[1]) + '</a>'; }).join('') + '</div>' : '') +
+          (v.t === 'Your chapter of the story' ? '<div class="ag-chips"><a href="#/history/suggest">Suggest a moment</a><a href="/communities">Find your community</a></div>' : '') + '</div></details></li>';
+      }).join('') + '</ol>' +
+      '<div class="ag-eranext">' + (prev ? '<a class="dg-btn dg-ghost" href="#/history/' + prev.k + '">&larr; ' + esc(prev.label) + '</a>' : '<span></span>') +
+      (next ? '<a class="dg-btn" href="#/history/' + next.k + '">' + esc(next.label) + ' &rarr;</a>' : '<a class="dg-btn" href="#/history/suggest">Suggest a moment</a>') + '</div>';
+  }
 
   // ---------- menu and Dani (nominate.js / welcome-guide.js) ----------
   function drawMenu(cur) {
@@ -235,7 +307,7 @@
     foldBtn.textContent = f ? 'Show Dani' : 'Hide Dani'; foldBtn.setAttribute('aria-expanded', String(!f));
   });
   function drawDani() {
-    var t = step(curTab === 'speeches/suggest' ? 'speeches' : curTab), i = STEPS.indexOf(t);
+    var t = step(curTab === 'speeches/suggest' ? 'speeches' : /^history\//.test(curTab) ? 'history' : curTab), i = STEPS.indexOf(t);
     bubble.textContent = t.say;
     var box = $('dgMaya'); box.innerHTML = ''; box.style.backgroundImage = "url('" + ART + t.art + ".jpg')";
     $('dgPlay').hidden = true;   // no recording yet: the Play button shows once Dani's lines are recorded
@@ -244,9 +316,10 @@
   }
   function route() {
     var k = (location.hash.replace(/^#\/?/, '') || 'overview').split('?')[0].replace(/\/+$/, '') || 'overview';
-    if (!VIEWS[k]) k = 'overview';
+    var era = /^history\/[a-z-]+$/.test(k) && !VIEWS[k];
+    if (!VIEWS[k] && !era) k = 'overview';
     curTab = k;
-    main.innerHTML = VIEWS[k]();
+    main.innerHTML = era ? eraView(k.split('/')[1]) : VIEWS[k]();
     if (k === 'humane-education/james-wildman') loadCards(JAMES_NAMES, 'agJames', 'agJamesGrid');
     if (k === 'speeches') loadCards(SPEAKER_NAMES, 'agSpk', 'agSpkGrid');
     if (k === 'humane-education/susan-hargreaves') loadCards(SUSAN_NAMES, 'agSusan', 'agSusanGrid', function (rows) {
@@ -281,6 +354,26 @@
       .then(function (x) {
         if (!x.ok || !x.d || !x.d.ok) throw x.d || {};
         $('agSug').outerHTML = '<p class="ag-about"><b>Thank you.</b> We have your suggestion and will watch it' + (em ? ', and we will write to ' + esc(em) + ' when it is added' : '') + '.</p><a class="dg-btn" href="#/speeches">Back to the talks</a>';
+      })
+      .catch(function (d) { go.disabled = false; go.textContent = 'Send my suggestion'; msg.className = 'k-msg err'; msg.textContent = d && d.error === 'daily_limit' ? 'You have sent a few already. Thank you, we have them.' : 'That did not go through. Try again in a moment.'; });
+  });
+  document.addEventListener('submit', function (e) {
+    if (!e.target || e.target.id !== 'agHis') return;
+    e.preventDefault();
+    var what = $('agHisWhat').value.trim(), when = $('agHisWhen').value.trim(), link = $('agHisLink').value.trim(), why = $('agHisWhy').value.trim(), em = $('agHisEmail').value.trim(), msg = $('agHisMsg'), go = $('agHisGo');
+    if (what.length < 3) { msg.className = 'k-msg err'; msg.textContent = 'Tell us what happened.'; return; }
+    if (link && !/^https?:\/\/\S+\.\S+/.test(link)) { msg.className = 'k-msg err'; msg.textContent = 'The link should start with https://'; return; }
+    if (em && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) { msg.className = 'k-msg err'; msg.textContent = 'That email does not look right.'; return; }
+    go.disabled = true; go.textContent = 'Sending...'; msg.className = 'k-msg'; msg.textContent = '';
+    var vid = ''; try { vid = localStorage.getItem('ve_visitor') || ''; } catch (x) {}
+    fetch(SB + '/functions/v1/ve-feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ page_url: location.href.split('#')[0] + '#/history', page_label: 'A History of the Vegan Movement', kind: 'suggestion',
+        message: 'Suggested moment for the History of the Vegan Movement: ' + what + (when ? '\nWhen: ' + when : '') + (link ? '\nSource: ' + link : '') + (why ? '\nWhy: ' + why : ''),
+        email: em, name: 'A visitor (via Dani, Suggest a moment)', visitor: vid, signed_in: false, viewport: innerWidth + 'x' + innerHeight }) })
+      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (x) {
+        if (!x.ok || !x.d || !x.d.ok) throw x.d || {};
+        $('agHis').outerHTML = '<p class="ag-about"><b>Thank you.</b> We have your suggestion and will look into it' + (em ? '. If we have a question, we will write to ' + esc(em) : '') + '.</p><a class="dg-btn" href="#/history">Back to the history</a>';
       })
       .catch(function (d) { go.disabled = false; go.textContent = 'Send my suggestion'; msg.className = 'k-msg err'; msg.textContent = d && d.error === 'daily_limit' ? 'You have sent a few already. Thank you, we have them.' : 'That did not go through. Try again in a moment.'; });
   });
