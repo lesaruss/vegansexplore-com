@@ -48,6 +48,7 @@
     '.ag-vid-b b{display:block;font-size:16px;font-weight:900;line-height:1.3;margin:4px 0;}',
     '.ag-vid-b p{margin:0;font-size:14px;line-height:1.55;color:var(--ink75);}',
     '.ag-vid-b .ag-len{display:block;margin-top:6px;font-size:12px;font-weight:800;color:var(--ink55);}',
+    '.ag-more{display:inline-block;margin-top:8px;font-size:13px;font-weight:800;color:var(--g);text-decoration:underline;}',
     '.ag-about{font-size:15px;line-height:1.6;color:var(--ink75);max-width:860px;margin:0 0 12px;}'
   ].join('');
   var st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
@@ -71,16 +72,35 @@
     ['', 'digital', 'Digital activism', 'Videos, posts, petitions and campaigns that reach people where they scroll.']
   ];
   // The parts in the menu, and every page the rail walks (each page its own Dani scene).
-  var TABS = [{ k: 'overview', label: 'Overview' }, { k: 'humane-education', label: 'Humane Education' }];
+  var TABS = [{ k: 'overview', label: 'Overview' }, { k: 'humane-education', label: 'Humane Education' }, { k: 'speeches', label: 'The Speeches' }];
   var STEPS = [
     // Dani's lines, approved by Sean 2026-11-16 (the Humane Education line updated for Susan the same day); text until recorded.
     { k: 'overview', art: 'overview', say: 'Hi, I\'m Dani. Every animal we\'ve ever helped was helped by someone who decided to speak up. There\'s no single right way to do it. Some people teach, some march, some build sanctuaries, some change laws. This Guide walks you through all of it, so you can find the way that fits you. Let\'s start with one of the gentlest and most powerful: teaching.' },
     { k: 'humane-education', art: 'humane-education', say: 'Humane education means helping people, often students, think about how their choices affect animals, people and the planet. It\'s about giving people the facts and letting them decide, not preaching. Nobody has been doing it longer, or with more heart, than Susan Hargreaves.' },
     // The two educator pages' lines are drafts for Sean.
     { k: 'humane-education/susan-hargreaves', art: 'susan-hargreaves', say: 'Meet Susan Hargreaves. She has been teaching people to care about animals for more than 40 years. Press play to hear her story on our podcast.' },
-    { k: 'humane-education/james-wildman', art: 'james-wildman', say: 'Meet James Wildman. He gives around 500 free talks a year. Start with our interview, then watch the talk that made him known.' }
+    { k: 'humane-education/james-wildman', art: 'james-wildman', say: 'Meet James Wildman. He gives around 500 free talks a year. Start with our interview, then watch the talk that made him known.' },
+    // Draft for Sean (2026-11-16, "Go ahead with the speeches").
+    { k: 'speeches', art: 'speeches', say: 'Sometimes one talk is all it takes. These six are some of the most watched and shared talks on Veganism anywhere. Start with a short one tonight, and save the long ones for when you have the time.' }
   ];
   // The videos: ours first, then the talk (YouTube, loaded only when pressed).
+  // The six speeches Sean shared (2026-11-16), shortest first so anyone can start tonight. Every one has subtitles in many languages.
+  var SPEECHES = [
+    { id: 'uQCe4qEexjc', k: 'Philip Wollen', t: 'Should Animals Be Off the Menu?', len: '10 minutes',
+      p: 'Philip Wollen\'s opening in a public debate. Short, direct and famous for good reason: it asks everyone to look at what their choices cost animals.' },
+    { id: '4XDVGgZijLA', k: 'Joey Carbstrong', t: 'Opening Speech in a Veganism Debate at the University of Oxford', len: '10 minutes',
+      p: 'A short, powerful case from a creator known for his street activism, investigations and documentaries.' },
+    { id: 'Z3u7hXpOm58', k: 'Earthling Ed', t: 'You Will Never Look at Your Life in the Same Way Again', len: 'About 32 minutes',
+      p: 'One of the best known talks by Ed Winters, who also gives TEDx talks, debates on TV and radio, and writes books on Veganism and ethical reasoning.' },
+    { id: 'KHOcox2lvQo', k: 'James Aspey', t: 'A Wake-Up Call', len: 'About 42 minutes',
+      p: 'One of the most inspiring and widely shared talks on Veganism, from a well known animal rights activist.' },
+    { id: 'YnQb58BoBQw', k: 'James Wildman', t: '101 Reasons to Go Vegan', len: 'About 1 hour 8 minutes',
+      p: 'The humane educator\'s classic, given to classrooms across Florida.', more: '<a class="ag-more" href="#/humane-education/james-wildman">Meet James in Humane Education</a>' },
+    { id: 'es6U00LMmC4', k: 'Gary Yourofsky', t: 'The Best Speech You Will Ever Hear', len: 'About 1 hour, plus a 30 minute Q&amp;A',
+      p: 'One of the most viewed talks on Veganism, with millions of views, from a speaker who has given thousands of talks at schools and universities.',
+      more: '<a class="ag-more" href="https://www.youtube.com/watch?v=WIkC4OJEx3c" target="_blank" rel="noopener">Watch part 2, the Q&amp;A (about 30 minutes)</a>' }
+  ];
+  var SPEAKER_NAMES = ['Earthling Ed', 'James Wildman', 'James Aspey', 'Joey Carbstrong', 'Philip Wollen', 'Gary Yourofsky'];
   var VIDS = {
     interview: { id: 'W5esV8NUFgk', k: 'Our interview', t: '101 Reasons to Go Vegan, How James Wildman Reaches 100,000 Students a Year', len: '21 minutes · the Vegans Explore Podcast',
       p: 'James explains how humor, evidence and meeting people where they are change minds more than winning arguments do.' },
@@ -121,7 +141,7 @@
   function vid(v) {
     return '<article class="ag-vid"><div class="ag-yt" data-yt="' + esc(v.id) + '" style="background-image:url(&quot;https://i.ytimg.com/vi/' + esc(v.id) + '/hqdefault.jpg&quot;)">' +
       '<button type="button" aria-label="Watch: ' + esc(v.t) + '"><span><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6,4 20,12 6,20"></polygon></svg>Watch</span></button></div>' +
-      '<div class="ag-vid-b"><div class="ag-vid-k">' + esc(v.k) + '</div><b>' + esc(v.t) + '</b><p>' + esc(v.p) + '</p><span class="ag-len">' + esc(v.len) + '</span></div></article>';
+      '<div class="ag-vid-b"><div class="ag-vid-k">' + esc(v.k) + '</div><b>' + esc(v.t) + '</b><p>' + esc(v.p) + '</p><span class="ag-len">' + v.len.replace(/&(?!amp;)/g, '&amp;') + '</span>' + (v.more || '') + '</div></article>';
   }
   // The shared Directory card (VERegionDirectory.card / .wire), never a hand-made one.
   function cards(list, id) { return '<div class="vrd-root"><div class="rank-grid" id="' + id + '">' + list.map(function (l, i) { return window.VERegionDirectory ? VERegionDirectory.card(l, i) : ''; }).join('') + '</div></div>'; }
@@ -149,7 +169,8 @@
           '<a class="dg-btn" href="#/humane-education">Start with humane education</a>') +
         '<div class="ag-sec"><h3>The ways to act</h3><p class="ag-sub">No way is ranked above another. Each part opens as it is ready.</p>' +
         '<ul class="ag-ways">' + WAYS.map(way).join('') + '</ul></div>' +
-        '<div class="ag-sec"><h3>Also coming</h3><p class="ag-sub">The talks that changed minds around the world, campaign news, and a place to rally and talk with other activists.</p></div>';
+        '<div class="ag-sec"><h3>The speeches</h3><p class="ag-sub">Six talks that changed minds around the world, shortest first.</p><ul class="ag-ways"><li><a class="ag-way" href="#/speeches"><span class="ag-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span><span><b>The Speeches</b><small>Philip Wollen, Joey Carbstrong, Earthling Ed, James Aspey, James Wildman and Gary Yourofsky.</small><span class="ag-tag live">Open now</span></span></a></li></ul></div>' +
+        '<div class="ag-sec"><h3>Also coming</h3><p class="ag-sub">Campaign news, and a place to rally and talk with other activists.</p></div>';
     },
     'humane-education': function () {
       return crumb('Humane Education') + head('Humane education', 'Teaching People to Care', '') +
@@ -172,6 +193,12 @@
         '<audio controls preload="none" src="' + SUSAN_AUDIO + '" style="width:100%;margin-top:10px"></audio></div></article></div></div>' +
         '<div class="ag-sec"><h3>Meet them</h3><p class="ag-sub">Susan and her organization in the Directory.</p><div id="agSusan"><p class="ag-sub">Their Directory pages are on the way.</p></div></div>' +
         '<div id="agSusanGo"></div>';
+    },
+    speeches: function () {
+      return crumb('The Speeches') + head('The speeches', 'Six Talks That Changed Minds', '') +
+        '<p class="ag-about">Some of the most watched and shared speeches on Veganism and animal rights, shortest first. Every one has subtitles in many languages: turn them on in the player.</p>' +
+        '<div class="ag-sec"><div class="ag-vids">' + SPEECHES.map(vid).join('') + '</div></div>' +
+        '<div class="ag-sec"><h3>Meet them</h3><p class="ag-sub">The speakers in our Directory.</p><div id="agSpk"><p class="ag-sub">Their Directory pages are on the way.</p></div></div>';
     },
     'humane-education/james-wildman': function () {
       return crumb('Humane Education', 'James Wildman') + head('Humane education', 'Teaching With James Wildman', '') +
@@ -208,6 +235,7 @@
     curTab = k;
     main.innerHTML = VIEWS[k]();
     if (k === 'humane-education/james-wildman') loadCards(JAMES_NAMES, 'agJames', 'agJamesGrid');
+    if (k === 'speeches') loadCards(SPEAKER_NAMES, 'agSpk', 'agSpkGrid');
     if (k === 'humane-education/susan-hargreaves') loadCards(SUSAN_NAMES, 'agSusan', 'agSusanGrid', function (rows) {
       // Bring Susan to your school shows once her People page is live, and links to it.
       var me = rows.filter(function (r) { return /susan hargreaves/i.test(r.name || ''); })[0], go = $('agSusanGo');
