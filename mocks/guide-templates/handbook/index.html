@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en" data-kit-parent="welcome-guide">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guide Template, Handbook: Nutrients | Vegans Explore</title>
+  <meta name="description" content="The Handbook template for every Guide part where people come to learn, part by part, shown on the Nutrition Guide's Nutrients part, with a progress variant for the business Guides. Mock, not live.">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="canonical" href="https://vegansexplore.com/mocks/guide-templates/handbook/">
+  <link rel="stylesheet" href="/public/ve-kit.css">
+  <style>
+    /* ==================== SHARED GUIDE FRAME, keep identical in both templates ====================
+       Brief: /mocks/guide-templates/BRIEF.md (Sean, 2026-11-16). One frame for every Guide: the Mock strip, the Guide bar with
+       ONE way to move (the Contents button and its panel, from option A), the page head, the Guide row. Only the body differs. */
+    body { margin: 0; background: #fff; color: var(--k-ink); font-family: 'Montserrat', system-ui, sans-serif; }
+    .mk-note { background: var(--k-peach); font-size: 13px; font-weight: 700; line-height: 1.45; padding: 9px 40px; }
+    .mk-note b { color: #8a4d00; letter-spacing: .08em; text-transform: uppercase; margin-right: 6px; }
+    .mk-note a { color: var(--k-ink); font-weight: 900; }
+
+    /* The Guide bar: name, the one line, the Contents button */
+    .gf-bar { background: var(--k-pink); padding: 10px 40px; display: flex; align-items: center; justify-content: space-between; gap: 8px 20px; }
+    .gf-name { min-width: 0; display: flex; align-items: baseline; gap: 4px 14px; flex-wrap: wrap; }
+    .gf-name > a { font-size: 17px; font-weight: 900; letter-spacing: -.02em; color: var(--k-ink); text-decoration: none; white-space: nowrap; }
+    .gf-name span { font-size: 12px; font-weight: 800; }
+    .gf-name span a { color: var(--k-ink); font-weight: 900; }
+    .gf-cbtn { font: inherit; flex: none; display: inline-flex; align-items: center; gap: 10px; max-width: 60%; background: #fff; color: var(--k-ink); border: 2px solid var(--k-ink); border-radius: var(--k-r); padding: 6px 8px 6px 12px; cursor: pointer; box-shadow: 3px 3px 0 var(--k-ink); }
+    .gf-cbtn:hover { background: var(--k-pinkt); }
+    .gf-cbtn > b { font-size: 10.5px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
+    .gf-cbtn > span { min-width: 0; font-size: 13px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-left: 2px solid var(--k-ink); padding-left: 10px; }
+    .gf-cbtn > i { width: 26px; height: 26px; flex: none; display: grid; place-items: center; background: var(--k-ink); border-radius: 4px; }
+    .gf-cbtn > i::before { content: ""; width: 7px; height: 7px; border-right: 2.4px solid #fff; border-bottom: 2.4px solid #fff; transform: translateY(-2px) rotate(45deg); transition: transform .15s; }
+    .gf-cbtn[aria-expanded="true"] > i::before { transform: translateY(2px) rotate(-135deg); }
+    .gf-stripe { margin: 0; border-radius: 0; height: 6px; }
+
+    /* The Contents panel: opens in place and pushes the page down; grid on desktop, a list on phones */
+    .gf-toc { border-bottom: 3px solid var(--k-ink); padding: 6px 40px 18px; background: #fff; }
+    .gf-toc[hidden] { display: none; }
+    .gf-toc-h { display: flex; align-items: baseline; justify-content: space-between; gap: 8px 16px; flex-wrap: wrap; padding: 8px 0 4px; }
+    .gf-toc-h .k-label { margin: 0; color: var(--k-pinkd); }
+    .gf-toc-h small { font-size: 12px; font-weight: 700; color: var(--k-mute); }
+    .gf-toc ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 28px; }
+    .gf-toc li a { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 2px 10px; padding: 12px 0; border-top: 2px solid var(--k-ink); text-decoration: none; color: var(--k-ink); }
+    .gf-toc li a > i { grid-row: span 2; font-style: normal; font-size: 24px; font-weight: 900; letter-spacing: -.04em; line-height: 1; }
+    .gf-toc li a b { font-size: 16px; font-weight: 900; letter-spacing: -.01em; line-height: 1.15; }
+    .gf-toc li a small { font-size: 12px; font-weight: 700; color: var(--k-mute); }
+    .gf-toc li a:hover b { text-decoration: underline; text-decoration-thickness: 2px; }
+    .gf-toc li a[aria-current] { background: var(--k-pinkt); box-shadow: inset 6px 0 0 var(--k-pink); padding-left: 12px; }
+    .gf-toc li a[aria-current] > i { color: var(--k-pinkd); }
+    .gf-toc li a[aria-current] small { color: var(--k-ink); }
+    .gf-toc-x { margin: 12px 0 0; font-size: 12.5px; font-weight: 800; }
+    .gf-toc-x a { color: var(--k-pinkd); }
+
+    main { padding: 22px 40px 64px; }
+
+    /* The page head: eyebrow, title, one line */
+    .gf-head .k-eb { margin-bottom: 8px; }
+    .gf-head .k-h1 { margin-bottom: 6px; }
+    .gf-head .k-lede { margin-bottom: 14px; }
+
+    /* The Guide, once: square picture framed from the top, the Guide's one line, a quiet Play */
+    .gf-guide { display: flex; align-items: center; gap: 12px; max-width: 860px; margin: 0 0 18px; }
+    .gf-guide img { width: 52px; height: 52px; flex: none; border-radius: 10px; border: 2px solid var(--k-ink); object-fit: cover; object-position: center top; display: block; background: var(--k-pinkt); }
+    .gf-guide p { flex: 1; min-width: 0; margin: 0; font-size: 13.5px; font-weight: 600; line-height: 1.42; color: var(--k-mute); }
+    .gf-guide p b { color: var(--k-ink); }
+    .gf-play { flex: none; font: inherit; font-size: 11px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; color: var(--k-ink); background: transparent; border: 2px solid var(--k-ink); border-radius: var(--k-r); padding: 7px 10px; cursor: pointer; }
+    .gf-play:hover { background: var(--k-pinkt); }
+
+    @media (max-width: 1100px) { .gf-toc ol { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 900px) {
+      .mk-note { padding: 7px 16px; font-size: 11.5px; line-height: 1.4; }
+      .gf-bar { padding: 8px 16px; }
+      .gf-name { display: block; }
+      .gf-name > a { display: block; font-size: 15px; }
+      .gf-name span { display: block; font-size: 11px; margin-top: 1px; }
+      .gf-cbtn { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 8px; padding: 5px 6px 5px 10px; max-width: 56%; text-align: left; }
+      .gf-cbtn > b { font-size: 9px; grid-column: 1; grid-row: 1; line-height: 1.3; }
+      .gf-cbtn > span { font-size: 12.5px; grid-column: 1; grid-row: 2; border-left: 0; padding-left: 0; line-height: 1.25; }
+      .gf-cbtn > i { grid-column: 2; grid-row: 1 / span 2; width: 24px; height: 24px; }
+      .gf-toc { padding: 4px 16px 14px; }
+      .gf-toc ol { grid-template-columns: minmax(0, 1fr); }
+      .gf-toc li a { padding: 10px 0; }
+      .gf-toc li a > i { font-size: 20px; }
+      .gf-toc li a b { font-size: 15px; }
+      main { padding: 14px 16px 48px; }
+      .gf-head .k-eb { margin-bottom: 6px; padding: 5px 8px; }
+      .gf-head .k-h1 { font-size: 34px; margin-bottom: 4px; }
+      .gf-head .k-lede { font-size: 14px; line-height: 1.45; margin-bottom: 10px; }
+      .gf-guide { gap: 10px; margin-bottom: 14px; align-items: flex-start; }
+      .gf-guide img { width: 44px; height: 44px; }
+      .gf-guide p { font-size: 12.5px; line-height: 1.38; }
+    }
+    /* ==================== END SHARED GUIDE FRAME ==================== */
+
+    /* ---------- Handbook body: one orange Start here, the part's pieces as rows, then Next part ---------- */
+    .hb-go { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; margin: 0 0 22px; }
+    .hb-go .k-cta { padding: 13px 22px; font-size: 12.5px; }
+    .hb-go small { font-size: 13px; font-weight: 700; color: var(--k-mute); }
+    .hb-prog { display: none; max-width: 860px; margin: 0 0 14px; }
+    .hb-prog-t { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 12px; font-size: 15px; font-weight: 900; margin: 0 0 8px; }
+    .hb-meter { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 4px; height: 12px; }
+    .hb-meter i { border: 2px solid var(--k-ink); border-radius: 3px; background: #fff; }
+    .hb-meter i.on { background: var(--k-br); }
+    .hb-rows-h { display: flex; align-items: baseline; justify-content: space-between; gap: 6px 16px; flex-wrap: wrap; border-bottom: 2px solid var(--k-ink); padding-bottom: 8px; margin: 0 0 12px; }
+    .hb-rows-h .k-h3 { margin: 0; }
+    .hb-rows-h small { font-size: 12.5px; font-weight: 700; color: var(--k-mute); }
+    .hb-rows { grid-template-columns: repeat(auto-fit, minmax(min(520px, 100%), 1fr)); gap: 10px 18px; }
+    .hb-row { padding: 10px 12px; }
+    .hb-row .k-row-t b a { color: inherit; text-decoration: none; }
+    .hb-row .k-row-t b a:hover { text-decoration: underline; }
+    .hb-row .k-row-t small { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .hb-st { display: none; }
+    .hb-note { max-width: 860px; font-size: 12px; font-weight: 600; line-height: 1.5; color: var(--k-mute); margin: 18px 0 0; }
+    .hb-next { margin: 22px 0 0; padding-top: 16px; border-top: 2px solid var(--k-ink); font-size: 13px; font-weight: 700; color: var(--k-mute); }
+    .hb-next a { font-size: 17px; font-weight: 900; color: var(--k-ink); text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; margin-right: 10px; }
+
+    /* The progress variant (?v=progress): the pattern for the business Guides */
+    body.hb-progress .hb-prog { display: block; }
+    body.hb-progress .hb-read, body.hb-progress .hb-go-plain { display: none; }
+    body.hb-progress .hb-st { display: inline-flex; }
+    .hb-go-prog { display: none; }
+    body.hb-progress .hb-go-prog { display: flex; }
+    .mk-prog { display: none; }
+    body.hb-progress .mk-plain { display: none; }
+    body.hb-progress .mk-prog { display: inline; }
+
+    @media (max-width: 900px) {
+      .hb-go { margin-bottom: 18px; }
+      .hb-go .k-cta { width: 100%; padding: 13px 16px; }
+      .hb-go small { display: none; }
+      .hb-row { grid-template-columns: 34px minmax(0, 1fr) auto; gap: 10px; padding: 9px 10px; }
+      .hb-row .k-num { width: 34px; height: 34px; }
+    }
+  </style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+
+<div class="mk-note"><b>Mock</b> <span class="mk-plain">Guide template: Handbook, on the Nutrition Guide's Nutrients part. Real content, nothing here is live. <a href="?v=progress">See it with progress</a></span><span class="mk-prog">Guide template: Handbook with progress, the pattern for the business Guides (Pre-Vegan Business, Pre-Vegan Restaurant, Vegan Restaurant). The progress is a Sample. <a href="./">See it without</a></span></div>
+
+<header class="gf-bar" id="gfBar" data-k-section="guides">
+  <div class="gf-name">
+    <a href="/guides/nutrition-guide">The Nutrition Guide</a>
+    <span>Try B12 free. <a href="/guides/nutrition-guide#/join">Get it: $11 or 1,100 points</a></span>
+  </div>
+  <button type="button" class="gf-cbtn" id="gfCbtn" aria-expanded="false" aria-controls="gfToc"><b>Contents</b><span>Nutrients</span><i aria-hidden="true"></i></button>
+</header>
+<div class="k-stripe gf-stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+<nav class="gf-toc" id="gfToc" aria-label="The Nutrition Guide, contents" hidden>
+  <div class="gf-toc-h"><span class="k-label">The Nutrition Guide, contents</span><small>7 parts. Press Escape or Contents to close.</small></div>
+  <ol>
+    <li><a href="/guides/nutrition-guide#/"><i>01</i><b>Overview</b><small>What a Vegan plate needs, and where to get it</small></a></li>
+    <li><a href="#top" aria-current="page"><i>02</i><b>Nutrients</b><small>Eight nutrients, one at a time · You are here</small></a></li>
+    <li><a href="/guides/nutrition-guide#/plate"><i>03</i><b>Your Plate</b><small>One plate, every meal</small></a></li>
+    <li><a href="/guides/nutrition-guide#/supplements"><i>04</i><b>Supplements</b><small>What to take, and what to look for</small></a></li>
+    <li><a href="/guides/nutrition-guide#/experts"><i>05</i><b>Experts</b><small>Find someone to ask</small></a></li>
+    <li><a href="/guides/nutrition-guide#/courses"><i>06</i><b>Courses</b><small>Learn more, or make it your work</small></a></li>
+    <li><a href="/guides/nutrition-guide#/pulse"><i>07</i><b>Pulse</b><small>Listen to the experts</small></a></li>
+  </ol>
+  <p class="gf-toc-x">Mock: <a class="mk-plain" href="?v=progress">see Nutrients with progress</a><a class="mk-prog" href="./">see Nutrients without progress</a></p>
+</nav>
+
+<main id="top" data-k-section="guides" data-template="handbook">
+  <section class="gf-head" aria-labelledby="gfTitle">
+    <span class="k-eb pk">Part 2 of 7</span>
+    <h1 class="k-h1" id="gfTitle">Nutrients</h1>
+    <p class="k-lede">Eight nutrients, one at a time: how much you need, the foods that have it, and when a supplement makes sense.</p>
+  </section>
+
+  <div class="gf-guide">
+    <img src="/public/guides/nutrition/theo-nutrients.jpg" alt="Theo, your Guide to nutrition, at the market" width="52" height="52">
+    <p><b>Theo:</b> Eight nutrients, one at a time: how much you need, which foods have it, and when to take a supplement. Try B12 free.</p>
+    <button type="button" class="gf-play" id="gfPlay" data-src="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/nutrition-guide/theo-nutrients-v1.mp3" aria-label="Play Theo">&#9654; Play</button>
+  </div>
+
+  <!-- Handbook body -->
+  <div class="hb-prog" aria-label="Your progress">
+    <div class="hb-prog-t">Your progress: 2 of 8 <span class="k-tag smp">Sample</span></div>
+    <div class="hb-meter" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+  </div>
+  <div class="hb-go hb-go-plain"><a class="k-btn k-cta" href="/guides/nutrition-guide#/nutrients/b12">Start here: Vitamin B12</a><small>Free to try, no sign-in.</small></div>
+  <div class="hb-go hb-go-prog"><a class="k-btn k-cta" href="/guides/nutrition-guide#/nutrients/iron">Continue: Iron</a><small>Next up, 3 of 8.</small></div>
+
+  <section aria-labelledby="hbRowsT">
+    <div class="hb-rows-h"><h2 class="k-h3" id="hbRowsT">The Eight Nutrients</h2><small>One at a time. Each opens on its own page.</small></div>
+    <div class="k-rows hb-rows">
+      <div class="k-row hb-row"><span class="k-num pk">1</span><span class="k-row-t"><b><a href="/guides/nutrition-guide#/nutrients/b12">Vitamin B12</a></b><small>Free to try. The one every Vegan needs a reliable source of.</small></span><span class="hb-act"><a class="k-btn k-sm hb-read" href="/guides/nutrition-guide#/nutrients/b12" aria-label="Read: Vitamin B12">Read</a><span class="k-tag live hb-st">&#10003; Done</span></span></div>
+      <div class="k-row hb-row"><span class="k-num or">2</span><span class="k-row-t"><b><a href="/guides/nutrition-guide#/nutrients/protein">Protein</a></b><small>In the full Guide: how much you need, the foods that have it, and when to supplement.</small></span><span class="hb-act"><a class="k-btn k-sm hb-read" href="/guides/nutrition-guide#/nutrients/protein" aria-label="Read: Protein">Read</a><span class="k-tag live hb-st">&#10003; Done</span></span></div>
+      <div class="k-row hb-row"><span class="k-num dk">3</span><span class="k-row-t"><b><a href="/guides/nutrition-guide#/nutrients/iron">Iron</a></b><small>In the full Guide: how much you need, the foods that have it, and when to supplement.</small></span><span class="hb-act"><a class="k-btn k-sm hb-read" href="/guides/nutrition-guide#/nutrients/iron" aria-label="Read: Iron">Read</a><span class="k-tag hb-st">Not yet</span></span></div>
+      <div class="k-row hb-row"><span class="k-num br">4</span><span class="k-row-t"><b><a href="/guides/nutrition-guide#/nutrients/calcium">Calcium</a></b><small>In the full Guide: how much you need, the foods that have it, and when to supplement.</small></span><span class="hb-act"><a class="k-btn k-sm hb-read" href="/guides/nutrition-guide#/nutrients/calcium" aria-label="Read: Calcium">Read</a><span class="k-tag hb-st">Not yet</span></span></div>
+      <div class="k-row hb-row"><span class="k-num pe">5</span><span class="k-row-t"><b><a href="/guides/nutrition-guide#/nutrients/vitamin-d">Vitamin D</a></b><small>In the full Guide: how much you need, the foods that have it, and when to supplement.</small></span><span class="hb-act"><a class="k-btn k-sm hb-read" href="/guides/nutrition-guide#/nutrients/vitamin-d" aria-label="Read: Vitamin D">Read</a><span class="k-tag hb-st">Not yet</span></span></div>
+      <div class="k-row hb-row"><span class="k-num ti">6</span><span class="k-row-t"><b><a href="/guides/nutrition-guide#/nutrients/omega-3">Omega-3s</a></b><small>In the full Guide: how much you need, the foods that have it, and when to supplement.</small></span><span class="hb-act"><a class="k-btn k-sm hb-read" href="/guides/nutrition-guide#/nutrients/omega-3" aria-label="Read: Omega-3s">Read</a><span class="k-tag hb-st">Not yet</span></span></div>
+      <div class="k-row hb-row"><span class="k-num pk">7</span><span class="k-row-t"><b><a href="/guides/nutrition-guide#/nutrients/iodine">Iodine</a></b><small>In the full Guide: how much you need, the foods that have it, and when to supplement.</small></span><span class="hb-act"><a class="k-btn k-sm hb-read" href="/guides/nutrition-guide#/nutrients/iodine" aria-label="Read: Iodine">Read</a><span class="k-tag hb-st">Not yet</span></span></div>
+      <div class="k-row hb-row"><span class="k-num or">8</span><span class="k-row-t"><b><a href="/guides/nutrition-guide#/nutrients/zinc">Zinc</a></b><small>In the full Guide: how much you need, the foods that have it, and when to supplement.</small></span><span class="hb-act"><a class="k-btn k-sm hb-read" href="/guides/nutrition-guide#/nutrients/zinc" aria-label="Read: Zinc">Read</a><span class="k-tag hb-st">Not yet</span></span></div>
+    </div>
+  </section>
+
+  <p class="hb-note">General information from the sources named, not medical advice. Talk with your doctor or a registered dietitian, especially if you are pregnant, breastfeeding, raising a Vegan child, or managing a health condition.</p>
+
+  <p class="hb-next"><a href="/guides/nutrition-guide#/plate">Next part: Your Plate &rsaquo;</a>Put it on your plate.</p>
+</main>
+
+<script>
+  /* SHARED GUIDE FRAME script: Contents (button or Escape), and the Guide's Play (only when pressed). Keep identical in both templates. */
+  (function () {
+    var btn = document.getElementById('gfCbtn'), toc = document.getElementById('gfToc'), bar = document.getElementById('gfBar');
+    // Never under the site's sticky header (nav.js, 60 to 115 px tall): if an element has slid under it, bring it back just below.
+    window.gfKeepBelowNav = function (el) {
+      var nav = document.querySelector('.ve-nav'), navB = nav ? Math.max(0, nav.getBoundingClientRect().bottom) : 0, top = el.getBoundingClientRect().top;
+      if (top < navB) window.scrollTo(0, top + window.scrollY - navB - 8);
+    };
+    function setToc(open, focusBack) {
+      toc.hidden = !open; btn.setAttribute('aria-expanded', String(open));
+      if (open) {
+        gfKeepBelowNav(bar);
+        var cur = toc.querySelector('[aria-current]'); if (cur) cur.focus({ preventScroll: true });
+      } else if (focusBack) btn.focus({ preventScroll: true });
+    }
+    btn.addEventListener('click', function () { setToc(toc.hidden, false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !toc.hidden) setToc(false, true); });
+    toc.addEventListener('click', function (e) { var a = e.target.closest('a'); if (a && a.getAttribute('href').charAt(0) === '#') { e.preventDefault(); setToc(false, true); } });
+    var play = document.getElementById('gfPlay'), audio = null;
+    play.addEventListener('click', function () {
+      if (!audio) { audio = new Audio(play.getAttribute('data-src')); audio.addEventListener('ended', function () { play.innerHTML = '&#9654; Play'; }); }
+      if (audio.paused) { audio.currentTime = 0; audio.play(); play.innerHTML = '&#10073;&#10073; Pause'; }
+      else { audio.pause(); play.innerHTML = '&#9654; Play'; }
+    });
+  })();
+
+  /* Handbook body: ?v=progress shows the same rows with progress (the business Guides' pattern). */
+  (function () {
+    if (new URLSearchParams(location.search).get('v') === 'progress') document.body.classList.add('hb-progress');
+  })();
+</script>
+<script src="/public/footer.js"></script>
+</body>
+</html>
