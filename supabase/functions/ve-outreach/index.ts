@@ -379,12 +379,16 @@ async function campaignTick(room: number, only?: string) {
   const since = easternMidnightIso();
   const slugs = [...new Set((due as { campaign_slug: string }[]).map((d) => d.campaign_slug))];
   const [{ data: camps }, { data: emails }, { data: sentToday }] = await Promise.all([
-    db.from('ve_outreach_campaigns').select('slug,daily_pace,email_count').in('slug', slugs),
+    db.from('ve_outreach_campaigns').select('slug,daily_pace,email_count,skips_daily_limit').in('slug', slugs),
     db.from('ve_outreach_campaign_emails').select('campaign_slug,step,day_offset').in('campaign_slug', slugs),
     db.from('ve_outreach_events').select('detail').eq('kind', 'sent').gte('created_at', since),
   ]);
   const paceLeft = new Map((camps || []).map((c) => [c.slug, c.daily_pace - (sentToday || []).filter((e) => (e.detail as Record<string, unknown>)?.campaign === c.slug).length]));
   const countOf = new Map((camps || []).map((c) => [c.slug, c.email_count]));
+  // Welcome emails that answer the person's own action (Liz's approval email) skip the one-a-day rule below (Sean, 2026-11-16: "yes, let
+  // welcome emails skip the daily limit"; an owner who claimed at 9:07 AM, after that morning's Holiday Guide email, would have waited a
+  // day for the welcome). ve_outreach_campaigns.skips_daily_limit, migration 20261116_welcome_emails_skip_daily_limit.sql.
+  const welcome = new Set((camps || []).filter((c) => c.skips_daily_limit).map((c) => c.slug));
   const dayOf = (slug: string, step: number) => (emails || []).find((e) => e.campaign_slug === slug && e.step === step)?.day_offset ?? 0;
   const mailedNow = new Set<string>();
   for (const d of due as { member_id: string; campaign_slug: string; listing_id: string; email: string; next_step: number }[]) {
@@ -395,7 +399,7 @@ async function campaignTick(room: number, only?: string) {
     // One outreach email per address per day, across every campaign: the second waits for the next day the sender runs.
     const { count: already } = await db.from('email_sends').select('id', { count: 'exact', head: true }).ilike('to_email', addr)
       .like('campaign_ref', 've-outreach-%').not('campaign_ref', 'like', 've-outreach-test-%').gte('created_at', since);
-    if ((already || 0) > 0) continue;
+    if ((already || 0) > 0 && !welcome.has(d.campaign_slug)) continue;
     const { data: mem } = await db.from('ve_outreach_campaign_members').select('id,campaign_slug,listing_id,person_key,step,send_status,removed_at').eq('id', d.member_id).single();
     if (!mem || mem.removed_at || mem.step + 1 !== d.next_step || !['waiting', 'in_sequence'].includes(mem.send_status)) continue;
     const step = d.next_step;
