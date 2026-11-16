@@ -583,7 +583,7 @@
         return '<div class="dg-card"><h3>' + esc(r.title) + '</h3><p>' + esc(r.text) + '</p>' + sources([[r.url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, ''), r.url]]) + '</div>'; }).join('') + '</div>';
     else if (cur === 'mine') body = '<div class="dg-tools">' + share + '<span class="dg-count">50 points for every recipe that goes into the Cookbook.</span></div><div id="dgMine"><div class="dg-loading">Loading your recipes...</div></div>';
     else body = '<div class="dg-chef-empty"><div><h3>Chefs are coming to the Cookbook</h3><p>We are partnering with chefs who specialize in dairy-free cooking. Each one shares recipes here, linked to their profile with their classes, books and services.</p></div>' +
-      '<a class="dg-btn" href="/partners">Are you a chef? Get featured</a></div>';
+      '<a class="dg-btn" href="/business-guide">Are you a chef? Get featured</a></div>';
     main.innerHTML = head('Cookbook', 'The Cookbook', ledes[cur], t) + body;
     if (cur === '') {
       var fEl = document.getElementById('dgFilter');
