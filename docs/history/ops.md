@@ -65,6 +65,7 @@ The ideas in the table are Logan's drafts until Sean picks a use; none points an
   mail.lesaruss.ai, outside this policy.
 - **Stripe.** In the Lesaruss account the old WordPress ARMember endpoint (`vegansexplore.com/?arm-listener=arm_stripe_api`, answering 405)
   was disabled. The failing endpoint Stripe emailed about (vegansexplore.lesaruss.com, no DNS) lives in the Vegans Explore Stripe
-  account, which this session cannot reach: Sean repoints or disables it there (`ve-stripe-webhook` is the live handler).
+  account, which this session cannot reach. Sean disabled it there the same day (endpoint "memorable-rhythm",
+  `https://vegansexplore.lesaruss.com/api/entry/webhook`, 100% errors); "empowering-harmony" to `ve-stripe-webhook` stays on (0% errors).
 - **Bounces.** A 6.5% day on mail.lesaruss.ai came from two small lists; `holiday-launch-registered` (3 of 10) and `closed-checking-in`
   (2 of 13) were paused at 10:47 AM ET. The email system's alert said "every campaign is paused" but only HQ email campaigns obey it.
