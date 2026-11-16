@@ -157,3 +157,13 @@ Giving (Approve = live on the page + 250 points per prize), the Holiday Guide se
 closed and rules hidden until the attorney's read), function `ve-giving`. The brands walkthrough `/partners/giving` (Liz) waits for Sean's
 lock before any brand is contacted. Attorney doc https://claude.ai/artifact/PQMHdQxyCKabWFw7ysdimV. Handoff
 `docs/handoff/2026-11-15-ve-outreach-christmas-and-11-days-of-giving.md`.
+
+**New Year's Eve (Sean, 2026-11-16: "I think we should actually create a New Year's Eve menu... We didn't even think about New Year's
+Eve as a holiday"; then "yes, lock it in and start wave 1"; playbook `ve-holiday-guide`).** Four parts locked: New Year's Eve menus, Ring
+in the new year (events), Your first Vegan year (resolutions), The year in review (top moments of the year, people vote, our own top
+content). Wave 1 (menus and events) is live: `ve_holidays` row `new-years-eve` (December 31, menus taken until midnight Eastern December
+24; migration `20261116_new_years_eve_holiday.sql`, which also holds the first menus, a chain's Holiday Feast that its marketing director
+asked for), and the Holiday Guide section `#/new-years-eve` with `#/ny-menus` and `#/ny-events`, each with its own Theo scene
+(`theo-new-years-eve.jpg`, `theo-ny-menus.jpg`, `theo-ny-events.jpg`; recipe, Theo's original reference, checked beside it). It is a row in
+`HOLX`, its `TABS`, `HOL_OV`, `HOME_ROWS` and the router, never a copy of the views. Theo's three lines are drafts until Sean approves them;
+Play Theo shows only where something plays. Wave 2 (resolutions, the year in review) comes back to Sean in December.
