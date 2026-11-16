@@ -23,7 +23,7 @@
   var JAMES_NAMES = ['James Wildman', 'Animal Rights Foundation of Florida'];
   var ZOE_NAMES = ['Zoe Weil', 'Institute for Humane Education'];
   // More humane educators (Sean, 2026-11-16: "find out who the community would consider humane educators"); each shows once its listing is approved.
-  var MORE_EDU_NAMES = ['TeachKind', 'HEART (Humane Education Advocates Reaching Teachers)', 'Ruby Roth', 'Factory Farming Awareness Coalition', 'Institute for Humane Education'];
+  var MORE_EDU_NAMES = ['TeachKind', 'LivingKind', 'Ruby Roth', 'Factory Farming Awareness Coalition', 'Institute for Humane Education'];
   var SUSAN_AUDIO = 'https://podcasts.captivate.fm/media/0809b3b7-51b2-47b5-84c8-aad59bbe7fa0/sfv-podcast-episode-007.mp3';
   var CSS = [
     '.dg-joinbox a.dg-btn{text-decoration:none;}',
