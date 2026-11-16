@@ -381,7 +381,7 @@
       '<select aria-label="Sort listings" class="sort-select" data-vrd-sort="' + cat.key + '">' +
       // No sort by the day a listing was added (Sean, 2026-10-27: "I don't think people care when I added the listing"). Books and
       // films sort by the year they came out, newest or oldest first (SUB_FILTERS years; the options show only there).
-      '<option value="votes">Most Votes</option><option value="az">A to Z</option><option value="newest" data-years hidden>Newest first</option><option value="oldest" data-years hidden>Oldest first</option>' +
+      '<option value="votes">Most Vouches</option><option value="az">A to Z</option><option value="newest" data-years hidden>Newest first</option><option value="oldest" data-years hidden>Oldest first</option>' +
       '</select></span>';
     var geoHtml = '';
     if (config && config.location) {
@@ -740,7 +740,7 @@
         : isMedia(l) ? '<div class="rank-meta">' + mediaMeta(l) + '</div>'
         : (anywhere ? (temp ? '<div class="rank-meta">' + temp + '</div>' : '') : '<div class="rank-meta">' + distSlot() + cardMeta(l) + temp + '</div>') +
           '<div class="rank-subcat">' + esc(anywhere ? shelfOf(l, cfg) : subLabel(l.category || '')) + veganTag(l) + vendsTag(l) + partnerTag(l) + bizBadgeTag(l) + '</div>') + vettingNote(l) + '</div>' +
-      '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><button class="vote-btn" data-listing-id="' + esc(l.id) + '" title="Vote for this one">' + (votes === 1 ? 'Vote' : 'Votes') + '</button>' + saveBtn(l) + adminBtn(l) + '</div>' +
+      '<div class="rank-right"><span class="vote-count">' + votes.toLocaleString() + '</span><button class="vote-btn" data-listing-id="' + esc(l.id) + '" title="Vouch for this one">' + (votes === 1 ? 'Vouch' : 'Vouches') + '</button>' + saveBtn(l) + adminBtn(l) + '</div>' +
       '</div>';
   }
 
@@ -789,7 +789,7 @@
       '<div class="rank-info"><div class="rank-name" style="color:#555">' + esc(l.name) + '</div>' +
       (cfg && cfg.everywhere ? '' : '<div class="rank-meta">' + distSlot() + cardMeta(l) + '</div>') +
       '<div class="rank-subcat"><span style="font-size:9px;font-weight:700;letter-spacing:.08em;color:#c00;border:1px solid #c00;border-radius:20px;padding:2px 8px;text-transform:uppercase">' + statusWords(l.category)[1] + '</span></div></div>' +
-      '<div class="rank-right"><span class="vote-count" style="color:#bbb">' + votes.toLocaleString() + '</span><span class="vote-label">votes</span>' + adminBtn(l) + '</div>' +
+      '<div class="rank-right"><span class="vote-count" style="color:#bbb">' + votes.toLocaleString() + '</span><span class="vote-label">vouches</span>' + adminBtn(l) + '</div>' +
       '</div>';
   }
 
@@ -2197,7 +2197,7 @@
   // details so it never runs into the vote button (Sean, 2026-10-25).
   function vettingNote(l) {
     if (!TRUST || !window.VETrust || !window.VETrust.pending(l, TRUST)) return '';
-    return '<div class="vrd-vetting" title="Shows to the public once ' + TRUST.min_voters + ' different members vote for it, or the business claims it.">' + (l.voter_count || 0) + ' of ' + TRUST.min_voters + ' member votes</div>';
+    return '<div class="vrd-vetting" title="Shows to the public once ' + TRUST.min_voters + ' different members vouch for it, or the business claims it.">' + (l.voter_count || 0) + ' of ' + TRUST.min_voters + ' member vouches</div>';
   }
 
   function fetchClosed(root, config, approved) {

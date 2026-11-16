@@ -1983,7 +1983,7 @@ function renderFilmOverview(l){
     '<p class="pp-sub">Our conversations with the people who made this film or appear in it.</p><div class="vep-dock" data-vep-always></div>' +
     '<div class="pp-scroll"><div class="vep-list"><p class="pp-empty">Loading...</p></div></div></div>' : '';
   var people = Array.isArray(d.film_people) && d.film_people.length ? '<div class="section" id="film-people"><h2 class="section-title">Featured people</h2>' +
-    '<p class="pp-sub">The people who made it or appear in it that we have interviewed. Vote for them like any listing.</p>' +
+    '<p class="pp-sub">The people who made it or appear in it that we have interviewed. Vouch for them like any listing.</p>' +
     '<div class="vrd-root"><div class="rank-grid"><p class="pp-empty">Loading...</p></div></div></div>' : '';
   return icons + '<div class="section">' + (video ? '<div class="film-grid">' + video + about + '</div>' : about) + renderOwnership(l) + '</div>' + people + pods;
 }
@@ -2020,7 +2020,7 @@ function bookPeople(l){
   var list = (l.details || {}).film_people, host = document.querySelector('#tab-overview > div');
   if(!Array.isArray(list) || !list.length || !host || document.getElementById('film-people')) return;
   var sec = document.createElement('div'); sec.className = 'section'; sec.id = 'film-people';
-  sec.innerHTML = '<h2 class="section-title">Featured people</h2><p class="pp-sub">The people whose stories are in this book. Vote for them like any listing.</p>' +
+  sec.innerHTML = '<h2 class="section-title">Featured people</h2><p class="pp-sub">The people whose stories are in this book. Vouch for them like any listing.</p>' +
     '<div class="vrd-root"><div class="rank-grid"><p class="pp-empty">Loading...</p></div></div>';
   host.appendChild(sec);
   loadFilmPeople(l);
@@ -2686,7 +2686,7 @@ function renderSidebar(l){
       '<div style="display:flex;border:1px solid var(--ve-border);border-radius:8px;overflow:hidden;margin-bottom:12px">'+
         '<div style="flex:1;padding:10px 8px;text-align:center;border-right:1px solid var(--ve-border)">'+
           '<div class="cstat-num" id="community-votes" style="font-size:20px'+(listingVotes===0?';color:var(--ve-green)':'')+'">'+listingVotes+'</div>'+
-          '<div class="cstat-label">Votes</div>'+
+          '<div class="cstat-label">Vouches</div>'+
         '</div>'+
         '<div style="flex:1;padding:10px 8px;text-align:center">'+
           '<div class="cstat-num" id="community-lesars" style="font-size:20px">0</div>'+
@@ -2712,9 +2712,9 @@ function renderSidebar(l){
       '<div class="side-card-title">Community Support</div>'+
       '<div style="border:1px solid var(--ve-border);border-radius:8px;padding:10px 8px;text-align:center">'+
         '<div class="cstat-num" id="community-votes" style="font-size:20px'+(listingVotes===0?';color:var(--ve-green)':'')+'">'+listingVotes+'</div>'+
-        '<div class="cstat-label">Votes</div>'+
+        '<div class="cstat-label">Vouches</div>'+
       '</div>'+
-      (listingVotes === 0 ? '<p class="member-note" style="text-align:center;margin-top:8px">Be the first to vote for this '+esc(listingNoun(l))+'.</p>' : '')+
+      (listingVotes === 0 ? '<p class="member-note" style="text-align:center;margin-top:8px">Be the first to vouch for this '+esc(listingNoun(l))+'.</p>' : '')+
     '</div>';
   var _bbAdSvg = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>';
   // Skyscraper ad removed (2026-09-08, Logan, Sean direction): just the two
@@ -4832,7 +4832,7 @@ function renderListing(l){
           (l.tagline || (person && personOf(l).title) ? '<p class="listing-tagline">'+esc(l.tagline || personOf(l).title)+'</p>' : '')+
         '</div>'+
         '<div class="listing-hero-right">'+
-          '<button class="vote-hero-btn" id="vote-btn" data-listing-id="'+esc(l.id)+'"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Vote<span class="vote-badge" id="vote-badge">'+votes+'</span></button>'+
+          '<button class="vote-hero-btn" id="vote-btn" data-listing-id="'+esc(l.id)+'"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Vouch<span class="vote-badge" id="vote-badge">'+votes+'</span></button>'+
           '<button class="save-hero-btn" id="save-btn" data-listing-id="'+esc(l.id)+'"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg><span id="save-btn-label">Save</span></button>'+
           // Check in shows where we know the place on the map (coordinates from Google).
           (!VB && l.latitude != null && l.longitude != null && l.business_status !== 'CLOSED_PERMANENTLY' ? '<button class="checkin-hero-btn" id="checkin-btn" data-listing-id="'+esc(l.id)+'"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><polyline points="9 10 11.5 12.5 15.5 8.5"/></svg><span id="checkin-label">Check in &middot; +10</span></button><div class="checkin-msg" id="checkin-msg" role="status"></div>' : '')+
@@ -4932,14 +4932,14 @@ function renderListing(l){
     var back = encodeURIComponent(location.pathname + location.search);
     if(VB){
       document.getElementById('listing-root').insertAdjacentHTML('beforeend',
-        '<section class="lv-vote" aria-label="Your Passport"><div class="lv-vote-copy"><strong>Your votes <span>rank them.</span></strong>'+
+        '<section class="lv-vote" aria-label="Your Passport"><div class="lv-vote-copy"><strong>Your vouches <span>rank them.</span></strong>'+
         '<p>$11, one time, gets you a LESARUSS Passport: vote once a day for the businesses you trust (the votes decide who leads each list). Own this business? Claim it with the same $11.</p></div>'+
         '<a class="lv-vote-btn" href="'+esc(VB.passportUrl)+'?from=vote">Get your Passport, $11</a></section>');
       return;
     }
     document.getElementById('listing-root').insertAdjacentHTML('beforeend',
-      '<section class="lv-vote" aria-label="Your Passport"><div class="lv-vote-copy"><strong>Your votes <span>rank them.</span></strong>'+
-      '<p>Joining is free with a short survey: vote for every business you love (the votes decide who leads each list), points for the survey and your own dashboard to build your Vegan world. Businesses join the same way and claim their page free.</p></div>'+
+      '<section class="lv-vote" aria-label="Your Passport"><div class="lv-vote-copy"><strong>Your vouches <span>rank them.</span></strong>'+
+      '<p>Joining is free with a short survey: vouch for every business you love (the vouches decide who leads each list), points for the survey and your own dashboard to build your Vegan world. Businesses join the same way and claim their page free.</p></div>'+
       '<a class="lv-vote-btn" href="/survey?s=explorer">Join free</a></section>');
   })();
 
@@ -4952,7 +4952,7 @@ function renderListing(l){
   // the activate modal on the payment_required response.
   (function(){
     var voteBtn = document.getElementById('vote-btn');
-    if(DEMO){ if(voteBtn) voteBtn.addEventListener('click', function(){ demoToast('Demo listing: in the live version this casts your daily vote.'); }); return; }
+    if(DEMO){ if(voteBtn) voteBtn.addEventListener('click', function(){ demoToast('Demo listing: in the live version this adds your vouch.'); }); return; }
     if(!voteBtn || !window.VEAuth || !window.VEVotes) return;
     var listingId = voteBtn.getAttribute('data-listing-id');
     // n: the new total from the server, or null to keep the number shown (already voted today).
@@ -4962,8 +4962,8 @@ function renderListing(l){
       var count = n != null ? n : ((badge ? parseInt(badge.textContent, 10) : 0) || 0);
       voteBtn.dataset.voted = '1';
       voteBtn.dataset.next = next || '';
-      voteBtn.title = 'You voted for this place. Tap to take your vote back.';
-      voteBtn.innerHTML = '<svg width="14" height="14" fill="#000" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Voted<span class="vote-badge" id="vote-badge">' + count + '</span>';
+      voteBtn.title = 'You vouched for this place. Tap to take your vouch back.';
+      voteBtn.innerHTML = '<svg width="14" height="14" fill="#000" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>Vouched<span class="vote-badge" id="vote-badge">' + count + '</span>';
       voteBtn.style.background = 'var(--vb-go,#2d7d31)';
       var cv = document.getElementById('community-votes');
       if(cv){ cv.textContent = count; }
@@ -5543,7 +5543,7 @@ function showMembersOnly(l, T){
   document.getElementById('listing-root').innerHTML =
     '<div class="listing-not-found">'+
       '<h2>Members only, for now</h2>'+
-      '<p>The Vegans Explore community is still vetting '+esc(l.name)+'. It opens to everyone once '+T.min_voters+' different members vote for it, or once the '+esc(listingNoun(l))+' claims its listing.</p>'+
+      '<p>The Vegans Explore community is still vetting '+esc(l.name)+'. It opens to everyone once '+T.min_voters+' different members vouch for it, or once the '+esc(listingNoun(l))+' claims its listing.</p>'+
       '<p><button type="button" id="mo-join" class="back-link" style="border:0;cursor:pointer;font:inherit">Become a member, free with a short survey</button></p>'+
       '<p><a href="/claim?listing='+slugq+'" class="back-link">Is this your '+esc(listingNoun(l))+'? Claim it</a></p>'+
     '</div>';
@@ -5551,7 +5551,7 @@ function showMembersOnly(l, T){
   if(b) b.onclick = function(){
     if(!window.VEAuth) return;
     if(!VEAuth.isLoggedIn()) VEAuth.showAuthModal('Sign in or create your Passport to see every listing.', function(){ window.location.reload(); });
-    else if(VEAuth.showActivateModal) VEAuth.showActivateModal('Join free with a short survey to see every listing and vote for the places you love.');
+    else if(VEAuth.showActivateModal) VEAuth.showActivateModal('Join free with a short survey to see every listing and vouch for the places you love.');
   };
 }
 

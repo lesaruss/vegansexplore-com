@@ -98,11 +98,11 @@
     ['', 'outreach', 'Street outreach', 'Conversations with people on the street, often with footage, so they can see for themselves.'],
     ['', 'direct', 'Direct action', 'Protests, vigils and peaceful public actions that bring attention to what animals go through.'],
     ['', 'law', 'Legal and policy work', 'Changing laws, rules and the way companies and schools do things.'],
-    ['', 'sanctuary', 'Sanctuaries and rescue', 'Giving animals a safe home for life, and showing visitors who they really are.'],
+    ['sanctuaries', 'sanctuary', 'Sanctuaries and rescue', 'Giving animals a safe home for life, and showing visitors who they really are.'],
     ['', 'digital', 'Digital activism', 'Videos, posts, petitions and campaigns that reach people where they scroll.']
   ];
   // The parts in the menu, and every page the rail walks (each page its own Dani scene).
-  var TABS = [{ k: 'overview', label: 'Overview' }, { k: 'humane-education', label: 'Humane Education' }, { k: 'speeches', label: 'The Speeches' }, { k: 'history', label: 'History' }];
+  var TABS = [{ k: 'overview', label: 'Overview' }, { k: 'humane-education', label: 'Humane Education' }, { k: 'speeches', label: 'The Speeches' }, { k: 'sanctuaries', label: 'Sanctuaries' }, { k: 'history', label: 'History' }];
   var STEPS = [
     // Dani's lines, approved by Sean 2026-11-16 (the Humane Education line updated for Susan the same day); text until recorded.
     { k: 'overview', art: 'overview', say: 'Hi, I\'m Dani. Every animal we\'ve ever helped was helped by someone who decided to speak up. There\'s no single right way to do it. Some people teach, some march, some build sanctuaries, some change laws. This Guide walks you through all of it, so you can find the way that fits you. Let\'s start with one of the gentlest and most powerful: teaching.' },
@@ -112,6 +112,8 @@
     { k: 'humane-education/james-wildman', art: 'james-wildman', say: 'Meet James Wildman. He gives around 500 free talks a year. Start with our interview, then watch the talk that made him known.' },
     // Draft for Sean (2026-11-16, "Go ahead with the speeches").
     { k: 'speeches', art: 'speeches', say: 'Sometimes one talk is all it takes. These are some of the most watched and shared talks on Veganism anywhere, and the list keeps growing. Start with a short one tonight, save the long ones for when you have the time, and tell us which talk changed your mind.' },
+    // Draft for Sean (2026-11-16, "Go ahead with sanctuaries and rescue").
+    { k: 'sanctuaries', art: 'sanctuaries', say: 'Some people help animals by changing minds. Sanctuaries and rescues help them one life at a time. Here, an animal who was never meant to grow old gets to live out a whole life. Visit one, lend a hand, or sponsor a friend, and you will never look at them the same way.' },
     // Draft for Sean (2026-11-16, the history of the movement).
     { k: 'history', art: 'history', say: 'Every Vegan today stands on the shoulders of people who spoke up long before us, some of them more than two thousand years ago. Walk through the story one era at a time, and if you know a moment we missed, tell us.' }
   ];
@@ -190,6 +192,14 @@
       if (done) done(rows);
     }).catch(function () { if (done) done([]); });
   }
+  function loadTop(category, boxId, gridId) {
+    var FIELDS = window.VERegionDirectory && VERegionDirectory.FIELDS ? VERegionDirectory.FIELDS : 'id,slug,name,category,logo_url,vote_count,address_city,address_state,color,vegan_status,communities,tags,extra_categories';
+    rest(SB + '/rest/v1/listings?select=' + FIELDS + '&status=eq.approved&category=eq.' + category + '&order=vote_count.desc.nullslast,name.asc&limit=8').then(function (rows) {
+      var box = $(boxId); if (!box) return;
+      if (!Array.isArray(rows) || !rows.length) { box.innerHTML = '<p class="ag-sub">None listed yet.</p>'; return; }
+      box.innerHTML = cards(rows, gridId); wireCards(gridId);
+    }).catch(function () {});
+  }
   function educator(k, name, org, line) {
     return '<li><a class="ag-way" href="#/humane-education/' + k + '"><span class="ag-ic"><svg viewBox="0 0 24 24" aria-hidden="true">' + IC.teach + '</svg></span><span><b>' + esc(name) + '</b><small>' + esc(org) + '. ' + esc(line) + '</small><span class="ag-tag live">Open</span></span></a></li>';
   }
@@ -245,6 +255,26 @@
         '<div class="k-f wide"><label for="agSugWhy">Why it belongs here</label><textarea id="agSugWhy" maxlength="1500"></textarea></div>' +
         '<div class="k-f wide"><button type="submit" class="dg-btn" id="agSugGo">Send my suggestion</button><p class="k-msg" id="agSugMsg" role="status"></p></div>' +
         '</form>';
+    },
+    sanctuaries: function () {
+      var ways = [
+        ['sanctuary', 'Visit', 'Many sanctuaries host tours and open days. Meeting the animals face to face is often what changes a mind. Check each one\'s visiting hours before you go.'],
+        ['teach', 'Volunteer', 'Sanctuaries and rescues run on helping hands: feeding, cleaning, building, driving, events and social media.'],
+        ['outreach', 'Sponsor an animal', 'Many sanctuaries let you sponsor one resident, covering food and care, with news about the friend you are helping.'],
+        ['law', 'Give', 'Food, vet bills and land cost money every day. A small monthly gift is what keeps most sanctuaries open.'],
+        ['direct', 'Adopt or foster', 'Rescues find homes for animals, from dogs and cats to chickens and pigs. Fostering gives an animal a bridge to a forever home.'],
+        ['digital', 'Share their stories', 'Follow your local sanctuary and share its rescues. Every share is a chance for someone to meet an animal as an individual.']
+      ];
+      return crumb('Sanctuaries and Rescue') + head('Sanctuaries and rescue', 'One Life at a Time', '') +
+        '<p class="ag-about">A <b>sanctuary</b> is a forever home: animals rescued from farms and other places live out their natural lives there, cared for and never sold or used. A <b>rescue</b> saves animals in need and finds them new homes. Both welcome help.</p>' +
+        '<div class="ag-sec"><h3>Find one near you</h3><p class="ag-sub">Our Directory lists sanctuaries and rescues across the country. Use Near me to see the closest.</p>' +
+        '<div class="wg-gs-btns"><a class="dg-btn" href="/directory?tab=community&amp;sub=sanctuaries">Sanctuaries near me</a> <a class="dg-btn dg-ghost" href="/directory?tab=community&amp;sub=rescues">Rescues near me</a></div></div>' +
+        '<div class="ag-sec"><h3>Ways to help</h3><ul class="ag-ways">' + ways.map(function (w) {
+          return '<li><div class="ag-way"><span class="ag-ic"><svg viewBox="0 0 24 24" aria-hidden="true">' + IC[w[0]] + '</svg></span><span><b>' + esc(w[1]) + '</b><small>' + esc(w[2]) + '</small></span></div></li>';
+        }).join('') + '</ul></div>' +
+        '<div class="ag-sec"><h3>Vouch for a sanctuary</h3><p class="ag-sub">Sanctuaries in our Directory, by how many members vouch for them. Been to one, or support one? Vouch for it: one vouch per member.</p><div id="agSan"><p class="ag-sub">Loading...</p></div></div>' +
+        '<div class="ag-sec"><h3>Vouch for a rescue</h3><p class="ag-sub">Rescues in our Directory, by how many members vouch for them. Adopted from one, or volunteered there? Vouch for it: one vouch per member.</p><div id="agRes"><p class="ag-sub">Loading...</p></div></div>' +
+        cta('Sanctuaries and rescue', 'Know a sanctuary or rescue we are missing?', 'Tell us about it. Our team looks it up and checks it before it goes on the Directory.', ['Add a sanctuary or rescue', '#/sanctuaries']).replace('<a class="vxc-go" href="#/sanctuaries">', '<a class="vxc-go" href="#/sanctuaries" data-ve-listing-request role="button">');
     },
     history: function () {
       var H = window.VE_ACTIVISM_HISTORY || [];
@@ -322,6 +352,7 @@
     main.innerHTML = era ? eraView(k.split('/')[1]) : VIEWS[k]();
     if (k === 'humane-education/james-wildman') loadCards(JAMES_NAMES, 'agJames', 'agJamesGrid');
     if (k === 'speeches') loadCards(SPEAKER_NAMES, 'agSpk', 'agSpkGrid');
+    if (k === 'sanctuaries') { loadTop('Sanctuaries', 'agSan', 'agSanGrid'); loadTop('Rescues', 'agRes', 'agResGrid'); }
     if (k === 'humane-education/susan-hargreaves') loadCards(SUSAN_NAMES, 'agSusan', 'agSusanGrid', function (rows) {
       // Bring Susan to your school shows once her People page is live, and links to it.
       var me = rows.filter(function (r) { return /susan hargreaves/i.test(r.name || ''); })[0], go = $('agSusanGo');
