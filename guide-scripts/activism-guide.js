@@ -21,6 +21,9 @@
   // Found by name, so a listing shows as soon as it is approved, whatever slug it gets.
   var SUSAN_NAMES = ['Susan Hargreaves', 'Be an Animal Hero'];
   var JAMES_NAMES = ['James Wildman', 'Animal Rights Foundation of Florida'];
+  var ZOE_NAMES = ['Zoe Weil', 'Institute for Humane Education'];
+  // More humane educators (Sean, 2026-11-16: "find out who the community would consider humane educators"); each shows once its listing is approved.
+  var MORE_EDU_NAMES = ['TeachKind', 'HEART (Humane Education Advocates Reaching Teachers)', 'Ruby Roth', 'Factory Farming Awareness Coalition', 'Institute for Humane Education'];
   var SUSAN_AUDIO = 'https://podcasts.captivate.fm/media/0809b3b7-51b2-47b5-84c8-aad59bbe7fa0/sfv-podcast-episode-007.mp3';
   var CSS = [
     '.dg-joinbox a.dg-btn{text-decoration:none;}',
@@ -110,6 +113,8 @@
     // The two educator pages' lines are drafts for Sean.
     { k: 'humane-education/susan-hargreaves', art: 'susan-hargreaves', say: 'Meet Susan Hargreaves. She has been teaching people to care about animals for more than 40 years. Press play to hear her story on our podcast.' },
     { k: 'humane-education/james-wildman', art: 'james-wildman', say: 'Meet James Wildman. He gives around 500 free talks a year. Start with our interview, then watch the talk that made him known.' },
+    // Draft for Sean (2026-11-16).
+    { k: 'humane-education/zoe-weil', art: 'zoe-weil', say: 'Meet Zoe Weil. She helped turn humane education into a field of its own, and she teaches the teachers. If you have ever wanted to bring this work into a classroom, start here.' },
     // Draft for Sean (2026-11-16, "Go ahead with the speeches").
     { k: 'speeches', art: 'speeches', say: 'Sometimes one talk is all it takes. These are some of the most watched and shared talks on Veganism anywhere, and the list keeps growing. Start with a short one tonight, save the long ones for when you have the time, and tell us which talk changed your mind.' },
     // Draft for Sean (2026-11-16, "Go ahead with sanctuaries and rescue").
@@ -218,12 +223,19 @@
     },
     'humane-education': function () {
       return crumb('Humane Education') + head('Humane education', 'Teaching People to Care', '') +
-        '<p class="ag-about">Humane education means helping people, often students, think about how their choices affect animals, people and the planet. It is about giving people the facts and letting them decide, not preaching.</p>' +
+        // What is humane education? (Sean, 2026-11-16: "people might not have heard the term before"; copy approved the same day.)
+        '<div class="ag-sec"><h3>What is humane education?</h3>' +
+        '<p class="ag-about">Humane education teaches people to think about how their everyday choices affect animals, other people and the planet, and then lets them decide for themselves. It isn\'t a lecture or a protest. It\'s teaching.</p>' +
+        '<p class="ag-about"><b>Where it happens:</b> classrooms and school assemblies, libraries, summer camps, universities, community centers and, more and more, online.</p>' +
+        '<p class="ag-about"><b>What a session looks like:</b> a talk, a story, a video or an activity that helps people see animals as individuals, learn where food and products come from, and practice kindness and critical thinking.</p>' +
+        '<p class="ag-about"><b>Why it matters:</b> most people never get the chance to think about these questions at all. Humane education gives them the facts and the space to decide, which is why so many Vegans say it was where their own journey began.</p></div>' +
         '<div class="ag-sec"><h3>The educators</h3><p class="ag-sub">Each one has their own page: their story, what to watch or hear, and how to reach them.</p>' +
         '<ul class="ag-ways">' +
         educator('susan-hargreaves', 'Susan Hargreaves', 'Be an Animal Hero', 'More than 40 years in schools, children\'s books and the documentary The Heart Whisperer.') +
         educator('james-wildman', 'James Wildman', 'Animal Rights Foundation of Florida', 'Around 500 free talks a year and the talk 101 Reasons to Go Vegan.') +
-        '</ul></div>';
+        educator('zoe-weil', 'Zoe Weil', 'Institute for Humane Education', 'Co-founder of the Institute and a teacher of teachers.') +
+        '</ul></div>' +
+        '<div class="ag-sec"><h3>More humane educators</h3><p class="ag-sub">Organizations and authors that bring humane education to schools, families and teachers.</p><div id="agMoreEdu"><p class="ag-sub">Their Directory pages are on the way.</p></div></div>';
     },
     'humane-education/susan-hargreaves': function () {
       return crumb('Humane Education', 'Susan Hargreaves') + head('Humane education', 'Teaching With Susan Hargreaves', '') +
@@ -298,6 +310,12 @@
         '<div class="k-f wide"><button type="submit" class="dg-btn" id="agHisGo">Send my suggestion</button><p class="k-msg" id="agHisMsg" role="status"></p></div>' +
         '</form>';
     },
+    'humane-education/zoe-weil': function () {
+      return crumb('Humane Education', 'Zoe Weil') + head('Humane education', 'Teaching With Zoe Weil', '') +
+        '<p class="ag-about">Zoe Weil co-founded the Institute for Humane Education in 1996 and leads it as its president. She is the author of <i>The Power and Promise of Humane Education</i>, and her TEDx talk <i>The World Becomes What We Teach</i> makes the case that what schools teach shapes the world students go on to build. Through the Institute she trains teachers to bring humane education, for animals, people and the planet, into their own classrooms.</p>' +
+        '<div class="ag-sec"><h3>Meet them</h3><p class="ag-sub">Zoe and the Institute for Humane Education in the Directory.</p><div id="agZoe"><p class="ag-sub">Their Directory pages are on the way.</p></div></div>' +
+        cta('Humane education', 'Want to teach it yourself?', 'The Institute for Humane Education offers courses and resources for teachers and parents.', ['Visit the Institute', 'https://humaneeducation.org']);
+    },
     'humane-education/james-wildman': function () {
       return crumb('Humane Education', 'James Wildman') + head('Humane education', 'Teaching With James Wildman', '') +
         '<p class="ag-about">James Wildman is a humane educator with the Animal Rights Foundation of Florida. He has worked there for more than 13 years, gives around 500 free presentations a year in schools, universities and communities, and has spoken to more than 100,000 people.</p>' +
@@ -351,6 +369,8 @@
     curTab = k;
     main.innerHTML = era ? eraView(k.split('/')[1]) : VIEWS[k]();
     if (k === 'humane-education/james-wildman') loadCards(JAMES_NAMES, 'agJames', 'agJamesGrid');
+    if (k === 'humane-education/zoe-weil') loadCards(ZOE_NAMES, 'agZoe', 'agZoeGrid');
+    if (k === 'humane-education') loadCards(MORE_EDU_NAMES, 'agMoreEdu', 'agMoreEduGrid');
     if (k === 'speeches') loadCards(SPEAKER_NAMES, 'agSpk', 'agSpkGrid');
     if (k === 'sanctuaries') { loadTop('Sanctuaries', 'agSan', 'agSanGrid'); loadTop('Rescues', 'agRes', 'agResGrid'); }
     if (k === 'humane-education/susan-hargreaves') loadCards(SUSAN_NAMES, 'agSusan', 'agSusanGrid', function (rows) {
