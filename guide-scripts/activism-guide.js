@@ -272,8 +272,8 @@
         '<div class="ag-sec"><h3>Ways to help</h3><ul class="ag-ways">' + ways.map(function (w) {
           return '<li><div class="ag-way"><span class="ag-ic"><svg viewBox="0 0 24 24" aria-hidden="true">' + IC[w[0]] + '</svg></span><span><b>' + esc(w[1]) + '</b><small>' + esc(w[2]) + '</small></span></div></li>';
         }).join('') + '</ul></div>' +
-        '<div class="ag-sec"><h3>Most loved sanctuaries</h3><p class="ag-sub">The sanctuaries in our Directory with the most votes from members.</p><div id="agSan"><p class="ag-sub">Loading...</p></div></div>' +
-        '<div class="ag-sec"><h3>Most loved rescues</h3><p class="ag-sub">The rescues in our Directory with the most votes from members.</p><div id="agRes"><p class="ag-sub">Loading...</p></div></div>' +
+        '<div class="ag-sec"><h3>Vouch for a sanctuary</h3><p class="ag-sub">Sanctuaries in our Directory, by how many members vouch for them. Been to one, or support one? Vouch for it: one vouch per member.</p><div id="agSan"><p class="ag-sub">Loading...</p></div></div>' +
+        '<div class="ag-sec"><h3>Vouch for a rescue</h3><p class="ag-sub">Rescues in our Directory, by how many members vouch for them. Adopted from one, or volunteered there? Vouch for it: one vouch per member.</p><div id="agRes"><p class="ag-sub">Loading...</p></div></div>' +
         cta('Sanctuaries and rescue', 'Know a sanctuary or rescue we are missing?', 'Tell us about it. Our team looks it up and checks it before it goes on the Directory.', ['Add a sanctuary or rescue', '#/sanctuaries']).replace('<a class="vxc-go" href="#/sanctuaries">', '<a class="vxc-go" href="#/sanctuaries" data-ve-listing-request role="button">');
     },
     history: function () {
