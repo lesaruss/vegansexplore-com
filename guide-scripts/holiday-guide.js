@@ -35,7 +35,7 @@
   function eventsUrl(h) {
     var cfg = HOLX[h] || HOLX.thanksliving;
     return SB + '/rest/v1/events?select=id,title,starts_at,timezone,location_name,city,state,country,event_type,time_set&status=eq.approved&tenant_id=eq.' + VE_TENANT +
-      '&starts_at=gte.' + new Date(Date.now() - 864e5).toISOString() + '&starts_at=lte.' + cfg.evTo + '&or=(' + cfg.evOr + ')&order=starts_at.asc&limit=200';
+      '&starts_at=gte.' + new Date(Math.max(Date.now() - 864e5, cfg.evFrom ? Date.parse(cfg.evFrom) : 0)).toISOString() + '&starts_at=lte.' + cfg.evTo + '&or=(' + cfg.evOr + ')&order=starts_at.asc&limit=200';
   }
   var LR_TAGS = ['lesaruss-ai-directory', 'lesaruss-ai-directory-candidate', 'lesaruss-ai-business-member'];
   function ours(list) { return (Array.isArray(list) ? list : []).filter(function (l) { return !(l.tags || []).some(function (t) { return LR_TAGS.indexOf(t) >= 0; }); }); }
@@ -59,7 +59,8 @@
     // New Year's Eve"; playbook ve-holiday-guide, Wave 1: menus and events; Wave 2 in December: resolutions and the year in review).
     'new-years-eve': { page: 'new-years-eve', menus: 'ny-menus', events: 'ny-events', label: 'New Year\'s Eve',
       fallback: { slug: 'new-years-eve', name: 'New Year\'s Eve', holiday_on: '2026-12-31', submit_close: '2026-12-24T05:00:00Z' },
-      evTo: '2027-01-02T05:00:00Z', evOr: 'title.ilike.*new year*,title.ilike.*nye*,title.ilike.*countdown*,title.ilike.*ring in*,description.ilike.*new year*',
+      // Only the night itself (the panel, 2026-11-16: a December 20 talk matched on its description and broke the page's promise).
+      evFrom: '2026-12-31T05:00:00Z', evTo: '2027-01-02T05:00:00Z', evOr: 'title.ilike.*new year*,title.ilike.*nye*,title.ilike.*countdown*,title.ilike.*ring in*,description.ilike.*new year*',
       evLede: 'Vegan New Year\'s Eve parties, dinners and countdowns on our calendar.', evEmpty: 'Hosting a New Year\'s Eve party or dinner?' }
   };
   // Theo's lines, text drafts for Sean (no recordings yet). `say` for visitors, `sayMember` for members.
@@ -87,7 +88,7 @@
     { k: 'xm-events', parent: 'christmas', hol: 'christmas', pic: '/public/guides/holiday/theo-xm-events.jpg', label: 'Events', say: 'Vegan Christmas festivals, cookie swaps and holiday lights. Here is what is on our calendar. Hosting one? Add it, so people can find you.' },
     { k: 'new-years-eve', label: 'New Year\'s Eve', hol: 'new-years-eve', pic: '/public/guides/holiday/theo-new-years-eve.jpg', say: 'Ringing in the new year? On this page are the Vegan places cooking for New Year\'s Eve and the parties to ring it in.' },
     { k: 'ny-menus', parent: 'new-years-eve', hol: 'new-years-eve', pic: '/public/guides/holiday/theo-ny-menus.jpg', label: 'Holiday Menus', say: 'Not cooking on New Year\'s Eve? Pick your chapter and see which Vegan places are cooking for the night and when to order by.' },
-    { k: 'ny-events', parent: 'new-years-eve', hol: 'new-years-eve', pic: '/public/guides/holiday/theo-ny-events.jpg', label: 'Events', say: 'Vegan New Year\'s Eve parties, dinners and countdowns. Here is what is on our calendar. Hosting one? Add it, so people can find you.' },
+    { k: 'ny-events', parent: 'new-years-eve', hol: 'new-years-eve', pic: '/public/guides/holiday/theo-ny-events.jpg', label: 'Events', say: 'Vegan New Year\'s Eve parties, dinners and countdowns. Here\'s what is on our calendar. Hosting one? Add it, so people can find you.' },
     { k: 'giveback', label: 'Give Back', pic: '/public/guides/holiday/theo-giveback.jpg', say: 'Giving is part of the season. Here are the nonprofits, rescues and sanctuaries doing the work, in your city and beyond. Giving Tuesday is December first.' },
     { k: 'giving', label: '11 Days of Giving', pic: '/public/guides/holiday/theo-giving.jpg', say: 'From December first to the eleventh, Vegan businesses are giving prizes, and members enter free. Enter once and you are in every draw. Here is how it works, and the prizes so far.' },
     { k: 'business', label: 'For Businesses', pic: '/public/guides/holiday/theo-business.jpg', say: 'Run a Vegan business? Send us your holiday menu and we\'ll feature it here, free for members. ThanksLiving menus close at the end of November eighteenth.' }
@@ -95,7 +96,11 @@
   // Theo's recordings (Sean approved the script v2, 2026-11-08): one per video chapter, roster voice aFyw0oiXW7dzKF4o7woX, each checked with stt.
   // The Overview plays the whole tour back to back; every other tab plays its own chapter (canon-ve-guide-tour-standard: Summarize this page).
   // A page with Theo's recorded line but no video yet plays the line alone (11 Days of Giving, Sean approved and recorded 2026-11-15).
-  var TAB_AUDIO = { giving: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/holiday-guide/theo-giving-v1.mp3' };
+  // New Year's Eve (2026-11-16): Sean's own takes in Voices, turned into Theo's voice (canon-guide-voices-sean-performs), stt matched word for word.
+  var TAB_AUDIO = { giving: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/holiday-guide/theo-giving-v1.mp3',
+    'new-years-eve': 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/holiday-guide/theo-new-years-eve-v1.mp3',
+    'ny-menus': 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/holiday-guide/theo-ny-menus-v1.mp3',
+    'ny-events': 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/holiday-guide/theo-ny-events-v1.mp3' };
   var AUDIO_BASE = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/holiday-guide/theo-tour-';
   var CHAPTER_LINES = ["Welcome to the Holiday Guide. I'm Theo. You're the one setting the table this year, and I'm here to help you do it your way.", "Vegans Explore has been bringing the Vegan community together since 2016, city by city. We know the places cooking near you and the groups doing good. This Guide puts all of it in one spot for the holidays, free.", "ThanksLiving is Thanksgiving with a fully plant-based table. Same family, same gratitude, nobody harmed. On this page you'll find a few easy ideas to make it yours, whether you host or bring one dish.", "Don't want to cook it all? Pick your chapter and see which Vegan places are cooking for the holiday, what they're offering, and when to order by. Our team checks every menu before it shows. Save one to find it again. Know a place we missed? Tell us, and we'll check it.", "Rather be at someone else's table? Find sanctuary dinners, potlucks and Thanksgiving events on our calendar. Hosting one? Add it, so people can find you.", "Giving is part of the season. Here are the nonprofits, rescues and sanctuaries doing the work, in your city and beyond. Giving Tuesday is December first.", "Run a Vegan business? Send us your holiday menu and we'll feature it here, free for members. ThanksLiving menus close at the end of November eighteenth.", "This Guide keeps growing. Each holiday opens here as it gets close, so be on the lookout for the next one. Come back often, and share it with whoever's at your table this year. Happy holidays."];
   var TAB_CH = { overview: [1, 2, 3, 4, 5, 6, 7, 8], thanksliving: [3], ideas: [3], menus: [4], events: [5], giveback: [6], business: [7] };
@@ -212,7 +217,8 @@
     if (!kids.length) return '';
     var items = [tab(par)].concat(kids);
     // Fewer than 6 sections show as buttons on desktop; 6 or more, and every phone, use the dropdown (Sean, 2026-11-10).
-    var row = items.length < 6 ? '<nav class="hg-subrow" aria-label="' + esc(tab(par).label) + '">' + items.map(function (c) {
+    // A section's pages are one sliding row at every count (the panel, 2026-11-16: never a second dropdown under the Guide's menu).
+    var row = items.length ? '<nav class="hg-subrow" aria-label="' + esc(tab(par).label) + '">' + items.map(function (c) {
       return '<a class="hg-subb' + (c.k === cur ? ' on' : '') + '" href="' + href(c.k) + '"' + (c.k === cur ? ' aria-current="page"' : '') + '>' + esc(c.k === par ? 'Overview' : c.label) + '</a>';
     }).join('') + '</nav>' : '';
     return '<div class="hg-sub' + (row ? ' hg-sub-few' : '') + '"><label class="hg-sub-l" for="hgSubSel">' + esc(tab(par).label) + '</label>' + row + '<select id="hgSubSel" class="dg-sort hg-subsel">' + items.map(function (c) {
@@ -287,7 +293,7 @@
     { label: '11 Days of Giving · December 1 to 11', line: 'Vegan businesses give prizes and members enter free, drawn at random in the open.', kids: ['giving'] },
     { label: 'Run a Business?', line: 'Send your holiday menu and we feature it here, free for members.', kids: ['business'] }
   ];
-  var PILL_PIC = { 'new-years-eve': 'theo-new-years-eve.jpg', 'ny-menus': 'p-menus.jpg', 'ny-events': 'p-events.jpg', hanukkah: 'theo-hanukkah.jpg', 'hk-recipes': 'r-latkes.jpg', 'hk-menus': 'p-menus.jpg', 'hk-events': 'p-events.jpg',
+  var PILL_PIC = { 'new-years-eve': 'theo-new-years-eve.jpg', 'ny-menus': 'theo-ny-menus.jpg', 'ny-events': 'theo-ny-events.jpg', hanukkah: 'theo-hanukkah.jpg', 'hk-recipes': 'r-latkes.jpg', 'hk-menus': 'p-menus.jpg', 'hk-events': 'p-events.jpg',
     christmas: 'theo-christmas.jpg', 'xm-recipes': 'r-wellington.jpg', 'xm-store': 'r-nog.jpg', 'xm-menus': 'p-menus.jpg', 'xm-events': 'p-events.jpg', recipes: 'r-loaf.jpg', ideas: 'p-thanks.jpg', 'hk-ideas': 'r-sufganiyot.jpg', 'hk-kosher': 'r-latkes.jpg', 'xm-ideas': 'r-gingerbread.jpg', 'xm-wish': 'w-give.jpg', 'xm-gifts': 'r-gingerbread.jpg', store: 'p-store.jpg', listen: 'p-listen.jpg', thanksliving: 'p-thanks.jpg', events: 'p-events.jpg', menus: 'p-menus.jpg', giveback: 'p-giveback.jpg', giving: 'theo-giving.jpg', business: 'p-business.jpg' };
   function groupRows() {
     return GROUPS.filter(function (g) { return !g.hol || !holPast(g.hol); }).map(function (g) {
@@ -385,7 +391,7 @@
     var gs = '<section class="wg-gs" aria-label="About ' + esc(t.name) + '"><span class="wg-gs-pic"><img src="' + PIC + o.pic + '" alt="" decoding="async" width="640" height="640"' + (/^theo-/.test(o.pic) ? ' style="object-position:center top"' : '') + '></span>' +
       '<div class="wg-gs-b"><div class="vgi-k">' + (left ? left + ' days to go' : 'This season') + '</div><h3 class="wg-gs-t">' + esc(tc('About ' + (h === 'thanksliving' ? 'ThanksLiving' : t.name))) + '</h3>' +
       '<p>' + o.intro + '</p>' +
-      '<div class="wg-gs-btns">' + (VIDEO[h] || TAB_CH[h] || TAB_AUDIO[h] ? '<button type="button" class="dg-btn" data-hg-video>&#9654; Play Theo</button>' : '') + '<a class="dg-btn dg-ghost" href="' + o.cta[1] + '">' + esc(o.cta[0]) + '</a></div></div></section>';
+      '<div class="wg-gs-btns">' + (VIDEO[h] || TAB_CH[h] || TAB_AUDIO[h] ? '<button type="button" class="dg-btn dg-ghost" data-hg-video>&#9654; Play Theo</button>' : '') + '<a class="dg-btn dg-ghost" href="' + o.cta[1] + '">' + esc(o.cta[0]) + '</a></div></div></section>';
     main.innerHTML = head(HOLX[h] && h !== 'thanksliving' ? IDEAS[h].k : 'November 26', h === 'thanksliving' ? 'ThanksLiving' : t.name, '') + gs +
       '<div class="wg-arts"><div class="wg-grp"><h5>In This Section</h5><ol>' + o.rows.map(function (r) { return artRow(PIC + PILL_PIC[r[0]], r[1], r[2], href(r[0])); }).join('') + '</ol></div></div>';
   }
@@ -699,7 +705,9 @@
       (m.summary ? '<p class="hg-sum">' + esc(m.summary) + '</p>' : '') +
       // Past the order-by day the card stays for reference, says so, and its menu has no Order button (Sean, 2026-11-10).
       '<div class="hg-facts">' + (m.order_by ? (m.order_by < today() ? '<span><b>Orders closed</b> ' + esc(dayFmt(onDay(m.order_by), { month: 'long', day: 'numeric' })) + '</span>' : '<span><b>Order by</b> ' + esc(dayFmt(onDay(m.order_by), { month: 'long', day: 'numeric' })) + '</span>') : '') +
-      (m.price_range ? '<span><b>Price</b> ' + esc(m.price_range) + '</span>' : '') + '</div>' +
+      (m.price_range ? '<span><b>Price</b> ' + esc(m.price_range) + '</span>' : '') +
+      // The pickup dates on the card (the panel, 2026-11-16: nothing on the card said when, so a New Year's Eve card read like Thanksgiving).
+      (m.pickup ? '<span class="hg-pick"><b>Pickup</b> ' + esc(String(m.pickup).replace(/^pickup (on |only\. )?/i, '')) + '</span>' : '') + '</div>' +
       // One row of three (Sean, 2026-11-10): See Menu opens the menu in a lightbox over the page (/public/ve-holiday-menu.js).
       '<div class="hg-acts">' + menuBtn('m-' + l.slug) +
       '<a class="dg-btn dg-ghost" href="/directory/' + encodeURIComponent(l.slug) + '">Their Listing</a>' +
@@ -753,7 +761,7 @@
     else if (sub && nearOn()) { NEAR_HUSH = true; NM().clear(); NEAR_HUSH = false; }
     else if (!sub && !OPEN_MENU && NM() && !nearOn() && NM().resume()) wantNear = 'me';
     var ch = chapter(sub), t = hrow(), n = pills(ch).length, open = daysUntil(t.submit_close) > 0;
-    main.innerHTML = head(t.name, 'Holiday menus near you', 'What Vegan places are cooking for ' + esc(t.name) + '. Every menu is checked by our team before it shows.') +
+    main.innerHTML = head(t.name, hx().label + ' menus near you', 'What Vegan places are cooking for ' + esc(t.name) + '. Every menu is checked by our team before it shows.') +
       '<div class="hg-tools2"><div class="hg-search"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#525252" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>' +
       '<input type="search" id="hgQ" placeholder="Search places, dishes, a city or a ZIP..." aria-label="Search holiday menus" value="' + esc(MF.q) + '" autocomplete="off" data-dictate="off"></div>' +
       (NM() ? '<button type="button" class="hg-fbtn hg-nearbtn" id="hgNearBtn" data-vrd-near aria-pressed="' + nearOn() + '" title="Sort by distance from you">' + NM().pin + '<span data-vrd-near-word>Near me</span></button>' : '') +
@@ -1422,7 +1430,7 @@
     EVENTS = EVS[h] === undefined ? null : EVS[h];
     if (EVS[h] === undefined) { EVS[h] = null; rest(eventsUrl(h)).then(function (d) { EVS[h] = Array.isArray(d) ? d : []; }).catch(function () { EVS[h] = []; }).then(function () { if (curView === ek) route(); }); }
     var btns = '<div class="hg-evtop"><a class="dg-btn hg-sm" href="/events#submit/1">Add your event</a><a class="dg-btn dg-ghost hg-sm" href="/events">The whole calendar</a></div>';
-    if (!EVENTS) { main.innerHTML = head('Events', 'Holiday Events', lede) + btns + '<div class="dg-loading">Loading events...</div>'; return; }
+    if (!EVENTS) { main.innerHTML = head('Events', hx().label + ' Events', lede) + btns + '<div class="dg-loading">Loading events...</div>'; return; }
     var counts = {};
     EVENTS.forEach(function (e) { var r = evRegion(e); counts[r] = (counts[r] || 0) + 1; });
     var regions = Object.keys(counts).sort(function (x, y) { var o = function (r) { return r === 'Online' || r === 'Other places' ? 1 : 0; }; return o(x) - o(y) || x.localeCompare(y); });
@@ -1430,7 +1438,7 @@
     var list = cur ? EVENTS.filter(function (e) { return evRegion(e) === cur; }) : EVENTS;
     var pick = regions.length > 1 ? '<select class="dg-sort hg-evsel" id="hgEvRegion" aria-label="Region"><option value="">Everywhere (' + EVENTS.length + ')</option>' +
       regions.map(function (r) { return '<option value="' + slugify(r) + '"' + (r === cur ? ' selected' : '') + '>' + esc(r) + ' (' + counts[r] + ')</option>'; }).join('') + '</select>' : '';
-    main.innerHTML = head('Events', 'Holiday Events', lede) +
+    main.innerHTML = head('Events', hx().label + ' Events', lede) +
       '<div class="hg-evbar">' + pick + btns + '</div>' +
       (list.length ? '<div class="hg-evs">' + list.map(function (e) {
         var when = e.time_set === false ? dayFmt(e.starts_at, { weekday: 'short', month: 'long', day: 'numeric' }) + ', time to be announced'
@@ -1853,7 +1861,7 @@
   function init() {
     if (window.VERegionDirectory) VERegionDirectory.css();
     if (window.VEEpisodes) VEEpisodes.css();
-    document.documentElement.classList.add('dg-fit');
+    // dg-fit (the one-screen desktop mode with its own inner scroll) is gone: the page scrolls as a page (ve-guide-frame.css, 2026-11-16).
     var box = document.getElementById('dgMaya');
     if (window.VEGuideArt) { var art = VEGuideArt('theo', 'square'); if (art) box.style.backgroundImage = "url('" + art + "')"; }
     if (NM()) NM().onChange(nearChanged);
