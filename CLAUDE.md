@@ -220,10 +220,10 @@ navigating through and seeing everything." Canon `canon-sean-interface-defaults`
 Any mock, demo, pitch walkthrough, illustrative report or concept page is built as the guided
 view on the first pass, never a long scroll: one full-height slide at a time on a **clean white stage** (Sean, 2026-11-07:
 "Why is it a green background? You should know me by now. I like the clean white background look"; `<main class="vg-stage vg-light">`,
-the dark stage only for pages already built on it: /partners and the pitch decks),
+the dark stage only for the pitch decks; /partners and the sample pitch were retired 2026-11-16),
 Back / "N of M" / Next at the bottom, nothing to scroll on desktop (nav, stage and footer share
 one screen), every slide fitting at 1440x900 and 1366x768, and on phones the slide stacks with
-the controls after it. The format is the `/partners` page; the shared shell is
+the controls after it. The format is the `/partners/giving` page, built from `/public/ve-kit.css`; the shared shell is
 `/public/ve-guided.js` (see its header for the markup). Wrap the page in
 `<div class="page-frame">`, put slides in `<main class="vg-stage">` as
 `<section class="vg-slide" id="..." data-title="...">`, and load the script after the footer.
@@ -301,7 +301,7 @@ every new Guide scene uses this recipe.
 that doesn't look half-baked... put like a stamp on there that says sample... so that we're not pretending it's a real listing." When a video,
 Guide picture, tour shot, pitch or social graphic shows what the site does, capture the demos, never a live page that is empty or thin: the
 sample business Green Leaf Kitchen (`/business/sample`, its dashboard, brand kit, site and shot list), the sample group (`/groups/sample`), the
-sample Gig Board (`/gigs/sample`, Kai Monroe) and the sample pitch (`/business/pitch?c=sample`). Every demo shot carries a visible **Sample**
+sample Gig Board (`/gigs/sample`, Kai Monroe). Every demo shot carries a visible **Sample**
 stamp (a corner tag on the frame), never cropped out, so no demo reads as a real listing or a real result. A real business appears only as
 itself, with what it really has. First: the Holiday Guide's Holiday Menus video (`theo-menus-v3`) shows Green Leaf Kitchen's holiday menu,
 stamped Sample, instead of waiting for real menus.

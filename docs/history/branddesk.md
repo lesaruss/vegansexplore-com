@@ -691,3 +691,14 @@ LinkedIn marked not linked from the site yet), `links` (the 11 profile links in 
 and `files`. The files are `public/brand-kit/social/` (profile icon 1080, YouTube 2560 x 1440, Facebook 1640 x 624, X 1500 x 500, LinkedIn
 1584 x 396, five highlight covers 1080 x 1920), rendered from `/mocks/brand-kit/social` with Playwright. Each file's Save opens the phone's
 share sheet (Save Image puts it in Photos), downloads on a computer. Migrations `20261115_ve_social_profile_kit.sql`, `_highlights`, `_link_list`.
+
+
+## 2026-11-16: /partners and the sample pitch retired
+Sean: "look at the partners page and the sample pitch... make updates... to match our look and feel, but also to match where we currently are as an
+organization. If it doesn't make sense, then we need to get rid of them." Neither matched: `/partners` sold South Florida Community Nights (Oct 24,
+Nov 21, Dec 12; none on the events calendar) with "Sign before Oct 24" and Stripe partnership checkout on Vegans Explore; `/business/pitch` sold
+Managed with checkout on Vegans Explore (no pitch was ever prepared, `ve_branddesk_pitches` empty). Since 2026-11-13 Vegans Explore advertises and
+LESARUSS.ai sells (`canon-ve-front-of-house` v16). Both files moved to `archive/retired-2026-11-16/`; `/partners`, `/business/pitch` and the 11
+redirects that pointed at `/partners` now go to `/business-guide` (For businesses, Liz, in the kit). Links repointed: the listing page's "Your ad
+here", the Dairy Guide's "Are you a chef?", the campaign engine's seat link. Depot > BrandDesk's pitch list now opens For businesses; the
+`ve-branddesk` pitch actions were left in place, unused. `/partners/giving`, `/partners/community-partner.html` and `/partners/pitches/` are untouched.

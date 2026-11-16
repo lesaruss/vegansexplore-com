@@ -188,6 +188,10 @@
     {"source": "/:slug([a-z0-9]+-[a-z0-9]+-[a-z0-9]+-[a-z0-9-]+)", "destination": "/api/gone?p=/:slug"}
   ],
   "redirects": [
+    {"source": "/partners", "destination": "/business-guide", "permanent": false},
+    {"source": "/partners/index.html", "destination": "/business-guide", "permanent": false},
+    {"source": "/business/pitch", "destination": "/business-guide", "permanent": false},
+    {"source": "/business/pitch.html", "destination": "/business-guide", "permanent": false},
     { "source": "/guides/taste", "missing": [{"type": "query", "key": "unsub"}], "destination": "/passport", "permanent": false },
     { "source": "/challenges", "destination": "/passport", "permanent": false },
     {"source": "/dashboard/directory/:slug", "destination": "/directory/:slug", "permanent": false},
@@ -924,7 +928,7 @@
     },
     {
       "source": "/opportunities/community-partners",
-      "destination": "/partners",
+      "destination": "/business-guide",
       "permanent": false
     },
     {
@@ -954,12 +958,12 @@
     },
     {
       "source": "/partners/discovery",
-      "destination": "/partners",
+      "destination": "/business-guide",
       "permanent": false
     },
     {
       "source": "/partners/events",
-      "destination": "/partners",
+      "destination": "/business-guide",
       "permanent": false
     },
     {
@@ -969,12 +973,12 @@
     },
     {
       "source": "/partners/marketing-services",
-      "destination": "/partners",
+      "destination": "/business-guide",
       "permanent": false
     },
     {
       "source": "/partners/media-assets",
-      "destination": "/partners",
+      "destination": "/business-guide",
       "permanent": false
     },
     {
@@ -994,7 +998,7 @@
     },
     {
       "source": "/partners/submit-promotion",
-      "destination": "/partners",
+      "destination": "/business-guide",
       "permanent": false
     },
     {
@@ -1004,12 +1008,12 @@
     },
     {
       "source": "/partners/vendor-opportunities",
-      "destination": "/partners",
+      "destination": "/business-guide",
       "permanent": false
     },
     {
       "source": "/partners/whats-new",
-      "destination": "/partners",
+      "destination": "/business-guide",
       "permanent": false
     },
     {
@@ -1054,7 +1058,7 @@
     },
     {
       "source": "/passport/welcome-to-the-community-partner-program",
-      "destination": "/partners",
+      "destination": "/business-guide",
       "permanent": false
     },
     {
@@ -1169,7 +1173,7 @@
     },
     {
       "source": "/sponsors",
-      "destination": "/partners",
+      "destination": "/business-guide",
       "permanent": false
     },
     {
@@ -1488,7 +1492,7 @@
     {"source": "/admin/partner-applications", "destination": "/dashboard/partners", "permanent": true},
     {
       "source": "/partner",
-      "destination": "/partners",
+      "destination": "/business-guide",
       "permanent": false
     },
     {
