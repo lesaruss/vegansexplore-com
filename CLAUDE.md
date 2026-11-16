@@ -44,7 +44,8 @@ we have systems, so we don't waste time and usage." Canon `canon-template-gate` 
 
 0. **Build from the kit** (Sean, 2026-11-16: "lock in the updated design, so that way we don't have to keep doing this every time you give me
    the old look and feel"; canon `canon-ve-brand-kit-web`, always loaded; error registry `UI-BUILT-IN-OLD-LOOK`). Every new page, view or
-   walkthrough links `/public/ve-kit.css` and is built from brand kit part 5, Web (`/mocks/brand-kit/web`: header and words, buttons and tags,
+   walkthrough links `/public/ve-kit.css` and is built from the brand kit's Web part (its home is HQ BrandDesk > Vegans Explore > Brand kit > Web,
+   `hq.lesaruss.ai/new/branddesk/vegans-explore?view=kit#kit-web`, data `ve_brand_cartridges.data.web`; every part drawn at `/mocks/brand-kit/web`: header and words, buttons and tags,
    blocks, cards, rows, steps, forms, tabs, which parent each page copies), never from an older page's own styles. A page on the Welcome
    Guide's frame, the listing page, the business dashboard or the claim form says so with `data-kit-parent="welcome-guide|listing|business-dashboard|claim"`.
    `scripts/look-check.js` runs before every push (`.claude/settings.json`) and refuses a new page off the kit, a new page without nav and
