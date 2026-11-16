@@ -101,3 +101,21 @@ it (without one, drift comes back) and an audit script that proves every page be
 (`ve-look.css`) and the phone card canon first, then roll out in the six batches above. **Confidence: high** that this stops drift
 (it removes the copies that cause it, and the check guards it); **medium** on the five-day timeline, because the special Guides
 (Events, Pre-Vegan Business, Welcome) may each need a small variant.
+
+## Iteration 2: the panel's corrections (2026-11-16, five lenses on the live pilot and this plan)
+
+All five: **do not move another Guide until the Holiday pilot matches the approved mock.** The plan's measures were all frame measures,
+and the pilot passes them while still failing visitors. Changes to this plan:
+- **Phase A first (Holiday only):** one way to navigate (the header dropdown names the holiday and page; the section tabs and the
+  Back / N of 26 / Next pager are settled for every Guide), a one-line join, land on content (no overview stop; title and main action
+  on the first phone screen), one card per business in the shared Directory card (fix the name mismatch), the business doorway and
+  Coming rows, Theo's picture once. Then re-panel the Holiday Guide beside the mock.
+- **Added measures:** title AND main action above the bottom bar at 390 x 844 (and a shorter phone); one way to navigate; no business
+  repeated in a list; no text box scrolling inside itself on phones (the corner script's bubble today); a business can send a menu or an
+  event; taps from the Guide home to content.
+- **Added checks:** screenshot all 17 Guides on every edit to the frame file; test paid and survey gates signed out, signed in and paid;
+  open every live campaign `/go/` link into a Guide before each batch; a one-move rollback per batch (the page's old copy kept in git).
+- **The frame file itself:** no `!important`, no id selectors, no Guide-specific classes (`hg-` and the like), no old-look colors; merge
+  the Guide rules from `ve-look.css` keeping its section scoping and the `ve-cb` guard (so the Welcome Guide's green and `?look=off` work).
+- **Timing:** no rollout during ThanksLiving week (the Holiday Guide's busiest days). Phase B starts after November 26.
+- **Order:** open question, the Welcome Guide last (lowest risk) or early (it proves the template variant). Logan's call at Phase B.
