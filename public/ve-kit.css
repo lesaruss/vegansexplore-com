@@ -1,0 +1,152 @@
+/* ve-kit.css: the Vegans Explore web kit, Color Block (brand kit part 5, Web; reference page /mocks/brand-kit/web).
+ *
+ * Sean, 2026-11-16: "lock in the updated design, so that way we don't have to keep doing this every time you give me the old look
+ * and feel... we set a rule that we look for the style guide to know exactly how to design each element." Canon
+ * canon-ve-brand-kit-web, error registry UI-BUILT-IN-OLD-LOOK.
+ *
+ * Every new page, view or walkthrough links this file and builds from these parts, never from an older page's own styles:
+ *   <link rel="stylesheet" href="/public/ve-kit.css">
+ * Tokens come from Part 1, Foundations (/mocks/brand-kit); nothing here is new except the names. The check
+ * (scripts/look-check.js, run before every push) refuses a new page that does not load this file or name a kit parent.
+ *
+ * Parts (prefix k-):
+ *   Words     .k-eb (eyebrow tag)  .k-h1 .k-h2 .k-h3  .k-lede  .k-hl.g/.o/.p (marker)  .k-label
+ *   Stripe    .k-stripe (<div class="k-stripe"><i></i>x7</div>)
+ *   Buttons   .k-btn (white, ink outline)  .k-btn.k-cta (orange: ONE per view)  .k-btn.k-on (dark green)  .k-btn.k-sm
+ *   Tags      .k-tag.live/.wait/.not/.new/.smp (status in plain words; .smp = Sample stamp)
+ *   Blocks    .k-block + a color: .k-dk .k-md .k-br .k-tint .k-or .k-peach .k-pink (type color fixed per color)
+ *   Cards     .k-card (ink outline, solid offset shadow in --k-c; set the color with .k-c-or etc. or style="--k-c:...")
+ *   Rows      .k-rows > .k-row (.k-num square, .k-row-t > b + small, then one tag or one button)
+ *   Numbers   .k-stats > .k-stat (b + small)
+ *   Steps     .k-steps > div (.you = the reader's part, orange)
+ *   Layout    .k-grid (cards, full width)  .k-split (.k-main + .k-side notes)  .k-pic (picture in an ink frame)
+ *   Forms     .k-form (.k-f > label + input/textarea/select, .k-f.wide), .k-msg
+ *   Tabs      .k-tabs (one sliding row; a > 5-tab menu outside dashboards is a .k-select dropdown)
+ *   Section   data-k-section="directory|events|guides|communities|pulse|media|passport" on any wrapper sets --k-c to its color
+ * Guided walkthroughs: <main class="vg-stage vg-light"> from /public/ve-guided.js, slides built only from the parts above.
+ */
+:root {
+  --k-dk: #2D5C27; --k-md: #3A9B3E; --k-br: #22C55E; --k-tint: #E8F5E9;
+  --k-or: #F69820; --k-or-hi: #E8890F; --k-peach: #FFEBD1; --k-pink: #FF9EC4; --k-pinkt: #FFE3EE; --k-pinkd: #C2185B;
+  --k-ink: #1a1a1a; --k-mute: #5c5c5c; --k-line: #e7e7e7; --k-r: 6px; --k-rc: 14px;
+  --k-c: var(--k-dk);
+}
+[data-k-section="directory"] { --k-c: var(--k-dk); }
+[data-k-section="events"] { --k-c: var(--k-or); }
+[data-k-section="guides"] { --k-c: var(--k-pink); }
+[data-k-section="communities"] { --k-c: var(--k-md); }
+[data-k-section="pulse"] { --k-c: var(--k-br); }
+[data-k-section="media"] { --k-c: var(--k-peach); }
+[data-k-section="passport"] { --k-c: var(--k-tint); }
+
+/* ---------- Words ---------- */
+.k-eb { display: inline-block; background: var(--k-dk); color: #fff; font-size: 10.5px; font-weight: 900; letter-spacing: .18em; text-transform: uppercase; padding: 6px 10px; border-radius: var(--k-r); margin-bottom: 12px; line-height: 1.3; }
+.k-eb.or { background: var(--k-or); color: var(--k-ink); }
+.k-eb.pk { background: var(--k-pink); color: var(--k-ink); }
+.k-h1 { font-size: clamp(32px, 3.8vw, 56px); font-weight: 900; line-height: 1.02; letter-spacing: -.035em; margin: 0 0 14px; }
+.k-h2 { font-size: clamp(26px, 2.8vw, 42px); font-weight: 900; line-height: 1.04; letter-spacing: -.025em; margin: 0 0 12px; }
+.k-h3 { font-size: 18px; font-weight: 900; line-height: 1.15; letter-spacing: -.01em; margin: 0 0 6px; }
+.k-lede { font-size: 15px; font-weight: 600; line-height: 1.55; color: var(--k-ink); max-width: 860px; margin: 0 0 16px; }
+.k-label { display: block; font-size: 10.5px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; color: var(--k-dk); margin: 0 0 6px; }
+.k-hl { padding: 0 .08em; border-radius: 4px; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.k-hl.g { background: linear-gradient(transparent 56%, var(--k-br) 56%, var(--k-br) 92%, transparent 92%); }
+.k-hl.o { background: linear-gradient(transparent 56%, var(--k-or) 56%, var(--k-or) 92%, transparent 92%); }
+.k-hl.p { background: linear-gradient(transparent 56%, var(--k-pink) 56%, var(--k-pink) 92%, transparent 92%); }
+
+/* ---------- The stripe: seven bands, the first twice as wide ---------- */
+.k-stripe { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr 1fr; height: 8px; border-radius: 4px; overflow: hidden; margin: 16px 0; }
+.k-stripe i:nth-child(1) { background: var(--k-dk); } .k-stripe i:nth-child(2) { background: var(--k-or); } .k-stripe i:nth-child(3) { background: var(--k-pink); }
+.k-stripe i:nth-child(4) { background: var(--k-peach); } .k-stripe i:nth-child(5) { background: var(--k-br); } .k-stripe i:nth-child(6) { background: var(--k-tint); } .k-stripe i:nth-child(7) { background: var(--k-md); }
+
+/* ---------- Buttons: white with an ink outline; one orange per view ---------- */
+.k-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: var(--k-r); font: inherit; font-size: 12px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; padding: 12px 18px; text-decoration: none; cursor: pointer; border: 2px solid var(--k-ink); background: #fff; color: var(--k-ink); line-height: 1.2; white-space: nowrap; }
+.k-btn:hover { background: var(--k-tint); }
+.k-btn.k-cta { background: var(--k-or); border-color: var(--k-or); }
+.k-btn.k-cta:hover { background: var(--k-or-hi); border-color: var(--k-or-hi); }
+.k-btn.k-on { background: var(--k-dk); border-color: var(--k-dk); color: #fff; }
+.k-btn.k-sm { font-size: 10.5px; padding: 8px 12px; }
+.k-btn[disabled] { opacity: .5; cursor: default; }
+.k-btns { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+/* ---------- Status tags: plain words, never an action ---------- */
+.k-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; border-radius: var(--k-r); padding: 5px 8px; white-space: nowrap; line-height: 1.2; background: #efefef; color: #555; }
+.k-tag::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; opacity: .8; }
+.k-tag.live { background: var(--k-tint); color: var(--k-dk); }
+.k-tag.wait { background: var(--k-peach); color: #8a4d00; }
+.k-tag.new { background: var(--k-pinkt); color: var(--k-pinkd); }
+.k-tag.smp { background: #9a3412; color: #fff; }
+.k-tag.smp::before { display: none; }
+
+/* ---------- Color blocks: the type color on each is fixed ---------- */
+.k-block { border-radius: var(--k-rc); padding: 18px 20px; background: var(--k-c); color: var(--k-ink); }
+.k-block.k-dk { background: var(--k-dk); color: #fff; } .k-block.k-md { background: var(--k-md); color: var(--k-ink); }
+.k-block.k-br { background: var(--k-br); } .k-block.k-tint { background: var(--k-tint); } .k-block.k-or { background: var(--k-or); }
+.k-block.k-peach { background: var(--k-peach); } .k-block.k-pink { background: var(--k-pink); }
+.k-block.k-dk .k-label, .k-block.k-dk .k-h3 { color: #fff; }
+.k-block .k-big { display: block; font-size: clamp(28px, 2.6vw, 38px); font-weight: 900; letter-spacing: -.03em; line-height: 1; }
+.k-block small { display: block; font-size: 12.5px; font-weight: 700; line-height: 1.4; margin-top: 6px; }
+.k-blocks { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); gap: 12px; }
+
+/* ---------- Cards: ink outline, solid offset shadow in the section color ---------- */
+.k-card { position: relative; background: #fff; color: var(--k-ink); border: 2px solid var(--k-ink); border-radius: var(--k-rc); box-shadow: 6px 6px 0 var(--k-c); padding: 16px 18px; }
+.k-card.k-c-dk { --k-c: var(--k-dk); } .k-card.k-c-or { --k-c: var(--k-or); } .k-card.k-c-pk { --k-c: var(--k-pink); }
+.k-card.k-c-br { --k-c: var(--k-br); } .k-card.k-c-md { --k-c: var(--k-md); } .k-card.k-c-pe { --k-c: var(--k-peach); }
+.k-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(360px, 100%), 1fr)); gap: 18px; }
+.k-clamp { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+/* ---------- Rows: same fields, one tag or one button, same place ---------- */
+.k-rows { display: grid; gap: 8px; }
+.k-row { display: grid; grid-template-columns: 38px minmax(0, 1fr) auto; align-items: center; gap: 12px; border: 2px solid var(--k-ink); border-radius: 10px; padding: 9px 12px; background: #fff; }
+.k-num { width: 38px; height: 38px; border-radius: 8px; display: grid; place-items: center; font-weight: 900; font-size: 14px; background: var(--k-c); color: var(--k-ink); }
+.k-num.dk { background: var(--k-dk); color: #fff; } .k-num.or { background: var(--k-or); } .k-num.pk { background: var(--k-pink); }
+.k-num.br { background: var(--k-br); } .k-num.pe { background: var(--k-peach); } .k-num.ti { background: var(--k-tint); }
+.k-row-t b { display: block; font-size: 14px; font-weight: 900; line-height: 1.25; }
+.k-row-t small { display: block; font-size: 12px; font-weight: 600; color: var(--k-mute); line-height: 1.4; }
+
+/* ---------- Numbers ---------- */
+.k-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); gap: 10px; }
+.k-stat { border: 2px solid var(--k-ink); border-radius: 12px; padding: 12px 14px; background: #fff; box-shadow: 4px 4px 0 var(--k-c); }
+.k-stat b { display: block; font-size: 28px; font-weight: 900; letter-spacing: -.03em; line-height: 1; }
+.k-stat small { display: block; font-size: 10px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; color: var(--k-mute); margin-top: 6px; line-height: 1.35; }
+
+/* ---------- Steps: a timeline; the reader's part in orange ---------- */
+.k-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(170px, 100%), 1fr)); gap: 12px; counter-reset: ks; }
+.k-steps > div { position: relative; border: 2px solid var(--k-ink); border-radius: 12px; padding: 14px; background: #fff; box-shadow: 5px 5px 0 var(--k-dk); font-size: 13px; font-weight: 600; line-height: 1.45; }
+.k-steps > div.you { background: var(--k-or); box-shadow: 5px 5px 0 var(--k-ink); }
+.k-steps em { display: block; font-style: normal; font-size: 10px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 4px; }
+.k-steps b { display: block; font-size: 16px; font-weight: 900; margin-bottom: 4px; letter-spacing: -.01em; }
+
+/* ---------- Layout ---------- */
+.k-split { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 22px 32px; align-items: start; }
+.k-side { font-size: 13px; font-weight: 600; line-height: 1.5; }
+.k-side p { margin: 0 0 14px; }
+.k-pic { border: 3px solid var(--k-ink); border-radius: var(--k-rc); box-shadow: 8px 8px 0 var(--k-c); overflow: hidden; background: #fff; }
+.k-pic img { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+/* ---------- Forms ---------- */
+.k-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 16px; }
+.k-f { min-width: 0; }
+.k-f.wide { grid-column: 1 / -1; }
+.k-f label { display: block; font-size: 10.5px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: var(--k-ink); margin: 0 0 5px; }
+.k-f :is(input, textarea, select), .k-select { font: inherit; font-size: 14px; font-weight: 600; width: 100%; border: 3px solid var(--k-ink); border-radius: var(--k-r); padding: 10px 12px; background: #fff; color: var(--k-ink); }
+.k-f textarea { min-height: 70px; resize: vertical; }
+.k-f :is(input, textarea, select):focus, .k-select:focus { outline: none; box-shadow: 4px 4px 0 var(--k-or); }
+.k-f select, .k-select { appearance: none; -webkit-appearance: none; padding-right: 46px; background: var(--k-tint) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%231a1a1a' stroke-width='2.4'/%3E%3C/svg%3E") no-repeat right 16px center; font-weight: 800; }
+.k-msg { font-size: 13px; font-weight: 800; color: var(--k-dk); margin-top: 8px; }
+.k-msg.err { color: #a3221b; }
+.k-stepbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 2px solid var(--k-ink); padding-top: 12px; margin-top: 14px; font-size: 11px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+
+/* ---------- Tabs: one sliding row ---------- */
+.k-tabs { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 0 0 6px; }
+.k-tabs::-webkit-scrollbar { display: none; }
+.k-tabs > :is(a, button) { flex: none; font: inherit; font-size: 12.5px; font-weight: 900; text-decoration: none; color: var(--k-ink); background: #fff; border: 2px solid var(--k-ink); border-radius: var(--k-r); padding: 9px 14px; cursor: pointer; }
+.k-tabs > [aria-selected="true"], .k-tabs > .on { background: var(--k-ink); color: #fff; }
+
+/* ---------- Phones ---------- */
+@media (max-width: 900px) {
+  .k-split, .k-form { grid-template-columns: minmax(0, 1fr); }
+  .k-card { box-shadow: 4px 4px 0 var(--k-c); }
+  .k-row { grid-template-columns: 34px minmax(0, 1fr); }
+  .k-row > :last-child:not(.k-row-t) { grid-column: 2; justify-self: start; }
+  .k-num { width: 34px; height: 34px; }
+}
