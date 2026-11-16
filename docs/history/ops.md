@@ -49,3 +49,22 @@ nyvegans, lavegans, cflovegans, ukvegans, soflovegans (no Atlanta, Philadelphia 
 soflocuisine, humblecabbage, relaxitsvegan, compassiondeck, compassionetarian, vegangameshow, vegnightout, vegantsunami, vhfexpo,
 worldveganexpo, veganswholiftacademy and veganswholiftpodcast (Vegans Who Lift ended; the podcast domain expires 2026-12-22, Sean decides).
 The ideas in the table are Logan's drafts until Sean picks a use; none points anywhere new yet.
+
+**Inbox sweep and security fixes (2026-11-16, Sean: "go ahead and do those other things").**
+- **Reply inboxes for every BrandDesk.** HQ table `brand_reply_inboxes` (HQ migration 113) lists each brand's reply inbox; Outreach shows a
+  Connect card per brand (HQ `components/branddesk/ReplyInboxCard.tsx`, `/api/branddesk/google/connect?kind=gmail&brand=`).
+  contact@vegansexplore.com was connected by Sean that morning; `email-replies-sync` v7 reads every row and writes `last_checked_at`.
+- **Gmail readers locked.** `gmail-inbox-list`, `gmail-thread`, `gmail-inbox-fetch` and `gmail-inbox-agent` answered anyone with no key.
+  Nothing called them. Each now needs `Authorization: Bearer LESARUSS_ADMIN_TOKEN`, read inside SQL by the caller (`net.http_post`);
+  list and thread take `{ brand }`. That is how Logan reads an inbox for Sean without HQ open.
+- **`qa_render_blob` locked** (the nightly sweep's emergency, 4 nights): it ignored its key; execute revoked from public, anon,
+  authenticated (`supabase/migrations/20261116_lock_qa_render_blob.sql`).
+- **DMARC for vegansexplore.com moved to quarantine** on Cloudflare (zone `5c146957b99ac37568f79ab89efa8741`, record `_dmarc`, through
+  `cloudflare_api_token` from SQL): `v=DMARC1; p=quarantine; pct=100; rua=mailto:contact@lesaruss.com; adkim=r; aspf=r`. The stored
+  reports showed every real sender (Google Workspace for contact@, Amazon SES for hello@) passing aligned DKIM; outreach sends from
+  mail.lesaruss.ai, outside this policy.
+- **Stripe.** In the Lesaruss account the old WordPress ARMember endpoint (`vegansexplore.com/?arm-listener=arm_stripe_api`, answering 405)
+  was disabled. The failing endpoint Stripe emailed about (vegansexplore.lesaruss.com, no DNS) lives in the Vegans Explore Stripe
+  account, which this session cannot reach: Sean repoints or disables it there (`ve-stripe-webhook` is the live handler).
+- **Bounces.** A 6.5% day on mail.lesaruss.ai came from two small lists; `holiday-launch-registered` (3 of 10) and `closed-checking-in`
+  (2 of 13) were paused at 10:47 AM ET. The email system's alert said "every campaign is paused" but only HQ email campaigns obey it.
