@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en" data-kit-parent="welcome-guide">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guide Template, Finder: New Year's Eve | Vegans Explore</title>
+  <meta name="description" content="The Finder template for every Guide part where people come to find a place, menu, event or product, shown on the Holiday Guide's New Year's Eve page. Mock, not live.">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="canonical" href="https://vegansexplore.com/mocks/guide-templates/finder/">
+  <link rel="stylesheet" href="/public/ve-kit.css">
+  <style>
+    /* ==================== SHARED GUIDE FRAME, keep identical in both templates ====================
+       Brief: /mocks/guide-templates/BRIEF.md (Sean, 2026-11-16). One frame for every Guide: the Mock strip, the Guide bar with
+       ONE way to move (the Contents button and its panel, from option A), the page head, the Guide row. Only the body differs. */
+    body { margin: 0; background: #fff; color: var(--k-ink); font-family: 'Montserrat', system-ui, sans-serif; }
+    .mk-note { background: var(--k-peach); font-size: 13px; font-weight: 700; line-height: 1.45; padding: 9px 40px; }
+    .mk-note b { color: #8a4d00; letter-spacing: .08em; text-transform: uppercase; margin-right: 6px; }
+    .mk-note a { color: var(--k-ink); font-weight: 900; }
+
+    /* The Guide bar: name, the one line, the Contents button */
+    .gf-bar { background: var(--k-pink); padding: 10px 40px; display: flex; align-items: center; justify-content: space-between; gap: 8px 20px; }
+    .gf-name { min-width: 0; display: flex; align-items: baseline; gap: 4px 14px; flex-wrap: wrap; }
+    .gf-name > a { font-size: 17px; font-weight: 900; letter-spacing: -.02em; color: var(--k-ink); text-decoration: none; white-space: nowrap; }
+    .gf-name span { font-size: 12px; font-weight: 800; }
+    .gf-name span a { color: var(--k-ink); font-weight: 900; }
+    .gf-cbtn { font: inherit; flex: none; display: inline-flex; align-items: center; gap: 10px; max-width: 60%; background: #fff; color: var(--k-ink); border: 2px solid var(--k-ink); border-radius: var(--k-r); padding: 6px 8px 6px 12px; cursor: pointer; box-shadow: 3px 3px 0 var(--k-ink); }
+    .gf-cbtn:hover { background: var(--k-pinkt); }
+    .gf-cbtn > b { font-size: 10.5px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
+    .gf-cbtn > span { min-width: 0; font-size: 13px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-left: 2px solid var(--k-ink); padding-left: 10px; }
+    .gf-cbtn > i { width: 26px; height: 26px; flex: none; display: grid; place-items: center; background: var(--k-ink); border-radius: 4px; }
+    .gf-cbtn > i::before { content: ""; width: 7px; height: 7px; border-right: 2.4px solid #fff; border-bottom: 2.4px solid #fff; transform: translateY(-2px) rotate(45deg); transition: transform .15s; }
+    .gf-cbtn[aria-expanded="true"] > i::before { transform: translateY(2px) rotate(-135deg); }
+    .gf-stripe { margin: 0; border-radius: 0; height: 6px; }
+
+    /* The Contents panel: opens in place and pushes the page down; grid on desktop, a list on phones */
+    .gf-toc { border-bottom: 3px solid var(--k-ink); padding: 6px 40px 18px; background: #fff; }
+    .gf-toc[hidden] { display: none; }
+    .gf-toc-h { display: flex; align-items: baseline; justify-content: space-between; gap: 8px 16px; flex-wrap: wrap; padding: 8px 0 4px; }
+    .gf-toc-h .k-label { margin: 0; color: var(--k-pinkd); }
+    .gf-toc-h small { font-size: 12px; font-weight: 700; color: var(--k-mute); }
+    .gf-toc ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 28px; }
+    .gf-toc li a { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 2px 10px; padding: 12px 0; border-top: 2px solid var(--k-ink); text-decoration: none; color: var(--k-ink); }
+    .gf-toc li a > i { grid-row: span 2; font-style: normal; font-size: 24px; font-weight: 900; letter-spacing: -.04em; line-height: 1; }
+    .gf-toc li a b { font-size: 16px; font-weight: 900; letter-spacing: -.01em; line-height: 1.15; }
+    .gf-toc li a small { font-size: 12px; font-weight: 700; color: var(--k-mute); }
+    .gf-toc li a:hover b { text-decoration: underline; text-decoration-thickness: 2px; }
+    .gf-toc li a[aria-current] { background: var(--k-pinkt); box-shadow: inset 6px 0 0 var(--k-pink); padding-left: 12px; }
+    .gf-toc li a[aria-current] > i { color: var(--k-pinkd); }
+    .gf-toc li a[aria-current] small { color: var(--k-ink); }
+    .gf-toc-x { margin: 12px 0 0; font-size: 12.5px; font-weight: 800; }
+    .gf-toc-x a { color: var(--k-pinkd); }
+
+    main { padding: 22px 40px 64px; }
+
+    /* The page head: eyebrow, title, one line */
+    .gf-head .k-eb { margin-bottom: 8px; }
+    .gf-head .k-h1 { margin-bottom: 6px; }
+    .gf-head .k-lede { margin-bottom: 14px; }
+
+    /* The Guide, once: square picture framed from the top, the Guide's one line, a quiet Play */
+    .gf-guide { display: flex; align-items: center; gap: 12px; max-width: 860px; margin: 0 0 18px; }
+    .gf-guide img { width: 52px; height: 52px; flex: none; border-radius: 10px; border: 2px solid var(--k-ink); object-fit: cover; object-position: center top; display: block; background: var(--k-pinkt); }
+    .gf-guide p { flex: 1; min-width: 0; margin: 0; font-size: 13.5px; font-weight: 600; line-height: 1.42; color: var(--k-mute); }
+    .gf-guide p b { color: var(--k-ink); }
+    .gf-play { flex: none; font: inherit; font-size: 11px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; color: var(--k-ink); background: transparent; border: 2px solid var(--k-ink); border-radius: var(--k-r); padding: 7px 10px; cursor: pointer; }
+    .gf-play:hover { background: var(--k-pinkt); }
+
+    @media (max-width: 1100px) { .gf-toc ol { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+    @media (max-width: 900px) {
+      .mk-note { padding: 7px 16px; font-size: 11.5px; line-height: 1.4; }
+      .gf-bar { padding: 8px 16px; }
+      .gf-name { display: block; }
+      .gf-name > a { display: block; font-size: 15px; }
+      .gf-name span { display: block; font-size: 11px; margin-top: 1px; }
+      .gf-cbtn { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 8px; padding: 5px 6px 5px 10px; max-width: 56%; text-align: left; }
+      .gf-cbtn > b { font-size: 9px; grid-column: 1; grid-row: 1; line-height: 1.3; }
+      .gf-cbtn > span { font-size: 12.5px; grid-column: 1; grid-row: 2; border-left: 0; padding-left: 0; line-height: 1.25; }
+      .gf-cbtn > i { grid-column: 2; grid-row: 1 / span 2; width: 24px; height: 24px; }
+      .gf-toc { padding: 4px 16px 14px; }
+      .gf-toc ol { grid-template-columns: minmax(0, 1fr); }
+      .gf-toc li a { padding: 10px 0; }
+      .gf-toc li a > i { font-size: 20px; }
+      .gf-toc li a b { font-size: 15px; }
+      main { padding: 14px 16px 48px; }
+      .gf-head .k-eb { margin-bottom: 6px; padding: 5px 8px; }
+      .gf-head .k-h1 { font-size: 34px; margin-bottom: 4px; }
+      .gf-head .k-lede { font-size: 14px; line-height: 1.45; margin-bottom: 10px; }
+      .gf-guide { gap: 10px; margin-bottom: 14px; align-items: flex-start; }
+      .gf-guide img { width: 44px; height: 44px; }
+      .gf-guide p { font-size: 12.5px; line-height: 1.38; }
+    }
+    /* ==================== END SHARED GUIDE FRAME ==================== */
+
+    /* ---------- Finder body: search, a one-sentence answer, answer chips, one list ---------- */
+    .fd-search { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 10px; max-width: 860px; }
+    .fd-q { position: relative; }
+    .fd-q input { font: inherit; font-size: 16px; font-weight: 700; width: 100%; box-sizing: border-box; border: 3px solid var(--k-ink); border-radius: var(--k-r); padding: 12px 14px 12px 42px; background: #fff; color: var(--k-ink); }
+    .fd-q input:focus { outline: none; box-shadow: 4px 4px 0 var(--k-or); }
+    .fd-q svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+    .fd-search .k-btn { padding: 13px 20px; font-size: 12.5px; }
+    .fd-answer { max-width: 860px; margin: 14px 0 0; font-size: 16px; font-weight: 700; line-height: 1.45; }
+    .fd-answer b { font-weight: 900; }
+
+    .fd-results { margin-top: 22px; scroll-margin-top: 130px; }
+    .fd-chips { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 14px; }
+    .fd-chips > span { font-size: 10.5px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; margin-right: 4px; }
+    .fd-chips button { font: inherit; font-size: 13px; font-weight: 900; color: var(--k-ink); background: #fff; border: 2px solid var(--k-ink); border-radius: var(--k-r); padding: 9px 14px; cursor: pointer; }
+    .fd-chips button:hover { background: var(--k-pinkt); }
+    .fd-chips button[aria-pressed="true"] { background: var(--k-ink); color: #fff; }
+
+    .fd-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(480px, 100%), 1fr)); gap: 18px; align-items: start; }
+    .fd-card { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 4px 16px; align-items: start; }
+    .fd-card[hidden], .fd-empty[hidden] { display: none; }
+    .fd-logo { width: 72px; height: 72px; border-radius: 12px; border: 2px solid var(--k-ink); background: #fff center/cover no-repeat; display: block; grid-row: span 2; }
+    .fd-kind { display: inline-block; font-size: 10px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; padding: 3px 7px; border-radius: 4px; background: var(--k-pink); margin-bottom: 6px; }
+    .fd-kind.ev { background: var(--k-or); }
+    .fd-card h3 { font-size: 19px; font-weight: 900; letter-spacing: -.02em; line-height: 1.15; margin: 0 0 6px; }
+    .fd-card h3 a { color: inherit; text-decoration: none; }
+    .fd-meta { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; font-size: 12.5px; font-weight: 800; margin: 0 0 8px; }
+    .fd-card p { font-size: 13.5px; font-weight: 600; line-height: 1.45; color: var(--k-mute); margin: 0 0 10px; }
+    .fd-days { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 0 0 12px; font-size: 11px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+    .fd-days span { border: 2px solid var(--k-ink); border-radius: var(--k-r); padding: 4px 8px; letter-spacing: .02em; background: #fff; }
+    .fd-days span.on { background: var(--k-pink); }
+    .fd-days span.on small { font-size: 9.5px; letter-spacing: .08em; margin-left: 4px; }
+    .fd-card .k-btns { grid-column: 2; }
+    .fd-empty { border: 2px dashed var(--k-ink); border-radius: var(--k-rc); padding: 16px 18px; display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 4px 16px; align-items: start; }
+    .fd-empty .fd-ico { width: 72px; height: 72px; border-radius: 12px; border: 2px dashed var(--k-ink); display: grid; place-items: center; font-size: 28px; font-weight: 900; grid-row: span 2; }
+    .fd-empty b { display: block; font-size: 17px; font-weight: 900; letter-spacing: -.01em; margin: 0 0 4px; }
+    .fd-empty p { font-size: 13.5px; font-weight: 600; line-height: 1.45; color: var(--k-mute); margin: 0 0 12px; }
+    .fd-empty .k-btns { grid-column: 2; }
+    .fd-end { font-size: 14px; font-weight: 800; margin: 18px 0 0; }
+
+    .fd-lower { margin-top: 36px; display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); gap: 24px 32px; align-items: start; }
+    .fd-lower .k-h3 { margin-bottom: 10px; }
+    .fd-lower .k-row { border-style: dashed; }
+    .fd-biz { display: grid; gap: 12px; }
+    .fd-biz b { font-size: 15px; font-weight: 900; line-height: 1.35; display: block; }
+    .fd-member { margin-top: 26px; font-size: 13px; font-weight: 700; color: var(--k-mute); }
+    .fd-member a { color: var(--k-pinkd); font-weight: 900; }
+
+    @media (max-width: 900px) {
+      .fd-search { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+      .fd-q { grid-column: 1 / -1; }
+      .fd-q input { padding-top: 11px; padding-bottom: 11px; }
+      .fd-search .k-btn { padding: 11px 12px; }
+      .fd-answer { font-size: 14px; line-height: 1.42; margin-top: 10px; }
+      .fd-results { margin-top: 16px; }
+      .fd-chips { gap: 6px; margin-bottom: 12px; }
+      .fd-chips > span { display: none; }
+      .fd-chips button { font-size: 12.5px; padding: 8px 10px; flex: 1 1 auto; }
+      .fd-card, .fd-empty { grid-template-columns: 52px minmax(0, 1fr); gap: 4px 12px; }
+      .fd-logo, .fd-empty .fd-ico { width: 52px; height: 52px; grid-row: auto; }
+      .fd-card .k-btns, .fd-empty .k-btns { grid-column: 1 / -1; }
+      .fd-card h3 { font-size: 17px; }
+      .fd-lower { grid-template-columns: minmax(0, 1fr); }
+    }
+  </style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+
+<div class="mk-note"><b>Mock</b> Guide template: Finder, on the Holiday Guide's New Year's Eve page. Real content, nothing here is live.</div>
+
+<header class="gf-bar" id="gfBar" data-k-section="guides">
+  <div class="gf-name">
+    <a href="/guides/holiday-guide">The Holiday Guide</a>
+    <span>Free for everyone. <a href="/welcome">Join free</a></span>
+  </div>
+  <button type="button" class="gf-cbtn" id="gfCbtn" aria-expanded="false" aria-controls="gfToc"><b>Contents</b><span>New Year's Eve</span><i aria-hidden="true"></i></button>
+</header>
+<div class="k-stripe gf-stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+<nav class="gf-toc" id="gfToc" aria-label="The Holiday Guide, contents" hidden>
+  <div class="gf-toc-h"><span class="k-label">The Holiday Guide, contents</span><small>8 parts. Press Escape or Contents to close.</small></div>
+  <ol>
+    <li><a href="/guides/holiday-guide#/"><i>01</i><b>Overview</b><small>The whole season at a glance</small></a></li>
+    <li><a href="/guides/holiday-guide#/thanksliving"><i>02</i><b>ThanksLiving</b><small>November 26</small></a></li>
+    <li><a href="/guides/holiday-guide#/hanukkah"><i>03</i><b>Hanukkah</b><small>Begins December 4</small></a></li>
+    <li><a href="/guides/holiday-guide#/christmas"><i>04</i><b>Christmas</b><small>December 25</small></a></li>
+    <li><a href="#top" aria-current="page"><i>05</i><b>New Year's Eve</b><small>December 31 · You are here</small></a></li>
+    <li><a href="/guides/holiday-guide#/giveback"><i>06</i><b>Give Back</b><small>Causes to support this season</small></a></li>
+    <li><a href="/guides/holiday-guide#/giving"><i>07</i><b>11 Days of Giving</b><small>December 1 to 11</small></a></li>
+    <li><a href="/guides/holiday-guide#/business"><i>08</i><b>For Businesses</b><small>Add a menu or an event, free</small></a></li>
+  </ol>
+</nav>
+
+<main id="top" data-k-section="guides" data-template="finder">
+  <section class="gf-head" aria-labelledby="gfTitle">
+    <span class="k-eb pk">December 31 · 45 days to go</span>
+    <h1 class="k-h1" id="gfTitle">New Year's Eve</h1>
+    <p class="k-lede">Where to ring in the new year, and food everyone at your table can eat.</p>
+  </section>
+
+  <div class="gf-guide">
+    <img src="/public/guides/holiday/theo-new-years-eve.jpg" alt="Theo, your Guide for the holidays, raising a glass" width="52" height="52">
+    <p><b>Theo:</b> Ringing in the new year? On this page are the Vegan places cooking for New Year's Eve and the parties to ring it in.</p>
+    <button type="button" class="gf-play" id="gfPlay" data-src="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/holiday-guide/theo-new-years-eve-v1.mp3" aria-label="Play Theo">&#9654; Play</button>
+  </div>
+
+  <!-- Finder body -->
+  <form class="fd-search" id="fdSearch" role="search" aria-label="Find New Year's Eve near you">
+    <div class="fd-q">
+      <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="7" fill="none" stroke="#1a1a1a" stroke-width="3"/><path d="M16 16l6 6" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/></svg>
+      <input type="text" id="fdQ" name="q" placeholder="City or ZIP" aria-label="City or ZIP" autocomplete="postal-code" data-dictate="off">
+    </div>
+    <button type="button" class="k-btn" id="fdNear">&#9737; Near me</button>
+    <button type="submit" class="k-btn k-cta">Search</button>
+  </form>
+  <p class="fd-answer" id="fdAnswer" aria-live="polite"><b>Next Level Veggie Grill</b> is cooking a Holiday Feast for pickup on December 26, 27, 31 and January 1, at 19 locations. No New Year's Eve parties posted yet.</p>
+
+  <section class="fd-results" id="results" aria-label="Everything for New Year's Eve">
+    <div class="fd-chips" id="fdChips" role="group" aria-label="Show">
+      <span>Show</span>
+      <button type="button" data-show="all" aria-pressed="true">Everything</button>
+      <button type="button" data-show="menu" aria-pressed="false">Hosting at home</button>
+      <button type="button" data-show="event" aria-pressed="false">Going out</button>
+    </div>
+
+    <div class="fd-list">
+      <article class="k-card k-c-pk fd-card" data-kind="menu">
+        <a class="fd-logo" href="/directory/next-level-veggie-grill-tustin" aria-label="Next Level Veggie Grill, their listing" style="background-image:url('https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/listings/next-level-veggie-grill/logo-2026-10-28-d0b8ba12.jpg')"></a>
+        <div>
+          <span class="fd-kind">Holiday menu</span>
+          <h3><a href="/directory/next-level-veggie-grill-tustin">Next Level Veggie Grill</a></h3>
+          <div class="fd-meta"><span class="k-tag live">100% Vegan</span><span>19 locations</span></div>
+          <div class="fd-days" aria-label="Pickup days">Pickup <span>Dec 26</span><span>Dec 27</span><span class="on">Dec 31<small>NYE</small></span><span>Jan 1</span></div>
+          <p class="k-clamp">The Holiday Feast: comfort food for 6 to 8 guests, ordered as a full Feast, gluten free, with dessert added, or a la carte.</p>
+        </div>
+        <div class="k-btns">
+          <a class="k-btn k-on k-sm" href="/guides/holiday-guide#/ny-menus/near">Nearest location</a>
+          <a class="k-btn k-sm" href="/guides/holiday-guide#/ny-menus">See the menu</a>
+        </div>
+      </article>
+
+      <article class="fd-empty" data-kind="event">
+        <span class="fd-ico" aria-hidden="true">+</span>
+        <div>
+          <span class="fd-kind ev">Parties and events</span>
+          <b>No New Year's Eve parties posted yet.</b>
+          <p>Hosting a dinner, a party or a countdown? Add it and people near you will find it.</p>
+        </div>
+        <div class="k-btns">
+          <a class="k-btn k-sm" href="/events#submit/1">Add your event</a>
+          <a class="k-btn k-sm" href="/events">The whole calendar</a>
+        </div>
+      </article>
+    </div>
+    <p class="fd-end">That is everything posted for December 31 so far.</p>
+  </section>
+
+  <div class="fd-lower">
+    <section aria-label="Coming in December">
+      <h2 class="k-h3">Coming in December</h2>
+      <div class="k-rows">
+        <div class="k-row"><span class="k-num pk">1</span><span class="k-row-t"><b>Your First Vegan Year</b><small>Starting the new year plant-based: simple first steps.</small></span><span class="k-tag wait">Coming</span></div>
+        <div class="k-row"><span class="k-num or">2</span><span class="k-row-t"><b>The Year in Review</b><small>The top moments of the year in the Vegan movement. Vote for the one that mattered most.</small></span><span class="k-tag wait">Coming</span></div>
+      </div>
+    </section>
+    <section aria-label="For businesses">
+      <h2 class="k-h3">For Businesses</h2>
+      <div class="k-block k-tint fd-biz">
+        <span class="k-label" style="margin:0">Run a Vegan business?</span>
+        <b>Add your New Year's Eve menu or event. It's free for members.</b>
+        <div class="k-btns"><a class="k-btn k-sm" href="/guides/holiday-guide#/business">Send your menu</a><a class="k-btn k-sm" href="/events#submit/1">Add your event</a></div>
+      </div>
+    </section>
+  </div>
+
+  <p class="fd-member">The Holiday Guide is free for everyone. <a href="/welcome">Join free</a> · Member? <a href="/login">Sign in</a></p>
+</main>
+
+<script>
+  /* SHARED GUIDE FRAME script: Contents (button or Escape), and the Guide's Play (only when pressed). Keep identical in both templates. */
+  (function () {
+    var btn = document.getElementById('gfCbtn'), toc = document.getElementById('gfToc'), bar = document.getElementById('gfBar');
+    // Never under the site's sticky header (nav.js, 60 to 115 px tall): if an element has slid under it, bring it back just below.
+    window.gfKeepBelowNav = function (el) {
+      var nav = document.querySelector('.ve-nav'), navB = nav ? Math.max(0, nav.getBoundingClientRect().bottom) : 0, top = el.getBoundingClientRect().top;
+      if (top < navB) window.scrollTo(0, top + window.scrollY - navB - 8);
+    };
+    function setToc(open, focusBack) {
+      toc.hidden = !open; btn.setAttribute('aria-expanded', String(open));
+      if (open) {
+        gfKeepBelowNav(bar);
+        var cur = toc.querySelector('[aria-current]'); if (cur) cur.focus({ preventScroll: true });
+      } else if (focusBack) btn.focus({ preventScroll: true });
+    }
+    btn.addEventListener('click', function () { setToc(toc.hidden, false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !toc.hidden) setToc(false, true); });
+    toc.addEventListener('click', function (e) { var a = e.target.closest('a'); if (a && a.getAttribute('href').charAt(0) === '#') { e.preventDefault(); setToc(false, true); } });
+    var play = document.getElementById('gfPlay'), audio = null;
+    play.addEventListener('click', function () {
+      if (!audio) { audio = new Audio(play.getAttribute('data-src')); audio.addEventListener('ended', function () { play.innerHTML = '&#9654; Play'; }); }
+      if (audio.paused) { audio.currentTime = 0; audio.play(); play.innerHTML = '&#10073;&#10073; Pause'; }
+      else { audio.pause(); play.innerHTML = '&#9654; Play'; }
+    });
+  })();
+
+  /* Finder body: the answer chips filter one list; search answers in one sentence. Every view is a link (?show= &q=). */
+  (function () {
+    var params = new URLSearchParams(location.search);
+    function setUrl() { var s = params.toString(); history.replaceState(null, '', location.pathname + (s ? '?' + s : '') + location.hash); }
+    var chips = [].slice.call(document.querySelectorAll('#fdChips button'));
+    var items = [].slice.call(document.querySelectorAll('.fd-list > [data-kind]'));
+    function show(kind) {
+      if (!chips.some(function (c) { return c.dataset.show === kind; })) kind = 'all';
+      chips.forEach(function (c) { c.setAttribute('aria-pressed', String(c.dataset.show === kind)); });
+      items.forEach(function (i) { i.hidden = !(kind === 'all' || i.dataset.kind === kind); });
+    }
+    chips.forEach(function (c) {
+      c.addEventListener('click', function () {
+        if (c.dataset.show === 'all') params.delete('show'); else params.set('show', c.dataset.show);
+        setUrl(); show(c.dataset.show); gfKeepBelowNav(document.getElementById('fdChips'));
+      });
+    });
+    show(params.get('show') || 'all');
+
+    var ans = document.getElementById('fdAnswer'), q = document.getElementById('fdQ');
+    function clean(s) { return String(s).replace(/[<>&"]/g, '').slice(0, 60); }
+    function answer(where) {
+      ans.innerHTML = 'Near ' + clean(where) + ': <b>Next Level Veggie Grill</b> is cooking a Holiday Feast for pickup on December 26, 27, 31 and January 1; pick the nearest of its 19 locations. No New Year\'s Eve parties posted yet.';
+    }
+    document.getElementById('fdSearch').addEventListener('submit', function (e) {
+      e.preventDefault(); var v = q.value.trim(); if (!v) { q.focus(); return; }
+      params.set('q', v); setUrl(); answer(v);
+    });
+    document.getElementById('fdNear').addEventListener('click', function () { params.set('q', 'near'); setUrl(); answer('you'); });
+    if (params.get('q')) { var pv = params.get('q'); if (pv !== 'near') q.value = pv; answer(pv === 'near' ? 'you' : pv); }
+  })();
+</script>
+<script src="/public/footer.js"></script>
+</body>
+</html>
