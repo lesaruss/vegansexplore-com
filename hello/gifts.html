@@ -87,8 +87,9 @@
     @media (max-width:900px){
       main{padding:28px 16px 64px;}
       .split{grid-template-columns:minmax(0,1fr);gap:28px;}
-      .side{order:-1}
-      .media{max-height:none;}
+      /* Phones (Sean, 2026-11-16: "fix the phone landing page button"): the words and Confirm my feature first, the picture after them
+         in its own 4:5 shape, so the one action is on the first screen. */
+      .media{max-height:none;max-width:420px;}
       .cta-row .btn{flex:1 1 100%}
       .intake{padding:16px}
       .row2{grid-template-columns:1fr}
