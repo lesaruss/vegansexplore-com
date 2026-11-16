@@ -217,7 +217,8 @@
     if (!kids.length) return '';
     var items = [tab(par)].concat(kids);
     // Fewer than 6 sections show as buttons on desktop; 6 or more, and every phone, use the dropdown (Sean, 2026-11-10).
-    var row = items.length < 6 ? '<nav class="hg-subrow" aria-label="' + esc(tab(par).label) + '">' + items.map(function (c) {
+    // A section's pages are one sliding row at every count (the panel, 2026-11-16: never a second dropdown under the Guide's menu).
+    var row = items.length ? '<nav class="hg-subrow" aria-label="' + esc(tab(par).label) + '">' + items.map(function (c) {
       return '<a class="hg-subb' + (c.k === cur ? ' on' : '') + '" href="' + href(c.k) + '"' + (c.k === cur ? ' aria-current="page"' : '') + '>' + esc(c.k === par ? 'Overview' : c.label) + '</a>';
     }).join('') + '</nav>' : '';
     return '<div class="hg-sub' + (row ? ' hg-sub-few' : '') + '"><label class="hg-sub-l" for="hgSubSel">' + esc(tab(par).label) + '</label>' + row + '<select id="hgSubSel" class="dg-sort hg-subsel">' + items.map(function (c) {
@@ -390,7 +391,7 @@
     var gs = '<section class="wg-gs" aria-label="About ' + esc(t.name) + '"><span class="wg-gs-pic"><img src="' + PIC + o.pic + '" alt="" decoding="async" width="640" height="640"' + (/^theo-/.test(o.pic) ? ' style="object-position:center top"' : '') + '></span>' +
       '<div class="wg-gs-b"><div class="vgi-k">' + (left ? left + ' days to go' : 'This season') + '</div><h3 class="wg-gs-t">' + esc(tc('About ' + (h === 'thanksliving' ? 'ThanksLiving' : t.name))) + '</h3>' +
       '<p>' + o.intro + '</p>' +
-      '<div class="wg-gs-btns">' + (VIDEO[h] || TAB_CH[h] || TAB_AUDIO[h] ? '<button type="button" class="dg-btn" data-hg-video>&#9654; Play Theo</button>' : '') + '<a class="dg-btn dg-ghost" href="' + o.cta[1] + '">' + esc(o.cta[0]) + '</a></div></div></section>';
+      '<div class="wg-gs-btns">' + (VIDEO[h] || TAB_CH[h] || TAB_AUDIO[h] ? '<button type="button" class="dg-btn dg-ghost" data-hg-video>&#9654; Play Theo</button>' : '') + '<a class="dg-btn dg-ghost" href="' + o.cta[1] + '">' + esc(o.cta[0]) + '</a></div></div></section>';
     main.innerHTML = head(HOLX[h] && h !== 'thanksliving' ? IDEAS[h].k : 'November 26', h === 'thanksliving' ? 'ThanksLiving' : t.name, '') + gs +
       '<div class="wg-arts"><div class="wg-grp"><h5>In This Section</h5><ol>' + o.rows.map(function (r) { return artRow(PIC + PILL_PIC[r[0]], r[1], r[2], href(r[0])); }).join('') + '</ol></div></div>';
   }
@@ -1860,7 +1861,7 @@
   function init() {
     if (window.VERegionDirectory) VERegionDirectory.css();
     if (window.VEEpisodes) VEEpisodes.css();
-    document.documentElement.classList.add('dg-fit');
+    // dg-fit (the one-screen desktop mode with its own inner scroll) is gone: the page scrolls as a page (ve-guide-frame.css, 2026-11-16).
     var box = document.getElementById('dgMaya');
     if (window.VEGuideArt) { var art = VEGuideArt('theo', 'square'); if (art) box.style.backgroundImage = "url('" + art + "')"; }
     if (NM()) NM().onChange(nearChanged);
