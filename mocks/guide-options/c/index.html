@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en" data-kit-parent="welcome-guide">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ask Theo, Guide Option C | Vegans Explore</title>
+  <meta name="description" content="Design panel option C for every Guide page: the Guide asks one question and the answer opens the right part in place. Shown on the Holiday Guide's New Year's Eve page. Mock, not live.">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="canonical" href="https://vegansexplore.com/mocks/guide-options/c/">
+  <link rel="stylesheet" href="/public/ve-kit.css">
+  <style>
+    /* Option C, Guide-led conversation (design panel, Sean 2026-11-16: "yes, run the four-option design panel"). The Guide appears once,
+       as the host: one question, a few answers, and each answer opens the right part in place (state in the hash, so it shares).
+       Moving between holidays is one dropdown; moving between a holiday's parts is the Guide's answers. "Everything" is always one tap.
+       Built only from /public/ve-kit.css parts. */
+    body { margin: 0; background: #fff; color: var(--k-ink); font-family: 'Montserrat', system-ui, sans-serif; }
+    .mk-note { background: var(--k-peach); font-size: 13px; font-weight: 700; line-height: 1.45; padding: 9px 40px; }
+    .mk-note b { color: #8a4d00; letter-spacing: .08em; text-transform: uppercase; margin-right: 6px; }
+
+    /* The Guide's header: name, the free line, and the one way between holidays */
+    .gc-top { background: var(--k-pink); padding: 14px 40px; display: flex; align-items: center; justify-content: space-between; gap: 10px 24px; flex-wrap: wrap; }
+    .gc-name { font-size: 22px; font-weight: 900; letter-spacing: -.02em; margin: 0; line-height: 1.1; }
+    .gc-free { font-size: 12.5px; font-weight: 800; margin: 2px 0 0; }
+    .gc-free a { color: var(--k-ink); }
+    .gc-hol { display: flex; align-items: center; gap: 10px; }
+    .gc-hol label { font-size: 10.5px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
+    .gc-hol .k-select { width: auto; min-width: 260px; background-color: #fff; }
+    .gc-stripe { margin: 0; border-radius: 0; }
+
+    main { padding: 26px 40px 64px; }
+    /* First screen: the holiday (title, line, one orange action) beside Theo's question */
+    .gc-hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr); gap: 28px 40px; align-items: start; }
+    .gc-hero .k-h1 { margin-bottom: 10px; }
+    .gc-hero .k-lede { margin-bottom: 18px; }
+
+    /* Theo, the host: once on the page */
+    .gc-talk { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 18px; align-items: start; border: 2px solid var(--k-ink); border-radius: var(--k-rc); box-shadow: 6px 6px 0 var(--k-pink); background: #fff; padding: 16px; }
+    .gc-face { aspect-ratio: 4 / 5; border: 2px solid var(--k-ink); border-radius: 12px; overflow: hidden; background: var(--k-pinkt); }
+    .gc-face img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center top; transition: opacity .25s; }
+    .gc-who { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+    .gc-who .k-label { margin: 0; color: var(--k-pinkd); }
+    .gc-bubble { position: relative; background: var(--k-pinkt); border: 2px solid var(--k-ink); border-radius: 12px; padding: 12px 14px; font-size: 15px; font-weight: 700; line-height: 1.45; margin: 0 0 12px; }
+    .gc-bubble b { display: block; font-size: 19px; font-weight: 900; letter-spacing: -.01em; line-height: 1.2; }
+    .gc-bubble .gc-reply { display: block; margin-top: 6px; font-size: 14px; font-weight: 600; }
+    .gc-bubble .gc-reply:empty { display: none; }
+    .gc-face { grid-row: 1 / span 2; }
+    .gc-ans { grid-column: 2; display: flex; flex-wrap: wrap; gap: 8px; align-self: start; }
+    .gc-ans button { font: inherit; font-size: 13px; font-weight: 900; color: var(--k-ink); background: #fff; border: 2px solid var(--k-ink); border-radius: var(--k-r); padding: 10px 14px; cursor: pointer; }
+    .gc-ans button:hover { background: var(--k-tint); }
+    .gc-ans button[aria-pressed="true"] { background: var(--k-ink); color: #fff; }
+    .gc-ans .gc-all { background: transparent; border-style: dashed; }
+
+    /* What the answer opens */
+    .gc-shown { display: flex; align-items: baseline; justify-content: space-between; gap: 8px 16px; flex-wrap: wrap; border-top: 2px solid var(--k-ink); margin-top: 34px; padding-top: 14px; }
+    .gc-shown p { margin: 0; font-size: 12px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+    .gc-shown a { font-size: 13px; font-weight: 800; color: var(--k-pinkd); }
+    .gc-sec { margin-top: 26px; scroll-margin-top: 80px; }
+    .gc-sec[hidden] { display: none; }
+    .gc-sec .k-h2 { font-size: clamp(22px, 2vw, 30px); }
+    .gc-sec > p { font-size: 14px; font-weight: 600; color: var(--k-mute); margin: -4px 0 14px; max-width: 860px; }
+    .gc-empty { border: 2px dashed var(--k-ink); border-radius: var(--k-rc); padding: 18px 20px; display: flex; gap: 14px 22px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+    .gc-empty b { display: block; font-size: 16px; font-weight: 900; margin-bottom: 4px; }
+    .gc-empty span { font-size: 13.5px; font-weight: 600; color: var(--k-mute); }
+    .gc-biz { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 14px; align-items: start; }
+    .gc-logo { width: 64px; height: 64px; border-radius: 12px; border: 2px solid var(--k-ink); background: #fff center/cover no-repeat; display: block; }
+    .gc-biz h3 { margin: 0 0 4px; font-size: 18px; font-weight: 900; }
+    .gc-biz h3 a { color: inherit; text-decoration: none; }
+    .gc-meta { font-size: 13px; font-weight: 700; margin: 0 0 8px; display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; }
+    .gc-biz p { font-size: 13.5px; font-weight: 600; line-height: 1.5; margin: 0 0 12px; }
+    .gc-coming .k-row { border-style: dashed; }
+    .gc-mocknote { border: 2px dashed var(--k-ink); border-radius: var(--k-rc); background: var(--k-peach); padding: 16px 18px; font-size: 14px; font-weight: 700; line-height: 1.5; }
+
+    @media (max-width: 900px) {
+      .mk-note { padding: 8px 16px; font-size: 12px; }
+      .gc-top { padding: 10px 16px; }
+      .gc-name { font-size: 18px; }
+      .gc-free { font-size: 12px; }
+      .gc-hol { width: 100%; }
+      .gc-hol label { display: none; }
+      .gc-hol .k-select { width: 100%; min-width: 0; padding-top: 8px; padding-bottom: 8px; }
+      main { padding: 16px 16px 48px; }
+      .gc-hero { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+      .gc-hero .k-eb { margin-bottom: 8px; }
+      .gc-hero .k-h1 { font-size: 34px; margin-bottom: 6px; }
+      .gc-hero .k-lede { font-size: 14px; margin-bottom: 12px; }
+      .gc-hero .k-btn.k-cta { width: 100%; box-sizing: border-box; }
+      .gc-talk { grid-template-columns: 76px minmax(0, 1fr); gap: 12px; padding: 12px; box-shadow: 4px 4px 0 var(--k-pink); }
+      .gc-face { aspect-ratio: 1 / 1; grid-row: auto; }
+      .gc-bubble { font-size: 14px; padding: 10px 12px; }
+      .gc-bubble b { font-size: 17px; }
+      .gc-ans { grid-column: 1 / -1; }
+      .gc-ans button { flex: 1 1 calc(50% - 8px); padding: 11px 10px; }
+      .gc-shown { margin-top: 24px; }
+      .gc-biz { grid-template-columns: 52px minmax(0, 1fr); }
+      .gc-logo { width: 52px; height: 52px; }
+    }
+  </style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+
+<div class="mk-note"><b>Mock</b> Option C: Ask Theo. Real content, nothing here is live.</div>
+
+<header class="gc-top" data-k-section="guides">
+  <div>
+    <h1 class="gc-name">The Holiday Guide</h1>
+    <p class="gc-free">Free for everyone. <a href="/welcome">Join free</a> · <a href="/signin">Member? Sign in</a></p>
+  </div>
+  <div class="gc-hol">
+    <label for="gcHol">Holiday</label>
+    <select class="k-select" id="gcHol" aria-label="Go to a holiday">
+      <option value="overview">Overview</option>
+      <option value="thanksliving">ThanksLiving · November 26</option>
+      <option value="hanukkah">Hanukkah · Begins December 4</option>
+      <option value="christmas">Christmas · December 25</option>
+      <option value="new-years-eve" selected>New Year's Eve · December 31</option>
+      <option value="give-back">Give Back</option>
+      <option value="days-of-giving">11 Days of Giving · December 1 to 11</option>
+      <option value="business">For Businesses</option>
+    </select>
+  </div>
+</header>
+<div class="k-stripe gc-stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+<main>
+  <div class="gc-hero">
+    <section>
+      <span class="k-eb pk" id="gcEb">December 31 · 45 days to go</span>
+      <h2 class="k-h1" id="gcTitle">New Year's Eve</h2>
+      <p class="k-lede" id="gcLede">Where to ring in the new year, and food everyone at your table can eat.</p>
+      <a class="k-btn k-cta" id="gcCta" href="/guides/holiday-guide#/ny-menus/near">Find it near me</a>
+    </section>
+
+    <section class="gc-talk" aria-label="Theo, your guide for the holidays">
+      <div class="gc-face"><img id="gcFace" src="/public/guides/holiday/theo-new-years-eve.jpg" alt="Theo raising a glass at a New Year's Eve party"></div>
+      <div>
+        <div class="gc-who"><span class="k-label">Theo · Your guide for the holidays</span><button type="button" class="k-btn k-sm" id="gcHear" aria-label="Hear Theo">&#9654; Hear Theo</button></div>
+        <p class="gc-bubble" aria-live="polite"><b id="gcQ">What are you planning for New Year's Eve?</b><span class="gc-reply" id="gcReply"></span></p>
+      </div>
+      <div class="gc-ans" id="gcAns" role="group" aria-label="Your answer"></div>
+    </section>
+  </div>
+
+  <div class="gc-shown"><p id="gcShown">Everything for New Year's Eve</p><a href="#/new-years-eve" id="gcReset" hidden>Show me everything</a></div>
+
+  <div id="gcBody">
+    <section class="gc-sec" id="out" data-for="out">
+      <h2 class="k-h2">Ring In the New Year</h2>
+      <p>Vegan dinners, parties and countdowns on December 31.</p>
+      <div class="gc-empty">
+        <div><b>No New Year's Eve parties posted yet.</b><span>Hosting a dinner, a party or a countdown? Add it and people near you will find it.</span></div>
+        <div class="k-btns"><a class="k-btn" href="/events#submit/1">Add your event</a><a class="k-btn k-sm" href="/events">See the whole calendar</a></div>
+      </div>
+    </section>
+
+    <section class="gc-sec" id="in" data-for="in home">
+      <h2 class="k-h2">Order a New Year's Eve Feast</h2>
+      <p>Vegan places cooking for the night. One card per business; pick the location nearest you.</p>
+      <div class="k-grid">
+        <article class="k-card k-c-pk gc-biz">
+          <a class="gc-logo" href="/directory/next-level-veggie-grill-tustin" aria-label="Next Level Veggie Grill, its listing" style="background-image:url('https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/listings/next-level-veggie-grill/logo-2026-10-28-d0b8ba12.jpg')"></a>
+          <div>
+            <h3><a href="/directory/next-level-veggie-grill-tustin">Next Level Veggie Grill</a></h3>
+            <div class="gc-meta"><span class="k-tag live">100% Vegan</span><span><b>19 locations</b></span><span><b>Pickup</b> Dec 26, 27, 31 and Jan 1</span></div>
+            <p class="k-clamp">The Holiday Feast: comfort food for 6 to 8 guests, ordered as a full Feast, gluten free, with dessert added, or a la carte.</p>
+            <div class="k-btns"><a class="k-btn k-on" href="/guides/holiday-guide#/ny-menus/near">See locations near me</a><a class="k-btn k-sm" href="/guides/holiday-guide#/ny-menus">See the menu</a></div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="gc-sec gc-coming" id="coming" data-for="home">
+      <h2 class="k-h2">Coming in December</h2>
+      <div class="k-rows">
+        <div class="k-row"><span class="k-num pk">1</span><span class="k-row-t"><b>Your First Vegan Year</b><small>Starting the new year plant-based: simple first steps.</small></span><span class="k-tag wait">Coming</span></div>
+        <div class="k-row"><span class="k-num or">2</span><span class="k-row-t"><b>The Year in Review</b><small>The top moments of the year in the Vegan movement. Vote for the one that mattered most.</small></span><span class="k-tag wait">Coming</span></div>
+      </div>
+    </section>
+
+    <section class="gc-sec" id="biz" data-for="biz">
+      <div class="k-block k-tint" style="display:flex;gap:14px 24px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+        <div><span class="k-label">Run a Vegan business?</span><b style="font-size:16px;font-weight:900">Add your New Year's Eve menu or event. It's free for members.</b></div>
+        <div class="k-btns"><a class="k-btn" href="/guides/holiday-guide#/business">Send your menu</a><a class="k-btn" href="/events#submit/1">Add your event</a></div>
+      </div>
+    </section>
+  </div>
+
+  <div id="gcOther" hidden>
+    <div class="gc-mocknote">In this mock only New Year's Eve is filled in. Every holiday uses the same pattern: Theo asks one question for that holiday, the answers open its parts in place, and "Show me everything" lists them all.</div>
+  </div>
+</main>
+
+<script>
+(function () {
+  var V = '/public/guides/holiday/';
+  /* One config per holiday: Theo's question, the answers (each opens parts), his short reply, and the picture for the answer.
+     Every Guide fills this same shape; the frame never changes. */
+  var HOL = {
+    'new-years-eve': {
+      eb: 'December 31 · 45 days to go', title: "New Year's Eve",
+      lede: 'Where to ring in the new year, and food everyone at your table can eat.',
+      q: "What are you planning for New Year's Eve?", face: 'theo-new-years-eve.jpg', alt: "Theo raising a glass at a New Year's Eve party",
+      ans: [
+        { id: 'going-out', label: 'Going out', show: 'out', face: 'theo-ny-events.jpg', alt: 'Theo watching fireworks with friends',
+          reply: "Here's where Vegans are ringing it in. Nothing is posted for the 31st yet, so if you know a party, add it." },
+        { id: 'ordering-in', label: 'Ordering in', show: 'in', face: 'theo-ny-menus.jpg', alt: 'Theo picking up a holiday feast',
+          reply: 'Next Level Veggie Grill is cooking a Holiday Feast for pickup on the 31st, at 19 locations.' },
+        { id: 'hosting', label: 'Hosting at home', show: 'home', face: 'theo-ny-menus.jpg', alt: 'Theo picking up a holiday feast',
+          reply: 'A Feast feeds 6 to 8, so your whole table eats. And in December: a plan for your first Vegan year.' },
+        { id: 'business', label: 'I run a business', show: 'biz', face: 'theo-new-years-eve.jpg', alt: "Theo raising a glass at a New Year's Eve party",
+          reply: "Add your menu or your event. It's free for members, and people planning the night will find it here." }
+      ]
+    }
+  };
+  var STUB = {
+    overview: ['The Holiday Guide', 'Every holiday, in one place', 'Which holiday are you planning for?', 'theo-christmas.jpg'],
+    thanksliving: ['ThanksLiving', 'November 26', 'Who is at your table this year?', 'theo-thanksliving.jpg'],
+    hanukkah: ['Hanukkah', 'Begins December 4', 'How are you celebrating Hanukkah?', 'theo-hanukkah.jpg'],
+    christmas: ['Christmas', 'December 25', 'How are you spending Christmas?', 'theo-christmas.jpg'],
+    'give-back': ['Give Back', 'This season', 'How would you like to give back?', 'theo-giveback.jpg'],
+    'days-of-giving': ['11 Days of Giving', 'December 1 to 11', 'Want a reminder for each day?', 'theo-giving.jpg'],
+    business: ['For Businesses', 'Free for members', 'What would you like to add?', 'theo-business.jpg']
+  };
+  var $ = function (id) { return document.getElementById(id); };
+  var audio = null;
+  $('gcHear').addEventListener('click', function () {
+    if (!audio) audio = new Audio('https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/holiday-guide/theo-new-years-eve-v1.mp3');
+    if (audio.paused) { audio.currentTime = 0; audio.play(); this.innerHTML = '&#10074;&#10074; Pause'; }
+    else { audio.pause(); this.innerHTML = '&#9654; Hear Theo'; }
+    var b = this; audio.onended = function () { b.innerHTML = '&#9654; Hear Theo'; };
+  });
+  $('gcHol').addEventListener('change', function () { location.hash = '#/' + this.value; });
+
+  function face(f, alt) { var i = $('gcFace'); if (i.getAttribute('src') !== V + f) { i.src = V + f; } i.alt = alt; }
+
+  function render() {
+    var p = location.hash.replace(/^#\/?/, '').split('/');
+    var hol = p[0] || 'new-years-eve', pick = p[1] || '';
+    $('gcHol').value = hol;
+    var h = HOL[hol];
+    $('gcHear').hidden = !h;
+    if (!h) {
+      var s = STUB[hol] || STUB.overview;
+      $('gcTitle').textContent = s[0]; $('gcEb').textContent = s[1]; $('gcQ').textContent = s[2]; $('gcReply').textContent = '';
+      $('gcLede').textContent = 'Same frame as New Year’s Eve: one question from Theo, the answers open this holiday’s parts.';
+      face(s[3], 'Theo, your guide for the holidays'); $('gcAns').innerHTML = '';
+      $('gcBody').hidden = true; $('gcOther').hidden = false; $('gcShown').textContent = s[0]; $('gcReset').hidden = true;
+      return;
+    }
+    $('gcBody').hidden = false; $('gcOther').hidden = true;
+    $('gcTitle').textContent = h.title; $('gcEb').textContent = h.eb; $('gcLede').textContent = h.lede; $('gcQ').textContent = h.q;
+    var a = null;
+    $('gcAns').innerHTML = '';
+    h.ans.forEach(function (x) {
+      if (x.id === pick) a = x;
+      var b = document.createElement('button'); b.type = 'button'; b.textContent = x.label;
+      b.setAttribute('aria-pressed', x.id === pick ? 'true' : 'false');
+      b.addEventListener('click', function () { location.hash = '#/' + hol + '/' + x.id; });
+      $('gcAns').appendChild(b);
+    });
+    var all = document.createElement('button'); all.type = 'button'; all.className = 'gc-all'; all.textContent = 'Show me everything';
+    all.setAttribute('aria-pressed', a ? 'false' : 'true');
+    all.addEventListener('click', function () { location.hash = '#/' + hol; });
+    $('gcAns').appendChild(all);
+    $('gcReply').textContent = a ? a.reply : '';
+    face(a ? a.face : h.face, a ? a.alt : h.alt);
+    [].forEach.call(document.querySelectorAll('.gc-sec'), function (sec) {
+      sec.hidden = !!a && sec.getAttribute('data-for').split(' ').indexOf(a.show) < 0;
+    });
+    $('gcShown').textContent = a ? 'For you: ' + a.label.toLowerCase() : "Everything for " + h.title;
+    $('gcReset').hidden = !a; $('gcReset').href = '#/' + hol;
+  }
+  window.addEventListener('hashchange', function () {
+    render();
+    if (/\/[^/]+\/[^/]+$/.test(location.hash) && window.innerWidth <= 900) {
+      var t = document.querySelector('.gc-shown'); window.scrollTo({ top: t.getBoundingClientRect().top + scrollY - 70, behavior: 'smooth' });
+    }
+  });
+  render();
+})();
+</script>
+<script src="/public/footer.js"></script>
+</body>
+</html>
