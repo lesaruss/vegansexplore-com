@@ -4,10 +4,17 @@
 # with scripts/brand-templates/find-us.js (the locked brand kit template, unchanged) and commits it to public/claims/<slug>/, where the
 # first posts live. Vercel deploys it; the ve-claims find_us check sees it live, marks the row ready and releases Liz's approval email.
 # No secret is needed here: the queue and the logos are public and the commit uses this workflow's own token.
+# 2026-11-16 (Sean: "go ahead, make the post maker reliable"): GitHub ran the */5 schedule only every 3 to 7 hours, so Dina's Vegan Deli's
+# post (approved 9:07 AM) waited until it was run by hand at 9:31 and Liz's welcome email waited with it. Now one run stays on watch for
+# up to 5 h 45 min, asking the queue every 2 minutes, and a run also starts on every push to main and on the schedule. The concurrency
+# group keeps one on watch and one waiting, so a new watch starts the moment the last one ends. Commits made here use this workflow's
+# token, which never starts another run. No secret is needed. (Public repo: standard runner minutes are free.)
 name: Find us post
 on:
   schedule:
     - cron: '*/5 * * * *'
+  push:
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: write
@@ -15,52 +22,53 @@ concurrency:
   group: find-us-post
   cancel-in-progress: false
 jobs:
-  render:
+  watch:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 355
     steps:
-      - name: Ask what is waiting
-        id: q
-        run: |
-          curl -sSf -X POST https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-claims -H 'Content-Type: application/json' \
-            -d '{"action":"find_us_queue"}' -o "$RUNNER_TEMP/queue.json"
-          N=$(jq '.queue | length' "$RUNNER_TEMP/queue.json"); echo "waiting: $N"; echo "n=$N" >> "$GITHUB_OUTPUT"
       - uses: actions/checkout@v4
-        if: steps.q.outputs.n != '0'
         with:
           ref: main
       - uses: actions/setup-node@v4
-        if: steps.q.outputs.n != '0'
         with:
           node-version: '20'
-      - name: Install the renderer
-        if: steps.q.outputs.n != '0'
-        run: |
-          npm install --no-save --no-package-lock playwright@1.48.2
-          npx playwright install --with-deps chromium
-      - name: Render
-        if: steps.q.outputs.n != '0'
-        run: |
-          python3 -m http.server 8766 >/dev/null 2>&1 &
-          sleep 1
-          jq -c '.queue[]' "$RUNNER_TEMP/queue.json" | while read -r row; do
-            SLUG=$(jq -r .slug <<<"$row"); NAME=$(jq -r .name <<<"$row"); CITY=$(jq -r .city <<<"$row"); LOGO_URL=$(jq -r .logo_url <<<"$row")
-            [[ "$SLUG" =~ ^[a-z0-9][a-z0-9-]{0,99}$ ]] || { echo "bad slug, skipped"; continue; }
-            [ -f "public/claims/$SLUG/post.jpg" ] && [ -f "public/claims/$SLUG/story.jpg" ] && { echo "$SLUG: already made, waiting for the deploy"; continue; }
-            [[ "$LOGO_URL" == https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/* ]] || { echo "$SLUG: logo not in our storage, skipped"; continue; }
-            D="$RUNNER_TEMP/logo-$SLUG"; mkdir -p "$D"
-            TYPE=$(curl -sSfL -o "$D/raw" -w '%{content_type}' "$LOGO_URL") || { echo "$SLUG: logo did not load"; continue; }
-            case "$TYPE" in image/png*) EXT=png;; image/svg*) EXT=svg;; image/webp*) EXT=webp;; image/jpeg*|image/jpg*) EXT=jpg;; *) echo "$SLUG: not an image ($TYPE)"; continue;; esac
-            mv "$D/raw" "$D/logo.$EXT"
-            node scripts/brand-templates/find-us.js --name "$NAME" --city "$CITY" --logo "$D/logo.$EXT" --out "public/claims/$SLUG" || echo "$SLUG: render failed"
-          done
-      - name: Commit
-        if: steps.q.outputs.n != '0'
+      - name: Watch the queue
         run: |
           git config user.name "Sean A. Russell"
           git config user.email "contact@lesaruss.com"
-          git add public/claims
-          git diff --cached --quiet && { echo "nothing new"; exit 0; }
-          git commit -m "Find us posts made at approval (ve-claims-onboarding)"
-          for i in 1 2 3 4; do git pull --rebase -q origin main && git push -q origin HEAD:main && exit 0; sleep $((i * 5)); done
-          exit 1
+          READY=0
+          END=$(( $(date +%s) + 345 * 60 ))
+          python3 -m http.server 8766 >/dev/null 2>&1 &
+          while [ "$(date +%s)" -lt "$END" ]; do
+            if curl -sSf -m 30 -X POST https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-claims -H 'Content-Type: application/json' \
+                 -d '{"action":"find_us_queue"}' -o "$RUNNER_TEMP/queue.json"; then
+              N=$(jq '.queue | length' "$RUNNER_TEMP/queue.json" 2>/dev/null || echo 0)
+            else
+              N=0; echo "$(date -u +%H:%M) queue did not answer"
+            fi
+            if [ "$N" != "0" ]; then
+              echo "$(date -u +%H:%M) waiting: $N"
+              git pull -q --rebase origin main || true
+              if [ "$READY" = "0" ]; then
+                npm install --no-save --no-package-lock playwright@1.48.2 && npx playwright install --with-deps chromium && READY=1
+              fi
+              jq -c '.queue[]' "$RUNNER_TEMP/queue.json" | while read -r row; do
+                SLUG=$(jq -r .slug <<<"$row"); NAME=$(jq -r .name <<<"$row"); CITY=$(jq -r .city <<<"$row"); LOGO_URL=$(jq -r .logo_url <<<"$row")
+                [[ "$SLUG" =~ ^[a-z0-9][a-z0-9-]{0,99}$ ]] || { echo "bad slug, skipped"; continue; }
+                [ -f "public/claims/$SLUG/post.jpg" ] && [ -f "public/claims/$SLUG/story.jpg" ] && { echo "$SLUG: already made, waiting for the deploy"; continue; }
+                [[ "$LOGO_URL" == https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/* ]] || { echo "$SLUG: logo not in our storage, skipped"; continue; }
+                D="$RUNNER_TEMP/logo-$SLUG"; mkdir -p "$D"
+                TYPE=$(curl -sSfL -m 60 -o "$D/raw" -w '%{content_type}' "$LOGO_URL") || { echo "$SLUG: logo did not load"; continue; }
+                case "$TYPE" in image/png*) EXT=png;; image/svg*) EXT=svg;; image/webp*) EXT=webp;; image/jpeg*|image/jpg*) EXT=jpg;; *) echo "$SLUG: not an image ($TYPE)"; continue;; esac
+                mv "$D/raw" "$D/logo.$EXT"
+                timeout 300 node scripts/brand-templates/find-us.js --name "$NAME" --city "$CITY" --logo "$D/logo.$EXT" --out "public/claims/$SLUG" || echo "$SLUG: render failed"
+              done
+              git add public/claims
+              if ! git diff --cached --quiet; then
+                git commit -q -m "Find us posts made at approval (ve-claims-onboarding)"
+                for i in 1 2 3 4; do git pull --rebase -q origin main && git push -q origin HEAD:main && { echo "pushed"; break; }; sleep $((i * 5)); done
+              fi
+            fi
+            sleep 120
+          done
+          echo "watch over; the next run takes over"
