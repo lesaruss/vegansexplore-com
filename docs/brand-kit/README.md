@@ -12,10 +12,17 @@ never from memory or a blank file (CLAUDE.md, template gate).
 | 2. Imagery: illustration style, shapes, faces never cut, asset packs | https://vegansexplore.com/mocks/brand-kit/imagery | `canon-ve-brand-kit-imagery` |
 | 3. Templates: posts, stories, thumbnails, video, podcast, email, ads | https://vegansexplore.com/mocks/brand-kit/templates | `canon-ve-brand-kit-templates` |
 | 4. The Guide roster: eight Guides, bios, voices, avatars | https://vegansexplore.com/mocks/brand-kit/roster | `canon-ve-guide-roster` |
+| 5. Web: every page part (header, buttons, tags, blocks, cards, rows, steps, forms, tabs), which parent each page copies, the check | https://vegansexplore.com/mocks/brand-kit/web ; stylesheet `/public/ve-kit.css` | `canon-ve-brand-kit-web` |
 | Social kit: profile icon, headers, podcast covers, client pack | https://vegansexplore.com/mocks/brand-kit/social | |
 | The look on a real page (the homepage) | https://vegansexplore.com/preview | |
 
 Source files: `mocks/brand-kit/*.html`, `preview/index.html`.
+
+## Building a page (Part 5, Web, 2026-11-16)
+
+Link `/public/ve-kit.css` and build from its parts (`.k-eb`, `.k-h1`, `.k-hl`, `.k-btn`/`.k-cta`, `.k-tag`, `.k-block`, `.k-card`,
+`.k-rows`, `.k-steps`, `.k-form`, `.k-tabs`, `.k-stripe`; the list is in the file's header). The reference is `/mocks/brand-kit/web`;
+the first page built on it is `/partners/giving`. Before pushing, `node scripts/look-check.js` (it also runs by itself on `git push`).
 
 ## Tokens (copy these exactly)
 

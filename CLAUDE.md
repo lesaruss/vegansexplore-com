@@ -42,12 +42,19 @@ draft message is not a lock on what it links to.
 we have systems, so we don't waste time and usage." Canon `canon-template-gate` (always loaded), error registry
 `UI-BUILT-FROM-BLANK-NOT-TEMPLATE`. Before writing any new page or view, and before redoing one:
 
+0. **Build from the kit** (Sean, 2026-11-16: "lock in the updated design, so that way we don't have to keep doing this every time you give me
+   the old look and feel"; canon `canon-ve-brand-kit-web`, always loaded; error registry `UI-BUILT-IN-OLD-LOOK`). Every new page, view or
+   walkthrough links `/public/ve-kit.css` and is built from brand kit part 5, Web (`/mocks/brand-kit/web`: header and words, buttons and tags,
+   blocks, cards, rows, steps, forms, tabs, which parent each page copies), never from an older page's own styles. A page on the Welcome
+   Guide's frame, the listing page, the business dashboard or the claim form says so with `data-kit-parent="welcome-guide|listing|business-dashboard|claim"`.
+   `scripts/look-check.js` runs before every push (`.claude/settings.json`) and refuses a new page off the kit, a new page without nav and
+   footer, and any added line with an old-look green.
 1. **Name its parent** from this map and copy that file; change only the content.
    | Building | Copy from |
    |---|---|
    | A Guide, a sampler, anything a Guide walks people through | The Explorer Guide, `passport.html?guide=welcome` + `guide-scripts/welcome-guide.js`: its Overview (Getting started card, then article rows) and its section pages (How to use this page, parts as rows, one See it for yourself call to action), the Guide in the right rail (Sean, 2026-11-09: "That's now the template for guides moving forward"). Existing Guides move to it only one at a time, when Sean says. First copy: `mocks/nominate/` |
-   | A walkthrough, pitch, mock or concept page | `/partners` with `/public/ve-guided.js` |
-   | A working tool, queue or console | `admin/depot/social.html` and the Depot pages |
+   | A walkthrough, pitch, mock or concept page | `/partners/giving` (the first walkthrough on the kit: `/public/ve-guided.js` white stage, every part from `/public/ve-kit.css`). Never `/partners` or an older mock's own styles |
+   | A working tool, queue or console | `admin/depot/social.html` for how it works (list, item, filters); its look from `/public/ve-kit.css` |
    | A dashboard for a business, organization or creator | `business-dashboard.html` at `/dashboard/business` (the creator dashboard's shell: the rounded-square picture, eyebrow, the parts as one sliding row (Sean, 2026-11-12), `?l=&tab=&pd=` in the address, rows with one button and a status tag; feeds from the database, never code). Its seven parts, in order: Home, Your page, Media kit, Opportunities, Messages, Insights, Your plan (Sean, 2026-11-11: "Approved, lock it in"; mock `/mocks/business-dashboard`; canon `canon-ve-business-dashboard` v2) |
    | A sign-up or a form of more than one section | `claim.html` (`?step=`) for the steps only. Its Guide is the Guide layout rail copied from the Welcome Guide (`#dgApp`, `#dgRail`, `.dg-maya`, `.dg-bubble`, `#dgFold` Hide me, `ve-guide-corner.js` and `ve-guide-min.js`, the Guide's picture through `VEGuideArt`), never the old `VEGuideTour.narrator`; its look is Color Block (`canon-ve-look-color-block`). A rebuild of a page Sean approved as a mock is screenshotted beside that mock at 1440 and 390 and shown to Sean before it goes live (Sean, 2026-11-12, on the claim form: "Is this even the new style?... it's using the old version of Liz") |
    | A new chapter (city hub) | the Seattle opening (canon `canon-ve-chapter-launch`, `docs/history/communities.md` Seattle): search first, every chapter list, wide city art, shown beside Los Angeles before "open" |
