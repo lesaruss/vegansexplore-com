@@ -14,7 +14,7 @@
   var pic = window.VEGuideArt ? VEGuideArt(slug, 'square') : '';
 
   var css =
-    '.dg-rail .dg-fold.dg-fold-me{display:flex !important;width:100%;justify-content:center;padding:11px 14px;margin-top:2px;}' +
+    'body:not(.ve-gf) .dg-rail .dg-fold.dg-fold-me{display:flex !important;width:100%;justify-content:center;padding:11px 14px;margin-top:2px;}@media (min-width:901px){body.ve-gf .dg-rail .dg-fold.dg-fold-me{display:flex !important;width:100%;justify-content:center;padding:11px 14px;margin-top:2px;}}' +
     '.dg-app.dg-min{grid-template-columns:minmax(0,1fr) !important;}' +
     '.dg-app.dg-min .dg-rail{display:none !important;}' +
     '.dg-mini{display:none;position:fixed;right:16px;bottom:16px;z-index:900;width:84px;padding:0;border:0;border-radius:12px;overflow:hidden;' +

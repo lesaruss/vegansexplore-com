@@ -9,7 +9,8 @@
  * ve-guide-min.js still fold the Guide away, since nothing here forces the picture or the bubble to show. */
 (function () {
   if (document.getElementById('ve-guide-corner-css')) return;
-  var R = '#dgRail', PIC = R + '>.dg-maya,' + R + '>.dg-guide';
+  // Pages on the shared frame (body.ve-gf, /public/ve-guide-frame.css, 2026-11-16) draw the Guide as a strip there; this card steps aside.
+  var R = 'body:not(.ve-gf) #dgRail', PIC = R + '>.dg-maya,' + R + '>.dg-guide';
   // Guides on phones (LOCKED by Sean 2026-11-07, canon canon-guide-mobile-card): one card that never grows. The picture a third wide
   // on the left; the words, then one row of buttons (Play, Talk to <Guide>) on the right, Hide me as a small tag at the bottom middle of the picture, the picture's bottom level with the buttons; longer
   // words scroll inside their own box. Rows are fixed (116 px words + 40 px buttons + 10 px gap = the 166 px picture).
