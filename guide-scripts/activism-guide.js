@@ -3,8 +3,11 @@
  * guide-scripts/nominate.js (head, crumb, the Getting started card, the article rows, the .vxc call to action, the rail's Back / N of M / Next).
  *
  *   #/                  Overview: Dani's welcome, the ways to act (each one its own part, none ranked above another), what is coming
- *   #/humane-education  Humane education, opened by James Wildman (Sean, 2026-11-16: "Yes, lock James as the opening"):
- *                       our podcast interview, his 101 Reasons to Go Vegan talk, his People page and his organization, one call to action
+ *   #/humane-education  Humane education: Dani's intro, then its educators, one page each (Sean, 2026-11-16: "she needs her own page,
+ *                       just like James Wildman. I would even have her lead the humane education because she's been at it for 40 plus years")
+ *   #/humane-education/susan-hargreaves  Susan Hargreaves, Be an Animal Hero: about, our 2018 episode, her listings, one call to action
+ *   #/humane-education/james-wildman     James Wildman, ARFF: about, our interview, his 101 Reasons talk, his listings, one call to action
+ * The menu shows the parts (Overview, Humane Education); the rail's Back / N of M / Next walks every page, each with its own Dani scene.
  *
  * Copy approved by Sean 2026-11-16 ("Approved, go ahead and build it"). Dani's lines are text until they are recorded (her voice id is in CLAUDE.md);
  * nothing plays until pressed. Parts not built yet say Coming, never a promise.
@@ -15,7 +18,10 @@
   var PIC = '/public/guides/';
   var ART = PIC + 'activism/dani-';
   // The people and organizations each part shows on the shared Directory card (slugs; a listing not yet approved simply does not show).
-  var JAMES_SLUGS = ['james-wildman', 'animal-rights-foundation-of-florida'];
+  // Found by name, so a listing shows as soon as it is approved, whatever slug it gets.
+  var SUSAN_NAMES = ['Susan Hargreaves', 'Be an Animal Hero'];
+  var JAMES_NAMES = ['James Wildman', 'Animal Rights Foundation of Florida'];
+  var SUSAN_AUDIO = 'https://podcasts.captivate.fm/media/0809b3b7-51b2-47b5-84c8-aad59bbe7fa0/sfv-podcast-episode-007.mp3';
   var CSS = [
     '.dg-joinbox a.dg-btn{text-decoration:none;}',
     '.ag-ways{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:12px;}',
@@ -64,10 +70,15 @@
     ['', 'sanctuary', 'Sanctuaries and rescue', 'Giving animals a safe home for life, and showing visitors who they really are.'],
     ['', 'digital', 'Digital activism', 'Videos, posts, petitions and campaigns that reach people where they scroll.']
   ];
-  var TABS = [
-    // Dani's lines, approved by Sean 2026-11-16 ("Approved, go ahead and build it"); text until recorded.
-    { k: 'overview', label: 'Overview', art: 'overview', say: 'Hi, I\'m Dani. Every animal we\'ve ever helped was helped by someone who decided to speak up. There\'s no single right way to do it. Some people teach, some march, some build sanctuaries, some change laws. This Guide walks you through all of it, so you can find the way that fits you. Let\'s start with one of the gentlest and most powerful: teaching.' },
-    { k: 'humane-education', label: 'Humane Education', art: 'humane-education', say: 'Humane education means helping people, often students, think about how their choices affect animals, people and the planet. It\'s about giving people the facts and letting them decide, not preaching. Nobody shows that better than James Wildman.' }
+  // The parts in the menu, and every page the rail walks (each page its own Dani scene).
+  var TABS = [{ k: 'overview', label: 'Overview' }, { k: 'humane-education', label: 'Humane Education' }];
+  var STEPS = [
+    // Dani's lines, approved by Sean 2026-11-16 (the Humane Education line updated for Susan the same day); text until recorded.
+    { k: 'overview', art: 'overview', say: 'Hi, I\'m Dani. Every animal we\'ve ever helped was helped by someone who decided to speak up. There\'s no single right way to do it. Some people teach, some march, some build sanctuaries, some change laws. This Guide walks you through all of it, so you can find the way that fits you. Let\'s start with one of the gentlest and most powerful: teaching.' },
+    { k: 'humane-education', art: 'humane-education', say: 'Humane education means helping people, often students, think about how their choices affect animals, people and the planet. It\'s about giving people the facts and letting them decide, not preaching. Nobody has been doing it longer, or with more heart, than Susan Hargreaves.' },
+    // The two educator pages' lines are drafts for Sean.
+    { k: 'humane-education/susan-hargreaves', art: 'susan-hargreaves', say: 'Meet Susan Hargreaves. She has been teaching people to care about animals for more than 40 years. Press play to hear her story on our podcast.' },
+    { k: 'humane-education/james-wildman', art: 'james-wildman', say: 'Meet James Wildman. He gives around 500 free talks a year. Start with our interview, then watch the talk that made him known.' }
   ];
   // The videos: ours first, then the talk (YouTube, loaded only when pressed).
   var VIDS = {
@@ -87,10 +98,10 @@
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function pic(p) { return PIC + p; }
   function rest(url) { return fetch(url, { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } }).then(function (r) { return r.json(); }); }
-  function tab(k) { for (var i = 0; i < TABS.length; i++) if (TABS[i].k === k) return TABS[i]; return TABS[0]; }
+  function step(k) { for (var i = 0; i < STEPS.length; i++) if (STEPS[i].k === k) return STEPS[i]; return STEPS[0]; }
   function href(k) { return '#/' + (k === 'overview' ? '' : k); }
   function head(k, h, lede) { return '<div class="dg-head"><div><div class="dg-k">' + esc(k) + '</div><h2 class="dg-h1">' + esc(h) + '</h2></div></div>' + (lede ? '<p class="dg-lede">' + lede + '</p>' : ''); }
-  function crumb(label) { return '<div class="dg-crumb"><a href="#/">The Vegan Activism Guide</a> &rsaquo; ' + esc(label) + '</div>'; }
+  function crumb(label, sub) { return '<div class="dg-crumb"><a href="#/">The Vegan Activism Guide</a> &rsaquo; ' + (sub ? '<a href="#/humane-education">' + esc(label) + '</a> &rsaquo; ' + esc(sub) : esc(label)) + '</div>'; }
   function card(kicker, title, picUrl, body, btns) {
     return '<section class="wg-gs"><span class="wg-gs-pic"><img src="' + esc(picUrl) + '" alt="" decoding="async" width="640" height="640"></span>' +
       '<div class="wg-gs-b"><div class="vgi-k">' + esc(kicker) + '</div><h3 class="wg-gs-t">' + esc(title) + '</h3>' + body +
@@ -115,13 +126,19 @@
   // The shared Directory card (VERegionDirectory.card / .wire), never a hand-made one.
   function cards(list, id) { return '<div class="vrd-root"><div class="rank-grid" id="' + id + '">' + list.map(function (l, i) { return window.VERegionDirectory ? VERegionDirectory.card(l, i) : ''; }).join('') + '</div></div>'; }
   function wireCards(id) { var g = $(id); if (g && window.VERegionDirectory) VERegionDirectory.wire(g, function (slug) { location.href = '/directory/' + encodeURIComponent(slug); }); }
-  function loadCards(slugs, boxId, gridId) {
+  function loadCards(names, boxId, gridId, done) {
     var FIELDS = window.VERegionDirectory && VERegionDirectory.FIELDS ? VERegionDirectory.FIELDS : 'id,slug,name,category,logo_url,vote_count,address_city,address_state,color,vegan_status,communities,tags,extra_categories';
-    rest(SB + '/rest/v1/listings?select=' + FIELDS + '&status=eq.approved&slug=in.(' + slugs.join(',') + ')').then(function (rows) {
-      var box = $(boxId); if (!box || !Array.isArray(rows) || !rows.length) return;
-      rows.sort(function (a, b) { return slugs.indexOf(a.slug) - slugs.indexOf(b.slug); });
+    var or = names.map(function (n) { return 'name.ilike.' + encodeURIComponent(n.replace(/[,()*]/g, ' ')); }).join(',');
+    rest(SB + '/rest/v1/listings?select=' + FIELDS + '&status=eq.approved&or=(' + or + ')').then(function (rows) {
+      var box = $(boxId); if (!box || !Array.isArray(rows) || !rows.length) { if (done) done([]); return; }
+      function at(r) { for (var i = 0; i < names.length; i++) if (names[i].toLowerCase() === String(r.name || '').toLowerCase()) return i; return 99; }
+      rows.sort(function (a, b) { return at(a) - at(b); });
       box.innerHTML = cards(rows, gridId); wireCards(gridId);
-    }).catch(function () {});
+      if (done) done(rows);
+    }).catch(function () { if (done) done([]); });
+  }
+  function educator(k, name, org, line) {
+    return '<li><a class="ag-way" href="#/humane-education/' + k + '"><span class="ag-ic"><svg viewBox="0 0 24 24" aria-hidden="true">' + IC.teach + '</svg></span><span><b>' + esc(name) + '</b><small>' + esc(org) + '. ' + esc(line) + '</small><span class="ag-tag live">Open</span></span></a></li>';
   }
 
   var VIEWS = {
@@ -135,7 +152,25 @@
         '<div class="ag-sec"><h3>Also coming</h3><p class="ag-sub">The talks that changed minds around the world, campaign news, and a place to rally and talk with other activists.</p></div>';
     },
     'humane-education': function () {
-      return crumb('Humane Education') + head('Humane education', 'Teaching With James Wildman', '') +
+      return crumb('Humane Education') + head('Humane education', 'Teaching People to Care', '') +
+        '<p class="ag-about">Humane education means helping people, often students, think about how their choices affect animals, people and the planet. It is about giving people the facts and letting them decide, not preaching.</p>' +
+        '<div class="ag-sec"><h3>The educators</h3><p class="ag-sub">Each one has their own page: their story, what to watch or hear, and how to reach them.</p>' +
+        '<ul class="ag-ways">' +
+        educator('susan-hargreaves', 'Susan Hargreaves', 'Be an Animal Hero', 'More than 40 years in schools, children\'s books and the documentary The Heart Whisperer.') +
+        educator('james-wildman', 'James Wildman', 'Animal Rights Foundation of Florida', 'Around 500 free talks a year and the talk 101 Reasons to Go Vegan.') +
+        '</ul></div>';
+    },
+    'humane-education/susan-hargreaves': function () {
+      return crumb('Humane Education', 'Susan Hargreaves') + head('Humane education', 'Teaching With Susan Hargreaves', '') +
+        '<p class="ag-about">Susan Hargreaves founded Be an Animal Hero and has been a humane educator for more than 40 years. She has written children\'s books and educational resource books, performs at schools with giveaways for students and people in need, and regularly works with PETA and other organizations to hand out items. Her documentary on humane education, <i>The Heart Whisperer</i>, was directed by the director of <i>Earthlings</i>. Our founder credits her as his personal Vegan mentor.</p>' +
+        '<div class="ag-sec"><h3>Listen</h3><div class="ag-vids"><article class="ag-vid"><div class="ag-vid-b"><div class="ag-vid-k">Our episode</div><b>Susan Hargreaves: Founder of Animal Hero Kids</b>' +
+        '<p>Susan on Vegan living, animal rights and making the change, on the SoFlo Vegans Podcast.</p><span class="ag-len">36 minutes \u00b7 the SoFlo Vegans Podcast, part of the Vegans Explore Network</span>' +
+        '<audio controls preload="none" src="' + SUSAN_AUDIO + '" style="width:100%;margin-top:10px"></audio></div></article></div></div>' +
+        '<div class="ag-sec"><h3>Meet them</h3><p class="ag-sub">Susan and her organization in the Directory.</p><div id="agSusan"><p class="ag-sub">Their Directory pages are on the way.</p></div></div>' +
+        '<div id="agSusanGo"></div>';
+    },
+    'humane-education/james-wildman': function () {
+      return crumb('Humane Education', 'James Wildman') + head('Humane education', 'Teaching With James Wildman', '') +
         '<p class="ag-about">James Wildman is a humane educator with the Animal Rights Foundation of Florida. He has worked there for more than 13 years, gives around 500 free presentations a year in schools, universities and communities, and has spoken to more than 100,000 people.</p>' +
         '<div class="ag-sec"><h3>Watch</h3><div class="ag-vids">' + vid(VIDS.interview) + vid(VIDS.talk) + '</div></div>' +
         '<div class="ag-sec"><h3>Meet them</h3><p class="ag-sub">James and his organization in the Directory.</p><div id="agJames"></div></div>' +
@@ -145,6 +180,7 @@
 
   // ---------- menu and Dani (nominate.js / welcome-guide.js) ----------
   function drawMenu(cur) {
+    cur = cur.split('/')[0];
     menuEl.innerHTML = TABS.map(function (t) { return '<a href="' + href(t.k) + '"' + (t.k === cur ? ' aria-current="page"' : '') + '>' + esc(t.label) + '</a>'; }).join('');
     menuSel.innerHTML = TABS.map(function (t, n) { return '<option value="' + t.k + '"' + (t.k === cur ? ' selected' : '') + '>' + (n + 1) + '. ' + esc(t.label) + '</option>'; }).join('');
   }
@@ -155,19 +191,24 @@
     foldBtn.textContent = f ? 'Show Dani' : 'Hide Dani'; foldBtn.setAttribute('aria-expanded', String(!f));
   });
   function drawDani() {
-    var t = tab(curTab), i = TABS.indexOf(t);
+    var t = step(curTab), i = STEPS.indexOf(t);
     bubble.textContent = t.say;
     var box = $('dgMaya'); box.innerHTML = ''; box.style.backgroundImage = "url('" + ART + t.art + ".jpg')";
     $('dgPlay').hidden = true;   // no recording yet: the Play button shows once Dani's lines are recorded
-    tourEl.innerHTML = tourM.innerHTML = '<a class="dg-tnav" href="' + href(TABS[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Back</a><span>' + (i + 1) + ' of ' + TABS.length + '</span>' +
-      '<a class="dg-tnav next" href="' + href(TABS[Math.min(TABS.length - 1, i + 1)].k) + '"' + (i < TABS.length - 1 ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Next</a>';
+    tourEl.innerHTML = tourM.innerHTML = '<a class="dg-tnav" href="' + href(STEPS[Math.max(0, i - 1)].k) + '"' + (i ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Back</a><span>' + (i + 1) + ' of ' + STEPS.length + '</span>' +
+      '<a class="dg-tnav next" href="' + href(STEPS[Math.min(STEPS.length - 1, i + 1)].k) + '"' + (i < STEPS.length - 1 ? '' : ' aria-disabled="true" style="opacity:.35;pointer-events:none"') + '>Next</a>';
   }
   function route() {
-    var k = (location.hash.replace(/^#\/?/, '') || 'overview').split(/[?\/]/)[0] || 'overview';
+    var k = (location.hash.replace(/^#\/?/, '') || 'overview').split('?')[0].replace(/\/+$/, '') || 'overview';
     if (!VIEWS[k]) k = 'overview';
     curTab = k;
     main.innerHTML = VIEWS[k]();
-    if (k === 'humane-education') loadCards(JAMES_SLUGS, 'agJames', 'agJamesGrid');
+    if (k === 'humane-education/james-wildman') loadCards(JAMES_NAMES, 'agJames', 'agJamesGrid');
+    if (k === 'humane-education/susan-hargreaves') loadCards(SUSAN_NAMES, 'agSusan', 'agSusanGrid', function (rows) {
+      // Bring Susan to your school shows once her People page is live, and links to it.
+      var me = rows.filter(function (r) { return /susan hargreaves/i.test(r.name || ''); })[0], go = $('agSusanGo');
+      if (me && go) go.innerHTML = cta('Humane education', 'Bring Susan to your school.', 'Susan performs at schools, with giveaways for students. Reach her through her page.', ['Bring Susan to your school', '/directory/' + me.slug]);
+    });
     drawMenu(curTab); drawDani();
     window.scrollTo(0, 0);
   }
