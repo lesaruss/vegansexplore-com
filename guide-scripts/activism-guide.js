@@ -25,6 +25,9 @@
   // Street outreach (Sean, 2026-11-16: "Go ahead with street outreach"): the groups and people known for it that we list.
   // Direct action (Sean, 2026-11-16: "Go ahead with direct action"): groups known for it that we list (The Save Movement and Surge show once listed).
   var ACTION_NAMES = ['Direct Action Everywhere', 'The Save Movement', 'Surge', 'Animal Equality', 'Mercy For Animals', 'The Humane League', 'PETA'];
+  // Legal and policy work (Sean, 2026-11-16: "Go ahead with legal and policy work"); ALDF and the Nonhuman Rights Project show once listed.
+  var LAW_NAMES = ['Animal Legal Defense Fund', 'Nonhuman Rights Project', 'Physicians Committee for Responsible Medicine', 'Humane World for Animals', 'The Humane League', 'Mercy For Animals'];
+  var SCHOOL_MILK_AUDIO = 'https://episodes.captivate.fm/episode/33c5126d-a2a4-4a20-8437-1a7fa327d191.mp3';
   var OUTREACH_NAMES = ['Anonymous for the Voiceless', 'Vegan Outreach', 'Earthling Ed', 'Joey Carbstrong', 'Revolution Philadelphia'];
   // More humane educators (Sean, 2026-11-16: "find out who the community would consider humane educators"); each shows once its listing is approved.
   var MORE_EDU_NAMES = ['TeachKind', 'LivingKind', 'Ruby Roth', 'Factory Farming Awareness Coalition', 'Institute for Humane Education'];
@@ -104,12 +107,12 @@
     ['humane-education', 'teach', 'Humane education', 'Helping people, often students, think through how their choices affect animals, people and the planet.'],
     ['street-outreach', 'outreach', 'Street outreach', 'Conversations with people on the street, often with footage, so they can see for themselves.'],
     ['direct-action', 'direct', 'Direct action', 'Protests, vigils and peaceful public actions that bring attention to what animals go through.'],
-    ['', 'law', 'Legal and policy work', 'Changing laws, rules and the way companies and schools do things.'],
+    ['legal-policy', 'law', 'Legal and policy work', 'Changing laws, rules and the way companies and schools do things.'],
     ['sanctuaries', 'sanctuary', 'Sanctuaries and rescue', 'Giving animals a safe home for life, and showing visitors who they really are.'],
     ['', 'digital', 'Digital activism', 'Videos, posts, petitions and campaigns that reach people where they scroll.']
   ];
   // The parts in the menu, and every page the rail walks (each page its own Dani scene).
-  var TABS = [{ k: 'overview', label: 'Overview' }, { k: 'humane-education', label: 'Humane Education' }, { k: 'street-outreach', label: 'Street Outreach' }, { k: 'direct-action', label: 'Direct Action' }, { k: 'speeches', label: 'The Speeches' }, { k: 'sanctuaries', label: 'Sanctuaries' }, { k: 'history', label: 'History' }];
+  var TABS = [{ k: 'overview', label: 'Overview' }, { k: 'humane-education', label: 'Humane Education' }, { k: 'street-outreach', label: 'Street Outreach' }, { k: 'direct-action', label: 'Direct Action' }, { k: 'legal-policy', label: 'Legal and Policy' }, { k: 'speeches', label: 'The Speeches' }, { k: 'sanctuaries', label: 'Sanctuaries' }, { k: 'history', label: 'History' }];
   var STEPS = [
     // Dani's lines, approved by Sean 2026-11-16 (the Humane Education line updated for Susan the same day); text until recorded.
     { k: 'overview', art: 'overview', say: 'Hi, I\'m Dani. Every animal we\'ve ever helped was helped by someone who decided to speak up. There\'s no single right way to do it. Some people teach, some march, some build sanctuaries, some change laws. This Guide walks you through all of it, so you can find the way that fits you. Let\'s start with one of the gentlest and most powerful: teaching.' },
@@ -123,6 +126,8 @@
     { k: 'street-outreach', art: 'street-outreach', say: 'Street outreach is just a conversation, on a sidewalk, with someone who has never been asked to think about animals this way. You do not need all the answers. You need to listen, ask good questions and be kind. Start by joining a group near you.' },
     // Draft for Sean (2026-11-16, "Go ahead with direct action").
     { k: 'direct-action', art: 'direct-action', say: 'Sometimes the most powerful thing we can do is show up, together, where everyone can see us. Marches, vigils and peaceful protests remind the world that animals have people standing up for them. Go with a group, stay peaceful, and you will never forget your first one.' },
+    // Draft for Sean (2026-11-16, "Go ahead with legal and policy work").
+    { k: 'legal-policy', art: 'legal-policy', say: 'Laws decide how millions of animals are treated, and laws are written by people who answer to us. You do not need to be a lawyer to change them. A phone call, an email or two minutes at a public meeting can be the voice that tips a vote.' },
     // Draft for Sean (2026-11-16, "Go ahead with the speeches").
     { k: 'speeches', art: 'speeches', say: 'Sometimes one talk is all it takes. These are some of the most watched and shared talks on Veganism anywhere, and the list keeps growing. Start with a short one tonight, save the long ones for when you have the time, and tell us which talk changed your mind.' },
     // Draft for Sean (2026-11-16, "Go ahead with sanctuaries and rescue").
@@ -288,6 +293,35 @@
         '<div class="k-f wide"><button type="submit" class="dg-btn" id="agSugGo">Send my suggestion</button><p class="k-msg" id="agSugMsg" role="status"></p></div>' +
         '</form>';
     },
+    'legal-policy': function () {
+      var forms = [
+        ['law', 'Animal law in the courts', 'Lawyers who use the law to protect animals, challenge cruelty and push for animals to have rights of their own. The Animal Legal Defense Fund and the Nonhuman Rights Project are known for it.'],
+        ['direct', 'Ballot measures', 'Voters deciding directly how animals are treated, like California\'s Proposition 12 in 2018, which set space requirements for some farm animals.'],
+        ['outreach', 'Talking to lawmakers', 'Calling, writing to and meeting with elected officials about bills that affect animals, from the city council to Congress.'],
+        ['teach', 'Food in schools and hospitals', 'Changing the rules for public meals so plant-based options are offered, like the push to let schools serve plant-based milk.'],
+        ['sanctuary', 'Local rules and resolutions', 'Cities and counties passing their own measures, such as plant-based days in public cafeterias or protections for local wildlife.']
+      ];
+      var steps = [
+        ['Find your representatives', 'Look up who represents you at the city, state and national level. They want to hear from the people who vote for them.'],
+        ['Call or write', 'A short, polite message in your own words about one bill does more than a long one. Say who you are, where you live and what you ask.'],
+        ['Speak at a public meeting', 'Most city councils and school boards set aside time for public comment. Two minutes from someone who lives there carries weight.'],
+        ['Vote, and help others vote', 'Read your ballot for measures that affect animals, and share what you learn with friends and family.']
+      ];
+      return crumb('Legal and Policy Work') + head('Legal and policy work', 'Change the Rules', '') +
+        '<div class="ag-sec"><h3>What is legal and policy work?</h3>' +
+        '<p class="ag-about">Legal and policy work changes the rules: the laws, regulations and public policies that decide how animals are treated and what food is served in schools, hospitals and public places. It happens in courtrooms, legislatures, city councils and at the ballot box, and anyone who votes can take part.</p></div>' +
+        '<div class="ag-sec"><h3>The ways it is done</h3><ul class="ag-ways">' + forms.map(function (w) {
+          return '<li><div class="ag-way"><span class="ag-ic"><svg viewBox="0 0 24 24" aria-hidden="true">' + IC[w[0]] + '</svg></span><span><b>' + esc(w[1]) + '</b><small>' + esc(w[2]) + '</small></span></div></li>';
+        }).join('') + '</ul></div>' +
+        '<div class="ag-sec"><h3>Listen</h3><div class="ag-vids"><article class="ag-vid"><div class="ag-vid-b"><div class="ag-vid-k">Our episode</div><b>Plant-Based Milk in Schools: A Historic Policy Shift Explained</b>' +
+        '<p>Sean A. Russell explains the bipartisan bill to let schools serve plant-based milk, what it changes and why it matters for students.</p><span class="ag-len">5 minutes \u00b7 the Vegans Explore Podcast</span>' +
+        '<audio controls preload="none" src="' + SCHOOL_MILK_AUDIO + '" style="width:100%;margin-top:10px"></audio></div></article></div></div>' +
+        '<div class="ag-sec"><h3>How anyone can take part</h3><ol class="ag-tl" style="--ag-c:#FF9EC4">' + steps.map(function (x) {
+          return '<li class="ag-ev"><details open><summary><b>' + esc(x[0]) + '</b></summary><div class="ag-evb"><p>' + esc(x[1]) + '</p></div></details></li>';
+        }).join('') + '</ol></div>' +
+        '<div class="ag-sec"><h3>Who does it</h3><p class="ag-sub">Organizations working on laws and policy for animals, in our Directory.</p><div id="agLaw"><p class="ag-sub">Loading...</p></div></div>' +
+        cta('Legal and policy work', 'See how far the law has come.', 'From the first animal cruelty law in 1822 to today, the History of the Vegan Movement follows the rules that changed.', ['A History of the Vegan Movement', '#/history']);
+    },
     'direct-action': function () {
       var forms = [
         ['direct', 'Marches', 'Thousands of people walking together through a city for the animals, like the Official Animal Rights March organized by Surge.'],
@@ -452,6 +486,7 @@
     if (k === 'humane-education') { loadCards(MORE_EDU_NAMES, 'agMoreEdu', 'agMoreEduGrid'); loadBooks(['Susan Hargreaves', 'Zoe Weil', 'Ruby Roth'], 'agTeachBooksSec', 'agTeachBooks', 'agTeachBooksGrid'); }
     if (k === 'speeches') loadCards(SPEAKER_NAMES, 'agSpk', 'agSpkGrid');
     if (k === 'direct-action') loadCards(ACTION_NAMES, 'agAct', 'agActGrid');
+    if (k === 'legal-policy') loadCards(LAW_NAMES, 'agLaw', 'agLawGrid');
     if (k === 'street-outreach') { loadCards(OUTREACH_NAMES, 'agOut', 'agOutGrid'); loadBooks(['Ed Winters'], 'agOutBooksSec', 'agOutBooks', 'agOutBooksGrid'); }
     if (k === 'sanctuaries') { loadTop('Sanctuaries', 'agSan', 'agSanGrid'); loadTop('Rescues', 'agRes', 'agResGrid'); }
     if (k === 'humane-education/susan-hargreaves') loadCards(SUSAN_NAMES, 'agSusan', 'agSusanGrid', function (rows) {
