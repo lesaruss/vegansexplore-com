@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en" data-kit-parent="welcome-guide">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guide page, new layout: mock — Vegans Explore</title>
+  <meta name="description" content="A proposed layout for every Guide page, shown on the Holiday Guide's New Year's Eve section. Mock, not live.">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="canonical" href="https://vegansexplore.com/mocks/guide-page/">
+  <link rel="stylesheet" href="/public/ve-kit.css">
+  <style>
+    /* Mock (Sean, 2026-11-16: "I don't feel like this is the best design. It's a little confusing. Let's have a panel take a look at it...
+       And this may apply to all our guides"; then "yes, build the mock"). The panel's layout for every Guide page, on New Year's Eve:
+       the page title and its one orange action on the first screen, one menu instead of two, the Guide once (rail on desktop, one line on
+       phones), no section overview stop (the holiday page holds its content), one card per business, honest empty states, Coming rows,
+       a doorway for businesses, and the page scrolls as a page (nothing scrolls inside itself). Built from /public/ve-kit.css. */
+    body { margin: 0; background: #fff; color: var(--k-ink); font-family: 'Montserrat', system-ui, sans-serif; }
+    .mk-note { background: var(--k-peach); font-size: 13px; font-weight: 700; line-height: 1.45; padding: 10px 40px; }
+    .mk-note b { color: #8a4d00; letter-spacing: .08em; text-transform: uppercase; margin-right: 6px; }
+    /* The Guide's header: name, one menu (the holiday), and the free line as a small link, not a box */
+    .gp-top { background: var(--k-pink); padding: 18px 40px 16px; display: flex; align-items: end; justify-content: space-between; gap: 14px 24px; flex-wrap: wrap; }
+    .gp-top .k-label { color: var(--k-ink); margin: 0 0 4px; }
+    .gp-name { font-size: clamp(24px, 2.4vw, 34px); font-weight: 900; letter-spacing: -.03em; margin: 0; line-height: 1.05; }
+    .gp-nav { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+    .gp-nav .k-select { width: auto; min-width: 230px; background-color: #fff; }
+    .gp-free { font-size: 12.5px; font-weight: 800; color: var(--k-ink); }
+    .gp-free a { color: var(--k-pinkd); }
+    .gp-stripe { margin: 0; border-radius: 0; height: 8px; }
+    main { padding: 22px 40px 64px; }
+    .gp-crumb { font-size: 12.5px; font-weight: 700; color: var(--k-mute); margin: 0 0 14px; }
+    .gp-crumb a { color: var(--k-dk); text-decoration: none; }
+    .gp-wrap { display: grid; grid-template-columns: minmax(0, 3fr) minmax(260px, 1fr); gap: 32px; align-items: start; }
+    .gp-hero .k-eb { margin-bottom: 10px; }
+    .gp-sec { margin-top: 30px; }
+    .gp-sec .k-h2 { font-size: clamp(22px, 2vw, 30px); }
+    .gp-sec > p { font-size: 14px; font-weight: 600; color: var(--k-mute); margin: -4px 0 14px; max-width: 860px; }
+    .gp-empty { border: 2px dashed var(--k-ink); border-radius: var(--k-rc); padding: 18px 20px; display: flex; gap: 14px 22px; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+    .gp-empty b { display: block; font-size: 16px; font-weight: 900; margin-bottom: 4px; }
+    .gp-empty span { font-size: 13.5px; font-weight: 600; color: var(--k-mute); }
+    .gp-biz { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 14px; align-items: start; }
+    .gp-logo { width: 64px; height: 64px; border-radius: 12px; border: 2px solid var(--k-ink); background: #fff center/cover no-repeat; display: block; }
+    .gp-biz h3 { margin: 0 0 4px; font-size: 18px; font-weight: 900; }
+    .gp-biz h3 a { color: inherit; text-decoration: none; }
+    .gp-meta { font-size: 13px; font-weight: 700; margin: 0 0 8px; display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: center; }
+    .gp-meta span b { font-weight: 900; }
+    .gp-biz p { font-size: 13.5px; font-weight: 600; line-height: 1.5; margin: 0 0 12px; }
+    /* The Guide: once, in the rail on desktop; one line on phones */
+    .gp-guide { position: sticky; top: 16px; }
+    .gp-guide .k-pic { aspect-ratio: 4 / 5; }
+    .gp-guide .k-pic img { object-position: center top; }
+    .gp-guide .k-label { margin-top: 14px; }
+    .gp-say { border: 2px solid var(--k-ink); border-radius: var(--k-rc); background: var(--k-pinkt); padding: 12px 14px; font-size: 13.5px; font-weight: 600; line-height: 1.5; margin: 6px 0 10px; }
+    .gp-strip { display: none; }
+    .gp-coming .k-row { border-style: dashed; }
+    @media (max-width: 900px) {
+      .mk-note { padding: 10px 16px; }
+      .gp-top { padding: 14px 16px 12px; }
+      .gp-nav, .gp-nav .k-select { width: 100%; }
+      main { padding: 14px 16px 48px; }
+      .gp-wrap { grid-template-columns: minmax(0, 1fr); }
+      .gp-guide { display: none; }
+      .gp-strip { display: flex; align-items: center; gap: 10px; border: 2px solid var(--k-ink); border-radius: 12px; background: var(--k-pinkt); padding: 8px 10px; margin: 0 0 14px; font-size: 13px; font-weight: 700; line-height: 1.35; }
+      .gp-strip img { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; object-position: center top; border: 2px solid var(--k-ink); flex: none; }
+      .gp-strip span { flex: 1; min-width: 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+      .gp-strip .k-btn { padding: 8px 10px; }
+      .gp-strip .k-btn { flex: none; }
+      .gp-biz { grid-template-columns: 52px minmax(0, 1fr); }
+      .gp-logo { width: 52px; height: 52px; }
+      .gp-hero .k-h1 { font-size: 34px; }
+    }
+  </style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+
+<div class="mk-note"><b>Mock</b> A proposed layout for every Guide page, shown on New Year's Eve with today's real menus and events. Nothing here is live; the buttons go to today's pages.</div>
+
+<header class="gp-top" data-k-section="guides">
+  <div>
+    <span class="k-label">Vegans Explore Guides</span>
+    <h1 class="gp-name">The Holiday Guide</h1>
+  </div>
+  <div class="gp-nav">
+    <label class="gp-free">Free for everyone. <a href="/welcome">Join free</a></label>
+    <select class="k-select" aria-label="Go to a holiday">
+      <option>Overview</option><option>ThanksLiving · November 26</option><option>Hanukkah · Begins December 4</option><option>Christmas · December 25</option>
+      <option selected>New Year's Eve · December 31</option><option>Give Back</option><option>11 Days of Giving</option><option>For Businesses</option>
+    </select>
+  </div>
+</header>
+<div class="k-stripe gp-stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+<main>
+  <div class="gp-crumb"><a href="/guides/holiday-guide">Holiday Guide</a> &rsaquo; New Year's Eve</div>
+
+  <div class="gp-strip" role="note">
+    <img src="/public/guides/holiday/theo-new-years-eve.jpg" alt="Theo, your guide for the holidays">
+    <span><b>Theo:</b> Ringing in the new year? Here are the Vegan places cooking for the night and the parties to ring it in.</span>
+    <button type="button" class="k-btn k-sm" data-hear>&#9654; Hear Theo</button>
+  </div>
+
+  <div class="gp-wrap">
+    <div>
+      <section class="gp-hero">
+        <span class="k-eb pk">December 31 · 45 days to go</span>
+        <h2 class="k-h1">New Year's Eve</h2>
+        <p class="k-lede">Where to ring in the new year, and food everyone at your table can eat.</p>
+        <div class="k-btns"><a class="k-btn k-cta" href="/guides/holiday-guide#/ny-menus/near">Find it near me</a><a class="k-btn" href="#celebrate">Where to celebrate</a><a class="k-btn" href="#order">Order a feast</a></div>
+      </section>
+
+      <section class="gp-sec" id="celebrate">
+        <h2 class="k-h2">Ring in the new year</h2>
+        <p>Vegan dinners, parties and countdowns on December 31.</p>
+        <div class="gp-empty">
+          <div><b>No New Year's Eve parties posted yet.</b><span>Hosting a dinner, a party or a countdown? Add it and people near you will find it.</span></div>
+          <div class="k-btns"><a class="k-btn" href="/events#submit/1">Add your event</a><a class="k-btn k-sm" href="/events">See all December events</a></div>
+        </div>
+      </section>
+
+      <section class="gp-sec" id="order">
+        <h2 class="k-h2">Order a New Year's Eve feast</h2>
+        <p>Vegan places cooking for the night. One card per business; pick the location nearest you.</p>
+        <div class="k-grid">
+          <article class="k-card k-c-pk gp-biz">
+            <a class="gp-logo" href="/directory/next-level-veggie-grill-tustin" aria-label="Next Level Veggie Grill, their listing" style="background-image:url('https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/listings/next-level-veggie-grill/logo-2026-10-28-d0b8ba12.jpg')"></a>
+            <div>
+              <h3><a href="/directory/next-level-veggie-grill-tustin">Next Level Veggie Grill</a></h3>
+              <div class="gp-meta"><span class="k-tag live">100% Vegan</span><span><b>19 locations</b></span><span><b>Pickup</b> Dec 26, 27, 31 and Jan 1</span></div>
+              <p class="k-clamp">The Holiday Feast: comfort food for 6 to 8 guests, ordered as a full Feast, gluten free, with dessert added, or a la carte.</p>
+              <div class="k-btns"><a class="k-btn k-on" href="/guides/holiday-guide#/ny-menus/near">See locations near me</a><a class="k-btn k-sm" href="/guides/holiday-guide#/ny-menus">See the menu</a></div>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section class="gp-sec gp-coming">
+        <h2 class="k-h2">Coming in December</h2>
+        <div class="k-rows">
+          <div class="k-row"><span class="k-num pk">1</span><span class="k-row-t"><b>Your first Vegan year</b><small>Starting the new year plant-based: simple first steps, and a Guide to walk you through them.</small></span><span class="k-tag wait">Coming</span></div>
+          <div class="k-row"><span class="k-num or">2</span><span class="k-row-t"><b>The year in review</b><small>The top moments of the year in the Vegan movement. Vote for the one that mattered most.</small></span><span class="k-tag wait">Coming</span></div>
+        </div>
+      </section>
+
+      <section class="gp-sec">
+        <div class="k-block k-tint" style="display:flex;gap:14px 24px;align-items:center;justify-content:space-between;flex-wrap:wrap">
+          <div><span class="k-label">Run a Vegan business?</span><b style="font-size:16px;font-weight:900">Add your New Year's Eve menu or event. It's free for members.</b></div>
+          <div class="k-btns"><a class="k-btn" href="/guides/holiday-guide#/business">Send your menu</a><a class="k-btn" href="/events#submit/1">Add your event</a></div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="gp-guide" aria-label="Theo, your guide">
+      <div class="k-pic" data-k-section="guides"><img src="/public/guides/holiday/theo-new-years-eve.jpg" alt="Theo raising a glass at a New Year's Eve party"></div>
+      <span class="k-label">Theo · Your guide for the holidays</span>
+      <div class="gp-say">Ringing in the new year? On this page are the Vegan places cooking for New Year's Eve and the parties to ring it in.</div>
+      <button type="button" class="k-btn k-sm" data-hear>&#9654; Hear Theo</button>
+    </aside>
+  </div>
+</main>
+
+<script>
+  (function () {
+    var a = new Audio('https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/holiday-guide/theo-new-years-eve-v1.mp3');
+    [].forEach.call(document.querySelectorAll('[data-hear]'), function (b) {
+      b.addEventListener('click', function () { if (a.paused) { a.currentTime = 0; a.play(); } else a.pause(); });
+    });
+  })();
+</script>
+<script src="/public/footer.js"></script>
+</body>
+</html>
