@@ -67,6 +67,11 @@
     .gv-f label{display:block;font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--dk);margin:0 0 6px;}
     .gv-f input,.gv-f textarea{font:inherit;font-size:15px;font-weight:600;color:var(--ink);border:3px solid var(--ink);border-radius:6px;padding:10px 14px;min-height:50px;width:100%;box-sizing:border-box;background:#fff;}
     .gv-f textarea{min-height:90px;resize:vertical;}
+    /* Holiday hours: one row per day, the day and its hours, like the weekly hours. */
+    .hh-row{display:grid;grid-template-columns:minmax(0,240px) minmax(0,1fr) auto;gap:10px;align-items:center;margin:0 0 10px;}
+    .hh-row select,.hh-row input{font:inherit;font-size:15px;font-weight:600;color:var(--ink);border:3px solid var(--ink);border-radius:6px;padding:10px 14px;min-height:50px;width:100%;box-sizing:border-box;background:#fff;}
+    .hh-row select{appearance:none;-webkit-appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 16px center;}
+    @media(max-width:560px){.hh-row{grid-template-columns:1fr auto;}.hh-row select{grid-column:1/-1;}}
     .gv-f .wide{grid-column:1/-1;}
     .gv-f small{display:block;margin-top:5px;font-size:12.5px;font-weight:600;color:#555;}
     .gv-ph{width:64px;height:64px;border-radius:10px;border:1px solid #ddd;background:#f6f6f6 center/cover no-repeat;flex:0 0 64px;}
@@ -456,24 +461,40 @@
   function hhDay(h) { return new Date(h.holiday_on + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }); }
   // Only places people visit (the food kind) are asked; a group, show or brand has no opening hours.
   function hhList() { return HH && HH.holidays && ((D && D.listing && D.listing.kind) || 'food') === 'food' ? HH.holidays : []; }
+  // The days around the holiday an owner can pick (four before to four after), each as "Wed, Nov 25".
+  function hhDates(h) {
+    var on = new Date(h.holiday_on + 'T12:00:00'), out = [];
+    for (var i = -4; i <= 4; i++) { var d = new Date(on.getTime() + i * 86400000);
+      out.push([d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'),
+        d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) + (i === 0 ? ' (' + hhName(h) + ')' : '')]); }
+    return out;
+  }
+  function hhRow(h, d) {
+    return '<div class="hh-row"><select aria-label="Day" data-hh-date>' + hhDates(h).map(function (x) { return '<option value="' + x[0] + '"' + (x[0] === d.date ? ' selected' : '') + '>' + esc(x[1]) + '</option>'; }).join('') + '</select>' +
+      '<input data-hh-hours maxlength="40" placeholder="Closed, or 11 AM to 6 PM" value="' + esc(d.hours || '') + '" aria-label="Hours that day" data-dictate="off">' +
+      '<button type="button" class="btn btn-sm" data-hh-del aria-label="Remove this day">Remove</button></div>';
+  }
   function drawHolidayHours(slug) {
     var h = hhList().filter(function (x) { return x.slug === slug; })[0];
     if (!h) return '<p class="empty">That holiday is not open for hours right now. <a href="' + base('home') + '" data-part="home">Back to Home</a></p>';
     var a = h.answer, nm = hhName(h);
+    var days = a && a.status === 'special' && a.days && a.days.length ? a.days : [{ date: h.holiday_on, hours: 'Closed' }];
     return '<section class="card"><h2>Your <span class="hl o">' + esc(nm) + ' hours</span></h2><p class="lede" style="margin:0 0 6px">' + esc(hhDay(h)) +
-      '. Visitors see this on your page, so they know before they come.</p>' +
+      '. Visitors see this on your page beside your regular hours, so they know before they come.</p>' +
       (a ? '<p class="empty" style="margin:0 0 14px">Now showing: <b>' + esc(a.status === 'same' ? 'Regular hours' : a.hours) + '</b></p>' : '') +
       '<button type="button" class="btn" id="hhSame">Staying the same</button>' +
-      '<div class="gv-f" style="margin-top:20px"><div class="wide"><label for="hhText">Or your ' + esc(nm) + ' hours</label><textarea id="hhText" maxlength="300" placeholder="Closed on ' + esc(nm) + ' Day. The day before, closing at 8 PM.">' + esc(a && a.status === 'special' ? a.hours : '') + '</textarea>' +
-      '<small>Say which days and times change: early closing, closed, or special hours.</small></div></div>' +
+      '<div class="sec" style="margin-top:22px"><h2 style="font-size:18px">Or the days your hours <span class="hl p">change</span></h2></div>' +
+      '<div id="hhDays">' + days.map(function (d) { return hhRow(h, d); }).join('') + '</div>' +
+      '<button type="button" class="btn btn-sm" id="hhAdd" style="margin:4px 0 18px">Add another day</button><br>' +
       '<button type="button" class="btn btn-go" id="hhSave">Save these hours</button><p class="msg" id="hhMsg" role="status" style="margin:10px 0 0;font-weight:700"></p></section>';
   }
   function hhSend(slug, same) {
-    var m = $('hhMsg'), t = ($('hhText') && $('hhText').value || '').trim();
-    if (!same && t.length < 3) { m.textContent = 'Write your hours, or choose Staying the same.'; return; }
+    var m = $('hhMsg'), days = [];
+    app.querySelectorAll('#hhDays .hh-row').forEach(function (r) { var t = r.querySelector('[data-hh-hours]').value.trim(); if (t) days.push({ date: r.querySelector('[data-hh-date]').value, hours: t }); });
+    if (!same && !days.length) { m.textContent = 'Add the hours for at least one day, or choose Staying the same.'; return; }
     ['hhSame', 'hhSave'].forEach(function (id) { var b = $(id); if (b) b.disabled = true; });
     m.textContent = 'Saving...';
-    post('ve-holiday', { action: 'hours_save', listing_id: L.id, holiday: slug, same: !!same, hours: same ? '' : t }).then(function (r) {
+    post('ve-holiday', { action: 'hours_save', listing_id: L.id, holiday: slug, same: !!same, days: same ? [] : days }).then(function (r) {
       if (!r || !r.ok) { ['hhSame', 'hhSave'].forEach(function (id) { var b = $(id); if (b) b.disabled = false; }); m.textContent = 'That did not save. Try again in a moment.'; return; }
       HH = r; go('home');
     });
@@ -653,6 +674,8 @@
       return;
     }
     if (e.target.id === 'gvSave') { e.preventDefault(); gvSave(); return; }
+    if (e.target.id === 'hhAdd') { e.preventDefault(); var hh = hhList().filter(function (x) { return x.slug === q('pd').slice(8); })[0]; if (hh) { $('hhDays').insertAdjacentHTML('beforeend', hhRow(hh, { date: hh.holiday_on, hours: '' })); tellParent(); } return; }
+    var hd = e.target.closest('[data-hh-del]'); if (hd) { e.preventDefault(); hd.parentNode.remove(); tellParent(); return; }
     if (e.target.id === 'hhSame' || e.target.id === 'hhSave') { e.preventDefault(); hhSend(q('pd').slice(8), e.target.id === 'hhSame'); return; }
     var gt = e.target.closest('[data-gv-take]');
     if (gt) { e.preventDefault(); gt.disabled = true; post('ve-giving', { action: 'prize_withdraw', listing_id: L.id, id: gt.getAttribute('data-gv-take') }).then(function (r) { if (r && r.ok) { GV.prizes = r.prizes; GV.given_cents = r.given_cents; } draw(); }); return; }
