@@ -1782,6 +1782,23 @@ function hoursMap(hoursJson){
   return hoursJson; // already object
 }
 
+// Holiday hours (Sean, 2026-11-17; migration 20261117_ve_holiday_hours.sql): what the owner answered on the business dashboard for a
+// holiday from today to three weeks out, above the weekly hours. "Regular hours" when they chose Staying the same.
+function loadHolidayHours(id){
+  var today = new Date(); var iso = function(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+  var until = new Date(today.getTime() + 21*86400000);
+  fetch(SUPABASE_URL+'/rest/v1/ve_holiday_hours?listing_id=eq.'+encodeURIComponent(id)+'&select=status,hours,ve_holidays!inner(name,holiday_on)&ve_holidays.holiday_on=gte.'+iso(today)+'&ve_holidays.holiday_on=lte.'+iso(until),
+    {headers:{apikey:ANON_KEY,Authorization:'Bearer '+ANON_KEY}}).then(function(r){ return r.json(); }).then(function(rows){
+    if(!Array.isArray(rows) || !rows.length) return;
+    rows.sort(function(x,y){ return x.ve_holidays.holiday_on < y.ve_holidays.holiday_on ? -1 : 1; });
+    var html = '<h2 class="section-title">Holiday hours</h2><table class="hours-table"><tbody>' + rows.map(function(r){
+      var h = r.ve_holidays, m = /\(([^)]+)\)\s*$/.exec(h.name || ''), nm = m ? m[1] : h.name;
+      var day = new Date(h.holiday_on+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
+      return '<tr><td>'+esc(nm)+'<br><span style="font-weight:600;color:var(--ve-text-50)">'+esc(day)+'</span></td><td>'+esc(r.status === 'same' ? 'Regular hours' : r.hours)+'</td></tr>';
+    }).join('') + '</tbody></table>';
+    var tries = 0; (function put(){ var el = document.getElementById('vhh'); if(el){ el.innerHTML = html; el.hidden = false; } else if(++tries < 40) setTimeout(put, 150); })();
+  }).catch(function(){});
+}
 function renderHours(hoursJson){
   if(!hoursJson) return '<p style="font-size:12px;color:var(--ve-text-50)">Hours not available</p>';
   var map = hoursMap(hoursJson);
@@ -4759,6 +4776,7 @@ function renderListing(l){
   } else if(catType === 'food'){
     overviewContent += sharedKitchenHtml(l);
     if(isDining(l)) overviewContent += renderAtAGlance(l);
+    overviewContent += '<div class="section" id="vhh" hidden></div>'; loadHolidayHours(l.id);
     if(l.google_hours_json){
       overviewContent += '<div class="section"><h2 class="section-title">Hours</h2>'+renderHours(l.google_hours_json)+'</div>';
     }

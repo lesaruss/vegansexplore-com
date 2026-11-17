@@ -33,3 +33,9 @@ from (values
 ) x(slug, hours)
 join listings l on l.slug = x.slug and l.status = 'approved'
 on conflict (listing_id, holiday_slug) do nothing;
+
+-- The listing page reads both tables with the public key (holiday name and date through the join); ve_holidays had no read policy.
+drop policy if exists "Public read ve_holiday_hours" on public.ve_holiday_hours;
+create policy "Public read ve_holiday_hours" on public.ve_holiday_hours for select to anon, authenticated using (true);
+drop policy if exists "Public read active ve_holidays" on public.ve_holidays;
+create policy "Public read active ve_holidays" on public.ve_holidays for select to anon, authenticated using (active);
