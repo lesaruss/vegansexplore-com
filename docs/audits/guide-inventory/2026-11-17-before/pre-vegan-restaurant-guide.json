@@ -1,0 +1,6955 @@
+{
+ "guide": "pre-vegan-restaurant-guide",
+ "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide",
+ "script": "guide-scripts/pre-vegan-restaurant-guide.js",
+ "takenAt": "2026-11-17T00:55:56.410Z",
+ "base": "https://vegansexplore.com",
+ "staticParts": [
+  {
+   "k": "overview",
+   "label": "Overview",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "stamp",
+   "label": "The stamp",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "how",
+   "label": "How it works",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "gates",
+   "label": "The gates",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "join",
+   "label": "Get in",
+   "parent": null,
+   "flags": [
+    "guest"
+   ]
+  },
+  {
+   "k": "ready",
+   "label": "Your readiness",
+   "parent": null,
+   "flags": [
+    "mine"
+   ]
+  },
+  {
+   "k": "next",
+   "label": "What's next",
+   "parent": null,
+   "flags": [
+    "mine"
+   ]
+  }
+ ],
+ "liveMenuParts": [
+  "overview",
+  "stamp",
+  "how",
+  "gates",
+  "join"
+ ],
+ "partsMissingFromLiveMenu": [
+  "ready",
+  "next"
+ ],
+ "views": [
+  {
+   "view": "overview",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/overview",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/overview",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/overview-390.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/overview",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Certify the plant-based dishes you already serve"
+     ],
+     "h3": [
+      "What it checks",
+      "Who it is for",
+      "What it costs",
+      "Start here"
+     ],
+     "items": [
+      "What it checks",
+      "Who it is for",
+      "What it costs",
+      "Start here"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "The stamp",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "How it works",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "The gates",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "START THE CHECK",
+      "TAKE THE READINESS CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": true
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": true
+      },
+      {
+       "href": "#/stamp",
+       "label": "The stamp",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "How it works",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "The gates",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": false
+      }
+     ],
+     "activePart": "overview",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 275,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 821,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/overview",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/overview",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/overview-1440.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/overview",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Certify the plant-based dishes you already serve"
+     ],
+     "h3": [
+      "What it checks",
+      "Who it is for",
+      "What it costs",
+      "Start here"
+     ],
+     "items": [
+      "What it checks",
+      "Who it is for",
+      "What it costs",
+      "Start here"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "THE STAMP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "HOW IT WORKS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "THE GATES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "START THE CHECK",
+      "TAKE THE READINESS CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in",
+      "GET IN"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": true
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": true
+      },
+      {
+       "href": "#/stamp",
+       "label": "THE STAMP",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "HOW IT WORKS",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "THE GATES",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": false
+      }
+     ],
+     "activePart": "overview",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 821,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "stamp",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/stamp-390.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/stamp",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "What a certified dish says"
+     ],
+     "h3": [
+      "On the menu",
+      "On the window",
+      "What it means",
+      "Never"
+     ],
+     "items": [
+      "On the menu",
+      "On the window",
+      "What it means",
+      "Never"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "The stamp",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "How it works",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "The gates",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "START THE CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": true
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "The stamp",
+       "current": true
+      },
+      {
+       "href": "#/how",
+       "label": "How it works",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "The gates",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": false
+      }
+     ],
+     "activePart": "stamp",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 150,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 946,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/stamp-1440.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/stamp",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "What a certified dish says"
+     ],
+     "h3": [
+      "On the menu",
+      "On the window",
+      "What it means",
+      "Never"
+     ],
+     "items": [
+      "On the menu",
+      "On the window",
+      "What it means",
+      "Never"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "THE STAMP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "HOW IT WORKS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "THE GATES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "START THE CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in",
+      "GET IN"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": true
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "THE STAMP",
+       "current": true
+      },
+      {
+       "href": "#/how",
+       "label": "HOW IT WORKS",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "THE GATES",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": false
+      }
+     ],
+     "activePart": "stamp",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 631,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 946,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "how",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/how-390.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/how",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "From the readiness check to a certified dish"
+     ],
+     "h3": [],
+     "items": [
+      "The readiness check.",
+      "A signed application.",
+      "Your evidence.",
+      "The desk review.",
+      "The visit.",
+      "The decision.",
+      "Twelve months.",
+      "Renewal."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "The stamp",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "How it works",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "The gates",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "START THE CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": true
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "The stamp",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "How it works",
+       "current": true
+      },
+      {
+       "href": "#/gates",
+       "label": "The gates",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": false
+      }
+     ],
+     "activePart": "how",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 129,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 967,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/how-1440.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/how",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "From the readiness check to a certified dish"
+     ],
+     "h3": [],
+     "items": [
+      "The readiness check.",
+      "A signed application.",
+      "Your evidence.",
+      "The desk review.",
+      "The visit.",
+      "The decision.",
+      "Twelve months.",
+      "Renewal."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "THE STAMP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "HOW IT WORKS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "THE GATES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "START THE CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in",
+      "GET IN"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": true
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "THE STAMP",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "HOW IT WORKS",
+       "current": true
+      },
+      {
+       "href": "#/gates",
+       "label": "THE GATES",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": false
+      }
+     ],
+     "activePart": "how",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 967,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "gates",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/gates-390.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/gates",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Eight gates, and how to pass each one"
+     ],
+     "h3": [
+      "Ingredient evidence",
+      "Hidden in process",
+      "Protected path",
+      "Accurate use",
+      "Staff",
+      "Change approval",
+      "Access and corrective action",
+      "Records",
+      "Doing it without us"
+     ],
+     "items": [
+      "Ingredient evidence",
+      "Hidden in process",
+      "Protected path",
+      "Accurate use",
+      "Staff",
+      "Change approval",
+      "Access and corrective action",
+      "Records",
+      "Doing it without us"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "The stamp",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "How it works",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "The gates",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g1",
+       "raw": "#/gates/g1",
+       "text": "G1 Ingredient evidence Every ingredient and sub-ingredient in the dish is traced to a brand and product. A distributor's",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g2",
+       "raw": "#/gates/g2",
+       "text": "G2 Hidden in process Anything the dish touches on its way to the plate (stocks, doughs, glazes, pan spray, frying oil, s",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g3",
+       "raw": "#/gates/g3",
+       "text": "G3 Protected path Every certified dish has a protected cooking path: its own storage, utensils and surfaces, or a clean ",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g4",
+       "raw": "#/gates/g4",
+       "text": "G4 Accurate use The mark and the dish names are accurate everywhere the dish appears, delivery apps included.",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g5",
+       "raw": "#/gates/g5",
+       "text": "G5 Staff Every critical staff question is answered right. One manager is named for these dishes, and there is a training",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g6",
+       "raw": "#/gates/g6",
+       "text": "G6 Change approval Any change to a certified dish is approved by us before it is served. Otherwise the mark stops at onc",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g7",
+       "raw": "#/gates/g7",
+       "text": "G7 Access and corrective action Our visits and your records are open to us. Suspension does not wait on proof of intent;",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g8",
+       "raw": "#/gates/g8",
+       "text": "G8 Records Records are kept for the term plus 5 years.",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "START THE CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "The stamp",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "How it works",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "The gates",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": false
+      }
+     ],
+     "activePart": "gates",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 150,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1882,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/gates-1440.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/gates",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Eight gates, and how to pass each one"
+     ],
+     "h3": [
+      "Ingredient evidence",
+      "Hidden in process",
+      "Protected path",
+      "Accurate use",
+      "Staff",
+      "Change approval",
+      "Access and corrective action",
+      "Records",
+      "Doing it without us"
+     ],
+     "items": [
+      "Ingredient evidence",
+      "Hidden in process",
+      "Protected path",
+      "Accurate use",
+      "Staff",
+      "Change approval",
+      "Access and corrective action",
+      "Records",
+      "Doing it without us"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "THE STAMP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "HOW IT WORKS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "THE GATES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g1",
+       "raw": "#/gates/g1",
+       "text": "G1 Ingredient evidence Every ingredient and sub-ingredient in the dish is traced to a brand and product. A distributor's",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g2",
+       "raw": "#/gates/g2",
+       "text": "G2 Hidden in process Anything the dish touches on its way to the plate (stocks, doughs, glazes, pan spray, frying oil, s",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g3",
+       "raw": "#/gates/g3",
+       "text": "G3 Protected path Every certified dish has a protected cooking path: its own storage, utensils and surfaces, or a clean ",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g4",
+       "raw": "#/gates/g4",
+       "text": "G4 Accurate use The mark and the dish names are accurate everywhere the dish appears, delivery apps included.",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g5",
+       "raw": "#/gates/g5",
+       "text": "G5 Staff Every critical staff question is answered right. One manager is named for these dishes, and there is a training",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g6",
+       "raw": "#/gates/g6",
+       "text": "G6 Change approval Any change to a certified dish is approved by us before it is served. Otherwise the mark stops at onc",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g7",
+       "raw": "#/gates/g7",
+       "text": "G7 Access and corrective action Our visits and your records are open to us. Suspension does not wait on proof of intent;",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g8",
+       "raw": "#/gates/g8",
+       "text": "G8 Records Records are kept for the term plus 5 years.",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "START THE CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in",
+      "GET IN"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "THE STAMP",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "HOW IT WORKS",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "THE GATES",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": false
+      }
+     ],
+     "activePart": "gates",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 890,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1882,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "join",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/join-390.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "One way in, and it is free"
+     ],
+     "h3": [
+      "What it asks",
+      "Who sees it"
+     ],
+     "items": [
+      "What it asks",
+      "Who sees it"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "The stamp",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "How it works",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "The gates",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "START THE CHECK",
+      "TAKE THE READINESS CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in",
+      "GET IN"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "The stamp",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "How it works",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "The gates",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 170,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 555,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/join-1440.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "One way in, and it is free"
+     ],
+     "h3": [
+      "What it asks",
+      "Who sees it"
+     ],
+     "items": [
+      "What it asks",
+      "Who sees it"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "THE STAMP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "HOW IT WORKS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "THE GATES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "START THE CHECK",
+      "TAKE THE READINESS CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in",
+      "GET IN"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "THE STAMP",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "HOW IT WORKS",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "THE GATES",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 555,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "ready",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/ready-390.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "One way in, and it is free"
+     ],
+     "h3": [
+      "What it asks",
+      "Who sees it"
+     ],
+     "items": [
+      "What it asks",
+      "Who sees it"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "The stamp",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "How it works",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "The gates",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "START THE CHECK",
+      "TAKE THE READINESS CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in",
+      "GET IN"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "The stamp",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "How it works",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "The gates",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 170,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 555,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/ready-1440.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "One way in, and it is free"
+     ],
+     "h3": [
+      "What it asks",
+      "Who sees it"
+     ],
+     "items": [
+      "What it asks",
+      "Who sees it"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "THE STAMP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "HOW IT WORKS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "THE GATES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "START THE CHECK",
+      "TAKE THE READINESS CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in",
+      "GET IN"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "THE STAMP",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "HOW IT WORKS",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "THE GATES",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 555,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "next",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/next-390.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "One way in, and it is free"
+     ],
+     "h3": [
+      "What it asks",
+      "Who sees it"
+     ],
+     "items": [
+      "What it asks",
+      "Who sees it"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "The stamp",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "How it works",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "The gates",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "START THE CHECK",
+      "TAKE THE READINESS CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in",
+      "GET IN"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "The stamp",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "How it works",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "The gates",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 170,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 555,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/next-1440.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "One way in, and it is free"
+     ],
+     "h3": [
+      "What it asks",
+      "Who sees it"
+     ],
+     "items": [
+      "What it asks",
+      "Who sees it"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "THE STAMP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "HOW IT WORKS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "THE GATES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "START THE CHECK",
+      "TAKE THE READINESS CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in",
+      "GET IN"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "THE STAMP",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "HOW IT WORKS",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "THE GATES",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 555,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "gates/g1",
+   "depth": 1,
+   "parent": "gates",
+   "isPart": false,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g1",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g1",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/gates_g1-390.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/gates/g1",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Ingredient evidence"
+     ],
+     "h3": [
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks",
+      "Common ways kitchens fail"
+     ],
+     "items": [
+      "Write the recipe card for the dish: every ingredient, by brand and product, in the amounts you use.",
+      "For each thing you buy, photograph the front of the package and the ingredient list. If it comes in a case with no retail label, ask the sup",
+      "Read every label down to the sub-ingredients (what is inside the sauce, the bread, the spice blend).",
+      "Take out anything with honey, beeswax, carmine (also called cochineal or E120), shellac (confectioner's glaze), gelatin, isinglass or animal",
+      "For these ten, ask the maker in writing and keep the answer: natural flavors, wine, beer, vinegar, vitamin D3, cane sugar, enzymes, glycerin",
+      "\"May contain milk\" or a shared-facility line is not a fail. Note it; it goes in the dish's disclosure.",
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks",
+      "Common ways kitchens fail"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "The stamp",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "How it works",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "The gates",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Pre-Vegan Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g2",
+       "raw": "#/gates/g2",
+       "text": "G2 →",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "START THE CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "The stamp",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "How it works",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "The gates",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": false
+      }
+     ],
+     "activePart": "gates",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 150,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 2030,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g1",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g1",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/gates_g1-1440.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/gates/g1",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Ingredient evidence"
+     ],
+     "h3": [
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks",
+      "Common ways kitchens fail"
+     ],
+     "items": [
+      "Write the recipe card for the dish: every ingredient, by brand and product, in the amounts you use.",
+      "For each thing you buy, photograph the front of the package and the ingredient list. If it comes in a case with no retail label, ask the sup",
+      "Read every label down to the sub-ingredients (what is inside the sauce, the bread, the spice blend).",
+      "Take out anything with honey, beeswax, carmine (also called cochineal or E120), shellac (confectioner's glaze), gelatin, isinglass or animal",
+      "For these ten, ask the maker in writing and keep the answer: natural flavors, wine, beer, vinegar, vitamin D3, cane sugar, enzymes, glycerin",
+      "\"May contain milk\" or a shared-facility line is not a fail. Note it; it goes in the dish's disclosure.",
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks",
+      "Common ways kitchens fail"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "THE STAMP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "HOW IT WORKS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "THE GATES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Pre-Vegan Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "The gates",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g2",
+       "raw": "#/gates/g2",
+       "text": "G2 →",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "START THE CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in",
+      "GET IN"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "THE STAMP",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "HOW IT WORKS",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "THE GATES",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": false
+      }
+     ],
+     "activePart": "gates",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 837,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 2030,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "gates/g2",
+   "depth": 1,
+   "parent": "gates",
+   "isPart": false,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g2",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g2",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/gates_g2-390.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/gates/g2",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Hidden in process"
+     ],
+     "h3": [
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks",
+      "Common ways kitchens fail"
+     ],
+     "items": [
+      "Walk the dish from the shelf to the plate and write down every base it uses: stock, dough, bread or bun, glaze, sauce, dressing, marinade, p",
+      "For anything you make in house, write its own recipe card and trace its ingredients as in G1.",
+      "Check the sprays and oils most kitchens forget: many pan sprays contain lecithin or flavorings, and \"butter-flavored\" oils can contain milk.",
+      "If a base is shared with other dishes (a house sauce, a pizza dough), it must pass for this dish too, or this dish gets its own.",
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks",
+      "Common ways kitchens fail"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "The stamp",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "How it works",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "The gates",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Pre-Vegan Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g1",
+       "raw": "#/gates/g1",
+       "text": "← G1",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g3",
+       "raw": "#/gates/g3",
+       "text": "G3 →",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "START THE CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "The stamp",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "How it works",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "The gates",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": false
+      }
+     ],
+     "activePart": "gates",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 150,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1210,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g2",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g2",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/gates_g2-1440.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/gates/g2",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Hidden in process"
+     ],
+     "h3": [
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks",
+      "Common ways kitchens fail"
+     ],
+     "items": [
+      "Walk the dish from the shelf to the plate and write down every base it uses: stock, dough, bread or bun, glaze, sauce, dressing, marinade, p",
+      "For anything you make in house, write its own recipe card and trace its ingredients as in G1.",
+      "Check the sprays and oils most kitchens forget: many pan sprays contain lecithin or flavorings, and \"butter-flavored\" oils can contain milk.",
+      "If a base is shared with other dishes (a house sauce, a pizza dough), it must pass for this dish too, or this dish gets its own.",
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks",
+      "Common ways kitchens fail"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "THE STAMP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "HOW IT WORKS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "THE GATES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Pre-Vegan Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "The gates",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g1",
+       "raw": "#/gates/g1",
+       "text": "← G1",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g3",
+       "raw": "#/gates/g3",
+       "text": "G3 →",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "START THE CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in",
+      "GET IN"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "THE STAMP",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "HOW IT WORKS",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "THE GATES",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": false
+      }
+     ],
+     "activePart": "gates",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 687,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1210,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "gates/g3",
+   "depth": 1,
+   "parent": "gates",
+   "isPart": false,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g3",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g3",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/gates_g3-390.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/gates/g3",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Protected path"
+     ],
+     "h3": [
+      "The rule",
+      "What to do",
+      "Passes",
+      "Fails",
+      "How to prove it",
+      "What the Verifier checks",
+      "Common ways kitchens fail"
+     ],
+     "items": [
+      "Storage: give the dish's ingredients their own shelf or bin, labeled, never under raw animal products unless covered.",
+      "Tools: set aside a pan, pot, tongs, ladle and cutting board for the dish (a color you use for nothing else works well). Or use a pan that is",
+      "Surfaces: a clean sheet, foil or a dedicated tray between the dish and any shared surface.",
+      "Fryer: a dedicated fryer, or no frying for this dish. Shared oil with chicken or fish is a fail, no matter how often it is changed.",
+      "Water: fresh water for pasta or vegetables, never the pot that cooked anything else.",
+      "Grill or flat-top: scrape and clean it before the dish goes on, every time, or use a barrier or a separate pan on top.",
+      "Oven: covered or on its own tray, and write down how you do it. Send that procedure with your evidence.",
+      "Garnish: a separate garnish container for the dish, not the shared station with cheese, butter or bacon.",
+      "Dedicated pan, pot, utensils and board",
+      "A shared pan, cleaned and sanitized, used only for this dish during its cook",
+      "A clean barrier on a shared surface",
+      "Shared oven, covered or on its own tray, under a written procedure",
+      "Shared fryer oil with any animal product",
+      "Pasta or vegetable water shared with animal products",
+      "A grill used for meat and not cleaned first",
+      "Shared oven, no procedure",
+      "Tongs or ladles moving between the dish and animal products",
+      "A shared garnish station with no separation",
+      "Stored under raw animal products, uncovered",
+      "The rule",
+      "What to do",
+      "Passes",
+      "Fails",
+      "How to prove it",
+      "What the Verifier checks",
+      "Common ways kitchens fail"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "The stamp",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "How it works",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "The gates",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Pre-Vegan Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g2",
+       "raw": "#/gates/g2",
+       "text": "← G2",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g4",
+       "raw": "#/gates/g4",
+       "text": "G4 →",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "START THE CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "The stamp",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "How it works",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "The gates",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": false
+      }
+     ],
+     "activePart": "gates",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 150,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 2464,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g3",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g3",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/gates_g3-1440.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/gates/g3",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Protected path"
+     ],
+     "h3": [
+      "The rule",
+      "What to do",
+      "Passes",
+      "Fails",
+      "How to prove it",
+      "What the Verifier checks",
+      "Common ways kitchens fail"
+     ],
+     "items": [
+      "Storage: give the dish's ingredients their own shelf or bin, labeled, never under raw animal products unless covered.",
+      "Tools: set aside a pan, pot, tongs, ladle and cutting board for the dish (a color you use for nothing else works well). Or use a pan that is",
+      "Surfaces: a clean sheet, foil or a dedicated tray between the dish and any shared surface.",
+      "Fryer: a dedicated fryer, or no frying for this dish. Shared oil with chicken or fish is a fail, no matter how often it is changed.",
+      "Water: fresh water for pasta or vegetables, never the pot that cooked anything else.",
+      "Grill or flat-top: scrape and clean it before the dish goes on, every time, or use a barrier or a separate pan on top.",
+      "Oven: covered or on its own tray, and write down how you do it. Send that procedure with your evidence.",
+      "Garnish: a separate garnish container for the dish, not the shared station with cheese, butter or bacon.",
+      "Dedicated pan, pot, utensils and board",
+      "A shared pan, cleaned and sanitized, used only for this dish during its cook",
+      "A clean barrier on a shared surface",
+      "Shared oven, covered or on its own tray, under a written procedure",
+      "Shared fryer oil with any animal product",
+      "Pasta or vegetable water shared with animal products",
+      "A grill used for meat and not cleaned first",
+      "Shared oven, no procedure",
+      "Tongs or ladles moving between the dish and animal products",
+      "A shared garnish station with no separation",
+      "Stored under raw animal products, uncovered",
+      "The rule",
+      "What to do",
+      "Passes",
+      "Fails",
+      "How to prove it",
+      "What the Verifier checks",
+      "Common ways kitchens fail"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "THE STAMP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "HOW IT WORKS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "THE GATES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Pre-Vegan Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "The gates",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g2",
+       "raw": "#/gates/g2",
+       "text": "← G2",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g4",
+       "raw": "#/gates/g4",
+       "text": "G4 →",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "START THE CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in",
+      "GET IN"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "THE STAMP",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "HOW IT WORKS",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "THE GATES",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": false
+      }
+     ],
+     "activePart": "gates",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 1062,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 2464,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "gates/g4",
+   "depth": 1,
+   "parent": "gates",
+   "isPart": false,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g4",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g4",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/gates_g4-390.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/gates/g4",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Accurate use"
+     ],
+     "h3": [
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks",
+      "Common ways kitchens fail"
+     ],
+     "items": [
+      "List every place the dish appears: printed menu, boards, website, QR menu, each delivery app, your social accounts.",
+      "Use the same dish name everywhere, word for word.",
+      "Put the mark only next to certified dishes, with the menu key (\"Plant-Based Dish, Pre-Vegan Certified\") on the same page or screen.",
+      "Never call the restaurant Vegan, never put the mark on the door or the whole menu, never write \"Vegan\" alone on a certified dish, and never ",
+      "On delivery apps, ask each platform to change a dish called \"Vegan\" to the certified name with the key in the description.",
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks",
+      "Common ways kitchens fail"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "The stamp",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "How it works",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "The gates",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Pre-Vegan Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g3",
+       "raw": "#/gates/g3",
+       "text": "← G3",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g5",
+       "raw": "#/gates/g5",
+       "text": "G5 →",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "START THE CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "The stamp",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "How it works",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "The gates",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": false
+      }
+     ],
+     "activePart": "gates",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 150,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1072,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g4",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g4",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/gates_g4-1440.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/gates/g4",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Accurate use"
+     ],
+     "h3": [
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks",
+      "Common ways kitchens fail"
+     ],
+     "items": [
+      "List every place the dish appears: printed menu, boards, website, QR menu, each delivery app, your social accounts.",
+      "Use the same dish name everywhere, word for word.",
+      "Put the mark only next to certified dishes, with the menu key (\"Plant-Based Dish, Pre-Vegan Certified\") on the same page or screen.",
+      "Never call the restaurant Vegan, never put the mark on the door or the whole menu, never write \"Vegan\" alone on a certified dish, and never ",
+      "On delivery apps, ask each platform to change a dish called \"Vegan\" to the certified name with the key in the description.",
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks",
+      "Common ways kitchens fail"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "THE STAMP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "HOW IT WORKS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "THE GATES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Pre-Vegan Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "The gates",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g3",
+       "raw": "#/gates/g3",
+       "text": "← G3",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g5",
+       "raw": "#/gates/g5",
+       "text": "G5 →",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "START THE CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in",
+      "GET IN"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "THE STAMP",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "HOW IT WORKS",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "THE GATES",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": false
+      }
+     ],
+     "activePart": "gates",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 691,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1072,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "gates/g5",
+   "depth": 1,
+   "parent": "gates",
+   "isPart": false,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g5",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g5",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/gates_g5-390.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/gates/g5",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Staff"
+     ],
+     "h3": [
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks",
+      "Common ways kitchens fail"
+     ],
+     "items": [
+      "Name one manager who is responsible for the certified dishes.",
+      "Train everyone who takes orders for or cooks these dishes. Write down who and the date. Retrain anyone new before their first shift on these",
+      "Teach the answers below. The Verifier asks two staff members questions like these, and one wrong answer fails the visit.",
+      "Post the script where order-takers can see it.",
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks",
+      "Common ways kitchens fail"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "The stamp",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "How it works",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "The gates",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Pre-Vegan Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g4",
+       "raw": "#/gates/g4",
+       "text": "← G4",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g6",
+       "raw": "#/gates/g6",
+       "text": "G6 →",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "START THE CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "The stamp",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "How it works",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "The gates",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": false
+      }
+     ],
+     "activePart": "gates",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 150,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1692,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g5",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g5",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/gates_g5-1440.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/gates/g5",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Staff"
+     ],
+     "h3": [
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks",
+      "Common ways kitchens fail"
+     ],
+     "items": [
+      "Name one manager who is responsible for the certified dishes.",
+      "Train everyone who takes orders for or cooks these dishes. Write down who and the date. Retrain anyone new before their first shift on these",
+      "Teach the answers below. The Verifier asks two staff members questions like these, and one wrong answer fails the visit.",
+      "Post the script where order-takers can see it.",
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks",
+      "Common ways kitchens fail"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "THE STAMP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "HOW IT WORKS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "THE GATES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Pre-Vegan Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "The gates",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g4",
+       "raw": "#/gates/g4",
+       "text": "← G4",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g6",
+       "raw": "#/gates/g6",
+       "text": "G6 →",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "START THE CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in",
+      "GET IN"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "THE STAMP",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "HOW IT WORKS",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "THE GATES",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": false
+      }
+     ],
+     "activePart": "gates",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 1009,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1692,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "gates/g6",
+   "depth": 1,
+   "parent": "gates",
+   "isPart": false,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g6",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g6",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/gates_g6-390.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/gates/g6",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Change approval"
+     ],
+     "h3": [
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks",
+      "Common ways kitchens fail"
+     ],
+     "items": [
+      "Write an approved pantry list: for each ingredient, the brands you are allowed to use.",
+      "Check every delivery against the list when it arrives. A different brand goes to the side, not into the dish.",
+      "Ask your suppliers in writing not to substitute on these items without telling you.",
+      "Before you change a recipe, a brand, a base or the way the dish is cooked, tell us and wait for the yes. A change we did not approve means t",
+      "If you are out of an approved ingredient, take the dish off rather than swap it.",
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks",
+      "Common ways kitchens fail"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "The stamp",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "How it works",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "The gates",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Pre-Vegan Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g5",
+       "raw": "#/gates/g5",
+       "text": "← G5",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g7",
+       "raw": "#/gates/g7",
+       "text": "G7 →",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "START THE CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "The stamp",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "How it works",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "The gates",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": false
+      }
+     ],
+     "activePart": "gates",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 150,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1226,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g6",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g6",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/gates_g6-1440.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/gates/g6",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Change approval"
+     ],
+     "h3": [
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks",
+      "Common ways kitchens fail"
+     ],
+     "items": [
+      "Write an approved pantry list: for each ingredient, the brands you are allowed to use.",
+      "Check every delivery against the list when it arrives. A different brand goes to the side, not into the dish.",
+      "Ask your suppliers in writing not to substitute on these items without telling you.",
+      "Before you change a recipe, a brand, a base or the way the dish is cooked, tell us and wait for the yes. A change we did not approve means t",
+      "If you are out of an approved ingredient, take the dish off rather than swap it.",
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks",
+      "Common ways kitchens fail"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "THE STAMP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "HOW IT WORKS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "THE GATES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Pre-Vegan Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "The gates",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g5",
+       "raw": "#/gates/g5",
+       "text": "← G5",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g7",
+       "raw": "#/gates/g7",
+       "text": "G7 →",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "START THE CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in",
+      "GET IN"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "THE STAMP",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "HOW IT WORKS",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "THE GATES",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": false
+      }
+     ],
+     "activePart": "gates",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 712,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1226,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "gates/g7",
+   "depth": 1,
+   "parent": "gates",
+   "isPart": false,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g7",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g7",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/gates_g7-390.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/gates/g7",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Access and corrective action"
+     ],
+     "h3": [
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks"
+     ],
+     "items": [
+      "Agree to a scheduled kitchen visit, one courtesy check a year, and secret shoppers who order like any guest.",
+      "Agree to photos of storage, stations and labels (never audio, never guests).",
+      "Know what happens if something is wrong: the dish's mark stops while it is fixed, you can appeal within 10 business days, and you get a deci",
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "The stamp",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "How it works",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "The gates",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Pre-Vegan Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g6",
+       "raw": "#/gates/g6",
+       "text": "← G6",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g8",
+       "raw": "#/gates/g8",
+       "text": "G8 →",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "START THE CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "The stamp",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "How it works",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "The gates",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": false
+      }
+     ],
+     "activePart": "gates",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 150,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 918,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g7",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g7",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/gates_g7-1440.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/gates/g7",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Access and corrective action"
+     ],
+     "h3": [
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks"
+     ],
+     "items": [
+      "Agree to a scheduled kitchen visit, one courtesy check a year, and secret shoppers who order like any guest.",
+      "Agree to photos of storage, stations and labels (never audio, never guests).",
+      "Know what happens if something is wrong: the dish's mark stops while it is fixed, you can appeal within 10 business days, and you get a deci",
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "THE STAMP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "HOW IT WORKS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "THE GATES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Pre-Vegan Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "The gates",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g6",
+       "raw": "#/gates/g6",
+       "text": "← G6",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g8",
+       "raw": "#/gates/g8",
+       "text": "G8 →",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "START THE CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in",
+      "GET IN"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "THE STAMP",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "HOW IT WORKS",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "THE GATES",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": false
+      }
+     ],
+     "activePart": "gates",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 572,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 918,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "gates/g8",
+   "depth": 1,
+   "parent": "gates",
+   "isPart": false,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g8",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g8",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/gates_g8-390.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/gates/g8",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Records"
+     ],
+     "h3": [
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks"
+     ],
+     "items": [
+      "Keep, in one place, every receiving label and invoice for these dishes' ingredients, the written answers from makers, the training roster an",
+      "Name the person who keeps them.",
+      "Keep them for the 12-month term and 5 years after. A shared drive folder per dish is enough.",
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "The stamp",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "How it works",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "The gates",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Pre-Vegan Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g7",
+       "raw": "#/gates/g7",
+       "text": "← G7",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "START THE CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "The stamp",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "How it works",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "The gates",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": false
+      }
+     ],
+     "activePart": "gates",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 150,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 579,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g8",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g8",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-restaurant-guide/gates_g8-1440.jpg",
+     "title": "The Pre-Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/gates/g8",
+     "h1": [
+      "The Pre-Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Records"
+     ],
+     "h3": [
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks"
+     ],
+     "items": [
+      "Keep, in one place, every receiving label and invoice for these dishes' ingredients, the written answers from makers, the training roster an",
+      "Name the person who keeps them.",
+      "Keep them for the 12-month term and 5 years after. A shared drive folder per dish is enough.",
+      "The rule",
+      "What to do",
+      "How to prove it",
+      "What the Verifier checks"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/stamp",
+       "raw": "#/stamp",
+       "text": "THE STAMP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "HOW IT WORKS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "THE GATES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Pre-Vegan Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates",
+       "raw": "#/gates",
+       "text": "The gates",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/gates/g7",
+       "raw": "#/gates/g7",
+       "text": "← G7",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/how",
+       "raw": "#/how",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "START THE CHECK",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in",
+      "GET IN"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "stamp",
+       "label": "The stamp",
+       "selected": false
+      },
+      {
+       "k": "how",
+       "label": "How it works",
+       "selected": false
+      },
+      {
+       "k": "gates",
+       "label": "The gates",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/stamp",
+       "label": "THE STAMP",
+       "current": false
+      },
+      {
+       "href": "#/how",
+       "label": "HOW IT WORKS",
+       "current": false
+      },
+      {
+       "href": "#/gates",
+       "label": "THE GATES",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": false
+      }
+     ],
+     "activePart": "gates",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 552,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "START THE CHECK",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 579,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  }
+ ],
+ "linkStatus": {
+  "https://vegansexplore.com/guides/pre-vegan-restaurant-guide": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/directory": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/dashboard/saves": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/account": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  }
+ }
+}

@@ -1,0 +1,6573 @@
+{
+ "guide": "food-photographer-guide",
+ "url": "https://vegansexplore.com/guides/food-photographer-guide",
+ "script": "guide-scripts/food-photographer-guide.js",
+ "takenAt": "2026-11-17T00:55:56.372Z",
+ "base": "https://vegansexplore.com",
+ "staticParts": [
+  {
+   "k": "overview",
+   "label": "Overview",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "standard",
+   "label": "What Good Looks Like",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "phone",
+   "label": "Your Phone",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "camera",
+   "label": "Your Camera",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "light",
+   "label": "Light and When to Shoot",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "angles",
+   "label": "The Two Angles",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "plating",
+   "label": "Plating and Drinks",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "space",
+   "label": "The Space and the People",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "deliver",
+   "label": "Delivering",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "paid",
+   "label": "Get Paid",
+   "parent": null,
+   "flags": []
+  }
+ ],
+ "liveMenuParts": [
+  "overview",
+  "standard",
+  "phone",
+  "camera",
+  "light",
+  "angles",
+  "plating",
+  "space",
+  "deliver",
+  "paid"
+ ],
+ "partsMissingFromLiveMenu": [],
+ "views": [
+  {
+   "view": "overview",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/food-photographer-guide#/overview",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/food-photographer-guide#/overview",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/food-photographer-guide/overview-390.jpg",
+     "title": "The Food Photographer Guide (preview) — Vegans Explore",
+     "hash": "#/overview",
+     "h1": [
+      "The Food Photographer Guide"
+     ],
+     "h2": [
+      "Shoot Food People Want to Eat"
+     ],
+     "h3": [
+      "How to use this page"
+     ],
+     "items": [
+      "What Good Looks Like",
+      "Your Phone",
+      "Your Camera",
+      "Light and When to Shoot",
+      "The Two Angles",
+      "Plating and Drinks",
+      "The Space and the People",
+      "Delivering",
+      "Get Paid",
+      "How to use this page"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "START WITH THE STANDARD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "What Good Looks Like",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Your Phone",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Your Camera",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Light and When to Shoot",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "The Two Angles",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Plating and Drinks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "The Space and the People",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Delivering",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Get Paid",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "HOW YOU GET PAID",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "Talk to Kai",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/food-photo/standard.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "Free FOR EVERYONE",
+      "FREE FOR EVERYONE",
+      "A $75 paid trial of three dishes, then booked shoots in your city."
+     ],
+     "guide": {
+      "slug": "kai",
+      "label": "Kai, your Guide",
+      "name": "Kai",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fkai-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": true
+      },
+      {
+       "k": "standard",
+       "label": "2. What Good Looks Like",
+       "selected": false
+      },
+      {
+       "k": "phone",
+       "label": "3. Your Phone",
+       "selected": false
+      },
+      {
+       "k": "camera",
+       "label": "4. Your Camera",
+       "selected": false
+      },
+      {
+       "k": "light",
+       "label": "5. Light and When to Shoot",
+       "selected": false
+      },
+      {
+       "k": "angles",
+       "label": "6. The Two Angles",
+       "selected": false
+      },
+      {
+       "k": "plating",
+       "label": "7. Plating and Drinks",
+       "selected": false
+      },
+      {
+       "k": "space",
+       "label": "8. The Space and the People",
+       "selected": false
+      },
+      {
+       "k": "deliver",
+       "label": "9. Delivering",
+       "selected": false
+      },
+      {
+       "k": "paid",
+       "label": "10. Get Paid",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": true
+      },
+      {
+       "href": "#/standard",
+       "label": "What Good Looks Like",
+       "current": false
+      },
+      {
+       "href": "#/phone",
+       "label": "Your Phone",
+       "current": false
+      },
+      {
+       "href": "#/camera",
+       "label": "Your Camera",
+       "current": false
+      },
+      {
+       "href": "#/light",
+       "label": "Light and When to Shoot",
+       "current": false
+      },
+      {
+       "href": "#/angles",
+       "label": "The Two Angles",
+       "current": false
+      },
+      {
+       "href": "#/plating",
+       "label": "Plating and Drinks",
+       "current": false
+      },
+      {
+       "href": "#/space",
+       "label": "The Space and the People",
+       "current": false
+      },
+      {
+       "href": "#/deliver",
+       "label": "Delivering",
+       "current": false
+      },
+      {
+       "href": "#/paid",
+       "label": "Get Paid",
+       "current": false
+      }
+     ],
+     "activePart": "overview",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 150,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 267,
+     "action": {
+      "text": "START WITH THE STANDARD",
+      "bottom": 395,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1288,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 267,
+      "actionBottom": 395,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/food-photographer-guide#/overview",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/food-photographer-guide#/overview",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/food-photographer-guide/overview-1440.jpg",
+     "title": "The Food Photographer Guide (preview) — Vegans Explore",
+     "hash": "#/overview",
+     "h1": [
+      "The Food Photographer Guide"
+     ],
+     "h2": [
+      "Shoot Food People Want to Eat"
+     ],
+     "h3": [
+      "How to use this page"
+     ],
+     "items": [
+      "What Good Looks Like",
+      "Your Phone",
+      "Your Camera",
+      "Light and When to Shoot",
+      "The Two Angles",
+      "Plating and Drinks",
+      "The Space and the People",
+      "Delivering",
+      "Get Paid",
+      "How to use this page"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "START WITH THE STANDARD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "What Good Looks Like",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Your Phone",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Your Camera",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Light and When to Shoot",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "The Two Angles",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Plating and Drinks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "The Space and the People",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Delivering",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Get Paid",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "HOW YOU GET PAID",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "Talk to Kai",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/food-photo/standard.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "Free FOR EVERYONE",
+      "FREE FOR EVERYONE",
+      "A $75 paid trial of three dishes, then booked shoots in your city."
+     ],
+     "guide": {
+      "slug": "kai",
+      "label": "Kai, your Guide",
+      "name": "KAI",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fkai-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": true
+      },
+      {
+       "k": "standard",
+       "label": "2. What Good Looks Like",
+       "selected": false
+      },
+      {
+       "k": "phone",
+       "label": "3. Your Phone",
+       "selected": false
+      },
+      {
+       "k": "camera",
+       "label": "4. Your Camera",
+       "selected": false
+      },
+      {
+       "k": "light",
+       "label": "5. Light and When to Shoot",
+       "selected": false
+      },
+      {
+       "k": "angles",
+       "label": "6. The Two Angles",
+       "selected": false
+      },
+      {
+       "k": "plating",
+       "label": "7. Plating and Drinks",
+       "selected": false
+      },
+      {
+       "k": "space",
+       "label": "8. The Space and the People",
+       "selected": false
+      },
+      {
+       "k": "deliver",
+       "label": "9. Delivering",
+       "selected": false
+      },
+      {
+       "k": "paid",
+       "label": "10. Get Paid",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": true
+      },
+      {
+       "href": "#/standard",
+       "label": "What Good Looks Like",
+       "current": false
+      },
+      {
+       "href": "#/phone",
+       "label": "Your Phone",
+       "current": false
+      },
+      {
+       "href": "#/camera",
+       "label": "Your Camera",
+       "current": false
+      },
+      {
+       "href": "#/light",
+       "label": "Light and When to Shoot",
+       "current": false
+      },
+      {
+       "href": "#/angles",
+       "label": "The Two Angles",
+       "current": false
+      },
+      {
+       "href": "#/plating",
+       "label": "Plating and Drinks",
+       "current": false
+      },
+      {
+       "href": "#/space",
+       "label": "The Space and the People",
+       "current": false
+      },
+      {
+       "href": "#/deliver",
+       "label": "Delivering",
+       "current": false
+      },
+      {
+       "href": "#/paid",
+       "label": "Get Paid",
+       "current": false
+      }
+     ],
+     "activePart": "overview",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 213,
+     "action": {
+      "text": "START WITH THE STANDARD",
+      "bottom": 202,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1288,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "standard",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/food-photographer-guide/standard-390.jpg",
+     "title": "The Food Photographer Guide (preview) — Vegans Explore",
+     "hash": "#/standard",
+     "h1": [
+      "The Food Photographer Guide"
+     ],
+     "h2": [
+      "What Good Looks Like"
+     ],
+     "h3": [
+      "One standard, every shoot",
+      "See the whole sample shoot."
+     ],
+     "items": [
+      "WHAT EVERY SHOOT HAS",
+      "Same Surface, Same Light",
+      "Two Angles Every Dish",
+      "Plated as Served",
+      "The Space Too",
+      "The People Behind It",
+      "One standard, every shoot",
+      "See the whole sample shoot."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "START WITH THE STANDARD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "What Good Looks Like",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Your Phone",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Your Camera",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Light and When to Shoot",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "The Two Angles",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Plating and Drinks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "The Space and the People",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Delivering",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Get Paid",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "The Food Photographer Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/business/sample/shoot",
+       "raw": "https://vegansexplore.com/business/sample/shoot",
+       "text": "SEE THE SAMPLE SHOOT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "Talk to Kai",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/food-photo/standard.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "Free FOR EVERYONE"
+     ],
+     "guide": {
+      "slug": "kai",
+      "label": "Kai, your Guide",
+      "name": "Kai",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fkai-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "standard",
+       "label": "2. What Good Looks Like",
+       "selected": true
+      },
+      {
+       "k": "phone",
+       "label": "3. Your Phone",
+       "selected": false
+      },
+      {
+       "k": "camera",
+       "label": "4. Your Camera",
+       "selected": false
+      },
+      {
+       "k": "light",
+       "label": "5. Light and When to Shoot",
+       "selected": false
+      },
+      {
+       "k": "angles",
+       "label": "6. The Two Angles",
+       "selected": false
+      },
+      {
+       "k": "plating",
+       "label": "7. Plating and Drinks",
+       "selected": false
+      },
+      {
+       "k": "space",
+       "label": "8. The Space and the People",
+       "selected": false
+      },
+      {
+       "k": "deliver",
+       "label": "9. Delivering",
+       "selected": false
+      },
+      {
+       "k": "paid",
+       "label": "10. Get Paid",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/standard",
+       "label": "What Good Looks Like",
+       "current": true
+      },
+      {
+       "href": "#/phone",
+       "label": "Your Phone",
+       "current": false
+      },
+      {
+       "href": "#/camera",
+       "label": "Your Camera",
+       "current": false
+      },
+      {
+       "href": "#/light",
+       "label": "Light and When to Shoot",
+       "current": false
+      },
+      {
+       "href": "#/angles",
+       "label": "The Two Angles",
+       "current": false
+      },
+      {
+       "href": "#/plating",
+       "label": "Plating and Drinks",
+       "current": false
+      },
+      {
+       "href": "#/space",
+       "label": "The Space and the People",
+       "current": false
+      },
+      {
+       "href": "#/deliver",
+       "label": "Delivering",
+       "current": false
+      },
+      {
+       "href": "#/paid",
+       "label": "Get Paid",
+       "current": false
+      }
+     ],
+     "activePart": "standard",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 267,
+     "action": {
+      "text": "START WITH THE STANDARD",
+      "bottom": 395,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1096,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 267,
+      "actionBottom": 395,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/food-photographer-guide/standard-1440.jpg",
+     "title": "The Food Photographer Guide (preview) — Vegans Explore",
+     "hash": "#/standard",
+     "h1": [
+      "The Food Photographer Guide"
+     ],
+     "h2": [
+      "What Good Looks Like"
+     ],
+     "h3": [
+      "One standard, every shoot",
+      "See the whole sample shoot."
+     ],
+     "items": [
+      "WHAT EVERY SHOOT HAS",
+      "Same Surface, Same Light",
+      "Two Angles Every Dish",
+      "Plated as Served",
+      "The Space Too",
+      "The People Behind It",
+      "One standard, every shoot",
+      "See the whole sample shoot."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "START WITH THE STANDARD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "What Good Looks Like",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Your Phone",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Your Camera",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Light and When to Shoot",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "The Two Angles",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Plating and Drinks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "The Space and the People",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Delivering",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Get Paid",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "The Food Photographer Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/business/sample/shoot",
+       "raw": "https://vegansexplore.com/business/sample/shoot",
+       "text": "SEE THE SAMPLE SHOOT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "Talk to Kai",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/food-photo/standard.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "Free FOR EVERYONE"
+     ],
+     "guide": {
+      "slug": "kai",
+      "label": "Kai, your Guide",
+      "name": "KAI",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fkai-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "standard",
+       "label": "2. What Good Looks Like",
+       "selected": true
+      },
+      {
+       "k": "phone",
+       "label": "3. Your Phone",
+       "selected": false
+      },
+      {
+       "k": "camera",
+       "label": "4. Your Camera",
+       "selected": false
+      },
+      {
+       "k": "light",
+       "label": "5. Light and When to Shoot",
+       "selected": false
+      },
+      {
+       "k": "angles",
+       "label": "6. The Two Angles",
+       "selected": false
+      },
+      {
+       "k": "plating",
+       "label": "7. Plating and Drinks",
+       "selected": false
+      },
+      {
+       "k": "space",
+       "label": "8. The Space and the People",
+       "selected": false
+      },
+      {
+       "k": "deliver",
+       "label": "9. Delivering",
+       "selected": false
+      },
+      {
+       "k": "paid",
+       "label": "10. Get Paid",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/standard",
+       "label": "What Good Looks Like",
+       "current": true
+      },
+      {
+       "href": "#/phone",
+       "label": "Your Phone",
+       "current": false
+      },
+      {
+       "href": "#/camera",
+       "label": "Your Camera",
+       "current": false
+      },
+      {
+       "href": "#/light",
+       "label": "Light and When to Shoot",
+       "current": false
+      },
+      {
+       "href": "#/angles",
+       "label": "The Two Angles",
+       "current": false
+      },
+      {
+       "href": "#/plating",
+       "label": "Plating and Drinks",
+       "current": false
+      },
+      {
+       "href": "#/space",
+       "label": "The Space and the People",
+       "current": false
+      },
+      {
+       "href": "#/deliver",
+       "label": "Delivering",
+       "current": false
+      },
+      {
+       "href": "#/paid",
+       "label": "Get Paid",
+       "current": false
+      }
+     ],
+     "activePart": "standard",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 213,
+     "action": {
+      "text": "START WITH THE STANDARD",
+      "bottom": 202,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1096,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "phone",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/food-photographer-guide/phone-390.jpg",
+     "title": "The Food Photographer Guide (preview) — Vegans Explore",
+     "hash": "#/phone",
+     "h1": [
+      "The Food Photographer Guide"
+     ],
+     "h2": [
+      "Your Phone"
+     ],
+     "h3": [
+      "Five settings, better photos today",
+      "Try it on your next meal."
+     ],
+     "items": [
+      "Five settings, better photos today",
+      "Try it on your next meal."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "START WITH THE STANDARD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "What Good Looks Like",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Your Phone",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Your Camera",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Light and When to Shoot",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "The Two Angles",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Plating and Drinks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "The Space and the People",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Delivering",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Get Paid",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "The Food Photographer Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "NEXT: YOUR CAMERA",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "Talk to Kai",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/food-photo/toast.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "Free FOR EVERYONE"
+     ],
+     "guide": {
+      "slug": "kai",
+      "label": "Kai, your Guide",
+      "name": "Kai",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fkai-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "standard",
+       "label": "2. What Good Looks Like",
+       "selected": false
+      },
+      {
+       "k": "phone",
+       "label": "3. Your Phone",
+       "selected": true
+      },
+      {
+       "k": "camera",
+       "label": "4. Your Camera",
+       "selected": false
+      },
+      {
+       "k": "light",
+       "label": "5. Light and When to Shoot",
+       "selected": false
+      },
+      {
+       "k": "angles",
+       "label": "6. The Two Angles",
+       "selected": false
+      },
+      {
+       "k": "plating",
+       "label": "7. Plating and Drinks",
+       "selected": false
+      },
+      {
+       "k": "space",
+       "label": "8. The Space and the People",
+       "selected": false
+      },
+      {
+       "k": "deliver",
+       "label": "9. Delivering",
+       "selected": false
+      },
+      {
+       "k": "paid",
+       "label": "10. Get Paid",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/standard",
+       "label": "What Good Looks Like",
+       "current": false
+      },
+      {
+       "href": "#/phone",
+       "label": "Your Phone",
+       "current": true
+      },
+      {
+       "href": "#/camera",
+       "label": "Your Camera",
+       "current": false
+      },
+      {
+       "href": "#/light",
+       "label": "Light and When to Shoot",
+       "current": false
+      },
+      {
+       "href": "#/angles",
+       "label": "The Two Angles",
+       "current": false
+      },
+      {
+       "href": "#/plating",
+       "label": "Plating and Drinks",
+       "current": false
+      },
+      {
+       "href": "#/space",
+       "label": "The Space and the People",
+       "current": false
+      },
+      {
+       "href": "#/deliver",
+       "label": "Delivering",
+       "current": false
+      },
+      {
+       "href": "#/paid",
+       "label": "Get Paid",
+       "current": false
+      }
+     ],
+     "activePart": "phone",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 267,
+     "action": {
+      "text": "START WITH THE STANDARD",
+      "bottom": 395,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 848,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 267,
+      "actionBottom": 395,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/food-photographer-guide/phone-1440.jpg",
+     "title": "The Food Photographer Guide (preview) — Vegans Explore",
+     "hash": "#/phone",
+     "h1": [
+      "The Food Photographer Guide"
+     ],
+     "h2": [
+      "Your Phone"
+     ],
+     "h3": [
+      "Five settings, better photos today",
+      "Try it on your next meal."
+     ],
+     "items": [
+      "Five settings, better photos today",
+      "Try it on your next meal."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "START WITH THE STANDARD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "What Good Looks Like",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Your Phone",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Your Camera",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Light and When to Shoot",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "The Two Angles",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Plating and Drinks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "The Space and the People",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Delivering",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Get Paid",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "The Food Photographer Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "NEXT: YOUR CAMERA",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "Talk to Kai",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/food-photo/toast.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "Free FOR EVERYONE"
+     ],
+     "guide": {
+      "slug": "kai",
+      "label": "Kai, your Guide",
+      "name": "KAI",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fkai-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "standard",
+       "label": "2. What Good Looks Like",
+       "selected": false
+      },
+      {
+       "k": "phone",
+       "label": "3. Your Phone",
+       "selected": true
+      },
+      {
+       "k": "camera",
+       "label": "4. Your Camera",
+       "selected": false
+      },
+      {
+       "k": "light",
+       "label": "5. Light and When to Shoot",
+       "selected": false
+      },
+      {
+       "k": "angles",
+       "label": "6. The Two Angles",
+       "selected": false
+      },
+      {
+       "k": "plating",
+       "label": "7. Plating and Drinks",
+       "selected": false
+      },
+      {
+       "k": "space",
+       "label": "8. The Space and the People",
+       "selected": false
+      },
+      {
+       "k": "deliver",
+       "label": "9. Delivering",
+       "selected": false
+      },
+      {
+       "k": "paid",
+       "label": "10. Get Paid",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/standard",
+       "label": "What Good Looks Like",
+       "current": false
+      },
+      {
+       "href": "#/phone",
+       "label": "Your Phone",
+       "current": true
+      },
+      {
+       "href": "#/camera",
+       "label": "Your Camera",
+       "current": false
+      },
+      {
+       "href": "#/light",
+       "label": "Light and When to Shoot",
+       "current": false
+      },
+      {
+       "href": "#/angles",
+       "label": "The Two Angles",
+       "current": false
+      },
+      {
+       "href": "#/plating",
+       "label": "Plating and Drinks",
+       "current": false
+      },
+      {
+       "href": "#/space",
+       "label": "The Space and the People",
+       "current": false
+      },
+      {
+       "href": "#/deliver",
+       "label": "Delivering",
+       "current": false
+      },
+      {
+       "href": "#/paid",
+       "label": "Get Paid",
+       "current": false
+      }
+     ],
+     "activePart": "phone",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 213,
+     "action": {
+      "text": "START WITH THE STANDARD",
+      "bottom": 202,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 848,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "camera",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/food-photographer-guide/camera-390.jpg",
+     "title": "The Food Photographer Guide (preview) — Vegans Explore",
+     "hash": "#/camera",
+     "h1": [
+      "The Food Photographer Guide"
+     ],
+     "h2": [
+      "Your Camera"
+     ],
+     "h3": [
+      "A starting point, then adjust",
+      "Set it, test it, adjust it."
+     ],
+     "items": [
+      "A starting point, then adjust",
+      "Set it, test it, adjust it."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "START WITH THE STANDARD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "What Good Looks Like",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Your Phone",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Your Camera",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Light and When to Shoot",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "The Two Angles",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Plating and Drinks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "The Space and the People",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Delivering",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Get Paid",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "The Food Photographer Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "NEXT: LIGHT AND WHEN TO SHOOT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "Talk to Kai",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/food-photo/noodles.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "Free FOR EVERYONE"
+     ],
+     "guide": {
+      "slug": "kai",
+      "label": "Kai, your Guide",
+      "name": "Kai",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fkai-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "standard",
+       "label": "2. What Good Looks Like",
+       "selected": false
+      },
+      {
+       "k": "phone",
+       "label": "3. Your Phone",
+       "selected": false
+      },
+      {
+       "k": "camera",
+       "label": "4. Your Camera",
+       "selected": true
+      },
+      {
+       "k": "light",
+       "label": "5. Light and When to Shoot",
+       "selected": false
+      },
+      {
+       "k": "angles",
+       "label": "6. The Two Angles",
+       "selected": false
+      },
+      {
+       "k": "plating",
+       "label": "7. Plating and Drinks",
+       "selected": false
+      },
+      {
+       "k": "space",
+       "label": "8. The Space and the People",
+       "selected": false
+      },
+      {
+       "k": "deliver",
+       "label": "9. Delivering",
+       "selected": false
+      },
+      {
+       "k": "paid",
+       "label": "10. Get Paid",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/standard",
+       "label": "What Good Looks Like",
+       "current": false
+      },
+      {
+       "href": "#/phone",
+       "label": "Your Phone",
+       "current": false
+      },
+      {
+       "href": "#/camera",
+       "label": "Your Camera",
+       "current": true
+      },
+      {
+       "href": "#/light",
+       "label": "Light and When to Shoot",
+       "current": false
+      },
+      {
+       "href": "#/angles",
+       "label": "The Two Angles",
+       "current": false
+      },
+      {
+       "href": "#/plating",
+       "label": "Plating and Drinks",
+       "current": false
+      },
+      {
+       "href": "#/space",
+       "label": "The Space and the People",
+       "current": false
+      },
+      {
+       "href": "#/deliver",
+       "label": "Delivering",
+       "current": false
+      },
+      {
+       "href": "#/paid",
+       "label": "Get Paid",
+       "current": false
+      }
+     ],
+     "activePart": "camera",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 267,
+     "action": {
+      "text": "START WITH THE STANDARD",
+      "bottom": 395,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 734,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 267,
+      "actionBottom": 395,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/food-photographer-guide/camera-1440.jpg",
+     "title": "The Food Photographer Guide (preview) — Vegans Explore",
+     "hash": "#/camera",
+     "h1": [
+      "The Food Photographer Guide"
+     ],
+     "h2": [
+      "Your Camera"
+     ],
+     "h3": [
+      "A starting point, then adjust",
+      "Set it, test it, adjust it."
+     ],
+     "items": [
+      "A starting point, then adjust",
+      "Set it, test it, adjust it."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "START WITH THE STANDARD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "What Good Looks Like",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Your Phone",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Your Camera",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Light and When to Shoot",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "The Two Angles",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Plating and Drinks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "The Space and the People",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Delivering",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Get Paid",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "The Food Photographer Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "NEXT: LIGHT AND WHEN TO SHOOT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "Talk to Kai",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/food-photo/noodles.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "Free FOR EVERYONE"
+     ],
+     "guide": {
+      "slug": "kai",
+      "label": "Kai, your Guide",
+      "name": "KAI",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fkai-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "standard",
+       "label": "2. What Good Looks Like",
+       "selected": false
+      },
+      {
+       "k": "phone",
+       "label": "3. Your Phone",
+       "selected": false
+      },
+      {
+       "k": "camera",
+       "label": "4. Your Camera",
+       "selected": true
+      },
+      {
+       "k": "light",
+       "label": "5. Light and When to Shoot",
+       "selected": false
+      },
+      {
+       "k": "angles",
+       "label": "6. The Two Angles",
+       "selected": false
+      },
+      {
+       "k": "plating",
+       "label": "7. Plating and Drinks",
+       "selected": false
+      },
+      {
+       "k": "space",
+       "label": "8. The Space and the People",
+       "selected": false
+      },
+      {
+       "k": "deliver",
+       "label": "9. Delivering",
+       "selected": false
+      },
+      {
+       "k": "paid",
+       "label": "10. Get Paid",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/standard",
+       "label": "What Good Looks Like",
+       "current": false
+      },
+      {
+       "href": "#/phone",
+       "label": "Your Phone",
+       "current": false
+      },
+      {
+       "href": "#/camera",
+       "label": "Your Camera",
+       "current": true
+      },
+      {
+       "href": "#/light",
+       "label": "Light and When to Shoot",
+       "current": false
+      },
+      {
+       "href": "#/angles",
+       "label": "The Two Angles",
+       "current": false
+      },
+      {
+       "href": "#/plating",
+       "label": "Plating and Drinks",
+       "current": false
+      },
+      {
+       "href": "#/space",
+       "label": "The Space and the People",
+       "current": false
+      },
+      {
+       "href": "#/deliver",
+       "label": "Delivering",
+       "current": false
+      },
+      {
+       "href": "#/paid",
+       "label": "Get Paid",
+       "current": false
+      }
+     ],
+     "activePart": "camera",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 213,
+     "action": {
+      "text": "START WITH THE STANDARD",
+      "bottom": 202,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 734,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "light",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/food-photographer-guide/light-390.jpg",
+     "title": "The Food Photographer Guide (preview) — Vegans Explore",
+     "hash": "#/light",
+     "h1": [
+      "The Food Photographer Guide"
+     ],
+     "h2": [
+      "Light and When to Shoot"
+     ],
+     "h3": [
+      "Where to put the plate, when to shoot",
+      "Find your window."
+     ],
+     "items": [
+      "LIGHT, STEP BY STEP",
+      "Window Light, From the Side",
+      "Overhead Lights Off",
+      "Soften Hard Sun",
+      "Fill With a White Card",
+      "Outside at Dusk",
+      "Where to put the plate, when to shoot",
+      "Find your window."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "START WITH THE STANDARD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "What Good Looks Like",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Your Phone",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Your Camera",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Light and When to Shoot",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "The Two Angles",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Plating and Drinks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "The Space and the People",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Delivering",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Get Paid",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "The Food Photographer Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "NEXT: THE TWO ANGLES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "Talk to Kai",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/food-photo/window.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "Free FOR EVERYONE"
+     ],
+     "guide": {
+      "slug": "kai",
+      "label": "Kai, your Guide",
+      "name": "Kai",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fkai-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "standard",
+       "label": "2. What Good Looks Like",
+       "selected": false
+      },
+      {
+       "k": "phone",
+       "label": "3. Your Phone",
+       "selected": false
+      },
+      {
+       "k": "camera",
+       "label": "4. Your Camera",
+       "selected": false
+      },
+      {
+       "k": "light",
+       "label": "5. Light and When to Shoot",
+       "selected": true
+      },
+      {
+       "k": "angles",
+       "label": "6. The Two Angles",
+       "selected": false
+      },
+      {
+       "k": "plating",
+       "label": "7. Plating and Drinks",
+       "selected": false
+      },
+      {
+       "k": "space",
+       "label": "8. The Space and the People",
+       "selected": false
+      },
+      {
+       "k": "deliver",
+       "label": "9. Delivering",
+       "selected": false
+      },
+      {
+       "k": "paid",
+       "label": "10. Get Paid",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/standard",
+       "label": "What Good Looks Like",
+       "current": false
+      },
+      {
+       "href": "#/phone",
+       "label": "Your Phone",
+       "current": false
+      },
+      {
+       "href": "#/camera",
+       "label": "Your Camera",
+       "current": false
+      },
+      {
+       "href": "#/light",
+       "label": "Light and When to Shoot",
+       "current": true
+      },
+      {
+       "href": "#/angles",
+       "label": "The Two Angles",
+       "current": false
+      },
+      {
+       "href": "#/plating",
+       "label": "Plating and Drinks",
+       "current": false
+      },
+      {
+       "href": "#/space",
+       "label": "The Space and the People",
+       "current": false
+      },
+      {
+       "href": "#/deliver",
+       "label": "Delivering",
+       "current": false
+      },
+      {
+       "href": "#/paid",
+       "label": "Get Paid",
+       "current": false
+      }
+     ],
+     "activePart": "light",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 267,
+     "action": {
+      "text": "START WITH THE STANDARD",
+      "bottom": 395,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1027,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 267,
+      "actionBottom": 395,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/food-photographer-guide/light-1440.jpg",
+     "title": "The Food Photographer Guide (preview) — Vegans Explore",
+     "hash": "#/light",
+     "h1": [
+      "The Food Photographer Guide"
+     ],
+     "h2": [
+      "Light and When to Shoot"
+     ],
+     "h3": [
+      "Where to put the plate, when to shoot",
+      "Find your window."
+     ],
+     "items": [
+      "LIGHT, STEP BY STEP",
+      "Window Light, From the Side",
+      "Overhead Lights Off",
+      "Soften Hard Sun",
+      "Fill With a White Card",
+      "Outside at Dusk",
+      "Where to put the plate, when to shoot",
+      "Find your window."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "START WITH THE STANDARD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "What Good Looks Like",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Your Phone",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Your Camera",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Light and When to Shoot",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "The Two Angles",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Plating and Drinks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "The Space and the People",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Delivering",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Get Paid",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "The Food Photographer Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "NEXT: THE TWO ANGLES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "Talk to Kai",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/food-photo/window.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "Free FOR EVERYONE"
+     ],
+     "guide": {
+      "slug": "kai",
+      "label": "Kai, your Guide",
+      "name": "KAI",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fkai-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "standard",
+       "label": "2. What Good Looks Like",
+       "selected": false
+      },
+      {
+       "k": "phone",
+       "label": "3. Your Phone",
+       "selected": false
+      },
+      {
+       "k": "camera",
+       "label": "4. Your Camera",
+       "selected": false
+      },
+      {
+       "k": "light",
+       "label": "5. Light and When to Shoot",
+       "selected": true
+      },
+      {
+       "k": "angles",
+       "label": "6. The Two Angles",
+       "selected": false
+      },
+      {
+       "k": "plating",
+       "label": "7. Plating and Drinks",
+       "selected": false
+      },
+      {
+       "k": "space",
+       "label": "8. The Space and the People",
+       "selected": false
+      },
+      {
+       "k": "deliver",
+       "label": "9. Delivering",
+       "selected": false
+      },
+      {
+       "k": "paid",
+       "label": "10. Get Paid",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/standard",
+       "label": "What Good Looks Like",
+       "current": false
+      },
+      {
+       "href": "#/phone",
+       "label": "Your Phone",
+       "current": false
+      },
+      {
+       "href": "#/camera",
+       "label": "Your Camera",
+       "current": false
+      },
+      {
+       "href": "#/light",
+       "label": "Light and When to Shoot",
+       "current": true
+      },
+      {
+       "href": "#/angles",
+       "label": "The Two Angles",
+       "current": false
+      },
+      {
+       "href": "#/plating",
+       "label": "Plating and Drinks",
+       "current": false
+      },
+      {
+       "href": "#/space",
+       "label": "The Space and the People",
+       "current": false
+      },
+      {
+       "href": "#/deliver",
+       "label": "Delivering",
+       "current": false
+      },
+      {
+       "href": "#/paid",
+       "label": "Get Paid",
+       "current": false
+      }
+     ],
+     "activePart": "light",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 213,
+     "action": {
+      "text": "START WITH THE STANDARD",
+      "bottom": 202,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1027,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "angles",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/food-photographer-guide/angles-390.jpg",
+     "title": "The Food Photographer Guide (preview) — Vegans Explore",
+     "hash": "#/angles",
+     "h1": [
+      "The Food Photographer Guide"
+     ],
+     "h2": [
+      "The Two Angles"
+     ],
+     "h3": [
+      "Two angles, every dish",
+      "Shoot both angles."
+     ],
+     "items": [
+      "THE TWO ANGLES",
+      "Three-Quarter, About 45 Degrees",
+      "Overhead, Straight Down",
+      "Same Surface, Same Distance",
+      "Leave Room Around It",
+      "Two angles, every dish",
+      "Shoot both angles."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "START WITH THE STANDARD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "What Good Looks Like",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Your Phone",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Your Camera",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Light and When to Shoot",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "The Two Angles",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Plating and Drinks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "The Space and the People",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Delivering",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Get Paid",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "The Food Photographer Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "NEXT: PLATING AND DRINKS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "Talk to Kai",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/food-photo/angle-top.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "Free FOR EVERYONE"
+     ],
+     "guide": {
+      "slug": "kai",
+      "label": "Kai, your Guide",
+      "name": "Kai",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fkai-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "standard",
+       "label": "2. What Good Looks Like",
+       "selected": false
+      },
+      {
+       "k": "phone",
+       "label": "3. Your Phone",
+       "selected": false
+      },
+      {
+       "k": "camera",
+       "label": "4. Your Camera",
+       "selected": false
+      },
+      {
+       "k": "light",
+       "label": "5. Light and When to Shoot",
+       "selected": false
+      },
+      {
+       "k": "angles",
+       "label": "6. The Two Angles",
+       "selected": true
+      },
+      {
+       "k": "plating",
+       "label": "7. Plating and Drinks",
+       "selected": false
+      },
+      {
+       "k": "space",
+       "label": "8. The Space and the People",
+       "selected": false
+      },
+      {
+       "k": "deliver",
+       "label": "9. Delivering",
+       "selected": false
+      },
+      {
+       "k": "paid",
+       "label": "10. Get Paid",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/standard",
+       "label": "What Good Looks Like",
+       "current": false
+      },
+      {
+       "href": "#/phone",
+       "label": "Your Phone",
+       "current": false
+      },
+      {
+       "href": "#/camera",
+       "label": "Your Camera",
+       "current": false
+      },
+      {
+       "href": "#/light",
+       "label": "Light and When to Shoot",
+       "current": false
+      },
+      {
+       "href": "#/angles",
+       "label": "The Two Angles",
+       "current": true
+      },
+      {
+       "href": "#/plating",
+       "label": "Plating and Drinks",
+       "current": false
+      },
+      {
+       "href": "#/space",
+       "label": "The Space and the People",
+       "current": false
+      },
+      {
+       "href": "#/deliver",
+       "label": "Delivering",
+       "current": false
+      },
+      {
+       "href": "#/paid",
+       "label": "Get Paid",
+       "current": false
+      }
+     ],
+     "activePart": "angles",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 267,
+     "action": {
+      "text": "START WITH THE STANDARD",
+      "bottom": 395,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 863,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 267,
+      "actionBottom": 395,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/food-photographer-guide/angles-1440.jpg",
+     "title": "The Food Photographer Guide (preview) — Vegans Explore",
+     "hash": "#/angles",
+     "h1": [
+      "The Food Photographer Guide"
+     ],
+     "h2": [
+      "The Two Angles"
+     ],
+     "h3": [
+      "Two angles, every dish",
+      "Shoot both angles."
+     ],
+     "items": [
+      "THE TWO ANGLES",
+      "Three-Quarter, About 45 Degrees",
+      "Overhead, Straight Down",
+      "Same Surface, Same Distance",
+      "Leave Room Around It",
+      "Two angles, every dish",
+      "Shoot both angles."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "START WITH THE STANDARD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "What Good Looks Like",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Your Phone",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Your Camera",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Light and When to Shoot",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "The Two Angles",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Plating and Drinks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "The Space and the People",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Delivering",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Get Paid",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "The Food Photographer Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "NEXT: PLATING AND DRINKS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "Talk to Kai",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/food-photo/angle-top.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "Free FOR EVERYONE"
+     ],
+     "guide": {
+      "slug": "kai",
+      "label": "Kai, your Guide",
+      "name": "KAI",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fkai-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "standard",
+       "label": "2. What Good Looks Like",
+       "selected": false
+      },
+      {
+       "k": "phone",
+       "label": "3. Your Phone",
+       "selected": false
+      },
+      {
+       "k": "camera",
+       "label": "4. Your Camera",
+       "selected": false
+      },
+      {
+       "k": "light",
+       "label": "5. Light and When to Shoot",
+       "selected": false
+      },
+      {
+       "k": "angles",
+       "label": "6. The Two Angles",
+       "selected": true
+      },
+      {
+       "k": "plating",
+       "label": "7. Plating and Drinks",
+       "selected": false
+      },
+      {
+       "k": "space",
+       "label": "8. The Space and the People",
+       "selected": false
+      },
+      {
+       "k": "deliver",
+       "label": "9. Delivering",
+       "selected": false
+      },
+      {
+       "k": "paid",
+       "label": "10. Get Paid",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/standard",
+       "label": "What Good Looks Like",
+       "current": false
+      },
+      {
+       "href": "#/phone",
+       "label": "Your Phone",
+       "current": false
+      },
+      {
+       "href": "#/camera",
+       "label": "Your Camera",
+       "current": false
+      },
+      {
+       "href": "#/light",
+       "label": "Light and When to Shoot",
+       "current": false
+      },
+      {
+       "href": "#/angles",
+       "label": "The Two Angles",
+       "current": true
+      },
+      {
+       "href": "#/plating",
+       "label": "Plating and Drinks",
+       "current": false
+      },
+      {
+       "href": "#/space",
+       "label": "The Space and the People",
+       "current": false
+      },
+      {
+       "href": "#/deliver",
+       "label": "Delivering",
+       "current": false
+      },
+      {
+       "href": "#/paid",
+       "label": "Get Paid",
+       "current": false
+      }
+     ],
+     "activePart": "angles",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 213,
+     "action": {
+      "text": "START WITH THE STANDARD",
+      "bottom": 202,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 863,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "plating",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/food-photographer-guide/plating-390.jpg",
+     "title": "The Food Photographer Guide (preview) — Vegans Explore",
+     "hash": "#/plating",
+     "h1": [
+      "The Food Photographer Guide"
+     ],
+     "h2": [
+      "Plating and Drinks"
+     ],
+     "h3": [
+      "As it leaves the kitchen, but clean",
+      "Clean it, then shoot it fast."
+     ],
+     "items": [
+      "BEFORE YOU PRESS THE BUTTON",
+      "Plated as Served",
+      "Wipe the Rims, Garnish Last",
+      "Shoot Fast",
+      "Drinks: Light From Behind",
+      "Props: Keep It Simple",
+      "As it leaves the kitchen, but clean",
+      "Clean it, then shoot it fast."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "START WITH THE STANDARD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "What Good Looks Like",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Your Phone",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Your Camera",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Light and When to Shoot",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "The Two Angles",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Plating and Drinks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "The Space and the People",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Delivering",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Get Paid",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "The Food Photographer Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "NEXT: THE SPACE AND THE PEOPLE",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "Talk to Kai",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/food-photo/plate.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "Free FOR EVERYONE"
+     ],
+     "guide": {
+      "slug": "kai",
+      "label": "Kai, your Guide",
+      "name": "Kai",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fkai-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "standard",
+       "label": "2. What Good Looks Like",
+       "selected": false
+      },
+      {
+       "k": "phone",
+       "label": "3. Your Phone",
+       "selected": false
+      },
+      {
+       "k": "camera",
+       "label": "4. Your Camera",
+       "selected": false
+      },
+      {
+       "k": "light",
+       "label": "5. Light and When to Shoot",
+       "selected": false
+      },
+      {
+       "k": "angles",
+       "label": "6. The Two Angles",
+       "selected": false
+      },
+      {
+       "k": "plating",
+       "label": "7. Plating and Drinks",
+       "selected": true
+      },
+      {
+       "k": "space",
+       "label": "8. The Space and the People",
+       "selected": false
+      },
+      {
+       "k": "deliver",
+       "label": "9. Delivering",
+       "selected": false
+      },
+      {
+       "k": "paid",
+       "label": "10. Get Paid",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/standard",
+       "label": "What Good Looks Like",
+       "current": false
+      },
+      {
+       "href": "#/phone",
+       "label": "Your Phone",
+       "current": false
+      },
+      {
+       "href": "#/camera",
+       "label": "Your Camera",
+       "current": false
+      },
+      {
+       "href": "#/light",
+       "label": "Light and When to Shoot",
+       "current": false
+      },
+      {
+       "href": "#/angles",
+       "label": "The Two Angles",
+       "current": false
+      },
+      {
+       "href": "#/plating",
+       "label": "Plating and Drinks",
+       "current": true
+      },
+      {
+       "href": "#/space",
+       "label": "The Space and the People",
+       "current": false
+      },
+      {
+       "href": "#/deliver",
+       "label": "Delivering",
+       "current": false
+      },
+      {
+       "href": "#/paid",
+       "label": "Get Paid",
+       "current": false
+      }
+     ],
+     "activePart": "plating",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 267,
+     "action": {
+      "text": "START WITH THE STANDARD",
+      "bottom": 395,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 967,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 267,
+      "actionBottom": 395,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/food-photographer-guide/plating-1440.jpg",
+     "title": "The Food Photographer Guide (preview) — Vegans Explore",
+     "hash": "#/plating",
+     "h1": [
+      "The Food Photographer Guide"
+     ],
+     "h2": [
+      "Plating and Drinks"
+     ],
+     "h3": [
+      "As it leaves the kitchen, but clean",
+      "Clean it, then shoot it fast."
+     ],
+     "items": [
+      "BEFORE YOU PRESS THE BUTTON",
+      "Plated as Served",
+      "Wipe the Rims, Garnish Last",
+      "Shoot Fast",
+      "Drinks: Light From Behind",
+      "Props: Keep It Simple",
+      "As it leaves the kitchen, but clean",
+      "Clean it, then shoot it fast."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "START WITH THE STANDARD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "What Good Looks Like",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Your Phone",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Your Camera",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Light and When to Shoot",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "The Two Angles",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Plating and Drinks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "The Space and the People",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Delivering",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Get Paid",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "The Food Photographer Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "NEXT: THE SPACE AND THE PEOPLE",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "Talk to Kai",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/food-photo/plate.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "Free FOR EVERYONE"
+     ],
+     "guide": {
+      "slug": "kai",
+      "label": "Kai, your Guide",
+      "name": "KAI",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fkai-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "standard",
+       "label": "2. What Good Looks Like",
+       "selected": false
+      },
+      {
+       "k": "phone",
+       "label": "3. Your Phone",
+       "selected": false
+      },
+      {
+       "k": "camera",
+       "label": "4. Your Camera",
+       "selected": false
+      },
+      {
+       "k": "light",
+       "label": "5. Light and When to Shoot",
+       "selected": false
+      },
+      {
+       "k": "angles",
+       "label": "6. The Two Angles",
+       "selected": false
+      },
+      {
+       "k": "plating",
+       "label": "7. Plating and Drinks",
+       "selected": true
+      },
+      {
+       "k": "space",
+       "label": "8. The Space and the People",
+       "selected": false
+      },
+      {
+       "k": "deliver",
+       "label": "9. Delivering",
+       "selected": false
+      },
+      {
+       "k": "paid",
+       "label": "10. Get Paid",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/standard",
+       "label": "What Good Looks Like",
+       "current": false
+      },
+      {
+       "href": "#/phone",
+       "label": "Your Phone",
+       "current": false
+      },
+      {
+       "href": "#/camera",
+       "label": "Your Camera",
+       "current": false
+      },
+      {
+       "href": "#/light",
+       "label": "Light and When to Shoot",
+       "current": false
+      },
+      {
+       "href": "#/angles",
+       "label": "The Two Angles",
+       "current": false
+      },
+      {
+       "href": "#/plating",
+       "label": "Plating and Drinks",
+       "current": true
+      },
+      {
+       "href": "#/space",
+       "label": "The Space and the People",
+       "current": false
+      },
+      {
+       "href": "#/deliver",
+       "label": "Delivering",
+       "current": false
+      },
+      {
+       "href": "#/paid",
+       "label": "Get Paid",
+       "current": false
+      }
+     ],
+     "activePart": "plating",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 213,
+     "action": {
+      "text": "START WITH THE STANDARD",
+      "bottom": 202,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 967,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "space",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/food-photographer-guide/space-390.jpg",
+     "title": "The Food Photographer Guide (preview) — Vegans Explore",
+     "hash": "#/space",
+     "h1": [
+      "The Food Photographer Guide"
+     ],
+     "h2": [
+      "The Space and the People"
+     ],
+     "h3": [
+      "Where they will sit, who will feed them",
+      "Walk the room."
+     ],
+     "items": [
+      "THE SHOT LIST FOR THE ROOM",
+      "Outside by Day",
+      "Outside at Dusk",
+      "Inside Wide, From the Corners",
+      "The Counter and the Details",
+      "The Owner and the Team",
+      "Where they will sit, who will feed them",
+      "Walk the room."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "START WITH THE STANDARD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "What Good Looks Like",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Your Phone",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Your Camera",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Light and When to Shoot",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "The Two Angles",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Plating and Drinks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "The Space and the People",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Delivering",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Get Paid",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "The Food Photographer Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "NEXT: DELIVERING",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "Talk to Kai",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/food-photo/space-wide.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "Free FOR EVERYONE"
+     ],
+     "guide": {
+      "slug": "kai",
+      "label": "Kai, your Guide",
+      "name": "Kai",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fkai-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "standard",
+       "label": "2. What Good Looks Like",
+       "selected": false
+      },
+      {
+       "k": "phone",
+       "label": "3. Your Phone",
+       "selected": false
+      },
+      {
+       "k": "camera",
+       "label": "4. Your Camera",
+       "selected": false
+      },
+      {
+       "k": "light",
+       "label": "5. Light and When to Shoot",
+       "selected": false
+      },
+      {
+       "k": "angles",
+       "label": "6. The Two Angles",
+       "selected": false
+      },
+      {
+       "k": "plating",
+       "label": "7. Plating and Drinks",
+       "selected": false
+      },
+      {
+       "k": "space",
+       "label": "8. The Space and the People",
+       "selected": true
+      },
+      {
+       "k": "deliver",
+       "label": "9. Delivering",
+       "selected": false
+      },
+      {
+       "k": "paid",
+       "label": "10. Get Paid",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/standard",
+       "label": "What Good Looks Like",
+       "current": false
+      },
+      {
+       "href": "#/phone",
+       "label": "Your Phone",
+       "current": false
+      },
+      {
+       "href": "#/camera",
+       "label": "Your Camera",
+       "current": false
+      },
+      {
+       "href": "#/light",
+       "label": "Light and When to Shoot",
+       "current": false
+      },
+      {
+       "href": "#/angles",
+       "label": "The Two Angles",
+       "current": false
+      },
+      {
+       "href": "#/plating",
+       "label": "Plating and Drinks",
+       "current": false
+      },
+      {
+       "href": "#/space",
+       "label": "The Space and the People",
+       "current": true
+      },
+      {
+       "href": "#/deliver",
+       "label": "Delivering",
+       "current": false
+      },
+      {
+       "href": "#/paid",
+       "label": "Get Paid",
+       "current": false
+      }
+     ],
+     "activePart": "space",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 267,
+     "action": {
+      "text": "START WITH THE STANDARD",
+      "bottom": 395,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 953,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 267,
+      "actionBottom": 395,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/food-photographer-guide/space-1440.jpg",
+     "title": "The Food Photographer Guide (preview) — Vegans Explore",
+     "hash": "#/space",
+     "h1": [
+      "The Food Photographer Guide"
+     ],
+     "h2": [
+      "The Space and the People"
+     ],
+     "h3": [
+      "Where they will sit, who will feed them",
+      "Walk the room."
+     ],
+     "items": [
+      "THE SHOT LIST FOR THE ROOM",
+      "Outside by Day",
+      "Outside at Dusk",
+      "Inside Wide, From the Corners",
+      "The Counter and the Details",
+      "The Owner and the Team",
+      "Where they will sit, who will feed them",
+      "Walk the room."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "START WITH THE STANDARD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "What Good Looks Like",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Your Phone",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Your Camera",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Light and When to Shoot",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "The Two Angles",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Plating and Drinks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "The Space and the People",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Delivering",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Get Paid",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "The Food Photographer Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "NEXT: DELIVERING",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "Talk to Kai",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/food-photo/space-wide.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "Free FOR EVERYONE"
+     ],
+     "guide": {
+      "slug": "kai",
+      "label": "Kai, your Guide",
+      "name": "KAI",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fkai-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "standard",
+       "label": "2. What Good Looks Like",
+       "selected": false
+      },
+      {
+       "k": "phone",
+       "label": "3. Your Phone",
+       "selected": false
+      },
+      {
+       "k": "camera",
+       "label": "4. Your Camera",
+       "selected": false
+      },
+      {
+       "k": "light",
+       "label": "5. Light and When to Shoot",
+       "selected": false
+      },
+      {
+       "k": "angles",
+       "label": "6. The Two Angles",
+       "selected": false
+      },
+      {
+       "k": "plating",
+       "label": "7. Plating and Drinks",
+       "selected": false
+      },
+      {
+       "k": "space",
+       "label": "8. The Space and the People",
+       "selected": true
+      },
+      {
+       "k": "deliver",
+       "label": "9. Delivering",
+       "selected": false
+      },
+      {
+       "k": "paid",
+       "label": "10. Get Paid",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/standard",
+       "label": "What Good Looks Like",
+       "current": false
+      },
+      {
+       "href": "#/phone",
+       "label": "Your Phone",
+       "current": false
+      },
+      {
+       "href": "#/camera",
+       "label": "Your Camera",
+       "current": false
+      },
+      {
+       "href": "#/light",
+       "label": "Light and When to Shoot",
+       "current": false
+      },
+      {
+       "href": "#/angles",
+       "label": "The Two Angles",
+       "current": false
+      },
+      {
+       "href": "#/plating",
+       "label": "Plating and Drinks",
+       "current": false
+      },
+      {
+       "href": "#/space",
+       "label": "The Space and the People",
+       "current": true
+      },
+      {
+       "href": "#/deliver",
+       "label": "Delivering",
+       "current": false
+      },
+      {
+       "href": "#/paid",
+       "label": "Get Paid",
+       "current": false
+      }
+     ],
+     "activePart": "space",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 213,
+     "action": {
+      "text": "START WITH THE STANDARD",
+      "bottom": 202,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 953,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "deliver",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/food-photographer-guide/deliver-390.jpg",
+     "title": "The Food Photographer Guide (preview) — Vegans Explore",
+     "hash": "#/deliver",
+     "h1": [
+      "The Food Photographer Guide"
+     ],
+     "h2": [
+      "Delivering"
+     ],
+     "h3": [
+      "Land it right",
+      "Deliver it right."
+     ],
+     "items": [
+      "HOW TO DELIVER",
+      "Three Shapes, Full Size",
+      "JPEG, Big Enough",
+      "Name Every File",
+      "Light Edits Only",
+      "Upload to the Shot List",
+      "Land it right",
+      "Deliver it right."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "START WITH THE STANDARD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "What Good Looks Like",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Your Phone",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Your Camera",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Light and When to Shoot",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "The Two Angles",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Plating and Drinks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "The Space and the People",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Delivering",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Get Paid",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "The Food Photographer Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "NEXT: GET PAID",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "Talk to Kai",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/food-photo/surface.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "Free FOR EVERYONE"
+     ],
+     "guide": {
+      "slug": "kai",
+      "label": "Kai, your Guide",
+      "name": "Kai",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fkai-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "standard",
+       "label": "2. What Good Looks Like",
+       "selected": false
+      },
+      {
+       "k": "phone",
+       "label": "3. Your Phone",
+       "selected": false
+      },
+      {
+       "k": "camera",
+       "label": "4. Your Camera",
+       "selected": false
+      },
+      {
+       "k": "light",
+       "label": "5. Light and When to Shoot",
+       "selected": false
+      },
+      {
+       "k": "angles",
+       "label": "6. The Two Angles",
+       "selected": false
+      },
+      {
+       "k": "plating",
+       "label": "7. Plating and Drinks",
+       "selected": false
+      },
+      {
+       "k": "space",
+       "label": "8. The Space and the People",
+       "selected": false
+      },
+      {
+       "k": "deliver",
+       "label": "9. Delivering",
+       "selected": true
+      },
+      {
+       "k": "paid",
+       "label": "10. Get Paid",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/standard",
+       "label": "What Good Looks Like",
+       "current": false
+      },
+      {
+       "href": "#/phone",
+       "label": "Your Phone",
+       "current": false
+      },
+      {
+       "href": "#/camera",
+       "label": "Your Camera",
+       "current": false
+      },
+      {
+       "href": "#/light",
+       "label": "Light and When to Shoot",
+       "current": false
+      },
+      {
+       "href": "#/angles",
+       "label": "The Two Angles",
+       "current": false
+      },
+      {
+       "href": "#/plating",
+       "label": "Plating and Drinks",
+       "current": false
+      },
+      {
+       "href": "#/space",
+       "label": "The Space and the People",
+       "current": false
+      },
+      {
+       "href": "#/deliver",
+       "label": "Delivering",
+       "current": true
+      },
+      {
+       "href": "#/paid",
+       "label": "Get Paid",
+       "current": false
+      }
+     ],
+     "activePart": "deliver",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 267,
+     "action": {
+      "text": "START WITH THE STANDARD",
+      "bottom": 395,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 846,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 267,
+      "actionBottom": 395,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/food-photographer-guide/deliver-1440.jpg",
+     "title": "The Food Photographer Guide (preview) — Vegans Explore",
+     "hash": "#/deliver",
+     "h1": [
+      "The Food Photographer Guide"
+     ],
+     "h2": [
+      "Delivering"
+     ],
+     "h3": [
+      "Land it right",
+      "Deliver it right."
+     ],
+     "items": [
+      "HOW TO DELIVER",
+      "Three Shapes, Full Size",
+      "JPEG, Big Enough",
+      "Name Every File",
+      "Light Edits Only",
+      "Upload to the Shot List",
+      "Land it right",
+      "Deliver it right."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "START WITH THE STANDARD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "What Good Looks Like",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Your Phone",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Your Camera",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Light and When to Shoot",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "The Two Angles",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Plating and Drinks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "The Space and the People",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Delivering",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Get Paid",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "The Food Photographer Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "NEXT: GET PAID",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "Talk to Kai",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/food-photo/surface.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "Free FOR EVERYONE"
+     ],
+     "guide": {
+      "slug": "kai",
+      "label": "Kai, your Guide",
+      "name": "KAI",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fkai-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "standard",
+       "label": "2. What Good Looks Like",
+       "selected": false
+      },
+      {
+       "k": "phone",
+       "label": "3. Your Phone",
+       "selected": false
+      },
+      {
+       "k": "camera",
+       "label": "4. Your Camera",
+       "selected": false
+      },
+      {
+       "k": "light",
+       "label": "5. Light and When to Shoot",
+       "selected": false
+      },
+      {
+       "k": "angles",
+       "label": "6. The Two Angles",
+       "selected": false
+      },
+      {
+       "k": "plating",
+       "label": "7. Plating and Drinks",
+       "selected": false
+      },
+      {
+       "k": "space",
+       "label": "8. The Space and the People",
+       "selected": false
+      },
+      {
+       "k": "deliver",
+       "label": "9. Delivering",
+       "selected": true
+      },
+      {
+       "k": "paid",
+       "label": "10. Get Paid",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/standard",
+       "label": "What Good Looks Like",
+       "current": false
+      },
+      {
+       "href": "#/phone",
+       "label": "Your Phone",
+       "current": false
+      },
+      {
+       "href": "#/camera",
+       "label": "Your Camera",
+       "current": false
+      },
+      {
+       "href": "#/light",
+       "label": "Light and When to Shoot",
+       "current": false
+      },
+      {
+       "href": "#/angles",
+       "label": "The Two Angles",
+       "current": false
+      },
+      {
+       "href": "#/plating",
+       "label": "Plating and Drinks",
+       "current": false
+      },
+      {
+       "href": "#/space",
+       "label": "The Space and the People",
+       "current": false
+      },
+      {
+       "href": "#/deliver",
+       "label": "Delivering",
+       "current": true
+      },
+      {
+       "href": "#/paid",
+       "label": "Get Paid",
+       "current": false
+      }
+     ],
+     "activePart": "deliver",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 213,
+     "action": {
+      "text": "START WITH THE STANDARD",
+      "bottom": 202,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 846,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "paid",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/food-photographer-guide/paid-390.jpg",
+     "title": "The Food Photographer Guide (preview) — Vegans Explore",
+     "hash": "#/paid",
+     "h1": [
+      "The Food Photographer Guide"
+     ],
+     "h2": [
+      "Get Paid"
+     ],
+     "h3": [
+      "From learning it to getting paid for it",
+      "Ready to get paid for it?"
+     ],
+     "items": [
+      "HOW IT WORKS",
+      "Apply on the Gig Board",
+      "The Paid Trial: $75",
+      "Join the Photographers We Book",
+      "Paid for Every Shoot",
+      "From learning it to getting paid for it",
+      "Ready to get paid for it?"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "START WITH THE STANDARD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "What Good Looks Like",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Your Phone",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Your Camera",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Light and When to Shoot",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "The Two Angles",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Plating and Drinks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "The Space and the People",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Delivering",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Get Paid",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "The Food Photographer Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/gigs#board",
+       "raw": "/gigs#board",
+       "text": "SEE THE JOB",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "Talk to Kai",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/food-photo/team.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "Free FOR EVERYONE",
+      "A short pitch and two or three food photos. Join free with a short survey to see it.",
+      "The Paid Trial: $75"
+     ],
+     "guide": {
+      "slug": "kai",
+      "label": "Kai, your Guide",
+      "name": "Kai",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fkai-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "standard",
+       "label": "2. What Good Looks Like",
+       "selected": false
+      },
+      {
+       "k": "phone",
+       "label": "3. Your Phone",
+       "selected": false
+      },
+      {
+       "k": "camera",
+       "label": "4. Your Camera",
+       "selected": false
+      },
+      {
+       "k": "light",
+       "label": "5. Light and When to Shoot",
+       "selected": false
+      },
+      {
+       "k": "angles",
+       "label": "6. The Two Angles",
+       "selected": false
+      },
+      {
+       "k": "plating",
+       "label": "7. Plating and Drinks",
+       "selected": false
+      },
+      {
+       "k": "space",
+       "label": "8. The Space and the People",
+       "selected": false
+      },
+      {
+       "k": "deliver",
+       "label": "9. Delivering",
+       "selected": false
+      },
+      {
+       "k": "paid",
+       "label": "10. Get Paid",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/standard",
+       "label": "What Good Looks Like",
+       "current": false
+      },
+      {
+       "href": "#/phone",
+       "label": "Your Phone",
+       "current": false
+      },
+      {
+       "href": "#/camera",
+       "label": "Your Camera",
+       "current": false
+      },
+      {
+       "href": "#/light",
+       "label": "Light and When to Shoot",
+       "current": false
+      },
+      {
+       "href": "#/angles",
+       "label": "The Two Angles",
+       "current": false
+      },
+      {
+       "href": "#/plating",
+       "label": "Plating and Drinks",
+       "current": false
+      },
+      {
+       "href": "#/space",
+       "label": "The Space and the People",
+       "current": false
+      },
+      {
+       "href": "#/deliver",
+       "label": "Delivering",
+       "current": false
+      },
+      {
+       "href": "#/paid",
+       "label": "Get Paid",
+       "current": true
+      }
+     ],
+     "activePart": "paid",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 267,
+     "action": {
+      "text": "START WITH THE STANDARD",
+      "bottom": 395,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 924,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 267,
+      "actionBottom": 395,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/food-photographer-guide/paid-1440.jpg",
+     "title": "The Food Photographer Guide (preview) — Vegans Explore",
+     "hash": "#/paid",
+     "h1": [
+      "The Food Photographer Guide"
+     ],
+     "h2": [
+      "Get Paid"
+     ],
+     "h3": [
+      "From learning it to getting paid for it",
+      "Ready to get paid for it?"
+     ],
+     "items": [
+      "HOW IT WORKS",
+      "Apply on the Gig Board",
+      "The Paid Trial: $75",
+      "Join the Photographers We Book",
+      "Paid for Every Shoot",
+      "From learning it to getting paid for it",
+      "Ready to get paid for it?"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "START WITH THE STANDARD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/standard",
+       "raw": "#/standard",
+       "text": "What Good Looks Like",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/phone",
+       "raw": "#/phone",
+       "text": "Your Phone",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/camera",
+       "raw": "#/camera",
+       "text": "Your Camera",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/light",
+       "raw": "#/light",
+       "text": "Light and When to Shoot",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/angles",
+       "raw": "#/angles",
+       "text": "The Two Angles",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/plating",
+       "raw": "#/plating",
+       "text": "Plating and Drinks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/space",
+       "raw": "#/space",
+       "text": "The Space and the People",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Delivering",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Get Paid",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/",
+       "raw": "#/",
+       "text": "The Food Photographer Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/gigs#board",
+       "raw": "/gigs#board",
+       "text": "SEE THE JOB",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/deliver",
+       "raw": "#/deliver",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#/paid",
+       "raw": "#/paid",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/food-photographer-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "Talk to Kai",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/food-photo/team.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "Free FOR EVERYONE",
+      "A short pitch and two or three food photos. Join free with a short survey to see it.",
+      "The Paid Trial: $75"
+     ],
+     "guide": {
+      "slug": "kai",
+      "label": "Kai, your Guide",
+      "name": "KAI",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fkai-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "standard",
+       "label": "2. What Good Looks Like",
+       "selected": false
+      },
+      {
+       "k": "phone",
+       "label": "3. Your Phone",
+       "selected": false
+      },
+      {
+       "k": "camera",
+       "label": "4. Your Camera",
+       "selected": false
+      },
+      {
+       "k": "light",
+       "label": "5. Light and When to Shoot",
+       "selected": false
+      },
+      {
+       "k": "angles",
+       "label": "6. The Two Angles",
+       "selected": false
+      },
+      {
+       "k": "plating",
+       "label": "7. Plating and Drinks",
+       "selected": false
+      },
+      {
+       "k": "space",
+       "label": "8. The Space and the People",
+       "selected": false
+      },
+      {
+       "k": "deliver",
+       "label": "9. Delivering",
+       "selected": false
+      },
+      {
+       "k": "paid",
+       "label": "10. Get Paid",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/standard",
+       "label": "What Good Looks Like",
+       "current": false
+      },
+      {
+       "href": "#/phone",
+       "label": "Your Phone",
+       "current": false
+      },
+      {
+       "href": "#/camera",
+       "label": "Your Camera",
+       "current": false
+      },
+      {
+       "href": "#/light",
+       "label": "Light and When to Shoot",
+       "current": false
+      },
+      {
+       "href": "#/angles",
+       "label": "The Two Angles",
+       "current": false
+      },
+      {
+       "href": "#/plating",
+       "label": "Plating and Drinks",
+       "current": false
+      },
+      {
+       "href": "#/space",
+       "label": "The Space and the People",
+       "current": false
+      },
+      {
+       "href": "#/deliver",
+       "label": "Delivering",
+       "current": false
+      },
+      {
+       "href": "#/paid",
+       "label": "Get Paid",
+       "current": true
+      }
+     ],
+     "activePart": "paid",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 213,
+     "action": {
+      "text": "START WITH THE STANDARD",
+      "bottom": 202,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 924,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  }
+ ],
+ "linkStatus": {
+  "https://vegansexplore.com/guides/food-photographer-guide": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/directory": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/dashboard/saves": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/account": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/business/sample/shoot": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/gigs": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  }
+ }
+}

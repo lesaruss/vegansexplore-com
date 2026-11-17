@@ -1,0 +1,5698 @@
+{
+ "guide": "pre-vegan-business-guide",
+ "url": "https://vegansexplore.com/guides/pre-vegan-business-guide",
+ "script": "guide-scripts/pre-vegan-business-guide.js",
+ "takenAt": "2026-11-17T00:55:56.408Z",
+ "base": "https://vegansexplore.com",
+ "staticParts": [
+  {
+   "k": "overview",
+   "label": "Overview",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "why",
+   "label": "Why add plant-based",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "add",
+   "label": "What to add",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "say",
+   "label": "How to say it",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "sourcing",
+   "label": "Sourcing",
+   "parent": null,
+   "flags": [
+    "mine"
+   ]
+  },
+  {
+   "k": "make",
+   "label": "Buy or make",
+   "parent": null,
+   "flags": [
+    "mine"
+   ]
+  },
+  {
+   "k": "found",
+   "label": "Get found",
+   "parent": null,
+   "flags": [
+    "mine"
+   ]
+  },
+  {
+   "k": "claim",
+   "label": "Claim your page",
+   "parent": null,
+   "flags": [
+    "mine"
+   ]
+  },
+  {
+   "k": "next",
+   "label": "What's next",
+   "parent": null,
+   "flags": [
+    "mine"
+   ]
+  },
+  {
+   "k": "mylist",
+   "label": "My list",
+   "parent": null,
+   "flags": [
+    "mine"
+   ]
+  },
+  {
+   "k": "join",
+   "label": "Get in",
+   "parent": null,
+   "flags": [
+    "guest"
+   ]
+  }
+ ],
+ "liveMenuParts": [
+  "overview",
+  "why",
+  "add",
+  "say",
+  "join"
+ ],
+ "partsMissingFromLiveMenu": [
+  "sourcing",
+  "make",
+  "found",
+  "claim",
+  "next",
+  "mylist"
+ ],
+ "views": [
+  {
+   "view": "overview",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-business-guide#/overview",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-business-guide#/overview",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-business-guide/overview-390.jpg",
+     "title": "The Pre-Vegan Business Guide - Vegans Explore Guides",
+     "hash": "#/overview",
+     "h1": [
+      "The Pre-Vegan Business Guide"
+     ],
+     "h2": [
+      "Adding plant-based options? You're in the right place."
+     ],
+     "h3": [
+      "The elephant in the room"
+     ],
+     "items": [
+      "The elephant in the room"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "Why add plant-based",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "What to add",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "How to say it",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "1 The worry",
+      "2 Who it's for",
+      "3 Why",
+      "4 What's inside",
+      "5 Finish line",
+      "6 How to use it",
+      "‹",
+      "The worry",
+      "Who it's for",
+      "Why",
+      "What's inside",
+      "Finish line",
+      "How to use it",
+      "›",
+      "▶ Play Maya",
+      "Talk to Maya",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/ov-elephant.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "maya",
+      "label": "Maya, your Guide",
+      "name": "Maya",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": true
+      },
+      {
+       "k": "why",
+       "label": "Why add plant-based",
+       "selected": false
+      },
+      {
+       "k": "add",
+       "label": "What to add",
+       "selected": false
+      },
+      {
+       "k": "say",
+       "label": "How to say it",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": true
+      },
+      {
+       "href": "#/why",
+       "label": "Why add plant-based",
+       "current": false
+      },
+      {
+       "href": "#/add",
+       "label": "What to add",
+       "current": false
+      },
+      {
+       "href": "#/say",
+       "label": "How to say it",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": false
+      }
+     ],
+     "activePart": "overview",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 547,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 444,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-business-guide#/overview",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-business-guide#/overview",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-business-guide/overview-1440.jpg",
+     "title": "The Pre-Vegan Business Guide - Vegans Explore Guides",
+     "hash": "#/overview",
+     "h1": [
+      "The Pre-Vegan Business Guide"
+     ],
+     "h2": [
+      "Adding plant-based options? You're in the right place."
+     ],
+     "h3": [
+      "The elephant in the room"
+     ],
+     "items": [
+      "The elephant in the room"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "WHY ADD PLANT-BASED",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "WHAT TO ADD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "HOW TO SAY IT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "1 The worry",
+      "2 Who it's for",
+      "3 Why",
+      "4 What's inside",
+      "5 Finish line",
+      "6 How to use it",
+      "‹",
+      "The worry",
+      "Who it's for",
+      "Why",
+      "What's inside",
+      "Finish line",
+      "How to use it",
+      "›",
+      "▶ PLAY MAYA",
+      "Talk to Maya",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/ov-elephant.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN"
+     ],
+     "guide": {
+      "slug": "maya",
+      "label": "Maya, your Guide",
+      "name": "MAYA",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": true
+      },
+      {
+       "k": "why",
+       "label": "Why add plant-based",
+       "selected": false
+      },
+      {
+       "k": "add",
+       "label": "What to add",
+       "selected": false
+      },
+      {
+       "k": "say",
+       "label": "How to say it",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": true
+      },
+      {
+       "href": "#/why",
+       "label": "WHY ADD PLANT-BASED",
+       "current": false
+      },
+      {
+       "href": "#/add",
+       "label": "WHAT TO ADD",
+       "current": false
+      },
+      {
+       "href": "#/say",
+       "label": "HOW TO SAY IT",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": false
+      }
+     ],
+     "activePart": "overview",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 718,
+       "clientHeight": 544
+      },
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 393,
+       "clientHeight": 212
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 444,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "why",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-business-guide/why-390.jpg",
+     "title": "The Pre-Vegan Business Guide - Vegans Explore Guides",
+     "hash": "#/why",
+     "h1": [
+      "The Pre-Vegan Business Guide"
+     ],
+     "h2": [
+      "The honest version"
+     ],
+     "h3": [
+      "Many people cannot have dairy",
+      "A short list costs little to try",
+      "Groups go where everyone can eat",
+      "WHAT IT WILL NOT DO",
+      "It will not bring customers on its own",
+      "It will not make you a Vegan business",
+      "It will not please everyone"
+     ],
+     "items": [
+      "Many people cannot have dairy",
+      "A short list costs little to try",
+      "Groups go where everyone can eat",
+      "It will not bring customers on its own",
+      "It will not make you a Vegan business",
+      "It will not please everyone",
+      "SEE WHAT TO ADD",
+      "WHAT IT WILL NOT DO"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "Why add plant-based",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "What to add",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "How to say it",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://www.niddk.nih.gov/health-information/digestive-diseases/lactose-intolerance/definition-facts",
+       "raw": "https://www.niddk.nih.gov/health-information/digestive-diseases/lactose-intolerance/definition-facts",
+       "text": "NIDDK, National Institutes of Health",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "SEE WHAT TO ADD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ Play Maya",
+      "Talk to Maya",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/why-dairy.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/why-short.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/why-groups.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/wont-sales.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/wont-vegan.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/wont-please.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "maya",
+      "label": "Maya, your Guide",
+      "name": "Maya",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "why",
+       "label": "Why add plant-based",
+       "selected": true
+      },
+      {
+       "k": "add",
+       "label": "What to add",
+       "selected": false
+      },
+      {
+       "k": "say",
+       "label": "How to say it",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/why",
+       "label": "Why add plant-based",
+       "current": true
+      },
+      {
+       "href": "#/add",
+       "label": "What to add",
+       "current": false
+      },
+      {
+       "href": "#/say",
+       "label": "How to say it",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": false
+      }
+     ],
+     "activePart": "why",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 150,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1492,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-business-guide/why-1440.jpg",
+     "title": "The Pre-Vegan Business Guide - Vegans Explore Guides",
+     "hash": "#/why",
+     "h1": [
+      "The Pre-Vegan Business Guide"
+     ],
+     "h2": [
+      "The honest version"
+     ],
+     "h3": [
+      "Many people cannot have dairy",
+      "A short list costs little to try",
+      "Groups go where everyone can eat",
+      "WHAT IT WILL NOT DO",
+      "It will not bring customers on its own",
+      "It will not make you a Vegan business",
+      "It will not please everyone"
+     ],
+     "items": [
+      "Many people cannot have dairy",
+      "A short list costs little to try",
+      "Groups go where everyone can eat",
+      "It will not bring customers on its own",
+      "It will not make you a Vegan business",
+      "It will not please everyone",
+      "SEE WHAT TO ADD",
+      "WHAT IT WILL NOT DO"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "WHY ADD PLANT-BASED",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "WHAT TO ADD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "HOW TO SAY IT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://www.niddk.nih.gov/health-information/digestive-diseases/lactose-intolerance/definition-facts",
+       "raw": "https://www.niddk.nih.gov/health-information/digestive-diseases/lactose-intolerance/definition-facts",
+       "text": "NIDDK, National Institutes of Health",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "SEE WHAT TO ADD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ PLAY MAYA",
+      "Talk to Maya",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/why-dairy.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/why-short.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/why-groups.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/wont-sales.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/wont-vegan.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/wont-please.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN"
+     ],
+     "guide": {
+      "slug": "maya",
+      "label": "Maya, your Guide",
+      "name": "MAYA",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "why",
+       "label": "Why add plant-based",
+       "selected": true
+      },
+      {
+       "k": "add",
+       "label": "What to add",
+       "selected": false
+      },
+      {
+       "k": "say",
+       "label": "How to say it",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/why",
+       "label": "WHY ADD PLANT-BASED",
+       "current": true
+      },
+      {
+       "href": "#/add",
+       "label": "WHAT TO ADD",
+       "current": false
+      },
+      {
+       "href": "#/say",
+       "label": "HOW TO SAY IT",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": false
+      }
+     ],
+     "activePart": "why",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 818,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1492,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "add",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-business-guide/add-390.jpg",
+     "title": "The Pre-Vegan Business Guide - Vegans Explore Guides",
+     "hash": "#/add",
+     "h1": [
+      "The Pre-Vegan Business Guide"
+     ],
+     "h2": [
+      "Pick your kind of business"
+     ],
+     "h3": [
+      "Coffee shop",
+      "Gym or studio",
+      "Juice or smoothie bar",
+      "Cafe or bakery",
+      "Caterer or venue",
+      "Every kind of business"
+     ],
+     "items": [
+      "Coffee shop",
+      "Gym or studio",
+      "Juice or smoothie bar",
+      "Cafe or bakery",
+      "Caterer or venue",
+      "Every kind of business"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "Why add plant-based",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "What to add",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "How to say it",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add/coffee",
+       "raw": "#/add/coffee",
+       "text": "Coffee shop",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide",
+       "raw": "/guides/vegan-restaurant-guide",
+       "text": "Vegan Restaurant Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add/coffee",
+       "raw": "#/add/coffee",
+       "text": "FREE TO TRY Coffee shop Plant milks that steam well, syrups and",
+       "visible": true,
+       "dataHref": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "TAKE THE SURVEY, FREE",
+      "▶ Play Maya",
+      "Talk to Maya",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/add-coffee.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/add-gym.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/add-juice.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/add-cafe.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/add-caterer.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "Each with first items, what to stock and what to watch for. Take the short survey about your business and the whole Guide opens. Free, no card.",
+      "TAKE THE SURVEY, FREE",
+      "Already a member? Sign in"
+     ],
+     "guide": {
+      "slug": "maya",
+      "label": "Maya, your Guide",
+      "name": "Maya",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "why",
+       "label": "Why add plant-based",
+       "selected": false
+      },
+      {
+       "k": "add",
+       "label": "What to add",
+       "selected": true
+      },
+      {
+       "k": "say",
+       "label": "How to say it",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/why",
+       "label": "Why add plant-based",
+       "current": false
+      },
+      {
+       "href": "#/add",
+       "label": "What to add",
+       "current": true
+      },
+      {
+       "href": "#/say",
+       "label": "How to say it",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": false
+      }
+     ],
+     "activePart": "add",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 150,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1143,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-business-guide/add-1440.jpg",
+     "title": "The Pre-Vegan Business Guide - Vegans Explore Guides",
+     "hash": "#/add",
+     "h1": [
+      "The Pre-Vegan Business Guide"
+     ],
+     "h2": [
+      "Pick your kind of business"
+     ],
+     "h3": [
+      "Coffee shop",
+      "Gym or studio",
+      "Juice or smoothie bar",
+      "Cafe or bakery",
+      "Caterer or venue",
+      "Every kind of business"
+     ],
+     "items": [
+      "Coffee shop",
+      "Gym or studio",
+      "Juice or smoothie bar",
+      "Cafe or bakery",
+      "Caterer or venue",
+      "Every kind of business"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "WHY ADD PLANT-BASED",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "WHAT TO ADD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "HOW TO SAY IT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add/coffee",
+       "raw": "#/add/coffee",
+       "text": "Coffee shop",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide",
+       "raw": "/guides/vegan-restaurant-guide",
+       "text": "Vegan Restaurant Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add/coffee",
+       "raw": "#/add/coffee",
+       "text": "FREE TO TRY Coffee shop Plant milks that steam well, syrups and",
+       "visible": true,
+       "dataHref": true
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "TAKE THE SURVEY, FREE",
+      "▶ PLAY MAYA",
+      "Talk to Maya",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/add-coffee.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/add-gym.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/add-juice.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/add-cafe.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/add-caterer.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "Each with first items, what to stock and what to watch for. Take the short survey about your business and the whole Guide opens. Free, no card.",
+      "TAKE THE SURVEY, FREE",
+      "Already a member? Sign in"
+     ],
+     "guide": {
+      "slug": "maya",
+      "label": "Maya, your Guide",
+      "name": "MAYA",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "why",
+       "label": "Why add plant-based",
+       "selected": false
+      },
+      {
+       "k": "add",
+       "label": "What to add",
+       "selected": true
+      },
+      {
+       "k": "say",
+       "label": "How to say it",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/why",
+       "label": "WHY ADD PLANT-BASED",
+       "current": false
+      },
+      {
+       "href": "#/add",
+       "label": "WHAT TO ADD",
+       "current": true
+      },
+      {
+       "href": "#/say",
+       "label": "HOW TO SAY IT",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": false
+      }
+     ],
+     "activePart": "add",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 854,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1143,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "say",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-business-guide/say-390.jpg",
+     "title": "The Pre-Vegan Business Guide - Vegans Explore Guides",
+     "hash": "#/say",
+     "h1": [
+      "The Pre-Vegan Business Guide"
+     ],
+     "h2": [
+      "The words on your menu"
+     ],
+     "h3": [
+      "Plant-based",
+      "Plant-based options",
+      "Hold it to the full standard",
+      "Say how it is made",
+      "LINES YOU CAN USE",
+      "A shared kitchen",
+      "A menu key",
+      "Made plant-based on request"
+     ],
+     "items": [
+      "Plant-based",
+      "Plant-based options",
+      "Hold it to the full standard",
+      "Say how it is made",
+      "A shared kitchen",
+      "A menu key",
+      "Made plant-based on request",
+      "LINES YOU CAN USE"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "Why add plant-based",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "What to add",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "How to say it",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "COPY",
+      "▶ Play Maya",
+      "Talk to Maya",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/say-pb.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/say-options.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/say-standard.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/say-made.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/line-kitchen.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/line-key.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/line-request.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "maya",
+      "label": "Maya, your Guide",
+      "name": "Maya",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "why",
+       "label": "Why add plant-based",
+       "selected": false
+      },
+      {
+       "k": "add",
+       "label": "What to add",
+       "selected": false
+      },
+      {
+       "k": "say",
+       "label": "How to say it",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/why",
+       "label": "Why add plant-based",
+       "current": false
+      },
+      {
+       "href": "#/add",
+       "label": "What to add",
+       "current": false
+      },
+      {
+       "href": "#/say",
+       "label": "How to say it",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": false
+      }
+     ],
+     "activePart": "say",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 170,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1069,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-business-guide/say-1440.jpg",
+     "title": "The Pre-Vegan Business Guide - Vegans Explore Guides",
+     "hash": "#/say",
+     "h1": [
+      "The Pre-Vegan Business Guide"
+     ],
+     "h2": [
+      "The words on your menu"
+     ],
+     "h3": [
+      "Plant-based",
+      "Plant-based options",
+      "Hold it to the full standard",
+      "Say how it is made",
+      "LINES YOU CAN USE",
+      "A shared kitchen",
+      "A menu key",
+      "Made plant-based on request"
+     ],
+     "items": [
+      "Plant-based",
+      "Plant-based options",
+      "Hold it to the full standard",
+      "Say how it is made",
+      "A shared kitchen",
+      "A menu key",
+      "Made plant-based on request",
+      "LINES YOU CAN USE"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "WHY ADD PLANT-BASED",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "WHAT TO ADD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "HOW TO SAY IT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "COPY",
+      "▶ PLAY MAYA",
+      "Talk to Maya",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/say-pb.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/say-options.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/say-standard.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/say-made.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/line-kitchen.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/line-key.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/public/guides/pre-vegan-business/line-request.jpg?v=1",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN"
+     ],
+     "guide": {
+      "slug": "maya",
+      "label": "Maya, your Guide",
+      "name": "MAYA",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "why",
+       "label": "Why add plant-based",
+       "selected": false
+      },
+      {
+       "k": "add",
+       "label": "What to add",
+       "selected": false
+      },
+      {
+       "k": "say",
+       "label": "How to say it",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/why",
+       "label": "WHY ADD PLANT-BASED",
+       "current": false
+      },
+      {
+       "href": "#/add",
+       "label": "WHAT TO ADD",
+       "current": false
+      },
+      {
+       "href": "#/say",
+       "label": "HOW TO SAY IT",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": false
+      }
+     ],
+     "activePart": "say",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 671,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1069,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "sourcing",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+     ],
+     "failedRequests": [
+      {
+       "url": "https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-sourcing",
+       "type": "fetch",
+       "status": 401
+      }
+     ],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-business-guide/sourcing-390.jpg",
+     "title": "The Pre-Vegan Business Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Pre-Vegan Business Guide"
+     ],
+     "h2": [
+      "Adding plant-based options?"
+     ],
+     "h3": [],
+     "items": [
+      "What to add",
+      "Sourcing and Buy or make:",
+      "Your page:",
+      "Founding Member"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "Why add plant-based",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "What to add",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "How to say it",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ Play Maya",
+      "Talk to Maya",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "There's one way in, and it's free. Take the short survey about your business, and the whole Guide opens."
+     ],
+     "guide": {
+      "slug": "maya",
+      "label": "Maya, your Guide",
+      "name": "Maya",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "why",
+       "label": "Why add plant-based",
+       "selected": false
+      },
+      {
+       "k": "add",
+       "label": "What to add",
+       "selected": false
+      },
+      {
+       "k": "say",
+       "label": "How to say it",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/why",
+       "label": "Why add plant-based",
+       "current": false
+      },
+      {
+       "href": "#/add",
+       "label": "What to add",
+       "current": false
+      },
+      {
+       "href": "#/say",
+       "label": "How to say it",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 205,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 585,
+     "brokenImages": [],
+     "realFailedRequests": [
+      {
+       "url": "https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-sourcing",
+       "type": "fetch",
+       "status": 401
+      }
+     ],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+     ],
+     "failedRequests": [
+      {
+       "url": "https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-sourcing",
+       "type": "fetch",
+       "status": 401
+      }
+     ],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-business-guide/sourcing-1440.jpg",
+     "title": "The Pre-Vegan Business Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Pre-Vegan Business Guide"
+     ],
+     "h2": [
+      "Adding plant-based options?"
+     ],
+     "h3": [],
+     "items": [
+      "What to add",
+      "Sourcing and Buy or make:",
+      "Your page:",
+      "Founding Member"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "WHY ADD PLANT-BASED",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "WHAT TO ADD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "HOW TO SAY IT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ PLAY MAYA",
+      "Talk to Maya",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "There's one way in, and it's free. Take the short survey about your business, and the whole Guide opens."
+     ],
+     "guide": {
+      "slug": "maya",
+      "label": "Maya, your Guide",
+      "name": "MAYA",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "why",
+       "label": "Why add plant-based",
+       "selected": false
+      },
+      {
+       "k": "add",
+       "label": "What to add",
+       "selected": false
+      },
+      {
+       "k": "say",
+       "label": "How to say it",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/why",
+       "label": "WHY ADD PLANT-BASED",
+       "current": false
+      },
+      {
+       "href": "#/add",
+       "label": "WHAT TO ADD",
+       "current": false
+      },
+      {
+       "href": "#/say",
+       "label": "HOW TO SAY IT",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 585,
+     "brokenImages": [],
+     "realFailedRequests": [
+      {
+       "url": "https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-sourcing",
+       "type": "fetch",
+       "status": 401
+      }
+     ]
+    }
+   }
+  },
+  {
+   "view": "make",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+     ],
+     "failedRequests": [
+      {
+       "url": "https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-sourcing",
+       "type": "fetch",
+       "status": 401
+      }
+     ],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-business-guide/make-390.jpg",
+     "title": "The Pre-Vegan Business Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Pre-Vegan Business Guide"
+     ],
+     "h2": [
+      "Adding plant-based options?"
+     ],
+     "h3": [],
+     "items": [
+      "What to add",
+      "Sourcing and Buy or make:",
+      "Your page:",
+      "Founding Member"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "Why add plant-based",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "What to add",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "How to say it",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ Play Maya",
+      "Talk to Maya",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "There's one way in, and it's free. Take the short survey about your business, and the whole Guide opens."
+     ],
+     "guide": {
+      "slug": "maya",
+      "label": "Maya, your Guide",
+      "name": "Maya",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "why",
+       "label": "Why add plant-based",
+       "selected": false
+      },
+      {
+       "k": "add",
+       "label": "What to add",
+       "selected": false
+      },
+      {
+       "k": "say",
+       "label": "How to say it",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/why",
+       "label": "Why add plant-based",
+       "current": false
+      },
+      {
+       "href": "#/add",
+       "label": "What to add",
+       "current": false
+      },
+      {
+       "href": "#/say",
+       "label": "How to say it",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 205,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 585,
+     "brokenImages": [],
+     "realFailedRequests": [
+      {
+       "url": "https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-sourcing",
+       "type": "fetch",
+       "status": 401
+      }
+     ],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "consoleErrors": [
+      "Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+     ],
+     "failedRequests": [
+      {
+       "url": "https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-sourcing",
+       "type": "fetch",
+       "status": 401
+      }
+     ],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-business-guide/make-1440.jpg",
+     "title": "The Pre-Vegan Business Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Pre-Vegan Business Guide"
+     ],
+     "h2": [
+      "Adding plant-based options?"
+     ],
+     "h3": [],
+     "items": [
+      "What to add",
+      "Sourcing and Buy or make:",
+      "Your page:",
+      "Founding Member"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "WHY ADD PLANT-BASED",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "WHAT TO ADD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "HOW TO SAY IT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ PLAY MAYA",
+      "Talk to Maya",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "There's one way in, and it's free. Take the short survey about your business, and the whole Guide opens."
+     ],
+     "guide": {
+      "slug": "maya",
+      "label": "Maya, your Guide",
+      "name": "MAYA",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "why",
+       "label": "Why add plant-based",
+       "selected": false
+      },
+      {
+       "k": "add",
+       "label": "What to add",
+       "selected": false
+      },
+      {
+       "k": "say",
+       "label": "How to say it",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/why",
+       "label": "WHY ADD PLANT-BASED",
+       "current": false
+      },
+      {
+       "href": "#/add",
+       "label": "WHAT TO ADD",
+       "current": false
+      },
+      {
+       "href": "#/say",
+       "label": "HOW TO SAY IT",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 585,
+     "brokenImages": [],
+     "realFailedRequests": [
+      {
+       "url": "https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-sourcing",
+       "type": "fetch",
+       "status": 401
+      }
+     ]
+    }
+   }
+  },
+  {
+   "view": "found",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-business-guide/found-390.jpg",
+     "title": "The Pre-Vegan Business Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Pre-Vegan Business Guide"
+     ],
+     "h2": [
+      "Adding plant-based options?"
+     ],
+     "h3": [],
+     "items": [
+      "What to add",
+      "Sourcing and Buy or make:",
+      "Your page:",
+      "Founding Member"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "Why add plant-based",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "What to add",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "How to say it",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ Play Maya",
+      "Talk to Maya",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "There's one way in, and it's free. Take the short survey about your business, and the whole Guide opens."
+     ],
+     "guide": {
+      "slug": "maya",
+      "label": "Maya, your Guide",
+      "name": "Maya",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "why",
+       "label": "Why add plant-based",
+       "selected": false
+      },
+      {
+       "k": "add",
+       "label": "What to add",
+       "selected": false
+      },
+      {
+       "k": "say",
+       "label": "How to say it",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/why",
+       "label": "Why add plant-based",
+       "current": false
+      },
+      {
+       "href": "#/add",
+       "label": "What to add",
+       "current": false
+      },
+      {
+       "href": "#/say",
+       "label": "How to say it",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 205,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 585,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-business-guide/found-1440.jpg",
+     "title": "The Pre-Vegan Business Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Pre-Vegan Business Guide"
+     ],
+     "h2": [
+      "Adding plant-based options?"
+     ],
+     "h3": [],
+     "items": [
+      "What to add",
+      "Sourcing and Buy or make:",
+      "Your page:",
+      "Founding Member"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "WHY ADD PLANT-BASED",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "WHAT TO ADD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "HOW TO SAY IT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ PLAY MAYA",
+      "Talk to Maya",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "There's one way in, and it's free. Take the short survey about your business, and the whole Guide opens."
+     ],
+     "guide": {
+      "slug": "maya",
+      "label": "Maya, your Guide",
+      "name": "MAYA",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "why",
+       "label": "Why add plant-based",
+       "selected": false
+      },
+      {
+       "k": "add",
+       "label": "What to add",
+       "selected": false
+      },
+      {
+       "k": "say",
+       "label": "How to say it",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/why",
+       "label": "WHY ADD PLANT-BASED",
+       "current": false
+      },
+      {
+       "href": "#/add",
+       "label": "WHAT TO ADD",
+       "current": false
+      },
+      {
+       "href": "#/say",
+       "label": "HOW TO SAY IT",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 585,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "claim",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-business-guide/claim-390.jpg",
+     "title": "The Pre-Vegan Business Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Pre-Vegan Business Guide"
+     ],
+     "h2": [
+      "Adding plant-based options?"
+     ],
+     "h3": [],
+     "items": [
+      "What to add",
+      "Sourcing and Buy or make:",
+      "Your page:",
+      "Founding Member"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "Why add plant-based",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "What to add",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "How to say it",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ Play Maya",
+      "Talk to Maya",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "There's one way in, and it's free. Take the short survey about your business, and the whole Guide opens."
+     ],
+     "guide": {
+      "slug": "maya",
+      "label": "Maya, your Guide",
+      "name": "Maya",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "why",
+       "label": "Why add plant-based",
+       "selected": false
+      },
+      {
+       "k": "add",
+       "label": "What to add",
+       "selected": false
+      },
+      {
+       "k": "say",
+       "label": "How to say it",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/why",
+       "label": "Why add plant-based",
+       "current": false
+      },
+      {
+       "href": "#/add",
+       "label": "What to add",
+       "current": false
+      },
+      {
+       "href": "#/say",
+       "label": "How to say it",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 205,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 585,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-business-guide/claim-1440.jpg",
+     "title": "The Pre-Vegan Business Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Pre-Vegan Business Guide"
+     ],
+     "h2": [
+      "Adding plant-based options?"
+     ],
+     "h3": [],
+     "items": [
+      "What to add",
+      "Sourcing and Buy or make:",
+      "Your page:",
+      "Founding Member"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "WHY ADD PLANT-BASED",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "WHAT TO ADD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "HOW TO SAY IT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ PLAY MAYA",
+      "Talk to Maya",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "There's one way in, and it's free. Take the short survey about your business, and the whole Guide opens."
+     ],
+     "guide": {
+      "slug": "maya",
+      "label": "Maya, your Guide",
+      "name": "MAYA",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "why",
+       "label": "Why add plant-based",
+       "selected": false
+      },
+      {
+       "k": "add",
+       "label": "What to add",
+       "selected": false
+      },
+      {
+       "k": "say",
+       "label": "How to say it",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/why",
+       "label": "WHY ADD PLANT-BASED",
+       "current": false
+      },
+      {
+       "href": "#/add",
+       "label": "WHAT TO ADD",
+       "current": false
+      },
+      {
+       "href": "#/say",
+       "label": "HOW TO SAY IT",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 585,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "next",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-business-guide/next-390.jpg",
+     "title": "The Pre-Vegan Business Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Pre-Vegan Business Guide"
+     ],
+     "h2": [
+      "Adding plant-based options?"
+     ],
+     "h3": [],
+     "items": [
+      "What to add",
+      "Sourcing and Buy or make:",
+      "Your page:",
+      "Founding Member"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "Why add plant-based",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "What to add",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "How to say it",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ Play Maya",
+      "Talk to Maya",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "There's one way in, and it's free. Take the short survey about your business, and the whole Guide opens."
+     ],
+     "guide": {
+      "slug": "maya",
+      "label": "Maya, your Guide",
+      "name": "Maya",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "why",
+       "label": "Why add plant-based",
+       "selected": false
+      },
+      {
+       "k": "add",
+       "label": "What to add",
+       "selected": false
+      },
+      {
+       "k": "say",
+       "label": "How to say it",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/why",
+       "label": "Why add plant-based",
+       "current": false
+      },
+      {
+       "href": "#/add",
+       "label": "What to add",
+       "current": false
+      },
+      {
+       "href": "#/say",
+       "label": "How to say it",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 205,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 585,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-business-guide/next-1440.jpg",
+     "title": "The Pre-Vegan Business Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Pre-Vegan Business Guide"
+     ],
+     "h2": [
+      "Adding plant-based options?"
+     ],
+     "h3": [],
+     "items": [
+      "What to add",
+      "Sourcing and Buy or make:",
+      "Your page:",
+      "Founding Member"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "WHY ADD PLANT-BASED",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "WHAT TO ADD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "HOW TO SAY IT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ PLAY MAYA",
+      "Talk to Maya",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "There's one way in, and it's free. Take the short survey about your business, and the whole Guide opens."
+     ],
+     "guide": {
+      "slug": "maya",
+      "label": "Maya, your Guide",
+      "name": "MAYA",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "why",
+       "label": "Why add plant-based",
+       "selected": false
+      },
+      {
+       "k": "add",
+       "label": "What to add",
+       "selected": false
+      },
+      {
+       "k": "say",
+       "label": "How to say it",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/why",
+       "label": "WHY ADD PLANT-BASED",
+       "current": false
+      },
+      {
+       "href": "#/add",
+       "label": "WHAT TO ADD",
+       "current": false
+      },
+      {
+       "href": "#/say",
+       "label": "HOW TO SAY IT",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 585,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "mylist",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-business-guide/mylist-390.jpg",
+     "title": "The Pre-Vegan Business Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Pre-Vegan Business Guide"
+     ],
+     "h2": [
+      "Adding plant-based options?"
+     ],
+     "h3": [],
+     "items": [
+      "What to add",
+      "Sourcing and Buy or make:",
+      "Your page:",
+      "Founding Member"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "Why add plant-based",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "What to add",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "How to say it",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ Play Maya",
+      "Talk to Maya",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "There's one way in, and it's free. Take the short survey about your business, and the whole Guide opens."
+     ],
+     "guide": {
+      "slug": "maya",
+      "label": "Maya, your Guide",
+      "name": "Maya",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "why",
+       "label": "Why add plant-based",
+       "selected": false
+      },
+      {
+       "k": "add",
+       "label": "What to add",
+       "selected": false
+      },
+      {
+       "k": "say",
+       "label": "How to say it",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/why",
+       "label": "Why add plant-based",
+       "current": false
+      },
+      {
+       "href": "#/add",
+       "label": "What to add",
+       "current": false
+      },
+      {
+       "href": "#/say",
+       "label": "How to say it",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 205,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 585,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-business-guide/mylist-1440.jpg",
+     "title": "The Pre-Vegan Business Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Pre-Vegan Business Guide"
+     ],
+     "h2": [
+      "Adding plant-based options?"
+     ],
+     "h3": [],
+     "items": [
+      "What to add",
+      "Sourcing and Buy or make:",
+      "Your page:",
+      "Founding Member"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "WHY ADD PLANT-BASED",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "WHAT TO ADD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "HOW TO SAY IT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ PLAY MAYA",
+      "Talk to Maya",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "There's one way in, and it's free. Take the short survey about your business, and the whole Guide opens."
+     ],
+     "guide": {
+      "slug": "maya",
+      "label": "Maya, your Guide",
+      "name": "MAYA",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "why",
+       "label": "Why add plant-based",
+       "selected": false
+      },
+      {
+       "k": "add",
+       "label": "What to add",
+       "selected": false
+      },
+      {
+       "k": "say",
+       "label": "How to say it",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/why",
+       "label": "WHY ADD PLANT-BASED",
+       "current": false
+      },
+      {
+       "href": "#/add",
+       "label": "WHAT TO ADD",
+       "current": false
+      },
+      {
+       "href": "#/say",
+       "label": "HOW TO SAY IT",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 585,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "join",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-business-guide/join-390.jpg",
+     "title": "The Pre-Vegan Business Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Pre-Vegan Business Guide"
+     ],
+     "h2": [
+      "Adding plant-based options?"
+     ],
+     "h3": [],
+     "items": [
+      "What to add",
+      "Sourcing and Buy or make:",
+      "Your page:",
+      "Founding Member"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "Why add plant-based",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "What to add",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "How to say it",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ Play Maya",
+      "Talk to Maya",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "There's one way in, and it's free. Take the short survey about your business, and the whole Guide opens."
+     ],
+     "guide": {
+      "slug": "maya",
+      "label": "Maya, your Guide",
+      "name": "Maya",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "why",
+       "label": "Why add plant-based",
+       "selected": false
+      },
+      {
+       "k": "add",
+       "label": "What to add",
+       "selected": false
+      },
+      {
+       "k": "say",
+       "label": "How to say it",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/why",
+       "label": "Why add plant-based",
+       "current": false
+      },
+      {
+       "href": "#/add",
+       "label": "What to add",
+       "current": false
+      },
+      {
+       "href": "#/say",
+       "label": "How to say it",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 205,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 585,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-business-guide/join-1440.jpg",
+     "title": "The Pre-Vegan Business Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Pre-Vegan Business Guide"
+     ],
+     "h2": [
+      "Adding plant-based options?"
+     ],
+     "h3": [],
+     "items": [
+      "What to add",
+      "Sourcing and Buy or make:",
+      "Your page:",
+      "Founding Member"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "WHY ADD PLANT-BASED",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "WHAT TO ADD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "HOW TO SAY IT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ PLAY MAYA",
+      "Talk to Maya",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "There's one way in, and it's free. Take the short survey about your business, and the whole Guide opens."
+     ],
+     "guide": {
+      "slug": "maya",
+      "label": "Maya, your Guide",
+      "name": "MAYA",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "why",
+       "label": "Why add plant-based",
+       "selected": false
+      },
+      {
+       "k": "add",
+       "label": "What to add",
+       "selected": false
+      },
+      {
+       "k": "say",
+       "label": "How to say it",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/why",
+       "label": "WHY ADD PLANT-BASED",
+       "current": false
+      },
+      {
+       "href": "#/add",
+       "label": "WHAT TO ADD",
+       "current": false
+      },
+      {
+       "href": "#/say",
+       "label": "HOW TO SAY IT",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 585,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "add/coffee",
+   "depth": 1,
+   "parent": "add",
+   "isPart": false,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add/coffee",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add/coffee",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-business-guide/add_coffee-390.jpg",
+     "title": "The Pre-Vegan Business Guide - Vegans Explore Guides",
+     "hash": "#/add/coffee",
+     "h1": [
+      "The Pre-Vegan Business Guide"
+     ],
+     "h2": [
+      "Coffee shop"
+     ],
+     "h3": [
+      "EASY FIRST ITEMS",
+      "WHAT TO STOCK",
+      "WHAT TO WATCH FOR",
+      "START HERE",
+      "The other kinds"
+     ],
+     "items": [
+      "An oat or soy barista milk for every drink, so any drink can be made plant-based.",
+      "One plant-based pastry, muffin or bar at the counter.",
+      "Mark which syrups and sauces are plant-based on the menu board.",
+      "A dairy-free whipped topping for the drinks that come with whipped cream.",
+      "A barista edition plant milk (oat or soy steam best) and a second one people ask for, such as almond.",
+      "Syrups and sauces whose labels say no milk.",
+      "A plant-based creamer for the self-serve station.",
+      "Caramel, white mocha and pumpkin sauces often contain milk. Read the label.",
+      "Whipped cream and milk chocolate are dairy.",
+      "Honey comes from bees, so it is not plant-based.",
+      "Butter or an egg wash on pastries, and glazes made with milk.",
+      "EASY FIRST ITEMS",
+      "WHAT TO STOCK",
+      "WHAT TO WATCH FOR",
+      "START HERE",
+      "The other kinds"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "Why add plant-based",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "What to add",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "How to say it",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "Pre-Vegan Business Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "HOW TO SAY IT ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "TAKE THE SURVEY, FREE",
+      "▶ Play Maya",
+      "Talk to Maya",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "Each with first items, what to stock and what to watch for. Take the short survey about your business and the whole Guide opens. Free, no card.",
+      "TAKE THE SURVEY, FREE",
+      "Already a member? Sign in"
+     ],
+     "guide": {
+      "slug": "maya",
+      "label": "Maya, your Guide",
+      "name": "Maya",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "why",
+       "label": "Why add plant-based",
+       "selected": false
+      },
+      {
+       "k": "add",
+       "label": "What to add",
+       "selected": true
+      },
+      {
+       "k": "say",
+       "label": "How to say it",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/why",
+       "label": "Why add plant-based",
+       "current": false
+      },
+      {
+       "href": "#/add",
+       "label": "What to add",
+       "current": true
+      },
+      {
+       "href": "#/say",
+       "label": "How to say it",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": false
+      }
+     ],
+     "activePart": "add",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 150,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1333,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add/coffee",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add/coffee",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/pre-vegan-business-guide/add_coffee-1440.jpg",
+     "title": "The Pre-Vegan Business Guide - Vegans Explore Guides",
+     "hash": "#/add/coffee",
+     "h1": [
+      "The Pre-Vegan Business Guide"
+     ],
+     "h2": [
+      "Coffee shop"
+     ],
+     "h3": [
+      "EASY FIRST ITEMS",
+      "WHAT TO STOCK",
+      "WHAT TO WATCH FOR",
+      "START HERE",
+      "The other kinds"
+     ],
+     "items": [
+      "An oat or soy barista milk for every drink, so any drink can be made plant-based.",
+      "One plant-based pastry, muffin or bar at the counter.",
+      "Mark which syrups and sauces are plant-based on the menu board.",
+      "A dairy-free whipped topping for the drinks that come with whipped cream.",
+      "A barista edition plant milk (oat or soy steam best) and a second one people ask for, such as almond.",
+      "Syrups and sauces whose labels say no milk.",
+      "A plant-based creamer for the self-serve station.",
+      "Caramel, white mocha and pumpkin sauces often contain milk. Read the label.",
+      "Whipped cream and milk chocolate are dairy.",
+      "Honey comes from bees, so it is not plant-based.",
+      "Butter or an egg wash on pastries, and glazes made with milk.",
+      "EASY FIRST ITEMS",
+      "WHAT TO STOCK",
+      "WHAT TO WATCH FOR",
+      "START HERE",
+      "The other kinds"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "WHY ADD PLANT-BASED",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "WHAT TO ADD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "HOW TO SAY IT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/",
+       "raw": "#/",
+       "text": "Pre-Vegan Business Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/add",
+       "raw": "#/add",
+       "text": "What to add",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "HOW TO SAY IT ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/why",
+       "raw": "#/why",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#/say",
+       "raw": "#/say",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/pre-vegan-business-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "TAKE THE SURVEY, FREE",
+      "▶ PLAY MAYA",
+      "Talk to Maya",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "Each with first items, what to stock and what to watch for. Take the short survey about your business and the whole Guide opens. Free, no card.",
+      "TAKE THE SURVEY, FREE",
+      "Already a member? Sign in"
+     ],
+     "guide": {
+      "slug": "maya",
+      "label": "Maya, your Guide",
+      "name": "MAYA",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "why",
+       "label": "Why add plant-based",
+       "selected": false
+      },
+      {
+       "k": "add",
+       "label": "What to add",
+       "selected": true
+      },
+      {
+       "k": "say",
+       "label": "How to say it",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/why",
+       "label": "WHY ADD PLANT-BASED",
+       "current": false
+      },
+      {
+       "href": "#/add",
+       "label": "WHAT TO ADD",
+       "current": true
+      },
+      {
+       "href": "#/say",
+       "label": "HOW TO SAY IT",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": false
+      }
+     ],
+     "activePart": "add",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 1031,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1333,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  }
+ ],
+ "linkStatus": {
+  "https://vegansexplore.com/guides/pre-vegan-business-guide": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/directory": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/dashboard/saves": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/account": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://www.niddk.nih.gov/health-information/digestive-diseases/lactose-intolerance/definition-facts": {
+   "status": null,
+   "error": "apiRequestContext.fetch: getaddrinfo ENOTFOUND www.niddk.nih.gov",
+   "internal": false,
+   "dead": true
+  },
+  "https://vegansexplore.com/guides/vegan-restaurant-guide": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  }
+ }
+}

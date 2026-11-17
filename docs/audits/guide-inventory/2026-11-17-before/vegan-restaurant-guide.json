@@ -1,0 +1,5974 @@
+{
+ "guide": "vegan-restaurant-guide",
+ "url": "https://vegansexplore.com/guides/vegan-restaurant-guide",
+ "script": "guide-scripts/vegan-restaurant-guide.js",
+ "takenAt": "2026-11-17T00:55:56.413Z",
+ "base": "https://vegansexplore.com",
+ "staticParts": [
+  {
+   "k": "overview",
+   "label": "Overview",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "audit",
+   "label": "Your audit",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "expect",
+   "label": "What to expect",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "fixes",
+   "label": "Top challenges",
+   "parent": null,
+   "flags": [
+    "after"
+   ]
+  },
+  {
+   "k": "pulse",
+   "label": "Pulse",
+   "parent": null,
+   "flags": [
+    "after"
+   ]
+  },
+  {
+   "k": "sourcing",
+   "label": "Sourcing",
+   "parent": null,
+   "flags": [
+    "mine"
+   ]
+  },
+  {
+   "k": "featured",
+   "label": "Claim your page",
+   "parent": null,
+   "flags": [
+    "after"
+   ]
+  },
+  {
+   "k": "dashboard",
+   "label": "Your dashboard",
+   "parent": null,
+   "flags": [
+    "after"
+   ]
+  },
+  {
+   "k": "demo",
+   "label": "Try the demo",
+   "parent": null,
+   "flags": [
+    "after"
+   ]
+  },
+  {
+   "k": "promos",
+   "label": "Promotions",
+   "parent": null,
+   "flags": [
+    "after"
+   ]
+  },
+  {
+   "k": "mylist",
+   "label": "My list",
+   "parent": null,
+   "flags": [
+    "mine"
+   ]
+  },
+  {
+   "k": "next",
+   "label": "What's next",
+   "parent": null,
+   "flags": [
+    "mine"
+   ]
+  },
+  {
+   "k": "join",
+   "label": "Get in",
+   "parent": null,
+   "flags": [
+    "guest"
+   ]
+  }
+ ],
+ "liveMenuParts": [
+  "overview",
+  "audit",
+  "expect",
+  "join"
+ ],
+ "partsMissingFromLiveMenu": [
+  "fixes",
+  "pulse",
+  "sourcing",
+  "featured",
+  "dashboard",
+  "demo",
+  "promos",
+  "mylist",
+  "next"
+ ],
+ "views": [
+  {
+   "view": "overview",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/overview",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/overview",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/overview-390.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/overview",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Welcome to the Vegan Restaurant Guide"
+     ],
+     "h3": [
+      "WHAT OPENS AFTER THE SURVEY",
+      "Your restaurant",
+      "Your page",
+      "Resources",
+      "Grow with us"
+     ],
+     "items": [
+      "Your restaurant",
+      "Your page",
+      "Resources",
+      "Grow with us",
+      "WHAT OPENS AFTER THE SURVEY"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "Your audit",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "What to expect",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "RUN MY FREE CHECK",
+      "▶ Start the tour",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-start.jpg%3Fv%3D2&w=640&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-audit.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-fixes.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-featured.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-dashboard.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-demo.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Fsrc-food_drink.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-pulse.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-promos.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": false,
+       "complete": false,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-next.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": false,
+       "complete": false,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": true
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": false
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": true
+      },
+      {
+       "href": "#/audit",
+       "label": "Your audit",
+       "current": false
+      },
+      {
+       "href": "#/expect",
+       "label": "What to expect",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": false
+      }
+     ],
+     "activePart": "overview",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 205,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1185,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/overview",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/overview",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/overview-1440.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/overview",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Welcome to the Vegan Restaurant Guide"
+     ],
+     "h3": [
+      "WHAT OPENS AFTER THE SURVEY",
+      "Your restaurant",
+      "Your page",
+      "Resources",
+      "Grow with us"
+     ],
+     "items": [
+      "Your restaurant",
+      "Your page",
+      "Resources",
+      "Grow with us",
+      "WHAT OPENS AFTER THE SURVEY"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "YOUR AUDIT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "WHAT TO EXPECT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "RUN MY FREE CHECK",
+      "▶ START THE TOUR",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-start.jpg%3Fv%3D2&w=640&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-audit.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-fixes.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-featured.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-dashboard.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-demo.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Fsrc-food_drink.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-pulse.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-promos.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-next.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": true
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": false
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": true
+      },
+      {
+       "href": "#/audit",
+       "label": "YOUR AUDIT",
+       "current": false
+      },
+      {
+       "href": "#/expect",
+       "label": "WHAT TO EXPECT",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": false
+      }
+     ],
+     "activePart": "overview",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 815,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1185,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "audit",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/audit-390.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/audit",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "This Guide is by invitation"
+     ],
+     "h3": [],
+     "items": [],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "Your audit",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "What to expect",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "mailto:contact@lesaruss.com?subject=Invitation%20to%20the%20Vegans%20Explore%20Restaurant%20Guide",
+       "raw": "mailto:contact@lesaruss.com?subject=Invitation%20to%20the%20Vegans%20Explore%20Restaurant%20Guide",
+       "text": "ASK FOR AN INVITATION",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ Start the tour",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": true
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/audit",
+       "label": "Your audit",
+       "current": true
+      },
+      {
+       "href": "#/expect",
+       "label": "What to expect",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": false
+      }
+     ],
+     "activePart": "audit",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 212,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 241,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/audit-1440.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/audit",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "This Guide is by invitation"
+     ],
+     "h3": [],
+     "items": [],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "YOUR AUDIT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "WHAT TO EXPECT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "mailto:contact@lesaruss.com?subject=Invitation%20to%20the%20Vegans%20Explore%20Restaurant%20Guide",
+       "raw": "mailto:contact@lesaruss.com?subject=Invitation%20to%20the%20Vegans%20Explore%20Restaurant%20Guide",
+       "text": "ASK FOR AN INVITATION",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ START THE TOUR",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": true
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/audit",
+       "label": "YOUR AUDIT",
+       "current": true
+      },
+      {
+       "href": "#/expect",
+       "label": "WHAT TO EXPECT",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": false
+      }
+     ],
+     "activePart": "audit",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 241,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "expect",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/expect-390.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/expect",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "What opens when you are in"
+     ],
+     "h3": [
+      "Top challenges",
+      "Your dashboard",
+      "Your Directory page",
+      "Our interviews",
+      "Campaigns, events and features",
+      "More Guides and tools for owners"
+     ],
+     "items": [
+      "Top challenges",
+      "Your dashboard",
+      "Your Directory page",
+      "Our interviews",
+      "Campaigns, events and features",
+      "More Guides and tools for owners"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "Your audit",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "What to expect",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "TAKE THE SHORT SURVEY",
+      "▶ Start the tour",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "We launch on January 1, 2027. Here is what is here now and what is coming.",
+      "The ways we bring members through your door. Each one says if it is live or coming.",
+      "LIVE AND COMING",
+      "COMING",
+      "TAKE THE SHORT SURVEY"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": false
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/audit",
+       "label": "Your audit",
+       "current": false
+      },
+      {
+       "href": "#/expect",
+       "label": "What to expect",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": false
+      }
+     ],
+     "activePart": "expect",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 205,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 825,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/expect-1440.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/expect",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "What opens when you are in"
+     ],
+     "h3": [
+      "Top challenges",
+      "Your dashboard",
+      "Your Directory page",
+      "Our interviews",
+      "Campaigns, events and features",
+      "More Guides and tools for owners"
+     ],
+     "items": [
+      "Top challenges",
+      "Your dashboard",
+      "Your Directory page",
+      "Our interviews",
+      "Campaigns, events and features",
+      "More Guides and tools for owners"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "YOUR AUDIT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "WHAT TO EXPECT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "TAKE THE SHORT SURVEY",
+      "▶ START THE TOUR",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "We launch on January 1, 2027. Here is what is here now and what is coming.",
+      "The ways we bring members through your door. Each one says if it is live or coming.",
+      "LIVE AND COMING",
+      "COMING",
+      "TAKE THE SHORT SURVEY"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": false
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/audit",
+       "label": "YOUR AUDIT",
+       "current": false
+      },
+      {
+       "href": "#/expect",
+       "label": "WHAT TO EXPECT",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": false
+      }
+     ],
+     "activePart": "expect",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 582,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 825,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "fixes",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/fixes-390.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "One way in, and it is free"
+     ],
+     "h3": [
+      "WHAT MEMBERSHIP GETS YOU",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "Founding Member"
+     ],
+     "items": [
+      "Your page, yours to run.",
+      "The Directory, the Daily Pulse and the events calendar",
+      "Founding Member",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "WHAT MEMBERSHIP GETS YOU"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "Your audit",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "What to expect",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ Start the tour",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "LIVE AS A LIST, CAMPAIGNS COMING",
+      "COMING",
+      "There is one way in, and it is free. Take the short survey. When you finish, you are a member."
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": false
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/audit",
+       "label": "Your audit",
+       "current": false
+      },
+      {
+       "href": "#/expect",
+       "label": "What to expect",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 205,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1775,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/fixes-1440.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "One way in, and it is free"
+     ],
+     "h3": [
+      "WHAT MEMBERSHIP GETS YOU",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "Founding Member"
+     ],
+     "items": [
+      "Your page, yours to run.",
+      "The Directory, the Daily Pulse and the events calendar",
+      "Founding Member",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "WHAT MEMBERSHIP GETS YOU"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "YOUR AUDIT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "WHAT TO EXPECT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ START THE TOUR",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "LIVE AS A LIST, CAMPAIGNS COMING",
+      "COMING",
+      "There is one way in, and it is free. Take the short survey. When you finish, you are a member."
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": false
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/audit",
+       "label": "YOUR AUDIT",
+       "current": false
+      },
+      {
+       "href": "#/expect",
+       "label": "WHAT TO EXPECT",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 1162,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1775,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "pulse",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/pulse-390.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "One way in, and it is free"
+     ],
+     "h3": [
+      "WHAT MEMBERSHIP GETS YOU",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "Founding Member"
+     ],
+     "items": [
+      "Your page, yours to run.",
+      "The Directory, the Daily Pulse and the events calendar",
+      "Founding Member",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "WHAT MEMBERSHIP GETS YOU"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "Your audit",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "What to expect",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ Start the tour",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "LIVE AS A LIST, CAMPAIGNS COMING",
+      "COMING",
+      "There is one way in, and it is free. Take the short survey. When you finish, you are a member."
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": false
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/audit",
+       "label": "Your audit",
+       "current": false
+      },
+      {
+       "href": "#/expect",
+       "label": "What to expect",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 205,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1775,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/pulse-1440.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "One way in, and it is free"
+     ],
+     "h3": [
+      "WHAT MEMBERSHIP GETS YOU",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "Founding Member"
+     ],
+     "items": [
+      "Your page, yours to run.",
+      "The Directory, the Daily Pulse and the events calendar",
+      "Founding Member",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "WHAT MEMBERSHIP GETS YOU"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "YOUR AUDIT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "WHAT TO EXPECT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ START THE TOUR",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "LIVE AS A LIST, CAMPAIGNS COMING",
+      "COMING",
+      "There is one way in, and it is free. Take the short survey. When you finish, you are a member."
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": false
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/audit",
+       "label": "YOUR AUDIT",
+       "current": false
+      },
+      {
+       "href": "#/expect",
+       "label": "WHAT TO EXPECT",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 1162,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1775,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "sourcing",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/sourcing",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/sourcing",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/sourcing-390.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/sourcing",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Welcome to the Vegan Restaurant Guide"
+     ],
+     "h3": [
+      "WHAT OPENS AFTER THE SURVEY",
+      "Your restaurant",
+      "Your page",
+      "Resources",
+      "Grow with us"
+     ],
+     "items": [
+      "Your restaurant",
+      "Your page",
+      "Resources",
+      "Grow with us",
+      "WHAT OPENS AFTER THE SURVEY"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "Your audit",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "What to expect",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "RUN MY FREE CHECK",
+      "▶ Start the tour",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-start.jpg%3Fv%3D2&w=640&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-audit.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-fixes.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-featured.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-dashboard.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-demo.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Fsrc-food_drink.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-pulse.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-promos.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-next.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": true
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": false
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": true
+      },
+      {
+       "href": "#/audit",
+       "label": "Your audit",
+       "current": false
+      },
+      {
+       "href": "#/expect",
+       "label": "What to expect",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": false
+      }
+     ],
+     "activePart": "overview",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 205,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1185,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/sourcing",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/sourcing",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/sourcing-1440.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/sourcing",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Welcome to the Vegan Restaurant Guide"
+     ],
+     "h3": [
+      "WHAT OPENS AFTER THE SURVEY",
+      "Your restaurant",
+      "Your page",
+      "Resources",
+      "Grow with us"
+     ],
+     "items": [
+      "Your restaurant",
+      "Your page",
+      "Resources",
+      "Grow with us",
+      "WHAT OPENS AFTER THE SURVEY"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "YOUR AUDIT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "WHAT TO EXPECT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "RUN MY FREE CHECK",
+      "▶ START THE TOUR",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-start.jpg%3Fv%3D2&w=640&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-audit.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-fixes.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-featured.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-dashboard.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-demo.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Fsrc-food_drink.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-pulse.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-promos.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-next.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": true
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": false
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": true
+      },
+      {
+       "href": "#/audit",
+       "label": "YOUR AUDIT",
+       "current": false
+      },
+      {
+       "href": "#/expect",
+       "label": "WHAT TO EXPECT",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": false
+      }
+     ],
+     "activePart": "overview",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 815,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1185,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "featured",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/featured-390.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "One way in, and it is free"
+     ],
+     "h3": [
+      "WHAT MEMBERSHIP GETS YOU",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "Founding Member"
+     ],
+     "items": [
+      "Your page, yours to run.",
+      "The Directory, the Daily Pulse and the events calendar",
+      "Founding Member",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "WHAT MEMBERSHIP GETS YOU"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "Your audit",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "What to expect",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ Start the tour",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "LIVE AS A LIST, CAMPAIGNS COMING",
+      "COMING",
+      "There is one way in, and it is free. Take the short survey. When you finish, you are a member."
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": false
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/audit",
+       "label": "Your audit",
+       "current": false
+      },
+      {
+       "href": "#/expect",
+       "label": "What to expect",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 205,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1775,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/featured-1440.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "One way in, and it is free"
+     ],
+     "h3": [
+      "WHAT MEMBERSHIP GETS YOU",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "Founding Member"
+     ],
+     "items": [
+      "Your page, yours to run.",
+      "The Directory, the Daily Pulse and the events calendar",
+      "Founding Member",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "WHAT MEMBERSHIP GETS YOU"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "YOUR AUDIT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "WHAT TO EXPECT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ START THE TOUR",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "LIVE AS A LIST, CAMPAIGNS COMING",
+      "COMING",
+      "There is one way in, and it is free. Take the short survey. When you finish, you are a member."
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": false
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/audit",
+       "label": "YOUR AUDIT",
+       "current": false
+      },
+      {
+       "href": "#/expect",
+       "label": "WHAT TO EXPECT",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 1162,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1775,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "dashboard",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/dashboard-390.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "One way in, and it is free"
+     ],
+     "h3": [
+      "WHAT MEMBERSHIP GETS YOU",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "Founding Member"
+     ],
+     "items": [
+      "Your page, yours to run.",
+      "The Directory, the Daily Pulse and the events calendar",
+      "Founding Member",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "WHAT MEMBERSHIP GETS YOU"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "Your audit",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "What to expect",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ Start the tour",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "LIVE AS A LIST, CAMPAIGNS COMING",
+      "COMING",
+      "There is one way in, and it is free. Take the short survey. When you finish, you are a member."
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": false
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/audit",
+       "label": "Your audit",
+       "current": false
+      },
+      {
+       "href": "#/expect",
+       "label": "What to expect",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 205,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1775,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/dashboard-1440.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "One way in, and it is free"
+     ],
+     "h3": [
+      "WHAT MEMBERSHIP GETS YOU",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "Founding Member"
+     ],
+     "items": [
+      "Your page, yours to run.",
+      "The Directory, the Daily Pulse and the events calendar",
+      "Founding Member",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "WHAT MEMBERSHIP GETS YOU"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "YOUR AUDIT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "WHAT TO EXPECT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ START THE TOUR",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "LIVE AS A LIST, CAMPAIGNS COMING",
+      "COMING",
+      "There is one way in, and it is free. Take the short survey. When you finish, you are a member."
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": false
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/audit",
+       "label": "YOUR AUDIT",
+       "current": false
+      },
+      {
+       "href": "#/expect",
+       "label": "WHAT TO EXPECT",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 1162,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1775,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "demo",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/demo-390.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "One way in, and it is free"
+     ],
+     "h3": [
+      "WHAT MEMBERSHIP GETS YOU",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "Founding Member"
+     ],
+     "items": [
+      "Your page, yours to run.",
+      "The Directory, the Daily Pulse and the events calendar",
+      "Founding Member",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "WHAT MEMBERSHIP GETS YOU"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "Your audit",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "What to expect",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ Start the tour",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "LIVE AS A LIST, CAMPAIGNS COMING",
+      "COMING",
+      "There is one way in, and it is free. Take the short survey. When you finish, you are a member."
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": false
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/audit",
+       "label": "Your audit",
+       "current": false
+      },
+      {
+       "href": "#/expect",
+       "label": "What to expect",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 205,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1775,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/demo-1440.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "One way in, and it is free"
+     ],
+     "h3": [
+      "WHAT MEMBERSHIP GETS YOU",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "Founding Member"
+     ],
+     "items": [
+      "Your page, yours to run.",
+      "The Directory, the Daily Pulse and the events calendar",
+      "Founding Member",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "WHAT MEMBERSHIP GETS YOU"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "YOUR AUDIT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "WHAT TO EXPECT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ START THE TOUR",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "LIVE AS A LIST, CAMPAIGNS COMING",
+      "COMING",
+      "There is one way in, and it is free. Take the short survey. When you finish, you are a member."
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": false
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/audit",
+       "label": "YOUR AUDIT",
+       "current": false
+      },
+      {
+       "href": "#/expect",
+       "label": "WHAT TO EXPECT",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 1162,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1775,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "promos",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/promos-390.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "One way in, and it is free"
+     ],
+     "h3": [
+      "WHAT MEMBERSHIP GETS YOU",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "Founding Member"
+     ],
+     "items": [
+      "Your page, yours to run.",
+      "The Directory, the Daily Pulse and the events calendar",
+      "Founding Member",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "WHAT MEMBERSHIP GETS YOU"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "Your audit",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "What to expect",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ Start the tour",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "LIVE AS A LIST, CAMPAIGNS COMING",
+      "COMING",
+      "There is one way in, and it is free. Take the short survey. When you finish, you are a member."
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": false
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/audit",
+       "label": "Your audit",
+       "current": false
+      },
+      {
+       "href": "#/expect",
+       "label": "What to expect",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 205,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1775,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/promos-1440.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "One way in, and it is free"
+     ],
+     "h3": [
+      "WHAT MEMBERSHIP GETS YOU",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "Founding Member"
+     ],
+     "items": [
+      "Your page, yours to run.",
+      "The Directory, the Daily Pulse and the events calendar",
+      "Founding Member",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "WHAT MEMBERSHIP GETS YOU"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "YOUR AUDIT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "WHAT TO EXPECT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ START THE TOUR",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "LIVE AS A LIST, CAMPAIGNS COMING",
+      "COMING",
+      "There is one way in, and it is free. Take the short survey. When you finish, you are a member."
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": false
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/audit",
+       "label": "YOUR AUDIT",
+       "current": false
+      },
+      {
+       "href": "#/expect",
+       "label": "WHAT TO EXPECT",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 1162,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1775,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "mylist",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/mylist",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/mylist",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/mylist-390.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/mylist",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Welcome to the Vegan Restaurant Guide"
+     ],
+     "h3": [
+      "WHAT OPENS AFTER THE SURVEY",
+      "Your restaurant",
+      "Your page",
+      "Resources",
+      "Grow with us"
+     ],
+     "items": [
+      "Your restaurant",
+      "Your page",
+      "Resources",
+      "Grow with us",
+      "WHAT OPENS AFTER THE SURVEY"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "Your audit",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "What to expect",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "RUN MY FREE CHECK",
+      "▶ Start the tour",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-start.jpg%3Fv%3D2&w=640&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-audit.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-fixes.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-featured.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-dashboard.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-demo.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Fsrc-food_drink.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-pulse.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-promos.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-next.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": true
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": false
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": true
+      },
+      {
+       "href": "#/audit",
+       "label": "Your audit",
+       "current": false
+      },
+      {
+       "href": "#/expect",
+       "label": "What to expect",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": false
+      }
+     ],
+     "activePart": "overview",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 205,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1185,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/mylist",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/mylist",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/mylist-1440.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/mylist",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "Welcome to the Vegan Restaurant Guide"
+     ],
+     "h3": [
+      "WHAT OPENS AFTER THE SURVEY",
+      "Your restaurant",
+      "Your page",
+      "Resources",
+      "Grow with us"
+     ],
+     "items": [
+      "Your restaurant",
+      "Your page",
+      "Resources",
+      "Grow with us",
+      "WHAT OPENS AFTER THE SURVEY"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "YOUR AUDIT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "WHAT TO EXPECT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "RUN MY FREE CHECK",
+      "▶ START THE TOUR",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-start.jpg%3Fv%3D2&w=640&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-audit.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-fixes.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-featured.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-dashboard.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-demo.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Fsrc-food_drink.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-pulse.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-promos.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      },
+      {
+       "src": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fguides%2Frestaurant-guide%2Ft-next.jpg%3Fv%3D2&w=256&q=75",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": true
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": false
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": true
+      },
+      {
+       "href": "#/audit",
+       "label": "YOUR AUDIT",
+       "current": false
+      },
+      {
+       "href": "#/expect",
+       "label": "WHAT TO EXPECT",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": false
+      }
+     ],
+     "activePart": "overview",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 815,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1185,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "next",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/next",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/next",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/next-390.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/next",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "One way in, and it is free"
+     ],
+     "h3": [
+      "WHAT MEMBERSHIP GETS YOU",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "Founding Member"
+     ],
+     "items": [
+      "Your page, yours to run.",
+      "The Directory, the Daily Pulse and the events calendar",
+      "Founding Member",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "WHAT MEMBERSHIP GETS YOU"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "Your audit",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "What to expect",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ Start the tour",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "LIVE AS A LIST, CAMPAIGNS COMING",
+      "COMING",
+      "There is one way in, and it is free. Take the short survey. When you finish, you are a member."
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": false
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/audit",
+       "label": "Your audit",
+       "current": false
+      },
+      {
+       "href": "#/expect",
+       "label": "What to expect",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 205,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1775,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/next",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/next",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/next-1440.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/next",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "One way in, and it is free"
+     ],
+     "h3": [
+      "WHAT MEMBERSHIP GETS YOU",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "Founding Member"
+     ],
+     "items": [
+      "Your page, yours to run.",
+      "The Directory, the Daily Pulse and the events calendar",
+      "Founding Member",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "WHAT MEMBERSHIP GETS YOU"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "YOUR AUDIT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "WHAT TO EXPECT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ START THE TOUR",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "LIVE AS A LIST, CAMPAIGNS COMING",
+      "COMING",
+      "There is one way in, and it is free. Take the short survey. When you finish, you are a member."
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": false
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/audit",
+       "label": "YOUR AUDIT",
+       "current": false
+      },
+      {
+       "href": "#/expect",
+       "label": "WHAT TO EXPECT",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 1162,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1775,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "join",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/join-390.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "One way in, and it is free"
+     ],
+     "h3": [
+      "WHAT MEMBERSHIP GETS YOU",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "Founding Member"
+     ],
+     "items": [
+      "Your page, yours to run.",
+      "The Directory, the Daily Pulse and the events calendar",
+      "Founding Member",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "WHAT MEMBERSHIP GETS YOU"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "Your audit",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "What to expect",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Get in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ Start the tour",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "LIVE AS A LIST, CAMPAIGNS COMING",
+      "COMING",
+      "There is one way in, and it is free. Take the short survey. When you finish, you are a member."
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": false
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/audit",
+       "label": "Your audit",
+       "current": false
+      },
+      {
+       "href": "#/expect",
+       "label": "What to expect",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get in",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 205,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 281,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1775,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 281,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/vegan-restaurant-guide/join-1440.jpg",
+     "title": "The Vegan Restaurant Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Vegan Restaurant Guide"
+     ],
+     "h2": [
+      "One way in, and it is free"
+     ],
+     "h3": [
+      "WHAT MEMBERSHIP GETS YOU",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "Founding Member"
+     ],
+     "items": [
+      "Your page, yours to run.",
+      "The Directory, the Daily Pulse and the events calendar",
+      "Founding Member",
+      "Post jobs",
+      "Join the community",
+      "Your page, yours to run",
+      "Promote your business and events",
+      "See what campaigns are happening",
+      "Never miss a Guide",
+      "Featured in our Guides",
+      "WHAT MEMBERSHIP GETS YOU"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/",
+       "raw": "#/",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "#/audit",
+       "text": "YOUR AUDIT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "WHAT TO EXPECT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "GET IN",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/expect",
+       "raw": "#/expect",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "TAKE THE SURVEY",
+      "▶ START THE TOUR",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "TAKE THE SURVEY",
+      "Sign in",
+      "GET IN",
+      "LIVE AS A LIST, CAMPAIGNS COMING",
+      "COMING",
+      "There is one way in, and it is free. Take the short survey. When you finish, you are a member."
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "audit",
+       "label": "Your audit",
+       "selected": false
+      },
+      {
+       "k": "expect",
+       "label": "What to expect",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get in",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/audit",
+       "label": "YOUR AUDIT",
+       "current": false
+      },
+      {
+       "href": "#/expect",
+       "label": "WHAT TO EXPECT",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "GET IN",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 1162,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "TAKE THE SURVEY",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1775,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  }
+ ],
+ "linkStatus": {
+  "https://vegansexplore.com/guides/vegan-restaurant-guide": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/directory": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/dashboard/saves": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/account": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  }
+ }
+}

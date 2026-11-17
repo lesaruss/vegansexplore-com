@@ -1,0 +1,7737 @@
+{
+ "guide": "welcome-guide",
+ "url": "https://vegansexplore.com/passport?guide=welcome",
+ "script": "guide-scripts/welcome-guide.js",
+ "takenAt": "2026-11-17T00:55:56.415Z",
+ "base": "https://vegansexplore.com",
+ "staticParts": [
+  {
+   "k": "overview",
+   "label": "Overview",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "directory",
+   "label": "Search and the Directory",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "city",
+   "label": "Your City",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "events",
+   "label": "Events",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "media",
+   "label": "Media",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "guides",
+   "label": "Guides",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "points",
+   "label": "Points and Levels",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "paths",
+   "label": "Your Path and Badges",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "better",
+   "label": "Make It Better",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "animals",
+   "label": "For the Animals",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "founder",
+   "label": "Become a Founder",
+   "parent": null,
+   "flags": []
+  }
+ ],
+ "liveMenuParts": [
+  "overview",
+  "directory",
+  "city",
+  "events",
+  "media",
+  "guides",
+  "points",
+  "paths",
+  "better",
+  "animals",
+  "founder"
+ ],
+ "partsMissingFromLiveMenu": [],
+ "views": [
+  {
+   "view": "overview",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/passport?guide=welcome#/overview",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/passport?guide=welcome#/overview",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/welcome-guide/overview-390.jpg",
+     "title": "Welcome to Vegans Explore - The Welcome Guide",
+     "hash": "#/overview",
+     "h1": [
+      "The Welcome Guide"
+     ],
+     "h2": [
+      "Welcome to Vegans Explore"
+     ],
+     "h3": [
+      "How to use this page"
+     ],
+     "items": [
+      "Search and the Directory",
+      "Your City",
+      "Events",
+      "Media",
+      "Guides",
+      "Points and Levels",
+      "Your Path and Badges",
+      "Make It Better",
+      "For the Animals",
+      "Become a Founder",
+      "How to use this page"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Directory",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Your City",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Events",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Media",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Guides",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Points and Levels",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Your Path",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Make It Better",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "For the Animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Become a Founder",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "BECOME A FOUNDER",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Search and the Directory",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Your Path and Badges",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "BECOME A FOUNDER",
+      "▶ PLAY THE TOUR",
+      "EXPAND",
+      "▶ Play the tour",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/welcome-ensemble.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [
+      {
+       "tag": "video",
+       "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/tour-video-v2.mp4"
+      }
+     ],
+     "gates": [
+      "Free FOR EVERYONE",
+      "Sign in",
+      "FREE FOR EVERYONE",
+      "A few quick questions, about two minutes, and you are in, free, with 250 points."
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/public/guides/welcome/liz-overview.jpg",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": true
+      },
+      {
+       "k": "directory",
+       "label": "2. Search and the Directory",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "3. Your City",
+       "selected": false
+      },
+      {
+       "k": "events",
+       "label": "4. Events",
+       "selected": false
+      },
+      {
+       "k": "media",
+       "label": "5. Media",
+       "selected": false
+      },
+      {
+       "k": "guides",
+       "label": "6. Guides",
+       "selected": false
+      },
+      {
+       "k": "points",
+       "label": "7. Points and Levels",
+       "selected": false
+      },
+      {
+       "k": "paths",
+       "label": "8. Your Path and Badges",
+       "selected": false
+      },
+      {
+       "k": "better",
+       "label": "9. Make It Better",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "10. For the Animals",
+       "selected": false
+      },
+      {
+       "k": "founder",
+       "label": "11. Become a Founder",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": true
+      },
+      {
+       "href": "#/directory",
+       "label": "Directory",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your City",
+       "current": false
+      },
+      {
+       "href": "#/events",
+       "label": "Events",
+       "current": false
+      },
+      {
+       "href": "#/media",
+       "label": "Media",
+       "current": false
+      },
+      {
+       "href": "#/guides",
+       "label": "Guides",
+       "current": false
+      },
+      {
+       "href": "#/points",
+       "label": "Points and Levels",
+       "current": false
+      },
+      {
+       "href": "#/paths",
+       "label": "Your Path",
+       "current": false
+      },
+      {
+       "href": "#/better",
+       "label": "Make It Better",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "For the Animals",
+       "current": false
+      },
+      {
+       "href": "#/founder",
+       "label": "Become a Founder",
+       "current": false
+      }
+     ],
+     "activePart": "overview",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 129,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 175,
+     "action": {
+      "text": "BECOME A FOUNDER",
+      "bottom": 303,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1366,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 175,
+      "actionBottom": 303,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/passport?guide=welcome#/overview",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/passport?guide=welcome#/overview",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/welcome-guide/overview-1440.jpg",
+     "title": "Welcome to Vegans Explore - The Welcome Guide",
+     "hash": "#/overview",
+     "h1": [
+      "The Welcome Guide"
+     ],
+     "h2": [
+      "Welcome to Vegans Explore"
+     ],
+     "h3": [
+      "How to use this page"
+     ],
+     "items": [
+      "Search and the Directory",
+      "Your City",
+      "Events",
+      "Media",
+      "Guides",
+      "Points and Levels",
+      "Your Path and Badges",
+      "Make It Better",
+      "For the Animals",
+      "Become a Founder",
+      "How to use this page"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Directory",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Your City",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Events",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Media",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Guides",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Points and Levels",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Your Path",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Make It Better",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "For the Animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Become a Founder",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "BECOME A FOUNDER",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Search and the Directory",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Your Path and Badges",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Read more ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "BECOME A FOUNDER",
+      "▶ PLAY THE TOUR",
+      "▶",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/welcome-ensemble.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [
+      {
+       "tag": "video",
+       "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/tour-video-v2.mp4"
+      }
+     ],
+     "gates": [
+      "Free FOR EVERYONE",
+      "Sign in",
+      "FREE FOR EVERYONE",
+      "A few quick questions, about two minutes, and you are in, free, with 250 points."
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/public/guides/welcome/liz-overview.jpg",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": true
+      },
+      {
+       "k": "directory",
+       "label": "2. Search and the Directory",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "3. Your City",
+       "selected": false
+      },
+      {
+       "k": "events",
+       "label": "4. Events",
+       "selected": false
+      },
+      {
+       "k": "media",
+       "label": "5. Media",
+       "selected": false
+      },
+      {
+       "k": "guides",
+       "label": "6. Guides",
+       "selected": false
+      },
+      {
+       "k": "points",
+       "label": "7. Points and Levels",
+       "selected": false
+      },
+      {
+       "k": "paths",
+       "label": "8. Your Path and Badges",
+       "selected": false
+      },
+      {
+       "k": "better",
+       "label": "9. Make It Better",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "10. For the Animals",
+       "selected": false
+      },
+      {
+       "k": "founder",
+       "label": "11. Become a Founder",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": true
+      },
+      {
+       "href": "#/directory",
+       "label": "Directory",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your City",
+       "current": false
+      },
+      {
+       "href": "#/events",
+       "label": "Events",
+       "current": false
+      },
+      {
+       "href": "#/media",
+       "label": "Media",
+       "current": false
+      },
+      {
+       "href": "#/guides",
+       "label": "Guides",
+       "current": false
+      },
+      {
+       "href": "#/points",
+       "label": "Points and Levels",
+       "current": false
+      },
+      {
+       "href": "#/paths",
+       "label": "Your Path",
+       "current": false
+      },
+      {
+       "href": "#/better",
+       "label": "Make It Better",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "For the Animals",
+       "current": false
+      },
+      {
+       "href": "#/founder",
+       "label": "Become a Founder",
+       "current": false
+      }
+     ],
+     "activePart": "overview",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "BECOME A FOUNDER",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1366,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "directory",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/passport?guide=welcome#/directory",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/passport?guide=welcome#/directory",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/welcome-guide/directory-390.jpg",
+     "title": "Welcome to Vegans Explore - The Welcome Guide",
+     "hash": "#/directory",
+     "h1": [
+      "The Welcome Guide"
+     ],
+     "h2": [
+      "Search and the Directory"
+     ],
+     "h3": [
+      "Every Vegan place, person and group",
+      "Go see the Directory."
+     ],
+     "items": [
+      "WHAT IS IN THE DIRECTORY",
+      "Local Food",
+      "Products",
+      "Services",
+      "Media",
+      "Community and People",
+      "Every Vegan place, person and group",
+      "Go see the Directory."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Directory",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Your City",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Events",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Media",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Guides",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Points and Levels",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Your Path",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Make It Better",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "For the Animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Become a Founder",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Welcome Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "VIEW THE DIRECTORY",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "BECOME A FOUNDER",
+      "▶ PLAY LIZ",
+      "EXPAND",
+      "▶ Play Liz",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/thumb-directory.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [
+      {
+       "tag": "video",
+       "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/sec-directory-v2.mp4"
+      }
+     ],
+     "gates": [
+      "Free FOR EVERYONE",
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/public/guides/welcome/liz-directory.jpg",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "directory",
+       "label": "2. Search and the Directory",
+       "selected": true
+      },
+      {
+       "k": "city",
+       "label": "3. Your City",
+       "selected": false
+      },
+      {
+       "k": "events",
+       "label": "4. Events",
+       "selected": false
+      },
+      {
+       "k": "media",
+       "label": "5. Media",
+       "selected": false
+      },
+      {
+       "k": "guides",
+       "label": "6. Guides",
+       "selected": false
+      },
+      {
+       "k": "points",
+       "label": "7. Points and Levels",
+       "selected": false
+      },
+      {
+       "k": "paths",
+       "label": "8. Your Path and Badges",
+       "selected": false
+      },
+      {
+       "k": "better",
+       "label": "9. Make It Better",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "10. For the Animals",
+       "selected": false
+      },
+      {
+       "k": "founder",
+       "label": "11. Become a Founder",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/directory",
+       "label": "Directory",
+       "current": true
+      },
+      {
+       "href": "#/city",
+       "label": "Your City",
+       "current": false
+      },
+      {
+       "href": "#/events",
+       "label": "Events",
+       "current": false
+      },
+      {
+       "href": "#/media",
+       "label": "Media",
+       "current": false
+      },
+      {
+       "href": "#/guides",
+       "label": "Guides",
+       "current": false
+      },
+      {
+       "href": "#/points",
+       "label": "Points and Levels",
+       "current": false
+      },
+      {
+       "href": "#/paths",
+       "label": "Your Path",
+       "current": false
+      },
+      {
+       "href": "#/better",
+       "label": "Make It Better",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "For the Animals",
+       "current": false
+      },
+      {
+       "href": "#/founder",
+       "label": "Become a Founder",
+       "current": false
+      }
+     ],
+     "activePart": "directory",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 175,
+     "action": {
+      "text": "BECOME A FOUNDER",
+      "bottom": 303,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 962,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 175,
+      "actionBottom": 303,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/passport?guide=welcome#/directory",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/passport?guide=welcome#/directory",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/welcome-guide/directory-1440.jpg",
+     "title": "Welcome to Vegans Explore - The Welcome Guide",
+     "hash": "#/directory",
+     "h1": [
+      "The Welcome Guide"
+     ],
+     "h2": [
+      "Search and the Directory"
+     ],
+     "h3": [
+      "Every Vegan place, person and group",
+      "Go see the Directory."
+     ],
+     "items": [
+      "WHAT IS IN THE DIRECTORY",
+      "Local Food",
+      "Products",
+      "Services",
+      "Media",
+      "Community and People",
+      "Every Vegan place, person and group",
+      "Go see the Directory."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Directory",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Your City",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Events",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Media",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Guides",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Points and Levels",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Your Path",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Make It Better",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "For the Animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Become a Founder",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Welcome Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "VIEW THE DIRECTORY",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "BECOME A FOUNDER",
+      "▶ PLAY LIZ",
+      "▶",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/thumb-directory.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [
+      {
+       "tag": "video",
+       "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/sec-directory-v2.mp4"
+      }
+     ],
+     "gates": [
+      "Free FOR EVERYONE",
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/public/guides/welcome/liz-directory.jpg",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "directory",
+       "label": "2. Search and the Directory",
+       "selected": true
+      },
+      {
+       "k": "city",
+       "label": "3. Your City",
+       "selected": false
+      },
+      {
+       "k": "events",
+       "label": "4. Events",
+       "selected": false
+      },
+      {
+       "k": "media",
+       "label": "5. Media",
+       "selected": false
+      },
+      {
+       "k": "guides",
+       "label": "6. Guides",
+       "selected": false
+      },
+      {
+       "k": "points",
+       "label": "7. Points and Levels",
+       "selected": false
+      },
+      {
+       "k": "paths",
+       "label": "8. Your Path and Badges",
+       "selected": false
+      },
+      {
+       "k": "better",
+       "label": "9. Make It Better",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "10. For the Animals",
+       "selected": false
+      },
+      {
+       "k": "founder",
+       "label": "11. Become a Founder",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/directory",
+       "label": "Directory",
+       "current": true
+      },
+      {
+       "href": "#/city",
+       "label": "Your City",
+       "current": false
+      },
+      {
+       "href": "#/events",
+       "label": "Events",
+       "current": false
+      },
+      {
+       "href": "#/media",
+       "label": "Media",
+       "current": false
+      },
+      {
+       "href": "#/guides",
+       "label": "Guides",
+       "current": false
+      },
+      {
+       "href": "#/points",
+       "label": "Points and Levels",
+       "current": false
+      },
+      {
+       "href": "#/paths",
+       "label": "Your Path",
+       "current": false
+      },
+      {
+       "href": "#/better",
+       "label": "Make It Better",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "For the Animals",
+       "current": false
+      },
+      {
+       "href": "#/founder",
+       "label": "Become a Founder",
+       "current": false
+      }
+     ],
+     "activePart": "directory",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "BECOME A FOUNDER",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 962,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "city",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/passport?guide=welcome#/city",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/passport?guide=welcome#/city",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/welcome-guide/city-390.jpg",
+     "title": "Welcome to Vegans Explore - The Welcome Guide",
+     "hash": "#/city",
+     "h1": [
+      "The Welcome Guide"
+     ],
+     "h2": [
+      "Your City"
+     ],
+     "h3": [
+      "Every chapter has its own home",
+      "Go find your city."
+     ],
+     "items": [
+      "IN YOUR CITY",
+      "The Daily Pulse",
+      "The Boards",
+      "Events in Your City",
+      "Most Voted Places",
+      "Where We Go Next",
+      "Every chapter has its own home",
+      "Go find your city."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Directory",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Your City",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Events",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Media",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Guides",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Points and Levels",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Your Path",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Make It Better",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "For the Animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Become a Founder",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Welcome Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/communities",
+       "raw": "/communities",
+       "text": "FIND YOUR CITY",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "BECOME A FOUNDER",
+      "▶ PLAY LIZ",
+      "EXPAND",
+      "▶ Play Liz",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/partner-community-manager.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [
+      {
+       "tag": "video",
+       "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/sec-city-v2.mp4"
+      }
+     ],
+     "gates": [
+      "Free FOR EVERYONE",
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/public/guides/welcome/liz-city.jpg",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "directory",
+       "label": "2. Search and the Directory",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "3. Your City",
+       "selected": true
+      },
+      {
+       "k": "events",
+       "label": "4. Events",
+       "selected": false
+      },
+      {
+       "k": "media",
+       "label": "5. Media",
+       "selected": false
+      },
+      {
+       "k": "guides",
+       "label": "6. Guides",
+       "selected": false
+      },
+      {
+       "k": "points",
+       "label": "7. Points and Levels",
+       "selected": false
+      },
+      {
+       "k": "paths",
+       "label": "8. Your Path and Badges",
+       "selected": false
+      },
+      {
+       "k": "better",
+       "label": "9. Make It Better",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "10. For the Animals",
+       "selected": false
+      },
+      {
+       "k": "founder",
+       "label": "11. Become a Founder",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/directory",
+       "label": "Directory",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your City",
+       "current": true
+      },
+      {
+       "href": "#/events",
+       "label": "Events",
+       "current": false
+      },
+      {
+       "href": "#/media",
+       "label": "Media",
+       "current": false
+      },
+      {
+       "href": "#/guides",
+       "label": "Guides",
+       "current": false
+      },
+      {
+       "href": "#/points",
+       "label": "Points and Levels",
+       "current": false
+      },
+      {
+       "href": "#/paths",
+       "label": "Your Path",
+       "current": false
+      },
+      {
+       "href": "#/better",
+       "label": "Make It Better",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "For the Animals",
+       "current": false
+      },
+      {
+       "href": "#/founder",
+       "label": "Become a Founder",
+       "current": false
+      }
+     ],
+     "activePart": "city",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 175,
+     "action": {
+      "text": "BECOME A FOUNDER",
+      "bottom": 303,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 898,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 175,
+      "actionBottom": 303,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/passport?guide=welcome#/city",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/passport?guide=welcome#/city",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/welcome-guide/city-1440.jpg",
+     "title": "Welcome to Vegans Explore - The Welcome Guide",
+     "hash": "#/city",
+     "h1": [
+      "The Welcome Guide"
+     ],
+     "h2": [
+      "Your City"
+     ],
+     "h3": [
+      "Every chapter has its own home",
+      "Go find your city."
+     ],
+     "items": [
+      "IN YOUR CITY",
+      "The Daily Pulse",
+      "The Boards",
+      "Events in Your City",
+      "Most Voted Places",
+      "Where We Go Next",
+      "Every chapter has its own home",
+      "Go find your city."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Directory",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Your City",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Events",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Media",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Guides",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Points and Levels",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Your Path",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Make It Better",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "For the Animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Become a Founder",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Welcome Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/communities",
+       "raw": "/communities",
+       "text": "FIND YOUR CITY",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "BECOME A FOUNDER",
+      "▶ PLAY LIZ",
+      "▶",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/partner-community-manager.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [
+      {
+       "tag": "video",
+       "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/sec-city-v2.mp4"
+      }
+     ],
+     "gates": [
+      "Free FOR EVERYONE",
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/public/guides/welcome/liz-city.jpg",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "directory",
+       "label": "2. Search and the Directory",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "3. Your City",
+       "selected": true
+      },
+      {
+       "k": "events",
+       "label": "4. Events",
+       "selected": false
+      },
+      {
+       "k": "media",
+       "label": "5. Media",
+       "selected": false
+      },
+      {
+       "k": "guides",
+       "label": "6. Guides",
+       "selected": false
+      },
+      {
+       "k": "points",
+       "label": "7. Points and Levels",
+       "selected": false
+      },
+      {
+       "k": "paths",
+       "label": "8. Your Path and Badges",
+       "selected": false
+      },
+      {
+       "k": "better",
+       "label": "9. Make It Better",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "10. For the Animals",
+       "selected": false
+      },
+      {
+       "k": "founder",
+       "label": "11. Become a Founder",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/directory",
+       "label": "Directory",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your City",
+       "current": true
+      },
+      {
+       "href": "#/events",
+       "label": "Events",
+       "current": false
+      },
+      {
+       "href": "#/media",
+       "label": "Media",
+       "current": false
+      },
+      {
+       "href": "#/guides",
+       "label": "Guides",
+       "current": false
+      },
+      {
+       "href": "#/points",
+       "label": "Points and Levels",
+       "current": false
+      },
+      {
+       "href": "#/paths",
+       "label": "Your Path",
+       "current": false
+      },
+      {
+       "href": "#/better",
+       "label": "Make It Better",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "For the Animals",
+       "current": false
+      },
+      {
+       "href": "#/founder",
+       "label": "Become a Founder",
+       "current": false
+      }
+     ],
+     "activePart": "city",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "BECOME A FOUNDER",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 898,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "events",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/passport?guide=welcome#/events",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/passport?guide=welcome#/events",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/welcome-guide/events-390.jpg",
+     "title": "Welcome to Vegans Explore - The Welcome Guide",
+     "hash": "#/events",
+     "h1": [
+      "The Welcome Guide"
+     ],
+     "h2": [
+      "Events"
+     ],
+     "h3": [
+      "Something to do, near you or anywhere",
+      "Go find something to do."
+     ],
+     "items": [
+      "ON THE CALENDAR",
+      "Find Something to Do",
+      "Every Event Checked",
+      "Going and Tickets",
+      "Submit an Event",
+      "Run Events With Us",
+      "Something to do, near you or anywhere",
+      "Go find something to do."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Directory",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Your City",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Events",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Media",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Guides",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Points and Levels",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Your Path",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Make It Better",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "For the Animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Become a Founder",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Welcome Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/events",
+       "raw": "/events",
+       "text": "SEE EVENTS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "BECOME A FOUNDER",
+      "▶ PLAY LIZ",
+      "EXPAND",
+      "▶ Play Liz",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/holiday/p-events.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [
+      {
+       "tag": "video",
+       "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/sec-events-v2.mp4"
+      }
+     ],
+     "gates": [
+      "Free FOR EVERYONE",
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/public/guides/welcome/liz-events.jpg",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "directory",
+       "label": "2. Search and the Directory",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "3. Your City",
+       "selected": false
+      },
+      {
+       "k": "events",
+       "label": "4. Events",
+       "selected": true
+      },
+      {
+       "k": "media",
+       "label": "5. Media",
+       "selected": false
+      },
+      {
+       "k": "guides",
+       "label": "6. Guides",
+       "selected": false
+      },
+      {
+       "k": "points",
+       "label": "7. Points and Levels",
+       "selected": false
+      },
+      {
+       "k": "paths",
+       "label": "8. Your Path and Badges",
+       "selected": false
+      },
+      {
+       "k": "better",
+       "label": "9. Make It Better",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "10. For the Animals",
+       "selected": false
+      },
+      {
+       "k": "founder",
+       "label": "11. Become a Founder",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/directory",
+       "label": "Directory",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your City",
+       "current": false
+      },
+      {
+       "href": "#/events",
+       "label": "Events",
+       "current": true
+      },
+      {
+       "href": "#/media",
+       "label": "Media",
+       "current": false
+      },
+      {
+       "href": "#/guides",
+       "label": "Guides",
+       "current": false
+      },
+      {
+       "href": "#/points",
+       "label": "Points and Levels",
+       "current": false
+      },
+      {
+       "href": "#/paths",
+       "label": "Your Path",
+       "current": false
+      },
+      {
+       "href": "#/better",
+       "label": "Make It Better",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "For the Animals",
+       "current": false
+      },
+      {
+       "href": "#/founder",
+       "label": "Become a Founder",
+       "current": false
+      }
+     ],
+     "activePart": "events",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 175,
+     "action": {
+      "text": "BECOME A FOUNDER",
+      "bottom": 303,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 893,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 175,
+      "actionBottom": 303,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/passport?guide=welcome#/events",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/passport?guide=welcome#/events",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/welcome-guide/events-1440.jpg",
+     "title": "Welcome to Vegans Explore - The Welcome Guide",
+     "hash": "#/events",
+     "h1": [
+      "The Welcome Guide"
+     ],
+     "h2": [
+      "Events"
+     ],
+     "h3": [
+      "Something to do, near you or anywhere",
+      "Go find something to do."
+     ],
+     "items": [
+      "ON THE CALENDAR",
+      "Find Something to Do",
+      "Every Event Checked",
+      "Going and Tickets",
+      "Submit an Event",
+      "Run Events With Us",
+      "Something to do, near you or anywhere",
+      "Go find something to do."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Directory",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Your City",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Events",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Media",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Guides",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Points and Levels",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Your Path",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Make It Better",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "For the Animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Become a Founder",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Welcome Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/events",
+       "raw": "/events",
+       "text": "SEE EVENTS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "BECOME A FOUNDER",
+      "▶ PLAY LIZ",
+      "▶",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/holiday/p-events.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [
+      {
+       "tag": "video",
+       "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/sec-events-v2.mp4"
+      }
+     ],
+     "gates": [
+      "Free FOR EVERYONE",
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/public/guides/welcome/liz-events.jpg",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "directory",
+       "label": "2. Search and the Directory",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "3. Your City",
+       "selected": false
+      },
+      {
+       "k": "events",
+       "label": "4. Events",
+       "selected": true
+      },
+      {
+       "k": "media",
+       "label": "5. Media",
+       "selected": false
+      },
+      {
+       "k": "guides",
+       "label": "6. Guides",
+       "selected": false
+      },
+      {
+       "k": "points",
+       "label": "7. Points and Levels",
+       "selected": false
+      },
+      {
+       "k": "paths",
+       "label": "8. Your Path and Badges",
+       "selected": false
+      },
+      {
+       "k": "better",
+       "label": "9. Make It Better",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "10. For the Animals",
+       "selected": false
+      },
+      {
+       "k": "founder",
+       "label": "11. Become a Founder",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/directory",
+       "label": "Directory",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your City",
+       "current": false
+      },
+      {
+       "href": "#/events",
+       "label": "Events",
+       "current": true
+      },
+      {
+       "href": "#/media",
+       "label": "Media",
+       "current": false
+      },
+      {
+       "href": "#/guides",
+       "label": "Guides",
+       "current": false
+      },
+      {
+       "href": "#/points",
+       "label": "Points and Levels",
+       "current": false
+      },
+      {
+       "href": "#/paths",
+       "label": "Your Path",
+       "current": false
+      },
+      {
+       "href": "#/better",
+       "label": "Make It Better",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "For the Animals",
+       "current": false
+      },
+      {
+       "href": "#/founder",
+       "label": "Become a Founder",
+       "current": false
+      }
+     ],
+     "activePart": "events",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "BECOME A FOUNDER",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 893,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "media",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/passport?guide=welcome#/media",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/passport?guide=welcome#/media",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/welcome-guide/media-390.jpg",
+     "title": "Welcome to Vegans Explore - The Welcome Guide",
+     "hash": "#/media",
+     "h1": [
+      "The Welcome Guide"
+     ],
+     "h2": [
+      "Media"
+     ],
+     "h3": [
+      "Shows, films and books worth your time",
+      "Go press Play."
+     ],
+     "items": [
+      "IN MEDIA",
+      "Our Shows",
+      "Top Podcasts",
+      "Documentaries",
+      "Books",
+      "Join Our Network",
+      "Shows, films and books worth your time",
+      "Go press Play."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Directory",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Your City",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Events",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Media",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Guides",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Points and Levels",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Your Path",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Make It Better",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "For the Animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Become a Founder",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Welcome Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/media",
+       "raw": "/media",
+       "text": "OPEN MEDIA",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "BECOME A FOUNDER",
+      "▶ PLAY LIZ",
+      "EXPAND",
+      "▶ Play Liz",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/holiday/p-listen.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [
+      {
+       "tag": "video",
+       "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/sec-media-v2.mp4"
+      }
+     ],
+     "gates": [
+      "Free FOR EVERYONE",
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/public/guides/welcome/liz-media.jpg",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "directory",
+       "label": "2. Search and the Directory",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "3. Your City",
+       "selected": false
+      },
+      {
+       "k": "events",
+       "label": "4. Events",
+       "selected": false
+      },
+      {
+       "k": "media",
+       "label": "5. Media",
+       "selected": true
+      },
+      {
+       "k": "guides",
+       "label": "6. Guides",
+       "selected": false
+      },
+      {
+       "k": "points",
+       "label": "7. Points and Levels",
+       "selected": false
+      },
+      {
+       "k": "paths",
+       "label": "8. Your Path and Badges",
+       "selected": false
+      },
+      {
+       "k": "better",
+       "label": "9. Make It Better",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "10. For the Animals",
+       "selected": false
+      },
+      {
+       "k": "founder",
+       "label": "11. Become a Founder",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/directory",
+       "label": "Directory",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your City",
+       "current": false
+      },
+      {
+       "href": "#/events",
+       "label": "Events",
+       "current": false
+      },
+      {
+       "href": "#/media",
+       "label": "Media",
+       "current": true
+      },
+      {
+       "href": "#/guides",
+       "label": "Guides",
+       "current": false
+      },
+      {
+       "href": "#/points",
+       "label": "Points and Levels",
+       "current": false
+      },
+      {
+       "href": "#/paths",
+       "label": "Your Path",
+       "current": false
+      },
+      {
+       "href": "#/better",
+       "label": "Make It Better",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "For the Animals",
+       "current": false
+      },
+      {
+       "href": "#/founder",
+       "label": "Become a Founder",
+       "current": false
+      }
+     ],
+     "activePart": "media",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 175,
+     "action": {
+      "text": "BECOME A FOUNDER",
+      "bottom": 303,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 823,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 175,
+      "actionBottom": 303,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/passport?guide=welcome#/media",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/passport?guide=welcome#/media",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/welcome-guide/media-1440.jpg",
+     "title": "Welcome to Vegans Explore - The Welcome Guide",
+     "hash": "#/media",
+     "h1": [
+      "The Welcome Guide"
+     ],
+     "h2": [
+      "Media"
+     ],
+     "h3": [
+      "Shows, films and books worth your time",
+      "Go press Play."
+     ],
+     "items": [
+      "IN MEDIA",
+      "Our Shows",
+      "Top Podcasts",
+      "Documentaries",
+      "Books",
+      "Join Our Network",
+      "Shows, films and books worth your time",
+      "Go press Play."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Directory",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Your City",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Events",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Media",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Guides",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Points and Levels",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Your Path",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Make It Better",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "For the Animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Become a Founder",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Welcome Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/media",
+       "raw": "/media",
+       "text": "OPEN MEDIA",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "BECOME A FOUNDER",
+      "▶ PLAY LIZ",
+      "▶",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/holiday/p-listen.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [
+      {
+       "tag": "video",
+       "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/sec-media-v2.mp4"
+      }
+     ],
+     "gates": [
+      "Free FOR EVERYONE",
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/public/guides/welcome/liz-media.jpg",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "directory",
+       "label": "2. Search and the Directory",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "3. Your City",
+       "selected": false
+      },
+      {
+       "k": "events",
+       "label": "4. Events",
+       "selected": false
+      },
+      {
+       "k": "media",
+       "label": "5. Media",
+       "selected": true
+      },
+      {
+       "k": "guides",
+       "label": "6. Guides",
+       "selected": false
+      },
+      {
+       "k": "points",
+       "label": "7. Points and Levels",
+       "selected": false
+      },
+      {
+       "k": "paths",
+       "label": "8. Your Path and Badges",
+       "selected": false
+      },
+      {
+       "k": "better",
+       "label": "9. Make It Better",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "10. For the Animals",
+       "selected": false
+      },
+      {
+       "k": "founder",
+       "label": "11. Become a Founder",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/directory",
+       "label": "Directory",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your City",
+       "current": false
+      },
+      {
+       "href": "#/events",
+       "label": "Events",
+       "current": false
+      },
+      {
+       "href": "#/media",
+       "label": "Media",
+       "current": true
+      },
+      {
+       "href": "#/guides",
+       "label": "Guides",
+       "current": false
+      },
+      {
+       "href": "#/points",
+       "label": "Points and Levels",
+       "current": false
+      },
+      {
+       "href": "#/paths",
+       "label": "Your Path",
+       "current": false
+      },
+      {
+       "href": "#/better",
+       "label": "Make It Better",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "For the Animals",
+       "current": false
+      },
+      {
+       "href": "#/founder",
+       "label": "Become a Founder",
+       "current": false
+      }
+     ],
+     "activePart": "media",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "BECOME A FOUNDER",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 823,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "guides",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/passport?guide=welcome#/guides",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/passport?guide=welcome#/guides",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/welcome-guide/guides-390.jpg",
+     "title": "Welcome to Vegans Explore - The Welcome Guide",
+     "hash": "#/guides",
+     "h1": [
+      "The Welcome Guide"
+     ],
+     "h2": [
+      "Guides"
+     ],
+     "h3": [
+      "One topic at a time, walked through",
+      "Go pick a Guide."
+     ],
+     "items": [
+      "IN THE GUIDES",
+      "Find Your Guide",
+      "Free With a Survey",
+      "Topic Guides",
+      "Ask Your Guide",
+      "What We Build Next",
+      "One topic at a time, walked through",
+      "Go pick a Guide."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Directory",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Your City",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Events",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Media",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Guides",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Points and Levels",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Your Path",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Make It Better",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "For the Animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Become a Founder",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Welcome Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides",
+       "raw": "/guides",
+       "text": "SEE EVERY GUIDE",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "BECOME A FOUNDER",
+      "▶ PLAY LIZ",
+      "EXPAND",
+      "▶ Play Liz",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/vegan-dairy-guide.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [
+      {
+       "tag": "video",
+       "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/sec-guides-v2.mp4"
+      }
+     ],
+     "gates": [
+      "Free FOR EVERYONE",
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/public/guides/welcome/liz-guides.jpg",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "directory",
+       "label": "2. Search and the Directory",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "3. Your City",
+       "selected": false
+      },
+      {
+       "k": "events",
+       "label": "4. Events",
+       "selected": false
+      },
+      {
+       "k": "media",
+       "label": "5. Media",
+       "selected": false
+      },
+      {
+       "k": "guides",
+       "label": "6. Guides",
+       "selected": true
+      },
+      {
+       "k": "points",
+       "label": "7. Points and Levels",
+       "selected": false
+      },
+      {
+       "k": "paths",
+       "label": "8. Your Path and Badges",
+       "selected": false
+      },
+      {
+       "k": "better",
+       "label": "9. Make It Better",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "10. For the Animals",
+       "selected": false
+      },
+      {
+       "k": "founder",
+       "label": "11. Become a Founder",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/directory",
+       "label": "Directory",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your City",
+       "current": false
+      },
+      {
+       "href": "#/events",
+       "label": "Events",
+       "current": false
+      },
+      {
+       "href": "#/media",
+       "label": "Media",
+       "current": false
+      },
+      {
+       "href": "#/guides",
+       "label": "Guides",
+       "current": true
+      },
+      {
+       "href": "#/points",
+       "label": "Points and Levels",
+       "current": false
+      },
+      {
+       "href": "#/paths",
+       "label": "Your Path",
+       "current": false
+      },
+      {
+       "href": "#/better",
+       "label": "Make It Better",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "For the Animals",
+       "current": false
+      },
+      {
+       "href": "#/founder",
+       "label": "Become a Founder",
+       "current": false
+      }
+     ],
+     "activePart": "guides",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 175,
+     "action": {
+      "text": "BECOME A FOUNDER",
+      "bottom": 303,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 825,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 175,
+      "actionBottom": 303,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/passport?guide=welcome#/guides",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/passport?guide=welcome#/guides",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/welcome-guide/guides-1440.jpg",
+     "title": "Welcome to Vegans Explore - The Welcome Guide",
+     "hash": "#/guides",
+     "h1": [
+      "The Welcome Guide"
+     ],
+     "h2": [
+      "Guides"
+     ],
+     "h3": [
+      "One topic at a time, walked through",
+      "Go pick a Guide."
+     ],
+     "items": [
+      "IN THE GUIDES",
+      "Find Your Guide",
+      "Free With a Survey",
+      "Topic Guides",
+      "Ask Your Guide",
+      "What We Build Next",
+      "One topic at a time, walked through",
+      "Go pick a Guide."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Directory",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Your City",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Events",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Media",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Guides",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Points and Levels",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Your Path",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Make It Better",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "For the Animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Become a Founder",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Welcome Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides",
+       "raw": "/guides",
+       "text": "SEE EVERY GUIDE",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "BECOME A FOUNDER",
+      "▶ PLAY LIZ",
+      "▶",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/vegan-dairy-guide.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [
+      {
+       "tag": "video",
+       "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/sec-guides-v2.mp4"
+      }
+     ],
+     "gates": [
+      "Free FOR EVERYONE",
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/public/guides/welcome/liz-guides.jpg",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "directory",
+       "label": "2. Search and the Directory",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "3. Your City",
+       "selected": false
+      },
+      {
+       "k": "events",
+       "label": "4. Events",
+       "selected": false
+      },
+      {
+       "k": "media",
+       "label": "5. Media",
+       "selected": false
+      },
+      {
+       "k": "guides",
+       "label": "6. Guides",
+       "selected": true
+      },
+      {
+       "k": "points",
+       "label": "7. Points and Levels",
+       "selected": false
+      },
+      {
+       "k": "paths",
+       "label": "8. Your Path and Badges",
+       "selected": false
+      },
+      {
+       "k": "better",
+       "label": "9. Make It Better",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "10. For the Animals",
+       "selected": false
+      },
+      {
+       "k": "founder",
+       "label": "11. Become a Founder",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/directory",
+       "label": "Directory",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your City",
+       "current": false
+      },
+      {
+       "href": "#/events",
+       "label": "Events",
+       "current": false
+      },
+      {
+       "href": "#/media",
+       "label": "Media",
+       "current": false
+      },
+      {
+       "href": "#/guides",
+       "label": "Guides",
+       "current": true
+      },
+      {
+       "href": "#/points",
+       "label": "Points and Levels",
+       "current": false
+      },
+      {
+       "href": "#/paths",
+       "label": "Your Path",
+       "current": false
+      },
+      {
+       "href": "#/better",
+       "label": "Make It Better",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "For the Animals",
+       "current": false
+      },
+      {
+       "href": "#/founder",
+       "label": "Become a Founder",
+       "current": false
+      }
+     ],
+     "activePart": "guides",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "BECOME A FOUNDER",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 825,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "points",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/passport?guide=welcome#/points",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/passport?guide=welcome#/points",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/welcome-guide/points-390.jpg",
+     "title": "Welcome to Vegans Explore - The Welcome Guide",
+     "hash": "#/points",
+     "h1": [
+      "The Welcome Guide"
+     ],
+     "h2": [
+      "Points and Levels"
+     ],
+     "h3": [
+      "Earn them by taking part",
+      "Start with 250 points."
+     ],
+     "items": [
+      "HOW POINTS WORK",
+      "Earn Points",
+      "Use Points",
+      "Give Points",
+      "Level Up",
+      "Your Link",
+      "Earn them by taking part",
+      "Start with 250 points."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Directory",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Your City",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Events",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Media",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Guides",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Points and Levels",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Your Path",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Make It Better",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "For the Animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Become a Founder",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Welcome Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/survey?s=explorer",
+       "raw": "/survey?s=explorer",
+       "text": "START EARNING, FREE",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "BECOME A FOUNDER",
+      "▶ PLAY LIZ",
+      "EXPAND",
+      "▶ Play Liz",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/thumb-bounties.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [
+      {
+       "tag": "video",
+       "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/sec-points-v2.mp4"
+      }
+     ],
+     "gates": [
+      "Free FOR EVERYONE",
+      "Sign in",
+      "Share any page with your link. Every friend who joins earns you 111 points.",
+      "Start with 250 points.",
+      "Take the short survey, join free, and your points start today.",
+      "Press Play and I will walk you through points. Then join free and start with 250 points."
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/public/guides/welcome/liz-points.jpg?v=2",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "directory",
+       "label": "2. Search and the Directory",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "3. Your City",
+       "selected": false
+      },
+      {
+       "k": "events",
+       "label": "4. Events",
+       "selected": false
+      },
+      {
+       "k": "media",
+       "label": "5. Media",
+       "selected": false
+      },
+      {
+       "k": "guides",
+       "label": "6. Guides",
+       "selected": false
+      },
+      {
+       "k": "points",
+       "label": "7. Points and Levels",
+       "selected": true
+      },
+      {
+       "k": "paths",
+       "label": "8. Your Path and Badges",
+       "selected": false
+      },
+      {
+       "k": "better",
+       "label": "9. Make It Better",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "10. For the Animals",
+       "selected": false
+      },
+      {
+       "k": "founder",
+       "label": "11. Become a Founder",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/directory",
+       "label": "Directory",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your City",
+       "current": false
+      },
+      {
+       "href": "#/events",
+       "label": "Events",
+       "current": false
+      },
+      {
+       "href": "#/media",
+       "label": "Media",
+       "current": false
+      },
+      {
+       "href": "#/guides",
+       "label": "Guides",
+       "current": false
+      },
+      {
+       "href": "#/points",
+       "label": "Points and Levels",
+       "current": true
+      },
+      {
+       "href": "#/paths",
+       "label": "Your Path",
+       "current": false
+      },
+      {
+       "href": "#/better",
+       "label": "Make It Better",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "For the Animals",
+       "current": false
+      },
+      {
+       "href": "#/founder",
+       "label": "Become a Founder",
+       "current": false
+      }
+     ],
+     "activePart": "points",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 175,
+     "action": {
+      "text": "BECOME A FOUNDER",
+      "bottom": 303,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 889,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 175,
+      "actionBottom": 303,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/passport?guide=welcome#/points",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/passport?guide=welcome#/points",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/welcome-guide/points-1440.jpg",
+     "title": "Welcome to Vegans Explore - The Welcome Guide",
+     "hash": "#/points",
+     "h1": [
+      "The Welcome Guide"
+     ],
+     "h2": [
+      "Points and Levels"
+     ],
+     "h3": [
+      "Earn them by taking part",
+      "Start with 250 points."
+     ],
+     "items": [
+      "HOW POINTS WORK",
+      "Earn Points",
+      "Use Points",
+      "Give Points",
+      "Level Up",
+      "Your Link",
+      "Earn them by taking part",
+      "Start with 250 points."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Directory",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Your City",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Events",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Media",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Guides",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Points and Levels",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Your Path",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Make It Better",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "For the Animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Become a Founder",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Welcome Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/survey?s=explorer",
+       "raw": "/survey?s=explorer",
+       "text": "START EARNING, FREE",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "BECOME A FOUNDER",
+      "▶ PLAY LIZ",
+      "▶",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/thumb-bounties.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [
+      {
+       "tag": "video",
+       "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/sec-points-v2.mp4"
+      }
+     ],
+     "gates": [
+      "Free FOR EVERYONE",
+      "Sign in",
+      "Share any page with your link. Every friend who joins earns you 111 points.",
+      "Start with 250 points.",
+      "Take the short survey, join free, and your points start today.",
+      "Press Play and I will walk you through points. Then join free and start with 250 points."
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/public/guides/welcome/liz-points.jpg?v=2",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "directory",
+       "label": "2. Search and the Directory",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "3. Your City",
+       "selected": false
+      },
+      {
+       "k": "events",
+       "label": "4. Events",
+       "selected": false
+      },
+      {
+       "k": "media",
+       "label": "5. Media",
+       "selected": false
+      },
+      {
+       "k": "guides",
+       "label": "6. Guides",
+       "selected": false
+      },
+      {
+       "k": "points",
+       "label": "7. Points and Levels",
+       "selected": true
+      },
+      {
+       "k": "paths",
+       "label": "8. Your Path and Badges",
+       "selected": false
+      },
+      {
+       "k": "better",
+       "label": "9. Make It Better",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "10. For the Animals",
+       "selected": false
+      },
+      {
+       "k": "founder",
+       "label": "11. Become a Founder",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/directory",
+       "label": "Directory",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your City",
+       "current": false
+      },
+      {
+       "href": "#/events",
+       "label": "Events",
+       "current": false
+      },
+      {
+       "href": "#/media",
+       "label": "Media",
+       "current": false
+      },
+      {
+       "href": "#/guides",
+       "label": "Guides",
+       "current": false
+      },
+      {
+       "href": "#/points",
+       "label": "Points and Levels",
+       "current": true
+      },
+      {
+       "href": "#/paths",
+       "label": "Your Path",
+       "current": false
+      },
+      {
+       "href": "#/better",
+       "label": "Make It Better",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "For the Animals",
+       "current": false
+      },
+      {
+       "href": "#/founder",
+       "label": "Become a Founder",
+       "current": false
+      }
+     ],
+     "activePart": "points",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "BECOME A FOUNDER",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 889,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "paths",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/passport?guide=welcome#/paths",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/passport?guide=welcome#/paths",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/welcome-guide/paths-390.jpg",
+     "title": "Welcome to Vegans Explore - The Welcome Guide",
+     "hash": "#/paths",
+     "h1": [
+      "The Welcome Guide"
+     ],
+     "h2": [
+      "Your Path and Badges"
+     ],
+     "h3": [
+      "Everyone starts as an Explorer",
+      "Find your path."
+     ],
+     "items": [
+      "THE PATHS AND THEIR BADGES",
+      "Explorer",
+      "Restaurant",
+      "Event host",
+      "Creator",
+      "Nonprofit",
+      "Business",
+      "Your badges",
+      "Everyone starts as an Explorer",
+      "Find your path."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Directory",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Your City",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Events",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Media",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Guides",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Points and Levels",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Your Path",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Make It Better",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "For the Animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Become a Founder",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Welcome Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/paths",
+       "raw": "/paths",
+       "text": "SEE YOUR PATHS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "BECOME A FOUNDER",
+      "▶ PLAY LIZ",
+      "EXPAND",
+      "▶ Play Liz",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/partner-group-partner.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [
+      {
+       "tag": "video",
+       "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/sec-paths-v2.mp4"
+      }
+     ],
+     "gates": [
+      "Free FOR EVERYONE",
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/public/guides/welcome/liz-paths.jpg",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "directory",
+       "label": "2. Search and the Directory",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "3. Your City",
+       "selected": false
+      },
+      {
+       "k": "events",
+       "label": "4. Events",
+       "selected": false
+      },
+      {
+       "k": "media",
+       "label": "5. Media",
+       "selected": false
+      },
+      {
+       "k": "guides",
+       "label": "6. Guides",
+       "selected": false
+      },
+      {
+       "k": "points",
+       "label": "7. Points and Levels",
+       "selected": false
+      },
+      {
+       "k": "paths",
+       "label": "8. Your Path and Badges",
+       "selected": true
+      },
+      {
+       "k": "better",
+       "label": "9. Make It Better",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "10. For the Animals",
+       "selected": false
+      },
+      {
+       "k": "founder",
+       "label": "11. Become a Founder",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/directory",
+       "label": "Directory",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your City",
+       "current": false
+      },
+      {
+       "href": "#/events",
+       "label": "Events",
+       "current": false
+      },
+      {
+       "href": "#/media",
+       "label": "Media",
+       "current": false
+      },
+      {
+       "href": "#/guides",
+       "label": "Guides",
+       "current": false
+      },
+      {
+       "href": "#/points",
+       "label": "Points and Levels",
+       "current": false
+      },
+      {
+       "href": "#/paths",
+       "label": "Your Path",
+       "current": true
+      },
+      {
+       "href": "#/better",
+       "label": "Make It Better",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "For the Animals",
+       "current": false
+      },
+      {
+       "href": "#/founder",
+       "label": "Become a Founder",
+       "current": false
+      }
+     ],
+     "activePart": "paths",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 175,
+     "action": {
+      "text": "BECOME A FOUNDER",
+      "bottom": 303,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1109,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 175,
+      "actionBottom": 303,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/passport?guide=welcome#/paths",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/passport?guide=welcome#/paths",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/welcome-guide/paths-1440.jpg",
+     "title": "Welcome to Vegans Explore - The Welcome Guide",
+     "hash": "#/paths",
+     "h1": [
+      "The Welcome Guide"
+     ],
+     "h2": [
+      "Your Path and Badges"
+     ],
+     "h3": [
+      "Everyone starts as an Explorer",
+      "Find your path."
+     ],
+     "items": [
+      "THE PATHS AND THEIR BADGES",
+      "Explorer",
+      "Restaurant",
+      "Event host",
+      "Creator",
+      "Nonprofit",
+      "Business",
+      "Your badges",
+      "Everyone starts as an Explorer",
+      "Find your path."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Directory",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Your City",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Events",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Media",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Guides",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Points and Levels",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Your Path",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Make It Better",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "For the Animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Become a Founder",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Welcome Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/paths",
+       "raw": "/paths",
+       "text": "SEE YOUR PATHS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "BECOME A FOUNDER",
+      "▶ PLAY LIZ",
+      "▶",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/partner-group-partner.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [
+      {
+       "tag": "video",
+       "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/sec-paths-v2.mp4"
+      }
+     ],
+     "gates": [
+      "Free FOR EVERYONE",
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/public/guides/welcome/liz-paths.jpg",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "directory",
+       "label": "2. Search and the Directory",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "3. Your City",
+       "selected": false
+      },
+      {
+       "k": "events",
+       "label": "4. Events",
+       "selected": false
+      },
+      {
+       "k": "media",
+       "label": "5. Media",
+       "selected": false
+      },
+      {
+       "k": "guides",
+       "label": "6. Guides",
+       "selected": false
+      },
+      {
+       "k": "points",
+       "label": "7. Points and Levels",
+       "selected": false
+      },
+      {
+       "k": "paths",
+       "label": "8. Your Path and Badges",
+       "selected": true
+      },
+      {
+       "k": "better",
+       "label": "9. Make It Better",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "10. For the Animals",
+       "selected": false
+      },
+      {
+       "k": "founder",
+       "label": "11. Become a Founder",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/directory",
+       "label": "Directory",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your City",
+       "current": false
+      },
+      {
+       "href": "#/events",
+       "label": "Events",
+       "current": false
+      },
+      {
+       "href": "#/media",
+       "label": "Media",
+       "current": false
+      },
+      {
+       "href": "#/guides",
+       "label": "Guides",
+       "current": false
+      },
+      {
+       "href": "#/points",
+       "label": "Points and Levels",
+       "current": false
+      },
+      {
+       "href": "#/paths",
+       "label": "Your Path",
+       "current": true
+      },
+      {
+       "href": "#/better",
+       "label": "Make It Better",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "For the Animals",
+       "current": false
+      },
+      {
+       "href": "#/founder",
+       "label": "Become a Founder",
+       "current": false
+      }
+     ],
+     "activePart": "paths",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "BECOME A FOUNDER",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1109,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "better",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/passport?guide=welcome#/better",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/passport?guide=welcome#/better",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/welcome-guide/better-390.jpg",
+     "title": "Welcome to Vegans Explore - The Welcome Guide",
+     "hash": "#/better",
+     "h1": [
+      "The Welcome Guide"
+     ],
+     "h2": [
+      "Make It Better"
+     ],
+     "h3": [
+      "Tell us what is working and what is not",
+      "Tell us one thing."
+     ],
+     "items": [
+      "WAYS TO TELL US",
+      "The Feedback button",
+      "Talk to your Guide",
+      "Ask a person",
+      "Search for what is missing",
+      "Tell us a place to add",
+      "Suggest a topic",
+      "Nominate someone",
+      "Tell us what is working and what is not",
+      "Tell us one thing."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Directory",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Your City",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Events",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Media",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Guides",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Points and Levels",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Your Path",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Make It Better",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "For the Animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Become a Founder",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Welcome Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/feedback",
+       "raw": "/feedback",
+       "text": "SEND FEEDBACK NOW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "BECOME A FOUNDER",
+      "▶ PLAY LIZ",
+      "EXPAND",
+      "▶ Play Liz",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/restaurant-guide/t-fixes.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [
+      {
+       "tag": "video",
+       "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/sec-better-v1.mp4"
+      }
+     ],
+     "gates": [
+      "Free FOR EVERYONE",
+      "Sign in",
+      "Ask a Guide anything. Saved answers are free; asking is 4 points a message."
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/public/guides/welcome/liz-better.jpg",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "directory",
+       "label": "2. Search and the Directory",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "3. Your City",
+       "selected": false
+      },
+      {
+       "k": "events",
+       "label": "4. Events",
+       "selected": false
+      },
+      {
+       "k": "media",
+       "label": "5. Media",
+       "selected": false
+      },
+      {
+       "k": "guides",
+       "label": "6. Guides",
+       "selected": false
+      },
+      {
+       "k": "points",
+       "label": "7. Points and Levels",
+       "selected": false
+      },
+      {
+       "k": "paths",
+       "label": "8. Your Path and Badges",
+       "selected": false
+      },
+      {
+       "k": "better",
+       "label": "9. Make It Better",
+       "selected": true
+      },
+      {
+       "k": "animals",
+       "label": "10. For the Animals",
+       "selected": false
+      },
+      {
+       "k": "founder",
+       "label": "11. Become a Founder",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/directory",
+       "label": "Directory",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your City",
+       "current": false
+      },
+      {
+       "href": "#/events",
+       "label": "Events",
+       "current": false
+      },
+      {
+       "href": "#/media",
+       "label": "Media",
+       "current": false
+      },
+      {
+       "href": "#/guides",
+       "label": "Guides",
+       "current": false
+      },
+      {
+       "href": "#/points",
+       "label": "Points and Levels",
+       "current": false
+      },
+      {
+       "href": "#/paths",
+       "label": "Your Path",
+       "current": false
+      },
+      {
+       "href": "#/better",
+       "label": "Make It Better",
+       "current": true
+      },
+      {
+       "href": "#/animals",
+       "label": "For the Animals",
+       "current": false
+      },
+      {
+       "href": "#/founder",
+       "label": "Become a Founder",
+       "current": false
+      }
+     ],
+     "activePart": "better",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 175,
+     "action": {
+      "text": "BECOME A FOUNDER",
+      "bottom": 303,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1140,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 175,
+      "actionBottom": 303,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/passport?guide=welcome#/better",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/passport?guide=welcome#/better",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/welcome-guide/better-1440.jpg",
+     "title": "Welcome to Vegans Explore - The Welcome Guide",
+     "hash": "#/better",
+     "h1": [
+      "The Welcome Guide"
+     ],
+     "h2": [
+      "Make It Better"
+     ],
+     "h3": [
+      "Tell us what is working and what is not",
+      "Tell us one thing."
+     ],
+     "items": [
+      "WAYS TO TELL US",
+      "The Feedback button",
+      "Talk to your Guide",
+      "Ask a person",
+      "Search for what is missing",
+      "Tell us a place to add",
+      "Suggest a topic",
+      "Nominate someone",
+      "Tell us what is working and what is not",
+      "Tell us one thing."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Directory",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Your City",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Events",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Media",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Guides",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Points and Levels",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Your Path",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Make It Better",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "For the Animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Become a Founder",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Welcome Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/feedback",
+       "raw": "/feedback",
+       "text": "SEND FEEDBACK NOW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "BECOME A FOUNDER",
+      "▶ PLAY LIZ",
+      "▶",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/restaurant-guide/t-fixes.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [
+      {
+       "tag": "video",
+       "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/sec-better-v1.mp4"
+      }
+     ],
+     "gates": [
+      "Free FOR EVERYONE",
+      "Sign in",
+      "Ask a Guide anything. Saved answers are free; asking is 4 points a message."
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/public/guides/welcome/liz-better.jpg",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "directory",
+       "label": "2. Search and the Directory",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "3. Your City",
+       "selected": false
+      },
+      {
+       "k": "events",
+       "label": "4. Events",
+       "selected": false
+      },
+      {
+       "k": "media",
+       "label": "5. Media",
+       "selected": false
+      },
+      {
+       "k": "guides",
+       "label": "6. Guides",
+       "selected": false
+      },
+      {
+       "k": "points",
+       "label": "7. Points and Levels",
+       "selected": false
+      },
+      {
+       "k": "paths",
+       "label": "8. Your Path and Badges",
+       "selected": false
+      },
+      {
+       "k": "better",
+       "label": "9. Make It Better",
+       "selected": true
+      },
+      {
+       "k": "animals",
+       "label": "10. For the Animals",
+       "selected": false
+      },
+      {
+       "k": "founder",
+       "label": "11. Become a Founder",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/directory",
+       "label": "Directory",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your City",
+       "current": false
+      },
+      {
+       "href": "#/events",
+       "label": "Events",
+       "current": false
+      },
+      {
+       "href": "#/media",
+       "label": "Media",
+       "current": false
+      },
+      {
+       "href": "#/guides",
+       "label": "Guides",
+       "current": false
+      },
+      {
+       "href": "#/points",
+       "label": "Points and Levels",
+       "current": false
+      },
+      {
+       "href": "#/paths",
+       "label": "Your Path",
+       "current": false
+      },
+      {
+       "href": "#/better",
+       "label": "Make It Better",
+       "current": true
+      },
+      {
+       "href": "#/animals",
+       "label": "For the Animals",
+       "current": false
+      },
+      {
+       "href": "#/founder",
+       "label": "Become a Founder",
+       "current": false
+      }
+     ],
+     "activePart": "better",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "BECOME A FOUNDER",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1140,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "animals",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/passport?guide=welcome#/animals",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/passport?guide=welcome#/animals",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/welcome-guide/animals-390.jpg",
+     "title": "Welcome to Vegans Explore - The Welcome Guide",
+     "hash": "#/animals",
+     "h1": [
+      "The Welcome Guide"
+     ],
+     "h2": [
+      "For the Animals"
+     ],
+     "h3": [
+      "The reason we are all here",
+      "Show up for the animals."
+     ],
+     "items": [
+      "HOW TO SHOW UP FOR THE ANIMALS",
+      "Nonprofits, rescues and sanctuaries",
+      "The Fosters board",
+      "The Rescues board",
+      "Sanctuary days and fundraisers",
+      "Give your points",
+      "For the animals in the Pulse",
+      "The reason we are all here",
+      "Show up for the animals."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Directory",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Your City",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Events",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Media",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Guides",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Points and Levels",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Your Path",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Make It Better",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "For the Animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Become a Founder",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Welcome Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory?tab=community",
+       "raw": "/directory?tab=community",
+       "text": "FIND NONPROFITS AND RESCUES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "BECOME A FOUNDER",
+      "▶ PLAY LIZ",
+      "EXPAND",
+      "▶ Play Liz",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/partner-nonprofit-partner.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [
+      {
+       "tag": "video",
+       "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/sec-animals-v1.mp4"
+      }
+     ],
+     "gates": [
+      "Free FOR EVERYONE",
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/public/guides/welcome/liz-animals.jpg",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "directory",
+       "label": "2. Search and the Directory",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "3. Your City",
+       "selected": false
+      },
+      {
+       "k": "events",
+       "label": "4. Events",
+       "selected": false
+      },
+      {
+       "k": "media",
+       "label": "5. Media",
+       "selected": false
+      },
+      {
+       "k": "guides",
+       "label": "6. Guides",
+       "selected": false
+      },
+      {
+       "k": "points",
+       "label": "7. Points and Levels",
+       "selected": false
+      },
+      {
+       "k": "paths",
+       "label": "8. Your Path and Badges",
+       "selected": false
+      },
+      {
+       "k": "better",
+       "label": "9. Make It Better",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "10. For the Animals",
+       "selected": true
+      },
+      {
+       "k": "founder",
+       "label": "11. Become a Founder",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/directory",
+       "label": "Directory",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your City",
+       "current": false
+      },
+      {
+       "href": "#/events",
+       "label": "Events",
+       "current": false
+      },
+      {
+       "href": "#/media",
+       "label": "Media",
+       "current": false
+      },
+      {
+       "href": "#/guides",
+       "label": "Guides",
+       "current": false
+      },
+      {
+       "href": "#/points",
+       "label": "Points and Levels",
+       "current": false
+      },
+      {
+       "href": "#/paths",
+       "label": "Your Path",
+       "current": false
+      },
+      {
+       "href": "#/better",
+       "label": "Make It Better",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "For the Animals",
+       "current": true
+      },
+      {
+       "href": "#/founder",
+       "label": "Become a Founder",
+       "current": false
+      }
+     ],
+     "activePart": "animals",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 175,
+     "action": {
+      "text": "BECOME A FOUNDER",
+      "bottom": 303,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1088,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 175,
+      "actionBottom": 303,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/passport?guide=welcome#/animals",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/passport?guide=welcome#/animals",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/welcome-guide/animals-1440.jpg",
+     "title": "Welcome to Vegans Explore - The Welcome Guide",
+     "hash": "#/animals",
+     "h1": [
+      "The Welcome Guide"
+     ],
+     "h2": [
+      "For the Animals"
+     ],
+     "h3": [
+      "The reason we are all here",
+      "Show up for the animals."
+     ],
+     "items": [
+      "HOW TO SHOW UP FOR THE ANIMALS",
+      "Nonprofits, rescues and sanctuaries",
+      "The Fosters board",
+      "The Rescues board",
+      "Sanctuary days and fundraisers",
+      "Give your points",
+      "For the animals in the Pulse",
+      "The reason we are all here",
+      "Show up for the animals."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Directory",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Your City",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Events",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Media",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Guides",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Points and Levels",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Your Path",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Make It Better",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "For the Animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Become a Founder",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Welcome Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory?tab=community",
+       "raw": "/directory?tab=community",
+       "text": "FIND NONPROFITS AND RESCUES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "BECOME A FOUNDER",
+      "▶ PLAY LIZ",
+      "▶",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [
+      {
+       "src": "https://vegansexplore.com/public/guides/partner-nonprofit-partner.jpg",
+       "alt": "",
+       "loaded": true,
+       "complete": true,
+       "visible": true,
+       "broken": false
+      }
+     ],
+     "media": [
+      {
+       "tag": "video",
+       "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/sec-animals-v1.mp4"
+      }
+     ],
+     "gates": [
+      "Free FOR EVERYONE",
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/public/guides/welcome/liz-animals.jpg",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "directory",
+       "label": "2. Search and the Directory",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "3. Your City",
+       "selected": false
+      },
+      {
+       "k": "events",
+       "label": "4. Events",
+       "selected": false
+      },
+      {
+       "k": "media",
+       "label": "5. Media",
+       "selected": false
+      },
+      {
+       "k": "guides",
+       "label": "6. Guides",
+       "selected": false
+      },
+      {
+       "k": "points",
+       "label": "7. Points and Levels",
+       "selected": false
+      },
+      {
+       "k": "paths",
+       "label": "8. Your Path and Badges",
+       "selected": false
+      },
+      {
+       "k": "better",
+       "label": "9. Make It Better",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "10. For the Animals",
+       "selected": true
+      },
+      {
+       "k": "founder",
+       "label": "11. Become a Founder",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/directory",
+       "label": "Directory",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your City",
+       "current": false
+      },
+      {
+       "href": "#/events",
+       "label": "Events",
+       "current": false
+      },
+      {
+       "href": "#/media",
+       "label": "Media",
+       "current": false
+      },
+      {
+       "href": "#/guides",
+       "label": "Guides",
+       "current": false
+      },
+      {
+       "href": "#/points",
+       "label": "Points and Levels",
+       "current": false
+      },
+      {
+       "href": "#/paths",
+       "label": "Your Path",
+       "current": false
+      },
+      {
+       "href": "#/better",
+       "label": "Make It Better",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "For the Animals",
+       "current": true
+      },
+      {
+       "href": "#/founder",
+       "label": "Become a Founder",
+       "current": false
+      }
+     ],
+     "activePart": "animals",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "BECOME A FOUNDER",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1088,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "founder",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/passport?guide=welcome#/founder",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/passport?guide=welcome#/founder",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/welcome-guide/founder-390.jpg",
+     "title": "Welcome to Vegans Explore - The Welcome Guide",
+     "hash": "#/founder",
+     "h1": [
+      "The Welcome Guide"
+     ],
+     "h2": [
+      "You Are Early, and That Is Rare"
+     ],
+     "h3": [
+      "Ready? Take the Explorer survey."
+     ],
+     "items": [
+      "Ready? Take the Explorer survey."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Directory",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Your City",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Events",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Media",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Guides",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Points and Levels",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Your Path",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Make It Better",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "For the Animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Become a Founder",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Welcome Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Back to the Overview",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "BECOME A FOUNDER",
+      "▶ PLAY LIZ",
+      "TAKE THE SURVEY",
+      "EXPAND",
+      "▶ Play Liz",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [
+      {
+       "tag": "video",
+       "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/sec-founder-v1.mp4"
+      }
+     ],
+     "gates": [
+      "Free FOR EVERYONE",
+      "Sign in",
+      "A few quick questions, about two minutes, and you are in, with 250 points. Join before midnight Eastern on January 1, 2027 and you are a Founding Member for good.",
+      "TAKE THE SURVEY"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "Liz",
+      "picture": "https://vegansexplore.com/public/guides/welcome/liz-founder.jpg",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "directory",
+       "label": "2. Search and the Directory",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "3. Your City",
+       "selected": false
+      },
+      {
+       "k": "events",
+       "label": "4. Events",
+       "selected": false
+      },
+      {
+       "k": "media",
+       "label": "5. Media",
+       "selected": false
+      },
+      {
+       "k": "guides",
+       "label": "6. Guides",
+       "selected": false
+      },
+      {
+       "k": "points",
+       "label": "7. Points and Levels",
+       "selected": false
+      },
+      {
+       "k": "paths",
+       "label": "8. Your Path and Badges",
+       "selected": false
+      },
+      {
+       "k": "better",
+       "label": "9. Make It Better",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "10. For the Animals",
+       "selected": false
+      },
+      {
+       "k": "founder",
+       "label": "11. Become a Founder",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/directory",
+       "label": "Directory",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your City",
+       "current": false
+      },
+      {
+       "href": "#/events",
+       "label": "Events",
+       "current": false
+      },
+      {
+       "href": "#/media",
+       "label": "Media",
+       "current": false
+      },
+      {
+       "href": "#/guides",
+       "label": "Guides",
+       "current": false
+      },
+      {
+       "href": "#/points",
+       "label": "Points and Levels",
+       "current": false
+      },
+      {
+       "href": "#/paths",
+       "label": "Your Path",
+       "current": false
+      },
+      {
+       "href": "#/better",
+       "label": "Make It Better",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "For the Animals",
+       "current": false
+      },
+      {
+       "href": "#/founder",
+       "label": "Become a Founder",
+       "current": true
+      }
+     ],
+     "activePart": "founder",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 129,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 175,
+     "action": {
+      "text": "BECOME A FOUNDER",
+      "bottom": 303,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 834,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 175,
+      "actionBottom": 303,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/passport?guide=welcome#/founder",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/passport?guide=welcome#/founder",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/welcome-guide/founder-1440.jpg",
+     "title": "Welcome to Vegans Explore - The Welcome Guide",
+     "hash": "#/founder",
+     "h1": [
+      "The Welcome Guide"
+     ],
+     "h2": [
+      "You Are Early, and That Is Rare"
+     ],
+     "h3": [
+      "Ready? Take the Explorer survey."
+     ],
+     "items": [
+      "Ready? Take the Explorer survey."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/directory",
+       "raw": "#/directory",
+       "text": "Directory",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/city",
+       "raw": "#/city",
+       "text": "Your City",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/events",
+       "raw": "#/events",
+       "text": "Events",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/media",
+       "raw": "#/media",
+       "text": "Media",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/guides",
+       "raw": "#/guides",
+       "text": "Guides",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/points",
+       "raw": "#/points",
+       "text": "Points and Levels",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/paths",
+       "raw": "#/paths",
+       "text": "Your Path",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/better",
+       "raw": "#/better",
+       "text": "Make It Better",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "For the Animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Become a Founder",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Welcome Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/",
+       "raw": "#/",
+       "text": "Back to the Overview",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/animals",
+       "raw": "#/animals",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#/founder",
+       "raw": "#/founder",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/passport?guide=welcome#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "BECOME A FOUNDER",
+      "▶ PLAY LIZ",
+      "TAKE THE SURVEY",
+      "▶",
+      "Talk to Liz",
+      "HIDE ME"
+     ],
+     "images": [],
+     "media": [
+      {
+       "tag": "video",
+       "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/sec-founder-v1.mp4"
+      }
+     ],
+     "gates": [
+      "Free FOR EVERYONE",
+      "Sign in",
+      "A few quick questions, about two minutes, and you are in, with 250 points. Join before midnight Eastern on January 1, 2027 and you are a Founding Member for good.",
+      "TAKE THE SURVEY"
+     ],
+     "guide": {
+      "slug": "liz",
+      "label": "Liz, your Guide",
+      "name": "LIZ",
+      "picture": "https://vegansexplore.com/public/guides/welcome/liz-founder.jpg",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "1. Overview",
+       "selected": false
+      },
+      {
+       "k": "directory",
+       "label": "2. Search and the Directory",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "3. Your City",
+       "selected": false
+      },
+      {
+       "k": "events",
+       "label": "4. Events",
+       "selected": false
+      },
+      {
+       "k": "media",
+       "label": "5. Media",
+       "selected": false
+      },
+      {
+       "k": "guides",
+       "label": "6. Guides",
+       "selected": false
+      },
+      {
+       "k": "points",
+       "label": "7. Points and Levels",
+       "selected": false
+      },
+      {
+       "k": "paths",
+       "label": "8. Your Path and Badges",
+       "selected": false
+      },
+      {
+       "k": "better",
+       "label": "9. Make It Better",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "10. For the Animals",
+       "selected": false
+      },
+      {
+       "k": "founder",
+       "label": "11. Become a Founder",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/directory",
+       "label": "Directory",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your City",
+       "current": false
+      },
+      {
+       "href": "#/events",
+       "label": "Events",
+       "current": false
+      },
+      {
+       "href": "#/media",
+       "label": "Media",
+       "current": false
+      },
+      {
+       "href": "#/guides",
+       "label": "Guides",
+       "current": false
+      },
+      {
+       "href": "#/points",
+       "label": "Points and Levels",
+       "current": false
+      },
+      {
+       "href": "#/paths",
+       "label": "Your Path",
+       "current": false
+      },
+      {
+       "href": "#/better",
+       "label": "Make It Better",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "For the Animals",
+       "current": false
+      },
+      {
+       "href": "#/founder",
+       "label": "Become a Founder",
+       "current": true
+      }
+     ],
+     "activePart": "founder",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "BECOME A FOUNDER",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 834,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  }
+ ],
+ "linkStatus": {
+  "https://vegansexplore.com/passport?guide=welcome": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/directory": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/dashboard/saves": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/account": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/communities": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/events": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/media": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/guides": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/survey?s=explorer": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/paths": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/feedback": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/directory?tab=community": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  }
+ }
+}
