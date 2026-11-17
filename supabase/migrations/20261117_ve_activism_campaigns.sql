@@ -35,3 +35,7 @@ values ('petco-prove-it', 'Petco: Prove It', array['True Cost Project','March fo
  '#PetcoProveIt', '2026-11-16', 'live', true, 'https://www.instagram.com/for.petes.sake.official/',
  'Sean, 2026-11-16: from For Pete''s Sake''s campaign post (screenshots). Spotlight (Sean: "one from Ella Majors that I want to spotlight").')
 on conflict (slug) do nothing;
+
+-- People behind a campaign (People page names, cards found by name; Sean, 2026-11-17: "their actual directory listings for the
+-- organizations that are affiliated and the people that are affiliated").
+alter table public.ve_activism_campaigns add column if not exists people text[] not null default '{}';

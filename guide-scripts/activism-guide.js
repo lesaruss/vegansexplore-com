@@ -526,7 +526,7 @@
   var CAMPS = null;
   function campsLoad() {
     if (CAMPS) return Promise.resolve(CAMPS);
-    return rest(SB + '/rest/v1/ve_activism_campaigns?select=slug,title,orgs,summary,background,actions,hashtag,starts_on,ends_on,status,spotlight&order=spotlight.desc,starts_on.desc')
+    return rest(SB + '/rest/v1/ve_activism_campaigns?select=slug,title,orgs,people,summary,background,actions,hashtag,starts_on,ends_on,status,spotlight&order=spotlight.desc,starts_on.desc')
       .then(function (r) { CAMPS = Array.isArray(r) ? r : []; return CAMPS; }).catch(function () { CAMPS = []; return CAMPS; });
   }
   function campDate(c) { if (!c.starts_on) return ''; var d = new Date(c.starts_on + 'T12:00:00'); return 'Since ' + d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); }
@@ -564,9 +564,11 @@
           var ext = /^https?:/.test(a.url || '');
           return '<li class="ag-act"><b>' + (n + 1) + '. ' + esc(a.label) + '</b><small>' + esc(a.detail) + '</small>' + (a.url ? '<a class="dg-btn dg-ghost" href="' + esc(a.url) + '"' + (ext ? ' target="_blank" rel="noopener"' : '') + '>' + esc(a.label) + '</a>' : '') + '</li>';
         }).join('') + '</ul></div>' : '') +
-        '<div class="ag-sec"><h3>Who runs it</h3><p class="ag-sub">The organizations behind this campaign, in our Directory.</p><div id="agCampOrgs"><p class="ag-sub">' + esc((c.orgs || []).join(', ')) + '</p></div></div>' +
+        '<div class="ag-sec"><h3>The organizations behind it</h3><p class="ag-sub">In our Directory.</p><div id="agCampOrgs"><p class="ag-sub">' + esc((c.orgs || []).join(', ')) + '</p></div></div>' +
+        ((c.people || []).length ? '<div class="ag-sec"><h3>The people behind it</h3><p class="ag-sub">Their People pages.</p><div id="agCampPeople"><p class="ag-sub">' + esc(c.people.join(', ')) + '</p></div></div>' : '') +
         '<p class="ag-credit">Facts and figures on this page are the campaign\'s own. Vegans Explore lists campaigns so people can find where to take action.</p>';
       if (c.orgs && c.orgs.length) loadCards(c.orgs, 'agCampOrgs', 'agCampOrgsGrid');
+      if (c.people && c.people.length) loadCards(c.people, 'agCampPeople', 'agCampPeopleGrid');
     });
   }
 
