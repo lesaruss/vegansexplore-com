@@ -5471,28 +5471,31 @@ function loadSocialTab(l){
   if(VB || DEMO || !l || !l.id) return;
   var btn = document.getElementById('tab-btn-social'), panel = document.getElementById('tab-social');
   if(!btn || !panel) return;
-  var sel = 'id,shortcode,post_url,post_type,caption,thumb_url,like_count,comment_count,view_count,posted_at,source,pinned';
+  var sel = 'id,shortcode,post_url,post_type,caption,thumb_url,like_count,comment_count,view_count,posted_at,source,pinned,match_reason';
   fetch(SUPABASE_URL + '/rest/v1/ve_listing_posts?select=' + sel + '&listing_id=eq.' + encodeURIComponent(l.id) + '&status=eq.shown&limit=200',
     { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
     .then(function(r){ return r.ok ? r.json() : []; }).then(function(rows){
       if(!Array.isArray(rows) || !rows.length) return;
-      var ours = rows.filter(function(p){ return p.source === 'ours'; }).sort(function(a, b){ return (Date.parse(b.posted_at) || 0) - (Date.parse(a.posted_at) || 0); });
+      // The tab is theirs (Sean, 2026-11-17: "It's a lot of us on there, and she probably just wants to showcase her stuff... Maybe we
+      // should just be focusing on new campaigns"): their own posts first; ours only as a small credit under them, at most three, and
+      // only real features: from the last 12 months and about them (three other accounts tagged at most, so a roundup that tags a crowd
+      // stays on our own channels, not on their page).
+      var YEAR = Date.now() - 365 * 86400000;
+      var others = function(c){ var seen = {}; (String(c || '').match(/@[A-Za-z0-9._]+/g) || []).forEach(function(h){ h = h.slice(1).toLowerCase().replace(/\.$/, ''); if(!/^(soflovegans?|vegansexplore|vegans\.explore)$/.test(h)) seen[h] = 1; }); return Object.keys(seen).length; };
+      var ours = rows.filter(function(p){ return p.source === 'ours' && (Date.parse(p.posted_at) || 0) >= YEAR && others(p.caption) <= 3; })
+        .sort(function(a, b){ return (Date.parse(b.posted_at) || 0) - (Date.parse(a.posted_at) || 0); }).slice(0, 3);
       var ourSh = {}; ours.forEach(function(p){ ourSh[p.shortcode] = 1; });
+      var owned = !!l.owner_member_id;
       var theirs = rows.filter(function(p){ return p.source === 'theirs' && !ourSh[p.shortcode]; }).sort(function(a, b){
         return (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || (Math.max(0, b.like_count) + b.comment_count) - (Math.max(0, a.like_count) + a.comment_count); });
-      var PER = 10, owned = !!l.owner_member_id;
+      if(!ours.length && !theirs.length) return; // never an empty tab
+      var PER = 10;
       var qs = function(){ return new URLSearchParams(location.search); };
       function go(k, v){ var u = new URL(location.href); if(v) u.searchParams.set(k, v); else u.searchParams.delete(k); history.pushState(null, '', u.pathname + u.search + u.hash); draw(); }
       function draw(){
-        var q = qs(), all = q.get('sfeat') === 'all', pg = Math.max(1, parseInt(q.get('spage'), 10) || 1), pages = Math.max(1, Math.ceil(theirs.length / PER));
+        var q = qs(), pg = Math.max(1, parseInt(q.get('spage'), 10) || 1), pages = Math.max(1, Math.ceil(theirs.length / PER));
         if(pg > pages) pg = pages;
         var h = '<div class="sc-pad">';
-        if(ours.length){
-          var shown = all ? ours : ours.slice(0, 8);
-          h += '<section class="sc-sec" aria-labelledby="sc-h1"><div class="sc-h"><h3 id="sc-h1">Featured by us</h3><span>' + esc(l.name) + ' on Vegans Explore and SoFlo Vegans</span></div>' +
-            '<div class="sc-grid">' + shown.map(scTile).join('') + '</div>' +
-            (ours.length > 8 ? '<div class="sc-more"><button type="button" data-sc-feat>' + (all ? 'Show fewer' : 'Show all ' + ours.length + ' featured posts') + '</button></div>' : '') + '</section>';
-        }
         if(theirs.length){
           h += '<section class="sc-sec" aria-labelledby="sc-h2"><div class="sc-h"><h3 id="sc-h2">Their top posts</h3><span>From their own Instagram</span></div>' +
             '<div class="sc-grid">' + theirs.slice((pg - 1) * PER, pg * PER).map(scTile).join('') + '</div>';
@@ -5504,14 +5507,17 @@ function loadSocialTab(l){
           }
           h += '<p class="sc-note">The top of their recent posts, ranked by likes and comments.</p></section>';
         } else if(!owned){
-          h += '<section class="sc-sec"><div class="sc-claim"><div><b>Is this your page?</b><span>Claim it and your own top Instagram posts show here, with Vegans Explore\'s features pinned first.</span></div>' +
+          h += '<section class="sc-sec"><div class="sc-claim"><div><b>Is this your page?</b><span>Claim it free and your own top Instagram posts show here.</span></div>' +
             '<a class="bd-btn" href="' + scAttr(claimHref(l)) + '">Claim this page</a></div></section>';
+        }
+        if(ours.length){
+          h += '<section class="sc-sec" aria-labelledby="sc-h1"><div class="sc-h"><h3 id="sc-h1">Featured on Vegans Explore</h3><span>Our latest posts about ' + esc(l.name) + '</span></div>' +
+            '<div class="sc-grid">' + ours.map(scTile).join('') + '</div></section>';
         }
         panel.innerHTML = h + '</div>';
       }
       draw();
       panel.addEventListener('click', function(e){
-        var f = e.target.closest('[data-sc-feat]'); if(f){ go('sfeat', qs().get('sfeat') === 'all' ? '' : 'all'); return; }
         var b = e.target.closest('[data-sc-pg]'); if(b && !b.disabled){ go('spage', +b.dataset.scPg > 1 ? b.dataset.scPg : ''); var t = panel.getBoundingClientRect().top + window.scrollY - 120; if(window.scrollY > t) window.scrollTo(0, Math.max(0, t)); }
       });
       window.addEventListener('popstate', function(){ if(qs().get('tab') === 'social') draw(); });
