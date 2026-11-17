@@ -67,6 +67,11 @@
     .gv-f label{display:block;font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--dk);margin:0 0 6px;}
     .gv-f input,.gv-f textarea{font:inherit;font-size:15px;font-weight:600;color:var(--ink);border:3px solid var(--ink);border-radius:6px;padding:10px 14px;min-height:50px;width:100%;box-sizing:border-box;background:#fff;}
     .gv-f textarea{min-height:90px;resize:vertical;}
+    /* Holiday hours: one row per day, the day and its hours, like the weekly hours. */
+    .hh-row{display:grid;grid-template-columns:minmax(0,240px) minmax(0,1fr) auto;gap:10px;align-items:center;margin:0 0 10px;}
+    .hh-row select,.hh-row input{font:inherit;font-size:15px;font-weight:600;color:var(--ink);border:3px solid var(--ink);border-radius:6px;padding:10px 14px;min-height:50px;width:100%;box-sizing:border-box;background:#fff;}
+    .hh-row select{appearance:none;-webkit-appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 16px center;}
+    @media(max-width:560px){.hh-row{grid-template-columns:1fr auto;}.hh-row select{grid-column:1/-1;}}
     .gv-f .wide{grid-column:1/-1;}
     .gv-f small{display:block;margin-top:5px;font-size:12.5px;font-weight:600;color:#555;}
     .gv-ph{width:64px;height:64px;border-radius:10px;border:1px solid #ddd;background:#f6f6f6 center/cover no-repeat;flex:0 0 64px;}
@@ -448,6 +453,52 @@
       (link ? '<div class="shn">Every click on your link shows up in Your week as <b>visitors you sent</b>.</div>' : '') +
       (k.where_url ? '<p class="empty" style="margin-top:14px">See it where it is live: <a href="' + esc(k.where_url) + '" target="_top">' + esc(k.where_label || 'Vegans Explore') + '</a></p>' : '') + '</div></div></section>';
   }
+  // Holiday hours (Sean, 2026-11-17: "If they haven't indicated holiday hours, and they can just check staying the same, and then it'll
+  // close off"; migration 20261117_ve_holiday_hours.sql). Each holiday in the next three weeks that asks (ve-holiday hours_mine) is a
+  // Needs you row until it is answered; the answer opens as its own view, ?tab=home&pd=holiday-<slug>, and shows on the listing page.
+  var HH = null;
+  function hhName(h) { var m = /\(([^)]+)\)\s*$/.exec(h.name || ''); return m ? m[1] : h.name; }
+  function hhDay(h) { return new Date(h.holiday_on + 'T12:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }); }
+  // Only places people visit (the food kind) are asked; a group, show or brand has no opening hours.
+  function hhList() { return HH && HH.holidays && ((D && D.listing && D.listing.kind) || 'food') === 'food' ? HH.holidays : []; }
+  // The days around the holiday an owner can pick (four before to four after), each as "Wed, Nov 25".
+  function hhDates(h) {
+    var on = new Date(h.holiday_on + 'T12:00:00'), out = [];
+    for (var i = -4; i <= 4; i++) { var d = new Date(on.getTime() + i * 86400000);
+      out.push([d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'),
+        d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) + (i === 0 ? ' (' + hhName(h) + ')' : '')]); }
+    return out;
+  }
+  function hhRow(h, d) {
+    return '<div class="hh-row"><select aria-label="Day" data-hh-date>' + hhDates(h).map(function (x) { return '<option value="' + x[0] + '"' + (x[0] === d.date ? ' selected' : '') + '>' + esc(x[1]) + '</option>'; }).join('') + '</select>' +
+      '<input data-hh-hours maxlength="40" placeholder="Closed, or 11 AM to 6 PM" value="' + esc(d.hours || '') + '" aria-label="Hours that day" data-dictate="off">' +
+      '<button type="button" class="btn btn-sm" data-hh-del aria-label="Remove this day">Remove</button></div>';
+  }
+  function drawHolidayHours(slug) {
+    var h = hhList().filter(function (x) { return x.slug === slug; })[0];
+    if (!h) return '<p class="empty">That holiday is not open for hours right now. <a href="' + base('home') + '" data-part="home">Back to Home</a></p>';
+    var a = h.answer, nm = hhName(h);
+    var days = a && a.status === 'special' && a.days && a.days.length ? a.days : [{ date: h.holiday_on, hours: 'Closed' }];
+    return '<section class="card"><h2>Your <span class="hl o">' + esc(nm) + ' hours</span></h2><p class="lede" style="margin:0 0 6px">' + esc(hhDay(h)) +
+      '. Visitors see this on your page beside your regular hours, so they know before they come.</p>' +
+      (a ? '<p class="empty" style="margin:0 0 14px">Now showing: <b>' + esc(a.status === 'same' ? 'Regular hours' : a.hours) + '</b></p>' : '') +
+      '<button type="button" class="btn" id="hhSame">Staying the same</button>' +
+      '<div class="sec" style="margin-top:22px"><h2 style="font-size:18px">Or the days your hours <span class="hl p">change</span></h2></div>' +
+      '<div id="hhDays">' + days.map(function (d) { return hhRow(h, d); }).join('') + '</div>' +
+      '<button type="button" class="btn btn-sm" id="hhAdd" style="margin:4px 0 18px">Add another day</button><br>' +
+      '<button type="button" class="btn btn-go" id="hhSave">Save these hours</button><p class="msg" id="hhMsg" role="status" style="margin:10px 0 0;font-weight:700"></p></section>';
+  }
+  function hhSend(slug, same) {
+    var m = $('hhMsg'), days = [];
+    app.querySelectorAll('#hhDays .hh-row').forEach(function (r) { var t = r.querySelector('[data-hh-hours]').value.trim(); if (t) days.push({ date: r.querySelector('[data-hh-date]').value, hours: t }); });
+    if (!same && !days.length) { m.textContent = 'Add the hours for at least one day, or choose Staying the same.'; return; }
+    ['hhSame', 'hhSave'].forEach(function (id) { var b = $(id); if (b) b.disabled = true; });
+    m.textContent = 'Saving...';
+    post('ve-holiday', { action: 'hours_save', listing_id: L.id, holiday: slug, same: !!same, days: same ? [] : days }).then(function (r) {
+      if (!r || !r.ok) { ['hhSame', 'hhSave'].forEach(function (id) { var b = $(id); if (b) b.disabled = false; }); m.textContent = 'That did not save. Try again in a moment.'; return; }
+      HH = r; go('home');
+    });
+  }
   var CHECK = { logo: ['Your logo', 'A clear, official logo instead of your first letter.', 'photos'],
     description: ['Your story', 'A few lines on who you are and what to try first.', 'about'],
     photos: ['Photos', 'Photos you own, so visitors can picture it.', 'photos'], hours: ['Your hours', 'Each day the way you want it shown.', 'hours'],
@@ -508,6 +559,9 @@
       var btn = c.k === 'menu' ? partBtn('Add it', 'page', 'menu') : c.k === 'audit' ? '<a class="btn btn-sm" href="/guides/vegan-restaurant-guide#/audit" target="_top">Run it</a>' : editBtn(m[2]);
       out.push(row('Needs you', 't-need', m[0], m[1], btn));
     });
+    hhList().filter(function (x) { return !x.answer; }).forEach(function (x) {
+      out.push(row('Needs you', 't-need', 'Your ' + hhName(x) + ' hours', hhDay(x) + ': open as usual, closed, or different hours? Tell visitors before they come.', partBtn('Answer', 'home', 'holiday-' + x.slug)));
+    });
     var h = D.health, flags = h && h.checks ? h.checks.filter(function (c) { return c.status === 'flag'; }) : [];
     if (flags.length) out.push(row('Flagged', 't-flag', 'Your listing check flagged ' + flags.length + (flags.length === 1 ? ' thing' : ' things'), flags.slice(0, 3).map(function (f) { return f.label || f.title || f.k; }).filter(Boolean).join(', '), partBtn('See it', 'page', 'audit')));
     return out;
@@ -554,10 +608,17 @@
     var a = needs(), b = fresh(), gs = gettingStarted();
     if (gs.indexOf('btn-sm go') < 0) { if (a.length) a[0] = go1(a[0]); else if (b.length) b[0] = go1(b[0]); }
     return gs + '<div class="sec"><h2>Needs <span class="hl o">you</span></h2>' + (a.length ? '<span class="count">' + a.length + '</span>' : '') + '</div>' +
-      (a.length ? list('need', a) : '<p class="empty">Nothing is waiting on you. Your page is ready for visitors.</p>') +
+      (a.length ? list('need', a) : '<p class="empty">Nothing is waiting on you. Your page is ready for visitors.</p>') + hhDone() +
       '<div class="sec"><h2>New <span class="hl p">for you</span></h2></div>' +
       (b.length ? list('new', b) : '<p class="empty">Nothing new this week. New opportunities show up here first.</p>') +
       '<div class="sec"><h2>Your <span class="hl g">week</span></h2></div>' + week();
+  }
+  function hhDone() {
+    var done = hhList().filter(function (x) { return x.answer; });
+    if (!done.length) return '';
+    return '<div class="sec"><h2>Holiday <span class="hl o">hours</span></h2></div>' + list('hh', done.map(function (x) {
+      return row('On your page', 't-new', 'Your ' + hhName(x) + ' hours', x.answer.status === 'same' ? 'Regular hours' : x.answer.hours, partBtn('Change', 'home', 'holiday-' + x.slug));
+    }));
   }
   function drawPageTop() {
     var todo = (D.checklist || []).filter(function (c) { return CHECK[c.k] && ['menu', 'audit'].indexOf(c.k) < 0; }), done = todo.filter(function (c) { return c.done; }).length;
@@ -576,11 +637,14 @@
     var label = PARTS.filter(function (x) { return x[0] === p; })[0][1];
     var kit = p === 'media' && q('pd') ? kitItem(q('pd')) : null;
     if (kit && !kit.ready) kit = null;
-    var html = head() + (p === 'home' ? '' : '<p class="crumb"><a href="' + base('home') + '" data-part="home">Home</a> &rsaquo; ' +
+    var hhSlug = p === 'home' && /^holiday-[a-z0-9-]+$/.test(q('pd') || '') ? q('pd').slice(8) : '';
+    var hhOne = hhSlug ? hhList().filter(function (x) { return x.slug === hhSlug; })[0] : null;
+    var html = head() + (hhSlug ? '<p class="crumb"><a href="' + base('home') + '" data-part="home">Home</a> &rsaquo; ' + esc(hhOne ? hhName(hhOne) + ' hours' : 'Holiday hours') + '</p>' : '') + (p === 'home' ? '' : '<p class="crumb"><a href="' + base('home') + '" data-part="home">Home</a> &rsaquo; ' +
       (kit ? '<a href="' + base('media') + '" data-part="media">' + esc(label) + '</a> &rsaquo; ' + esc(kit.title)
         : p === 'opportunities' && q('pd') === 'ads' ? '<a href="' + base('opportunities') + '" data-part="opportunities">' + esc(label) + '</a> &rsaquo; Ads'
         : p === 'opportunities' && q('pd') === 'giving' ? '<a href="' + base('opportunities') + '" data-part="opportunities">' + esc(label) + '</a> &rsaquo; 11 Days of Giving' : esc(label)) + '</p>');
-    if (p === 'home') html += drawHome();
+    if (hhSlug) html += drawHolidayHours(hhSlug);
+    else if (p === 'home') html += drawHome();
     else if (p === 'page') html += drawPageTop() + '<div id="bdHost" class="bd-host"></div>';
     else if (p === 'media') html += kit ? drawKitItem(kit) : drawKit();
     else if (p === 'messages') html += drawSoon('Messages', 'Messages from our team, and your replies, right here. Anything important is emailed to you too.');
@@ -610,6 +674,9 @@
       return;
     }
     if (e.target.id === 'gvSave') { e.preventDefault(); gvSave(); return; }
+    if (e.target.id === 'hhAdd') { e.preventDefault(); var hh = hhList().filter(function (x) { return x.slug === q('pd').slice(8); })[0]; if (hh) { $('hhDays').insertAdjacentHTML('beforeend', hhRow(hh, { date: hh.holiday_on, hours: '' })); tellParent(); } return; }
+    var hd = e.target.closest('[data-hh-del]'); if (hd) { e.preventDefault(); hd.parentNode.remove(); tellParent(); return; }
+    if (e.target.id === 'hhSame' || e.target.id === 'hhSave') { e.preventDefault(); hhSend(q('pd').slice(8), e.target.id === 'hhSame'); return; }
     var gt = e.target.closest('[data-gv-take]');
     if (gt) { e.preventDefault(); gt.disabled = true; post('ve-giving', { action: 'prize_withdraw', listing_id: L.id, id: gt.getAttribute('data-gv-take') }).then(function (r) { if (r && r.ok) { GV.prizes = r.prizes; GV.given_cents = r.given_cents; } draw(); }); return; }
     var mb = e.target.closest('[data-more-btn]');
@@ -640,7 +707,8 @@
     app.hidden = false; app.innerHTML = '<p class="empty">Opening your dashboard...</p>';
     fetchListing(slug).then(function (l) {
       if (!l) return gateMsg('That listing is not in the Directory.');
-      return Promise.all([post('ve-claims', { action: 'owner_dashboard', listing_id: l.id, days: 7 }), kitFetch(l.id)]).then(function (all) {
+      return Promise.all([post('ve-claims', { action: 'owner_dashboard', listing_id: l.id, days: 7 }), kitFetch(l.id), post('ve-holiday', { action: 'hours_mine', listing_id: l.id })]).then(function (all) {
+        HH = all[2] && all[2].ok ? all[2] : null;
         var d = all[0];
         if (!d || !d.ok) return gateMsg(d && d.error === 'not_owner' ? 'This dashboard belongs to the listing\'s owner.' : 'Your dashboard did not open. Refresh to try again.');
         L = l; D = d; ADMIN = !!d.admin;

@@ -195,6 +195,7 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .hours-table{width:100%;border-collapse:collapse}
 .hours-table td{padding:6px 0;font-size:12px;font-weight:600;color:var(--ve-text-75);border-bottom:1px solid var(--ve-border)}
 .hours-table td:first-child{font-weight:800;color:var(--ve-text);width:100px}
+.hours-table .vh-name{display:inline-block;margin-left:6px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;padding:2px 7px;border-radius:4px;background:#FFEBD1;color:#1a1a1a}
 .hours-table tr.today td{color:var(--vb-go,#2d7d31);font-weight:800}
 
 /* PLATFORMS (MEDIA) */
@@ -1780,6 +1781,45 @@ function hoursMap(hoursJson){
     return map;
   }
   return hoursJson; // already object
+}
+
+// Holiday hours (Sean, 2026-11-17; migration 20261117_ve_holiday_hours.sql): what the owner answered on the business dashboard for a
+// holiday from today to three weeks out, above the weekly hours. "Regular hours" when they chose Staying the same.
+function loadHolidayHours(id, hasRegular){
+  var pad = function(n){ return String(n).padStart(2,'0'); };
+  var iso = function(d){ return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate()); };
+  var now = new Date(), today = iso(now), until = iso(new Date(now.getTime() + 21*86400000)), gone = iso(new Date(now.getTime() - 4*86400000));
+  fetch(SUPABASE_URL+'/rest/v1/ve_holiday_hours?listing_id=eq.'+encodeURIComponent(id)+'&select=status,days,ve_holidays!inner(name,holiday_on)&ve_holidays.holiday_on=gte.'+gone+'&ve_holidays.holiday_on=lte.'+until,
+    {headers:{apikey:ANON_KEY,Authorization:'Bearer '+ANON_KEY}}).then(function(r){ return r.json(); }).then(function(rows){
+    if(!Array.isArray(rows) || !rows.length) return;
+    var label = function(d){ return new Date(d+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'}); };
+    // Every day as one row, like the weekly hours: the owner's days, or the holiday itself with Regular hours.
+    var days = [];
+    rows.forEach(function(r){
+      var h = r.ve_holidays, m = /\(([^)]+)\)\s*$/.exec(h.name || ''), nm = m ? m[1] : h.name;
+      if(r.status === 'same') days.push({ date: h.holiday_on, hours: 'Regular hours', name: nm });
+      else (r.days || []).forEach(function(d){ days.push({ date: d.date, hours: d.hours, name: d.date === h.holiday_on ? nm : '' }); });
+    });
+    days = days.filter(function(d){ return d.date >= today; }).sort(function(x,y){ return x.date < y.date ? -1 : 1; });
+    if(!days.length) return;
+    var holidayTable = '<table class="hours-table"><tbody>' + days.map(function(d){
+      return '<tr'+(d.date === today ? ' class="today"' : '')+'><td>'+esc(label(d.date))+'</td><td>'+esc(d.hours)+(d.name ? ' <span class="vh-name">'+esc(d.name)+'</span>' : '')+'</td></tr>';
+    }).join('') + '</tbody></table>';
+    var tries = 0; (function put(){
+      var box = document.getElementById('vhours');
+      if(!box){ if(++tries < 40) setTimeout(put, 150); return; }
+      var pane = box.querySelector('.vh-pane'), regular = pane.innerHTML;
+      box.hidden = false;
+      if(!hasRegular){ pane.innerHTML = holidayTable; box.querySelector('.section-title').textContent = 'Holiday hours'; return; }
+      pane.insertAdjacentHTML('beforebegin', '<div class="he-tabs" role="tablist"><button type="button" role="tab" data-vh="reg" aria-selected="true">Regular hours</button>' +
+        '<button type="button" role="tab" data-vh="hol" aria-selected="false">Holiday hours</button></div>');
+      var show = function(k){
+        box.querySelectorAll('[data-vh]').forEach(function(b){ b.setAttribute('aria-selected', b.getAttribute('data-vh') === k ? 'true' : 'false'); });
+        pane.innerHTML = k === 'hol' ? holidayTable : regular;
+      };
+      box.querySelectorAll('[data-vh]').forEach(function(b){ b.onclick = function(){ show(b.getAttribute('data-vh')); }; });
+    })();
+  }).catch(function(){});
 }
 
 function renderHours(hoursJson){
@@ -4759,9 +4799,9 @@ function renderListing(l){
   } else if(catType === 'food'){
     overviewContent += sharedKitchenHtml(l);
     if(isDining(l)) overviewContent += renderAtAGlance(l);
-    if(l.google_hours_json){
-      overviewContent += '<div class="section"><h2 class="section-title">Hours</h2>'+renderHours(l.google_hours_json)+'</div>';
-    }
+    // Hours, with Regular hours / Holiday hours when the owner has set a coming holiday (loadHolidayHours).
+    overviewContent += '<div class="section" id="vhours"'+(l.google_hours_json ? '' : ' hidden')+'><h2 class="section-title">Hours</h2><div class="vh-pane">'+(l.google_hours_json ? renderHours(l.google_hours_json) : '')+'</div></div>';
+    loadHolidayHours(l.id, !!l.google_hours_json);
   } else if(catType === 'media'){
     overviewContent += l.category === 'Podcasts' && !DEMO ? renderPodcastOverview(l) : l.category === 'Documentaries & Films' && !DEMO ? renderFilmOverview(l) : isYouTubeL(l) && !DEMO ? renderYouTubeOverview(l) : renderPlatforms(l);
     if(l.target_audience) overviewContent += '<div class="section"><h2 class="section-title">Who It\'s For</h2><p class="about-text">'+esc(l.target_audience)+'</p></div>';

@@ -2,6 +2,7 @@
 // A member business with a claimed listing (or an open claim on it) sends its holiday menu; a person checks it before it shows.
 // POST { action, ... }. verify_jwt off; the Vegans Explore token is checked here.
 // Public:  holidays, live {holiday}
+// Owner:   hours_mine {listing_id}, hours_save {listing_id, holiday, same: true | days: [{date, hours}]} (holiday hours; a super admin: any listing)
 // Member:  mine {listing? (a super admin: any place, to upload its menu)}, save {holiday, listing_id, summary, items, order_url, order_by, pickup, price_range, holiday_hours, contact_note}, withdraw {id},
 //          photo_url {listing_id} (a dish photo, squared in the browser, into vegan-media), scan_start {listing_id, type},
 //          scan_read {listing_id, holiday, paths[]} (up to 3 photos or a PDF of their menu, read by Claude into dishes; 10 reads a day)
@@ -22,7 +23,7 @@ const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const SLUG = /^[a-z0-9-]{1,40}$/;
 const CLOSED_CLAIM = ['rejected', 'declined', 'cancelled', 'canceled', 'expired', 'test'];
-const READ_ACTIONS = new Set(['holidays', 'live', 'mine']);
+const READ_ACTIONS = new Set(['holidays', 'live', 'mine', 'hours_mine']);
 const PUBLIC_BASE = `${Deno.env.get('SUPABASE_URL')}/storage/v1/object/public/vegan-media/`;
 const PHOTO_PREFIX = 'media/holiday-menus/';
 const SCAN_BUCKET = 'holiday-menu-scans';
@@ -30,6 +31,7 @@ const SCAN_TYPES: Record<string, string> = { 'image/jpeg': 'jpg', 'image/png': '
 const SCAN_READS_A_DAY = 10;
 const TIPS_A_DAY = 10;
 const WISHES_A_DAY = 20;
+const HOURS_ASK_DAYS = 21; // a holiday's hours are asked for in the three weeks before it
 const CODE = /^[A-Za-z0-9-]{4,20}$/;
 // The same wish from many people counts once per link (or per name when there is no link) on Most Wanted.
 const wishKey = (w: { link?: string | null; title: string }) => { try { if (w.link) { const u = new URL(w.link); return (u.hostname.replace(/^www\./, '') + u.pathname.replace(/\/$/, '')).toLowerCase(); } } catch { /* the name then */ } return w.title.toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim(); };
@@ -263,6 +265,43 @@ Deno.serve(async (req) => {
     const ids = ls.map((l) => l.id);
     const { data: menus } = ids.length ? await db.from('ve_holiday_menus').select('*').in('listing_id', ids) : { data: [] as any[] };
     return json({ ok: true, member, listings: ls, menus: menus || [], holidays: await holidays() });
+  }
+
+  // ---- Holiday hours (Sean, 2026-11-17; migration 20261117_ve_holiday_hours.sql). The owner (or an open claim) answers each coming
+  // holiday that asks: regular hours ("same") or its hours in words ("special"). It shows on the listing page at once; no review, they
+  // are the business's own hours. Any signed-in owner may answer (no membership needed). A super admin answers for any listing.
+  if (action === 'hours_mine' || action === 'hours_save') {
+    const lid = String(b.listing_id || '');
+    if (!UUID.test(lid)) return json({ error: 'bad_request' }, 400);
+    const mine = await myListings(me);
+    if (!admin && !mine.some((l) => l.id === lid)) return json({ error: 'not_your_listing' }, 403);
+    const today = new Date().toISOString().slice(0, 10);
+    const until = new Date(Date.now() + HOURS_ASK_DAYS * 86400000).toISOString().slice(0, 10);
+    const { data: hs } = await db.from('ve_holidays').select('slug, name, holiday_on').eq('active', true).eq('asks_hours', true)
+      .gte('holiday_on', today).lte('holiday_on', until).order('holiday_on');
+    if (action === 'hours_save') {
+      const slug = String(b.holiday || '');
+      const h = (hs || []).find((x) => x.slug === slug);
+      if (!h) return json({ error: 'bad_holiday' }, 400);
+      const same = b.same === true;
+      // Each day the hours change, within four days of the holiday, like the weekly hours: [{date, hours}] ("Closed", "11 AM to 6 PM").
+      const on = Date.parse(h.holiday_on + 'T12:00:00Z');
+      const seen = new Set<string>();
+      const days = same ? [] : (Array.isArray(b.days) ? b.days : []).slice(0, 9).map((d: any) => ({ date: clean(d?.date, 10), hours: clean(d?.hours, 40) }))
+        .filter((d: any) => isDate(d.date) && d.hours.length >= 2 && Math.abs(Date.parse(d.date + 'T12:00:00Z') - on) <= 4 * 86400000 && !seen.has(d.date) && seen.add(d.date))
+        .sort((x: any, y: any) => (x.date < y.date ? -1 : 1));
+      if (!same && !days.length) return json({ error: 'hours_needed' }, 400);
+      const label = (iso: string) => new Date(iso + 'T12:00:00Z').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' });
+      const row = { listing_id: lid, holiday_slug: slug, status: same ? 'same' : 'special', days: same ? null : days,
+        hours: same ? null : days.map((d: any) => `${label(d.date)}: ${d.hours}.`).join(' '),
+        set_by: me, set_by_team: !mine.some((l) => l.id === lid), updated_at: new Date().toISOString() };
+      const { error } = await db.from('ve_holiday_hours').upsert(row, { onConflict: 'listing_id,holiday_slug' });
+      if (error) return json({ error: 'save_failed' }, 500);
+    }
+    const slugs = (hs || []).map((h) => h.slug);
+    const { data: ans } = slugs.length ? await db.from('ve_holiday_hours').select('holiday_slug, status, hours, days, updated_at').eq('listing_id', lid).in('holiday_slug', slugs)
+      : { data: [] as any[] };
+    return json({ ok: true, holidays: (hs || []).map((h) => ({ ...h, answer: (ans || []).find((a) => a.holiday_slug === h.slug) || null })) });
   }
 
   if (action === 'save') {

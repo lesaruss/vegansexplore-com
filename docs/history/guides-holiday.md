@@ -167,3 +167,26 @@ asked for), and the Holiday Guide section `#/new-years-eve` with `#/ny-menus` an
 (`theo-new-years-eve.jpg`, `theo-ny-menus.jpg`, `theo-ny-events.jpg`; recipe, Theo's original reference, checked beside it). It is a row in
 `HOLX`, its `TABS`, `HOL_OV`, `HOME_ROWS` and the router, never a copy of the views. Theo's three lines are drafts until Sean approves them;
 Play Theo shows only where something plays. Wave 2 (resolutions, the year in review) comes back to Sean in December.
+
+**Ideas 111726, 2026-11-17** (Drive, nine screenshots; migration `20261117_ideas_111726_batch.sql`): live the same hour: The Green Table
+Wesley Chapel (new listing, a location of the Palm Harbor listing) and three events: its Game Night (Nov 18), ART BASIL at Aguacate Garden of
+Love (Dec 2) and My Hungry Vegan's Brunch @ Night (Jan 23, 2027); Seasoned Green (on hold since October, approved on Sean's word, a food
+truck serving Central Florida) and its ThanksLiving menu. Left out, nothing confirmable: the Austin Vegan Holiday Market (no day of the month), the Healthful Living Ocean Retreat (no official page). Holiday closures (Sen
+Saigon's Thanksgiving hours, Vegan International Co. closed Nov 25 to 28) have no place on a listing yet; Sean's answer is an owner task (Depot > Ideas b00dc2ee): a claimed business is asked
+for each holiday's hours or "staying the same".
+
+**Holiday hours, 2026-11-17** (Sean: "that should be one of the questions that we ask for our members... they can just check staying the
+same, and then it'll close off"; then "Let's build the holiday hours feature now"). Live (main 40fe5e6, `ve-holiday` v14 from 8512b7e
+through `ve-function-deploy`, source sha256 matched and read back). Table `ve_holiday_hours` (one answer per listing and holiday: `same` or
+`special` with the hours in words; public read, no public writes) and `ve_holidays.asks_hours` (Hanukkah and Kwanzaa off); migration
+`20261117_ve_holiday_hours.sql`. The business dashboard (food listings only) shows each holiday in the next 21 days with no answer as a
+**Needs you** row, Answer opening `?tab=home&pd=holiday-<slug>` (Staying the same, or the hours and Save these hours); answered ones sit
+under Holiday hours on Home with Change. `ve-holiday` `hours_mine` / `hours_save` (owner or open claim, any signed-in owner; a super admin
+for any listing). The listing page shows **Holiday hours** above Hours (`loadHolidayHours`). First rows set by the team: Sen Saigon and
+Vegan International Co. (Thanksgiving). Proven: listing pages live at 1440 and 390; the dashboard flow in a browser against mocked owner
+answers (row, view, save, row closes); the live function refuses a caller who is not signed in. Not yet proven signed in as a real owner.
+Not built: an email nudge to owners who have not answered.
+**Redone the same day** (Sean: "It's all mushed together... Can't we set it up just like the other one?... one of those little toggle things"):
+holiday hours are days (`ve_holiday_hours.days` [{date, hours}], migration `20261117_ve_holiday_hours_days.sql`); the listing page has one Hours
+section with the Events-style toggle (`.he-tabs`, Regular hours / Holiday hours), the holiday side a table like the weekly one with the holiday
+day tagged; the owner picks each day (four days either side) and its hours. `ve-holiday` v15 from 16da82a, sha256 matched and read back.
