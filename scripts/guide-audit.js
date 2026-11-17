@@ -13,7 +13,7 @@
     node scripts/guide-audit.js compare <beforeDir> <afterDir>
 
   --local=<repoDir>: proof before a push. The live site is visited as usual, but the Guide pages (/guides/*), their scripts
-  (/guide-scripts/*), the shared frame (/public/ve-guide-frame.css and .js) and the kit (/public/ve-kit.css) are served from the
+  (/guide-scripts/*), the Welcome Guide (/passport), the shared frame (/public/ve-guide-frame.css and .js) and the kit (/public/ve-kit.css) are served from the
   files in <repoDir> (Playwright route), so a change can be compared against the BEFORE inventory without deploying it.
 
   snapshot: visits each Guide (signed out) at 1440x900 and 390x844. Parts come from the Guide's own
@@ -257,13 +257,15 @@ function collect(args) {
 }
 
 // ---------- --local: serve the Guide files from a working copy ----------
-const LOCAL_PATHS = /^\/(guides\/[a-z0-9-]+(\.html)?|guide-scripts\/[a-z0-9-]+\.js|public\/ve-guide-frame\.(css|js)|public\/ve-kit\.css)$/;
+// /passport is the Welcome Guide's page (passport.html).
+const LOCAL_PATHS = /^\/(guides\/[a-z0-9-]+(\.html)?|passport|guide-scripts\/[a-z0-9-]+\.js|public\/ve-guide-frame\.(css|js)|public\/ve-kit\.css)$/;
 async function routeLocal(ctx, base, dir) {
   const host = new URL(base).host;
   await ctx.route(u => u.host === host && LOCAL_PATHS.test(u.pathname), async r => {
     const p = new URL(r.request().url()).pathname.slice(1);
     let f = path.join(dir, p);
     if (p.startsWith('guides/') && !p.endsWith('.html')) f += '.html';
+    if (p === 'passport') f = path.join(dir, 'passport.html');
     if (!fs.existsSync(f)) return r.continue();
     const ct = f.endsWith('.css') ? 'text/css' : f.endsWith('.js') ? 'application/javascript' : 'text/html';
     return r.fulfill({ status: 200, contentType: ct + '; charset=utf-8', body: fs.readFileSync(f) });

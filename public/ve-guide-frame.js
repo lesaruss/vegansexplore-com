@@ -13,7 +13,9 @@
  * Optional page data: <script type="application/json" id="gf-parts">{"<tab key>": "one line"}</script> for the Contents lines,
  * and body data-gf-lead / data-gf-join for the join line's words. A Guide whose menu is groups of sections (its dropdown lists each
  * group with its sections in small type, the Vegan Events Guide) adds "_kids": {"<section label>": "<section key>"}: Contents then
- * lists each group's sections under it as links, the Contents button names the section too, and Next walks section by section. The Holiday Guide (body.ve-gf without gf-hb) never runs this. */
+ * lists each group's sections under it as links, the Contents button names the section too, and Next walks section by section. A Guide whose
+ * recording is a video in its rail (the Welcome Guide) adds body data-gf-video: the video opens big when it starts. The Holiday Guide
+ * (body.ve-gf without gf-hb) never runs this. */
 (function () {
   var D = document, B = D.body;
   if (!B || !B.classList.contains('gf-hb') || D.getElementById('gfBar')) return;
@@ -194,6 +196,14 @@
   }
   gPlay.addEventListener('click', function () { var ps = playSrc(); if (ps) ps.click(); setTimeout(drawGuide, 60); });
   gTalk.addEventListener('click', function () { var t = rail && rail.querySelector('[data-vepg-talk]'); if (t) t.click(); });
+  // Opt-in (body data-gf-video, the Welcome Guide): the Guide's recording is a video in its rail box (#dgMaya), and the rail is hidden.
+  // When that video starts, it opens big instead, through the page's own Expand (.hg-expand: a lightbox with controls and captions that
+  // picks up where the frame was), so Play still plays only when pressed and the video is seen. Guides without the attribute are unchanged.
+  if (B.hasAttribute('data-gf-video')) D.addEventListener('play', function (e) {
+    var v = e.target, ex = maya && maya.querySelector('.hg-expand');
+    if (!v || v.tagName !== 'VIDEO' || !rail || !rail.contains(v) || !ex) return;
+    v.pause(); ex.click();
+  }, true);
   var gq = 0;
   function queueGuide() { if (gq) return; gq = requestAnimationFrame(function () { gq = 0; drawGuide(); }); }
   [bubble, maya, dgPlay, rail, main].forEach(function (el) { if (el) new MutationObserver(queueGuide).observe(el, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['style', 'hidden', 'class'] }); });

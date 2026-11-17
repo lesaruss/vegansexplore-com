@@ -74,6 +74,9 @@
   var back = params.get('back') || '';
   if (!/^\/(?!\/)/.test(back)) back = '';
   var curTab = 'overview';
+  // On the Handbook template (passport.html, body.gf-hb, 2026-11-17) Liz's row carries the one Play (it opens her video big), so the
+  // page's own Play buttons are not drawn twice, and each block's link to go see it is the view's one orange action.
+  var HB = document.body.classList.contains('gf-hb');
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function auth() { return window.VEAuth || null; }
@@ -146,11 +149,11 @@
   function gettingStarted() {
     // One blurb, about 250 characters (Sean, 2026-11-10: "I don't like the three sections... just make it a 250 character blurb").
     var ps = member()
-      ? ['<b>Welcome back.</b> Everything is open to you now. Press Play the tour any time and Liz walks you through Vegans Explore in about three minutes, or read on: every part is below, and Read more shows how to use it today.']
-      : ['<b>Vegans Explore is your Vegan world in one place:</b> places to eat and shop, your city, events, shows and Guides. Press Play the tour and Liz walks you through it in about three minutes, or read on. Joining is free, with 250 points.'];
+      ? ['<b>Welcome back.</b> Everything is open to you now. ' + (HB ? 'Press Play beside Liz any time and she walks' : 'Press Play the tour any time and Liz walks') + ' you through Vegans Explore in about three minutes, or read on: every part is below, and Read more shows how to use it today.']
+      : ['<b>Vegans Explore is your Vegan world in one place:</b> places to eat and shop, your city, events, shows and Guides. ' + (HB ? 'Press Play beside Liz and she walks' : 'Press Play the tour and Liz walks') + ' you through it in about three minutes, or read on. Joining is free, with 250 points.'];
     return '<section class="wg-gs" aria-label="Getting started"><span class="wg-gs-pic"><img src="' + pic('welcome-ensemble.jpg') + '" alt="" decoding="async" width="640" height="640"></span>' +
       '<div class="wg-gs-b"><div class="vgi-k">Getting started</div><h3 class="wg-gs-t">How to use this page</h3>' + ps.map(function (x) { return '<p>' + x + '</p>'; }).join('') +
-      '<div class="wg-gs-btns"><button type="button" class="dg-btn" data-wg-tour>&#9654; Play the tour</button>' + (member() ? '' : '<a class="dg-btn dg-ghost" href="#/founder">Become a Founder</a>') + '</div></div></section>';
+      '<div class="wg-gs-btns">' + (HB ? '' : '<button type="button" class="dg-btn" data-wg-tour>&#9654; Play the tour</button>') + (member() ? '' : '<a class="dg-btn' + (HB ? '' : ' dg-ghost') + '" href="#/founder">Become a Founder</a>') + '</div></div></section>';
   }
   // One article row, read like the Pulse: a picture, the title, a short summary, a link (the Overview and every section page use it).
   function artRow(picUrl, title, txt, link, more) {
@@ -173,10 +176,10 @@
   // approved and recorded), then the parts of that area as plain rows (a picture, about 150 characters, no link each), then one call to action
   // at the bottom to go see it. Becoming a member is the header's button.
   function sectionPage(k, o) {
-    var rec = !!CLIPS[k];
+    var rec = !!CLIPS[k], play = rec && !HB;
     var start = '<section class="wg-gs" aria-label="How to use this page"><span class="wg-gs-pic"><img src="' + pic(o.pic) + '" alt="" decoding="async" width="640" height="640"></span>' +
-      '<div class="wg-gs-b"><div class="vgi-k">How to use this page</div><h3 class="wg-gs-t">' + esc(o.title) + '</h3>' + '<p>' + (rec ? 'Press Play Liz for a short walk-through, or read on. ' : '') + o.how + '</p>' +
-      '<div class="wg-gs-btns">' + (rec ? '<button type="button" class="dg-btn" data-wg-tour>&#9654; Play Liz</button>' : '') + '<a class="dg-btn' + (rec ? ' dg-ghost' : '') + '" href="' + esc(o.go[1]) + '"' + (o.feedback ? ' data-ve-feedback' : '') + '>' + esc(o.go[0]) + '</a></div></div></section>';
+      '<div class="wg-gs-b"><div class="vgi-k">How to use this page</div><h3 class="wg-gs-t">' + esc(o.title) + '</h3>' + '<p>' + (rec ? (HB ? 'Press Play beside Liz for a short walk-through, or read on. ' : 'Press Play Liz for a short walk-through, or read on. ') : '') + o.how + '</p>' +
+      '<div class="wg-gs-btns">' + (play ? '<button type="button" class="dg-btn" data-wg-tour>&#9654; Play Liz</button>' : '') + '<a class="dg-btn' + (play ? ' dg-ghost' : '') + '" href="' + esc(o.go[1]) + '"' + (o.feedback ? ' data-ve-feedback' : '') + '>' + esc(o.go[0]) + '</a></div></div></section>';
     if (window.VEExplorerCard) VEExplorerCard.html({}); // loads the card's styles, shared by the call to action below
     var cta = '<section class="vxc" aria-label="' + esc(o.go[0]) + '"><div class="vxc-b"><div class="vxc-k">See it for yourself</div><h3>' + esc(o.ctaTitle) + '</h3><p>' + esc(o.ctaText) + '</p></div>' +
       '<a class="vxc-go" href="' + esc(o.go[1]) + '"' + (o.feedback ? ' data-ve-feedback' : '') + '>' + esc(o.go[0]) + '</a></section>';
@@ -315,7 +318,7 @@
           '<div class="dg-btns"><a class="dg-btn" href="' + esc(back || '/dashboard') + '">' + (back ? 'Go back' : 'Open your dashboard') + '</a></div>';
       }
       return crumb(tab('founder').label) + head('Become a Founder', 'You Are Early, and That Is Rare', 'A few quick questions, about two minutes, and you are in, free, with 250 points to use across the platform.' + (OPEN ? ' Join before midnight Eastern on January 1, 2027 and you are a Founding Member for good. Founders unlock some really cool things in 2027, and the only way to hear about them, and lock them in for yourself, is to join today.' : '')) +
-        (CLIPS.founder ? '<div class="dg-btns" style="margin:0 0 14px"><button type="button" class="dg-btn dg-ghost" data-wg-tour>&#9654; Play Liz</button></div>' : '') +
+        (CLIPS.founder && !HB ? '<div class="dg-btns" style="margin:0 0 14px"><button type="button" class="dg-btn dg-ghost" data-wg-tour>&#9654; Play Liz</button></div>' : '') +
         countdown() + explorerCard() +
         '<p class="dg-lede" style="margin-top:14px">Want to take your time? Every section of this Guide breaks down exactly how to use it today. <a href="#/" style="color:var(--g);font-weight:800">Back to the Overview</a>.</p>';
     }
