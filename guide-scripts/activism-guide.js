@@ -28,6 +28,8 @@
   // Legal and policy work (Sean, 2026-11-16: "Go ahead with legal and policy work"); ALDF and the Nonhuman Rights Project show once listed.
   var LAW_NAMES = ['Animal Legal Defense Fund', 'Nonhuman Rights Project', 'Physicians Committee for Responsible Medicine', 'Humane World for Animals', 'The Humane League', 'Mercy For Animals'];
   var SCHOOL_MILK_AUDIO = 'https://episodes.captivate.fm/episode/33c5126d-a2a4-4a20-8437-1a7fa327d191.mp3';
+  // Digital activism (Sean, 2026-11-16: "Go ahead with digital activism").
+  var DIGITAL_NAMES = ['Earthling Ed', 'Joey Carbstrong', 'Veganuary', 'Vegan Outreach', 'The Humane League', 'Faunalytics'];
   var OUTREACH_NAMES = ['Anonymous for the Voiceless', 'Vegan Outreach', 'Earthling Ed', 'Joey Carbstrong', 'Revolution Philadelphia'];
   // More humane educators (Sean, 2026-11-16: "find out who the community would consider humane educators"); each shows once its listing is approved.
   var MORE_EDU_NAMES = ['TeachKind', 'LivingKind', 'Ruby Roth', 'Factory Farming Awareness Coalition', 'Institute for Humane Education'];
@@ -89,6 +91,15 @@
     '.ag-chips a{font-size:12px;font-weight:800;border:2px solid #1a1a1a;border-radius:6px;padding:5px 9px;color:#1a1a1a;text-decoration:none;background:#FFF7EC;}',
     '.ag-eranext{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:18px 0;}',
     '.ag-credit{font-size:13px;color:var(--ink55);margin:18px 0 0;}',
+    '.ag-camp{border:3px solid #1a1a1a;border-radius:10px;padding:16px;background:#FFF1B8;box-shadow:5px 5px 0 #1a1a1a;margin:6px 0 18px;}',
+    '.ag-camp small{font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;}',
+    '.ag-camp b{display:block;font-size:22px;font-weight:900;margin:6px 0;}',
+    '.ag-camp p{margin:0 0 12px;font-size:15px;line-height:1.55;}',
+    '.ag-acts{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:12px;}',
+    '.ag-act{display:flex;flex-direction:column;gap:6px;border:2px solid #1a1a1a;border-radius:10px;padding:14px;background:#fff;}',
+    '.ag-act b{font-size:16px;font-weight:900;}',
+    '.ag-act small{font-size:14px;line-height:1.5;color:var(--ink75);}',
+    '.ag-act a{align-self:flex-start;margin-top:6px;}',
     '.ag-about{font-size:15px;line-height:1.6;color:var(--ink75);margin:0 0 12px;}'
   ].join('');
   var st = document.createElement('style'); st.textContent = CSS; document.head.appendChild(st);
@@ -109,10 +120,10 @@
     ['direct-action', 'direct', 'Direct action', 'Protests, vigils and peaceful public actions that bring attention to what animals go through.'],
     ['legal-policy', 'law', 'Legal and policy work', 'Changing laws, rules and the way companies and schools do things.'],
     ['sanctuaries', 'sanctuary', 'Sanctuaries and rescue', 'Giving animals a safe home for life, and showing visitors who they really are.'],
-    ['', 'digital', 'Digital activism', 'Videos, posts, petitions and campaigns that reach people where they scroll.']
+    ['digital-activism', 'digital', 'Digital activism', 'Videos, posts, petitions and campaigns that reach people where they scroll.']
   ];
   // The parts in the menu, and every page the rail walks (each page its own Dani scene).
-  var TABS = [{ k: 'overview', label: 'Overview' }, { k: 'humane-education', label: 'Humane Education' }, { k: 'street-outreach', label: 'Street Outreach' }, { k: 'direct-action', label: 'Direct Action' }, { k: 'legal-policy', label: 'Legal and Policy' }, { k: 'speeches', label: 'The Speeches' }, { k: 'sanctuaries', label: 'Sanctuaries' }, { k: 'history', label: 'History' }];
+  var TABS = [{ k: 'overview', label: 'Overview' }, { k: 'humane-education', label: 'Humane Education' }, { k: 'street-outreach', label: 'Street Outreach' }, { k: 'direct-action', label: 'Direct Action' }, { k: 'legal-policy', label: 'Legal and Policy' }, { k: 'digital-activism', label: 'Digital Activism' }, { k: 'campaigns', label: 'Campaigns' }, { k: 'speeches', label: 'The Speeches' }, { k: 'sanctuaries', label: 'Sanctuaries' }, { k: 'history', label: 'History' }];
   var STEPS = [
     // Dani's lines, approved by Sean 2026-11-16 (the Humane Education line updated for Susan the same day); text until recorded.
     { k: 'overview', art: 'overview', say: 'Hi, I\'m Dani. Every animal we\'ve ever helped was helped by someone who decided to speak up. There\'s no single right way to do it. Some people teach, some march, some build sanctuaries, some change laws. This Guide walks you through all of it, so you can find the way that fits you. Let\'s start with one of the gentlest and most powerful: teaching.' },
@@ -128,6 +139,10 @@
     { k: 'direct-action', art: 'direct-action', say: 'Sometimes the most powerful thing we can do is show up, together, where everyone can see us. Marches, vigils and peaceful protests remind the world that animals have people standing up for them. Go with a group, stay peaceful, and you will never forget your first one.' },
     // Draft for Sean (2026-11-16, "Go ahead with legal and policy work").
     { k: 'legal-policy', art: 'legal-policy', say: 'Laws decide how millions of animals are treated, and laws are written by people who answer to us. You do not need to be a lawyer to change them. A phone call, an email or two minutes at a public meeting can be the voice that tips a vote.' },
+    // Draft for Sean (2026-11-16, "Go ahead with digital activism").
+    { k: 'digital-activism', art: 'digital-activism', say: 'Your phone is a megaphone. One honest video, one shared story or one review asking for a Vegan option can reach more people than you will ever meet on the street. Share what you love, check your facts and lead with kindness.' },
+    // Draft for Sean (2026-11-17, Campaigns: "points out all the major campaigns... where people can go and support").
+    { k: 'campaigns', art: 'campaigns', say: 'These are the campaigns happening right now, run by groups across the movement. Each one tells you exactly what it asks for and how to help, whether you have two minutes or a whole weekend. Pick one and take one action today.' },
     // Draft for Sean (2026-11-16, "Go ahead with the speeches").
     { k: 'speeches', art: 'speeches', say: 'Sometimes one talk is all it takes. These are some of the most watched and shared talks on Veganism anywhere, and the list keeps growing. Start with a short one tonight, save the long ones for when you have the time, and tell us which talk changed your mind.' },
     // Draft for Sean (2026-11-16, "Go ahead with sanctuaries and rescue").
@@ -242,7 +257,8 @@
         '<ul class="ag-ways">' + WAYS.map(way).join('') + '</ul></div>' +
         '<div class="ag-sec"><h3>The speeches</h3><p class="ag-sub">Talks that changed minds around the world, shortest first. Know one we should add? Suggest it.</p><ul class="ag-ways"><li><a class="ag-way" href="#/speeches"><span class="ag-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span><span><b>Talks That Changed Minds</b><small>Philip Wollen, Joey Carbstrong, Earthling Ed, James Aspey, James Wildman and Gary Yourofsky.</small><span class="ag-tag live">Open now</span></span></a></li></ul></div>' +
         '<div class="ag-sec"><h3>History</h3><p class="ag-sub">From ancient teachers to today\'s activists.</p><ul class="ag-ways"><li><a class="ag-way" href="#/history"><span class="ag-ic"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><span><b>A History of the Vegan Movement</b><small>A timeline from the earliest records to today, one era at a time.</small><span class="ag-tag live">Open now</span></span></a></li></ul></div>' +
-        '<div class="ag-sec"><h3>Also coming</h3><p class="ag-sub">Campaign news, and a place to rally and talk with other activists.</p></div>';
+        '<div class="ag-sec"><h3>Campaigns</h3><p class="ag-sub">Live campaigns from across the movement, and how to help each one.</p><ul class="ag-ways"><li><a class="ag-way" href="#/campaigns"><span class="ag-ic"><svg viewBox="0 0 24 24" aria-hidden="true">' + IC.direct + '</svg></span><span><b>Where to Show Up Now</b><small>What each campaign asks for, who runs it and the actions you can take today.</small><span class="ag-tag live">Open now</span></span></a></li></ul></div>' +
+        '<div class="ag-sec"><h3>Also coming</h3><p class="ag-sub">A place to rally and talk with other activists.</p></div>';
     },
     'humane-education': function () {
       return crumb('Humane Education') + head('Humane education', 'Teaching People to Care', '') +
@@ -292,6 +308,59 @@
         '<div class="k-f wide"><label for="agSugWhy">Why it belongs here</label><textarea id="agSugWhy" maxlength="1500"></textarea></div>' +
         '<div class="k-f wide"><button type="submit" class="dg-btn" id="agSugGo">Send my suggestion</button><p class="k-msg" id="agSugMsg" role="status"></p></div>' +
         '</form>';
+    },
+    campaigns: function () {
+      return crumb('Campaigns') + head('Campaigns', 'Where to Show Up Now', '') +
+        '<p class="ag-about">Live campaigns run by groups across the movement, with exactly what each one asks for and how you can help. We keep this list current, and close a campaign when it ends.</p>' +
+        '<div id="agCampList"><p class="ag-sub">Loading...</p></div>' +
+        cta('Campaigns', 'Know a campaign we should list?', 'Tell us what it asks for and where people can take action. We check every suggestion before it goes up.', ['Suggest a campaign', '#/campaigns/suggest']);
+    },
+    'campaigns/suggest': function () {
+      return crumb('Campaigns', 'Suggest a campaign', '#/campaigns') + head('Campaigns', 'Suggest a Campaign', '') +
+        '<p class="ag-about">Which campaign should people know about? Tell us what it asks for, who runs it and where people can take action.</p>' +
+        '<form class="k-form" id="agCmp" novalidate>' +
+        '<div class="k-f wide"><label for="agCmpWhat">What the campaign asks for</label><input id="agCmpWhat" type="text" maxlength="200" required></div>' +
+        '<div class="k-f"><label for="agCmpWho">Who runs it</label><input id="agCmpWho" type="text" maxlength="160"></div>' +
+        '<div class="k-f"><label for="agCmpLink">Where to take action</label><input id="agCmpLink" type="url" maxlength="500" placeholder="https://"></div>' +
+        '<div class="k-f wide"><label for="agCmpWhy">Anything else we should know</label><textarea id="agCmpWhy" maxlength="1500"></textarea></div>' +
+        '<div class="k-f"><label for="agCmpEmail">Your email (optional)</label><input id="agCmpEmail" type="email" maxlength="200" placeholder="Only if we have a question"></div>' +
+        '<div class="k-f wide"><button type="submit" class="dg-btn" id="agCmpGo">Send my suggestion</button><p class="k-msg" id="agCmpMsg" role="status"></p></div>' +
+        '</form>';
+    },
+    'digital-activism': function () {
+      var forms = [
+        ['digital', 'Make your own content', 'Short videos, recipes, posts and stories about why you went Vegan. Earthling Ed and Joey Carbstrong built huge audiences this way.'],
+        ['outreach', 'Share what others make', 'Sharing a powerful documentary, a news story or an investigation puts it in front of people who would never find it on their own.'],
+        ['law', 'Online campaigns and petitions', 'Emails, comments and petitions that ask companies and lawmakers to change, often organized by groups like The Humane League.'],
+        ['teach', 'Mentoring and challenges', 'Helping someone try Vegan online, through challenges like Veganuary or Vegan Outreach\'s free 10 Weeks to Vegan mentoring.'],
+        ['sanctuary', 'Reviews and requests', 'Leaving good reviews for Vegan businesses, and kindly asking restaurants and stores to add Vegan options, so the places that try get rewarded.']
+      ];
+      var here = [
+        ['Vouch for a place', 'Vouch for the Vegan businesses, sanctuaries and groups you stand behind, so more people find them.', '/directory'],
+        ['Add a place we are missing', 'Know a Vegan business, sanctuary or group that is not in our Directory? Tell us and we will add it.', '#/digital-activism'],
+        ['Nominate someone', 'Give someone in your community their flowers, and they could be featured on our podcast and city pages.', '/nominate'],
+        ['Share a Guide', 'Every page of this Guide has its own link. Send the part that fits to someone who is ready for it.', '#/']
+      ];
+      var steps = [
+        ['Pick one place to start', 'You do not need every app. Choose the one where your friends and family already are.'],
+        ['Share stories, not shame', 'People change when they feel invited, not judged. A good meal or a rescued animal\'s story opens more minds than an argument.'],
+        ['Check before you share', 'Make sure a fact or a video is true and current before passing it on. One wrong claim can undo a lot of trust.'],
+        ['Protect your peace', 'You do not have to answer every comment. Mute, block and log off when you need to.']
+      ];
+      return crumb('Digital Activism') + head('Digital activism', 'Speak Up Online', '') +
+        '<div class="ag-sec"><h3>What is digital activism?</h3>' +
+        '<p class="ag-about">Digital activism is speaking up for animals online: making and sharing videos, posts and stories, signing and sharing campaigns, mentoring people who want to try Vegan, and supporting the businesses that make it easy. It reaches people in places no one could ever stand on a street corner.</p></div>' +
+        '<div class="ag-sec"><h3>The ways it is done</h3><ul class="ag-ways">' + forms.map(function (w) {
+          return '<li><div class="ag-way"><span class="ag-ic"><svg viewBox="0 0 24 24" aria-hidden="true">' + IC[w[0]] + '</svg></span><span><b>' + esc(w[1]) + '</b><small>' + esc(w[2]) + '</small></span></div></li>';
+        }).join('') + '</ul></div>' +
+        '<div class="ag-sec"><h3>Start right here</h3><p class="ag-sub">Things you can do on Vegans Explore today.</p><ul class="ag-ways">' + here.map(function (w) {
+          return '<li><a class="ag-way" href="' + w[2] + '"' + (w[0] === 'Add a place we are missing' ? ' data-ve-listing-request role="button"' : '') + '><span class="ag-ic"><svg viewBox="0 0 24 24" aria-hidden="true">' + IC.digital + '</svg></span><span><b>' + esc(w[0]) + '</b><small>' + esc(w[1]) + '</small><span class="ag-tag live">Open</span></span></a></li>';
+        }).join('') + '</ul></div>' +
+        '<div class="ag-sec"><h3>Good habits online</h3><ol class="ag-tl" style="--ag-c:#FF9EC4">' + steps.map(function (x) {
+          return '<li class="ag-ev"><details open><summary><b>' + esc(x[0]) + '</b></summary><div class="ag-evb"><p>' + esc(x[1]) + '</p></div></details></li>';
+        }).join('') + '</ol></div>' +
+        '<div class="ag-sec"><h3>Who does it</h3><p class="ag-sub">People and groups known for activism online, in our Directory.</p><div id="agDig"><p class="ag-sub">Loading...</p></div></div>' +
+        cta('Digital activism', 'Want to make content?', 'Kai\'s Creator Guide walks you through building a Vegan audience, step by step.', ['The Creator Guide', '/guides/creator-guide']);
     },
     'legal-policy': function () {
       var forms = [
@@ -453,6 +522,56 @@
       (next ? '<a class="dg-btn" href="#/history/' + next.k + '">' + esc(next.label) + ' &rarr;</a>' : '<a class="dg-btn" href="#/history/suggest">Suggest a moment</a>') + '</div>';
   }
 
+  // ---------- Campaigns (ve_activism_campaigns; Logan adds and closes rows) ----------
+  var CAMPS = null;
+  function campsLoad() {
+    if (CAMPS) return Promise.resolve(CAMPS);
+    return rest(SB + '/rest/v1/ve_activism_campaigns?select=slug,title,orgs,people,summary,background,actions,hashtag,starts_on,ends_on,status,spotlight&order=spotlight.desc,starts_on.desc')
+      .then(function (r) { CAMPS = Array.isArray(r) ? r : []; return CAMPS; }).catch(function () { CAMPS = []; return CAMPS; });
+  }
+  function campDate(c) { if (!c.starts_on) return ''; var d = new Date(c.starts_on + 'T12:00:00'); return 'Since ' + d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }); }
+  function campRow(c) {
+    return '<li><a class="ag-way" href="#/campaigns/' + esc(c.slug) + '"><span class="ag-ic"><svg viewBox="0 0 24 24" aria-hidden="true">' + IC.direct + '</svg></span><span><b>' + esc(c.title) + '</b><small>' + esc(c.summary) + '</small>' +
+      '<span class="ag-tag ' + (c.status === 'live' ? 'live' : 'soon') + '">' + (c.status === 'live' ? 'Live' : 'Ended') + '</span></span></a></li>';
+  }
+  function drawCampList() {
+    var box = $('agCampList'); if (!box) return;
+    campsLoad().then(function (all) {
+      if (!$('agCampList')) return;
+      var live = all.filter(function (c) { return c.status === 'live'; }), ended = all.filter(function (c) { return c.status === 'ended'; });
+      var spot = live.filter(function (c) { return c.spotlight; })[0];
+      var rest2 = live.filter(function (c) { return c !== spot; });
+      box.innerHTML = (spot ? '<div class="ag-sec"><h3>Spotlight</h3><div class="ag-camp"><small>Live \u00b7 ' + esc(campDate(spot)) + (spot.hashtag ? ' \u00b7 ' + esc(spot.hashtag) : '') + '</small><b>' + esc(spot.title) + '</b><p>' + esc(spot.summary) + '</p>' +
+          '<a class="dg-btn" href="#/campaigns/' + esc(spot.slug) + '">Take action</a></div></div>' : '') +
+        (rest2.length ? '<div class="ag-sec"><h3>More live campaigns</h3><ul class="ag-ways">' + rest2.map(campRow).join('') + '</ul></div>' : '') +
+        (ended.length ? '<div class="ag-sec"><h3>Ended</h3><ul class="ag-ways">' + ended.map(campRow).join('') + '</ul></div>' : '') +
+        (!all.length ? '<p class="ag-sub">No campaigns listed right now.</p>' : '');
+    });
+  }
+  function campView(slug) {
+    return crumb('Campaigns', '...', '#/campaigns') + '<div id="agCampOne"><p class="ag-sub">Loading...</p></div>';
+  }
+  function drawCamp(slug) {
+    campsLoad().then(function (all) {
+      var c = all.filter(function (x) { return x.slug === slug; })[0], box = $('agCampOne'); if (!box) return;
+      if (!c) { box.innerHTML = '<p class="ag-sub">That campaign is not listed. <a href="#/campaigns">See the campaigns</a>.</p>'; return; }
+      var cr = document.querySelector('.dg-crumb'); if (cr) cr.innerHTML = '<a href="#/">The Vegan Activism Guide</a> &rsaquo; <a href="#/campaigns">Campaigns</a> &rsaquo; ' + esc(c.title);
+      var acts = Array.isArray(c.actions) ? c.actions : [];
+      box.innerHTML = head((c.status === 'live' ? 'Live campaign' : 'Ended campaign') + (c.hashtag ? ' \u00b7 ' + c.hashtag : ''), c.title, '') +
+        '<p class="ag-about">' + esc(c.summary) + '</p>' +
+        (c.background ? '<div class="ag-sec"><h3>The campaign\'s case</h3><p class="ag-about">' + esc(c.background) + '</p></div>' : '') +
+        (acts.length ? '<div class="ag-sec"><h3>How to help</h3><ul class="ag-acts">' + acts.map(function (a, n) {
+          var ext = /^https?:/.test(a.url || '');
+          return '<li class="ag-act"><b>' + (n + 1) + '. ' + esc(a.label) + '</b><small>' + esc(a.detail) + '</small>' + (a.url ? '<a class="dg-btn dg-ghost" href="' + esc(a.url) + '"' + (ext ? ' target="_blank" rel="noopener"' : '') + '>' + esc(a.label) + '</a>' : '') + '</li>';
+        }).join('') + '</ul></div>' : '') +
+        '<div class="ag-sec"><h3>The organizations behind it</h3><p class="ag-sub">In our Directory.</p><div id="agCampOrgs"><p class="ag-sub">' + esc((c.orgs || []).join(', ')) + '</p></div></div>' +
+        ((c.people || []).length ? '<div class="ag-sec"><h3>The people behind it</h3><p class="ag-sub">Their People pages.</p><div id="agCampPeople"><p class="ag-sub">' + esc(c.people.join(', ')) + '</p></div></div>' : '') +
+        '<p class="ag-credit">Facts and figures on this page are the campaign\'s own. Vegans Explore lists campaigns so people can find where to take action.</p>';
+      if (c.orgs && c.orgs.length) loadCards(c.orgs, 'agCampOrgs', 'agCampOrgsGrid');
+      if (c.people && c.people.length) loadCards(c.people, 'agCampPeople', 'agCampPeopleGrid');
+    });
+  }
+
   // ---------- menu and Dani (nominate.js / welcome-guide.js) ----------
   function drawMenu(cur) {
     cur = cur.split('/')[0];
@@ -466,7 +585,7 @@
     foldBtn.textContent = f ? 'Show Dani' : 'Hide Dani'; foldBtn.setAttribute('aria-expanded', String(!f));
   });
   function drawDani() {
-    var t = step(curTab === 'speeches/suggest' ? 'speeches' : /^history\//.test(curTab) ? 'history' : curTab), i = STEPS.indexOf(t);
+    var t = step(curTab === 'speeches/suggest' ? 'speeches' : /^history\//.test(curTab) ? 'history' : /^campaigns\//.test(curTab) ? 'campaigns' : curTab), i = STEPS.indexOf(t);
     bubble.textContent = t.say;
     var box = $('dgMaya'); box.innerHTML = ''; box.style.backgroundImage = "url('" + ART + t.art + ".jpg')";
     $('dgPlay').hidden = true;   // no recording yet: the Play button shows once Dani's lines are recorded
@@ -476,9 +595,12 @@
   function route() {
     var k = (location.hash.replace(/^#\/?/, '') || 'overview').split('?')[0].replace(/\/+$/, '') || 'overview';
     var era = /^history\/[a-z-]+$/.test(k) && !VIEWS[k];
-    if (!VIEWS[k] && !era) k = 'overview';
+    var camp = /^campaigns\/[a-z0-9-]+$/.test(k) && !VIEWS[k];
+    if (!VIEWS[k] && !era && !camp) k = 'overview';
     curTab = k;
-    main.innerHTML = era ? eraView(k.split('/')[1]) : VIEWS[k]();
+    main.innerHTML = era ? eraView(k.split('/')[1]) : camp ? campView(k.split('/')[1]) : VIEWS[k]();
+    if (camp) drawCamp(k.split('/')[1]);
+    if (k === 'campaigns') drawCampList();
     if (k === 'humane-education/james-wildman') loadCards(JAMES_NAMES, 'agJames', 'agJamesGrid');
     if (k === 'humane-education/zoe-weil') { loadCards(ZOE_NAMES, 'agZoe', 'agZoeGrid'); loadBooks('Zoe Weil', 'agZoeBooksSec', 'agZoeBooks', 'agZoeBooksGrid'); }
     if (k === 'humane-education/susan-hargreaves') loadBooks('Susan Hargreaves', 'agSusanBooksSec', 'agSusanBooks', 'agSusanBooksGrid');
@@ -487,6 +609,7 @@
     if (k === 'speeches') loadCards(SPEAKER_NAMES, 'agSpk', 'agSpkGrid');
     if (k === 'direct-action') loadCards(ACTION_NAMES, 'agAct', 'agActGrid');
     if (k === 'legal-policy') loadCards(LAW_NAMES, 'agLaw', 'agLawGrid');
+    if (k === 'digital-activism') loadCards(DIGITAL_NAMES, 'agDig', 'agDigGrid');
     if (k === 'street-outreach') { loadCards(OUTREACH_NAMES, 'agOut', 'agOutGrid'); loadBooks(['Ed Winters'], 'agOutBooksSec', 'agOutBooks', 'agOutBooksGrid'); }
     if (k === 'sanctuaries') { loadTop('Sanctuaries', 'agSan', 'agSanGrid'); loadTop('Rescues', 'agRes', 'agResGrid'); }
     if (k === 'humane-education/susan-hargreaves') loadCards(SUSAN_NAMES, 'agSusan', 'agSusanGrid', function (rows) {
@@ -541,6 +664,26 @@
       .then(function (x) {
         if (!x.ok || !x.d || !x.d.ok) throw x.d || {};
         $('agHis').outerHTML = '<p class="ag-about"><b>Thank you.</b> We have your suggestion and will look into it' + (em ? '. If we have a question, we will write to ' + esc(em) : '') + '.</p><a class="dg-btn" href="#/history">Back to the history</a>';
+      })
+      .catch(function (d) { go.disabled = false; go.textContent = 'Send my suggestion'; msg.className = 'k-msg err'; msg.textContent = d && d.error === 'daily_limit' ? 'You have sent a few already. Thank you, we have them.' : 'That did not go through. Try again in a moment.'; });
+  });
+  document.addEventListener('submit', function (e) {
+    if (!e.target || e.target.id !== 'agCmp') return;
+    e.preventDefault();
+    var what = $('agCmpWhat').value.trim(), who = $('agCmpWho').value.trim(), link = $('agCmpLink').value.trim(), why = $('agCmpWhy').value.trim(), em = $('agCmpEmail').value.trim(), msg = $('agCmpMsg'), go = $('agCmpGo');
+    if (what.length < 3) { msg.className = 'k-msg err'; msg.textContent = 'Tell us what the campaign asks for.'; return; }
+    if (link && !/^https?:\/\/\S+\.\S+/.test(link)) { msg.className = 'k-msg err'; msg.textContent = 'The link should start with https://'; return; }
+    if (em && !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) { msg.className = 'k-msg err'; msg.textContent = 'That email does not look right.'; return; }
+    go.disabled = true; go.textContent = 'Sending...'; msg.className = 'k-msg'; msg.textContent = '';
+    var vid = ''; try { vid = localStorage.getItem('ve_visitor') || ''; } catch (x) {}
+    fetch(SB + '/functions/v1/ve-feedback', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ page_url: location.href.split('#')[0] + '#/campaigns', page_label: 'Campaigns', kind: 'suggestion',
+        message: 'Suggested campaign for the Activism Guide: ' + what + (who ? '\nWho runs it: ' + who : '') + (link ? '\nTake action: ' + link : '') + (why ? '\nMore: ' + why : ''),
+        email: em, name: 'A visitor (via Dani, Suggest a campaign)', visitor: vid, signed_in: false, viewport: innerWidth + 'x' + innerHeight }) })
+      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      .then(function (x) {
+        if (!x.ok || !x.d || !x.d.ok) throw x.d || {};
+        $('agCmp').outerHTML = '<p class="ag-about"><b>Thank you.</b> We have your suggestion and will look into it' + (em ? '. If we have a question, we will write to ' + esc(em) : '') + '.</p><a class="dg-btn" href="#/campaigns">Back to the campaigns</a>';
       })
       .catch(function (d) { go.disabled = false; go.textContent = 'Send my suggestion'; msg.className = 'k-msg err'; msg.textContent = d && d.error === 'daily_limit' ? 'You have sent a few already. Thank you, we have them.' : 'That did not go through. Try again in a moment.'; });
   });
