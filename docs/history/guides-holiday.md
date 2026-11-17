@@ -186,3 +186,7 @@ for any listing). The listing page shows **Holiday hours** above Hours (`loadHol
 Vegan International Co. (Thanksgiving). Proven: listing pages live at 1440 and 390; the dashboard flow in a browser against mocked owner
 answers (row, view, save, row closes); the live function refuses a caller who is not signed in. Not yet proven signed in as a real owner.
 Not built: an email nudge to owners who have not answered.
+**Redone the same day** (Sean: "It's all mushed together... Can't we set it up just like the other one?... one of those little toggle things"):
+holiday hours are days (`ve_holiday_hours.days` [{date, hours}], migration `20261117_ve_holiday_hours_days.sql`); the listing page has one Hours
+section with the Events-style toggle (`.he-tabs`, Regular hours / Holiday hours), the holiday side a table like the weekly one with the holiday
+day tagged; the owner picks each day (four days either side) and its hours. `ve-holiday` v15 from 16da82a, sha256 matched and read back.
