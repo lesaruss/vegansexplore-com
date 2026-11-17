@@ -167,3 +167,9 @@ asked for), and the Holiday Guide section `#/new-years-eve` with `#/ny-menus` an
 (`theo-new-years-eve.jpg`, `theo-ny-menus.jpg`, `theo-ny-events.jpg`; recipe, Theo's original reference, checked beside it). It is a row in
 `HOLX`, its `TABS`, `HOL_OV`, `HOME_ROWS` and the router, never a copy of the views. Theo's three lines are drafts until Sean approves them;
 Play Theo shows only where something plays. Wave 2 (resolutions, the year in review) comes back to Sean in December.
+
+**Ideas 111726, 2026-11-17** (Drive, nine screenshots; migration `20261117_ideas_111726_batch.sql`): live the same hour: The Green Table
+Wesley Chapel (new listing, a location of the Palm Harbor listing) and three events: its Game Night (Nov 18), ART BASIL at Aguacate Garden of
+Love (Dec 2) and My Hungry Vegan's Brunch @ Night (Jan 23, 2027). Left out, nothing confirmable: Seasoned Green's Thanksgiving catering (no
+city), the Austin Vegan Holiday Market (no day of the month), the Healthful Living Ocean Retreat (no official page). Holiday closures (Sen
+Saigon's Thanksgiving hours, Vegan International Co. closed Nov 25 to 28) have no place on a listing yet.
