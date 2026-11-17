@@ -396,6 +396,13 @@ html,body{min-height:100%;font-family:Montserrat,sans-serif;color:var(--ve-text)
 .sc-h h3{font-size:18px;font-weight:900;margin:0}
 .sc-h span{font-size:13px;color:var(--ve-text-75)}
 .sc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:16px}
+/* Spotlight: the owner's own picks, each the post itself (Instagram, TikTok or YouTube's embed), three across, two when narrower, one on phones. */
+.sc-spot{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(270px,100%),1fr));gap:18px;align-items:start}
+.sc-spot>div{min-width:0}
+.sc-spot .instagram-media,.sc-spot .tiktok-embed{min-width:0!important;max-width:100%!important;width:100%!important;margin:0!important}
+.sc-spot iframe{max-width:100%}
+.sc-spot .sc-yt{position:relative;width:100%;border-radius:10px;overflow:hidden;background:#000}
+.sc-spot .sc-yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .sc-t{display:flex;flex-direction:column;background:#fff;border:1px solid var(--ve-border);border-radius:10px;overflow:hidden;color:inherit;text-decoration:none}
 .sc-t:hover{border-color:rgba(0,0,0,.28)}
 .sc-img{position:relative;aspect-ratio:1/1;background:#EAF7EA}
@@ -4027,6 +4034,7 @@ function oeCss(){
     '.oe-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid rgba(0,0,0,.09);padding-top:14px;margin-top:6px}.oe-nav .n{font-size:13px;font-weight:700;color:rgba(26,26,26,.7)}' +
     '.oe-msg{font-size:13px;font-weight:700;color:var(--vb-go-hover,#1f5f22);min-height:18px;margin:0 0 10px}.oe-msg.bad{color:#a61b1b}' +
     '.oe-logo{display:flex;gap:14px;align-items:center;margin:0 0 18px}.oe-logo .pic{width:88px;height:88px;border-radius:10px;background:#EAF7EA center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:32px;font-weight:900;color:var(--vb-go-hover,#1f5f22);flex:0 0 auto}' +
+    '.oe-spot{border:2px solid #1a1a1a;border-radius:10px;padding:16px;margin:0 0 6px}.oe-spot-in{display:block;width:100%;box-sizing:border-box;font:inherit;font-size:14px;padding:10px 12px;border:1.5px solid rgba(0,0,0,.2);border-radius:6px;margin:0 0 8px}' +
     '.oe-photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin:0 0 12px}.oe-photos div{position:relative;aspect-ratio:1/1;border-radius:8px;background:#eee center/cover no-repeat}' +
     '.oe-photos button{position:absolute;top:6px;right:6px;font:inherit;font-size:11px;font-weight:800;padding:4px 8px;border-radius:6px;border:0;background:rgba(0,0,0,.7);color:#fff;cursor:pointer}' +
     '.oe-file{display:inline-flex}.oe-file input{position:absolute;width:1px;height:1px;opacity:0}';
@@ -4045,12 +4053,31 @@ function oeSocialCall(body){
   return fetch(SUPABASE_URL + '/functions/v1/ve-listing-posts', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + VEAuth.getToken() }, body: JSON.stringify(body) })
     .then(function(r){ return r.json(); }).catch(function(){ return { error: 'network' }; });
 }
+function oeSpotWire(box, l, msg, draw){
+  var b = box.querySelector('[data-oe-spot-save]'); if(!b) return;
+  b.addEventListener('click', function(){
+    var urls = Array.prototype.map.call(box.querySelectorAll('[data-oe-spot]'), function(i){ return i.value.trim(); }).filter(Boolean);
+    b.disabled = true; msg('Saving your Spotlight...');
+    oeSocialCall({ action: 'owner_spotlight', listing_id: l.id, urls: urls }).then(function(r){
+      b.disabled = false;
+      if(r && r.ok){ l.spotlight_posts = r.spotlight; msg(r.spotlight.length ? 'Saved. Your Spotlight shows first on your Social tab.' : 'Saved. Your Spotlight is empty.'); draw(); return; }
+      msg(r && r.error === 'bad_link' ? 'One link is not a post we can show: ' + (r.bad || [])[0] + '. Use the link to one Instagram post or reel, TikTok video, or YouTube video.' : 'That did not save. Try again in a moment.', true);
+    });
+  });
+}
 function oeSocial(el, l, D, msg){
   var box = document.getElementById('oe-social'); if(!box) return;
   function draw(){
     oeSocialCall({ action: 'owner_get', listing_id: l.id }).then(function(d){
       if(!d || !d.ok){ box.innerHTML = '<p class="bd-small">We could not open this just now. Try again in a moment.</p>'; return; }
-      if(!d.handle){ box.innerHTML = '<p class="bd-small" style="margin:0 0 10px"><b>Add your Instagram first.</b> Your Social tab shows your top Instagram posts. Go Back to Contact and links, enter your handle, and come back here.</p>'; return; }
+      // Spotlight first (Sean, 2026-11-17: "give them suggestions on what to pick to spotlight... as simple as them putting the URL in
+      // there"): up to six links to their own posts, shown at the top of their Social tab as the posts themselves.
+      var sp = (d.spotlight || []).map(function(x){ return x.url; });
+      var spot = '<div class="oe-spot"><b>Spotlight</b><p class="bd-small" style="margin:4px 0 8px">Paste links to up to six of your own posts (Instagram, TikTok or YouTube). They show first on your Social tab, as the posts themselves.</p>' +
+        '<p class="bd-small" style="margin:0 0 10px"><b>Good picks:</b> the dish people come back for, your space, the people behind it, a special or event coming up, how something is made, and a post your customers loved.</p>' +
+        [0,1,2,3,4,5].map(function(k){ return '<input class="oe-spot-in" data-oe-spot maxlength="300" placeholder="https://www.instagram.com/p/..." aria-label="Spotlight post ' + (k + 1) + '" data-dictate="off" value="' + esc(sp[k] || '') + '">'; }).join('') +
+        '<div class="bd-btns" style="margin:4px 0 0"><button type="button" class="bd-btn" data-oe-spot-save>Save my Spotlight</button></div></div>';
+      if(!d.handle){ box.innerHTML = spot + '<p class="bd-small" style="margin:18px 0 10px"><b>Want your top Instagram posts too?</b> Go Back to Contact and links, enter your Instagram handle, and they show under your Spotlight.</p>'; oeSpotWire(box, l, msg, draw); return; }
       var when = d.last_fetch_at ? new Date(d.last_fetch_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '';
       var h = '<p class="bd-small" style="margin:0 0 12px">Your Social tab shows your top posts from <b>@' + esc(d.handle) + '</b>, ranked by likes and comments, with the posts we feature pinned first. ' +
         'We read your recent public posts about once a week' + (when ? ' (last read ' + esc(when) + ')' : '') + '. Hide any you do not want shown, or pin your favorites.</p>';
@@ -4066,7 +4093,8 @@ function oeSocial(el, l, D, msg){
       }
       h += '<div class="bd-btns" style="margin-top:6px"><button type="button" class="bd-btn o" data-oe-refresh>Read my page now</button>' +
         '<button type="button" class="bd-btn o" data-oe-pause>' + (d.paused ? 'Show my Instagram posts again' : 'Stop showing my Instagram posts') + '</button></div>';
-      box.innerHTML = h;
+      box.innerHTML = spot + '<div style="margin-top:22px"><b>Your top Instagram posts</b></div>' + h;
+      oeSpotWire(box, l, msg, draw);
       var q = function(s){ return box.querySelector(s); };
       Array.prototype.forEach.call(box.querySelectorAll('[data-oe-sp]'), function(b){ b.addEventListener('click', function(){
         oeSocialCall({ action: 'owner_post', listing_id: l.id, post_id: b.dataset.id, op: b.dataset.oeSp }).then(function(r){ if(r && r.ok) draw(); else msg('Could not save that. Try again.', true); }); }); });
@@ -5467,6 +5495,20 @@ function scTile(p){
     '<div class="sc-m">' + (p.like_count >= 0 ? '<span>' + scNum(p.like_count) + ' likes</span>' : '') + '<span>' + scNum(p.comment_count) + ' comments</span>' + views + (dt ? '<span>' + dt + '</span>' : '') + '</div></div>' +
     '<span class="sr-only"> (opens on Instagram in a new tab)</span></a>';
 }
+// Spotlight (Sean, 2026-11-17): a post link the owner pasted, shown as the post itself through its network's own embed.
+function spotHtml(p){
+  if(!p || !p.id) return '';
+  if(p.network === 'instagram') return '<div><blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/' + scAttr(p.kind === 'p' ? 'p' : p.kind) + '/' + scAttr(p.id) + '/" data-instgrm-version="14"><a href="' + scAttr(p.url) + '" target="_blank" rel="noopener">See this post on Instagram</a></blockquote></div>';
+  if(p.network === 'tiktok') return '<div><blockquote class="tiktok-embed" cite="' + scAttr(p.url) + '" data-video-id="' + scAttr(p.id) + '"><section><a href="' + scAttr(p.url) + '" target="_blank" rel="noopener">See this video on TikTok</a></section></blockquote></div>';
+  if(p.network === 'youtube') return '<div><div class="sc-yt" style="aspect-ratio:' + (p.kind === 'short' ? '9/16' : '16/9') + '"><iframe src="https://www.youtube-nocookie.com/embed/' + scAttr(p.id) + '" title="YouTube video" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>';
+  return '';
+}
+function spotScripts(list){
+  var need = function(n){ return (list || []).some(function(p){ return p.network === n; }); };
+  var add = function(src, done){ var s = document.querySelector('script[src="' + src + '"]'); if(s){ done(); return; } s = document.createElement('script'); s.async = true; s.src = src; s.onload = done; document.body.appendChild(s); };
+  if(need('instagram')) add('https://www.instagram.com/embed.js', function(){ try{ window.instgrm && instgrm.Embeds.process(); }catch(e){} });
+  if(need('tiktok')){ var old = document.querySelector('script[src="https://www.tiktok.com/embed.js"]'); if(old) old.remove(); add('https://www.tiktok.com/embed.js', function(){}); }
+}
 function loadSocialTab(l){
   if(VB || DEMO || !l || !l.id) return;
   var btn = document.getElementById('tab-btn-social'), panel = document.getElementById('tab-social');
@@ -5475,7 +5517,9 @@ function loadSocialTab(l){
   fetch(SUPABASE_URL + '/rest/v1/ve_listing_posts?select=' + sel + '&listing_id=eq.' + encodeURIComponent(l.id) + '&status=eq.shown&limit=200',
     { headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + ANON_KEY } })
     .then(function(r){ return r.ok ? r.json() : []; }).then(function(rows){
-      if(!Array.isArray(rows) || !rows.length) return;
+      var spot = Array.isArray(l.spotlight_posts) ? l.spotlight_posts.slice(0, 6) : [];
+      if(!Array.isArray(rows)) rows = [];
+      if(!rows.length && !spot.length) return;
       // The tab is theirs (Sean, 2026-11-17: "It's a lot of us on there, and she probably just wants to showcase her stuff... Maybe we
       // should just be focusing on new campaigns"): their own posts first; ours only as a small credit under them, at most three, and
       // only real features: from the last 12 months and about them (three other accounts tagged at most, so a roundup that tags a crowd
@@ -5488,7 +5532,7 @@ function loadSocialTab(l){
       var owned = !!l.owner_member_id;
       var theirs = rows.filter(function(p){ return p.source === 'theirs' && !ourSh[p.shortcode]; }).sort(function(a, b){
         return (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || (Math.max(0, b.like_count) + b.comment_count) - (Math.max(0, a.like_count) + a.comment_count); });
-      if(!ours.length && !theirs.length) return; // never an empty tab
+      if(!ours.length && !theirs.length && !spot.length) return; // never an empty tab
       var PER = 10;
       var qs = function(){ return new URLSearchParams(location.search); };
       function go(k, v){ var u = new URL(location.href); if(v) u.searchParams.set(k, v); else u.searchParams.delete(k); history.pushState(null, '', u.pathname + u.search + u.hash); draw(); }
@@ -5496,6 +5540,8 @@ function loadSocialTab(l){
         var q = qs(), pg = Math.max(1, parseInt(q.get('spage'), 10) || 1), pages = Math.max(1, Math.ceil(theirs.length / PER));
         if(pg > pages) pg = pages;
         var h = '<div class="sc-pad">';
+        if(spot.length) h += '<section class="sc-sec" aria-labelledby="sc-h0"><div class="sc-h"><h3 id="sc-h0">Spotlight</h3><span>Picked by ' + esc(l.name) + '</span></div>' +
+          '<div class="sc-spot">' + spot.map(spotHtml).join('') + '</div></section>';
         if(theirs.length){
           h += '<section class="sc-sec" aria-labelledby="sc-h2"><div class="sc-h"><h3 id="sc-h2">Their top posts</h3><span>From their own Instagram</span></div>' +
             '<div class="sc-grid">' + theirs.slice((pg - 1) * PER, pg * PER).map(scTile).join('') + '</div>';
@@ -5506,7 +5552,7 @@ function loadSocialTab(l){
               '<button type="button" data-sc-pg="' + (pg + 1) + '"' + (pg === pages ? ' disabled' : '') + '>Next</button></nav>';
           }
           h += '<p class="sc-note">The top of their recent posts, ranked by likes and comments.</p></section>';
-        } else if(!owned){
+        } else if(!owned && !spot.length){
           h += '<section class="sc-sec"><div class="sc-claim"><div><b>Is this your page?</b><span>Claim it free and your own top Instagram posts show here.</span></div>' +
             '<a class="bd-btn" href="' + scAttr(claimHref(l)) + '">Claim this page</a></div></section>';
         }
@@ -5515,6 +5561,7 @@ function loadSocialTab(l){
             '<div class="sc-grid">' + ours.map(scTile).join('') + '</div></section>';
         }
         panel.innerHTML = h + '</div>';
+        if(spot.length) spotScripts(spot);
       }
       draw();
       panel.addEventListener('click', function(e){
