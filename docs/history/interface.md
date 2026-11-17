@@ -354,3 +354,11 @@ list that scrolls inside its box (Interface defaults) shows its scrollbar. Same 
 lists (`.pp-scroll`, With Vegans Explore and On other podcasts) were capped at 880 px with `overflow-y:auto; overscroll-behavior:contain`,
 which never hands the scroll to the page; the cap is gone and they run the full page (proven live: a wheel over the tiles moves the page
 600 of 600 px at 1440 and 390). `overscroll-behavior:contain` is only for a box that is meant to scroll on its own and shows it.
+
+## Share on phones and pull to refresh in the app (Sean, 2026-11-17)
+
+Sean could not copy a page link in the home-screen app: the new header hid Share under 700px. It now shows as an icon beside
+Feedback (the duplicate search button stays hidden; the search field is on its own row). He also had to close the app to see
+updates, since a home-screen app has no pull to refresh: `ve-app-shell.js` (v8) draws its own in standalone mode only (pull past
+80px at the top of the page, the circle turns orange, release reloads; never with the viewer, menu or search list open or an
+inner box scrolled). Proven live at 390 and 1440; Sean confirmed the button on his phone. Commit 6e36e59.
