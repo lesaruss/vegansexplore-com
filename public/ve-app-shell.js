@@ -193,5 +193,64 @@
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', addBar); else addBar();
 
+  /* Pull down to refresh (Sean, 2026-11-17: "When I drag it down, it refreshes the page because I find myself having to close out the
+   * whole website just to see new updates"). Opened from the home screen the phone gives no pull to refresh and no reload button, so
+   * the app draws its own: at the top of the page, pull down past the line and let go, and the page loads fresh (sw.js goes to the
+   * network first). Only in the app; a browser keeps its own. Never while a viewer, the menu or an inner list is open or scrolled. */
+  function addPull() {
+    if (!standalone || document.getElementById('ve-ptr')) return;
+    var st = document.createElement('style');
+    st.textContent = '#ve-ptr{position:fixed;left:50%;top:calc(8px + env(safe-area-inset-top,0px));z-index:10050;width:40px;height:40px;margin-left:-20px;' +
+      'border-radius:50%;background:#fff;border:2px solid #1A1A1A;display:flex;align-items:center;justify-content:center;pointer-events:none;' +
+      'opacity:0;transform:translateY(-60px);box-shadow:0 4px 14px rgba(0,0,0,.14)}' +
+      '#ve-ptr svg{width:20px;height:20px;stroke:#1A1A1A;fill:none;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}' +
+      '#ve-ptr.ready{background:#F28C28}#ve-ptr.go svg{animation:ve-ptr-spin .7s linear infinite}' +
+      '#ve-ptr.back{transition:transform .2s ease,opacity .2s ease}@keyframes ve-ptr-spin{to{transform:rotate(360deg)}}';
+    document.head.appendChild(st);
+    var ind = document.createElement('div'); ind.id = 've-ptr'; ind.setAttribute('aria-hidden', 'true');
+    ind.innerHTML = '<svg viewBox="0 0 24 24"><path d="M20 12a8 8 0 11-2.34-5.66"/><path d="M20 4v5h-5"/></svg>';
+    document.body.appendChild(ind);
+    var LINE = 80, sy = null, sx = 0, d = 0, on = false;
+    function scrolledInside(el) {
+      for (; el && el !== document.body && el !== document.documentElement; el = el.parentElement) {
+        if (el.scrollTop > 0) return true;
+      }
+      return false;
+    }
+    function show(dist) {
+      var y = Math.min(dist, 130) - 60;
+      ind.classList.remove('back');
+      ind.style.opacity = String(Math.min(1, dist / LINE));
+      ind.style.transform = 'translateY(' + y + 'px) rotate(' + Math.round(dist * 2.4) + 'deg)';
+      ind.classList.toggle('ready', dist >= LINE);
+    }
+    function reset() { ind.classList.add('back'); ind.classList.remove('ready'); ind.style.opacity = '0'; ind.style.transform = 'translateY(-60px)'; }
+    document.addEventListener('touchstart', function (e) {
+      sy = null; d = 0; on = false;
+      if (e.touches.length !== 1 || window.scrollY > 0) return;
+      if (document.getElementById('ve-viewer') || document.getElementById('ve-tm') || document.querySelector('.ve-burger-menu:not([hidden]), .ves-list:not([hidden])')) return;
+      if (scrolledInside(e.target)) return;
+      sy = e.touches[0].clientY; sx = e.touches[0].clientX;
+    }, { passive: true });
+    document.addEventListener('touchmove', function (e) {
+      if (sy === null) return;
+      var dy = e.touches[0].clientY - sy, dx = e.touches[0].clientX - sx;
+      if (!on && (Math.abs(dx) > Math.abs(dy) || dy < 0 || window.scrollY > 0)) { if (Math.abs(dx) > 10 || dy < -10) sy = null; return; }
+      if (dy > 8) { on = true; d = (dy - 8) * 0.55; show(d); }
+    }, { passive: true });
+    function end() {
+      if (sy === null) return;
+      sy = null;
+      if (on && d >= LINE) {
+        ind.classList.add('go'); ind.style.transform = 'translateY(' + (LINE - 60) + 'px)'; ind.style.opacity = '1';
+        setTimeout(function () { location.reload(); }, 120);
+      } else reset();
+      on = false; d = 0;
+    }
+    document.addEventListener('touchend', end, { passive: true });
+    document.addEventListener('touchcancel', end, { passive: true });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', addPull); else addPull();
+
   window.VEAppShell = { view: view, close: close, standalone: standalone };
 })();
