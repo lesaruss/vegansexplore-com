@@ -106,7 +106,15 @@
   // ---------- Contents: built from the Guide's own menu ----------
   function parts() {
     var links = menu ? menu.querySelectorAll('a') : [];
-    return [].filter.call(sel.options, function (o) { return o.value !== 'search'; }).map(function (o, i) {
+    var opts = [].filter.call(sel.options, function (o) { return o.value !== 'search'; });
+    // A Guide whose members' menu is a group dropdown it draws without redrawing the select (the Pre-Vegan Business and Vegan
+    // Restaurant Guides): Contents is read from the dropdown's own links, and choosing one follows its link.
+    var dd = menu ? menu.querySelectorAll('.dg-dd-list > a') : [];
+    if (dd.length && (dd.length !== opts.length || menu.classList.contains('dg-dd-on'))) return [].map.call(dd, function (a) {
+      var h = a.getAttribute('href') || '#/', m = h.match(/^#\/g\/([^/?]+)/), b = a.querySelector('b');
+      return { k: m ? m[1] : 'start', label: txt(b || a), locked: false, on: a.getAttribute('aria-current') === 'page', href: h, kids: kidsIn(a), link: true };
+    });
+    return opts.map(function (o, i) {
       var raw = txt(o);
       var a = links[i], k = o.value;
       return { k: k, label: raw.replace(/^\d+\.\s*/, '').replace(/\s*\(locked\)$/i, ''), locked: /\(locked\)$/i.test(raw), on: o.selected && sel.value === k,
@@ -117,7 +125,7 @@
   function kidsIn(a) {
     var sm = KIDS && a ? a.querySelector('small') : null; if (!sm) return [];
     return sm.innerHTML.split(/&middot;|\u00b7/).map(function (h) {
-      var t = D.createElement('span'); t.innerHTML = h; var label = txt(t), k = KIDS[label];
+      var t = D.createElement('span'); t.innerHTML = h; var raw = txt(t), label = raw.replace(/^\d+[a-z]\s+/, ''), k = KIDS[raw] || KIDS[label];
       return k ? { k: k, label: label, locked: !!t.querySelector('svg'), href: '#/' + k } : null;
     }).filter(Boolean);
   }
@@ -136,7 +144,8 @@
         var bits = [line, p.locked ? 'In the full Guide' : '', p.on ? 'You are here' : ''].filter(Boolean).join(' &middot; ');
         var here = p.on && !ck;
         if (p.kids.length) bits = [line, here ? 'You are here' : ''].filter(Boolean).join(' &middot; ');
-        return '<li><a href="' + esc(p.href) + '" data-gf-part="' + esc(p.k) + '"' + (p.on && (here || !p.kids.length) ? ' aria-current="page"' : '') + '><i>' + two(i + 1) + '</i><b>' + esc(p.label) + '</b><small>' + bits + '</small></a>' +
+        var pt = progPart(p.k); if (pt) bits = [bits, '<span class="gf-tst' + (pt.done ? ' on' : '') + '">' + esc(pt.tag) + '</span>'].filter(Boolean).join(' &middot; ');
+        return '<li><a href="' + esc(p.href) + '" data-gf-part="' + esc(p.k) + '"' + (p.link ? ' data-gf-link' : '') + (p.on && (here || !p.kids.length) ? ' aria-current="page"' : '') + '><i>' + two(i + 1) + '</i><b>' + esc(p.label) + '</b><small>' + bits + '</small></a>' +
           (p.kids.length ? '<p class="gf-kids">' + p.kids.map(function (x) {
             var on = p.on && x.label === ck;
             return '<a href="' + esc(x.href) + '" data-gf-kid="' + esc(x.k) + '"' + (on ? ' aria-current="page"' : '') + '>' + esc(x.label) + (x.locked ? ' <span class="gf-lk">Locked</span>' : '') + '</a>';
@@ -160,6 +169,7 @@
     var k = a.getAttribute('data-gf-part'), before = location.hash, h = a.getAttribute('href');
     setToc(false, false);
     // Exactly what the old dropdown did: set it and fire change; fall back to the tab's own link.
+    if (a.hasAttribute('data-gf-link')) { if (h && h !== before) location.hash = h; return; }
     sel.value = k; sel.dispatchEvent(new Event('change', { bubbles: true }));
     setTimeout(function () { if (location.hash === before && h && h.charAt(0) === '#' && h !== before) location.hash = h; }, 0);
   });
@@ -256,7 +266,9 @@
     var inForm = cand && !gs && !pb && cand.closest('form, .vg-form, .vg-field, [data-step]');
     var jb = box && shown(box) ? box.querySelector('.dg-btn') : null;
     var src = gs || pb || inForm ? null : (cand || (jb && shown(jb) ? jb : null));
-    var go = main.querySelector('.gf-go'), pick = gs || pb || (inForm ? cand : null);
+    var cont = drawProg(c, row.hidden || !main.contains(row) ? anchor : row);
+    if (cont) src = null;
+    var go = main.querySelector('.gf-go:not(.gf-cont)'), pick = cont || gs || pb || (inForm ? cand : null);
     if (HEADGO) [].forEach.call(main.querySelectorAll('.gf-dup'), function (o) { if (o !== src) o.classList.remove('gf-dup'); });
     if (HEADGO && src && src.closest('.dg-head') && !src.classList.contains('gf-dup')) src.classList.add('gf-dup');
     if (src && main.firstElementChild && !main.querySelector(':scope > .dg-loading')) {
@@ -271,6 +283,8 @@
       // After the Guide row; with no Guide line, after the head; in a view with no Guide head (the Gig Board's walkthrough), after its
       // first title and the line under it.
       var after = !row.hidden && main.contains(row) ? row : anchor;
+      // With progress (opt-in), the stand-in follows the meter, as in the mock.
+      if (after && after.nextElementSibling && after.nextElementSibling.classList.contains('gf-prog')) after = after.nextElementSibling;
       if (!after) {
         var t1 = q('h1, h2');
         if (t1) { after = t1; var nx1 = t1.nextElementSibling; if (nx1 && nx1.tagName === 'P') after = nx1; }
@@ -302,5 +316,96 @@
   function queueDress() { if (dq) return; dq = requestAnimationFrame(function () { dq = 0; dress(); }); }
   new MutationObserver(queueDress).observe(main, { childList: true, subtree: true });
 
-  drawJoin(); drawToc(); dress();
+  // ---------- progress (opt-in: body data-gf-progress; the business Guides, mock /mocks/guide-templates/handbook/?v=progress) ----------
+  // The page names what counts with window.gfProgress(ctx), which returns (or resolves to) { path, contents, here }:
+  //   contents  { "<part key>": { done, tag } }, a part's status in Contents ("Done", "Opened", "Not yet");
+  //   here      the view's own track { title, unit, note, cont, steps: [{ k, label, href, done, tag }] }: the meter
+  //             "Your progress: N of M", a Done / Not yet tag on each row that links to a step, and "Continue: <next>" as the view's
+  //             one orange action (cont: false keeps the view's own action). Nothing is drawn until at least one step is done.
+  // Progress is only ever what the Guide really tracks (read through the calls the Guide already makes), or, where it tracks nothing,
+  // the views this browser opened: a view counts as opened once the visitor has been on it for a moment and moved on (never on landing).
+  var PG = B.hasAttribute('data-gf-progress') ? { res: null, seq: 0, path: '' } : null;
+  function hpath() { return (location.hash || '').replace(/^#\/?/, '').split('?')[0].replace(/\/+$/, '') || 'overview'; }
+  var OPK = 'gf-opened:' + location.pathname.replace(/\.html$/, '');
+  function openedAll() { try { return JSON.parse(localStorage.getItem(OPK) || '{}') || {}; } catch (e) { return {}; } }
+  function progPart(k) { var r = PG && PG.res; return r && r.contents && r.path === hpath() && r.any ? r.contents[k] || null : null; }
+  function ctxNow() {
+    var c = current();
+    return { path: hpath(), part: c.p ? c.p.k : '', member: B.classList.contains('dg-member'), opened: function (k) { return !!openedAll()[k]; },
+      token: function () { var a = window.VEAuth; try { return a && a.isLoggedIn && a.isLoggedIn() ? a.getToken() : null; } catch (e) { return null; } },
+      json: function (id) { try { return JSON.parse(D.getElementById(id).textContent); } catch (e) { return null; } } };
+  }
+  function queueProg() {
+    if (!PG || typeof window.gfProgress !== 'function') return;
+    var my = ++PG.seq, x = ctxNow();
+    Promise.resolve().then(function () { return window.gfProgress(x); }).then(function (r) {
+      if (my !== PG.seq) return;
+      if (r) { r.path = x.path; r.any = !!r.any || Object.keys(r.contents || {}).some(function (k) { return r.contents[k].done; }); }
+      PG.res = r || null; drawToc(); queueDress();
+    }).catch(function () {});
+  }
+  // The row a step's link sits in (a kit row, a gate card, a group tile), never the frame's own links.
+  function stepRows(href) {
+    var out = [];
+    [].forEach.call(main.querySelectorAll('[data-href="' + href + '"], a[href="' + href + '"]'), function (a) {
+      if (a.closest('.gf-next, .gf-go, .gf-prog, .dg-crumb, .dg-btns, .dg-start, .rg-fixnav, .gf-guide')) return;
+      var r = a.matches('.dg-srow, .pv-gate, .rg-gtile, .wg-art, .dg-tile') ? a : a.closest('.dg-srow, .pv-gate, .rg-gtile, .wg-art, .dg-tile');
+      if (r && out.indexOf(r) < 0) out.push(r);
+    });
+    return out;
+  }
+  function drawProg(c, after) {
+    if (!PG) return null;
+    var r = PG.res, here = r && r.path === hpath() ? r.here : null, box = main.querySelector('.gf-prog'), ct = main.querySelector('.gf-cont');
+    var steps = here && here.steps || [], n = steps.filter(function (s) { return s.done; }).length;
+    [].forEach.call(main.querySelectorAll('.gf-st'), function (t) { if (!steps.length || !n) { var rr = t.closest('.gf-has-st'); if (rr) rr.classList.remove('gf-has-st'); t.remove(); } });
+    if (!steps.length || !n || main.querySelector(':scope > .dg-loading')) { if (box) box.remove(); if (ct) ct.remove(); return null; }
+    var t = '<p class="gf-prog-t">' + esc(here.title || 'Your progress') + ': <b>' + n + ' of ' + steps.length + '</b>' + (here.unit ? ' ' + esc(here.unit) : '') +
+      (here.note ? '<small>' + esc(here.note) + '</small>' : '') + '</p><div class="gf-meter" aria-hidden="true" style="grid-template-columns:repeat(' + steps.length + ',minmax(0,1fr))">' +
+      steps.map(function (s) { return '<i' + (s.done ? ' class="on"' : '') + '></i>'; }).join('') + '</div>';
+    if (!box) { box = D.createElement('div'); box.className = 'gf-prog'; box.setAttribute('role', 'status'); }
+    if (box.getAttribute('data-t') !== t) { box.setAttribute('data-t', t); box.innerHTML = t; }
+    if (after && after.parentNode) { if (after.nextElementSibling !== box) after.parentNode.insertBefore(box, after.nextElementSibling); }
+    else if (box.parentNode !== main) main.insertBefore(box, main.firstChild);
+    // A tag on each row that links to a step: Done (or Opened) and Not yet, on the right where Read was.
+    steps.forEach(function (s) {
+      if (!s.href) return;
+      stepRows(s.href).forEach(function (row) {
+        var tag = row.querySelector('.gf-st[data-k="' + s.k + '"]'), lab = s.done ? s.tag || 'Done' : 'Not yet';
+        if (!tag) {
+          tag = D.createElement('span'); tag.className = 'gf-tag gf-st'; tag.setAttribute('data-k', s.k);
+          var acts = row.querySelector(':scope > .dg-acts');
+          if (acts) acts.insertBefore(tag, acts.firstChild); else row.appendChild(tag);
+          row.classList.add('gf-has-st');
+        }
+        if (tag.getAttribute('data-l') !== lab) { tag.setAttribute('data-l', lab); tag.classList.toggle('on', !!s.done); tag.innerHTML = (s.done ? '&#10003; ' : '') + esc(lab); }
+      });
+    });
+    // Continue: the first step not done yet, unless the view keeps its own action or that step is this view.
+    var nx = null; steps.some(function (s) { if (!s.done) { nx = s; return true; } return false; });
+    var here0 = '#/' + (hpath() === 'overview' ? '' : hpath());
+    if (here.cont === false || !nx || !nx.href || nx.href === here0 || (nx.href === '#/' && hpath() === 'overview')) { if (ct) ct.remove(); return null; }
+    var lab = 'Continue: ' + nx.label;
+    if (!ct) { ct = D.createElement('div'); ct.className = 'gf-go gf-cont'; }
+    if (ct.getAttribute('data-l') !== lab + nx.href) { ct.setAttribute('data-l', lab + nx.href); ct.innerHTML = '<a class="dg-btn gf-cta" href="' + esc(nx.href) + '">' + esc(lab) + '</a>'; }
+    if (box.nextElementSibling !== ct) box.parentNode.insertBefore(ct, box.nextElementSibling);
+    return ct.firstChild;
+  }
+  if (PG) {
+    var vStart = Date.now(), vKey = hpath(), wasMember = B.classList.contains('dg-member');
+    var markOpened = function () {
+      if (Date.now() - vStart < 1500 || main.querySelector(':scope > .dg-loading')) return;
+      var o = openedAll(); if (o[vKey]) return; o[vKey] = Date.now();
+      try { localStorage.setItem(OPK, JSON.stringify(o)); } catch (e) {}
+    };
+    window.addEventListener('hashchange', function () { markOpened(); vKey = hpath(); vStart = Date.now(); queueProg(); });
+    window.addEventListener('pagehide', markOpened);
+    D.addEventListener('visibilitychange', function () { if (D.visibilityState === 'hidden') markOpened(); });
+    new MutationObserver(function () { var m = B.classList.contains('dg-member'); if (m !== wasMember) { wasMember = m; queueProg(); } }).observe(B, { attributes: true, attributeFilter: ['class'] });
+    // A Guide's own ticks (Mark done) change what counts: read again after a click inside the view.
+    main.addEventListener('click', function (e) { if (e.target.closest('[data-tick], [data-step], [data-save]')) setTimeout(queueProg, 900); });
+    window.gfProgressRefresh = queueProg;
+  }
+
+  drawJoin(); drawToc(); dress(); queueProg();
 })();

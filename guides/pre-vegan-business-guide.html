@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-kit-parent="welcome-guide">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -557,8 +557,10 @@
       .pb-ov-tabs{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;}.pb-ov-tabs button{flex:0 0 auto;}}
   </style>
 <script src="/public/ve-guide-corner.js"></script>
+<link rel="stylesheet" href="/public/ve-kit.css">
+<link rel="stylesheet" href="/public/ve-guide-frame.css">
 </head>
-<body>
+<body class="ve-gf gf-hb" data-gf-progress>
 <div class="page-frame">
 <script src="/public/nav.js"></script>
 
@@ -609,5 +611,46 @@
 <script src="/public/ve-votes.js"></script>
 <script src="/guide-scripts/pre-vegan-business-guide.js"></script>
 <script src="/public/ve-guide-min.js"></script>
+<!-- The locked Guide template, Handbook with progress (Sean, 2026-11-17; canon canon-ve-guide-templates, mock /mocks/guide-templates/handbook/?v=progress).
+     The shared frame turns this page's header, tabs and rail into the Guide bar, Contents and the Guide row. The Contents lines are the parts' own lines. -->
+<script type="application/json" id="gf-parts">{"overview": "The worry, who it is for, and five steps", "why": "Honest reasons, with sources", "add": "First items for your kind of business", "say": "The words for your menu", "sourcing": "Who sells it, each with an honest label", "make": "A supplier or a recipe for each item", "found": "How people find you in the Directory", "claim": "Find your business and make the page yours", "next": "What you can do next", "mylist": "Everything you saved, in one place", "join": "The short survey, free", "start": "Your story and five steps", "learn": "Why it is worth it, and the words", "addit": "What to add, who sells it, a recipe", "gofound": "How people find you, and your page", "yours": "Everything you saved, and what to do next", "_kids": {"2a Why add plant-based": "why", "2b How to say it": "say", "3a What to add": "add", "3b Sourcing": "sourcing", "3c Buy or make": "make", "4a Get found": "found", "4b Claim your page": "claim", "5a My list": "mylist", "5b What's next": "next"}}</script>
+<script>
+/* Progress (Handbook with progress; /public/ve-guide-frame.js reads window.gfProgress). Only what is true:
+   members: the five steps of Start here, ticked by the member on the Overview's Finish line card (ve-cookbook saves, kind fix,
+   key step-1 to step-5: the Guide's own checklist, the same call it makes). Read only.
+   visitors, and the kinds of business in What to add for everyone: the Guide tracks nothing, so a part or a kind of business counts
+   once this browser has opened it, labelled Opened. */
+window.gfProgress = (function () {
+  var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co', SLUG = 'pre-vegan-business-guide';
+  // STEPS in /guide-scripts/pre-vegan-business-guide.js
+  var STEPS = [['1', 'Pick your kind of business', '#/add'], ['2', 'Choose your first items', '#/add'], ['3', 'Line up a supplier or a recipe for each', '#/make'],
+    ['4', 'Set your menu wording', '#/say'], ['5', 'Claim your page', '#/claim']];
+  return function (x) {
+    var tok = x.token(), pub = x.json('pb-public') || {}, ex = pub.add_example ? pub.add_example.id : 'coffee';
+    var kinds = (pub.types || []).filter(function (t) { return x.member || t[0] === ex; }).map(function (t) {
+      return { k: 'add-' + t[0], label: t[1], href: '#/add/' + t[0], done: x.opened('add/' + t[0]), tag: 'Opened' };
+    });
+    var kindsHere = x.path === 'add' ? { steps: kinds, unit: 'kinds of business opened', note: 'Opened on this browser.' } : null;
+    if (x.member && tok) {
+      return fetch(SB + '/functions/v1/ve-cookbook', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok },
+        body: JSON.stringify({ action: 'saves', guide: SLUG }) }).then(function (r) { return r.json(); }).then(function (d) {
+        var T = {}; ((d && d.saves) || []).forEach(function (s) { if (s.kind === 'fix') T[s.key] = 1; });
+        var steps = STEPS.map(function (st) { return { k: 'step-' + st[0], label: st[1], href: st[2], done: !!T['step-' + st[0]], tag: 'Done' }; });
+        var n = steps.filter(function (s) { return s.done; }).length;
+        return { any: n > 0, contents: { start: { done: n === steps.length, tag: n + ' of ' + steps.length + ' steps done' } },
+          here: x.path === 'overview' ? { steps: steps, unit: 'steps done', note: 'Saved on your account: the five steps you tick on the Finish line card.' } : kindsHere };
+      });
+    }
+    var guide = [['why', 'Why add plant-based'], ['add', 'What to add'], ['say', 'How to say it']].map(function (p) {
+      return { k: p[0], label: p[1], href: '#/' + p[0], done: x.opened(p[0]) || (p[0] === 'add' && kinds.some(function (k) { return k.done; })), tag: 'Opened' };
+    }).concat([{ k: 'join', label: 'Take the survey', href: '#/join', done: false }]);
+    var contents = {}; guide.forEach(function (s) { contents[s.k] = { done: s.done, tag: s.done ? s.tag : 'Not yet' }; });
+    var note = 'Opened on this browser. Take the survey and the whole Guide opens.';
+    var here = x.path === 'overview' ? { steps: guide, unit: 'parts', note: note } : kindsHere || (/^(why|say|join)$/.test(x.path) ? { steps: guide, unit: 'parts', note: note, cont: false } : null);
+    return { contents: contents, here: here };
+  };
+})();
+</script>
+<script src="/public/ve-guide-frame.js"></script>
 </body>
 </html>

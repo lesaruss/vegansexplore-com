@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-kit-parent="welcome-guide">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -525,10 +525,15 @@
     .rg-pill-pic{width:30px;height:30px;border-radius:50%;overflow:hidden;flex:0 0 30px;background:var(--gl);}
         .rg-g4{grid-template-columns:repeat(2,minmax(0,1fr));}.rg-g4 .rg-gpic{aspect-ratio:16/8;}
     @media (max-width:640px){.rg-g4{grid-template-columns:1fr;}}
+    /* The Handbook template (2026-11-17, /public/ve-guide-frame.css Part 3): a row's line in the kit's row size. Only under body.gf-hb. */
+    html body.ve-gf.gf-hb .dg-srow-b > p{font-size:12.5px;font-weight:600;line-height:1.4;color:#5c5c5c;margin:2px 0 0;}
+    @media (max-width:900px){html body.ve-gf.gf-hb .dg-srow-b > p{font-size:11px;line-height:1.35;}}
   </style>
 <script src="/public/ve-guide-corner.js"></script>
+<link rel="stylesheet" href="/public/ve-kit.css">
+<link rel="stylesheet" href="/public/ve-guide-frame.css">
 </head>
-<body>
+<body class="ve-gf gf-hb" data-gf-progress>
 <div class="page-frame">
 <script src="/public/nav.js"></script>
 
@@ -583,5 +588,41 @@
 <script src="/public/ve-guide-intro.js"></script>
 <script src="/guide-scripts/vegan-restaurant-guide.js"></script>
 <script src="/public/ve-guide-min.js"></script>
+<!-- The locked Guide template, Handbook with progress (Sean, 2026-11-17; canon canon-ve-guide-templates, mock /mocks/guide-templates/handbook/?v=progress).
+     The shared frame turns this page's header, tabs and rail into the Guide bar, Contents and the Guide row. The Contents lines are the parts' own lines. -->
+<script type="application/json" id="gf-parts">{"overview": "What the Guide is, and where to start", "audit": "A free check of your restaurant", "expect": "What opens when you are in", "join": "The short survey, free", "fixes": "The top 10 things Vegan businesses run into", "pulse": "Interviews with owners, and the research", "sourcing": "Who sells it ready-made, and Buy or make", "featured": "Your page in the Directory", "dashboard": "Who looks at your page, and what they do next", "demo": "A sample restaurant to look around", "promos": "Events, features and campaigns", "mylist": "Everything you saved", "next": "Claim your page, open your dashboard, follow us", "start": "Why this Guide, and how to use it", "business": "Your free check, and the top challenges", "page": "Your page, your dashboard, the demo", "help": "Who to buy from, and interviews", "grow": "Promotions, what is next, your list", "_kids": {"Your audit": "audit", "Your business": "audit", "Top challenges": "fixes", "Claim your page": "featured", "Your dashboard": "dashboard", "Try the demo": "demo", "Sourcing": "sourcing", "Pulse": "pulse", "Promotions": "promos", "What's next": "next", "My list": "mylist"}}</script>
+<script>
+/* Progress (Handbook with progress; /public/ve-guide-frame.js reads window.gfProgress). Only what is true:
+   Your audit: done once a free check has run from this browser (the Guide keeps its id as rg_last_audit, and reopens it from there).
+   Top challenges, members: done once they have ticked at least one challenge they relate to (ve-cookbook gvotes, the call the tab
+   makes). Every other part, and each challenge: the Guide tracks nothing, so it counts once this browser has opened it, labelled Opened. */
+window.gfProgress = (function () {
+  var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co', SLUG = 'vegan-restaurant-guide';
+  function ls(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  return function (x) {
+    var tok = x.token(), audit = { k: 'audit', label: 'Run your free check', href: '#/audit', done: !!ls('rg_last_audit'), tag: 'Done' };
+    var contents = {};
+    function out(guide, here) { guide.forEach(function (s) { contents[s.k] = { done: s.done, tag: s.done ? s.tag : 'Not yet' }; }); return { contents: contents, here: here }; }
+    if (x.member && tok) {
+      return fetch(SB + '/functions/v1/ve-cookbook', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + tok },
+        body: JSON.stringify({ action: 'gvotes', guide: SLUG }) }).then(function (r) { return r.json(); }).catch(function () { return {}; }).then(function (d) {
+        var mine = (d && d.mine && d.mine.fix) || [];
+        var guide = [audit, { k: 'fixes', label: 'Tick the challenges you relate to', href: '#/fixes', done: mine.length > 0, tag: 'Done' }].concat(
+          [['featured', 'Claim your page'], ['dashboard', 'Your dashboard'], ['demo', 'Try the demo'], ['sourcing', 'Sourcing'], ['pulse', 'Pulse'], ['promos', 'Promotions']].map(function (p) {
+            return { k: p[0], label: p[1], href: '#/' + p[0], done: x.opened(p[0]), tag: 'Opened' };
+          }));
+        var note = 'Your free check on this browser, the challenges you ticked on your account, and the parts this browser opened.';
+        var pub = x.json('rg-public') || {}, fixes = (pub.titles || []).map(function (t) { return { k: t[0], label: t[1], href: '#/fixes/' + t[0], done: x.opened('fixes/' + t[0]), tag: 'Opened' }; });
+        var here = x.path === 'overview' ? { steps: guide, unit: 'steps', note: note } : x.path === 'fixes' ? { steps: fixes, unit: 'challenges opened', note: 'Opened on this browser.' } : null;
+        return out(guide, here);
+      });
+    }
+    var guide = [audit, { k: 'expect', label: 'What to expect', href: '#/expect', done: x.opened('expect'), tag: 'Opened' }, { k: 'join', label: 'Take the short survey', href: '#/join', done: false }];
+    var note = 'Your free check and the parts opened on this browser. Take the short survey and the whole Guide opens.';
+    return out(guide, x.path === 'overview' ? { steps: guide, unit: 'steps', note: note } : /^(audit|expect|join)$/.test(x.path) ? { steps: guide, unit: 'steps', note: note, cont: false } : null);
+  };
+})();
+</script>
+<script src="/public/ve-guide-frame.js"></script>
 </body>
 </html>

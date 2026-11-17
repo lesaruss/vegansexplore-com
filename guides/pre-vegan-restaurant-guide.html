@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-kit-parent="welcome-guide">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -486,10 +486,15 @@
     .pv-stamp b{display:block;font-size:16px;}
     .pv-stamp small{display:block;font-size:12.5px;color:#444;margin-top:4px;line-height:1.45;}
     .pv-note{font-size:12.5px;color:#525252;}
+    /* The Handbook template (2026-11-17, /public/ve-guide-frame.css Part 3): the cards on the kit's ink outline. Only under body.gf-hb. */
+    html body.ve-gf.gf-hb .pv-gate{border:2px solid #1a1a1a;border-radius:10px;}
+    html body.ve-gf.gf-hb a.pv-gate:hover{box-shadow:4px 4px 0 #FF9EC4;}
   </style>
 <script src="/public/ve-guide-corner.js"></script>
+<link rel="stylesheet" href="/public/ve-kit.css">
+<link rel="stylesheet" href="/public/ve-guide-frame.css">
 </head>
-<body>
+<body class="ve-gf gf-hb" data-gf-progress>
 <div class="page-frame">
 <script src="/public/nav.js"></script>
 
@@ -532,5 +537,62 @@
 <script src="/public/ve-auth.js"></script>
 <script src="/guide-scripts/pre-vegan-restaurant-guide.js"></script>
 <script src="/public/ve-guide-min.js"></script>
+<!-- The locked Guide template, Handbook with progress (Sean, 2026-11-17; canon canon-ve-guide-templates, mock /mocks/guide-templates/handbook/?v=progress).
+     The shared frame turns this page's header, tabs and rail into the Guide bar, Contents and the Guide row. The Contents lines are the parts' own lines. -->
+<script type="application/json" id="gf-parts">{"overview": "What it is and who it is for", "stamp": "What a certified dish says, and never says", "how": "From the readiness check to a certified dish", "gates": "Eight gates, and how to pass each one", "join": "The free, private readiness check", "ready": "Your private score, gate by gate", "next": "Where to go from here"}</script>
+<script>
+/* Progress (Handbook with progress; /public/ve-guide-frame.js reads window.gfProgress). Only what is true:
+   members: the readiness check taken (ve-mission-survey preveg_readiness, the call Your readiness makes) and each gate whose every
+   "What to do" step is marked Done in my kitchen (ve-cookbook saves, kind fix, key <gate>-<n>: the Guide's own ticks). Read only.
+   visitors: the Guide tracks nothing for them, so a part or a gate counts once this browser has opened it, labelled Opened. */
+window.gfProgress = (function () {
+  var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co', SLUG = 'pre-vegan-restaurant-guide';
+  var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  // The eight gates and how many "What to do" steps each has (GATES in /guide-scripts/pre-vegan-restaurant-guide.js).
+  var GATES = [['g1', 'G1 Ingredient evidence', 6], ['g2', 'G2 Hidden in process', 4], ['g3', 'G3 Protected path', 8], ['g4', 'G4 Accurate use', 5],
+    ['g5', 'G5 Staff', 4], ['g6', 'G6 Change approval', 5], ['g7', 'G7 Access and corrective action', 3], ['g8', 'G8 Records', 3]];
+  var ready = null;
+  function post(url, body, bearer) {
+    return fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + bearer }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json(); });
+  }
+  return function (x) {
+    var tok = x.token(), gates, guide, contents = {}, unit, note;
+    if (x.member && tok) {
+      if (!ready) ready = post(SB + '/functions/v1/ve-mission-survey?action=preveg_readiness', { token: tok }, ANON)
+        .then(function (d) { return d && d.readiness || {}; }).catch(function () { ready = null; return {}; });
+      var ticks = post(SB + '/functions/v1/ve-cookbook', { action: 'saves', guide: SLUG }, tok).then(function (d) {
+        var t = {}; ((d && d.saves) || []).forEach(function (s) { if (s.kind === 'fix') t[s.key] = 1; }); return t;
+      });
+      return Promise.all([ready, ticks]).then(function (v) {
+        var R = v[0], T = v[1];
+        gates = GATES.map(function (g) { var n = 0; for (var i = 1; i <= g[2]; i++) if (T[g[0] + '-' + i]) n++;
+          return { k: g[0], label: g[1], href: '#/gates/' + g[0], done: n === g[2], tag: 'Done' }; });
+        guide = [{ k: 'ready', label: 'Take the readiness check', href: '#/ready', done: !!R.answered, tag: 'Done' }].concat(gates);
+        var gd = gates.filter(function (g) { return g.done; }).length;
+        contents.ready = { done: !!R.answered, tag: R.answered ? 'Done' : 'Not yet' };
+        contents.gates = { done: gd === gates.length, tag: gd + ' of ' + gates.length + ' done' };
+        note = 'Saved on your account: your readiness check, and each gate with every step marked Done in my kitchen.';
+        var r = view(x, guide, gates, contents, 'steps', note, 'gates done'); r.any = !!R.answered || gd > 0; return r;
+      });
+    }
+    gates = GATES.map(function (g) { return { k: g[0], label: g[1], href: '#/gates/' + g[0], done: x.opened('gates/' + g[0]), tag: 'Opened' }; });
+    guide = [['stamp', 'The stamp'], ['how', 'How it works'], ['gates', 'The gates']].map(function (p) {
+      return { k: p[0], label: p[1], href: '#/' + p[0], done: x.opened(p[0]) || (p[0] === 'gates' && gates.some(function (g) { return g.done; })), tag: 'Opened' };
+    }).concat([{ k: 'join', label: 'Take the readiness check', href: '#/join', done: false }]);
+    guide.forEach(function (s) { contents[s.k] = { done: s.done, tag: s.done ? s.tag : 'Not yet' }; });
+    note = 'Opened on this browser. Take the readiness check to keep your score on your account.';
+    return view(x, guide, gates, contents, 'parts', note, 'gates opened');
+  };
+  function view(x, guide, gates, contents, unit, note, gUnit) {
+    var here = null;
+    if (x.path === 'overview') here = { steps: guide, unit: unit, note: note };
+    else if (x.path === 'gates') here = { steps: gates, unit: gUnit, note: note };
+    else if (/^(stamp|how|join|ready)$/.test(x.path)) here = { steps: guide, unit: unit, note: note, cont: false };
+    return { contents: contents, here: here };
+  }
+})();
+</script>
+<script src="/public/ve-guide-frame.js"></script>
 </body>
 </html>

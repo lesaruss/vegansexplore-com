@@ -334,7 +334,11 @@
   var SRC_ICON = ICON.sourcing;
   var SRC = { counts: null, shown: 0 };
   function inSrc() { return curTab === 'sourcing' || curTab === 'make'; }
+  // Sourcing and Buy or make are members' tabs. The first route() runs before the access check answers, so a signed-out visit to
+  // #/sourcing or #/make used to call ve-sourcing with "Bearer null" (a 401) before being sent to Get in. With no sign-in there is
+  // nothing to ask for: answer as the function does for a visitor, without the call (the Restaurant Guide never draws these tabs signed out).
   function srcFetch(body) {
+    if (!token()) return Promise.resolve({ ok: false, error: 'guide_required' });
     return fetch(SRC_FN, { method: 'POST', headers: { apikey: ANON_KEY, Authorization: 'Bearer ' + token(), 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ guide: SLUG }, body)) })
       .then(function (r) { return r.json(); });
   }

@@ -426,3 +426,33 @@ body.gf-hb .gf-kids .gf-lk { font-size: 9px; font-weight: 900; letter-spacing: .
 
 /* Opt-in (body data-gf-head-go): the page head's own copy of the view's main action is hidden; the orange stand-in under the Guide row clicks it */
 html body.ve-gf.gf-hb[data-gf-head-go] .dg-head .gf-dup { display: none !important; }
+
+/* Handbook with progress (opt-in: body data-gf-progress; the business Guides: Pre-Vegan Business, Pre-Vegan Restaurant, Vegan Restaurant).
+   The mock's progress variant (/mocks/guide-templates/handbook/?v=progress): "Your progress: N of M" and a meter under the Guide row, a Done or
+   Not yet tag on the right of each step's row (where Read was), "Continue: <next>" as the view's one orange action, and each part's status in
+   Contents. /public/ve-guide-frame.js draws it only from what the page says counts (window.gfProgress) and only once something is done. */
+body.gf-hb[data-gf-progress] .gf-prog { max-width: 860px; margin: 0 0 14px; }
+body.gf-hb[data-gf-progress] .gf-prog-t { display: block; font-size: 15px; font-weight: 800; line-height: 1.3; color: #1a1a1a; margin: 0 0 8px; }
+body.gf-hb[data-gf-progress] .gf-prog-t b { font-weight: 900; }
+body.gf-hb[data-gf-progress] .gf-prog-t small { display: block; margin-top: 2px; font-size: 12px; font-weight: 700; color: #5c5c5c; }
+body.gf-hb[data-gf-progress] .gf-meter { display: grid; gap: 4px; height: 12px; }
+body.gf-hb[data-gf-progress] .gf-meter i { border: 2px solid #1a1a1a; border-radius: 3px; background: #fff; }
+body.gf-hb[data-gf-progress] .gf-meter i.on { background: #22C55E; }
+html body.ve-gf.gf-hb[data-gf-progress] .gf-st { flex: none; align-self: center; }
+html body.ve-gf.gf-hb[data-gf-progress] .gf-st.on { background: #E8F5E9; color: #2D5C27; }
+html body.ve-gf.gf-hb[data-gf-progress] .gf-has-st > .gf-read { display: none; }
+/* A gate card carries its tag in its top right corner; a group tile under its words (never over its picture) */
+html body.ve-gf.gf-hb[data-gf-progress] .pv-gate.gf-has-st { position: relative; }
+html body.ve-gf.gf-hb[data-gf-progress] .pv-gate.gf-has-st > h3 { padding-right: 100px; }
+html body.ve-gf.gf-hb[data-gf-progress] .pv-gate.gf-has-st > .gf-st { position: absolute; top: 12px; right: 12px; }
+html body.ve-gf.gf-hb[data-gf-progress] .rg-gtile > .gf-st { align-self: flex-start; margin: 0 14px 14px; }
+body.gf-hb[data-gf-progress] .gf-toc .gf-tst { font-weight: 900; color: #555; }
+body.gf-hb[data-gf-progress] .gf-toc .gf-tst.on { color: #2D5C27; }
+@media (max-width: 900px) {
+  body.gf-hb[data-gf-progress] .gf-prog { margin-bottom: 12px; }
+  body.gf-hb[data-gf-progress] .gf-prog-t { font-size: 13.5px; margin-bottom: 6px; }
+  body.gf-hb[data-gf-progress] .gf-prog-t small { font-size: 11px; }
+  body.gf-hb[data-gf-progress] .gf-meter { height: 10px; gap: 3px; }
+  html body.ve-gf.gf-hb[data-gf-progress] .pv-gate.gf-has-st > h3 { padding-right: 0; }
+  html body.ve-gf.gf-hb[data-gf-progress] .pv-gate.gf-has-st > .gf-st { top: 10px; right: 10px; }
+}
