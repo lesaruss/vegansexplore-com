@@ -89,6 +89,13 @@
       .gf-guide img { width: 44px; height: 44px; }
       .gf-guide p { font-size: 12.5px; line-height: 1.38; }
     }
+    /* Rows keep their tag or button on the right on phones too (Sean, 2026-11-17); the text in the middle gives */
+    @media (max-width: 900px) {
+      main .k-row { grid-template-columns: 30px minmax(0, 1fr) auto; gap: 10px; }
+      main .k-row > :last-child:not(.k-row-t) { grid-column: 3; justify-self: end; }
+      main .k-row .k-num { width: 30px; height: 30px; }
+      main .k-row .k-row-t small { font-size: 11px; }
+    }
     /* ==================== END SHARED GUIDE FRAME ==================== */
 
     /* ---------- Handbook body: one orange Start here, the part's pieces as rows, then Next part ---------- */
@@ -127,8 +134,14 @@
       .hb-go { margin-bottom: 18px; }
       .hb-go .k-cta { width: 100%; padding: 13px 16px; }
       .hb-go small { display: none; }
-      .hb-row { grid-template-columns: 34px minmax(0, 1fr) auto; gap: 10px; padding: 9px 10px; }
-      .hb-row .k-num { width: 34px; height: 34px; }
+      /* Sean, 2026-11-17: the button or tag stays on the right like desktop; the text in the middle gives */
+      .hb-row { grid-template-columns: 30px minmax(0, 1fr) auto; gap: 10px; padding: 9px 10px; }
+      .hb-row > .hb-act { grid-column: 3; justify-self: end; }
+      .hb-row .k-num { width: 30px; height: 30px; font-size: 13px; }
+      .hb-row .k-row-t b { font-size: 13px; }
+      .hb-row .k-row-t small { font-size: 11px; line-height: 1.35; }
+      .hb-row .hb-act .k-btn { font-size: 9.5px; padding: 6px 9px; }
+      .hb-row .hb-act .k-tag { font-size: 9px; }
     }
   </style>
 </head>

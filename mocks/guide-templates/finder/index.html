@@ -89,6 +89,13 @@
       .gf-guide img { width: 44px; height: 44px; }
       .gf-guide p { font-size: 12.5px; line-height: 1.38; }
     }
+    /* Rows keep their tag or button on the right on phones too (Sean, 2026-11-17); the text in the middle gives */
+    @media (max-width: 900px) {
+      main .k-row { grid-template-columns: 30px minmax(0, 1fr) auto; gap: 10px; }
+      main .k-row > :last-child:not(.k-row-t) { grid-column: 3; justify-self: end; }
+      main .k-row .k-num { width: 30px; height: 30px; }
+      main .k-row .k-row-t small { font-size: 11px; }
+    }
     /* ==================== END SHARED GUIDE FRAME ==================== */
 
     /* ---------- Finder body: search, a one-sentence answer, answer chips, one list ---------- */
@@ -138,6 +145,11 @@
     .fd-member { margin-top: 26px; font-size: 13px; font-weight: 700; color: var(--k-mute); }
     .fd-member a { color: var(--k-pinkd); font-weight: 900; }
 
+    /* Sean, 2026-11-17: buttons and tags stay on the right on every screen, like desktop; the text in the middle gives */
+    .fd-card, .fd-empty { grid-template-columns: 72px minmax(0, 1fr) auto; }
+    .fd-card .k-btns, .fd-empty .k-btns { grid-column: 3; grid-row: 1; flex-direction: column; align-items: stretch; align-self: center; flex-wrap: nowrap; gap: 8px; }
+    .fd-card .k-btns .k-btn, .fd-empty .k-btns .k-btn { text-align: center; }
+
     @media (max-width: 900px) {
       .fd-search { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
       .fd-q { grid-column: 1 / -1; }
@@ -148,10 +160,19 @@
       .fd-chips { gap: 6px; margin-bottom: 12px; }
       .fd-chips > span { display: none; }
       .fd-chips button { font-size: 12.5px; padding: 8px 10px; flex: 1 1 auto; }
-      .fd-card, .fd-empty { grid-template-columns: 52px minmax(0, 1fr); gap: 4px 12px; }
-      .fd-logo, .fd-empty .fd-ico { width: 52px; height: 52px; grid-row: auto; }
-      .fd-card .k-btns, .fd-empty .k-btns { grid-column: 1 / -1; }
-      .fd-card h3 { font-size: 17px; }
+      .fd-card, .fd-empty { grid-template-columns: 40px minmax(0, 1fr) auto; gap: 4px 10px; padding: 12px; }
+      .fd-logo, .fd-empty .fd-ico { width: 40px; height: 40px; border-radius: 8px; grid-row: auto; }
+      .fd-empty .fd-ico { font-size: 20px; }
+      .fd-card .k-btns, .fd-empty .k-btns { grid-column: 3; gap: 6px; max-width: 96px; }
+      .fd-card .k-btns .k-btn, .fd-empty .k-btns .k-btn { font-size: 9.5px; letter-spacing: .06em; padding: 7px 6px; white-space: normal; line-height: 1.2; }
+      .fd-card h3 { font-size: 15px; margin-bottom: 4px; }
+      .fd-empty b { font-size: 14px; }
+      .fd-kind { font-size: 8.5px; padding: 2px 5px; margin-bottom: 4px; }
+      .fd-meta { font-size: 11px; gap: 4px 8px; margin-bottom: 6px; }
+      .fd-meta .k-tag { font-size: 9px; }
+      .fd-days { font-size: 9px; gap: 4px; margin-bottom: 8px; }
+      .fd-days span { padding: 3px 5px; }
+      .fd-card p, .fd-empty p { font-size: 12px; line-height: 1.4; margin-bottom: 0; }
       .fd-lower { grid-template-columns: minmax(0, 1fr); }
     }
   </style>
