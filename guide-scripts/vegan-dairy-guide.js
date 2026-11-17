@@ -466,7 +466,7 @@
     };
     if (!member()) {
       // Visitors: the same answer and kinds, then the real list blurred behind the offer (its button is the view's one action).
-      main.innerHTML = h + '<p class="fd-answer">' + brandAnswer(BRANDS.length, null, '', BRANDS).replace(' Open one to see where to buy it.', ' Where to buy each one comes with the full Guide.') + '</p>' + chips(false) +
+      main.innerHTML = h + '<p class="fd-answer">' + brandAnswer(BRANDS.length, null, '', BRANDS).replace(' Open one to see where to buy it.', ' Where to buy each one comes with the full Guide.') + '</p>' +
         gated(dirGrid('', sortBy(BRANDS, 'votes').slice(0, 6).map(dirCard).join('')), 'Every brand, sorted by what you are replacing', 'With where to buy each one. Members vote, so the best rise to the top.');
       return;
     }
