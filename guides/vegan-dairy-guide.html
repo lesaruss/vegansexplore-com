@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-kit-parent="welcome-guide">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -436,8 +436,10 @@
     @media (max-width:480px){.dg-bubble{font-size:13.5px;padding:11px 13px;}}
   </style>
 <script src="/public/ve-guide-corner.js"></script>
+<link rel="stylesheet" href="/public/ve-kit.css">
+<link rel="stylesheet" href="/public/ve-guide-frame.css">
 </head>
-<body>
+<body class="ve-gf gf-hb gf-fd">
 <div class="page-frame">
 <script src="/public/nav.js"></script>
 
@@ -497,5 +499,10 @@
 <script src="/public/ve-macros.js"></script>
 <script src="/guide-scripts/vegan-dairy-guide.js"></script>
 <script src="/public/ve-guide-min.js"></script>
+<!-- The locked Guide template (Sean, 2026-11-17; canon canon-ve-guide-templates): the shared frame turns this page's header, tabs and rail
+     into the Guide bar, Contents and the Guide row. The template is chosen per part: Brands is a Finder part (vegan-dairy-guide.js viewBrands
+     draws its own search block, "own"), Pulse, Swaps, Cookbook and The truth are Handbook parts. -->
+<script type="application/json" id="gf-parts">{"overview": "Going dairy-free, without the guesswork", "pulse": "What the research says, and our podcasts on dairy", "brands": "Find the brands to buy, by what you are replacing", "swaps": "How to replace dairy when you cook", "cookbook": "Recipes, What can I make, and cookbooks", "look": "How milk is really made, in plain facts", "mylist": "Everything you save, in one place", "join": "$11 or 1,100 points, yours to keep", "_finder": {"brands": {"own": true}}}</script>
+<script src="/public/ve-guide-frame.js"></script>
 </body>
 </html>

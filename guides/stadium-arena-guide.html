@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-kit-parent="welcome-guide">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -546,8 +546,10 @@
     @media (max-width:480px){.sa-item{gap:10px;}.sa-acts .sa-mini span{display:none;}}
   </style>
 <script src="/public/ve-guide-corner.js"></script>
+<link rel="stylesheet" href="/public/ve-kit.css">
+<link rel="stylesheet" href="/public/ve-guide-frame.css">
 </head>
-<body>
+<body class="ve-gf gf-hb gf-fd">
 <div class="page-frame">
 <script src="/public/nav.js"></script>
 
@@ -596,5 +598,10 @@
 <script src="/public/ve-scan.js"></script>
 <script src="/guide-scripts/stadium-arena-guide.js"></script>
 <script src="/public/ve-guide-min.js"></script>
+<!-- The locked Guide template, Finder (Sean, 2026-11-17; canon canon-ve-guide-templates): the shared frame turns this page's header,
+     tabs and rail into the Guide bar, Contents and the Guide row, and its list part into the Finder (search, one answer, chips, one list). -->
+<script type="application/json" id="gf-parts">{"overview": "Vegan food at the game, stand by stand", "venues": "Find a stadium or arena and its Vegan food", "bounties": "Points for jobs at the game", "report": "Confirm what is there, or tell us what changed", "mylist": "Everything you save, in one place", "join": "$11 or 1,100 points, yours to keep", "_finder": {"venues": {"list": ".sa-vgrid", "card": "a.sa-vcard", "reset": "#saCity", "subs": ["stadiums", "arenas"], "noun": ["venue", "venues"], "placeholder": "City, ZIP or venue", "chips": [["Everything", "#/venues"], ["Stadiums", "#/venues/stadiums", "stadium|stadiums"], ["Arenas", "#/venues/arenas", "arena|arenas"], ["Free to try", "free", "free to try"]], "empty": ["Nothing to show here yet.", "Know a stand with Vegan food that is not in the Guide? Members add what is missing and earn points.", "Help keep it right", "#/report"], "after": {"label": "Built with you", "title": "Something missing or changed at a game?", "line": "Members confirm what is still there, fix what changed and add what is missing, with a photo, and earn points.", "btn": ["Help keep it right", "#/report"]}, "lede": "Search a city, a ZIP or near you, then open a venue: each one lists its stands with Vegan food and where to find them."}}}</script>
+<script src="/public/ve-region-directory.js"></script>
+<script src="/public/ve-guide-frame.js"></script>
 </body>
 </html>

@@ -1,0 +1,3195 @@
+{
+ "guide": "theme-park-guide",
+ "url": "https://vegansexplore.com/guides/theme-park-guide",
+ "script": "guide-scripts/theme-park-guide.js",
+ "takenAt": "2026-11-17T20:20:14.106Z",
+ "base": "https://vegansexplore.com",
+ "local": "/home/user/vegansexplore-com",
+ "staticParts": [
+  {
+   "k": "overview",
+   "label": "Overview",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "venues",
+   "label": "Parks",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "report",
+   "label": "Help keep it right",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "mylist",
+   "label": "My list",
+   "parent": null,
+   "flags": [
+    "mine"
+   ]
+  },
+  {
+   "k": "join",
+   "label": "Get access",
+   "parent": null,
+   "flags": [
+    "guest"
+   ]
+  }
+ ],
+ "liveMenuParts": [
+  "overview",
+  "venues",
+  "report",
+  "join"
+ ],
+ "partsMissingFromLiveMenu": [
+  "mylist"
+ ],
+ "views": [
+  {
+   "view": "overview",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/theme-park-guide#/overview",
+     "capturedAt": "2026-11-17T20:05:07.666Z",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/theme-park-guide#/overview",
+     "screenshot": "../../../tmp/claude-0/finder/after/shots/theme-park-guide/overview-390.jpg",
+     "title": "The Vegan Theme Park Guide - Vegans Explore Guides",
+     "hash": "#/overview",
+     "h1": [
+      "The Vegan Theme Park Guide"
+     ],
+     "h2": [
+      "Find the Vegan food inside the park."
+     ],
+     "h3": [
+      "Three steps, wherever you are in the park",
+      "One Guide for every park",
+      "The map comes first, the menu follows",
+      "Where we are",
+      "Magic Kingdom Park"
+     ],
+     "items": [
+      "Still here:",
+      "Something changed:",
+      "Something missing:",
+      "Magic Kingdom Park",
+      "Three steps, wherever you are in the park",
+      "One Guide for every park",
+      "The map comes first, the menu follows",
+      "Where we are"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "Help keep it right",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "Parks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "Get access",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "/guides/theme-park-guide#/",
+       "text": "The Vegan Theme Park Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "01OverviewVegan food at the park, restaurant by restaurant · You are here",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "02ParksFind a park and its Vegan food",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "03Help keep it rightConfirm what is there, or tell us what changed",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "04Get access$11 or 1,100 points, yours to keep",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "GET THE GUIDE",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "Get the Guide",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venue/magic-kingdom",
+       "raw": "#/venue/magic-kingdom",
+       "text": "TRY MAGIC KINGDOM FREE",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venue/magic-kingdom",
+       "raw": "#/venue/magic-kingdom",
+       "text": "FREE TO EVERYONE Magic Kingdom Park Walt Disney World Resort · Central Florida 45 VEGAN ITEMS LISTED",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "See every park",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "Next part: Parks ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "CONTENTS Overview",
+      "Talk to River"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Get it for $11",
+      "Sign in",
+      "GET ACCESS"
+     ],
+     "frame": "handbook",
+     "toc": [
+      {
+       "href": "#/",
+       "label": "01OverviewVegan food at the park, restaurant by restaurant · You are here"
+      },
+      {
+       "href": "#/venues",
+       "label": "02ParksFind a park and its Vegan food"
+      },
+      {
+       "href": "#/report",
+       "label": "03Help keep it rightConfirm what is there, or tell us what changed"
+      },
+      {
+       "href": "#/join",
+       "label": "04Get access$11 or 1,100 points, yours to keep"
+      }
+     ],
+     "guide": {
+      "slug": "river",
+      "label": "River, your Guide",
+      "name": "River",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Friver-v1.jpg&w=1080&q=75",
+      "railVisible": false
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": true
+      },
+      {
+       "k": "venues",
+       "label": "Parks",
+       "selected": false
+      },
+      {
+       "k": "report",
+       "label": "Help keep it right",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get access",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": true
+      },
+      {
+       "href": "#/venues",
+       "label": "Parks",
+       "current": false
+      },
+      {
+       "href": "#/report",
+       "label": "Help keep it right",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get access",
+       "current": false
+      }
+     ],
+     "activePart": "overview",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 138,
+     "action": {
+      "text": "GET THE GUIDE",
+      "bottom": 501,
+      "cls": "dg-btn gf-go-a gf-cta"
+     },
+     "mainTextLength": 1881,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 138,
+      "actionBottom": 501,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/theme-park-guide#/overview",
+     "capturedAt": "2026-11-17T20:05:06.710Z",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/theme-park-guide#/overview",
+     "screenshot": "../../../tmp/claude-0/finder/after/shots/theme-park-guide/overview-1440.jpg",
+     "title": "The Vegan Theme Park Guide - Vegans Explore Guides",
+     "hash": "#/overview",
+     "h1": [
+      "The Vegan Theme Park Guide"
+     ],
+     "h2": [
+      "Find the Vegan food inside the park."
+     ],
+     "h3": [
+      "Three steps, wherever you are in the park",
+      "One Guide for every park",
+      "The map comes first, the menu follows",
+      "Where we are",
+      "Magic Kingdom Park"
+     ],
+     "items": [
+      "Still here:",
+      "Something changed:",
+      "Something missing:",
+      "Magic Kingdom Park",
+      "Three steps, wherever you are in the park",
+      "One Guide for every park",
+      "The map comes first, the menu follows",
+      "Where we are"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "Help keep it right",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "Parks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "Get access",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "/guides/theme-park-guide#/",
+       "text": "The Vegan Theme Park Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "01OverviewVegan food at the park, restaurant by restaurant · You are here",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "02ParksFind a park and its Vegan food",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "03Help keep it rightConfirm what is there, or tell us what changed",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "04Get access$11 or 1,100 points, yours to keep",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "GET THE GUIDE",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "Get the Guide",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venue/magic-kingdom",
+       "raw": "#/venue/magic-kingdom",
+       "text": "TRY MAGIC KINGDOM FREE",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venue/magic-kingdom",
+       "raw": "#/venue/magic-kingdom",
+       "text": "FREE TO EVERYONE Magic Kingdom Park Walt Disney World Resort · Central Florida 45 VEGAN ITEMS LISTED",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "See every park",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "Next part: Parks ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "CONTENTS Overview",
+      "Talk to River"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Get it for $11",
+      "Sign in",
+      "GET ACCESS"
+     ],
+     "frame": "handbook",
+     "toc": [
+      {
+       "href": "#/",
+       "label": "01OverviewVegan food at the park, restaurant by restaurant · You are here"
+      },
+      {
+       "href": "#/venues",
+       "label": "02ParksFind a park and its Vegan food"
+      },
+      {
+       "href": "#/report",
+       "label": "03Help keep it rightConfirm what is there, or tell us what changed"
+      },
+      {
+       "href": "#/join",
+       "label": "04Get access$11 or 1,100 points, yours to keep"
+      }
+     ],
+     "guide": {
+      "slug": "river",
+      "label": "River, your Guide",
+      "name": "River",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Friver-v1.jpg&w=1080&q=75",
+      "railVisible": false
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": true
+      },
+      {
+       "k": "venues",
+       "label": "Parks",
+       "selected": false
+      },
+      {
+       "k": "report",
+       "label": "Help keep it right",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get access",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": true
+      },
+      {
+       "href": "#/venues",
+       "label": "Parks",
+       "current": false
+      },
+      {
+       "href": "#/report",
+       "label": "Help keep it right",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get access",
+       "current": false
+      }
+     ],
+     "activePart": "overview",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 142,
+     "action": {
+      "text": "GET THE GUIDE",
+      "bottom": 486,
+      "cls": "dg-btn gf-go-a gf-cta"
+     },
+     "mainTextLength": 1881,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "venues",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+     "capturedAt": "2026-11-17T20:05:09.658Z",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+     "screenshot": "../../../tmp/claude-0/finder/after/shots/theme-park-guide/venues-390.jpg",
+     "title": "The Vegan Theme Park Guide - Vegans Explore Guides",
+     "hash": "#/venues",
+     "h1": [
+      "The Vegan Theme Park Guide"
+     ],
+     "h2": [
+      "Choose your park"
+     ],
+     "h3": [
+      "Magic Kingdom Park"
+     ],
+     "items": [
+      "Magic Kingdom Park"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "Help keep it right",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "Parks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "Get access",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "/guides/theme-park-guide#/",
+       "text": "The Vegan Theme Park Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "01OverviewVegan food at the park, restaurant by restaurant",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "02ParksFind a park and its Vegan food · You are here",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "03Help keep it rightConfirm what is there, or tell us what changed",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "04Get access$11 or 1,100 points, yours to keep",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venue/magic-kingdom",
+       "raw": "#/venue/magic-kingdom",
+       "text": "FREE TO EVERYONE Magic Kingdom Park Walt Disney World Resort · Central Florida 45 VEGAN ITEMS LISTED",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "HELP KEEP IT RIGHT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "Next part: Help keep it right ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "CONTENTS Parks",
+      "Talk to River",
+      "☉ NEAR ME",
+      "SEARCH"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Get it for $11",
+      "Sign in"
+     ],
+     "frame": "handbook",
+     "toc": [
+      {
+       "href": "#/",
+       "label": "01OverviewVegan food at the park, restaurant by restaurant"
+      },
+      {
+       "href": "#/venues",
+       "label": "02ParksFind a park and its Vegan food · You are here"
+      },
+      {
+       "href": "#/report",
+       "label": "03Help keep it rightConfirm what is there, or tell us what changed"
+      },
+      {
+       "href": "#/join",
+       "label": "04Get access$11 or 1,100 points, yours to keep"
+      }
+     ],
+     "guide": {
+      "slug": "river",
+      "label": "River, your Guide",
+      "name": "River",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Friver-v1.jpg&w=1080&q=75",
+      "railVisible": false
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "venues",
+       "label": "Parks",
+       "selected": true
+      },
+      {
+       "k": "report",
+       "label": "Help keep it right",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get access",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/venues",
+       "label": "Parks",
+       "current": true
+      },
+      {
+       "href": "#/report",
+       "label": "Help keep it right",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get access",
+       "current": false
+      }
+     ],
+     "activePart": "venues",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 138,
+     "action": {
+      "text": "SEARCH",
+      "bottom": 498,
+      "cls": "dg-btn fd-go gf-cta"
+     },
+     "mainTextLength": 986,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 138,
+      "actionBottom": 498,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+     "capturedAt": "2026-11-17T20:05:08.211Z",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+     "screenshot": "../../../tmp/claude-0/finder/after/shots/theme-park-guide/venues-1440.jpg",
+     "title": "The Vegan Theme Park Guide - Vegans Explore Guides",
+     "hash": "#/venues",
+     "h1": [
+      "The Vegan Theme Park Guide"
+     ],
+     "h2": [
+      "Choose your park"
+     ],
+     "h3": [
+      "Magic Kingdom Park"
+     ],
+     "items": [
+      "Magic Kingdom Park"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "Help keep it right",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "Parks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "Get access",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "/guides/theme-park-guide#/",
+       "text": "The Vegan Theme Park Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "01OverviewVegan food at the park, restaurant by restaurant",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "02ParksFind a park and its Vegan food · You are here",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "03Help keep it rightConfirm what is there, or tell us what changed",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "04Get access$11 or 1,100 points, yours to keep",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venue/magic-kingdom",
+       "raw": "#/venue/magic-kingdom",
+       "text": "FREE TO EVERYONE Magic Kingdom Park Walt Disney World Resort · Central Florida 45 VEGAN ITEMS LISTED",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "HELP KEEP IT RIGHT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "Next part: Help keep it right ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "CONTENTS Parks",
+      "Talk to River",
+      "☉ NEAR ME",
+      "SEARCH"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Get it for $11",
+      "Sign in"
+     ],
+     "frame": "handbook",
+     "toc": [
+      {
+       "href": "#/",
+       "label": "01OverviewVegan food at the park, restaurant by restaurant"
+      },
+      {
+       "href": "#/venues",
+       "label": "02ParksFind a park and its Vegan food · You are here"
+      },
+      {
+       "href": "#/report",
+       "label": "03Help keep it rightConfirm what is there, or tell us what changed"
+      },
+      {
+       "href": "#/join",
+       "label": "04Get access$11 or 1,100 points, yours to keep"
+      }
+     ],
+     "guide": {
+      "slug": "river",
+      "label": "River, your Guide",
+      "name": "River",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Friver-v1.jpg&w=1080&q=75",
+      "railVisible": false
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "venues",
+       "label": "Parks",
+       "selected": true
+      },
+      {
+       "k": "report",
+       "label": "Help keep it right",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get access",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/venues",
+       "label": "Parks",
+       "current": true
+      },
+      {
+       "href": "#/report",
+       "label": "Help keep it right",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get access",
+       "current": false
+      }
+     ],
+     "activePart": "venues",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 142,
+     "action": {
+      "text": "SEARCH",
+      "bottom": 461,
+      "cls": "dg-btn fd-go gf-cta"
+     },
+     "mainTextLength": 986,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "report",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/theme-park-guide#/report",
+     "capturedAt": "2026-11-17T20:05:13.301Z",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/theme-park-guide#/report",
+     "screenshot": "../../../tmp/claude-0/finder/after/shots/theme-park-guide/report-390.jpg",
+     "title": "The Vegan Theme Park Guide - Vegans Explore Guides",
+     "hash": "#/report",
+     "h1": [
+      "The Vegan Theme Park Guide"
+     ],
+     "h2": [
+      "Members keep this Guide right"
+     ],
+     "h3": [],
+     "items": [
+      "Still here",
+      "Add a photo of the menu board or the food if you can. Your phone shares your location once, to show you are inside the park.",
+      "Bounty"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "Help keep it right",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "Parks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "Get access",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "/guides/theme-park-guide#/",
+       "text": "The Vegan Theme Park Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "01OverviewVegan food at the park, restaurant by restaurant",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "02ParksFind a park and its Vegan food",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "03Help keep it rightConfirm what is there, or tell us what changed · You are here",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "04Get access$11 or 1,100 points, yours to keep",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "PICK A PARK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "Next part: Get access ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "CONTENTS Help keep it right",
+      "Talk to River"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Get it for $11",
+      "Sign in",
+      "100 points",
+      "50 points",
+      "25 points",
+      "15 points",
+      "10 points",
+      "5 points",
+      "Next part: Get access ›"
+     ],
+     "frame": "handbook",
+     "toc": [
+      {
+       "href": "#/",
+       "label": "01OverviewVegan food at the park, restaurant by restaurant"
+      },
+      {
+       "href": "#/venues",
+       "label": "02ParksFind a park and its Vegan food"
+      },
+      {
+       "href": "#/report",
+       "label": "03Help keep it rightConfirm what is there, or tell us what changed · You are here"
+      },
+      {
+       "href": "#/join",
+       "label": "04Get access$11 or 1,100 points, yours to keep"
+      }
+     ],
+     "guide": {
+      "slug": "river",
+      "label": "River, your Guide",
+      "name": "River",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Friver-v1.jpg&w=1080&q=75",
+      "railVisible": false
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "venues",
+       "label": "Parks",
+       "selected": false
+      },
+      {
+       "k": "report",
+       "label": "Help keep it right",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Get access",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/venues",
+       "label": "Parks",
+       "current": false
+      },
+      {
+       "href": "#/report",
+       "label": "Help keep it right",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "Get access",
+       "current": false
+      }
+     ],
+     "activePart": "report",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 154,
+     "action": {
+      "text": "PICK A PARK",
+      "bottom": 555,
+      "cls": "dg-btn gf-go-a gf-cta"
+     },
+     "mainTextLength": 1568,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 154,
+      "actionBottom": 555,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/theme-park-guide#/report",
+     "capturedAt": "2026-11-17T20:05:12.626Z",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/theme-park-guide#/report",
+     "screenshot": "../../../tmp/claude-0/finder/after/shots/theme-park-guide/report-1440.jpg",
+     "title": "The Vegan Theme Park Guide - Vegans Explore Guides",
+     "hash": "#/report",
+     "h1": [
+      "The Vegan Theme Park Guide"
+     ],
+     "h2": [
+      "Members keep this Guide right"
+     ],
+     "h3": [],
+     "items": [
+      "Still here",
+      "Add a photo of the menu board or the food if you can. Your phone shares your location once, to show you are inside the park.",
+      "Bounty"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "Help keep it right",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "Parks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "Get access",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "/guides/theme-park-guide#/",
+       "text": "The Vegan Theme Park Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "01OverviewVegan food at the park, restaurant by restaurant",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "02ParksFind a park and its Vegan food",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "03Help keep it rightConfirm what is there, or tell us what changed · You are here",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "04Get access$11 or 1,100 points, yours to keep",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "PICK A PARK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "Next part: Get access ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "CONTENTS Help keep it right",
+      "Talk to River"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Get it for $11",
+      "Sign in",
+      "100 points",
+      "50 points",
+      "25 points",
+      "15 points",
+      "10 points",
+      "5 points",
+      "Next part: Get access ›"
+     ],
+     "frame": "handbook",
+     "toc": [
+      {
+       "href": "#/",
+       "label": "01OverviewVegan food at the park, restaurant by restaurant"
+      },
+      {
+       "href": "#/venues",
+       "label": "02ParksFind a park and its Vegan food"
+      },
+      {
+       "href": "#/report",
+       "label": "03Help keep it rightConfirm what is there, or tell us what changed · You are here"
+      },
+      {
+       "href": "#/join",
+       "label": "04Get access$11 or 1,100 points, yours to keep"
+      }
+     ],
+     "guide": {
+      "slug": "river",
+      "label": "River, your Guide",
+      "name": "River",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Friver-v1.jpg&w=1080&q=75",
+      "railVisible": false
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "venues",
+       "label": "Parks",
+       "selected": false
+      },
+      {
+       "k": "report",
+       "label": "Help keep it right",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Get access",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/venues",
+       "label": "Parks",
+       "current": false
+      },
+      {
+       "href": "#/report",
+       "label": "Help keep it right",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "Get access",
+       "current": false
+      }
+     ],
+     "activePart": "report",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 142,
+     "action": {
+      "text": "PICK A PARK",
+      "bottom": 480,
+      "cls": "dg-btn gf-go-a gf-cta"
+     },
+     "mainTextLength": 1568,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "mylist",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/theme-park-guide#/mylist",
+     "capturedAt": "2026-11-17T20:05:14.505Z",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/theme-park-guide#/mylist",
+     "screenshot": "../../../tmp/claude-0/finder/after/shots/theme-park-guide/mylist-390.jpg",
+     "title": "The Vegan Theme Park Guide - Vegans Explore Guides",
+     "hash": "#/mylist",
+     "h1": [
+      "The Vegan Theme Park Guide"
+     ],
+     "h2": [
+      "Find the Vegan food inside the park."
+     ],
+     "h3": [
+      "Three steps, wherever you are in the park",
+      "One Guide for every park",
+      "The map comes first, the menu follows",
+      "Where we are",
+      "Magic Kingdom Park"
+     ],
+     "items": [
+      "Still here:",
+      "Something changed:",
+      "Something missing:",
+      "Magic Kingdom Park",
+      "Three steps, wherever you are in the park",
+      "One Guide for every park",
+      "The map comes first, the menu follows",
+      "Where we are"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "Help keep it right",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "Parks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "Get access",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "/guides/theme-park-guide#/",
+       "text": "The Vegan Theme Park Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "01OverviewVegan food at the park, restaurant by restaurant · You are here",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "02ParksFind a park and its Vegan food",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "03Help keep it rightConfirm what is there, or tell us what changed",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "04Get access$11 or 1,100 points, yours to keep",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "GET THE GUIDE",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "Get the Guide",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venue/magic-kingdom",
+       "raw": "#/venue/magic-kingdom",
+       "text": "TRY MAGIC KINGDOM FREE",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venue/magic-kingdom",
+       "raw": "#/venue/magic-kingdom",
+       "text": "FREE TO EVERYONE Magic Kingdom Park Walt Disney World Resort · Central Florida 45 VEGAN ITEMS LISTED",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "See every park",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "Next part: Parks ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "CONTENTS Overview",
+      "Talk to River"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Get it for $11",
+      "Sign in",
+      "GET ACCESS"
+     ],
+     "frame": "handbook",
+     "toc": [
+      {
+       "href": "#/",
+       "label": "01OverviewVegan food at the park, restaurant by restaurant · You are here"
+      },
+      {
+       "href": "#/venues",
+       "label": "02ParksFind a park and its Vegan food"
+      },
+      {
+       "href": "#/report",
+       "label": "03Help keep it rightConfirm what is there, or tell us what changed"
+      },
+      {
+       "href": "#/join",
+       "label": "04Get access$11 or 1,100 points, yours to keep"
+      }
+     ],
+     "guide": {
+      "slug": "river",
+      "label": "River, your Guide",
+      "name": "River",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Friver-v1.jpg&w=1080&q=75",
+      "railVisible": false
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": true
+      },
+      {
+       "k": "venues",
+       "label": "Parks",
+       "selected": false
+      },
+      {
+       "k": "report",
+       "label": "Help keep it right",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get access",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": true
+      },
+      {
+       "href": "#/venues",
+       "label": "Parks",
+       "current": false
+      },
+      {
+       "href": "#/report",
+       "label": "Help keep it right",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get access",
+       "current": false
+      }
+     ],
+     "activePart": "overview",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 138,
+     "action": {
+      "text": "GET THE GUIDE",
+      "bottom": 501,
+      "cls": "dg-btn gf-go-a gf-cta"
+     },
+     "mainTextLength": 1881,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 138,
+      "actionBottom": 501,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/theme-park-guide#/mylist",
+     "capturedAt": "2026-11-17T20:05:13.371Z",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/theme-park-guide#/mylist",
+     "screenshot": "../../../tmp/claude-0/finder/after/shots/theme-park-guide/mylist-1440.jpg",
+     "title": "The Vegan Theme Park Guide - Vegans Explore Guides",
+     "hash": "#/mylist",
+     "h1": [
+      "The Vegan Theme Park Guide"
+     ],
+     "h2": [
+      "Find the Vegan food inside the park."
+     ],
+     "h3": [
+      "Three steps, wherever you are in the park",
+      "One Guide for every park",
+      "The map comes first, the menu follows",
+      "Where we are",
+      "Magic Kingdom Park"
+     ],
+     "items": [
+      "Still here:",
+      "Something changed:",
+      "Something missing:",
+      "Magic Kingdom Park",
+      "Three steps, wherever you are in the park",
+      "One Guide for every park",
+      "The map comes first, the menu follows",
+      "Where we are"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "Help keep it right",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "Parks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "Get access",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "/guides/theme-park-guide#/",
+       "text": "The Vegan Theme Park Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "01OverviewVegan food at the park, restaurant by restaurant · You are here",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "02ParksFind a park and its Vegan food",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "03Help keep it rightConfirm what is there, or tell us what changed",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "04Get access$11 or 1,100 points, yours to keep",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "GET THE GUIDE",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "Get the Guide",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venue/magic-kingdom",
+       "raw": "#/venue/magic-kingdom",
+       "text": "TRY MAGIC KINGDOM FREE",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venue/magic-kingdom",
+       "raw": "#/venue/magic-kingdom",
+       "text": "FREE TO EVERYONE Magic Kingdom Park Walt Disney World Resort · Central Florida 45 VEGAN ITEMS LISTED",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "See every park",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "Next part: Parks ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "CONTENTS Overview",
+      "Talk to River"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Get it for $11",
+      "Sign in",
+      "GET ACCESS"
+     ],
+     "frame": "handbook",
+     "toc": [
+      {
+       "href": "#/",
+       "label": "01OverviewVegan food at the park, restaurant by restaurant · You are here"
+      },
+      {
+       "href": "#/venues",
+       "label": "02ParksFind a park and its Vegan food"
+      },
+      {
+       "href": "#/report",
+       "label": "03Help keep it rightConfirm what is there, or tell us what changed"
+      },
+      {
+       "href": "#/join",
+       "label": "04Get access$11 or 1,100 points, yours to keep"
+      }
+     ],
+     "guide": {
+      "slug": "river",
+      "label": "River, your Guide",
+      "name": "River",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Friver-v1.jpg&w=1080&q=75",
+      "railVisible": false
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": true
+      },
+      {
+       "k": "venues",
+       "label": "Parks",
+       "selected": false
+      },
+      {
+       "k": "report",
+       "label": "Help keep it right",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get access",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": true
+      },
+      {
+       "href": "#/venues",
+       "label": "Parks",
+       "current": false
+      },
+      {
+       "href": "#/report",
+       "label": "Help keep it right",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get access",
+       "current": false
+      }
+     ],
+     "activePart": "overview",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 142,
+     "action": {
+      "text": "GET THE GUIDE",
+      "bottom": 486,
+      "cls": "dg-btn gf-go-a gf-cta"
+     },
+     "mainTextLength": 1881,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "join",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/theme-park-guide#/join",
+     "capturedAt": "2026-11-17T20:05:17.601Z",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/theme-park-guide#/join",
+     "screenshot": "../../../tmp/claude-0/finder/after/shots/theme-park-guide/join-390.jpg",
+     "title": "The Vegan Theme Park Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Vegan Theme Park Guide"
+     ],
+     "h2": [
+      "Open every park"
+     ],
+     "h3": [],
+     "items": [
+      "Every park:",
+      "Points:",
+      "Checked by members:",
+      "My list:",
+      "The community:"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "Help keep it right",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "Parks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "Get access",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "/guides/theme-park-guide#/",
+       "text": "The Vegan Theme Park Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "01OverviewVegan food at the park, restaurant by restaurant",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "02ParksFind a park and its Vegan food",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "03Help keep it rightConfirm what is there, or tell us what changed",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "04Get access$11 or 1,100 points, yours to keep · You are here",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "CONTENTS Get access",
+      "Talk to River",
+      "GET IT FOR $11"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Get it for $11",
+      "Sign in",
+      "Get access",
+      "Every Vegans Explore Guide is $11, or 1,100 points for members, and yours to keep.",
+      "The Vegan Theme Park Guide is eleven dollars, or 1,100 points, and it's yours to keep. Come join us!",
+      "$11YOURS TO KEEP",
+      "sign in",
+      "GET IT FOR $11"
+     ],
+     "frame": "handbook",
+     "toc": [
+      {
+       "href": "#/",
+       "label": "01OverviewVegan food at the park, restaurant by restaurant"
+      },
+      {
+       "href": "#/venues",
+       "label": "02ParksFind a park and its Vegan food"
+      },
+      {
+       "href": "#/report",
+       "label": "03Help keep it rightConfirm what is there, or tell us what changed"
+      },
+      {
+       "href": "#/join",
+       "label": "04Get access$11 or 1,100 points, yours to keep · You are here"
+      }
+     ],
+     "guide": {
+      "slug": "river",
+      "label": "River, your Guide",
+      "name": "River",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Friver-v1.jpg&w=1080&q=75",
+      "railVisible": false
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "venues",
+       "label": "Parks",
+       "selected": false
+      },
+      {
+       "k": "report",
+       "label": "Help keep it right",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get access",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/venues",
+       "label": "Parks",
+       "current": false
+      },
+      {
+       "href": "#/report",
+       "label": "Help keep it right",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get access",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 154,
+     "action": {
+      "text": "GET IT FOR $11",
+      "bottom": 585,
+      "cls": "dg-btn gf-cta"
+     },
+     "mainTextLength": 826,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 154,
+      "actionBottom": 585,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/theme-park-guide#/join",
+     "capturedAt": "2026-11-17T20:05:16.484Z",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/theme-park-guide#/join",
+     "screenshot": "../../../tmp/claude-0/finder/after/shots/theme-park-guide/join-1440.jpg",
+     "title": "The Vegan Theme Park Guide - Vegans Explore Guides",
+     "hash": "#/join",
+     "h1": [
+      "The Vegan Theme Park Guide"
+     ],
+     "h2": [
+      "Open every park"
+     ],
+     "h3": [],
+     "items": [
+      "Every park:",
+      "Points:",
+      "Checked by members:",
+      "My list:",
+      "The community:"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "Help keep it right",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "Parks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "Get access",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "/guides/theme-park-guide#/",
+       "text": "The Vegan Theme Park Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "01OverviewVegan food at the park, restaurant by restaurant",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "02ParksFind a park and its Vegan food",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "03Help keep it rightConfirm what is there, or tell us what changed",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "04Get access$11 or 1,100 points, yours to keep · You are here",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "CONTENTS Get access",
+      "Talk to River",
+      "GET IT FOR $11"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Get it for $11",
+      "Sign in",
+      "Get access",
+      "Every Vegans Explore Guide is $11, or 1,100 points for members, and yours to keep.",
+      "The Vegan Theme Park Guide is eleven dollars, or 1,100 points, and it's yours to keep. Come join us!",
+      "$11YOURS TO KEEP",
+      "sign in",
+      "GET IT FOR $11"
+     ],
+     "frame": "handbook",
+     "toc": [
+      {
+       "href": "#/",
+       "label": "01OverviewVegan food at the park, restaurant by restaurant"
+      },
+      {
+       "href": "#/venues",
+       "label": "02ParksFind a park and its Vegan food"
+      },
+      {
+       "href": "#/report",
+       "label": "03Help keep it rightConfirm what is there, or tell us what changed"
+      },
+      {
+       "href": "#/join",
+       "label": "04Get access$11 or 1,100 points, yours to keep · You are here"
+      }
+     ],
+     "guide": {
+      "slug": "river",
+      "label": "River, your Guide",
+      "name": "River",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Friver-v1.jpg&w=1080&q=75",
+      "railVisible": false
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "venues",
+       "label": "Parks",
+       "selected": false
+      },
+      {
+       "k": "report",
+       "label": "Help keep it right",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get access",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/venues",
+       "label": "Parks",
+       "current": false
+      },
+      {
+       "href": "#/report",
+       "label": "Help keep it right",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get access",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 142,
+     "action": {
+      "text": "GET IT FOR $11",
+      "bottom": 579,
+      "cls": "dg-btn gf-cta"
+     },
+     "mainTextLength": 826,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "venue/magic-kingdom",
+   "depth": 1,
+   "parent": "overview",
+   "isPart": false,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/theme-park-guide#/venue/magic-kingdom",
+     "capturedAt": "2026-11-17T20:07:28.307Z",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/theme-park-guide#/venue/magic-kingdom",
+     "screenshot": "../../../tmp/claude-0/finder/after/shots/theme-park-guide/venue_magic-kingdom-390.jpg",
+     "title": "The Vegan Theme Park Guide - Vegans Explore Guides",
+     "hash": "#/venue/magic-kingdom",
+     "h1": [
+      "The Vegan Theme Park Guide"
+     ],
+     "h2": [
+      "Magic Kingdom Park",
+      "WHERE YOU ARE"
+     ],
+     "h3": [
+      "1Cinderella's Royal Table",
+      "2Be Our Guest Restaurant",
+      "3The Crystal Palace",
+      "4Liberty Tree Tavern",
+      "5Tony's Town Square Restaurant",
+      "6The Plaza Restaurant",
+      "7Skipper Canteen",
+      "8Columbia Harbour House",
+      "9Pecos Bill Tall Tale Inn and Cafe",
+      "10Casey's Corner",
+      "11Cosmic Ray's Starlight Café",
+      "12Pinocchio Village Haus",
+      "13Aloha Isle",
+      "14Sunshine Tree Terrace",
+      "15The Diamond Horseshoe",
+      "16Liberty Square Market"
+     ],
+     "items": [
+      "100 m · 330 ft",
+      "1Cinderella's Royal Table",
+      "2Be Our Guest Restaurant",
+      "3The Crystal Palace",
+      "4Liberty Tree Tavern",
+      "5Tony's Town Square Restaurant",
+      "6The Plaza Restaurant",
+      "7Skipper Canteen",
+      "8Columbia Harbour House",
+      "9Pecos Bill Tall Tale Inn and Cafe",
+      "10Casey's Corner",
+      "11Cosmic Ray's Starlight Café",
+      "12Pinocchio Village Haus",
+      "13Aloha Isle",
+      "14Sunshine Tree Terrace",
+      "15The Diamond Horseshoe",
+      "16Liberty Square Market"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "Help keep it right",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "Parks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "Get access",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "/guides/theme-park-guide#/",
+       "text": "The Vegan Theme Park Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "01OverviewVegan food at the park, restaurant by restaurant",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "02ParksFind a park and its Vegan food · You are here",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "03Help keep it rightConfirm what is there, or tell us what changed",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "04Get access$11 or 1,100 points, yours to keep",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "Vegan Theme Park Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venue/magic-kingdom/report/missing",
+       "raw": "#/venue/magic-kingdom/report/missing",
+       "text": "ADD SOMETHING MISSING",
+       "visible": true
+      },
+      {
+       "href": "https://disneyworld.disney.go.com/dining/magic-kingdom/",
+       "raw": "https://disneyworld.disney.go.com/dining/magic-kingdom/",
+       "text": "THE PARK'S FULL MENU",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "Next part: Help keep it right ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "CONTENTS Parks",
+      "Talk to River",
+      "SHOW WHERE I AM",
+      "ALL",
+      "FANTASYLAND",
+      "MAIN STREET, U.S.A.",
+      "LIBERTY SQUARE",
+      "ADVENTURELAND",
+      "FRONTIERLAND",
+      "TOMORROWLAND",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "BIGGER MAP",
+      "CLEAR",
+      "0",
+      "+"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Get it for $11",
+      "Sign in"
+     ],
+     "frame": "handbook",
+     "toc": [
+      {
+       "href": "#/",
+       "label": "01OverviewVegan food at the park, restaurant by restaurant"
+      },
+      {
+       "href": "#/venues",
+       "label": "02ParksFind a park and its Vegan food · You are here"
+      },
+      {
+       "href": "#/report",
+       "label": "03Help keep it rightConfirm what is there, or tell us what changed"
+      },
+      {
+       "href": "#/join",
+       "label": "04Get access$11 or 1,100 points, yours to keep"
+      }
+     ],
+     "guide": {
+      "slug": "river",
+      "label": "River, your Guide",
+      "name": "River",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Friver-v1.jpg&w=1080&q=75",
+      "railVisible": false
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "venues",
+       "label": "Parks",
+       "selected": true
+      },
+      {
+       "k": "report",
+       "label": "Help keep it right",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get access",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/venues",
+       "label": "Parks",
+       "current": true
+      },
+      {
+       "href": "#/report",
+       "label": "Help keep it right",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get access",
+       "current": false
+      }
+     ],
+     "activePart": "venues",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 138,
+     "action": {
+      "text": "SHOW WHERE I AM",
+      "bottom": 522,
+      "cls": "dg-btn gf-go-a gf-cta"
+     },
+     "mainTextLength": 2067,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 138,
+      "actionBottom": 522,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/theme-park-guide#/venue/magic-kingdom",
+     "capturedAt": "2026-11-17T20:07:27.007Z",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/theme-park-guide#/venue/magic-kingdom",
+     "screenshot": "../../../tmp/claude-0/finder/after/shots/theme-park-guide/venue_magic-kingdom-1440.jpg",
+     "title": "The Vegan Theme Park Guide - Vegans Explore Guides",
+     "hash": "#/venue/magic-kingdom",
+     "h1": [
+      "The Vegan Theme Park Guide"
+     ],
+     "h2": [
+      "Magic Kingdom Park",
+      "WHERE YOU ARE"
+     ],
+     "h3": [
+      "1Cinderella's Royal Table",
+      "2Be Our Guest Restaurant",
+      "3The Crystal Palace",
+      "4Liberty Tree Tavern",
+      "5Tony's Town Square Restaurant",
+      "6The Plaza Restaurant",
+      "7Skipper Canteen",
+      "8Columbia Harbour House",
+      "9Pecos Bill Tall Tale Inn and Cafe",
+      "10Casey's Corner",
+      "11Cosmic Ray's Starlight Café",
+      "12Pinocchio Village Haus",
+      "13Aloha Isle",
+      "14Sunshine Tree Terrace",
+      "15The Diamond Horseshoe",
+      "16Liberty Square Market"
+     ],
+     "items": [
+      "100 m · 330 ft",
+      "1Cinderella's Royal Table",
+      "2Be Our Guest Restaurant",
+      "3The Crystal Palace",
+      "4Liberty Tree Tavern",
+      "5Tony's Town Square Restaurant",
+      "6The Plaza Restaurant",
+      "7Skipper Canteen",
+      "8Columbia Harbour House",
+      "9Pecos Bill Tall Tale Inn and Cafe",
+      "10Casey's Corner",
+      "11Cosmic Ray's Starlight Café",
+      "12Pinocchio Village Haus",
+      "13Aloha Isle",
+      "14Sunshine Tree Terrace",
+      "15The Diamond Horseshoe",
+      "16Liberty Square Market"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "Help keep it right",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "Parks",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "Get access",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "/guides/theme-park-guide#/",
+       "text": "The Vegan Theme Park Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "01OverviewVegan food at the park, restaurant by restaurant",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venues",
+       "raw": "#/venues",
+       "text": "02ParksFind a park and its Vegan food · You are here",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "03Help keep it rightConfirm what is there, or tell us what changed",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/join",
+       "raw": "#/join",
+       "text": "04Get access$11 or 1,100 points, yours to keep",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "Vegan Theme Park Guide",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/venue/magic-kingdom/report/missing",
+       "raw": "#/venue/magic-kingdom/report/missing",
+       "text": "ADD SOMETHING MISSING",
+       "visible": true
+      },
+      {
+       "href": "https://disneyworld.disney.go.com/dining/magic-kingdom/",
+       "raw": "https://disneyworld.disney.go.com/dining/magic-kingdom/",
+       "text": "THE PARK'S FULL MENU",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "Next part: Help keep it right ›",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/",
+       "raw": "#/",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#/report",
+       "raw": "#/report",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/theme-park-guide#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "CONTENTS Parks",
+      "Talk to River",
+      "SHOW WHERE I AM",
+      "ALL",
+      "FANTASYLAND",
+      "MAIN STREET, U.S.A.",
+      "LIBERTY SQUARE",
+      "ADVENTURELAND",
+      "FRONTIERLAND",
+      "TOMORROWLAND",
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15",
+      "16",
+      "BIGGER MAP",
+      "CLEAR",
+      "0",
+      "+"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Get it for $11",
+      "Sign in"
+     ],
+     "frame": "handbook",
+     "toc": [
+      {
+       "href": "#/",
+       "label": "01OverviewVegan food at the park, restaurant by restaurant"
+      },
+      {
+       "href": "#/venues",
+       "label": "02ParksFind a park and its Vegan food · You are here"
+      },
+      {
+       "href": "#/report",
+       "label": "03Help keep it rightConfirm what is there, or tell us what changed"
+      },
+      {
+       "href": "#/join",
+       "label": "04Get access$11 or 1,100 points, yours to keep"
+      }
+     ],
+     "guide": {
+      "slug": "river",
+      "label": "River, your Guide",
+      "name": "River",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Friver-v1.jpg&w=1080&q=75",
+      "railVisible": false
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "venues",
+       "label": "Parks",
+       "selected": true
+      },
+      {
+       "k": "report",
+       "label": "Help keep it right",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Get access",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/venues",
+       "label": "Parks",
+       "current": true
+      },
+      {
+       "href": "#/report",
+       "label": "Help keep it right",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Get access",
+       "current": false
+      }
+     ],
+     "activePart": "venues",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 142,
+     "action": {
+      "text": "SHOW WHERE I AM",
+      "bottom": 443,
+      "cls": "dg-btn gf-go-a gf-cta"
+     },
+     "mainTextLength": 2067,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  }
+ ],
+ "linkStatus": {
+  "https://vegansexplore.com/guides/theme-park-guide": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/directory": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/dashboard/saves": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/account": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://disneyworld.disney.go.com/dining/magic-kingdom/": {
+   "status": 200,
+   "internal": false,
+   "dead": false
+  }
+ }
+}

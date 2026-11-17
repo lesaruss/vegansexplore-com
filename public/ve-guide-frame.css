@@ -456,3 +456,77 @@ body.gf-hb[data-gf-progress] .gf-toc .gf-tst.on { color: #2D5C27; }
   html body.ve-gf.gf-hb[data-gf-progress] .pv-gate.gf-has-st > h3 { padding-right: 0; }
   html body.ve-gf.gf-hb[data-gf-progress] .pv-gate.gf-has-st > .gf-st { top: 10px; right: 10px; }
 }
+
+/* ---------- Part 4: the Finder body (2026-11-17, opt-in: body.gf-fd) ----------
+ * The Finder Guides (Airport, Stadium & Arena, Theme Park, Supermarket, Vegan Dairy) carry body class gf-fd as well as ve-gf gf-hb, so they
+ * get the same frame as the Handbook Guides, and the parts named in their gf-parts "_finder" open as the Finder mock
+ * (/mocks/guide-templates/finder/): the search block (City or ZIP, Near me, Search as the one orange action), the one-sentence answer, the
+ * answer chips, one list, "That is every ... so far", the honest empty state and the doorway. Built by /public/ve-guide-frame.js (fdDraw).
+ * Everything here is under body.gf-fd, so the Handbook Guides and the Holiday Guide are unchanged. Values copy the mock's Finder block. */
+body.gf-fd .fd-search { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 10px; max-width: 860px; margin: 0; }
+body.gf-fd .fd-q { position: relative; }
+body.gf-fd .fd-q input { font: inherit; font-size: 16px; font-weight: 700; width: 100%; box-sizing: border-box; border: 3px solid #1a1a1a; border-radius: 6px; padding: 12px 14px 12px 42px; background: #fff; color: #1a1a1a; margin: 0; }
+body.gf-fd .fd-q input:focus { outline: none; box-shadow: 4px 4px 0 #F69820; }
+body.gf-fd .fd-q svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); pointer-events: none; }
+html body.ve-gf.gf-hb.gf-fd .dg-main .fd-search .dg-btn { padding: 13px 20px; font-size: 12.5px; }
+body.gf-fd .fd-answer { max-width: 860px; margin: 14px 0 0; font-size: 16px; font-weight: 700; line-height: 1.45; color: #1a1a1a; }
+body.gf-fd .fd-answer b { font-weight: 900; }
+body.gf-fd .fd-clear { margin-left: 6px; font-size: 13px; font-weight: 900; color: #C2185B; white-space: nowrap; }
+body.gf-fd .fd-chips { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 22px 0 14px; }
+body.gf-fd .fd-chips > span { font-size: 10.5px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; margin-right: 4px; }
+body.gf-fd .fd-chips :is(button, a) { font: inherit; font-size: 13px; font-weight: 900; color: #1a1a1a; background: #fff; border: 2px solid #1a1a1a; border-radius: 6px; padding: 9px 14px; cursor: pointer; text-decoration: none; line-height: 1.2; }
+body.gf-fd .fd-chips :is(button, a):hover { background: #FFE3EE; }
+body.gf-fd .fd-chips :is(button, a)[aria-pressed="true"], body.gf-fd .fd-chips :is(button, a)[aria-pressed="true"]:hover { background: #1a1a1a; color: #fff; }
+body.gf-fd .fd-chips[hidden] { display: none; }
+/* Chips that only name the kinds (a visitor's view of a gated list): the same shape, not pressable */
+body.gf-fd .fd-chips .fd-chip-t { font-size: 13px; font-weight: 900; color: #1a1a1a; background: #fff; border: 2px solid #1a1a1a; border-radius: 6px; padding: 9px 14px; line-height: 1.2; }
+/* A search with no Near me (the Dairy Guide's Brands: brands are not tied to a place) */
+body.gf-fd .fd-search.fd-search-nonear { grid-template-columns: minmax(0, 1fr) auto; }
+/* The Directory cards' own sort bar under the chips */
+html body.ve-gf.gf-hb.gf-fd .dg-main > .fd-chips + .vrd-root .sort-bar { margin: 0 0 10px; }
+/* The Guide's own switches in the page head are the chips now (the same links), so the head's copy is hidden */
+html body.ve-gf.gf-hb.gf-fd .dg-main:has(> .fd-chips) .dg-head > .dg-toggles { display: none; }
+/* One list: the space before it when there are no chips */
+html body.ve-gf.gf-hb.gf-fd .dg-main > .fd-answer + :is(.sa-vgrid, .dg-empty, .sg-stores) { margin-top: 22px; }
+html body.ve-gf.gf-hb.gf-fd .dg-main [hidden] { display: none !important; }
+body.gf-fd .fd-dist { background: #FF9EC4; color: #1a1a1a; }
+body.gf-fd .fd-empty { border: 2px dashed #1a1a1a; border-radius: 14px; padding: 16px 18px; display: grid; grid-template-columns: 72px minmax(0, 1fr) auto; gap: 4px 16px; align-items: center; margin: 4px 0 0; max-width: 980px; }
+body.gf-fd .fd-empty .fd-ico { width: 72px; height: 72px; border-radius: 12px; border: 2px dashed #1a1a1a; display: grid; place-items: center; font-size: 28px; font-weight: 900; }
+body.gf-fd .fd-empty b { display: block; font-size: 17px; font-weight: 900; letter-spacing: -.01em; margin: 0 0 4px; }
+body.gf-fd .fd-empty p { font-size: 13.5px; font-weight: 600; line-height: 1.45; color: #5c5c5c; margin: 0; }
+body.gf-fd .fd-end { font-size: 14px; font-weight: 800; margin: 18px 0 0; color: #1a1a1a; }
+body.gf-fd .fd-lower { margin: 30px 0 0; max-width: 980px; border: 2px dashed #1a1a1a; border-radius: 14px; padding: 16px 18px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 18px; align-items: center; }
+body.gf-fd .fd-lower .fd-lk { grid-column: 1; font-size: 10.5px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; color: #C2185B; }
+body.gf-fd .fd-lower b { grid-column: 1; font-size: 16px; font-weight: 900; line-height: 1.3; }
+body.gf-fd .fd-lower p { grid-column: 1; margin: 0; font-size: 13.5px; font-weight: 600; line-height: 1.45; color: #5c5c5c; }
+body.gf-fd .fd-lower .fd-btns { grid-column: 2; grid-row: 1 / span 3; }
+/* The venue Guides' list: full width, the cards four across (the old two-beside-the-rail rule is gone with the rail) */
+html body.ve-gf.gf-hb.gf-fd .dg-app .sa-vgrid:not(.ov-new) { grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); }
+html body.ve-gf.gf-hb.gf-fd .sa-vcard { border: 2px solid #1a1a1a; border-radius: 14px; }
+html body.ve-gf.gf-hb.gf-fd .sa-vcard:hover { border-color: #1a1a1a; box-shadow: 4px 4px 0 #FF9EC4; transform: none; }
+@media (max-width: 900px) {
+  body.gf-fd .fd-search { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; }
+  body.gf-fd .fd-q { grid-column: 1 / -1; }
+  body.gf-fd .fd-q input { padding-top: 11px; padding-bottom: 11px; }
+  html body.ve-gf.gf-hb.gf-fd .dg-main .fd-search .dg-btn { padding: 11px 12px; }
+  body.gf-fd .fd-answer { font-size: 14px; line-height: 1.42; margin-top: 10px; }
+  body.gf-fd .fd-chips { gap: 6px; margin: 16px 0 12px; }
+  body.gf-fd .fd-chips > span { display: none; }
+  body.gf-fd .fd-chips :is(button, a) { font-size: 12.5px; padding: 8px 10px; flex: 1 1 auto; text-align: center; }
+  body.gf-fd .fd-chips .fd-chip-t { font-size: 12.5px; padding: 8px 10px; flex: 1 1 auto; text-align: center; }
+  body.gf-fd .fd-search.fd-search-nonear { grid-template-columns: minmax(0, 1fr) auto; }
+  body.gf-fd .fd-search.fd-search-nonear .fd-q { grid-column: auto; }
+  html body.ve-gf.gf-hb.gf-fd .dg-main > .fd-answer + :is(.sa-vgrid, .dg-empty, .sg-stores) { margin-top: 16px; }
+  body.gf-fd .fd-empty { grid-template-columns: 40px minmax(0, 1fr) auto; gap: 4px 10px; padding: 12px; }
+  body.gf-fd .fd-empty .fd-ico { width: 40px; height: 40px; border-radius: 8px; font-size: 20px; }
+  body.gf-fd .fd-empty b { font-size: 14px; }
+  body.gf-fd .fd-empty p { font-size: 12px; line-height: 1.4; }
+  html body.ve-gf.gf-hb.gf-fd .dg-main :is(.fd-empty, .fd-lower) .dg-btn { font-size: 9.5px; letter-spacing: .06em; padding: 7px 8px; white-space: normal; max-width: 112px; text-align: center; }
+  body.gf-fd .fd-lower { padding: 12px; gap: 2px 10px; }
+  body.gf-fd .fd-lower b { font-size: 14px; }
+  body.gf-fd .fd-lower p { font-size: 12px; line-height: 1.4; }
+}
+/* The Guide's own city dropdown on a Finder part: set to every city by the frame and hidden, the search does its job */
+html body.ve-gf.gf-hb.gf-fd .dg-main:has(> .fd-search) > .sa-city { display: none; }
+/* Finder Guides: the Overview hero's own copy of the view's main action is hidden (the orange stand-in under the Guide row clicks it) */
+html body.ve-gf.gf-hb.gf-fd :is(.ov-hero, .dg-head) .gf-dup { display: none !important; }

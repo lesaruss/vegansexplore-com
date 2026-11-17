@@ -758,6 +758,8 @@
     api({ action: 'list' }).then(function (d) {
       if (d && d.me) ME = d.me;
       VENUES = (d && d.venues) || [];
+      // The Finder template (ve-guide-frame.js) reads the list it answers from here; nothing else changes.
+      window.gfFinderData = function () { return VENUES; };
       ((d && d.points) || []).forEach(function (p) { POINTS[p.kind] = p; });
       if (d && d.limits) LIMITS = d.limits;
       route();
