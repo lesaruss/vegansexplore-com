@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-kit-parent="welcome-guide">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -555,10 +555,51 @@
     .ev-rec .ev-live{font-size:12.5px;font-weight:800;color:#b42318;}
     .ev-rec.done{border-color:var(--gm);background:var(--gl);}
     .ev-give{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:14px;margin:0 0 16px;}
+    /* The Handbook template (2026-11-17, canon canon-ve-guide-templates; /public/ve-guide-frame.css Part 3). Only under body.gf-hb.
+       The group and section tiles are the Handbook's rows: icon left, the name and its line in the middle, one tag (or Read) on the right. */
+    html body.ve-gf.gf-hb .dg-tiles{grid-template-columns:repeat(auto-fit,minmax(min(520px,100%),1fr));gap:10px 18px;}
+    html body.ve-gf.gf-hb .dg-tile{display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:2px 12px;align-items:center;border:2px solid #1a1a1a;border-radius:10px;padding:10px 12px;background:#fff;color:#1a1a1a;box-shadow:none;transform:none;}
+    html body.ve-gf.gf-hb .dg-tile:hover{transform:none;box-shadow:4px 4px 0 #FF9EC4;}
+    html body.ve-gf.gf-hb .dg-tile > div:not(.dg-ic){display:contents;}
+    html body.ve-gf.gf-hb .dg-tile .dg-ic{grid-column:1;grid-row:1/span 3;width:52px;height:52px;border-radius:8px;border:2px solid #1a1a1a;background:#FFE3EE;}
+    html body.ve-gf.gf-hb .dg-tile b{grid-column:2;font-size:14.5px;line-height:1.25;}
+    html body.ve-gf.gf-hb .dg-tile span{grid-column:2;margin:0;font-size:12.5px;font-weight:600;line-height:1.4;color:#5c5c5c;}
+    html body.ve-gf.gf-hb .dg-tile .dg-gkids{color:#1a1a1a !important;font-size:11.5px !important;margin:2px 0 0 !important;}
+    html body.ve-gf.gf-hb .dg-tile .dg-mlock{grid-column:3;grid-row:1/span 3;align-self:center;margin:0 !important;font-size:10px !important;font-weight:900;letter-spacing:.1em;border-radius:6px;padding:5px 8px;white-space:nowrap;background:#efefef;color:#555 !important;}
+    html body.ve-gf.gf-hb .dg-tile .dg-mlock[style]{background:#E8F5E9;color:#2D5C27 !important;}
+    html body.ve-gf.gf-hb .dg-tile:not(:has(.dg-mlock))::after{content:"Read";grid-column:3;grid-row:1/span 3;align-self:center;font-size:10.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;border:2px solid #1a1a1a;border-radius:6px;padding:8px 12px;}
+    /* The parts' own blocks take the kit's ink outline; gear items are rows with Shop on the right */
+    html body.ve-gf.gf-hb :is(.ev-box,.ev-phase,.rg-step,.dg-skel){border:2px solid #1a1a1a;border-radius:10px;}
+    html body.ve-gf.gf-hb .rg-step em{background:#1a1a1a;}
+    html body.ve-gf.gf-hb .ev-gear{grid-template-columns:repeat(auto-fit,minmax(min(360px,100%),1fr));}
+    html body.ve-gf.gf-hb .ev-gear a{border:2px solid #1a1a1a;border-radius:10px;padding:9px 12px;}
+    html body.ve-gf.gf-hb .ev-gear a:hover{border-color:#1a1a1a;box-shadow:4px 4px 0 #FF9EC4;}
+    html body.ve-gf.gf-hb .ev-gear a > div{flex:1;min-width:0;}
+    html body.ve-gf.gf-hb .ev-gear a::after{content:"Shop";flex:none;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;border:2px solid #1a1a1a;border-radius:6px;padding:6px 10px;}
+    html body.ve-gf.gf-hb .ev-gear i{border:2px solid #1a1a1a;border-radius:8px;background:#FFE3EE;}
+    html body.ve-gf.gf-hb .ev-calc input{border:2px solid #1a1a1a;}
+    /* The Overview's own start buttons: the first is the view's one orange action, drawn under River's row, so it is not shown twice */
+    html body.ve-gf.gf-hb .dg-main:has(> .gf-go) .dg-start > .dg-btn:not(.dg-ghost){display:none;}
+    html body.ve-gf.gf-hb .dg-start{margin-top:18px;}
+    @media (max-width:900px){
+      html body.ve-gf.gf-hb .dg-tile{grid-template-columns:40px minmax(0,1fr) auto;gap:1px 10px;padding:9px 10px;}
+      html body.ve-gf.gf-hb .dg-tile .dg-ic{width:40px;height:40px;}
+      html body.ve-gf.gf-hb .dg-tile .dg-ic svg{width:22px;height:22px;}
+      html body.ve-gf.gf-hb .dg-tile b{font-size:13px;}
+      html body.ve-gf.gf-hb .dg-tile span{font-size:11px;line-height:1.35;}
+      html body.ve-gf.gf-hb .dg-tile .dg-mlock{font-size:9px !important;padding:4px 6px;white-space:normal;max-width:96px;text-align:center;line-height:1.25;}
+      html body.ve-gf.gf-hb .dg-tile:not(:has(.dg-mlock))::after{font-size:9.5px;padding:6px 9px;}
+      /* Get access: the price box tighter, so its button is on the first screen */
+      html body.ve-gf.gf-hb .dg-access > .dg-pricebox{padding:12px 14px;}
+      html body.ve-gf.gf-hb .dg-pricebox .dg-big{font-size:28px;}
+      html body.ve-gf.gf-hb .dg-pricebox p{font-size:13px;line-height:1.4;margin:4px 0 8px;}
+    }
   </style>
 <script src="/public/ve-guide-corner.js"></script>
+<link rel="stylesheet" href="/public/ve-kit.css">
+<link rel="stylesheet" href="/public/ve-guide-frame.css">
 </head>
-<body>
+<body class="ve-gf gf-hb" data-gf-head-go>
 <div class="page-frame">
 <script src="/public/nav.js"></script>
 
@@ -612,5 +653,9 @@
 <script src="/public/ve-episodes.js"></script>
 <script src="/guide-scripts/vegan-events-guide.js"></script>
 <script src="/public/ve-guide-min.js"></script>
+<!-- The locked Guide template, Handbook (Sean, 2026-11-17; canon canon-ve-guide-templates). Contents lists the six groups River walks (Sean,
+     2026-11-05), each with its sections; "_kids" names each section's address so Contents can link it. -->
+<script type="application/json" id="gf-parts">{"start": "What the Guide covers, and where to begin", "planit": "Pick the kind of event, set the plan and know the money.", "lineup": "The place, the vendors and everything you pack.", "runit": "Getting the word out, the day itself and the day after.", "learn": "The hard questions, and hosts who have done it.", "together": "Claim what is yours, a sponsorship, and your access.", "_kids": {"Kinds": "kinds", "The plan": "plan", "Money": "money", "Venue": "venue", "Vendors": "vendors", "Gear": "gear", "The word": "word", "Day of": "dayof", "After": "after", "Elephants": "elephants", "Hosts": "hosts", "Claim": "claim", "Sponsorship": "work", "Get access": "join", "My list": "mylist"}}</script>
+<script src="/public/ve-guide-frame.js"></script>
 </body>
 </html>
