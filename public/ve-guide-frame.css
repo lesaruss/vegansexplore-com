@@ -413,3 +413,16 @@ html body.ve-gf.gf-hb .vg-land { display: block; }
 html body.ve-gf.gf-hb .vg-land .vg-kai { display: none; }
 html body.ve-gf.gf-hb .vg-land .vg-kick { color: #C2185B; }
 html body.ve-gf.gf-hb .vg-land .vg-sec { color: #1a1a1a; }
+
+/* Grouped Guides (2026-11-17, the Vegan Events Guide): a Contents entry is a group, its sections listed under it as links. Only drawn when
+   the page's gf-parts has "_kids", so the Guides moved before are unchanged. */
+body.gf-hb .gf-toc li:has(> .gf-kids) { min-width: 0; }
+body.gf-hb .gf-kids { margin: -4px 0 12px 50px; display: flex; flex-wrap: wrap; gap: 4px 6px; }
+body.gf-hb .gf-toc li .gf-kids a[data-gf-kid] { font-size: 12px; font-weight: 800; line-height: 1.3; color: #1a1a1a; text-decoration: none; border: 2px solid #1a1a1a; border-radius: 6px; padding: 3px 8px; background: #fff; display: inline-flex; align-items: center; gap: 6px; box-shadow: none; }
+body.gf-hb .gf-toc li .gf-kids a[data-gf-kid]:hover { background: #FFE3EE; }
+body.gf-hb .gf-toc li .gf-kids a[data-gf-kid][aria-current] { background: #FF9EC4; padding-left: 8px; }
+body.gf-hb .gf-kids .gf-lk { font-size: 9px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; color: #555; }
+@media (max-width: 900px) { body.gf-hb .gf-kids { margin: -2px 0 10px 40px; } body.gf-hb .gf-cbtn .gf-cur-g { display: none; } }
+
+/* Opt-in (body data-gf-head-go): the page head's own copy of the view's main action is hidden; the orange stand-in under the Guide row clicks it */
+html body.ve-gf.gf-hb[data-gf-head-go] .dg-head .gf-dup { display: none !important; }

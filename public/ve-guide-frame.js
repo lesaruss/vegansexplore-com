@@ -11,7 +11,9 @@
  *   - the Guide once, as a row under the page head: the rail's picture, the bubble's line, a quiet Play that clicks #dgPlay, Talk;
  *   - the page head's "Part N of M", one orange action per view (.gf-cta), Read on rows that open, and "Next part" at the bottom.
  * Optional page data: <script type="application/json" id="gf-parts">{"<tab key>": "one line"}</script> for the Contents lines,
- * and body data-gf-lead / data-gf-join for the join line's words. The Holiday Guide (body.ve-gf without gf-hb) never runs this. */
+ * and body data-gf-lead / data-gf-join for the join line's words. A Guide whose menu is groups of sections (its dropdown lists each
+ * group with its sections in small type, the Vegan Events Guide) adds "_kids": {"<section label>": "<section key>"}: Contents then
+ * lists each group's sections under it as links, the Contents button names the section too, and Next walks section by section. The Holiday Guide (body.ve-gf without gf-hb) never runs this. */
 (function () {
   var D = document, B = D.body;
   if (!B || !B.classList.contains('gf-hb') || D.getElementById('gfBar')) return;
@@ -33,6 +35,7 @@
     return out.join('').replace(/\s+/g, ' ').trim();
   }
   var LINES = {}; try { var lj = D.getElementById('gf-parts'); if (lj) LINES = JSON.parse(lj.textContent) || {}; } catch (e) {}
+  var KIDS = LINES._kids || null;
   var guideName = txt(top.querySelector('.dg-title')) || D.title;
   var gName = rail ? txt(rail.querySelector('.dg-maya-name b')) : '';
   var gFirst = gName.split(' ')[0];
@@ -105,19 +108,37 @@
       var raw = txt(o);
       var a = links[i], k = o.value;
       return { k: k, label: raw.replace(/^\d+\.\s*/, '').replace(/\s*\(locked\)$/i, ''), locked: /\(locked\)$/i.test(raw), on: o.selected && sel.value === k,
-        href: a && a.getAttribute('href') ? a.getAttribute('href') : '#/' + (k === 'overview' ? '' : k) };
+        href: a && a.getAttribute('href') ? a.getAttribute('href') : '#/' + (k === 'overview' ? '' : k), kids: kidsIn(a) };
     });
   }
+  // A group's sections, from the small type under it in the Guide's own dropdown (only with "_kids" in gf-parts).
+  function kidsIn(a) {
+    var sm = KIDS && a ? a.querySelector('small') : null; if (!sm) return [];
+    return sm.innerHTML.split(/&middot;|\u00b7/).map(function (h) {
+      var t = D.createElement('span'); t.innerHTML = h; var label = txt(t), k = KIDS[label];
+      return k ? { k: k, label: label, locked: !!t.querySelector('svg'), href: '#/' + k } : null;
+    }).filter(Boolean);
+  }
+  function curKid() { var s = menu ? menu.querySelector('.dg-dd-sec') : null; return s ? txt(s).replace(/^\u203a\s*/, '') : ''; }
   function current() { var P = parts(); for (var i = 0; i < P.length; i++) if (P[i].on) return { i: i, p: P[i], all: P }; return { i: -1, p: null, all: P }; }
   function two(n) { return (n < 10 ? '0' : '') + n; }
   function drawToc() {
     var c = current(), P = c.all;
-    curEl.textContent = c.p ? c.p.label : 'Search results';
+    var ck = c.p && c.p.kids.length ? curKid() : '';
+    // A section inside a group: "Plan it > Kinds" (on phones the section alone, .gf-cur-g is hidden there)
+    if (ck) curEl.innerHTML = '<span class="gf-cur-g">' + esc(c.p.label) + ' &rsaquo; </span>' + esc(ck);
+    else curEl.textContent = c.p ? c.p.label : 'Search results';
     toc.innerHTML = '<div class="gf-toc-h"><span class="k-label">' + esc(guideName) + ', contents</span><small>' + P.length + ' parts. Press Escape or Contents to close.</small></div><ol>' +
       P.map(function (p, i) {
         var line = LINES[p.k] || '';
         var bits = [line, p.locked ? 'In the full Guide' : '', p.on ? 'You are here' : ''].filter(Boolean).join(' &middot; ');
-        return '<li><a href="' + esc(p.href) + '" data-gf-part="' + esc(p.k) + '"' + (p.on ? ' aria-current="page"' : '') + '><i>' + two(i + 1) + '</i><b>' + esc(p.label) + '</b><small>' + bits + '</small></a></li>';
+        var here = p.on && !ck;
+        if (p.kids.length) bits = [line, here ? 'You are here' : ''].filter(Boolean).join(' &middot; ');
+        return '<li><a href="' + esc(p.href) + '" data-gf-part="' + esc(p.k) + '"' + (p.on && (here || !p.kids.length) ? ' aria-current="page"' : '') + '><i>' + two(i + 1) + '</i><b>' + esc(p.label) + '</b><small>' + bits + '</small></a>' +
+          (p.kids.length ? '<p class="gf-kids">' + p.kids.map(function (x) {
+            var on = p.on && x.label === ck;
+            return '<a href="' + esc(x.href) + '" data-gf-kid="' + esc(x.k) + '"' + (on ? ' aria-current="page"' : '') + '>' + esc(x.label) + (x.locked ? ' <span class="gf-lk">Locked</span>' : '') + '</a>';
+          }).join('') + '</p>' : '') + '</li>';
       }).join('') + '</ol>';
   }
   function setToc(open, focusBack) {
@@ -131,6 +152,7 @@
   btn.addEventListener('click', function () { setToc(toc.hidden, false); });
   D.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !toc.hidden) setToc(false, true); });
   toc.addEventListener('click', function (e) {
+    if (e.target.closest('a[data-gf-kid]')) { setToc(false, false); return; }
     var a = e.target.closest('a[data-gf-part]'); if (!a) return;
     e.preventDefault();
     var k = a.getAttribute('data-gf-part'), before = location.hash, h = a.getAttribute('href');
@@ -140,6 +162,7 @@
     setTimeout(function () { if (location.hash === before && h && h.charAt(0) === '#' && h !== before) location.hash = h; }, 0);
   });
   new MutationObserver(function () { drawToc(); queueDress(); }).observe(sel, { childList: true, subtree: true, attributes: true });
+  if (KIDS && menu) new MutationObserver(function () { drawToc(); queueDress(); }).observe(menu, { childList: true });
   sel.addEventListener('change', drawToc);
   window.addEventListener('hashchange', function () { setTimeout(drawToc, 0); });
 
@@ -177,7 +200,10 @@
 
   // ---------- each view: the head, the Guide row, one orange action, Read, Next part ----------
   function sub() { return (location.hash || '').replace(/^#\/?/, '').split('/').slice(1).join('/'); }
-  function firstVisible(list) { for (var i = 0; i < list.length; i++) { var r = list[i].getClientRects(); if (r.length && r[0].width) return list[i]; } return list[0] || null; }
+  function firstVisible(list) { for (var i = 0; i < list.length; i++) { if (list[i].classList.contains('gf-dup')) return list[i]; var r = list[i].getClientRects(); if (r.length && r[0].width) return list[i]; } return list[0] || null; }
+  // Opt-in (body data-gf-head-go, the Vegan Events Guide): when the view's main action is a button in its page head, the stand-in under
+  // the Guide row is the only copy shown (the original is hidden with .gf-dup and still clicked), so the action is not shown twice.
+  var HEADGO = B.hasAttribute('data-gf-head-go');
   function dress() {
     var c = current();
     // Page head: "Part N of M" on a part's own page (not on a piece inside it, whose crumb says where it is).
@@ -220,6 +246,8 @@
     var jb = box && shown(box) ? box.querySelector('.dg-btn') : null;
     var src = gs || pb || inForm ? null : (cand || (jb && shown(jb) ? jb : null));
     var go = main.querySelector('.gf-go'), pick = gs || pb || (inForm ? cand : null);
+    if (HEADGO) [].forEach.call(main.querySelectorAll('.gf-dup'), function (o) { if (o !== src) o.classList.remove('gf-dup'); });
+    if (HEADGO && src && src.closest('.dg-head') && !src.classList.contains('gf-dup')) src.classList.add('gf-dup');
     if (src && main.firstElementChild && !main.querySelector(':scope > .dg-loading')) {
       var label = txt(src);
       if (!go) { go = D.createElement('div'); go.className = 'gf-go'; }
@@ -244,10 +272,15 @@
     if (pick && !pick.classList.contains('gf-cta')) pick.classList.add('gf-cta');
     // Next part at the bottom (the pager is gone), unless the section's own "See it for yourself" already goes there.
     var nx = main.querySelector(':scope > .gf-next'), next = c.i >= 0 ? c.all[c.i + 1] : null;
+    // Grouped: a group's page goes to its first section, a section to the next one, the last section to the next group.
+    if (c.p && c.p.kids.length) {
+      var ck2 = curKid(), ki = -1; c.p.kids.forEach(function (x, n) { if (x.label === ck2) ki = n; });
+      if (ki < c.p.kids.length - 1) next = c.p.kids[ki + 1];
+    }
     var said = next && [].some.call(main.querySelectorAll('.vxc-go'), function (a) { return a.getAttribute('href') === next.href; });
     if (said || !next || !main.firstElementChild || main.querySelector(':scope > .dg-loading')) { if (nx) nx.remove(); }
     else {
-      var html = '<a href="' + esc(next.href) + '" data-gf-part="' + esc(next.k) + '">Next part: ' + esc(next.label) + ' &rsaquo;</a>' + esc(LINES[next.k] || '');
+      var html = '<a href="' + esc(next.href) + '" data-gf-part="' + esc(next.k) + '">Next part: ' + esc(next.label) + ' &rsaquo;</a>' + esc(typeof LINES[next.k] === 'string' ? LINES[next.k] : '');
       if (!nx) { nx = D.createElement('p'); nx.className = 'gf-next'; }
       if (nx.getAttribute('data-k') !== next.k) { nx.setAttribute('data-k', next.k); nx.innerHTML = html; }
       if (main.lastElementChild !== nx) main.appendChild(nx);
