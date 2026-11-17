@@ -318,6 +318,13 @@
       if (nx.getAttribute('data-k') !== next.k) { nx.setAttribute('data-k', next.k); nx.innerHTML = html; }
       if (main.lastElementChild !== nx) main.appendChild(nx);
     }
+    // Finder cards read like the mock's (Sean, 2026-11-17: "This doesn't feel like the style I approved"): the access tag moves off
+    // the picture into the tags (words never on the picture), and each card ends in one button on the right.
+    if (B.classList.contains('gf-fd')) [].forEach.call(main.querySelectorAll('.sa-vcard'), function (c) {
+      var b = c.querySelector('.sa-vbadge'), t = c.querySelector('.sa-vtags');
+      if (b && t) { while (b.lastChild) t.insertBefore(b.lastChild, t.firstChild); b.remove(); }
+      if (!c.querySelector('.fd-open')) { var s = D.createElement('span'); s.className = 'fd-open'; s.textContent = 'Open'; c.appendChild(s); }
+    });
     drawGuide();
   }
   var dq = 0;
