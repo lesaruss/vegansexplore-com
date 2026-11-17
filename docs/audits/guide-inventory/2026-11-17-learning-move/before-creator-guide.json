@@ -1,0 +1,413 @@
+{
+ "guide": "creator-guide",
+ "mode": "live",
+ "w": 1440,
+ "parts": {
+  "overview": {
+   "titles": [
+    "The Creator Guide",
+    "Looking for paid work that fits what you already make?",
+    "What you get",
+    "How it works",
+    "How to use this page"
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/tips",
+    "#/people",
+    "#/pulse",
+    "#/join",
+    "#/next",
+    "#/overview/dashboard",
+    "#/overview/join/1"
+   ],
+   "buttons": [
+    "Take survey",
+    "▶ Play Kai"
+   ],
+   "money": [
+    "Free",
+    "survey",
+    "Take survey",
+    "Sign in",
+    "Points gigs and gigs with no follower minimum let a small creator build a record. Results count more than followers."
+   ],
+   "menu": [
+    "Overview",
+    "The 10 tips",
+    "People doing it",
+    "Pulse",
+    "Get access",
+    "Become a creator"
+   ],
+   "hscroll": false,
+   "inner": [
+    "#dgMain.dg-main"
+   ],
+   "classes": {
+    "vg": 1,
+    "vg-land": 1,
+    "vg-land-l": 1,
+    "vg-kick": 1,
+    "vg-h": 1,
+    "vg-sec": 3,
+    "vg-gets": 1,
+    "vg-grid": 1,
+    "vg-grid4": 1,
+    "vg-steps4": 1,
+    "vg-card": 4,
+    "vg-n": 4,
+    "vg-title": 4,
+    "vg-line": 4,
+    "vg-use": 1,
+    "vg-btns": 1,
+    "vg-btn": 2,
+    "ghost": 1,
+    "vg-kai": 1,
+    "vg-kai-say": 1,
+    "vg-kai-play": 1
+   }
+  },
+  "tips": {
+   "titles": [
+    "The Creator Guide",
+    "From hobbyist to professional Vegan creator",
+    "1. Define Your Purpose and Niche",
+    "2. Master Storytelling and Authenticity",
+    "3. Build a Consistent Content Flow",
+    "4. Grow Your Audience with Smart Marketing",
+    "5. Monetize Without Selling Out",
+    "6. Build Community, Not Just an Audience",
+    "7. Leverage Data and Feedback",
+    "8. Protect Your Energy and Avoid Burnout",
+    "9. Scale Into a Full-Time Business",
+    "10. Stay True to the Movement",
+    "Every tip, with what to do this week"
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/tips",
+    "#/people",
+    "#/pulse",
+    "#/join",
+    "#/next",
+    "#/tips/purpose"
+   ],
+   "buttons": [
+    "Take survey",
+    "Take the creator survey, free",
+    "▶ Play Kai",
+    "Talk to Kai",
+    "Hide me"
+   ],
+   "money": [
+    "Free",
+    "survey",
+    "Take survey",
+    "Sign in",
+    "Free to try",
+    "In the full Guide",
+    "Storytelling, a steady content flow, smart marketing, earning without selling out, community, data, protecting your energy, going full time and staying true to the movement. Take the free creator survey to open the rest of the Guide. It makes you a member.",
+    "Take the creator survey, free",
+    "Already a member? Sign in"
+   ],
+   "menu": [
+    "Overview",
+    "The 10 tips",
+    "People doing it",
+    "Pulse",
+    "Get access",
+    "Become a creator"
+   ],
+   "hscroll": false,
+   "inner": [
+    "#dgMain.dg-main"
+   ],
+   "classes": {
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "dg-lede": 1,
+    "dg-srows": 1,
+    "dg-srow": 10,
+    "dg-th": 10,
+    "rg-th": 10,
+    "[object": 61,
+    "SVGAnimatedString]": 61,
+    "dg-srow-b": 10,
+    "dg-free": 1,
+    "dg-srow-p": 10,
+    "dg-gated": 1,
+    "dg-blur": 1,
+    "dg-skel": 1,
+    "dg-gate": 1,
+    "dg-lockic": 1,
+    "dg-btns": 1,
+    "dg-btn": 1
+   }
+  },
+  "people": {
+   "titles": [
+    "The Creator Guide",
+    "Vegan creators and channels"
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/tips",
+    "#/people",
+    "#/pulse",
+    "#/join",
+    "#/next",
+    "#/people/creators",
+    "#/people/youtube"
+   ],
+   "buttons": [
+    "Take survey",
+    "Vouch",
+    "Save",
+    "Show more",
+    "▶ Play Kai",
+    "Talk to Kai",
+    "Hide me"
+   ],
+   "money": [
+    "Free",
+    "survey",
+    "Take survey",
+    "Sign in"
+   ],
+   "menu": [
+    "Overview",
+    "The 10 tips",
+    "People doing it",
+    "Pulse",
+    "Get access",
+    "Become a creator"
+   ],
+   "hscroll": false,
+   "inner": [
+    "#dgMain.dg-main"
+   ],
+   "classes": {
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "dg-toggles": 1,
+    "dg-lede": 1,
+    "dg-tools": 1,
+    "dg-count": 1,
+    "vrd-root": 1,
+    "rank-grid": 1,
+    "rank-card": 24,
+    "vrd-logo": 24,
+    "av": 24,
+    "rank-info": 24,
+    "rank-name": 24,
+    "rank-meta": 24,
+    "rank-right": 24,
+    "vote-count": 24,
+    "vote-btn": 24,
+    "vrd-save": 24,
+    "vrd-mstat": 3,
+    "vrd-mstat-on": 3,
+    "veb-wrap": 1,
+    "veb-corner": 1,
+    "[object": 20,
+    "SVGAnimatedString]": 20,
+    "dg-btns": 1,
+    "dg-btn": 1,
+    "dg-ghost": 1,
+    "dg-pp": 1
+   }
+  },
+  "pulse": {
+   "titles": [
+    "The Creator Guide",
+    "Building a platform"
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/tips",
+    "#/people",
+    "#/pulse",
+    "#/join",
+    "#/next",
+    "#/pulse/craft",
+    "/directory/vegans-explore-podcast?ep=370b293c-61ee-45f8-8f0d-e12aaa8f67b6",
+    "/directory/vegans-who-lift-podcast?ep=08d4dded-ea4b-4322-9e56-ae49a524a3af",
+    "/directory/vegans-explore-podcast?ep=6b69fb7d-da34-43ce-8837-adcb40da4a39",
+    "/directory/vegans-explore-podcast?ep=9b87c237-6b29-42f9-8002-2dae81dcaada",
+    "/directory/soflo-vegans-podcast?ep=e9ea10f9-ef41-4425-9ea6-06705ef38816",
+    "/directory/vegans-explore-podcast?ep=3d36a143-e014-4059-915d-d61c70e6cb04",
+    "/directory/soflo-vegans-podcast?ep=tag%3Asoundcloud%2C2010%3Atracks%2F611830473"
+   ],
+   "buttons": [
+    "Take survey",
+    "Play",
+    "Take the creator survey, free",
+    "▶ Play Kai",
+    "Talk to Kai",
+    "Hide me"
+   ],
+   "money": [
+    "Free",
+    "survey",
+    "Take survey",
+    "Sign in",
+    "Listen to our conversations with creators right here in the Guide. Take the free creator survey to open the rest of the Guide. It makes you a member.",
+    "Take the creator survey, free",
+    "Already a member? Sign in"
+   ],
+   "menu": [
+    "Overview",
+    "The 10 tips",
+    "People doing it",
+    "Pulse",
+    "Get access",
+    "Become a creator"
+   ],
+   "hscroll": false,
+   "inner": [],
+   "classes": {
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "dg-toggles": 1,
+    "dg-lede": 1,
+    "dg-gated": 1,
+    "dg-blur": 1,
+    "rg-eps": 1,
+    "vep-list": 1,
+    "vep-row": 7,
+    "vep-imga": 7,
+    "vep-img": 7,
+    "vep-t": 7,
+    "vep-meta": 7,
+    "vep-acts": 7,
+    "vep-btn": 7,
+    "go": 7,
+    "[object": 17,
+    "SVGAnimatedString]": 17,
+    "dg-gate": 1,
+    "dg-lockic": 1,
+    "dg-btns": 1,
+    "dg-btn": 1
+   }
+  },
+  "join": {
+   "titles": [
+    "The Creator Guide",
+    "Open the whole Creator Guide"
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/tips",
+    "#/people",
+    "#/pulse",
+    "#/join",
+    "#/next"
+   ],
+   "buttons": [
+    "Take survey",
+    "Take the creator survey, free",
+    "Talk to Kai",
+    "Hide me"
+   ],
+   "money": [
+    "Free",
+    "survey",
+    "Take survey",
+    "Sign in",
+    "The Creator Guide is free when you take the short creator survey. Your answers are how we match you to paid campaigns, collabs and events, and finishing it makes you a Vegans Explore member. The overview, People doing it and Become a creator stay open to everyone.",
+    "with the creator survey",
+    "About ten minutes, up to 250 points, and your membership opens when you finish. Before midnight Eastern on January 1, 2027, that makes you a Founding Member.",
+    "Take the creator survey, free",
+    "The whole Creator Guide is free when you take the short creator survey. If you're not a member yet, it makes you one, and your answers are how we match you to campaigns."
+   ],
+   "menu": [
+    "Overview",
+    "The 10 tips",
+    "People doing it",
+    "Pulse",
+    "Get access",
+    "Become a creator"
+   ],
+   "hscroll": false,
+   "inner": [],
+   "classes": {
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "dg-lede": 1,
+    "dg-access": 1,
+    "dg-pricebox": 1,
+    "dg-big": 1,
+    "dg-btn": 1,
+    "dg-pp": 1
+   }
+  },
+  "next": {
+   "titles": [
+    "The Creator Guide",
+    "About you"
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/tips",
+    "#/people",
+    "#/pulse",
+    "#/join",
+    "#/next"
+   ],
+   "buttons": [
+    "Take survey",
+    "Next",
+    "▶ Play Kai",
+    "Talk to Kai",
+    "Hide me"
+   ],
+   "money": [
+    "Free",
+    "survey",
+    "Take survey",
+    "Sign in"
+   ],
+   "menu": [
+    "Overview",
+    "The 10 tips",
+    "People doing it",
+    "Pulse",
+    "Get access",
+    "Become a creator"
+   ],
+   "hscroll": false,
+   "inner": [
+    "#dgMain.dg-main"
+   ],
+   "classes": {
+    "vg": 1,
+    "vg-form": 1,
+    "vg-kick": 1,
+    "vg-h": 1,
+    "vg-steps": 1,
+    "on": 1,
+    "vg-help": 1,
+    "vg-field": 7,
+    "req": 4,
+    "vg-opts": 2,
+    "vg-err": 1,
+    "vg-pager": 1,
+    "vg-btn": 1
+   }
+  }
+ },
+ "errors": [
+  "Failed to load resource: net::ERR_TUNNEL_CONNECTION_FAILED"
+ ]
+}

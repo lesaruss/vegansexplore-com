@@ -175,3 +175,241 @@ html body.ve-gf.ve-gf .dg-tour { display: none; }
   html body.ve-gf.ve-gf .dg-rail > .vepg-talk, html body.ve-gf.ve-gf .dg-rail .dg-fold, html body.ve-gf.ve-gf .dg-rail .hg-expand,
   html body.ve-gf.ve-gf .dg-rail > .dg-namebar, html body.ve-gf.ve-gf .dg-rail > .dg-tour { display: none; }
 }
+
+/* ---------- Part 3: the locked templates (2026-11-17) ---------- */
+/* Sean, 2026-11-17: "Yes, I want to lock it in... they all need to be uniformed" (canon canon-ve-guide-templates). One frame, two bodies:
+ * Finder (/mocks/guide-templates/finder/) and Handbook (/mocks/guide-templates/handbook/). Everything here is scoped to body.ve-gf.gf-hb
+ * (the Handbook move: Nutrition, Food Photographer, Creator, Nonprofit first), so a page on Parts 1 and 2 only (the Holiday Guide, body.ve-gf)
+ * is untouched. /public/ve-guide-frame.js builds the parts named here from the Guide's own markup: .gf-bar (the pink Guide bar with the join
+ * line and ONE Contents button), .gf-toc (the numbered Contents panel), .gf-guide (the Guide once, under the page head), .gf-pn (Part N of M),
+ * .gf-cta (the view's one orange action), .gf-read (Read on a row) and .gf-next (Next part). The old header, tabs, rail and pager are hidden,
+ * never removed: the Guide's script still draws into them. Values copy the mock's shared frame block. */
+html body.ve-gf.gf-hb { background: #fff; }
+html body.ve-gf.gf-hb .dg-top, html body.ve-gf.gf-hb.ve-gf .dg-rail, html body.ve-gf.gf-hb.ve-gf .dg-tour, html body.ve-gf.gf-hb .dg-mini { display: none !important; }
+html body.ve-gf.gf-hb .page-frame { display: block; height: auto; }
+
+/* The Guide bar: name, the one line, the Contents button (members: their search beside it) */
+body.gf-hb .gf-bar { background: #FF9EC4; color: #1a1a1a; padding: 10px 40px; display: flex; align-items: center; justify-content: space-between; gap: 8px 20px; }
+body.gf-hb .gf-name { min-width: 0; display: flex; align-items: baseline; gap: 4px 14px; flex-wrap: wrap; }
+body.gf-hb .gf-h { margin: 0; font: inherit; }
+body.gf-hb .gf-h > a { display: block; font-size: 17px; font-weight: 900; letter-spacing: -.02em; color: #1a1a1a; text-decoration: none; white-space: nowrap; }
+body.gf-hb .gf-join { font-size: 12px; font-weight: 800; line-height: 1.45; }
+body.gf-hb .gf-join[hidden] { display: none; }
+body.gf-hb .gf-join a { color: #1a1a1a; font-weight: 900; text-decoration: underline; text-underline-offset: 2px; }
+body.gf-hb .gf-jin { margin-left: 10px; }
+body.gf-hb .gf-jin a { margin-left: 2px; }
+body.gf-hb .gf-status { font-size: 12px; font-weight: 800; color: #1a1a1a; }
+body.gf-hb .gf-status:empty { display: none; }
+body.gf-hb .gf-tools { flex: none; display: flex; align-items: center; gap: 10px; max-width: 64%; min-width: 0; }
+html body.ve-gf.gf-hb .gf-tools .dg-searchbox { flex: 0 1 340px; min-width: 0; width: 340px; }
+html body.ve-gf.gf-hb .gf-tools .dg-searchbox input { border: 2px solid #1a1a1a; border-radius: 6px; padding: 9px 12px 9px 38px; font-size: 13.5px; font-weight: 600; }
+html body.ve-gf.gf-hb .gf-tools .dg-searchbox input:focus { box-shadow: 3px 3px 0 #F69820; border-color: #1a1a1a; }
+body.gf-hb .gf-cbtn { font: inherit; flex: none; display: inline-flex; align-items: center; gap: 10px; max-width: 100%; background: #fff; color: #1a1a1a; border: 2px solid #1a1a1a; border-radius: 6px; padding: 6px 8px 6px 12px; cursor: pointer; box-shadow: 3px 3px 0 #1a1a1a; }
+body.gf-hb .gf-cbtn:hover { background: #FFE3EE; }
+body.gf-hb .gf-cbtn > b { font-size: 10.5px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
+body.gf-hb .gf-cbtn > span { min-width: 0; font-size: 13px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-left: 2px solid #1a1a1a; padding-left: 10px; }
+body.gf-hb .gf-cbtn > i { width: 26px; height: 26px; flex: none; display: grid; place-items: center; background: #1a1a1a; border-radius: 4px; }
+body.gf-hb .gf-cbtn > i::before { content: ""; width: 7px; height: 7px; border-right: 2.4px solid #fff; border-bottom: 2.4px solid #fff; transform: translateY(-2px) rotate(45deg); transition: transform .15s; }
+body.gf-hb .gf-cbtn[aria-expanded="true"] > i::before { transform: translateY(2px) rotate(-135deg); }
+body.gf-hb .gf-stripe { margin: 0; border-radius: 0; height: 6px; }
+
+/* The Contents panel: opens in place and pushes the page down; a grid on desktop, a list on phones */
+body.gf-hb .gf-toc { border-bottom: 3px solid #1a1a1a; padding: 6px 40px 18px; background: #fff; }
+body.gf-hb .gf-toc[hidden] { display: none; }
+body.gf-hb .gf-toc-h { display: flex; align-items: baseline; justify-content: space-between; gap: 8px 16px; flex-wrap: wrap; padding: 8px 0 4px; }
+body.gf-hb .gf-toc-h .k-label { margin: 0; color: #C2185B; }
+body.gf-hb .gf-toc-h small { font-size: 12px; font-weight: 700; color: #5c5c5c; }
+body.gf-hb .gf-toc ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0 28px; }
+body.gf-hb .gf-toc li a { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 2px 10px; padding: 12px 0; border-top: 2px solid #1a1a1a; text-decoration: none; color: #1a1a1a; }
+body.gf-hb .gf-toc li a > i { grid-row: span 2; font-style: normal; font-size: 24px; font-weight: 900; letter-spacing: -.04em; line-height: 1; }
+body.gf-hb .gf-toc li a b { font-size: 16px; font-weight: 900; letter-spacing: -.01em; line-height: 1.15; }
+body.gf-hb .gf-toc li a small { font-size: 12px; font-weight: 700; color: #5c5c5c; }
+body.gf-hb .gf-toc li a small:empty { display: none; }
+body.gf-hb .gf-toc li a:hover b { text-decoration: underline; text-decoration-thickness: 2px; }
+body.gf-hb .gf-toc li a[aria-current] { background: #FFE3EE; box-shadow: inset 6px 0 0 #FF9EC4; padding-left: 12px; }
+body.gf-hb .gf-toc li a[aria-current] > i { color: #C2185B; }
+body.gf-hb .gf-toc li a[aria-current] small { color: #1a1a1a; }
+
+/* The page: full width, one column, scrolls as a page */
+html body.ve-gf.gf-hb .dg-app { display: block; padding: 22px 40px 64px; }
+html body.ve-gf.gf-hb .dg-main { overflow: visible; padding: 0; min-height: 0; }
+
+/* The page head: eyebrow (Part N of M), title, one line */
+body.gf-hb .gf-pn { margin: 0 0 8px; }
+html body.ve-gf.gf-hb .dg-crumb { font-size: 12px; font-weight: 800; color: #5c5c5c; margin: 0 0 10px; }
+html body.ve-gf.gf-hb .dg-crumb a { color: #C2185B; }
+html body.ve-gf.gf-hb .dg-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 10px 20px; margin: 0 0 6px; }
+html body.ve-gf.gf-hb .dg-head .dg-k { font-size: 11px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; color: #C2185B; margin: 0 0 4px; }
+html body.ve-gf.gf-hb .dg-head .dg-k.gf-k-dup { display: none; }
+html body.ve-gf.gf-hb .dg-main .dg-h1, html body.ve-gf.gf-hb .dg-head .dg-h1 { display: block; background: none; padding: 0; margin: 0;
+  font-size: clamp(30px, 3.4vw, 50px) !important; font-weight: 900; line-height: 1.04; letter-spacing: -.035em; color: #1a1a1a; }
+html body.ve-gf.gf-hb .dg-lede { font-size: 15px; font-weight: 600; line-height: 1.55; color: #1a1a1a; max-width: 860px; margin: 0 0 14px; }
+
+/* The Guide, once: square picture framed from the top, the Guide's line, a quiet Play (and Talk, smaller) */
+body.gf-hb .gf-guide { display: flex; align-items: center; gap: 12px; max-width: 980px; margin: 0 0 18px; }
+body.gf-hb .gf-guide[hidden] { display: none; }
+body.gf-hb .gf-gpic { width: 52px; height: 52px; flex: none; border-radius: 10px; border: 2px solid #1a1a1a; background: #FFE3EE center top / cover no-repeat; display: block; }
+body.gf-hb .gf-guide p { flex: 1; min-width: 0; margin: 0; font-size: 13.5px; font-weight: 600; line-height: 1.42; color: #5c5c5c; }
+body.gf-hb .gf-guide p b { color: #1a1a1a; }
+body.gf-hb .gf-gacts { flex: none; display: flex; align-items: center; gap: 8px; }
+body.gf-hb .gf-play, body.gf-hb .gf-talk { flex: none; font: inherit; font-size: 11px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; color: #1a1a1a; background: transparent; border: 2px solid #1a1a1a; border-radius: 6px; padding: 7px 10px; cursor: pointer; white-space: nowrap; }
+body.gf-hb .gf-talk { border: 0; padding: 7px 2px; text-transform: none; letter-spacing: 0; font-size: 12px; font-weight: 800; color: #C2185B; text-decoration: underline; text-underline-offset: 2px; }
+body.gf-hb .gf-play:hover { background: #FFE3EE; }
+body.gf-hb .gf-play[hidden], body.gf-hb .gf-talk[hidden] { display: none; }
+
+/* Buttons in the page: the kit's white button with an ink outline; the view's ONE orange action is .gf-cta */
+html body.ve-gf.gf-hb.gf-hb .dg-main :is(.dg-btn, .vxc-go, .dg-tnav, .vg-btn), html body.ve-gf.gf-hb.gf-hb .dg-main .dg-tnav.next {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 0; border-radius: 6px; font-family: inherit; font-size: 12px; font-weight: 900; letter-spacing: .1em;
+  text-transform: uppercase; padding: 11px 18px; text-decoration: none; cursor: pointer; border: 2px solid #1a1a1a; background: #fff; color: #1a1a1a; line-height: 1.2; box-shadow: none; }
+html body.ve-gf.gf-hb.gf-hb .dg-main :is(.dg-btn, .vxc-go, .dg-tnav, .vg-btn):hover { background: #E8F5E9; }
+html body.ve-gf.gf-hb.gf-hb .dg-main .gf-cta, html body.ve-gf.gf-hb.gf-hb .dg-main .gf-cta.dg-btn { background: #F69820; border-color: #F69820; color: #1a1a1a; padding: 13px 22px; }
+html body.ve-gf.gf-hb.gf-hb .dg-main .gf-cta:hover { background: #E8890F; border-color: #E8890F; }
+/* ve-look.css paints .vg-btn with !important (white, or orange for .vg-next and Sign in); here only .gf-cta is orange */
+html body.ve-gf.gf-hb.gf-hb .dg-main .vg-btn:is(.vg-next, [data-signin]):not(.gf-cta) { background: #fff !important; border-color: #1a1a1a !important; }
+html body.ve-gf.gf-hb.gf-hb .dg-main .vg-btn.gf-cta { background: #F69820 !important; border-color: #F69820 !important; }
+body.gf-hb .gf-go { margin: 0 0 20px; }
+
+/* Getting started and How to use this page: one compact block, the words and the one orange action first */
+html body.ve-gf.gf-hb .wg-gs { display: flex; gap: 16px; align-items: flex-start; border: 2px solid #1a1a1a; border-radius: 14px; box-shadow: 6px 6px 0 #FF9EC4; background: #fff; padding: 14px; margin: 4px 6px 22px 0; max-width: 1180px; }
+html body.ve-gf.gf-hb .wg-gs-pic { flex: 0 0 132px; width: 132px; height: 132px; border: 2px solid #1a1a1a; border-radius: 10px; }
+html body.ve-gf.gf-hb .wg-gs-b { min-height: 0; padding: 0; }
+html body.ve-gf.gf-hb .wg-gs-b .vgi-k { font-size: 10.5px; font-weight: 900; letter-spacing: .16em; color: #C2185B; }
+html body.ve-gf.gf-hb .wg-gs-t { font-size: 18px; margin: 4px 0 6px; }
+html body.ve-gf.gf-hb .wg-gs-b p { font-size: 14px; line-height: 1.5; color: #1a1a1a; font-weight: 500; margin: 0 0 6px; max-width: 860px; }
+html body.ve-gf.gf-hb .wg-gs-btns { margin-top: 10px; gap: 10px; }
+/* The block's one action comes right after its words; anything else it holds (a Guide's settings, lists) follows the action */
+html body.ve-gf.gf-hb .wg-gs-b { display: flex; flex-direction: column; align-items: stretch; }
+html body.ve-gf.gf-hb .wg-gs-b > .wg-gs-btns { order: 1; margin-bottom: 4px; }
+html body.ve-gf.gf-hb .wg-gs-b > :not(.vgi-k):not(.wg-gs-t):not(p):not(.wg-gs-btns) { order: 2; }
+html body.ve-gf.gf-hb .fp-set div { border: 2px solid #1a1a1a; border-radius: 10px; padding: 10px 12px; }
+html body.ve-gf.gf-hb .fp-set b { font-size: 16px; }
+
+/* Lists of parts or pieces: kit rows, two across when there is room. Picture or icon left, title and two lines middle, one button right */
+html body.ve-gf.gf-hb .wg-arts { display: block; }
+html body.ve-gf.gf-hb .wg-grp { margin: 0 0 22px; }
+html body.ve-gf.gf-hb .wg-grp h5 { font-size: 18px; font-weight: 900; letter-spacing: -.01em; text-transform: none; color: #1a1a1a; border-bottom: 2px solid #1a1a1a; padding: 0 0 8px; margin: 0 0 12px; }
+html body.ve-gf.gf-hb .wg-grp ol, html body.ve-gf.gf-hb ol.wg-arts, html body.ve-gf.gf-hb .wg-arts > ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(520px, 100%), 1fr)); gap: 10px 18px; }
+html body.ve-gf.gf-hb .wg-art { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 12px; align-items: center; border: 2px solid #1a1a1a; border-radius: 10px; padding: 10px 12px; background: #fff; }
+html body.ve-gf.gf-hb .wg-art-img { width: 56px; height: 56px; border-radius: 8px; border: 2px solid #1a1a1a; background-position: center top; }
+html body.ve-gf.gf-hb .wg-art > div { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 12px; align-items: center; min-width: 0; }
+html body.ve-gf.gf-hb .wg-art-t { grid-column: 1; font-size: 14.5px; font-weight: 900; line-height: 1.25; margin: 0; color: #1a1a1a; }
+html body.ve-gf.gf-hb .wg-art > div > p { grid-column: 1; margin: 0; font-size: 12.5px; font-weight: 600; line-height: 1.4; color: #5c5c5c;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+html body.ve-gf.gf-hb .wg-art-more { grid-column: 2; grid-row: 1 / span 2; align-self: center; font-size: 10.5px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase;
+  border: 2px solid #1a1a1a; border-radius: 6px; padding: 8px 12px; color: #1a1a1a; text-decoration: none; white-space: nowrap; background: #fff; }
+html body.ve-gf.gf-hb .wg-art-more:hover { background: #FFE3EE; }
+
+html body.ve-gf.gf-hb .dg-srows { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(520px, 100%), 1fr)); gap: 10px 18px; }
+html body.ve-gf.gf-hb .dg-srow { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 12px; align-items: center; border: 2px solid #1a1a1a; border-radius: 10px; padding: 10px 12px; background: #fff; }
+html body.ve-gf.gf-hb .dg-srow:not(:has(> .dg-th)) { grid-template-columns: minmax(0, 1fr) auto; }
+html body.ve-gf.gf-hb .dg-srow:not(:has(> .dg-acts, > .gf-read, > .gf-tag)) { grid-template-columns: 52px minmax(0, 1fr); }
+html body.ve-gf.gf-hb .dg-srow:not(:has(> .dg-th)):not(:has(> .dg-acts, > .gf-read, > .gf-tag)) { grid-template-columns: minmax(0, 1fr); }
+html body.ve-gf.gf-hb .dg-srow[data-href]:hover { border-color: #1a1a1a; box-shadow: 4px 4px 0 #FF9EC4; }
+html body.ve-gf.gf-hb .dg-srow > .dg-th { width: 52px; height: 52px; border-radius: 8px; background-color: #FFE3EE; border: 2px solid #1a1a1a; align-self: center; }
+html body.ve-gf.gf-hb .dg-srow > .dg-th svg { width: 26px; height: 26px; }
+html body.ve-gf.gf-hb .dg-srow-b h3 { font-size: 14.5px; font-weight: 900; line-height: 1.25; margin: 0 0 2px; }
+html body.ve-gf.gf-hb .dg-srow-b .dg-srow-p { font-size: 12.5px; font-weight: 600; line-height: 1.4; color: #5c5c5c; }
+html body.ve-gf.gf-hb .dg-srow > .dg-acts { align-self: center; }
+html body.ve-gf.gf-hb .gf-read { font-size: 10.5px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; border: 2px solid #1a1a1a; border-radius: 6px; padding: 8px 12px; color: #1a1a1a; text-decoration: none; white-space: nowrap; background: #fff; }
+html body.ve-gf.gf-hb .gf-read:hover { background: #FFE3EE; }
+@media (max-width: 900px) { html body.ve-gf.gf-hb .gf-tag { font-size: 9px; padding: 4px 6px; } }
+html body.ve-gf.gf-hb .gf-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; border-radius: 6px; padding: 5px 8px; white-space: nowrap; background: #efefef; color: #555; }
+html body.ve-gf.gf-hb .dg-free { background: #FFE3EE; color: #C2185B; border-radius: 6px; font-weight: 900; padding: 3px 8px; margin: 0 6px 4px 0; }
+
+/* Switches inside a part (On our shows / Near you): the kit's tabs */
+html body.ve-gf.gf-hb .dg-toggles { display: flex; flex-wrap: wrap; gap: 8px; padding: 0; background: none; border-radius: 0; }
+html body.ve-gf.gf-hb .dg-toggles :is(a, button) { border: 2px solid #1a1a1a; border-radius: 6px; background: #fff; color: #1a1a1a; font-weight: 900; padding: 8px 13px; box-shadow: none; }
+html body.ve-gf.gf-hb .dg-toggles [aria-pressed="true"] { background: #1a1a1a; color: #fff; }
+
+/* What comes with the full Guide: the gate as a kit card */
+/* The gate sits in the same cell as the blurred preview, so the box grows to fit it: nothing is cut off, nothing scrolls */
+html body.ve-gf.gf-hb .dg-gated { display: grid; grid-template-columns: minmax(0, 1fr); max-height: none; min-height: 0; overflow: visible; }
+html body.ve-gf.gf-hb .dg-gated > * { grid-area: 1 / 1; }
+html body.ve-gf.gf-hb .dg-gated > .dg-blur { max-height: 340px; overflow: hidden; }
+html body.ve-gf.gf-hb .dg-gated > .dg-gate { position: relative; left: auto; top: auto; transform: none; align-self: center; justify-self: center; width: calc(100% - 38px); max-width: 440px; margin: 16px auto 22px; }
+html body.ve-gf.gf-hb .dg-gate { border: 2px solid #1a1a1a; border-radius: 14px; box-shadow: 6px 6px 0 #FF9EC4; }
+html body.ve-gf.gf-hb .dg-gate .dg-lockic { background: #FFE3EE; border-radius: 8px; }
+html body.ve-gf.gf-hb .dg-gate a:not(.dg-btn) { color: #C2185B; }
+html body.ve-gf.gf-hb .dg-pricebox { border: 2px solid #1a1a1a; border-radius: 14px; box-shadow: 6px 6px 0 #FF9EC4; }
+
+/* Next part: a plain link at the bottom (the section's "See it for yourself" becomes it) */
+html body.ve-gf.gf-hb.gf-hb .vxc { display: block; margin: 26px 0 0; padding: 16px 0 0; border: 0; border-top: 2px solid #1a1a1a; border-radius: 0; background: none; box-shadow: none; }
+html body.ve-gf.gf-hb .vxc-k { font-size: 10.5px; font-weight: 900; letter-spacing: .16em; color: #C2185B; }
+html body.ve-gf.gf-hb .vxc h3 { font-size: 17px; margin: 4px 0 2px; }
+html body.ve-gf.gf-hb .vxc p { font-size: 13px; font-weight: 600; color: #5c5c5c; margin: 0 0 10px; }
+html body.ve-gf.gf-hb.gf-hb .dg-main .vxc-go:not(.gf-cta) { width: auto; border: 0; background: none; padding: 0; font-size: 17px; letter-spacing: -.01em; text-transform: none;
+  text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; }
+html body.ve-gf.gf-hb.gf-hb .dg-main .vxc-go:not(.gf-cta)::after { content: " \203A"; }
+html body.ve-gf.gf-hb.gf-hb .dg-main .vxc-go:not(.gf-cta):hover { background: none; }
+body.gf-hb .gf-next { margin: 26px 0 0; padding-top: 16px; border-top: 2px solid #1a1a1a; font-size: 13px; font-weight: 700; color: #5c5c5c; }
+body.gf-hb .gf-next a { font-size: 17px; font-weight: 900; color: #1a1a1a; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 3px; margin-right: 10px; }
+
+@media (max-width: 1100px) { body.gf-hb .gf-toc ol { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 900px) {
+  body.gf-hb .gf-bar { padding: 8px 16px; }
+  body.gf-hb .gf-name { display: block; }
+  body.gf-hb .gf-h > a { font-size: 14.5px; white-space: normal; line-height: 1.15; }
+  body.gf-hb .gf-name { min-width: 0; flex: 1 1 auto; }
+  body.gf-hb .gf-join { display: block; font-size: 11px; margin-top: 1px; }
+  body.gf-hb .gf-jin { margin-left: 4px; }
+  body.gf-hb .gf-tools { max-width: 46%; }
+  body.gf-hb .gf-bar { gap: 8px 12px; }
+  html body.ve-gf.gf-hb .gf-tools .dg-searchbox { display: none !important; }
+  body.gf-hb .gf-cbtn { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 8px; padding: 5px 6px 5px 10px; text-align: left; }
+  body.gf-hb .gf-cbtn > b { font-size: 9px; grid-column: 1; grid-row: 1; line-height: 1.3; }
+  body.gf-hb .gf-cbtn > span { font-size: 12.5px; grid-column: 1; grid-row: 2; border-left: 0; padding-left: 0; line-height: 1.25; }
+  body.gf-hb .gf-cbtn > i { grid-column: 2; grid-row: 1 / span 2; width: 24px; height: 24px; }
+  body.gf-hb .gf-toc { padding: 4px 16px 14px; }
+  body.gf-hb .gf-toc ol { grid-template-columns: minmax(0, 1fr); }
+  body.gf-hb .gf-toc li a { padding: 10px 0; }
+  body.gf-hb .gf-toc li a > i { font-size: 20px; }
+  body.gf-hb .gf-toc li a b { font-size: 15px; }
+  html body.ve-gf.gf-hb .dg-app { padding: 14px 16px 48px; }
+  body.gf-hb .gf-pn { margin-bottom: 6px; padding: 5px 8px; }
+  html body.ve-gf.gf-hb .dg-main .dg-h1, html body.ve-gf.gf-hb .dg-head .dg-h1 { font-size: 30px !important; }
+  html body.ve-gf.gf-hb .dg-lede { font-size: 14px; line-height: 1.45; margin-bottom: 10px; }
+  body.gf-hb .gf-guide { gap: 10px; margin-bottom: 14px; align-items: flex-start; }
+  body.gf-hb .gf-gpic { width: 44px; height: 44px; }
+  body.gf-hb .gf-guide p { font-size: 12.5px; line-height: 1.38; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  body.gf-hb .gf-gacts { flex-direction: column; align-items: stretch; gap: 2px; }
+  body.gf-hb .gf-talk { font-size: 11px; padding: 2px; text-align: center; }
+  /* A part's own switches stay one row: smaller, and they slide sideways if they must, never wrapping into a second row */
+  html body.ve-gf.gf-hb .dg-toggles { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; gap: 6px; max-width: 100%; }
+  html body.ve-gf.gf-hb .dg-toggles::-webkit-scrollbar { display: none; }
+  html body.ve-gf.gf-hb .dg-toggles :is(a, button) { flex: none; font-size: 10.5px; padding: 7px 10px; }
+  html body.ve-gf.gf-hb .dg-head > div:first-child { min-width: 0; max-width: 100%; }
+  /* Get access: the price and its button first, then what comes with it */
+  html body.ve-gf.gf-hb .dg-access { display: flex; flex-direction: column; }
+  html body.ve-gf.gf-hb .dg-access > .dg-pricebox { order: -1; margin-bottom: 14px; }
+  html body.ve-gf.gf-hb .dg-pricebox .dg-big { font-size: 34px; line-height: 1.1; }
+  html body.ve-gf.gf-hb .dg-pricebox p { margin: 6px 0 10px; }
+  html body.ve-gf.gf-hb .wg-gs { padding: 12px; margin: 2px 4px 18px 0; box-shadow: 4px 4px 0 #FF9EC4; }
+  html body.ve-gf.gf-hb .wg-gs-t { font-size: 16px; }
+  html body.ve-gf.gf-hb .wg-gs-b p { font-size: 13px; }
+  html body.ve-gf.gf-hb.gf-hb .dg-main :is(.wg-gs, .gf-go) .gf-cta { width: 100%; }
+  body.gf-hb .gf-go { margin-bottom: 16px; }
+  html body.ve-gf.gf-hb .fp-set { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  html body.ve-gf.gf-hb .fp-set div { padding: 8px 10px; }
+  html body.ve-gf.gf-hb .fp-set b { font-size: 13.5px; }
+  html body.ve-gf.gf-hb .fp-set small { font-size: 11px; line-height: 1.35; }
+  /* Rows keep the desktop layout on phones (Sean, 2026-11-17): the button or tag stays on the right; the text in the middle gives */
+  html body.ve-gf.gf-hb .wg-art { grid-template-columns: 44px minmax(0, 1fr); gap: 10px; padding: 9px 10px; }
+  html body.ve-gf.gf-hb .wg-art-img { width: 44px; height: 44px; }
+  html body.ve-gf.gf-hb .wg-art-t { font-size: 13px; }
+  html body.ve-gf.gf-hb .wg-art > div > p { font-size: 11px; line-height: 1.35; }
+  html body.ve-gf.gf-hb .wg-art-more, html body.ve-gf.gf-hb .gf-read { font-size: 9.5px; padding: 6px 9px; }
+  html body.ve-gf.gf-hb .dg-srow { grid-template-columns: 40px minmax(0, 1fr) auto; gap: 10px; padding: 9px 10px; }
+  html body.ve-gf.gf-hb .dg-srow:not(:has(> .dg-acts, > .gf-read, > .gf-tag)) { grid-template-columns: 40px minmax(0, 1fr); }
+  html body.ve-gf.gf-hb .dg-srow > .dg-th { width: 40px; height: 40px; }
+  html body.ve-gf.gf-hb .dg-srow > .dg-th svg { width: 22px; height: 22px; }
+  html body.ve-gf.gf-hb .dg-srow-b h3 { font-size: 13px; }
+  html body.ve-gf.gf-hb .dg-srow-b .dg-srow-p { font-size: 11px; line-height: 1.35; }
+}
+
+/* Fixes after review (2026-11-17): the Guide appears once. The "How to use this page" picture is a second Guide picture beside the
+   Guide row, so it goes at every width; a view's own Guide panel (the Creator landing) gives its line to the row and is hidden. */
+html body.ve-gf.gf-hb .wg-gs-pic { display: none; }
+html body.ve-gf.gf-hb .vg-land { display: block; }
+html body.ve-gf.gf-hb .vg-land .vg-kai { display: none; }
+html body.ve-gf.gf-hb .vg-land .vg-kick { color: #C2185B; }
+html body.ve-gf.gf-hb .vg-land .vg-sec { color: #1a1a1a; }

@@ -1,0 +1,525 @@
+{
+ "guide": "food-photographer-guide",
+ "mode": "live",
+ "w": 1440,
+ "parts": {
+  "overview": {
+   "titles": [
+    "The Food Photographer Guide",
+    "Shoot Food People Want to Eat",
+    "How to use this page",
+    "Learn the Standard",
+    "Shoot and Get Paid"
+   ],
+   "links": [
+    "#/standard",
+    "#/paid",
+    "#/phone",
+    "#/camera",
+    "#/light",
+    "#/angles",
+    "#/plating",
+    "#/space",
+    "#/deliver",
+    "#/"
+   ],
+   "linkText": [
+    "Start with the standard",
+    "How you get paid",
+    "What Good Looks Like",
+    "Read more ›",
+    "Your Phone",
+    "Your Camera",
+    "Light and When to Shoot",
+    "The Two Angles",
+    "Plating and Drinks",
+    "The Space and the People",
+    "Delivering",
+    "Get Paid",
+    "Back",
+    "Next"
+   ],
+   "buttons": [
+    "Talk to Kai",
+    "Hide me"
+   ],
+   "money": [
+    "Free",
+    "Free for everyone",
+    "A $75 paid trial of three dishes, then booked shoots in your city."
+   ],
+   "menu": [
+    "Overview",
+    "What Good Looks Like",
+    "Your Phone",
+    "Your Camera",
+    "Light and When to Shoot",
+    "The Two Angles",
+    "Plating and Drinks",
+    "The Space and the People",
+    "Delivering",
+    "Get Paid"
+   ],
+   "allText": "VEGANS EXPLORE GUIDES The Food Photographer Guide Free FOR EVERYONE START WITH THE STANDARD 1. Overview 2. What Good Looks Like 3. Your Phone 4. Your Camera 5. Light and When to Shoot 6. The Two Angles 7. Plating and Drinks 8. The Space and the People 9. Delivering 10. Get Paid FREE FOR EVERYONE Shoot Food People Want to Eat GETTING STARTED How to use this page This Guide teaches the one standard we shoot restaurants to, with the exact settings, light and angles, using your phone or a camera. Read it in order, practice on your next meal, then take the paid trial and join the photographers we book. START WITH THE STANDARD HOW YOU GET PAID LEARN THE STANDARD What Good Looks Like The one standard every shoot is held to, shown on our sample restaurant. Read more › Your Phone Five phone settings that make your food photos look better today. Read more › Your Camera Where to start with a camera: aperture, ISO, shutter and white balance. Read more › Light and When to Shoot Where to put the plate, when to shoot, and how to soften the light. Read more › The Two Angles Three-quarter and overhead, on the same surface for every dish. Read more › SHOOT AND GET PAID Plating and Drinks Shoot it as it leaves the kitchen, clean, fast, with drinks lit from behind. Read more › The Space and the People Outside by day and dusk, the room, the counter, the details and the team. Read more › Delivering Three shapes, full size, named right and uploaded to the shot list. Read more › Get Paid A $75 paid trial of three dishes, then booked shoots in your city. Read more › KAI · YOUR CREATOR GUIDE Hi, I'm Kai. Restaurants want photos that make people hungry. This Guide shows you exactly how we shoot them, and how to get paid for it. Talk to Kai BACK 1 of 10 NEXT HIDE ME",
+   "hscroll": false,
+   "inner": [],
+   "orange": [
+    "A.dg-btn \"Start with the standard\""
+   ],
+   "titleBottom": 378,
+   "ctaBottom": null,
+   "ctaText": null
+  },
+  "standard": {
+   "titles": [
+    "The Food Photographer Guide",
+    "What Good Looks Like",
+    "One standard, every shoot",
+    "What every shoot has",
+    "See the whole sample shoot."
+   ],
+   "links": [
+    "#/standard",
+    "#/",
+    "https://vegansexplore.com/business/sample/shoot",
+    "#/phone"
+   ],
+   "linkText": [
+    "Start with the standard",
+    "The Food Photographer Guide",
+    "See the sample shoot",
+    "Back",
+    "Next"
+   ],
+   "buttons": [
+    "Talk to Kai",
+    "Hide me"
+   ],
+   "money": [
+    "Free"
+   ],
+   "menu": [
+    "Overview",
+    "What Good Looks Like",
+    "Your Phone",
+    "Your Camera",
+    "Light and When to Shoot",
+    "The Two Angles",
+    "Plating and Drinks",
+    "The Space and the People",
+    "Delivering",
+    "Get Paid"
+   ],
+   "allText": "VEGANS EXPLORE GUIDES The Food Photographer Guide Free FOR EVERYONE START WITH THE STANDARD 1. Overview 2. What Good Looks Like 3. Your Phone 4. Your Camera 5. Light and When to Shoot 6. The Two Angles 7. Plating and Drinks 8. The Space and the People 9. Delivering 10. Get Paid The Food Photographer Guide › What Good Looks Like LEARN THE STANDARD What Good Looks Like HOW TO USE THIS PAGE One standard, every shoot Everything below is what a finished shoot looks like. The pictures are Green Leaf Kitchen, our sample restaurant. Look at them closely: the same table, the same light, the same two angles. That sameness is what makes a menu look like one place. SEE THE SAMPLE SHOOT WHAT EVERY SHOOT HAS Same Surface, Same Light Every dish on the same table, by the same window, so the whole menu reads as one restaurant. Two Angles Every Dish A three-quarter shot and an overhead shot of each dish, framed the same way each time. Plated as Served What the customer gets, cleaned up and garnished. Nothing added that is not on the menu. The Space Too Outside, the room, the counter and the details, so people can picture walking in. The People Behind It The owner and the team, with their OK. People choose places run by people they like. SEE IT FOR YOURSELF See the whole sample shoot. Every dish and every shot of the space, the way a client gets them. SEE THE SAMPLE SHOOT KAI · YOUR CREATOR GUIDE Start here. This is the standard every shoot is held to. Learn to see it, and the rest gets easy. Talk to Kai BACK 2 of 10 NEXT HIDE ME",
+   "hscroll": false,
+   "inner": [],
+   "orange": [
+    "A.dg-btn \"Start with the standard\""
+   ],
+   "titleBottom": 401,
+   "ctaBottom": null,
+   "ctaText": null
+  },
+  "phone": {
+   "titles": [
+    "The Food Photographer Guide",
+    "Your Phone",
+    "Five settings, better photos today",
+    "Try it on your next meal."
+   ],
+   "links": [
+    "#/standard",
+    "#/",
+    "#/camera"
+   ],
+   "linkText": [
+    "Start with the standard",
+    "The Food Photographer Guide",
+    "Next: Your Camera",
+    "Back",
+    "Next"
+   ],
+   "buttons": [
+    "Talk to Kai",
+    "Hide me"
+   ],
+   "money": [
+    "Free"
+   ],
+   "menu": [
+    "Overview",
+    "What Good Looks Like",
+    "Your Phone",
+    "Your Camera",
+    "Light and When to Shoot",
+    "The Two Angles",
+    "Plating and Drinks",
+    "The Space and the People",
+    "Delivering",
+    "Get Paid"
+   ],
+   "allText": "VEGANS EXPLORE GUIDES The Food Photographer Guide Free FOR EVERYONE START WITH THE STANDARD 1. Overview 2. What Good Looks Like 3. Your Phone 4. Your Camera 5. Light and When to Shoot 6. The Two Angles 7. Plating and Drinks 8. The Space and the People 9. Delivering 10. Get Paid The Food Photographer Guide › Your Phone LEARN THE STANDARD Your Phone HOW TO USE THIS PAGE Five settings, better photos today Change these once and leave them. Wipe the lens with a soft cloth before every shoot; a smudge blurs more food photos than anything else. Grid on iPhone: Settings, Camera, Grid. Android: camera settings, Grid lines. Flash off Always. Flash flattens food and makes it shine in the wrong places. 1x lens Not the wide 0.5x. Step back and use 1x or 2x so plates keep their shape. Lock focus and exposure Tap and hold on the food until you see the lock, then slide a little darker. Portrait mode off No portrait blur, no filters, full resolution. We edit later, lightly. NEXT: YOUR CAMERA SEE IT FOR YOURSELF Try it on your next meal. Five settings, one window, one plate. Then come back and learn the light. NEXT: YOUR CAMERA KAI · YOUR CREATOR GUIDE Your phone is enough to start. Five settings, and your photos already look better. Talk to Kai BACK 3 of 10 NEXT HIDE ME",
+   "hscroll": false,
+   "inner": [],
+   "orange": [
+    "A.dg-btn \"Start with the standard\""
+   ],
+   "titleBottom": 401,
+   "ctaBottom": null,
+   "ctaText": null
+  },
+  "camera": {
+   "titles": [
+    "The Food Photographer Guide",
+    "Your Camera",
+    "A starting point, then adjust",
+    "Set it, test it, adjust it."
+   ],
+   "links": [
+    "#/standard",
+    "#/",
+    "#/light",
+    "#/phone"
+   ],
+   "linkText": [
+    "Start with the standard",
+    "The Food Photographer Guide",
+    "Next: Light and When to Shoot",
+    "Back",
+    "Next"
+   ],
+   "buttons": [
+    "Talk to Kai",
+    "Hide me"
+   ],
+   "money": [
+    "Free"
+   ],
+   "menu": [
+    "Overview",
+    "What Good Looks Like",
+    "Your Phone",
+    "Your Camera",
+    "Light and When to Shoot",
+    "The Two Angles",
+    "Plating and Drinks",
+    "The Space and the People",
+    "Delivering",
+    "Get Paid"
+   ],
+   "allText": "VEGANS EXPLORE GUIDES The Food Photographer Guide Free FOR EVERYONE START WITH THE STANDARD 1. Overview 2. What Good Looks Like 3. Your Phone 4. Your Camera 5. Light and When to Shoot 6. The Two Angles 7. Plating and Drinks 8. The Space and the People 9. Delivering 10. Get Paid The Food Photographer Guide › Your Camera LEARN THE STANDARD Your Camera HOW TO USE THIS PAGE A starting point, then adjust These are starting settings, not rules. Set them, take a test shot, look at it big, then adjust one thing at a time. f/4 to f/8 Enough of the dish in focus. Use f/2.8 only for a single detail shot. ISO 100 to 400 As low as the light allows, for clean shadows. 1/125 or faster Handheld. Slower than that, use a tripod. Daylight white balance Or set it from a gray card, so whites stay white. RAW and JPEG RAW for editing, JPEG to check on the spot. NEXT: LIGHT AND WHEN TO SHOOT SEE IT FOR YOURSELF Set it, test it, adjust it. One test shot, one change at a time. Then on to light. NEXT: LIGHT AND WHEN TO SHOOT KAI · YOUR CREATOR GUIDE Have a camera? Here is where to start. Then adjust from there. Talk to Kai BACK 4 of 10 NEXT HIDE ME",
+   "hscroll": false,
+   "inner": [],
+   "orange": [
+    "A.dg-btn \"Start with the standard\""
+   ],
+   "titleBottom": 401,
+   "ctaBottom": null,
+   "ctaText": null
+  },
+  "light": {
+   "titles": [
+    "The Food Photographer Guide",
+    "Light and When to Shoot",
+    "Where to put the plate, when to shoot",
+    "Light, step by step",
+    "Find your window."
+   ],
+   "links": [
+    "#/standard",
+    "#/",
+    "#/angles",
+    "#/camera"
+   ],
+   "linkText": [
+    "Start with the standard",
+    "The Food Photographer Guide",
+    "Next: The Two Angles",
+    "Back",
+    "Next"
+   ],
+   "buttons": [
+    "Talk to Kai",
+    "Hide me"
+   ],
+   "money": [
+    "Free"
+   ],
+   "menu": [
+    "Overview",
+    "What Good Looks Like",
+    "Your Phone",
+    "Your Camera",
+    "Light and When to Shoot",
+    "The Two Angles",
+    "Plating and Drinks",
+    "The Space and the People",
+    "Delivering",
+    "Get Paid"
+   ],
+   "allText": "VEGANS EXPLORE GUIDES The Food Photographer Guide Free FOR EVERYONE START WITH THE STANDARD 1. Overview 2. What Good Looks Like 3. Your Phone 4. Your Camera 5. Light and When to Shoot 6. The Two Angles 7. Plating and Drinks 8. The Space and the People 9. Delivering 10. Get Paid The Food Photographer Guide › Light and When to Shoot LEARN THE STANDARD Light and When to Shoot HOW TO USE THIS PAGE Where to put the plate, when to shoot Find the biggest window in the room and put the table beside it. Turn off the lights overhead. Shoot before service starts or between lunch and dinner, when the room is quiet and the light is steady. NEXT: THE TWO ANGLES LIGHT, STEP BY STEP Window Light, From the Side Light from the side or slightly behind the plate gives food shape and texture. Overhead Lights Off Mixed light turns food yellow on one side and blue on the other. Window only. Soften Hard Sun Direct sun makes harsh shadows. Hang a sheer curtain or a diffuser in the window. Fill With a White Card A white card or foam board opposite the window lifts the dark side of the plate. Outside at Dusk For the building, shoot 15 to 30 minutes after sunset with every light on. SEE IT FOR YOURSELF Find your window. One window, overhead lights off, a white card to fill. That is the setup. NEXT: THE TWO ANGLES KAI · YOUR CREATOR GUIDE Light is everything. Learn where to put the plate and when to shoot, and you are halfway there. Talk to Kai BACK 5 of 10 NEXT HIDE ME",
+   "hscroll": false,
+   "inner": [],
+   "orange": [
+    "A.dg-btn \"Start with the standard\""
+   ],
+   "titleBottom": 401,
+   "ctaBottom": null,
+   "ctaText": null
+  },
+  "angles": {
+   "titles": [
+    "The Food Photographer Guide",
+    "The Two Angles",
+    "Two angles, every dish",
+    "The two angles",
+    "Shoot both angles."
+   ],
+   "links": [
+    "#/standard",
+    "#/",
+    "#/plating",
+    "#/light"
+   ],
+   "linkText": [
+    "Start with the standard",
+    "The Food Photographer Guide",
+    "Next: Plating and Drinks",
+    "Back",
+    "Next"
+   ],
+   "buttons": [
+    "Talk to Kai",
+    "Hide me"
+   ],
+   "money": [
+    "Free"
+   ],
+   "menu": [
+    "Overview",
+    "What Good Looks Like",
+    "Your Phone",
+    "Your Camera",
+    "Light and When to Shoot",
+    "The Two Angles",
+    "Plating and Drinks",
+    "The Space and the People",
+    "Delivering",
+    "Get Paid"
+   ],
+   "allText": "VEGANS EXPLORE GUIDES The Food Photographer Guide Free FOR EVERYONE START WITH THE STANDARD 1. Overview 2. What Good Looks Like 3. Your Phone 4. Your Camera 5. Light and When to Shoot 6. The Two Angles 7. Plating and Drinks 8. The Space and the People 9. Delivering 10. Get Paid The Food Photographer Guide › The Two Angles LEARN THE STANDARD The Two Angles HOW TO USE THIS PAGE Two angles, every dish Every dish gets both angles, on the same surface, from the same distance. Leave a little room around the plate so it fits all three shapes we deliver. NEXT: PLATING AND DRINKS THE TWO ANGLES Three-Quarter, About 45 Degrees Best for burgers, sandwiches, stacks and drinks: anything with height. Overhead, Straight Down Best for bowls, flat plates and spreads. Keep the phone level with the table. Same Surface, Same Distance Every dish on the same table at the same size, so the menu looks like one place. Leave Room Around It The plate fills most of the frame with room to spare for square, tall and wide. SEE IT FOR YOURSELF Shoot both angles. One plate, two angles, same table. Then learn to make the plate ready. NEXT: PLATING AND DRINKS KAI · YOUR CREATOR GUIDE Two angles for every dish. Same surface, same light, every time. Talk to Kai BACK 6 of 10 NEXT HIDE ME",
+   "hscroll": false,
+   "inner": [],
+   "orange": [
+    "A.dg-btn \"Start with the standard\""
+   ],
+   "titleBottom": 401,
+   "ctaBottom": null,
+   "ctaText": null
+  },
+  "plating": {
+   "titles": [
+    "The Food Photographer Guide",
+    "Plating and Drinks",
+    "As it leaves the kitchen, but clean",
+    "Before you press the button",
+    "Clean it, then shoot it fast."
+   ],
+   "links": [
+    "#/standard",
+    "#/",
+    "#/space",
+    "#/angles"
+   ],
+   "linkText": [
+    "Start with the standard",
+    "The Food Photographer Guide",
+    "Next: The Space and the People",
+    "Back",
+    "Next"
+   ],
+   "buttons": [
+    "Talk to Kai",
+    "Hide me"
+   ],
+   "money": [
+    "Free"
+   ],
+   "menu": [
+    "Overview",
+    "What Good Looks Like",
+    "Your Phone",
+    "Your Camera",
+    "Light and When to Shoot",
+    "The Two Angles",
+    "Plating and Drinks",
+    "The Space and the People",
+    "Delivering",
+    "Get Paid"
+   ],
+   "allText": "VEGANS EXPLORE GUIDES The Food Photographer Guide Free FOR EVERYONE START WITH THE STANDARD 1. Overview 2. What Good Looks Like 3. Your Phone 4. Your Camera 5. Light and When to Shoot 6. The Two Angles 7. Plating and Drinks 8. The Space and the People 9. Delivering 10. Get Paid The Food Photographer Guide › Plating and Drinks SHOOT AND GET PAID Plating and Drinks HOW TO USE THIS PAGE As it leaves the kitchen, but clean Shoot what the customer gets. Ask the kitchen to plate it as they serve it, then fix the small things and shoot right away. Sauces dry, ice melts and steam disappears in minutes. NEXT: THE SPACE AND THE PEOPLE BEFORE YOU PRESS THE BUTTON Plated as Served No extras that are not on the menu. People should get what they see. Wipe the Rims, Garnish Last Clean drips and crumbs, add the fresh garnish just before you shoot. Shoot Fast Have the table and light ready before the plate comes out of the kitchen. Drinks: Light From Behind Put the window behind the glass so it glows. Catch the cold drops on the outside. Props: Keep It Simple One napkin, one utensil. No other brands in the frame. SEE IT FOR YOURSELF Clean it, then shoot it fast. Wipe, garnish, shoot. Then the room and the people. NEXT: THE SPACE AND THE PEOPLE KAI · YOUR CREATOR GUIDE Shoot it the way it leaves the kitchen, and shoot it fast. Here is what to fix before you press the button. Talk to Kai BACK 7 of 10 NEXT HIDE ME",
+   "hscroll": false,
+   "inner": [],
+   "orange": [
+    "A.dg-btn \"Start with the standard\""
+   ],
+   "titleBottom": 401,
+   "ctaBottom": null,
+   "ctaText": null
+  },
+  "space": {
+   "titles": [
+    "The Food Photographer Guide",
+    "The Space and the People",
+    "Where they will sit, who will feed them",
+    "The shot list for the room",
+    "Walk the room."
+   ],
+   "links": [
+    "#/standard",
+    "#/",
+    "#/deliver",
+    "#/plating"
+   ],
+   "linkText": [
+    "Start with the standard",
+    "The Food Photographer Guide",
+    "Next: Delivering",
+    "Back",
+    "Next"
+   ],
+   "buttons": [
+    "Talk to Kai",
+    "Hide me"
+   ],
+   "money": [
+    "Free"
+   ],
+   "menu": [
+    "Overview",
+    "What Good Looks Like",
+    "Your Phone",
+    "Your Camera",
+    "Light and When to Shoot",
+    "The Two Angles",
+    "Plating and Drinks",
+    "The Space and the People",
+    "Delivering",
+    "Get Paid"
+   ],
+   "allText": "VEGANS EXPLORE GUIDES The Food Photographer Guide Free FOR EVERYONE START WITH THE STANDARD 1. Overview 2. What Good Looks Like 3. Your Phone 4. Your Camera 5. Light and When to Shoot 6. The Two Angles 7. Plating and Drinks 8. The Space and the People 9. Delivering 10. Get Paid The Food Photographer Guide › The Space and the People SHOOT AND GET PAID The Space and the People HOW TO USE THIS PAGE Where they will sit, who will feed them Shoot the space before it fills up. Hold the camera at chest height and keep the walls straight up and down. Ask before photographing anyone, and get customers' permission in writing. NEXT: DELIVERING THE SHOT LIST FOR THE ROOM Outside by Day The front, the entrance and the sign, straight on, in good daylight. Outside at Dusk The same view after sunset with the lights on. It is the shot people remember. Inside Wide, From the Corners Chest height, walls straight. Show where people sit. The Counter and the Details The counter or bar, the plants, the menu board: what makes it theirs. The Owner and the Team With their OK. Customers only with written permission. SEE IT FOR YOURSELF Walk the room. Outside, inside, the counter, the details, the team. Then deliver it right. NEXT: DELIVERING KAI · YOUR CREATOR GUIDE People want to see where they will sit and who will feed them. Here is the shot list for the room. Talk to Kai BACK 8 of 10 NEXT HIDE ME",
+   "hscroll": false,
+   "inner": [],
+   "orange": [
+    "A.dg-btn \"Start with the standard\""
+   ],
+   "titleBottom": 401,
+   "ctaBottom": null,
+   "ctaText": null
+  },
+  "deliver": {
+   "titles": [
+    "The Food Photographer Guide",
+    "Delivering",
+    "Land it right",
+    "How to deliver",
+    "Deliver it right."
+   ],
+   "links": [
+    "#/standard",
+    "#/",
+    "#/paid",
+    "#/space"
+   ],
+   "linkText": [
+    "Start with the standard",
+    "The Food Photographer Guide",
+    "Next: Get Paid",
+    "Back",
+    "Next"
+   ],
+   "buttons": [
+    "Talk to Kai",
+    "Hide me"
+   ],
+   "money": [
+    "Free"
+   ],
+   "menu": [
+    "Overview",
+    "What Good Looks Like",
+    "Your Phone",
+    "Your Camera",
+    "Light and When to Shoot",
+    "The Two Angles",
+    "Plating and Drinks",
+    "The Space and the People",
+    "Delivering",
+    "Get Paid"
+   ],
+   "allText": "VEGANS EXPLORE GUIDES The Food Photographer Guide Free FOR EVERYONE START WITH THE STANDARD 1. Overview 2. What Good Looks Like 3. Your Phone 4. Your Camera 5. Light and When to Shoot 6. The Two Angles 7. Plating and Drinks 8. The Space and the People 9. Delivering 10. Get Paid The Food Photographer Guide › Delivering SHOOT AND GET PAID Delivering HOW TO USE THIS PAGE Land it right A shoot is done when the files are in the shot list, in the right shapes, named so anyone can find them. Edit lightly and honestly. NEXT: GET PAID HOW TO DELIVER Three Shapes, Full Size Every dish in 4:5, 1:1 and 16:9, each made from your full-size photo. JPEG, Big Enough sRGB color, at least 3,000 pixels on the long side. Name Every File The dish and the angle, like burrito-bowl-overhead.jpg, so nothing gets lost. Light Edits Only Exposure, white balance and straightening. No filters, nothing added that is not there. Upload to the Shot List Each photo onto its dish in the shot list. Copyright goes to the client. SEE IT FOR YOURSELF Deliver it right. Three shapes, full size, named and uploaded. Then get paid for it. NEXT: GET PAID KAI · YOUR CREATOR GUIDE Great photos still need to land right. Here is exactly how to deliver them. Talk to Kai BACK 9 of 10 NEXT HIDE ME",
+   "hscroll": false,
+   "inner": [],
+   "orange": [
+    "A.dg-btn \"Start with the standard\""
+   ],
+   "titleBottom": 401,
+   "ctaBottom": null,
+   "ctaText": null
+  },
+  "paid": {
+   "titles": [
+    "The Food Photographer Guide",
+    "Get Paid",
+    "From learning it to getting paid for it",
+    "How it works",
+    "Ready to get paid for it?"
+   ],
+   "links": [
+    "#/standard",
+    "#/",
+    "/gigs#board",
+    "#/deliver",
+    "#/paid"
+   ],
+   "linkText": [
+    "Start with the standard",
+    "The Food Photographer Guide",
+    "See the job",
+    "Back",
+    "Next"
+   ],
+   "buttons": [
+    "Talk to Kai",
+    "Hide me"
+   ],
+   "money": [
+    "Free",
+    "A short pitch and two or three food photos. Join free with a short survey to see it.",
+    "The Paid Trial: $75"
+   ],
+   "menu": [
+    "Overview",
+    "What Good Looks Like",
+    "Your Phone",
+    "Your Camera",
+    "Light and When to Shoot",
+    "The Two Angles",
+    "Plating and Drinks",
+    "The Space and the People",
+    "Delivering",
+    "Get Paid"
+   ],
+   "allText": "VEGANS EXPLORE GUIDES The Food Photographer Guide Free FOR EVERYONE START WITH THE STANDARD 1. Overview 2. What Good Looks Like 3. Your Phone 4. Your Camera 5. Light and When to Shoot 6. The Two Angles 7. Plating and Drinks 8. The Space and the People 9. Delivering 10. Get Paid The Food Photographer Guide › Get Paid SHOOT AND GET PAID Get Paid HOW TO USE THIS PAGE From learning it to getting paid for it Restaurants book photo shoots through us, and we book the photographers who meet this standard. Members, creators and students all start the same way: apply, take the paid trial, and join the photographers we book in your city. SEE THE JOB HOW IT WORKS Apply on the Gig Board A short pitch and two or three food photos. Join free with a short survey to see it. The Paid Trial: $75 Three dishes we name, shot to this standard. We tell you what passed and what to fix. Join the Photographers We Book Pass it and we book you for shoots in your city, with the shot list in hand. Paid for Every Shoot The pay for each shoot is set and agreed before you are booked. SEE IT FOR YOURSELF Ready to get paid for it? Apply on the Gig Board. A few people are picked for the paid trial each round. SEE THE JOB KAI · YOUR CREATOR GUIDE Ready? Here is how you go from learning this to getting paid for it. Talk to Kai BACK 10 of 10 NEXT HIDE ME",
+   "hscroll": false,
+   "inner": [],
+   "orange": [
+    "A.dg-btn \"Start with the standard\""
+   ],
+   "titleBottom": 401,
+   "ctaBottom": null,
+   "ctaText": null
+  }
+ },
+ "errors": []
+}
