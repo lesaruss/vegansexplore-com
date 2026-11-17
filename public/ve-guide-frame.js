@@ -78,7 +78,7 @@
     joinEl.hidden = false;
     var price = box.querySelector('.dg-jb-price');
     var lead = B.getAttribute('data-gf-lead') || (price ? words(price).replace(/\.$/, '') + '.' : '');
-    if (lead) joinEl.appendChild(D.createTextNode(lead + ' '));
+    if (lead) { var ls = D.createElement('span'); ls.className = 'gf-jlead'; ls.textContent = lead + ' '; joinEl.appendChild(ls); }
     var jb = box.querySelector('.dg-btn');
     if (jb && shown(jb)) {
       var lab = txt(jb), cfg = B.getAttribute('data-gf-join');
