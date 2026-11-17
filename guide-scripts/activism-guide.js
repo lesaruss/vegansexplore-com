@@ -28,6 +28,8 @@
   // Legal and policy work (Sean, 2026-11-16: "Go ahead with legal and policy work"); ALDF and the Nonhuman Rights Project show once listed.
   var LAW_NAMES = ['Animal Legal Defense Fund', 'Nonhuman Rights Project', 'Physicians Committee for Responsible Medicine', 'Humane World for Animals', 'The Humane League', 'Mercy For Animals'];
   var SCHOOL_MILK_AUDIO = 'https://episodes.captivate.fm/episode/33c5126d-a2a4-4a20-8437-1a7fa327d191.mp3';
+  // Digital activism (Sean, 2026-11-16: "Go ahead with digital activism").
+  var DIGITAL_NAMES = ['Earthling Ed', 'Joey Carbstrong', 'Veganuary', 'Vegan Outreach', 'The Humane League', 'Faunalytics'];
   var OUTREACH_NAMES = ['Anonymous for the Voiceless', 'Vegan Outreach', 'Earthling Ed', 'Joey Carbstrong', 'Revolution Philadelphia'];
   // More humane educators (Sean, 2026-11-16: "find out who the community would consider humane educators"); each shows once its listing is approved.
   var MORE_EDU_NAMES = ['TeachKind', 'LivingKind', 'Ruby Roth', 'Factory Farming Awareness Coalition', 'Institute for Humane Education'];
@@ -109,10 +111,10 @@
     ['direct-action', 'direct', 'Direct action', 'Protests, vigils and peaceful public actions that bring attention to what animals go through.'],
     ['legal-policy', 'law', 'Legal and policy work', 'Changing laws, rules and the way companies and schools do things.'],
     ['sanctuaries', 'sanctuary', 'Sanctuaries and rescue', 'Giving animals a safe home for life, and showing visitors who they really are.'],
-    ['', 'digital', 'Digital activism', 'Videos, posts, petitions and campaigns that reach people where they scroll.']
+    ['digital-activism', 'digital', 'Digital activism', 'Videos, posts, petitions and campaigns that reach people where they scroll.']
   ];
   // The parts in the menu, and every page the rail walks (each page its own Dani scene).
-  var TABS = [{ k: 'overview', label: 'Overview' }, { k: 'humane-education', label: 'Humane Education' }, { k: 'street-outreach', label: 'Street Outreach' }, { k: 'direct-action', label: 'Direct Action' }, { k: 'legal-policy', label: 'Legal and Policy' }, { k: 'speeches', label: 'The Speeches' }, { k: 'sanctuaries', label: 'Sanctuaries' }, { k: 'history', label: 'History' }];
+  var TABS = [{ k: 'overview', label: 'Overview' }, { k: 'humane-education', label: 'Humane Education' }, { k: 'street-outreach', label: 'Street Outreach' }, { k: 'direct-action', label: 'Direct Action' }, { k: 'legal-policy', label: 'Legal and Policy' }, { k: 'digital-activism', label: 'Digital Activism' }, { k: 'speeches', label: 'The Speeches' }, { k: 'sanctuaries', label: 'Sanctuaries' }, { k: 'history', label: 'History' }];
   var STEPS = [
     // Dani's lines, approved by Sean 2026-11-16 (the Humane Education line updated for Susan the same day); text until recorded.
     { k: 'overview', art: 'overview', say: 'Hi, I\'m Dani. Every animal we\'ve ever helped was helped by someone who decided to speak up. There\'s no single right way to do it. Some people teach, some march, some build sanctuaries, some change laws. This Guide walks you through all of it, so you can find the way that fits you. Let\'s start with one of the gentlest and most powerful: teaching.' },
@@ -128,6 +130,8 @@
     { k: 'direct-action', art: 'direct-action', say: 'Sometimes the most powerful thing we can do is show up, together, where everyone can see us. Marches, vigils and peaceful protests remind the world that animals have people standing up for them. Go with a group, stay peaceful, and you will never forget your first one.' },
     // Draft for Sean (2026-11-16, "Go ahead with legal and policy work").
     { k: 'legal-policy', art: 'legal-policy', say: 'Laws decide how millions of animals are treated, and laws are written by people who answer to us. You do not need to be a lawyer to change them. A phone call, an email or two minutes at a public meeting can be the voice that tips a vote.' },
+    // Draft for Sean (2026-11-16, "Go ahead with digital activism").
+    { k: 'digital-activism', art: 'digital-activism', say: 'Your phone is a megaphone. One honest video, one shared story or one review asking for a Vegan option can reach more people than you will ever meet on the street. Share what you love, check your facts and lead with kindness.' },
     // Draft for Sean (2026-11-16, "Go ahead with the speeches").
     { k: 'speeches', art: 'speeches', say: 'Sometimes one talk is all it takes. These are some of the most watched and shared talks on Veganism anywhere, and the list keeps growing. Start with a short one tonight, save the long ones for when you have the time, and tell us which talk changed your mind.' },
     // Draft for Sean (2026-11-16, "Go ahead with sanctuaries and rescue").
@@ -292,6 +296,41 @@
         '<div class="k-f wide"><label for="agSugWhy">Why it belongs here</label><textarea id="agSugWhy" maxlength="1500"></textarea></div>' +
         '<div class="k-f wide"><button type="submit" class="dg-btn" id="agSugGo">Send my suggestion</button><p class="k-msg" id="agSugMsg" role="status"></p></div>' +
         '</form>';
+    },
+    'digital-activism': function () {
+      var forms = [
+        ['digital', 'Make your own content', 'Short videos, recipes, posts and stories about why you went Vegan. Earthling Ed and Joey Carbstrong built huge audiences this way.'],
+        ['outreach', 'Share what others make', 'Sharing a powerful documentary, a news story or an investigation puts it in front of people who would never find it on their own.'],
+        ['law', 'Online campaigns and petitions', 'Emails, comments and petitions that ask companies and lawmakers to change, often organized by groups like The Humane League.'],
+        ['teach', 'Mentoring and challenges', 'Helping someone try Vegan online, through challenges like Veganuary or Vegan Outreach\'s free 10 Weeks to Vegan mentoring.'],
+        ['sanctuary', 'Reviews and requests', 'Leaving good reviews for Vegan businesses, and kindly asking restaurants and stores to add Vegan options, so the places that try get rewarded.']
+      ];
+      var here = [
+        ['Vouch for a place', 'Vouch for the Vegan businesses, sanctuaries and groups you stand behind, so more people find them.', '/directory'],
+        ['Add a place we are missing', 'Know a Vegan business, sanctuary or group that is not in our Directory? Tell us and we will add it.', '#/digital-activism'],
+        ['Nominate someone', 'Give someone in your community their flowers, and they could be featured on our podcast and city pages.', '/nominate'],
+        ['Share a Guide', 'Every page of this Guide has its own link. Send the part that fits to someone who is ready for it.', '#/']
+      ];
+      var steps = [
+        ['Pick one place to start', 'You do not need every app. Choose the one where your friends and family already are.'],
+        ['Share stories, not shame', 'People change when they feel invited, not judged. A good meal or a rescued animal\'s story opens more minds than an argument.'],
+        ['Check before you share', 'Make sure a fact or a video is true and current before passing it on. One wrong claim can undo a lot of trust.'],
+        ['Protect your peace', 'You do not have to answer every comment. Mute, block and log off when you need to.']
+      ];
+      return crumb('Digital Activism') + head('Digital activism', 'Speak Up Online', '') +
+        '<div class="ag-sec"><h3>What is digital activism?</h3>' +
+        '<p class="ag-about">Digital activism is speaking up for animals online: making and sharing videos, posts and stories, signing and sharing campaigns, mentoring people who want to try Vegan, and supporting the businesses that make it easy. It reaches people in places no one could ever stand on a street corner.</p></div>' +
+        '<div class="ag-sec"><h3>The ways it is done</h3><ul class="ag-ways">' + forms.map(function (w) {
+          return '<li><div class="ag-way"><span class="ag-ic"><svg viewBox="0 0 24 24" aria-hidden="true">' + IC[w[0]] + '</svg></span><span><b>' + esc(w[1]) + '</b><small>' + esc(w[2]) + '</small></span></div></li>';
+        }).join('') + '</ul></div>' +
+        '<div class="ag-sec"><h3>Start right here</h3><p class="ag-sub">Things you can do on Vegans Explore today.</p><ul class="ag-ways">' + here.map(function (w) {
+          return '<li><a class="ag-way" href="' + w[2] + '"' + (w[0] === 'Add a place we are missing' ? ' data-ve-listing-request role="button"' : '') + '><span class="ag-ic"><svg viewBox="0 0 24 24" aria-hidden="true">' + IC.digital + '</svg></span><span><b>' + esc(w[0]) + '</b><small>' + esc(w[1]) + '</small><span class="ag-tag live">Open</span></span></a></li>';
+        }).join('') + '</ul></div>' +
+        '<div class="ag-sec"><h3>Good habits online</h3><ol class="ag-tl" style="--ag-c:#FF9EC4">' + steps.map(function (x) {
+          return '<li class="ag-ev"><details open><summary><b>' + esc(x[0]) + '</b></summary><div class="ag-evb"><p>' + esc(x[1]) + '</p></div></details></li>';
+        }).join('') + '</ol></div>' +
+        '<div class="ag-sec"><h3>Who does it</h3><p class="ag-sub">People and groups known for activism online, in our Directory.</p><div id="agDig"><p class="ag-sub">Loading...</p></div></div>' +
+        cta('Digital activism', 'Want to make content?', 'Kai\'s Creator Guide walks you through building a Vegan audience, step by step.', ['The Creator Guide', '/guides/creator-guide']);
     },
     'legal-policy': function () {
       var forms = [
@@ -487,6 +526,7 @@
     if (k === 'speeches') loadCards(SPEAKER_NAMES, 'agSpk', 'agSpkGrid');
     if (k === 'direct-action') loadCards(ACTION_NAMES, 'agAct', 'agActGrid');
     if (k === 'legal-policy') loadCards(LAW_NAMES, 'agLaw', 'agLawGrid');
+    if (k === 'digital-activism') loadCards(DIGITAL_NAMES, 'agDig', 'agDigGrid');
     if (k === 'street-outreach') { loadCards(OUTREACH_NAMES, 'agOut', 'agOutGrid'); loadBooks(['Ed Winters'], 'agOutBooksSec', 'agOutBooks', 'agOutBooksGrid'); }
     if (k === 'sanctuaries') { loadTop('Sanctuaries', 'agSan', 'agSanGrid'); loadTop('Rescues', 'agRes', 'agResGrid'); }
     if (k === 'humane-education/susan-hargreaves') loadCards(SUSAN_NAMES, 'agSusan', 'agSusanGrid', function (rows) {
