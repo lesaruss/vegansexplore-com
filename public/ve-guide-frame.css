@@ -582,3 +582,22 @@ html body.ve-gf.gf-hb.gf-fd .sa-vcard:hover .fd-open { background: #FFE3EE; }
   /* Chips fill the row like the mock's, a little smaller so three fit on one line */
   body.gf-fd .fd-chips :is(button, a), body.gf-fd .fd-chips .fd-chip-t { flex: 1 1 auto; font-size: 12px; padding: 8px 8px; }
 }
+
+/* The top of every Guide back to the approved mock (Sean, 2026-11-17: "I don't like how the guides are sitting at the top. It looks
+   jumbled and broken"). The Guide row is the mock's: picture, line, and its buttons right beside the line (860 px), Talk a quiet button
+   like Play rather than a loose link far to the right. On phones the bar's join line is one short line, as in the mock. The overview
+   title keeps its breathing room above its line. */
+body.gf-hb .gf-guide { max-width: 900px; }
+body.gf-hb .gf-talk { border: 2px solid #1a1a1a; border-radius: 6px; padding: 7px 10px; font-size: 11px; font-weight: 900; letter-spacing: .1em;
+  text-transform: uppercase; color: #1a1a1a; text-decoration: none; background: #fff; }
+body.gf-hb .gf-talk:hover { background: #FFE3EE; }
+html body.ve-gf.gf-hb .ov-hero .dg-h1 { margin-bottom: 10px; }
+@media (max-width: 900px) {
+  body.gf-hb .gf-jlead { display: none; }
+  body.gf-hb .gf-jin { font-size: 0; margin-left: 0; }
+  body.gf-hb .gf-jin a { font-size: 11px; margin-left: 8px; }
+  body.gf-hb .gf-join { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  body.gf-hb .gf-gacts { gap: 6px; }
+  body.gf-hb .gf-talk { padding: 5px 8px; font-size: 9.5px; letter-spacing: .06em; text-align: center; }
+  html body.ve-gf.gf-hb .ov-hero .dg-h1 { margin-bottom: 8px; }
+}
