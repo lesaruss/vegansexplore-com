@@ -208,3 +208,14 @@ page says "Nothing was approved: <why>" and keeps the button, per-post results s
 every refusal and every change with counts (maxDuration 300). HQ's `social.html` is now the only source of that page (the
 VE Depot original is a stub), so `scripts/sync-branddesk-social.py` in HQ no longer applies. Handoff:
 `docs/handoff/2026-11-15-branddesk-social-approve.md`.
+
+## The Social tab is theirs (Sean, 2026-11-17)
+
+Sean, on Love Life Cafe's tab (eight of our posts, several roundups, one from 2019): "It's a lot of us on there, and she probably just wants to
+showcase her stuff... as a restaurant owner, I might even be turned off by it... Maybe we should just be focusing on new campaigns and then
+making that more a showcase for their stuff"; Logan's recommendation, then "go". `loadSocialTab` in `directory/listing.html`: **Their top
+posts** first; then **Featured on Vegans Explore**, at most three, only from the last 12 months and only posts about them (three other
+accounts tagged at most, our own handles not counted; a roundup that tags a crowd stays on our channels). Show all (`?sfeat=all`) is gone.
+An unclaimed listing with no posts of its own shows Is this your page? (Claim it free) above the features. No qualifying post and none of
+their own: no Social tab (Love Life Cafe, for one). On 2026-11-17 about 42 listings kept a feature, against 253 with a tab before. The rows
+in `ve_listing_posts` are unchanged; the filter is on the page.
