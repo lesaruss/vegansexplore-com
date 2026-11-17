@@ -4,6 +4,7 @@
 //   thumbs   (cron, every 10 min)  copies each post's picture into our storage (Instagram's links expire), 20 posts a run
 //   weekly   (cron, daily)         for CLAIMED listings (owner_member_id set) with an Instagram handle: enrol them, then fetch their
 //                                  recent posts (Apify instagram-scraper) when their last fetch is older than refresh_days
+//   owner_spotlight {listing_id, urls[]}   up to 6 of their own post links shown first on the Social tab (Spotlight)
 //   owner_get / owner_post / owner_pause / owner_refresh   the owner's Social step in Edit your page (member token, the listing's owner)
 //   admin_list / admin_set / admin_fetch / admin_thumbs     the Depot review (super admin)
 //   admin_refresh_quote / admin_refresh_run   re-read the FEATURED posts' pictures (the May 2026 links expired). The quote is free (it asks
@@ -235,6 +236,28 @@ async function weeklyRun() {
   return { enrolled: fresh.length, fetched, results: out };
 }
 
+// A post link an owner pastes for Spotlight: an Instagram post or reel, a TikTok video, or a YouTube video or Short.
+function spotlightOf(t: string): { url: string; network: string; id: string; kind: string } | null {
+  let u: URL;
+  try { u = new URL(/^https?:\/\//i.test(t) ? t : 'https://' + t); } catch { return null; }
+  const host = u.hostname.replace(/^(www\.|m\.)/, '').toLowerCase(), path = u.pathname;
+  let m;
+  if (host === 'instagram.com' && (m = /^\/(?:[A-Za-z0-9._]+\/)?(p|reel|reels|tv)\/([A-Za-z0-9_-]{5,40})/.exec(path))) {
+    const kind = m[1] === 'p' ? 'p' : m[1] === 'tv' ? 'tv' : 'reel';
+    return { url: `https://www.instagram.com/${kind}/${m[2]}/`, network: 'instagram', id: m[2], kind };
+  }
+  if (host === 'tiktok.com' && (m = /^\/@([A-Za-z0-9._]+)\/video\/(\d{8,25})/.exec(path))) {
+    return { url: `https://www.tiktok.com/@${m[1]}/video/${m[2]}`, network: 'tiktok', id: m[2], kind: 'video' };
+  }
+  const yt = host === 'youtu.be' ? (/^\/([A-Za-z0-9_-]{11})/.exec(path) || [])[1]
+    : host === 'youtube.com' ? (u.searchParams.get('v') || (/^\/(?:shorts|embed|live)\/([A-Za-z0-9_-]{11})/.exec(path) || [])[1]) : null;
+  if (yt && /^[A-Za-z0-9_-]{11}$/.test(yt)) {
+    const short = /^\/shorts\//.test(path);
+    return { url: short ? `https://www.youtube.com/shorts/${yt}` : `https://www.youtube.com/watch?v=${yt}`, network: 'youtube', id: yt, kind: short ? 'short' : 'video' };
+  }
+  return null;
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ error: 'method_not_allowed' }, 405);
@@ -285,12 +308,32 @@ Deno.serve(async (req) => {
     }
     if (soc && handle && soc.instagram_handle !== handle) { await db.from('ve_listing_social').update({ instagram_handle: handle, last_fetch_at: null, fetch_fails: 0 }).eq('listing_id', listingId); soc.instagram_handle = handle; soc.last_fetch_at = null; }
 
+    // Spotlight (Sean, 2026-11-17): the owner pastes up to 6 links to their own posts (Instagram, TikTok, YouTube); the page shows the
+    // posts themselves. Only the link is kept, cleaned to its id; nothing is fetched from the network here.
+    if (action === 'owner_spotlight') {
+      const raw: unknown[] = Array.isArray(body.urls) ? body.urls.slice(0, 12) : [];
+      const out: { url: string; network: string; id: string; kind: string }[] = [];
+      const bad: string[] = [];
+      for (const v of raw) {
+        const t = String(v ?? '').trim();
+        if (!t) continue;
+        const sp = spotlightOf(t);
+        if (!sp) { bad.push(t.slice(0, 200)); continue; }
+        if (!out.some((x) => x.network === sp.network && x.id === sp.id)) out.push(sp);
+      }
+      if (bad.length) return json({ error: 'bad_link', bad }, 400);
+      if (out.length > 6) return json({ error: 'too_many' }, 400);
+      const { error } = await db.from('listings').update({ spotlight_posts: out.length ? out : null }).eq('id', listingId);
+      if (error) return json({ error: 'save_failed' }, 500);
+      return json({ ok: true, spotlight: out });
+    }
     if (action === 'owner_get') {
       const { data: posts } = await db.from('ve_listing_posts')
         .select('id, shortcode, post_url, post_type, caption, thumb_url, like_count, comment_count, view_count, posted_at, status, pinned')
         .eq('listing_id', listingId).eq('source', 'theirs').neq('status', 'removed').limit(80);
       const sorted = (posts || []).sort((a: any, b: any) => (b.pinned ? 1 : 0) - (a.pinned ? 1 : 0) || (b.like_count + b.comment_count) - (a.like_count + a.comment_count));
-      return json({ ok: true, handle, owner: l.owner_member_id === member.id, paused: !!soc?.paused, last_fetch_at: soc?.last_fetch_at || null,
+      const { data: lsp } = await db.from('listings').select('spotlight_posts').eq('id', listingId).maybeSingle();
+      return json({ ok: true, spotlight: lsp?.spotlight_posts || [], handle, owner: l.owner_member_id === member.id, paused: !!soc?.paused, last_fetch_at: soc?.last_fetch_at || null,
         note: soc?.last_fetch_note || null, switched_on: !!S.scrape_on, posts: sorted });
     }
     if (action === 'owner_pause') {
