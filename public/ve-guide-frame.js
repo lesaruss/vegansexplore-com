@@ -15,7 +15,8 @@
  * group with its sections in small type, the Vegan Events Guide) adds "_kids": {"<section label>": "<section key>"}: Contents then
  * lists each group's sections under it as links, the Contents button names the section too, and Next walks section by section. A Guide whose
  * recording is a video in its rail (the Welcome Guide) adds body data-gf-video: the video opens big when it starts. The Holiday Guide
- * (body.ve-gf without gf-hb) never runs this. */
+ * (body.ve-gf without gf-hb) never runs this. A Finder Guide (body.gf-fd, the venue, Supermarket and Dairy Guides) names its Finder parts
+ * in gf-parts "_finder" (see the Finder section below); without gf-fd none of it runs. */
 (function () {
   var D = document, B = D.body;
   if (!B || !B.classList.contains('gf-hb') || D.getElementById('gfBar')) return;
@@ -242,6 +243,8 @@
     var anchor = head ? (head.nextElementSibling && head.nextElementSibling.classList.contains('dg-lede') ? head.nextElementSibling : head) : null;
     // A landing with its own heading (the Creator Guide's, from ve-gigs.js): the row goes under its title and first line.
     if (!anchor) { var lh = main.querySelector('.vg-land-l > .vg-h'); if (lh) anchor = lh.nextElementSibling && lh.nextElementSibling.tagName === 'P' ? lh.nextElementSibling : lh; }
+    // Finder Guides (body.gf-fd): a view whose title is not in a .dg-head (the venue Guides' Overview hero) gets the row under its title and line.
+    if (!anchor && FD) { var oh = main.querySelector('.ov-hero > .dg-h1'); if (oh) anchor = oh.nextElementSibling && oh.nextElementSibling.classList.contains('dg-lede') ? oh.nextElementSibling : oh; }
     if (anchor) { if (anchor.nextElementSibling !== row) anchor.parentNode.insertBefore(row, anchor.nextElementSibling); }
     else {
       var crumb = main.firstElementChild && main.firstElementChild.classList.contains('dg-crumb') ? main.firstElementChild : null;
@@ -268,9 +271,14 @@
     var src = gs || pb || inForm ? null : (cand || (jb && shown(jb) ? jb : null));
     var cont = drawProg(c, row.hidden || !main.contains(row) ? anchor : row);
     if (cont) src = null;
-    var go = main.querySelector('.gf-go:not(.gf-cont)'), pick = cont || gs || pb || (inForm ? cand : null);
-    if (HEADGO) [].forEach.call(main.querySelectorAll('.gf-dup'), function (o) { if (o !== src) o.classList.remove('gf-dup'); });
-    if (HEADGO && src && src.closest('.dg-head') && !src.classList.contains('gf-dup')) src.classList.add('gf-dup');
+    // A Finder part (opt-in, body.gf-fd): its Search is the view's one orange action, drawn after the Guide row.
+    var fdGo = FD ? fdDraw(c, !row.hidden && main.contains(row) ? row : anchor) : null;
+    if (fdGo) src = null;
+    var go = main.querySelector('.gf-go:not(.gf-cont)'), pick = cont || fdGo || gs || pb || (inForm ? cand : null);
+    if (HEADGO || FD) [].forEach.call(main.querySelectorAll('.gf-dup'), function (o) { if (o !== src) o.classList.remove('gf-dup'); });
+    if ((HEADGO || FD) && src && src.closest('.dg-head') && !src.classList.contains('gf-dup')) src.classList.add('gf-dup');
+    // Finder Guides: the Overview hero's own copy of its main action is hidden; the orange stand-in under the Guide row clicks it.
+    if (FD && src && src.closest('.ov-hero') && !src.classList.contains('gf-dup')) src.classList.add('gf-dup');
     if (src && main.firstElementChild && !main.querySelector(':scope > .dg-loading')) {
       var label = txt(src);
       if (!go) { go = D.createElement('div'); go.className = 'gf-go'; }
@@ -405,6 +413,255 @@
     // A Guide's own ticks (Mark done) change what counts: read again after a click inside the view.
     main.addEventListener('click', function (e) { if (e.target.closest('[data-tick], [data-step], [data-save]')) setTimeout(queueProg, 900); });
     window.gfProgressRefresh = queueProg;
+  }
+
+  // ---------- Finder (opt-in: body.gf-fd and "_finder" in gf-parts; the Finder Guides, mock /mocks/guide-templates/finder/) ----------
+  // A part named in "_finder" opens as the Finder: the search block (City or ZIP, Near me, Search as the view's one orange action), one
+  // sentence that says what is there (worked out from the Guide's own list, never written by hand), answer chips that filter it, the one
+  // list the Guide already draws, "That is every ... so far", and the doorway after it. The Guide's own city dropdown is set to every city
+  // and hidden: the search replaces it. Near me, a ZIP and a typed city use the Directory's own Near me (VERegionDirectory.near); the
+  // places are matched by their city, read the way universal search reads a place. The address carries ?q= and ?show=.
+  // Config per part: { list, card, reset, noun: [one, many], unit: [one, many], count, free, chips: [[label, test, phrase|noun]],
+  //   placeholder, radius, empty: [title, line, button, href], after: { label, title, line, btn: [text, href] } }.
+  //   A chip's test is a field of the item ("free", "last": shown when truthy) or a route ("#/venues/stadiums", the Guide's own filter).
+  var FD = B.classList.contains('gf-fd') && LINES._finder ? LINES._finder : null;
+  var FDS = { q: '', mode: '', origin: null, label: '', show: '', pts: null, ptsP: null, matches: null, wantNear: false, seq: 0 };
+  var FD_SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var FD_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  function fdNear() { return window.VERegionDirectory && VERegionDirectory.near; }
+  function fdCfg(c) {
+    if (!FD || !c.p) return null;
+    var f = FD[c.p.k]; if (!f) return null;
+    var s = sub(); if (s && (f.subs || []).indexOf(s) < 0) return null;
+    return f;
+  }
+  function fdParams() { return new URLSearchParams(location.search); }
+  function fdSetUrl(k, v) {
+    var P = fdParams(); if (v) P.set(k, v); else P.delete(k);
+    var q = P.toString(); history.replaceState(history.state, '', location.pathname + (q ? '?' + q : '') + location.hash);
+  }
+  function fdN(n, w) { return n + ' ' + (n === 1 ? w[0] : w[1]); }
+  function fdMiles(mi) { return (mi < 10 ? Math.max(0.1, Math.round(mi * 10) / 10).toFixed(1) : Math.round(mi).toLocaleString('en-US')) + ' mi'; }
+  function fdHav(a, b) {
+    var R = 3958.7613, r = Math.PI / 180, dLa = (b.lat - a.lat) * r, dLo = (b.lng - a.lng) * r;
+    var h = Math.sin(dLa / 2) * Math.sin(dLa / 2) + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dLo / 2) * Math.sin(dLo / 2);
+    return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
+  }
+  // A place's point, read the way universal search reads it (ve_search_core's place), kept for the visit.
+  function fdPlace(text) {
+    return fetch(FD_SB + '/rest/v1/rpc/ve_search_core', { method: 'POST', headers: { apikey: FD_ANON, Authorization: 'Bearer ' + FD_ANON, 'Content-Type': 'application/json' },
+      body: JSON.stringify({ p_q: String(text).toLowerCase(), p_limit: 1 }) })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) { var it = d && d.interpretation, pl = it && it.place; return pl && isFinite(pl.lat) && isFinite(pl.lng) && !String(it.terms || '').trim() ? { lat: +pl.lat, lng: +pl.lng } : null; })
+      .catch(function () { return null; });
+  }
+  // Every item's point, from its city: one lookup per city, kept in this tab.
+  function fdPoints(items) {
+    if (FDS.ptsP) return FDS.ptsP;
+    var KEY = 'gf_fd_pts', cache = {}; try { cache = JSON.parse(sessionStorage.getItem(KEY) || '{}') || {}; } catch (e) {}
+    var cities = {};
+    items.forEach(function (v) { if (v.city) cities[v.city + (v.state ? ', ' + v.state : '')] = 1; });
+    FDS.ptsP = Promise.all(Object.keys(cities).map(function (k) {
+      if (cache[k] !== undefined) return null;
+      return fdPlace(k).then(function (pt) { return pt || fdPlace(k.split(',')[0]); }).then(function (pt) { cache[k] = pt || null; });
+    })).then(function () {
+      try { sessionStorage.setItem(KEY, JSON.stringify(cache)); } catch (e) {}
+      var out = {}; items.forEach(function (v) { var pt = cache[v.city + (v.state ? ', ' + v.state : '')]; if (pt) out[v.slug] = pt; });
+      return (FDS.pts = out);
+    });
+    return FDS.ptsP;
+  }
+  function fdItems() { try { return (window.gfFinderData && window.gfFinderData()) || null; } catch (e) { return null; } }
+  function fdText(v) { return [v.name, v.city, v.state, (v.teams || []).join(' '), v.hub ? String(v.hub).replace(/-/g, ' ') : '', v.hub && window.VE_HUBS ? (VE_HUBS.filter(function (h) { return h.slug === v.hub; })[0] || {}).name : ''].join(' ').toLowerCase(); }
+  // Search: a ZIP or Near me through the Directory's Near me, a city through its place, else the words in the names.
+  function fdSearch(f, q) {
+    q = String(q || '').trim(); var my = ++FDS.seq, items = fdItems() || [], NM = fdNear();
+    FDS.q = q; FDS.matches = null;
+    if (!q) { FDS.mode = ''; FDS.origin = null; fdSetUrl('q', ''); queueDress(); return; }
+    fdSetUrl('q', q === 'near' ? 'near' : q);
+    if (q === 'near') {
+      FDS.wantNear = true; FDS.mode = 'busy'; queueDress();
+      if (NM) { var st0 = NM.state(); if (st0.on && !st0.zip && !st0.place) return fdOrigin(st0.origin, 'you', my); NM.start(main.querySelector('.fd-near')); }
+      else FDS.mode = '';
+      return;
+    }
+    FDS.mode = 'busy'; queueDress();
+    if (/^\d{5}$/.test(q) && NM) {
+      NM.zip(q).then(function (ok) { if (my !== FDS.seq) return; if (ok) fdOrigin(NM.state().origin, q, my); else { FDS.mode = 'none'; queueDress(); } });
+      return;
+    }
+    var words = items.filter(function (v) { return fdText(v).indexOf(q.toLowerCase()) >= 0; });
+    var exact = items.filter(function (v) { return (v.teams || []).some(function (t) { return String(t).toLowerCase() === q.toLowerCase(); }) || String(v.name).toLowerCase() === q.toLowerCase(); });
+    if (exact.length) { FDS.mode = 'text'; FDS.matches = exact.map(function (v) { return v.slug; }); queueDress(); return; }
+    var placeP = NM && NM.city ? NM.city(q).then(function (ok) { return ok ? NM.state().origin : null; }) : fdPlace(q);
+    placeP.then(function (o) {
+      if (my !== FDS.seq) return;
+      if (o) return fdOrigin(o, q.replace(/(^|\s)\S/g, function (x) { return x.toUpperCase(); }), my);
+      FDS.mode = words.length ? 'text' : 'none'; FDS.matches = words.map(function (v) { return v.slug; }); queueDress();
+    });
+  }
+  function fdOrigin(o, label, my) {
+    if (!o) { FDS.mode = 'none'; queueDress(); return; }
+    FDS.origin = o; FDS.label = label;
+    fdPoints(fdItems() || []).then(function () { if (my !== FDS.seq) return; FDS.mode = 'near'; queueDress(); });
+  }
+  var fdNearHooked = false;
+  function fdHookNear() {
+    var NM = fdNear(); if (fdNearHooked || !NM) return; fdNearHooked = true;
+    NM.onChange(function (st) {
+      if (!FDS.wantNear || !st.on) return;
+      FDS.wantNear = false;
+      fdOrigin(st.origin, st.zip ? st.zip : st.place ? st.place : 'you', FDS.seq);
+    });
+  }
+  function fdChipOn(ch, f) {
+    var t = ch[1];
+    if (t && t.charAt(0) === '#') return location.hash.replace(/\?.*$/, '') === t || (!sub() && t === '#/' + (location.hash.replace(/^#\/?/, '').split('/')[0]));
+    return FDS.show === t;
+  }
+  function fdDraw(c, after) {
+    var f = fdCfg(c);
+    if (!f) { [].forEach.call(main.querySelectorAll('.gf-fdx'), function (n) { n.remove(); }); return null; }
+    if (main.querySelector(':scope > .dg-loading')) return null;
+    fdHookNear();
+    // The Guide's own city dropdown: every city, hidden; the search does its job.
+    var rs = f.reset ? main.querySelector(f.reset) : null;
+    if (rs && rs.value !== 'all' && [].some.call(rs.options, function (o) { return o.value === 'all'; })) { setTimeout(function () { if (rs.value !== 'all' && D.contains(rs)) { rs.value = 'all'; rs.dispatchEvent(new Event('change', { bubbles: true })); } }, 0); }
+    if (FDS.show === '' && fdParams().get('show')) FDS.show = fdParams().get('show');
+    if (!FDS.started) { FDS.started = true; var q0 = fdParams().get('q'); if (q0) setTimeout(function () { fdSearch(f, q0); }, 0); }
+    // The part's line under its title, when the page gives one that fits the search (the Guide's old line named its dropdown).
+    var ld = f.lede ? main.querySelector('.dg-head + .dg-lede') : null;
+    if (ld && ld.textContent !== f.lede) ld.textContent = f.lede;
+    // The search block, right after the Guide row (or the page head).
+    var form = main.querySelector('.fd-search');
+    if (!form) {
+      form = D.createElement('form'); form.className = 'fd-search gf-fdx'; form.setAttribute('role', 'search'); form.setAttribute('aria-label', 'Find ' + (f.noun ? f.noun[1] : 'it') + ' near you');
+      form.innerHTML = '<div class="fd-q"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="7" fill="none" stroke="#1a1a1a" stroke-width="3"/><path d="M16 16l6 6" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/></svg>' +
+        '<input type="text" name="q" placeholder="' + esc(f.placeholder || 'City or ZIP') + '" aria-label="' + esc(f.placeholder || 'City or ZIP') + '" autocomplete="off" data-dictate="off"></div>' +
+        '<button type="button" class="dg-btn fd-near">&#9737; Near me</button><button type="submit" class="dg-btn fd-go">Search</button>';
+      form.addEventListener('submit', function (e) { e.preventDefault(); var v = form.querySelector('input').value.trim(); if (!v) { form.querySelector('input').focus(); return; } fdSearch(f, v); });
+      form.querySelector('.fd-near').addEventListener('click', function () { form.querySelector('input').value = ''; fdSearch(f, 'near'); });
+      var ans0 = D.createElement('p'); ans0.className = 'fd-answer gf-fdx'; ans0.setAttribute('aria-live', 'polite');
+      ans0.addEventListener('click', function (e) { if (e.target.closest('.fd-clear')) { e.preventDefault(); form.querySelector('input').value = ''; fdSearch(f, ''); } });
+      form._ans = ans0;
+    }
+    var inp = form.querySelector('input');
+    if (D.activeElement !== inp && inp.value !== (FDS.q === 'near' ? '' : FDS.q)) inp.value = FDS.q === 'near' ? '' : FDS.q;
+    var ans = form._ans;
+    var at = after && after.parentNode === main ? after : null;
+    if (at) { if (at.nextElementSibling !== form) main.insertBefore(form, at.nextElementSibling); }
+    else if (form.parentNode !== main) main.insertBefore(form, main.firstChild);
+    if (form.nextElementSibling !== ans) main.insertBefore(ans, form.nextElementSibling);
+    // The Guide's own filter switches (in the head) become the chips; the head's copy is hidden.
+    var list = main.querySelector(f.list), emptyG = main.querySelector(':scope > .dg-empty');
+    var items = fdItems(), cards = {};
+    [].forEach.call(main.querySelectorAll(f.card), function (a) { var k = (a.getAttribute('href') || '').split('/').pop(); if (k) cards[k] = a; });
+    var base = items ? items.filter(function (v) { return cards[v.slug]; }) : [];
+    // Chips
+    var chips = main.querySelector('.fd-chips');
+    var CH = (f.chips || []).filter(function (ch) { return (ch[1] && ch[1].charAt(0) === '#') || base.length; });
+    // An unknown ?show= is Everything.
+    if (FDS.show && !CH.some(function (x) { return x[1] === FDS.show; })) FDS.show = '';
+    if (CH.length > 1) {
+      if (!chips) {
+        chips = D.createElement('div'); chips.className = 'fd-chips gf-fdx'; chips.setAttribute('role', 'group'); chips.setAttribute('aria-label', 'Show');
+        chips.addEventListener('click', function (e) {
+          var b = e.target.closest('button[data-show]'); if (!b) return;
+          FDS.show = b.getAttribute('data-show'); fdSetUrl('show', FDS.show); queueDress();
+        });
+      }
+      var ch = '<span>Show</span>' + CH.map(function (x) {
+        var on = fdChipOn(x, f);
+        return x[1] && x[1].charAt(0) === '#' ? '<a href="' + esc(x[1]) + '" aria-pressed="' + on + '">' + esc(x[0]) + '</a>'
+          : '<button type="button" data-show="' + esc(x[1]) + '" aria-pressed="' + on + '">' + esc(x[0]) + '</button>';
+      }).join('');
+      if (chips.getAttribute('data-h') !== ch) { chips.setAttribute('data-h', ch); chips.innerHTML = ch; }
+      var ref = list || emptyG || ans.nextElementSibling;
+      if (ref && chips.nextElementSibling !== ref) main.insertBefore(chips, ref);
+      else if (!ref && chips.parentNode !== main) main.appendChild(chips);
+    } else if (chips) chips.remove();
+    // What shows: the chip's filter, then the search.
+    var dataChip = FDS.show ? CH.filter(function (x) { return x[1] && x[1].charAt(0) !== '#' && x[1] === FDS.show; })[0] : null;
+    var routeChip = CH.filter(function (x) { return x[1] && x[1].charAt(0) === '#' && fdChipOn(x, f) && x[1] !== CH[0][1]; })[0];
+    var set = base.filter(function (v) { return !dataChip || !!v[dataChip[1]]; });
+    var R = f.radius || 100, D2 = {};
+    if (FDS.mode === 'near' && FDS.origin && FDS.pts) set.forEach(function (v) { var pt = FDS.pts[v.slug]; D2[v.slug] = pt ? fdHav(FDS.origin, pt) : null; });
+    var shown = set, within = [];
+    if (FDS.mode === 'near') {
+      shown = set.slice().sort(function (a, b) { return (D2[a.slug] == null ? 1e9 : D2[a.slug]) - (D2[b.slug] == null ? 1e9 : D2[b.slug]); });
+      within = shown.filter(function (v) { return D2[v.slug] != null && D2[v.slug] <= R; });
+      if (within.length) shown = within;
+    } else if (FDS.mode === 'text' || FDS.mode === 'none') shown = set.filter(function (v) { return (FDS.matches || []).indexOf(v.slug) >= 0; });
+    // Draw: hide what does not show, order by distance, the distance as a tag.
+    var keep = {}; shown.forEach(function (v) { keep[v.slug] = 1; });
+    Object.keys(cards).forEach(function (k) {
+      var a = cards[k], hide = !!items && !keep[k];
+      if (a.hidden !== hide) a.hidden = hide;
+      var dt = a.querySelector('.fd-dist'), want = FDS.mode === 'near' && D2[k] != null ? fdMiles(D2[k]) + ' away' : '';
+      if (want && !dt) { var tg = a.querySelector(f.tags || '.sa-vtags'); if (tg) { dt = D.createElement('span'); dt.className = 'dg-tag fd-dist'; tg.insertBefore(dt, tg.firstChild); } }
+      if (dt && !want) dt.remove(); else if (dt && dt.textContent !== want) dt.textContent = want;
+    });
+    if (list && FDS.mode === 'near') {
+      var order = shown.map(function (v) { return cards[v.slug]; }).filter(Boolean), cur = [].filter.call(list.children, function (x) { return !x.hidden; });
+      if (order.some(function (el, i) { return cur[i] !== el; })) order.forEach(function (el) { list.appendChild(el); });
+    }
+    // The answer, in one sentence, from the list.
+    var noun = routeChip && routeChip[2] ? routeChip[2].split('|') : f.noun, unit = f.unit || ['Vegan item', 'Vegan items'];
+    var cnt = function (v) { return +v[f.count || 'items'] || 0; }, sum = function (L) { return L.reduce(function (n, v) { return n + cnt(v); }, 0); };
+    var phrase = dataChip ? ' ' + dataChip[2] : '';
+    var freeV = set.filter(function (v) { return v[f.free || 'free']; })[0];
+    var h = '', clear = FDS.mode && FDS.mode !== 'busy' ? ' <a href="#" class="fd-clear">Show everything</a>' : '';
+    if (!items) h = 'Loading the ' + esc(f.noun[1]) + '...';
+    else if (FDS.mode === 'busy') h = 'Looking...';
+    else if (FDS.mode === 'near') {
+      var near = FDS.label === 'you' ? 'you' : FDS.label;
+      if (within.length) {
+        var v0 = within[0];
+        h = 'Near ' + esc(near) + ': <b>' + esc(v0.name) + '</b> is the closest, ' + fdMiles(D2[v0.slug]) + ' away, with <b>' + fdN(cnt(v0), unit) + '</b>.' +
+          (within.length > 1 ? ' <b>' + fdN(within.length - 1, ['more ' + noun[0], 'more ' + noun[1]]) + '</b> within ' + R + ' miles.' : ' No other ' + esc(noun[1]) + phrase + ' within ' + R + ' miles yet.');
+      } else if (shown.length && D2[shown[0].slug] != null) h = 'No ' + esc(noun[1]) + phrase + ' in the Guide within ' + R + ' miles of ' + esc(near) + ' yet. The closest is <b>' + esc(shown[0].name) + '</b>, ' + fdMiles(D2[shown[0].slug]) + ' away.';
+      else h = 'No ' + esc(noun[1]) + phrase + ' in the Guide near ' + esc(near) + ' yet.';
+    } else if (FDS.mode === 'text' || FDS.mode === 'none') {
+      h = !shown.length ? 'Nothing in the Guide matches &ldquo;' + esc(FDS.q) + '&rdquo;' + phrase + ' yet.'
+        : shown.length === 1 ? '<b>' + esc(shown[0].name) + '</b> matches &ldquo;' + esc(FDS.q) + '&rdquo;, with <b>' + fdN(cnt(shown[0]), unit) + '</b>.'
+        : '<b>' + fdN(shown.length, noun) + '</b> match &ldquo;' + esc(FDS.q) + '&rdquo;, with <b>' + fdN(sum(shown), unit) + '</b> between them.';
+    } else if (!shown.length) h = 'No ' + esc(noun[1]) + phrase + ' yet.';
+    else if (shown.length === 1) h = '<b>' + esc(shown[0].name) + '</b> is the one ' + esc(noun[0]) + (phrase || ' in the Guide') + ' so far, with <b>' + fdN(cnt(shown[0]), unit) + '</b>' + (!dataChip && shown[0][f.free || 'free'] ? ', and it is free to try.' : '.');
+    else h = '<b>' + fdN(shown.length, noun) + '</b> ' + (phrase ? 'are' + phrase : 'are in the Guide') + ' so far, with <b>' + fdN(sum(shown), unit) + '</b> between them.' +
+      (!dataChip && freeV ? ' <b>' + esc(freeV.name) + '</b> is free to try.' : '');
+    h += clear;
+    if (ans.getAttribute('data-h') !== h) { ans.setAttribute('data-h', h); ans.innerHTML = h; }
+    // The honest empty state, then "That is every ... so far", then the doorway.
+    var tail = list || emptyG || chips || ans;
+    var em = main.querySelector('.fd-empty');
+    if (items && !shown.length && f.empty) {
+      if (!em) { em = D.createElement('div'); em.className = 'fd-empty gf-fdx'; }
+      var eh = '<span class="fd-ico" aria-hidden="true">+</span><div><b>' + esc(f.empty[0]) + '</b><p>' + esc(f.empty[1]) + '</p></div>' +
+        (f.empty[2] ? '<div class="fd-btns"><a class="dg-btn" href="' + esc(f.empty[3]) + '">' + esc(f.empty[2]) + '</a></div>' : '');
+      if (em.getAttribute('data-h') !== eh) { em.setAttribute('data-h', eh); em.innerHTML = eh; }
+      if (tail.nextElementSibling !== em) main.insertBefore(em, tail.nextElementSibling);
+      tail = em;
+    } else if (em) em.remove();
+    var end = main.querySelector('.fd-end');
+    if (items && shown.length) {
+      if (!end) { end = D.createElement('p'); end.className = 'fd-end gf-fdx'; }
+      var et = FDS.mode === 'near' ? (within.length ? 'That is every ' + noun[0] + phrase + ' within ' + R + ' miles of ' + (FDS.label === 'you' ? 'you' : FDS.label) + ' so far.' : 'That is every ' + noun[0] + phrase + ' in the Guide so far, closest first.')
+        : FDS.mode === 'text' ? 'That is everything in the Guide that matches “' + FDS.q + '” so far.'
+        : 'That is every ' + noun[0] + phrase + ' in the Guide so far.';
+      if (end.textContent !== et) end.textContent = et;
+      if (tail.nextElementSibling !== end) main.insertBefore(end, tail.nextElementSibling);
+      tail = end;
+    } else if (end) end.remove();
+    var low = main.querySelector('.fd-lower');
+    if (f.after) {
+      if (!low) {
+        low = D.createElement('section'); low.className = 'fd-lower gf-fdx'; low.setAttribute('aria-label', f.after.label);
+        low.innerHTML = '<span class="fd-lk">' + esc(f.after.label) + '</span><b>' + esc(f.after.title) + '</b><p>' + esc(f.after.line) + '</p>' +
+          '<div class="fd-btns"><a class="dg-btn" href="' + esc(f.after.btn[1]) + '">' + esc(f.after.btn[0]) + '</a></div>';
+      }
+      if (tail.nextElementSibling !== low) main.insertBefore(low, tail.nextElementSibling);
+    }
+    return form.querySelector('.fd-go');
   }
 
   drawJoin(); drawToc(); dress(); queueProg();
