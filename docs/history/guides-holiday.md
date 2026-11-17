@@ -174,3 +174,15 @@ Love (Dec 2) and My Hungry Vegan's Brunch @ Night (Jan 23, 2027); Seasoned Green
 truck serving Central Florida) and its ThanksLiving menu. Left out, nothing confirmable: the Austin Vegan Holiday Market (no day of the month), the Healthful Living Ocean Retreat (no official page). Holiday closures (Sen
 Saigon's Thanksgiving hours, Vegan International Co. closed Nov 25 to 28) have no place on a listing yet; Sean's answer is an owner task (Depot > Ideas b00dc2ee): a claimed business is asked
 for each holiday's hours or "staying the same".
+
+**Holiday hours, 2026-11-17** (Sean: "that should be one of the questions that we ask for our members... they can just check staying the
+same, and then it'll close off"; then "Let's build the holiday hours feature now"). Live (main 40fe5e6, `ve-holiday` v14 from 8512b7e
+through `ve-function-deploy`, source sha256 matched and read back). Table `ve_holiday_hours` (one answer per listing and holiday: `same` or
+`special` with the hours in words; public read, no public writes) and `ve_holidays.asks_hours` (Hanukkah and Kwanzaa off); migration
+`20261117_ve_holiday_hours.sql`. The business dashboard (food listings only) shows each holiday in the next 21 days with no answer as a
+**Needs you** row, Answer opening `?tab=home&pd=holiday-<slug>` (Staying the same, or the hours and Save these hours); answered ones sit
+under Holiday hours on Home with Change. `ve-holiday` `hours_mine` / `hours_save` (owner or open claim, any signed-in owner; a super admin
+for any listing). The listing page shows **Holiday hours** above Hours (`loadHolidayHours`). First rows set by the team: Sen Saigon and
+Vegan International Co. (Thanksgiving). Proven: listing pages live at 1440 and 390; the dashboard flow in a browser against mocked owner
+answers (row, view, save, row closes); the live function refuses a caller who is not signed in. Not yet proven signed in as a real owner.
+Not built: an email nudge to owners who have not answered.
