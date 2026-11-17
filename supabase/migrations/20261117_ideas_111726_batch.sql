@@ -1,5 +1,5 @@
 -- 2026-11-17: Sean's screenshot folder "Ideas 111726" (Drive). What Sean hands over goes live (CLAUDE.md). Safe to run twice.
--- Left out, nothing confirmable online: Seasoned Green's Thanksgiving catering (no city found), the Austin Vegan Holiday Market
+-- Left out, nothing confirmable online: the Austin Vegan Holiday Market
 -- (Vegan Social Club; the screenshot has no day of the month), the Healthful Living Ocean Retreat (no official page found).
 -- Holiday closures (Sen Saigon Thanksgiving hours, Vegan International Co. closed Nov 25 to 28) have no place on a listing yet.
 
@@ -50,3 +50,17 @@ where not exists (select 1 from events where title ilike 'Brunch @ Night%' and s
 -- 3) Wesley Chapel's own hours (HappyCow listing), so it does not show Palm Harbor's.
 update listings set google_hours_json = '{"Monday":"12 to 6 PM","Tuesday":"12 to 6 PM","Wednesday":"12 to 6 PM","Thursday":"12 to 6 PM","Friday":"12 to 8 PM","Saturday":"12 to 8 PM","Sunday":"12 to 4 PM"}'::jsonb
 where slug = 'the-green-table-wesley-chapel' and google_hours_json is null;
+
+-- 4) Seasoned Green (IMG_8421): Sean, 2026-11-17: "They are a food truck serving Central Florida." Its listing existed, on hold since
+-- 2026-10-26 (Google: temporarily closed); it is operating, so approved, then its ThanksLiving menu tip goes live.
+update listings set status='approved', category='Food Trucks', instagram='@seasonedgreen', communities=array['central-florida'],
+  description='Seasoned Green is a Vegan food truck serving Central Florida from the Tampa area, with comfort food like noxtail with butterbeans, G.O.A.T. curry, baked mac and cheeze and gumbo-style greens, plus holiday catering.',
+  updated_at=now()
+where slug='seasoned-green' and status='pending';
+
+insert into ve_holiday_menu_tips (holiday_slug, member_id, listing_id, place_name, city, state, link, note, status, by_team, team_note, reviewed_by, reviewed_at)
+select 'thanksliving', '72712a4a-ea0e-4ef4-a29e-d382496ef8da'::uuid, (select id from listings where slug = 'seasoned-green'),
+  'Seasoned Green', 'Central Florida', 'FL', 'https://www.instagram.com/seasonedgreen/',
+  'Seasoned Green''s Thanksgiving catering menu: lentil loaf with mushroom gravy, a BBQ Beyond meatless loaf, fried oyster mushroom, cauliflower wings, noxtail with butterbeans and G.O.A.T. curry; sides of baked mac and cheeze (gluten-free available), gumbo-style greens, rice and peas, cornbread, sweet potato casserole and candied butternut squash; sweet potato pie, cheezecake, peach cobbler and pound cake. Build your own combo box. Pre-orders are open; pickup Wed Nov 25.',
+  'live', true, 'From Sean''s screenshot ideas 111726 - IMG_8421.', '72712a4a-ea0e-4ef4-a29e-d382496ef8da'::uuid, now()
+where not exists (select 1 from ve_holiday_menu_tips t where t.holiday_slug = 'thanksliving' and t.link = 'https://www.instagram.com/seasonedgreen/' and t.status <> 'declined');
