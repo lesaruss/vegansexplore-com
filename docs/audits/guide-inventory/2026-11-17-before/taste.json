@@ -1,0 +1,6356 @@
+{
+ "guide": "taste",
+ "url": "https://vegansexplore.com/guides/taste?unsub=",
+ "script": "guides/taste.html",
+ "note": "Public /guides/taste redirects to /passport; audited at /guides/taste?unsub=",
+ "takenAt": "2026-11-17T00:55:56.405Z",
+ "base": "https://vegansexplore.com",
+ "staticParts": [
+  {
+   "k": "overview",
+   "label": "Overview",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "dairy",
+   "label": "Buttermilk swap",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "nutrition",
+   "label": "Vitamin B12",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "stadium",
+   "label": "Stadium & Arena",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "airport",
+   "label": "Airport",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "animals",
+   "label": "The animals",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "city",
+   "label": "Your city",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "restaurant",
+   "label": "Restaurant check",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "creator",
+   "label": "Creator tip 1",
+   "parent": null,
+   "flags": []
+  },
+  {
+   "k": "join",
+   "label": "Open every tab",
+   "parent": null,
+   "flags": []
+  }
+ ],
+ "liveMenuParts": [
+  "overview",
+  "dairy",
+  "nutrition",
+  "stadium",
+  "airport",
+  "animals",
+  "city",
+  "restaurant",
+  "creator",
+  "join"
+ ],
+ "partsMissingFromLiveMenu": [],
+ "views": [
+  {
+   "view": "overview",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/taste/overview-390.jpg",
+     "title": "A Taste of Vegans Explore — Vegans Explore",
+     "hash": "#/overview",
+     "h1": [
+      "A Taste of Vegans Explore"
+     ],
+     "h2": [
+      "Free recipes, swaps and tips from our Guides"
+     ],
+     "h3": [],
+     "items": [
+      "Buttermilk swap",
+      "Vitamin B12",
+      "Stadium & Arena",
+      "Airport",
+      "The animals",
+      "Your city",
+      "Restaurant check",
+      "Creator tip 1"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open all 8 free pieces",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/login?next=%2Fguides%2Ftaste",
+       "raw": "/login?next=%2Fguides%2Ftaste",
+       "text": "Sign in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "Buttermilk swap",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "Vitamin B12",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "Stadium & Arena",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "Airport",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "The animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "Your city",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "Restaurant check",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "Creator tip 1",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open every tab",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "Buttermilk swap Make buttermilk from what is in your kitchen. Open now.",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "Vitamin B12 Vitamin B12: how much, and where to get it.",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "Stadium & Arena Hard Rock Stadium, every Vegan stand.",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "Airport Fort Lauderdale airport, gate by gate.",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "The animals Rescues, sanctuaries and fosters near you.",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "Your city Your city's places, Pulse and events.",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "Restaurant check A free check of any Vegan restaurant.",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "Creator tip 1 Know who you make content for, and why.",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "TRY THE BUTTERMILK SWAP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN ALL 8 FREE PIECES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "Talk to Liz"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [],
+     "guide": {
+      "slug": "",
+      "label": "Your Guide",
+      "name": "Your Guides · all eight of us",
+      "picture": "https://vegansexplore.com/public/guides/welcome-ensemble.jpg",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": true
+      },
+      {
+       "k": "dairy",
+       "label": "Buttermilk swap",
+       "selected": false
+      },
+      {
+       "k": "nutrition",
+       "label": "Vitamin B12",
+       "selected": false
+      },
+      {
+       "k": "stadium",
+       "label": "Stadium & Arena",
+       "selected": false
+      },
+      {
+       "k": "airport",
+       "label": "Airport",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "The animals",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "Your city",
+       "selected": false
+      },
+      {
+       "k": "restaurant",
+       "label": "Restaurant check",
+       "selected": false
+      },
+      {
+       "k": "creator",
+       "label": "Creator tip 1",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Open every tab",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/overview",
+       "label": "Overview",
+       "current": true
+      },
+      {
+       "href": "#/dairy",
+       "label": "Buttermilk swap",
+       "current": false
+      },
+      {
+       "href": "#/nutrition",
+       "label": "Vitamin B12",
+       "current": false
+      },
+      {
+       "href": "#/stadium",
+       "label": "Stadium & Arena",
+       "current": false
+      },
+      {
+       "href": "#/airport",
+       "label": "Airport",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "The animals",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your city",
+       "current": false
+      },
+      {
+       "href": "#/restaurant",
+       "label": "Restaurant check",
+       "current": false
+      },
+      {
+       "href": "#/creator",
+       "label": "Creator tip 1",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Open every tab",
+       "current": false
+      }
+     ],
+     "activePart": "overview",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 129,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "OPEN ALL 8 FREE PIECES",
+      "bottom": 537,
+      "cls": "dg-cta"
+     },
+     "mainTextLength": 897,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 537,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/taste/overview-1440.jpg",
+     "title": "A Taste of Vegans Explore — Vegans Explore",
+     "hash": "#/overview",
+     "h1": [
+      "A Taste of Vegans Explore"
+     ],
+     "h2": [
+      "Free recipes, swaps and tips from our Guides"
+     ],
+     "h3": [],
+     "items": [
+      "Buttermilk swap",
+      "Vitamin B12",
+      "Stadium & Arena",
+      "Airport",
+      "The animals",
+      "Your city",
+      "Restaurant check",
+      "Creator tip 1"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN ALL 8 FREE PIECES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/login?next=%2Fguides%2Ftaste",
+       "raw": "/login?next=%2Fguides%2Ftaste",
+       "text": "Sign in",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "BUTTERMILK SWAP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "VITAMIN B12",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "STADIUM & ARENA",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "AIRPORT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "THE ANIMALS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "YOUR CITY",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "RESTAURANT CHECK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "CREATOR TIP 1",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN EVERY TAB",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "Buttermilk swap Make buttermilk from what is in your kitchen. Open now.",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "Vitamin B12 Vitamin B12: how much, and where to get it.",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "Stadium & Arena Hard Rock Stadium, every Vegan stand.",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "Airport Fort Lauderdale airport, gate by gate.",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "The animals Rescues, sanctuaries and fosters near you.",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "Your city Your city's places, Pulse and events.",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "Restaurant check A free check of any Vegan restaurant.",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "Creator tip 1 Know who you make content for, and why.",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "TRY THE BUTTERMILK SWAP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open all 8 free pieces",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "Talk to Liz"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "",
+      "label": "Your Guide",
+      "name": "YOUR GUIDES · ALL EIGHT OF US",
+      "picture": "https://vegansexplore.com/public/guides/welcome-ensemble.jpg",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": true
+      },
+      {
+       "k": "dairy",
+       "label": "Buttermilk swap",
+       "selected": false
+      },
+      {
+       "k": "nutrition",
+       "label": "Vitamin B12",
+       "selected": false
+      },
+      {
+       "k": "stadium",
+       "label": "Stadium & Arena",
+       "selected": false
+      },
+      {
+       "k": "airport",
+       "label": "Airport",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "The animals",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "Your city",
+       "selected": false
+      },
+      {
+       "k": "restaurant",
+       "label": "Restaurant check",
+       "selected": false
+      },
+      {
+       "k": "creator",
+       "label": "Creator tip 1",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Open every tab",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/overview",
+       "label": "OVERVIEW",
+       "current": true
+      },
+      {
+       "href": "#/dairy",
+       "label": "BUTTERMILK SWAP",
+       "current": false
+      },
+      {
+       "href": "#/nutrition",
+       "label": "VITAMIN B12",
+       "current": false
+      },
+      {
+       "href": "#/stadium",
+       "label": "STADIUM & ARENA",
+       "current": false
+      },
+      {
+       "href": "#/airport",
+       "label": "AIRPORT",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "THE ANIMALS",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "YOUR CITY",
+       "current": false
+      },
+      {
+       "href": "#/restaurant",
+       "label": "RESTAURANT CHECK",
+       "current": false
+      },
+      {
+       "href": "#/creator",
+       "label": "CREATOR TIP 1",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "OPEN EVERY TAB",
+       "current": false
+      }
+     ],
+     "activePart": "overview",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "OPEN ALL 8 FREE PIECES",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 897,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "dairy",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/taste/dairy-390.jpg",
+     "title": "A Taste of Vegans Explore — Vegans Explore",
+     "hash": "#/dairy",
+     "h1": [
+      "A Taste of Vegans Explore"
+     ],
+     "h2": [
+      "The Buttermilk swap"
+     ],
+     "h3": [],
+     "items": [
+      "Make it:"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open all 8 free pieces",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/login?next=%2Fguides%2Ftaste",
+       "raw": "/login?next=%2Fguides%2Ftaste",
+       "text": "Sign in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "Buttermilk swap",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "Vitamin B12",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "Stadium & Arena",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "Airport",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "The animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "Your city",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "Restaurant check",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "Creator tip 1",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open every tab",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-dairy-guide#/swaps",
+       "raw": "/guides/vegan-dairy-guide#/swaps",
+       "text": "OPEN THE DAIRY GUIDE",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN ALL 8 FREE PIECES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "Talk to Liz"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Get the full Dairy Guide for $11, or open it with the 1,100 welcome points that come with the Passport, our $11 membership."
+     ],
+     "guide": {
+      "slug": "",
+      "label": "Your Guide",
+      "name": "Maya · Your Guide",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "dairy",
+       "label": "Buttermilk swap",
+       "selected": true
+      },
+      {
+       "k": "nutrition",
+       "label": "Vitamin B12",
+       "selected": false
+      },
+      {
+       "k": "stadium",
+       "label": "Stadium & Arena",
+       "selected": false
+      },
+      {
+       "k": "airport",
+       "label": "Airport",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "The animals",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "Your city",
+       "selected": false
+      },
+      {
+       "k": "restaurant",
+       "label": "Restaurant check",
+       "selected": false
+      },
+      {
+       "k": "creator",
+       "label": "Creator tip 1",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Open every tab",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/overview",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/dairy",
+       "label": "Buttermilk swap",
+       "current": true
+      },
+      {
+       "href": "#/nutrition",
+       "label": "Vitamin B12",
+       "current": false
+      },
+      {
+       "href": "#/stadium",
+       "label": "Stadium & Arena",
+       "current": false
+      },
+      {
+       "href": "#/airport",
+       "label": "Airport",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "The animals",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your city",
+       "current": false
+      },
+      {
+       "href": "#/restaurant",
+       "label": "Restaurant check",
+       "current": false
+      },
+      {
+       "href": "#/creator",
+       "label": "Creator tip 1",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Open every tab",
+       "current": false
+      }
+     ],
+     "activePart": "dairy",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 129,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "OPEN ALL 8 FREE PIECES",
+      "bottom": 537,
+      "cls": "dg-cta"
+     },
+     "mainTextLength": 524,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 537,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/taste/dairy-1440.jpg",
+     "title": "A Taste of Vegans Explore — Vegans Explore",
+     "hash": "#/dairy",
+     "h1": [
+      "A Taste of Vegans Explore"
+     ],
+     "h2": [
+      "The Buttermilk swap"
+     ],
+     "h3": [],
+     "items": [
+      "Make it:"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN ALL 8 FREE PIECES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/login?next=%2Fguides%2Ftaste",
+       "raw": "/login?next=%2Fguides%2Ftaste",
+       "text": "Sign in",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "BUTTERMILK SWAP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "VITAMIN B12",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "STADIUM & ARENA",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "AIRPORT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "THE ANIMALS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "YOUR CITY",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "RESTAURANT CHECK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "CREATOR TIP 1",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN EVERY TAB",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-dairy-guide#/swaps",
+       "raw": "/guides/vegan-dairy-guide#/swaps",
+       "text": "OPEN THE DAIRY GUIDE",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open all 8 free pieces",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "Talk to Liz"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in",
+      "Get the full Dairy Guide for $11, or open it with the 1,100 welcome points that come with the Passport, our $11 membership."
+     ],
+     "guide": {
+      "slug": "",
+      "label": "Your Guide",
+      "name": "MAYA · YOUR GUIDE",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fmaya-v4.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "dairy",
+       "label": "Buttermilk swap",
+       "selected": true
+      },
+      {
+       "k": "nutrition",
+       "label": "Vitamin B12",
+       "selected": false
+      },
+      {
+       "k": "stadium",
+       "label": "Stadium & Arena",
+       "selected": false
+      },
+      {
+       "k": "airport",
+       "label": "Airport",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "The animals",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "Your city",
+       "selected": false
+      },
+      {
+       "k": "restaurant",
+       "label": "Restaurant check",
+       "selected": false
+      },
+      {
+       "k": "creator",
+       "label": "Creator tip 1",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Open every tab",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/overview",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/dairy",
+       "label": "BUTTERMILK SWAP",
+       "current": true
+      },
+      {
+       "href": "#/nutrition",
+       "label": "VITAMIN B12",
+       "current": false
+      },
+      {
+       "href": "#/stadium",
+       "label": "STADIUM & ARENA",
+       "current": false
+      },
+      {
+       "href": "#/airport",
+       "label": "AIRPORT",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "THE ANIMALS",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "YOUR CITY",
+       "current": false
+      },
+      {
+       "href": "#/restaurant",
+       "label": "RESTAURANT CHECK",
+       "current": false
+      },
+      {
+       "href": "#/creator",
+       "label": "CREATOR TIP 1",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "OPEN EVERY TAB",
+       "current": false
+      }
+     ],
+     "activePart": "dairy",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "OPEN ALL 8 FREE PIECES",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 524,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "nutrition",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/taste/nutrition-390.jpg",
+     "title": "A Taste of Vegans Explore — Vegans Explore",
+     "hash": "#/nutrition",
+     "h1": [
+      "A Taste of Vegans Explore"
+     ],
+     "h2": [
+      "Vitamin B12, the one to know"
+     ],
+     "h3": [],
+     "items": [
+      "Why:"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open all 8 free pieces",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/login?next=%2Fguides%2Ftaste",
+       "raw": "/login?next=%2Fguides%2Ftaste",
+       "text": "Sign in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "Buttermilk swap",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "Vitamin B12",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "Stadium & Arena",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "Airport",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "The animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "Your city",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "Restaurant check",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "Creator tip 1",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open every tab",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/nutrition-guide#/nutrients/b12",
+       "raw": "/guides/nutrition-guide#/nutrients/b12",
+       "text": "READ THE B12 PAGE",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN ALL 8 FREE PIECES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "Talk to Liz"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Get the full Nutrition Guide for $11, or open it with the 1,100 welcome points that come with the Passport, our $11 membership."
+     ],
+     "guide": {
+      "slug": "",
+      "label": "Your Guide",
+      "name": "Theo · Your Guide",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Ftheo-v3.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "dairy",
+       "label": "Buttermilk swap",
+       "selected": false
+      },
+      {
+       "k": "nutrition",
+       "label": "Vitamin B12",
+       "selected": true
+      },
+      {
+       "k": "stadium",
+       "label": "Stadium & Arena",
+       "selected": false
+      },
+      {
+       "k": "airport",
+       "label": "Airport",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "The animals",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "Your city",
+       "selected": false
+      },
+      {
+       "k": "restaurant",
+       "label": "Restaurant check",
+       "selected": false
+      },
+      {
+       "k": "creator",
+       "label": "Creator tip 1",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Open every tab",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/overview",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/dairy",
+       "label": "Buttermilk swap",
+       "current": false
+      },
+      {
+       "href": "#/nutrition",
+       "label": "Vitamin B12",
+       "current": true
+      },
+      {
+       "href": "#/stadium",
+       "label": "Stadium & Arena",
+       "current": false
+      },
+      {
+       "href": "#/airport",
+       "label": "Airport",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "The animals",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your city",
+       "current": false
+      },
+      {
+       "href": "#/restaurant",
+       "label": "Restaurant check",
+       "current": false
+      },
+      {
+       "href": "#/creator",
+       "label": "Creator tip 1",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Open every tab",
+       "current": false
+      }
+     ],
+     "activePart": "nutrition",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 129,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "OPEN ALL 8 FREE PIECES",
+      "bottom": 537,
+      "cls": "dg-cta"
+     },
+     "mainTextLength": 708,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 537,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/taste/nutrition-1440.jpg",
+     "title": "A Taste of Vegans Explore — Vegans Explore",
+     "hash": "#/nutrition",
+     "h1": [
+      "A Taste of Vegans Explore"
+     ],
+     "h2": [
+      "Vitamin B12, the one to know"
+     ],
+     "h3": [],
+     "items": [
+      "Why:"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN ALL 8 FREE PIECES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/login?next=%2Fguides%2Ftaste",
+       "raw": "/login?next=%2Fguides%2Ftaste",
+       "text": "Sign in",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "BUTTERMILK SWAP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "VITAMIN B12",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "STADIUM & ARENA",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "AIRPORT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "THE ANIMALS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "YOUR CITY",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "RESTAURANT CHECK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "CREATOR TIP 1",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN EVERY TAB",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/nutrition-guide#/nutrients/b12",
+       "raw": "/guides/nutrition-guide#/nutrients/b12",
+       "text": "READ THE B12 PAGE",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open all 8 free pieces",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "Talk to Liz"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in",
+      "Get the full Nutrition Guide for $11, or open it with the 1,100 welcome points that come with the Passport, our $11 membership."
+     ],
+     "guide": {
+      "slug": "",
+      "label": "Your Guide",
+      "name": "THEO · YOUR GUIDE",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Ftheo-v3.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "dairy",
+       "label": "Buttermilk swap",
+       "selected": false
+      },
+      {
+       "k": "nutrition",
+       "label": "Vitamin B12",
+       "selected": true
+      },
+      {
+       "k": "stadium",
+       "label": "Stadium & Arena",
+       "selected": false
+      },
+      {
+       "k": "airport",
+       "label": "Airport",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "The animals",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "Your city",
+       "selected": false
+      },
+      {
+       "k": "restaurant",
+       "label": "Restaurant check",
+       "selected": false
+      },
+      {
+       "k": "creator",
+       "label": "Creator tip 1",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Open every tab",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/overview",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/dairy",
+       "label": "BUTTERMILK SWAP",
+       "current": false
+      },
+      {
+       "href": "#/nutrition",
+       "label": "VITAMIN B12",
+       "current": true
+      },
+      {
+       "href": "#/stadium",
+       "label": "STADIUM & ARENA",
+       "current": false
+      },
+      {
+       "href": "#/airport",
+       "label": "AIRPORT",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "THE ANIMALS",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "YOUR CITY",
+       "current": false
+      },
+      {
+       "href": "#/restaurant",
+       "label": "RESTAURANT CHECK",
+       "current": false
+      },
+      {
+       "href": "#/creator",
+       "label": "CREATOR TIP 1",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "OPEN EVERY TAB",
+       "current": false
+      }
+     ],
+     "activePart": "nutrition",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "OPEN ALL 8 FREE PIECES",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 708,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "stadium",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/taste/stadium-390.jpg",
+     "title": "A Taste of Vegans Explore — Vegans Explore",
+     "hash": "#/stadium",
+     "h1": [
+      "A Taste of Vegans Explore"
+     ],
+     "h2": [
+      "A whole stadium, mapped"
+     ],
+     "h3": [],
+     "items": [],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open all 8 free pieces",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/login?next=%2Fguides%2Ftaste",
+       "raw": "/login?next=%2Fguides%2Ftaste",
+       "text": "Sign in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "Buttermilk swap",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "Vitamin B12",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "Stadium & Arena",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "Airport",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "The animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "Your city",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "Restaurant check",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "Creator tip 1",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open every tab",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/stadium-arena-guide#/venue/hard-rock-stadium",
+       "raw": "/guides/stadium-arena-guide#/venue/hard-rock-stadium",
+       "text": "OPEN HARD ROCK STADIUM",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN ALL 8 FREE PIECES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "Talk to Liz"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Get the full Stadium & Arena Guide for $11, or open it with the 1,100 welcome points that come with the Passport, our $11 membership."
+     ],
+     "guide": {
+      "slug": "",
+      "label": "Your Guide",
+      "name": "River · Your Guide",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Friver-v1.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "dairy",
+       "label": "Buttermilk swap",
+       "selected": false
+      },
+      {
+       "k": "nutrition",
+       "label": "Vitamin B12",
+       "selected": false
+      },
+      {
+       "k": "stadium",
+       "label": "Stadium & Arena",
+       "selected": true
+      },
+      {
+       "k": "airport",
+       "label": "Airport",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "The animals",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "Your city",
+       "selected": false
+      },
+      {
+       "k": "restaurant",
+       "label": "Restaurant check",
+       "selected": false
+      },
+      {
+       "k": "creator",
+       "label": "Creator tip 1",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Open every tab",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/overview",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/dairy",
+       "label": "Buttermilk swap",
+       "current": false
+      },
+      {
+       "href": "#/nutrition",
+       "label": "Vitamin B12",
+       "current": false
+      },
+      {
+       "href": "#/stadium",
+       "label": "Stadium & Arena",
+       "current": true
+      },
+      {
+       "href": "#/airport",
+       "label": "Airport",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "The animals",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your city",
+       "current": false
+      },
+      {
+       "href": "#/restaurant",
+       "label": "Restaurant check",
+       "current": false
+      },
+      {
+       "href": "#/creator",
+       "label": "Creator tip 1",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Open every tab",
+       "current": false
+      }
+     ],
+     "activePart": "stadium",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 205,
+     "action": {
+      "text": "OPEN ALL 8 FREE PIECES",
+      "bottom": 537,
+      "cls": "dg-cta"
+     },
+     "mainTextLength": 328,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 537,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/taste/stadium-1440.jpg",
+     "title": "A Taste of Vegans Explore — Vegans Explore",
+     "hash": "#/stadium",
+     "h1": [
+      "A Taste of Vegans Explore"
+     ],
+     "h2": [
+      "A whole stadium, mapped"
+     ],
+     "h3": [],
+     "items": [],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN ALL 8 FREE PIECES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/login?next=%2Fguides%2Ftaste",
+       "raw": "/login?next=%2Fguides%2Ftaste",
+       "text": "Sign in",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "BUTTERMILK SWAP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "VITAMIN B12",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "STADIUM & ARENA",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "AIRPORT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "THE ANIMALS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "YOUR CITY",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "RESTAURANT CHECK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "CREATOR TIP 1",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN EVERY TAB",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/stadium-arena-guide#/venue/hard-rock-stadium",
+       "raw": "/guides/stadium-arena-guide#/venue/hard-rock-stadium",
+       "text": "OPEN HARD ROCK STADIUM",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open all 8 free pieces",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "Talk to Liz"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in",
+      "Get the full Stadium & Arena Guide for $11, or open it with the 1,100 welcome points that come with the Passport, our $11 membership."
+     ],
+     "guide": {
+      "slug": "",
+      "label": "Your Guide",
+      "name": "RIVER · YOUR GUIDE",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Friver-v1.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "dairy",
+       "label": "Buttermilk swap",
+       "selected": false
+      },
+      {
+       "k": "nutrition",
+       "label": "Vitamin B12",
+       "selected": false
+      },
+      {
+       "k": "stadium",
+       "label": "Stadium & Arena",
+       "selected": true
+      },
+      {
+       "k": "airport",
+       "label": "Airport",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "The animals",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "Your city",
+       "selected": false
+      },
+      {
+       "k": "restaurant",
+       "label": "Restaurant check",
+       "selected": false
+      },
+      {
+       "k": "creator",
+       "label": "Creator tip 1",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Open every tab",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/overview",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/dairy",
+       "label": "BUTTERMILK SWAP",
+       "current": false
+      },
+      {
+       "href": "#/nutrition",
+       "label": "VITAMIN B12",
+       "current": false
+      },
+      {
+       "href": "#/stadium",
+       "label": "STADIUM & ARENA",
+       "current": true
+      },
+      {
+       "href": "#/airport",
+       "label": "AIRPORT",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "THE ANIMALS",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "YOUR CITY",
+       "current": false
+      },
+      {
+       "href": "#/restaurant",
+       "label": "RESTAURANT CHECK",
+       "current": false
+      },
+      {
+       "href": "#/creator",
+       "label": "CREATOR TIP 1",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "OPEN EVERY TAB",
+       "current": false
+      }
+     ],
+     "activePart": "stadium",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 683,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "OPEN ALL 8 FREE PIECES",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 328,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "airport",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/taste/airport-390.jpg",
+     "title": "A Taste of Vegans Explore — Vegans Explore",
+     "hash": "#/airport",
+     "h1": [
+      "A Taste of Vegans Explore"
+     ],
+     "h2": [
+      "Vegan food, gate by gate"
+     ],
+     "h3": [],
+     "items": [],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open all 8 free pieces",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/login?next=%2Fguides%2Ftaste",
+       "raw": "/login?next=%2Fguides%2Ftaste",
+       "text": "Sign in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "Buttermilk swap",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "Vitamin B12",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "Stadium & Arena",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "Airport",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "The animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "Your city",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "Restaurant check",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "Creator tip 1",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open every tab",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/airport-guide#/airport/fll",
+       "raw": "/guides/airport-guide#/airport/fll",
+       "text": "OPEN FORT LAUDERDALE",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN ALL 8 FREE PIECES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "Talk to Liz"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Get the full Airport Guide for $11, or open it with the 1,100 welcome points that come with the Passport, our $11 membership."
+     ],
+     "guide": {
+      "slug": "",
+      "label": "Your Guide",
+      "name": "Nori · Your Guide",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fnori-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "dairy",
+       "label": "Buttermilk swap",
+       "selected": false
+      },
+      {
+       "k": "nutrition",
+       "label": "Vitamin B12",
+       "selected": false
+      },
+      {
+       "k": "stadium",
+       "label": "Stadium & Arena",
+       "selected": false
+      },
+      {
+       "k": "airport",
+       "label": "Airport",
+       "selected": true
+      },
+      {
+       "k": "animals",
+       "label": "The animals",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "Your city",
+       "selected": false
+      },
+      {
+       "k": "restaurant",
+       "label": "Restaurant check",
+       "selected": false
+      },
+      {
+       "k": "creator",
+       "label": "Creator tip 1",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Open every tab",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/overview",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/dairy",
+       "label": "Buttermilk swap",
+       "current": false
+      },
+      {
+       "href": "#/nutrition",
+       "label": "Vitamin B12",
+       "current": false
+      },
+      {
+       "href": "#/stadium",
+       "label": "Stadium & Arena",
+       "current": false
+      },
+      {
+       "href": "#/airport",
+       "label": "Airport",
+       "current": true
+      },
+      {
+       "href": "#/animals",
+       "label": "The animals",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your city",
+       "current": false
+      },
+      {
+       "href": "#/restaurant",
+       "label": "Restaurant check",
+       "current": false
+      },
+      {
+       "href": "#/creator",
+       "label": "Creator tip 1",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Open every tab",
+       "current": false
+      }
+     ],
+     "activePart": "airport",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 205,
+     "action": {
+      "text": "OPEN ALL 8 FREE PIECES",
+      "bottom": 537,
+      "cls": "dg-cta"
+     },
+     "mainTextLength": 331,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 537,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/taste/airport-1440.jpg",
+     "title": "A Taste of Vegans Explore — Vegans Explore",
+     "hash": "#/airport",
+     "h1": [
+      "A Taste of Vegans Explore"
+     ],
+     "h2": [
+      "Vegan food, gate by gate"
+     ],
+     "h3": [],
+     "items": [],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN ALL 8 FREE PIECES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/login?next=%2Fguides%2Ftaste",
+       "raw": "/login?next=%2Fguides%2Ftaste",
+       "text": "Sign in",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "BUTTERMILK SWAP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "VITAMIN B12",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "STADIUM & ARENA",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "AIRPORT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "THE ANIMALS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "YOUR CITY",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "RESTAURANT CHECK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "CREATOR TIP 1",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN EVERY TAB",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/airport-guide#/airport/fll",
+       "raw": "/guides/airport-guide#/airport/fll",
+       "text": "OPEN FORT LAUDERDALE",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open all 8 free pieces",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "Talk to Liz"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in",
+      "Get the full Airport Guide for $11, or open it with the 1,100 welcome points that come with the Passport, our $11 membership."
+     ],
+     "guide": {
+      "slug": "",
+      "label": "Your Guide",
+      "name": "NORI · YOUR GUIDE",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fnori-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "dairy",
+       "label": "Buttermilk swap",
+       "selected": false
+      },
+      {
+       "k": "nutrition",
+       "label": "Vitamin B12",
+       "selected": false
+      },
+      {
+       "k": "stadium",
+       "label": "Stadium & Arena",
+       "selected": false
+      },
+      {
+       "k": "airport",
+       "label": "Airport",
+       "selected": true
+      },
+      {
+       "k": "animals",
+       "label": "The animals",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "Your city",
+       "selected": false
+      },
+      {
+       "k": "restaurant",
+       "label": "Restaurant check",
+       "selected": false
+      },
+      {
+       "k": "creator",
+       "label": "Creator tip 1",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Open every tab",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/overview",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/dairy",
+       "label": "BUTTERMILK SWAP",
+       "current": false
+      },
+      {
+       "href": "#/nutrition",
+       "label": "VITAMIN B12",
+       "current": false
+      },
+      {
+       "href": "#/stadium",
+       "label": "STADIUM & ARENA",
+       "current": false
+      },
+      {
+       "href": "#/airport",
+       "label": "AIRPORT",
+       "current": true
+      },
+      {
+       "href": "#/animals",
+       "label": "THE ANIMALS",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "YOUR CITY",
+       "current": false
+      },
+      {
+       "href": "#/restaurant",
+       "label": "RESTAURANT CHECK",
+       "current": false
+      },
+      {
+       "href": "#/creator",
+       "label": "CREATOR TIP 1",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "OPEN EVERY TAB",
+       "current": false
+      }
+     ],
+     "activePart": "airport",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 683,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "OPEN ALL 8 FREE PIECES",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 331,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "animals",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/taste/animals-390.jpg",
+     "title": "A Taste of Vegans Explore — Vegans Explore",
+     "hash": "#/animals",
+     "h1": [
+      "A Taste of Vegans Explore"
+     ],
+     "h2": [
+      "The rescues, sanctuaries and people helping"
+     ],
+     "h3": [],
+     "items": [
+      "Rescues and sanctuaries near you, the animals waiting for a foster on the Fosters board, and the Nonprofit Guide's first tip on telling your"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open all 8 free pieces",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/login?next=%2Fguides%2Ftaste",
+       "raw": "/login?next=%2Fguides%2Ftaste",
+       "text": "Sign in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "Buttermilk swap",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "Vitamin B12",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "Stadium & Arena",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "Airport",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "The animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "Your city",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "Restaurant check",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "Creator tip 1",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open every tab",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory?tab=community",
+       "raw": "/directory?tab=community",
+       "text": "RESCUES AND SANCTUARIES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/pulse/fosters",
+       "raw": "/pulse/fosters",
+       "text": "THE FOSTERS BOARD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/nonprofit-guide#/tips/story",
+       "raw": "/guides/nonprofit-guide#/tips/story",
+       "text": "NONPROFIT TIP 1",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN ALL 8 FREE PIECES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "Talk to Liz"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [],
+     "guide": {
+      "slug": "",
+      "label": "Your Guide",
+      "name": "Dani · Your Guide",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fdani-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "dairy",
+       "label": "Buttermilk swap",
+       "selected": false
+      },
+      {
+       "k": "nutrition",
+       "label": "Vitamin B12",
+       "selected": false
+      },
+      {
+       "k": "stadium",
+       "label": "Stadium & Arena",
+       "selected": false
+      },
+      {
+       "k": "airport",
+       "label": "Airport",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "The animals",
+       "selected": true
+      },
+      {
+       "k": "city",
+       "label": "Your city",
+       "selected": false
+      },
+      {
+       "k": "restaurant",
+       "label": "Restaurant check",
+       "selected": false
+      },
+      {
+       "k": "creator",
+       "label": "Creator tip 1",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Open every tab",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/overview",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/dairy",
+       "label": "Buttermilk swap",
+       "current": false
+      },
+      {
+       "href": "#/nutrition",
+       "label": "Vitamin B12",
+       "current": false
+      },
+      {
+       "href": "#/stadium",
+       "label": "Stadium & Arena",
+       "current": false
+      },
+      {
+       "href": "#/airport",
+       "label": "Airport",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "The animals",
+       "current": true
+      },
+      {
+       "href": "#/city",
+       "label": "Your city",
+       "current": false
+      },
+      {
+       "href": "#/restaurant",
+       "label": "Restaurant check",
+       "current": false
+      },
+      {
+       "href": "#/creator",
+       "label": "Creator tip 1",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Open every tab",
+       "current": false
+      }
+     ],
+     "activePart": "animals",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 129,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "OPEN ALL 8 FREE PIECES",
+      "bottom": 537,
+      "cls": "dg-cta"
+     },
+     "mainTextLength": 428,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 537,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/taste/animals-1440.jpg",
+     "title": "A Taste of Vegans Explore — Vegans Explore",
+     "hash": "#/animals",
+     "h1": [
+      "A Taste of Vegans Explore"
+     ],
+     "h2": [
+      "The rescues, sanctuaries and people helping"
+     ],
+     "h3": [],
+     "items": [
+      "Rescues and sanctuaries near you, the animals waiting for a foster on the Fosters board, and the Nonprofit Guide's first tip on telling your"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN ALL 8 FREE PIECES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/login?next=%2Fguides%2Ftaste",
+       "raw": "/login?next=%2Fguides%2Ftaste",
+       "text": "Sign in",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "BUTTERMILK SWAP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "VITAMIN B12",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "STADIUM & ARENA",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "AIRPORT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "THE ANIMALS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "YOUR CITY",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "RESTAURANT CHECK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "CREATOR TIP 1",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN EVERY TAB",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory?tab=community",
+       "raw": "/directory?tab=community",
+       "text": "RESCUES AND SANCTUARIES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/pulse/fosters",
+       "raw": "/pulse/fosters",
+       "text": "THE FOSTERS BOARD",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/nonprofit-guide#/tips/story",
+       "raw": "/guides/nonprofit-guide#/tips/story",
+       "text": "NONPROFIT TIP 1",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open all 8 free pieces",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "Talk to Liz"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "",
+      "label": "Your Guide",
+      "name": "DANI · YOUR GUIDE",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fdani-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "dairy",
+       "label": "Buttermilk swap",
+       "selected": false
+      },
+      {
+       "k": "nutrition",
+       "label": "Vitamin B12",
+       "selected": false
+      },
+      {
+       "k": "stadium",
+       "label": "Stadium & Arena",
+       "selected": false
+      },
+      {
+       "k": "airport",
+       "label": "Airport",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "The animals",
+       "selected": true
+      },
+      {
+       "k": "city",
+       "label": "Your city",
+       "selected": false
+      },
+      {
+       "k": "restaurant",
+       "label": "Restaurant check",
+       "selected": false
+      },
+      {
+       "k": "creator",
+       "label": "Creator tip 1",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Open every tab",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/overview",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/dairy",
+       "label": "BUTTERMILK SWAP",
+       "current": false
+      },
+      {
+       "href": "#/nutrition",
+       "label": "VITAMIN B12",
+       "current": false
+      },
+      {
+       "href": "#/stadium",
+       "label": "STADIUM & ARENA",
+       "current": false
+      },
+      {
+       "href": "#/airport",
+       "label": "AIRPORT",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "THE ANIMALS",
+       "current": true
+      },
+      {
+       "href": "#/city",
+       "label": "YOUR CITY",
+       "current": false
+      },
+      {
+       "href": "#/restaurant",
+       "label": "RESTAURANT CHECK",
+       "current": false
+      },
+      {
+       "href": "#/creator",
+       "label": "CREATOR TIP 1",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "OPEN EVERY TAB",
+       "current": false
+      }
+     ],
+     "activePart": "animals",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "OPEN ALL 8 FREE PIECES",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 428,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "city",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/taste?unsub=#/city",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/taste?unsub=#/city",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/taste/city-390.jpg",
+     "title": "A Taste of Vegans Explore — Vegans Explore",
+     "hash": "#/city",
+     "h1": [
+      "A Taste of Vegans Explore"
+     ],
+     "h2": [
+      "Your city, on Vegans Explore"
+     ],
+     "h3": [],
+     "items": [],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open all 8 free pieces",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/login?next=%2Fguides%2Ftaste",
+       "raw": "/login?next=%2Fguides%2Ftaste",
+       "text": "Sign in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "Buttermilk swap",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "Vitamin B12",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "Stadium & Arena",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "Airport",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "The animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "Your city",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "Restaurant check",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "Creator tip 1",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open every tab",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/communities",
+       "raw": "/communities",
+       "text": "FIND YOUR CITY",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/pulse",
+       "raw": "/pulse",
+       "text": "THE DAILY PULSE",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/events",
+       "raw": "/events",
+       "text": "EVENTS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN ALL 8 FREE PIECES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "Talk to Liz"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "The places to eat and shop, the Daily Pulse every morning, and the events coming up. Anyone can look around; members vote, post and check in.",
+      "I'm Pascal. Your city on Vegans Explore: the places members vote up, the Daily Pulse every morning and what is coming up."
+     ],
+     "guide": {
+      "slug": "",
+      "label": "Your Guide",
+      "name": "Pascal · Your Guide",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fpascal-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "dairy",
+       "label": "Buttermilk swap",
+       "selected": false
+      },
+      {
+       "k": "nutrition",
+       "label": "Vitamin B12",
+       "selected": false
+      },
+      {
+       "k": "stadium",
+       "label": "Stadium & Arena",
+       "selected": false
+      },
+      {
+       "k": "airport",
+       "label": "Airport",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "The animals",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "Your city",
+       "selected": true
+      },
+      {
+       "k": "restaurant",
+       "label": "Restaurant check",
+       "selected": false
+      },
+      {
+       "k": "creator",
+       "label": "Creator tip 1",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Open every tab",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/overview",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/dairy",
+       "label": "Buttermilk swap",
+       "current": false
+      },
+      {
+       "href": "#/nutrition",
+       "label": "Vitamin B12",
+       "current": false
+      },
+      {
+       "href": "#/stadium",
+       "label": "Stadium & Arena",
+       "current": false
+      },
+      {
+       "href": "#/airport",
+       "label": "Airport",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "The animals",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your city",
+       "current": true
+      },
+      {
+       "href": "#/restaurant",
+       "label": "Restaurant check",
+       "current": false
+      },
+      {
+       "href": "#/creator",
+       "label": "Creator tip 1",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Open every tab",
+       "current": false
+      }
+     ],
+     "activePart": "city",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 129,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "OPEN ALL 8 FREE PIECES",
+      "bottom": 537,
+      "cls": "dg-cta"
+     },
+     "mainTextLength": 227,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 537,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/taste?unsub=#/city",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/taste?unsub=#/city",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/taste/city-1440.jpg",
+     "title": "A Taste of Vegans Explore — Vegans Explore",
+     "hash": "#/city",
+     "h1": [
+      "A Taste of Vegans Explore"
+     ],
+     "h2": [
+      "Your city, on Vegans Explore"
+     ],
+     "h3": [],
+     "items": [],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN ALL 8 FREE PIECES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/login?next=%2Fguides%2Ftaste",
+       "raw": "/login?next=%2Fguides%2Ftaste",
+       "text": "Sign in",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "BUTTERMILK SWAP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "VITAMIN B12",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "STADIUM & ARENA",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "AIRPORT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "THE ANIMALS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "YOUR CITY",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "RESTAURANT CHECK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "CREATOR TIP 1",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN EVERY TAB",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/communities",
+       "raw": "/communities",
+       "text": "FIND YOUR CITY",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/pulse",
+       "raw": "/pulse",
+       "text": "THE DAILY PULSE",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/events",
+       "raw": "/events",
+       "text": "EVENTS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open all 8 free pieces",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "Talk to Liz"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in",
+      "The places to eat and shop, the Daily Pulse every morning, and the events coming up. Anyone can look around; members vote, post and check in.",
+      "I'm Pascal. Your city on Vegans Explore: the places members vote up, the Daily Pulse every morning and what is coming up."
+     ],
+     "guide": {
+      "slug": "",
+      "label": "Your Guide",
+      "name": "PASCAL · YOUR GUIDE",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fpascal-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "dairy",
+       "label": "Buttermilk swap",
+       "selected": false
+      },
+      {
+       "k": "nutrition",
+       "label": "Vitamin B12",
+       "selected": false
+      },
+      {
+       "k": "stadium",
+       "label": "Stadium & Arena",
+       "selected": false
+      },
+      {
+       "k": "airport",
+       "label": "Airport",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "The animals",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "Your city",
+       "selected": true
+      },
+      {
+       "k": "restaurant",
+       "label": "Restaurant check",
+       "selected": false
+      },
+      {
+       "k": "creator",
+       "label": "Creator tip 1",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Open every tab",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/overview",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/dairy",
+       "label": "BUTTERMILK SWAP",
+       "current": false
+      },
+      {
+       "href": "#/nutrition",
+       "label": "VITAMIN B12",
+       "current": false
+      },
+      {
+       "href": "#/stadium",
+       "label": "STADIUM & ARENA",
+       "current": false
+      },
+      {
+       "href": "#/airport",
+       "label": "AIRPORT",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "THE ANIMALS",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "YOUR CITY",
+       "current": true
+      },
+      {
+       "href": "#/restaurant",
+       "label": "RESTAURANT CHECK",
+       "current": false
+      },
+      {
+       "href": "#/creator",
+       "label": "CREATOR TIP 1",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "OPEN EVERY TAB",
+       "current": false
+      }
+     ],
+     "activePart": "city",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgMain.dg-main",
+       "scrollHeight": 656,
+       "clientHeight": 544
+      }
+     ],
+     "h1Bottom": 181,
+     "action": {
+      "text": "OPEN ALL 8 FREE PIECES",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 227,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "restaurant",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/taste/restaurant-390.jpg",
+     "title": "A Taste of Vegans Explore — Vegans Explore",
+     "hash": "#/restaurant",
+     "h1": [
+      "A Taste of Vegans Explore"
+     ],
+     "h2": [
+      "A free check of any Vegan restaurant"
+     ],
+     "h3": [],
+     "items": [
+      "What it checks:"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open all 8 free pieces",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/login?next=%2Fguides%2Ftaste",
+       "raw": "/login?next=%2Fguides%2Ftaste",
+       "text": "Sign in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "Buttermilk swap",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "Vitamin B12",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "Stadium & Arena",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "Airport",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "The animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "Your city",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "Restaurant check",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "Creator tip 1",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open every tab",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "/guides/vegan-restaurant-guide#/audit",
+       "text": "RUN THE FREE CHECK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN ALL 8 FREE PIECES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "Talk to Liz"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Pick a business and Liz checks its Google listing, website, search and social, then lists what to fix right away. Free for everyone.",
+      "Get the full Vegan Restaurant Guide for $11, or open it with the 1,100 welcome points that come with the Passport, our $11 membership."
+     ],
+     "guide": {
+      "slug": "",
+      "label": "Your Guide",
+      "name": "Liz · Your Guide",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "dairy",
+       "label": "Buttermilk swap",
+       "selected": false
+      },
+      {
+       "k": "nutrition",
+       "label": "Vitamin B12",
+       "selected": false
+      },
+      {
+       "k": "stadium",
+       "label": "Stadium & Arena",
+       "selected": false
+      },
+      {
+       "k": "airport",
+       "label": "Airport",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "The animals",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "Your city",
+       "selected": false
+      },
+      {
+       "k": "restaurant",
+       "label": "Restaurant check",
+       "selected": true
+      },
+      {
+       "k": "creator",
+       "label": "Creator tip 1",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Open every tab",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/overview",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/dairy",
+       "label": "Buttermilk swap",
+       "current": false
+      },
+      {
+       "href": "#/nutrition",
+       "label": "Vitamin B12",
+       "current": false
+      },
+      {
+       "href": "#/stadium",
+       "label": "Stadium & Arena",
+       "current": false
+      },
+      {
+       "href": "#/airport",
+       "label": "Airport",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "The animals",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your city",
+       "current": false
+      },
+      {
+       "href": "#/restaurant",
+       "label": "Restaurant check",
+       "current": true
+      },
+      {
+       "href": "#/creator",
+       "label": "Creator tip 1",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Open every tab",
+       "current": false
+      }
+     ],
+     "activePart": "restaurant",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 129,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "OPEN ALL 8 FREE PIECES",
+      "bottom": 537,
+      "cls": "dg-cta"
+     },
+     "mainTextLength": 506,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 537,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/taste/restaurant-1440.jpg",
+     "title": "A Taste of Vegans Explore — Vegans Explore",
+     "hash": "#/restaurant",
+     "h1": [
+      "A Taste of Vegans Explore"
+     ],
+     "h2": [
+      "A free check of any Vegan restaurant"
+     ],
+     "h3": [],
+     "items": [
+      "What it checks:"
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN ALL 8 FREE PIECES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/login?next=%2Fguides%2Ftaste",
+       "raw": "/login?next=%2Fguides%2Ftaste",
+       "text": "Sign in",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "BUTTERMILK SWAP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "VITAMIN B12",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "STADIUM & ARENA",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "AIRPORT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "THE ANIMALS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "YOUR CITY",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "RESTAURANT CHECK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "CREATOR TIP 1",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN EVERY TAB",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/vegan-restaurant-guide#/audit",
+       "raw": "/guides/vegan-restaurant-guide#/audit",
+       "text": "RUN THE FREE CHECK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open all 8 free pieces",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "Talk to Liz"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in",
+      "Pick a business and Liz checks its Google listing, website, search and social, then lists what to fix right away. Free for everyone.",
+      "Get the full Vegan Restaurant Guide for $11, or open it with the 1,100 welcome points that come with the Passport, our $11 membership."
+     ],
+     "guide": {
+      "slug": "",
+      "label": "Your Guide",
+      "name": "LIZ · YOUR GUIDE",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fliz-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "dairy",
+       "label": "Buttermilk swap",
+       "selected": false
+      },
+      {
+       "k": "nutrition",
+       "label": "Vitamin B12",
+       "selected": false
+      },
+      {
+       "k": "stadium",
+       "label": "Stadium & Arena",
+       "selected": false
+      },
+      {
+       "k": "airport",
+       "label": "Airport",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "The animals",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "Your city",
+       "selected": false
+      },
+      {
+       "k": "restaurant",
+       "label": "Restaurant check",
+       "selected": true
+      },
+      {
+       "k": "creator",
+       "label": "Creator tip 1",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Open every tab",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/overview",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/dairy",
+       "label": "BUTTERMILK SWAP",
+       "current": false
+      },
+      {
+       "href": "#/nutrition",
+       "label": "VITAMIN B12",
+       "current": false
+      },
+      {
+       "href": "#/stadium",
+       "label": "STADIUM & ARENA",
+       "current": false
+      },
+      {
+       "href": "#/airport",
+       "label": "AIRPORT",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "THE ANIMALS",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "YOUR CITY",
+       "current": false
+      },
+      {
+       "href": "#/restaurant",
+       "label": "RESTAURANT CHECK",
+       "current": true
+      },
+      {
+       "href": "#/creator",
+       "label": "CREATOR TIP 1",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "OPEN EVERY TAB",
+       "current": false
+      }
+     ],
+     "activePart": "restaurant",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "OPEN ALL 8 FREE PIECES",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 506,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "creator",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/taste/creator-390.jpg",
+     "title": "A Taste of Vegans Explore — Vegans Explore",
+     "hash": "#/creator",
+     "h1": [
+      "A Taste of Vegans Explore"
+     ],
+     "h2": [
+      "Tip 1: Define your purpose and niche"
+     ],
+     "h3": [],
+     "items": [
+      "The most effective creators know exactly who they are speaking to and why. A clear mission keeps your content focused and helps you stand ou",
+      "In action:",
+      "This week:",
+      "Write a one-sentence mission statement for your content.",
+      "Identify your target audience such as families, athletes, or students.",
+      "Audit your last five posts and ask if they align with your mission."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open all 8 free pieces",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/login?next=%2Fguides%2Ftaste",
+       "raw": "/login?next=%2Fguides%2Ftaste",
+       "text": "Sign in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "Buttermilk swap",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "Vitamin B12",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "Stadium & Arena",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "Airport",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "The animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "Your city",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "Restaurant check",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "Creator tip 1",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open every tab",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/creator-guide#/tips/purpose",
+       "raw": "/guides/creator-guide#/tips/purpose",
+       "text": "OPEN THE CREATOR GUIDE",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN ALL 8 FREE PIECES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "Talk to Liz"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Get the full Creator Guide for $11, or open it with the 1,100 welcome points that come with the Passport, our $11 membership."
+     ],
+     "guide": {
+      "slug": "",
+      "label": "Your Guide",
+      "name": "Kai · Your Guide",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fkai-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "dairy",
+       "label": "Buttermilk swap",
+       "selected": false
+      },
+      {
+       "k": "nutrition",
+       "label": "Vitamin B12",
+       "selected": false
+      },
+      {
+       "k": "stadium",
+       "label": "Stadium & Arena",
+       "selected": false
+      },
+      {
+       "k": "airport",
+       "label": "Airport",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "The animals",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "Your city",
+       "selected": false
+      },
+      {
+       "k": "restaurant",
+       "label": "Restaurant check",
+       "selected": false
+      },
+      {
+       "k": "creator",
+       "label": "Creator tip 1",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Open every tab",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/overview",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/dairy",
+       "label": "Buttermilk swap",
+       "current": false
+      },
+      {
+       "href": "#/nutrition",
+       "label": "Vitamin B12",
+       "current": false
+      },
+      {
+       "href": "#/stadium",
+       "label": "Stadium & Arena",
+       "current": false
+      },
+      {
+       "href": "#/airport",
+       "label": "Airport",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "The animals",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your city",
+       "current": false
+      },
+      {
+       "href": "#/restaurant",
+       "label": "Restaurant check",
+       "current": false
+      },
+      {
+       "href": "#/creator",
+       "label": "Creator tip 1",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "Open every tab",
+       "current": false
+      }
+     ],
+     "activePart": "creator",
+     "hScroll": null,
+     "innerScroll": [
+      {
+       "el": "#dgBubble.dg-bubble",
+       "scrollHeight": 129,
+       "clientHeight": 112
+      }
+     ],
+     "h1Bottom": 205,
+     "action": {
+      "text": "OPEN ALL 8 FREE PIECES",
+      "bottom": 537,
+      "cls": "dg-cta"
+     },
+     "mainTextLength": 1006,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": 537,
+      "titlePass": true,
+      "actionPass": true
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/taste/creator-1440.jpg",
+     "title": "A Taste of Vegans Explore — Vegans Explore",
+     "hash": "#/creator",
+     "h1": [
+      "A Taste of Vegans Explore"
+     ],
+     "h2": [
+      "Tip 1: Define your purpose and niche"
+     ],
+     "h3": [],
+     "items": [
+      "The most effective creators know exactly who they are speaking to and why. A clear mission keeps your content focused and helps you stand ou",
+      "In action:",
+      "This week:",
+      "Write a one-sentence mission statement for your content.",
+      "Identify your target audience such as families, athletes, or students.",
+      "Audit your last five posts and ask if they align with your mission."
+     ],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN ALL 8 FREE PIECES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/login?next=%2Fguides%2Ftaste",
+       "raw": "/login?next=%2Fguides%2Ftaste",
+       "text": "Sign in",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "BUTTERMILK SWAP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "VITAMIN B12",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "STADIUM & ARENA",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "AIRPORT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "THE ANIMALS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "YOUR CITY",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "RESTAURANT CHECK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "CREATOR TIP 1",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN EVERY TAB",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/creator-guide#/tips/purpose",
+       "raw": "/guides/creator-guide#/tips/purpose",
+       "text": "OPEN THE CREATOR GUIDE",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open all 8 free pieces",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "Talk to Liz"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in",
+      "Get the full Creator Guide for $11, or open it with the 1,100 welcome points that come with the Passport, our $11 membership."
+     ],
+     "guide": {
+      "slug": "",
+      "label": "Your Guide",
+      "name": "KAI · YOUR GUIDE",
+      "picture": "https://vegansexplore.com/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fkai-v2.jpg&w=1080&q=75",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "dairy",
+       "label": "Buttermilk swap",
+       "selected": false
+      },
+      {
+       "k": "nutrition",
+       "label": "Vitamin B12",
+       "selected": false
+      },
+      {
+       "k": "stadium",
+       "label": "Stadium & Arena",
+       "selected": false
+      },
+      {
+       "k": "airport",
+       "label": "Airport",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "The animals",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "Your city",
+       "selected": false
+      },
+      {
+       "k": "restaurant",
+       "label": "Restaurant check",
+       "selected": false
+      },
+      {
+       "k": "creator",
+       "label": "Creator tip 1",
+       "selected": true
+      },
+      {
+       "k": "join",
+       "label": "Open every tab",
+       "selected": false
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/overview",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/dairy",
+       "label": "BUTTERMILK SWAP",
+       "current": false
+      },
+      {
+       "href": "#/nutrition",
+       "label": "VITAMIN B12",
+       "current": false
+      },
+      {
+       "href": "#/stadium",
+       "label": "STADIUM & ARENA",
+       "current": false
+      },
+      {
+       "href": "#/airport",
+       "label": "AIRPORT",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "THE ANIMALS",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "YOUR CITY",
+       "current": false
+      },
+      {
+       "href": "#/restaurant",
+       "label": "RESTAURANT CHECK",
+       "current": false
+      },
+      {
+       "href": "#/creator",
+       "label": "CREATOR TIP 1",
+       "current": true
+      },
+      {
+       "href": "#/join",
+       "label": "OPEN EVERY TAB",
+       "current": false
+      }
+     ],
+     "activePart": "creator",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "OPEN ALL 8 FREE PIECES",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 1006,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  },
+  {
+   "view": "join",
+   "depth": 0,
+   "parent": null,
+   "isPart": true,
+   "widths": {
+    "390": {
+     "url": "https://vegansexplore.com/guides/taste?unsub=#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/taste?unsub=#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/taste/join-390.jpg",
+     "title": "A Taste of Vegans Explore — Vegans Explore",
+     "hash": "#/join",
+     "h1": [
+      "A Taste of Vegans Explore"
+     ],
+     "h2": [
+      "Open every tab"
+     ],
+     "h3": [],
+     "items": [],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open all 8 free pieces",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/login?next=%2Fguides%2Ftaste",
+       "raw": "/login?next=%2Fguides%2Ftaste",
+       "text": "Sign in",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "Overview",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "Buttermilk swap",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "Vitamin B12",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "Stadium & Arena",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "Airport",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "The animals",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "Your city",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "Restaurant check",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "Creator tip 1",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open every tab",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": true
+      }
+     ],
+     "chromeLinks": 27,
+     "buttons": [
+      "NEXT",
+      "Talk to Liz"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "",
+      "label": "Your Guide",
+      "name": "Your Guides · all eight of us",
+      "picture": "https://vegansexplore.com/public/guides/welcome-ensemble.jpg",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "dairy",
+       "label": "Buttermilk swap",
+       "selected": false
+      },
+      {
+       "k": "nutrition",
+       "label": "Vitamin B12",
+       "selected": false
+      },
+      {
+       "k": "stadium",
+       "label": "Stadium & Arena",
+       "selected": false
+      },
+      {
+       "k": "airport",
+       "label": "Airport",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "The animals",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "Your city",
+       "selected": false
+      },
+      {
+       "k": "restaurant",
+       "label": "Restaurant check",
+       "selected": false
+      },
+      {
+       "k": "creator",
+       "label": "Creator tip 1",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Open every tab",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/overview",
+       "label": "Overview",
+       "current": false
+      },
+      {
+       "href": "#/dairy",
+       "label": "Buttermilk swap",
+       "current": false
+      },
+      {
+       "href": "#/nutrition",
+       "label": "Vitamin B12",
+       "current": false
+      },
+      {
+       "href": "#/stadium",
+       "label": "Stadium & Arena",
+       "current": false
+      },
+      {
+       "href": "#/airport",
+       "label": "Airport",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "The animals",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "Your city",
+       "current": false
+      },
+      {
+       "href": "#/restaurant",
+       "label": "Restaurant check",
+       "current": false
+      },
+      {
+       "href": "#/creator",
+       "label": "Creator tip 1",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "Open every tab",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 205,
+     "action": null,
+     "mainTextLength": 436,
+     "brokenImages": [],
+     "realFailedRequests": [],
+     "phone": {
+      "h1Bottom": 205,
+      "actionBottom": null,
+      "titlePass": true,
+      "actionPass": false
+     }
+    },
+    "1440": {
+     "url": "https://vegansexplore.com/guides/taste?unsub=#/join",
+     "consoleErrors": [],
+     "failedRequests": [],
+     "errors": [],
+     "finalUrl": "https://vegansexplore.com/guides/taste?unsub=#/join",
+     "screenshot": "../../../tmp/claude-0/guide-inventory/before/shots/taste/join-1440.jpg",
+     "title": "A Taste of Vegans Explore — Vegans Explore",
+     "hash": "#/join",
+     "h1": [
+      "A Taste of Vegans Explore"
+     ],
+     "h2": [
+      "Open every tab"
+     ],
+     "h3": [],
+     "items": [],
+     "links": [
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN ALL 8 FREE PIECES",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/login?next=%2Fguides%2Ftaste",
+       "raw": "/login?next=%2Fguides%2Ftaste",
+       "text": "Sign in",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/overview",
+       "raw": "#/overview",
+       "text": "OVERVIEW",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/dairy",
+       "raw": "#/dairy",
+       "text": "BUTTERMILK SWAP",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/nutrition",
+       "raw": "#/nutrition",
+       "text": "VITAMIN B12",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/stadium",
+       "raw": "#/stadium",
+       "text": "STADIUM & ARENA",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/airport",
+       "raw": "#/airport",
+       "text": "AIRPORT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/animals",
+       "raw": "#/animals",
+       "text": "THE ANIMALS",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/city",
+       "raw": "#/city",
+       "text": "YOUR CITY",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/restaurant",
+       "raw": "#/restaurant",
+       "text": "RESTAURANT CHECK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "CREATOR TIP 1",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "OPEN EVERY TAB",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "Back",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Next",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "Open all 8 free pieces",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/creator",
+       "raw": "#/creator",
+       "text": "BACK",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#/join",
+       "raw": "#/join",
+       "text": "NEXT",
+       "visible": true
+      },
+      {
+       "href": "https://vegansexplore.com/",
+       "raw": "/",
+       "text": "Home",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/directory",
+       "raw": "/directory",
+       "text": "Explore",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/guides/taste?unsub=#menu",
+       "raw": "#menu",
+       "text": "Menu",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/dashboard/saves",
+       "raw": "/dashboard/saves",
+       "text": "Saves",
+       "visible": false
+      },
+      {
+       "href": "https://vegansexplore.com/account",
+       "raw": "/account",
+       "text": "Profile",
+       "visible": false
+      }
+     ],
+     "chromeLinks": 26,
+     "buttons": [
+      "NEXT",
+      "Talk to Liz"
+     ],
+     "images": [],
+     "media": [],
+     "gates": [
+      "Sign in"
+     ],
+     "guide": {
+      "slug": "",
+      "label": "Your Guide",
+      "name": "YOUR GUIDES · ALL EIGHT OF US",
+      "picture": "https://vegansexplore.com/public/guides/welcome-ensemble.jpg",
+      "railVisible": true
+     },
+     "menu": [
+      {
+       "k": "overview",
+       "label": "Overview",
+       "selected": false
+      },
+      {
+       "k": "dairy",
+       "label": "Buttermilk swap",
+       "selected": false
+      },
+      {
+       "k": "nutrition",
+       "label": "Vitamin B12",
+       "selected": false
+      },
+      {
+       "k": "stadium",
+       "label": "Stadium & Arena",
+       "selected": false
+      },
+      {
+       "k": "airport",
+       "label": "Airport",
+       "selected": false
+      },
+      {
+       "k": "animals",
+       "label": "The animals",
+       "selected": false
+      },
+      {
+       "k": "city",
+       "label": "Your city",
+       "selected": false
+      },
+      {
+       "k": "restaurant",
+       "label": "Restaurant check",
+       "selected": false
+      },
+      {
+       "k": "creator",
+       "label": "Creator tip 1",
+       "selected": false
+      },
+      {
+       "k": "join",
+       "label": "Open every tab",
+       "selected": true
+      }
+     ],
+     "menuLinks": [
+      {
+       "href": "#/overview",
+       "label": "OVERVIEW",
+       "current": false
+      },
+      {
+       "href": "#/dairy",
+       "label": "BUTTERMILK SWAP",
+       "current": false
+      },
+      {
+       "href": "#/nutrition",
+       "label": "VITAMIN B12",
+       "current": false
+      },
+      {
+       "href": "#/stadium",
+       "label": "STADIUM & ARENA",
+       "current": false
+      },
+      {
+       "href": "#/airport",
+       "label": "AIRPORT",
+       "current": false
+      },
+      {
+       "href": "#/animals",
+       "label": "THE ANIMALS",
+       "current": false
+      },
+      {
+       "href": "#/city",
+       "label": "YOUR CITY",
+       "current": false
+      },
+      {
+       "href": "#/restaurant",
+       "label": "RESTAURANT CHECK",
+       "current": false
+      },
+      {
+       "href": "#/creator",
+       "label": "CREATOR TIP 1",
+       "current": false
+      },
+      {
+       "href": "#/join",
+       "label": "OPEN EVERY TAB",
+       "current": true
+      }
+     ],
+     "activePart": "join",
+     "hScroll": null,
+     "innerScroll": [],
+     "h1Bottom": 181,
+     "action": {
+      "text": "OPEN ALL 8 FREE PIECES",
+      "bottom": 170,
+      "cls": "dg-btn"
+     },
+     "mainTextLength": 436,
+     "brokenImages": [],
+     "realFailedRequests": []
+    }
+   }
+  }
+ ],
+ "linkStatus": {
+  "https://vegansexplore.com/guides/taste?unsub=": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/login?next=%2Fguides%2Ftaste": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/directory": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/dashboard/saves": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/account": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/guides/vegan-dairy-guide": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/guides/nutrition-guide": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/guides/stadium-arena-guide": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/guides/airport-guide": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/directory?tab=community": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/pulse/fosters": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/guides/nonprofit-guide": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/communities": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/pulse": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/events": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/guides/vegan-restaurant-guide": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  },
+  "https://vegansexplore.com/guides/creator-guide": {
+   "status": 200,
+   "internal": true,
+   "dead": false
+  }
+ }
+}

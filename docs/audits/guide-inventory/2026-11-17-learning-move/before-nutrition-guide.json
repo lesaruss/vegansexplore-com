@@ -1,0 +1,658 @@
+{
+ "guide": "nutrition-guide",
+ "mode": "live",
+ "w": 1440,
+ "parts": {
+  "overview": {
+   "titles": [
+    "The Nutrition Guide",
+    "Eat Vegan, and Cover the Basics",
+    "How to use this Guide",
+    "Eat Well",
+    "Find Help",
+    "Listen"
+   ],
+   "links": [
+    "#",
+    "#/nutrients/b12",
+    "#/experts",
+    "#/nutrients",
+    "#/plate",
+    "#/supplements",
+    "#/courses",
+    "#/pulse",
+    "#/"
+   ],
+   "buttons": [
+    "Get it for $11",
+    "▶ Play Theo",
+    "Talk to Theo",
+    "Hide me"
+   ],
+   "money": [
+    "$11",
+    "Get it for $11",
+    "Sign in",
+    "Supplements, Experts and Courses are open to everyone, and B12 is free to try. The rest comes with the full Guide.",
+    "Try B12, free",
+    "B12, protein, iron, calcium, vitamin D, omega-3s, iodine and zinc: how much, and where to get it. In the full Guide.",
+    "Build a Vegan plate at every meal, and check off the basics every day. In the full Guide.",
+    "Our episodes with Dr. Barnard, Dr. Klaper, Dr. Bulsiewicz and more. In the full Guide."
+   ],
+   "menu": [
+    "Overview",
+    "Nutrients",
+    "Your plate",
+    "Supplements",
+    "Experts",
+    "Courses",
+    "Pulse",
+    "Get access"
+   ],
+   "hscroll": false,
+   "inner": [
+    "#dgMain.dg-main"
+   ],
+   "classes": {
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "wg-gs": 1,
+    "wg-gs-pic": 1,
+    "wg-gs-b": 1,
+    "vgi-k": 1,
+    "wg-gs-t": 1,
+    "wg-gs-btns": 1,
+    "dg-btn": 2,
+    "dg-ghost": 1,
+    "wg-arts": 1,
+    "wg-arts-ov": 1,
+    "wg-grp": 3,
+    "wg-art": 6,
+    "wg-art-img": 6,
+    "wg-art-t": 6,
+    "wg-art-more": 6,
+    "nt-note": 1
+   }
+  },
+  "nutrients": {
+   "titles": [
+    "The Nutrition Guide",
+    "What a Vegan plate needs",
+    "Eight nutrients, one at a time",
+    "Vitamin B12",
+    "Protein",
+    "Iron",
+    "Calcium",
+    "Vitamin D",
+    "Omega-3s",
+    "Iodine",
+    "Zinc",
+    "Every nutrient, with what to do this week",
+    "Put it on your plate."
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/nutrients/b12",
+    "#/plate"
+   ],
+   "buttons": [
+    "Get it for $11",
+    "▶ Play Theo",
+    "Talk to Theo",
+    "Hide me"
+   ],
+   "money": [
+    "$11",
+    "Get it for $11",
+    "Sign in",
+    "Free to try",
+    "In the full Guide",
+    "Protein, iron, calcium, vitamin D, omega-3s, iodine and zinc: how much, where to get them, and when to supplement. It is $11 and yours to keep. Members can pay with 1,100 points instead.",
+    "Member? Sign in",
+    "Eight nutrients, one at a time: how much you need, which foods have it, and when to take a supplement. Try B12 free."
+   ],
+   "menu": [
+    "Overview",
+    "Nutrients",
+    "Your plate",
+    "Supplements",
+    "Experts",
+    "Courses",
+    "Pulse",
+    "Get access"
+   ],
+   "hscroll": false,
+   "inner": [
+    "#dgMain.dg-main"
+   ],
+   "classes": {
+    "dg-crumb": 1,
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "dg-lede": 1,
+    "wg-gs": 1,
+    "wg-gs-pic": 1,
+    "wg-gs-b": 1,
+    "vgi-k": 1,
+    "wg-gs-t": 1,
+    "wg-gs-btns": 1,
+    "dg-btn": 2,
+    "dg-srows": 1,
+    "dg-srow": 8,
+    "dg-th": 8,
+    "rg-th": 8,
+    "[object": 48,
+    "SVGAnimatedString]": 48,
+    "dg-srow-b": 8,
+    "dg-free": 1,
+    "dg-srow-p": 8,
+    "dg-gated": 1,
+    "dg-blur": 1,
+    "dg-skel": 1,
+    "dg-gate": 1,
+    "dg-lockic": 1,
+    "dg-btns": 1,
+    "vxc": 1,
+    "vxc-b": 1,
+    "vxc-k": 1,
+    "vxc-go": 1,
+    "nt-note": 1
+   }
+  },
+  "plate": {
+   "titles": [
+    "The Nutrition Guide",
+    "Build a Vegan plate at every meal",
+    "One plate, every meal",
+    "Half: vegetables and fruits",
+    "A quarter: whole grains",
+    "A quarter: plant protein",
+    "Cover the rest with a supplement."
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/plate",
+    "#/supplements",
+    "#/nutrients"
+   ],
+   "buttons": [
+    "Get it for $11",
+    "▶ Play Theo",
+    "Talk to Theo",
+    "Hide me"
+   ],
+   "money": [
+    "$11",
+    "Get it for $11",
+    "Sign in",
+    "The plate at every meal, and the basics to cover every day. It is $11 and yours to keep. Members can pay with 1,100 points instead.",
+    "Member? Sign in"
+   ],
+   "menu": [
+    "Overview",
+    "Nutrients",
+    "Your plate",
+    "Supplements",
+    "Experts",
+    "Courses",
+    "Pulse",
+    "Get access"
+   ],
+   "hscroll": false,
+   "inner": [
+    "#dgMain.dg-main"
+   ],
+   "classes": {
+    "dg-crumb": 1,
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "dg-lede": 1,
+    "wg-gs": 1,
+    "wg-gs-pic": 1,
+    "wg-gs-b": 1,
+    "vgi-k": 1,
+    "wg-gs-t": 1,
+    "wg-gs-btns": 1,
+    "dg-btn": 2,
+    "dg-gated": 1,
+    "dg-blur": 1,
+    "nt-plate": 1,
+    "[object": 12,
+    "SVGAnimatedString]": 12,
+    "dg-skel": 3,
+    "dg-gate": 1,
+    "dg-lockic": 1,
+    "dg-btns": 1,
+    "vxc": 1,
+    "vxc-b": 1,
+    "vxc-k": 1,
+    "vxc-go": 1,
+    "nt-note": 1
+   }
+  },
+  "supplements": {
+   "titles": [
+    "The Nutrition Guide",
+    "Supplements, and what to look for",
+    "What to take, and what to look for",
+    "Before you buy",
+    "Brands in our Directory",
+    "Ask someone who knows."
+   ],
+   "links": [
+    "#",
+    "#/",
+    "/directory?tab=products&sub=nutrition-and-supplements",
+    "/claim?add=1",
+    "#/experts",
+    "#/plate"
+   ],
+   "buttons": [
+    "Get it for $11",
+    "Vouch",
+    "Save",
+    "Vouches",
+    "▶ Play Theo",
+    "Talk to Theo",
+    "Hide me"
+   ],
+   "money": [
+    "$11",
+    "Get it for $11",
+    "Sign in",
+    "Independent test seals, whether it is really Vegan, how much is too much, and what to tell your doctor. It is $11 and yours to keep. Members can pay with 1,100 points instead.",
+    "Member? Sign in",
+    "The supplement brands in our Directory, and in the full Guide, what to look for on the label before you buy."
+   ],
+   "menu": [
+    "Overview",
+    "Nutrients",
+    "Your plate",
+    "Supplements",
+    "Experts",
+    "Courses",
+    "Pulse",
+    "Get access"
+   ],
+   "hscroll": false,
+   "inner": [
+    "#dgMain.dg-main"
+   ],
+   "classes": {
+    "dg-crumb": 1,
+    "dg-head": 1,
+    "dg-k": 2,
+    "dg-h1": 1,
+    "dg-lede": 2,
+    "wg-gs": 1,
+    "wg-gs-pic": 1,
+    "wg-gs-b": 1,
+    "vgi-k": 1,
+    "wg-gs-t": 1,
+    "wg-gs-btns": 1,
+    "dg-btn": 4,
+    "dg-gated": 1,
+    "dg-blur": 1,
+    "dg-skel": 1,
+    "dg-gate": 1,
+    "dg-lockic": 1,
+    "[object": 3,
+    "SVGAnimatedString]": 3,
+    "dg-btns": 2,
+    "vrd-root": 1,
+    "rank-grid": 1,
+    "rank-card": 24,
+    "vrd-logo": 24,
+    "av": 24,
+    "rank-info": 24,
+    "rank-name": 24,
+    "rank-meta": 24,
+    "online-badge": 23,
+    "rank-subcat": 24,
+    "vrd-vegan": 24,
+    "vrd-vegan-fully": 23,
+    "rank-right": 24,
+    "vote-count": 24,
+    "vote-btn": 24,
+    "vrd-save": 24,
+    "vrd-vegan-options": 1,
+    "dg-ghost": 2,
+    "vxc": 1,
+    "vxc-b": 1,
+    "vxc-k": 1,
+    "vxc-go": 1,
+    "nt-note": 1
+   }
+  },
+  "experts": {
+   "titles": [
+    "The Nutrition Guide",
+    "Physicians and health experts",
+    "Find someone to ask",
+    "Want to go deeper?"
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/experts",
+    "#/experts/pros",
+    "#/pulse",
+    "#/courses",
+    "#/supplements"
+   ],
+   "buttons": [
+    "Get it for $11",
+    "Vouch",
+    "Save",
+    "▶ Play Theo",
+    "Talk to Theo",
+    "Hide me"
+   ],
+   "money": [
+    "$11",
+    "Get it for $11",
+    "Sign in"
+   ],
+   "menu": [
+    "Overview",
+    "Nutrients",
+    "Your plate",
+    "Supplements",
+    "Experts",
+    "Courses",
+    "Pulse",
+    "Get access"
+   ],
+   "hscroll": false,
+   "inner": [
+    "#dgMain.dg-main"
+   ],
+   "classes": {
+    "dg-crumb": 1,
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "dg-toggles": 1,
+    "dg-lede": 1,
+    "wg-gs": 1,
+    "wg-gs-pic": 1,
+    "wg-gs-b": 1,
+    "vgi-k": 1,
+    "wg-gs-t": 1,
+    "wg-gs-btns": 1,
+    "dg-btn": 2,
+    "vrd-root": 1,
+    "rank-grid": 1,
+    "rank-card": 20,
+    "vrd-logo": 20,
+    "av": 20,
+    "rank-info": 20,
+    "rank-name": 20,
+    "rank-meta": 20,
+    "rank-right": 20,
+    "vote-count": 20,
+    "vote-btn": 20,
+    "vrd-save": 20,
+    "dg-btns": 1,
+    "dg-ghost": 1,
+    "vxc": 1,
+    "vxc-b": 1,
+    "vxc-k": 1,
+    "vxc-go": 1,
+    "nt-note": 1
+   }
+  },
+  "courses": {
+   "titles": [
+    "The Nutrition Guide",
+    "Courses and certificates",
+    "Learn more, or make it your work",
+    "Plant-Based Nutrition Certificate",
+    "Free Nutrition & Lifestyle Coaching Workshop",
+    "Nutrition & Lifestyle Coaching Certificate",
+    "Food for Life Nutrition and Cooking Instructor Training",
+    "Nutrition for Clinicians",
+    "Professional Plant-Based Certification",
+    "Online Plant-Based Culinary Arts Diploma",
+    "Online Associate Degree in Plant-Based Culinary Arts",
+    "Health-Centered Culinary Arts",
+    "Online Health-Centered Culinary Arts & Food Operations",
+    "Hear it from the experts."
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/courses",
+    "#/courses/nutrition",
+    "#/courses/cooking",
+    "#/courses/coaching",
+    "https://nutritionstudies.org/courses/plant-based-nutrition/",
+    "https://certificate.foodrevolution.org/workshop/",
+    "https://certificate.foodrevolution.org/",
+    "https://www.pcrm.org/good-nutrition/plant-based-diets/ffl/become-an-instructor",
+    "https://www.pcrm.org/good-nutrition/nutrition-for-clinicians",
+    "https://plantricianproject.org/plant-based-nutrition-certificate",
+    "https://rouxbe.com/site/plant-based-certification-course/",
+    "https://www.escoffier.edu/plant-based-programs/",
+    "https://www.ice.edu/campus-programs/health-centered-culinary-arts",
+    "https://www.ice.edu/online-programs/health-centered-culinary-arts",
+    "#/pulse",
+    "#/experts"
+   ],
+   "buttons": [
+    "Get it for $11",
+    "▶ Play Theo",
+    "Talk to Theo",
+    "Hide me"
+   ],
+   "money": [
+    "$11",
+    "Get it for $11",
+    "Sign in",
+    "See the free workshop",
+    "A certificate. Continuing education credits for health professionals and coaches are an extra $125.",
+    "$949, or 4 monthly payments of $237.25",
+    "Free Nutrition & Lifestyle Coaching Workshop",
+    "A free three-part live workshop from Food Revolution Network on becoming a nutrition and lifestyle coach.",
+    "Free; no certificate",
+    "Free",
+    "$3,997, or 6 payments of $674, or 12 payments of $349",
+    "$1,099 (institutions $1,349)",
+    "Free online continuing education from the Physicians Committee on nutrition for doctors, nurses, health coaches and other clinicians, with free CME credits from select chapters.",
+    "Free continuing education credits from select chapters",
+    "$1,999",
+    "$24,688",
+    "$37,305"
+   ],
+   "menu": [
+    "Overview",
+    "Nutrients",
+    "Your plate",
+    "Supplements",
+    "Experts",
+    "Courses",
+    "Pulse",
+    "Get access"
+   ],
+   "hscroll": false,
+   "inner": [
+    "#dgMain.dg-main"
+   ],
+   "classes": {
+    "dg-crumb": 1,
+    "dg-head": 1,
+    "dg-k": 12,
+    "dg-h1": 1,
+    "dg-toggles": 1,
+    "dg-lede": 2,
+    "wg-gs": 1,
+    "wg-gs-pic": 1,
+    "wg-gs-b": 1,
+    "vgi-k": 1,
+    "wg-gs-t": 1,
+    "wg-gs-btns": 1,
+    "dg-btn": 12,
+    "dg-srows": 1,
+    "dg-srow": 11,
+    "dg-srow-b": 11,
+    "dg-srow-p": 11,
+    "dg-btns": 11,
+    "dg-tip": 1,
+    "vxc": 1,
+    "vxc-b": 1,
+    "vxc-k": 1,
+    "vxc-go": 1,
+    "nt-note": 1
+   }
+  },
+  "pulse": {
+   "titles": [
+    "The Nutrition Guide",
+    "Physicians on our shows",
+    "Listen to the experts",
+    "You have the whole map."
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/pulse",
+    "#/pulse/experts",
+    "/directory/vegans-explore-podcast?ep=b8615f03-7837-443c-aa43-7e98cf83cda3",
+    "/directory/vegans-explore-podcast?ep=3a286bfd-97f9-4c27-85b8-099556740015",
+    "/directory/vegans-explore-podcast?ep=e29ba716-4350-40b3-8692-17d718ecfb41",
+    "/directory/vegans-explore-podcast?ep=05119b80-c7fc-4c95-ac1d-b4fbaab76f69",
+    "/directory/vegans-explore-podcast?ep=779f25d1-b411-4985-bde4-6a59deba0589",
+    "/directory/soflo-vegans-podcast?ep=tag%3Asoundcloud%2C2010%3Atracks%2F760841980",
+    "/directory/soflo-vegans-podcast?ep=tag%3Asoundcloud%2C2010%3Atracks%2F737619079",
+    "/directory/soflo-vegans-podcast?ep=49953dea-e361-40d8-a2f6-625ea281d417",
+    "/directory/soflo-vegans-podcast?ep=tag%3Asoundcloud%2C2010%3Atracks%2F640629552",
+    "/directory/soflo-vegans-podcast?ep=tag%3Asoundcloud%2C2010%3Atracks%2F601615119",
+    "/directory/soflo-vegans-podcast?ep=tag%3Asoundcloud%2C2010%3Atracks%2F723868189",
+    "/directory/soflo-vegans-podcast?ep=e785931d-fd62-4561-acc1-fd7f267e36af",
+    "#/join",
+    "#/courses"
+   ],
+   "buttons": [
+    "Get it for $11",
+    "Play",
+    "▶ Play Theo",
+    "Talk to Theo",
+    "Hide me"
+   ],
+   "money": [
+    "$11",
+    "Get it for $11",
+    "Sign in",
+    "Listen to our physicians and health experts right here in the Guide. It is $11 and yours to keep. Members can pay with 1,100 points instead.",
+    "Member? Sign in"
+   ],
+   "menu": [
+    "Overview",
+    "Nutrients",
+    "Your plate",
+    "Supplements",
+    "Experts",
+    "Courses",
+    "Pulse",
+    "Get access"
+   ],
+   "hscroll": false,
+   "inner": [
+    "#dgMain.dg-main"
+   ],
+   "classes": {
+    "dg-crumb": 1,
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "dg-toggles": 1,
+    "dg-lede": 1,
+    "wg-gs": 1,
+    "wg-gs-pic": 1,
+    "wg-gs-b": 1,
+    "vgi-k": 1,
+    "wg-gs-t": 1,
+    "wg-gs-btns": 1,
+    "dg-btn": 2,
+    "dg-gated": 1,
+    "dg-blur": 1,
+    "rg-eps": 1,
+    "vep-list": 1,
+    "vep-row": 12,
+    "vep-imga": 12,
+    "vep-img": 12,
+    "vep-t": 12,
+    "vep-meta": 12,
+    "vep-acts": 12,
+    "vep-btn": 12,
+    "go": 12,
+    "[object": 27,
+    "SVGAnimatedString]": 27,
+    "dg-gate": 1,
+    "dg-lockic": 1,
+    "dg-btns": 1,
+    "vxc": 1,
+    "vxc-b": 1,
+    "vxc-k": 1,
+    "vxc-go": 1
+   }
+  },
+  "join": {
+   "titles": [
+    "The Nutrition Guide",
+    "Open the whole Nutrition Guide"
+   ],
+   "links": [
+    "#",
+    "#/pulse",
+    "#/join"
+   ],
+   "buttons": [
+    "Get it for $11",
+    "▶ Play Theo",
+    "Talk to Theo",
+    "Hide me"
+   ],
+   "money": [
+    "$11",
+    "Get it for $11",
+    "Sign in",
+    "Every Vegans Explore Guide is $11, or 1,100 points, and yours to keep. Vitamin B12, the supplement brands, the experts and the courses stay open to everyone.",
+    "Get the Guide for $11, one time, and it is yours to keep. Members can pay with 1,100 points instead:",
+    "sign in",
+    "The Nutrition Guide is eleven dollars, or 1,100 points, and it's yours to keep. Members can pick either one."
+   ],
+   "menu": [
+    "Overview",
+    "Nutrients",
+    "Your plate",
+    "Supplements",
+    "Experts",
+    "Courses",
+    "Pulse",
+    "Get access"
+   ],
+   "hscroll": false,
+   "inner": [],
+   "classes": {
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "dg-lede": 1,
+    "dg-access": 1,
+    "dg-pricebox": 1,
+    "dg-big": 1,
+    "dg-btn": 1,
+    "dg-status": 1
+   }
+  }
+ },
+ "errors": [
+  "Failed to load resource: net::ERR_TUNNEL_CONNECTION_FAILED"
+ ]
+}

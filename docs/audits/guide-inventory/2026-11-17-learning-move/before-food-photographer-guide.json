@@ -1,0 +1,588 @@
+{
+ "guide": "food-photographer-guide",
+ "mode": "live",
+ "w": 1440,
+ "parts": {
+  "overview": {
+   "titles": [
+    "The Food Photographer Guide",
+    "Shoot Food People Want to Eat",
+    "How to use this page",
+    "Learn the Standard",
+    "Shoot and Get Paid"
+   ],
+   "links": [
+    "#/standard",
+    "#/paid",
+    "#/phone",
+    "#/camera",
+    "#/light",
+    "#/angles",
+    "#/plating",
+    "#/space",
+    "#/deliver",
+    "#/"
+   ],
+   "buttons": [
+    "Talk to Kai",
+    "Hide me"
+   ],
+   "money": [
+    "Free",
+    "Free for everyone",
+    "A $75 paid trial of three dishes, then booked shoots in your city."
+   ],
+   "menu": [
+    "Overview",
+    "What Good Looks Like",
+    "Your Phone",
+    "Your Camera",
+    "Light and When to Shoot",
+    "The Two Angles",
+    "Plating and Drinks",
+    "The Space and the People",
+    "Delivering",
+    "Get Paid"
+   ],
+   "hscroll": false,
+   "inner": [],
+   "classes": {
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "wg-gs": 1,
+    "wg-gs-pic": 1,
+    "wg-gs-b": 1,
+    "vgi-k": 1,
+    "wg-gs-t": 1,
+    "wg-gs-btns": 1,
+    "dg-btn": 2,
+    "dg-ghost": 1,
+    "wg-arts": 1,
+    "wg-arts-ov": 1,
+    "wg-grp": 2,
+    "wg-art": 9,
+    "wg-art-img": 9,
+    "wg-art-t": 9,
+    "wg-art-more": 9
+   }
+  },
+  "standard": {
+   "titles": [
+    "The Food Photographer Guide",
+    "What Good Looks Like",
+    "One standard, every shoot",
+    "What every shoot has",
+    "See the whole sample shoot."
+   ],
+   "links": [
+    "#/standard",
+    "#/",
+    "https://vegansexplore.com/business/sample/shoot",
+    "#/phone"
+   ],
+   "buttons": [
+    "Talk to Kai",
+    "Hide me"
+   ],
+   "money": [
+    "Free"
+   ],
+   "menu": [
+    "Overview",
+    "What Good Looks Like",
+    "Your Phone",
+    "Your Camera",
+    "Light and When to Shoot",
+    "The Two Angles",
+    "Plating and Drinks",
+    "The Space and the People",
+    "Delivering",
+    "Get Paid"
+   ],
+   "hscroll": false,
+   "inner": [],
+   "classes": {
+    "dg-crumb": 1,
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "wg-gs": 1,
+    "wg-gs-pic": 1,
+    "wg-gs-b": 1,
+    "vgi-k": 1,
+    "wg-gs-t": 1,
+    "wg-gs-btns": 1,
+    "dg-btn": 1,
+    "wg-arts": 1,
+    "wg-grp": 1,
+    "wg-art": 5,
+    "wg-art-img": 5,
+    "wg-art-t": 5,
+    "vxc": 1,
+    "vxc-b": 1,
+    "vxc-k": 1,
+    "vxc-go": 1
+   }
+  },
+  "phone": {
+   "titles": [
+    "The Food Photographer Guide",
+    "Your Phone",
+    "Five settings, better photos today",
+    "Try it on your next meal."
+   ],
+   "links": [
+    "#/standard",
+    "#/",
+    "#/camera"
+   ],
+   "buttons": [
+    "Talk to Kai",
+    "Hide me"
+   ],
+   "money": [
+    "Free"
+   ],
+   "menu": [
+    "Overview",
+    "What Good Looks Like",
+    "Your Phone",
+    "Your Camera",
+    "Light and When to Shoot",
+    "The Two Angles",
+    "Plating and Drinks",
+    "The Space and the People",
+    "Delivering",
+    "Get Paid"
+   ],
+   "hscroll": false,
+   "inner": [],
+   "classes": {
+    "dg-crumb": 1,
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "wg-gs": 1,
+    "wg-gs-pic": 1,
+    "wg-gs-b": 1,
+    "vgi-k": 1,
+    "wg-gs-t": 1,
+    "fp-set": 1,
+    "wg-gs-btns": 1,
+    "dg-btn": 1,
+    "vxc": 1,
+    "vxc-b": 1,
+    "vxc-k": 1,
+    "vxc-go": 1
+   }
+  },
+  "camera": {
+   "titles": [
+    "The Food Photographer Guide",
+    "Your Camera",
+    "A starting point, then adjust",
+    "Set it, test it, adjust it."
+   ],
+   "links": [
+    "#/standard",
+    "#/",
+    "#/light",
+    "#/phone"
+   ],
+   "buttons": [
+    "Talk to Kai",
+    "Hide me"
+   ],
+   "money": [
+    "Free"
+   ],
+   "menu": [
+    "Overview",
+    "What Good Looks Like",
+    "Your Phone",
+    "Your Camera",
+    "Light and When to Shoot",
+    "The Two Angles",
+    "Plating and Drinks",
+    "The Space and the People",
+    "Delivering",
+    "Get Paid"
+   ],
+   "hscroll": false,
+   "inner": [],
+   "classes": {
+    "dg-crumb": 1,
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "wg-gs": 1,
+    "wg-gs-pic": 1,
+    "wg-gs-b": 1,
+    "vgi-k": 1,
+    "wg-gs-t": 1,
+    "fp-set": 1,
+    "wg-gs-btns": 1,
+    "dg-btn": 1,
+    "vxc": 1,
+    "vxc-b": 1,
+    "vxc-k": 1,
+    "vxc-go": 1
+   }
+  },
+  "light": {
+   "titles": [
+    "The Food Photographer Guide",
+    "Light and When to Shoot",
+    "Where to put the plate, when to shoot",
+    "Light, step by step",
+    "Find your window."
+   ],
+   "links": [
+    "#/standard",
+    "#/",
+    "#/angles",
+    "#/camera"
+   ],
+   "buttons": [
+    "Talk to Kai",
+    "Hide me"
+   ],
+   "money": [
+    "Free"
+   ],
+   "menu": [
+    "Overview",
+    "What Good Looks Like",
+    "Your Phone",
+    "Your Camera",
+    "Light and When to Shoot",
+    "The Two Angles",
+    "Plating and Drinks",
+    "The Space and the People",
+    "Delivering",
+    "Get Paid"
+   ],
+   "hscroll": false,
+   "inner": [],
+   "classes": {
+    "dg-crumb": 1,
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "wg-gs": 1,
+    "wg-gs-pic": 1,
+    "wg-gs-b": 1,
+    "vgi-k": 1,
+    "wg-gs-t": 1,
+    "wg-gs-btns": 1,
+    "dg-btn": 1,
+    "wg-arts": 1,
+    "wg-grp": 1,
+    "wg-art": 5,
+    "wg-art-img": 5,
+    "wg-art-t": 5,
+    "vxc": 1,
+    "vxc-b": 1,
+    "vxc-k": 1,
+    "vxc-go": 1
+   }
+  },
+  "angles": {
+   "titles": [
+    "The Food Photographer Guide",
+    "The Two Angles",
+    "Two angles, every dish",
+    "The two angles",
+    "Shoot both angles."
+   ],
+   "links": [
+    "#/standard",
+    "#/",
+    "#/plating",
+    "#/light"
+   ],
+   "buttons": [
+    "Talk to Kai",
+    "Hide me"
+   ],
+   "money": [
+    "Free"
+   ],
+   "menu": [
+    "Overview",
+    "What Good Looks Like",
+    "Your Phone",
+    "Your Camera",
+    "Light and When to Shoot",
+    "The Two Angles",
+    "Plating and Drinks",
+    "The Space and the People",
+    "Delivering",
+    "Get Paid"
+   ],
+   "hscroll": false,
+   "inner": [],
+   "classes": {
+    "dg-crumb": 1,
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "wg-gs": 1,
+    "wg-gs-pic": 1,
+    "wg-gs-b": 1,
+    "vgi-k": 1,
+    "wg-gs-t": 1,
+    "wg-gs-btns": 1,
+    "dg-btn": 1,
+    "wg-arts": 1,
+    "wg-grp": 1,
+    "wg-art": 4,
+    "wg-art-img": 4,
+    "wg-art-t": 4,
+    "vxc": 1,
+    "vxc-b": 1,
+    "vxc-k": 1,
+    "vxc-go": 1
+   }
+  },
+  "plating": {
+   "titles": [
+    "The Food Photographer Guide",
+    "Plating and Drinks",
+    "As it leaves the kitchen, but clean",
+    "Before you press the button",
+    "Clean it, then shoot it fast."
+   ],
+   "links": [
+    "#/standard",
+    "#/",
+    "#/space",
+    "#/angles"
+   ],
+   "buttons": [
+    "Talk to Kai",
+    "Hide me"
+   ],
+   "money": [
+    "Free"
+   ],
+   "menu": [
+    "Overview",
+    "What Good Looks Like",
+    "Your Phone",
+    "Your Camera",
+    "Light and When to Shoot",
+    "The Two Angles",
+    "Plating and Drinks",
+    "The Space and the People",
+    "Delivering",
+    "Get Paid"
+   ],
+   "hscroll": false,
+   "inner": [],
+   "classes": {
+    "dg-crumb": 1,
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "wg-gs": 1,
+    "wg-gs-pic": 1,
+    "wg-gs-b": 1,
+    "vgi-k": 1,
+    "wg-gs-t": 1,
+    "wg-gs-btns": 1,
+    "dg-btn": 1,
+    "wg-arts": 1,
+    "wg-grp": 1,
+    "wg-art": 5,
+    "wg-art-img": 5,
+    "wg-art-t": 5,
+    "vxc": 1,
+    "vxc-b": 1,
+    "vxc-k": 1,
+    "vxc-go": 1
+   }
+  },
+  "space": {
+   "titles": [
+    "The Food Photographer Guide",
+    "The Space and the People",
+    "Where they will sit, who will feed them",
+    "The shot list for the room",
+    "Walk the room."
+   ],
+   "links": [
+    "#/standard",
+    "#/",
+    "#/deliver",
+    "#/plating"
+   ],
+   "buttons": [
+    "Talk to Kai",
+    "Hide me"
+   ],
+   "money": [
+    "Free"
+   ],
+   "menu": [
+    "Overview",
+    "What Good Looks Like",
+    "Your Phone",
+    "Your Camera",
+    "Light and When to Shoot",
+    "The Two Angles",
+    "Plating and Drinks",
+    "The Space and the People",
+    "Delivering",
+    "Get Paid"
+   ],
+   "hscroll": false,
+   "inner": [],
+   "classes": {
+    "dg-crumb": 1,
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "wg-gs": 1,
+    "wg-gs-pic": 1,
+    "wg-gs-b": 1,
+    "vgi-k": 1,
+    "wg-gs-t": 1,
+    "wg-gs-btns": 1,
+    "dg-btn": 1,
+    "wg-arts": 1,
+    "wg-grp": 1,
+    "wg-art": 5,
+    "wg-art-img": 5,
+    "wg-art-t": 5,
+    "vxc": 1,
+    "vxc-b": 1,
+    "vxc-k": 1,
+    "vxc-go": 1
+   }
+  },
+  "deliver": {
+   "titles": [
+    "The Food Photographer Guide",
+    "Delivering",
+    "Land it right",
+    "How to deliver",
+    "Deliver it right."
+   ],
+   "links": [
+    "#/standard",
+    "#/",
+    "#/paid",
+    "#/space"
+   ],
+   "buttons": [
+    "Talk to Kai",
+    "Hide me"
+   ],
+   "money": [
+    "Free"
+   ],
+   "menu": [
+    "Overview",
+    "What Good Looks Like",
+    "Your Phone",
+    "Your Camera",
+    "Light and When to Shoot",
+    "The Two Angles",
+    "Plating and Drinks",
+    "The Space and the People",
+    "Delivering",
+    "Get Paid"
+   ],
+   "hscroll": false,
+   "inner": [],
+   "classes": {
+    "dg-crumb": 1,
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "wg-gs": 1,
+    "wg-gs-pic": 1,
+    "wg-gs-b": 1,
+    "vgi-k": 1,
+    "wg-gs-t": 1,
+    "wg-gs-btns": 1,
+    "dg-btn": 1,
+    "wg-arts": 1,
+    "wg-grp": 1,
+    "wg-art": 5,
+    "wg-art-img": 5,
+    "wg-art-t": 5,
+    "vxc": 1,
+    "vxc-b": 1,
+    "vxc-k": 1,
+    "vxc-go": 1
+   }
+  },
+  "paid": {
+   "titles": [
+    "The Food Photographer Guide",
+    "Get Paid",
+    "From learning it to getting paid for it",
+    "How it works",
+    "Ready to get paid for it?"
+   ],
+   "links": [
+    "#/standard",
+    "#/",
+    "/gigs#board",
+    "#/deliver",
+    "#/paid"
+   ],
+   "buttons": [
+    "Talk to Kai",
+    "Hide me"
+   ],
+   "money": [
+    "Free",
+    "A short pitch and two or three food photos. Join free with a short survey to see it.",
+    "The Paid Trial: $75"
+   ],
+   "menu": [
+    "Overview",
+    "What Good Looks Like",
+    "Your Phone",
+    "Your Camera",
+    "Light and When to Shoot",
+    "The Two Angles",
+    "Plating and Drinks",
+    "The Space and the People",
+    "Delivering",
+    "Get Paid"
+   ],
+   "hscroll": false,
+   "inner": [],
+   "classes": {
+    "dg-crumb": 1,
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "wg-gs": 1,
+    "wg-gs-pic": 1,
+    "wg-gs-b": 1,
+    "vgi-k": 1,
+    "wg-gs-t": 1,
+    "wg-gs-btns": 1,
+    "dg-btn": 1,
+    "wg-arts": 1,
+    "wg-grp": 1,
+    "wg-art": 4,
+    "wg-art-img": 4,
+    "wg-art-t": 4,
+    "vxc": 1,
+    "vxc-b": 1,
+    "vxc-k": 1,
+    "vxc-go": 1
+   }
+  }
+ },
+ "errors": [
+  "Failed to load resource: net::ERR_TUNNEL_CONNECTION_FAILED"
+ ]
+}

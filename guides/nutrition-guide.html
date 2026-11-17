@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-kit-parent="welcome-guide">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -566,8 +566,10 @@
     }
   </style>
 <script src="/public/ve-guide-corner.js"></script>
+<link rel="stylesheet" href="/public/ve-kit.css">
+<link rel="stylesheet" href="/public/ve-guide-frame.css">
 </head>
-<body>
+<body class="ve-gf gf-hb" data-gf-lead="Try B12 free." data-gf-join="Get it: $11 or 1,100 points">
 <div class="page-frame">
 <script src="/public/nav.js"></script>
 
@@ -622,5 +624,9 @@
 <script src="/public/ve-explorer-card.js"></script>
 <script src="/guide-scripts/nutrition-guide.js?v=4"></script>
 <script src="/public/ve-guide-min.js"></script>
+<!-- The locked Guide template, Handbook (Sean, 2026-11-17; canon canon-ve-guide-templates): the shared frame turns this page's header,
+     tabs and rail into the Guide bar, Contents and the Guide row. The Contents lines below are the parts' own titles. -->
+<script type="application/json" id="gf-parts">{"overview": "What a Vegan plate needs, and where to get it", "nutrients": "Eight nutrients, one at a time", "plate": "One plate, every meal", "supplements": "What to take, and what to look for", "experts": "Find someone to ask", "courses": "Learn more, or make it your work", "pulse": "Listen to the experts", "mylist": "Everything you save, in one place", "join": "$11 or 1,100 points, yours to keep"}</script>
+<script src="/public/ve-guide-frame.js"></script>
 </body>
 </html>

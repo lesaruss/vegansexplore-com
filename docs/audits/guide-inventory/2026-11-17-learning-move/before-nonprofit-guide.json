@@ -1,0 +1,714 @@
+{
+ "guide": "nonprofit-guide",
+ "mode": "live",
+ "w": 1440,
+ "parts": {
+  "overview": {
+   "titles": [
+    "The Nonprofit Guide",
+    "A home for your Vegan nonprofit"
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/tips",
+    "#/pulse",
+    "#/directory",
+    "#/found",
+    "#/businesses",
+    "#/events",
+    "#/support",
+    "#/partner",
+    "#/join",
+    "/nonprofits/sample",
+    "#/tips/story"
+   ],
+   "buttons": [
+    "Take survey",
+    "Start with the survey, free",
+    "Talk to Dani",
+    "Hide me"
+   ],
+   "money": [
+    "Free",
+    "survey",
+    "Take survey",
+    "Sign in",
+    "What you get, free",
+    "One short survey and your organization is a member. Your page in our Directory, your events on our calendar and in the Daily Pulse, a way to reach our members as they join, and one place to run it all.",
+    "Start with the survey, free",
+    "In the full Guide",
+    "Your own link, points for our services, a kit and a badge.",
+    "Try tip 1, free",
+    "The full Guide is free with a short survey.",
+    "Hi, I'm Dani. If you run a Vegan nonprofit, you carry a lot. One short survey makes your organization a member, free, with one place to run it all. And you help us build it."
+   ],
+   "menu": [
+    "Overview",
+    "The 10 tips",
+    "Pulse",
+    "Directory",
+    "Get found",
+    "Businesses",
+    "Events",
+    "Support",
+    "Become a Partner",
+    "Get access"
+   ],
+   "hscroll": false,
+   "inner": [
+    "#dgMain.dg-main"
+   ],
+   "classes": {
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "dg-lede": 1,
+    "rg-steps": 1,
+    "rg-step": 3,
+    "dg-btns": 1,
+    "dg-btn": 4,
+    "dg-ghost": 2,
+    "dg-tiles": 1,
+    "dg-tile": 8,
+    "dg-ic": 8,
+    "[object": 35,
+    "SVGAnimatedString]": 35,
+    "dg-mlock": 8,
+    "dg-warm": 1,
+    "dg-start": 1
+   }
+  },
+  "tips": {
+   "titles": [
+    "The Nonprofit Guide",
+    "Ten ways to fundraise and stay relevant",
+    "1. Lead with mission-driven storytelling",
+    "2. Diversify revenue streams",
+    "3. Build a strong digital presence",
+    "4. Leverage peer-to-peer fundraising",
+    "5. Prioritize donor retention over acquisition",
+    "6. Foster partnerships with businesses",
+    "7. Embrace virtual and hybrid fundraising",
+    "8. Invest in data and analytics",
+    "9. Engage younger generations",
+    "10. Prioritize equity and trust",
+    "Every tip, with what to do this week"
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/tips",
+    "#/pulse",
+    "#/directory",
+    "#/found",
+    "#/businesses",
+    "#/events",
+    "#/support",
+    "#/partner",
+    "#/join",
+    "#/tips/story"
+   ],
+   "buttons": [
+    "Take survey",
+    "Take the survey, free",
+    "Talk to Dani",
+    "Hide me"
+   ],
+   "money": [
+    "Free",
+    "survey",
+    "Take survey",
+    "Sign in",
+    "Free to try",
+    "In the full Guide",
+    "Revenue, your digital home, peer-to-peer, keeping donors, business partners, hybrid events, data, younger supporters and trust, each with a checklist for this week. Take the free survey about your organization. When you finish, you are a member and the whole Guide opens.",
+    "Take the survey, free",
+    "Already a member? Sign in"
+   ],
+   "menu": [
+    "Overview",
+    "The 10 tips",
+    "Pulse",
+    "Directory",
+    "Get found",
+    "Businesses",
+    "Events",
+    "Support",
+    "Become a Partner",
+    "Get access"
+   ],
+   "hscroll": false,
+   "inner": [
+    "#dgMain.dg-main"
+   ],
+   "classes": {
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "dg-lede": 1,
+    "dg-srows": 1,
+    "dg-srow": 10,
+    "dg-th": 10,
+    "rg-th": 10,
+    "[object": 60,
+    "SVGAnimatedString]": 60,
+    "dg-srow-b": 10,
+    "dg-free": 1,
+    "dg-srow-p": 10,
+    "dg-gated": 1,
+    "dg-blur": 1,
+    "dg-skel": 1,
+    "dg-gate": 1,
+    "dg-lockic": 1,
+    "dg-btns": 1,
+    "dg-btn": 1
+   }
+  },
+  "pulse": {
+   "titles": [
+    "The Nonprofit Guide",
+    "Our nonprofit series"
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/tips",
+    "#/pulse",
+    "#/directory",
+    "#/found",
+    "#/businesses",
+    "#/events",
+    "#/support",
+    "#/partner",
+    "#/join",
+    "#/pulse/leaders",
+    "/directory/vegans-explore-podcast?ep=43bf326f-e986-4783-addc-e30afc259404",
+    "/directory/vegans-explore-podcast?ep=0899c71a-e815-4097-8d1b-bcac428f8f04",
+    "/directory/vegans-explore-podcast?ep=84d3d5b9-f90b-47d0-9f55-1d49f0c3b2a4",
+    "/directory/vegans-explore-podcast?ep=b3f52089-2b13-4e57-bb27-f414302adf3e",
+    "/directory/vegans-explore-podcast?ep=573b398a-c521-4b5a-8c8e-433bc5c28f7e",
+    "/directory/vegans-explore-podcast?ep=ea7a6a73-caaf-4590-a7b3-5d8c82ffc4c7"
+   ],
+   "buttons": [
+    "Take survey",
+    "Play",
+    "Take the survey, free",
+    "Talk to Dani",
+    "Hide me"
+   ],
+   "money": [
+    "Free",
+    "survey",
+    "Take survey",
+    "Sign in",
+    "Listen to the series and the leaders right here in the Guide. Take the free survey about your organization. When you finish, you are a member and the whole Guide opens.",
+    "Take the survey, free",
+    "Already a member? Sign in"
+   ],
+   "menu": [
+    "Overview",
+    "The 10 tips",
+    "Pulse",
+    "Directory",
+    "Get found",
+    "Businesses",
+    "Events",
+    "Support",
+    "Become a Partner",
+    "Get access"
+   ],
+   "hscroll": false,
+   "inner": [],
+   "classes": {
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "dg-toggles": 1,
+    "dg-lede": 1,
+    "dg-gated": 1,
+    "dg-blur": 1,
+    "rg-eps": 1,
+    "vep-list": 1,
+    "vep-row": 6,
+    "vep-imga": 6,
+    "vep-img": 6,
+    "vep-t": 6,
+    "vep-meta": 6,
+    "vep-acts": 6,
+    "vep-btn": 6,
+    "go": 6,
+    "[object": 15,
+    "SVGAnimatedString]": 15,
+    "dg-gate": 1,
+    "dg-lockic": 1,
+    "dg-btns": 1,
+    "dg-btn": 1
+   }
+  },
+  "directory": {
+   "titles": [
+    "The Nonprofit Guide",
+    "Nonprofits, rescues and sanctuaries"
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/tips",
+    "#/pulse",
+    "#/directory",
+    "#/found",
+    "#/businesses",
+    "#/events",
+    "#/support",
+    "#/partner",
+    "#/join",
+    "#/directory/nonprofits",
+    "#/directory/rescues",
+    "#/directory/sanctuaries"
+   ],
+   "buttons": [
+    "Take survey",
+    "Vouch",
+    "Save",
+    "Show more",
+    "Talk to Dani",
+    "Hide me"
+   ],
+   "money": [
+    "Free",
+    "survey",
+    "Take survey",
+    "Sign in"
+   ],
+   "menu": [
+    "Overview",
+    "The 10 tips",
+    "Pulse",
+    "Directory",
+    "Get found",
+    "Businesses",
+    "Events",
+    "Support",
+    "Become a Partner",
+    "Get access"
+   ],
+   "hscroll": false,
+   "inner": [
+    "#dgMain.dg-main"
+   ],
+   "classes": {
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "dg-toggles": 1,
+    "dg-lede": 1,
+    "dg-tools": 1,
+    "dg-sort": 1,
+    "ng-pick": 1,
+    "dg-count": 1,
+    "vrd-root": 1,
+    "rank-grid": 1,
+    "rank-card": 24,
+    "vrd-logo": 24,
+    "av": 24,
+    "rank-info": 24,
+    "rank-name": 24,
+    "rank-meta": 24,
+    "rank-subcat": 24,
+    "rank-right": 24,
+    "vote-count": 24,
+    "vote-btn": 24,
+    "vrd-save": 24,
+    "vrd-vegan": 4,
+    "vrd-vegan-fully": 4,
+    "dg-btns": 1,
+    "dg-btn": 1,
+    "dg-ghost": 1
+   }
+  },
+  "found": {
+   "titles": [
+    "The Nonprofit Guide",
+    "Make your Directory page work for you",
+    "Find your organization"
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/tips",
+    "#/pulse",
+    "#/directory",
+    "#/found",
+    "#/businesses",
+    "#/events",
+    "#/support",
+    "#/partner",
+    "#/join",
+    "/business",
+    "/claim?add=1",
+    "mailto:contact@lesaruss.com?subject=Chapters%20our%20organization%20serves",
+    "/directory?tab=community"
+   ],
+   "buttons": [
+    "Take survey",
+    "Talk to Dani",
+    "Hide me"
+   ],
+   "money": [
+    "Free",
+    "survey",
+    "Take survey",
+    "Sign in",
+    "Make the page yours: your story, links, photos and events. Claiming is free for members, and our team checks every claim.",
+    "Votes and points",
+    "Members vote for the organizations they love, and they can give your organization points right from its page.",
+    "Your page in our Directory is free. Here's how to claim it, keep it current and show up in every chapter you serve."
+   ],
+   "menu": [
+    "Overview",
+    "The 10 tips",
+    "Pulse",
+    "Directory",
+    "Get found",
+    "Businesses",
+    "Events",
+    "Support",
+    "Become a Partner",
+    "Get access"
+   ],
+   "hscroll": false,
+   "inner": [
+    "#dgMain.dg-main"
+   ],
+   "classes": {
+    "dg-head": 1,
+    "dg-k": 2,
+    "dg-h1": 1,
+    "dg-lede": 1,
+    "rg-steps": 1,
+    "rg-step": 6,
+    "rg-find": 1,
+    "rg-hits": 1
+   }
+  },
+  "businesses": {
+   "titles": [
+    "The Nonprofit Guide",
+    "Vegan businesses near you that fit a tie-in",
+    "Vegan food brands",
+    "100% Vegan restaurants near you"
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/tips",
+    "#/pulse",
+    "#/directory",
+    "#/found",
+    "#/businesses",
+    "#/events",
+    "#/support",
+    "#/partner",
+    "#/join"
+   ],
+   "buttons": [
+    "Take survey",
+    "Take the survey, free",
+    "Talk to Dani",
+    "Hide me"
+   ],
+   "money": [
+    "Free",
+    "survey",
+    "Take survey",
+    "Sign in",
+    "Vegan brands and restaurants in your chapter, and a pitch you can send today. Take the free survey about your organization. When you finish, you are a member and the whole Guide opens.",
+    "Take the survey, free",
+    "Already a member? Sign in"
+   ],
+   "menu": [
+    "Overview",
+    "The 10 tips",
+    "Pulse",
+    "Directory",
+    "Get found",
+    "Businesses",
+    "Events",
+    "Support",
+    "Become a Partner",
+    "Get access"
+   ],
+   "hscroll": false,
+   "inner": [],
+   "classes": {
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "dg-sort": 1,
+    "ng-pick": 1,
+    "dg-lede": 1,
+    "dg-gated": 1,
+    "dg-blur": 1,
+    "dg-skel": 2,
+    "dg-gate": 1,
+    "dg-lockic": 1,
+    "[object": 3,
+    "SVGAnimatedString]": 3,
+    "dg-btns": 1,
+    "dg-btn": 1
+   }
+  },
+  "events": {
+   "titles": [
+    "The Nonprofit Guide",
+    "Fill your next event"
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/tips",
+    "#/pulse",
+    "#/directory",
+    "#/found",
+    "#/businesses",
+    "#/events",
+    "#/support",
+    "#/partner",
+    "#/join",
+    "#/events/kit",
+    "/events#submit/1",
+    "/events#mine",
+    "/directory?tab=food&sub=vendors",
+    "#/tips/hybrid"
+   ],
+   "buttons": [
+    "Take survey",
+    "Talk to Dani",
+    "Hide me"
+   ],
+   "money": [
+    "Free",
+    "survey",
+    "Take survey",
+    "Sign in"
+   ],
+   "menu": [
+    "Overview",
+    "The 10 tips",
+    "Pulse",
+    "Directory",
+    "Get found",
+    "Businesses",
+    "Events",
+    "Support",
+    "Become a Partner",
+    "Get access"
+   ],
+   "hscroll": false,
+   "inner": [],
+   "classes": {
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "dg-toggles": 1,
+    "dg-lede": 1,
+    "rg-steps": 1,
+    "rg-step": 4
+   }
+  },
+  "support": {
+   "titles": [
+    "The Nonprofit Guide",
+    "Burnout, and what to do instead",
+    "Three weaknesses that drain small nonprofits",
+    "Share the load"
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/tips",
+    "#/pulse",
+    "#/directory",
+    "#/found",
+    "#/businesses",
+    "#/events",
+    "#/support",
+    "#/partner",
+    "#/join"
+   ],
+   "buttons": [
+    "Take survey",
+    "Take the survey, free",
+    "Talk to Dani",
+    "Hide me"
+   ],
+   "money": [
+    "Free",
+    "survey",
+    "Take survey",
+    "Sign in",
+    "What quietly drains small nonprofits, how to turn volunteers into leaders, and where to find help. Take the free survey about your organization. When you finish, you are a member and the whole Guide opens.",
+    "Take the survey, free",
+    "Already a member? Sign in"
+   ],
+   "menu": [
+    "Overview",
+    "The 10 tips",
+    "Pulse",
+    "Directory",
+    "Get found",
+    "Businesses",
+    "Events",
+    "Support",
+    "Become a Partner",
+    "Get access"
+   ],
+   "hscroll": false,
+   "inner": [],
+   "classes": {
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "dg-lede": 1,
+    "dg-gated": 1,
+    "dg-blur": 1,
+    "dg-skel": 2,
+    "dg-gate": 1,
+    "dg-lockic": 1,
+    "[object": 3,
+    "SVGAnimatedString]": 3,
+    "dg-btns": 1,
+    "dg-btn": 1
+   }
+  },
+  "partner": {
+   "titles": [
+    "The Nonprofit Guide",
+    "Vegans Explore Nonprofit Partners"
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/tips",
+    "#/pulse",
+    "#/directory",
+    "#/found",
+    "#/businesses",
+    "#/events",
+    "#/support",
+    "#/partner",
+    "#/join",
+    "#/partner/tell",
+    "/nonprofits/sample",
+    "/policies#membership"
+   ],
+   "buttons": [
+    "Take survey",
+    "Talk to Dani",
+    "Hide me"
+   ],
+   "money": [
+    "Free",
+    "survey",
+    "Take survey",
+    "Sign in",
+    "Points for our services",
+    "Points your organization holds, set when you are invited, toward promoting your events, a feature or a social push. Members can give you more.",
+    "Nonprofit Partners get their own link, points for our services, a kit and a badge. Partnership is by invitation."
+   ],
+   "menu": [
+    "Overview",
+    "The 10 tips",
+    "Pulse",
+    "Directory",
+    "Get found",
+    "Businesses",
+    "Events",
+    "Support",
+    "Become a Partner",
+    "Get access"
+   ],
+   "hscroll": false,
+   "inner": [
+    "#dgMain.dg-main"
+   ],
+   "classes": {
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "dg-toggles": 1,
+    "dg-lede": 1,
+    "rg-steps": 1,
+    "rg-step": 5,
+    "dg-btns": 1,
+    "dg-btn": 3,
+    "dg-ghost": 2
+   }
+  },
+  "join": {
+   "titles": [
+    "The Nonprofit Guide",
+    "Open the whole Nonprofit Guide"
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/tips",
+    "#/pulse",
+    "#/directory",
+    "#/found",
+    "#/businesses",
+    "#/events",
+    "#/support",
+    "#/partner",
+    "#/join"
+   ],
+   "buttons": [
+    "Take survey",
+    "Take the survey, free",
+    "Talk to Dani",
+    "Hide me"
+   ],
+   "money": [
+    "Free",
+    "survey",
+    "Take survey",
+    "Sign in",
+    "The Guide opens when you take the free survey about your organization, members included: a few minutes, with points for every answer. If you are not a member yet, finishing it makes you one. Nonprofit Partners get it with the partnership. The Directory, Get found, Events and the partnership stay open to everyone.",
+    "with the survey",
+    "A few minutes, up to 250 points, and the Guide opens when you finish.",
+    "Take the survey, free",
+    "The Nonprofit Guide opens when you finish its short survey about your organization. It's free, it earns you points, and if you're not a member yet, it makes you one."
+   ],
+   "menu": [
+    "Overview",
+    "The 10 tips",
+    "Pulse",
+    "Directory",
+    "Get found",
+    "Businesses",
+    "Events",
+    "Support",
+    "Become a Partner",
+    "Get access"
+   ],
+   "hscroll": false,
+   "inner": [],
+   "classes": {
+    "dg-head": 1,
+    "dg-k": 1,
+    "dg-h1": 1,
+    "dg-lede": 1,
+    "dg-access": 1,
+    "dg-pricebox": 1,
+    "dg-big": 1,
+    "dg-btn": 1,
+    "dg-pp": 1
+   }
+  }
+ },
+ "errors": [
+  "Failed to load resource: net::ERR_TUNNEL_CONNECTION_FAILED"
+ ]
+}

@@ -1,0 +1,576 @@
+{
+ "guide": "nutrition-guide",
+ "mode": "live",
+ "w": 1440,
+ "parts": {
+  "overview": {
+   "titles": [
+    "The Nutrition Guide",
+    "Eat Vegan, and Cover the Basics",
+    "How to use this Guide",
+    "Eat Well",
+    "Find Help",
+    "Listen"
+   ],
+   "links": [
+    "#",
+    "#/nutrients/b12",
+    "#/experts",
+    "#/nutrients",
+    "#/plate",
+    "#/supplements",
+    "#/courses",
+    "#/pulse",
+    "#/"
+   ],
+   "linkText": [
+    "Sign in",
+    "Try B12, free",
+    "Meet the experts",
+    "Nutrients",
+    "See what is inside ›",
+    "Your plate",
+    "Supplements",
+    "Open ›",
+    "Experts",
+    "Courses",
+    "Pulse",
+    "Back",
+    "Next"
+   ],
+   "buttons": [
+    "Get it for $11",
+    "▶ Play Theo",
+    "Talk to Theo",
+    "Hide me"
+   ],
+   "money": [
+    "$11",
+    "Get it for $11",
+    "Sign in",
+    "Supplements, Experts and Courses are open to everyone, and B12 is free to try. The rest comes with the full Guide.",
+    "Try B12, free",
+    "B12, protein, iron, calcium, vitamin D, omega-3s, iodine and zinc: how much, and where to get it. In the full Guide.",
+    "Build a Vegan plate at every meal, and check off the basics every day. In the full Guide.",
+    "Our episodes with Dr. Barnard, Dr. Klaper, Dr. Bulsiewicz and more. In the full Guide."
+   ],
+   "menu": [
+    "Overview",
+    "Nutrients",
+    "Your plate",
+    "Supplements",
+    "Experts",
+    "Courses",
+    "Pulse",
+    "Get access"
+   ],
+   "allText": "VEGANS EXPLORE GUIDES The Nutrition Guide $11 ONE TIME PURCHASE GET IT FOR $11 Member? Sign in 1. Overview 2. Nutrients (locked) 3. Your plate (locked) 4. Supplements 5. Experts 6. Courses 7. Pulse (locked) 8. Get access VEGANS EXPLORE GUIDES FOR YOUR HEALTH Eat Vegan, and Cover the Basics GETTING STARTED How to use this Guide This Guide covers what a Vegan plate needs, nutrient by nutrient, with every number from the source named under it. Start with vitamin B12, build your plate, check your supplements, then find an expert or a course when you want to go deeper. Supplements, Experts and Courses are open to everyone, and B12 is free to try. The rest comes with the full Guide. TRY B12, FREE MEET THE EXPERTS EAT WELL Nutrients B12, protein, iron, calcium, vitamin D, omega-3s, iodine and zinc: how much, and where to get it. In the full Guide. See what is inside › Your plate Build a Vegan plate at every meal, and check off the basics every day. In the full Guide. See what is inside › FIND HELP Supplements What to look for on the label, and the brands in our Directory. Open › Experts Physicians and health experts from our shows, and health professionals near you. Open › Courses Plant-based nutrition, cooking and coaching courses and certificates. Open › LISTEN Pulse Our episodes with Dr. Barnard, Dr. Klaper, Dr. Bulsiewicz and more. In the full Guide. See what is inside › General information from the sources named, not medical advice. Talk with your doctor or a registered dietitian, especially if you are pregnant, breastfeeding, raising a Vegan child, or managing a health condition. THEO · YOUR GUIDE FOR VEGAN NUTRITION I'm Theo. I've been Vegan a long time. Here's what I wish I'd known on day one: what your plate needs, and where to get it. ▶ PLAY THEO Talk to Theo BACK 1 of 8 NEXT HIDE ME",
+   "hscroll": false,
+   "inner": [
+    "MAIN#dgMain.dg-main"
+   ],
+   "orange": [
+    "BUTTON.dg-btn \"Get it for $11\""
+   ],
+   "titleBottom": 346,
+   "ctaBottom": null,
+   "ctaText": null
+  },
+  "nutrients": {
+   "titles": [
+    "The Nutrition Guide",
+    "What a Vegan plate needs",
+    "Eight nutrients, one at a time",
+    "Vitamin B12",
+    "Protein",
+    "Iron",
+    "Calcium",
+    "Vitamin D",
+    "Omega-3s",
+    "Iodine",
+    "Zinc",
+    "Every nutrient, with what to do this week",
+    "Put it on your plate."
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/nutrients/b12",
+    "#/plate"
+   ],
+   "linkText": [
+    "Sign in",
+    "Nutrition Guide",
+    "Start with B12",
+    "Vitamin B12",
+    "Member? Sign in",
+    "Next: Your plate",
+    "Back",
+    "Next"
+   ],
+   "buttons": [
+    "Get it for $11",
+    "▶ Play Theo",
+    "Talk to Theo",
+    "Hide me"
+   ],
+   "money": [
+    "$11",
+    "Get it for $11",
+    "Sign in",
+    "Free to try",
+    "In the full Guide",
+    "Protein, iron, calcium, vitamin D, omega-3s, iodine and zinc: how much, where to get them, and when to supplement. It is $11 and yours to keep. Members can pay with 1,100 points instead.",
+    "Member? Sign in",
+    "Eight nutrients, one at a time: how much you need, which foods have it, and when to take a supplement. Try B12 free."
+   ],
+   "menu": [
+    "Overview",
+    "Nutrients",
+    "Your plate",
+    "Supplements",
+    "Experts",
+    "Courses",
+    "Pulse",
+    "Get access"
+   ],
+   "allText": "VEGANS EXPLORE GUIDES The Nutrition Guide $11 ONE TIME PURCHASE GET IT FOR $11 Member? Sign in 1. Overview 2. Nutrients (locked) 3. Your plate (locked) 4. Supplements 5. Experts 6. Courses 7. Pulse (locked) 8. Get access Nutrition Guide › Nutrients NUTRIENTS What a Vegan plate needs What a Vegan plate needs, nutrient by nutrient: how much, where to get it from food, and when a supplement makes sense. Every number comes from the source named under it. Vitamin B12 is open for you to try. HOW TO USE THIS PAGE Eight nutrients, one at a time Start with vitamin B12. Tap a nutrient to see how much you need, the foods that have it, when a supplement makes sense, and a short checklist for this week. Save the ones you are working on. START WITH B12 FREE TO TRY Vitamin B12 The one every Vegan needs a reliable source of. Protein In the full Guide Iron In the full Guide Calcium In the full Guide Vitamin D In the full Guide Omega-3s In the full Guide Iodine In the full Guide Zinc In the full Guide Every nutrient, with what to do this week All eight nutrients Protein, iron, calcium, vitamin D, omega-3s, iodine and zinc: how much, where to get them, and when to supplement. It is $11 and yours to keep. Members can pay with 1,100 points instead. GET IT FOR $11 Member? Sign in SEE IT FOR YOURSELF Put it on your plate. Turn the eight nutrients into one simple plate at every meal. NEXT: YOUR PLATE General information from the sources named, not medical advice. Talk with your doctor or a registered dietitian, especially if you are pregnant, breastfeeding, raising a Vegan child, or managing a health condition. THEO · YOUR GUIDE FOR VEGAN NUTRITION Eight nutrients, one at a time: how much you need, which foods have it, and when to take a supplement. Try B12 free. ▶ PLAY THEO Talk to Theo BACK 2 of 8 NEXT HIDE ME",
+   "hscroll": false,
+   "inner": [
+    "MAIN#dgMain.dg-main"
+   ],
+   "orange": [
+    "BUTTON.dg-btn \"Get it for $11\""
+   ],
+   "titleBottom": 369,
+   "ctaBottom": null,
+   "ctaText": null
+  },
+  "plate": {
+   "titles": [
+    "The Nutrition Guide",
+    "Build a Vegan plate at every meal",
+    "One plate, every meal",
+    "Half: vegetables and fruits",
+    "A quarter: whole grains",
+    "A quarter: plant protein",
+    "Cover the rest with a supplement."
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/plate",
+    "#/supplements",
+    "#/nutrients"
+   ],
+   "linkText": [
+    "Sign in",
+    "Nutrition Guide",
+    "See the every-day list",
+    "Member? Sign in",
+    "Next: Supplements",
+    "Back",
+    "Next"
+   ],
+   "buttons": [
+    "Get it for $11",
+    "▶ Play Theo",
+    "Talk to Theo",
+    "Hide me"
+   ],
+   "money": [
+    "$11",
+    "Get it for $11",
+    "Sign in",
+    "The plate at every meal, and the basics to cover every day. It is $11 and yours to keep. Members can pay with 1,100 points instead.",
+    "Member? Sign in"
+   ],
+   "menu": [
+    "Overview",
+    "Nutrients",
+    "Your plate",
+    "Supplements",
+    "Experts",
+    "Courses",
+    "Pulse",
+    "Get access"
+   ],
+   "allText": "VEGANS EXPLORE GUIDES The Nutrition Guide $11 ONE TIME PURCHASE GET IT FOR $11 Member? Sign in 1. Overview 2. Nutrients (locked) 3. Your plate (locked) 4. Supplements 5. Experts 6. Courses 7. Pulse (locked) 8. Get access Nutrition Guide › Your plate YOUR PLATE Build a Vegan plate at every meal No counting: a picture of the plate, and a short list to check off every day. HOW TO USE THIS PAGE One plate, every meal Half vegetables and fruit, a quarter whole grains, a quarter plant protein. Use the picture at every meal and tick off the every-day list. No counting. SEE THE EVERY-DAY LIST Vegetables and fruits Whole grains Plant protein Half: vegetables and fruits A quarter: whole grains A quarter: plant protein Your plate, and the every-day list The plate at every meal, and the basics to cover every day. It is $11 and yours to keep. Members can pay with 1,100 points instead. GET IT FOR $11 Member? Sign in SEE IT FOR YOURSELF Cover the rest with a supplement. What most Vegans take, and what to look for on the label. NEXT: SUPPLEMENTS General information from the sources named, not medical advice. Talk with your doctor or a registered dietitian, especially if you are pregnant, breastfeeding, raising a Vegan child, or managing a health condition. THEO · YOUR GUIDE FOR VEGAN NUTRITION A simple way to build a Vegan plate at every meal, and a short list to check off every day. ▶ PLAY THEO Talk to Theo BACK 3 of 8 NEXT HIDE ME",
+   "hscroll": false,
+   "inner": [
+    "MAIN#dgMain.dg-main"
+   ],
+   "orange": [
+    "BUTTON.dg-btn \"Get it for $11\""
+   ],
+   "titleBottom": 369,
+   "ctaBottom": null,
+   "ctaText": null
+  },
+  "supplements": {
+   "titles": [
+    "The Nutrition Guide",
+    "Supplements, and what to look for",
+    "What to take, and what to look for",
+    "Before you buy",
+    "Brands in our Directory",
+    "Ask someone who knows."
+   ],
+   "links": [
+    "#",
+    "#/",
+    "/directory?tab=products&sub=nutrition-and-supplements",
+    "/claim?add=1",
+    "#/experts",
+    "#/plate"
+   ],
+   "linkText": [
+    "Sign in",
+    "Nutrition Guide",
+    "See the brands",
+    "Member? Sign in",
+    "See them in the Directory",
+    "Add a brand",
+    "Next: Experts",
+    "Back",
+    "Next"
+   ],
+   "buttons": [
+    "Get it for $11",
+    "Vouch",
+    "Save",
+    "Vouches",
+    "▶ Play Theo",
+    "Talk to Theo",
+    "Hide me"
+   ],
+   "money": [
+    "$11",
+    "Get it for $11",
+    "Sign in",
+    "Independent test seals, whether it is really Vegan, how much is too much, and what to tell your doctor. It is $11 and yours to keep. Members can pay with 1,100 points instead.",
+    "Member? Sign in",
+    "The supplement brands in our Directory, and in the full Guide, what to look for on the label before you buy."
+   ],
+   "menu": [
+    "Overview",
+    "Nutrients",
+    "Your plate",
+    "Supplements",
+    "Experts",
+    "Courses",
+    "Pulse",
+    "Get access"
+   ],
+   "allText": "VEGANS EXPLORE GUIDES The Nutrition Guide $11 ONE TIME PURCHASE GET IT FOR $11 Member? Sign in 1. Overview 2. Nutrients (locked) 3. Your plate (locked) 4. Supplements 5. Experts 6. Courses 7. Pulse (locked) 8. Get access Nutrition Guide › Supplements SUPPLEMENTS Supplements, and what to look for Most Vegans take B12, and many take vitamin D, an algae omega-3 or iodine. Here is what to check on the label, and the brands in our Directory. HOW TO USE THIS PAGE What to take, and what to look for Most Vegans take B12, and many take vitamin D, an algae omega-3 or iodine. Read what to check on the label, then look at the brands in our Directory. Members vote for the ones they trust. SEE THE BRANDS Before you buy What to look for in a supplement Independent test seals, whether it is really Vegan, how much is too much, and what to tell your doctor. It is $11 and yours to keep. Members can pay with 1,100 points instead. GET IT FOR $11 Member? Sign in BRANDS IN OUR DIRECTORY Members vote for the ones they trust. A listing here is not a recommendation for your health. ALOHA ONLINE NUTRITION & SUPPLEMENTS 100% VEGAN 1 VOUCH SAVE Complement ONLINE NUTRITION & SUPPLEMENTS 100% VEGAN 1 VOUCH SAVE Garden of Life Palm Beach Gardens NUTRITION & SUPPLEMENTS PRE-VEGAN OPTIONS 1 VOUCH SAVE Huel ONLINE NUTRITION & SUPPLEMENTS 100% VEGAN 1 VOUCH SAVE Sakara Life ONLINE FOOD & DRINK 100% VEGAN 1 VOUCH SAVE Sunwarrior ONLINE NUTRITION & SUPPLEMENTS 100% VEGAN 1 VOUCH SAVE Truvani ONLINE NUTRITION & SUPPLEMENTS 100% VEGAN 1 VOUCH SAVE Vedge Nutrition ONLINE NUTRITION & SUPPLEMENTS 100% VEGAN 1 VOUCH SAVE Vega ONLINE NUTRITION & SUPPLEMENTS 100% VEGAN 1 VOUCH SAVE Amazing Grass ONLINE NUTRITION & SUPPLEMENTS 100% VEGAN 0 VOUCHES SAVE Deva Nutrition ONLINE NUTRITION & SUPPLEMENTS 100% VEGAN 0 VOUCHES SAVE Form Nutrition ONLINE NUTRITION & SUPPLEMENTS 100% VEGAN 0 VOUCHES SAVE Future Kind ONLINE NUTRITION & SUPPLEMENTS 100% VEGAN 0 VOUCHES SAVE Happy Viking ONLINE NUTRITION & SUPPLEMENTS 100% VEGAN 0 VOUCHES SAVE KOS ONLINE NUTRITION & SUPPLEMENTS 100% VEGAN 0 VOUCHES SAVE Moss Be Good ONLINE NUTRITION & SUPPLEMENTS 100% VEGAN 0 VOUCHES SAVE Nested Naturals ONLINE NUTRITION & SUPPLEMENTS 100% VEGAN 0 VOUCHES SAVE Nuzest ONLINE NUTRITION & SUPPLEMENTS 100% VEGAN 0 VOUCHES SAVE Ora Organic ONLINE NUTRITION & SUPPLEMENTS 100% VEGAN 0 VOUCHES SAVE PlantFusion ONLINE NUTRITION & SUPPLEMENTS 100% VEGAN 0 VOUCHES SAVE Ritual ONLINE NUTRITION & SUPPLEMENTS 100% VEGAN 0 VOUCHES SAVE Sprout Living ONLINE NUTRITION & SUPPLEMENTS 100% VEGAN 0 VOUCHES SAVE Vivo Life ONLINE NUTRITION & SUPPLEMENTS 100% VEGAN 0 VOUCHES SAVE Your Super ONLINE NUTRITION & SUPPLEMENTS 100% VEGAN 0 VOUCHES SAVE SEE THEM IN THE DIRECTORY ADD A BRAND SEE IT FOR YOURSELF Ask someone who knows. Physicians and dietitians from our shows, and health professionals near you. NEXT: EXPERTS General information from the sources named, not medical advice. Talk with your doctor or a registered dietitian, especially if you are pregnant, breastfeeding, raising a Vegan child, or managing a health condition. THEO · YOUR GUIDE FOR VEGAN NUTRITION The supplement brands in our Directory, and in the full Guide, what to look for on the label before you buy. ▶ PLAY THEO Talk to Theo BACK 4 of 8 NEXT HIDE ME",
+   "hscroll": false,
+   "inner": [
+    "MAIN#dgMain.dg-main"
+   ],
+   "orange": [
+    "BUTTON.dg-btn \"Get it for $11\""
+   ],
+   "titleBottom": 369,
+   "ctaBottom": null,
+   "ctaText": null
+  },
+  "experts": {
+   "titles": [
+    "The Nutrition Guide",
+    "Physicians and health experts",
+    "Find someone to ask",
+    "Want to go deeper?"
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/experts",
+    "#/experts/pros",
+    "#/pulse",
+    "#/courses",
+    "#/supplements"
+   ],
+   "linkText": [
+    "Sign in",
+    "Nutrition Guide",
+    "On our shows",
+    "Near you",
+    "Find one near you",
+    "Hear them on the podcast",
+    "Next: Courses",
+    "Back",
+    "Next"
+   ],
+   "buttons": [
+    "Get it for $11",
+    "Vouch",
+    "Save",
+    "▶ Play Theo",
+    "Talk to Theo",
+    "Hide me"
+   ],
+   "money": [
+    "$11",
+    "Get it for $11",
+    "Sign in"
+   ],
+   "menu": [
+    "Overview",
+    "Nutrients",
+    "Your plate",
+    "Supplements",
+    "Experts",
+    "Courses",
+    "Pulse",
+    "Get access"
+   ],
+   "allText": "VEGANS EXPLORE GUIDES The Nutrition Guide $11 ONE TIME PURCHASE GET IT FOR $11 Member? Sign in 1. Overview 2. Nutrients (locked) 3. Your plate (locked) 4. Supplements 5. Experts 6. Courses 7. Pulse (locked) 8. Get access Nutrition Guide › Experts EXPERTS Physicians and health experts ON OUR SHOWS NEAR YOU The doctors, dietitians and health experts in our People directory, most of them guests on our shows. Members vote for the ones they trust. HOW TO USE THIS PAGE Find someone to ask Hear a physician or a dietitian on our shows first, then find one near you. Switch between On our shows and Near you, and pick your chapter. FIND ONE NEAR YOU Aaron Spitz Physicians 1 VOUCH SAVE Angela Crawford Health Experts 1 VOUCH SAVE Angie Sadeghi Physicians 1 VOUCH SAVE Cyrus Khambatta Founders 1 VOUCH SAVE Desiree Nielsen Health Experts 1 VOUCH SAVE Evie Kevish Health Experts 1 VOUCH SAVE James and Dahlia Marin Health Experts 1 VOUCH SAVE Joel Kahn Physicians 1 VOUCH SAVE Kwame Terra Founders 1 VOUCH SAVE Lakshman Mulpuri Physicians 1 VOUCH SAVE Mari Mitrani Physicians 1 VOUCH SAVE Maxime Sigouin Health Experts 1 VOUCH SAVE Michael Klaper Physicians 1 VOUCH SAVE Neal Barnard Physicians 1 VOUCH SAVE Robby Barbaro Founders 1 VOUCH SAVE Shabnam Islam Health Experts 1 VOUCH SAVE Sherri Johnson Content Creators 1 VOUCH SAVE Tabay Atkins Health Experts 1 VOUCH SAVE Tim James Health Experts 1 VOUCH SAVE Will Bulsiewicz Physicians 1 VOUCH SAVE HEAR THEM ON THE PODCAST SEE IT FOR YOURSELF Want to go deeper? Plant-based nutrition, cooking and coaching courses and certificates. NEXT: COURSES General information from the sources named, not medical advice. Talk with your doctor or a registered dietitian, especially if you are pregnant, breastfeeding, raising a Vegan child, or managing a health condition. THEO · YOUR GUIDE FOR VEGAN NUTRITION The physicians and health experts we've had on our shows, and the health professionals near you in our Directory. ▶ PLAY THEO Talk to Theo BACK 5 of 8 NEXT HIDE ME",
+   "hscroll": false,
+   "inner": [
+    "MAIN#dgMain.dg-main"
+   ],
+   "orange": [
+    "BUTTON.dg-btn \"Get it for $11\""
+   ],
+   "titleBottom": 369,
+   "ctaBottom": null,
+   "ctaText": null
+  },
+  "courses": {
+   "titles": [
+    "The Nutrition Guide",
+    "Courses and certificates",
+    "Learn more, or make it your work",
+    "Plant-Based Nutrition Certificate",
+    "Free Nutrition & Lifestyle Coaching Workshop",
+    "Nutrition & Lifestyle Coaching Certificate",
+    "Food for Life Nutrition and Cooking Instructor Training",
+    "Nutrition for Clinicians",
+    "Professional Plant-Based Certification",
+    "Online Plant-Based Culinary Arts Diploma",
+    "Online Associate Degree in Plant-Based Culinary Arts",
+    "Health-Centered Culinary Arts",
+    "Online Health-Centered Culinary Arts & Food Operations",
+    "Hear it from the experts."
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/courses",
+    "#/courses/nutrition",
+    "#/courses/cooking",
+    "#/courses/coaching",
+    "https://nutritionstudies.org/courses/plant-based-nutrition/",
+    "https://certificate.foodrevolution.org/workshop/",
+    "https://certificate.foodrevolution.org/",
+    "https://www.pcrm.org/good-nutrition/plant-based-diets/ffl/become-an-instructor",
+    "https://www.pcrm.org/good-nutrition/nutrition-for-clinicians",
+    "https://plantricianproject.org/plant-based-nutrition-certificate",
+    "https://rouxbe.com/site/plant-based-certification-course/",
+    "https://www.escoffier.edu/plant-based-programs/",
+    "https://www.ice.edu/campus-programs/health-centered-culinary-arts",
+    "https://www.ice.edu/online-programs/health-centered-culinary-arts",
+    "#/pulse",
+    "#/experts"
+   ],
+   "linkText": [
+    "Sign in",
+    "Nutrition Guide",
+    "All",
+    "Nutrition",
+    "Cooking",
+    "Coaching",
+    "See the free workshop",
+    "See the course",
+    "Tell us",
+    "Next: The Pulse",
+    "Back",
+    "Next"
+   ],
+   "buttons": [
+    "Get it for $11",
+    "▶ Play Theo",
+    "Talk to Theo",
+    "Hide me"
+   ],
+   "money": [
+    "$11",
+    "Get it for $11",
+    "Sign in",
+    "See the free workshop",
+    "A certificate. Continuing education credits for health professionals and coaches are an extra $125.",
+    "$949, or 4 monthly payments of $237.25",
+    "Free Nutrition & Lifestyle Coaching Workshop",
+    "A free three-part live workshop from Food Revolution Network on becoming a nutrition and lifestyle coach.",
+    "Free; no certificate",
+    "Free",
+    "$3,997, or 6 payments of $674, or 12 payments of $349",
+    "$1,099 (institutions $1,349)",
+    "Free online continuing education from the Physicians Committee on nutrition for doctors, nurses, health coaches and other clinicians, with free CME credits from select chapters.",
+    "Free continuing education credits from select chapters",
+    "$1,999",
+    "$24,688",
+    "$37,305"
+   ],
+   "menu": [
+    "Overview",
+    "Nutrients",
+    "Your plate",
+    "Supplements",
+    "Experts",
+    "Courses",
+    "Pulse",
+    "Get access"
+   ],
+   "allText": "VEGANS EXPLORE GUIDES The Nutrition Guide $11 ONE TIME PURCHASE GET IT FOR $11 Member? Sign in 1. Overview 2. Nutrients (locked) 3. Your plate (locked) 4. Supplements 5. Experts 6. Courses 7. Pulse (locked) 8. Get access Nutrition Guide › Courses COURSES Courses and certificates ALL NUTRITION COOKING COACHING Plant-based nutrition, cooking and coaching courses, for yourself or for your work: what each one gives you, how long it takes and what it costs. Every one goes to the school's own page to sign up. HOW TO USE THIS PAGE Learn more, or make it your work Pick Nutrition, Cooking or Coaching at the top. Each course shows what you earn, how long it takes and what it costs, and the button goes to the school's own page to sign up. SEE THE FREE WORKSHOP T. COLIN CAMPBELL CENTER FOR NUTRITION STUDIES Plant-Based Nutrition Certificate The T. Colin Campbell Center's online certificate in the science of whole-food, plant-based eating, in three parts: Nutrition and Society, Nutrition and Chronic Disease, and Plant-Based in Practice. YOU EARN A certificate. Continuing education credits for health professionals and coaches are an extra $125. FORMAT Online, on demand, at your own pace LENGTH 15 modules, 50+ hours plus assignments COST $949, or 4 monthly payments of $237.25 SEE THE COURSE FOOD REVOLUTION NETWORK Free Nutrition & Lifestyle Coaching Workshop A free three-part live workshop from Food Revolution Network on becoming a nutrition and lifestyle coach. YOU EARN Free; no certificate FORMAT Live online, 9 AM PT / 12 PM ET each day; replays available LENGTH November 17 to 19, 2026, about three hours a day COST Free SEE THE COURSE FOOD REVOLUTION NETWORK Nutrition & Lifestyle Coaching Certificate Food Revolution Network's coaching certificate trains coaches to guide people toward plant-forward eating and lasting lifestyle change, with a final exam to become a certified coach. YOU EARN Food Revolution Network-Certified Nutrition & Lifestyle Coach FORMAT 100% online and self-paced, with a year of live support LENGTH About 53 hours of required lessons, plus optional ones COST $3,997, or 6 payments of $674, or 12 payments of $349 SEE THE COURSE PHYSICIANS COMMITTEE FOR RESPONSIBLE MEDICINE Food for Life Nutrition and Cooking Instructor Training The Physicians Committee trains instructors to teach Food for Life plant-based nutrition and cooking classes in person and online in their own communities. YOU EARN Licensed Food for Life instructor FORMAT Online, self-paced, with weekly required live Zoom sessions LENGTH 8 weeks. Spring 2027: April 20 to June 15 COST $1,099 (institutions $1,349) Apply by Dec. 28 for early acceptance, or Jan. 18. SEE THE COURSE PHYSICIANS COMMITTEE FOR RESPONSIBLE MEDICINE Nutrition for Clinicians Free online continuing education from the Physicians Committee on nutrition for doctors, nurses, health coaches and other clinicians, with free CME credits from select chapters. YOU EARN Free continuing education credits from select chapters FORMAT Online LENGTH Course by course COST Free SEE THE COURSE THE PLANTRICIAN PROJECT Plant-Based Nutrition Certificate The Plantrician Project's self-paced certificate in plant-based nutrition, made for health ambassadors, fitness coaches and anyone who wants the science. YOU EARN A certificate FORMAT Online, self-paced, with self-check quizzes LENGTH 8 modules, over 10 hours COST Not listed on the course page SEE THE COURSE ROUXBE Professional Plant-Based Certification Rouxbe's online course trains cooks and food professionals in plant-based cooking technique, from stocks and grains to a final assessment. YOU EARN Certificate of Completion FORMAT Online video lessons, lifetime access LENGTH At your own pace COST $1,999 SEE THE COURSE AUGUSTE ESCOFFIER SCHOOL OF CULINARY ARTS Online Plant-Based Culinary Arts Diploma Escoffier's online plant-based diploma trains professional plant-based cooks and sends each student to a real kitchen for a hands-on industry externship. YOU EARN A diploma; its credits carry over to the associate degree FORMAT 100% online with one industry externship LENGTH 60 weeks COST $24,688 SEE THE COURSE AUGUSTE ESCOFFIER SCHOOL OF CULINARY ARTS Online Associate Degree in Plant-Based Culinary Arts Escoffier's plant-based associate degree covers everything in the diploma plus business skills, with two industry externships. YOU EARN An associate degree FORMAT 100% online with two industry externships LENGTH 84 weeks COST $37,305 SEE THE COURSE INSTITUTE OF CULINARY EDUCATION (NATURAL GOURMET CENTER) Health-Centered Culinary Arts ICE's Natural Gourmet Center trains chefs to cook innovative, plant-forward food in its New York and Los Angeles kitchens. YOU EARN A diploma, or an associate degree FORMAT In person in New York or Los Angeles LENGTH Diploma in as little as 8 months, degree in as little as 15 COST Not listed on the program page SEE THE COURSE INSTITUTE OF CULINARY EDUCATION (NATURAL GOURMET CENTER) Online Health-Centered Culinary Arts & Food Operations The online version of ICE's health-centered, plant-forward culinary program, taught by chefs from its New York and Los Angeles campuses, with an externship. YOU EARN A diploma FORMAT Online, with an externship LENGTH 16 months, about 18 hours a week COST Not listed on the program page SEE THE COURSE Know a plant-based course we should add? Tell us, and we will check it. SEE IT FOR YOURSELF Hear it from the experts. Our episodes with physicians and health experts, played right here. NEXT: THE PULSE A course listed here is not a recommendation or a medical credential. Prices and dates are from each school's own page when we checked; confirm them with the school before you enroll. THEO · YOUR GUIDE FOR VEGAN NUTRITION Want to go deeper? These are courses and certificates in plant-based nutrition, cooking and coaching, for yourself or for your work. ▶ PLAY THEO Talk to Theo BACK 6 of 8 NEXT HIDE ME",
+   "hscroll": false,
+   "inner": [
+    "MAIN#dgMain.dg-main"
+   ],
+   "orange": [
+    "BUTTON.dg-btn \"Get it for $11\""
+   ],
+   "titleBottom": 369,
+   "ctaBottom": null,
+   "ctaText": null
+  },
+  "pulse": {
+   "titles": [
+    "The Nutrition Guide",
+    "Physicians on our shows",
+    "Listen to the experts",
+    "You have the whole map."
+   ],
+   "links": [
+    "#",
+    "#/",
+    "#/pulse",
+    "#/pulse/experts",
+    "/directory/vegans-explore-podcast?ep=b8615f03-7837-443c-aa43-7e98cf83cda3",
+    "/directory/vegans-explore-podcast?ep=3a286bfd-97f9-4c27-85b8-099556740015",
+    "/directory/vegans-explore-podcast?ep=e29ba716-4350-40b3-8692-17d718ecfb41",
+    "/directory/vegans-explore-podcast?ep=05119b80-c7fc-4c95-ac1d-b4fbaab76f69",
+    "/directory/vegans-explore-podcast?ep=779f25d1-b411-4985-bde4-6a59deba0589",
+    "/directory/soflo-vegans-podcast?ep=tag%3Asoundcloud%2C2010%3Atracks%2F760841980",
+    "/directory/soflo-vegans-podcast?ep=tag%3Asoundcloud%2C2010%3Atracks%2F737619079",
+    "/directory/soflo-vegans-podcast?ep=49953dea-e361-40d8-a2f6-625ea281d417",
+    "/directory/soflo-vegans-podcast?ep=tag%3Asoundcloud%2C2010%3Atracks%2F640629552",
+    "/directory/soflo-vegans-podcast?ep=tag%3Asoundcloud%2C2010%3Atracks%2F601615119",
+    "/directory/soflo-vegans-podcast?ep=tag%3Asoundcloud%2C2010%3Atracks%2F723868189",
+    "/directory/soflo-vegans-podcast?ep=e785931d-fd62-4561-acc1-fd7f267e36af",
+    "#/join",
+    "#/courses"
+   ],
+   "linkText": [
+    "Sign in",
+    "Nutrition Guide",
+    "Physicians",
+    "Health experts",
+    "Hear the physicians",
+    "Dr. Neal Barnard Answers the Biggest Questions About Plant-Based Living",
+    "Moving Medicine Forward, Why Nutrition Belongs at the Center of Healthcare",
+    "Dr. Will “Dr. B” Bulsiewicz on Fiber, Microbiomes, and the Future of Human Health",
+    "Can AI Be Your Health Ally?, Dr. Klaper on ChatGPT, Research, and Responsibility",
+    "Dr. Michael Klaper Explains Nutrition, Immunity, and the Gaps in Medical Education",
+    "Dr. Joel Kahn: The Cost of Heart Disease and the Role of Plant-Based Nutrition",
+    "Dr. Angie Sadeghi: Understanding the Gut’s Role in Your Overall Health",
+    "Dr. Will Bulsiewicz: The Fiber Fueled Cookbook",
+    "Dr. Neal Barnard: Food’s Impact on Overall Health",
+    "Dr. Michael Klaper: Healthy Living on a Plant-Based Lifestyle",
+    "Dr. Aaron Spitz: Game Changers Documentary and Men’s Health",
+    "Dr. Lakshman (Lucky) Mulpuri: Plant-based Medical Curriculum",
+    "Member? Sign in",
+    "Get the whole Guide",
+    "Back",
+    "Next"
+   ],
+   "buttons": [
+    "Get it for $11",
+    "Play",
+    "▶ Play Theo",
+    "Talk to Theo",
+    "Hide me"
+   ],
+   "money": [
+    "$11",
+    "Get it for $11",
+    "Sign in",
+    "Listen to our physicians and health experts right here in the Guide. It is $11 and yours to keep. Members can pay with 1,100 points instead.",
+    "Member? Sign in"
+   ],
+   "menu": [
+    "Overview",
+    "Nutrients",
+    "Your plate",
+    "Supplements",
+    "Experts",
+    "Courses",
+    "Pulse",
+    "Get access"
+   ],
+   "allText": "VEGANS EXPLORE GUIDES The Nutrition Guide $11 ONE TIME PURCHASE GET IT FOR $11 Member? Sign in 1. Overview 2. Nutrients (locked) 3. Your plate (locked) 4. Supplements 5. Experts 6. Courses 7. Pulse (locked) 8. Get access Nutrition Guide › Pulse THE NUTRITION PULSE Physicians on our shows PHYSICIANS HEALTH EXPERTS Dr. Neal Barnard, Dr. Michael Klaper, Dr. Will Bulsiewicz, Dr. Joel Kahn, Dr. Angie Sadeghi and more, on food and health. HOW TO USE THIS PAGE Listen to the experts Play any episode right here. Physicians and health experts from our shows, on food and health. Members vote for the ones that helped them most. HEAR THE PHYSICIANS Dr. Neal Barnard Answers the Biggest Questions About Plant-Based Living Vegans Explore Podcast · Dec 14, 2025 · 35 min PLAY Moving Medicine Forward, Why Nutrition Belongs at the Center of Healthcare Vegans Explore Podcast · Jan 16, 2026 · 9 min PLAY Dr. Will “Dr. B” Bulsiewicz on Fiber, Microbiomes, and the Future of Human Health Vegans Explore Podcast · Dec 19, 2025 · 58 min PLAY Can AI Be Your Health Ally?, Dr. Klaper on ChatGPT, Research, and Responsibility Vegans Explore Podcast · Feb 6, 2026 · 12 min PLAY Dr. Michael Klaper Explains Nutrition, Immunity, and the Gaps in Medical Education Vegans Explore Podcast · Dec 29, 2025 · 1 hr PLAY Dr. Joel Kahn: The Cost of Heart Disease and the Role of Plant-Based Nutrition SoFlo Vegans Podcast · Feb 17, 2020 · 1 hr 21 min PLAY Dr. Angie Sadeghi: Understanding the Gut’s Role in Your Overall Health SoFlo Vegans Podcast · Jan 3, 2020 · 1 hr 2 min PLAY Dr. Will Bulsiewicz: The Fiber Fueled Cookbook SoFlo Vegans Podcast · Jul 6, 2022 · 57 min PLAY Dr. Neal Barnard: Food’s Impact on Overall Health SoFlo Vegans Podcast · Jun 24, 2019 · 41 min PLAY Dr. Michael Klaper: Healthy Living on a Plant-Based Lifestyle SoFlo Vegans Podcast · Apr 4, 2019 · 1 hr 1 min PLAY Dr. Aaron Spitz: Game Changers Documentary and Men’s Health SoFlo Vegans Podcast · Dec 5, 2019 · 1 hr 15 min PLAY Dr. Lakshman (Lucky) Mulpuri: Plant-based Medical Curriculum SoFlo Vegans Podcast · Oct 5, 2022 · 51 min PLAY Every health episode Listen to our physicians and health experts right here in the Guide. It is $11 and yours to keep. Members can pay with 1,100 points instead. GET IT FOR $11 Member? Sign in SEE IT FOR YOURSELF You have the whole map. Nutrients, your plate, supplements, experts, courses and the Pulse, all in one Guide. GET THE WHOLE GUIDE THEO · YOUR GUIDE FOR VEGAN NUTRITION Our episodes with Dr. Barnard, Dr. Klaper, Dr. Bulsiewicz and more, on food and health. Play them right here. ▶ PLAY THEO Talk to Theo BACK 7 of 8 NEXT HIDE ME",
+   "hscroll": false,
+   "inner": [
+    "MAIN#dgMain.dg-main"
+   ],
+   "orange": [
+    "BUTTON.dg-btn \"Get it for $11\""
+   ],
+   "titleBottom": 369,
+   "ctaBottom": null,
+   "ctaText": null
+  },
+  "join": {
+   "titles": [
+    "The Nutrition Guide",
+    "Open the whole Nutrition Guide"
+   ],
+   "links": [
+    "#",
+    "#/pulse",
+    "#/join"
+   ],
+   "linkText": [
+    "Sign in",
+    "sign in",
+    "Back",
+    "Next"
+   ],
+   "buttons": [
+    "Get it for $11",
+    "▶ Play Theo",
+    "Talk to Theo",
+    "Hide me"
+   ],
+   "money": [
+    "$11",
+    "Get it for $11",
+    "Sign in",
+    "Every Vegans Explore Guide is $11, or 1,100 points, and yours to keep. Vitamin B12, the supplement brands, the experts and the courses stay open to everyone.",
+    "Get the Guide for $11, one time, and it is yours to keep. Members can pay with 1,100 points instead:",
+    "sign in",
+    "The Nutrition Guide is eleven dollars, or 1,100 points, and it's yours to keep. Members can pick either one."
+   ],
+   "menu": [
+    "Overview",
+    "Nutrients",
+    "Your plate",
+    "Supplements",
+    "Experts",
+    "Courses",
+    "Pulse",
+    "Get access"
+   ],
+   "allText": "VEGANS EXPLORE GUIDES The Nutrition Guide $11 ONE TIME PURCHASE GET IT FOR $11 Member? Sign in 1. Overview 2. Nutrients (locked) 3. Your plate (locked) 4. Supplements 5. Experts 6. Courses 7. Pulse (locked) 8. Get access GET ACCESS Open the whole Nutrition Guide Every Vegans Explore Guide is $11, or 1,100 points, and yours to keep. Vitamin B12, the supplement brands, the experts and the courses stay open to everyone. All eight nutrients, each with how much, where to get it, when to supplement and what to do this week. Your plate at every meal, and the every-day list. What to look for in a supplement before you buy. The Nutrition Pulse: our physicians and health experts, played right here, and My list to keep your place. $11YOURS TO KEEP Get the Guide for $11, one time, and it is yours to keep. Members can pay with 1,100 points instead: sign in. GET IT FOR $11 THEO · YOUR GUIDE FOR VEGAN NUTRITION The Nutrition Guide is eleven dollars, or 1,100 points, and it's yours to keep. Members can pick either one. ▶ PLAY THEO Talk to Theo BACK 8 of 8 NEXT HIDE ME",
+   "hscroll": false,
+   "inner": [],
+   "orange": [
+    "BUTTON.dg-btn \"Get it for $11\""
+   ],
+   "titleBottom": 346,
+   "ctaBottom": null,
+   "ctaText": null
+  }
+ },
+ "errors": []
+}
