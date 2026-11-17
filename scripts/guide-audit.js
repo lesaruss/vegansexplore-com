@@ -9,8 +9,12 @@
 
   Usage
     node scripts/guide-audit.js snapshot <outDir> [--only=holiday-guide,airport-guide] [--base=https://vegansexplore.com]
-                                         [--shots=<dir>] [--concurrency=4] [--depth=2] [--no-linkcheck]
+                                         [--shots=<dir>] [--concurrency=4] [--depth=2] [--no-linkcheck] [--local=<repoDir>]
     node scripts/guide-audit.js compare <beforeDir> <afterDir>
+
+  --local=<repoDir>: proof before a push. The live site is visited as usual, but the Guide pages (/guides/*), their scripts
+  (/guide-scripts/*), the shared frame (/public/ve-guide-frame.css and .js) and the kit (/public/ve-kit.css) are served from the
+  files in <repoDir> (Playwright route), so a change can be compared against the BEFORE inventory without deploying it.
 
   snapshot: visits each Guide (signed out) at 1440x900 and 390x844. Parts come from the Guide's own
   TABS list in its script (read from the repo) plus whatever the live menu shows; sub-views are found
@@ -252,6 +256,20 @@ function collect(args) {
   return out;
 }
 
+// ---------- --local: serve the Guide files from a working copy ----------
+const LOCAL_PATHS = /^\/(guides\/[a-z0-9-]+(\.html)?|guide-scripts\/[a-z0-9-]+\.js|public\/ve-guide-frame\.(css|js)|public\/ve-kit\.css)$/;
+async function routeLocal(ctx, base, dir) {
+  const host = new URL(base).host;
+  await ctx.route(u => u.host === host && LOCAL_PATHS.test(u.pathname), async r => {
+    const p = new URL(r.request().url()).pathname.slice(1);
+    let f = path.join(dir, p);
+    if (p.startsWith('guides/') && !p.endsWith('.html')) f += '.html';
+    if (!fs.existsSync(f)) return r.continue();
+    const ct = f.endsWith('.css') ? 'text/css' : f.endsWith('.js') ? 'application/javascript' : 'text/html';
+    return r.fulfill({ status: 200, contentType: ct + '; charset=utf-8', body: fs.readFileSync(f) });
+  });
+}
+
 // ---------- snapshot ----------
 async function snapshot(outDir, opts) {
   const { chromium, request } = require('playwright');
@@ -290,6 +308,7 @@ async function snapshot(outDir, opts) {
     const rec = { url, capturedAt: new Date().toISOString(), consoleErrors: [], failedRequests: [], errors: [] };
     const ctx = await browser.newContext({ viewport: { width: task.W.w, height: task.W.h }, deviceScaleFactor: 1, isMobile: task.W.w < 600, hasTouch: task.W.w < 600, userAgent: task.W.w < 600 ? 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1 VEGuideAudit' : undefined });
     await ctx.route(IGNORE_REQ, r => r.abort());
+    if (opts.local) await routeLocal(ctx, base, path.resolve(String(opts.local)));
     const page = await ctx.newPage();
     page.on('console', m => { if (m.type() === 'error') { const loc = m.location() || {}; if (!IGNORE_REQ.test(loc.url || '') && !IGNORE_REQ.test(m.text())) rec.consoleErrors.push(m.text().slice(0, 300)); } });
     page.on('pageerror', e => rec.consoleErrors.push('pageerror: ' + String(e.message || e).slice(0, 300)));
@@ -411,7 +430,7 @@ async function snapshot(outDir, opts) {
     const live = new Set();
     views.forEach(V => Object.values(V.widths).forEach(r => (r.menu || []).forEach(o => live.add(o.k))));
     const json = {
-      guide: g.id, url: base + g.url, script: g.script, note: g.note, state: opts.state && opts.state !== true ? String(opts.state) : undefined, takenAt: new Date().toISOString(), base,
+      guide: g.id, url: base + g.url, script: g.script, note: g.note, state: opts.state && opts.state !== true ? String(opts.state) : undefined, takenAt: new Date().toISOString(), base, local: opts.local ? String(opts.local) : undefined,
       staticParts: S.staticParts, liveMenuParts: Array.from(live),
       partsMissingFromLiveMenu: S.staticParts.map(p => p.k).filter(k => !live.has(k)),
       views: views.map(V => ({ view: V.view, depth: V.depth, parent: V.parent, isPart: V.isPart, widths: V.widths }))
@@ -562,6 +581,6 @@ function compare(beforeDir, afterDir) {
   if (cmd === 'snapshot' && o._[1]) { await snapshot(path.resolve(o._[1]), o); process.exit(0); }
   if (cmd === 'summary' && o._[1]) { const d = path.resolve(o._[1]), L0 = load(d); writeSummary(d, GUIDES.filter(g => L0[g.id]).map(g => summarize(L0[g.id])), { base: (Object.values(L0)[0] || {}).base || '', took: 0, shots: o.shots || '(see snapshot run)' }); console.log('Wrote ' + path.join(d, 'SUMMARY.md')); process.exit(0); }
   if (cmd === 'compare' && o._[1] && o._[2]) process.exit(compare(path.resolve(o._[1]), path.resolve(o._[2])));
-  console.log('Usage:\n  node scripts/guide-audit.js snapshot <outDir> [--only=<guide>[,<guide>]] [--base=https://vegansexplore.com] [--shots=<dir>] [--concurrency=4] [--depth=2] [--no-linkcheck] [--state="after move"]\n  node scripts/guide-audit.js compare <beforeDir> <afterDir>\n  node scripts/guide-audit.js summary <dir>   (rewrite SUMMARY.md from the JSONs)\nGuides: ' + GUIDES.map(g => g.id).join(', '));
+  console.log('Usage:\n  node scripts/guide-audit.js snapshot <outDir> [--only=<guide>[,<guide>]] [--base=https://vegansexplore.com] [--shots=<dir>] [--concurrency=4] [--depth=2] [--no-linkcheck] [--state="after move"] [--local=<repoDir>]\n  node scripts/guide-audit.js compare <beforeDir> <afterDir>\n  node scripts/guide-audit.js summary <dir>   (rewrite SUMMARY.md from the JSONs)\nGuides: ' + GUIDES.map(g => g.id).join(', '));
   process.exit(2);
 })().catch(e => { console.error(e); process.exit(3); });
