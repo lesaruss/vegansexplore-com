@@ -433,31 +433,74 @@
     }
     main.innerHTML = html;
   }
+  // Brands is a Finder part (Sean, 2026-11-17; canon canon-ve-guide-templates; mock /mocks/guide-templates/finder/): the Guide's own
+  // search became the search block (Search is the view's one orange action), one sentence that says what is there (worked out from
+  // the list), the kinds as answer chips (the same #/brands/<kind> links; an empty kind says so plainly), one list of Directory cards,
+  // "That is every ... so far", and the doorway for brands. The address carries ?q=. ve-guide-frame.js draws nothing here ("own").
+  // Brands are not tied to a place, so there is no Near me here: where to buy is on each brand's own page.
+  function brandQ() { return new URLSearchParams(location.search).get('q') || ''; }
+  function setBrandQ(v) {
+    var P = new URLSearchParams(location.search); if (v) P.set('q', v); else P.delete('q');
+    var qs = P.toString(); try { history.replaceState(history.state, '', location.pathname + (qs ? '?' + qs : '') + location.hash); } catch (e) {}
+  }
+  function inCat(l, c) { return ((l.details && l.details.dairy_guide) || []).some(function (i) { return i.cat === c; }); }
+  function brandAnswer(n, cat, q, all) {
+    var what = cat ? esc(cat.toLowerCase()) + ' ' : '';
+    if (q) return !n ? 'Nothing in the Guide matches &ldquo;' + esc(q) + '&rdquo;' + (cat ? ' in ' + esc(cat) : '') + ' yet.'
+      : '<b>' + n + (n === 1 ? ' brand' : ' brands') + '</b>' + (cat ? ' in ' + esc(cat) : '') + (n === 1 ? ' matches' : ' match') + ' &ldquo;' + esc(q) + '&rdquo;.';
+    if (!n) return 'No ' + what + 'brands in the Guide yet.';
+    var kinds = CATS.filter(function (c) { return all.some(function (l) { return inCat(l, c); }); }).length;
+    return '<b>' + n + ' ' + what + (n === 1 ? 'brand is' : 'brands are') + '</b> in the Guide so far' +
+      (cat ? '.' : ', across <b>' + kinds + ' kinds</b> of dairy they replace.') + ' Open one to see where to buy it.';
+  }
   function viewBrands(catSlug) {
     var cat = catSlug ? catBySlug(catSlug) : null;
     var h = (cat ? crumb([['Brands', '#/brands'], [cat]]) : '') + head('Brands', cat ? esc(cat) : 'The brands to buy',
       'Every brand is a listing in the Vegans Explore Directory. Vote for the ones you love, and open one to see where to buy it.');
     if (!BRANDS) { main.innerHTML = h + '<div class="dg-loading">Loading brands...</div>'; return; }
+    var chips = function (on) {
+      return '<div class="fd-chips" role="group" aria-label="Show"><span>Show</span>' + ['Everything'].concat(CATS).map(function (c) {
+        var all = c === 'Everything', p = (all && !cat) || c === cat;
+        return on ? '<a href="#/brands' + (all ? '' : '/' + slugify(c)) + '" aria-pressed="' + p + '">' + esc(c) + '</a>' : '<b class="fd-chip-t">' + esc(c) + '</b>';
+      }).join('') + '</div>';
+    };
     if (!member()) {
-      main.innerHTML = h + '<div class="dg-chips">' + CATS.map(function (c) { return '<span class="dg-chip" style="cursor:default">' + esc(c) + '</span>'; }).join('') + '</div>' +
+      // Visitors: the same answer and kinds, then the real list blurred behind the offer (its button is the view's one action).
+      main.innerHTML = h + '<p class="fd-answer">' + brandAnswer(BRANDS.length, null, '', BRANDS).replace(' Open one to see where to buy it.', ' Where to buy each one comes with the full Guide.') + '</p>' + chips(false) +
         gated(dirGrid('', sortBy(BRANDS, 'votes').slice(0, 6).map(dirCard).join('')), 'Every brand, sorted by what you are replacing', 'With where to buy each one. Members vote, so the best rise to the top.');
       return;
     }
-    var list = cat ? BRANDS.filter(function (l) { return ((l.details && l.details.dairy_guide) || []).some(function (i) { return i.cat === cat; }); }) : BRANDS;
-    var pills = ['All'].concat(CATS).map(function (c) { return [c, '#/brands' + (c === 'All' ? '' : '/' + slugify(c)), (c === 'All' && !cat) || c === cat]; });
-    main.innerHTML = h + dirTools(pills, 'Search brands (oat, cashew...)', 'Search brands') + dirGrid('dgList', '');
+    var list = cat ? BRANDS.filter(function (l) { return inCat(l, cat); }) : BRANDS;
+    var q0 = brandQ();
+    main.innerHTML = h +
+      '<form class="fd-search fd-search-nonear" id="dgFind" role="search" aria-label="Search brands"><div class="fd-q"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="7" fill="none" stroke="#1a1a1a" stroke-width="3"/><path d="M16 16l6 6" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/></svg>' +
+      '<input type="text" id="dgFilter" placeholder="Search brands (oat, cashew...)" aria-label="Search brands" autocomplete="off" data-dictate="off" value="' + esc(q0) + '"></div>' +
+      '<button type="submit" class="dg-btn fd-go">Search</button></form>' +
+      '<p class="fd-answer" id="dgAns" aria-live="polite"></p>' + chips(true) +
+      '<div class="vrd-root"><div class="sort-bar"><span class="sort-label">Sort by</span><select class="sort-select" id="dgSort" aria-label="Sort listings"><option value="votes">Most Votes</option><option value="az">A to Z</option></select><span class="geo-label" id="dgCount"></span></div></div>' +
+      dirGrid('dgList', '') + '<div id="dgNone"></div><p class="fd-end" id="dgEnd"></p>' +
+      '<section class="fd-lower" aria-label="For brands"><span class="fd-lk">For brands</span><b>Is your brand in the Guide?</b><p>Every brand here is its own listing in the Directory. A brand can claim its listing and keep it right.</p>' +
+      '<div class="fd-btns"><a class="dg-btn dg-ghost" href="/claim">Claim your listing</a></div></section>';
     var sortEl = document.getElementById('dgSort'), fEl = document.getElementById('dgFilter');
     sortEl.value = sortPref;
     function draw() {
-      var q = fEl.value.trim().toLowerCase();
-      var rows = sortBy(list, sortPref).filter(function (l) { return !q || (l.name + ' ' + JSON.stringify((l.details && l.details.dairy_guide) || [])).toLowerCase().indexOf(q) >= 0; });
+      var q = fEl.value.trim(), ql = q.toLowerCase();
+      var rows = sortBy(list, sortPref).filter(function (l) { return !ql || (l.name + ' ' + JSON.stringify((l.details && l.details.dairy_guide) || [])).toLowerCase().indexOf(ql) >= 0; });
       document.getElementById('dgCount').textContent = rows.length + (rows.length === 1 ? ' brand' : ' brands');
+      document.getElementById('dgAns').innerHTML = brandAnswer(rows.length, cat, q, list) + (q ? ' <a href="#" class="fd-clear" id="dgClear">Show everything</a>' : '');
       var listEl = document.getElementById('dgList');
-      listEl.innerHTML = rows.map(dirCard).join('') || '<p class="vrd-empty">No match. Try another word.</p>';
+      listEl.innerHTML = rows.map(dirCard).join('');
+      listEl.parentNode.hidden = !rows.length;
+      document.getElementById('dgNone').innerHTML = rows.length ? '' : '<div class="fd-empty"><span class="fd-ico" aria-hidden="true">+</span><div><b>No brands here yet.</b><p>' +
+        (q ? 'Try another word, or every kind.' : 'This list grows as brands are added to the Directory.') + '</p></div>' + (cat || q ? '<div class="fd-btns"><a class="dg-btn dg-ghost" href="#/brands" id="dgAll">Every brand</a></div>' : '') + '</div>';
+      document.getElementById('dgEnd').textContent = rows.length ? (q ? 'That is every brand that matches \u201c' + q + '\u201d so far.' : 'That is every ' + (cat ? cat.toLowerCase() + ' ' : '') + 'brand in the Guide so far.') : '';
       wireCards(listEl);
+      var cl = document.getElementById('dgClear'); if (cl) cl.addEventListener('click', function (e) { e.preventDefault(); fEl.value = ''; setBrandQ(''); draw(); });
+      var al = document.getElementById('dgAll'); if (al) al.addEventListener('click', function () { fEl.value = ''; setBrandQ(''); if (!cat) { draw(); } });
     }
     sortEl.addEventListener('change', function () { sortPref = sortEl.value; draw(); });
-    fEl.addEventListener('input', draw);
+    fEl.addEventListener('input', function () { setBrandQ(fEl.value.trim()); draw(); });
+    document.getElementById('dgFind').addEventListener('submit', function (e) { e.preventDefault(); if (!fEl.value.trim()) { fEl.focus(); return; } setBrandQ(fEl.value.trim()); draw(); });
     draw();
   }
 

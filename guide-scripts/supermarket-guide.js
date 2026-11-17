@@ -90,7 +90,7 @@
     return fetch(API, { method: 'POST', headers: h, body: JSON.stringify(Object.assign({ guide: SLUG }, body)) }).then(function (r) { return r.json(); });
   }
   function unlockApi(action) {
-    return fetch(UNLOCK_URL, { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: ANON_KEY },
+    return fetch(UNLOCK_URL + '?action=' + encodeURIComponent(action), { method: 'POST', headers: { 'Content-Type': 'application/json', apikey: ANON_KEY },
       body: JSON.stringify({ action: action, slug: SLUG, token: token() || undefined }) }).then(function (r) { return r.json(); });
   }
   function fmtDate(iso) { try { return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }); } catch (e) { return ''; } }
@@ -179,33 +179,99 @@
     else list.sort(function (a, b) { return (b.free ? 1 : 0) - (a.free ? 1 : 0) || String(a.city).localeCompare(String(b.city)) || String(a.name).localeCompare(String(b.name)); });
     return list;
   }
-  function viewStores() {
-    if (!STORES) { main.innerHTML = head('Stores', 'Find your store', '') + '<div class="dg-loading">Loading the stores...</div>'; return; }
-    var hub = pref('hub', 'all'), ch = pref('chain', 'all'), list = filtered();
-    var sel = function (id, label, opts, cur) {
-      return '<label class="sa-city"><span>' + label + '</span><select id="' + id + '">' + opts.map(function (o) { return '<option value="' + esc(o[0]) + '"' + (o[0] === cur ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select></label>';
-    };
-    main.innerHTML = head('Stores', 'Find your store', 'Pick your supermarket by city or by where you are. Each store lists its Vegan sections and the aisle our members found them in.') +
-      '<div class="sg-tools">' + sel('sgChain', 'Supermarket', [['all', 'Every supermarket']].concat(chains().map(function (c) { return [c.slug, c.name]; })), ch) +
-      sel('sgHub', 'Chapter', [['all', 'Every chapter']].concat(chapters().map(function (h) { return [h, hubName(h)]; })), hub) +
-      '<label class="sa-city sg-q"><span>Search</span><input id="sgQ" type="search" placeholder="City, street or store" value="' + esc(pref('q', '')) + '"></label>' +
-      '<button type="button" class="dg-btn dg-ghost" id="sgNear">' + (HERE ? 'Nearest first' : 'Near me') + '</button></div>' +
-      '<p class="sg-count">' + list.length + (list.length === 1 ? ' store' : ' stores') + (HERE ? ', nearest first' : '') + '</p>' +
-      (list.length ? '<div class="sg-stores">' + list.slice(0, SHOWN).map(storeCard).join('') + '</div>' +
-        (list.length > SHOWN ? '<div class="dg-btns" style="justify-content:center;margin-top:14px"><button type="button" class="dg-btn dg-ghost" id="sgMore">Show more stores</button></div>' : '')
-        : '<p class="dg-empty">No stores match. Try another city or every chapter.</p>');
-    var on = function (id, ev, fn) { var el = document.getElementById(id); if (el) el.addEventListener(ev, fn); };
-    on('sgChain', 'change', function (e) { setPref('chain', e.target.value); SHOWN = 24; route(); });
-    on('sgHub', 'change', function (e) { setPref('hub', e.target.value); SHOWN = 24; route(); });
-    on('sgQ', 'input', function (e) { setPref('q', e.target.value); SHOWN = 24; clearTimeout(viewStores.t); viewStores.t = setTimeout(function () { var p = e.target.selectionStart; route(); var i = document.getElementById('sgQ'); if (i) { i.focus(); try { i.setSelectionRange(p, p); } catch (er) {} } }, 250); });
-    on('sgMore', 'click', function () { SHOWN += 48; route(); });
-    on('sgNear', 'click', function (e) {
-      if (!navigator.geolocation) return;
-      var b = e.target; b.disabled = true; b.textContent = 'Finding you...';
-      navigator.geolocation.getCurrentPosition(function (p) { HERE = { lat: p.coords.latitude, lng: p.coords.longitude }; setPref('hub', 'all'); SHOWN = 24; route(); },
-        function () { b.disabled = false; b.textContent = 'Near me'; }, { timeout: 15000, maximumAge: 300000 });
-    });
+  // The Finder template (Sean, 2026-11-17; canon canon-ve-guide-templates; mock /mocks/guide-templates/finder/): the Stores part's own
+  // filters became the search block (City, ZIP or store; Near me; Search, the view's one orange action), one sentence that says what is
+  // there (worked out from the list), the chapters as answer chips (the supermarket too, once there is more than one), one list with
+  // Show N more, and "That is every store ... so far". Near me and a ZIP are the Directory's own (VERegionDirectory.near), so the visit
+  // keeps one spot everywhere. The address carries ?q= (the words, a ZIP, or near). ve-guide-frame.js draws nothing here ("own").
+  var NEAR_MI = 10;
+  function NM() { return window.VERegionDirectory && VERegionDirectory.near; }
+  function setQ(v) {
+    var P = new URLSearchParams(location.search); if (v) P.set('q', v); else P.delete('q');
+    var qs = P.toString(); try { history.replaceState(history.state, '', location.pathname + (qs ? '?' + qs : '') + location.hash); } catch (e) {}
   }
+  function nearFrom(o, label) { HERE = o ? { lat: o.lat, lng: o.lng, label: label } : null; setPref('hub', 'all'); setPref('q', ''); SHOWN = 24; route(); }
+  var nearHooked = false;
+  function hookNear() {
+    var n = NM(); if (nearHooked || !n) return; nearHooked = true;
+    n.onChange(function (st) { if (viewStores.want && st.on) { viewStores.want = false; setQ('near'); nearFrom(st.origin, st.zip ? st.zip : st.place ? st.place : 'you'); } });
+  }
+  function storeSearch(v) {
+    v = String(v || '').trim(); var n = NM();
+    if (!v) { HERE = null; setPref('q', ''); setQ(''); SHOWN = 24; route(); return; }
+    if (v === 'near') { if (!n) return; viewStores.want = true; var st = n.state(); if (st.on && !st.zip && !st.place) { viewStores.want = false; nearFrom(st.origin, 'you'); return; } n.start(document.getElementById('sgNear')); return; }
+    setQ(v);
+    if (/^\d{5}$/.test(v) && n) { n.zip(v).then(function (ok) { if (ok) nearFrom(n.state().origin, v); else { HERE = null; setPref('q', v); SHOWN = 24; route(); } }); return; }
+    // Words first (a store's name, street or city); a city with no store of that name opens nearest first from it.
+    var low = v.toLowerCase(), hit = (STORES || []).some(function (x) { return (x.name + ' ' + (x.address || '') + ' ' + (x.city || '')).toLowerCase().indexOf(low) >= 0; });
+    if (!hit && n && n.city) { n.city(v).then(function (ok) { if (ok) nearFrom(n.state().origin, v.replace(/(^|\s)\S/g, function (c) { return c.toUpperCase(); })); else { HERE = null; setPref('q', v); SHOWN = 24; route(); } }); return; }
+    HERE = null; setPref('q', v); SHOWN = 24; route();
+  }
+  function viewStores() {
+    hookNear();
+    if (!STORES) { main.innerHTML = head('Stores', 'Find your store', '') + '<div class="dg-loading">Loading the stores...</div>'; return; }
+    if (!viewStores.boot) { viewStores.boot = true; var q0 = new URLSearchParams(location.search).get('q'); if (q0) { setTimeout(function () { storeSearch(q0); }, 0); } else setPref('q', ''); }
+    var hub = pref('hub', 'all'), ch = pref('chain', 'all'), q = pref('q', ''), list = filtered();
+    var C = chains(), H = chapters(), chainName = C.length === 1 ? C[0].name : '', sN = function (n) { return n + ' ' + (chainName ? chainName + ' ' : '') + (n === 1 ? 'store' : 'stores'); };
+    var where = hub !== 'all' ? ' in ' + hubName(hub) : '', mappedN = list.filter(mapped).length, freeS = list.filter(function (v) { return v.free; })[0];
+    var withD = HERE ? list.filter(function (v) { return v.lat != null; }) : [], within = HERE ? withD.filter(function (v) { return km(HERE, v) * 0.621371 <= NEAR_MI; }) : [];
+    var ans, endLine;
+    if (HERE) {
+      var near = HERE.label === 'you' || !HERE.label ? 'you' : HERE.label, s0 = withD[0];
+      ans = !s0 ? 'No stores in the Guide near ' + esc(near) + ' yet.'
+        : within.length ? 'Near ' + esc(near) + ': <b>' + esc(s0.name) + '</b> is the closest, ' + esc(miles(km(HERE, s0))) + ' away.' + (within.length > 1 ? ' <b>' + (within.length - 1) + ' more ' + (within.length === 2 ? 'store' : 'stores') + '</b> within ' + NEAR_MI + ' miles.' : ' No other store within ' + NEAR_MI + ' miles yet.')
+        : 'No stores in the Guide within ' + NEAR_MI + ' miles of ' + esc(near) + ' yet. The closest is <b>' + esc(s0.name) + '</b>, ' + esc(miles(km(HERE, s0))) + ' away.';
+      endLine = 'That is every store in the Guide, nearest first.';
+    } else if (q) {
+      ans = !list.length ? 'Nothing in the Guide matches &ldquo;' + esc(q) + '&rdquo;' + esc(where) + ' yet.'
+        : list.length === 1 ? '<b>' + esc(list[0].name) + '</b> matches &ldquo;' + esc(q) + '&rdquo;.'
+        : '<b>' + sN(list.length) + '</b>' + esc(where) + ' match &ldquo;' + esc(q) + '&rdquo;.';
+      endLine = 'That is everything that matches “' + q + '”' + where + ' so far.';
+    } else {
+      ans = !list.length ? 'No stores' + esc(where) + ' yet.'
+        : '<b>' + sN(list.length) + '</b>' + esc(where) + (list.length === 1 ? ' is' : ' are') + ' in the Guide so far' +
+          (mappedN ? ', ' + mappedN + ' with their aisles mapped by members.' : '. No aisles mapped by a member yet: the first to map one earns the most.') +
+          (freeS ? ' <b>' + esc(freeS.name) + '</b> is free to try.' : '');
+      endLine = 'That is every store' + where + ' in the Guide so far.';
+    }
+    if (HERE || q) ans += ' <a href="#" class="fd-clear" id="sgClear">Show everything</a>';
+    var chip = function (attr, val, label, on) { return '<button type="button" ' + attr + '="' + esc(val) + '" aria-pressed="' + !!on + '">' + esc(label) + '</button>'; };
+    var chips = H.length > 1 ? '<div class="fd-chips" role="group" aria-label="Show"><span>Show</span>' + chip('data-hub', 'all', 'Everywhere', hub === 'all') +
+      H.map(function (h) { return chip('data-hub', h, hubName(h), hub === h); }).join('') + '</div>' : '';
+    if (C.length > 1) chips += '<div class="fd-chips" role="group" aria-label="Supermarket"><span>Supermarket</span>' + chip('data-chain', 'all', 'Every supermarket', ch === 'all') +
+      C.map(function (c) { return chip('data-chain', c.slug, c.name, ch === c.slug); }).join('') + '</div>';
+    var shown = list.slice(0, SHOWN), more = list.length - shown.length;
+    main.innerHTML = head('Stores', 'Find your store', 'Search your city, a ZIP or near you. Each store lists its Vegan sections and the aisle our members found them in.') +
+      '<form class="fd-search" id="sgFind" role="search" aria-label="Find your store"><div class="fd-q"><svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="7" fill="none" stroke="#1a1a1a" stroke-width="3"/><path d="M16 16l6 6" stroke="#1a1a1a" stroke-width="3" stroke-linecap="round"/></svg>' +
+        '<input id="sgQ" type="text" placeholder="City, ZIP or store" aria-label="City, ZIP or store" autocomplete="off" data-dictate="off" value="' + esc(q || (HERE && HERE.label && HERE.label !== 'you' ? HERE.label : '')) + '"></div>' +
+        '<button type="button" class="dg-btn fd-near" id="sgNear">&#9737; Near me</button><button type="submit" class="dg-btn fd-go">Search</button></form>' +
+      '<p class="fd-answer" aria-live="polite">' + ans + '</p>' + chips +
+      (list.length ? '<div class="sg-stores">' + shown.map(storeCard).join('') + '</div>' +
+        (more > 0 ? '<div class="dg-btns sg-morebar"><button type="button" class="dg-btn dg-ghost" id="sgMore">Show ' + Math.min(more, 48) + ' more</button><span>' + shown.length + ' of ' + list.length + ' shown</span></div>' : '<p class="fd-end">' + esc(endLine) + '</p>')
+        : '<div class="fd-empty"><span class="fd-ico" aria-hidden="true">+</span><div><b>No stores here yet.</b><p>Know a supermarket with Vegan sections that is not in the Guide? Tell us, and members map its aisles.</p></div><div class="fd-btns"><a class="dg-btn" href="#/tracker">Help keep it right</a></div></div>');
+    var on = function (id, ev, fn) { var el = document.getElementById(id); if (el) el.addEventListener(ev, fn); };
+    on('sgFind', 'submit', function (e) { e.preventDefault(); var v = document.getElementById('sgQ').value.trim(); if (!v) { document.getElementById('sgQ').focus(); return; } storeSearch(v); });
+    on('sgNear', 'click', function () { storeSearch('near'); });
+    on('sgClear', 'click', function (e) { e.preventDefault(); storeSearch(''); });
+    on('sgMore', 'click', function () { SHOWN += 48; route(); });
+    [].forEach.call(main.querySelectorAll('[data-hub]'), function (b) { b.addEventListener('click', function () { setPref('hub', b.getAttribute('data-hub')); SHOWN = 24; route(); }); });
+    [].forEach.call(main.querySelectorAll('[data-chain]'), function (b) { b.addEventListener('click', function () { setPref('chain', b.getAttribute('data-chain')); SHOWN = 24; route(); }); });
+  }
+
+  // A long list of products or brands on a store's category (2026-11-17): the first PBOX_N on the page, then "Show N more" opens the
+  // rest in place, so the page scrolls as a page (it was a box that scrolled inside itself, .sg-pbox with a max height).
+  var PBOX_N = 12;
+  function pbox(tiles, what) {
+    var more = tiles.length - PBOX_N;
+    return '<div class="sg-pgrid sg-pbox">' + tiles.map(function (t, i) { return i < PBOX_N ? t : t.replace(/^<(\w+)/, '<$1 hidden data-pmore-h'); }).join('') + '</div>' +
+      (more > 0 ? '<div class="dg-btns sg-morebar"><button type="button" class="dg-btn dg-ghost" data-pmore>Show ' + more + ' more ' + esc(what) + '</button></div>' : '');
+  }
+  main.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-pmore]'); if (!b) return;
+    var bar = b.closest('.sg-morebar'), grid = bar && bar.previousElementSibling;
+    if (grid) [].forEach.call(grid.querySelectorAll('[data-pmore-h]'), function (t) { t.hidden = false; t.removeAttribute('data-pmore-h'); });
+    if (bar) bar.remove();
+  });
 
   // ---------- one store ----------
   function freshTag(it) {
@@ -444,9 +510,9 @@
         var aisles = '<h3 class="sg-ph">Where it is at ' + esc(v.name) + '</h3><div class="sg-aminis">' + aisleItems.map(function (it) { return aisleMini(v, it); }).join('') + '</div>';
         var lists = '';
         if (R.products.length) lists += '<h3 class="sg-ph sg-ph2">Products <i>' + P.length + '</i></h3>' +
-          (P.length ? '<div class="sg-pgrid sg-pbox">' + P.map(function (r) { return prodTile(r, has[r.p.id], chainName); }).join('') + '</div>' : '<p class="dg-empty">No products match. Try another filter.</p>');
+          (P.length ? pbox(P.map(function (r) { return prodTile(r, has[r.p.id], chainName); }), 'products') : '<p class="dg-empty">No products match. Try another filter.</p>');
         if (R.brands.length) lists += '<h3 class="sg-ph sg-ph2">Brands <i>' + B.length + '</i></h3>' +
-          (B.length ? '<div class="sg-pgrid sg-pbox">' + B.map(brandTile).join('') + '</div>' : '<p class="dg-empty">No brands match. Try another filter.</p>');
+          (B.length ? pbox(B.map(brandTile), 'brands') : '<p class="dg-empty">No brands match. Try another filter.</p>');
         if (!R.products.length && !R.brands.length) lists += ck === 'produce'
           ? '<h3 class="sg-ph">What to buy and why</h3><div class="sg-tips">' + PRODUCE.map(function (p) { return '<div class="sg-tip"><span class="sg-tip-i">' + ICON.leaf + '</span><div><b>' + esc(p[0]) + '</b><p>' + esc(p[1]) + '</p></div></div>'; }).join('') + '</div>'
           : '<p class="dg-empty">We have no products listed here yet. Seen one in this store? Tap Update on its type above, add a photo, and it goes on this page once the team checks it.</p>';
@@ -1159,7 +1225,7 @@
       '.sg-addit{border:1px solid var(--line);border-radius:8px;padding:16px;margin:20px 0 8px;background:#fafbfa}.sg-addit input{padding:10px 12px;border:1.5px solid var(--line);border-radius:6px;font:inherit;font-size:15px;box-sizing:border-box}' +
       '.sg-ptile{display:flex;gap:12px;align-items:center;padding:10px;height:94px;box-sizing:border-box;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:#fff;color:inherit;text-decoration:none}.sg-ptile:hover{border-color:var(--vb-go-hover,#1f5f22)}' +
       '.sg-ptile .sg-thumb{width:56px;height:56px;background:#fff;border:1px solid var(--line)}.sg-ptile .sg-thumb img{object-fit:contain}.sg-pb{min-width:0;display:flex;flex-direction:column;gap:2px}.sg-pb b{font-size:13.5px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.sg-pb em{font-style:normal;font-size:12px;color:var(--ink75);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.sg-pb .dg-tag{align-self:flex-start}.sg-pmeta{display:flex;align-items:center;gap:6px;min-width:0;white-space:nowrap;overflow:hidden}.sg-mac{font-size:11.5px;font-weight:800;color:var(--vb-accent-ink,#1f5f22)}.sg-pmeta .dg-tag{flex:0 1 auto;overflow:hidden;text-overflow:ellipsis}' +
-      '.sg-pbox{max-height:304px;overflow-y:auto;overscroll-behavior:contain;padding:1px 6px 1px 1px;align-content:start}.sg-ph2 i{font-style:normal;font-weight:700;font-size:12px;color:var(--ink75);margin-left:4px}' +
+      '.sg-pbox{align-content:start}.sg-pbox>[hidden]{display:none!important}.sg-ph2 i{font-style:normal;font-weight:700;font-size:12px;color:var(--ink75);margin-left:4px}' +
       '.sg-pfilter{display:flex;flex-direction:column;gap:10px;margin:4px 0 6px}.sg-psearch input{width:100%;box-sizing:border-box;height:42px;padding:0 14px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:14px;background:#fff}' +
       '.sg-chips{display:flex;flex-wrap:wrap;gap:8px}.sg-chip{font:inherit;font-size:13px;font-weight:700;padding:7px 12px;border:1px solid var(--line);border-radius:6px;background:#fff;color:inherit;cursor:pointer}.sg-chip i{font-style:normal;font-weight:600;color:var(--ink75);margin-left:2px}' +
       '.sg-chip.on{background:var(--vb-go,#2D5C27);border-color:var(--vb-go,#2D5C27);color:#fff}.sg-chip.on i{color:#e8f5e9}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}' +
@@ -1181,7 +1247,7 @@
       '@media(max-width:480px){.sg-thumb{width:56px;height:56px}}' +
       '.sg-tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) auto;gap:10px;align-items:end;margin:0 0 10px}' +
       '.sg-tools .sa-city{margin:0;display:flex;flex-direction:column;align-items:stretch;gap:6px;min-width:0}.sg-tools .sa-city select{min-width:0;width:100%}.sg-q input{width:100%;height:42px;border:1px solid rgba(0,0,0,.18);border-radius:6px;padding:0 12px;font:500 14px Montserrat,sans-serif}' +
-      '.sg-count{font-size:13px;color:rgba(26,26,26,.66);margin:6px 0 10px}' +
+      '.sg-count{font-size:13px;color:rgba(26,26,26,.66);margin:6px 0 10px}.sg-morebar{align-items:center;gap:12px;margin-top:14px}.sg-morebar span{font-size:13px;font-weight:700;color:rgba(26,26,26,.66)}' +
       '.sg-stores{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:10px}' +
       '.sg-store{display:flex;gap:12px;align-items:flex-start;border:1px solid rgba(0,0,0,.1);border-radius:10px;padding:12px;text-decoration:none;color:inherit;background:#fff;position:relative}' +
       '.sg-store:hover{border-color:var(--g,#1f5f22)}.sg-store b{display:block;font-size:14.5px;line-height:1.25;margin-bottom:3px}' +
