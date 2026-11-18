@@ -14,7 +14,7 @@
   <!-- Directory Reach as a Guide (Sean, 2026-11-18: "apply the new guide style to this... so we can see there's a navigation and all that").
        The locked Guide frame, option C (canon canon-ve-guide-templates v2, reference /mocks/guide-panel2/c/), Handbook body: the frame's own
        markup (gf-bar with every part as a tab, gf-ch head with the Guide card and one orange action, dg-srows rows, gf-next) styled only by
-       /public/ve-guide-frame.css. Liz is the Guide (the bridge to businesses). Parts are #/<part> in the address. Pictures are cropped
+       /public/ve-guide-frame.css. Kai is the Guide (the Creator Guide; Sean, 2026-11-18: "The guide should be Kai because Kai is for content creators, and Liz is not"). Parts are #/<part> in the address. Pictures are cropped
        screenshots of the real pages and console. Page styles below are content only. -->
   <style>
     @font-face { font-family: 'Montserrat'; font-style: normal; font-weight: 400 900; font-display: swap; src: url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2'); }
@@ -32,7 +32,7 @@
     @media (max-width: 900px) { .dr-two { grid-template-columns: minmax(0, 1fr); } }
   </style>
 </head>
-<body class="ve-gf gf-hb gf-c" data-gf-for="How we reach every listing by December 1, and 250 members by December 31" data-gf-who="Liz, the Explorer">
+<body class="ve-gf gf-hb gf-c" data-gf-for="How we reach every listing by December 1, and 250 members by December 31" data-gf-who="Kai, Creator Guide">
 <script src="/public/nav.js"></script>
 
 <header class="gf-bar" id="gfBar" data-k-section="guides">
@@ -100,7 +100,7 @@
         <div><em>Step 3</em><b>Their own link</b>/go/r-their-name, tracked, to their group's page.</div>
         <div class="you"><em>Step 4</em><b>See your page</b>Their listing, Sean's words, Claim it free.</div>
         <div class="you"><em>Step 5</em><b>The survey</b>Short and free: now they are a member.</div>
-        <div class="you"><em>Step 6</em><b>Liz's Welcome</b>I walk them through the site, then their dashboard.</div>
+        <div class="you"><em>Step 6</em><b>Liz's Welcome</b>Liz walks them through the site, then their dashboard.</div>
       </div>
       <p class="dr-note">Orange is the person's part.</p>
     </section>
@@ -236,11 +236,11 @@
     var k = p.getAttribute('data-part');
     return '<a href="#/' + (k === 'overview' ? '' : k) + '" data-gf-part="' + k + '">' + esc(p.getAttribute('data-title')) + '</a>';
   }).join('');
-  // The Guide card on every part: Liz's square picture, who she is, the part's line.
-  var pic = (window.VEGuideArt && VEGuideArt('liz', 'square')) || '/public/brand-kit/avatars/liz-v2.jpg';
+  // The Guide card on every part: Kai's square picture, who she is, the part's line.
+  var pic = (window.VEGuideArt && VEGuideArt('kai', 'square')) || '/public/brand-kit/avatars/kai-v2.jpg';
   [].forEach.call(document.querySelectorAll('.gf-guide'), function (g) {
-    g.innerHTML = '<span class="gf-gpic" role="img" aria-label="Liz, your Guide" style="background-image:url(\'' + pic + '\')"></span>' +
-      '<p><b class="gf-who">Liz, the Explorer</b><span class="gf-say">' + esc(g.getAttribute('data-say')) + '</span></p>';
+    g.innerHTML = '<span class="gf-gpic" role="img" aria-label="Kai, your Guide" style="background-image:url(\'' + pic + '\')"></span>' +
+      '<p><b class="gf-who">Kai, Creator Guide</b><span class="gf-say">' + esc(g.getAttribute('data-say')) + '</span></p>';
   });
   // "Next part" at the bottom of each part, a plain link (Handbook rule: no numbered pager).
   parts.forEach(function (p, i) {
