@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en" data-kit-parent="business-dashboard">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>KJ's dashboard: mock — Vegans Explore</title>
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Mock of KJ's one dashboard as community manager for @vegansexplore: the weekly brief, conversations, asks, Ask Logan, briefs, her record and her kit. Illustrative, not live.">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preload" href="/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2" as="font" type="font/woff2" crossorigin><style>/* Montserrat, self-hosted (site health 2026-11-11): the same faces Google served, without the blocking stylesheet */@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:400;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:600;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:700;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:800;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WRhyzbi.woff2) format('woff2');unicode-range:U+0460-052F,U+1C80-1C8A,U+20B4,U+2DE0-2DFF,U+A640-A69F,U+FE2E-FE2F}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459W1hyzbi.woff2) format('woff2');unicode-range:U+0301,U+0400-045F,U+0490-0491,U+04B0-04B1,U+2116}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459WZhyzbi.woff2) format('woff2');unicode-range:U+0102-0103,U+0110-0111,U+0128-0129,U+0168-0169,U+01A0-01A1,U+01AF-01B0,U+0300-0301,U+0303-0304,U+0308-0309,U+0323,U+0329,U+1EA0-1EF9,U+20AB}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wdhyzbi.woff2) format('woff2');unicode-range:U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20C4,U+2113,U+2C60-2C7F,U+A720-A7FF}@font-face{font-family:'Montserrat';font-style:normal;font-weight:900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}</style>
+  <link rel="stylesheet" href="/public/ve-kit.css">
+  <!-- KJ's dashboard, MOCK (Sean, 2026-11-18: "when she logs in, it's her dashboard. It should be tailored to this experience. And she should
+       have to only go to her dashboard to get all this information... you're going to be that attentive ear and available on her dashboard").
+       Parent: business-dashboard.html (/dashboard/business), its styles copied verbatim below: the dark green who bar with the rounded-square
+       picture, the parts as one sliding row (?tab= in the address), rows with one button and a status tag, one orange action per view.
+       Kai is the Guide. Every word is in the COPY object, marked Draft; illustrative rows are stamped Sample. Not live, nothing saves. -->
+  <style>
+    /* On the brand kit (Sean, 2026-11-12: restyle before going on; canon canon-ve-look-color-block, canon-ve-brand-kit-foundations,
+       reference /mocks/brand-kit). Tokens copied from docs/brand-kit/README.md. The who bar is the dark green band with the stripe under
+       it; cards and lists wear the ink outline and the solid offset shadow; headings carry the marker; one orange action button per view
+       (.btn-go), every other button white with an ink outline. */
+    :root{--dk:#2D5C27;--md:#3A9B3E;--br:#22C55E;--tint:#E8F5E9;--or:#F69820;--orh:#ffad40;--peach:#FFEBD1;--pink:#FF9EC4;--pinkt:#FFE3EE;--pinkd:#C2185B;
+      --ink:#1a1a1a;--mute:#5c5c5c;--line:#e7e7e7;--r:6px;--sh:6px;
+      --stripe:linear-gradient(90deg,#2D5C27 0 25%,#F69820 25% 37.5%,#FF9EC4 37.5% 50%,#FFEBD1 50% 62.5%,#22C55E 62.5% 75%,#E8F5E9 75% 87.5%,#3A9B3E 87.5% 100%);}
+    @media (max-width:600px){:root{--sh:5px;}}
+    *,*::before,*::after{box-sizing:border-box;}
+    body{margin:0;background:#fff;color:var(--ink);font-family:'Montserrat',sans-serif;line-height:1.45;-webkit-font-smoothing:antialiased;}
+    :focus-visible{outline:3px solid var(--or);outline-offset:2px;}
+    main{max-width:none;margin:0;padding:32px 40px 80px;}
+    @media (max-width:600px){main{padding:22px 16px 56px;}}
+    [hidden]{display:none !important;}
+    .k{font-size:11px;font-weight:900;letter-spacing:.18em;text-transform:uppercase;color:var(--dk);margin:0;}
+    h1{font-size:clamp(28px,3.2vw,44px);font-weight:900;line-height:1.04;letter-spacing:-.025em;margin:4px 0 8px;}
+    h2{font-size:18px;font-weight:900;letter-spacing:-.01em;margin:0 0 10px;}
+    .lede{font-size:15px;font-weight:600;line-height:1.55;color:var(--mute);margin:0 0 18px;max-width:860px;}
+    .hl{padding:0 .08em;border-radius:4px;-webkit-box-decoration-break:clone;box-decoration-break:clone;}
+    .hl.g{background:linear-gradient(transparent 56%,var(--br) 56%,var(--br) 92%,transparent 92%);}
+    .hl.o{background:linear-gradient(transparent 56%,var(--or) 56%,var(--or) 92%,transparent 92%);}
+    .hl.p{background:linear-gradient(transparent 56%,var(--pink) 56%,var(--pink) 92%,transparent 92%);}
+    .card{--c:var(--dk);background:#fff;border:2px solid var(--ink);border-radius:14px;padding:20px 22px;margin:0 var(--sh) 22px 0;box-shadow:var(--sh) var(--sh) 0 var(--c);}
+    .card.block{border:0;box-shadow:none;background:var(--c);margin-right:0;}
+    .card.block .lede{color:var(--ink);}
+    .preview{background:var(--peach);border-radius:var(--r);padding:10px 14px;font-size:13.5px;font-weight:700;margin:0 0 18px;}
+    /* Buttons (Foundations 9): white with an ink outline; the one action of the view is orange; on the dark band, white and outlined white. */
+    .btn{font:inherit;font-size:12px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:10px 16px;min-height:44px;border-radius:var(--r);cursor:pointer;border:2px solid var(--ink);background:#fff;color:var(--ink);text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap;}
+    .btn:hover{background:var(--tint);}
+    .btn-go{background:var(--or);border-color:var(--or);}
+    /* The 11 Days of Giving prize form (Sean, 2026-11-15): fields in the dashboard's own select look, 6px corners. */
+    .gv-f{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(260px,100%),1fr));gap:14px 18px;margin:6px 0 14px;}
+    .gv-f label{display:block;font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--dk);margin:0 0 6px;}
+    .gv-f input,.gv-f textarea{font:inherit;font-size:15px;font-weight:600;color:var(--ink);border:3px solid var(--ink);border-radius:6px;padding:10px 14px;min-height:50px;width:100%;box-sizing:border-box;background:#fff;}
+    .gv-f textarea{min-height:90px;resize:vertical;}
+    /* Holiday hours: one row per day, the day and its hours, like the weekly hours. */
+    .hh-row{display:grid;grid-template-columns:minmax(0,240px) minmax(0,1fr) auto;gap:10px;align-items:center;margin:0 0 10px;}
+    .hh-row select,.hh-row input{font:inherit;font-size:15px;font-weight:600;color:var(--ink);border:3px solid var(--ink);border-radius:6px;padding:10px 14px;min-height:50px;width:100%;box-sizing:border-box;background:#fff;}
+    .hh-row select{appearance:none;-webkit-appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%231a1a1a' stroke-width='3'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 16px center;}
+    @media(max-width:560px){.hh-row{grid-template-columns:1fr auto;}.hh-row select{grid-column:1/-1;}}
+    .gv-f .wide{grid-column:1/-1;}
+    .gv-f small{display:block;margin-top:5px;font-size:12.5px;font-weight:600;color:#555;}
+    .gv-ph{width:64px;height:64px;border-radius:10px;border:1px solid #ddd;background:#f6f6f6 center/cover no-repeat;flex:0 0 64px;}
+    .btn-go:hover{background:var(--orh);border-color:var(--orh);}
+    .btn-sm{font-size:11px;padding:7px 12px;min-height:38px;}
+    .btn-wh{background:#fff;color:var(--dk);border-color:#fff;}
+    .btn-wh:hover{background:var(--tint);}
+    .btn-gh{background:transparent;color:#fff;border-color:#fff;}
+    .btn-gh:hover{background:rgba(255,255,255,.12);}
+    .gate{max-width:520px;margin:40px auto;background:#fff;border:2px solid var(--ink);border-radius:14px;padding:32px;text-align:center;box-shadow:var(--sh) var(--sh) 0 var(--dk);font-weight:600;}
+    .soon{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;background:#fff;color:var(--ink);border-radius:var(--r);padding:5px 8px;vertical-align:middle;margin-left:6px;}
+    .soon::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--or);}
+    /* The who bar (parent creator.html: the picture top left a square with rounded corners, never a circle; Sean, 2026-11-10), now the
+       dark green band (Foundations: brand green, white type), the stripe under it, edge to edge. */
+    /* the stripe sits under the band with a thin white gap, as the live page bar does it (ve-look.css .vcb-bar): its first band is brand green too */
+    .band{position:relative;background:#fff linear-gradient(var(--dk),var(--dk)) 0 0/100% calc(100% - 11px) no-repeat;color:#fff;margin:-32px -40px 26px;padding:30px 40px 41px;}
+    .band::after{content:"";position:absolute;left:0;right:0;bottom:0;height:8px;background:var(--stripe);}
+    @media (max-width:600px){.band{margin:-22px -16px 22px;padding:22px 16px 35px;}}
+    .who{position:relative;display:flex;gap:18px;align-items:center;}
+    .av{width:84px;height:84px;border-radius:14px;background:#fff center/contain no-repeat;flex:none;border:3px solid #fff;display:grid;place-items:center;font-weight:900;font-size:32px;color:var(--dk);}
+    .who a:has(.av){display:block;border-radius:14px;}
+    .band .k{color:var(--br);}
+    .who h1{margin:4px 0 6px;color:#fff;}
+    .who p{margin:0;font-size:14px;font-weight:600;color:#d9ead7;}
+    .who-acts{margin-left:auto;display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;}
+    .crt{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;background:var(--peach);color:#8a4d00;border-radius:var(--r);padding:5px 8px;margin-left:10px;vertical-align:middle;}
+    .crt::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--or);}
+    .who-acts svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;}
+    @media (max-width:760px){.who{flex-wrap:wrap}.who-acts{margin-left:0;width:100%;justify-content:flex-start}.av{width:64px;height:64px;font-size:24px}}
+    /* The parts: one dropdown at every width (more than five; Sean 2026-11-09, the BCPS rule). The main picker: 3px ink outline, mint,
+       our own chevron 16px from the edge (canon rule 15). */
+    .parts{display:flex;gap:10px 14px;align-items:center;flex-wrap:wrap;margin:0 0 22px;}
+    .parts label{font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--dk);}
+    select{font:inherit;font-size:15px;font-weight:800;color:var(--ink);border:3px solid var(--ink);border-radius:var(--r);padding:10px 14px;min-height:50px;-webkit-appearance:none;-moz-appearance:none;appearance:none;padding-right:48px;cursor:pointer;min-width:min(320px,100%);
+      background:var(--tint) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%231a1a1a' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center/14px 9px;}
+    select::-ms-expand{display:none;}
+    @media (max-width:600px){.parts select{width:100%}}
+    .crumb{font-size:13px;font-weight:700;color:var(--mute);margin:0 0 10px;}
+    .crumb a{color:var(--dk);text-decoration:underline;text-underline-offset:3px;}
+    /* Rows: the same fields, one button in the same place, status a tag in plain words with a dot (canon-sean-interface-defaults). */
+    .rows{--c:var(--dk);border:2px solid var(--ink);border-radius:14px;background:#fff;overflow:hidden;margin:0 var(--sh) 26px 0;box-shadow:var(--sh) var(--sh) 0 var(--c);}
+    .rows.need{--c:var(--or);}
+    .rows.new{--c:var(--pink);}
+    .r{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:14px;align-items:center;padding:14px 18px;border-top:1px solid var(--line);}
+    .r:first-child{border-top:0;}
+    .r[data-more]{display:none;}
+    .rows.open .r[data-more]{display:grid;}
+    .r b{display:block;font-size:15.5px;font-weight:900;}
+    .r p{margin:2px 0 0;font-size:13.5px;font-weight:600;line-height:1.5;color:var(--mute);display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+    .r .btn{min-width:150px;}
+    .btn-on{background:var(--dk);border-color:var(--dk);color:#fff;}
+    .btn-on:hover{background:var(--dk);}
+    .msg{font-size:13.5px;font-weight:800;color:var(--dk);min-height:20px;margin:0;}
+    .more{display:block;width:100%;font:inherit;font-size:12px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;background:#fff;color:var(--ink);border:0;border-top:1px solid var(--line);padding:13px 18px;cursor:pointer;text-align:left;}
+    .more:hover{background:var(--tint);}
+    /* phones: the words take the full width, the tag and the button share the line under them */
+    @media (max-width:600px){.r{grid-template-columns:minmax(0,1fr) auto;gap:10px 12px;padding:14px}.r>div{grid-column:1 / -1}.r .tag{grid-column:1;justify-self:start;grid-row:2}.r .btn{grid-column:2;grid-row:2;min-width:0}}
+    .tag{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;padding:5px 8px;border-radius:var(--r);white-space:nowrap;}
+    .tag::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.8;flex:none;}
+    .t-need{background:var(--peach);color:#8a4d00}.t-new{background:var(--pinkt);color:var(--pinkd)}.t-flag{background:#fde2e0;color:#a3221b}.t-tip{background:var(--tint);color:var(--dk)}
+    .sec{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin:30px 0 14px;}
+    @media (max-width:600px){.sec select{width:100%;margin-left:0 !important}}
+    .sec h2{margin:0;font-size:clamp(24px,2.4vw,32px);line-height:1.04;letter-spacing:-.025em;}
+    .sec .count{font-size:13px;font-weight:900;background:var(--or);color:var(--ink);border-radius:var(--r);padding:3px 9px;}
+    .totals{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;margin:0 var(--sh) 22px 0;}
+    @media (max-width:800px){.totals{grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;}}
+    .tot{background:#fff;border:2px solid var(--ink);border-radius:14px;padding:14px 16px;box-shadow:var(--sh) var(--sh) 0 var(--dk);}
+    .tot b{display:block;font-size:40px;font-weight:900;line-height:1;letter-spacing:-.03em;}
+    .tot span{display:block;font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-top:6px;}
+    .tot em{display:block;font-style:normal;font-size:12px;font-weight:800;margin-top:6px;color:var(--mute);}
+    .tot em.up{color:var(--dk)}.tot em.down{color:#a3221b}
+    @media (max-width:600px){.tot b{font-size:32px}}
+    .empty{font-size:14px;font-weight:600;color:var(--mute);margin:0 0 10px;}
+    .pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr));gap:18px;margin:0 var(--sh) 0 0;}
+    .pick a{display:flex;gap:12px;align-items:center;background:#fff;border:2px solid var(--ink);border-radius:14px;padding:12px;text-decoration:none;color:var(--ink);box-shadow:var(--sh) var(--sh) 0 var(--dk);transition:transform .15s,box-shadow .15s;}
+    .pick a:hover{transform:translate(-2px,-2px);box-shadow:calc(var(--sh) + 2px) calc(var(--sh) + 2px) 0 var(--dk);}
+    .pick i{width:52px;height:52px;border-radius:12px;background:#fff center/contain no-repeat;border:2px solid var(--ink);flex:none;display:grid;place-items:center;font-style:normal;font-weight:900;color:var(--dk);}
+    .pick b{font-weight:900;}
+    .pick small{display:block;color:var(--mute);font-size:12.5px;font-weight:600;}
+    .empty a{color:var(--dk);font-weight:800;text-underline-offset:3px;}
+    .search{font:inherit;font-size:14px;font-weight:600;padding:9px 11px;min-height:46px;border:2px solid var(--ink);border-radius:var(--r);width:100%;max-width:420px;}
+    /* The hosted views (public/ve-partner-dashboard.js) on the kit. Scoped to .bd-host so the listing page's own ?tab=brand dashboard is
+       untouched; the higher specificity wins over the module's injected CSS. Lists never scroll inside themselves (Sean, 2026-11-12). */
+    .bd-host .vpd-nav{gap:8px;margin:0 0 22px;}
+    .bd-host .vpd-nav a{background:#fff;color:var(--dk);border:2px solid var(--dk);font-weight:800;padding:7px 12px;}
+    .bd-host .vpd-nav a.on{background:var(--dk);color:#fff;}
+    .bd-host .vpd-head h3{font-size:clamp(24px,2.4vw,32px);letter-spacing:-.025em;line-height:1.04;}
+    .bd-host .vpd-head span,.bd-host .vpd-empty{color:var(--mute);font-weight:600;}
+    .bd-host .vpd-crumb a{color:var(--dk);}
+    .bd-host .vpd h4{font-size:11px;font-weight:900;letter-spacing:.16em;color:var(--dk);margin:26px 0 12px;}
+    .bd-host .vpd-tag{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:900;letter-spacing:.1em;padding:5px 8px;background:var(--tint);color:var(--dk);align-self:flex-start;}
+    .bd-host .vpd-tag::before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor;opacity:.8;flex:none;}
+    .bd-host .vpd-tag.warn{background:var(--peach);color:#8a4d00}.bd-host .vpd-tag.off{background:#efefef;color:#555}
+    .bd-host .vpd-tiles{gap:18px;margin:0 var(--sh) 22px 0;}
+    .bd-host .vpd-tiles>div,.bd-host .vpd-card,.bd-host .vpd-list,.bd-host .vpd-hc,.bd-host .vpd-hc-strip,.bd-host .vpd-table-wrap{border:2px solid var(--ink);border-radius:14px;box-shadow:var(--sh) var(--sh) 0 var(--dk);}
+    .bd-host .vpd-list,.bd-host .vpd-hc,.bd-host .vpd-hc-strip,.bd-host .vpd-table-wrap{margin-right:var(--sh);margin-bottom:24px;}
+    .bd-host .vpd-tiles b{font-size:40px;letter-spacing:-.03em;line-height:1;}
+    .bd-host .vpd-tiles span{font-size:10px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);margin-top:6px;}
+    .bd-host .vpd-tiles em.up{color:var(--dk)}.bd-host .vpd-tiles em.down{color:#a3221b}
+    .bd-host .vpd-grid{gap:18px;margin:0 var(--sh) 24px 0;}
+    .bd-host .vpd-card{padding:16px 18px;gap:8px;}
+    .bd-host .vpd-card b{font-weight:900;}
+    .bd-host .vpd-card p{color:var(--mute);font-weight:600;}
+    .bd-host .vpd-card.done{background:var(--tint);}
+    .bd-host .vpd-card.done b::before{color:var(--dk);}
+    .bd-host .vpd-btn{background:#fff;color:var(--ink);border:2px solid var(--ink);font-weight:900;letter-spacing:.1em;}
+    .bd-host .vpd-btn:hover{background:var(--tint);}
+    .bd-host .vpd-btn.o{background:#fff;color:var(--ink);border:2px solid var(--ink);}
+    .bd-host [data-vpd-int].o{background:var(--dk);color:#fff;border-color:var(--dk);}
+    .bd-host .vpd-bar .vpd-btn:not(.o),.bd-host .vpd-join .vpd-btn{background:var(--or);color:var(--ink);border-color:var(--or);}
+    .bd-host .vpd-range button{border:2px solid var(--dk);color:var(--dk);font-weight:800;}
+    .bd-host .vpd-range button.on{background:var(--dk);border-color:var(--dk);color:#fff;}
+    .bd-host .vpd-chart i{background:var(--md);}
+    .bd-host .vpd-rows div{border-bottom:1px solid var(--line);font-weight:600;}
+    .bd-host .vpd-table-wrap,.bd-host .vpd-scroll{max-height:none;overflow:visible;}
+    .bd-host .vpd-table-wrap{overflow-x:auto;}
+    .bd-host .vpd-table th{background:var(--tint);color:var(--ink);font-weight:900;}
+    .bd-host .vpd-table td{border-top:1px solid var(--line);}
+    .bd-host .vpd-ladder div{border:2px solid var(--ink);}
+    .bd-host .vpd-ladder .past{background:var(--tint);}
+    .bd-host .vpd-ladder .on{background:var(--dk);border-color:var(--dk);}
+    .bd-host .vpd-prog{background:var(--line);}
+    .bd-host .vpd-prog i{background:var(--br);}
+    .bd-host .vpd-row{border-top:1px solid var(--line);}
+    .bd-host .vpd-row b{font-weight:900;}
+    .bd-host .vpd-cat{background:var(--tint);color:var(--dk);border-top:1px solid var(--line);}
+    .bd-host .vpd-f input,.bd-host .vpd-f textarea,.bd-host .vpd-f select,.bd-host .vpd-form input,.bd-host .vpd-form textarea{border:2px solid var(--ink);}
+    .bd-host .vpd-checks input{accent-color:var(--dk);}
+    .bd-host .vpd-msg{color:var(--dk);}
+    .bd-host .vpd-join{background:var(--dk);border-radius:14px;}
+    .bd-host .vpd-join p{color:#d9ead7;}
+    .bd-host .vpd-hc-ic.pass{background:var(--dk);}
+    .bd-host .vpd-hc-area{background:var(--tint);color:var(--dk);}
+    .bd-host .vpd-hc-next{background:var(--peach);}
+    .bd-host .vpd-hc-sw button{border:2px solid var(--dk);color:var(--dk);}
+    .bd-host .vpd-hc-sw button.on{background:var(--dk);color:#fff;border-color:var(--dk);}
+    /* Older names the Getting started and Your post code still uses, mapped onto the kit. */
+    :root{--g:var(--dk);--gl:var(--tint);--ink75:var(--mute);--ink55:var(--mute);}
+    .btn.go{background:var(--or);border-color:var(--or);color:var(--ink);}
+    .btn.go:hover{background:var(--orh);border-color:var(--orh);}
+    .btn.ok{background:var(--tint);color:var(--dk);border-color:var(--dk);}
+    /* The parts as one sliding row (Sean, 2026-11-12: "I've grown to be okay with the sliding feature... they can see the options versus
+       having to do the drop down"), copied from the listing page's .listing-tabs; on the kit the current part is underlined in brand green. */
+    .ptabs{display:flex;overflow-x:auto;scrollbar-width:none;gap:4px;border-bottom:2px solid var(--line);margin:0 0 22px;}
+    .ptabs::-webkit-scrollbar{display:none;}
+    .ptabs a{flex:none;display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:800;padding:11px 14px;color:var(--mute);border-bottom:4px solid transparent;margin-bottom:-2px;white-space:nowrap;text-decoration:none;}
+    .ptabs a:hover{color:var(--ink);}
+    .ptabs a.on{color:var(--ink);font-weight:900;border-bottom-color:var(--dk);}
+    .ptabs a em{font-style:normal;background:var(--or);color:var(--ink);border-radius:var(--r);font-size:10.5px;font-weight:900;padding:1px 7px;}
+    .loc{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:-8px 0 20px;}
+    .loc label{font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--dk);}
+    /* Getting started with Liz (the Welcome Guide's Getting started card), on the kit: a card in the Guides pink, her picture framed. */
+    .welcome{font-size:clamp(24px,2.4vw,32px);font-weight:900;line-height:1.04;letter-spacing:-.025em;margin:0 0 16px;}
+    .gs{position:relative;display:grid;grid-template-columns:160px minmax(0,1fr);gap:20px;align-items:start;border:2px solid var(--ink);background:#fff;border-radius:14px;padding:20px;margin:0 var(--sh) 26px 0;box-shadow:var(--sh) var(--sh) 0 var(--pink);}
+    .gs .liz{width:160px;aspect-ratio:1;border-radius:12px;border:2px solid var(--ink);background:var(--pinkt) center 18%/cover no-repeat;}
+    .gs h3{font-size:20px;font-weight:900;letter-spacing:-.01em;margin:0 0 4px;}
+    .gs .gsp{font-size:14px;font-weight:600;color:var(--mute);margin:0 0 10px;line-height:1.5;}
+    .meter{height:10px;border-radius:var(--r);background:var(--line);overflow:hidden;margin:0 0 14px;}
+    .meter i{display:block;height:100%;background:var(--br);border-radius:var(--r);}
+    .gsr{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+    .gr{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:12px;align-items:center;background:#fff;border:2px solid var(--line);border-radius:12px;padding:10px 12px;}
+    .gr .ic{width:40px;height:40px;border-radius:10px;background:var(--tint);display:grid;place-items:center;}
+    .gr .ic svg{width:20px;height:20px;stroke:var(--dk);fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;}
+    .gr b{display:block;font-size:14px;font-weight:900;line-height:1.3;}
+    .gr small{display:block;font-size:12px;font-weight:600;color:var(--mute);line-height:1.35;}
+    .gr.done .ic{background:var(--dk);}.gr.done .ic svg{stroke:#fff;}
+    .gr.done b{text-decoration:line-through;text-decoration-color:rgba(45,92,39,.45);color:var(--mute);}
+    .gr.hot{border-color:var(--or);}
+    .gr .btn{min-height:38px;padding:7px 14px;}
+    @media (max-width:900px){.gsr{grid-template-columns:minmax(0,1fr);}}
+    @media (max-width:600px){.gs{grid-template-columns:minmax(0,1fr);padding:16px}.gs .liz{width:96px;}}
+    /* Your post (Media kit): the post in a phone feed, the story in a phone frame, then download, the link and the caption. */
+    .sh{display:grid;grid-template-columns:260px 160px minmax(0,1fr);gap:22px;align-items:start;}
+    .ph{border:7px solid var(--ink);border-radius:22px;overflow:hidden;background:#fff;}
+    .ph img{display:block;width:100%;}
+    .ph-top{display:flex;align-items:center;gap:7px;padding:7px 9px;font-size:11px;font-weight:800;}
+    .ph-top i{width:22px;height:22px;border-radius:50%;background:#fff center/cover no-repeat;border:1px solid #eee;}
+    .ph-cap{font-size:10.5px;line-height:1.45;padding:7px 9px 10px;color:#333;}
+    .lk{display:flex;align-items:center;gap:8px;flex-wrap:wrap;border:2px solid var(--ink);border-radius:var(--r);padding:9px 11px;background:var(--tint);margin:14px 0 0;}
+    .lk code{flex:1 1 200px;font:800 15px Montserrat,sans-serif;color:var(--ink);}
+    .cap{border:2px dashed #c9c9c9;border-radius:var(--r);padding:11px 13px;font-size:13.5px;font-weight:600;color:#333;margin-top:10px;}
+    .cap p{margin:0 0 10px;line-height:1.5;}
+    .shn{font-size:13px;font-weight:700;color:var(--dk);background:var(--tint);border-radius:var(--r);padding:9px 11px;margin-top:12px;}
+    @media (max-width:900px){.sh{grid-template-columns:minmax(0,1fr) 120px;}.sh-act{grid-column:1 / -1;}}
+    /* Mock-only additions (content, not frame) */
+    .mk-note{background:var(--peach);font-size:12.5px;font-weight:700;padding:8px 40px;margin:-32px -40px 0;}
+    .mk-note b{color:#8a4d00;letter-spacing:.08em;text-transform:uppercase;margin-right:6px;}
+    @media (max-width:600px){.mk-note{margin:-22px -16px 0;padding:7px 16px;}}
+    .smp{display:inline-flex;align-items:center;font-size:9.5px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;background:#9a3412;color:#fff;border-radius:var(--r);padding:3px 7px;vertical-align:middle;margin-left:6px;}
+    .drf{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:900;letter-spacing:.1em;text-transform:uppercase;background:var(--peach);color:#8a4d00;border-radius:var(--r);padding:4px 8px;vertical-align:middle;margin-left:6px;}
+    .drf::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--or);}
+    .kai{display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px;align-items:center;background:var(--pinkt);border:2px solid var(--ink);border-radius:14px;box-shadow:4px 4px 0 var(--pink);padding:10px 12px;margin:0 var(--sh) 22px 0;max-width:720px;}
+    .kai i{width:56px;height:56px;border-radius:10px;border:2px solid var(--ink);background:#fff center/cover no-repeat;}
+    .kai b{display:block;font-size:10.5px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:var(--pinkd);}
+    .kai span{font-size:14px;font-weight:800;line-height:1.35;}
+    .brief h3{font-size:22px;font-weight:900;letter-spacing:-.01em;margin:0 0 4px;}
+    .brief .from{font-size:12px;font-weight:800;color:var(--mute);margin:0 0 12px;}
+    .brief h4{font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--dk);margin:14px 0 6px;}
+    .brief p{font-size:14.5px;font-weight:600;line-height:1.55;margin:0 0 6px;max-width:900px;}
+    .brief ul{margin:0 0 6px;padding-left:20px;font-size:14.5px;font-weight:600;line-height:1.6;}
+    .q{background:var(--tint);border-radius:var(--r);padding:12px 14px;margin:12px 0 10px;font-size:14.5px;font-weight:800;}
+    .ta{font:inherit;font-size:14px;font-weight:600;width:100%;min-height:80px;border:2px solid var(--ink);border-radius:var(--r);padding:10px 12px;margin:0 0 10px;resize:vertical;}
+    .in{font:inherit;font-size:14px;font-weight:600;border:2px solid var(--ink);border-radius:var(--r);padding:10px 12px;min-height:46px;}
+    .qa{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(220px,100%),1fr));gap:10px;align-items:end;margin:0 0 18px;}
+    .qa label{display:block;font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--dk);margin:0 0 6px;}
+    .qa .in,.qa select{width:100%;}
+    .pic{width:44px;height:44px;border-radius:10px;border:2px solid var(--ink);background:var(--tint) center/cover no-repeat;display:grid;place-items:center;font-weight:900;color:var(--dk);flex:none;}
+    .r.pp{grid-template-columns:44px minmax(0,1fr) auto auto;}
+    @media (max-width:600px){.r.pp{grid-template-columns:44px minmax(0,1fr);}.r.pp>div{grid-column:2}.r.pp .tag{grid-column:1/-1;grid-row:auto}.r.pp .btn{grid-column:1/-1;grid-row:auto}}
+    .t-done{background:var(--tint);color:var(--dk)}.t-wait{background:#efefef;color:#555}
+    .chat{display:grid;gap:10px;margin:0 var(--sh) 18px 0;max-width:900px;}
+    .bub{border:2px solid var(--ink);border-radius:14px;padding:12px 14px;font-size:14px;font-weight:600;line-height:1.55;max-width:88%;}
+    .bub.me{background:var(--pinkt);margin-left:auto;}
+    .bub.lg{background:#fff;}
+    .bub small{display:block;font-size:11px;font-weight:800;color:var(--mute);margin-top:6px;}
+    .kitc{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(340px,100%),1fr));gap:18px;margin:0 var(--sh) 22px 0;}
+    .kitc .card{margin:0;}
+    .kitc .card p{font-size:14px;font-weight:600;line-height:1.55;margin:0 0 10px;}
+    .kitc .card .k{margin-bottom:6px;}
+    .chk{display:flex;gap:10px;align-items:flex-start;}
+    .chk input{width:20px;height:20px;accent-color:var(--dk);margin:2px 0 0;flex:none;}
+  </style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+<main>
+  <div class="mk-note"><b>Mock</b>KJ's dashboard, illustrative. Words are Draft; rows marked Sample are not real. Nothing saves.</div>
+  <div style="height:32px"></div>
+  <div class="band">
+    <div class="who">
+      <span class="av" id="av" role="img" aria-label="KJ"></span>
+      <div>
+        <p class="k" id="eb"></p>
+        <h1 id="hName"></h1>
+        <p id="hLine"></p>
+      </div>
+    </div>
+  </div>
+  <nav class="ptabs" id="tabs" aria-label="KJ's dashboard"></nav>
+  <div id="view"></div>
+</main>
+<script src="/public/footer.js"></script>
+<script>
+(function () {
+  // ---- Every word, in one place. DRAFT until Sean locks it. Rows with smp:true are illustrative (stamped Sample). ----
+  var COPY = {
+    eyebrow: 'Community Manager, Instagram',
+    name: 'KJ',
+    line: 'Your one home: this week, every conversation, your asks and Logan, any time.',
+    avatar: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/people/keya-vegankween/avatar-geekfon-v3.jpg',
+    tabs: [['home', 'Home'], ['conversations', 'Conversations'], ['asks', 'Asks'], ['logan', 'Ask Logan'], ['briefs', 'Briefs'], ['record', 'Your record'], ['kit', 'Your kit']],
+    kai: {
+      home: 'Start with the brief, then open today\'s conversations. Anything you are unsure of, ask Logan.',
+      conversations: 'Everyone who commented, replied, mentioned us, wrote or followed. Answer as Vegans Explore, with their own link.',
+      asks: 'What Sean wants this week. Outside these, you have room: if you spot an opening, take it, and tell us under Your ideas.',
+      logan: 'Logan is here for instructions, information and questions. Decisions go to Sean.',
+      briefs: 'Every Monday: where we are, what is next, and a question for you.',
+      record: 'Your taps are your record and your pay record.',
+      kit: 'Everything you send people, ready to copy.'
+    },
+    home: {
+      briefTitle: 'This week\'s brief: Monday, November 23',
+      briefFrom: 'From Sean and Logan',
+      where: 'We are at 84 members on the way to 250 by December 31. All five group pages are live, and every place in the Directory has its own link.',
+      next: 'Every post this week tags the places in it and asks a question. Your job is to catch every comment, reply and mention, and turn the warm ones into members.',
+      asks: ['Answer every comment on the city posts the same day.', 'Send a private reply with their link to every business that comments.', 'Welcome new followers and ask which group they are.'],
+      question: 'Which kind of post gets the most comments from businesses so far, and why do you think that is?',
+      replyHint: 'Your answer goes to Sean and Logan.',
+      goalH: 'The goal',
+      goal: [['84', 'of 250 members', 'By Thu Dec 31, 11:59 PM Eastern. As of Nov 18.'], ['0', 'of 60 from your links', 'Members who joined through a link you sent.'], ['32', 'of 100 claimed', 'Listings claimed by their owners. As of Nov 18.']],
+      todayH: 'Today at a glance',
+      today: [['6', 'New comments'], ['3', 'Replies to answer'], ['2', 'Mentions'], ['4', 'New followers']],
+      go: 'Open today\'s conversations'
+    },
+    convo: {
+      h: 'Conversations',
+      lede: 'One row per person. Answer in Business Suite as Vegans Explore, then tap what happened.',
+      quickH: 'Add someone',
+      quick: { handle: '@handle', from: ['Commented on a post', 'Replied to a story', 'Mentioned us', 'Wrote to us', 'New follower'], group: ['Restaurants and food', 'Other businesses', 'Nonprofits', 'Creators and media', 'Explorer'] },
+      rows: [
+        { smp: true, who: '@sampleveganbakery', from: 'Commented "PAGE" on "Now on Vegans Explore: Philly bakeries"', group: 'Restaurants and food, matched to their listing', tag: ['t-new', 'New'], btn: 'Copy their link' },
+        { smp: true, who: '@samplerescue', from: 'Replied to a story mention', group: 'Nonprofits, matched to their listing', tag: ['t-need', 'Replied'], btn: 'Copy their link' },
+        { smp: true, who: '@sampleexplorer', from: 'New follower', group: 'Explorer', tag: ['t-new', 'New'], btn: 'Copy welcome' },
+        { smp: true, who: '@samplefoodtruck', from: 'Wrote to us: "Is it free to be listed?"', group: 'Restaurants and food, matched to their listing', tag: ['t-tip', 'Link sent'], btn: 'Open in Business Suite' },
+        { smp: true, who: '@samplecreator', from: 'Mentioned @vegansexplore in a reel', group: 'Creators and media', tag: ['t-done', 'Joined'], btn: 'Say thanks' }
+      ]
+    },
+    asks: {
+      h: 'Sean\'s asks',
+      items: [
+        { smp: true, t: 'Answer every comment on the Philadelphia city post', due: 'Mon Nov 23' },
+        { smp: true, t: 'Private reply with their link to every business that comments PAGE', due: 'Every day' },
+        { smp: true, t: 'Find three Vegan creators in Philadelphia we should spotlight', due: 'Fri Nov 27' },
+        { smp: true, t: 'Tell us one thing businesses keep asking', due: 'Fri Nov 27' }
+      ],
+      ideasH: 'Your ideas',
+      ideasLede: 'Spot something we should try? Send it. It goes to Sean.',
+      ideasBtn: 'Send to Sean'
+    },
+    logan: {
+      h: 'Ask Logan',
+      lede: 'Logan answers within a day. Anything that is a decision goes to Sean, and you will see his answer here.',
+      thread: [
+        { me: true, smp: true, t: 'A bakery asked if they can add more photos after they claim. What do I tell them?', at: 'Mon 10:12 AM' },
+        { me: false, smp: true, t: 'Yes: once they claim, their dashboard lets them update their page. Send them their link and say Liz walks them through it. Copy their link is on their row.', at: 'Mon 10:20 AM, Logan' },
+        { me: true, smp: true, t: 'Can I comment on a business\'s own post to say congrats?', at: 'Mon 2:05 PM' },
+        { me: false, smp: true, t: 'Good idea, and that one is a decision, so I asked Sean. He said yes, as Vegans Explore, from Business Suite. Keep it short and real.', at: 'Mon 4:40 PM, Logan' }
+      ],
+      ask: 'Ask Logan anything',
+      askBtn: 'Send'
+    },
+    briefs: {
+      h: 'Briefs',
+      rows: [
+        { smp: true, t: 'Week of November 23: the city posts start', p: 'Where we are, the first tagged posts, your three asks, and a question about what gets businesses to comment.', tag: ['t-new', 'This week'], btn: 'Read' },
+        { smp: true, t: 'Welcome: how this works', p: 'Your role, the 250 goal, what you never do, and how to reach Logan.', tag: ['t-done', 'Replied'], btn: 'Read' }
+      ]
+    },
+    record: {
+      h: 'Your record',
+      tiles: [['0', 'Conversations answered', 'This week'], ['0', 'Links sent', 'This week'], ['0', 'Members from your links', 'All time'], ['Dec 4', 'Next payday', '$125, for Nov 16 to 29']],
+      weeksH: 'By week',
+      weeks: [{ smp: true, t: 'Week of Nov 23', p: 'Answered 0, links sent 0, joined 0.', tag: ['t-wait', 'Coming'], btn: 'Open' }],
+      payH: 'Pay',
+      pay: 'You are paid $125 for each 2-week period, through Stripe. Periods run Monday to Sunday; payday is the Friday after a period ends.'
+    },
+    kit: {
+      h: 'Your kit',
+      openersH: 'What you send',
+      openers: [
+        ['To a business that comments or replies', 'Thank you! Here\'s your page: {link} It\'s free. Claiming it takes a short free survey to join, and Liz, our Guide, walks you through the rest.'],
+        ['To a new follower', 'Thanks for the follow! Are you here as a Vegan explorer, or do you run a business, group or page?'],
+        ['To an Explorer', 'Here\'s your way in, free before January 1: {link}']
+      ],
+      pagesH: 'Where people land',
+      pages: [['Restaurants and food', '/hello/restaurants?l=wevegan-cafe'], ['Other businesses', '/hello/businesses?l=bunniecakes'], ['Nonprofits', '/hello/nonprofits?l=aguacate-sanctuary-and-rescue'], ['Creators and media', '/hello/creators?l=mic-the-vegan'], ['Explorers', '/hello/explorers?c=philadelphia']],
+      rulesH: 'What you never do',
+      rules: ['Start a cold message, from our account or yours.', 'Post, edit or delete anything on @vegansexplore.', 'Ask for or use the password, or touch the profile, settings or security.', 'Promise anything we have not built.'],
+      creatorKit: ['Your creator kit', '/dashboard/creator']
+    }
+  };
+
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var D = ' <span class="drf">Draft</span>', S = '<span class="smp">Sample</span>';
+  var kaiPic = (window.VEGuideArt && VEGuideArt('kai', 'square')) || '/public/brand-kit/avatars/kai-v2.jpg';
+  $('av').style.background = '#fff url(\'' + COPY.avatar + '\') center/cover no-repeat';
+  $('eb').textContent = COPY.eyebrow; $('hName').textContent = COPY.name; $('hLine').innerHTML = esc(COPY.line) + D;
+
+  function kai(k) { return '<div class="kai"><i style="background-image:url(\'' + kaiPic + '\')"></i><div><b>Kai, Creator Guide</b><span>' + esc(COPY.kai[k]) + '</span></div></div>'; }
+  function sec(h, extra) { return '<div class="sec"><h2>' + esc(h) + '</h2>' + (extra || '') + D + '</div>'; }
+  function row(r, pic) {
+    return '<div class="r' + (pic ? ' pp' : '') + '">' + (pic ? '<span class="pic">' + esc(r.who.replace('@', '').slice(0, 2).toUpperCase()) + '</span>' : '') +
+      '<div><b>' + esc(r.who || r.t) + (r.smp ? S : '') + '</b><p>' + esc(r.from ? r.from + ' · ' + r.group : r.p) + '</p></div>' +
+      '<span class="tag ' + r.tag[0] + '">' + esc(r.tag[1]) + '</span><button type="button" class="btn btn-sm">' + esc(r.btn) + '</button></div>';
+  }
+  function tot(t) { return '<div class="tot"><b>' + esc(t[0]) + '</b><span>' + esc(t[1]) + '</span>' + (t[2] ? '<em>' + esc(t[2]) + '</em>' : '') + '</div>'; }
+
+  var V = {
+    home: function () {
+      var h = COPY.home;
+      return kai('home') +
+        '<div class="card brief" style="--c:var(--or)"><h3>' + esc(h.briefTitle) + S + D + '</h3><p class="from">' + esc(h.briefFrom) + '</p>' +
+        '<h4>Where we are</h4><p>' + esc(h.where) + '</p><h4>What\'s next</h4><p>' + esc(h.next) + '</p>' +
+        '<h4>This week\'s asks</h4><ul>' + h.asks.map(function (a) { return '<li>' + esc(a) + '</li>'; }).join('') + '</ul>' +
+        '<div class="q">' + esc(h.question) + '</div><textarea class="ta" placeholder="' + esc(h.replyHint) + '" aria-label="Your answer"></textarea>' +
+        '<button type="button" class="btn">Send my answer</button></div>' +
+        sec(h.goalH) + '<div class="totals">' + h.goal.map(tot).join('') + '</div>' +
+        sec(h.todayH, S) + '<div class="totals">' + h.today.map(tot).join('') + '</div>' +
+        '<a class="btn btn-go" href="?tab=conversations">' + esc(h.go) + '</a>';
+    },
+    conversations: function () {
+      var c = COPY.convo, q = c.quick;
+      return kai('conversations') + sec(c.h) + '<p class="lede">' + esc(c.lede) + '</p>' +
+        '<div class="qa"><div><label for="qh">' + esc(c.quickH) + '</label><input id="qh" class="in" placeholder="' + esc(q.handle) + '"></div>' +
+        '<div><label for="qf">What happened</label><select id="qf">' + q.from.map(function (x) { return '<option>' + esc(x) + '</option>'; }).join('') + '</select></div>' +
+        '<div><label for="qg">Group</label><select id="qg">' + q.group.map(function (x) { return '<option>' + esc(x) + '</option>'; }).join('') + '</select></div>' +
+        '<div><button type="button" class="btn">Add</button></div></div>' +
+        '<div class="rows new">' + c.rows.map(function (r) { return row(r, true); }).join('') + '</div>';
+    },
+    asks: function () {
+      var a = COPY.asks;
+      return kai('asks') + sec(a.h) + '<div class="rows need">' + a.items.map(function (i) {
+        return '<div class="r"><div class="chk"><input type="checkbox" aria-label="Done"><div><b>' + esc(i.t) + (i.smp ? S : '') + '</b><p>Due ' + esc(i.due) + '</p></div></div><span class="tag t-need">To do</span><button type="button" class="btn btn-sm">Ask Logan</button></div>';
+      }).join('') + '</div>' + sec(a.ideasH) + '<p class="lede">' + esc(a.ideasLede) + '</p><textarea class="ta" aria-label="Your idea"></textarea><button type="button" class="btn btn-go">' + esc(a.ideasBtn) + '</button>';
+    },
+    logan: function () {
+      var l = COPY.logan;
+      return kai('logan') + sec(l.h) + '<p class="lede">' + esc(l.lede) + '</p><div class="chat">' + l.thread.map(function (m) {
+        return '<div class="bub ' + (m.me ? 'me' : 'lg') + '">' + esc(m.t) + (m.smp ? S : '') + '<small>' + esc(m.at) + '</small></div>';
+      }).join('') + '</div><textarea class="ta" placeholder="' + esc(l.ask) + '" aria-label="' + esc(l.ask) + '"></textarea><button type="button" class="btn btn-go">' + esc(l.askBtn) + '</button>';
+    },
+    briefs: function () { var b = COPY.briefs; return kai('briefs') + sec(b.h) + '<div class="rows">' + b.rows.map(function (r) { return row(r); }).join('') + '</div>'; },
+    record: function () {
+      var r = COPY.record;
+      return kai('record') + sec(r.h) + '<div class="totals">' + r.tiles.map(tot).join('') + '</div>' + sec(r.weeksH) + '<div class="rows">' + r.weeks.map(function (x) { return row(x); }).join('') + '</div>' +
+        sec(r.payH) + '<p class="lede">' + esc(r.pay) + '</p>';
+    },
+    kit: function () {
+      var k = COPY.kit;
+      return kai('kit') + sec(k.openersH) + '<div class="kitc">' + k.openers.map(function (o) {
+        return '<div class="card"><p class="k">' + esc(o[0]) + '</p><p>' + esc(o[1]) + '</p><button type="button" class="btn btn-sm">Copy</button></div>';
+      }).join('') + '</div>' + sec(k.pagesH) + '<div class="rows">' + k.pages.map(function (p) {
+        return '<div class="r"><div><b>' + esc(p[0]) + '</b><p>vegansexplore.com' + esc(p[1]) + '</p></div><span class="tag t-tip">Live</span><a class="btn btn-sm" href="' + esc(p[1]) + '" target="_blank" rel="noopener">Open</a></div>';
+      }).join('') + '</div>' + sec(k.rulesH) + '<div class="rows need">' + k.rules.map(function (t) { return '<div class="r"><div><b>' + esc(t) + '</b></div></div>'; }).join('') + '</div>' +
+        '<a class="btn" href="' + esc(k.creatorKit[1]) + '">' + esc(k.creatorKit[0]) + '</a>';
+    }
+  };
+
+  function show() {
+    var t = new URLSearchParams(location.search).get('tab') || 'home'; if (!V[t]) t = 'home';
+    $('tabs').innerHTML = COPY.tabs.map(function (x) { return '<a href="?tab=' + x[0] + '"' + (x[0] === t ? ' class="on" aria-current="page"' : '') + '>' + esc(x[1]) + (x[0] === 'conversations' ? ' <em>15</em>' : '') + '</a>'; }).join('');
+    $('view').innerHTML = V[t]();
+  }
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest && e.target.closest('a[href^="?tab="]');
+    if (a) { e.preventDefault(); history.pushState(null, '', a.getAttribute('href')); show(); window.scrollTo(0, 0); }
+  });
+  window.addEventListener('popstate', show); show();
+})();
+</script>
+</body>
+</html>
