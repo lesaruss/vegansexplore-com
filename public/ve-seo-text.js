@@ -29,7 +29,7 @@
     var d = text;
     if (where && d.toLowerCase().indexOf(where.split(',')[0].toLowerCase()) < 0) d = d ? d + ' · ' + where : '';
     if (d.length < DESC_MIN) {
-      var fill = 'Find ' + name + (where ? ' in ' + where : '') + ' on Vegans Explore, the Vegan community Directory, with links and member votes.';
+      var fill = 'Find ' + name + (where ? ' in ' + where : '') + ' on Vegans Explore, the Vegan community Directory, with links and member vouches.';
       d = d ? d.replace(/[.\s]+$/, '') + '. ' + fill : fill;
     }
     return clip(d, DESC_MAX);

@@ -286,7 +286,7 @@
     return '<div class="vrd-root"><div class="subcat-pills">' + pills.map(function (p) { return '<a class="subcat-pill' + (p[2] ? ' sc-active' : '') + '" href="' + p[1] + '">' + esc(p[0]) + '</a>'; }).join('') +
       '<div class="vrd-search-wrap"><svg class="vrd-search-icon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>' +
       '<input type="text" class="vrd-search-input" id="dgFilter" placeholder="' + esc(searchPh) + '" aria-label="' + esc(searchLabel) + '"></div></div>' +
-      '<div class="sort-bar"><span class="sort-label">Sort by</span><select class="sort-select" id="dgSort" aria-label="Sort listings"><option value="votes">Most Votes</option><option value="az">A to Z</option></select><span class="geo-label" id="dgCount"></span></div></div>';
+      '<div class="sort-bar"><span class="sort-label">Sort by</span><select class="sort-select" id="dgSort" aria-label="Sort listings"><option value="votes">Most Vouches</option><option value="az">A to Z</option></select><span class="geo-label" id="dgCount"></span></div></div>';
   }
   function sortBy(list, how) {
     return list.slice().sort(function (a, b) { return how === 'az' ? a.name.localeCompare(b.name) : (b.vote_count || 0) - (a.vote_count || 0) || a.name.localeCompare(b.name); });
@@ -345,7 +345,7 @@
   function gvCount(kind, key) { return (GV.counts[kind] || {})[key] || 0; }
   function gvoteBtn(kind, key) {
     var on = !!GV.mine[kind][key];
-    return '<button type="button" class="dg-vote dg-vote-s' + (on ? ' on' : '') + '" data-gvote="' + kind + ':' + esc(key) + '" aria-pressed="' + on + '" title="' + (on ? 'You voted for this' : 'Vote for this') + '">' + HEART + '<b>' + gvCount(kind, key) + '</b></button>';
+    return '<button type="button" class="dg-vote dg-vote-s' + (on ? ' on' : '') + '" data-gvote="' + kind + ':' + esc(key) + '" aria-pressed="' + on + '" title="' + (on ? 'You vouched for this' : 'Vouch for this') + '">' + HEART + '<b>' + gvCount(kind, key) + '</b></button>';
   }
   // An episode is its podcast row, the one a person's page uses (VEEpisodes.row): the show's square artwork, the title, the show,
   // date and length, Play in the player docked above the list; ours add our vote and Save (My list), another show's links to it.
@@ -456,7 +456,7 @@
   function viewBrands(catSlug) {
     var cat = catSlug ? catBySlug(catSlug) : null;
     var h = (cat ? crumb([['Brands', '#/brands'], [cat]]) : '') + head('Brands', cat ? esc(cat) : 'The brands to buy',
-      'Every brand is a listing in the Vegans Explore Directory. Vote for the ones you love, and open one to see where to buy it.');
+      'Every brand is a listing in the Vegans Explore Directory. Vouch for the ones you love, and open one to see where to buy it.');
     if (!BRANDS) { main.innerHTML = h + '<div class="dg-loading">Loading brands...</div>'; return; }
     var chips = function (on) {
       return '<div class="fd-chips" role="group" aria-label="Show"><span>Show</span>' + ['Everything'].concat(CATS).map(function (c) {
@@ -467,7 +467,7 @@
     if (!member()) {
       // Visitors: the same answer and kinds, then the real list blurred behind the offer (its button is the view's one action).
       main.innerHTML = h + '<p class="fd-answer">' + brandAnswer(BRANDS.length, null, '', BRANDS).replace(' Open one to see where to buy it.', ' Where to buy each one comes with the full Guide.') + '</p>' +
-        gated(dirGrid('', sortBy(BRANDS, 'votes').slice(0, 6).map(dirCard).join('')), 'Every brand, sorted by what you are replacing', 'With where to buy each one. Members vote, so the best rise to the top.');
+        gated(dirGrid('', sortBy(BRANDS, 'votes').slice(0, 6).map(dirCard).join('')), 'Every brand, sorted by what you are replacing', 'With where to buy each one. Members vouch, so the best rise to the top.');
       return;
     }
     var list = cat ? BRANDS.filter(function (l) { return inCat(l, cat); }) : BRANDS;
@@ -477,7 +477,7 @@
       '<input type="text" id="dgFilter" placeholder="Search brands (oat, cashew...)" aria-label="Search brands" autocomplete="off" data-dictate="off" value="' + esc(q0) + '"></div>' +
       '<button type="submit" class="dg-btn fd-go">Search</button></form>' +
       '<p class="fd-answer" id="dgAns" aria-live="polite"></p>' + chips(true) +
-      '<div class="vrd-root"><div class="sort-bar"><span class="sort-label">Sort by</span><select class="sort-select" id="dgSort" aria-label="Sort listings"><option value="votes">Most Votes</option><option value="az">A to Z</option></select><span class="geo-label" id="dgCount"></span></div></div>' +
+      '<div class="vrd-root"><div class="sort-bar"><span class="sort-label">Sort by</span><select class="sort-select" id="dgSort" aria-label="Sort listings"><option value="votes">Most Vouches</option><option value="az">A to Z</option></select><span class="geo-label" id="dgCount"></span></div></div>' +
       dirGrid('dgList', '') + '<div id="dgNone"></div><p class="fd-end" id="dgEnd"></p>' +
       '<section class="fd-lower" aria-label="For brands"><span class="fd-lk">For brands</span><b>Is your brand in the Guide?</b><p>Every brand here is its own listing in the Directory. A brand can claim its listing and keep it right.</p>' +
       '<div class="fd-btns"><a class="dg-btn dg-ghost" href="/claim">Claim your listing</a></div></section>';
@@ -517,7 +517,7 @@
     var t = toggles([['All', '#/swaps']].concat(SWAP_GROUPS.map(function (g) { return [g, '#/swaps/' + slugify(g)]; })), group || 'All');
     main.innerHTML = head('Swaps', group ? esc(group) : 'Swap it out', 'Grab one from the shelf, or make it from what is already in your pantry.', t) +
       '<div class="dg-tools"><input type="search" id="dgFilter" placeholder="Search swaps (buttermilk, cream cheese...)" aria-label="Search swaps">' +
-      '<select class="dg-sort" id="dgSwapSort" aria-label="Sort swaps"><option value="votes">Most votes</option><option value="az">A to Z</option></select><span class="dg-count" id="dgCountS"></span></div>' +
+      '<select class="dg-sort" id="dgSwapSort" aria-label="Sort swaps"><option value="votes">Most vouches</option><option value="az">A to Z</option></select><span class="dg-count" id="dgCountS"></span></div>' +
       '<div class="dg-srows" id="dgList"></div><div style="margin-top:14px">' + sources(MEM.swap_sources) + '</div>';
     var fEl = document.getElementById('dgFilter');
     function draw() {
@@ -569,7 +569,7 @@
   }
   function recipeVoteBtn(r) {
     var on = !!VOTED[r.id];
-    return '<button type="button" class="dg-vote dg-vote-s' + (on ? ' on' : '') + '" data-vote="' + esc(r.id) + '" aria-pressed="' + on + '" title="' + (on ? 'You voted for this' : 'Vote for this') + '">' + HEART + '<b>' + (r.votes || 0) + '</b></button>';
+    return '<button type="button" class="dg-vote dg-vote-s' + (on ? ' on' : '') + '" data-vote="' + esc(r.id) + '" aria-pressed="' + on + '" title="' + (on ? 'You vouched for this' : 'Vouch for this') + '">' + HEART + '<b>' + (r.votes || 0) + '</b></button>';
   }
   // A recipe is the same tile as a swap (Sean, 2026-10-10): picture, title, how long and how much, what you need, and vote
   // and save at the top right. `meta` replaces the time line (What can I make? says what it uses).
@@ -603,7 +603,7 @@
       var names = (COOK_TITLES && COOK_TITLES.length ? COOK_TITLES : RECIPE_NAMES).slice(0, 4);
       main.innerHTML = head('Cookbook', 'The Cookbook', 'An ongoing list of recipes you can make at home, and the dairy-free cookbooks people love most. Members share their own, too. The list keeps growing.') +
         '<div class="dg-cookpv"><div>' + gated('<div class="dg-grid">' + names.map(function (r) { return skel(r, 3); }).join('') + '</div>', 'Recipes and cookbooks', 'Dairy-free recipes from Maya and members, and the cookbooks members rank highest.') + '</div>' +
-        '<div><div class="dg-k" style="margin-bottom:10px">Cookbooks, voted on by members</div><div class="dg-books">' + COVERS.map(function (c) {
+        '<div><div class="dg-k" style="margin-bottom:10px">Cookbooks, vouched for by members</div><div class="dg-books">' + COVERS.map(function (c) {
           return '<img src="' + COVER_BASE + c[1] + '.jpg" alt="' + esc(c[0]) + ' cover" loading="lazy">'; }).join('') + '</div></div></div>';
       if (COOK_TITLES == null) loadCookbook(function () { if (curTab === 'cookbook' && !member()) viewCookbook(sub); });
       return;
@@ -614,7 +614,7 @@
     var cur = { make: 1, books: 1, chefs: 1, mine: 1 }[parts[0]] ? parts[0] : '';
     var t = toggles(COOK_SUBS.map(function (x) { return [x[0], '#/cookbook' + (x[1] ? '/' + x[1] : '')]; }), COOK_SUBS.filter(function (x) { return x[1] === cur; })[0][0]);
     var ledes = { '': 'Recipes from Maya and members, most loved first. Made one of your own? Share it.', make: 'Tick what you have. Recipes that use the most of it come first.',
-      books: 'Cookbooks from the Vegans Explore Directory, most voted first.', chefs: 'Chefs who cook dairy-free, with their recipes and what they offer.', mine: 'The recipes you shared, and where each one stands.' };
+      books: 'Cookbooks from the Vegans Explore Directory, most vouched for first.', chefs: 'Chefs who cook dairy-free, with their recipes and what they offer.', mine: 'The recipes you shared, and where each one stands.' };
     var share = '<a class="dg-btn" href="#/cookbook/new/1">Share a recipe</a>';
     var body = '';
     if (cur === '') {
@@ -706,7 +706,7 @@
       (r.summary ? '<p class="dg-lede" style="margin-bottom:6px">' + esc(r.summary) + '</p>' : '') +
       '<div class="dg-rcp-meta">' + [r.time, r.servings ? 'Serves ' + r.servings : ''].filter(Boolean).map(esc).join(' &middot; ') + '</div>' +
       '<div class="dg-recipe-acts">' + (r.status === 'retesting' ? tag('retesting') : '') +
-      '<button type="button" class="dg-vote' + (voted ? ' on' : '') + '" data-vote="' + esc(r.id) + '" aria-pressed="' + voted + '">' + HEART + '<span>' + (voted ? 'You love this' : 'Vote') + '</span><b>' + (r.votes || 0) + '</b></button>' + saveBtn('recipe', r.slug) + '</div>' +
+      '<button type="button" class="dg-vote' + (voted ? ' on' : '') + '" data-vote="' + esc(r.id) + '" aria-pressed="' + voted + '">' + HEART + '<span>' + (voted ? 'You vouched' : 'Vouch') + '</span><b>' + (r.votes || 0) + '</b></button>' + saveBtn('recipe', r.slug) + '</div>' +
       (r.status === 'retesting' ? '<p class="dg-note" style="margin:10px 0 0">A few members said this one did not work for them, so we are making it again. It stays here while we do.</p>' : '') +
       (r.ingredients.length ? '<div class="dg-k" style="margin-top:16px">Shopping list</div><ul class="dg-shoplist">' + r.ingredients.map(function (i, n) {
         var ty = (r.types || [])[n];
@@ -1073,7 +1073,7 @@
       '<li><b>The Dairy-Free Pulse:</b> every research fact with its source, and our podcasts and interviews on dairy.</li>' +
       '<li><b>The brands to buy</b>, sorted by what you are replacing, with the stores that carry them.</li>' +
       '<li><b>Swaps</b> from the shelf or your pantry, and the Cookbook: recipes, cookbooks and chefs.</li>' +
-      '<li><b>The community:</b> your member dashboard, Directory votes, the Community Board and points.</li></ul></div>';
+      '<li><b>The community:</b> your member dashboard, Directory vouches, the Community Board and points.</li></ul></div>';
     var status = '<span class="dg-status" role="status" style="display:block;margin-top:10px;color:#8a5a00"></span>';
     if (!priced()) {
       main.innerHTML = '<div class="dg-join">' + head('Get access', 'The Dairy Guide comes with membership', 'Membership, free with a short survey, opens this Guide and the whole Vegans Explore community.') + list + '</div>';

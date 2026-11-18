@@ -239,7 +239,7 @@
   var BIZ = true; // this file is /business only since 2026-11-08; the Welcome Guide is passport.html (guide-scripts/welcome-guide.js)
   if (BIZ) TABS = [
     { k: 'overview', label: 'Overview', g: 'liz', say: 'Hi, I\'m Liz. This is Vegans Explore for businesses. Your page, your numbers and the members who find you, one tab at a time.' },
-    { k: 'page', label: 'Your page', g: 'river', say: 'Your page in the Directory is where members find you, vote for you, save you and check in when they visit.' },
+    { k: 'page', label: 'Your page', g: 'river', say: 'Your page in the Directory is where members find you, vouch for you, save you and check in when they visit.' },
     { k: 'dash', label: 'Your dashboard', g: 'liz', say: 'Your dashboard sits on your own page: your numbers, who comes back, your menu, ads and what you can take part in.' },
     { k: 'found', label: 'Get found', g: 'nori', say: 'Members find you in the Directory, the Guides, the Daily Pulse and at our events. Here is what is live and what is coming.' },
     { k: 'partner', label: 'Partner plan', g: 'maya', say: 'When you want the full experience, the Partner plan puts you in the front row of every campaign.' },
@@ -289,7 +289,7 @@
   ];
   var VIEWS = {
     overview: function () {
-      var BL = { places: 'The Directory, search, votes and saves.', community: 'The Daily Pulse, boards, events and bounties.', guides: 'Mini apps, and a free piece of each.', points: 'Earn them, spend them, give them. Four levels.',
+      var BL = { places: 'The Directory, search, vouches and saves.', community: 'The Daily Pulse, boards, events and bounties.', guides: 'Mini apps, and a free piece of each.', points: 'Earn them, spend them, give them. Four levels.',
         supports: 'What your time builds.', bring: 'Your link, and what it earns.', business: 'Members too, with services of their own.', join: 'One way in: a short survey, free.' };
       var tiles = TABS.filter(function (t) { return t.k !== 'overview'; }).map(function (t) {
         return '<a class="dg-tile" href="' + href(t.k) + '"><div class="dg-ic" style="background-image:url(\'' + esc(art(t.g) || '') + '\')"></div><div><b>' + esc(t.label) + '</b><span>' + esc(BL[t.k]) + '</span></div></a>';
@@ -301,13 +301,13 @@
         cd + '<div class="dg-tiles">' + tiles + '</div>' + joinBtns();
     },
     places: function () {
-      return gateNote() + head('Find your places', 'The Directory, voted on by members', 'Local food, products, services, media, community groups and people, in every city we cover. Anyone can browse and search it. Members decide what rises to the top.') +
+      return gateNote() + head('Find your places', 'The Directory, vouched for by members', 'Local food, products, services, media, community groups and people, in every city we cover. Anyone can browse and search it. Members decide what rises to the top.') +
         '<div class="dg-grid">' +
         card('Search from anywhere', 'The box at the top of every page finds a place, a kind of food or an answer. Try &ldquo;Vegan restaurants in Atlanta&rdquo;.', 'Everyone') +
         card('The Directory', 'Browse by section and city, and open any page. <a href="/directory">Open the Directory</a>.', 'Everyone') +
-        card('Media', 'Podcasts, documentaries and books, ranked by member votes. <a href="/media">See Media</a>.', 'Everyone') +
+        card('Media', 'Podcasts, documentaries and books, ranked by member vouches. <a href="/media">See Media</a>.', 'Everyone') +
         card('Share any page', 'The Share button in the top bar copies the page you are on, just as you see it, so a friend lands in the same place.', 'Everyone') +
-        card('Vote for what you love', 'Vote once for each place you love, and take it back any time. Each vote is one real person, and every Directory sorts by them.', 'Members') +
+        card('Vouch for what you love', 'Vouch once for each place you love, and undo it any time. Each vouch is one real person, and every Directory sorts by them.', 'Members') +
         card('Save and check in', 'Save the places you want to try. Check in when you are there for 10 points a visit. You can also give some of your points to a business or nonprofit you believe in.', 'Members') +
         '</div>' + joinBtns();
     },
@@ -318,7 +318,7 @@
         card('The boards', 'Jobs, classifieds, fosters and rescues for your city, and Suggest a Topic. Members post and reply.', 'Members post') +
         card('Events', 'Vegan events in your city and around the world, open to everyone, and you can submit one. <a href="/events">See events</a>.', 'Everyone') +
         card('Bounties', 'Small jobs from the campaigns in your city, paid in points.', 'Earn points') +
-        card('Your chapter', 'Every city has its own page. Vote for it and save it to join it. <a href="/communities">Find your city</a>.', 'Everyone') +
+        card('Your chapter', 'Every city has its own page. Vouch for it and save it to join it. <a href="/communities">Find your city</a>.', 'Everyone') +
         '</div>' + joinBtns();
     },
     guides: function () {
@@ -356,7 +356,7 @@
         '<div class="dg-grid">' +
         card('Your link', 'Every member gets one. A friend who joins with it earns you 111 points, and from Level 2 your link earns a share of what they buy, 20%, rising with your level. Keep it, or give it to an organization you care about.', 'Earn') +
         card('The Share button', 'When you are signed in, it copies any page with your own link on it, so anyone who joins from it is credited to you.', 'Earn') +
-        card('Vote together', 'Every vote moves a place up the list for the whole city. The more members vote, the truer the list.', 'Your city') +
+        card('Vouch together', 'Every vouch moves a place up the list for the whole city. The more members vouch, the truer the list.', 'Your city') +
         card('Share what you love', 'Send a friend a listing, a Daily Pulse topic or a Guide.', 'Share') +
         '</div>' + joinBtns();
     },
@@ -376,7 +376,7 @@
           '<div class="dg-btns"><a class="dg-btn" href="' + esc(back || '/dashboard') + '">' + (back ? 'Go back' : 'Open your dashboard') + '</a></div>' + status;
       }
       var vid = window.VEVideo ? VEVideo.markup({ src: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/home/next-v3.mp4', vtt: '/public/home/next-v3.vtt', poster: '/public/home/next-poster.jpg?v=1', title: 'Watch the video', sub: 'What you can do on Vegans Explore, in 40 seconds', label: 'What you can do on Vegans Explore, narrated by Liz', ga: 'passport_next_v3' }) : '';
-      return gateNote() + head('Enter the room', 'One way in, and it is free', 'Take a short survey and you are a member with everything open: vote, post, join your city, take on bounties, earn points and open Guides.') + FOUNDING_LINE +
+      return gateNote() + head('Enter the room', 'One way in, and it is free', 'Take a short survey and you are a member with everything open: vouch, post, join your city, take on bounties, earn points and open Guides.') + FOUNDING_LINE +
         '<div class="dg-paths" style="grid-template-columns:1fr">' +
         '<div class="dg-path"><span class="dg-tag">Free</span><div class="dg-big">Free</div><b>Take the survey</b>' +
         '<p>The Explorer survey: a few quick questions about you and where you live, about two minutes. Finish it and your membership opens right away.' + (me() ? '' : ' Already a member? <a href="#" data-signin>Sign in</a>.') + '</p><ul>' +
@@ -407,7 +407,7 @@
       return head('Your page', 'Your page in the Directory', 'Every business in the Directory has a page. Claim yours, or add it if it is not there yet, and it is yours to keep up to date.') +
         '<div class="dg-grid">' +
         card('Your story, your way', 'Your about, hours, links, menu, logo and photos, changed by you and live right away.', 'Yours') +
-        card('Votes', 'Members vote once for each place they love. The Directory sorts by how many people vote for it.', 'Members') +
+        card('Vouches', 'Members vouch once for each place they love. The Directory sorts by how many people vouch for it.', 'Members') +
         card('Saves and check-ins', 'Members save you for later and check in when they visit, 10 points a visit. You see who comes back.', 'Members') +
         card('Reviewed by our team', 'Before anything is approved, our team carefully reviews each claim to make sure it is accurate.', 'Trust') +
         '</div>' + sampleBtns();
@@ -425,7 +425,7 @@
     found: function () {
       return head('Get found', 'Where members find you', 'Your page is in the Directory from day one. Here is everything else, marked Live or Coming.') +
         '<div class="dg-grid">' +
-        card('The Directory', 'Search, sections and every city\'s hub, sorted by member votes. <a href="/directory">Open it</a>.', 'Live') +
+        card('The Directory', 'Search, sections and every city\'s hub, sorted by member vouches. <a href="/directory">Open it</a>.', 'Live') +
         card('Events', 'Submit your event to the calendar every city sees. <a href="/events">See events</a>.', 'Live') +
         card('Ads', 'Ad spots on the Daily Pulse, the Directory, Events and the city hubs. Ask about one from your dashboard.', 'Live') +
         card('The Restaurant Guide', 'A free check of your Google listing, website and social, then the fixes in order. <a href="/guides/vegan-restaurant-guide">Take a look</a>.', 'Live') +
@@ -484,7 +484,7 @@
   var OPEN = Date.now() < Date.parse('2027-01-01T05:00:00Z');
   // A members-only prompt (vote, save, check in...) lands on the overview with its note, not the join step (Sean, 2026-11-01).
   function gateNote() {
-    var w = fromVote ? ['Voting is for members.', 'vote for the places you love'] : fromSave ? ['Saving is for members.', 'keep the places you love on My list'] :
+    var w = fromVote ? ['Vouching is for members.', 'vouch for the places you love'] : fromSave ? ['Saving is for members.', 'keep the places you love on My list'] :
       fromCheckin ? ['Check-ins are for members.', 'earn 10 points every time you visit a place'] : fromGive ? ['Giving points is for members.', 'give your points to the places you love'] :
       fromTickets ? ['This is a members-only event.', 'we take you straight to the tickets'] : fromBoard ? ['Posting and comments are for members.', 'join the conversation on the Daily Pulse in every city'] : null;
     if (fromOld && !w) return '<p class="dg-note"><b>That page has moved.</b> Vegans Explore has a new home, and this is the best place to start: see how it works, then come in free with a short survey. ' + (isMember() ? '<a href="/dashboard" style="color:var(--g);font-weight:800">Open your dashboard</a>.' : '<a href="' + href('join') + '" style="color:var(--g);font-weight:800">See how to join</a>.') + '</p>';

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en" data-kit-parent="welcome-guide">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guide Front Door, Option B | Vegans Explore</title>
+  <meta name="description" content="Design panel 2, option B, An Inviting Front Door: each Guide opens on a welcoming cover with the Guide large, who it is for, one promise, one Start here and its parts as picture cards. Mock, not live.">
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="/public/ve-kit.css">
+  <style>
+    /* Option B, An Inviting Front Door (brief: /mocks/guide-panel2/BRIEF.md, 2026-11-18).
+       The cover is loud (big Guide, one promise, one orange Start here, the parts as picture cards); inside a part it goes quiet
+       (title, one line, the list). Every part is always visible: on the cover as cards, inside a part as one numbered sliding row. */
+    body { margin: 0; background: #fff; color: var(--k-ink); font-family: 'Montserrat', system-ui, sans-serif; }
+    .mk-note { background: var(--k-peach); font-size: 13px; font-weight: 700; line-height: 1.45; padding: 9px 40px; }
+    .mk-note b { color: #8a4d00; letter-spacing: .08em; text-transform: uppercase; margin-right: 6px; }
+    .mk-note a { color: var(--k-ink); font-weight: 900; margin-left: 10px; }
+    .mk-note a[aria-current] { text-decoration: none; background: #fff; border-radius: 4px; padding: 1px 6px; }
+    main { padding: 28px 40px 80px; margin: 0; max-width: none; }
+    a { color: inherit; }
+
+    /* ---------- The cover ---------- */
+    .cv { display: grid; grid-template-columns: minmax(0, 1fr) var(--picw, min(420px, 36vw)); grid-template-areas: "t pic" "t say"; gap: 0 48px; align-items: start; }
+    .cv-t { grid-area: t; align-self: center; padding: 10px 0; }
+    .cv-pic { grid-area: pic; }
+    .cv-pic.k-pic { --k-c: var(--k-pink); aspect-ratio: var(--ar, 4 / 5); }
+    .cv-pic img { object-position: center top; }
+    .cv-say { grid-area: say; margin-top: 18px; }
+    .cv h1 { font-size: clamp(30px, 5.2vw, 76px); line-height: .98; letter-spacing: -.04em; margin: 0 0 18px; }
+    .cv-for { display: flex; gap: 10px; align-items: baseline; font-size: 16px; font-weight: 700; line-height: 1.4; margin: 0 0 12px; }
+    .cv-for b { flex: none; font-size: 10.5px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; background: var(--k-ink); color: #fff; border-radius: 4px; padding: 4px 7px; transform: translateY(-2px); }
+    .cv-promise { font-size: clamp(17px, 1.6vw, 22px); font-weight: 700; line-height: 1.4; max-width: 640px; margin: 0 0 24px; }
+    .cv-go { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+    .cv-go .k-cta { font-size: 15px; padding: 16px 30px; box-shadow: 4px 4px 0 var(--k-ink); }
+    .cv-go small { font-size: 13px; font-weight: 700; color: var(--k-mute); }
+
+    /* The Guide's voice: one Play button and the whole line, never cut */
+    .say { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px; align-items: start; border: 2px solid var(--k-ink); border-radius: 12px; padding: 12px; background: var(--k-pinkt); }
+    .say-btn { font: inherit; display: inline-flex; align-items: center; gap: 8px; border: 2px solid var(--k-ink); border-radius: var(--k-r); background: #fff; padding: 9px 12px 9px 10px; cursor: pointer; font-size: 11px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
+    .say-btn:hover { background: var(--k-pink); }
+    .say-btn i { width: 0; height: 0; border-left: 11px solid var(--k-ink); border-top: 7px solid transparent; border-bottom: 7px solid transparent; }
+    .say-btn[aria-pressed="true"] i { width: 11px; height: 13px; border: 0; border-left: 4px solid var(--k-ink); border-right: 4px solid var(--k-ink); }
+    .say p { margin: 0; font-size: 14px; font-weight: 700; line-height: 1.45; }
+    .say p small { display: block; font-size: 11px; font-weight: 800; color: var(--k-pinkd); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 3px; }
+    .say-bar { grid-column: 1 / -1; height: 4px; border-radius: 2px; background: #fff; overflow: hidden; display: none; }
+    .say-bar i { display: block; height: 100%; width: 0; background: var(--k-pinkd); }
+    .say.on .say-bar { display: block; }
+    .say.on .say-bar i { animation: sayp 9s linear forwards; }
+    @keyframes sayp { to { width: 100%; } }
+
+    /* One plain line on what is free and what comes with the Guide */
+    .price { display: flex; align-items: center; gap: 10px 16px; flex-wrap: wrap; border-left: 6px solid var(--k-pink); background: #fafafa; border-radius: 0 10px 10px 0; padding: 12px 16px; font-size: 14px; font-weight: 700; line-height: 1.45; margin: 0; }
+    .price span { flex: 1 1 420px; min-width: 0; }
+    .price .k-btn { flex: none; }
+
+    /* The parts as big picture cards: picture left, words middle, what is free on the right, at every width */
+    .parts-h { display: flex; align-items: baseline; justify-content: space-between; gap: 6px 20px; flex-wrap: wrap; margin: 56px 0 16px; }
+    .parts-h .k-h2 { margin: 0; }
+    .parts-h small { font-size: 14px; font-weight: 700; color: var(--k-mute); }
+    .pc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(560px, 100%), 1fr)); gap: 22px; margin-bottom: 22px; }
+    .pc { --k-c: var(--k-pink); display: grid; grid-template-columns: var(--pcw, 190px) minmax(0, 1fr); gap: 20px; align-items: center; padding: 14px; text-decoration: none; transition: transform .12s, box-shadow .12s; }
+    .pc:hover { transform: translate(-2px, -2px); box-shadow: 8px 8px 0 var(--k-c); }
+    .pc-img { aspect-ratio: var(--ar, 1 / 1); border: 2px solid var(--k-ink); border-radius: 10px; overflow: hidden; background: var(--k-tint); }
+    .pc-img img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center top; }
+    .pc-t { min-width: 0; }
+    .pc-n { font-size: 10.5px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; color: var(--k-pinkd); margin: 0 0 4px; }
+    .pc-t h3 { font-size: clamp(20px, 1.8vw, 28px); font-weight: 900; letter-spacing: -.02em; line-height: 1.05; margin: 0 0 8px; }
+    .pc-t p { font-size: 14px; font-weight: 600; line-height: 1.45; margin: 0 0 12px; }
+    .pc-f { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+    .pc-f em { font-style: normal; font-size: 12.5px; font-weight: 700; color: var(--k-mute); min-width: 0; }
+    .pc-f i { flex: none; font-style: normal; font-size: 20px; font-weight: 900; }
+    .k-tag.pg { background: var(--k-pinkt); color: var(--k-pinkd); }
+
+    .mk-aside { margin-top: 28px; border: 2px dashed #c9a27a; background: #fffaf3; border-radius: 10px; padding: 12px 16px; font-size: 13px; font-weight: 700; line-height: 1.5; }
+    .mk-aside b { color: #8a4d00; }
+
+    /* ---------- Inside a part: quiet ---------- */
+    .crumb { font-size: 12px; font-weight: 800; color: var(--k-mute); margin: 0 0 12px; }
+    .crumb a { color: var(--k-ink); font-weight: 900; }
+    .prow { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; padding: 0 0 6px; margin: 0 0 26px; border-bottom: 2px solid var(--k-line); padding-bottom: 12px; }
+    .prow::-webkit-scrollbar { display: none; }
+    .prow a { flex: none; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; font-size: 13px; font-weight: 900; border: 2px solid var(--k-ink); border-radius: var(--k-r); padding: 7px 12px 7px 7px; background: #fff; }
+    .prow a b { width: 22px; height: 22px; border-radius: 4px; display: grid; place-items: center; background: var(--k-pinkt); font-size: 11px; }
+    .prow a.cover b { background: var(--k-pink); }
+    .prow a[aria-current] { background: var(--k-ink); color: #fff; }
+    .prow a[aria-current] b { background: var(--k-pink); color: var(--k-ink); }
+    .prow a:hover:not([aria-current]) { background: var(--k-pinkt); }
+
+    .ph { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 420px); gap: 20px 40px; align-items: end; margin-bottom: 20px; }
+    .ph .k-label { color: var(--k-pinkd); }
+    .ph h1 { font-size: clamp(28px, 3.4vw, 48px); line-height: 1.02; letter-spacing: -.035em; margin: 0 0 10px; }
+    .ph p.one { font-size: 16px; font-weight: 600; line-height: 1.5; max-width: 760px; margin: 0 0 18px; }
+    .gsm { display: grid; grid-template-columns: 84px minmax(0, 1fr); gap: 12px; align-items: center; }
+    .gsm .k-pic { --k-c: var(--k-pink); aspect-ratio: 1 / 1; border-width: 2px; box-shadow: 4px 4px 0 var(--k-pink); border-radius: 10px; }
+    .gsm .k-pic img { object-position: center top; }
+    .gsm .say { padding: 10px; }
+
+    .list { display: grid; gap: 8px; margin: 18px 0 0; }
+    .list .k-row { text-decoration: none; color: inherit; padding: 11px 14px; }
+    .list .k-row:hover { background: var(--k-pinkt); }
+    .list .k-num { background: var(--k-tint); }
+    .list .k-row-t b { font-size: 15px; }
+    .list .k-row-t small { font-size: 13px; }
+
+    .pnext { display: flex; align-items: center; justify-content: space-between; gap: 10px; border-top: 2px solid var(--k-ink); margin-top: 28px; padding-top: 14px; font-size: 11px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; }
+    .med { font-size: 12.5px; font-weight: 600; line-height: 1.5; color: var(--k-mute); max-width: 860px; margin: 18px 0 0; }
+
+    /* Finder: search and the airport cards */
+    .find { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; max-width: 760px; margin: 0 0 14px; }
+    .find input { font: inherit; font-size: 15px; font-weight: 700; border: 3px solid var(--k-ink); border-radius: var(--k-r); padding: 12px 14px; min-width: 0; }
+    .find input:focus { outline: none; box-shadow: 4px 4px 0 var(--k-or); }
+    .ap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 18px; margin-top: 18px; }
+    .ap { --k-c: var(--k-pink); display: grid; grid-template-rows: auto 1fr; padding: 0; overflow: hidden; text-decoration: none; }
+    .ap:hover { transform: translate(-2px, -2px); }
+    .ap-img { aspect-ratio: 1200 / 670; border-bottom: 2px solid var(--k-ink); background: var(--k-tint); }
+    .ap-img img { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .ap-t { padding: 12px 14px 14px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 10px; align-content: start; }
+    .ap-code { font-size: 12px; font-weight: 900; letter-spacing: .12em; }
+    .ap-code em { font-style: normal; }
+    .ap-code span { background: var(--k-ink); color: #fff; border-radius: 4px; padding: 2px 6px; margin-right: 6px; }
+    .ap-t h3 { grid-column: 1; font-size: 16px; font-weight: 900; line-height: 1.2; margin: 4px 0 2px; }
+    .ap-t small { grid-column: 1; font-size: 12.5px; font-weight: 700; color: var(--k-mute); }
+    .ap-t .k-tag { grid-column: 2; grid-row: 1; justify-self: end; }
+    .ap[hidden] { display: none; }
+    .ap-none { font-weight: 700; }
+
+    /* ---------- Phones: the same layouts, smaller; room for the bottom bar ---------- */
+    @media (max-width: 900px) {
+      .mk-note { padding: 8px 16px; font-size: 12px; }
+      .mk-note a { margin-left: 6px; }
+      main { padding: 16px 16px 120px; }
+      .cv { --picw: 40%; grid-template-areas: "t pic" "go go" "pr pr" "say say"; gap: 0 14px; }
+      .cv-t { display: contents; }
+      .cv-id { grid-area: t; }
+      .cv-go { grid-area: go; margin-top: 14px; }
+      .cv-promise { grid-area: pr; }
+      .mk-note .mk-x { display: none; }
+      .cv h1 { font-size: 28px; margin-bottom: 10px; }
+      .cv-for { font-size: 13px; display: block; margin-bottom: 0; }
+      .cv-for b { display: inline-block; margin: 0 0 4px; transform: none; }
+      .cv-promise { font-size: 15px; margin: 14px 0 0; }
+      .cv-say { margin-top: 14px; }
+      .cv-go .k-cta { width: 100%; }
+      .say { grid-template-columns: minmax(0, 1fr); }
+      .say-btn { justify-self: start; }
+      .parts-h { margin-top: 36px; }
+      .pc { --pcw: 96px; gap: 12px; padding: 10px; }
+      .pc-t h3 { font-size: 18px; margin-bottom: 4px; }
+      .pc-t p { font-size: 12.5px; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+      .pc-f em { font-size: 11px; }
+      .ph { grid-template-columns: minmax(0, 1fr); align-items: start; }
+      .ph h1 { font-size: 28px; }
+      .ph p.one { font-size: 14px; margin-bottom: 14px; }
+      .gsm { grid-template-columns: 64px minmax(0, 1fr); }
+      .ap-grid { gap: 10px; }
+      .ap { grid-template-columns: 116px minmax(0, 1fr); grid-template-rows: none; box-shadow: 4px 4px 0 var(--k-c); }
+      .ap-img { aspect-ratio: auto; height: 100%; min-height: 72px; border-bottom: 0; border-right: 2px solid var(--k-ink); }
+      .ap-t { padding: 9px 10px; }
+      .ap-t h3 { font-size: 13.5px; }
+      .ap-code em { display: none; }
+      .ap-t .k-tag { white-space: normal; max-width: 78px; font-size: 9px; text-align: left; }
+      .gsm .say-btn { padding: 7px 10px; }
+      .ap-t small { font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+
+<div class="mk-note"><b>Mock</b> Option B<span class="mk-x">, An Inviting Front Door. Real content; nothing here is live.</span>
+  <a href="?view=handbook" data-v="handbook">Nutrition cover</a>
+  <a href="?view=handbook&amp;part=nutrients" data-v="handbook|nutrients">Nutrients part</a>
+  <a href="?view=finder" data-v="finder">Choose your airport</a>
+  <a href="?view=finder&amp;part=cover" data-v="finder|cover">Airport cover</a>
+</div>
+
+<main id="app" data-k-section="guides"></main>
+
+<script>
+(function () {
+  var NP = '/public/guides/nutrition/';
+  var POINTS = '$11 once, or 1,100 points you earn on the site (the free survey alone gives 250)';
+  var ICON = {
+    b12: '<path d="M12 3c-3 4-6 7-6 11a6 6 0 0012 0c0-4-3-7-6-11z"/><path d="M10 14h4"/>',
+    protein: '<path d="M7 4c-2 4-2 12 0 16M17 4c2 4 2 12 0 16"/><path d="M7 12h10"/>',
+    iron: '<circle cx="12" cy="12" r="8"/><path d="M12 7v10M9 9h6M9 15h6"/>',
+    calcium: '<path d="M8 3h8l-1 4H9z"/><path d="M9 7v13a1 1 0 001 1h4a1 1 0 001-1V7"/>',
+    'vitamin-d': '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    'omega-3': '<path d="M12 3c4 4 6 7 6 10a6 6 0 01-12 0c0-3 2-6 6-10z"/><path d="M9.5 14a2.5 2.5 0 002.5 2.5"/>',
+    iodine: '<path d="M3 14c3-3 6-3 9 0s6 3 9 0"/><path d="M3 9c3-3 6-3 9 0s6 3 9 0"/>',
+    zinc: '<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M9 10h6l-6 5h6"/>'
+  };
+  function svg(id) { return '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2D5C27" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICON[id] + '</svg>'; }
+
+  var GUIDES = {
+    handbook: {
+      name: 'Nutrition Guide', guide: 'Theo', view: 'handbook',
+      eyebrow: 'The Nutrition Guide',
+      title: 'What Your Vegan Plate Needs',
+      forWho: 'Anyone eating Vegan, from your first week to your twentieth year.',
+      promise: 'Eight nutrients, how much you need and the foods that have them, with the source of every number named under it.',
+      start: ['Start here', 'Opens Nutrients, with vitamin B12 free'],
+      pic: NP + 'theo-overview.jpg', ar: '4 / 5', picw: 'min(420px, 34vw)',
+      say: 'I\'m Theo. I\'ve been Vegan a long time. Here\'s what I wish I\'d known on day one.',
+      price: 'Free for everyone: vitamin B12, Supplements, Experts and Courses. The rest comes with the full Guide, ' + POINTS + '.',
+      first: 'nutrients',
+      parts: [
+        { k: 'nutrients', t: 'Nutrients', pic: NP + 'scene-market.webp', line: 'B12, protein, iron, calcium, vitamin D, omega-3s, iodine and zinc: how much, and where to get it.', tag: ['pg', 'B12 free'], what: 'B12 free, the other seven with the Guide' },
+        { k: 'plate', t: 'Your Plate', pic: NP + 'scene-plate.webp', line: 'One simple plate at every meal, and a short list to check off every day. No counting.', tag: ['pg', 'With the Guide'], what: 'Comes with the Guide' },
+        { k: 'supplements', t: 'Supplements', pic: NP + 'card-supplements.jpg', line: 'What most Vegans take, what to check on the label, and the brands in our Directory.', tag: ['live', 'Free'], what: 'Free for everyone' },
+        { k: 'experts', t: 'Experts', pic: NP + 'card-experts.jpg', line: 'Physicians and dietitians from our shows, and health professionals near you.', tag: ['live', 'Free'], what: 'Free for everyone' },
+        { k: 'courses', t: 'Courses', pic: NP + 'card-courses.jpg', line: 'Plant-based nutrition, cooking and coaching courses, for yourself or for your work.', tag: ['live', 'Free'], what: 'Free for everyone' },
+        { k: 'pulse', t: 'The Pulse', pic: NP + 'scene-podcast.webp', line: 'Our episodes with Dr. Barnard, Dr. Klaper, Dr. Bulsiewicz and more, played right here.', tag: ['pg', 'With the Guide'], what: 'Comes with the Guide' }
+      ]
+    },
+    finder: {
+      name: 'Airport Guide', guide: 'Nori', view: 'finder',
+      eyebrow: 'The Airport Guide',
+      title: 'Vegan Food at the Airport, Gate by Gate',
+      forWho: 'Anyone flying through an airport in our cities.',
+      promise: 'Type your gate and see the closest Vegan food you can reach, before or after security, without going through security again.',
+      start: ['Start here', 'Opens Choose your airport, with Fort Lauderdale free'],
+      pic: '/public/guides/airport-guide.jpg', ar: '1200 / 750', picw: 'min(560px, 42vw)',
+      say: 'Hi, I\'m Nori. Type your gate and I\'ll show you the closest Vegan food you can reach.',
+      price: 'Free for everyone: Fort Lauderdale. Every other airport comes with the full Guide, ' + POINTS + '.',
+      first: 'airports',
+      parts: [
+        { k: 'airports', t: 'Choose Your Airport', pic: '/public/guides/airports/atl.webp', ar: '1200 / 670', line: 'Every spot with Vegan food, before or after security, and the gate it is near.', tag: ['pg', 'FLL free'], what: 'Fort Lauderdale free, the rest with the Guide' },
+        { k: 'bounties', t: 'Bounties', pic: '/public/guides/thumb-bounties.jpg', ar: '1280 / 714', line: 'Points for small jobs on your way through: a photo, a price, a menu that changed.', tag: ['pg', 'With the Guide'], what: 'See them free, earn with the Guide' },
+        { k: 'report', t: 'Help Keep It Right', pic: '/public/guides/airports/mco.webp', ar: '1200 / 670', line: 'At the airport? Confirm what is still there, or tell us what changed, with a photo.', tag: ['live', 'Members'], what: 'Free for members (membership is free)' }
+      ]
+    }
+  };
+
+  var NUTS = [
+    ['b12', 'Vitamin B12', 'The one every Vegan needs a reliable source of.', 1],
+    ['protein', 'Protein', 'Beans, lentils, tofu, tempeh and seitan, spread through the day.'],
+    ['iron', 'Iron', 'Beans, lentils, greens and whole grains, with vitamin C to help it in.'],
+    ['calcium', 'Calcium', 'Plant milks with calcium added, calcium-set tofu and leafy greens.'],
+    ['vitamin-d', 'Vitamin D', 'Sunlight, foods with vitamin D added and, for many, a supplement.'],
+    ['omega-3', 'Omega-3s', 'Flax, chia, hemp and walnuts, or an algae supplement.'],
+    ['iodine', 'Iodine', 'Iodized salt or a supplement; seaweed varies too much to count on.'],
+    ['zinc', 'Zinc', 'Beans, nuts, seeds and whole grains, soaked or sprouted when you can.']
+  ];
+
+  // The 16 airports, as the live Guide lists them (ve-venues, 2026-11-18): code, name, city, Vegan items, last checked
+  var AIRPORTS = [
+    ['fll', 'Fort Lauderdale-Hollywood International Airport', 'Fort Lauderdale, FL', 11, 'Nov 8', 1],
+    ['mia', 'Miami International Airport', 'Miami, FL', 18], ['pbi', 'Palm Beach International Airport', 'West Palm Beach, FL', 5],
+    ['mco', 'Orlando International Airport', 'Orlando, FL', 10], ['tpa', 'Tampa International Airport', 'Tampa, FL', 16],
+    ['jax', 'Jacksonville International Airport', 'Jacksonville, FL', 4], ['atl', 'Hartsfield-Jackson Atlanta International Airport', 'Atlanta, GA', 17],
+    ['dca', 'Ronald Reagan Washington National Airport', 'Arlington, VA', 13], ['iad', 'Washington Dulles International Airport', 'Dulles, VA', 6],
+    ['bwi', 'Baltimore/Washington International Thurgood Marshall Airport', 'Linthicum, MD', 9], ['phl', 'Philadelphia International Airport', 'Philadelphia, PA', 9],
+    ['jfk', 'John F. Kennedy International Airport', 'New York, NY', 6], ['lga', 'LaGuardia Airport', 'New York, NY', 5],
+    ['ewr', 'Newark Liberty International Airport', 'Newark, NJ', 12], ['lax', 'Los Angeles International Airport', 'Los Angeles, CA', 7],
+    ['lhr', 'London Heathrow Airport', 'London, England', 6]
+  ];
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function url(view, part) { return '?view=' + view + (part ? '&part=' + part : ''); }
+  function say(g, line, label) {
+    return '<div class="say"><button type="button" class="say-btn" aria-pressed="false"><i></i>Hear ' + g + '</button>' +
+      '<p><small>' + esc(label) + '</small>' + esc(line) + '</p><div class="say-bar"><i></i></div></div>';
+  }
+
+  function cover(G) {
+    var cards = G.parts.map(function (p, i) {
+      return '<a class="k-card pc" href="' + url(G.view, p.k) + '" style="' + (p.ar ? '--ar:' + p.ar + ';--pcw:min(240px,34%)' : '') + '">' +
+        '<div class="pc-img"><img src="' + p.pic + '" alt="" loading="lazy"></div>' +
+        '<div class="pc-t"><p class="pc-n">Part ' + (i + 1) + '</p><h3>' + esc(p.t) + '</h3><p>' + esc(p.line) + '</p>' +
+        '<div class="pc-f"><em>' + esc(p.what) + '</em><span class="k-tag ' + p.tag[0] + '">' + esc(p.tag[1]) + '</span></div></div></a>';
+    }).join('');
+    return '<section class="cv" style="--picw:' + G.picw + '">' +
+      '<div class="cv-t"><div class="cv-id"><span class="k-eb pk">' + esc(G.eyebrow) + '</span>' +
+        '<h1>' + esc(G.title) + '</h1>' +
+        '<p class="cv-for"><b>For</b> ' + esc(G.forWho) + '</p></div>' +
+        '<p class="cv-promise">' + esc(G.promise) + '</p>' +
+        '<div class="cv-go"><a class="k-btn k-cta" href="' + url(G.view, G.first) + '">' + G.start[0] + '</a><small>' + esc(G.start[1]) + '</small></div></div>' +
+      '<div class="k-pic cv-pic" style="--ar:' + G.ar + '"><img src="' + G.pic + '" alt="' + G.guide + ', the ' + G.name + '\'s Guide"></div>' +
+      '<div class="cv-say">' + say(G.guide, G.say, G.guide + ' says, 9 seconds') + '</div>' +
+    '</section>' +
+    '<div class="parts-h"><h2 class="k-h2">What Is Inside</h2><small>' + G.parts.length + ' parts. Pick any one, in any order.</small></div>' +
+    '<div class="pc-grid">' + cards + '</div>' +
+    '<p class="price"><span>' + esc(G.price) + '</span><a class="k-btn k-sm" href="#">Get the Guide</a></p>' +
+    '<div class="mk-aside"><b>Note for Sean:</b> in this design the Welcome Guide\'s one orange button says <b>Start here</b> and opens Getting started. "Become a Founder" moves down to a picture card of its own, with one line on what a Founding Member gets.</div>';
+  }
+
+  function prow(G, cur) {
+    return '<p class="crumb"><a href="' + url(G.view, 'cover') + '">' + G.name + '</a> / ' + esc(G.parts.filter(function (p) { return p.k === cur; })[0].t) + '</p>' +
+      '<nav class="prow" aria-label="Parts of the ' + G.name + '"><a class="cover" href="' + url(G.view, 'cover') + '"><b>&#8962;</b>Cover</a>' +
+      G.parts.map(function (p, i) { return '<a href="' + url(G.view, p.k) + '"' + (p.k === cur ? ' aria-current="page"' : '') + '><b>' + (i + 1) + '</b>' + esc(p.t) + '</a>'; }).join('') + '</nav>';
+  }
+  function pnext(G, cur) {
+    var i = G.parts.map(function (p) { return p.k; }).indexOf(cur), n = G.parts[i + 1];
+    return '<div class="pnext"><a class="k-btn k-sm" href="' + url(G.view, 'cover') + '">Back to the cover</a><span>Part ' + (i + 1) + ' of ' + G.parts.length + '</span>' +
+      (n ? '<a class="k-btn k-sm" href="' + url(G.view, n.k) + '">Next: ' + esc(n.t) + '</a>' : '<span></span>') + '</div>';
+  }
+
+  function nutrients(G) {
+    var rows = NUTS.map(function (n) {
+      return '<a class="k-row" href="' + (n[3] ? '#b12' : url('handbook', 'nutrients') + '#get') + '" id="' + n[0] + '"><span class="k-num">' + svg(n[0]) + '</span>' +
+        '<span class="k-row-t"><b>' + n[1] + '</b><small>' + n[2] + '</small></span>' +
+        '<span class="k-tag ' + (n[3] ? 'live' : 'pg') + '">' + (n[3] ? 'Free' : 'With the Guide') + '</span></a>';
+    }).join('');
+    return prow(G, 'nutrients') +
+      '<section class="ph"><div><span class="k-label">Part 1 of 6 &middot; For anyone eating Vegan</span><h1>Eight Nutrients, One at a Time</h1>' +
+        '<p class="one">Start with vitamin B12, the one every Vegan needs a reliable source of.</p>' +
+        '<a class="k-btn k-cta" href="#b12">Read B12, free</a></div>' +
+        '<div class="gsm"><div class="k-pic"><img src="/public/brand-kit/avatars/theo-v3.jpg" alt="Theo"></div>' +
+        say('Theo', 'Eight nutrients, one at a time: how much you need, which foods have it, and when to take a supplement.', 'Theo on this part') + '</div></section>' +
+      '<p class="price"><span>Vitamin B12 is free for everyone. The other seven come with the full Guide, ' + POINTS + '.</span></p>' +
+      '<div class="list">' + rows + '</div>' +
+      '<p class="med">General information from the sources named, not medical advice. Talk with your doctor or a registered dietitian, especially if you are pregnant, breastfeeding, raising a Vegan child, or managing a health condition.</p>' +
+      pnext(G, 'nutrients');
+  }
+
+  function airports(G) {
+    var cards = AIRPORTS.map(function (a) {
+      return '<a class="k-card ap" href="#' + a[0] + '" data-q="' + esc((a[0] + ' ' + a[1] + ' ' + a[2]).toLowerCase()) + '">' +
+        '<div class="ap-img"><img src="/public/guides/airports/' + a[0] + '.webp" alt="" loading="lazy"></div>' +
+        '<div class="ap-t"><span class="ap-code"><span>' + a[0].toUpperCase() + '</span><em>' + esc(a[2]) + '</em></span>' +
+        '<span class="k-tag ' + (a[5] ? 'live' : 'pg') + '">' + (a[5] ? 'Free' : 'With the Guide') + '</span>' +
+        '<h3 class="k-clamp">' + esc(a[1]) + '</h3><small>' + a[3] + ' Vegan items &middot; ' + (a[4] ? 'Checked ' + a[4] : 'Not checked yet') + '</small></div></a>';
+    }).join('');
+    var items = AIRPORTS.reduce(function (s, a) { return s + a[3]; }, 0);
+    return prow(G, 'airports') +
+      '<section class="ph"><div><span class="k-label">Part 1 of 3 &middot; For anyone flying</span><h1>Choose Your Airport</h1>' +
+        '<p class="one">' + AIRPORTS.length + ' airports and ' + items + ' Vegan items, each one marked before or after security, with the gate it is near.</p>' +
+        '<a class="k-btn k-cta" href="#fll">Try Fort Lauderdale, free</a></div>' +
+        '<div class="gsm"><div class="k-pic"><img src="/public/brand-kit/avatars/nori-v2.jpg" alt="Nori"></div>' +
+        say('Nori', 'Pick your airport, then type your gate. I\'ll show you the closest Vegan food and the walk.', 'Nori on this part') + '</div></section>' +
+      '<div class="find"><input id="apq" type="search" placeholder="Search an airport, a city or a code" aria-label="Search airports"><button type="button" class="k-btn" id="near">Near me</button></div>' +
+      '<p class="price"><span>Fort Lauderdale is free for everyone. The other ' + (AIRPORTS.length - 1) + ' come with the full Guide, ' + POINTS + '.</span></p>' +
+      '<div class="ap-grid" id="aps">' + cards + '</div><p class="ap-none" id="apnone" hidden>No airport matches that yet.</p>' +
+      pnext(G, 'airports');
+  }
+
+  function quiet(G, k) {
+    var p = G.parts.filter(function (x) { return x.k === k; })[0];
+    return prow(G, k) + '<section class="ph"><div><span class="k-label">Part ' + (G.parts.indexOf(p) + 1) + ' of ' + G.parts.length + '</span><h1>' + esc(p.t) + '</h1>' +
+      '<p class="one">' + esc(p.line) + '</p><span class="k-tag ' + p.tag[0] + '">' + esc(p.what) + '</span></div></section>' +
+      '<p class="med">This mock draws the cover, Nutrients and Choose your airport in full; this part follows the same quiet shape: title, one line, the list.</p>' + pnext(G, k);
+  }
+
+  var q = new URLSearchParams(location.search);
+  var view = q.get('view') === 'finder' ? 'finder' : 'handbook';
+  var G = GUIDES[view];
+  var part = q.get('part') || (view === 'finder' ? 'airports' : 'cover');
+  if (part !== 'cover' && !G.parts.some(function (p) { return p.k === part; })) part = 'cover';
+  var app = document.getElementById('app');
+  app.innerHTML = part === 'cover' ? cover(G) : part === 'nutrients' && view === 'handbook' ? nutrients(G) : part === 'airports' && view === 'finder' ? airports(G) : quiet(G, part);
+  document.title = (part === 'cover' ? G.name : G.parts.filter(function (p) { return p.k === part; })[0].t + ', ' + G.name) + ', Option B | Vegans Explore';
+
+  var key = view + (part === 'cover' ? (view === 'finder' ? '|cover' : '') : (view === 'handbook' ? '|' + part : ''));
+  document.querySelectorAll('.mk-note a[data-v]').forEach(function (a) { if (a.getAttribute('data-v') === key) a.setAttribute('aria-current', 'page'); });
+
+  // Play: nothing plays until pressed (the recordings are Sean's to make; this mock only shows the press)
+  app.addEventListener('click', function (e) {
+    var b = e.target.closest('.say-btn'); if (!b) return;
+    var box = b.closest('.say'), on = b.getAttribute('aria-pressed') !== 'true';
+    b.setAttribute('aria-pressed', on ? 'true' : 'false'); box.classList.toggle('on', on);
+    b.lastChild.nodeValue = on ? 'Pause' : 'Hear ' + (view === 'finder' ? 'Nori' : 'Theo');
+  });
+  var inp = document.getElementById('apq');
+  if (inp) {
+    inp.addEventListener('input', function () {
+      var t = inp.value.trim().toLowerCase(), n = 0;
+      document.querySelectorAll('#aps .ap').forEach(function (c) { var hit = !t || c.getAttribute('data-q').indexOf(t) > -1; c.hidden = !hit; if (hit) n++; });
+      document.getElementById('apnone').hidden = n > 0;
+    });
+    document.getElementById('near').addEventListener('click', function () { inp.value = 'fl'; inp.dispatchEvent(new Event('input')); });
+  }
+})();
+</script>
+<script src="/public/footer.js"></script>
+</body>
+</html>

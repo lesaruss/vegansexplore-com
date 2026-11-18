@@ -349,7 +349,7 @@
   function gvCount(key) { return (GV.counts.episode || {})[key] || 0; }
   function gvoteBtn(key) {
     var on = !!GV.mine.episode[key];
-    return '<button type="button" class="dg-vote dg-vote-s' + (on ? ' on' : '') + '" data-gvote="episode:' + esc(key) + '" aria-pressed="' + on + '" title="' + (on ? 'You voted for this' : 'Vote for this') + '">' + HEART + '<b>' + gvCount(key) + '</b></button>';
+    return '<button type="button" class="dg-vote dg-vote-s' + (on ? ' on' : '') + '" data-gvote="episode:' + esc(key) + '" aria-pressed="' + on + '" title="' + (on ? 'You vouched for this' : 'Vouch for this') + '">' + HEART + '<b>' + gvCount(key) + '</b></button>';
   }
 
   // ---------- chapters (VE_HUBS), for venues and vendors near you ----------
@@ -520,7 +520,7 @@
     var know = member() && MEM.venue
       ? '<div class="ev-cols">' + box('What to ask before you sign', list(MEM.venue.ask)) + box('Red flags in a venue contract', list(MEM.venue.flags)) + '</div>'
       : gated('<div class="ev-cols">' + box('What to ask before you sign', skel('', 5)) + box('Red flags', skel('', 4)) + '</div>', 'What to ask a venue', 'The questions to take with you on a visit, and the red flags in a venue contract.');
-    main.innerHTML = head('Venue', 'Find the room, then ask the right questions', 'Event venues in our Directory, and the restaurants and spaces where Vegan events were held this year. Members vote for the ones they love working with.') +
+    main.innerHTML = head('Venue', 'Find the room, then ask the right questions', 'Event venues in our Directory, and the restaurants and spaces where Vegan events were held this year. Members vouch for the ones they love working with.') +
       dirList(VENUES, 'evVenues', '#/venue', 'evVenueCh', 'No venues listed in this chapter yet. Know one? Add it, and it helps every host after you.') +
       '<div class="dg-btns" style="margin:14px 0 22px"><a class="dg-btn dg-ghost" href="/directory?tab=services&sub=event-venues">See them in the Directory</a><a class="dg-btn dg-ghost" href="/claim?add=1">Add a venue</a></div>' + know;
     wireCards('evVenues', '#/venue'); wirePick('evVenueCh', function () { viewVenue(''); });
@@ -880,7 +880,7 @@
       box('Who qualifies', list(['Vegan events, where everything served and sold is Vegan', 'Plant-forward events at a venue that is not Vegan, when the host is a Group Partner', 'We take two a chapter a month, so apply early'])) + '</div>' +
       '<h3 class="dg-k" style="margin:6px 0 8px">Why work with us</h3><div class="rg-steps">' + [
         ['Thirteen chapters', 'From South Florida to London, each with its own hub, Daily Pulse and calendar.'],
-        ['A Directory of Vegan businesses', 'More than a thousand places, vendors, groups and venues, voted on by members.'],
+        ['A Directory of Vegan businesses', 'More than a thousand places, vendors, groups and venues, vouched for by members.'],
         ['Every Vegan event, in one calendar', 'We gather Vegan events from everywhere, and every city hub reads it.'],
         ['Tickets at 5%', 'A Group Partner sells tickets on its own page; free events are free.'],
         ['The guest pass', 'A first-timer comes to one free event, and joins after.'],

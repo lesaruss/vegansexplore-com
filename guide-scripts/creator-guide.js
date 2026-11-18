@@ -231,7 +231,7 @@
   function gvCount(key) { return (GV.counts.episode || {})[key] || 0; }
   function gvoteBtn(key) {
     var on = !!GV.mine.episode[key];
-    return '<button type="button" class="dg-vote dg-vote-s' + (on ? ' on' : '') + '" data-gvote="episode:' + esc(key) + '" aria-pressed="' + on + '" title="' + (on ? 'You voted for this' : 'Vote for this') + '">' + HEART + '<b>' + gvCount(key) + '</b></button>';
+    return '<button type="button" class="dg-vote dg-vote-s' + (on ? ' on' : '') + '" data-gvote="episode:' + esc(key) + '" aria-pressed="' + on + '" title="' + (on ? 'You vouched for this' : 'Vouch for this') + '">' + HEART + '<b>' + gvCount(key) + '</b></button>';
   }
 
   // ---------- Directory cards ----------
@@ -357,7 +357,7 @@
     var q = (document.getElementById('cgQ') || {}).value || '';
     var list = (CREATORS || []).filter(function (l) { return (!s[2] || inCat(l, s[2])) && (!q || (l.name || '').toLowerCase().indexOf(q.toLowerCase()) >= 0); });
     main.innerHTML = head('People doing it', 'Vegan creators and channels',
-      'The content creators and YouTube channels in our Directory, the most voted first. Study how they show up, and vote for the ones you watch.',
+      'The content creators and YouTube channels in our Directory, the most vouched for first. Study how they show up, and vouch for the ones you watch.',
       toggles(PEOPLE_SUBS.map(function (x) { return [x[0], '#/people' + (x[1] ? '/' + x[1] : '')]; }), s[0])) +
       '<div class="dg-tools"><input type="search" id="cgQ" placeholder="Search ' + esc(s[1] ? s[0].toLowerCase() : 'creators') + '..." value="' + esc(q) + '" aria-label="Search creators"><span class="dg-count">' + (CREATORS ? list.length + ' shown' : '') + '</span></div>' +
       (CREATORS ? (list.length ? cards(list.slice(0, shown), 'cgPeople') + (list.length > shown ? '<div class="dg-btns" style="margin-top:14px"><button type="button" class="dg-btn dg-ghost" data-more>Show more</button></div>' : '')
@@ -499,13 +499,13 @@
     var rows = pages.map(function (x) {
       return '<div class="dg-row cg-you-row"><div class="cg-you-pg"><span class="cg-you-th"' + (x.logo_url ? ' style="background-image:url(\'' + esc(x.logo_url) + '\')"' : '') + '></span><div><b>' + esc(x.name) + '</b>' +
         '<span class="cg-you-k">' + esc(CAT_WORD[x.category] || x.category) + (x.since ? ' · on Vegans Explore since ' + esc(day(x.since)) : '') + '</span></div></div>' +
-        '<div class="cg-you-n">' + fmtN(x.views) + ' views · ' + fmtN(x.visitors) + ' people · ' + fmtN(x.votes) + (x.votes === 1 ? ' vote' : ' votes') + '</div>' +
+        '<div class="cg-you-n">' + fmtN(x.views) + ' views · ' + fmtN(x.visitors) + ' people · ' + fmtN(x.votes) + (x.votes === 1 ? ' vouch' : ' vouches') + '</div>' +
         '<a class="dg-btn dg-ghost" href="/directory/' + encodeURIComponent(x.slug) + '" target="_blank" rel="noopener">Open</a></div>';
     }).join('');
     var soon = function (h, p) { return '<div class="dg-card"><span class="dg-tag dg-tag-wait">Coming</span><h3 style="margin-top:8px">' + h + '</h3><p>' + p + '</p></div>'; };
     main.innerHTML = head('Made for ' + first, first + ', this is your Creator Guide',
       'Everything Vegans Explore has built around you so far, in one place: your pages, the people finding them, and what opens up when our campaigns start on January 1.', badge) +
-      '<div class="cg-you-stats">' + stat(fmtN(pages.length), 'Pages about you') + stat(fmtN(views), 'Views so far') + stat(fmtN(votes), 'Member votes') + '</div>' +
+      '<div class="cg-you-stats">' + stat(fmtN(pages.length), 'Pages about you') + stat(fmtN(views), 'Views so far') + stat(fmtN(votes), 'Member vouches') + '</div>' +
       '<p class="dg-pp" style="margin:8px 0 22px">Counting from the day your pages went up' + (since ? ' (' + esc(since) + ')' : '') + '. These are views on Vegans Explore, our own team\'s visits included, not your Instagram or YouTube numbers.</p>' +
       '<h3 class="cg-you-h">Your pages on Vegans Explore</h3><div class="dg-rows">' + (rows || '<p class="dg-empty">Your pages are being set up.</p>') + '</div>' +
       '<h3 class="cg-you-h">Your Creator Dashboard</h3>' +

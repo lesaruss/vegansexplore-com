@@ -183,7 +183,7 @@
     grid.innerHTML = rs.map(function (x) {
       var vs = x.vegan_status === 'fully_vegan' || x.vegan_status === 'vegan' ? '<span class="tag">100% Vegan</span>' : (x.vegan_status === 'vegan_options' ? '<span class="tag d">Vegan options</span>' : (x.vegan_status === 'vegan_friendly' ? '<span class="tag d">Vegan friendly</span>' : ''));
       return '<a class="card" href="/directory/' + encodeURIComponent(x.slug) + '"><span class="logo">' + (x.logo_url ? '<img src="' + esc(x.logo_url) + '" alt="" loading="lazy" width="64" height="64" onerror="this.replaceWith(document.createTextNode(\'' + esc((x.name || '?').charAt(0).toUpperCase()) + '\'))">' : esc((x.name || '?').charAt(0).toUpperCase())) + '</span>' +
-        '<span class="t"><b>' + esc(x.name) + '</b><span class="m">' + esc(S.meta(x)) + '</span>' + ((vs || x.votes) ? '<span class="tags">' + vs + (x.votes ? '<span class="tag d">' + x.votes + (x.votes === 1 ? ' vote' : ' votes') + '</span>' : '') + '</span>' : '') +
+        '<span class="t"><b>' + esc(x.name) + '</b><span class="m">' + esc(S.meta(x)) + '</span>' + ((vs || x.votes) ? '<span class="tags">' + vs + (x.votes ? '<span class="tag d">' + x.votes + (x.votes === 1 ? ' vouch' : ' vouches') + '</span>' : '') + '</span>' : '') +
         (x.tagline ? '<span class="tl">' + esc(x.tagline) + '</span>' : '') + '</span></a>';
     }).join('');
     var c = data.content || {}, hasC = S.hasContent(c) || !!data.store;

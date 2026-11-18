@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en" data-kit-parent="welcome-guide">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guide Panel Option A: Parts You Can See (Mock) - Vegans Explore</title>
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Mock, design panel 2, option A: every part of a Guide always in view, the Guide as a warm card with a big Play, one main button.">
+  <link rel="icon" href="/public/favicon.ico">
+  <style>@font-face{font-family:'Montserrat';font-style:normal;font-weight:400 900;font-display:swap;src:url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2');}</style>
+  <link rel="stylesheet" href="/public/ve-kit.css">
+  <!-- Design panel 2 (2026-11-18), option A, "Parts you can see". Built from the web kit (/public/ve-kit.css); the frame it would replace is
+       /public/ve-guide-frame.css. Content is the live Nutrition Guide and Airport Guide (guide-scripts/nutrition-guide.js, airport-guide.js).
+       Page styles below are layout only, prefix pa-. -->
+  <style>
+    *,*::before,*::after{box-sizing:border-box;}
+    body{margin:0;font-family:"Montserrat",sans-serif;background:#fff;color:#1a1a1a;line-height:1.5;}
+    .pa-mock{background:var(--k-peach);border-bottom:2px solid var(--k-ink);padding:8px 40px;display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;font-size:12px;font-weight:700;}
+    .pa-mock b{font-weight:900;letter-spacing:.12em;text-transform:uppercase;font-size:10.5px;}
+    .pa-mock nav{display:flex;gap:6px;flex-wrap:wrap;}
+    .pa-mock nav a{color:var(--k-ink);text-decoration:none;border:2px solid var(--k-ink);border-radius:var(--k-r);padding:3px 8px;font-weight:800;font-size:11.5px;background:#fff;}
+    .pa-mock nav a.on{background:var(--k-ink);color:#fff;}
+    .pa-wnote{margin:26px 0 0;display:inline-block;background:var(--k-peach);border:2px solid var(--k-ink);border-radius:var(--k-r);padding:8px 12px;font-size:12.5px;font-weight:600;}
+    .pa-price.m{display:none;}
+    .pa-gact{display:flex;flex-wrap:wrap;gap:12px;align-items:center;}
+    .pa-gact .pa-bar{flex-basis:100%;margin-top:0;}
+    .pa-gact .k-cta{font-size:13px;padding:16px 22px;}
+    .pa-guide .pa-search{flex-basis:100%;}
+
+    .pa-page{padding:26px 40px 80px;}
+    .pa-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px 24px;margin-bottom:6px;}
+    .pa-head .k-h1{margin:0 0 6px;}
+    .pa-who{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:14px;font-weight:700;margin:0;}
+    .pa-who .k-tag{background:var(--k-pinkt);color:var(--k-pinkd);}
+    .pa-page > .k-stripe{margin:14px 0 26px;}
+
+    .pa-body{display:grid;grid-template-columns:290px minmax(0,1fr);gap:40px;align-items:start;}
+
+    /* The parts: always visible. A column on desktop, one sliding row of tabs on phones. */
+    .pa-parts{position:sticky;top:84px;}
+    .pa-parts .k-label{color:var(--k-ink);}
+    .pa-list{list-style:none;margin:0 0 14px;padding:0;display:grid;gap:6px;}
+    .pa-list a{display:grid;grid-template-columns:30px minmax(0,1fr) auto;align-items:center;gap:10px;text-decoration:none;color:var(--k-ink);border:2px solid transparent;border-radius:10px;padding:7px 9px;}
+    .pa-list a:hover{border-color:var(--k-line);background:#fafafa;}
+    .pa-list .pa-n{width:30px;height:30px;border-radius:8px;display:grid;place-items:center;font-weight:900;font-size:13px;background:#f1f1f1;}
+    .pa-list b{display:block;font-size:14px;font-weight:900;line-height:1.2;}
+    .pa-list small{display:block;font-size:11.5px;font-weight:600;color:var(--k-mute);line-height:1.3;margin-top:2px;}
+    .pa-list .pa-lk{color:var(--k-mute);display:inline-flex;}
+    .pa-list a[aria-current="page"]{border-color:var(--k-ink);background:var(--k-pinkt);box-shadow:4px 4px 0 var(--k-pink);}
+    .pa-list a[aria-current="page"] .pa-n{background:var(--k-ink);color:#fff;}
+    .pa-price{border-top:2px solid var(--k-ink);padding-top:12px;font-size:12.5px;font-weight:600;line-height:1.5;}
+    .pa-price b{font-weight:900;}
+    .pa-price svg{vertical-align:-1px;margin-right:4px;}
+    .pa-price a{color:var(--k-ink);font-weight:900;}
+
+    /* The Guide: a warm card at the top of the content, with a big Play. */
+    .pa-guide{display:grid;grid-template-columns:auto minmax(0,1fr);gap:22px;align-items:center;background:var(--k-pinkt);border:2px solid var(--k-ink);border-radius:var(--k-rc);box-shadow:6px 6px 0 var(--k-pink);padding:16px;margin:0 0 30px;}
+    .pa-gpic{width:168px;aspect-ratio:4/5;border:2px solid var(--k-ink);border-radius:12px;overflow:hidden;background:#fff;}
+    .pa-gpic.sq{aspect-ratio:1/1;}
+    .pa-gpic img{display:block;width:100%;height:100%;object-fit:cover;object-position:center top;}
+    .pa-gname{font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;margin:0 0 6px;color:var(--k-pinkd);}
+    .pa-say{font-size:clamp(17px,1.5vw,21px);font-weight:800;line-height:1.38;letter-spacing:-.01em;margin:0 0 16px;max-width:780px;}
+    .pa-play{display:inline-flex;align-items:center;gap:12px;font:inherit;font-size:15px;font-weight:900;color:#fff;background:var(--k-ink);border:2px solid var(--k-ink);border-radius:var(--k-r);padding:10px 20px 10px 10px;cursor:pointer;}
+    .pa-play i{width:40px;height:40px;border-radius:var(--k-r);background:var(--k-pink);display:grid;place-items:center;font-style:normal;}
+    .pa-play:hover{background:#333;}
+    .pa-play small{font-size:11px;font-weight:700;opacity:.8;display:block;letter-spacing:0;}
+    .pa-bar{height:6px;border-radius:3px;background:#fff;border:1.5px solid var(--k-ink);margin-top:12px;max-width:420px;overflow:hidden;display:none;}
+    .pa-bar span{display:block;height:100%;width:0;background:var(--k-pinkd);}
+    .pa-guide.playing .pa-bar{display:block;}
+
+    /* Content */
+    .pa-crumb{font-size:12px;font-weight:700;color:var(--k-mute);margin:0 0 10px;}
+    .pa-crumb a{color:var(--k-ink);}
+    .pa-sec{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 20px;margin:0 0 16px;}
+    .pa-sec .k-h2{margin:0 0 4px;}
+    .pa-sec p{margin:0;font-size:15px;font-weight:600;}
+    .pa-tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:14px;}
+    .pa-tile{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:12px;align-items:center;border:2px solid var(--k-ink);border-radius:12px;padding:12px;background:#fff;text-decoration:none;color:var(--k-ink);box-shadow:4px 4px 0 var(--k-tint);}
+    .pa-tile.open{box-shadow:4px 4px 0 var(--k-pink);}
+    .pa-ic{width:44px;height:44px;border-radius:10px;background:var(--k-tint);display:grid;place-items:center;}
+    .pa-tile b{display:block;font-size:15px;font-weight:900;line-height:1.2;}
+    .pa-tile small{display:block;font-size:12px;font-weight:600;color:var(--k-mute);line-height:1.35;margin-top:2px;}
+    .pa-lock{background:#efefef;color:#555;}
+    .pa-lock::before{display:none;}
+    .pa-note{margin:30px 0 0;font-size:12.5px;font-weight:600;color:var(--k-mute);max-width:860px;border-left:4px solid var(--k-tint);padding-left:12px;}
+    .pa-next{display:flex;justify-content:flex-end;margin-top:22px;}
+    .pa-stub{max-width:860px;}
+
+    .pa-rows .k-row{grid-template-columns:44px minmax(0,1fr) auto;}
+    .pa-rows .k-row .pa-ic{width:44px;height:44px;}
+    .pa-rows .k-row.free{box-shadow:4px 4px 0 var(--k-pink);}
+    .pa-glance{margin-top:26px;}
+    .pa-glance .k-stats{margin:10px 0 14px;}
+    .pa-glance .k-stat{--k-c:var(--k-pink);}
+    .pa-chips{display:flex;flex-wrap:wrap;gap:8px;}
+    .pa-chips span{border:2px solid var(--k-ink);border-radius:var(--k-r);padding:5px 10px;font-size:13px;font-weight:700;background:#fff;}
+
+    /* Finder */
+    .pa-search{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;max-width:900px;}
+    .pa-search input{font:inherit;font-size:15px;font-weight:600;width:100%;border:3px solid var(--k-ink);border-radius:var(--k-r);padding:11px 14px;}
+    .pa-search input:focus{outline:none;box-shadow:4px 4px 0 var(--k-or);}
+    .pa-answer{font-size:15px;font-weight:600;margin:14px 0 12px;}
+    .pa-filter{margin:0 0 14px;}
+    .pa-filter button{font-family:inherit;}
+    .pa-air{display:grid;gap:10px;}
+    .pa-arow{display:grid;grid-template-columns:128px minmax(0,1fr) auto 18px;align-items:center;gap:14px;border:2px solid var(--k-ink);border-radius:12px;padding:8px 12px 8px 8px;background:#fff;text-decoration:none;color:var(--k-ink);}
+    .pa-arow:hover{box-shadow:4px 4px 0 var(--k-pink);}
+    .pa-apic{width:128px;aspect-ratio:16/9;border-radius:8px;overflow:hidden;border:2px solid var(--k-ink);background:var(--k-tint);}
+    .pa-apic img{width:100%;height:100%;object-fit:cover;display:block;}
+    .pa-arow b{display:block;font-size:15px;font-weight:900;line-height:1.25;}
+    .pa-arow small{display:block;font-size:12.5px;font-weight:600;color:var(--k-mute);}
+    .pa-atags{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;}
+    .pa-chev{font-size:22px;font-weight:900;line-height:1;}
+    .pa-more{margin-top:12px;}
+
+    @media (max-width:900px){
+      .pa-mock{padding:8px 16px;}
+      .pa-mock{padding:6px 16px;gap:8px;flex-wrap:nowrap;}
+      .pa-mock > span,.pa-dt{display:none;}
+      .pa-mock nav{flex-wrap:nowrap;}
+      .pa-page > .pa-head .k-eb{display:none;}
+      .pa-crumb,.pa-main > .k-eb{display:none;}
+      .pa-main{display:flex;flex-direction:column;min-width:0;}
+      .pa-main > .pa-guide,.pa-main > .pa-price.m{order:-1;}
+      .pa-main > .k-h2{font-size:24px;margin-bottom:10px;}
+      .pa-wnote{align-self:flex-start;}
+      .pa-price.d{display:none;}
+      .pa-price.m{display:block;margin:-10px 0 22px;}
+      .pa-gact{gap:8px;}
+      .pa-gact > .k-cta,.pa-gact > .pa-play{width:100%;}
+      .pa-gact .k-cta{padding:14px 16px;}
+      .pa-page{padding:12px 16px 110px;}
+      .pa-head .k-h1{font-size:30px;margin-bottom:4px;}
+      .pa-who{font-size:12px;}
+      .pa-who .k-tag{font-size:9px;}
+      .pa-whox{display:none;}
+      .pa-body{gap:10px;}
+      .pa-page > .k-stripe{margin:10px 0 12px;}
+      .pa-body{grid-template-columns:minmax(0,1fr);gap:16px;}
+      .pa-parts{position:static;min-width:0;}
+      .pa-parts > .k-label{display:none;}
+      .pa-list{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;margin:0 -16px 8px;padding:0 16px 6px;}
+      .pa-list::-webkit-scrollbar{display:none;}
+      .pa-list li{flex:none;}
+      .pa-list a{display:flex;gap:7px;border:2px solid var(--k-ink);border-radius:var(--k-r);padding:6px 10px 6px 6px;background:#fff;}
+      .pa-list a[aria-current="page"]{box-shadow:3px 3px 0 var(--k-pink);}
+      .pa-list .pa-n{width:24px;height:24px;font-size:12px;border-radius:5px;}
+      .pa-list b{font-size:13px;white-space:nowrap;}
+      .pa-list small{display:none;}
+      .pa-price{border-top:0;padding-top:0;font-size:12px;}
+      .pa-guide{grid-template-columns:84px minmax(0,1fr);gap:8px 12px;padding:10px;box-shadow:4px 4px 0 var(--k-pink);margin-bottom:22px;align-items:start;}
+      .pa-guide > div{display:contents;}
+      .pa-gpic{width:84px;grid-row:1 / span 2;}
+      .pa-gname{grid-column:2;margin:0;font-size:10px;}
+      .pa-say{grid-column:2;font-size:14.5px;margin:0;}
+      .pa-gact{grid-column:1 / -1;}
+      .pa-play{justify-content:flex-start;padding:5px 14px 5px 5px;font-size:14px;}
+      .pa-play i{width:34px;height:34px;}
+      .pa-bar{max-width:none;}
+      .pa-sec .k-h2{font-size:24px;}
+      .pa-sec p{font-size:14px;}
+      .pa-sec .k-btn{width:100%;}
+      .pa-tile{grid-template-columns:38px minmax(0,1fr) auto;padding:10px;gap:10px;}
+      .pa-ic,.pa-rows .k-row .pa-ic{width:38px;height:38px;}
+      .pa-tile b{font-size:14px;}
+      .pa-rows .k-row{grid-template-columns:38px minmax(0,1fr) auto;}
+      .pa-search{grid-template-columns:minmax(0,1fr) auto;gap:8px;}
+      .pa-search input{grid-column:1;grid-row:1;font-size:14px;padding:10px 10px;}
+      .pa-search .k-cta{grid-column:2;grid-row:1;padding:12px 14px;}
+      .pa-search #paNear{grid-column:1 / -1;grid-row:2;justify-self:start;}
+      .pa-arow{grid-template-columns:76px minmax(0,1fr) auto;gap:10px;padding:6px 8px 6px 6px;}
+      .pa-apic{width:76px;}
+      .pa-arow b{font-size:13.5px;}
+      .pa-arow small{font-size:11.5px;}
+      .pa-atags{flex-direction:column;align-items:flex-end;}
+      .pa-atags .k-tag{font-size:9px;padding:4px 6px;}
+      .pa-chev{display:none;}
+    }
+  </style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+
+<div class="pa-mock" role="note">
+  <b>Mock</b><span>Option A: Parts You Can See</span>
+  <nav aria-label="Mock views">
+    <a href="?view=handbook" data-v="handbook">Handbook<span class="pa-dt">: Nutrition Guide</span></a>
+    <a href="?view=handbook&amp;part=nutrients" data-v="nutrients">A part<span class="pa-dt">: Nutrients</span></a>
+    <a href="?view=finder" data-v="finder">Finder<span class="pa-dt">: Airport Guide</span></a>
+  </nav>
+</div>
+
+<div class="pa-page" data-k-section="guides" id="paApp"></div>
+
+<script src="/public/footer.js"></script>
+<script>
+(function () {
+  var Q = new URLSearchParams(location.search);
+  var VIEW = Q.get('view') === 'finder' ? 'finder' : 'handbook';
+  var PART = Q.get('part') || (VIEW === 'finder' ? 'airports' : 'overview');
+  var app = document.getElementById('paApp');
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  var LOCK = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>';
+  var S = 'stroke="#2D5C27" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"';
+  var NUT_ICON = {
+    b12: '<path d="M12 3c-3 4-6 7-6 11a6 6 0 0012 0c0-4-3-7-6-11z"/><path d="M10 14h4"/>',
+    protein: '<path d="M7 4c-2 4-2 12 0 16M17 4c2 4 2 12 0 16"/><path d="M7 12h10"/>',
+    iron: '<circle cx="12" cy="12" r="8"/><path d="M12 7v10M9 9h6M9 15h6"/>',
+    calcium: '<path d="M8 3h8l-1 4H9z"/><path d="M9 7v13a1 1 0 001 1h4a1 1 0 001-1V7"/>',
+    'vitamin-d': '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    'omega-3': '<path d="M12 3c4 4 6 7 6 10a6 6 0 01-12 0c0-3 2-6 6-10z"/><path d="M9.5 14a2.5 2.5 0 002.5 2.5"/>',
+    iodine: '<path d="M3 14c3-3 6-3 9 0s6 3 9 0"/><path d="M3 9c3-3 6-3 9 0s6 3 9 0"/>',
+    zinc: '<path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z"/><path d="M9 10h6l-6 5h6"/>'
+  };
+  function nutIcon(id) { return '<svg width="26" height="26" viewBox="0 0 24 24" fill="none" ' + S + ' aria-hidden="true">' + NUT_ICON[id] + '</svg>'; }
+  function art(slug, fallback) { try { if (window.VEGuideArt) { var u = VEGuideArt(slug, 'square'); if (u) return u; } } catch (e) {} return fallback; }
+
+  // ---------- The two Guides, from guide-scripts/nutrition-guide.js and airport-guide.js ----------
+  var G = {
+    handbook: {
+      name: 'The Nutrition Guide', base: '?view=handbook', guide: 'Theo', role: 'Your Guide for Vegan nutrition',
+      who: 'For anyone eating Vegan, or starting to', whoX: 'Not medical advice.',
+      priceS: LOCK + ' Locked parts come with the full Guide: <b>$11 once, or 1,100 points</b> (250 for the free survey). B12 is free. <a href="#">How points work</a>',
+      price: '<b>Vitamin B12 and three parts are free.</b> Parts with a ' + LOCK + 'lock open with the full Guide: <b>$11 once, or 1,100 points</b>. You earn points on the site, like 250 for the free survey. <a href="#">How points work</a>',
+      parts: [
+        { k: 'overview', label: 'Overview', sub: 'What a Vegan plate needs', pic: 'theo-overview.jpg',
+          say: 'I\'m Theo. I\'ve been Vegan a long time. Here\'s what I wish I\'d known on day one: what your plate needs, and where to get it.' },
+        { k: 'nutrients', label: 'Nutrients', sub: 'Eight, one at a time. B12 free', part: 1, pic: 'theo-nutrients.jpg', title: 'Eight Nutrients, One at a Time',
+          say: 'Eight nutrients, one at a time: how much you need, which foods have it, and when to take a supplement. Try B12 free.' },
+        { k: 'plate', label: 'Your Plate', sub: 'One plate, every meal', lock: 1, pic: 'theo-plate.jpg', title: 'One Plate, Every Meal',
+          say: 'A simple way to build a Vegan plate at every meal, and a short list to check off every day.',
+          how: 'Half vegetables and fruit, a quarter whole grains, a quarter plant protein. Use the picture at every meal and tick off the every-day list. No counting.' },
+        { k: 'supplements', label: 'Supplements', sub: 'What to take, what to look for', pic: 'theo-supplements.jpg', title: 'What to Take, and What to Look For',
+          say: 'The supplement brands in our Directory, and in the full Guide, what to look for on the label before you buy.',
+          how: 'Most Vegans take B12, and many take vitamin D, an algae omega-3 or iodine. Read what to check on the label, then look at the brands in our Directory.' },
+        { k: 'experts', label: 'Experts', sub: 'Find someone to ask', pic: 'theo-experts.jpg', title: 'Find Someone to Ask',
+          say: 'The physicians and health experts we\'ve had on our shows, and the health professionals near you in our Directory.',
+          how: 'Hear a physician or a dietitian on our shows first, then find one near you.' },
+        { k: 'courses', label: 'Courses', sub: 'Learn more, or make it your work', pic: 'theo-courses.jpg', title: 'Learn More, or Make It Your Work',
+          say: 'Want to go deeper? These are courses and certificates in plant-based nutrition, cooking and coaching, for yourself or for your work.',
+          how: 'Pick Nutrition, Cooking or Coaching. Each course shows what you earn, how long it takes and what it costs.' },
+        { k: 'pulse', label: 'Pulse', sub: 'Listen to the experts', lock: 1, pic: 'theo-pulse.jpg', title: 'Listen to the Experts',
+          say: 'Our episodes with Dr. Barnard, Dr. Klaper, Dr. Bulsiewicz and more, on food and health. Play them right here.',
+          how: 'Play any episode right here: physicians and health experts from our shows, on food and health.' }
+      ]
+    },
+    finder: {
+      name: 'The Airport Guide', base: '?view=finder', guide: 'Nori', role: 'Your Travel Guide',
+      who: 'For travelers flying through', whoX: 'Vegan food by your gate.',
+      priceS: LOCK + ' Every airport but Fort Lauderdale comes with the full Guide: <b>$11 once, or 1,100 points</b> (250 for the free survey). <a href="#">How points work</a>',
+      price: '<b>Fort Lauderdale is free to try.</b> Every other airport, and the parts with a ' + LOCK + 'lock, open with the full Guide: <b>$11 once, or 1,100 points</b>. You earn points on the site, like 250 for the free survey. <a href="#">How points work</a>',
+      parts: [
+        { k: 'overview', label: 'Overview', sub: 'Type your gate, find food', title: 'Type Your Gate, Find Food',
+          say: 'Hi, I\'m Nori. Type your gate and I\'ll show you the closest Vegan food you can reach. Try it right here with Fort Lauderdale.',
+          how: 'Open an airport, type your gate, and see the closest Vegan food you can reach without going through security again.' },
+        { k: 'airports', label: 'Choose Your Airport', sub: '16 airports. Fort Lauderdale free', title: 'Choose Your Airport',
+          say: 'Pick an airport to see every spot with Vegan food, before or after security, and the gate it\'s near. Fort Lauderdale is free.' },
+        { k: 'bounties', label: 'Bounties', sub: 'Points for jobs on your way', lock: 1, title: 'Points for Jobs on Your Way Through',
+          say: 'Bounties are points for jobs on your way through. Pick an airport and you\'ll see what we want done there, biggest first.',
+          how: 'Pick an airport and work the list from the top on your way to the gate.' },
+        { k: 'report', label: 'Help Keep It Right', sub: 'Snap a photo, earn points', lock: 1, title: 'Help Keep It Right',
+          say: 'Members keep this Guide right on their way through. Snap a photo at the airport, tell us what changed, and earn points.',
+          how: 'Confirm what is still there, fix what changed and add what is missing, with a photo. Accepted reports earn points.' }
+      ]
+    }
+  };
+  var g = G[VIEW];
+  var parts = g.parts;
+  var cur = parts.filter(function (p) { return p.k === PART; })[0] || parts[0];
+  var idx = parts.indexOf(cur);
+
+  // B12 (open to everyone) and the eight titles, from guides/nutrition-guide.html #nt-public
+  var NUTS = [['b12', 'Vitamin B12'], ['protein', 'Protein'], ['iron', 'Iron'], ['calcium', 'Calcium'], ['vitamin-d', 'Vitamin D'], ['omega-3', 'Omega-3s'], ['iodine', 'Iodine'], ['zinc', 'Zinc']];
+  var B12 = { short: 'The one every Vegan needs a reliable source of.', amount: [['2.4 mcg', 'Adults, a day'], ['2.6 mcg', 'Pregnant, a day'], ['2.8 mcg', 'Breastfeeding, a day']],
+    foods: ['Plant milks with B12 added', 'Breakfast cereals with B12 added', 'Nutritional yeast with B12 added', 'A B12 supplement'] };
+  var NOTE = 'General information from the sources named, not medical advice. Talk with your doctor or a registered dietitian, especially if you are pregnant, breastfeeding, raising a Vegan child, or managing a health condition.';
+
+  // Airports, as the live page lists them (https://vegansexplore.com/guides/airport-guide#/airports, 2026-11-18)
+  var AIR = [
+    ['fll', 'Fort Lauderdale-Hollywood International Airport', 'Fort Lauderdale, FL', 11, 1, 'Nov 8, 2026'],
+    ['mia', 'Miami International Airport', 'Miami, FL', 18], ['pbi', 'Palm Beach International Airport', 'West Palm Beach, FL', 5],
+    ['mco', 'Orlando International Airport', 'Orlando, FL', 10], ['tpa', 'Tampa International Airport', 'Tampa, FL', 16],
+    ['jax', 'Jacksonville International Airport', 'Jacksonville, FL', 4], ['atl', 'Hartsfield-Jackson Atlanta International Airport', 'Atlanta, GA', 17],
+    ['dca', 'Ronald Reagan Washington National Airport', 'Arlington, VA', 13], ['iad', 'Washington Dulles International Airport', 'Dulles, VA', 6],
+    ['bwi', 'Baltimore/Washington International Thurgood Marshall Airport', 'Linthicum, MD', 9], ['phl', 'Philadelphia International Airport', 'Philadelphia, PA', 9],
+    ['jfk', 'John F. Kennedy International Airport', 'New York, NY', 6], ['lga', 'LaGuardia Airport', 'New York, NY', 5],
+    ['ewr', 'Newark Liberty International Airport', 'Newark, NJ', 12], ['lax', 'Los Angeles International Airport', 'Los Angeles, CA', 7],
+    ['lhr', 'London Heathrow Airport', 'London, England', 6]
+  ];
+
+  // ---------- Pieces ----------
+  function partHref(p) { return g.base + (p.k === parts[0].k && VIEW === 'handbook' ? '' : '&part=' + p.k); }
+  function partsList() {
+    return '<nav class="pa-parts" aria-label="' + esc(g.name) + ' parts"><span class="k-label">In this Guide: ' + parts.length + ' parts</span><ol class="pa-list">' +
+      parts.map(function (p, i) {
+        return '<li><a href="' + partHref(p) + '"' + (p === cur ? ' aria-current="page"' : '') + '><span class="pa-n">' + (i + 1) + '</span>' +
+          '<span><b>' + esc(p.label) + '</b><small>' + esc(p.sub) + '</small></span>' +
+          (p.lock ? '<span class="pa-lk" aria-label="locked">' + LOCK + '</span>' : '<span></span>') + '</a></li>';
+      }).join('') + '</ol><p class="pa-price d">' + g.price + '</p></nav>';
+  }
+  function guideCard(p, act) {
+    var pic = VIEW === 'handbook'
+      ? '<span class="pa-gpic"><img src="/public/guides/nutrition/' + p.pic + '" alt="Theo, your Guide" width="1080" height="1350"></span>'
+      : '<span class="pa-gpic sq"><img src="' + esc(art('nori', '/_vercel/image?url=%2Fpublic%2Fbrand-kit%2Favatars%2Fnori-v2.jpg&w=640&q=75')) + '" alt="Nori, your Guide" width="1080" height="1080"></span>';
+    return '<section class="pa-guide" aria-label="' + g.guide + ', your Guide">' + pic +
+      '<div><p class="pa-gname">' + g.guide + ' &middot; ' + esc(g.role) + '</p><p class="pa-say">' + esc(p.say) + '</p>' +
+      '<div class="pa-gact">' + (act || '') + '<button type="button" class="pa-play" aria-pressed="false"><i aria-hidden="true"><svg width="16" height="16" viewBox="0 0 24 24" fill="#1a1a1a"><path d="M7 4l13 8-13 8z"/></svg></i><span>Play ' + g.guide +
+      '<small>Hear this part in ' + (VIEW === 'handbook' ? 'his' : 'their') + ' words</small></span></button><div class="pa-bar" aria-hidden="true"><span></span></div></div></div></section>' +
+      '<p class="pa-price m">' + g.priceS + '</p>';
+  }
+  function partHead(p) {
+    return '<div class="pa-crumb"><a href="' + partHref(parts[0]) + '">' + esc(g.name) + '</a> &rsaquo; ' + esc(p.label) + '</div>' +
+      '<span class="k-eb pk">Part ' + (idx + 1) + ' of ' + parts.length + '</span>';
+  }
+  function nextLink() {
+    var n = parts[idx + 1]; if (!n) return '';
+    return '<div class="pa-next"><a class="k-btn" href="' + partHref(n) + '">Next: ' + esc(n.label) + ' &rsaquo;</a></div>';
+  }
+  function nutTag(id) { return id === 'b12' ? '<span class="k-tag new">Free to try</span>' : '<span class="k-tag pa-lock">' + LOCK + ' Full Guide</span>'; }
+
+  // ---------- Views ----------
+  function overview() {
+    var tiles = NUTS.map(function (n) {
+      var open = n[0] === 'b12';
+      return '<a class="pa-tile' + (open ? ' open' : '') + '" href="' + g.base + '&part=nutrients"><span class="pa-ic">' + nutIcon(n[0]) + '</span>' +
+        '<span><b>' + esc(n[1]) + '</b><small>' + (open ? esc(B12.short) : 'How much, where to get it, when to supplement') + '</small></span>' + nutTag(n[0]) + '</a>';
+    }).join('');
+    return guideCard(cur, '<a class="k-btn k-cta pa-main-act" href="' + g.base + '&part=nutrients#b12">Start With Vitamin B12, Free</a>') +
+      '<div class="pa-sec"><div><h2 class="k-h2">What a Vegan Plate Needs</h2><p>Eight nutrients, each with the source named under it.</p></div></div>' +
+      '<div class="pa-tiles">' + tiles + '</div>' +
+      '<p class="pa-note">' + esc(NOTE) + '</p>' + nextLink();
+  }
+  function nutrients() {
+    var rows = NUTS.map(function (n, i) {
+      var open = n[0] === 'b12';
+      return '<div class="k-row' + (open ? ' free' : '') + '"><span class="pa-ic">' + nutIcon(n[0]) + '</span><div class="k-row-t"><b>' + (i + 1) + '. ' + esc(n[1]) + '</b><small>' +
+        (open ? esc(B12.short) : 'How much, where to get it, when to supplement') + '</small></div>' +
+        (open ? '<a class="k-btn k-sm" href="#b12">Read</a>' : '<span class="k-tag pa-lock">' + LOCK + ' Full Guide</span>') + '</div>';
+    }).join('');
+    return partHead(cur) + '<h2 class="k-h2">' + esc(cur.title) + '</h2>' + guideCard(cur, '<a class="k-btn k-cta pa-main-act" href="#b12">Read Vitamin B12, Free</a>') +
+      '<div class="k-rows pa-rows">' + rows + '</div>' +
+      '<section class="k-card k-c-pk pa-glance" id="b12"><span class="k-label">Free to try</span><h3 class="k-h3">Vitamin B12 at a Glance</h3>' +
+      '<p style="margin:0;font-size:14px;font-weight:600;max-width:860px">Vitamin B12 keeps your nerves and blood cells healthy. Plants do not make it reliably, so every Vegan needs a dependable source: fortified foods or a supplement.</p>' +
+      '<div class="k-stats">' + B12.amount.map(function (a) { return '<div class="k-stat"><b>' + a[0] + '</b><small>' + a[1] + '</small></div>'; }).join('') + '</div>' +
+      '<span class="k-label">Where to get it</span><div class="pa-chips">' + B12.foods.map(function (f) { return '<span>' + esc(f) + '</span>'; }).join('') + '</div>' +
+      '<p style="margin:12px 0 0;font-size:12px;font-weight:600;color:var(--k-mute)">Sources: NIH Office of Dietary Supplements; The Vegan Society.</p></section>' +
+      '<p class="pa-note">' + esc(NOTE) + '</p>' + nextLink();
+  }
+  function stub() {
+    return partHead(cur) + '<h2 class="k-h2">' + esc(cur.title) + '</h2>' + guideCard(cur) +
+      '<div class="k-block k-peach pa-stub"><span class="k-label" style="color:var(--k-ink)">How this part works</span><p style="margin:0;font-weight:600">' + esc(cur.how) + '</p>' +
+      (cur.lock ? '<p style="margin:10px 0 0;font-weight:800">' + LOCK + ' This part opens with the full Guide.</p>' : '') +
+      '<p style="margin:10px 0 0;font-size:12px;font-weight:700">In this mock, ' + (VIEW === 'handbook' ? 'Overview and Nutrients are' : 'Choose Your Airport is') + ' drawn in full.</p></div>' + nextLink();
+  }
+  var shown = 5, filt = '', q = '';
+  function airRows() {
+    var list = AIR.filter(function (a) {
+      if (filt === 'free' && !a[4]) return false;
+      if (filt === 'checked' && !a[5]) return false;
+      if (q) { var s = (a[0] + ' ' + a[1] + ' ' + a[2]).toLowerCase(); return s.indexOf(q.toLowerCase()) >= 0; }
+      return true;
+    });
+    var rows = list.slice(0, shown).map(function (a) {
+      return '<a class="pa-arow" href="#' + a[0] + '"><span class="pa-apic"><img src="/public/guides/airports/' + a[0] + '.webp" alt="" loading="lazy" width="1200" height="670"></span>' +
+        '<span><b>' + esc(a[1]) + '</b><small>' + esc(a[2]) + ' &middot; ' + a[0].toUpperCase() + (a[5] ? ' &middot; Checked ' + esc(a[5]) : '') + '</small></span>' +
+        '<span class="pa-atags">' + (a[4] ? '<span class="k-tag new">Free to try</span>' : '<span class="k-tag pa-lock">' + LOCK + ' Full Guide</span>') +
+        '<span class="k-tag live">' + a[3] + ' Vegan items</span></span><span class="pa-chev" aria-hidden="true">&rsaquo;</span></a>';
+    }).join('');
+    var more = list.length > shown ? '<button type="button" class="k-btn pa-more" data-more>Show ' + (list.length - shown) + ' more</button>' : '';
+    return { html: (rows || '<p>No airport matches that yet.</p>') + more, n: list.length };
+  }
+  function finder() {
+    return partHead(cur) + '<h2 class="k-h2">' + esc(cur.title) + '</h2>' + guideCard(cur,
+      '<form class="pa-search" role="search" id="paSearch"><input type="text" id="paQ" placeholder="City, ZIP or airport code" aria-label="City, ZIP or airport code" autocomplete="off" data-dictate="off">' +
+      '<button type="button" class="k-btn" id="paNear">&#9737; Near me</button><button type="submit" class="k-btn k-cta">Find Food</button></form>') +
+      '<p class="pa-answer" id="paAns"><b>16 airports</b> are in the Guide so far, with <b>154 Vegan items</b> between them. <b>Fort Lauderdale</b> is free to try.</p>' +
+      '<div class="k-tabs pa-filter" role="group" aria-label="Show"><button type="button" data-f="" class="on">Everything</button><button type="button" data-f="free">Free to try</button><button type="button" data-f="checked">Checked by a member</button></div>' +
+      '<div class="pa-air" id="paAir"></div>' + nextLink();
+  }
+
+  // ---------- Draw ----------
+  var body = VIEW === 'finder' ? (cur.k === 'airports' ? finder() : stub()) : (cur.k === 'overview' ? overview() : cur.k === 'nutrients' ? nutrients() : stub());
+  app.innerHTML = '<header class="pa-head"><div><span class="k-eb pk">Vegans Explore Guides</span><h1 class="k-h1">' + esc(g.name) + '</h1>' +
+    '<p class="pa-who"><span class="k-tag">' + esc(g.who) + '</span><span class="pa-whox">' + esc(g.whoX) + '</span></p></div></header>' +
+    '<div class="k-stripe" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>' +
+    '<div class="pa-body">' + partsList() + '<main class="pa-main">' + body +
+    '<p class="pa-wnote"><b>Mock note:</b> in this design the Welcome Guide\'s main button says <b>Find Vegan Food Near Me</b>.</p></main></div>';
+
+  // The current part's tab slides into view on phones (the row moves, not the page).
+  var on = app.querySelector('.pa-list [aria-current]');
+  if (on && window.innerWidth <= 900) { var l = on.closest('.pa-list'); l.scrollLeft = on.parentNode.offsetLeft - 16; }
+
+  // Mock view links
+  var vk = VIEW === 'finder' ? 'finder' : (cur.k === 'overview' ? 'handbook' : 'nutrients');
+  [].forEach.call(document.querySelectorAll('.pa-mock [data-v]'), function (a) { if (a.getAttribute('data-v') === vk) a.classList.add('on'); });
+
+  // Play: nothing plays until pressed (the recording comes from Sean's Voices booth; this mock shows the state only).
+  var timer = null;
+  app.addEventListener('click', function (e) {
+    var b = e.target.closest('.pa-play');
+    if (b) {
+      var card = b.closest('.pa-guide'), bar = card.querySelector('.pa-bar span'), playing = card.classList.toggle('playing');
+      b.setAttribute('aria-pressed', String(playing));
+      b.querySelector('span').firstChild.nodeValue = (playing ? 'Pause ' : 'Play ') + g.guide;
+      clearInterval(timer);
+      if (playing) { var w = parseFloat(bar.style.width) || 0; timer = setInterval(function () { w = w >= 100 ? 0 : w + 1; bar.style.width = w + '%'; if (w >= 100) { card.classList.remove('playing'); clearInterval(timer); b.querySelector('span').firstChild.nodeValue = 'Play ' + g.guide; } }, 120); }
+      return;
+    }
+    var f = e.target.closest('[data-f]');
+    if (f) { filt = f.getAttribute('data-f'); [].forEach.call(app.querySelectorAll('[data-f]'), function (x) { x.classList.toggle('on', x === f); }); shown = 5; drawAir(); return; }
+    if (e.target.closest('[data-more]')) { shown = 99; drawAir(); }
+  });
+  function drawAir() { var el = document.getElementById('paAir'); if (el) el.innerHTML = airRows().html; }
+  drawAir();
+  var form = document.getElementById('paSearch');
+  if (form) {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault(); q = document.getElementById('paQ').value.trim(); shown = 5;
+      var r = airRows(); document.getElementById('paAir').innerHTML = r.html;
+      document.getElementById('paAns').innerHTML = q ? '<b>' + r.n + (r.n === 1 ? ' airport' : ' airports') + '</b> match &ldquo;' + esc(q) + '&rdquo;.' : '<b>16 airports</b> are in the Guide so far, with <b>154 Vegan items</b> between them.';
+    });
+    document.getElementById('paNear').addEventListener('click', function () {
+      document.getElementById('paQ').value = 'FL'; form.requestSubmit();
+      document.getElementById('paAns').innerHTML = 'Near you (sample: South Florida): <b>Fort Lauderdale</b> is closest, and free to try.';
+    });
+  }
+})();
+</script>
+</body>
+</html>

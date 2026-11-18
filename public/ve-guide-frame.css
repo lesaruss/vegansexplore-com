@@ -601,3 +601,218 @@ html body.ve-gf.gf-hb .ov-hero .dg-h1 { margin-bottom: 10px; }
   body.gf-hb .gf-talk { padding: 5px 8px; font-size: 9.5px; letter-spacing: .06em; text-align: center; }
   html body.ve-gf.gf-hb .ov-hero .dg-h1 { margin-bottom: 8px; }
 }
+
+/* ---------- Part 5: Option C, the real thing first (2026-11-18, opt-in: body.gf-c) ----------
+ * Sean, 2026-11-18: "I love C. I had a chance to play around with it. The real thing first, that's the winner for me." Mock
+ * /mocks/guide-panel2/c/ (brief /mocks/guide-panel2/BRIEF.md). Piloted on the Nutrition and Airport Guides: body.gf-c. A slim pink Guide bar
+ * with who the Guide is for and every part as one visible tab row (sliding on phones, with a fade), no Contents button or panel; on each
+ * view the title, one short line, the Guide as a small card beside the title (above the action on phones), ONE orange action with one plain
+ * price line beside it, then the real content. How to use this page and Getting started boxes are hidden (their button is the orange
+ * action). Locked reads Full Guide. Built by /public/ve-guide-frame.js (drawTabs, cPrep, cFinish). Everything is under body.gf-c, so the
+ * other Guides and the Holiday Guide are unchanged. Values copy the mock. */
+html body.ve-gf.gf-hb.gf-c :is(.gf-cbtn, .gf-toc, .gf-pn, .wg-gs) { display: none !important; }
+body.gf-c .gf-bar { padding: 8px 40px 0; flex-wrap: wrap; justify-content: flex-start; align-items: center; gap: 0 18px; }
+body.gf-c .gf-name { flex: none; display: block; padding-bottom: 8px; }
+body.gf-c .gf-h > a { font-size: 16px; }
+body.gf-c .gf-for { display: block; font-size: 12px; font-weight: 800; color: #1a1a1a; white-space: nowrap; margin-top: 1px; }
+body.gf-c .gf-tabwrap { position: relative; flex: 1 1 520px; min-width: 0; }
+body.gf-c .gf-tabs { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 0 8px; }
+body.gf-c .gf-tabs > a { flex: none; display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 800; line-height: 1.2; white-space: nowrap;
+  text-decoration: none; color: #1a1a1a; background: #fff; border: 2px solid #1a1a1a; border-radius: 6px; padding: 7px 10px; }
+body.gf-c .gf-tabs > a:hover { background: #FFE3EE; }
+body.gf-c .gf-tabs > a.gf-tjoin { background: #FFE3EE; }
+body.gf-c .gf-tabs > a[aria-current] { background: #1a1a1a; color: #fff; }
+body.gf-c .gf-tabs > a svg { flex: none; }
+body.gf-c .gf-tools { flex: none; max-width: none; margin-left: auto; padding-bottom: 8px; }
+/* The join and sign-in, quietly: the price is said once, beside the orange action */
+body.gf-c .gf-join { display: flex; align-items: baseline; gap: 2px 14px; font-size: 12px; white-space: nowrap; }
+body.gf-c .gf-join[hidden] { display: none; }
+body.gf-c .gf-jlead { display: none; }
+body.gf-c .gf-join a { font-weight: 800; }
+body.gf-c .gf-jin { font-size: 0; margin-left: 0; }
+body.gf-c .gf-jin a { font-size: 12px; margin-left: 0; }
+/* A free Guide (no data-gf-price) offers nothing in the bar: its join is the view's orange action, so the bar keeps only Sign in */
+body.gf-c:not([data-gf-price]) .gf-join .gf-jgo { display: none; }
+
+/* The head: title and one line on the left, the Guide's card on the right, then the one orange action with its price line */
+body.gf-c .gf-ch { margin: 0 0 26px; }
+body.gf-c .gf-ch.gf-ch-g { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 430px); column-gap: 36px; align-items: start; }
+body.gf-c .gf-ch > * { grid-column: 1; }
+body.gf-c .gf-ch > .gf-guide { grid-column: 2; grid-row: 1 / span 4; }
+html body.ve-gf.gf-hb.gf-c .gf-ch-top > .dg-head .dg-k { display: none; }
+html body.ve-gf.gf-hb.gf-c .gf-ch > .dg-head { margin-bottom: 8px; }
+html body.ve-gf.gf-hb.gf-c .gf-ch > .dg-lede { font-size: 16px; font-weight: 600; margin: 0 0 14px; }
+body.gf-c .gf-ch > .gf-go, body.gf-c .gf-go { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; margin: 0 0 4px; }
+body.gf-c .gf-price { flex: 1 1 280px; margin: 0; max-width: 620px; font-size: 13px; font-weight: 700; line-height: 1.45; color: #1a1a1a; }
+body.gf-c .gf-price b { font-weight: 900; }
+/* The Guide: a small square picture, one line in full, Play (and Talk). Pink, so it reads as the Guides section. */
+body.gf-c .gf-guide { display: grid; grid-template-columns: 64px minmax(0, 1fr) auto; gap: 12px; align-items: center; max-width: none; margin: 0;
+  background: #FFE3EE; border: 2px solid #1a1a1a; border-radius: 14px; box-shadow: 4px 4px 0 #FF9EC4; padding: 10px 12px; }
+body.gf-c .gf-guide[hidden] { display: none; }
+body.gf-c .gf-gpic { width: 64px; height: 64px; background-color: #fff; }
+body.gf-c .gf-guide p { color: #1a1a1a; }
+body.gf-c .gf-guide .gf-who { display: block; font-size: 10.5px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: #C2185B; margin: 0 0 2px; }
+body.gf-c .gf-guide .gf-say { display: block; font-size: 14px; font-weight: 800; line-height: 1.35; color: #1a1a1a; }
+body.gf-c .gf-gacts { flex-direction: column; align-items: stretch; gap: 6px; }
+body.gf-c .gf-play { background: #fff; }
+
+/* Tiles (gf-parts "_c.tiles", the Nutrition Guide's nutrients): four across, picture left, name middle, one tag right */
+html body.ve-gf.gf-hb.gf-c .dg-main.gf-tiles > .dg-srows { grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 14px; }
+html body.ve-gf.gf-hb.gf-c .dg-main.gf-tiles .dg-srow { grid-template-columns: 52px minmax(0, 1fr) auto; border-radius: 14px; padding: 12px 14px; box-shadow: 5px 5px 0 #e6e6e6; }
+html body.ve-gf.gf-hb.gf-c .dg-main.gf-tiles .dg-srow:has(> .gf-free) { box-shadow: 5px 5px 0 #FF9EC4; }
+html body.ve-gf.gf-hb.gf-c .dg-main.gf-tiles .dg-srow > .dg-th { background-color: #f1f1f1; border: 0; border-radius: 10px; }
+html body.ve-gf.gf-hb.gf-c .dg-main.gf-tiles .dg-srow:has(> .gf-free) > .dg-th { background-color: #FF9EC4; }
+html body.ve-gf.gf-hb.gf-c .dg-main.gf-tiles .dg-srow-b h3 { font-size: 17px; letter-spacing: -.01em; line-height: 1.2; }
+html body.ve-gf.gf-hb.gf-c .dg-main.gf-tiles .dg-srow-b h3 a { color: #1a1a1a; text-decoration: none; }
+html body.ve-gf.gf-hb.gf-c .dg-main.gf-tiles .dg-srow:has(> .gf-lock) .dg-srow-p { display: none; }
+html body.ve-gf.gf-hb.gf-c .dg-main.gf-tiles .dg-srow[data-href] { cursor: pointer; }
+/* Tags: free in green, Full Guide in grey with its small lock */
+html body.ve-gf.gf-hb.gf-c .gf-tag.gf-free { background: #E8F5E9; color: #2D5C27; margin: 0; padding: 5px 8px; }
+html body.ve-gf.gf-hb.gf-c .gf-tag.gf-free::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #22C55E; }
+html body.ve-gf.gf-hb.gf-c .gf-tag.gf-lock { background: #f1f1f1; color: #444; }
+
+/* Finder cards in C (the mock's airports): picture left in its own shape, the code big, the name, one line of details, one tag right */
+html body.ve-gf.gf-hb.gf-fd.gf-c .sa-vcard { box-shadow: 5px 5px 0 #e6e6e6; }
+html body.ve-gf.gf-hb.gf-fd.gf-c .sa-vcard.fd-free { box-shadow: 5px 5px 0 #FF9EC4; }
+html body.ve-gf.gf-hb.gf-fd.gf-c .sa-vcard:hover { background: #FFE3EE; box-shadow: 5px 5px 0 #FF9EC4; }
+html body.ve-gf.gf-hb.gf-fd.gf-c .sa-vcard .sa-vimg { flex-basis: 180px; width: 180px; aspect-ratio: 1200 / 670; margin: 10px 0 10px 10px; }
+html body.ve-gf.gf-hb.gf-fd.gf-c .sa-vcard .sa-vbody { padding: 10px 12px 10px 14px; }
+html body.ve-gf.gf-hb.gf-fd.gf-c .fd-code { display: block; font-size: 22px; font-weight: 900; letter-spacing: -.01em; line-height: 1; margin: 0 0 4px; color: #1a1a1a; }
+html body.ve-gf.gf-hb.gf-fd.gf-c .sa-vcard h3 { font-size: 13.5px; line-height: 1.25; margin: 0 0 3px; }
+html body.ve-gf.gf-hb.gf-fd.gf-c .sa-vmeta { font-size: 12px; font-weight: 700; }
+html body.ve-gf.gf-hb.gf-fd.gf-c .sa-vtags { gap: 0; margin-top: 2px; }
+html body.ve-gf.gf-hb.gf-fd.gf-c .sa-vtags .dg-tag:not(.fd-dist) { background: none; border: 0; padding: 0; color: #5c5c5c; font-size: 12px; font-weight: 700; letter-spacing: 0; text-transform: none; }
+html body.ve-gf.gf-hb.gf-fd.gf-c .sa-vtags .dg-tag:not(.fd-dist) + .dg-tag::before { content: "\00b7"; margin: 0 6px; }
+html body.ve-gf.gf-hb.gf-fd.gf-c .sa-vcard > .fd-acc { flex: none; align-self: center; margin: 0 14px 0 4px; display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 900;
+  letter-spacing: .1em; text-transform: uppercase; border: 0; border-radius: 6px; padding: 5px 8px; line-height: 1.2; background: #f1f1f1; color: #444; }
+html body.ve-gf.gf-hb.gf-fd.gf-c .sa-vcard > .fd-acc.sa-tag-free { background: #E8F5E9; color: #2D5C27; }
+
+/* The Overview in C (cOverview): the hero tiles, then "Also in this Guide" as numbered part tiles; the old article rows are hidden */
+html body.ve-gf.gf-hb.gf-c :is(.wg-arts, .dg-tiles).gf-c-hidden { display: none; }
+body.gf-c .gf-cov { margin: 0 0 28px; }
+body.gf-c .gf-cov > .k-label { margin-bottom: 10px; }
+body.gf-c .gf-ntiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 14px; }
+body.gf-c .gf-ntile { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 12px; align-items: center; text-decoration: none; color: #1a1a1a; background: #fff;
+  border: 2px solid #1a1a1a; border-radius: 14px; padding: 12px 14px; box-shadow: 5px 5px 0 #e6e6e6; }
+body.gf-c .gf-ntile.gf-nfree { box-shadow: 5px 5px 0 #FF9EC4; }
+body.gf-c .gf-ntile:hover { background: #FFE3EE; }
+body.gf-c .gf-nab { width: 52px; height: 52px; border-radius: 10px; display: grid; place-items: center; font-size: 15px; font-weight: 900; letter-spacing: -.02em; background: #f1f1f1; }
+body.gf-c .gf-nfree .gf-nab { background: #FF9EC4; }
+body.gf-c .gf-nt { min-width: 0; }
+body.gf-c .gf-nt b { display: block; font-size: 17px; font-weight: 900; letter-spacing: -.01em; line-height: 1.2; }
+body.gf-c .gf-nt small { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 12.5px; font-weight: 600; color: #5c5c5c; line-height: 1.4; margin-top: 2px; }
+body.gf-c .gf-ptiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(360px, 100%), 1fr)); gap: 10px 14px; }
+body.gf-c .gf-ptile { text-decoration: none; color: #1a1a1a; }
+body.gf-c .gf-ptt { min-width: 0; }
+body.gf-c .gf-ptt b { display: block; font-size: 14px; font-weight: 900; line-height: 1.25; }
+body.gf-c .gf-ptt small { font-size: 12px; font-weight: 600; color: #5c5c5c; line-height: 1.4; }
+body.gf-c .gf-ptile:hover { background: #E8F5E9; }
+body.gf-c .gf-cov .gf-tag { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; border-radius: 6px; padding: 5px 8px; white-space: nowrap; }
+html body.ve-gf.gf-hb.gf-c .gf-cov .gf-tag.gf-free { background: #E8F5E9; color: #2D5C27; }
+html body.ve-gf.gf-hb.gf-c .gf-cov .gf-tag.gf-lock { background: #f1f1f1; color: #444; }
+
+@media (max-width: 900px) {
+  body.gf-c .gf-bar { padding: 6px 16px 0; gap: 0 10px; flex-wrap: wrap; }
+  body.gf-c .gf-name { display: block; flex: 1 1 0; min-width: 0; padding-bottom: 6px; }
+  body.gf-c .gf-h > a { font-size: 15px; }
+  body.gf-c .gf-for { display: block; font-size: 11px; white-space: normal; line-height: 1.3; margin-top: 1px; }
+  body.gf-c .gf-tools { order: 1; padding-bottom: 6px; align-self: flex-start; padding-top: 2px; }
+  body.gf-c .gf-join { flex-direction: column; align-items: flex-end; gap: 2px; overflow: visible; font-size: 11px; }
+  body.gf-c .gf-join a { font-size: 11px; }
+  body.gf-c .gf-jin a { font-size: 11.5px; }
+  body.gf-c .gf-tabwrap { order: 2; flex: 0 0 calc(100% + 32px); margin: 0 -16px; }
+  body.gf-c .gf-tabs { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding: 0 16px 8px; }
+  body.gf-c .gf-tabs::-webkit-scrollbar { display: none; }
+  body.gf-c .gf-tabwrap::after { content: ""; position: absolute; right: 0; top: 0; bottom: 8px; width: 34px; background: linear-gradient(90deg, rgba(255,158,196,0), #FF9EC4); pointer-events: none; }
+  body.gf-c .gf-ch.gf-ch-g { display: block; }
+  /* A part's own page: the tab row already says where you are, so its crumb goes on phones, as in the mock (a piece inside keeps its crumb) */
+  html body.ve-gf.gf-hb.gf-c .dg-main > .dg-crumb:has(+ .gf-ch-top) { display: none; }
+  body.gf-c .gf-ch { margin-bottom: 20px; }
+  html body.ve-gf.gf-hb.gf-c .gf-ch > .dg-lede { font-size: 14px; line-height: 1.45; margin-bottom: 10px; }
+  body.gf-c .gf-ch > .gf-guide { margin: 0 0 12px; }
+  /* Phones: the mock's proportions. Picture 56 px; the Guide's name and its Play (and Talk) on the first row, the line under them */
+  body.gf-c .gf-guide { grid-template-columns: 56px minmax(0, 1fr) auto; gap: 4px 10px; padding: 8px 10px; box-shadow: 3px 3px 0 #FF9EC4; align-items: center; }
+  body.gf-c .gf-gpic { width: 56px; height: 56px; grid-column: 1; grid-row: 1 / span 2; align-self: start; }
+  body.gf-c .gf-guide p { display: contents; }
+  body.gf-c .gf-guide .gf-who { grid-column: 2; grid-row: 1; letter-spacing: .08em; margin: 0; }
+  body.gf-c .gf-guide > .gf-gacts { grid-column: 3; grid-row: 1; flex-direction: row; justify-content: flex-end; }
+  body.gf-c .gf-guide .gf-say { grid-column: 2 / -1; grid-row: 2; align-self: start; }
+  body.gf-c .gf-guide > .gf-gacts:not(:has(> :not([hidden]))) { display: none; }
+  body.gf-c .gf-guide p { -webkit-line-clamp: unset; overflow: visible; }
+  body.gf-c .gf-guide .gf-who { font-size: 9.5px; margin-bottom: 1px; }
+  body.gf-c .gf-guide .gf-say { font-size: 13px; line-height: 1.3; }
+  body.gf-c .gf-gacts { gap: 5px; }
+  body.gf-c :is(.gf-play, .gf-talk) { font-size: 9px; letter-spacing: .04em; padding: 4px 6px; text-align: center; }
+  body.gf-c .gf-price { flex-basis: 100%; font-size: 12px; line-height: 1.4; }
+  html body.ve-gf.gf-hb.gf-c .gf-ch > .dg-head .dg-h1 { font-size: 28px !important; }
+  html body.ve-gf.gf-hb.gf-c .gf-ch > .dg-head { margin-bottom: 6px; }
+  /* The bar on phones: Sign in only (the Get access tab and the price line carry the join), so the For line stays one line */
+  body.gf-c .gf-join .gf-jgo { display: none; }
+  body.gf-c .gf-ch > .gf-guide { margin-bottom: 10px; }
+  html body.ve-gf.gf-hb.gf-fd.gf-c .dg-main > .gf-ch { margin-bottom: 12px; }
+  body.gf-c .gf-go { gap: 8px; }
+  html body.ve-gf.gf-hb.gf-c.gf-c .dg-main .gf-go .gf-cta { width: 100%; }
+  html body.ve-gf.gf-hb.gf-c .dg-main.gf-tiles .dg-srow { grid-template-columns: 40px minmax(0, 1fr) auto; gap: 10px; padding: 10px 12px; }
+  html body.ve-gf.gf-hb.gf-c .dg-main.gf-tiles .dg-srow > .dg-th { width: 40px; height: 40px; }
+  html body.ve-gf.gf-hb.gf-c .dg-main.gf-tiles .dg-srow-b h3 { font-size: 15px; }
+  body.gf-c .gf-ntile { grid-template-columns: 40px minmax(0, 1fr) auto; gap: 10px; padding: 10px 12px; }
+  body.gf-c .gf-nab { width: 40px; height: 40px; font-size: 13px; }
+  body.gf-c .gf-nt b { font-size: 15px; }
+  body.gf-c .gf-cov .gf-tag { font-size: 9px; padding: 4px 6px; }
+  body.gf-c .gf-cov { margin-bottom: 20px; }
+  html body.ve-gf.gf-hb.gf-fd.gf-c .sa-vcard .sa-vimg { flex-basis: 96px; width: 96px; margin: 8px 0 8px 8px; }
+  html body.ve-gf.gf-hb.gf-fd.gf-c .sa-vcard .sa-vbody { padding: 8px 8px 8px 10px; }
+  html body.ve-gf.gf-hb.gf-fd.gf-c .fd-code { font-size: 18px; }
+  html body.ve-gf.gf-hb.gf-fd.gf-c .sa-vcard h3 { font-size: 12.5px; }
+  html body.ve-gf.gf-hb.gf-fd.gf-c :is(.sa-vmeta, .sa-vtags .dg-tag:not(.fd-dist)) { font-size: 11px; }
+  html body.ve-gf.gf-hb.gf-fd.gf-c .sa-vcard > .fd-acc { font-size: 9px; padding: 4px 6px; margin-right: 10px; }
+}
+
+/* Option C, members' search in the tab row (Sean, 2026-11-18): small, at the end of the parts, sliding with them on phones */
+body.gf-c .gf-tabscroll { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 0 0 8px; }
+body.gf-c .gf-tabscroll > .gf-tabs { padding: 0; }
+html body.ve-gf.gf-hb.gf-c .gf-tabscroll > .dg-searchbox { flex: 0 0 210px; width: 210px; position: relative; margin: 0; }
+html body.ve-gf.gf-hb.gf-c .gf-tabscroll > .dg-searchbox input { font-size: 12px; font-weight: 700; padding: 7px 10px 7px 30px; border: 2px solid #1a1a1a; border-radius: 6px; background: #fff; }
+html body.ve-gf.gf-hb.gf-c .gf-tabscroll > .dg-searchbox svg { left: 10px; width: 14px; height: 14px; }
+@media (max-width: 900px) {
+  body.gf-c .gf-tabscroll { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding: 0 16px 8px; }
+  body.gf-c .gf-tabscroll::-webkit-scrollbar { display: none; }
+  body.gf-c .gf-tabscroll > .gf-tabs { overflow: visible; padding: 0; flex: none; }
+  html body.ve-gf.gf-hb.gf-c.dg-member .gf-tabscroll > .dg-searchbox { display: block !important; flex: 0 0 170px; width: 170px; }
+}
+
+/* Option C, members' search beside the orange action (Sean, 2026-11-18: "the top can just be the navigation"); the bar never holds it */
+html body.ve-gf.gf-hb.gf-c .gf-go > .dg-searchbox { flex: 1 1 260px; max-width: 420px; width: auto; position: relative; margin: 0; }
+html body.ve-gf.gf-hb.gf-c .gf-go > .dg-searchbox input { font-size: 13.5px; font-weight: 600; padding: 10px 12px 10px 38px; border: 2px solid #1a1a1a; border-radius: 6px; background: #fff; }
+html body.ve-gf.gf-hb.gf-c .gf-go > .dg-searchbox input:focus { box-shadow: 3px 3px 0 #F69820; }
+@media (max-width: 900px) {
+  html body.ve-gf.gf-hb.gf-c.dg-member .gf-go > .dg-searchbox { display: block !important; flex-basis: 100%; max-width: none; }
+}
+
+/* Option C on the Creator Guide's landing (ve-gigs.js, 2026-11-18): its title, one line, Kai's card and the one orange action are the C head;
+   the kicker above the title is the bar's For line, and its How to use this page list goes, as every Guide's how-to box does in C */
+html body.ve-gf.gf-hb.gf-c .vg-land-l > .vg-kick:has(+ .gf-ch) { display: none; }
+html body.ve-gf.gf-hb.gf-c .vg-land-l > .gf-ch > .vg-h { margin-top: 0; }
+html body.ve-gf.gf-hb.gf-c .vg-land-l > .gf-ch > .dg-lede { max-width: none; color: #1a1a1a; }
+html body.ve-gf.gf-hb.gf-c .vg-land-l > .vg-sec:has(+ .vg-use), html body.ve-gf.gf-hb.gf-c .vg-land-l > .vg-use { display: none; }
+
+/* Option C, a long Guide line (more than about 130 characters, gf-long; 2026-11-18 roll-out): its first rows show and More opens the rest, so
+   the card stays small and the orange action stays in the first screen. Every word stays in the page; Play reads it all. The pilots' lines are short. */
+body.gf-c .gf-smore { font: inherit; font-size: 11px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; color: #C2185B; background: none; border: 0; padding: 2px 0 0; cursor: pointer; text-decoration: underline; justify-self: start; }
+body.gf-c .gf-smore[hidden] { display: none; }
+body.gf-c .gf-guide.gf-long:not(.gf-sopen) .gf-say { display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+@media (max-width: 900px) {
+  body.gf-c .gf-guide.gf-long:not(.gf-sopen) .gf-say { -webkit-line-clamp: 3; }
+  body.gf-c .gf-guide .gf-smore { grid-column: 2 / -1; grid-row: 3; font-size: 10px; padding: 0; }
+}
+/* Option C: a locked row says Full Guide once, in its tag on the right; its own "In the full Guide" line under the title is not repeated */
+html body.ve-gf.gf-hb.gf-c .dg-srow:has(> .gf-tag.gf-lock) .dg-srow-p:has(> svg:first-child) { display: none; }
+
+/* Option C, the bar stays one slim line on desktop too (Sean, 2026-11-18): a Guide with many parts slides its tabs sideways, with a fade at
+   the edge, instead of wrapping to a second row */
+@media (min-width: 901px) {
+  body.gf-c .gf-tabscroll { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding-right: 36px; }
+  body.gf-c .gf-tabscroll::-webkit-scrollbar { display: none; }
+  body.gf-c .gf-tabscroll > .gf-tabs { flex-wrap: nowrap; flex: none; }
+  body.gf-c .gf-tabwrap::after { content: ""; position: absolute; right: 0; top: 0; bottom: 8px; width: 36px; background: linear-gradient(90deg, rgba(255,158,196,0), #FF9EC4); pointer-events: none; }
+}

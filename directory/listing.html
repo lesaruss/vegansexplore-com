@@ -1539,7 +1539,8 @@ function loadInPulse(l){
   }).catch(function(){});
 }
 // Signature dishes (playbook ve-signature-dishes, canon canon-ve-signature-dishes, Sean 2026-11-06): a claimed food place's featured dishes
-// in the owner's order, each with its vote count. Members vote once per dish (ve-signature-dishes vote); votes never change the order.
+// in the owner's order, each with its vouch count. Members vouch once per dish, kept until they undo it (ve-signature-dishes vote, `on`
+// false; canon canon-ve-vouch-everything, 2026-11-18); vouches never change the order.
 // The owner edits them on the business dashboard (?tab=brand&pd=dishes). The sample business reads DEMO.dishes and saves nothing.
 var SIG_FN = SUPABASE_URL + '/functions/v1/ve-signature-dishes';
 function loadSigDishes(l){
@@ -1555,22 +1556,22 @@ function loadSigDishes(l){
         '<div class="sd-top"><b class="sd-name">' + esc(x.name) + '</b>' + (x.price_display ? '<span class="sd-price">' + esc(x.price_display) + '</span>' : '') + '</div>' +
         '<p class="sd-line">' + esc(x.line) + '</p>' +
         ((x.tags || []).length ? '<div class="sd-tags">' + x.tags.map(function(t){ return '<span>' + esc(t) + '</span>'; }).join('') + '</div>' : '') +
-        '<button type="button" class="sd-vote' + (x.voted ? ' on' : '') + '" data-sd-vote="' + esc(x.id) + '" aria-pressed="' + (x.voted ? 'true' : 'false') + '"' + (own ? ' disabled title="You cannot vote on your own dishes"' : '') +
-        ' aria-label="' + (x.voted ? 'Take back your vote for ' : 'Vote for ') + esc(x.name) + '">' + heart + '<b>' + Number(x.votes || 0).toLocaleString() + '</b><span>' + (x.votes === 1 ? 'vote' : 'votes') + '</span></button></div></div>';
+        '<button type="button" class="sd-vote' + (x.voted ? ' on' : '') + '" data-sd-vote="' + esc(x.id) + '" aria-pressed="' + (x.voted ? 'true' : 'false') + '"' + (own ? ' disabled title="You cannot vouch for your own dishes"' : (x.voted ? ' title="Vouched. Tap again to undo my vouch"' : '')) +
+        ' aria-label="' + (x.voted ? 'Undo my vouch for ' : 'Vouch for ') + esc(x.name) + '">' + heart + '<b>' + Number(x.votes || 0).toLocaleString() + '</b><span>' + (x.votes === 1 ? 'vouch' : 'vouches') + '</span></button></div></div>';
     };
     box.hidden = false; box.className = 'section';
     box.innerHTML = '<h2 class="section-title">Signature dishes</h2><div class="sd-grid">' + ds.map(card).join('') + '</div>' +
-      '<p class="about-text sd-note">Chosen by ' + esc(l.name) + '. Members vote for their favorites.</p>';
+      '<p class="about-text sd-note">Chosen by ' + esc(l.name) + '. Members vouch, once each, for their favorites.</p>';
     box.querySelectorAll('[data-sd-vote]').forEach(function(b){
       b.addEventListener('click', function(){
-        if(DEMO){ alert('This is the sample business, so votes are not counted.'); return; }
+        if(DEMO){ alert('This is the sample business, so vouches are not counted.'); return; }
         if(!window.VEAuth || !VEAuth.isLoggedIn()){ if(window.VEVotes && VEVotes.passportPrompt) VEVotes.passportPrompt(); return; }
         var on = b.getAttribute('aria-pressed') !== 'true'; b.disabled = true;
         call({ action: 'vote', dish_id: b.dataset.sdVote, on: on }).then(function(r){
           b.disabled = false;
           if(!r || !r.ok){ if(r && r.error === 'members_only' && window.VEVotes && VEVotes.passportPrompt) VEVotes.passportPrompt(); return; }
           b.classList.toggle('on', r.voted); b.setAttribute('aria-pressed', r.voted ? 'true' : 'false');
-          b.querySelector('b').textContent = Number(r.votes).toLocaleString(); b.querySelector('span').textContent = r.votes === 1 ? 'vote' : 'votes';
+          b.querySelector('b').textContent = Number(r.votes).toLocaleString(); b.querySelector('span').textContent = r.votes === 1 ? 'vouch' : 'vouches'; b.setAttribute('aria-label', (r.voted ? 'Undo my vouch for ' : 'Vouch for ') + (b.getAttribute('aria-label') || '').replace(/^(Undo my vouch for |Vouch for )/, '')); if (r.voted) b.title = 'Vouched. Tap again to undo my vouch'; else b.removeAttribute('title');
         }, function(){ b.disabled = false; });
       });
     });
@@ -2814,7 +2815,7 @@ function renderSidebar(l){
 // details.store.search_checked says the search works), then the store's website.
 function isGroceryStore(l){ return (l.tags||[]).indexOf('ve-grocery-store') >= 0; }
 // Department, category, search and sort (Sean, 2026-10-08: "whatever categories are available, a drop down,
-// and then it just shows you those items"), most voted first, 12 at a time. Each card opens the product page.
+// and then it just shows you those items"), most vouched first, 12 at a time. Each card opens the product page.
 // Find a store near you (the Supermarket Guide, 2026-11-01): a chain's stores are ve_venues rows of kind supermarket under its listing,
 // read through ve-venues `stores`. The tab shows only when we hold its stores; each opens that store in the Supermarket Guide.
 function loadStores(l){
@@ -2872,7 +2873,7 @@ function loadAisle(l){
     panel.innerHTML = '<div class="aisle"><p class="aisle-lede">' + rows.length + ' Vegan ' + (rows.length === 1 ? 'product' : 'products') + ' our Guides have found at ' + esc(l.name) + '. Stock changes by location, so check your store.</p>' +
       '<div class="aisle-tools"><select id="aisleDept" aria-label="Department"></select><select id="aisleCat" aria-label="Category"></select>' +
       '<input type="search" id="aisleQ" placeholder="Search this aisle (oat, cream cheese, a brand...)" aria-label="Search this aisle">' +
-      '<select id="aisleSort" aria-label="Sort"><option value="votes">Most voted</option><option value="az">A to Z</option></select><span class="aisle-count" id="aisleCount"></span></div>' +
+      '<select id="aisleSort" aria-label="Sort"><option value="votes">Most vouches</option><option value="az">A to Z</option></select><span class="aisle-count" id="aisleCount"></span></div>' +
       '<div class="aisle-grid" id="aisleGrid"></div><button type="button" class="aisle-more" id="aisleMore" hidden></button></div>';
     var dEl = document.getElementById('aisleDept'), cEl = document.getElementById('aisleCat'), qEl = document.getElementById('aisleQ'), sEl = document.getElementById('aisleSort');
     function fillCats(){
@@ -2887,7 +2888,7 @@ function loadAisle(l){
       return '<a class="aisle-card' + (p.id === want ? ' hit' : '') + '" id="product-' + esc(p.id) + '" href="/products/' + encodeURIComponent(p.slug) + '">' + av +
         '<div class="aisle-main"><div class="aisle-type">' + esc(p.product_type) + '</div><div class="aisle-name">' + esc(VEProducts.title(p, b.name)) + '</div>' +
         (p.made_from ? '<div class="aisle-sub">Made from ' + esc(p.made_from.charAt(0).toLowerCase() + p.made_from.slice(1)) + (p.note ? '. ' + esc(p.note) : '') + '</div>' : '') +
-        '<div class="aisle-foot"><span class="aisle-votes">' + (b.vote_count || 0) + ' votes for ' + esc(b.name) + '</span></div></div></a>';
+        '<div class="aisle-foot"><span class="aisle-votes">' + (b.vote_count || 0) + ((b.vote_count || 0) === 1 ? ' vouch for ' : ' vouches for ') + esc(b.name) + '</span></div></div></a>';
     }
     function draw(){
       var q = S.q.trim().toLowerCase();
@@ -2950,7 +2951,7 @@ function loadBrandSite(l){
   var ov = document.querySelector('#tab-overview > div');
   VEProductView.css();
   // Votes within the brand (Sean, 2026-11-01: "people to be able to vote for it within the brand. So you're not going to see the
-  // rankings anywhere except when you click on the brand itself"): ve-products votes, one per member per product.
+  // rankings anywhere except when you click on the brand itself"): ve-products votes, one vouch per member per product, tapped again to undo.
   function pvApi(body){
     var h = { 'Content-Type': 'application/json', apikey: ANON_KEY }, t = window.VEAuth && VEAuth.isLoggedIn() ? VEAuth.getToken() : null;
     if(t) h.Authorization = 'Bearer ' + t;
@@ -2975,9 +2976,9 @@ function loadBrandSite(l){
         '<div class="bp-main"><div class="bp-type">' + (rk ? '<span class="bp-rank">#' + rk + ' at ' + esc(l.name) + '</span> · ' : '') + esc(p.department ? p.department + ' · ' + p.product_type : p.product_type) + '</div><div class="bp-name">' + esc(title(p)) + '</div>' +
         '<div class="bp-sub">' + (n > 1 ? n + ' versions' : (p.made_from ? 'Made from ' + esc(p.made_from.charAt(0).toLowerCase() + p.made_from.slice(1)) : '')) + '</div>' +
         (p.macros && window.VEMacros ? '<div class="bp-mac">' + esc(VEMacros.line(p.macros)) + '</div>' : '') + '</div></a>' +
-        '<button type="button" class="bp-vote' + (on ? ' on' : '') + '" data-pvote="' + esc(p.id) + '" aria-pressed="' + on + '" aria-label="' + (on ? 'Take back your vote for ' : 'Vote for ') + esc(title(p)) + '"><b>' + c + '</b><span>' + (on ? 'Voted' : 'Vote') + '</span></button></div>';
+        '<button type="button" class="bp-vote' + (on ? ' on' : '') + '" data-pvote="' + esc(p.id) + '" aria-pressed="' + on + '" aria-label="' + (on ? 'Undo my vouch for ' : 'Vouch for ') + esc(title(p)) + '"' + (on ? ' title="Vouched. Tap again to undo my vouch"' : '') + '><b>' + c + '</b><span>' + (on ? 'Vouched' : 'Vouch') + '</span></button></div>';
     }
-    function count(n){ return n + (n === 1 ? ' product' : ' products') + ' in our Guides' + (rows.some(pvCount) ? ', most voted first' : ''); }
+    function count(n){ return n + (n === 1 ? ' product' : ' products') + ' in our Guides' + (rows.some(pvCount) ? ', most vouched first' : ''); }
 
     // ---- Overview: about the brand, its products, where to find them
     var stores = {};
@@ -5002,7 +5003,7 @@ function renderListing(l){
     if(VB){
       document.getElementById('listing-root').insertAdjacentHTML('beforeend',
         '<section class="lv-vote" aria-label="Your Passport"><div class="lv-vote-copy"><strong>Your vouches <span>rank them.</span></strong>'+
-        '<p>$11, one time, gets you a LESARUSS Passport: vote once a day for the businesses you trust (the votes decide who leads each list). Own this business? Claim it with the same $11.</p></div>'+
+        '<p>$11, one time, gets you a LESARUSS Passport: vouch once for each business you trust (the vouches decide who leads each list). Own this business? Claim it with the same $11.</p></div>'+
         '<a class="lv-vote-btn" href="'+esc(VB.passportUrl)+'?from=vote">Get your Passport, $11</a></section>');
       return;
     }

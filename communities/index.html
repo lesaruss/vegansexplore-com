@@ -208,7 +208,7 @@
     if (asked && VECityBanner.hubBySlug(asked)) { location.replace('/communities/' + asked); return; }
     var banner = VECityBanner.mount('com-hero', {
       key: 'communities', title: 'Vegan Communities', allTitle: 'Every City', allLabel: 'All cities', param: false, hubLink: false,
-      sub: "We're building the Vegan world's home base, city by city. Vote for your cities, save the ones you call home.",
+      sub: "We're building the Vegan world's home base, city by city. Vouch for your cities, save the ones you call home.",
       onChange: function (slug) { if (slug) location.href = '/communities/' + slug; }
     });
     banner.el.querySelector('select').setAttribute('autocomplete', 'off');

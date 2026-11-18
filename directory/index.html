@@ -27,7 +27,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vegan Directory &#8212; Vegans Explore</title>
-  <meta name="description" content="Everything Vegan near you: places to eat, animals to help, people to follow. Every listing Vegans Explore vets, in every city we serve, ranked by member votes.">
+  <meta name="description" content="Everything Vegan near you: places to eat, animals to help, people to follow. Every listing Vegans Explore vets, in every city we serve, ranked by member vouches.">
   <link rel="canonical" href="https://vegansexplore.com/directory">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Vegans Explore">
@@ -239,7 +239,7 @@
         <label class="fd-loc"><select id="fd-loc" aria-label="Location"></select></label>
       </div>
       <div class="fd-doors" id="fd-doors"></div>
-      <div class="fd-sec"><h2 id="fd-top-h"><span class="hl">Top voted</span></h2><p>Members vote. The best rise to the top.</p></div>
+      <div class="fd-sec"><h2 id="fd-top-h"><span class="hl">Most vouched for</span></h2><p>Members vouch. The best rise to the top.</p></div>
       <div class="vrd-root" id="fd-top"><div class="rank-grid"><p class="fd-empty">Loading...</p></div></div>
     </section>
 
@@ -252,8 +252,8 @@
     <!-- One box at the foot of every view, as on the live Directory: Join free (the one orange button), Claim, Suggest. -->
     <section class="vote-box" id="dir-vote-box" aria-label="Join, claim or suggest">
       <div class="vote-box-copy">
-        <strong>Your vote moves <span>the list.</span></strong>
-        <p id="dir-vote-line"><b>Explorers:</b> join free with a short survey and vote for the places, causes and people you love (the votes decide who leads each list). <b>Businesses:</b> claim your page free once you are a member. <b>Know a place we are missing?</b> Tell us, and our team checks it before it goes on.</p>
+        <strong>Your vouch moves <span>the list.</span></strong>
+        <p id="dir-vote-line"><b>Explorers:</b> join free with a short survey and vouch for the places, causes and people you love (the vouches decide who leads each list). <b>Businesses:</b> claim your page free once you are a member. <b>Know a place we are missing?</b> Tell us, and our team checks it before it goes on.</p>
       </div>
       <div class="vote-box-btns">
         <a class="btn-join" id="dir-join-btn" href="/survey?s=explorer">Join free</a>
@@ -290,7 +290,7 @@
       { key: 'media', label: 'Watch, Listen & Read', ex: 'Books, podcasts, films, YouTube, news', go: 'Find something to watch', unit: 'titles', subcats: ['Books', 'Podcasts', 'Documentaries & Films', 'YouTube', 'News Outlets'] },
       { key: 'services', label: 'Services & Spaces', ex: 'Studios, event venues, health and coaching', local: true, go: 'Book a service or space', unit: 'services', subcats: ['Studios', 'Event Venues', 'Health & Coaching', 'More services'] },
       { key: 'travel', label: 'Travel', ex: 'Cruises, retreats, stays, airlines and travel apps', go: 'Plan a Vegan trip', unit: 'trips', subcats: ['Cruises', 'Retreats', 'Stays', 'Airlines', 'Travel Apps'] },
-      { key: 'vetting', label: 'Being vetted', membersOnly: true, ex: 'Places waiting for member votes', local: true, go: 'Vote on new places', unit: 'places', subcats: ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Catering', 'Meal Prep'] },
+      { key: 'vetting', label: 'Being vetted', membersOnly: true, ex: 'Places waiting for member vouches', local: true, go: 'Vouch for new places', unit: 'places', subcats: ['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Vendors', 'Catering', 'Meal Prep'] },
       { key: 'review', label: 'Review', adminOnly: true, frame: '/admin/depot/directory-review', subcats: [] }
     ];
     DOORS.forEach(function (d) { d.icon = svg(d.key); });
@@ -418,7 +418,7 @@
           '<a class="fd-t" href="' + href(d.key) + '" data-door="' + d.key + '">' + d.label + '</a><span class="ex">' + d.ex + '</span>' + quick +
           '<span class="go">' + d.go + '</span></div>';
       }).join('');
-      document.getElementById('fd-top-h').innerHTML = '<span class="hl">Top voted</span>' + (area ? ' ' + areaCap() : '');
+      document.getElementById('fd-top-h').innerHTML = '<span class="hl">Most vouched for</span>' + (area ? ' ' + areaCap() : '');
       paintTop();
     }
     // Top voted, mixed across doors: the best of Eat and Animals near you, then a podcast or book, then a person.
@@ -430,7 +430,7 @@
           .sort(function (a, b) { return (b.vote_count || 0) - (a.vote_count || 0) || String(a.name).localeCompare(b.name); })[0];
       }
       var picks = [best('food', true), best('community', true), best('media'), best('people')].filter(Boolean);
-      if (!picks.length) { grid.innerHTML = '<p class="fd-empty">Nothing voted here yet.</p>'; return; }
+      if (!picks.length) { grid.innerHTML = '<p class="fd-empty">Nothing vouched for here yet.</p>'; return; }
       grid.innerHTML = picks.map(function (l, i) { return VERegionDirectory.card(l, i); }).join('');
       VERegionDirectory.wire(document.getElementById('fd-top'));
     }
@@ -440,7 +440,7 @@
     var CHOICES = [{ value: '', label: 'All doors' }].concat(DOORS.filter(function (d) { return d.key !== 'review' && (!d.membersOnly || member); }).map(function (d) { return { value: d.key, label: d.label }; }));
     var banner = VECityBanner.mount('dir-hero', {
       key: 'dir', title: 'Vegan Directory', choices: CHOICES, param: false, pickLabel: 'Door',
-      sub: 'Everything Vegan near you, ranked by member votes.',
+      sub: 'Everything Vegan near you, ranked by member vouches.',
       home: { label: 'Directory home', onClick: function () { go(''); } },
       onChange: function (v) { if (ready) go(v); },
       actions: [{ label: 'Suggest a place', short: 'Suggest', onClick: function () { VEListingRequest.open({ page: location.href }); } }]

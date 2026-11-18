@@ -64,7 +64,7 @@
     var quiet = false;
     try { quiet = sessionStorage.getItem('ve_lesaruss_quiet_mode') === '1'; sessionStorage.removeItem('ve_lesaruss_quiet_mode'); } catch (e) {}
     if (quiet && !code) { location.replace(back()); return; }
-    if (!code) { show('Nothing to sign in', VB ? 'Start from a Vote button and press Sign in with LESARUSS.' : 'Start from the Sign in window and press Continue with LESARUSS.', retry); return; }
+    if (!code) { show('Nothing to sign in', VB ? 'Start from a Vouch button and press Sign in with LESARUSS.' : 'Start from the Sign in window and press Continue with LESARUSS.', retry); return; }
     VEAuth.finishLesaruss(code, state).then(function (d) {
       if (d && d.token) {
         var to = back();
@@ -77,7 +77,7 @@
         return;
       }
       if (d && d.error === 'membership_needed') {
-        show('Voting is for LESARUSS members', d.message,
+        show('Vouching is for LESARUSS members', d.message,
           '<a class="btn dark" href="' + (VB ? VB.passportUrl : 'https://lesaruss.ai/join') + '">Become a Diplomat</a><a class="btn line" href="/directory">Back to the Directory</a>');
         return;
       }

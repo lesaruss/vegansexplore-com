@@ -68,7 +68,7 @@
     claimApi: HQ + '/api/claim',
     applyUrl: HQ + '/business/apply',
     claimLede: 'Find your business in the LESARUSS.ai Directory and claim it with a LESARUSS Passport, $11 one time. Not listed yet? Add it and we will review it.',
-    claimTicks: ['Your listing, marked as claimed and yours to keep current once we confirm it is you', 'A LESARUSS Passport: vote every day for the businesses you trust',
+    claimTicks: ['Your listing, marked as claimed and yours to keep current once we confirm it is you', 'A LESARUSS Passport: vouch once for each business you trust, and take it back any time',
       'First access to sponsorship and advertising opportunities'],
     claimNext: function (slug) {
       return [
@@ -80,10 +80,10 @@
     // Claim this listing: Join the Directory, here on lesaruss.ai, in LESARUSS colors.
     claimUrl: function (slug) { return '/claim?listing=' + encodeURIComponent(slug || ''); },
     gates: {
-      vote: { icon: 'heart', title: 'Voting is for LESARUSS members',
-        body: 'Member votes decide which businesses lead every list. A LESARUSS Passport, <b>$11 one time</b>, lets you vote every day for the studios, venues and services you trust. <a href="/join">Diplomats</a> vote too.' },
+      vote: { icon: 'heart', title: 'Vouching is for LESARUSS members',
+        body: 'Member vouches decide which businesses lead every list. A LESARUSS Passport, <b>$11 one time</b>, lets you vouch once for each studio, venue and service you trust. <a href="/join">Diplomats</a> vouch too.' },
       save: { icon: 'bookmark', title: 'Saving is for Passport holders',
-        body: 'Save the businesses you want to come back to. With a LESARUSS Passport, <b>$11 one time</b>, you can also vote for them every day.' },
+        body: 'Save the businesses you want to come back to. With a LESARUSS Passport, <b>$11 one time</b>, you can also vouch for them.' },
       comment: { icon: 'chat', from: 'pulse', title: 'Comments are for LESARUSS members',
         body: 'Anyone can read the Pulse. LESARUSS members talk under every briefing: what they are seeing in their business, and what is working. A LESARUSS Passport is <b>$11 one time</b>. <a href="/join">Diplomats</a> comment too.' },
       report: { icon: 'chat', from: 'pulse', title: 'Reports come from LESARUSS members',

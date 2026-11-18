@@ -505,7 +505,7 @@
     <div class="section-hdr">
       <div>
         <h2 class="section-title" id="hub-ov-title" data-hub-text="Welcome to Vegan {name}"></h2>
-        <p class="section-sub" data-hub-text="Places, people, events and conversations across {area}. Vote for this community and save it if it is home."></p>
+        <p class="section-sub" data-hub-text="Places, people, events and conversations across {area}. Vouch for this community and save it if it is home."></p>
       </div>
     </div>
     <div id="hub-ov-card"></div>
@@ -515,7 +515,7 @@
     <h3 class="hov-h" data-hub-text="Explore {name}"></h3>
     <div class="hov-go" id="hub-ov-go"></div>
     <div id="hub-ov-top" hidden>
-      <h3 class="hov-h" data-hub-text="Most voted in {name}"></h3>
+      <h3 class="hov-h" data-hub-text="Most vouched for in {name}"></h3>
       <div class="vrd-root"><div class="rank-grid" id="hub-ov-top-grid"></div></div>
       <p class="hov-more"><a href="?tab=directory" data-hov-tab="directory">See the whole Directory</a></p>
     </div>
@@ -530,7 +530,7 @@
     <div id="hub-ov-dishes" hidden>
       <h3 class="hov-h" data-hub-text="Top dishes in {name}"></h3>
       <div class="sd-grid" id="hub-ov-dishes-grid"></div>
-      <p class="hov-more">Signature dishes the places chose themselves, ranked by member votes over the last 90 days.</p>
+      <p class="hov-more">Signature dishes the places chose themselves, ranked by member vouches over the last 90 days.</p>
     </div>
   </section>
 
@@ -998,7 +998,7 @@
     function drawStats(s) {
       s = s || {};
       var f = function (v) { return v == null ? '&ndash;' : Number(v).toLocaleString(); };
-      stats.innerHTML = [['directory', s.places, 'Places'], ['events', s.events, 'Events coming up'], ['members', s.members, 'Members'], ['vote', s.votes, 'Community votes']].map(function (x) {
+      stats.innerHTML = [['directory', s.places, 'Places'], ['events', s.events, 'Events coming up'], ['members', s.members, 'Members'], ['vote', s.votes, 'Community vouches']].map(function (x) {
         var v = f(x[1]);
         if (x[0] === 'vote') return '<button type="button" class="hov-stat" data-hov-vote><b>' + v + '</b><span>' + esc(x[2]) + '</span></button>';
         return '<a class="hov-stat" href="?tab=' + x[0] + '" data-hov-tab="' + x[0] + '"><b>' + v + '</b><span>' + esc(x[2]) + '</span></a>';
@@ -1030,7 +1030,7 @@
           return '<a class="sd-card" href="/directory/' + encodeURIComponent(l.slug) + '"><div class="sd-pic"><img src="' + esc(x.photo_url) + '" alt="' + esc(x.name) + '" loading="lazy" decoding="async"></div><div class="sd-body">' +
             '<div class="sd-top"><b class="sd-name">' + esc(x.name) + '</b>' + (x.price_display ? '<span class="sd-price">' + esc(x.price_display) + '</span>' : '') + '</div>' +
             '<span class="sd-place">' + esc(l.name) + (VG[l.vegan_status] ? '<em>' + VG[l.vegan_status] + '</em>' : '') + '</span>' +
-            '<p class="sd-line">' + esc(x.line) + '</p><span class="sd-votes">' + Number(x.votes).toLocaleString() + (x.votes === 1 ? ' vote' : ' votes') + '</span></div></a>';
+            '<p class="sd-line">' + esc(x.line) + '</p><span class="sd-votes">' + Number(x.votes).toLocaleString() + (x.votes === 1 ? ' vouch' : ' vouches') + '</span></div></a>';
         }).join('');
         document.getElementById('hub-ov-dishes').hidden = false;
       }).catch(function () {});

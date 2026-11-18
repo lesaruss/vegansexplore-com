@@ -108,7 +108,7 @@
 
   // A members-only prompt (vote, save, check in...) lands on the Overview with its note (Sean, 2026-11-01), and an old link says it moved.
   function gateNote() {
-    var w = { vote: ['Voting is for members.', 'vote every day for the places you love'], save: ['Saving is for members.', 'keep the places you love in My Saves'],
+    var w = { vote: ['Vouching is for members.', 'vouch once for each place you love'], save: ['Saving is for members.', 'keep the places you love in My Saves'],
       checkin: ['Check-ins are for members.', 'earn 10 points every time you visit a place'], give: ['Giving points is for members.', 'give your points to the places you love'],
       tickets: ['This is a members-only event.', 'we take you straight to the tickets'], board: ['Posting and comments are for members.', 'join the conversation on the Daily Pulse in every city'] }[from];
     if (from === 'old-link' && !w) return '<p class="dg-note"><b>That page has moved.</b> Vegans Explore has a new home, and this is the best place to start.</p>';
@@ -135,10 +135,10 @@
   // About 75 characters each (Sean, 2026-11-10: "let's go with 75 characters, because I still feel like they're a little long").
   // Read more carries the rest.
   var SUMMARY = {
-    directory: 'One search finds any Vegan place, person or answer, ranked by member votes.',
+    directory: 'One search finds any Vegan place, person or answer, ranked by member vouches.',
     city: 'Your chapter\'s home: a Daily Pulse each morning, boards, events and places.',
     events: 'Festivals, potlucks and meetups near you, or submit your own from a flyer.',
-    media: 'Our shows, plus podcasts, films and books the community votes to the top.',
+    media: 'Our shows, plus the podcasts, films and books the community vouches for.',
     guides: 'Mini websites on one topic each, walked through by one of our Guides.',
     points: 'Earn points by taking part, then spend them on Guides and level up.',
     paths: 'Start as an Explorer, then find the path, Guide and badge that fit you.',
@@ -193,10 +193,10 @@
   var VIEWS = {
     directory: function () {
       return sectionPage('directory', { kicker: 'Find your way', title: 'Every Vegan place, person and group', pic: 'thumb-directory.jpg', group: 'What is in the Directory',
-        how: '<b>Everything below is part of the Directory.</b> Members vote for the places they love, and that is how places rise to the top. When you are ready, open the Directory and pick your city.',
+        how: '<b>Everything below is part of the Directory.</b> Members vouch for the places they love, and that is how places rise to the top. When you are ready, open the Directory and pick your city.',
         go: ['View the Directory', '/directory'], ctaTitle: 'Go see the Directory.', ctaText: 'Pick your city and start looking around. It is open to everyone.',
         parts: [
-          ['eating-out.jpg', 'Local Food', 'Restaurants, bakeries, food trucks, markets and more, ranked by votes.'],
+          ['eating-out.jpg', 'Local Food', 'Restaurants, bakeries, food trucks, markets and more, ranked by vouches.'],
           ['supermarket-guide.jpg', 'Products', 'Brands you can buy anywhere: food, supplements, clothing and beauty.'],
           ['nutrition-guide.jpg', 'Services', 'Coaches, health pros, animal care and more, from people who share your values.'],
           ['restaurant-guide/t-pulse.jpg', 'Media', 'Podcasts, channels, documentaries and books, ranked by the community.'],
@@ -211,8 +211,8 @@
           ['holiday/w-say.jpg', 'The Daily Pulse', 'A short morning briefing: your city\'s news, what is on, one thing to do.'],
           ['vegan-pets.jpg', 'The Boards', 'Jobs, classifieds, fosters and rescues, a board for each in your city.'],
           ['partner-group-partner.jpg', 'Events in Your City', 'Potlucks, meetups, festivals and sanctuary days, on one calendar.'],
-          ['restaurant-guide/t-promos.jpg', 'Most Voted Places', 'The places your chapter\'s members vote to the top, to eat and shop.'],
-          ['vegan-abroad.jpg', 'Where We Go Next', 'Not seeing your city? Vote for the next chapter, or suggest one.']
+          ['restaurant-guide/t-promos.jpg', 'Most Vouched Places', 'The places your chapter\'s members vouch for most, to eat and shop.'],
+          ['vegan-abroad.jpg', 'Where We Go Next', 'Not seeing your city? Vouch for the next chapter, or suggest one.']
         ] });
     },
     events: function () {
@@ -233,7 +233,7 @@
         go: ['Open Media', '/media'], ctaTitle: 'Go press Play.', ctaText: 'Our shows and the community\'s favorites, right on the page. Open to everyone.',
         parts: [
           ['restaurant-guide/t-pulse.jpg', 'Our Shows', 'The Vegans Explore Podcast, SoFlo Vegans and Pre-Vegans.'],
-          ['holiday/p-listen.jpg', 'Top Podcasts', 'The podcasts the community votes to the top, playable on the page.'],
+          ['holiday/p-listen.jpg', 'Top Podcasts', 'The podcasts the community vouches for most, playable on the page.'],
           ['creator-guide.jpg', 'Documentaries', 'Films that changed how people see food and animals, and where to watch.'],
           ['restaurant-guide/t-mylist.jpg', 'Books', 'Cookbooks, memoirs and health books, including our guests\' picks.'],
           ['partner-official-creator.jpg', 'Join Our Network', 'Host a podcast? Apply to join the Vegans Explore Podcast Network.']
@@ -296,7 +296,7 @@
         how: '<b>Each part below is a way to help, starting today.</b> Businesses, people and nonprofits that show up can run campaigns for the animals together. Be first to hear about ours.',
         go: ['Find nonprofits and rescues', '/directory?tab=community'], ctaTitle: 'Show up for the animals.', ctaText: 'Find the nonprofits, rescues and sanctuaries near you, and give them your points.',
         parts: [
-          ['nonprofit-guide.jpg', 'Nonprofits, rescues and sanctuaries', 'Listed in every chapter in the Directory, ranked by member votes.'],
+          ['nonprofit-guide.jpg', 'Nonprofits, rescues and sanctuaries', 'Listed in every chapter in the Directory, ranked by member vouches.'],
           ['vegan-pets.jpg', 'The Fosters board', 'Every city has a Fosters board, so animals find a home close by.'],
           ['thumb-community.jpg', 'The Rescues board', 'Every city has a Rescues board for animals who need help now.'],
           ['vegan-events-guide.jpg', 'Sanctuary days and fundraisers', 'Find them in Events, in your chapter and around the world.'],
@@ -309,7 +309,7 @@
         var m = me() || {};
         return crumb(tab('founder').label) + head('You are in', m.founding_member ? 'Welcome, Founding Member' : 'Welcome, Explorer', 'You are a member. Here is what to do first.') +
           '<div class="wg-ways">' + [
-            ['1. Vote for three places you love', 'Open the Directory, find three places, and vote. Come back tomorrow and vote again.', '/directory'],
+            ['1. Vouch for three places you love', 'Open the Directory, find three places, and vouch for each one. Then check in when you visit to earn points.', '/directory'],
             ['2. Check in this week', 'Visiting a Vegan place? Tap Check in on its page for 10 points.', '/directory'],
             ['3. Tell us one thing', 'Something working, missing or confusing? Send it with the Feedback button. We read every one.', '']
           ].map(function (w) { return '<div class="wg-box"><h3>' + esc(w[0]) + '</h3><p>' + esc(w[1]) + '</p>' + (w[2] ? '<a href="' + w[2] + '">Open it</a>' : '<button type="button" class="dg-link" data-ve-feedback>Send feedback</button>') + '</div>'; }).join('') + '</div>' +

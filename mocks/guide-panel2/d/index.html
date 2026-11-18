@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en" data-kit-parent="welcome-guide">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your Guide Walks You Through It (Option D) | Vegans Explore</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Design panel 2, option D: the Guide leads with a friendly opening and a numbered path of the Guide's parts.">
+<link rel="preload" href="/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/public/ve-kit.css">
+<style>
+  @font-face { font-family: 'Montserrat'; font-style: normal; font-weight: 400 900; font-display: swap; src: url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2'); unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+  :root { --gutter: 40px; }
+  body { margin: 0; background: #fff; color: var(--k-ink); font-family: 'Montserrat', sans-serif; line-height: 1.5; }
+  button, input { font-family: inherit; }
+  * { box-sizing: border-box; }
+  .mockstrip { background: var(--k-peach); border-bottom: 2px solid var(--k-ink); padding: 8px var(--gutter); font-size: 12px; font-weight: 800; display: flex; flex-wrap: wrap; gap: 6px 18px; align-items: center; }
+  .mockstrip b { letter-spacing: .12em; text-transform: uppercase; font-size: 10.5px; }
+  .mockstrip a { color: var(--k-ink); }
+  .mockstrip a[aria-current="page"] { text-decoration: none; background: var(--k-ink); color: #fff; padding: 2px 7px; border-radius: var(--k-r); }
+  main.d-main { padding: 22px var(--gutter) 80px; max-width: none; margin: 0; }
+
+  /* ---------- The path: every part of the Guide, numbered, across the top ---------- */
+  .d-pathwrap { margin: 0 0 22px; }
+  .d-pathhead { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; margin-bottom: 10px; }
+  .d-pathhead .k-label { margin: 0; color: var(--k-pinkd); }
+  .d-where { font-size: 13px; font-weight: 800; }
+  .d-where span { color: var(--k-mute); font-weight: 700; }
+  .d-path { list-style: none; margin: 0; padding: 0 6px 6px 0; display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 10px; counter-reset: dp; }
+  .d-path li { min-width: 0; }
+  .d-step { position: relative; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 4px 10px; align-items: start; height: 100%; text-decoration: none; color: var(--k-ink); background: #fff; border: 2px solid var(--k-ink); border-radius: 12px; padding: 10px 11px; box-shadow: 4px 4px 0 var(--k-pink); }
+  .d-step:hover { background: var(--k-pinkt); }
+  .d-step .k-num { width: 34px; height: 34px; background: var(--k-pinkt); font-size: 13px; }
+  .d-step b { display: block; font-size: 14px; font-weight: 900; line-height: 1.2; }
+  .d-step small { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 11.5px; font-weight: 600; color: var(--k-mute); line-height: 1.35; margin-top: 3px; }
+  .d-step .k-tag { grid-column: 2; justify-self: start; margin-top: 4px; }
+  .d-step.done .k-num { background: var(--k-tint); color: var(--k-dk); }
+  .d-step.here { background: var(--k-ink); color: #fff; box-shadow: 4px 4px 0 var(--k-or); }
+  .d-step.here small { color: #d6d6d6; }
+  .d-step.here .k-num { background: var(--k-pink); color: var(--k-ink); }
+  .d-step .d-you { position: absolute; top: -10px; right: 10px; background: var(--k-or); color: var(--k-ink); border: 2px solid var(--k-ink); border-radius: var(--k-r); font-size: 9.5px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; padding: 2px 6px; }
+  .k-tag.full { background: var(--k-peach); color: #8a4d00; }
+
+  /* ---------- The Guide's opening ---------- */
+  .d-open { display: grid; grid-template-columns: minmax(220px, 300px) minmax(0, 1fr); gap: 28px 40px; align-items: center; }
+  .d-open.sq { grid-template-columns: minmax(200px, 260px) minmax(0, 1fr); }
+  .d-pic { aspect-ratio: 4 / 5; --k-c: var(--k-pink); }
+  .d-pic.sq { aspect-ratio: 1 / 1; }
+  .d-for { display: inline-flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 10px; }
+  .d-for .k-eb { margin: 0; }
+  .d-for span { font-size: 13px; font-weight: 800; }
+  .lg2 { font-style: normal; }
+  .d-say { position: relative; background: var(--k-pinkt); border: 2px solid var(--k-ink); border-radius: var(--k-rc); padding: 14px 16px 14px; margin: 4px 0 14px; max-width: 760px; }
+  .d-say::before { content: ""; position: absolute; left: -11px; top: 22px; width: 18px; height: 18px; background: var(--k-pinkt); border-left: 2px solid var(--k-ink); border-bottom: 2px solid var(--k-ink); transform: rotate(45deg); }
+  .d-say .who { display: block; font-size: 10.5px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: var(--k-pinkd); margin-bottom: 4px; }
+  .d-say p { margin: 0; font-size: 17px; font-weight: 700; line-height: 1.45; }
+  .d-play { display: flex; align-items: center; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+  .d-playbtn { display: inline-flex; align-items: center; gap: 10px; font: inherit; font-size: 13px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; background: var(--k-dk); color: #fff; border: 2px solid var(--k-ink); border-radius: var(--k-r); padding: 9px 14px 9px 9px; cursor: pointer; box-shadow: 3px 3px 0 var(--k-ink); }
+  .d-playbtn i { width: 28px; height: 28px; border-radius: 50%; background: #fff; display: grid; place-items: center; }
+  .d-playbtn i svg { display: block; }
+  .d-playbtn[aria-pressed="true"] { background: var(--k-ink); }
+  .d-bar { flex: 1 1 120px; max-width: 220px; height: 6px; border-radius: 3px; background: #fff; border: 1.5px solid var(--k-ink); overflow: hidden; }
+  .d-bar i { display: block; height: 100%; width: 0; background: var(--k-pinkd); transition: width .2s linear; }
+  .d-playnote { font-size: 11.5px; font-weight: 700; color: var(--k-mute); }
+  .d-actions { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; margin-top: 4px; }
+  .d-actions .k-btn.k-cta { font-size: 13px; padding: 14px 20px; box-shadow: 3px 3px 0 var(--k-ink); border-color: var(--k-ink); }
+  .d-actions .d-after { font-size: 12.5px; font-weight: 700; color: var(--k-mute); }
+  .d-price { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; font-weight: 700; line-height: 1.5; margin: 16px 0 0; max-width: 860px; }
+  .d-price svg { flex: none; margin-top: 2px; }
+
+  /* ---------- Content under the opening ---------- */
+  .d-sec { margin-top: 36px; }
+  .d-sec > .k-h3 { font-size: 22px; margin-bottom: 4px; }
+  .d-sec > p.sub { font-size: 13.5px; font-weight: 600; color: var(--k-mute); margin: 0 0 14px; max-width: 860px; }
+  .d-nuts { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)); gap: 10px; }
+  .d-nuts .k-row { text-decoration: none; color: var(--k-ink); }
+  .d-nuts .k-row.free { box-shadow: 4px 4px 0 var(--k-br); }
+  .d-free3 { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 10px; }
+  .d-note { font-size: 12px; font-weight: 600; color: var(--k-mute); line-height: 1.5; max-width: 860px; margin: 26px 0 0; }
+  .d-welcome { margin-top: 22px; border: 2px dashed var(--k-ink); border-radius: var(--k-rc); padding: 12px 16px; background: #fff; font-size: 13px; font-weight: 700; line-height: 1.5; max-width: 860px; }
+  .d-welcome b.btnlike { display: inline-block; background: var(--k-or); border: 2px solid var(--k-ink); border-radius: var(--k-r); padding: 1px 8px; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; }
+
+  /* Nutrients part */
+  .d-two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 24px 32px; align-items: start; margin-top: 28px; }
+  .d-b12 { --k-c: var(--k-br); scroll-margin-top: 90px; }
+  .d-b12 .k-h2 { font-size: clamp(24px, 2.2vw, 32px); margin-bottom: 6px; }
+  .d-amts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 12px 0 14px; }
+  .d-amts div { border: 2px solid var(--k-ink); border-radius: 10px; padding: 8px 10px; background: var(--k-tint); }
+  .d-amts b { display: block; font-size: 17px; font-weight: 900; }
+  .d-amts small { display: block; font-size: 10px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; color: var(--k-mute); }
+  .d-b12 h4 { font-size: 12px; font-weight: 900; letter-spacing: .12em; text-transform: uppercase; margin: 14px 0 6px; color: var(--k-dk); }
+  .d-b12 p, .d-b12 li { font-size: 14px; font-weight: 600; line-height: 1.5; }
+  .d-b12 ul { margin: 0; padding-left: 20px; }
+  .d-b12 p { margin: 0 0 8px; }
+  .d-check label { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; font-weight: 600; line-height: 1.45; padding: 6px 0; border-bottom: 1px solid var(--k-line); }
+  .d-check input { width: 18px; height: 18px; margin-top: 1px; accent-color: var(--k-dk); flex: none; }
+  .d-src { font-size: 12px; font-weight: 600; color: var(--k-mute); }
+  .d-src a { color: var(--k-dk); }
+  .d-upnext { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; border-top: 2px solid var(--k-ink); margin-top: 16px; padding-top: 12px; font-size: 13px; font-weight: 700; }
+
+  /* Guide row (inside a part): compact, same parts as the opening */
+  .d-guiderow { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 18px 24px; align-items: center; }
+  .d-guiderow .d-pic { width: 120px; }
+  .d-guiderow .d-say { margin-bottom: 0; }
+
+  /* Finder */
+  .d-stats { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0 0; }
+  .d-stats .k-stat { --k-c: var(--k-pink); min-width: 140px; padding: 10px 14px; }
+  .d-stats .k-stat b { font-size: 24px; }
+  .d-search { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; max-width: 720px; margin: 0 0 14px; }
+  .d-search input { font: inherit; font-size: 15px; font-weight: 600; width: 100%; border: 3px solid var(--k-ink); border-radius: var(--k-r); padding: 11px 14px; background: #fff; }
+  .d-search input:focus { outline: none; box-shadow: 4px 4px 0 var(--k-or); }
+  .d-ports { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr)); gap: 18px; }
+  .d-port { display: flex; flex-direction: column; text-decoration: none; color: var(--k-ink); border: 2px solid var(--k-ink); border-radius: var(--k-rc); background: #fff; box-shadow: 5px 5px 0 var(--k-pink); overflow: hidden; }
+  .d-port:hover { background: var(--k-pinkt); }
+  .d-port.free { box-shadow: 5px 5px 0 var(--k-br); }
+  .d-port .ph { aspect-ratio: 1200 / 670; background: #eee center / cover no-repeat; border-bottom: 2px solid var(--k-ink); }
+  .d-port .bd { display: grid; grid-template-columns: 52px minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 11px 12px; }
+  .d-code { width: 52px; height: 40px; border-radius: 8px; background: var(--k-ink); color: #fff; display: grid; place-items: center; font-weight: 900; font-size: 14px; letter-spacing: .04em; }
+  .d-port h3 { margin: 0; font-size: 14.5px; font-weight: 900; line-height: 1.22; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .d-port .meta { font-size: 12px; font-weight: 700; color: var(--k-mute); margin-top: 2px; }
+  .d-port .tags { display: flex; flex-wrap: wrap; gap: 5px; grid-column: 2; }
+  .d-port .bd { grid-template-columns: 52px minmax(0, 1fr); align-items: start; }
+  a.k-row, a.k-row * { text-decoration: none; color: var(--k-ink); }
+  .k-tag.chk { background: #fff; color: var(--k-dk); border: 1.5px solid var(--k-dk); }
+  .d-empty { font-weight: 800; padding: 12px 0; }
+  .d-msg { font-size: 12.5px; font-weight: 800; color: var(--k-dk); min-height: 18px; margin: -6px 0 10px; }
+
+  /* ---------- Phones ---------- */
+  @media (max-width: 900px) {
+    :root { --gutter: 16px; }
+    main.d-main { padding: 8px 16px 110px; }
+    .mockstrip { padding: 5px 16px; font-size: 10.5px; gap: 2px 10px; flex-wrap: nowrap; overflow: hidden; white-space: nowrap; }
+    .mockstrip > span { display: none; }
+    .mockstrip a .lg { display: none; }
+    .d-pathwrap { margin-bottom: 14px; }
+    .d-pathhead { margin-bottom: 0; flex-wrap: nowrap; }
+    .d-pathhead .k-label { font-size: 9.5px; white-space: nowrap; }
+    .d-where { font-size: 11px; text-align: right; }
+    .d-where span { display: none; }
+    /* The path slides on phones (one row, swiped), every part still visible by name */
+    .d-path { grid-auto-columns: 124px; overflow-x: auto; scrollbar-width: none; padding: 10px 6px 8px 0; gap: 8px; scroll-snap-type: x proximity; }
+    .d-path::-webkit-scrollbar { display: none; }
+    .d-path li { scroll-snap-align: start; }
+    .d-step { grid-template-columns: 24px minmax(0, 1fr); padding: 7px 8px; gap: 2px 7px; box-shadow: 3px 3px 0 var(--k-pink); align-items: center; }
+    .d-step .k-num { width: 24px; height: 24px; font-size: 11px; grid-row: span 2; }
+    .d-step b { font-size: 12.5px; }
+    .d-step small { display: none; }
+    .d-step .k-tag { font-size: 8.5px; padding: 3px 5px; margin-top: 2px; }
+    .d-step .d-you { top: -9px; right: 6px; font-size: 8px; }
+    .d-open, .d-open.sq { display: block; }
+    .d-open > .d-pic { display: none; }
+    .d-head .k-h1 { font-size: 27px; margin-bottom: 8px; }
+    .lg2 { display: none; }
+    .d-path { padding-top: 9px; padding-bottom: 6px; }
+    .d-pathwrap { margin-bottom: 8px; }
+    .d-play { margin-top: 6px; }
+    .d-for { margin-bottom: 6px; }
+    .d-for .k-eb { display: none; }
+    .d-for span { font-size: 11.5px; line-height: 1.35; color: var(--k-pinkd); }
+    /* On phones the Guide sits beside the line: picture left, words right (rows keep the desktop layout) */
+    .d-guiderow, .d-mobguide { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 12px; align-items: start; }
+    .d-guiderow .d-pic, .d-mobpic .d-pic { width: 76px; box-shadow: 4px 4px 0 var(--k-pink); border-width: 2px; }
+    .d-say { padding: 10px 12px; margin: 0 0 10px; }
+    .d-say::before { top: 16px; width: 14px; height: 14px; left: -9px; }
+    .d-say .who { display: none; }
+    .d-say { padding: 8px 10px; }
+    .d-step .d-you { font-size: 7.5px; padding: 1px 5px; }
+    .d-step b { line-height: 1.12; }
+    .d-say p { font-size: 13.5px; line-height: 1.4; }
+    .d-play { margin-top: 8px; gap: 8px; }
+    .d-playbtn { font-size: 11.5px; padding: 6px 10px 6px 6px; }
+    .d-playbtn i { width: 22px; height: 22px; }
+    .d-bar { display: none; }
+    .d-playnote { display: none; }
+    .d-actions { margin-top: 6px; }
+    .d-actions .k-btn.k-cta { width: 100%; font-size: 12px; padding: 12px 12px; }
+    .d-actions .d-after { font-size: 12px; }
+    .d-price { font-size: 12.5px; margin-top: 12px; }
+    .d-two { grid-template-columns: minmax(0, 1fr); margin-top: 20px; }
+    .d-amts b { font-size: 15px; }
+    .d-stats { gap: 8px; margin-top: 10px; }
+    .d-stats .k-stat { min-width: 0; flex: 1 1 0; padding: 8px 10px; box-shadow: 3px 3px 0 var(--k-pink); }
+    .d-stats .k-stat b { font-size: 19px; }
+    .d-stats .k-stat small { font-size: 8.5px; letter-spacing: .08em; }
+    /* Airport tiles keep the desktop order as a row: picture left, words middle, tags right */
+    .d-ports { gap: 10px; }
+    .d-port { display: grid; grid-template-columns: 92px minmax(0, 1fr); box-shadow: 3px 3px 0 var(--k-pink); }
+    .d-port.free { box-shadow: 3px 3px 0 var(--k-br); }
+    .d-port .ph { border-bottom: 0; border-right: 2px solid var(--k-ink); aspect-ratio: auto; min-height: 68px; }
+    .d-port .bd { grid-template-columns: minmax(0, 1fr) auto; padding: 8px 10px; gap: 8px; align-items: center; }
+    .d-port .tags { grid-column: auto; flex-direction: column; align-items: flex-end; }
+    .d-port .d-code { display: none; }
+    .d-port h3 { font-size: 13px; }
+    .d-port .meta { font-size: 11px; }
+    .d-port .tags .k-tag { font-size: 8.5px; padding: 3px 5px; }
+    .d-search { grid-template-columns: minmax(0, 1fr) auto; }
+    .d-search input { font-size: 14px; padding: 10px 12px; }
+  }
+  @media (min-width: 901px) { .d-mobguide { display: contents; } .d-mobpic { display: none; } }
+</style>
+</head>
+<body>
+<div class="page-frame">
+<script src="/public/nav.js"></script>
+
+<div class="mockstrip" role="note">
+  <b>Mock, Option D</b><span>Your Guide Walks You Through It</span>
+  <a href="?view=handbook" data-v="handbook"><span class="lg">Nutrition Guide, </span>Front page</a>
+  <a href="?view=handbook&amp;part=nutrients" data-v="nutrients"><span class="lg">Nutrition Guide, </span>Nutrients</a>
+  <a href="?view=finder" data-v="finder"><span class="lg">Airport Guide, Choose your </span>Airport</a>
+</div>
+
+<main class="d-main" id="app" data-k-section="guides"></main>
+
+<script src="/public/footer.js"></script>
+</div>
+
+<script>
+(function () {
+  var Q = new URLSearchParams(location.search);
+  var VIEW = Q.get('view') === 'finder' ? 'finder' : 'handbook';
+  var PART = VIEW === 'handbook' && Q.get('part') === 'nutrients' ? 'nutrients' : '';
+  var CUR = VIEW === 'finder' ? 'finder' : (PART || 'handbook');
+  var app = document.getElementById('app');
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function art(slug) { return (window.VEGuideArt && VEGuideArt(slug, 'square')) || ('/public/brand-kit/avatars/' + slug + (slug === 'theo' ? '-v3' : '-v2') + '.jpg'); }
+
+  Array.prototype.forEach.call(document.querySelectorAll('.mockstrip a'), function (a) { if (a.getAttribute('data-v') === CUR) a.setAttribute('aria-current', 'page'); });
+
+  var LOCK = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a1a1a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>';
+  var PLAY = '<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 1.5v9l7.5-4.5z" fill="#2D5C27"/></svg>';
+  var PAUSE = '<svg width="12" height="12" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 1.5h2.6v9H2.5zM6.9 1.5h2.6v9H6.9z" fill="#1a1a1a"/></svg>';
+
+  // ---------- The path ----------
+  function tag(t) { return t === 'free' ? '<span class="k-tag live">Free</span>' : t === 'b12' ? '<span class="k-tag live">B12 free</span>' : t === 'fll' ? '<span class="k-tag live">FLL free</span>' : '<span class="k-tag full">Full Guide</span>'; }
+  function path(steps, hereIdx, title) {
+    var cur = steps[hereIdx], nxt = steps[hereIdx + 1];
+    var where = hereIdx === 0 ? 'You are at the start' : 'Step ' + hereIdx + ' of ' + (steps.length - 1) + ': ' + cur.t;
+    return '<nav class="d-pathwrap" aria-label="' + esc(title) + ', every part">' +
+      '<div class="d-pathhead"><span class="k-label">' + esc(title) + ': your path</span>' +
+      '<span class="d-where">' + esc(where) + (nxt ? ' <span>&middot; Up next: ' + esc(nxt.t) + '</span>' : '') + '</span></div>' +
+      '<ol class="d-path">' + steps.map(function (s, i) {
+        var st = i === hereIdx ? 'here' : i < hereIdx ? 'done' : '';
+        return '<li><a class="d-step ' + st + '" href="' + (s.href || '#') + '"' + (s.href ? '' : ' data-soon="' + esc(s.t) + '"') + (i === hereIdx ? ' aria-current="step"' : '') + '>' +
+          (i === hereIdx ? '<span class="d-you">You are here</span>' : '') +
+          '<span class="k-num">' + (i === 0 ? (i < hereIdx ? '&#10003;' : '&#9733;') : i) + '</span>' +
+          '<span><b>' + esc(s.t) + '</b><small>' + esc(s.d) + '</small></span>' + tag(s.tag) + '</a></li>';
+      }).join('') + '</ol></nav>';
+  }
+
+  // ---------- The Guide speaking: picture, line, Play ----------
+  function say(name, line, secs) {
+    return '<div class="d-say"><span class="who">' + esc(name) + ' says</span><p>' + esc(line) + '</p>' +
+      '<div class="d-play"><button type="button" class="d-playbtn" data-secs="' + secs + '" aria-pressed="false"><i>' + PLAY + '</i><span>Play ' + esc(name) + '</span></button>' +
+      '<span class="d-bar"><i></i></span><span class="d-playnote">' + secs + ' seconds, in ' + esc(name) + '\'s voice. Nothing plays until you press it.</span></div></div>';
+  }
+  function pic(src, alt, sq) { return '<div class="k-pic d-pic' + (sq ? ' sq' : '') + '"><img src="' + esc(src) + '" alt="' + esc(alt) + '" decoding="async"></div>'; }
+  var PRICE_N = 'Free for everyone: Vitamin B12, Supplements, Experts and Courses. The rest opens with the full Guide, $11 once or 1,100 points. Points are earned on the site: the free member survey alone gives you 250.';
+  var MED = 'General information from the sources named, not medical advice. Talk with your doctor or a registered dietitian, especially if you are pregnant, breastfeeding, raising a Vegan child, or managing a health condition.';
+  var WELCOME = '<div class="d-welcome">In this design, the Welcome Guide\'s one main button says <b class="btnlike">Start here</b> (not "Become a Founder"). It opens step 1 of the Welcome Guide\'s path, Find Vegan food near you, with Liz walking it.</div>';
+
+  // ---------- The Nutrition Guide ----------
+  var NPIC = '/public/guides/nutrition/';
+  var NSTEPS = [
+    { t: 'Start here', d: 'Meet Theo and see the path.', tag: 'free', href: '?view=handbook' },
+    { t: 'Nutrients', d: 'Eight nutrients, one at a time.', tag: 'b12', href: '?view=handbook&part=nutrients' },
+    { t: 'Your plate', d: 'One plate, every meal, no counting.', tag: 'full' },
+    { t: 'Supplements', d: 'What to take, and what to look for.', tag: 'free' },
+    { t: 'Experts', d: 'Physicians and dietitians near you.', tag: 'free' },
+    { t: 'Courses', d: 'Learn more, or make it your work.', tag: 'free' },
+    { t: 'Pulse', d: 'Episodes with Dr. Barnard and more.', tag: 'full' }
+  ];
+  var NUTS = [['b12', 'Vitamin B12', 'The one every Vegan needs a reliable source of.'], ['protein', 'Protein', 'How much, and the plants that have the most.'],
+    ['iron', 'Iron', 'Plant iron, and what helps you absorb it.'], ['calcium', 'Calcium', 'For bones: fortified milks, tofu and greens.'],
+    ['vitamin-d', 'Vitamin D', 'Sun, fortified foods, or a supplement.'], ['omega-3', 'Omega-3s', 'Seeds, walnuts and algae oil.'],
+    ['iodine', 'Iodine', 'Iodized salt or a supplement.'], ['zinc', 'Zinc', 'Beans, seeds, nuts and whole grains.']];
+  function nutRows(linkB12) {
+    return NUTS.map(function (n, i) {
+      var free = n[0] === 'b12';
+      return '<' + (free && linkB12 ? 'a href="' + linkB12 + '"' : 'div') + ' class="k-row' + (free ? ' free' : '') + '"><span class="k-num ' + (free ? 'br' : 'pe') + '">' + (i + 1) + '</span>' +
+        '<span class="k-row-t"><b>' + esc(n[1]) + '</b><small class="k-clamp">' + esc(n[2]) + '</small></span>' + (free ? '<span class="k-tag live">Free</span>' : '<span class="k-tag full">Full Guide</span>') + '</' + (free && linkB12 ? 'a' : 'div') + '>';
+    }).join('');
+  }
+
+  function handbookFront() {
+    var line = 'I\'m Theo. I\'ve been Vegan a long time. Here\'s what I wish I\'d known on day one: what your plate needs, and where to get it.';
+    return path(NSTEPS, 0, 'The Nutrition Guide') +
+      '<section class="d-open" aria-label="Meet Theo">' + pic(NPIC + 'theo-overview.jpg', 'Theo, your Guide for Vegan nutrition, waving in his kitchen') +
+      '<div class="d-head"><div class="d-for"><span class="k-eb pk">The Nutrition Guide</span><span>For anyone eating Vegan, from day one<i class="lg2">, and the families they cook for</i></span></div>' +
+      '<h1 class="k-h1">What a Vegan Plate Needs</h1>' +
+      '<div class="d-mobguide"><div class="d-mobpic">' + pic(NPIC + 'theo-overview.jpg', 'Theo, your Guide') + '</div>' + say('Theo', line, 24) + '</div>' +
+      '<div class="d-actions"><a class="k-btn k-cta" href="?view=handbook&amp;part=nutrients">Next step: Start with Vitamin B12 &rsaquo;</a><span class="d-after">Free, about 3 minutes</span></div>' +
+      '<p class="d-price">' + LOCK + '<span>' + esc(PRICE_N) + '</span></p></div></section>' +
+      '<section class="d-sec"><h2 class="k-h3">Step 1 Is the Eight Nutrients</h2><p class="sub">How much you need, which foods have it, and when a supplement makes sense. Every number comes from the source named under it.</p>' +
+      '<div class="d-nuts">' + nutRows('?view=handbook&part=nutrients#b12') + '</div></section>' +
+      '<p class="d-note">' + esc(MED) + '</p>' + WELCOME;
+  }
+
+  function handbookNutrients() {
+    var line = 'Eight nutrients, one at a time: how much you need, which foods have it, and when to take a supplement. Try B12 free.';
+    return path(NSTEPS, 1, 'The Nutrition Guide') +
+      '<section class="d-head" aria-label="Nutrients">' +
+      '<div class="d-for"><span class="k-eb pk">Step 1 of 6</span><span>For anyone eating Vegan, from day one</span></div>' +
+      '<h1 class="k-h1">Eight Nutrients, One at a Time</h1>' +
+      '<div class="d-guiderow">' + pic(NPIC + 'theo-nutrients.jpg', 'Theo with jars of grains and bowls of greens, beans and seeds') +
+      '<div>' + say('Theo', line, 9) + '</div></div>' +
+      '<div class="d-actions" style="margin-top:14px"><a class="k-btn k-cta" href="#b12" data-jump="b12">Next step: Read Vitamin B12 &rsaquo;</a><span class="d-after">Free for everyone</span></div>' +
+      '<p class="d-price">' + LOCK + '<span>Vitamin B12 is free. The other seven open with the full Guide: $11 once, or 1,100 points you earn on the site (the free member survey gives 250).</span></p></section>' +
+      '<div class="d-two"><div><h2 class="k-h3" style="font-size:20px">All Eight</h2><div class="k-rows">' + nutRows('#b12') + '</div></div>' +
+      '<article class="k-card d-b12" id="b12"><span class="k-tag live">Free for everyone</span>' +
+      '<h2 class="k-h2" style="margin-top:10px">Vitamin B12</h2>' +
+      '<p>Vitamin B12 keeps your nerves and blood cells healthy. Plants do not make it reliably, so every Vegan needs a dependable source: fortified foods or a supplement.</p>' +
+      '<div class="d-amts"><div><b>2.4 mcg</b><small>Adults, a day</small></div><div><b>2.6 mcg</b><small>Pregnant, a day</small></div><div><b>2.8 mcg</b><small>Breastfeeding, a day</small></div></div>' +
+      '<h4>Where to get it</h4><ul><li>Plant milks with B12 added</li><li>Breakfast cereals with B12 added</li><li>Nutritional yeast with B12 added</li><li>A B12 supplement</li></ul>' +
+      '<h4>When to take a supplement</h4><p>The Vegan Society gives three ways to get enough. Eat foods with B12 added two or three times a day, for at least 3 mcg a day. Or take a daily supplement of at least 10 mcg. Or take a weekly supplement of at least 2,000 mcg.</p>' +
+      '<p><b>Good to know:</b> Seaweed and other algae contain look-alikes of B12 that do not count. Do not rely on them for it.</p>' +
+      '<h4>This week</h4><div class="d-check">' +
+      ['Check the labels of the plant milk and cereal you already buy for B12.', 'Pick your way: foods with B12 added, a daily supplement, or a weekly one.', 'Set a reminder on your phone so it becomes a habit.'].map(function (w) { return '<label><input type="checkbox"><span>' + esc(w) + '</span></label>'; }).join('') + '</div>' +
+      '<p class="d-src" style="margin-top:10px">Sources: <a href="https://ods.od.nih.gov/factsheets/VitaminB12-HealthProfessional/" target="_blank" rel="noopener">NIH Office of Dietary Supplements</a>, <a href="https://www.vegansociety.com/resources/nutrition-and-health/nutrients/vitamin-b12/what-every-vegan-should-know-about-vitamin-b12" target="_blank" rel="noopener">The Vegan Society</a>.</p>' +
+      '<div class="d-upnext"><span>Up next on the path: <b>Step 2, Your plate</b> (full Guide)</span><a class="k-btn k-sm" href="?view=handbook">Back to the start</a></div>' +
+      '</article></div>' +
+      '<p class="d-note">' + esc(MED) + '</p>' + WELCOME;
+  }
+
+  // ---------- The Airport Guide: Choose your airport ----------
+  var ASTEPS = [
+    { t: 'Start here', d: 'Meet Nori and try Get me there.', tag: 'free', href: 'https://vegansexplore.com/guides/airport-guide#/' },
+    { t: 'Choose your airport', d: 'Every airport in our cities.', tag: 'fll', href: '?view=finder' },
+    { t: 'Your gate', d: 'Type your gate, get the closest Vegan food.', tag: 'full' },
+    { t: 'Bounties', d: 'Points for jobs on your way through.', tag: 'full' },
+    { t: 'Help keep it right', d: 'Tell us what changed, earn points.', tag: 'full' }
+  ];
+  var PORTS = [
+    ['fll', 'Fort Lauderdale-Hollywood International Airport', 'Fort Lauderdale, FL', 11, '2026-11-08', 1, 26.072, -80.15],
+    ['mia', 'Miami International Airport', 'Miami, FL', 18, 0, 0, 25.795, -80.287], ['pbi', 'Palm Beach International Airport', 'West Palm Beach, FL', 5, 0, 0, 26.683, -80.096],
+    ['mco', 'Orlando International Airport', 'Orlando, FL', 10, 0, 0, 28.431, -81.308], ['tpa', 'Tampa International Airport', 'Tampa, FL', 16, 0, 0, 27.975, -82.533],
+    ['jax', 'Jacksonville International Airport', 'Jacksonville, FL', 4, 0, 0, 30.494, -81.688], ['atl', 'Hartsfield-Jackson Atlanta International Airport', 'Atlanta, GA', 17, 0, 0, 33.641, -84.428],
+    ['dca', 'Ronald Reagan Washington National Airport', 'Arlington, VA', 13, 0, 0, 38.851, -77.04], ['iad', 'Washington Dulles International Airport', 'Dulles, VA', 6, 0, 0, 38.953, -77.456],
+    ['bwi', 'Baltimore/Washington International Thurgood Marshall Airport', 'Linthicum, MD', 9, 0, 0, 39.177, -76.668], ['phl', 'Philadelphia International Airport', 'Philadelphia, PA', 9, 0, 0, 39.874, -75.243],
+    ['jfk', 'John F. Kennedy International Airport', 'New York, NY', 6, 0, 0, 40.641, -73.778], ['lga', 'LaGuardia Airport', 'New York, NY', 5, 0, 0, 40.777, -73.874],
+    ['ewr', 'Newark Liberty International Airport', 'Newark, NJ', 12, 0, 0, 40.69, -74.174], ['lax', 'Los Angeles International Airport', 'Los Angeles, CA', 7, 0, 0, 33.942, -118.408],
+    ['lhr', 'London Heathrow Airport', 'London, UK', 6, 0, 0, 51.47, -0.454]];
+  var ORDER = PORTS.slice();
+  function portCard(p, dist) {
+    var free = !!p[5];
+    return '<a class="d-port' + (free ? ' free' : '') + '" href="https://vegansexplore.com/guides/airport-guide#/airport/' + p[0] + '">' +
+      '<span class="ph" role="img" aria-label="' + esc(p[1]) + ', illustrated" style="background-image:url(\'/public/guides/airports/' + p[0] + '.webp\')"></span>' +
+      '<span class="bd"><span class="d-code">' + p[0].toUpperCase() + '</span><span><h3>' + esc(p[1]) + '</h3><span class="meta">' + p[0].toUpperCase() + ' &middot; ' + esc(p[2]) + ' &middot; ' + p[3] + ' Vegan items' + (dist != null ? ' &middot; ' + dist + ' mi' : '') + '</span></span>' +
+      '<span class="tags">' + (free ? '<span class="k-tag live">Free</span><span class="k-tag chk">Checked Nov 8</span>' : '<span class="k-tag full">Full Guide</span>') + '</span></span></a>';
+  }
+  function finder() {
+    var total = PORTS.reduce(function (a, p) { return a + p[3]; }, 0);
+    var line = 'Pick an airport to see every spot with Vegan food, before or after security, and the gate it\'s near. Fort Lauderdale is free.';
+    return path(ASTEPS, 1, 'The Airport Guide') +
+      '<section class="d-open sq" aria-label="Choose your airport">' + pic(art('nori'), 'Nori, your travel Guide, waving with a backpack', 1) +
+      '<div class="d-head"><div class="d-for"><span class="k-eb pk">The Airport Guide &middot; Step 1 of 4</span><span>For travelers flying through<i class="lg2">, before or after security</i></span></div>' +
+      '<h1 class="k-h1">Choose Your Airport</h1>' +
+      '<div class="d-mobguide"><div class="d-mobpic">' + pic(art('nori'), 'Nori, your travel Guide', 1) + '</div>' + say('Nori', line, 8) + '</div>' +
+      '<div class="d-actions"><a class="k-btn k-cta" href="https://vegansexplore.com/guides/airport-guide#/airport/fll">Next step: Try Fort Lauderdale, free &rsaquo;</a><span class="d-after">Type a gate and see the closest Vegan food</span></div>' +
+      '<p class="d-price">' + LOCK + '<span>Fort Lauderdale is free for everyone. Every other airport opens with the full Guide: $11 once, or 1,100 points you earn on the site (the free member survey gives 250).</span></p>' +
+      '</div></section>' +
+      '<section class="d-sec"><div class="d-stats"><div class="k-stat"><b>' + PORTS.length + '</b><small>Airports</small></div><div class="k-stat"><b>' + total + '</b><small>Vegan items</small></div><div class="k-stat"><b>1</b><small>Free to try</small></div></div></section>' +
+      '<section class="d-sec" style="margin-top:22px"><h2 class="k-h3">Find Your Airport</h2>' +
+      '<form class="d-search" role="search" onsubmit="return false"><input type="search" id="dq" placeholder="Airport, city or code, like ATL" aria-label="Find your airport" autocomplete="off"><button type="button" class="k-btn" id="dnear">Near me</button></form>' +
+      '<div class="d-msg" id="dmsg" role="status"></div><div class="d-ports" id="dports"></div></section>' +
+      '<p class="d-note">Airport spots open, close and change hours, so ask when it matters. Every item says where it came from and when a member last checked it.</p>' + WELCOME;
+  }
+  function drawPorts(dists) {
+    var q = (document.getElementById('dq').value || '').trim().toLowerCase();
+    var list = ORDER.filter(function (p) { return !q || (p[0] + ' ' + p[1] + ' ' + p[2]).toLowerCase().indexOf(q) >= 0; });
+    document.getElementById('dports').innerHTML = list.length ? list.map(function (p) { return portCard(p, dists ? dists[p[0]] : null); }).join('') : '<p class="d-empty">No airport by that name yet. Try a city or a three-letter code.</p>';
+  }
+  function miles(a, b, c, d) { var r = Math.PI / 180, x = Math.sin((c - a) * r / 2), y = Math.sin((d - b) * r / 2); return Math.round(7918 * Math.asin(Math.sqrt(x * x + Math.cos(a * r) * Math.cos(c * r) * y * y))); }
+
+  // ---------- Render ----------
+  app.innerHTML = VIEW === 'finder' ? finder() : PART === 'nutrients' ? handbookNutrients() : handbookFront();
+  document.title = (VIEW === 'finder' ? 'Choose Your Airport' : PART ? 'Eight Nutrients, One at a Time' : 'The Nutrition Guide') + ' (Option D Mock) | Vegans Explore';
+
+  if (VIEW === 'finder') {
+    var dists = null;
+    drawPorts();
+    document.getElementById('dq').addEventListener('input', function () { drawPorts(dists); });
+    document.getElementById('dnear').addEventListener('click', function () {
+      var m = document.getElementById('dmsg');
+      if (!navigator.geolocation) { m.textContent = 'This browser cannot share a location. Type a city instead.'; return; }
+      m.textContent = 'Finding the airports closest to you...';
+      navigator.geolocation.getCurrentPosition(function (pos) {
+        dists = {}; PORTS.forEach(function (p) { dists[p[0]] = miles(pos.coords.latitude, pos.coords.longitude, p[6], p[7]); });
+        ORDER = PORTS.slice().sort(function (a, b) { return dists[a[0]] - dists[b[0]]; });
+        m.textContent = 'Closest first.'; drawPorts(dists);
+      }, function () { m.textContent = 'No location shared. Type a city or a code instead.'; }, { timeout: 8000 });
+    });
+  }
+
+  // The path: steps this mock does not draw say so, the current step slides into view on phones
+  app.addEventListener('click', function (e) {
+    var s = e.target.closest('[data-soon]');
+    if (s) { e.preventDefault(); var w = app.querySelector('.d-where'); if (w) w.innerHTML = esc(s.getAttribute('data-soon')) + ' <span>&middot; this mock draws Start here and the first part</span>'; return; }
+    var j = e.target.closest('[data-jump]');
+    if (j) { e.preventDefault(); var t = document.getElementById(j.getAttribute('data-jump')); if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' }); history.replaceState(null, '', '#' + j.getAttribute('data-jump')); }
+  });
+  var here = app.querySelector('.d-step.here'), rail = app.querySelector('.d-path');
+  if (here && rail && rail.scrollWidth > rail.clientWidth) rail.scrollLeft = Math.max(0, here.parentNode.offsetLeft - 16);
+
+  // Play: no recording yet (Sean records each line in Voices); the mock shows how it plays, nothing starts until pressed
+  Array.prototype.forEach.call(document.querySelectorAll('.d-playbtn'), function (b) {
+    var timer = null, t0 = 0, secs = +b.getAttribute('data-secs') || 10, bar = b.parentNode.querySelector('.d-bar i');
+    b.addEventListener('click', function () {
+      var on = b.getAttribute('aria-pressed') !== 'true';
+      b.setAttribute('aria-pressed', String(on));
+      b.querySelector('i').innerHTML = on ? PAUSE : PLAY;
+      b.querySelector('span').textContent = on ? 'Pause' : 'Play ' + (b.closest('.d-say').querySelector('.who').textContent.replace(' says', ''));
+      clearInterval(timer);
+      if (on) { t0 = Date.now() - (parseFloat(bar.style.width) || 0) / 100 * secs * 1000; timer = setInterval(function () {
+        var p = Math.min(100, (Date.now() - t0) / (secs * 10)); bar.style.width = p + '%';
+        if (p >= 100) { clearInterval(timer); bar.style.width = '0'; b.click(); }
+      }, 200); }
+    });
+  });
+})();
+</script>
+</body>
+</html>

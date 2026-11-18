@@ -19,10 +19,15 @@
 // POST { action: 'points', listing_id }  no sign-in needed  -> { points, members }  what the community gave a listing
 // POST { action: 'chapter_stats' }        no sign-in needed  -> { chapters: [{chapter, votes, voters, members, places, events}] }
 // POST { action: 'chapter_vote', chapter } Authorization   -> { ok, votes, next_vote_at } | 409 already_voted | 402
-// POST { action: 'chapter_today' }        Authorization     -> { next: { chapter: next_vote_at } }
+// POST { action: 'chapter_today' }        Authorization     -> { next: { chapter: next_vote_at } }  every chapter they vouch for
+// POST { action: 'chapter_unvote', chapter } Authorization -> { ok, votes }  takes their vouch back
 // POST { action: 'next_list' }            no sign-in needed  -> { places: [{slug, name, sub, sort, votes, voters}] }
 // POST { action: 'next_today' }           Authorization     -> { next: { place: next_vote_at } }
 // POST { action: 'next_vote', place }     Authorization     -> { ok, votes, next_vote_at } | 409 already_voted | 402
+// POST { action: 'next_unvote', place }   Authorization     -> { ok, votes }  takes their vouch back
+// Since 2026-11-18 (Sean, canon canon-ve-vouch-everything: "If people know that people only can vote for things once, then it makes
+// it a little bit easier to trust the rankings") chapters and next places are vouches too: one per member, kept until undone, and
+// votes = the number of people (migration 20261118_vouch_chapters.sql). The 24-hour notes below are the history.
 // POST { action: 'next_suggest', place, why? } Authorization -> { ok }  members, 3 a day; emailed to the team
 // Depot > Next chapter suggestions (/admin/depot/next-chapters, 2026-11-09), super admins only:
 // POST { action: 'next_admin_list' }  -> { suggestions: [...with member name and email], places: [...every status, with votes] }
@@ -89,10 +94,15 @@ const esc = (x: string) => x.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&l
 async function memberOk(id: string) {
   const { data: m } = await db.from('members').select('membership_status, standing, name, email, member_class').eq('id', id).maybeSingle();
   if (m && m.standing && m.standing !== 'good') return { err: json({ error: 'account_not_in_good_standing', message: 'Your account is on hold. Write to contact@lesaruss.com and we will help.' }, 403) };
-  if (!m || m.membership_status !== 'active') return { err: json({ error: 'payment_required', message: 'Join free with a short survey to vote for where Vegans Explore opens next.' }, 402) };
+  if (!m || m.membership_status !== 'active') return { err: json({ error: 'payment_required', message: 'Join free with a short survey to vouch for where Vegans Explore opens next.' }, 402) };
   return { m };
 }
-const nextAt = (createdAt: string) => new Date(new Date(createdAt).getTime() + DAY_MS).toISOString();
+// The number of people who vouch for one chapter or place (older repeat rows count once).
+async function vouchers(table: string, col: string, val: string): Promise<number | null> {
+  const { data, error } = await db.from(table).select('member_id').eq(col, val);
+  if (error) return null;
+  return new Set((data || []).map((r: any) => r.member_id)).size;
+}
 
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
@@ -126,11 +136,19 @@ Deno.serve(async (req) => {
   const memberId = who.sub, lesaruss = who.brand === 'lesaruss-ai';
 
   if (body.action === 'chapter_today') {
-    const since = new Date(Date.now() - DAY_MS).toISOString();
-    const { data } = await db.from('ve_chapter_votes').select('chapter, created_at').eq('member_id', memberId).gt('created_at', since);
+    // Every chapter they vouch for (a vouch does not run out after a day).
+    const { data } = await db.from('ve_chapter_votes').select('chapter, created_at').eq('member_id', memberId);
     const next: Record<string, string> = {};
-    for (const r of data || []) next[r.chapter] = nextAt(r.created_at);
+    for (const r of data || []) { const n = vouchUntil(r.created_at); if (!next[r.chapter] || n > next[r.chapter]) next[r.chapter] = n; }
     return json({ next });
+  }
+
+  if (body.action === 'chapter_unvote') {
+    const ch = String(body.chapter || '');
+    if (!CHAPTERS.includes(ch)) return json({ error: 'bad_chapter' }, 400);
+    const { error } = await db.from('ve_chapter_votes').delete().eq('member_id', memberId).eq('chapter', ch);
+    if (error) return json({ error: 'unvote_failed', message: error.message }, 500);
+    return json({ ok: true, votes: await vouchers('ve_chapter_votes', 'chapter', ch) });
   }
 
   if (body.action === 'chapter_vote') {
@@ -138,22 +156,34 @@ Deno.serve(async (req) => {
     const ch = String(body.chapter || '');
     if (!CHAPTERS.includes(ch)) return json({ error: 'bad_chapter' }, 400);
     const { data: member } = await db.from('members').select('membership_status').eq('id', memberId).maybeSingle();
-    if (!member || member.membership_status !== 'active') return json({ error: 'payment_required', message: 'Join free with a short survey to vote for the communities you love every day.' }, 402);
+    if (!member || member.membership_status !== 'active') return json({ error: 'payment_required', message: 'Join free with a short survey to vouch for the communities you love.' }, 402);
+    // One vouch per member per chapter; Undo takes it back.
     const { data: last } = await db.from('ve_chapter_votes').select('created_at').eq('member_id', memberId).eq('chapter', ch)
-      .order('created_at', { ascending: false }).limit(1).maybeSingle();
-    if (last && Date.now() - new Date(last.created_at).getTime() < DAY_MS) return json({ error: 'already_voted', next_vote_at: nextAt(last.created_at) }, 409);
+      .order('created_at', { ascending: true }).limit(1).maybeSingle();
+    if (last) return json({ error: 'already_voted', next_vote_at: vouchUntil(last.created_at) }, 409);
     const { data: row, error } = await db.from('ve_chapter_votes').insert({ member_id: memberId, chapter: ch, vote_date: todayEastern() }).select('created_at').single();
-    if (error) return json({ error: error.code === '23505' ? 'already_voted' : 'vote_failed' }, error.code === '23505' ? 409 : 500);
-    const { count } = await db.from('ve_chapter_votes').select('id', { count: 'exact', head: true }).eq('chapter', ch);
-    return json({ ok: true, votes: count ?? null, next_vote_at: nextAt(row.created_at) });
+    if (error) {
+      if (error.code !== '23505') return json({ error: 'vote_failed' }, 500);
+      const { data: again } = await db.from('ve_chapter_votes').select('created_at').eq('member_id', memberId).eq('chapter', ch).order('created_at', { ascending: true }).limit(1).maybeSingle();
+      return json({ error: 'already_voted', next_vote_at: again ? vouchUntil(again.created_at) : null }, 409);
+    }
+    return json({ ok: true, votes: await vouchers('ve_chapter_votes', 'chapter', ch), next_vote_at: vouchUntil(row.created_at) });
   }
 
   if (body.action === 'next_today') {
-    const since = new Date(Date.now() - DAY_MS).toISOString();
-    const { data } = await db.from('ve_next_chapter_votes').select('place, created_at').eq('member_id', memberId).gt('created_at', since);
+    // Every place they vouch for (a vouch does not run out after a day).
+    const { data } = await db.from('ve_next_chapter_votes').select('place, created_at').eq('member_id', memberId);
     const next: Record<string, string> = {};
-    for (const r of data || []) next[r.place] = nextAt(r.created_at);
+    for (const r of data || []) { const n = vouchUntil(r.created_at); if (!next[r.place] || n > next[r.place]) next[r.place] = n; }
     return json({ next });
+  }
+
+  if (body.action === 'next_unvote') {
+    const place = String(body.place || '');
+    if (!place) return json({ error: 'bad_place' }, 400);
+    const { error } = await db.from('ve_next_chapter_votes').delete().eq('member_id', memberId).eq('place', place);
+    if (error) return json({ error: 'unvote_failed', message: error.message }, 500);
+    return json({ ok: true, votes: await vouchers('ve_next_chapter_votes', 'place', place) });
   }
 
   if (body.action === 'next_vote') {
@@ -162,13 +192,17 @@ Deno.serve(async (req) => {
     const { data: pl } = await db.from('ve_next_chapters').select('slug').eq('slug', place).eq('status', 'open').maybeSingle();
     if (!pl) return json({ error: 'bad_place' }, 400);
     const ok = await memberOk(memberId); if (ok.err) return ok.err;
+    // One vouch per member per place; Undo takes it back.
     const { data: last } = await db.from('ve_next_chapter_votes').select('created_at').eq('member_id', memberId).eq('place', place)
-      .order('created_at', { ascending: false }).limit(1).maybeSingle();
-    if (last && Date.now() - new Date(last.created_at).getTime() < DAY_MS) return json({ error: 'already_voted', next_vote_at: nextAt(last.created_at) }, 409);
+      .order('created_at', { ascending: true }).limit(1).maybeSingle();
+    if (last) return json({ error: 'already_voted', next_vote_at: vouchUntil(last.created_at) }, 409);
     const { data: row, error } = await db.from('ve_next_chapter_votes').insert({ member_id: memberId, place, vote_date: todayEastern() }).select('created_at').single();
-    if (error) return json({ error: error.code === '23505' ? 'already_voted' : 'vote_failed' }, error.code === '23505' ? 409 : 500);
-    const { count } = await db.from('ve_next_chapter_votes').select('id', { count: 'exact', head: true }).eq('place', place);
-    return json({ ok: true, votes: count ?? null, next_vote_at: nextAt(row.created_at) });
+    if (error) {
+      if (error.code !== '23505') return json({ error: 'vote_failed' }, 500);
+      const { data: again } = await db.from('ve_next_chapter_votes').select('created_at').eq('member_id', memberId).eq('place', place).order('created_at', { ascending: true }).limit(1).maybeSingle();
+      return json({ error: 'already_voted', next_vote_at: again ? vouchUntil(again.created_at) : null }, 409);
+    }
+    return json({ ok: true, votes: await vouchers('ve_next_chapter_votes', 'place', place), next_vote_at: vouchUntil(row.created_at) });
   }
 
   if (body.action === 'next_suggest') {
@@ -217,7 +251,7 @@ Deno.serve(async (req) => {
       for (const r of votes || []) { (v[r.place] ||= { votes: 0, voters: new Set() }).votes++; v[r.place].voters.add(r.member_id); }
       return json({ ok: true,
         suggestions: (sug || []).map((x: any) => ({ ...x, member: x.member_id ? who[x.member_id] || null : null })),
-        places: (places || []).map((p: any) => ({ ...p, votes: v[p.slug]?.votes || 0, voters: v[p.slug]?.voters.size || 0 })) });
+        places: (places || []).map((p: any) => ({ ...p, votes: v[p.slug]?.voters.size || 0, voters: v[p.slug]?.voters.size || 0 })) });
     }
 
     if (body.action === 'next_admin_decide') {

@@ -3,10 +3,11 @@
    click on it, you go to that particular city").
 
    VEChapters.mount(el, { onSave(slug, saved) })  draws every chapter in VE_HUBS (after /public/ve-hubs.js) as a card: the chapter's
-   art as a square on the left, its name, where it is, its places, upcoming events and members, the votes over Votes, and Save.
-   A search and Sort by (Most votes, Most places, A to Z) sit over the cards. The whole card opens /communities/<slug> as its own
-   page, never in a frame. Votes are ve-votes chapter_vote (once every 24 hours, members); Save is joining the chapter (ve-auth
-   join_community / leave_community), so saved chapters are the member's communities. Signed out, Vote and Save open the
+   art as a square on the left, its name, where it is, its places, upcoming events and members, the vouches over Vouch, and Save.
+   A search and Sort by (Most vouches, Most places, A to Z) sit over the cards. The whole card opens /communities/<slug> as its own
+   page, never in a frame. Vouches are ve-votes chapter_vote (since 2026-11-18 one per member, kept until
+   Undo my vouch, chapter_unvote; canon canon-ve-vouch-everything; the count is people); Save is joining the chapter (ve-auth
+   join_community / leave_community), so saved chapters are the member's communities. Signed out, Vouch and Save open the
    Passport window (VEVotes). Numbers come from ve-votes chapter_stats.
    A city hub shows its own card on its Overview: { only: [slug], bar: false, url: false, here: true } (no search, no link out).
    Sort by Traffic (Sean, 2026-11-09) ranks by ve_chapter_stats' traffic, a rank only (podcast downloads and web visitors from the chapter,
@@ -89,7 +90,7 @@
     try { var p = new URLSearchParams(location.search); state.q = p.get('q') || ''; if (/^(votes|traffic|places|az)$/.test(p.get('sort') || '')) state.sort = p.get('sort'); } catch (e) {}
     el.innerHTML = (opts.bar === false ? '<div class="vch-bar" hidden>' : '<div class="vch-bar">') + '<label style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)" for="vch-q">Search communities</label>' +
       '<input type="search" id="vch-q" placeholder="Search communities by city or state" autocomplete="off" value="' + esc(state.q) + '">' +
-      '<select id="vch-sort" aria-label="Sort by"><option value="votes">Most votes</option><option value="traffic">Traffic</option><option value="places">Most places</option><option value="az">A to Z</option></select></div>' +
+      '<select id="vch-sort" aria-label="Sort by"><option value="votes">Most vouches</option><option value="traffic">Traffic</option><option value="places">Most places</option><option value="az">A to Z</option></select></div>' +
       '<div class="vch-grid" role="list"></div>';
     var grid = el.querySelector('.vch-grid'), qIn = el.querySelector('#vch-q'), sortSel = el.querySelector('#vch-sort');
     sortSel.value = state.sort;
@@ -130,10 +131,22 @@
           '<span class="vch-nums">' + (s.places != null ? '<span>' + n(s.places) + (s.places === 1 ? ' place' : ' places') + '</span><span>' + n(s.events) + (s.events === 1 ? ' event' : ' events') + ' coming up</span>' +
             (s.members ? '<span>' + n(s.members) + (s.members === 1 ? ' member' : ' members') + '</span>' : '') : '<span>&nbsp;</span>') + '</span></span>' +
           '<span class="vch-right"><span class="vch-count">' + n(v) + '</span>' +
-          '<button type="button" class="vch-btn' + (voted ? ' on' : '') + '" data-vch-vote="' + esc(h.slug) + '" aria-label="Vote for ' + esc(h.name) + '">' + (voted ? 'Voted' : (v === 1 ? 'Vote' : 'Votes')) + '</button>' +
+          '<button type="button" class="vch-btn' + (voted ? ' on' : '') + '" data-vch-vote="' + esc(h.slug) + '" aria-label="' + (voted ? 'You vouch for ' : 'Vouch for ') + esc(h.name) + '">' + (voted ? 'Vouched' : (v === 1 ? 'Vouch' : 'Vouches')) + '</button>' +
           '<button type="button" class="vch-btn save' + (on ? ' on' : '') + '" data-vch-save="' + esc(h.slug) + '" aria-pressed="' + on + '" aria-label="' + (on ? 'Saved: ' : 'Save ') + esc(h.name) + '">' + (on ? 'Saved' : 'Save') + '</button>' +
           (admin() && !opts.here ? '<a class="vch-btn ins" href="' + HQ + esc(h.slug) + '" target="_blank" rel="noopener" aria-label="Insights for ' + esc(h.name) + '">Insights</a>' : '') + '</span></div>';
       }).join('');
+    }
+
+    // Vouched: the same window as a listing's, with Undo my vouch (chapter_unvote).
+    function vouched(slug) {
+      var h = VE_HUBS.filter(function (x) { return x.slug === slug; })[0] || {};
+      votes().then(function (V) {
+        if (!V || !V.votedPrompt) return;
+        V.votedPrompt(next[slug], { title: 'You vouched for ' + (h.name || 'this community'),
+          body: 'Each member vouches for a community once, so every count is the number of people who stand behind it. Made a mistake? You can take your vouch back.',
+          undo: function () { return call({ action: 'chapter_unvote', chapter: slug }, true); },
+          onUndo: function (d) { delete next[slug]; stats[slug] = Object.assign({}, stats[slug], { votes: d.votes != null ? d.votes : Math.max(0, ((stats[slug] || {}).votes || 1) - 1) }); draw(); toast('Your vouch is taken back.'); } });
+      });
     }
 
     grid.addEventListener('click', function (e) {
@@ -155,15 +168,15 @@
       if (!token()) { votes().then(function (V) { if (!V) { location.href = '/passport'; return; } vb ? V.passportPrompt() : V.savePrompt(); }); return; }
       if (vb) {
         var slug = vb.getAttribute('data-vch-vote');
-        if (next[slug]) { votes().then(function (V) { if (V && V.votedPrompt) V.votedPrompt(next[slug]); }); return; }
+        if (next[slug]) { vouched(slug); return; }
         vb.disabled = true;
         call({ action: 'chapter_vote', chapter: slug }, true).then(function (d) {
           vb.disabled = false;
-          if (d.ok) { stats[slug] = Object.assign({}, stats[slug], { votes: d.votes }); next[slug] = d.next_vote_at; draw(); toast('Thanks. Your vote counts for ' + (VE_HUBS.filter(function (h) { return h.slug === slug; })[0] || {}).name + '.'); }
-          else if (d.error === 'already_voted') { next[slug] = d.next_vote_at; draw(); votes().then(function (V) { if (V && V.votedPrompt) V.votedPrompt(d.next_vote_at); }); }
+          if (d.ok) { stats[slug] = Object.assign({}, stats[slug], { votes: d.votes }); next[slug] = d.next_vote_at; draw(); toast('Thanks. You vouch for ' + (VE_HUBS.filter(function (h) { return h.slug === slug; })[0] || {}).name + '.'); }
+          else if (d.error === 'already_voted') { next[slug] = d.next_vote_at; draw(); vouched(slug); }
           else if (d._status === 402) votes().then(function (V) { V ? V.passportPrompt() : (location.href = '/passport'); });
-          else toast('That vote did not go through. Try again.');
-        }).catch(function () { vb.disabled = false; toast('That vote did not go through. Try again.'); });
+          else toast('That vouch did not go through. Try again.');
+        }).catch(function () { vb.disabled = false; toast('That vouch did not go through. Try again.'); });
         return;
       }
       var s2 = sb.getAttribute('data-vch-save'), on = saved().indexOf(s2) >= 0;

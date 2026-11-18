@@ -43,12 +43,23 @@
   var gName = rail ? txt(rail.querySelector('.dg-maya-name b')) : '';
   var gFirst = gName.split(' ')[0];
   var gSlug = rail ? rail.getAttribute('data-guide') || '' : '';
+  // Option C (Sean, 2026-11-18: "I love C... The real thing first, that's the winner for me"; mock /mocks/guide-panel2/c/). Opt-in, piloted on
+  // two Guides: body.gf-c. The bar shows who the Guide is for (body data-gf-for) and every part as one visible tab row (sliding on phones), the
+  // Contents button and panel are not shown; each view is the title, one short line, the Guide as a small card (data-gf-who names it), ONE
+  // orange action with one plain price line beside it (data-gf-price, for visitors), then the real content. The How to use this page and
+  // Getting started boxes are hidden (their button becomes the orange action). gf-parts "_c": { "go": { "<part>": [label, href] } } gives a
+  // part its orange action when its own content has none to lend (the Airport Guide's airports), and "tiles": ["<part>"] lays that part's
+  // rows out as tiles four across (the Nutrition Guide's nutrients). Without gf-c none of this runs and nothing changes.
+  var CM = B.classList.contains('gf-c'), CC = CM && LINES._c && typeof LINES._c === 'object' ? LINES._c : {};
+  var LOCKI = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>';
 
   // ---------- the Guide bar ----------
   var bar = D.createElement('header');
   bar.className = 'gf-bar'; bar.id = 'gfBar'; bar.setAttribute('data-k-section', 'guides');
-  bar.innerHTML = '<div class="gf-name"><h1 class="gf-h"><a href="' + esc(location.pathname) + '#/">' + esc(guideName) + '</a></h1><span class="gf-join" id="gfJoin"></span>' +
+  bar.innerHTML = '<div class="gf-name"><h1 class="gf-h"><a href="' + esc(location.pathname) + '#/">' + esc(guideName) + '</a></h1>' +
+    (CM && B.getAttribute('data-gf-for') ? '<span class="gf-for">' + esc(B.getAttribute('data-gf-for')) + '</span>' : '') + '<span class="gf-join" id="gfJoin"></span>' +
     '<span class="dg-status gf-status" role="status"></span></div>' +
+    (CM ? '<div class="gf-tabwrap"><div class="gf-tabscroll"><nav class="gf-tabs" id="gfTabs" aria-label="' + esc(guideName) + ', parts"></nav></div></div>' : '') +
     '<div class="gf-tools"><button type="button" class="gf-cbtn" id="gfCbtn" aria-expanded="false" aria-controls="gfToc"><b>Contents</b><span id="gfCur"></span><i aria-hidden="true"></i></button></div>';
   var stripe = D.createElement('div');
   stripe.className = 'k-stripe gf-stripe'; stripe.setAttribute('aria-hidden', 'true'); stripe.innerHTML = '<i></i><i></i><i></i><i></i><i></i><i></i><i></i>';
@@ -60,7 +71,15 @@
   var joinEl = D.getElementById('gfJoin'), btn = D.getElementById('gfCbtn'), curEl = D.getElementById('gfCur');
   // Members keep their search: the page's own form, moved (its listeners come with it).
   var sform = D.getElementById('dgSearchForm');
-  if (sform) bar.querySelector('.gf-tools').insertBefore(sform, btn);
+  // Option C (Sean, 2026-11-18: "if you put the search in it, it throws the layout off... make the search box a little smaller so it fits...
+  // part of the scroll"): members' search sits small at the end of the tab row and slides with it on phones, so the bar stays slim.
+  // Option C (Sean, 2026-11-18: "take the search out of that bar, because I really want it to be a slim strip, and we put it to the right
+  // of the button... the top can just be the navigation"): members' search lives beside the orange action (cFinish), never in the bar.
+  if (sform) { if (CM) { var park = D.createElement('div'); park.hidden = true; park.className = 'gf-park'; bar.appendChild(park); park.appendChild(sform); }
+    else bar.querySelector('.gf-tools').insertBefore(sform, btn); }
+  // C: the join and sign-in stay reachable, quietly, at the end of the bar (the price is said once, beside the orange action).
+  if (CM) bar.querySelector('.gf-tools').insertBefore(joinEl, btn);
+  var tabsEl = CM ? D.getElementById('gfTabs') : null;
 
   // The join line, mirrored from the page's own join box. Every action is a stand-in that clicks the original.
   var box = top.querySelector('.dg-joinbox'), joinBtn0 = box ? box.querySelector('.dg-btn') : null, joinTxt0 = joinBtn0 ? txt(joinBtn0) : '';
@@ -152,7 +171,31 @@
             return '<a href="' + esc(x.href) + '" data-gf-kid="' + esc(x.k) + '"' + (on ? ' aria-current="page"' : '') + '>' + esc(x.label) + (x.locked ? ' <span class="gf-lk">Locked</span>' : '') + '</a>';
           }).join('') + '</p>' : '') + '</li>';
       }).join('') + '</ol>';
+    if (tabsEl) drawTabs(c);
   }
+  // C: every part as one visible tab row, the current one marked, a small lock on the parts that open with the full Guide.
+  function drawTabs(c) {
+    var h = c.all.map(function (p) {
+      return '<a href="' + esc(p.href) + '" data-gf-part="' + esc(p.k) + '"' + (p.link ? ' data-gf-link' : '') + (p.on ? ' aria-current="page"' : '') + (p.k === 'join' ? ' class="gf-tjoin"' : '') +
+        (p.locked ? ' aria-label="' + esc(p.label) + ', in the full Guide"' : '') + '>' + esc(p.label) + (p.locked ? LOCKI : '') + '</a>';
+    }).join('');
+    if (tabsEl.getAttribute('data-h') === h) return;
+    tabsEl.setAttribute('data-h', h); tabsEl.innerHTML = h;
+    // On phones the row slides: the current part is brought into view.
+    var on = tabsEl.querySelector('[aria-current]');
+    if (on && tabsEl.scrollWidth > tabsEl.clientWidth) tabsEl.scrollLeft = Math.max(0, on.offsetLeft - 16);
+  }
+  // Choosing a part does exactly what the old dropdown did: set it and fire change; fall back to the tab's own link.
+  function goPart(a) {
+    var k = a.getAttribute('data-gf-part'), before = location.hash, h = a.getAttribute('href');
+    if (a.hasAttribute('data-gf-link')) { if (h && h !== before) location.hash = h; return; }
+    sel.value = k; sel.dispatchEvent(new Event('change', { bubbles: true }));
+    setTimeout(function () { if (location.hash === before && h && h.charAt(0) === '#' && h !== before) location.hash = h; }, 0);
+  }
+  if (tabsEl) tabsEl.addEventListener('click', function (e) {
+    var a = e.target.closest('a[data-gf-part]'); if (!a || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    e.preventDefault(); goPart(a);
+  });
   function setToc(open, focusBack) {
     toc.hidden = !open; btn.setAttribute('aria-expanded', String(open));
     if (open) {
@@ -167,12 +210,8 @@
     if (e.target.closest('a[data-gf-kid]')) { setToc(false, false); return; }
     var a = e.target.closest('a[data-gf-part]'); if (!a) return;
     e.preventDefault();
-    var k = a.getAttribute('data-gf-part'), before = location.hash, h = a.getAttribute('href');
     setToc(false, false);
-    // Exactly what the old dropdown did: set it and fire change; fall back to the tab's own link.
-    if (a.hasAttribute('data-gf-link')) { if (h && h !== before) location.hash = h; return; }
-    sel.value = k; sel.dispatchEvent(new Event('change', { bubbles: true }));
-    setTimeout(function () { if (location.hash === before && h && h.charAt(0) === '#' && h !== before) location.hash = h; }, 0);
+    goPart(a);
   });
   new MutationObserver(function () { drawToc(); queueDress(); }).observe(sel, { childList: true, subtree: true, attributes: true });
   if (KIDS && menu) new MutationObserver(function () { drawToc(); queueDress(); }).observe(menu, { childList: true });
@@ -183,8 +222,12 @@
   var maya = D.getElementById('dgMaya'), bubble = D.getElementById('dgBubble'), dgPlay = D.getElementById('dgPlay');
   var row = D.createElement('div');
   row.className = 'gf-guide'; row.id = 'gfGuide';
-  row.innerHTML = '<span class="gf-gpic" role="img" aria-label="' + esc(gFirst || 'Your Guide') + ', your Guide"></span><p><b>' + esc(gFirst) + (gFirst ? ':' : '') + '</b> <span class="gf-say"></span></p>' +
+  var gWho = CM ? B.getAttribute('data-gf-who') || gFirst : '';
+  row.innerHTML = '<span class="gf-gpic" role="img" aria-label="' + esc(gFirst || 'Your Guide') + ', your Guide"></span>' +
+    (CM ? '<p><b class="gf-who">' + esc(gWho) + '</b><span class="gf-say"></span><button type="button" class="gf-smore" hidden aria-expanded="false">More</button></p>' : '<p><b>' + esc(gFirst) + (gFirst ? ':' : '') + '</b> <span class="gf-say"></span></p>') +
     '<span class="gf-gacts"><button type="button" class="gf-play" hidden>&#9654; Play</button><button type="button" class="gf-talk" hidden></button></span>';
+  var gMore = row.querySelector('.gf-smore');
+  if (gMore) gMore.addEventListener('click', function () { var o = !row.classList.contains('gf-sopen'); row.classList.toggle('gf-sopen', o); gMore.setAttribute('aria-expanded', String(o)); gMore.textContent = o ? 'Less' : 'More'; });
   var gPic = row.querySelector('.gf-gpic'), gSay = row.querySelector('.gf-say'), gPlay = row.querySelector('.gf-play'), gTalk = row.querySelector('.gf-talk');
   // A view that draws its own Guide panel (the Creator Guide's landing, from ve-gigs.js) lends its line and Play to the row,
   // and its own panel is hidden, so the Guide still appears once.
@@ -195,9 +238,15 @@
     if ((!bg || bg === 'none') && window.VEGuideArt && gSlug) bg = "url('" + VEGuideArt(gSlug, 'square') + "')";
     if (bg && bg !== 'none' && gPic.getAttribute('data-bg') !== bg) { gPic.setAttribute('data-bg', bg); gPic.style.backgroundImage = bg; }
     var k = inner(), say = k ? txt(k.querySelector('p')) : txt(bubble);
-    if (gSay.textContent !== say) gSay.textContent = say;
-    if (row.hidden !== !say) row.hidden = !say;
     var ps = playSrc(), on = !!ps && !ps.hidden && (k ? true : !(dgPlay && dgPlay.hidden)) && !!txt(ps);
+    // C: a view whose line has no recording may show the mock's shorter line (gf-parts "_c.say"); a recorded line stays word for word.
+    if (CM && !on && say && CC.say) { var cc = current(); if (cc.p && !sub() && CC.say[cc.p.k]) say = CC.say[cc.p.k]; }
+    if (gSay.textContent !== say) gSay.textContent = say;
+    // C: a long line (more than about three rows on a phone) shows its first rows and More; Play still reads it all, every word stays in the page.
+    var lg = CM && say.length > 130;
+    if (row.classList.contains('gf-long') !== lg) { row.classList.toggle('gf-long', lg); row.classList.remove('gf-sopen'); }
+    if (gMore && gMore.hidden !== !lg) gMore.hidden = !lg;
+    if (row.hidden !== !say) row.hidden = !say;
     if (gPlay.hidden !== !on) gPlay.hidden = !on;
     var lab = on && /pause|stop/i.test(txt(ps)) ? 'Pause' : 'Play';
     if (gPlay.getAttribute('data-l') !== lab) { gPlay.setAttribute('data-l', lab); gPlay.innerHTML = lab === 'Pause' ? '&#10073;&#10073; Pause' : '&#9654; Play'; }
@@ -227,11 +276,12 @@
   var HEADGO = B.hasAttribute('data-gf-head-go');
   function dress() {
     var c = current();
-    // Page head: "Part N of M" on a part's own page (not on a piece inside it, whose crumb says where it is).
+    if (CM) cPrep(c);
+    // Page head: "Part N of M" on a part's own page (not on a piece inside it, whose crumb says where it is). C shows the parts in the bar instead.
     var head = main.querySelector('.dg-head');
     var pn = main.querySelector('.gf-pn');
     // A group's own page (#/g/<group>, grouped Guides only) is a part's page too.
-    if (head && c.p && (!sub() || (KIDS && /^#\/g\/[^/]+$/.test(location.hash)))) {
+    if (!CM && head && c.p && (!sub() || (KIDS && /^#\/g\/[^/]+$/.test(location.hash)))) {
       var want = 'Part ' + (c.i + 1) + ' of ' + c.all.length;
       if (!pn || pn.nextElementSibling !== head) { if (pn) pn.remove(); pn = D.createElement('span'); pn.className = 'k-eb pk gf-pn'; head.parentNode.insertBefore(pn, head); }
       if (pn.textContent !== want) pn.textContent = want;
@@ -242,9 +292,9 @@
     // The Guide row, after the head and its line (or at the top of a view with no head).
     var anchor = head ? (head.nextElementSibling && head.nextElementSibling.classList.contains('dg-lede') ? head.nextElementSibling : head) : null;
     // A landing with its own heading (the Creator Guide's, from ve-gigs.js): the row goes under its title and first line.
-    if (!anchor) { var lh = main.querySelector('.vg-land-l > .vg-h'); if (lh) anchor = lh.nextElementSibling && lh.nextElementSibling.tagName === 'P' ? lh.nextElementSibling : lh; }
+    if (!anchor) { var lh = main.querySelector('.vg-land-l > .vg-h, .vg-land-l > .gf-ch > .vg-h'); if (lh) anchor = lh.nextElementSibling && lh.nextElementSibling.tagName === 'P' ? lh.nextElementSibling : lh; }
     // Finder Guides (body.gf-fd): a view whose title is not in a .dg-head (the venue Guides' Overview hero) gets the row under its title and line.
-    if (!anchor && FD) { var oh = main.querySelector('.ov-hero > .dg-h1'); if (oh) anchor = oh.nextElementSibling && oh.nextElementSibling.classList.contains('dg-lede') ? oh.nextElementSibling : oh; }
+    if (!anchor && FD) { var oh = main.querySelector('.ov-hero > .dg-h1, .ov-hero > .gf-ch > .dg-h1'); if (oh) anchor = oh.nextElementSibling && oh.nextElementSibling.classList.contains('dg-lede') ? oh.nextElementSibling : oh; }
     if (anchor) { if (anchor.nextElementSibling !== row) anchor.parentNode.insertBefore(row, anchor.nextElementSibling); }
     else {
       var crumb = main.firstElementChild && main.firstElementChild.classList.contains('dg-crumb') ? main.firstElementChild : null;
@@ -253,11 +303,14 @@
     }
     // Rows that open but carry no button get one Read button on the right (the same link as their title).
     [].forEach.call(main.querySelectorAll('.dg-srow'), function (r) {
-      if (r.querySelector(':scope > .dg-acts, :scope > .gf-read, :scope > .gf-tag')) return;
+      // C: a piece that is free to try says so in the tag's place, on the right (its own "Free to try" tag, moved there).
+      var fr = CM ? r.querySelector(':scope > .dg-srow-b > .dg-free') : null;
+      if (fr && !r.querySelector(':scope > .dg-acts')) { fr.classList.add('gf-tag', 'gf-free'); r.appendChild(fr); }
+      if (r.querySelector(':scope > .dg-acts, :scope > .gf-read, :scope > .gf-tag, :scope > .dg-free')) return;
       var h = r.getAttribute('data-href'), t = r.querySelector('h3');
       if (h) r.insertAdjacentHTML('beforeend', '<a class="gf-read" href="' + esc(h) + '" aria-label="Read: ' + esc(txt(t)) + '">Read</a>');
       // A locked piece says so with a tag in the same place (a status in plain words, never an action).
-      else if (/in the full guide/i.test(txt(r))) r.insertAdjacentHTML('beforeend', '<span class="gf-tag">Locked</span>');
+      else if (/in the full guide/i.test(txt(r))) r.insertAdjacentHTML('beforeend', CM ? '<span class="gf-tag gf-lock">' + LOCKI + ' Full Guide</span>' : '<span class="gf-tag">Locked</span>');
     });
     // One orange action per view. A "How to use this page" block's first button is it (it already sits under the head). Otherwise the
     // view's main action (the price box, the gate's join or survey, its first button; with none, the bar's join) gets a stand-in right
@@ -268,21 +321,29 @@
     var cand = gs || pb || q('.dg-gate .dg-btn:not(.dg-ghost)') || q('.dg-btn:not(.dg-ghost):not(.dg-save):not(.dg-vote):not(.gf-go-a), .vg-btn:not(.ghost)') || q('.vxc-go');
     var inForm = cand && !gs && !pb && cand.closest('form, .vg-form, .vg-field, [data-step]');
     var jb = box && shown(box) ? box.querySelector('.dg-btn') : null;
-    var src = gs || pb || inForm ? null : (cand || (jb && shown(jb) ? jb : null));
-    var cont = drawProg(c, row.hidden || !main.contains(row) ? anchor : row);
+    // C: the How to use this page box is hidden, so its button is lent to the stand-in like any other view's main action.
+    var gsIn = CM ? null : gs;
+    var src = gsIn || pb || inForm ? null : (cand || (jb && shown(jb) ? jb : null));
+    // C: a part named in gf-parts "_c.go" has its own orange action (a link), when its content has none to lend.
+    var cgo = CM && c.p && !sub() && CC.go && CC.go[c.p.k] ? CC.go[c.p.k] : null;
+    if (cgo) src = null;
+    var cont = drawProg(c, outer(row.hidden || !main.contains(row) ? anchor : row));
     if (cont) src = null;
     // A Finder part (opt-in, body.gf-fd): its Search is the view's one orange action, drawn after the Guide row.
-    var fdGo = FD ? fdDraw(c, !row.hidden && main.contains(row) ? row : anchor) : null;
+    var fdGo = FD ? fdDraw(c, outer(!row.hidden && main.contains(row) ? row : anchor)) : null;
     if (fdGo) src = null;
-    var go = main.querySelector('.gf-go:not(.gf-cont)'), pick = cont || fdGo || gs || pb || (inForm ? cand : null);
+    if (cgo) fdGo = null;
+    var go = main.querySelector('.gf-go:not(.gf-cont)'), pick = cont || fdGo || gsIn || pb || (inForm ? cand : null);
     if (HEADGO || FD) [].forEach.call(main.querySelectorAll('.gf-dup'), function (o) { if (o !== src) o.classList.remove('gf-dup'); });
     if ((HEADGO || FD) && src && src.closest('.dg-head') && !src.classList.contains('gf-dup')) src.classList.add('gf-dup');
     // Finder Guides: the Overview hero's own copy of its main action is hidden; the orange stand-in under the Guide row clicks it.
     if (FD && src && src.closest('.ov-hero') && !src.classList.contains('gf-dup')) src.classList.add('gf-dup');
-    if (src && main.firstElementChild && !main.querySelector(':scope > .dg-loading')) {
-      var label = txt(src);
+    if ((src || cgo) && main.firstElementChild && !main.querySelector(':scope > .dg-loading')) {
+      var label = cgo ? cgo[0] : txt(src);
       if (!go) { go = D.createElement('div'); go.className = 'gf-go'; }
-      if (go._src !== src || go.getAttribute('data-l') !== label) {
+      if (cgo) {
+        if (go.getAttribute('data-l') !== label + '|' + cgo[1]) { go._src = null; go.setAttribute('data-l', label + '|' + cgo[1]); go.innerHTML = '<a class="dg-btn gf-go-a" href="' + esc(cgo[1]) + '">' + esc(label) + '</a>'; }
+      } else if (go._src !== src || go.getAttribute('data-l') !== label) {
         go._src = src; go.setAttribute('data-l', label);
         var h0 = src.getAttribute('href');
         go.innerHTML = '<a class="dg-btn gf-go-a" href="' + esc(h0 && h0 !== '#' ? h0 : '#') + '">' + esc(label) + '</a>';
@@ -320,12 +381,133 @@
     }
     // Finder cards read like the mock's (Sean, 2026-11-17: "This doesn't feel like the style I approved"): the access tag moves off
     // the picture into the tags (words never on the picture), and each card ends in one button on the right.
-    if (B.classList.contains('gf-fd')) [].forEach.call(main.querySelectorAll('.sa-vcard'), function (c) {
+    if (B.classList.contains('gf-fd') && !CM) [].forEach.call(main.querySelectorAll('.sa-vcard'), function (c) {
       var b = c.querySelector('.sa-vbadge'), t = c.querySelector('.sa-vtags');
       if (b && t) { while (b.lastChild) t.insertBefore(b.lastChild, t.firstChild); b.remove(); }
       if (!c.querySelector('.fd-open')) { var s = D.createElement('span'); s.className = 'fd-open'; s.textContent = 'Open'; c.appendChild(s); }
     });
+    if (CM) { cFinish(c, go, pick); cOverview(c); }
     drawGuide();
+  }
+
+  // ---------- Option C (opt-in: body.gf-c) ----------
+  // A Handbook Guide's Overview in C: the real content first. Its article rows (.wg-arts) become the mock's "Also in this Guide": one
+  // numbered tile per part, the whole tile the same link the row had, one tag on the right (Open, or Full Guide), no buttons. With
+  // gf-parts "_c.hero" (the Nutrition Guide's nutrients) a hero of tiles comes first, read from the page's own public JSON:
+  //   { "label", "json": "<script id>", "list": "titles", "free": "example", "abbr": { id: "B12" }, "href": "#/nutrients/", "part": "#/nutrients" }
+  // and that part's row is left out of the list (the hero is it). The old rows stay in the page, hidden.
+  function cOverview(c) {
+    // A Guide whose Overview lists its parts as icon tiles (.dg-tiles: the Nonprofit, Events and Dairy Guides) gets the same numbered tiles.
+    var ov = !!(c.p && (c.p.k === 'overview' || c.i === 0) && !sub());
+    var arts = ov ? main.querySelector(':scope > .wg-arts') || main.querySelector(':scope > .dg-tiles') : null;
+    if (!arts || arts.hasAttribute('data-gf-c')) return;
+    arts.setAttribute('data-gf-c', '');
+    var jb = box && shown(box) ? box.querySelector('.dg-btn') : null, visitor = !!(jb && shown(jb));
+    var tagOpen = '<span class="gf-tag gf-free gf-open">Open</span>', tagLock = '<span class="gf-tag gf-lock">' + LOCKI + ' Full Guide</span>';
+    var h = '', H = CC.hero, data = null;
+    try { data = H && JSON.parse(D.getElementById(H.json).textContent); } catch (e) { data = null; }
+    if (H && data && data[H.list || 'titles']) {
+      var ex = data[H.free || 'example'] || {};
+      h += '<section class="gf-cov gf-cov-hero"><span class="k-label">' + esc(H.label || '') + '</span><div class="gf-ntiles">' + data[H.list || 'titles'].map(function (t) {
+        var id = t[0], free = id === ex.id, open = free || !visitor;
+        return '<a class="gf-ntile' + (free ? ' gf-nfree' : '') + '" href="' + esc((H.href || '#/') + id) + '"><span class="gf-nab">' + esc((H.abbr || {})[id] || t[1].slice(0, 2)) + '</span>' +
+          '<span class="gf-nt"><b>' + esc(t[1]) + '</b>' + (free && ex.short ? '<small>' + esc(ex.short) + '</small>' : '') + '</span>' +
+          (free && visitor ? '<span class="gf-tag gf-free">Free</span>' : open ? tagOpen : tagLock) + '</a>';
+      }).join('') + '</div></section>';
+    }
+    var DT = arts.classList.contains('dg-tiles');
+    var rows = [].map.call(arts.querySelectorAll(DT ? 'a.dg-tile' : '.wg-art'), function (r) {
+      if (DT) {
+        var tb = r.querySelector('b'), ts = r.querySelector('b ~ span:not(.dg-mlock)'), lk = r.querySelector('.dg-mlock'), th = r.getAttribute('href') || '';
+        var tn = 0; c.all.forEach(function (x, i) { if (x.href === th || '#/' + x.k === th) tn = i; });
+        return { href: th, title: txt(tb), words: txt(ts), locked: !!lk && /full guide|locked/i.test(txt(lk) || lk.getAttribute('aria-label') || '') || (!!lk && !txt(lk) && !!lk.querySelector('svg')), n: tn };
+      }
+      var a = r.querySelector('.wg-art-t'), p = r.querySelector('p'), more = r.querySelector('.wg-art-more');
+      var href = a ? a.getAttribute('href') : '', words = p ? txt(p) : '';
+      var locked = /in the full guide\.?$/i.test(words) || (!!more && /^(see what|locked|unlock|get |full guide)/i.test(txt(more)));
+      var n = 0; c.all.forEach(function (x, i) { if (x.href === href || '#/' + x.k === href) n = i; });
+      return { href: href, title: txt(a), words: words.replace(/\s*In the full Guide\.?$/i, ''), locked: locked, n: n };
+    }).filter(function (r) { return r.href && !(H && H.part && r.href === H.part); });
+    if (rows.length) h += '<section class="gf-cov"><span class="k-label">Also in this Guide</span><div class="gf-ptiles">' + rows.map(function (r, i) {
+      return '<a class="k-row gf-ptile" href="' + esc(r.href) + '"><span class="k-num pk">' + (r.n || i + 1) + '</span><span class="gf-ptt"><b>' + esc(r.title) + '</b>' +
+        (r.words ? '<small class="k-clamp">' + esc(r.words) + '</small>' : '') + '</span>' + (r.locked ? tagLock : tagOpen) + '</a>';
+    }).join('') + '</div></section>';
+    if (!h) return;
+    arts.insertAdjacentHTML('beforebegin', h);
+    arts.classList.add('gf-c-hidden');
+  }
+  // The element a placement should follow: the C head block when the element sits inside it.
+  function outer(el) { return el && el.parentNode && el.parentNode.classList && el.parentNode.classList.contains('gf-ch') ? el.parentNode : el; }
+  // Before placing: one short line under the title. A view whose only words sat in its hidden How to use box lends that box's first
+  // sentence; a long line shows its first sentence (the rest stays in the page, not shown). Never new words.
+  function firstSentence(t) { var m = t.match(/^[\s\S]{30,}?[.!?](?=\s)/); return m && m[0].length < t.length - 1 ? m[0] : ''; }
+  function cPrep(c) {
+    var head = main.querySelector(':scope > .dg-head, :scope > .gf-ch > .dg-head');
+    if (head && !(head.nextElementSibling && head.nextElementSibling.classList.contains('dg-lede'))) {
+      var gp = main.querySelector('.wg-gs .wg-gs-b > p');
+      var f = gp ? txt(gp) : '';
+      if (f) { var fs = firstSentence(f) || f; var lp = D.createElement('p'); lp.className = 'dg-lede gf-c-lede'; lp.textContent = fs; head.parentNode.insertBefore(lp, head.nextElementSibling); }
+    }
+    // The Creator Guide's landing (ve-gigs.js): its title's first line is the view's one line.
+    var lp0 = main.querySelector('.vg-land-l > .vg-h + p:not(.dg-lede)'); if (lp0) lp0.classList.add('dg-lede');
+    [].forEach.call(main.querySelectorAll('.vg-land-l > .vg-h + .dg-lede:not([data-gf-c]), :scope > .dg-head + .dg-lede:not([data-gf-c]), :scope > .gf-ch > .dg-head + .dg-lede:not([data-gf-c]), .ov-hero > .dg-h1 + .dg-lede:not([data-gf-c]), .gf-ch > .dg-h1 + .dg-lede:not([data-gf-c])'), function (ld) {
+      ld.setAttribute('data-gf-c', '');
+      if (ld.children.length || ld.classList.contains('gf-c-lede')) return;
+      var t = ld.textContent, f = t.length > 110 ? firstSentence(t) : '';
+      if (f) { ld.textContent = f; var more = D.createElement('span'); more.className = 'gf-c-more'; more.hidden = true; more.textContent = t.slice(f.length); ld.appendChild(more); }
+    });
+    // A part named in "_c.tiles" lays its rows out as tiles (the mock's nutrients).
+    var tl = !!(c.p && !sub() && (CC.tiles || []).indexOf(c.p.k) >= 0);
+    if (main.classList.contains('gf-tiles') !== tl) main.classList.toggle('gf-tiles', tl);
+  }
+  // After placing: the head block (title, line, the Guide's card beside it, the one orange action with its price line), and the Finder
+  // cards as the mock's (code, name, one tag on the right).
+  var PRICE = B.getAttribute('data-gf-price') || '';
+  function cFinish(c, go, pick) {
+    var t = main.querySelector('.dg-head') || main.querySelector('.ov-hero > .dg-h1, .ov-hero > .gf-ch > .dg-h1, .vg-land-l > .vg-h, .vg-land-l > .gf-ch > .vg-h');
+    if (t && main.contains(t)) {
+      var par = t.parentNode, wrap = par.classList.contains('gf-ch') ? par : null;
+      var grp = [t], n = t.nextElementSibling;
+      if (wrap) n = t.nextElementSibling;
+      while (n && (n.classList.contains('dg-lede') || n === row || n.classList.contains('gf-go') || n.classList.contains('gf-prog'))) { grp.push(n); n = n.nextElementSibling; }
+      if (!wrap) { wrap = D.createElement('div'); wrap.className = 'gf-ch'; par.insertBefore(wrap, t); grp.forEach(function (e) { wrap.appendChild(e); }); }
+      var top = wrap.parentNode === main;
+      if (wrap.classList.contains('gf-ch-top') !== top) wrap.classList.toggle('gf-ch-top', top);
+      var g = !row.hidden && wrap.contains(row);
+      if (wrap.classList.contains('gf-ch-g') !== g) wrap.classList.toggle('gf-ch-g', g);
+    }
+    // The one plain price line beside the orange action, for visitors (while the bar's join is offered).
+    var jb = box && shown(box) ? box.querySelector('.dg-btn') : null;
+    var pr = go && go.parentNode ? go.querySelector('.gf-price') : null;
+    var want = !!(PRICE && go && go.parentNode && pick === go.firstChild && jb && shown(jb));
+    if (want && !pr) { pr = D.createElement('p'); pr.className = 'gf-price'; pr.innerHTML = esc(PRICE).replace(/(\$\d+ once, or [\d,]+ points)/, '<b>$1</b>'); go.appendChild(pr); }
+    else if (!want && pr) pr.remove();
+    // Locked reads Full Guide: a tile's own "In the full Guide" tag says it the C way (same place, same small lock).
+    [].forEach.call(main.querySelectorAll('.dg-mlock'), function (m) { if (/^in the full guide\.?$/i.test(txt(m))) m.innerHTML = LOCKI + ' Full Guide'; });
+    // Members' search beside the orange action (where visitors read the price); parked out of sight on a view with no action.
+    if (sform) {
+      var home = go && go.parentNode ? go : bar.querySelector('.gf-park');
+      if (home && sform.parentNode !== home) home.appendChild(sform);
+    }
+    // Finder cards: the airport's code big over its name, the access tag on the right (locked reads Full Guide), nothing on the picture.
+    if (FD) {
+      var items = fdItems() || [];
+      [].forEach.call(main.querySelectorAll('.sa-vcard'), function (a) {
+        if (a.hasAttribute('data-gf-c')) return;
+        a.setAttribute('data-gf-c', '');
+        var slug = (a.getAttribute('href') || '').split('/').pop(), v = items.filter(function (x) { return x.slug === slug; })[0];
+        var code = v && v.teams && v.teams.length === 1 && /^[A-Z0-9]{3,4}$/.test(v.teams[0]) ? v.teams[0] : '';
+        var body = a.querySelector('.sa-vbody');
+        if (code && body) body.insertAdjacentHTML('afterbegin', '<span class="fd-code">' + esc(code) + '</span>');
+        var bd = a.querySelector('.sa-vbadge'), tag = bd ? bd.querySelector('.dg-tag') : null;
+        if (tag) {
+          if (tag.classList.contains('sa-tag-lock')) tag.innerHTML = LOCKI + ' Full Guide';
+          tag.classList.add('fd-acc'); a.appendChild(tag);
+          if (tag.classList.contains('sa-tag-free')) a.classList.add('fd-free');
+        }
+        if (bd) bd.remove();
+      });
+    }
   }
   var dq = 0;
   function queueDress() { if (dq) return; dq = requestAnimationFrame(function () { dq = 0; dress(); }); }
