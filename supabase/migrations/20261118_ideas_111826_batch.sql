@@ -2,8 +2,7 @@
 -- Held for Sean, nothing confirmable online yet: PETA's Albuquerque glue trap ban (IMG_8433), the Florida statewide animal cruelty
 -- hotline from the Polk County Bully Project (IMG_8436), the Costa Rica Vegan fitness and yoga retreat, Sept 12 to 18, 2027 (IMG_8428 to 8430).
 -- Land & Monkeys Paris (IMG_8436, 8437) starts the Paris chapter (Sean, 2026-11-18: "I want us to launch a Paris chapter"), its own work.
--- The HQ search-terms screenshot (IMG_8427) waits on Sean's word. The Pompano Beach Fruitluck Friendsgiving (Vega Vegan Social Club,
--- Sat Nov 21, 1 to 6 PM, IMG_8431) has no public link (events need one); held for the post's link.
+-- The HQ search-terms screenshot (IMG_8427) waits on Sean's word.
 
 -- 1) Events, approved at once.
 select ve_event_intake(jsonb_build_object(
@@ -33,3 +32,14 @@ select 'thanksliving', '72712a4a-ea0e-4ef4-a29e-d382496ef8da'::uuid, (select id 
   'WeVegan Cafe''s Thanksgiving pre-orders: a Thanksgiving individual plate with all the sides ($25, on sale from $30, order Nov 19 to 23) and Thanksgiving pies ($35, on sale from $40, order Nov 18 to 24). Pickup only, Tue Nov 24 or Wed Nov 25, 7 AM to 4 PM.',
   'live', true, 'From Sean''s screenshot ideas 111826 - IMG_8432.', '72712a4a-ea0e-4ef4-a29e-d382496ef8da'::uuid, now()
 where not exists (select 1 from ve_holiday_menu_tips t where t.holiday_slug = 'thanksliving' and t.link = 'https://www.instagram.com/wevegancafe/' and t.status <> 'declined');
+
+-- 3) The Pompano Beach Fruitluck (IMG_8431): held until Sean sent the event's link, 2026-11-18.
+select ve_event_intake(jsonb_build_object(
+  'title', 'Beach Friendsgiving Fruitluck at Pompano Beach', 'link', 'https://facebook.com/events/s/southeast-florida-november-bea/1116852064465528/',
+  'starts_at', '2026-11-21T13:00:00-05:00', 'ends_at', '2026-11-21T18:00:00-05:00', 'timezone', 'America/New_York', 'time_set', true,
+  'category', 'social', 'event_type', 'in_person',
+  'location_name', 'Pompano Beach Pier, Pavilion 2', 'address', 'Pompano Public Beach, Pavilion 2', 'city', 'Pompano Beach', 'state', 'FL', 'country', 'US',
+  'organizer_name', 'Vega Vegan Social Club (South Florida)', 'organizer_url', 'https://facebook.com/events/s/southeast-florida-november-bea/1116852064465528/',
+  'description', 'Vega Vegan Social Club hosts a Friendsgiving ThanksLiving fruitluck at Pavilion 2 by the Pompano Beach Pier, with yoga, drumming and a gratitude circle. Bring fruit to share and a blanket. Family friendly, all welcome; the pavilion is open from 8 AM for anyone who wants a morning by the ocean.'),
+  'admin', null, '72712a4a-ea0e-4ef4-a29e-d382496ef8da'::uuid, true)
+where not exists (select 1 from events where title ilike '%Fruitluck%' and starts_at::date = '2026-11-21');
