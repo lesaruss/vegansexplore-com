@@ -92,7 +92,7 @@
     goal: {
       title: 'The goal',
       line: '250 members by Thursday, December 31, 11:59 PM Eastern.',
-      checkpoint: 'This week: {members} members by Sunday, {date} ({per} a week from here).',
+      checkpoint: 'This week: {members} members by {date} ({per} a week from here).',
       kj: 'New members from KJ\'s links',
       claims: 'Listings claimed'
     },
@@ -228,6 +228,12 @@
       '<div class="acts">' + (x.status === 'open' && x.kind === 'follower' ? '<button class="k-btn k-on" data-copy="welcome">Copy welcome and open Instagram</button><button class="k-btn" data-in="welcomed">Welcomed</button>' : (x.instagram ? '<a class="k-btn k-on" href="' + esc(x.instagram) + '" target="_blank" rel="noopener">Open Instagram</a>' : '')) +
       '<button class="k-btn" data-in="done">Done</button></div></div><span class="rowside"><span class="k-tag ' + (x.status === 'welcomed' ? 'live' : 'new') + '">' + (x.status === 'welcomed' ? 'Welcomed' : 'Open') + '</span></span></div>';
   }
+  // Five, then Show N more in place (Sean, 2026-11-12: nothing scrolls inside itself).
+  function fiveMore(rows) {
+    if (rows.length <= 5) return '<div class="k-rows">' + rows.join('') + '</div>';
+    return '<div class="k-rows">' + rows.slice(0, 5).join('') + '<div class="k-rows" hidden>' + rows.slice(5).join('') + '</div></div>' +
+      '<p style="margin-top:10px"><button class="k-btn" type="button" onclick="this.parentNode.previousElementSibling.lastElementChild.hidden=false;this.parentNode.remove()">Show ' + (rows.length - 5) + ' more</button></p>';
+  }
   function drawToday() {
     post({ action: 'week' }).then(function (w) {
       if (!w.ok) return fail(w);
@@ -244,9 +250,9 @@
         (w.inbound.length ? '<div class="k-rows">' + w.inbound.map(inboundRow).join('') + '</div>' : '<p class="muted">Nobody waiting.</p>') + '</div>';
       h += '<div class="sec"><h2 class="k-h2">Today\'s cards</h2>';
       if (!w.is_workday) h += '<p class="muted">Today is not a sending day. The next cards are below.</p>';
-      else h += w.dm.length ? '<div class="k-rows">' + w.dm.map(function (r, i) { return cardRow(r, 'dm', i === 0); }).join('') + '</div>' : '<p class="muted">Today\'s messages are done. Thank you.</p>';
+      else h += w.dm.length ? fiveMore(w.dm.map(function (r, i) { return cardRow(r, 'dm', i === 0); })) : '<p class="muted">Today\'s messages are done. Thank you.</p>';
       h += '</div>';
-      if (w.follow.length) h += '<div class="sec"><h2 class="k-h2">Follow ahead</h2><p class="muted">For ' + esc(dayName(w.follow_for)) + '. Follow now; the message comes then.</p><div class="k-rows">' + w.follow.map(function (r) { return cardRow(r, 'follow'); }).join('') + '</div></div>';
+      if (w.follow.length) h += '<div class="sec"><h2 class="k-h2">Follow ahead</h2><p class="muted">For ' + esc(dayName(w.follow_for)) + '. Follow now; the message comes then.</p>' + fiveMore(w.follow.map(function (r) { return cardRow(r, 'follow'); })) + '</div>';
       if (w.ahead.length) h += '<div class="sec"><span class="k-label">Coming up</span><p class="muted">' + w.ahead.map(function (d) { return esc(dayName(d.date)) + ': ' + d.dm + ' cards'; }).join(' &middot; ') + '</p></div>';
       $('view').innerHTML = h;
       $('inForm').addEventListener('submit', function (e) {
