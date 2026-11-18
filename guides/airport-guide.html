@@ -549,7 +549,7 @@
 <link rel="stylesheet" href="/public/ve-kit.css">
 <link rel="stylesheet" href="/public/ve-guide-frame.css">
 </head>
-<body class="ve-gf gf-hb gf-fd" data-gf-lead="Fort Lauderdale is free to try." data-gf-join="Get it: $11 or 1,100 points">
+<body class="ve-gf gf-hb gf-fd gf-c" data-gf-lead="Fort Lauderdale is free to try." data-gf-join="Get it: $11 or 1,100 points" data-gf-for="For Vegans flying through" data-gf-who="Nori, Travel Guide" data-gf-price="Fort Lauderdale is free. The rest open with the full Guide: $11 once, or 1,100 points (the free survey gives 250).">
 <div class="page-frame">
 <script src="/public/nav.js"></script>
 
@@ -600,8 +600,10 @@
 <script src="/public/ve-guide-min.js"></script>
 <!-- The locked Guide template, Finder (Sean, 2026-11-17; canon canon-ve-guide-templates): the shared frame turns this page's header,
      tabs and rail into the Guide bar, Contents and the Guide row, and its list part into the Finder (search, one answer, chips, one list). -->
-<script type="application/json" id="gf-parts">{"overview": "Vegan food at the airport, gate by gate", "airports": "Find an airport and its Vegan food", "bounties": "Points for jobs on your way through", "report": "Confirm what is there, or tell us what changed", "mylist": "Everything you save, in one place", "join": "$11 or 1,100 points, yours to keep", "_finder": {"airports": {"list": ".sa-vgrid", "card": "a.sa-vcard", "reset": "#saCity", "noun": ["airport", "airports"], "placeholder": "City, ZIP or airport code", "chips": [["Everything", ""], ["Free to try", "free", "free to try"], ["Checked by a member", "last", "checked by a member"]], "empty": ["Nothing to show here yet.", "Know an airport spot with Vegan food that is not in the Guide? Members add what is missing and earn points.", "Help keep it right", "#/report"], "after": {"label": "Built with you", "title": "Something missing or changed at an airport?", "line": "Members confirm what is still there, fix what changed and add what is missing, with a photo, and earn points.", "btn": ["Help keep it right", "#/report"]}, "lede": "Search a city, a ZIP or near you, then open an airport: each one lists its spots with Vegan food, before or after security, and the gate they are near."}}}</script>
+<script type="application/json" id="gf-parts">{"overview": "Vegan food at the airport, gate by gate", "airports": "Find an airport and its Vegan food", "bounties": "Points for jobs on your way through", "report": "Confirm what is there, or tell us what changed", "mylist": "Everything you save, in one place", "join": "$11 or 1,100 points, yours to keep", "_finder": {"airports": {"list": ".sa-vgrid", "card": "a.sa-vcard", "reset": "#saCity", "noun": ["airport", "airports"], "placeholder": "City, ZIP or airport code", "chips": [["Everything", ""], ["Free to try", "free", "free to try"], ["Checked by a member", "last", "checked by a member"]], "empty": ["Nothing to show here yet.", "Know an airport spot with Vegan food that is not in the Guide? Members add what is missing and earn points.", "Help keep it right", "#/report"], "after": {"label": "Built with you", "title": "Something missing or changed at an airport?", "line": "Members confirm what is still there, fix what changed and add what is missing, with a photo, and earn points.", "btn": ["Help keep it right", "#/report"]}, "lede": "Search a city, a ZIP or near you, then open an airport: each one lists its spots with Vegan food, before or after security, and the gate they are near."}}, "_c": {"go": {"airports": ["Try Fort Lauderdale free", "#/airport/fll"]}, "say": {"airports": "Tell me your gate and I'll find the closest Vegan food."}}}</script>
 <script src="/public/ve-region-directory.js"></script>
+<!-- Option C pilot (Sean, 2026-11-18: "I love C... The real thing first, that's the winner for me"; mock /mocks/guide-panel2/c/): body gf-c,
+     data-gf-for / -who / -price and gf-parts "_c". Remove gf-c to go back to the Contents frame. -->
 <script src="/public/ve-guide-frame.js"></script>
 </body>
 </html>
