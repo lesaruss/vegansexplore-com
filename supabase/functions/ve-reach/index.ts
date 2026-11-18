@@ -18,7 +18,8 @@
 //   POST { action: 'roster', group?, status?, channel?, q?, sort?, offset?, limit? }
 //   POST { action: 'item', id }                         one listing's full history
 //   POST { action: 'touch', id, kind, note? }           log a tap (follow, followed_back, dm, replied, cant_reach, note, checkin, pin, unpin)
-//   POST { action: 'link', id }                         their personal tracked /go/ link (made once)
+//   POST { action: 'link', id }                         their personal tracked /go/ link (made once) to /hello/<group>?l=<slug>
+//   POST { action: 'inbound_link', id, chapter? }       the same for an inbound person (their listing's page, or their group's page)
 //   POST { action: 'scout', chapter, kind, url?, name?, note? }   an event (pending review) or a person or place (Depot > Ideas)
 //   POST { action: 'done', offset? }                    the holder's own touches, newest first
 // Ops: the LESARUSS_ADMIN_TOKEN acts as an admin (reads and proofs; its touches have no member).
@@ -291,20 +292,42 @@ async function item(id: string) {
   };
 }
 
-async function personalLink(id: string, me: { id: string }) {
-  const { data: l } = await db.from('listings').select('id, slug, name').eq('id', id).eq('status', 'approved').maybeSingle();
-  if (!l) return null;
-  const { data: have } = await db.from('ve_links').select('code').eq('initiative_slug', 'directory-reach-2026').eq('label', `Reach: ${l.slug}`.slice(0, 120)).maybeSingle();
+// Every personal link goes to the group's pre-welcome page Sean locked (2026-11-18): /hello/<group>?l=<listing slug>, and for an Explorer
+// /hello/explorers (?c=<chapter> when known). Group pages: restaurants, businesses, nonprofits, creators, explorers.
+const PAGE_OF: Record<string, string> = { restaurants: 'restaurants', businesses: 'businesses', nonprofits: 'nonprofits', creators: 'creators', explorer: 'explorers' };
+function groupOfCategory(c: string | null) {
+  if (['Rescues', 'Nonprofits', 'Sanctuaries', 'Activists', 'Groups'].includes(c || '')) return 'nonprofits';
+  if (['Podcasts', 'YouTube', 'Radio and TV', 'News Outlets', 'Documentaries & Films', 'Books', 'Athletes', 'Founders'].includes(c || '')) return 'creators';
+  if (['Restaurants', 'Bakeries & Cafes', 'Food Trucks', 'Catering', 'Markets'].includes(c || '')) return 'restaurants';
+  return 'businesses';
+}
+async function makeLink(label: string, base: string, destination: string, tags: string[], name: string, me: { id: string }) {
+  const { data: have } = await db.from('ve_links').select('code').eq('initiative_slug', 'directory-reach-2026').eq('label', label.slice(0, 120)).maybeSingle();
   if (have) return `https://vegansexplore.com/go/${have.code}`;
-  const base = 'r-' + l.slug.replace(/[^a-z0-9-]/g, '').slice(0, 40).replace(/-+$/, '');
   for (let k = 0; k < 5; k++) {
     const code = k === 0 ? base : `${base.slice(0, 42)}-${Math.random().toString(36).slice(2, 6)}`;
-    const { error } = await db.from('ve_links').insert({ code, label: `Reach: ${l.slug}`.slice(0, 120), destination: `/claim?listing=${encodeURIComponent(l.slug)}`,
-      initiative_slug: 'directory-reach-2026', tags: ['directory-reach', 'instagram-dm', l.slug.slice(0, 60)], channel: 'dm', recipient_name: String(l.name).slice(0, 120),
-      active: true, created_by: me.id });
+    const { error } = await db.from('ve_links').insert({ code, label: label.slice(0, 120), destination, initiative_slug: 'directory-reach-2026',
+      tags: ['directory-reach', 'instagram-dm', ...tags].map((t) => t.slice(0, 60)), channel: 'dm', recipient_name: String(name).slice(0, 120), active: true, created_by: me.id });
     if (!error) return `https://vegansexplore.com/go/${code}`;
   }
   return null;
+}
+async function personalLink(id: string, me: { id: string }) {
+  const { data: l } = await db.from('listings').select('id, slug, name, category').eq('id', id).eq('status', 'approved').maybeSingle();
+  if (!l) return null;
+  const grp = groupOfCategory(l.category);
+  const base = 'r-' + l.slug.replace(/[^a-z0-9-]/g, '').slice(0, 40).replace(/-+$/, '');
+  return await makeLink(`Reach: ${l.slug}`, base, `/hello/${PAGE_OF[grp]}?l=${encodeURIComponent(l.slug)}`, [grp, l.slug], l.name, me);
+}
+// An inbound person: their listing's page when matched; otherwise their group's page (an Explorer gets /hello/explorers, with ?c= when known).
+async function inboundLink(id: string, me: { id: string }, chapter: string) {
+  const { data: x } = await db.from('ve_reach_inbound').select('id, handle, grp, listing_id').eq('id', id).maybeSingle();
+  if (!x) return null;
+  if (x.listing_id) return await personalLink(x.listing_id, me);
+  const c = /^[a-z0-9-]{2,40}$/.test(chapter) ? chapter : '';
+  const dest = x.grp === 'explorer' ? `/hello/explorers${c ? `?c=${c}` : ''}` : `/hello/${PAGE_OF[x.grp]}`;
+  const base = 'r-in-' + String(x.handle).toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').slice(0, 36);
+  return await makeLink(`Reach inbound: @${x.handle}`, base, dest, [x.grp, 'inbound'], '@' + x.handle, me);
 }
 
 Deno.serve(async (req) => {
@@ -381,6 +404,11 @@ Deno.serve(async (req) => {
     if (action === 'link') {
       if (!isId(body.id)) return json({ error: 'bad_request' }, 400);
       const url = await personalLink(body.id, me);
+      return url ? json({ ok: true, url }) : json({ error: 'not_found' }, 404);
+    }
+    if (action === 'inbound_link') {
+      if (!isId(body.id)) return json({ error: 'bad_request' }, 400);
+      const url = await inboundLink(body.id, me, String(body.chapter || ''));
       return url ? json({ ok: true, url }) : json({ error: 'not_found' }, 404);
     }
     if (action === 'scout') {

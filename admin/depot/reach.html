@@ -226,7 +226,7 @@
     var g = { explorer: 'Explorer', restaurants: 'Restaurants and food', businesses: 'Other businesses', nonprofits: 'Nonprofits', creators: 'Creators and media' }[x.grp];
     return '<div class="k-row r5" data-inbound="' + x.id + '" data-ig="' + esc(x.instagram || '') + '"><span class="thumb">' + esc(String(x.handle).slice(0, 2).toUpperCase()) + '</span><div class="k-row-t"><b>' + who + '</b><small>' + esc(g) + ' &middot; ' + esc({ follower: 'new follower', message: 'wrote to us', comment: 'commented' }[x.kind]) + (x.note ? ' &middot; ' + esc(x.note) : '') + '</small>' +
       '<div class="acts">' + (x.status === 'open' && x.kind === 'follower' ? '<button class="k-btn k-on" data-copy="welcome">Copy welcome and open Instagram</button><button class="k-btn" data-in="welcomed">Welcomed</button>' : (x.instagram ? '<a class="k-btn k-on" href="' + esc(x.instagram) + '" target="_blank" rel="noopener">Open Instagram</a>' : '')) +
-      '<button class="k-btn" data-in="done">Done</button></div></div><span class="rowside"><span class="k-tag ' + (x.status === 'welcomed' ? 'live' : 'new') + '">' + (x.status === 'welcomed' ? 'Welcomed' : 'Open') + '</span></span></div>';
+      '<button class="k-btn" data-copy="inpage">Copy their page link</button><button class="k-btn" data-in="done">Done</button></div></div><span class="rowside"><span class="k-tag ' + (x.status === 'welcomed' ? 'live' : 'new') + '">' + (x.status === 'welcomed' ? 'Welcomed' : 'Open') + '</span></span></div>';
   }
   // Five, then Show N more in place (Sean, 2026-11-12: nothing scrolls inside itself).
   function fiveMore(rows) {
@@ -311,6 +311,11 @@
       row.addEventListener('click', function (e) {
         var b = e.target.closest('button'); if (!b) return;
         if (b.getAttribute('data-copy') === 'welcome') { var o = openers['all:welcome']; copyAndOpen(o ? o.body : '', row.getAttribute('data-ig')); return; }
+        if (b.getAttribute('data-copy') === 'inpage') {
+          b.disabled = true;
+          post({ action: 'inbound_link', id: id }).then(function (r) { b.disabled = false; var o = openers['all:page']; copyAndOpen((o ? o.body : '{link}').replace('{link}', r.url || ''), null); });
+          return;
+        }
         var st = b.getAttribute('data-in'); if (!st) return;
         b.disabled = true;
         post({ action: 'inbound_set', id: id, status: st }).then(function (r) {
