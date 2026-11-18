@@ -765,3 +765,16 @@ html body.ve-gf.gf-hb.gf-c .gf-cov .gf-tag.gf-lock { background: #f1f1f1; color:
   html body.ve-gf.gf-hb.gf-fd.gf-c :is(.sa-vmeta, .sa-vtags .dg-tag:not(.fd-dist)) { font-size: 11px; }
   html body.ve-gf.gf-hb.gf-fd.gf-c .sa-vcard > .fd-acc { font-size: 9px; padding: 4px 6px; margin-right: 10px; }
 }
+
+/* Option C, members' search in the tab row (Sean, 2026-11-18): small, at the end of the parts, sliding with them on phones */
+body.gf-c .gf-tabscroll { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 0 0 8px; }
+body.gf-c .gf-tabscroll > .gf-tabs { padding: 0; }
+html body.ve-gf.gf-hb.gf-c .gf-tabscroll > .dg-searchbox { flex: 0 0 210px; width: 210px; position: relative; margin: 0; }
+html body.ve-gf.gf-hb.gf-c .gf-tabscroll > .dg-searchbox input { font-size: 12px; font-weight: 700; padding: 7px 10px 7px 30px; border: 2px solid #1a1a1a; border-radius: 6px; background: #fff; }
+html body.ve-gf.gf-hb.gf-c .gf-tabscroll > .dg-searchbox svg { left: 10px; width: 14px; height: 14px; }
+@media (max-width: 900px) {
+  body.gf-c .gf-tabscroll { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; padding: 0 16px 8px; }
+  body.gf-c .gf-tabscroll::-webkit-scrollbar { display: none; }
+  body.gf-c .gf-tabscroll > .gf-tabs { overflow: visible; padding: 0; flex: none; }
+  html body.ve-gf.gf-hb.gf-c.dg-member .gf-tabscroll > .dg-searchbox { display: block !important; flex: 0 0 170px; width: 170px; }
+}

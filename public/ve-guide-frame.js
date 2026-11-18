@@ -59,7 +59,7 @@
   bar.innerHTML = '<div class="gf-name"><h1 class="gf-h"><a href="' + esc(location.pathname) + '#/">' + esc(guideName) + '</a></h1>' +
     (CM && B.getAttribute('data-gf-for') ? '<span class="gf-for">' + esc(B.getAttribute('data-gf-for')) + '</span>' : '') + '<span class="gf-join" id="gfJoin"></span>' +
     '<span class="dg-status gf-status" role="status"></span></div>' +
-    (CM ? '<div class="gf-tabwrap"><nav class="gf-tabs" id="gfTabs" aria-label="' + esc(guideName) + ', parts"></nav></div>' : '') +
+    (CM ? '<div class="gf-tabwrap"><div class="gf-tabscroll"><nav class="gf-tabs" id="gfTabs" aria-label="' + esc(guideName) + ', parts"></nav></div></div>' : '') +
     '<div class="gf-tools"><button type="button" class="gf-cbtn" id="gfCbtn" aria-expanded="false" aria-controls="gfToc"><b>Contents</b><span id="gfCur"></span><i aria-hidden="true"></i></button></div>';
   var stripe = D.createElement('div');
   stripe.className = 'k-stripe gf-stripe'; stripe.setAttribute('aria-hidden', 'true'); stripe.innerHTML = '<i></i><i></i><i></i><i></i><i></i><i></i><i></i>';
@@ -71,7 +71,9 @@
   var joinEl = D.getElementById('gfJoin'), btn = D.getElementById('gfCbtn'), curEl = D.getElementById('gfCur');
   // Members keep their search: the page's own form, moved (its listeners come with it).
   var sform = D.getElementById('dgSearchForm');
-  if (sform) bar.querySelector('.gf-tools').insertBefore(sform, btn);
+  // Option C (Sean, 2026-11-18: "if you put the search in it, it throws the layout off... make the search box a little smaller so it fits...
+  // part of the scroll"): members' search sits small at the end of the tab row and slides with it on phones, so the bar stays slim.
+  if (sform) { if (CM) bar.querySelector('.gf-tabscroll').appendChild(sform); else bar.querySelector('.gf-tools').insertBefore(sform, btn); }
   // C: the join and sign-in stay reachable, quietly, at the end of the bar (the price is said once, beside the orange action).
   if (CM) bar.querySelector('.gf-tools').insertBefore(joinEl, btn);
   var tabsEl = CM ? D.getElementById('gfTabs') : null;
