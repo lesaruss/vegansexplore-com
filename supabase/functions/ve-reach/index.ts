@@ -96,9 +96,15 @@ function workdaysBetween(a: string, b: string) { let n = 0, d = a; while (d <= b
 // ---- The roster ----
 type Row = Record<string, any>;
 async function roster(): Promise<Row[]> {
-  const { data, error } = await db.rpc('ve_reach_roster');
-  if (error) throw new Error(error.message);
-  return (data || []) as Row[];
+  // The API returns at most 1,000 rows a call: page through all of them.
+  const out: Row[] = [];
+  for (let from = 0; from < 20000; from += 1000) {
+    const { data, error } = await db.rpc('ve_reach_roster').order('id').range(from, from + 999);
+    if (error) throw new Error(error.message);
+    out.push(...((data || []) as Row[]));
+    if (!data || data.length < 1000) break;
+  }
+  return out;
 }
 function statusOf(r: Row): string {
   if (r.claimed) return 'claimed';
