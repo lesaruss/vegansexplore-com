@@ -71,7 +71,7 @@
     { k: 'plate', label: 'Your plate', lock: 1, say: 'A simple way to build a Vegan plate at every meal, and a short list to check off every day.',
       sayMember: 'Use the plate at every meal, and the every-day list to cover the basics without counting anything.' },
     { k: 'supplements', label: 'Supplements', say: 'The supplement brands in our Directory, and in the full Guide, what to look for on the label before you buy.',
-      sayMember: 'Here\'s what to look for before you buy, and the brands in our Directory. Members vote for the ones they trust.' },
+      sayMember: 'Here\'s what to look for before you buy, and the brands in our Directory. Members vouch for the ones they trust.' },
     { k: 'experts', label: 'Experts', say: 'The physicians and health experts we\'ve had on our shows, and the health professionals near you in our Directory.',
       sayMember: 'Find a physician, a dietitian or a health expert, and hear them on the podcast first.' },
     { k: 'courses', label: 'Courses', say: 'Want to go deeper? These are courses and certificates in plant-based nutrition, cooking and coaching, for yourself or for your work.',
@@ -663,7 +663,7 @@
   var VB = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/nutrition-guide/';
   var TAB_AUDIO = {
     overview: [VB + 'theo-overview-v1.mp3', VB + 'theo-overview-member-v1.mp3'], nutrients: [VB + 'theo-nutrients-v1.mp3', VB + 'theo-nutrients-member-v1.mp3'],
-    plate: [VB + 'theo-plate-v1.mp3', VB + 'theo-plate-member-v1.mp3'], supplements: [VB + 'theo-supplements-v1.mp3', VB + 'theo-supplements-member-v1.mp3'],
+    plate: [VB + 'theo-plate-v1.mp3', VB + 'theo-plate-member-v1.mp3'], supplements: [VB + 'theo-supplements-v1.mp3', VB + 'theo-supplements-member-v2.mp3'],
     experts: [VB + 'theo-experts-v1.mp3', VB + 'theo-experts-member-v1.mp3'], courses: [VB + 'theo-courses-v1.mp3', VB + 'theo-courses-member-v1.mp3'],
     pulse: [VB + 'theo-pulse-v2.mp3', VB + 'theo-pulse-member-v1.mp3'], mylist: ['', VB + 'theo-mylist-member-v1.mp3'], join: [VB + 'theo-join-v1.mp3', '']
   };

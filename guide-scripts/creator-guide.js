@@ -64,7 +64,7 @@
     { k: 'you', label: 'Your page', say: '' },
     { k: 'overview', label: 'Overview' },
     { k: 'tips', label: 'The 10 tips', lock: 1, voice: 'tab-tips', say: 'Ten moves from hobby to professional, each with a real Vegan creator doing it and three things you can start this week. The first one, purpose and niche, is open to try.' },
-    { k: 'people', label: 'People doing it', voice: 'tab-people', say: 'These are creators and channels in our Directory. See how they show up, and vote for the ones you watch.' },
+    { k: 'people', label: 'People doing it', voice: 'tab-people', say: 'These are the creators and channels in our Directory. See how they show up, and vouch for the ones you watch.' },
     { k: 'pulse', label: 'Pulse', lock: 1, voice: 'tab-pulse', say: 'Our conversations with creators: how they built a following, made a living and kept going. Play them right here.' },
     { k: 'mylist', label: 'My list', mine: 1, voice: 'tab-mylist', say: 'Everything you saved is right here: your tips, episodes and creators.' },
     // Kai's old Get access line said eleven dollars; this one is text until Sean approves it and it is recorded (-v2).

@@ -44,7 +44,7 @@
     { k: 'say', label: 'How to say it', say: 'The words matter. Call an item plant-based only when it has nothing from an animal: no meat, dairy, eggs or honey. Call your menu plant-based options. Here\'s a line for shared kitchens too.' },
     { k: 'sourcing', label: 'Sourcing', mine: 1, say: 'You don\'t have to make it all. Here\'s who sells it, and every supplier wears an honest label. Check with the supplier before you order.' },
     { k: 'make', label: 'Buy or make', mine: 1, say: 'For each item, see who sells it ready, or a recipe to make it. The recipes are home scale, so test a batch before you scale it.' },
-    { k: 'found', label: 'Get found', mine: 1, say: 'Here\'s how people find you in our Directory. Places with plant-based options are vetted by member votes, and nobody can pay to move up.' },
+    { k: 'found', label: 'Get found', mine: 1, say: 'Here\'s how people find you in our Directory. Places with plant-based options are vetted by member vouches, and nobody can pay to move up.' },
     { k: 'claim', label: 'Claim your page', mine: 1, say: 'If your business is in our Directory, claim your page and keep it current. If it isn\'t, add it here.' },
     { k: 'next', label: 'What\'s next', mine: 1, say: 'You\'re in. Thank you. Claim your page, save what you need, and follow us. Tasting nights are coming, and we\'ll tell you when the first one runs.' },
     { k: 'mylist', label: 'My list', mine: 1, say: 'Everything you saved is right here.' },
@@ -57,7 +57,7 @@
   var AUDIO_V = { overview: 'overview-v2', why: 'why-v2', add: 'add-v1', say: 'say-v2', join: 'join-v1' };
   // Group pages (members): Maya's `say` in GROUPS, recorded as g-<group>-v1.mp3 (approved by Sean 2026-11-06, recorded 2026-11-07, checked with stt).
   var AUDIO_G = { learn: 'g-learn-v1', addit: 'g-addit-v1', gofound: 'g-gofound-v1', yours: 'g-yours-v1' };
-  var AUDIO_M = { overview: 'overview-member-v2', add: 'add-member-v1', sourcing: 'sourcing-v1', make: 'make-v1', found: 'found-v2', claim: 'claim-v1', next: 'next-v1', mylist: 'mylist-v1' };
+  var AUDIO_M = { overview: 'overview-member-v2', add: 'add-member-v1', sourcing: 'sourcing-v1', make: 'make-v1', found: 'found-v3', claim: 'claim-v1', next: 'next-v1', mylist: 'mylist-v1' };
   // Members: the tabs as 5 groups (Sean, 2026-11-06), copied from the Events Guide's GROUPS. A group opens as a page of tiles; the
   // dropdown and Back / Next go by group. Maya's line on a group page (`say`) is recorded (AUDIO_G); change a line, record -v2.
   var GROUPS = [

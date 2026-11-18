@@ -252,7 +252,7 @@
   var VOICE_URL = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/creator-guide/kai-';
   // A line recorded again plays its newer take (Sean, 2026-10-31: "lives here" was read as the verb, so those lines say "is right here";
   // and every line with "Vegan" in it was recorded again from text spelled "Veegan", so she says it right).
-  var VOICE_VER = { mine: 2, 'tab-mylist': 2, overview: 3, 'profile-partner': 2, 'profile-team': 2, 'tab-tips': 2 };
+  var VOICE_VER = { 'tab-people': 2, mine: 2, 'tab-mylist': 2, overview: 3, 'profile-partner': 2, 'profile-team': 2, 'tab-tips': 2 };
   var voice = (function () {
     var a = null, cur = '', cued = '';
     function isOn() { try { return sessionStorage.getItem('ve_kai_voice') === '1'; } catch (e) { return false; } }
