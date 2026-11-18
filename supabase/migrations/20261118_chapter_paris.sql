@@ -71,7 +71,7 @@ begin
   if position('''paris''' in d) = 0 then execute replace(d, '''boston'',''london'']', '''boston'',''paris'',''london'']'); end if;
 end $$;
 
--- 5. At the opening (on Sean's "open"; NOT RUN until then): the local Daily Pulse and the Pulse queue's chapter name. Paris was never
+-- 5. At the opening (Sean, 2026-11-18: "open Paris"; run the same day): the local Daily Pulse and the Pulse queue's chapter name. Paris was never
 --    on the next-chapter board (ve_next_chapters has no Paris row), and ve_creator_application_link gives an international chapter no
 --    state (as London), so neither changes.
 update public.lesaruss_dispatch_settings set value = jsonb_set(value::jsonb, '{communities}', (value::jsonb->'communities') || '["paris"]'::jsonb)::text

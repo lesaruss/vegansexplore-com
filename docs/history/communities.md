@@ -239,3 +239,20 @@ Sean, 2026-11-14: "go" on building the four as one batch, then "open them". Nine
   and read each live version back from the Management API (canon `canon-ve-chapter-launch` `deploy_one_at_a_time`). All 21 deployed that
   way from 40cccb8, every version and sha256 confirmed. Proven live at 1440 and 390 beside Los Angeles
   (`docs/audits/2026-11-14-batch4-live-beside-la-*.jpg`).
+
+## Paris, the first chapter in France (2026-11-18)
+
+Sean, 2026-11-18: "I want us to launch a Paris chapter" (first case Land & Monkeys, the all-Vegan bakery chain, from his screenshots Ideas
+111826), then "open Paris" and "push Paris to main". Twenty chapters now.
+- **Listings**: 18 Google searches (once:paris-restaurants, $0.72; `20261118_paris_restaurant_search.sql`) added 112: 38 fully Vegan, 74 to
+  Being vetted. All 8 Land & Monkeys shops, Beaumarchais the chain parent. French accents folded in slugs; a name saying "vegetarien" is not
+  fully Vegan by name. Reach: Paris and its inner suburbs by city list; suburb listings carry `communities ['paris']`.
+- **France**: `VE_HUBS` state `FR` with `match.country` (the PostgREST filter adds `address_country=eq.FR`), France in the country map and
+  the chapter cards, `ve_outreach_cities` states `['FR']` so `ve_chapter_of` refuses Paris, TX. EU consent like London (Pulse sign-up, join
+  box, taster, taste page, ve-taster, ve-pulse-subscribe). `ve-auth` folds accents in city slugs and keeps Paris to France
+  (`CHAPTER_OWN_STATE`). Open gap, as London: the in-browser chapter matchers check the city name only.
+- **Art**: drawn new in Higgsfield in every shape from Boston's style (`communities/paris/`; originals in `vegan-media/media/communities/paris/`).
+- **Opening**: chapter `20261118_chapter_paris.sql`. All 22 chapter-list functions were first checked identical live to main b516eae, then
+  deployed one at a time from 6b22dc1 through `ve-function-deploy`, each version, source sha256 and live body read back. Proven live beside
+  Los Angeles (`docs/audits/2026-11-18-paris-live-beside-la-*.jpg`). Launch post and story `public/chapters/paris/`, `/go/paris-open`
+  (`20261118_paris_launch_link.sql`), parked in `ve-social-schedule`.
