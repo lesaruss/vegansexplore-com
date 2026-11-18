@@ -37,7 +37,7 @@ function fromB64u(s: string) { const pad = s.length % 4 ? '='.repeat(4 - (s.leng
 
 const CITY: Record<string, string> = { 'south-florida': 'South Florida', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', atlanta: 'Atlanta',
   'washington-dc': 'Washington, D.C.', delaware: 'Delaware', maryland: 'Maryland', virginia: 'Virginia', 'west-virginia': 'West Virginia', 'new-york': 'New York',
-  philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', seattle: 'Seattle', portland: 'Portland', 'san-francisco': 'San Francisco', 'austin': 'Austin', 'denver': 'Denver', 'boston': 'Boston', london: 'London' };
+  philadelphia: 'Philadelphia', 'los-angeles': 'Los Angeles', seattle: 'Seattle', portland: 'Portland', 'san-francisco': 'San Francisco', 'austin': 'Austin', 'denver': 'Denver', 'boston': 'Boston', 'paris': 'Paris', london: 'London' };
 const MAX_CITIES = 3;
 
 // The subscriber's key: the Taster key (bytes 32 to 64 of the service key), so no member function takes it for a member session.
@@ -231,16 +231,16 @@ Deno.serve(async (req) => {
     const cities = cleanCities(body.cities), freq = body.frequency === 'weekly' ? 'weekly' : 'daily';
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || email.length > 200) return json({ error: 'email', message: 'That email does not look right.' }, 400);
     if (!cities.length) return json({ error: 'cities', message: 'Pick at least one city.' }, 400);
-    if (cities.includes('london') && body.consent !== true) return json({ error: 'consent', message: 'Tick the box to get our emails.' }, 400);
+    if ((cities.includes('london') || cities.includes('paris')) && body.consent !== true) return json({ error: 'consent', message: 'Tick the box to get our emails.' }, 400);
     const { data: ex } = await db.from('ve_tasters').select('*').ilike('email', likeEsc(email)).maybeSingle();
     if (ex && ex.updated_at && Date.now() - Date.parse(ex.updated_at) < 60e3) return json({ error: 'slow_down', message: 'Give it a minute and try again.' }, 429);
     const now = new Date().toISOString();
     const src = String(body.source || '').slice(0, 120) || null;
-    const consent_basis = cities.includes('london') ? 'checkbox' : 'notice';
+    const consent_basis = (cities.includes('london') || cities.includes('paris')) ? 'checkbox' : 'notice';
     let t: any;
     if (ex) {
       const patch: Record<string, unknown> = { pulse_cities: cities, pulse_frequency: freq, updated_at: now, pulse_unsubscribed_at: null, pulse_source: src || ex.pulse_source, pulse_requested_at: ex.pulse_requested_at || now };
-      if (cities.includes('london')) { patch.consent_basis = 'checkbox'; }
+      if ((cities.includes('london') || cities.includes('paris'))) { patch.consent_basis = 'checkbox'; }
       const r = await db.from('ve_tasters').update(patch).eq('id', ex.id).select('*').single(); t = r.data;
     } else {
       const local = email.split('@')[0].replace(/[^a-z0-9]+/gi, ' ').trim().slice(0, 40) || 'Subscriber';
@@ -266,7 +266,7 @@ Deno.serve(async (req) => {
     if (action === 'save') {
       const cities = cleanCities(body.cities);
       if (!cities.length) return json({ error: 'cities', message: 'Pick at least one city.' }, 400);
-      if (cities.includes('london')) { const { data: cur } = await db.from('ve_tasters').select('consent_basis').eq('id', id).maybeSingle(); if (cur?.consent_basis !== 'checkbox') return json({ error: 'consent', message: 'London needs the box ticked on the sign-up form. Subscribe again from the Daily Pulse page.' }, 400); }
+      if ((cities.includes('london') || cities.includes('paris'))) { const { data: cur } = await db.from('ve_tasters').select('consent_basis').eq('id', id).maybeSingle(); if (cur?.consent_basis !== 'checkbox') return json({ error: 'consent', message: 'London needs the box ticked on the sign-up form. Subscribe again from the Daily Pulse page.' }, 400); }
       patch.pulse_cities = cities; patch.pulse_frequency = body.frequency === 'weekly' ? 'weekly' : 'daily'; patch.updated_at = new Date().toISOString();
     }
     const { data: t } = await db.from('ve_tasters').update(patch).eq('id', id).select('*').maybeSingle();

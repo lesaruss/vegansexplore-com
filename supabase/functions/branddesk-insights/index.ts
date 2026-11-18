@@ -967,6 +967,7 @@ async function placeOf(kind: string, slug: string): Promise<{ name: string; matc
     let matches: PMatch[];
     if (c.cities?.length) {
       if (slug === 'london') matches = [{ country: 'GB', cities: c.cities }];
+      else if (slug === 'paris') matches = [{ country: 'FR', cities: c.cities }];
       else matches = [{ country: 'US', province: CHAPTER_REGION[slug] ?? (c.states?.length ? US_STATES[c.states[0]] : undefined), cities: c.cities }];
     } else matches = (c.states ?? []).map((s: string) => ({ country: 'US', province: US_STATES[s] }));
     return { name: c.name, matches, mentions: [c.name.toLowerCase()] };

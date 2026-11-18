@@ -83,7 +83,7 @@ const vouchUntil = (iso: string) => new Date(new Date(iso).getTime() + 365 * DAY
 const todayEastern = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date());
 const DAY_MS = 24 * 60 * 60 * 1000;
 const CHAPTERS = ['south-florida', 'central-florida', 'north-florida', 'atlanta', 'washington-dc', 'delaware', 'maryland',
-  'virginia', 'west-virginia', 'new-york', 'philadelphia', 'los-angeles', 'seattle', 'portland', 'san-francisco', 'austin', 'denver', 'boston', 'london'];
+  'virginia', 'west-virginia', 'new-york', 'philadelphia', 'los-angeles', 'seattle', 'portland', 'san-francisco', 'austin', 'denver', 'boston', 'paris', 'london'];
 const RESEND_KEY = Deno.env.get('RESEND_API_KEY') ?? '';
 const esc = (x: string) => x.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] as string));
 async function memberOk(id: string) {

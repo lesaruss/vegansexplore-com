@@ -192,6 +192,7 @@ const HUBS: Record<string, { name: string; cities?: string[]; states?: string[] 
   'austin': { name: 'Austin', states: ['TX'], cities: ['Austin', 'Round Rock', 'Cedar Park', 'Pflugerville', 'Georgetown', 'Leander', 'San Marcos', 'Kyle', 'Buda', 'Lakeway', 'Bee Cave', 'Dripping Springs', 'Hutto', 'Manor', 'Bastrop', 'Wimberley', 'New Braunfels', 'Taylor', 'Liberty Hill', 'Lago Vista', 'West Lake Hills', 'Sunset Valley', 'Elgin', 'Lockhart', 'Spicewood', 'Del Valle', 'Canyon Lake'] },
   'denver': { name: 'Denver', states: ['CO'] },
   'boston': { name: 'Boston', states: ['MA'] },
+  paris: { name: 'Paris', cities: ['Paris', 'Boulogne-Billancourt', 'Montreuil', 'Saint-Denis', 'Vincennes', 'Neuilly-sur-Seine', 'Levallois-Perret', 'Issy-les-Moulineaux', 'Ivry-sur-Seine', 'Pantin', 'Saint-Ouen-sur-Seine', 'Clichy', 'Vanves', 'Malakoff', 'Montrouge', 'Bagnolet', 'Les Lilas', 'Le Pré-Saint-Gervais', 'Charenton-le-Pont', 'Saint-Mandé', 'Gentilly', 'Le Kremlin-Bicêtre', 'Aubervilliers', 'Puteaux', 'Courbevoie'] },
   london: { name: 'London', cities: ['London'] },
 };
 function hubOf(l: any): string | null {

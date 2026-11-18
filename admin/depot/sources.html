@@ -237,7 +237,7 @@
         e.preventDefault();
         var s = $('f-scope').value;
         $('add-msg').textContent = 'Saving...';
-        api({ action: 'feed_save', feed_name: $('f-name').value, scope: s, city_slug: $('f-city').value || null, feed_url: $('f-url').value, search_query: $('f-q').value, locale: $('f-city').value === 'london' ? 'GB' : 'US' }).then(function (d) {
+        api({ action: 'feed_save', feed_name: $('f-name').value, scope: s, city_slug: $('f-city').value || null, feed_url: $('f-url').value, search_query: $('f-q').value, locale: $('f-city').value === 'london' ? 'GB' : $('f-city').value === 'paris' ? 'FR' : 'US' }).then(function (d) {
           if (!d.ok) { $('add-msg').textContent = { city_required: 'Pick the city this source covers.', bad_url: 'Use the full https:// feed address.', query_required: 'Add the search words.', name_required: 'Add a name.' }[d.error] || 'That did not save.'; return; }
           $('add-msg').textContent = 'Added. Pulling it now...'; $('add').reset(); syncForm();
           api({ action: 'feed_pull', id: d.feed.id }).then(function (r) { $('add-msg').textContent = 'Added. ' + (r.found || 0) + ' stories read, ' + (r.added || 0) + ' flagged.' + (r.status && r.status !== 'ok' ? ' Problem: ' + r.status : ''); loadFeeds(); load(); });

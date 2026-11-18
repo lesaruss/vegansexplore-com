@@ -15,7 +15,7 @@ const corsHeaders = {
 const supabase = createClient(SUPABASE_URL, SERVICE_KEY);
 
 // The DMV became Washington, D.C., Maryland and Virginia, and North Florida joined (Sean, 2026-10-27; same slugs as /public/ve-hubs.js).
-const VALID_COMMUNITIES = ['atlanta','central-florida','north-florida','washington-dc','delaware','maryland','virginia','west-virginia','london','los-angeles','seattle','portland','san-francisco','austin','denver','boston','new-york','philadelphia','south-florida'];
+const VALID_COMMUNITIES = ['atlanta','central-florida','north-florida','washington-dc','delaware','maryland','virginia','west-virginia','london','los-angeles','seattle','portland','san-francisco','austin','denver','boston','paris','new-york','philadelphia','south-florida'];
 
 // Tenant the Vegans Explore front door writes to (2026-09-09, Sean, Fieldy
 // field note behind dashboard items 5-7). Both signup paths below used to
@@ -494,7 +494,8 @@ async function requireFullMember(memberId: string): Promise<Response | null> {
 
 function slugifyCity(v: unknown): string | null {
   if (typeof v !== 'string') return null;
-  const s = v.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+  // Accents folded first, so "Île-de-France" and "Saint-Mandé" slug the same as typed without them.
+  const s = v.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
   return s || null;
 }
 
@@ -517,7 +518,7 @@ function isPlausibleCityName(raw: string): boolean {
 
 const COMMUNITY_DISPLAY: Record<string, string> = {
   'atlanta': 'Atlanta', 'central-florida': 'Central Florida', 'north-florida': 'North Florida', 'washington-dc': 'Washington, D.C.', 'delaware': 'Delaware', 'maryland': 'Maryland', 'virginia': 'Virginia', 'west-virginia': 'West Virginia',
-  'london': 'London', 'los-angeles': 'Los Angeles', 'seattle': 'Seattle', 'portland': 'Portland', 'san-francisco': 'San Francisco', 'austin': 'Austin', 'denver': 'Denver', 'boston': 'Boston', 'new-york': 'New York',
+  'london': 'London', 'los-angeles': 'Los Angeles', 'seattle': 'Seattle', 'portland': 'Portland', 'san-francisco': 'San Francisco', 'austin': 'Austin', 'denver': 'Denver', 'boston': 'Boston', 'paris': 'Paris', 'new-york': 'New York',
   'philadelphia': 'Philadelphia', 'south-florida': 'South Florida',
 };
 
@@ -576,6 +577,10 @@ const CITY_ALIASES: Record<string, string> = {
   // boston (all of Massachusetts)
   'massachusetts': 'boston', 'somerville': 'boston', 'brookline': 'boston', 'worcester': 'boston', 'framingham': 'boston', 'waltham': 'boston',
   'malden': 'boston', 'provincetown': 'boston', 'nantucket': 'boston', 'cape-cod': 'boston', 'marthas-vineyard': 'boston',
+  // paris (Paris and its inner suburbs, 2026-11-18)
+  'montreuil': 'paris', 'boulogne-billancourt': 'paris', 'vincennes': 'paris', 'saint-denis': 'paris', 'pantin': 'paris',
+  'issy-les-moulineaux': 'paris', 'levallois-perret': 'paris', 'neuilly-sur-seine': 'paris', 'montmartre': 'paris', 'le-marais': 'paris',
+  'ile-de-france': 'paris',
   // london
   'camden': 'london', 'hackney': 'london', 'brixton': 'london', 'croydon': 'london',
   'greenwich': 'london', 'islington': 'london', 'shoreditch': 'london',
@@ -834,7 +839,7 @@ const STATE_QUALIFIERS = new Set([
   'al','ak','az','ar','ca','co','ct','de','fl','ga','hi','id','il','in','ia','ks','ky','la','me',
   'md','ma','mi','mn','ms','mo','mt','ne','nv','nh','nj','nm','ny','nc','nd','oh','ok','or','pa',
   'ri','sc','sd','tn','tx','ut','vt','va','wa','wv','wi','wy','dc',
-  'usa','us','uk','gb','england','scotland','wales','united-kingdom','united-states','d-c',
+  'usa','us','uk','gb','england','scotland','wales','united-kingdom','united-states','d-c','france','fr',
   'florida','california','georgia','pennsylvania','maryland','virginia','delaware','west-virginia','texas','new-york','washington','oregon','colorado','massachusetts',
 ]);
 
@@ -864,6 +869,7 @@ function stripCitySuffix(slug: string): string | null {
 // disambiguate it -- safe default is "unlaunched", never a guess.
 const CHAPTER_OWN_STATE: Record<string, string[]> = {
   portland: ['or', 'oregon'], 'san-francisco': ['ca', 'california'], austin: ['tx', 'texas'], denver: ['co', 'colorado'], boston: ['ma', 'massachusetts'],
+  paris: ['fr', 'france'],
 };
 function resolveExactCommunity(citySlug: string, stateSlug?: string | null): string | null {
   // A chapter named for a city is that city's chapter only in its own state: "Portland, ME", "Austin, MN" or "Boston, GA" is not it.

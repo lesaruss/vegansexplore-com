@@ -13,7 +13,7 @@
   var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-pulse-subscribe';
   var CITIES = [['south-florida', 'South Florida'], ['central-florida', 'Central Florida'], ['north-florida', 'North Florida'], ['atlanta', 'Atlanta'],
     ['washington-dc', 'Washington, D.C.'], ['delaware', 'Delaware'], ['maryland', 'Maryland'], ['virginia', 'Virginia'], ['west-virginia', 'West Virginia'],
-    ['new-york', 'New York'], ['philadelphia', 'Philadelphia'], ['los-angeles', 'Los Angeles'], ['seattle', 'Seattle'], ['portland', 'Portland'], ['san-francisco', 'San Francisco'], ['austin', 'Austin'], ['denver', 'Denver'], ['boston', 'Boston'], ['london', 'London']];
+    ['new-york', 'New York'], ['philadelphia', 'Philadelphia'], ['los-angeles', 'Los Angeles'], ['seattle', 'Seattle'], ['portland', 'Portland'], ['san-francisco', 'San Francisco'], ['austin', 'Austin'], ['denver', 'Denver'], ['boston', 'Boston'], ['paris', 'Paris'], ['london', 'London']];
   var MAX = 3, THIRTY_DAYS = 30 * 864e5;
   function ls(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) {} return null; }
   function ss(k, v) { try { if (v === undefined) return sessionStorage.getItem(k); sessionStorage.setItem(k, v); } catch (e) {} return null; }
@@ -119,15 +119,15 @@
     form.addEventListener('change', function (e) {
       var p = picked();
       if (e.target.name === 'city' && p.length > MAX) { e.target.checked = false; err.textContent = 'Pick up to three cities.'; return; }
-      err.textContent = ''; lon.style.display = picked().indexOf('london') > -1 ? 'block' : 'none';
+      err.textContent = ''; lon.style.display = (picked().indexOf('london') > -1 || picked().indexOf('paris') > -1) ? 'block' : 'none';
     });
-    lon.style.display = picked().indexOf('london') > -1 ? 'block' : 'none';
+    lon.style.display = (picked().indexOf('london') > -1 || picked().indexOf('paris') > -1) ? 'block' : 'none';
     var first = form.querySelector('input[name=city]:checked') || form.querySelector('input[name=city]'); if (first) first.focus();
     form.addEventListener('submit', function (e) {
       e.preventDefault();
       var cities = picked(), freq = (form.querySelector('input[name=freq]:checked') || {}).value || 'daily';
       if (!cities.length) { err.textContent = 'Pick at least one city.'; return; }
-      if (cities.indexOf('london') > -1 && !form.consent.checked) { err.textContent = 'Tick the box to get the London Pulse by email.'; return; }
+      if ((cities.indexOf('london') > -1 || cities.indexOf('paris') > -1) && !form.consent.checked) { err.textContent = 'Tick the box to get the Pulse by email.'; return; }
       go.disabled = true; go.textContent = 'One moment…'; err.textContent = '';
       fetch(FN, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'subscribe', email: email, cities: cities, frequency: freq,
         consent: !!form.consent.checked, source: location.pathname.slice(0, 100) }) })

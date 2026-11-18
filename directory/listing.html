@@ -4332,6 +4332,7 @@ function getCommunityForListing(l){
   if(l.address_state === 'GA') return {slug:'atlanta', name:'Atlanta'};
   if(l.address_state === 'NY') return {slug:'new-york', name:'New York'};
   if(l.address_city === 'London') return {slug:'london', name:'London'};
+  if(l.address_country === 'FR' && window.VE_HUBS){ var par = VE_HUB('paris'); if(par && par.slug === 'paris' && par.match.cities.indexOf(l.address_city) > -1) return {slug:'paris', name:'Paris'}; }
   // An address outside our chapters: the first chapter it serves (listings.communities, 2026-10-24).
   var c = (l.communities || []).filter(function(x){ return x !== 'all'; })[0];
   var h = c && window.VE_HUBS ? VE_HUBS.filter(function(x){ return x.slug === c; })[0] : null;
