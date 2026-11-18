@@ -170,6 +170,10 @@
       "destination": "/admin/depot/reach"
     },
     {
+      "source": "/positions/:slug/start",
+      "destination": "/positions/start"
+    },
+    {
       "source": "/dashboard/sample",
       "destination": "/dashboard/center-console"
     },
