@@ -40,6 +40,14 @@ const POSITION = 'social-media-manager-instagram';
 const FEATURE_CAP = 20;
 const SEAN_CAP = 20;
 const QUIET_DAYS = 7;
+const CITY_MIN = 8;
+const STATE_NAMES: Record<string, string> = { AL: 'Alabama', AK: 'Alaska', AZ: 'Arizona', AR: 'Arkansas', CA: 'California', CO: 'Colorado', CT: 'Connecticut',
+  DE: 'Delaware', DC: 'Washington, D.C.', FL: 'Florida', GA: 'Georgia', HI: 'Hawaii', ID: 'Idaho', IL: 'Illinois', IN: 'Indiana', IA: 'Iowa', KS: 'Kansas',
+  KY: 'Kentucky', LA: 'Louisiana', ME: 'Maine', MD: 'Maryland', MA: 'Massachusetts', MI: 'Michigan', MN: 'Minnesota', MS: 'Mississippi', MO: 'Missouri',
+  MT: 'Montana', NE: 'Nebraska', NV: 'Nevada', NH: 'New Hampshire', NJ: 'New Jersey', NM: 'New Mexico', NY: 'New York', NC: 'North Carolina',
+  ND: 'North Dakota', OH: 'Ohio', OK: 'Oklahoma', OR: 'Oregon', PA: 'Pennsylvania', RI: 'Rhode Island', SC: 'South Carolina', SD: 'South Dakota',
+  TN: 'Tennessee', TX: 'Texas', UT: 'Utah', VT: 'Vermont', VA: 'Virginia', WA: 'Washington', WV: 'West Virginia', WI: 'Wisconsin', WY: 'Wyoming',
+  GB: 'the UK', FR: 'France' };
 const GOAL = { members: 250, kj_members: 60, claims: 100, by: '2026-12-31' };
 const DEADLINE = '2026-12-01';
 const DAYS_OFF = ['2026-11-26', '2026-11-27']; // Thanksgiving Thursday and Friday
@@ -238,24 +246,48 @@ async function feature(rows: Row[]) {
   const featured = [...doneIds].map((id) => byId.get(id)).filter(Boolean) as Row[];
   const q = queue(rows);
   const room = Math.max(0, FEATURE_CAP - featured.length);
-  // 'all' marks listings with no city (online brands); a feature is one real chapter when possible.
-  const city = (r: Row) => r.chapter && r.chapter !== 'all' ? r.chapter : null;
-  let chapter: string | null = featured.map(city).find(Boolean) || null;
-  if (!chapter) chapter = q.map(city).find(Boolean) || null;
-  let batch = chapter ? q.filter((r) => r.chapter === chapter).slice(0, room) : [];
-  if (batch.length < Math.min(5, room)) batch = batch.concat(q.filter((r) => !batch.includes(r)).slice(0, room - batch.length));
-  const all = featured.concat(batch);
+  // A public caption must be true (coordinator, 2026-11-18): the batch is one CITY first, the city with the most waiting
+  // Instagram-only places; only when that city has fewer than CITY_MIN does it fill from the same chapter, and then the caption names
+  // the real state or states ("across Pennsylvania"), never a city some places are not in. One mention per Instagram account.
+  const handleOf = (r: Row) => { const u = igUrl(r.instagram); return u ? String(u.replace(/\/+$/, '').split('/').pop()).toLowerCase() : ''; };
+  const cityKey = (r: Row) => r.city ? `${String(r.city).split(',')[0].trim().toLowerCase()}|${String(r.state || '').toLowerCase()}` : '';
+  const realChapter = (r: Row) => r.chapter && r.chapter !== 'all' ? r.chapter : null;
+  let pick: Row | undefined = featured[0];
+  if (!pick) {
+    const counts = new Map<string, number>();
+    for (const r of q) if (!(r.emails && r.emails.length) && cityKey(r)) counts.set(cityKey(r), (counts.get(cityKey(r)) || 0) + 1);
+    let best = '', n = 0;
+    for (const r of q) { const k = cityKey(r); if (k && (counts.get(k) || 0) > n) { best = k; n = counts.get(k) || 0; } }
+    pick = q.find((r) => cityKey(r) === best);
+  }
+  const used = new Set(featured.map(handleOf));
+  const take = (list: Row[], max: number) => { const out: Row[] = []; for (const r of list) { if (out.length >= max) break; const h = handleOf(r); if (!h || used.has(h)) continue; used.add(h); out.push(r); } return out; };
+  let batch: Row[] = [];
+  let mode: 'city' | 'area' = 'city';
+  if (pick) {
+    batch = take(q.filter((r) => cityKey(r) === cityKey(pick!)), room);
+    if (featured.length + batch.length < CITY_MIN && realChapter(pick)) {
+      mode = 'area';
+      batch = batch.concat(take(q.filter((r) => realChapter(r) === realChapter(pick!) && cityKey(r) !== cityKey(pick!)), room - batch.length));
+    }
+  }
+  const chapter = pick ? realChapter(pick) : null;
+  const members = featured.concat(batch);
+  const cityName = pick ? String(pick.city).split(',')[0].trim() : '';
+  const states = [...new Set(members.map((r) => STATE_NAMES[String(r.state || '').toUpperCase()] || String(r.state || '')).filter(Boolean))];
+  const areaName = states.length <= 1 ? (states[0] || cityName) : states.slice(0, -1).join(', ') + ' and ' + states[states.length - 1];
+  const where = mode === 'city' ? { headline: cityName, phrase: `in ${cityName}` } : { headline: areaName, phrase: `across ${areaName}` };
+  const all = members;
   const groupCount: Record<string, number> = {};
   for (const r of all) groupCount[r.grp] = (groupCount[r.grp] || 0) + 1;
   const group = Object.entries(groupCount).sort((a, b) => b[1] - a[1])[0]?.[0] || 'restaurants';
-  // One mention per account: a chain's locations often share one Instagram.
-  const handles = [...new Set(all.map((r) => { const u = igUrl(r.instagram); return u ? '@' + String(u.replace(/\/+$/, '').split('/').pop()).toLowerCase() : ''; }).filter(Boolean))];
+  const handles = [...new Set(all.map(handleOf).filter(Boolean))].map((h) => '@' + h);
   const { data: inbound } = await db.from('ve_reach_inbound').select('id, handle, grp, kind, status, note, listing_id, created_at').neq('status', 'done')
     .order('created_at', { ascending: true }).limit(50);
   const lids = (inbound || []).map((x: any) => x.listing_id).filter(Boolean);
   const { data: ls } = lids.length ? await db.from('listings').select('id, slug, name, logo_url').in('id', lids) : { data: [] };
   const lBy = new Map((ls || []).map((l: any) => [l.id, l]));
-  return { today, is_workday: workdaysFrom(today, 1)[0] === today, chapter, group, group_words: GROUP_WORDS[group], handles,
+  return { today, is_workday: workdaysFrom(today, 1)[0] === today, chapter, mode, where, group, group_words: GROUP_WORDS[group], handles,
     featured: featured.map(card), batch: batch.map(card), cap: FEATURE_CAP, queue_left: q.length,
     inbound: (inbound || []).map((x: any) => ({ ...x, listing: x.listing_id ? lBy.get(x.listing_id) || null : null, instagram: igUrl(x.handle) })),
     openers: await openers(), days_off: DAYS_OFF, template: { canva: 'DAHaJ8TQI0I', url: 'https://www.canva.com/design/DAHaJ8TQI0I/edit', canon: 'canon-ve-city-carousel' } };

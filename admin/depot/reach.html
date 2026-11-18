@@ -251,9 +251,10 @@
   function drawToday() {
     post({ action: 'feature' }).then(function (w) {
       if (!w.ok) return fail(w);
-      var C = COPY.feature, cname = chapterName(w.chapter);
+      // The place named is always true (city first; across the real states when a batch spans more than one city).
+      var C = COPY.feature, where = w.where || { headline: chapterName(w.chapter), phrase: 'in ' + chapterName(w.chapter) }, cname = where.headline;
       var cap = w.openers[w.group + ':caption'];
-      var caption = (cap ? cap.body : '{handles} ' + C.ask).replace('{chapter}', cname).replace('{handles}', w.handles.join(' '));
+      var caption = (cap ? cap.body : '{handles} ' + C.ask).replace(/in \{chapter\}/, where.phrase).replace('{chapter}', where.headline).replace('{handles}', w.handles.join(' '));
       var h = '<div class="k-block k-tint"><p style="margin:0;font-weight:700">' + esc(COPY.welcome) + draft() + '</p></div>';
       h += '<div class="sec"><h2 class="k-h2">Inbound</h2><p class="muted">Everyone who replied to a feature, commented, followed or wrote comes first. Replies are never limited.</p>' +
         '<form class="k-form" id="inForm" style="grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));margin:8px 0 12px">' +
