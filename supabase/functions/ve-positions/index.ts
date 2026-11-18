@@ -7,7 +7,10 @@
 //   POST { action: 'sign', slug, signed_name, agree, sha }   step 3: e-sign the agreement (ESIGN/UETA: text, hash, name, IP, browser, copy emailed)
 //   POST { action: 'payout_start', slug }               step 4: Stripe Express onboarding (W-9 and bank on Stripe's pages)
 //   POST { action: 'payout_status', slug }              step 4: asks Stripe whether transfers are on
-//   POST { action: 'instagram', slug, handle }          step 5: their Instagram handle for Sean's Shared Access invite
+//   POST { action: 'instagram', slug, handle }          their Instagram handle (optional since feature first)
+//   POST { action: 'meta_email', slug, email }          the email on their Meta (Facebook) account, for Sean's Business Suite partial-access invite
+//                                                       (2026-11-18, feature first: docs/plans/2026-11-18-kj-access-panel.md). Signed agreement first.
+//   POST { action: 'preview', slug }                    super admins (or the ops token): the start page's data with an empty checklist, no writes
 // Sean (a superadmin member):
 //   admin_list, admin_person {id}, admin_search {q}, admin_assign {slug, member_id, note, send}, admin_start_trial {id},
 //   admin_hold {payout_id}, admin_release {payout_id}, admin_end {id, reason, ended_on}, admin_offboard_done {id}
@@ -197,14 +200,37 @@ const ORDER = ['applied', 'shortlisted', 'invited', 'role_read', 'agreed', 'payo
 const before = (stage: string, target: string) => ORDER.indexOf(stage) < ORDER.indexOf(target);
 const STAGE_WORDS: Record<string, string> = {
   applied: 'Applied', shortlisted: 'Shortlisted', invited: 'Invited', role_read: 'Role read', agreed: 'Agreement signed', payouts_ready: 'Payouts ready',
-  awaiting_access: 'Waiting on Instagram access', trial: 'Active (trial)', active: 'Active', paused: 'Paused', ended: 'Ended',
+  awaiting_access: 'Waiting on Business Suite access', trial: 'Active (trial)', active: 'Active', paused: 'Paused', ended: 'Ended',
 };
 async function payoutAccount(memberId: string) {
   const { data } = await db.from('ve_member_payout_accounts').select('*').eq('member_id', memberId).maybeSingle();
   return data;
 }
-// The quick check (step 2): three do's and don'ts, each with one right answer.
-const CHECK: Record<string, string> = { personal: 'write_each', limit: 'stop_at_limit', warning: 'pause_48' };
+// The quick check: three do's and don'ts, each with one right answer. Feature first (2026-11-18): how a conversation starts, how the
+// account is reached, and who messages the places that stay quiet.
+const CHECK: Record<string, string> = { start: 'feature_first', account: 'business_suite', quiet: 'sean_list' };
+const isEmail = (v: string) => /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(v) && v.length <= 200;
+
+// Ready for access: the agreement signed, payouts ready and the Meta email given. Moves them to Waiting on access once and tells Sean what to do.
+async function maybeReady(pos: any, id: string) {
+  const { data: p } = await db.from('ve_position_people').select('*').eq('id', id).maybeSingle();
+  if (!p || !p.agreed_at || !p.payouts_ready_at || !p.meta_email) return false;
+  const moved = await advance(p.id, ['agreed', 'payouts_ready'], 'awaiting_access');
+  if (moved) await sendOne(SEAN_EMAIL, `${p.name || 'Your new team member'} is ready for Business Suite access`, wrap(
+    `<p style="margin:0 0 12px"><b>${esc(p.name || '')}</b> finished the start page for ${esc(pos.title)}: on board, agreement signed, payouts ready.</p>` +
+    `<ol style="margin:0 0 16px;padding-left:20px"><li>Meta Business Suite (business.facebook.com): Settings, People, Add people.</li>` +
+    `<li>Invite <b>${esc(p.meta_email)}</b> with <b>partial access</b> to the Vegans Explore Instagram account: Content, Messages and Comments only. Never full control.</li>` +
+    `<li>On their page, tap <b>Invite sent, start trial</b>.</li></ol>` + btn(`${CONSOLE}#person/${p.id}`, 'Open their page')));
+  return moved;
+}
+
+// The position as the start page reads it. A draft (posting_draft, agreement_draft_*) waits for Sean's lock: the page shows it marked
+// Draft and cannot sign it; signing stays on the live version until the draft is promoted (migration 20261118_positions_meta_email_and_v2_draft.sql).
+function positionOut(pos: any) {
+  return { slug: pos.slug, title: pos.title, summary: pos.summary, posting: pos.posting, pay_cents: pos.pay_cents, trial_days: pos.trial_days,
+    agreement: { version: pos.agreement_version, text: pos.agreement_text, sha: pos.agreement_sha256 },
+    draft: pos.agreement_draft_text ? { posting: pos.posting_draft || null, version: pos.agreement_draft_version, text: pos.agreement_draft_text } : null };
+}
 
 function startUrl(slug: string, step?: string) {
   return `${SITE}/positions/${slug}/start${step ? `?step=${step}` : ''}`;
@@ -225,8 +251,8 @@ async function personView(pos: any, p: any) {
   }
   return {
     id: p.id, name: p.name, email: p.email, stage: p.stage, stage_words: STAGE_WORDS[p.stage], path: p.path,
-    steps: { role: !!p.role_read_at, check: !!p.check_passed_at, agreement: !!p.agreed_at, payouts: !!p.payouts_ready_at, instagram: !!p.ig_handle, access: !!p.access_granted_at },
-    ig_handle: p.ig_handle, start_on: p.start_on, trial_review_on: p.trial_review_on, ended_on: p.ended_on,
+    steps: { role: !!p.role_read_at, check: !!p.check_passed_at, agreement: !!p.agreed_at, payouts: !!p.payouts_ready_at, instagram: !!p.ig_handle, meta: !!p.meta_email, access: !!p.access_granted_at },
+    ig_handle: p.ig_handle, meta_email: p.meta_email ?? null, start_on: p.start_on, trial_review_on: p.trial_review_on, ended_on: p.ended_on,
     agreement: agr?.[0] ?? null, payouts_account: acct ? { ready: acct.transfers_active, livemode: acct.livemode } : null,
     payouts: payouts || [], next_payout: preview,
   };
@@ -391,6 +417,22 @@ Deno.serve(async (req) => {
     return json({ ok: true, held: true });
   }
 
+  // The start page as Sean reviews it: the real position text (and its drafts), an empty checklist, nothing written.
+  if (action === 'preview') {
+    const ops = await isOps(req);
+    const v = ops ? null : await viewer(req);
+    if (!ops && !v?.is_superadmin) return json({ error: 'forbidden' }, 403);
+    if (!isSlug(body.slug)) return json({ error: 'bad_request' }, 400);
+    const pos = await positionBySlug(body.slug);
+    if (!pos) return json({ error: 'not_found' }, 404);
+    const t = todayET(); const s = nextStretch(t, t, null);
+    return json({ ok: true, preview: true, position: positionOut(pos), person: {
+      id: null, name: 'Preview', stage: 'invited', stage_words: STAGE_WORDS.invited, path: 'assigned',
+      steps: { role: false, check: false, agreement: false, payouts: false, instagram: false, meta: false, access: false },
+      ig_handle: null, meta_email: null, start_on: null, trial_review_on: null, ended_on: null, agreement: null, payouts_account: null, payouts: [],
+      next_payout: { ...s, amount_cents: amountFor(pos.pay_cents, s.days), if_started_today: true } } });
+  }
+
   const me = await viewer(req);
   if (!me) return json({ error: 'sign_in' }, 401);
 
@@ -534,8 +576,7 @@ Deno.serve(async (req) => {
 
   const reply = async () => {
     const { data: fresh } = await db.from('ve_position_people').select('*').eq('id', p.id).maybeSingle();
-    return json({ ok: true, position: { slug: pos.slug, title: pos.title, summary: pos.summary, posting: pos.posting, pay_cents: pos.pay_cents, trial_days: pos.trial_days,
-      agreement: { version: pos.agreement_version, text: pos.agreement_text, sha: pos.agreement_sha256 } }, person: await personView(pos, fresh) });
+    return json({ ok: true, position: positionOut(pos), person: await personView(pos, fresh) });
   };
 
   if (action === 'me') return await reply();
@@ -580,6 +621,7 @@ Deno.serve(async (req) => {
         if (ready) {
           await db.from('ve_position_people').update({ payouts_ready_at: p.payouts_ready_at || nowIso(), updated_at: nowIso() }).eq('id', p.id);
           if (before(p.stage, 'payouts_ready')) await advance(p.id, ['agreed'], 'payouts_ready');
+          await maybeReady(pos, p.id);
         }
       }
       return await reply();
@@ -612,6 +654,16 @@ Deno.serve(async (req) => {
       console.error('payout_start', e);
       return json({ error: 'stripe', message: 'Stripe did not open. Try again in a minute.' }, 500);
     }
+  }
+
+  if (action === 'meta_email') {
+    const e = clean(body.email, 200).toLowerCase();
+    if (!isEmail(e)) return json({ error: 'email', message: 'That does not look like an email address. Use the one you sign in to Facebook with.' }, 400);
+    if (!p.agreed_at) return json({ error: 'order', message: 'Say you are in and sign first.' }, 409);
+    await db.from('ve_position_people').update({ meta_email: e, meta_email_at: nowIso(), updated_at: nowIso() }).eq('id', p.id);
+    await log(p.id, me.id, 'meta_email', null, { ip: ipOf(req) });
+    await maybeReady(pos, p.id);
+    return await reply();
   }
 
   if (action === 'instagram') {
