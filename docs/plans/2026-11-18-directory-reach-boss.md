@@ -121,6 +121,30 @@ Directory) stay as they are.
 4. Two-day pilot: 50 emails and KJ's first cards per group; check; adjust.
 5. Full run to December 1, daily loop; Thanksgiving Thursday and Friday off.
 
+### Added by Sean, 2026-11-18: everyone who follows or messages us gets the right invitation
+
+Sean: "if somebody messages us... we should also be connecting, and this worked really well for me, connecting with every single body that
+follows us... looking at, you know, what group they fit in, and then giving them the proper invitation for that." Then: "we should have the
+landing pages for each group, because then this would be a welcome message letting them know about the platform and just giving them a
+pre-entry, a pre-welcome before they go into the bigger welcome."
+
+- **Lane 5, inbound: new followers and anyone who messages us.** KJ looks at their profile, picks their group, and sends that group's
+  pre-welcome page with their own link. Our system cannot see who follows us (Instagram's interface gives only the count), so she adds
+  them to the console with a quick add (handle and group); a listing in the Directory is matched automatically.
+- **Five groups, not four:** the four Directory groups plus **Explorers** (people who join as members, not as a business). The same five
+  pre-welcome pages serve both outreach and inbound.
+- **Each group page is a pre-welcome, not the welcome.** It comes before the bigger Welcome (the Welcome Guide and the Explorer path,
+  which already lets people choose for themselves): a short thank-you, why we reached out, the January 1 launch, and the one next step,
+  which is the Welcome where Liz walks them through the site.
+- **Sean's words for the pre-welcome (his draft, to be recorded in his voice, 30 seconds, shaped per group):** "Before you come in, I just
+  want to give you a quick welcome. Thank you so much. We're reaching out to people that we think would be a great fit for our community.
+  As we get ready to launch on January 1st, our goal is to have a packed room as we kick off the new year, so that way we can really start
+  doing some great things for all of these communities. But the first step is for people to come on board. So check it out, and you'll be
+  able to know exactly what to do with this next step, which is the welcome, and I'll walk you through all the things, different features
+  of the site before you jump right in."
+- **Order:** someone who messaged us is answered first (a reply, no cap); new followers come next in her day (a first message that counts
+  toward the 20, but lands in their main inbox because they follow us); then the outreach list.
+
 ## S: Simplify (make it repeatable)
 
 - **One rule for every list: no address is sent to until it passes the check.** The check runs by itself on any new contact.

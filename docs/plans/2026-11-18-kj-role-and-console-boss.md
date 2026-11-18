@@ -62,6 +62,11 @@ should be spotlighting. She works her own hours, in her own words; the queue is 
 
 1. **Answer first.** Replies and new messages to people she has reached, within one business day. Anything she cannot answer goes to Logan
    on the card (Ask Logan); decisions go to Sean.
+1b. **Welcome every new follower and anyone who messages us** (added by Sean, 2026-11-18: "connecting with every single body that follows
+   us... looking at what group they fit in, and then giving them the proper invitation"). Look at their profile, pick their group
+   (Explorer, Restaurants and food, Other businesses, Nonprofits, Creators and media), add them in the console (quick add: handle and
+   group), and send that group's pre-welcome page with their own link. Messages to us are answered first; new followers come before the
+   outreach list and count toward the 20.
 2. **Follow ahead.** Follow the people on the next two to three days of her list, so a follow-back can land before the message.
 3. **Start conversations.** Message the people on today's list with the group's current opener (adapted in her words) and their own link.
 4. **Record it.** One tap per person (status) and a note when there is something to know. This is her check-in and her pay record.
@@ -129,6 +134,10 @@ weeks (Positions BOSS rule), the openers weekly, the scout rotation if a chapter
 3. **Scout: one chapter per weekday, no quota.** Default: yes.
 4. **Friday three-bullet recap** on the page. Default: yes.
 5. **Time guide: "about an hour on weekdays, your hours"** shown on the page (her pay is per period, not per hour). Default: yes.
+6. **Welcoming new followers counts toward the 20 a day** (they follow us, so it lands in their main inbox; replies to people who wrote
+   to us never count). Default: yes, new followers first, then the outreach list.
+7. **The console gets a quick add and an Inbound list** (handle, group, matched to a listing when there is one). Default: yes, built
+   after the panel.
 
 ## Conclusion
 
