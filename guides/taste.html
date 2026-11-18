@@ -345,7 +345,7 @@
     var nx = document.getElementById('tz-next'); if (!nx) return;
     var consent = function () {
       var box = document.getElementById('tz-consent'); if (!box) return;
-      box.innerHTML = document.getElementById('tz-ch').value === 'london' ? '<label class="agree"><input type="checkbox" id="tz-ok"' + (F.consent ? ' checked' : '') + '> <span>Yes, send me emails from Vegans Explore. I can stop them any time.</span></label>'
+      box.innerHTML = ['london', 'paris'].indexOf(document.getElementById('tz-ch').value) > -1 ? '<label class="agree"><input type="checkbox" id="tz-ok"' + (F.consent ? ' checked' : '') + '> <span>Yes, send me emails from Vegans Explore. I can stop them any time.</span></label>'
         : '';
     };
     if (step === 2) { consent(); document.getElementById('tz-ch').addEventListener('change', consent); document.getElementById('tz-back').addEventListener('click', function () { step = 1; draw(); }); }
@@ -360,7 +360,7 @@
       F.why = document.getElementById('tz-why').value; F.chapter = document.getElementById('tz-ch').value; F.journey = document.getElementById('tz-j').value;
       var ok = document.getElementById('tz-ok'); F.consent = ok ? ok.checked : false; keep();
       if (!F.why || !F.chapter || !F.journey) { m.textContent = 'Answer the three questions.'; return; }
-      if (F.chapter === 'london' && !F.consent) { m.textContent = 'Tick the box to get our emails.'; return; }
+      if ((F.chapter === 'london' || F.chapter === 'paris') && !F.consent) { m.textContent = 'Tick the box to get our emails.'; return; }
       nx.disabled = true;
       api({ action: 'join', name: F.name, email: F.email, why: F.why, chapter: F.chapter, journey: F.journey, consent: F.consent, source: qs.get('from') || document.referrer.slice(0, 60) }).then(function (r) {
         nx.disabled = false;

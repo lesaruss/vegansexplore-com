@@ -15,7 +15,7 @@
   if (window.VEChapters) return;
   var FN = 'https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-votes';
   var WHERE = { FL: 'Florida', GA: 'Georgia', DC: 'Washington, D.C.', DE: 'Delaware', MD: 'Maryland', VA: 'Virginia', WV: 'West Virginia',
-    NY: 'New York', PA: 'Pennsylvania', CA: 'California', WA: 'Washington', OR: 'Oregon', TX: 'Texas', CO: 'Colorado', MA: 'Massachusetts', GB: 'United Kingdom' };
+    NY: 'New York', PA: 'Pennsylvania', CA: 'California', WA: 'Washington', OR: 'Oregon', TX: 'Texas', CO: 'Colorado', MA: 'Massachusetts', GB: 'United Kingdom', FR: 'France' };
 
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function token() { try { return window.VEAuth && VEAuth.isLoggedIn() ? VEAuth.getToken() : null; } catch (e) { return null; } }
@@ -122,7 +122,7 @@
       if (!list.length) { grid.innerHTML = '<p class="vch-empty">No community matches that. Try a city or a state.</p>'; return; }
       grid.innerHTML = list.map(function (h) {
         var s = stats[h.slug] || {}, v = s.votes || 0, on = mine.indexOf(h.slug) >= 0, voted = !!next[h.slug];
-        var where = h.state === 'GB' ? 'United Kingdom' : h.state === 'DC' ? 'United States' : (WHERE[h.state] || '') + ', United States';
+        var where = h.state === 'GB' ? 'United Kingdom' : h.state === 'FR' ? 'France' : h.state === 'DC' ? 'United States' : (WHERE[h.state] || '') + ', United States';
         return '<div class="vch-card' + (opts.here ? ' here' : '') + '" role="listitem" data-slug="' + esc(h.slug) + '">' +
           '<span class="vch-av" style="background-image:url(\'' + esc(window.VEImg ? VEImg((h.page && h.page.banner) || '', 160) : ((h.page && h.page.banner) || '')) + '\')" aria-hidden="true"></span>' +
           '<span class="vch-info"><span class="vch-name"><a class="vch-link" href="/communities/' + esc(h.slug) + '">' + esc(h.name) + '</a>' + (on ? ' <span class="vch-mine">Saved</span>' : '') + '</span>' +

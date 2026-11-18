@@ -515,3 +515,14 @@ companion animals (Sean, on Dani's story).
 - Play the full episode crossfades the music like the finished mix, two players, Web Audio gain so it works on iPhone (8afb330).
 - Earlier in the session: guides hidden by default, "Approve as heard", BrandDesk in each brand's kit, music under every commercial,
   Drive links for audio, microphone picker, Plantbaed said plant-bayed. Handoff `docs/handoff/2026-11-13-ve-podcast-146.md`.
+
+## 2026-11-17: SoFlo 113 built the night before air (playbooks ve-city-shows, ve-podcast-studio)
+
+At 8 PM Eastern the day before, 113 was still unvoiced; Sean: "I want to get the podcast out tomorrow." Logan pitched the lineup and it aired
+as "Thanksgiving week in South Florida" (Captivate: Scheduled Wed Nov 18 7:00 AM Eastern, episode 113, season 10; Sean: "No notes"). New
+this episode: Sean's "Here's how this works" segment; claimed listings first ("They take priority"); River's ThanksLiving rundown from the
+Holiday Guide's South Florida menus; Guides on AI voices for podcasts, Sean records only his own parts (Sean performed Liz once, turned into her
+voice with `voice-booth` sts); seven new news beds (`news-breaking`, `-island`, `-miami-latin`, `-lofi`, `-funk`, `-modern-tech`,
+`-measured`); a song must outlast its segment; Dania (Day-nee-uh) and Aguacate (Agua-cah-teh, picked from samples) in HQ `spoken()`, HQ main
+f6f3517. Mix: HQ `scripts/podcast-mix/mix_soflo_113.py`. Handoff `docs/handoff/2026-11-17-soflo-113.md`; migration
+`20261117_soflo_113_podcast_canon.sql`.

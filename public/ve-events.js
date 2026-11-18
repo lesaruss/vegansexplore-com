@@ -859,7 +859,7 @@
     }
     function blank() {
       var hub = st.city && window.VECityBanner ? VECityBanner.hubBySlug(st.city) : null;
-      return { title: '', category: '', description: '', start: '', end: '', timezone: (hub && hub.tz) || myTz(), online: false, location_name: '', address: '', city: '', state: '', country: hub ? (hub.slug === 'london' ? 'GB' : 'US') : '', ticket_url: '', role: '', read: '', readNote: '' };
+      return { title: '', category: '', description: '', start: '', end: '', timezone: (hub && hub.tz) || myTz(), online: false, location_name: '', address: '', city: '', state: '', country: hub ? (hub.countryCode || (hub.slug === 'london' ? 'GB' : 'US')) : '', ticket_url: '', role: '', read: '', readNote: '' };
     }
     function field(id, label, input, hint, wide) {
       return '<div class="vev-f' + (wide ? ' wide' : '') + '" data-f="' + id + '"><label for="vev-' + id + '">' + label + '</label>' + input + (hint ? '<small>' + hint + '</small>' : '') + '</div>';

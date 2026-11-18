@@ -219,3 +219,14 @@ accounts tagged at most, our own handles not counted; a roundup that tags a crow
 An unclaimed listing with no posts of its own shows Is this your page? (Claim it free) above the features. No qualifying post and none of
 their own: no Social tab (Love Life Cafe, for one). On 2026-11-17 about 42 listings kept a feature, against 253 with a tab before. The rows
 in `ve_listing_posts` are unchanged; the filter is on the page.
+
+**Spotlight, 2026-11-17** (Sean: "when people claim it, let's keep the social media and just let them know to, give them suggestions on what
+to pick to spotlight... as simple as them putting the URL in there and then it's showing up as a 3 column on the page or a 2 column if it's
+too big"). `listings.spotlight_posts` ([{url, network, id, kind}], at most 6; migration `20261117_listing_spotlight_posts.sql`), set by the
+owner in Edit your page > Social (a Spotlight box above their Instagram posts, six link fields and the good picks: the dish people come back
+for, the space, the people, a coming special or event, how something is made, a post customers loved) through `ve-listing-posts`
+`owner_spotlight` (v6 from 963c993, sha256 matched and read back; Instagram post or reel, TikTok video, YouTube video or Short; anything
+else is refused with the link named). The Social tab shows **Spotlight, Picked by <name>** first, each the post itself through the network's
+own embed (Instagram and TikTok embed.js, YouTube's nocookie player), `.sc-spot` three across, two when narrower, one on phones; then Their
+top posts, then Featured on Vegans Explore. Proven: the columns at 1440, 1100 and 390 against mocked links. Not proven: the embeds drawing
+(the build session cannot reach Instagram) and the owner's Social step signed in.

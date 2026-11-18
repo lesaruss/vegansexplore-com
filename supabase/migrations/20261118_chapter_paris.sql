@@ -1,0 +1,84 @@
+-- Paris joins as a chapter (Sean, 2026-11-18: "I want us to launch a Paris chapter"; first case Land & Monkeys, the all-Vegan bakery
+-- chain, from his screenshots Ideas 111826). Copied from 20261114_chapter_portland.sql and 20261114_chapters_sf_austin_denver_boston.sql,
+-- with London as the international precedent. Slug paris: Paris and its inner suburbs by city list, as in /public/ve-hubs.js (which also
+-- checks address_country FR). Steps 1 to 4 and the stats run before the opening (applied 2026-11-18), each safe to run twice; step 5
+-- waits for Sean's "open".
+
+-- 1. Who can call a chapter home.
+alter table public.member_communities drop constraint if exists member_communities_community_slug_check;
+alter table public.member_communities add constraint member_communities_community_slug_check check (community_slug = any (array['atlanta','central-florida','north-florida','washington-dc','delaware','maryland','virginia','west-virginia','london','los-angeles','new-york','philadelphia','south-florida','seattle','portland','san-francisco','austin','denver','boston','paris']));
+alter table public.members drop constraint if exists members_home_community_check;
+alter table public.members add constraint members_home_community_check check (home_community is null or home_community = any (array['atlanta','central-florida','north-florida','washington-dc','delaware','maryland','virginia','west-virginia','london','los-angeles','new-york','philadelphia','south-florida','seattle','portland','san-francisco','austin','denver','boston','paris']));
+
+-- 2. The board opens on its pinned How it works posts, copied from Washington, D.C.'s.
+insert into public.ve_board_posts (community_slug, member_id, kind, category, title, body, status, pinned)
+select 'paris', p.member_id, p.kind, p.category, replace(p.title, 'Washington, D.C.', 'Paris'), replace(p.body, 'Washington, D.C.', 'Paris'), p.status, true
+from public.ve_board_posts p
+where p.community_slug = 'washington-dc' and p.pinned and p.category = 'guide'
+  and not exists (select 1 from public.ve_board_posts q where q.community_slug = 'paris' and q.kind = p.kind and q.pinned and q.category = 'guide');
+
+-- 3. Business outreach and the monthly check-ups (off until Sean turns them on). France has no state, so states holds the country code
+--    FR: ve_chapter_of then matches a blank state (French addresses) and refuses Paris, TX or Paris, TN.
+insert into public.ve_outreach_cities (community_slug, name, kind, brand, program, states, cities, enabled, daily_cap)
+values ('paris', 'Paris', 'city', 'vegans-explore', 'business-outreach', array['FR'], array['Paris','Boulogne-Billancourt','Montreuil','Saint-Denis','Vincennes','Neuilly-sur-Seine','Levallois-Perret','Issy-les-Moulineaux','Ivry-sur-Seine','Pantin','Saint-Ouen-sur-Seine','Clichy','Vanves','Malakoff','Montrouge','Bagnolet','Les Lilas','Le Pré-Saint-Gervais','Charenton-le-Pont','Saint-Mandé','Gentilly','Le Kremlin-Bicêtre','Aubervilliers','Puteaux','Courbevoie'], false, 30)
+on conflict (community_slug) do nothing;
+update public.ve_outreach_contacts set community_slug = 'paris'
+  from public.listings l where l.id = ve_outreach_contacts.listing_id and l.address_country = 'FR'
+  and l.address_city = any (array['Paris','Boulogne-Billancourt','Montreuil','Saint-Denis','Vincennes','Neuilly-sur-Seine','Levallois-Perret','Issy-les-Moulineaux','Ivry-sur-Seine','Pantin','Saint-Ouen-sur-Seine','Clichy','Vanves','Malakoff','Montrouge','Bagnolet','Les Lilas','Le Pré-Saint-Gervais','Charenton-le-Pont','Saint-Mandé','Gentilly','Le Kremlin-Bicêtre','Aubervilliers','Puteaux','Courbevoie'])
+  and ve_outreach_contacts.community_slug is distinct from 'paris';
+
+-- 4. The three ad slots, filled the way Los Angeles is today: the house Guide ads on the skyscraper and the first landscape,
+--    Humble Cabbage's Vegans Explore Tee on the second (its own tracked link, /go/hc-ve-paris).
+insert into public.ad_placements (brand_slug, site_name, site_url, page_name, page_slug, slot_id, slot_position, dimensions, status, estimated_monthly_views, notes)
+select 'vegans-explore', 'VEGANS EXPLORE', 'https://vegansexplore.com', 'Community Hub - Paris', '/communities/paris', 've-paris-hub-' || s.slot,
+       'sticky-sidebar', s.dim, 'active', 0, 'Billboard on the shared city hub (communities/hub.html), added 2026-11-18 with the chapter (Sean, 2026-11-18: launch a Paris chapter); the landscape pair is also the chapter rail on /directory.'
+from (values ('skyscraper', '300x600'), ('landscape-1', '300x250'), ('landscape-2', '300x250')) s(slot, dim)
+where not exists (select 1 from public.ad_placements p where p.slot_id = 've-paris-hub-' || s.slot);
+insert into public.ve_links (code, label, destination, initiative_slug, tags, channel, active)
+values ('hc-ve-paris', 'Humble Cabbage ad · VE Paris chapter', 'https://humblecabbage.com/products/6abc6a2e5158794d5f0c9c6a', 'humble-cabbage-ads', array['ad','humble-cabbage','vegans-explore','paris'], 'other', true)
+on conflict (code) do nothing;
+-- The house Guide campaigns already run on many rails: Paris's slots join the same ones as Los Angeles's.
+insert into public.ad_campaign_placements (campaign_id, placement_id)
+select cp.campaign_id, sp.id
+from public.ad_placements lp
+join public.ad_campaign_placements cp on cp.placement_id = lp.id
+join public.ad_campaigns c on c.id = cp.campaign_id and c.status = 'active' and c.sponsor_campaign_id = '7b1c4f2e-1a10-4d2e-9a51-0c0de5a11001'
+join public.ad_placements sp on sp.slot_id = replace(lp.slot_id, 've-los-angeles-hub-', 've-paris-hub-')
+where lp.slot_id like 've-los-angeles-hub-%'
+  and not exists (select 1 from public.ad_campaign_placements x where x.placement_id = sp.id and x.campaign_id = cp.campaign_id);
+with src as (
+  select c.* from public.ad_campaigns c join public.ad_campaign_placements cp on cp.campaign_id = c.id
+  join public.ad_placements p on p.id = cp.placement_id and p.slot_id = 've-los-angeles-hub-landscape-2' where c.status = 'active' limit 1
+), tgt as (select id from public.ad_placements where slot_id = 've-paris-hub-landscape-2'),
+made as (
+  insert into public.ad_campaigns (campaign_name, sponsor_name, campaign_type, creative_url, click_through_url, start_date, status, notes, sponsor_campaign_id, asset_id)
+  select 'Humble Cabbage - VE Tee (Community Hub - Paris, ve-paris-hub-landscape-2)', s.sponsor_name, s.campaign_type,
+         replace(s.creative_url, 'c=maya', 'c=nori'), 'https://vegansexplore.com/go/hc-ve-paris', date '2026-11-18', 'active',
+         'Copied from Los Angeles landscape-2 when Paris was built (2026-11-18). Clicks tracked by /go/hc-ve-paris.', s.sponsor_campaign_id, s.asset_id
+  from src s
+  where not exists (select 1 from public.ad_campaign_placements cp join public.ad_campaigns c on c.id = cp.campaign_id join tgt on tgt.id = cp.placement_id
+                    where c.status = 'active' and c.sponsor_campaign_id = '2a088365-5de6-4de7-abbc-a5f8bac0eddb')
+  returning id
+)
+insert into public.ad_campaign_placements (campaign_id, placement_id) select made.id, tgt.id from made, tgt;
+
+
+-- The chapter cards' numbers (ve_chapter_stats) read before the opening, so the preview shows real counts (as Portland's).
+do $$
+declare d text;
+begin
+  d := pg_get_functiondef('public.ve_chapter_stats'::regproc);
+  if position('''paris''' in d) = 0 then execute replace(d, '''boston'',''london'']', '''boston'',''paris'',''london'']'); end if;
+end $$;
+
+-- 5. At the opening (Sean, 2026-11-18: "open Paris"; run the same day): the local Daily Pulse and the Pulse queue's chapter name. Paris was never
+--    on the next-chapter board (ve_next_chapters has no Paris row), and ve_creator_application_link gives an international chapter no
+--    state (as London), so neither changes.
+update public.lesaruss_dispatch_settings set value = jsonb_set(value::jsonb, '{communities}', (value::jsonb->'communities') || '["paris"]'::jsonb)::text
+  where key = 'pulse_auto' and not (value::jsonb->'communities') ? 'paris';
+do $$
+declare d text;
+begin
+  d := pg_get_functiondef('public.ve_pulse_auto_queue'::regproc);
+  if position('"paris"' in d) = 0 then execute replace(d, '"boston":"Boston Pulse",', '"boston":"Boston Pulse","paris":"Paris Pulse",'); end if;
+end $$;

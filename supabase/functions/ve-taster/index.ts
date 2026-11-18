@@ -30,7 +30,7 @@ function fromB64u(s: string) { const pad = s.length % 4 ? '='.repeat(4 - (s.leng
 const likeEsc = (s: string) => s.replace(/[\\%_]/g, (c) => '\\' + c);
 const WHY = ['food', 'going', 'vegan', 'animals', 'business', 'creator'];
 const JOURNEY = ['curious', 'flexitarian', 'vegetarian', 'new', 'years'];
-const CHAPTERS = ['south-florida', 'central-florida', 'north-florida', 'atlanta', 'washington-dc', 'delaware', 'maryland', 'virginia', 'west-virginia', 'new-york', 'philadelphia', 'los-angeles', 'seattle', 'portland', 'san-francisco', 'austin', 'denver', 'boston', 'london', 'elsewhere'];
+const CHAPTERS = ['south-florida', 'central-florida', 'north-florida', 'atlanta', 'washington-dc', 'delaware', 'maryland', 'virginia', 'west-virginia', 'new-york', 'philadelphia', 'los-angeles', 'seattle', 'portland', 'san-francisco', 'austin', 'denver', 'boston', 'paris', 'london', 'elsewhere'];
 // The Guide we suggest, from what brought them here and where they are on their journey.
 function suggest(why: string, journey: string) {
   if (why === 'business') return 'vegan-restaurant-guide';
@@ -87,13 +87,13 @@ Deno.serve(async (req) => {
     if (name.length < 2 || name.length > 80) return json({ error: 'name', message: 'Tell us your name.' }, 400);
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email) || email.length > 200) return json({ error: 'email', message: 'That email does not look right.' }, 400);
     if (!WHY.includes(why) || !JOURNEY.includes(journey) || !CHAPTERS.includes(chapter)) return json({ error: 'answers', message: 'Answer the three questions.' }, 400);
-    if (chapter === 'london' && body.consent !== true) return json({ error: 'consent', message: 'Tick the box to get our emails.' }, 400);
+    if ((chapter === 'london' || chapter === 'paris') && body.consent !== true) return json({ error: 'consent', message: 'Tick the box to get our emails.' }, 400);
     const { data: m } = await db.from('members').select('id, membership_status').ilike('email', likeEsc(email)).maybeSingle();
     if (m && m.membership_status === 'active') return json({ ok: false, member: true, message: 'You are already a member. Sign in and everything is open to you.' });
     // A few tries a day per email, so nobody floods someone else's inbox.
     const { data: ex } = await db.from('ve_tasters').select('*').ilike('email', likeEsc(email)).maybeSingle();
     if (ex && ex.updated_at && Date.now() - Date.parse(ex.updated_at) < 60e3) return json({ error: 'slow_down', message: 'Give it a minute and try again.' }, 429);
-    const row = { email, name, why, journey, chapter, suggested_guide: suggest(why, journey), consent_basis: chapter === 'london' ? 'checkbox' : 'notice',
+    const row = { email, name, why, journey, chapter, suggested_guide: suggest(why, journey), consent_basis: (chapter === 'london' || chapter === 'paris') ? 'checkbox' : 'notice',
       consent_at: new Date().toISOString(), source: String(body.source || '').slice(0, 60) || null, unsubscribed_at: null, updated_at: new Date().toISOString() };
     const res = ex ? await db.from('ve_tasters').update(row).eq('id', ex.id).select('*').single() : await db.from('ve_tasters').insert(row).select('*').single();
     if (res.error || !res.data) return json({ error: 'save_failed' }, 500);
