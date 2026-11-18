@@ -21,7 +21,8 @@
        docs/plans/2026-11-18-directory-reach-panel.md). Parent: /hello (Sean's note page: his words on the left, his picture on the right,
        nothing plays until pressed), rebuilt on the kit (/public/ve-kit.css). Every link we send lands here as /hello/restaurants?l=<slug>
        through a tracked /go/ link: their own listing card first (the proof the message is real), one orange button to their page, Claim
-       it free beside it. All words are DRAFT until Sean locks them (the COPY object below). */
+       it free beside it. Words live in the COPY object below; the restaurant words were locked by Sean on 2026-11-18. The other four group
+       pages (businesses, nonprofits, creators, explorers) are copies of this file with their own COPY, Draft until he locks them. */
     main { padding: 44px 40px 80px; }
     .hr-split { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 48px; align-items: start; }
     .hr-card { max-width: 420px; margin: 4px 0 20px; }
@@ -48,6 +49,7 @@
     .hr-city b { display: block; margin-top: 8px; font-size: 15px; font-weight: 900; }
     .hr-city small { display: block; font-size: 13px; font-weight: 600; color: var(--k-mute); }
     .hr-draft { vertical-align: middle; margin-left: 8px; }
+    [hidden] { display: none !important; }
     @media (max-width: 900px) {
       main { padding: 28px 16px 64px; }
       .hr-split { grid-template-columns: minmax(0, 1fr); gap: 28px; }
@@ -62,7 +64,7 @@
   <main data-k-section="directory">
     <section class="hr-split">
       <div>
-        <span class="k-eb" id="eb"></span> <span class="k-tag wait hr-draft">Draft</span>
+        <span class="k-eb" id="eb"></span> <span class="k-tag wait hr-draft" id="draft" hidden>Draft</span>
         <h1 class="k-h1" id="h1" style="margin-top:14px"></h1>
         <div class="hr-card vrd-root"><div class="rank-grid" id="card"></div></div>
         <div class="hr-said" id="said"></div>
@@ -71,7 +73,7 @@
           <a class="k-btn" id="claim" href="/claim">Claim it free</a>
         </div>
         <p class="hr-fine" id="fine"></p>
-        <p class="hr-fine"><span id="fix-t"></span> <a id="fix" href="mailto:hello@vegansexplore.com">Tell us</a></p>
+        <p class="hr-fine" id="fix-p"><span id="fix-t"></span> <a id="fix" href="mailto:hello@vegansexplore.com">Tell us</a></p>
       </div>
       <aside class="hr-side">
         <div class="k-pic">
@@ -103,8 +105,9 @@
   <script src="/public/ve-region-directory.js"></script>
   <script>
   (function () {
-    // ---- All words, in one place. DRAFT until Sean locks them (playbook ve-directory-reach). ----
+    // ---- All words, in one place (playbook ve-directory-reach). Restaurants and food LOCKED by Sean 2026-11-18 ("lock it"). ----
     var COPY = {
+      group: 'restaurants', locked: true, nameOrYour: 'Your restaurant', cta: 'See your page', claim: 'Claim it free',
       eyebrow: 'A note from Sean A. Russell',
       h1Named: '{name} is in the Vegans Explore Directory.',
       h1Plain: 'Your restaurant is in the Vegans Explore Directory.',
@@ -139,11 +142,13 @@
     function paint(L) {
       var name = L && L.name ? L.name : '';
       $('eb').textContent = COPY.eyebrow;
+      $('draft').hidden = !!COPY.locked;
+      $('see').textContent = COPY.cta; $('claim').textContent = COPY.claim || '';
       $('h1').textContent = name ? COPY.h1Named.replace('{name}', name) : COPY.h1Plain;
       $('said').innerHTML = COPY.said.map(function (p) {
-        return '<p>' + esc(p.replace('{nameOrYour}', name || 'Your restaurant')) + '</p>';
+        return '<p>' + esc(p.replace('{nameOrYour}', name || COPY.nameOrYour)) + '</p>';
       }).join('');
-      $('fine').textContent = COPY.fine;
+      $('fine').textContent = COPY.fine || ''; $('fine').hidden = !COPY.fine;
       $('fix-t').textContent = COPY.fixText;
       $('vid-tag').textContent = COPY.videoTag;
       $('who').textContent = COPY.who;
@@ -154,8 +159,8 @@
       $('why-h').textContent = COPY.whyH;
       $('why').textContent = COPY.why;
       if (L && L.slug) {
-        $('see').href = '/directory/' + encodeURIComponent(L.slug) + '?from=hello-restaurants';
-        $('claim').href = '/claim?listing=' + encodeURIComponent(L.slug) + '&from=hello-restaurants';
+        $('see').href = '/directory/' + encodeURIComponent(L.slug) + '?from=hello-' + COPY.group;
+        $('claim').href = '/claim?listing=' + encodeURIComponent(L.slug) + '&from=hello-' + COPY.group;
         $('fix').href = 'mailto:hello@vegansexplore.com?subject=' + encodeURIComponent('Fix ' + name + ' on Vegans Explore');
         try { VERegionDirectory.css(); $('card').innerHTML = VERegionDirectory.card(L, 0); VERegionDirectory.wire($('card'), function () {}); } catch (e) { $('card').innerHTML = ''; }
       }
@@ -178,8 +183,12 @@
       var box = $('cities');
       if (!chapters.length) {
         $('city-h').textContent = COPY.cityNone;
-        box.className = 'hr-cities';
-        box.innerHTML = '<a class="hr-city" href="/communities"><div class="k-pic"><img src="/communities/hero.jpg" alt="Vegans Explore communities"></div><b>Every chapter</b></a>';
+        // No single chapter (online, or a city we have not opened): six chapters' art as a grid, linking to all of them.
+        var some = (window.VE_HUBS || []).filter(function (h) { return h.page && (h.page.wide || h.page.banner); }).slice(0, 6);
+        box.className = 'hr-cities lots';
+        box.innerHTML = some.map(function (h) {
+          return '<a class="hr-city" href="/communities/' + esc(h.slug) + '"><div class="k-pic"><img src="' + esc(h.page.wide || h.page.banner) + '" alt="' + esc(h.page.alt || h.name) + '" loading="lazy"></div><b>' + esc(h.name) + '</b></a>';
+        }).join('') + '<a class="hr-city" href="/communities" style="grid-column:1/-1"><b>See every chapter</b></a>';
         return;
       }
       $('city-h').textContent = chapters.length === 1 ? COPY.cityOne.replace('{chapter}', chapters[0].name) : COPY.cityMany;
@@ -192,6 +201,12 @@
     }
 
     paint(null);
+    // A group with no listing (Explorers): no card, no claim, no fix line; the button goes to the survey; ?c=<chapter> shows their chapter.
+    if (COPY.noListing) {
+      $('claim').hidden = true; $('fix-p').hidden = true; $('card').parentNode.hidden = true; $('see').href = COPY.ctaHref;
+      var c = (new URLSearchParams(location.search).get('c') || '').toLowerCase(), hub = (window.VE_HUBS || []).filter(function (h) { return h.slug === c; })[0];
+      paintCities(hub ? [hub] : []); return;
+    }
     if (!slug) { paintCities([]); return; }
     var URL_ = 'https://fwbhwfxpncrsfhttimna.supabase.co/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,address_country,parent_id,color,vegan_status,tags,communities,product_kinds,cuisines,vetted_at&status=eq.approved&slug=eq.' + encodeURIComponent(slug) + '&limit=1';
     var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
