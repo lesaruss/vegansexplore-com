@@ -248,7 +248,8 @@ async function feature(rows: Row[]) {
   const groupCount: Record<string, number> = {};
   for (const r of all) groupCount[r.grp] = (groupCount[r.grp] || 0) + 1;
   const group = Object.entries(groupCount).sort((a, b) => b[1] - a[1])[0]?.[0] || 'restaurants';
-  const handles = all.map((r) => { const u = igUrl(r.instagram); return u ? '@' + u.replace(/\/+$/, '').split('/').pop() : ''; }).filter(Boolean);
+  // One mention per account: a chain's locations often share one Instagram.
+  const handles = [...new Set(all.map((r) => { const u = igUrl(r.instagram); return u ? '@' + String(u.replace(/\/+$/, '').split('/').pop()).toLowerCase() : ''; }).filter(Boolean))];
   const { data: inbound } = await db.from('ve_reach_inbound').select('id, handle, grp, kind, status, note, listing_id, created_at').neq('status', 'done')
     .order('created_at', { ascending: true }).limit(50);
   const lids = (inbound || []).map((x: any) => x.listing_id).filter(Boolean);
