@@ -631,6 +631,8 @@ body.gf-c .gf-jlead { display: none; }
 body.gf-c .gf-join a { font-weight: 800; }
 body.gf-c .gf-jin { font-size: 0; margin-left: 0; }
 body.gf-c .gf-jin a { font-size: 12px; margin-left: 0; }
+/* A free Guide (no data-gf-price) offers nothing in the bar: its join is the view's orange action, so the bar keeps only Sign in */
+body.gf-c:not([data-gf-price]) .gf-join .gf-jgo { display: none; }
 
 /* The head: title and one line on the left, the Guide's card on the right, then the one orange action with its price line */
 body.gf-c .gf-ch { margin: 0 0 26px; }
@@ -686,7 +688,7 @@ html body.ve-gf.gf-hb.gf-fd.gf-c .sa-vcard > .fd-acc { flex: none; align-self: c
 html body.ve-gf.gf-hb.gf-fd.gf-c .sa-vcard > .fd-acc.sa-tag-free { background: #E8F5E9; color: #2D5C27; }
 
 /* The Overview in C (cOverview): the hero tiles, then "Also in this Guide" as numbered part tiles; the old article rows are hidden */
-html body.ve-gf.gf-hb.gf-c .wg-arts.gf-c-hidden { display: none; }
+html body.ve-gf.gf-hb.gf-c :is(.wg-arts, .dg-tiles).gf-c-hidden { display: none; }
 body.gf-c .gf-cov { margin: 0 0 28px; }
 body.gf-c .gf-cov > .k-label { margin-bottom: 10px; }
 body.gf-c .gf-ntiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 14px; }
@@ -786,3 +788,23 @@ html body.ve-gf.gf-hb.gf-c .gf-go > .dg-searchbox input:focus { box-shadow: 3px 
 @media (max-width: 900px) {
   html body.ve-gf.gf-hb.gf-c.dg-member .gf-go > .dg-searchbox { display: block !important; flex-basis: 100%; max-width: none; }
 }
+
+/* Option C on the Creator Guide's landing (ve-gigs.js, 2026-11-18): its title, one line, Kai's card and the one orange action are the C head;
+   the kicker above the title is the bar's For line, and its How to use this page list goes, as every Guide's how-to box does in C */
+html body.ve-gf.gf-hb.gf-c .vg-land-l > .vg-kick:has(+ .gf-ch) { display: none; }
+html body.ve-gf.gf-hb.gf-c .vg-land-l > .gf-ch > .vg-h { margin-top: 0; }
+html body.ve-gf.gf-hb.gf-c .vg-land-l > .gf-ch > .dg-lede { max-width: none; color: #1a1a1a; }
+html body.ve-gf.gf-hb.gf-c .vg-land-l > .vg-sec:has(+ .vg-use), html body.ve-gf.gf-hb.gf-c .vg-land-l > .vg-use { display: none; }
+
+/* Option C, a long Guide line (more than about 130 characters, gf-long; 2026-11-18 roll-out): its first rows show and More opens the rest, so
+   the card stays small and the orange action stays in the first screen. Every word stays in the page; Play reads it all. The pilots' lines are short. */
+body.gf-c .gf-smore { font: inherit; font-size: 11px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; color: #C2185B; background: none; border: 0; padding: 2px 0 0; cursor: pointer; text-decoration: underline; justify-self: start; }
+body.gf-c .gf-smore[hidden] { display: none; }
+body.gf-c .gf-guide.gf-long:not(.gf-sopen) .gf-say { display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical; overflow: hidden; }
+@media (max-width: 900px) {
+  body.gf-c .gf-guide.gf-long:not(.gf-sopen) .gf-say { -webkit-line-clamp: 3; }
+  body.gf-c .gf-guide .gf-smore { grid-column: 2 / -1; grid-row: 3; font-size: 10px; padding: 0; }
+}
+/* Option C: a locked row says Full Guide once, in its tag on the right; its own "In the full Guide" line under the title is not repeated */
+html body.ve-gf.gf-hb.gf-c .dg-srow:has(> .gf-tag.gf-lock) .dg-srow-p:has(> svg:first-child) { display: none; }
+
