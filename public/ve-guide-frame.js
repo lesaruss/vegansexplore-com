@@ -224,8 +224,10 @@
   row.className = 'gf-guide'; row.id = 'gfGuide';
   var gWho = CM ? B.getAttribute('data-gf-who') || gFirst : '';
   row.innerHTML = '<span class="gf-gpic" role="img" aria-label="' + esc(gFirst || 'Your Guide') + ', your Guide"></span>' +
-    (CM ? '<p><b class="gf-who">' + esc(gWho) + '</b><span class="gf-say"></span></p>' : '<p><b>' + esc(gFirst) + (gFirst ? ':' : '') + '</b> <span class="gf-say"></span></p>') +
+    (CM ? '<p><b class="gf-who">' + esc(gWho) + '</b><span class="gf-say"></span><button type="button" class="gf-smore" hidden aria-expanded="false">More</button></p>' : '<p><b>' + esc(gFirst) + (gFirst ? ':' : '') + '</b> <span class="gf-say"></span></p>') +
     '<span class="gf-gacts"><button type="button" class="gf-play" hidden>&#9654; Play</button><button type="button" class="gf-talk" hidden></button></span>';
+  var gMore = row.querySelector('.gf-smore');
+  if (gMore) gMore.addEventListener('click', function () { var o = !row.classList.contains('gf-sopen'); row.classList.toggle('gf-sopen', o); gMore.setAttribute('aria-expanded', String(o)); gMore.textContent = o ? 'Less' : 'More'; });
   var gPic = row.querySelector('.gf-gpic'), gSay = row.querySelector('.gf-say'), gPlay = row.querySelector('.gf-play'), gTalk = row.querySelector('.gf-talk');
   // A view that draws its own Guide panel (the Creator Guide's landing, from ve-gigs.js) lends its line and Play to the row,
   // and its own panel is hidden, so the Guide still appears once.
@@ -240,6 +242,10 @@
     // C: a view whose line has no recording may show the mock's shorter line (gf-parts "_c.say"); a recorded line stays word for word.
     if (CM && !on && say && CC.say) { var cc = current(); if (cc.p && !sub() && CC.say[cc.p.k]) say = CC.say[cc.p.k]; }
     if (gSay.textContent !== say) gSay.textContent = say;
+    // C: a long line (more than about three rows on a phone) shows its first rows and More; Play still reads it all, every word stays in the page.
+    var lg = CM && say.length > 130;
+    if (row.classList.contains('gf-long') !== lg) { row.classList.toggle('gf-long', lg); row.classList.remove('gf-sopen'); }
+    if (gMore && gMore.hidden !== !lg) gMore.hidden = !lg;
     if (row.hidden !== !say) row.hidden = !say;
     if (gPlay.hidden !== !on) gPlay.hidden = !on;
     var lab = on && /pause|stop/i.test(txt(ps)) ? 'Pause' : 'Play';
@@ -286,7 +292,7 @@
     // The Guide row, after the head and its line (or at the top of a view with no head).
     var anchor = head ? (head.nextElementSibling && head.nextElementSibling.classList.contains('dg-lede') ? head.nextElementSibling : head) : null;
     // A landing with its own heading (the Creator Guide's, from ve-gigs.js): the row goes under its title and first line.
-    if (!anchor) { var lh = main.querySelector('.vg-land-l > .vg-h'); if (lh) anchor = lh.nextElementSibling && lh.nextElementSibling.tagName === 'P' ? lh.nextElementSibling : lh; }
+    if (!anchor) { var lh = main.querySelector('.vg-land-l > .vg-h, .vg-land-l > .gf-ch > .vg-h'); if (lh) anchor = lh.nextElementSibling && lh.nextElementSibling.tagName === 'P' ? lh.nextElementSibling : lh; }
     // Finder Guides (body.gf-fd): a view whose title is not in a .dg-head (the venue Guides' Overview hero) gets the row under its title and line.
     if (!anchor && FD) { var oh = main.querySelector('.ov-hero > .dg-h1, .ov-hero > .gf-ch > .dg-h1'); if (oh) anchor = oh.nextElementSibling && oh.nextElementSibling.classList.contains('dg-lede') ? oh.nextElementSibling : oh; }
     if (anchor) { if (anchor.nextElementSibling !== row) anchor.parentNode.insertBefore(row, anchor.nextElementSibling); }
@@ -391,7 +397,9 @@
   //   { "label", "json": "<script id>", "list": "titles", "free": "example", "abbr": { id: "B12" }, "href": "#/nutrients/", "part": "#/nutrients" }
   // and that part's row is left out of the list (the hero is it). The old rows stay in the page, hidden.
   function cOverview(c) {
-    var arts = c.p && c.p.k === 'overview' && !sub() ? main.querySelector(':scope > .wg-arts') : null;
+    // A Guide whose Overview lists its parts as icon tiles (.dg-tiles: the Nonprofit, Events and Dairy Guides) gets the same numbered tiles.
+    var ov = !!(c.p && (c.p.k === 'overview' || c.i === 0) && !sub());
+    var arts = ov ? main.querySelector(':scope > .wg-arts') || main.querySelector(':scope > .dg-tiles') : null;
     if (!arts || arts.hasAttribute('data-gf-c')) return;
     arts.setAttribute('data-gf-c', '');
     var jb = box && shown(box) ? box.querySelector('.dg-btn') : null, visitor = !!(jb && shown(jb));
@@ -407,10 +415,16 @@
           (free && visitor ? '<span class="gf-tag gf-free">Free</span>' : open ? tagOpen : tagLock) + '</a>';
       }).join('') + '</div></section>';
     }
-    var rows = [].map.call(arts.querySelectorAll('.wg-art'), function (r) {
+    var DT = arts.classList.contains('dg-tiles');
+    var rows = [].map.call(arts.querySelectorAll(DT ? 'a.dg-tile' : '.wg-art'), function (r) {
+      if (DT) {
+        var tb = r.querySelector('b'), ts = r.querySelector('b ~ span:not(.dg-mlock)'), lk = r.querySelector('.dg-mlock'), th = r.getAttribute('href') || '';
+        var tn = 0; c.all.forEach(function (x, i) { if (x.href === th || '#/' + x.k === th) tn = i; });
+        return { href: th, title: txt(tb), words: txt(ts), locked: !!lk && /full guide|locked/i.test(txt(lk) || lk.getAttribute('aria-label') || '') || (!!lk && !txt(lk) && !!lk.querySelector('svg')), n: tn };
+      }
       var a = r.querySelector('.wg-art-t'), p = r.querySelector('p'), more = r.querySelector('.wg-art-more');
       var href = a ? a.getAttribute('href') : '', words = p ? txt(p) : '';
-      var locked = /in the full guide\.?$/i.test(words) || (!!more && !/^open/i.test(txt(more)));
+      var locked = /in the full guide\.?$/i.test(words) || (!!more && /^(see what|locked|unlock|get |full guide)/i.test(txt(more)));
       var n = 0; c.all.forEach(function (x, i) { if (x.href === href || '#/' + x.k === href) n = i; });
       return { href: href, title: txt(a), words: words.replace(/\s*In the full Guide\.?$/i, ''), locked: locked, n: n };
     }).filter(function (r) { return r.href && !(H && H.part && r.href === H.part); });
@@ -434,7 +448,9 @@
       var f = gp ? txt(gp) : '';
       if (f) { var fs = firstSentence(f) || f; var lp = D.createElement('p'); lp.className = 'dg-lede gf-c-lede'; lp.textContent = fs; head.parentNode.insertBefore(lp, head.nextElementSibling); }
     }
-    [].forEach.call(main.querySelectorAll(':scope > .dg-head + .dg-lede:not([data-gf-c]), :scope > .gf-ch > .dg-head + .dg-lede:not([data-gf-c]), .ov-hero > .dg-h1 + .dg-lede:not([data-gf-c]), .gf-ch > .dg-h1 + .dg-lede:not([data-gf-c])'), function (ld) {
+    // The Creator Guide's landing (ve-gigs.js): its title's first line is the view's one line.
+    var lp0 = main.querySelector('.vg-land-l > .vg-h + p:not(.dg-lede)'); if (lp0) lp0.classList.add('dg-lede');
+    [].forEach.call(main.querySelectorAll('.vg-land-l > .vg-h + .dg-lede:not([data-gf-c]), :scope > .dg-head + .dg-lede:not([data-gf-c]), :scope > .gf-ch > .dg-head + .dg-lede:not([data-gf-c]), .ov-hero > .dg-h1 + .dg-lede:not([data-gf-c]), .gf-ch > .dg-h1 + .dg-lede:not([data-gf-c])'), function (ld) {
       ld.setAttribute('data-gf-c', '');
       if (ld.children.length || ld.classList.contains('gf-c-lede')) return;
       var t = ld.textContent, f = t.length > 110 ? firstSentence(t) : '';
@@ -448,7 +464,7 @@
   // cards as the mock's (code, name, one tag on the right).
   var PRICE = B.getAttribute('data-gf-price') || '';
   function cFinish(c, go, pick) {
-    var t = main.querySelector('.dg-head') || main.querySelector('.ov-hero > .dg-h1, .ov-hero > .gf-ch > .dg-h1');
+    var t = main.querySelector('.dg-head') || main.querySelector('.ov-hero > .dg-h1, .ov-hero > .gf-ch > .dg-h1, .vg-land-l > .vg-h, .vg-land-l > .gf-ch > .vg-h');
     if (t && main.contains(t)) {
       var par = t.parentNode, wrap = par.classList.contains('gf-ch') ? par : null;
       var grp = [t], n = t.nextElementSibling;
@@ -466,6 +482,8 @@
     var want = !!(PRICE && go && go.parentNode && pick === go.firstChild && jb && shown(jb));
     if (want && !pr) { pr = D.createElement('p'); pr.className = 'gf-price'; pr.innerHTML = esc(PRICE).replace(/(\$\d+ once, or [\d,]+ points)/, '<b>$1</b>'); go.appendChild(pr); }
     else if (!want && pr) pr.remove();
+    // Locked reads Full Guide: a tile's own "In the full Guide" tag says it the C way (same place, same small lock).
+    [].forEach.call(main.querySelectorAll('.dg-mlock'), function (m) { if (/^in the full guide\.?$/i.test(txt(m))) m.innerHTML = LOCKI + ' Full Guide'; });
     // Members' search beside the orange action (where visitors read the price); parked out of sight on a view with no action.
     if (sform) {
       var home = go && go.parentNode ? go : bar.querySelector('.gf-park');
