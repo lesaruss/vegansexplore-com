@@ -6,9 +6,15 @@
 //
 // Who: a super admin, or the holder of the Instagram Social Media Manager position (ve_position_people on
 // social-media-manager-instagram, any stage from invited to active; not ended). Everyone else gets 403 and no data.
-//   POST { action: 'me' }                               who is asking, and the day's numbers
-//   POST { action: 'plan' }                             progress by group and lane, the openers, the caps
-//   POST { action: 'week' }                             Monday to Friday of this week: follow ahead and DM cards, capped
+// v2 (2026-11-18, the panel's plan, docs/plans/2026-11-18-directory-reach-panel.md, Sean: "let's do this"; goal Sean: "250, lock it in"):
+// the goal (members vs 250 by Dec 31, KJ's new members vs 60, claims vs 100), Told and Engaged never merged, tags apart as Notified, four
+// taps, ramped caps enforced here (DMs 10 a day for her first three working days, then 15, then 20 after a clean week; follows 25; follower
+// welcomes their own 10), inbound people ahead of outreach, openers by kind (first DM with no link, the page follow-up, the welcome).
+//   POST { action: 'me' }                               who is asking
+//   POST { action: 'plan' }                             the goal, Told / Engaged / Notified by group and lane, the openers, the caps
+//   POST { action: 'week' }                             today and the days ahead (past days hidden): inbound, DM cards, follow ahead
+//   POST { action: 'inbound_add', handle, group, kind?, note? }   a new follower or anyone who writes (matched to a listing)
+//   POST { action: 'inbound_set', id, status }          welcomed (capped at 10 a day) or done
 //   POST { action: 'roster', group?, status?, channel?, q?, sort?, offset?, limit? }
 //   POST { action: 'item', id }                         one listing's full history
 //   POST { action: 'touch', id, kind, note? }           log a tap (follow, followed_back, dm, replied, cant_reach, note, checkin, pin, unpin)
@@ -23,8 +29,12 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const db = createClient(SUPABASE_URL, SERVICE_KEY);
 const POSITION = 'social-media-manager-instagram';
-const DM_CAP = 20;        // new DMs a weekday (Positions BOSS 2026-11-13: 20 a day, 3 an hour)
-const FOLLOW_CAP = 40;    // follows a weekday, set conservatively; Meta publishes no number
+// Caps (panel 2026-11-18): DMs ramp 10 a day for the holder's first three working days, then 15, then 20 after a clean week;
+// follows 25 a day; follower welcomes their own 10. Meta publishes no numbers; these are conservative.
+const DM_RAMP = [10, 15, 20];
+const FOLLOW_CAP = 25;
+const WELCOME_CAP = 10;
+const GOAL = { members: 250, kj_members: 60, claims: 100, by: '2026-12-31' };
 const DEADLINE = '2026-12-01';
 const DAYS_OFF = ['2026-11-26', '2026-11-27']; // Thanksgiving Thursday and Friday
 const GROUP_ORDER = ['restaurants', 'businesses', 'nonprofits', 'creators'];
@@ -122,6 +132,9 @@ function laneOf(r: Row): string {
   if (r.website) return 'find';
   return 'none';
 }
+const isTold = (r: Row) => (r.emails_sent > 0 && !r.bounced) || !!r.dm_at;
+const isEngaged = (r: Row) => !!(r.clicked || r.replied_email || r.replied_dm || r.claimed);
+const isNotified = (r: Row) => r.last_touch_kind === 'tagged';
 function igUrl(h: string | null) {
   if (!h) return null;
   const s = String(h).trim();
@@ -135,7 +148,7 @@ function card(r: Row) {
     city: [r.city, r.state].filter(Boolean).join(', '), instagram: igUrl(r.instagram), website: r.website, status: statusOf(r),
     status_words: STATUS_WORDS[statusOf(r)], lane: laneOf(r), emails_sent: r.emails_sent, last_touch_at: r.last_touch_at,
     last_touch_kind: r.last_touch_kind, touches: r.touches, opened: r.opened, clicked: r.clicked, bounced: r.bounced,
-    unsubscribed: r.unsubscribed, claimed: r.claimed, replied: r.replied_email || r.replied_dm, followed_at: r.followed_at,
+    unsubscribed: r.unsubscribed, claimed: r.claimed, replied: r.replied_email || r.replied_dm, followed_at: r.followed_at, told: isTold(r), engaged: isEngaged(r),
     followed_back: r.followed_back, dm_at: r.dm_at, pinned: r.pinned, note: r.kj_note, has_email: !!(r.emails && r.emails.length),
   };
 }
@@ -156,63 +169,98 @@ function queue(rows: Row[]) {
 }
 
 async function openers() {
-  const { data } = await db.from('ve_reach_messages').select('grp, lane, version, body, status').neq('status', 'retired').order('version', { ascending: false });
+  const { data } = await db.from('ve_reach_messages').select('grp, lane, kind, version, body, status').neq('status', 'retired').order('version', { ascending: false });
   const out: Record<string, any> = {};
-  for (const m of data || []) { const k = `${m.grp}:${m.lane}`; if (!out[k]) out[k] = m; }
+  for (const m of data || []) { const k = `${m.grp}:${m.kind}`; if (!out[k]) out[k] = m; }
   return out;
 }
 
-async function plan(rows: Row[]) {
-  const groups: Record<string, any> = {};
-  for (const g of GROUP_ORDER) groups[g] = { words: GROUP_WORDS[g], total: 0, reached: 0, claimed: 0, replied: 0, email: 0, instagram: 0, find: 0, none: 0, not_reached: 0 };
-  const lanes: Record<string, any> = { email: { total: 0, reached: 0 }, instagram: { total: 0, reached: 0 }, find: { total: 0, reached: 0 }, none: { total: 0, reached: 0 } };
-  let reached = 0, claimed = 0;
-  for (const r of rows) {
-    const s = statusOf(r), l = laneOf(r), g = groups[r.grp];
-    const isReached = !['not_reached', 'cant_reach'].includes(s);
-    g.total++; g[l]++; lanes[l].total++;
-    if (isReached) { g.reached++; lanes[l].reached++; reached++; } else if (s === 'not_reached') g.not_reached++;
-    if (s === 'claimed') { g.claimed++; claimed++; }
-    if (s === 'replied') g.replied++;
+async function goal(meId: string | null, role: string) {
+  const [{ count: members }, { count: claims }] = await Promise.all([
+    db.from('members').select('id', { count: 'exact', head: true }).or('is_superadmin.is.null,is_superadmin.eq.false'),
+    db.from('listings').select('id', { count: 'exact', head: true }).eq('status', 'approved').not('owner_member_id', 'is', null),
+  ]);
+  // KJ's own number: new members credited to the personal links made in this console (directory-reach-2026).
+  const { data: links } = await db.from('ve_links').select('id').eq('initiative_slug', 'directory-reach-2026');
+  const ids = (links || []).map((l: any) => l.id);
+  let kj = 0;
+  if (ids.length) {
+    const { data: clicks } = await db.from('ve_link_clicks').select('member_id').in('link_id', ids).eq('is_bot', false).not('member_id', 'is', null);
+    kj = new Set((clicks || []).map((c: any) => c.member_id)).size;
   }
   const today = todayET();
-  const daysLeft = workdaysBetween(today, DEADLINE);
-  const { data: tags } = await db.from('ve_reach_log').select('id', { count: 'exact', head: true }).eq('kind', 'tagged');
-  return { total: rows.length, reached, claimed, groups, lanes, today, deadline: DEADLINE, days_left: daysLeft, dm_cap: DM_CAP, follow_cap: FOLLOW_CAP,
-    days_off: DAYS_OFF, openers: await openers(), tagged: tags ?? 0 };
+  const daysToGoal = Math.max(1, Math.round((Date.parse(GOAL.by) - Date.parse(today)) / 86400000));
+  const weeksLeft = Math.max(1, Math.ceil(daysToGoal / 7));
+  const perWeek = Math.max(0, Math.ceil((GOAL.members - (members || 0)) / weeksLeft));
+  const sunday = addDays(today, (7 - dow(today)) % 7);
+  return { members: members || 0, members_goal: GOAL.members, kj_members: kj, kj_goal: GOAL.kj_members, claims: claims || 0, claims_goal: GOAL.claims,
+    by: GOAL.by, checkpoint: { by: sunday, members: Math.min(GOAL.members, (members || 0) + perWeek), per_week: perWeek } };
+}
+
+async function plan(rows: Row[], me: { id: string; role: string }) {
+  const groups: Record<string, any> = {};
+  for (const g of GROUP_ORDER) groups[g] = { words: GROUP_WORDS[g], total: 0, told: 0, engaged: 0, notified: 0, claimed: 0, email: 0, instagram: 0, find: 0, none: 0 };
+  const lanes: Record<string, any> = { email: { total: 0, told: 0, engaged: 0 }, instagram: { total: 0, told: 0, engaged: 0 }, find: { total: 0, told: 0, engaged: 0 }, none: { total: 0, told: 0, engaged: 0 } };
+  let told = 0, engaged = 0, notified = 0;
+  for (const r of rows) {
+    const l = laneOf(r), g = groups[r.grp];
+    g.total++; g[l]++; lanes[l].total++;
+    if (isTold(r)) { g.told++; lanes[l].told++; told++; }
+    if (isEngaged(r)) { g.engaged++; lanes[l].engaged++; engaged++; }
+    if (isNotified(r)) { g.notified++; notified++; }
+    if (r.claimed) g.claimed++;
+  }
+  const today = todayET();
+  return { total: rows.length, told, engaged, notified, groups, lanes, today, deadline: DEADLINE, days_left: workdaysBetween(today, DEADLINE),
+    goal: await goal(me.id, me.role), caps: { dm: DM_RAMP, follow: FOLLOW_CAP, welcome: WELCOME_CAP, dm_today: await dmCap(me.id) },
+    days_off: DAYS_OFF, openers: await openers() };
+}
+
+// The DM cap for this person today: 10 for their first three working days with a message, then 15 for the next five, then 20.
+async function dmCap(memberId: string | null) {
+  if (!memberId) return DM_RAMP[2];
+  const { data } = await db.from('ve_reach_log').select('at').eq('member_id', memberId).eq('kind', 'dm').order('at', { ascending: true }).limit(1);
+  if (!data?.length) return DM_RAMP[0];
+  const n = workdaysBetween(etDay(data[0].at), todayET());
+  return n <= 3 ? DM_RAMP[0] : n <= 8 ? DM_RAMP[1] : DM_RAMP[2];
+}
+async function countToday(memberId: string | null, kind: string) {
+  let q = db.from('ve_reach_log').select('id', { count: 'exact', head: true }).eq('kind', kind).gte('at', todayET() + 'T05:00:00Z');
+  if (memberId) q = q.eq('member_id', memberId);
+  const { count } = await q;
+  return count || 0;
 }
 
 async function week(rows: Row[], me: { id: string }) {
   const today = todayET();
-  const monday = addDays(today, -((dow(today) + 6) % 7));
-  const days = [0, 1, 2, 3, 4].map((i) => addDays(monday, i));
-  const { data: logs } = await db.from('ve_reach_log').select('listing_id, kind, at').gte('at', monday + 'T05:00:00Z').in('kind', ['follow', 'dm']);
-  const byId = new Map(rows.map((r) => [r.id, r]));
-  const doneOn: Record<string, { follow: any[]; dm: any[] }> = {};
-  for (const d of days) doneOn[d] = { follow: [], dm: [] };
-  for (const l of logs || []) {
-    const d = etDay(l.at); const r = byId.get(l.listing_id);
-    if (doneOn[d] && r) (doneOn[d] as any)[l.kind].push(card(r));
-  }
-  // Remaining days from today: DMs in queue order at the cap; follows two workdays ahead of each DM.
+  const cap = await dmCap(me.id);
+  const [dmDone, followDone] = await Promise.all([countToday(me.id, 'dm'), countToday(me.id, 'follow')]);
   const q = queue(rows);
   const plannedDays = workdaysFrom(today, 12);
   const dmPlan: Record<string, Row[]> = {};
   let i = 0;
   for (const d of plannedDays) {
-    const room = Math.max(0, DM_CAP - (d === today ? (doneOn[d]?.dm.length || 0) : 0));
+    const room = d === today ? Math.max(0, cap - dmDone) : cap;
     dmPlan[d] = q.slice(i, i + room); i += room;
   }
-  const out = days.map((d) => {
-    const past = d < today, off = DAYS_OFF.includes(d);
-    const idx = plannedDays.indexOf(d);
-    const followFor = idx >= 0 ? plannedDays[idx + 2] : null;
-    const follow = past || off || !followFor ? [] : (dmPlan[followFor] || []).filter((r) => !r.followed_at).slice(0, FOLLOW_CAP).map(card);
-    // The first days have nothing followed ahead yet: follow today's DMs first, then message them.
-    const dm = past || off ? [] : (dmPlan[d] || []).map(card);
-    return { date: d, today: d === today, past, off, done: doneOn[d], dm, follow, follow_for: followFor };
-  });
-  return { today, days: out, dm_cap: DM_CAP, follow_cap: FOLLOW_CAP, queue_left: q.length, openers: await openers() };
+  // Follow ahead: the accounts messaged two working days from now, not followed yet, within today's follows.
+  const followFor = plannedDays[2] || null;
+  const follow = followFor ? (dmPlan[followFor] || []).filter((r) => !r.followed_at).slice(0, Math.max(0, FOLLOW_CAP - followDone)).map(card) : [];
+  const { data: inbound } = await db.from('ve_reach_inbound').select('id, handle, grp, kind, status, note, listing_id, created_at').neq('status', 'done')
+    .order('created_at', { ascending: true }).limit(50);
+  const lids = (inbound || []).map((x: any) => x.listing_id).filter(Boolean);
+  const { data: ls } = lids.length ? await db.from('listings').select('id, slug, name, logo_url').in('id', lids) : { data: [] };
+  const lBy = new Map((ls || []).map((l: any) => [l.id, l]));
+  const welcomedToday = await (async () => {
+    let wq = db.from('ve_reach_inbound').select('id', { count: 'exact', head: true }).gte('welcomed_at', today + 'T05:00:00Z');
+    if (me.id) wq = wq.eq('welcomed_by', me.id);
+    return (await wq).count || 0;
+  })();
+  const ahead = plannedDays.filter((d) => d > today).slice(0, 4).map((d) => ({ date: d, dm: (dmPlan[d] || []).length }));
+  return { today, is_workday: plannedDays[0] === today, dm: (dmPlan[today] || []).map(card), follow, follow_for: followFor, ahead,
+    inbound: (inbound || []).map((x: any) => ({ ...x, listing: x.listing_id ? lBy.get(x.listing_id) || null : null, instagram: igUrl(x.handle) })),
+    caps: { dm: cap, dm_done: dmDone, follow: FOLLOW_CAP, follow_done: followDone, welcome: WELCOME_CAP, welcome_done: welcomedToday },
+    queue_left: q.length, openers: await openers(), days_off: DAYS_OFF };
 }
 
 async function item(id: string) {
@@ -269,7 +317,31 @@ Deno.serve(async (req) => {
   const action = String(body.action || '');
   try {
     if (action === 'me') return json({ ok: true, me });
-    if (action === 'plan') return json({ ok: true, me, ...(await plan(await roster())) });
+    if (action === 'plan') return json({ ok: true, me, ...(await plan(await roster(), me)) });
+    if (action === 'inbound_add') {
+      const handle = clean(body.handle, 120).replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/[/?#].*$/, '').replace(/^@/, '');
+      const grp = String(body.group || ''), kind = ['follower', 'message', 'comment'].includes(String(body.kind)) ? String(body.kind) : 'follower';
+      if (!/^[A-Za-z0-9._]{1,30}$/.test(handle) || !['explorer', ...GROUP_ORDER].includes(grp)) return json({ error: 'bad_request', message: 'Add their Instagram handle and a group.' }, 400);
+      const { data: match } = await db.from('listings').select('id').eq('status', 'approved')
+        .or(`instagram.ilike.${handle},instagram.ilike.@${handle},instagram.ilike.%instagram.com/${handle},instagram.ilike.%instagram.com/${handle}/`).limit(1);
+      const { data, error } = await db.from('ve_reach_inbound').insert({ handle, grp, kind, note: clean(body.note, 500) || null, added_by: me.id, listing_id: match?.[0]?.id ?? null }).select('id, listing_id').single();
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      return json({ ok: true, id: data.id, matched: !!data.listing_id });
+    }
+    if (action === 'inbound_set') {
+      const st = String(body.status || '');
+      if (!isId(body.id) || !['welcomed', 'done'].includes(st)) return json({ error: 'bad_request' }, 400);
+      if (st === 'welcomed') {
+        let wq = db.from('ve_reach_inbound').select('id', { count: 'exact', head: true }).gte('welcomed_at', todayET() + 'T05:00:00Z');
+        if (me.id) wq = wq.eq('welcomed_by', me.id);
+        if (((await wq).count || 0) >= WELCOME_CAP) return json({ error: 'cap', message: `That is today's ${WELCOME_CAP} welcomes. The rest wait for tomorrow.` }, 429);
+      }
+      const patch: Record<string, unknown> = { status: st, updated_at: new Date().toISOString() };
+      if (st === 'welcomed') { patch.welcomed_by = me.id; patch.welcomed_at = new Date().toISOString(); }
+      const { error } = await db.from('ve_reach_inbound').update(patch).eq('id', body.id);
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      return json({ ok: true });
+    }
     if (action === 'week') return json({ ok: true, me, ...(await week(await roster(), me)) });
     if (action === 'roster') {
       let rows = (await roster()).map(card);
@@ -296,13 +368,11 @@ Deno.serve(async (req) => {
     }
     if (action === 'touch') {
       const kind = String(body.kind || '');
-      if (!isId(body.id) || !['follow', 'followed_back', 'dm', 'replied', 'cant_reach', 'note', 'checkin', 'pin', 'unpin'].includes(kind)) return json({ error: 'bad_request' }, 400);
+      if (!isId(body.id) || !['follow', 'dm', 'replied', 'cant_reach', 'note', 'page_sent', 'pin', 'unpin'].includes(kind)) return json({ error: 'bad_request' }, 400);
       if ((kind === 'pin' || kind === 'unpin') && me.role !== 'admin') return json({ error: 'forbidden' }, 403);
       if (kind === 'dm' || kind === 'follow') {
-        const since = todayET() + 'T05:00:00Z';
-        const { count } = await db.from('ve_reach_log').select('id', { count: 'exact', head: true }).eq('member_id', me.id).eq('kind', kind).gte('at', since);
-        const cap = kind === 'dm' ? DM_CAP : FOLLOW_CAP;
-        if ((count || 0) >= cap) return json({ error: 'cap', message: `That is today's ${cap} ${kind === 'dm' ? 'new messages' : 'follows'}. Instagram's limit protects the account; the rest wait for tomorrow.` }, 429);
+        const cap = kind === 'dm' ? await dmCap(me.id) : FOLLOW_CAP;
+        if ((await countToday(me.id, kind)) >= cap) return json({ error: 'cap', message: `That is today's ${cap} ${kind === 'dm' ? 'new messages' : 'follows'}. The limit protects the account; the rest wait for tomorrow.` }, 429);
       }
       const { error } = await db.from('ve_reach_log').insert({ listing_id: body.id, member_id: me.id, kind, note: clean(body.note, 1000) || null });
       if (error) return json({ error: 'save_failed', message: error.message }, 500);

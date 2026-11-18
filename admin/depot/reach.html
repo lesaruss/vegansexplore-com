@@ -49,6 +49,9 @@
     .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: var(--k-ink); color: #fff; font-weight: 800; font-size: 13px; padding: 10px 16px; border-radius: 8px; z-index: 50; }
     .k-tag.bad { background: #fde8e6; color: #a3221b; }
     .k-tag.not { background: #f1f1f1; color: var(--k-mute); }
+    .bar { height: 8px; border-radius: 4px; background: var(--k-tint); margin-top: 10px; overflow: hidden; } .bar i { display: block; height: 100%; background: var(--k-or); }
+    .k-row.first { box-shadow: 6px 6px 0 var(--k-or); }
+    .reason { font: inherit; font-size: 11px; font-weight: 800; border: 2px solid var(--k-ink); border-radius: 6px; padding: 6px 30px 6px 8px; appearance: none; -webkit-appearance: none; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%231a1a1a' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 10px center; }
     @media (max-width: 600px) { .rowside .k-tag { white-space: normal; max-width: 82px; font-size: 8.5px; letter-spacing: .06em; padding: 4px 6px; line-height: 1.2; } .k-row.r5 { grid-template-columns: 40px minmax(0, 1fr) auto; } .thumb { width: 40px; height: 40px; } }
   </style>
 </head>
@@ -61,10 +64,10 @@
   <div id="gate" class="gate" hidden></div>
   <div id="app" hidden>
     <nav class="k-tabs" id="tabs" aria-label="Parts">
+      <a href="?tab=today" data-t="today">Today</a>
       <a href="?tab=plan" data-t="plan">Plan</a>
-      <a href="?tab=week" data-t="week">This week</a>
-      <a href="?tab=scout" data-t="scout">Chapter scout</a>
       <a href="?tab=roster" data-t="roster">Roster</a>
+      <a href="?tab=scout" data-t="scout">Friday scout</a>
       <a href="?tab=done" data-t="done">Done</a>
     </nav>
     <div class="k-stripe"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
@@ -80,31 +83,36 @@
   var STATUSES = [['not_reached', 'Not reached yet'], ['reached', 'Reached'], ['clicked', 'Clicked'], ['replied', 'Replied'], ['unsubscribed', 'Unsubscribed'], ['claimed', 'Claimed'], ['cant_reach', "Can't reach"]];
   var TAGCLASS = { claimed: 'live', replied: 'live', clicked: 'new', reached: 'wait', not_reached: 'not', unsubscribed: 'bad', cant_reach: 'bad' };
   // ======== COPY: every word on this page that is not a label or live data. ALL DRAFT (Sean, 2026-11-18: "it's okay to build the
-  // structure, but the content still needs to be finalized"). Replace here after the BOSS on KJ's role and Sean's review; the DM openers
-  // live in ve_reach_messages (status draft until Sean locks them). Nothing below is final. ========
+  // structure, but the content still needs to be finalized"). Replace here after Sean locks the words; the Instagram openers live in
+  // ve_reach_messages (status draft until Sean locks them). v2 follows the panel (docs/plans/2026-11-18-directory-reach-panel.md). ========
   var COPY = {
-    title: 'Every listing hears from us by December 1.',
-    lede: 'The plan, the week, the roster and the record of everyone we reach in the Directory, in one place.',
+    title: 'Directory Reach',
+    lede: 'Start real conversations with the places in our Directory, one card at a time.',
+    welcome: 'Thank you for jumping in. Today: answer anyone who wrote, welcome new followers, then work the cards below. Questions go on the card.',
+    goal: {
+      title: 'The goal',
+      line: '250 members by Thursday, December 31, 11:59 PM Eastern.',
+      checkpoint: 'This week: {members} members by Sunday, {date} ({per} a week from here).',
+      kj: 'New members from KJ\'s links',
+      claims: 'Listings claimed'
+    },
     plan: {
-      bigTitle: 'The big picture',
-      big: ['Goal: every listing in the Directory hears from us once by Monday, December 1, 11:59 PM Eastern.',
-        'Why January 1: launch, and the close of Founding businesses at midnight Eastern.'],
-      lanesTitle: 'How we reach them',
-      lanes: ['Email, when we have a checked address.', 'Instagram conversations.', 'Instagram tags in city posts.', 'Find them: an email or contact form from their website.'],
-      roleTitle: 'KJ\'s role',
-      role: 'Social Media Manager (Instagram). Starting conversations with the listings on Instagram. To be finalized after the role BOSS.',
-      steps: [['Follow ahead', 'Two or three days before the message.'], ['Start the conversation', 'Today\'s messages, with their own link.'],
-        ['Keep it going', 'Replies, check-ins, notes here.'], ['Chapter scout', 'One chapter a weekday: events and people to spotlight.']],
-      capTitle: 'The daily limit',
-      cap: '{dm} new messages and {follow} follows a weekday, 3 messages an hour. Instagram blocks accounts that look like spam; a block stops the account for 24 to 48 hours.',
+      twoTitle: 'Told and Engaged',
+      two: 'Told: they got an email or a message from us. Engaged: they clicked, replied or claimed. Tags in city posts are counted apart, as Notified.',
+      roleTitle: 'KJ\'s part until December 1',
+      duties: [['Answer anyone who writes', 'Replies are never limited.'], ['Welcome new followers', 'Ask which group they are; add them under Inbound.'], ['Work today\'s cards', 'Follow ahead, then message, in your own words.']],
+      capTitle: 'The daily limits',
+      cap: 'New messages: 10 a day for the first three working days, then 15, then 20 after a clean week. Follows: 25 a day. Welcomes to new followers: 10 a day, separate. Stop for the day on any Instagram warning.',
       seeTitle: 'What the console can see',
-      see: 'Email replies, opens and clicks come in by themselves. Instagram messages cannot be read by our system, so the steps logged here are the record.',
-      openersNote: 'One opener per group, a starting point. Drafts until Sean locks them; {name} and {link} fill in on each card.'
+      see: 'Email replies, opens and clicks come in by themselves. Instagram messages cannot be read by our system, so the taps logged here are the record.',
+      openersNote: 'The first message carries no link: one thing from their feed and a question. The page goes in the follow-up, after they reply.'
     },
     scout: {
-      ask: 'Look around {chapter} for Vegan events and people or places worth spotlighting, and send each one here. Tomorrow: {next}.',
+      friday: 'Look around {chapter} for Vegan events and people or places worth spotlighting, and send each one here.',
+      notToday: 'Scouting is on Fridays until December 1. Next: {date}, {chapter}.',
       where: 'Each one lands in Depot > Ideas, marked Chapter scout with the chapter.'
-    }
+    },
+    reasons: [['', 'Why not?'], ['looks closed', 'Looks closed'], ['no account', 'No Instagram account'], ['wrong account', 'Wrong account'], ['other', 'Other']]
   };
   var ME = null, PLAN = null;
   function $(id) { return document.getElementById(id); }
@@ -139,103 +147,123 @@
     var t = e.target.closest('#tabs a');
     if (t) { e.preventDefault(); go({ tab: t.getAttribute('data-t') }); }
   });
-  function tab() { var t = q('tab'); return ['plan', 'week', 'scout', 'roster', 'done'].indexOf(t) >= 0 ? t : 'plan'; }
+  function draft() { return ' <span class="k-tag wait">Draft</span>'; }
+  function tab() { var t = q('tab'); return ['today', 'plan', 'scout', 'roster', 'done'].indexOf(t) >= 0 ? t : 'today'; }
   function draw() {
     var t = tab();
     Array.prototype.forEach.call(document.querySelectorAll('#tabs a'), function (a) { a.setAttribute('aria-selected', a.getAttribute('data-t') === t ? 'true' : 'false'); });
     $('view').innerHTML = '<p class="muted">Loading...</p>';
+    if (t === 'today') return drawToday();
     if (t === 'plan') return drawPlan();
-    if (t === 'week') return drawWeek();
     if (t === 'scout') return drawScout();
     if (t === 'roster') return q('id') ? drawItem(q('id')) : drawRoster();
     if (t === 'done') return drawDone();
   }
 
   // ---------- Plan ----------
-  function draft() { return ' <span class="k-tag wait">Draft</span>'; }
+  function meter(v, goal, label) {
+    var pc = goal ? Math.min(100, Math.round(100 * v / goal)) : 0;
+    return '<div class="k-stat"><b>' + n(v) + ' <span class="pill">of ' + n(goal) + '</span></b><small>' + esc(label) + '</small><div class="bar"><i style="width:' + pc + '%"></i></div></div>';
+  }
   function drawPlan() {
     post({ action: 'plan' }).then(function (p) {
       if (!p.ok) return fail(p);
-      PLAN = p;
-      var C = COPY.plan, pct = p.total ? Math.round(100 * p.reached / p.total) : 0;
-      var h = '';
-      h += '<div class="k-stats">' +
-        '<div class="k-stat"><b>' + n(p.total) + '</b><small>Listings in the Directory</small></div>' +
-        '<div class="k-stat"><b>' + n(p.reached) + '</b><small>Reached so far (' + pct + '%)</small></div>' +
-        '<div class="k-stat"><b>' + n(p.claimed) + '</b><small>Claimed their page</small></div>' +
-        '<div class="k-stat"><b>' + n(p.days_left) + '</b><small>Working days to Dec 1</small></div></div>';
-      h += '<div class="sec k-split"><div class="k-main"><h2 class="k-h2">' + esc(C.bigTitle) + draft() + '</h2>' +
-        C.big.map(function (t) { return '<p class="k-lede">' + esc(t) + '</p>'; }).join('') +
-        '</div><div class="k-side"><div class="k-block k-peach"><span class="k-label">' + esc(C.lanesTitle) + draft() + '</span><p>' + C.lanes.map(esc).join('<br>') + '</p></div></div></div>';
-      h += '<div class="sec"><h2 class="k-h2">Progress by group</h2><div class="k-rows">';
+      var C = COPY.plan, G = p.goal, cp = G.checkpoint;
+      var h = '<h2 class="k-h2">' + esc(COPY.goal.title) + '</h2><p class="k-lede"><b>' + esc(COPY.goal.line) + '</b>' + draft() + '</p>';
+      h += '<div class="k-stats">' + meter(G.members, G.members_goal, 'Members to date') + meter(G.kj_members, G.kj_goal, COPY.goal.kj) + meter(G.claims, G.claims_goal, COPY.goal.claims) + '</div>';
+      h += '<p class="k-lede" style="margin-top:12px">' + esc(COPY.goal.checkpoint.replace('{members}', n(cp.members)).replace('{date}', dayName(cp.by)).replace('{per}', n(cp.per_week))) + draft() + '</p>';
+      h += '<div class="sec k-split"><div class="k-main"><h2 class="k-h2">' + esc(C.twoTitle) + draft() + '</h2><p class="k-lede">' + esc(C.two) + '</p>' +
+        '<div class="k-blocks"><div class="k-block k-tint"><span class="k-big">' + n(p.told) + '</span><small>Told, of ' + n(p.total) + '</small></div>' +
+        '<div class="k-block k-br"><span class="k-big">' + n(p.engaged) + '</span><small>Engaged</small></div>' +
+        '<div class="k-block k-peach"><span class="k-big">' + n(p.notified) + '</span><small>Notified (tags, counted apart)</small></div></div></div>' +
+        '<div class="k-side"><div class="k-block k-peach"><span class="k-label">Working days to Dec 1</span><span class="k-big">' + n(p.days_left) + '</span><small>Thanksgiving Thursday and Friday off.</small></div></div></div>';
+      h += '<div class="sec"><h2 class="k-h2">By group</h2><div class="k-rows">';
       GROUPS.forEach(function (g, i) {
         var x = p.groups[g[0]] || {};
-        var gp = x.total ? Math.round(100 * x.reached / x.total) : 0;
-        h += '<div class="k-row"><span class="k-num ' + ['dk', 'or', 'pk', 'br'][i] + '">' + gp + '%</span><div class="k-row-t"><b>' + esc(g[1]) + '</b><small>' +
-          n(x.reached) + ' of ' + n(x.total) + ' reached. Ways in: ' + n(x.email) + ' email, ' + n(x.instagram) + ' Instagram only, ' + n(x.find) + ' website only, ' + n(x.none) + ' nothing yet. ' + n(x.claimed) + ' claimed.</small></div>' +
+        h += '<div class="k-row"><span class="k-num ' + ['dk', 'or', 'pk', 'br'][i] + '">' + (x.total ? Math.round(100 * x.told / x.total) : 0) + '%</span><div class="k-row-t"><b>' + esc(g[1]) + '</b><small>' +
+          n(x.told) + ' told, ' + n(x.engaged) + ' engaged, ' + n(x.claimed) + ' claimed, of ' + n(x.total) + '. Ways in: ' + n(x.email) + ' email, ' + n(x.instagram) + ' Instagram only, ' + n(x.find) + ' website only, ' + n(x.none) + ' nothing yet.</small></div>' +
           '<a class="k-btn k-sm" href="?tab=roster&group=' + g[0] + '" data-go=\'' + JSON.stringify({ tab: 'roster', group: g[0] }) + '\'>Roster</a></div>';
       });
       h += '</div></div>';
       var L = p.lanes;
-      h += '<div class="sec"><h2 class="k-h2">Progress by way in</h2><div class="k-blocks">' +
-        '<div class="k-block k-tint"><span class="k-big">' + n(L.email.reached) + ' / ' + n(L.email.total) + '</span><small>Email</small></div>' +
-        '<div class="k-block k-pink"><span class="k-big">' + n(L.instagram.reached) + ' / ' + n(L.instagram.total) + '</span><small>Instagram only</small></div>' +
-        '<div class="k-block k-peach"><span class="k-big">' + n(p.tagged) + '</span><small>Tagged in a city post</small></div>' +
-        '<div class="k-block k-br"><span class="k-big">' + n(L.find.total) + '</span><small>Website only: to find</small></div></div></div>';
-      h += '<div class="sec k-split"><div class="k-main"><h2 class="k-h2">' + esc(C.roleTitle) + draft() + '</h2><p class="k-lede">' + esc(C.role) + '</p><div class="k-steps">' +
-        C.steps.map(function (st, i) { return '<div' + (i === 1 ? ' class="you"' : '') + '><em>' + (i + 1) + '</em><b>' + esc(st[0]) + '</b>' + esc(st[1]) + '</div>'; }).join('') +
-        '</div></div><div class="k-side"><div class="k-block k-or"><span class="k-label">' + esc(C.capTitle) + draft() + '</span><p>' + esc(C.cap.replace('{dm}', p.dm_cap).replace('{follow}', p.follow_cap)) + '</p></div>' +
+      h += '<div class="sec"><h2 class="k-h2">By way in</h2><div class="k-blocks">' +
+        '<div class="k-block k-tint"><span class="k-big">' + n(L.email.told) + ' / ' + n(L.email.total) + '</span><small>Email: told</small></div>' +
+        '<div class="k-block k-pink"><span class="k-big">' + n(L.instagram.told) + ' / ' + n(L.instagram.total) + '</span><small>Instagram only: told</small></div>' +
+        '<div class="k-block k-br"><span class="k-big">' + n(L.find.total) + '</span><small>Website only: to find</small></div>' +
+        '<div class="k-block k-peach"><span class="k-big">' + n(L.none.total) + '</span><small>Nothing yet: January</small></div></div></div>';
+      h += '<div class="sec k-split"><div class="k-main"><h2 class="k-h2">' + esc(C.roleTitle) + draft() + '</h2><div class="k-steps">' +
+        C.duties.map(function (st, i) { return '<div' + (i === 2 ? ' class="you"' : '') + '><em>' + (i + 1) + '</em><b>' + esc(st[0]) + '</b>' + esc(st[1]) + '</div>'; }).join('') +
+        '</div></div><div class="k-side"><div class="k-block k-or"><span class="k-label">' + esc(C.capTitle) + draft() + '</span><p>' + esc(C.cap) + '</p><p><b>Today: ' + n(p.caps.dm_today) + ' new messages.</b></p></div>' +
         '<div class="k-block k-tint" style="margin-top:12px"><span class="k-label">' + esc(C.seeTitle) + draft() + '</span><p>' + esc(C.see) + '</p></div></div></div>';
       h += '<div class="sec"><h2 class="k-h2">The openers</h2><p class="muted">' + esc(C.openersNote) + '</p><div class="k-grid">';
-      GROUPS.forEach(function (g) {
-        var o = p.openers[g[0] + ':dm'];
-        h += '<div class="k-card"><span class="k-label">' + esc(g[1]) + '</span>' + (o ? '<span class="k-tag ' + (o.status === 'locked' ? 'live' : 'wait') + '">' + (o.status === 'locked' ? 'Locked' : 'Draft') + ', version ' + o.version + '</span><p class="opener">' + esc(o.body) + '</p>' : '<p class="muted">Coming</p>') + '</div>';
+      var ops = [['restaurants:outreach', 'First message: Restaurants and food'], ['businesses:outreach', 'First message: Other businesses'], ['nonprofits:outreach', 'First message: Nonprofits'],
+        ['creators:outreach', 'First message: Creators and media'], ['all:page', 'After they reply: their page'], ['all:welcome', 'New follower welcome']];
+      ops.forEach(function (o) {
+        var m = p.openers[o[0]];
+        h += '<div class="k-card"><span class="k-label">' + esc(o[1]) + '</span>' + (m ? '<span class="k-tag ' + (m.status === 'locked' ? 'live' : 'wait') + '">' + (m.status === 'locked' ? 'Locked' : 'Draft') + ', version ' + m.version + '</span><p class="opener">' + esc(m.body) + '</p>' : '<p class="muted">Coming</p>') + '</div>';
       });
       h += '</div></div>';
       $('view').innerHTML = h;
     });
   }
 
-  // ---------- This week ----------
-  function cardRow(r, mode, openers) {
-    var o = openers[r.group + ':dm'];
-    var h = '<div class="k-row r5" data-id="' + r.id + '">' + thumb(r) + '<div class="k-row-t"><b><a href="/directory/' + encodeURIComponent(r.slug) + '" target="_blank" rel="noopener">' + esc(r.name) + '</a></b>' +
-      '<small>' + esc(r.group_words) + (r.city ? ' &middot; ' + esc(r.city) : '') + (r.followed_back ? ' &middot; follows us' : r.followed_at ? ' &middot; followed' : '') + (r.note ? ' &middot; ' + esc(r.note) : '') + '</small>' +
+  // ---------- Today ----------
+  var GROUP_KEY = { 'Restaurants and food': 'restaurants', 'Other businesses': 'businesses', 'Nonprofits': 'nonprofits', 'Creators and media': 'creators' };
+  function reasonSelect() { return '<select class="reason" data-reason>' + COPY.reasons.map(function (r) { return '<option value="' + esc(r[0]) + '">' + esc(r[1]) + '</option>'; }).join('') + '</select>'; }
+  function cardRow(r, mode, first) {
+    return '<div class="k-row r5' + (first ? ' first' : '') + '" data-id="' + r.id + '" data-group="' + esc(r.group) + '" data-ig="' + esc(r.instagram || '') + '">' + thumb(r) +
+      '<div class="k-row-t"><b><a href="/directory/' + encodeURIComponent(r.slug) + '" target="_blank" rel="noopener">' + esc(r.name) + '</a></b>' +
+      '<small>' + esc(r.group_words) + (r.city ? ' &middot; ' + esc(r.city) : '') + (r.followed_at ? ' &middot; followed' : '') + (r.note ? ' &middot; ' + esc(r.note) : '') + '</small>' +
       '<div class="acts">' +
-      (r.instagram ? '<a class="k-btn k-on" href="' + esc(r.instagram) + '" target="_blank" rel="noopener">Instagram</a>' : '') +
+      (mode === 'dm' ? '<button class="k-btn k-on" data-copy="outreach">Copy opener and open Instagram</button>' : (r.instagram ? '<a class="k-btn k-on" href="' + esc(r.instagram) + '" target="_blank" rel="noopener">Open Instagram</a>' : '')) +
       '<button class="k-btn" data-touch="follow"' + (r.followed_at ? ' disabled' : '') + '>Followed</button>' +
-      '<button class="k-btn" data-touch="followed_back"' + (r.followed_back ? ' disabled' : '') + '>They follow us</button>' +
-      (mode === 'dm' ? '<button class="k-btn" data-copy="opener">Copy opener</button><button class="k-btn" data-touch="dm">Message sent</button>' : '') +
-      '<button class="k-btn" data-touch="replied">Replied</button><button class="k-btn" data-touch="cant_reach">Can\'t reach</button><button class="k-btn" data-touch="note">Add note</button>' +
-      '</div><input class="note-in" placeholder="A note (last post, looks closed, what they said)" data-note>' +
-      '</div><span class="rowside">' + tag(r) + '</span></div>';
-    return h;
+      (mode === 'dm' ? '<button class="k-btn" data-touch="dm">Messaged</button>' : '') +
+      '<button class="k-btn" data-touch="replied">Replied</button>' + reasonSelect() + '<button class="k-btn" data-touch="cant_reach">Can\'t reach</button>' +
+      '</div><input class="note-in" placeholder="Note (optional)" data-note></div><span class="rowside">' + tag(r) + '</span></div>';
   }
-  function drawWeek() {
+  function inboundRow(x) {
+    var who = x.listing ? '<a href="/directory/' + encodeURIComponent(x.listing.slug) + '" target="_blank" rel="noopener">' + esc(x.listing.name) + '</a> (@' + esc(x.handle) + ')' : '@' + esc(x.handle);
+    var g = { explorer: 'Explorer', restaurants: 'Restaurants and food', businesses: 'Other businesses', nonprofits: 'Nonprofits', creators: 'Creators and media' }[x.grp];
+    return '<div class="k-row r5" data-inbound="' + x.id + '" data-ig="' + esc(x.instagram || '') + '"><span class="thumb">' + esc(String(x.handle).slice(0, 2).toUpperCase()) + '</span><div class="k-row-t"><b>' + who + '</b><small>' + esc(g) + ' &middot; ' + esc({ follower: 'new follower', message: 'wrote to us', comment: 'commented' }[x.kind]) + (x.note ? ' &middot; ' + esc(x.note) : '') + '</small>' +
+      '<div class="acts">' + (x.status === 'open' && x.kind === 'follower' ? '<button class="k-btn k-on" data-copy="welcome">Copy welcome and open Instagram</button><button class="k-btn" data-in="welcomed">Welcomed</button>' : (x.instagram ? '<a class="k-btn k-on" href="' + esc(x.instagram) + '" target="_blank" rel="noopener">Open Instagram</a>' : '')) +
+      '<button class="k-btn" data-in="done">Done</button></div></div><span class="rowside"><span class="k-tag ' + (x.status === 'welcomed' ? 'live' : 'new') + '">' + (x.status === 'welcomed' ? 'Welcomed' : 'Open') + '</span></span></div>';
+  }
+  function drawToday() {
     post({ action: 'week' }).then(function (w) {
       if (!w.ok) return fail(w);
-      var h = '<p class="k-lede">Today: follow the accounts listed under Follow ahead, then send today\'s messages. ' + n(w.dm_cap) + ' new messages a weekday, ' + n(w.follow_cap) + ' follows. ' + n(w.queue_left) + ' accounts wait in the queue.</p>';
-      w.days.forEach(function (d) {
-        var cls = 'day' + (d.today ? ' today' : '') + (d.off ? ' off' : '') + (d.past ? ' past' : '');
-        h += '<section class="' + cls + '"><h3>' + esc(dayName(d.date)) + (d.today ? ' <span class="k-tag new">Today</span>' : '') + (d.off ? ' <span class="k-tag not">Off, Thanksgiving</span>' : '') + '</h3>';
-        var done = d.done || { follow: [], dm: [] };
-        if (d.past) {
-          h += '<p class="muted">Done: ' + done.dm.length + ' messages, ' + done.follow.length + ' follows.</p>';
-        } else if (!d.off) {
-          if (done.dm.length || done.follow.length) h += '<p class="muted">Done so far: ' + done.dm.length + ' of ' + w.dm_cap + ' messages, ' + done.follow.length + ' follows.</p>';
-          h += '<span class="k-label">Message (' + d.dm.length + ')</span>';
-          h += d.dm.length ? '<div class="k-rows">' + d.dm.slice(0, d.today ? 100 : 5).map(function (r) { return cardRow(r, 'dm', w.openers); }).join('') + '</div>' : '<p class="muted">Nothing left for this day.</p>';
-          if (!d.today && d.dm.length > 5) h += '<p class="muted">and ' + (d.dm.length - 5) + ' more on the day.</p>';
-          if (d.follow.length) {
-            h += '<span class="k-label" style="margin-top:14px">Follow ahead (for ' + esc(dayName(d.follow_for)) + ', ' + d.follow.length + ')</span>';
-            h += '<div class="k-rows">' + d.follow.slice(0, d.today ? 100 : 5).map(function (r) { return cardRow(r, 'follow', w.openers); }).join('') + '</div>';
-          }
-        }
-        h += '</section>';
-      });
+      var c = w.caps;
+      var h = '<div class="k-block k-tint"><p style="margin:0;font-weight:700">' + esc(COPY.welcome) + draft() + '</p></div>';
+      h += '<div class="sec k-stats"><div class="k-stat"><b>' + c.dm_done + ' / ' + c.dm + '</b><small>New messages today</small></div><div class="k-stat"><b>' + c.follow_done + ' / ' + c.follow + '</b><small>Follows today</small></div>' +
+        '<div class="k-stat"><b>' + c.welcome_done + ' / ' + c.welcome + '</b><small>Welcomes today</small></div><div class="k-stat"><b>' + n(w.queue_left) + '</b><small>Waiting in the queue</small></div></div>';
+      h += '<div class="sec"><h2 class="k-h2">Inbound</h2><p class="muted">New followers and anyone who writes come first.</p>' +
+        '<form class="k-form" id="inForm" style="grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));margin:8px 0 12px">' +
+        '<div class="k-f"><label for="ih">Instagram handle</label><input id="ih" placeholder="@handle"></div>' +
+        '<div class="k-f"><label for="ig">Group</label><select id="ig"><option value="explorer">Explorer</option><option value="restaurants">Restaurants and food</option><option value="businesses">Other businesses</option><option value="nonprofits">Nonprofits</option><option value="creators">Creators and media</option></select></div>' +
+        '<div class="k-f"><label for="ik">What happened</label><select id="ik"><option value="follower">New follower</option><option value="message">Wrote to us</option><option value="comment">Commented</option></select></div>' +
+        '<div class="k-f" style="align-self:end"><button class="k-btn" type="submit">Add</button></div></form>' +
+        (w.inbound.length ? '<div class="k-rows">' + w.inbound.map(inboundRow).join('') + '</div>' : '<p class="muted">Nobody waiting.</p>') + '</div>';
+      h += '<div class="sec"><h2 class="k-h2">Today\'s cards</h2>';
+      if (!w.is_workday) h += '<p class="muted">Today is not a sending day. The next cards are below.</p>';
+      else h += w.dm.length ? '<div class="k-rows">' + w.dm.map(function (r, i) { return cardRow(r, 'dm', i === 0); }).join('') + '</div>' : '<p class="muted">Today\'s messages are done. Thank you.</p>';
+      h += '</div>';
+      if (w.follow.length) h += '<div class="sec"><h2 class="k-h2">Follow ahead</h2><p class="muted">For ' + esc(dayName(w.follow_for)) + '. Follow now; the message comes then.</p><div class="k-rows">' + w.follow.map(function (r) { return cardRow(r, 'follow'); }).join('') + '</div></div>';
+      if (w.ahead.length) h += '<div class="sec"><span class="k-label">Coming up</span><p class="muted">' + w.ahead.map(function (d) { return esc(dayName(d.date)) + ': ' + d.dm + ' cards'; }).join(' &middot; ') + '</p></div>';
       $('view').innerHTML = h;
+      $('inForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        post({ action: 'inbound_add', handle: $('ih').value, group: $('ig').value, kind: $('ik').value }).then(function (r) {
+          if (!r.ok) return toast(r.message || 'That did not save.');
+          toast(r.matched ? 'Added, matched to their listing' : 'Added'); drawToday();
+        });
+      });
       wireRows(w.openers);
     });
+  }
+  function copyAndOpen(text, ig) {
+    var win = ig ? window.open(ig, '_blank', 'noopener') : null;
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(function () { toast('Copied. Paste it in your own words.'); }, function () { prompt('Copy this', text); });
+    else prompt('Copy this', text);
+    return win;
   }
   function wireRows(openers) {
     Array.prototype.forEach.call(document.querySelectorAll('[data-id]'), function (row) {
@@ -243,62 +271,90 @@
       row.addEventListener('click', function (e) {
         var b = e.target.closest('button'); if (!b) return;
         var kind = b.getAttribute('data-touch'), copy = b.getAttribute('data-copy');
-        var noteEl = row.querySelector('[data-note]');
-        if (copy === 'opener') {
+        var noteEl = row.querySelector('[data-note]'), reasonEl = row.querySelector('[data-reason]');
+        if (copy === 'outreach') {
+          var o = openers[row.getAttribute('data-group') + ':outreach'];
+          var name = row.querySelector('.k-row-t b').textContent;
+          copyAndOpen((o ? o.body : '').replace('{name}', name), row.getAttribute('data-ig'));
+          return;
+        }
+        if (copy === 'page') {
           b.disabled = true;
           post({ action: 'link', id: id }).then(function (r) {
-            b.disabled = false;
-            var name = row.querySelector('.k-row-t b').textContent;
-            var grp = (row.querySelector('.k-row-t small').textContent.split(' · ')[0] || '');
-            var key = { 'Restaurants and food': 'restaurants', 'Other businesses': 'businesses', 'Nonprofits': 'nonprofits', 'Creators and media': 'creators' }[grp];
-            var o = openers[key + ':dm'];
-            var text = (o ? o.body : '').replace('{name}', name).replace('{link}', r.url || '');
-            if (navigator.clipboard) navigator.clipboard.writeText(text).then(function () { toast('Opener copied with their link'); }, function () { prompt('Copy this', text); });
-            else prompt('Copy this', text);
+            b.disabled = false; var o = openers['all:page'];
+            copyAndOpen((o ? o.body : '{link}').replace('{link}', r.url || ''), null);
+            post({ action: 'touch', id: id, kind: 'page_sent' });
           });
           return;
         }
         if (!kind) return;
         var note = noteEl ? noteEl.value.trim() : '';
+        if (kind === 'cant_reach') { var why = reasonEl ? reasonEl.value : ''; note = [why, note].filter(Boolean).join(': '); }
         if (kind === 'note' && !note) { noteEl.focus(); return; }
         b.disabled = true;
         post({ action: 'touch', id: id, kind: kind, note: note }).then(function (r) {
           if (!r.ok) { b.disabled = false; toast(r.message || 'That did not save. Try again.'); return; }
           b.classList.add('done'); if (noteEl) noteEl.value = '';
-          toast('Logged');
+          toast(kind === 'replied' ? 'Logged. Send their page next.' : 'Logged');
+          if (kind === 'replied') { var pb = row.querySelector('[data-copy="page"]'); if (!pb) row.querySelector('.acts').insertAdjacentHTML('afterbegin', '<button class="k-btn k-on" data-copy="page">Copy their page link</button>'); }
+        });
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-inbound]'), function (row) {
+      var id = row.getAttribute('data-inbound');
+      row.addEventListener('click', function (e) {
+        var b = e.target.closest('button'); if (!b) return;
+        if (b.getAttribute('data-copy') === 'welcome') { var o = openers['all:welcome']; copyAndOpen(o ? o.body : '', row.getAttribute('data-ig')); return; }
+        var st = b.getAttribute('data-in'); if (!st) return;
+        b.disabled = true;
+        post({ action: 'inbound_set', id: id, status: st }).then(function (r) {
+          if (!r.ok) { b.disabled = false; return toast(r.message || 'That did not save.'); }
+          toast('Logged'); drawToday();
         });
       });
     });
   }
 
-  // ---------- Chapter scout ----------
-  function todaysChapter() {
-    var hubs = (window.VE_HUBS || []).filter(function (h) { return h.slug !== 'sample'; });
-    if (!hubs.length) return null;
-    var d = new Date(new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date()) + 'T00:00:00Z');
-    var wd = 0, x = new Date(Date.UTC(2026, 10, 16));
-    while (x < d) { var k = x.getUTCDay(); if (k >= 1 && k <= 5) wd++; x = new Date(x.getTime() + 86400000); }
-    return { today: hubs[wd % hubs.length], next: hubs[(wd + 1) % hubs.length] };
+  // ---------- Friday scout ----------
+  function chapters() { return (window.VE_HUBS || []).filter(function (h) { return h.slug !== 'sample'; }); }
+  function etToday() { return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date()); }
+  function scoutPlan() {
+    var hubs = chapters(); if (!hubs.length) return null;
+    var today = etToday(), d = new Date(today + 'T00:00:00Z'), dow = d.getUTCDay();
+    var weekly = today <= '2026-12-01';
+    var isDay = weekly ? dow === 5 : (dow >= 1 && dow <= 5);
+    // Fridays from Nov 20 until Dec 1, then every weekday: the chapter is the count of scout days so far.
+    var count = 0, x = new Date(Date.UTC(2026, 10, 20));
+    while (x < d) { var k = x.getUTCDay(), s = x.toISOString().slice(0, 10); if (s <= '2026-12-01' ? k === 5 : (k >= 1 && k <= 5)) count++; x = new Date(x.getTime() + 86400000); }
+    var next = new Date(d.getTime()); do { next = new Date(next.getTime() + 86400000); var nk = next.getUTCDay(), ns = next.toISOString().slice(0, 10); } while (!(ns <= '2026-12-01' ? nk === 5 : (nk >= 1 && nk <= 5)));
+    var name = function (h) { return (h.page && h.page.short) || h.name; };
+    return { isDay: isDay, today: hubs[count % hubs.length], next: hubs[(isDay ? count + 1 : count) % hubs.length], nextDate: next.toISOString().slice(0, 10), name: name };
   }
   function drawScout() {
-    var c = todaysChapter(), C = COPY.scout;
-    var name = c ? (c.today.page && c.today.page.short) || c.today.name : '';
-    var next = c ? ((c.next.page && c.next.page.short) || c.next.name) : '';
-    var h = '<div class="k-split"><div class="k-main"><h2 class="k-h2">Today\'s chapter: <span class="k-hl g">' + esc(name) + '</span></h2>' +
-      '<p class="k-lede">' + esc(C.ask.replace('{chapter}', name).replace('{next}', next)) + draft() + '</p>' +
-      '<p><a class="k-btn" href="/communities/' + esc(c ? c.today.slug : '') + '" target="_blank" rel="noopener">Open the ' + esc(name) + ' page</a></p>' +
-      '<form class="k-form" id="scoutForm" style="margin-top:16px">' +
-      '<div class="k-f"><label for="sk">What is it</label><select id="sk"><option value="event">An event</option><option value="spotlight">Someone to spotlight</option></select></div>' +
-      '<div class="k-f"><label for="sn">Name</label><input id="sn" placeholder="The event, person or business"></div>' +
-      '<div class="k-f wide"><label for="su">Link</label><input id="su" placeholder="https://..."></div>' +
-      '<div class="k-f wide"><label for="so">Why it matters</label><textarea id="so" placeholder="A line or two"></textarea></div>' +
-      '<div class="k-f wide"><button class="k-btn k-cta" type="submit">Send it</button><p class="k-msg" id="sm"></p></div></form></div>' +
-      '<div class="k-side"><div class="k-block k-tint"><span class="k-label">Where it goes</span><p>' + esc(C.where) + '</p></div></div></div>';
+    var c = scoutPlan(), C = COPY.scout;
+    if (!c) { $('view').innerHTML = '<p class="muted">Coming</p>'; return; }
+    var admin = ME && ME.role === 'admin';
+    var name = c.name(c.today);
+    var h = '<div class="k-split"><div class="k-main">';
+    if (!c.isDay) h += '<p class="k-lede">' + esc(C.notToday.replace('{date}', dayName(c.nextDate)).replace('{chapter}', c.name(c.next))) + draft() + '</p>';
+    if (c.isDay || admin) {
+      h += '<h2 class="k-h2">' + (c.isDay ? 'Today\'s chapter: ' : 'Next chapter: ') + '<span class="k-hl g">' + esc(c.isDay ? name : c.name(c.next)) + '</span></h2>' +
+        '<p class="k-lede">' + esc(C.friday.replace('{chapter}', c.isDay ? name : c.name(c.next))) + draft() + '</p>' +
+        '<form class="k-form" id="scoutForm" style="margin-top:16px">' +
+        '<div class="k-f"><label for="sk">What is it</label><select id="sk"><option value="event">An event</option><option value="spotlight">Someone to spotlight</option></select></div>' +
+        '<div class="k-f"><label for="sn">Name</label><input id="sn" placeholder="The event, person or business"></div>' +
+        '<div class="k-f wide"><label for="su">Link</label><input id="su" placeholder="https://..."></div>' +
+        '<div class="k-f wide"><label for="so">Why it matters</label><textarea id="so" placeholder="A line or two"></textarea></div>' +
+        '<div class="k-f wide"><button class="k-btn k-cta" type="submit">Send it</button><p class="k-msg" id="sm"></p></div></form>';
+    }
+    h += '</div><div class="k-side"><div class="k-block k-tint"><span class="k-label">Where it goes</span><p>' + esc(C.where) + '</p></div></div></div>';
     $('view').innerHTML = h;
-    $('scoutForm').addEventListener('submit', function (e) {
+    var f = $('scoutForm'); if (!f) return;
+    var chap = c.isDay ? name : c.name(c.next);
+    f.addEventListener('submit', function (e) {
       e.preventDefault();
       $('sm').className = 'k-msg'; $('sm').textContent = 'Sending...';
-      post({ action: 'scout', chapter: name, kind: $('sk').value, name: $('sn').value, url: $('su').value, note: $('so').value }).then(function (r) {
+      post({ action: 'scout', chapter: chap, kind: $('sk').value, name: $('sn').value, url: $('su').value, note: $('so').value }).then(function (r) {
         if (!r.ok) { $('sm').className = 'k-msg err'; $('sm').textContent = r.message || 'That did not send.'; return; }
         $('sm').textContent = 'Sent to ' + r.where + '. Thank you.'; $('sn').value = $('su').value = $('so').value = '';
       });
@@ -358,13 +414,13 @@
         '<div class="acts"><a class="k-btn" href="/directory/' + encodeURIComponent(L.slug) + '" target="_blank" rel="noopener">Directory listing</a>' +
         (L.instagram ? '<a class="k-btn k-on" href="' + esc(L.instagram) + '" target="_blank" rel="noopener">Instagram</a>' : '') +
         (L.website ? '<a class="k-btn" href="' + esc(L.website) + '" target="_blank" rel="noopener">Website</a>' : '') +
-        '<button class="k-btn" data-touch="follow">Followed</button><button class="k-btn" data-touch="followed_back">They follow us</button><button class="k-btn" data-touch="dm">Message sent</button><button class="k-btn" data-touch="replied">Replied</button><button class="k-btn" data-touch="cant_reach">Can\'t reach</button><button class="k-btn" data-touch="note">Add note</button>' +
+        '<button class="k-btn" data-touch="follow">Followed</button><button class="k-btn" data-touch="dm">Messaged</button><button class="k-btn" data-touch="replied">Replied</button>' + reasonSelect() + '<button class="k-btn" data-touch="cant_reach">Can\'t reach</button><button class="k-btn" data-copy="page">Copy their page link</button><button class="k-btn" data-touch="note">Save note</button>' +
         (ME && ME.role === 'admin' ? '<button class="k-btn" data-touch="' + (L.pinned ? 'unpin' : 'pin') + '">' + (L.pinned ? 'Unpin' : 'Pin to the top') + '</button>' : '') +
         '</div><input class="note-in" placeholder="A note" data-note></div><span class="rowside">' + tag(L) + '</span></div>';
       h += '<div class="sec k-stats"><div class="k-stat"><b>' + n(L.touches) + '</b><small>Times contacted</small></div><div class="k-stat"><b>' + n(L.emails_count) + '</b><small>Email addresses on file</small></div>' +
         '<div class="k-stat"><b>' + (L.opened ? 'Yes' : 'No') + '</b><small>Opened an email</small></div><div class="k-stat"><b>' + (L.replied ? 'Yes' : 'No') + '</b><small>Replied</small></div></div>';
       var ev = [];
-      r.log.forEach(function (x) { ev.push({ at: x.at, t: { follow: 'Followed on Instagram', followed_back: 'They follow us', dm: 'Instagram message sent', replied: 'They replied', cant_reach: "Can't reach", note: 'Note', checkin: 'Checked in', pin: 'Pinned to the top', unpin: 'Unpinned', tagged: 'Tagged in a post' }[x.kind] + (x.note ? ': ' + x.note : '') + (x.by ? ' (' + x.by + ')' : '') }); });
+      r.log.forEach(function (x) { ev.push({ at: x.at, t: { follow: 'Followed on Instagram', followed_back: 'They follow us', dm: 'Instagram message sent', page_sent: 'Their page link sent', replied: 'They replied', cant_reach: "Can't reach", note: 'Note', checkin: 'Checked in', pin: 'Pinned to the top', unpin: 'Unpinned', tagged: 'Tagged in a post' }[x.kind] + (x.note ? ': ' + x.note : '') + (x.by ? ' (' + x.by + ')' : '') }); });
       r.emails.forEach(function (x) { ev.push({ at: x.at, t: 'Email: ' + (x.subject || x.campaign || '') + ' (' + [x.bounced ? 'bounced' : x.delivered ? 'delivered' : 'sent', x.opened ? 'opened' : '', x.clicked ? 'clicked' : '', x.unsub ? 'unsubscribe link' : ''].filter(Boolean).join(', ') + ')' }); });
       r.replies.forEach(function (x) { ev.push({ at: x.at, t: 'Email reply from ' + (x.from || '') + ': ' + (x.snippet || '') }); });
       r.claims.forEach(function (x) { ev.push({ at: x.at, t: 'Claim ' + x.status }); });
@@ -372,7 +428,7 @@
       h += '<div class="sec"><h2 class="k-h2">History</h2>' + (ev.length ? '<div class="hist">' + ev.map(function (e) { return '<div>' + esc(e.t) + '<br><small>' + esc(when(e.at)) + '</small></div>'; }).join('') + '</div>' : '<p class="muted">No contact yet.</p>') + '</div>';
       if (r.campaigns.length) h += '<div class="sec"><span class="k-label">Campaigns</span><p class="muted">' + r.campaigns.map(function (c) { return esc(c.campaign_slug) + ' (' + esc(c.send_status) + ')'; }).join(', ') + '</p></div>';
       $('view').innerHTML = h;
-      wireRows({});
+      post({ action: 'plan' }).then(function (p) { wireRows(p.openers || {}); });
     });
   }
 
@@ -380,7 +436,7 @@
   function drawDone() {
     post({ action: 'done' }).then(function (r) {
       if (!r.ok) return fail(r);
-      var words = { follow: 'Followed', followed_back: 'They follow us', dm: 'Message sent', replied: 'Replied', cant_reach: "Can't reach", note: 'Note', checkin: 'Checked in', pin: 'Pinned', unpin: 'Unpinned' };
+      var words = { follow: 'Followed', followed_back: 'They follow us', page_sent: 'Page link sent', dm: 'Messaged', replied: 'Replied', cant_reach: "Can't reach", note: 'Note', checkin: 'Checked in', pin: 'Pinned', unpin: 'Unpinned' };
       var h = '<p class="k-lede">Everything logged from this account, newest first. Open one to fix it or add a note.</p>';
       h += r.rows.length ? '<div class="k-rows">' + r.rows.map(function (d) {
         var L = d.listing || { name: 'A listing', slug: '' };
