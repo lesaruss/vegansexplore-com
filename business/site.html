@@ -171,7 +171,7 @@
     .sortseg{display:inline-flex;border:1.5px solid color-mix(in srgb,var(--c-text) 25%,transparent);border-radius:6px;overflow:hidden;}
     .sortseg button{background:none;border:0;color:inherit;font:700 13px/1 var(--f-body),system-ui,sans-serif;padding:10px 12px;cursor:pointer;}
     .sortseg button.on{background:var(--c-text);color:var(--c-page);}
-    /* Votes (Vegans Explore members, on a live site) */
+    /* Vouches (Vegans Explore members, on a live site) */
     .vote{display:inline-flex;align-items:center;gap:6px;border:1.5px solid color-mix(in srgb,var(--c-text) 22%,transparent);background:var(--c-page);color:var(--c-text);border-radius:6px;padding:5px 10px;font:700 13px/1 var(--f-body),system-ui,sans-serif;cursor:pointer;}
     .vote svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2;}
     .vote.on{background:var(--c-accent);border-color:var(--c-accent);color:var(--c-page);}
@@ -414,22 +414,23 @@
     var items = [], byKey = {};
     C.menu.sections.forEach(function (s, si) { s.items.forEach(function (it, ii) { var k = si + '-' + ii; var o = Object.assign({ section: s.name, key: k }, it); items.push(o); byKey[k] = o; }); });
     var withPhoto = items.filter(function (i) { return i.photo && i.photo.src; });
-    // Votes: on a live site Vegans Explore members sign in to vote; the sample keeps a visitor's votes in this browser.
+    // Vouches: on a live site Vegans Explore members sign in to vouch; the sample keeps a visitor's votes in this browser.
     // The sample's sign in: a Vegans Explore member already signed in on vegansexplore.com comes in as themselves; anyone else uses
     // the sample login. Signed in, the sample bar switches between a member and the owner. Nothing here is saved anywhere but this browser.
     var CAN_VOTE = !VS && !PC, SESS = null; try { SESS = JSON.parse(sessionStorage.getItem('ve_site_session') || 'null'); } catch (e) {}
     function setSess(v) { SESS = v; try { if (v) sessionStorage.setItem('ve_site_session', JSON.stringify(v)); else sessionStorage.removeItem('ve_site_session'); } catch (e) {} }
     var OWNER = function () { return !!(SESS && SESS.role === 'owner'); };
-    // Votes are daily (one a day for each dish or post, like the Directory's); saves keep a dish as their Favorite.
+    // Vouches (Sean, 2026-11-18, canon canon-ve-vouch-everything): one per member for each dish or post, kept until they tap the heart
+    // again to undo it, like the Directory's; the count is people. Saves keep a dish as their Favorite. (Before: one a day.)
     var TODAY = nowNY.getFullYear() + '-' + (nowNY.getMonth() + 1) + '-' + nowNY.getDate();
     var MYV = {}, MYS = {}; try { MYV = JSON.parse(localStorage.getItem('ve_site_votes2') || '{}'); MYS = JSON.parse(localStorage.getItem('ve_site_saves') || '{}'); } catch (e) {}
     function vcount(key, base) { return (base || 0) + (MYV[key] ? 1 : 0); }
-    function votedToday(key) { return MYV[key] === TODAY; }
+    function vouched(key) { return !!MYV[key]; }
     var BOOK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg>';
     function saveBtn(k, label) { if (!CAN_VOTE) return ''; var on = !!MYS[k]; return '<button type="button" class="save' + (on ? ' on' : '') + '" data-save="' + k + '" aria-pressed="' + on + '" aria-label="Save ' + esc(label) + '">' + BOOK + (on ? 'Saved' : 'Save') + '</button>'; }
     function needSign() { try { sessionStorage.setItem('ve_site_next', location.hash || '#/'); } catch (e) {} location.hash = '#/signin'; }
     var HEART = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.8 4.5c2.2 0 3.6 1.2 4.2 2.4h2c.6-1.2 2-2.4 4.2-2.4 3.8 0 5.9 3.9 4.4 7.3C19.5 16.4 12 21 12 21z"/></svg>';
-    function voteBtn(key, base, label) { if (!CAN_VOTE) return ''; var on = votedToday(key); return '<button type="button" class="vote' + (on ? ' on' : '') + '" data-vote="' + key + '" data-base="' + (base || 0) + '" aria-pressed="' + on + '" title="One vote a day" aria-label="Vote for ' + esc(label) + '">' + HEART + '<span>' + vcount(key, base) + '</span></button>'; }
+    function voteBtn(key, base, label) { if (!CAN_VOTE) return ''; var on = vouched(key); return '<button type="button" class="vote' + (on ? ' on' : '') + '" data-vote="' + key + '" data-base="' + (base || 0) + '" aria-pressed="' + on + '" title="' + (on ? 'Vouched. Tap again to undo my vouch' : 'Vouch, once, for your favorite') + '" aria-label="' + (on ? 'Undo my vouch for ' : 'Vouch for ') + esc(label) + '">' + HEART + '<span>' + vcount(key, base) + '</span></button>'; }
     function arrows(id) { return '<div class="rctl"><button type="button" class="arr" data-rail="' + id + '" data-dir="-1" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M15 5l-7 7 7 7"/></svg></button><button type="button" class="arr" data-rail="' + id + '" data-dir="1" aria-label="Next"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M9 5l7 7-7 7"/></svg></button></div>'; }
     function rail(id, cards) { return '<div class="rail" id="' + id + '">' + cards.join('') + '</div><div class="rdots" data-dots="' + id + '"></div>'; }
     var picks = withPhoto.slice().sort(function (a, b) { return vcount('d:' + b.key, b.votes) - vcount('d:' + a.key, a.votes); }).slice(0, 9);
@@ -608,7 +609,7 @@
           '<div class="btns"><a class="btn" href="' + href('menu') + '">See the menu</a><a class="btn ghost" href="' + esc(orderHref()) + '">Order</a><a class="btn ghost" href="' + esc(maps) + '" target="_blank" rel="noopener">Directions</a></div></div></div>' +
           '<div class="today"><div class="wrap"><span>Today: ' + esc(I.hours[today]) + '</span><span>' + esc(addr) + '</span><a href="' + esc(tel) + '">' + esc(I.phone) + '</a>' + (biz.vegan ? '<span class="badge">' + esc(biz.vegan) + '</span>' : '') + '</div></div>' +
           (picks.length ? '<section class="s"><div class="wrap"><div class="eyebrow">Favorites</div><div class="rhead"><h2>What people come back for</h2>' + arrows('favRail') + '</div>' +
-          (CAN_VOTE ? '<p class="vnote">' + (VE_MEMBER ? 'Signed in as ' + esc(veFirst(VE_MEMBER)) + ' with Vegans Explore. Tap the heart on your favorite.' : 'Ranked by votes from Vegans Explore members. Tap the heart on your favorite.') + '</p>' : '') +
+          (CAN_VOTE ? '<p class="vnote">' + (VE_MEMBER ? 'Signed in as ' + esc(veFirst(VE_MEMBER)) + ' with Vegans Explore. Tap the heart to vouch for your favorite.' : 'Ranked by vouches from Vegans Explore members. Tap the heart to vouch for your favorite.') + '</p>' : '') +
           rail('favRail', picks.map(function (i, n) { return dish(i, false, CAN_VOTE ? n + 1 : 0); })) +
           '<p style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap"><a class="btn" href="' + href('menu') + '">See the whole menu</a><a class="btn ghost" href="' + esc(orderHref()) + '">Order for pickup</a></p></div></section>' : '') +
           '<section class="s dark"><div class="wrap split"><div><div class="eyebrow">Our story</div><h2>' + esc(C.story.tagline) + '</h2><p>' + esc(C.story.long[0] || '') + '</p><p><a class="btn ghost" href="' + href('about') + '" style="color:inherit">Read our story</a></p></div>' +
@@ -654,7 +655,7 @@
         var who = VE_MEMBER ? veFirst(VE_MEMBER) : '';
         if (SESS) return '<section class="s"><div class="wrap"><div class="signbox"><div class="vehead"><img src="' + VE_MARK + '" alt="">Vegans Explore</div><h2 style="font-size:28px;margin-bottom:8px">You are signed in, ' + esc(SESS.name) + '</h2><p class="note">Use the switch in the bar at the top to see the site as a member or as the owner.</p><p style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap"><a class="btn" href="' + href('menu') + '">Go to the menu</a><button class="btn ghost" type="button" data-signout>Sign out</button></p></div></div></section>';
         return '<section class="s"><div class="wrap"><div class="signbox"><div class="vehead"><img src="' + VE_MARK + '" alt="">Sign in with Vegans Explore</div>' +
-          '<p style="margin:0 0 16px">One Vegans Explore account works on every restaurant site we manage: vote for dishes every day, save your favorites, and order faster.</p>' +
+          '<p style="margin:0 0 16px">One Vegans Explore account works on every restaurant site we manage: vouch for the dishes you love, save your favorites, and order faster.</p>' +
           (who ? '<p class="note" style="margin:0 0 12px">You are signed in on Vegans Explore as ' + esc(who) + '.</p><button class="btn" type="button" data-signin="real" style="width:100%">Continue as ' + esc(who) + '</button><p class="note" style="text-align:center;margin:12px 0">or use the sample login</p>' : '') +
           '<label class="f">Email<input value="demo@vegansexplore.com" readonly></label><label class="f">Password<input type="password" value="explore11" readonly></label>' +
           '<button class="btn' + (who ? ' ghost' : '') + '" type="button" data-signin="sample" style="width:100%">Sign in to the sample</button>' +
@@ -780,8 +781,8 @@
         placed = { name: nm.value.trim().split(/\s+/)[0], no: 'GL-' + (1000 + Math.floor(Math.random() * 9000)), when: /soon/.test(w) ? 'in about ' + (I.ordering.pickup_minutes || 20) + ' minutes' : w.replace(/^In /, 'in ') };
         CART = {}; saveCart(); drawCart(); var ce = document.getElementById('cart'); if (ce && ce.getBoundingClientRect().top < 0 || ce && ce.getBoundingClientRect().top > innerHeight) ce.scrollIntoView({ behavior: 'smooth', block: 'start' }); document.querySelectorAll('[data-add]').forEach(function (b) { b.outerHTML = '<button class="btn sm add" type="button" data-add="' + b.dataset.add + '">Add</button>'; }); return; }
       if (e.target.closest('[data-neworder]')) { placed = null; drawCart(); }
-      if ((t = e.target.closest('[data-vote]'))) { if (!SESS) { needSign(); return; } var vk = t.dataset.vote; if (votedToday(vk)) delete MYV[vk]; else MYV[vk] = TODAY; try { localStorage.setItem('ve_site_votes2', JSON.stringify(MYV)); } catch (x) {}
-        document.querySelectorAll('[data-vote="' + vk + '"]').forEach(function (b) { var on = votedToday(vk); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); b.querySelector('span').textContent = vcount(vk, +b.dataset.base); }); return; }
+      if ((t = e.target.closest('[data-vote]'))) { if (!SESS) { needSign(); return; } var vk = t.dataset.vote; if (vouched(vk)) delete MYV[vk]; else MYV[vk] = TODAY; try { localStorage.setItem('ve_site_votes2', JSON.stringify(MYV)); } catch (x) {}
+        document.querySelectorAll('[data-vote="' + vk + '"]').forEach(function (b) { var on = vouched(vk); b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); b.title = on ? 'Vouched. Tap again to undo my vouch' : 'Vouch, once, for your favorite'; b.querySelector('span').textContent = vcount(vk, +b.dataset.base); }); return; }
       if ((t = e.target.closest('[data-save]'))) { if (!SESS) { needSign(); return; } var sk = t.dataset.save; if (MYS[sk]) delete MYS[sk]; else MYS[sk] = 1; try { localStorage.setItem('ve_site_saves', JSON.stringify(MYS)); } catch (x) {} draw(); return; }
       if ((t = e.target.closest('[data-signin]'))) { try { sessionStorage.removeItem('ve_site_signedout'); } catch (x) {} setSess(t.dataset.signin === 'real' && VE_MEMBER ? { name: veFirst(VE_MEMBER), real: true, role: 'member' } : { name: 'Sam', real: false, role: 'member' }); goNext(); return; }
       if (e.target.closest('[data-signout]')) { setSess(null); try { sessionStorage.setItem('ve_site_signedout', '1'); } catch (x) {} draw(); return; }

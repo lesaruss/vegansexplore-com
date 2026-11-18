@@ -74,8 +74,8 @@
       sayMember: 'Here are all ten tips. Each has a short checklist for this week. Tick it off as you go, and save the ones you\'re working on.' },
     { k: 'pulse', label: 'Pulse', lock: 1, say: 'Our five-part nonprofit series, and our interviews with the people behind PETA, The Humane League, Animal Hero Kids and the sanctuaries. Play them right here.',
       sayMember: 'Every nonprofit episode we\'ve recorded lives here. Start with the series, then hear how the leaders did it.' },
-    { k: 'directory', label: 'Directory', say: 'Here are the nonprofits, rescues and sanctuaries in our Directory, chapter by chapter. Members vote for the ones they love.',
-      sayMember: 'Find your organization and the ones near you. Members vote and give points here, so a page that\'s kept current gets noticed.' },
+    { k: 'directory', label: 'Directory', say: 'Here are the nonprofits, rescues and sanctuaries in our Directory, chapter by chapter. Members vouch for the ones they love.',
+      sayMember: 'Find your organization and the ones near you. Members vouch and give points here, so a page that\'s kept current gets noticed.' },
     { k: 'found', label: 'Get found', say: 'Your page in our Directory is free. Here\'s how to claim it, keep it current and show up in every chapter you serve.',
       sayMember: 'Find your page, claim it, and keep it current. Members can give your organization points right from it.' },
     { k: 'businesses', label: 'Businesses', lock: 1, say: 'Vegan brands and restaurants want to be seen doing good. Here are the ones near you, and a pitch you can send today.',
@@ -244,7 +244,7 @@
   function gvCount(key) { return (GV.counts.episode || {})[key] || 0; }
   function gvoteBtn(key) {
     var on = !!GV.mine.episode[key];
-    return '<button type="button" class="dg-vote dg-vote-s' + (on ? ' on' : '') + '" data-gvote="episode:' + esc(key) + '" aria-pressed="' + on + '" title="' + (on ? 'You voted for this' : 'Vote for this') + '">' + HEART + '<b>' + gvCount(key) + '</b></button>';
+    return '<button type="button" class="dg-vote dg-vote-s' + (on ? ' on' : '') + '" data-gvote="episode:' + esc(key) + '" aria-pressed="' + on + '" title="' + (on ? 'You vouched for this' : 'Vouch for this') + '">' + HEART + '<b>' + gvCount(key) + '</b></button>';
   }
 
   // ---------- chapters (VE_HUBS), for the Directory and Businesses ----------
@@ -388,7 +388,7 @@
       return (!s[1] || orgCat(l, s[0])) && inChapter(l, ch) && (!q || (l.name || '').toLowerCase().indexOf(q.toLowerCase()) >= 0);
     });
     main.innerHTML = head('Directory', 'Nonprofits, rescues and sanctuaries',
-      'Every one in our Directory, chapter by chapter, the most voted first. National organizations show in every chapter.',
+      'Every one in our Directory, chapter by chapter, the most vouched for first. National organizations show in every chapter.',
       toggles(DIR_SUBS.map(function (x) { return [x[0], '#/directory' + (x[1] ? '/' + x[1] : '')]; }), s[0])) +
       '<div class="dg-tools">' + chapterPick('ngDirCh', ch) + '<input type="search" id="ngDirQ" placeholder="Search ' + esc(s[1] ? s[0] : 'organizations') + '..." value="' + esc(q) + '" aria-label="Search organizations"><span class="dg-count">' + (ORGS ? list.length + ' shown' : '') + '</span></div>' +
       (ORGS ? (list.length ? cards(list.slice(0, dirShown), 'ngDir') + (list.length > dirShown ? '<div class="dg-btns" style="margin-top:14px"><button type="button" class="dg-btn dg-ghost" data-more>Show more</button></div>' : '')
@@ -407,7 +407,7 @@
       ['Claim it', 'Make the page yours: your story, links, photos and events. Claiming is free for members, and our team checks every claim.', '/business', 'How claiming works'],
       ['Not listed? Add it', 'Add your organization to the Directory. It waits for our team to check it, then it goes live.', '/claim?add=1', 'Add your organization'],
       ['Every chapter you serve', 'A statewide or national organization shows in every chapter it serves, not just its home city. Tell us which.', 'mailto:contact@lesaruss.com?subject=' + encodeURIComponent('Chapters our organization serves'), 'Tell our team'],
-      ['Votes and points', 'Members vote for the organizations they love, and they can give your organization points right from its page.', '/directory?tab=community', 'See the Community Directory'],
+      ['Vouches and points', 'Members vouch for the organizations they love, and they can give your organization points right from its page.', '/directory?tab=community', 'See the Community Directory'],
       ['The Nonprofit Partner badge', 'Nonprofit Partners wear a badge on their page and Directory card, and earn through their own link.', '#/partner', 'Become a Partner']
     ];
     main.innerHTML = head('Get found', 'Make your Directory page work for you',

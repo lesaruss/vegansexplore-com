@@ -425,7 +425,7 @@
     function kit(as) {
       var pro = as !== 'public', first = (C.name || '').split(' ')[0] || 'them', a = C.audience || {};
       var done = (C.kit_done || []).filter(function (x) { return x[1]; }).length, all = (C.kit_done || []).length;
-      var cta = as === 'you' ? '<a class="vg-btn" href="/ambassadors/door">Edit your kit</a>' : as === 'public' ? '<span class="vg-btn ghost">+ Vote</span><span class="vg-btn">Book ' + esc(first) + ' through us</span>' : as === 'partner' ? '<span class="vg-btn">Book ' + esc(first) + '</span>' : '<span class="vg-tag ok">Ambassador · Creator profile</span>';
+      var cta = as === 'you' ? '<a class="vg-btn" href="/ambassadors/door">Edit your kit</a>' : as === 'public' ? '<span class="vg-btn ghost">+ Vouch</span><span class="vg-btn">Book ' + esc(first) + ' through us</span>' : as === 'partner' ? '<span class="vg-btn">Book ' + esc(first) + '</span>' : '<span class="vg-tag ok">Ambassador · Creator profile</span>';
       var hero = '<div class="vg-kit-hero" style="background-image:linear-gradient(90deg,rgba(0,0,0,.86) 0%,rgba(0,0,0,.7) 45%,rgba(0,0,0,.25) 100%),url(\'' + esc(C.cover || '') + '\')">' +
         '<div class="vg-kit-av" style="background-image:url(\'' + esc(C.avatar || '') + '\')"></div><div class="vg-kit-id"><span>Content creator · ' + esc(C.city || '') + '</span><h2>' + esc(C.name || '') + '</h2><p>' + esc(C.tagline || C.line || '') + '</p>' +
         '<div class="vg-tags"><span class="vg-tag ok">Official creator</span>' + (pro ? '<span class="vg-tag dark">' + standing(C) + '</span>' : '') + (C.platforms || []).map(function (p) { return '<span class="vg-tag">' + esc(p.label) + '</span>'; }).join('') + '</div></div>' +

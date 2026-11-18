@@ -79,9 +79,9 @@
       { stories: [{ title: 'Forty vendors confirmed for the Plant-Based Weekend' }, { title: 'Visit Marisol Bay adds a free shuttle from Port Marisol' }, { title: 'Chef Alana Reyes headlines the chef stage' }],
         events: [{ title: 'Plant-Based Weekend on the Bay', when: '', where: 'Bayfront Park' }], action: { title: 'Plan your weekend' } }),
     topic('sample-pulse-2', 'sample', 1, 'Port Marisol gets its first all-Vegan pizza counter',
-      'Harbor Lights Pizza opened a slice window on the waterfront, with cashew mozzarella made in house. Members have voted it into the Directory\'s top five in a week.',
+      'Harbor Lights Pizza opened a slice window on the waterfront, with cashew mozzarella made in house. Members vouched it into the Directory\'s top five in a week.',
       'What should be on the next special?', 24,
-      { stories: [{ title: 'Harbor Lights Pizza opens a slice window' }, { title: 'Bayfront Greens Market stocks three new local brands' }], events: [], action: { title: 'Vote for your favorite slice' } }),
+      { stories: [{ title: 'Harbor Lights Pizza opens a slice window' }, { title: 'Bayfront Greens Market stocks three new local brands' }], events: [], action: { title: 'Vouch for your favorite slice' } }),
     topic('sample-pulse-3', 'sample', 2, 'The chamber wants more plant-based dishes on Main Street',
       'The Marisol Bay Chamber of Commerce, a community sponsor, is helping restaurants add plant-based (Pre-Vegan) options, starting with a mixer on the calendar.',
       'Which Main Street spot should go first?', 17,
@@ -262,7 +262,7 @@
     var t = e.target; if (!t.closest) return;
     if (!t.closest('#hub-content-grid, #hero-section')) return;
     var stop = function () { e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation(); };
-    if (t.closest('.vote-btn, .vrd-save, [data-vch-vote], [data-vch-save], [data-hov-vote], .hub-opp-apply-btn, [data-redeem-id], [data-donate-id]')) { stop(); toast('Sample: votes, saves and applications are not counted in the sample community.'); return; }
+    if (t.closest('.vote-btn, .vrd-save, [data-vch-vote], [data-vch-save], [data-hov-vote], .hub-opp-apply-btn, [data-redeem-id], [data-donate-id]')) { stop(); toast('Sample: vouches, saves and applications are not counted in the sample community.'); return; }
     var a = t.closest('a[href]'), h = a ? a.getAttribute('href') : '';
     var card = t.closest('.rank-card[data-slug]');
     if (card && !a) { stop(); openListing(card.getAttribute('data-slug')); return; }

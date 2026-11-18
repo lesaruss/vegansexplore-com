@@ -171,7 +171,7 @@
       if (inv.points_to === 'founding') {
         $('title').textContent = inv.first_name + ', be one of our first Founding Members.';
         $('lede').textContent = 'I’m building Vegans Explore, a community for Vegans, city by city, and I’m hand-picking the first Founding Members: the people who shape what this becomes before everyone else arrives.' + (inv.comp ? '' : ' Joining is free: a short survey, with 250 points to start.');
-        if (!inv.comp) $('pt-points').hidden = false, $('pt-points').textContent = '250 points to start: vote, check in, and give to the places you love';
+        if (!inv.comp) $('pt-points').hidden = false, $('pt-points').textContent = '250 points to start: vouch, check in, and give to the places you love';
       }
       // A Nonprofit Partner invitation (Sean, 2026-10-29): the organization is the partner and earns; the person leads the account, on us.
       if (inv.points_to === 'nonprofit') {
@@ -206,7 +206,7 @@
         $('lede').textContent = giver + ' of ' + gg + ' gave you a Passport: a Founding Membership on Vegans Explore, the community for Vegans, city by city.';
         $('gift').hidden = false; $('gift').textContent = 'Your Passport is a gift from ' + gg + (inv.points > 0 ? ', with ' + Number(inv.points).toLocaleString('en-US') + ' points to start' : '');
         $('points').innerHTML = ['<b>Everything a Passport holder has:</b> the Directory, the Guides, the Daily Pulse, events in every city.',
-          inv.points > 0 ? Number(inv.points).toLocaleString('en-US') + ' points to start: vote, check in, unlock a Guide, and give to the places you love.' : '',
+          inv.points > 0 ? Number(inv.points).toLocaleString('en-US') + ' points to start: vouch, check in, unlock a Guide, and give to the places you love.' : '',
           '<b>' + esc(gg) + '</b> is waiting for you there, with its events and announcements.']
           .filter(Boolean).map(function (t) { return '<li>' + t + '</li>'; }).join('');
       }

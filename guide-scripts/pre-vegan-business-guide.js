@@ -488,8 +488,8 @@
   function viewFound() {
     var steps = [
       ['Listed in the Directory', 'Members find places by city, search and kind. A place that is not Vegan but has plant-based items is listed too, marked so people know what to expect.', '/directory', 'See the Directory'],
-      ['Vetted by members', 'A place with plant-based options shows to everyone once 10 different members vote for it, its business claims it, or our team checks it. Until then members see it under Being vetted.', '/directory', 'How the Directory works'],
-      ['Votes move you up', 'Members vote for the places they love, and the most voted rise to the top of their city. Votes are the only thing that moves a place up.', '/directory', 'See the most voted'],
+      ['Vetted by members', 'A place with plant-based options shows to everyone once 10 different members vouch for it, its business claims it, or our team checks it. Until then members see it under Being vetted.', '/directory', 'How the Directory works'],
+      ['Vouches move you up', 'Members vouch for the places they love, and the most vouched for rise to the top of their city. Vouches are the only thing that moves a place up.', '/directory', 'See the most vouched for'],
       ['Nobody can pay to move up', 'Being featured, an ad or a plan never buys a better place in the list. That is why members trust it.', '', '']
     ];
     main.innerHTML = head('Get found', 'How people find you on Vegans Explore', 'An honest list is the point. Here is how a place gets in front of the people looking for plant-based food.') +

@@ -6,9 +6,9 @@
    three-fourths on the left and the board one-fourth on the right on desktop; on phones the board comes first, showing the top 3
    with "See all", then the chapters. /communities and the dashboard's Communities tab both use it.
    VENextChapters.mount(el)       draws the board alone.
-   Places are ve_next_chapters rows (a new place is a row); votes are ve-votes next_vote, once every 24 hours per member, like a
-   chapter's; Suggest another place is ve-votes next_suggest (members, 3 a day, emailed to the team, added by hand). Signed out,
-   Vote and Suggest open the members window (VEVotes). Load after /public/ve-auth.js.
+   Places are ve_next_chapters rows (a new place is a row); vouches are ve-votes next_vote, one per member per place, kept until
+   Undo my vouch (next_unvote), like a chapter's and a listing's (Sean, 2026-11-18, canon canon-ve-vouch-everything; the count is people); Suggest another place is ve-votes next_suggest (members, 3 a day, emailed to the team, added by hand). Signed out,
+   Vouch and Suggest open the members window (VEVotes). Load after /public/ve-auth.js.
    Ranked by the algorithm, never showing its numbers (Sean, 2026-11-09: "I don't necessarily want to show the downloads on there"): votes,
    then voters, then traffic, a rank next_list returns from podcast downloads there (branddesk-insights next_places, daily) and the episodes
    that named it. A super admin can open each place's insights: BrandDesk > Vegans Explore > Insights > Chapters (hq.lesaruss.ai).
@@ -95,14 +95,14 @@
         '<span class="nx-info"><span class="nx-name">' + esc(p.name) + '</span><span class="nx-meta">' + esc(p.sub || '') + '</span>' +
         (admin() ? '<a class="nx-ins" href="' + HQ + 'next:' + encodeURIComponent(p.slug) + '" target="_blank" rel="noopener">Insights</a>' : '') + '</span>' +
         '<span class="nx-right"><span class="nx-count">' + Number(p.votes || 0).toLocaleString() + '</span>' +
-        '<button type="button" class="nx-btn' + (voted ? ' on' : '') + '" data-nx-vote="' + esc(p.slug) + '" aria-label="Vote for ' + esc(p.name) + '">' + (voted ? 'Voted' : 'Vote') + '</button></span></li>';
+        '<button type="button" class="nx-btn' + (voted ? ' on' : '') + '" data-nx-vote="' + esc(p.slug) + '" aria-label="' + (voted ? 'You vouch for ' : 'Vouch for ') + esc(p.name) + '">' + (voted ? 'Vouched' : 'Vouch') + '</button></span></li>';
     }
     function draw() {
       var list = places.slice().sort(function (a, b) { return (b.votes - a.votes) || (b.voters - a.voters) || ((a.traffic || 1e9) - (b.traffic || 1e9)) || (a.sort - b.sort); });
       var top = list.slice(0, TOP), rise = list.slice(TOP);
       el.classList.toggle('short', !open);
       el.innerHTML = '<div class="nx-eye">Coming next</div><h2>Where should we go next?</h2>' +
-        '<p class="nx-sub">Vote for the next chapter, once a day for each place you want. Your votes guide us. They don\'t decide it: we may open somewhere because someone there is ready to lead.</p>' +
+        '<p class="nx-sub">Vouch for every place you want us to open next. Your vouches guide us. They don\'t decide it: we may open somewhere because someone there is ready to lead.</p>' +
         (list.length ? '<div class="nx-scroll"><ol class="nx-list">' + top.map(row).join('') + '</ol>' +
           (rise.length ? '<div class="nx-h3 nx-hide">Rising</div><ol class="nx-list nx-hide">' + rise.map(function (p, i) { return row(p, i + TOP); }).join('') + '</ol>' : '') + '</div>' +
           (list.length > PHONE_TOP ? '<button type="button" class="nx-more" data-nx-more>See all ' + list.length + ' places</button>' : '')
@@ -114,6 +114,18 @@
           : '<button type="button" class="nx-suggest" data-nx-suggest>+ Suggest another place</button>') + '</div>';
     }
 
+    // Vouched: the same window as a listing's, with Undo my vouch (next_unvote).
+    function vouched(slug) {
+      var p = places.filter(function (x) { return x.slug === slug; })[0];
+      votes().then(function (V) {
+        if (!V || !V.votedPrompt) return;
+        V.votedPrompt(next[slug], { title: 'You vouched for ' + (p ? p.name : 'this place'),
+          body: 'Each member vouches for a place once, so every count is the number of people who want us there. Made a mistake? You can take your vouch back.',
+          undo: function () { return call({ action: 'next_unvote', place: slug }, true); },
+          onUndo: function (d) { delete next[slug]; if (p) p.votes = d.votes != null ? d.votes : Math.max(0, (p.votes || 1) - 1); draw(); toast('Your vouch is taken back.'); } });
+      });
+    }
+
     el.addEventListener('click', function (e) {
       if (e.target.closest('[data-nx-more]')) { open = true; draw(); return; }
       if (e.target.closest('[data-nx-suggest]')) { if (!token()) { join(); return; } formOpen = true; draw(); var i = el.querySelector('#nx-place'); if (i) i.focus(); return; }
@@ -122,16 +134,16 @@
       e.preventDefault();
       if (!token()) { join(); return; }
       var slug = vb.getAttribute('data-nx-vote');
-      if (next[slug]) { votes().then(function (V) { if (V && V.votedPrompt) V.votedPrompt(next[slug]); }); return; }
+      if (next[slug]) { vouched(slug); return; }
       vb.disabled = true;
       call({ action: 'next_vote', place: slug }, true).then(function (d) {
         vb.disabled = false;
         var p = places.filter(function (x) { return x.slug === slug; })[0];
-        if (d.ok) { if (p) { p.votes = d.votes; } next[slug] = d.next_vote_at; draw(); toast('Thanks. Your vote counts for ' + (p ? p.name : 'that place') + '.'); }
-        else if (d.error === 'already_voted') { next[slug] = d.next_vote_at; draw(); votes().then(function (V) { if (V && V.votedPrompt) V.votedPrompt(d.next_vote_at); }); }
+        if (d.ok) { if (p) { p.votes = d.votes; } next[slug] = d.next_vote_at; draw(); toast('Thanks. You vouch for ' + (p ? p.name : 'that place') + '.'); }
+        else if (d.error === 'already_voted') { next[slug] = d.next_vote_at; draw(); vouched(slug); }
         else if (d._status === 402) join();
-        else toast(d.message || 'That vote did not go through. Try again.');
-      }).catch(function () { vb.disabled = false; toast('That vote did not go through. Try again.'); });
+        else toast(d.message || 'That vouch did not go through. Try again.');
+      }).catch(function () { vb.disabled = false; toast('That vouch did not go through. Try again.'); });
     });
     el.addEventListener('submit', function (e) {
       var f = e.target.closest('[data-nx-form]'); if (!f) return;

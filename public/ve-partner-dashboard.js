@@ -842,7 +842,7 @@
         var mv = d.featured ? '<span style="display:flex;gap:4px">' + (i > 0 ? '<button type="button" class="vpd-btn sm o" data-vpd-dmove="' + esc(d.id) + '" data-dir="-1" aria-label="Move ' + esc(d.name) + ' up">&uarr;</button>' : '') +
           (i < list.length - 1 ? '<button type="button" class="vpd-btn sm o" data-vpd-dmove="' + esc(d.id) + '" data-dir="1" aria-label="Move ' + esc(d.name) + ' down">&darr;</button>' : '') + '</span>' : '';
         return '<div class="vpd-row" style="grid-template-columns:56px 1fr auto">' + thumb(d) + '<div><b>' + esc(d.name) + (d.price_display ? ' &middot; ' + esc(d.price_display) : '') + '</b><small>' + esc(d.line || 'No line yet') +
-          ' &middot; ' + n(d.votes) + (d.votes === 1 ? ' vote' : ' votes') + '</small></div><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">' + tag + mv +
+          ' &middot; ' + n(d.votes) + (d.votes === 1 ? ' vouch' : ' vouches') + '</small></div><div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:flex-end">' + tag + mv +
           '<a class="vpd-btn sm o" href="?tab=brand&pd=dishes&item=' + esc(d.id) + '" data-vpd="dishes" data-vpd-item="' + esc(d.id) + '">Edit</a></div></div>';
       };
       var run = function (k) { return (DS.slots || []).filter(function (x) { return x.slot === k; }).sort(function (a, b) { return a.ends_at < b.ends_at ? 1 : -1; })[0]; };
@@ -852,7 +852,7 @@
         return '<div><span>Slot ' + k + (r ? ' &middot; on until ' + esc(dt(r.ends_at)) : ' &middot; 50 points for 30 days') + '</span>' +
           (!r || soon ? '<button type="button" class="vpd-btn sm' + (r ? ' o' : '') + '" data-vpd-dslot="' + k + '"' + (k === 5 && !run(4) ? ' disabled title="Add slot 4 first"' : '') + '>' + (r ? 'Keep it 30 more days' : 'Add slot ' + k) + '</button>' : '<b>On</b>') + '</div>';
       }).join('') + '</div>';
-      return '<p class="vpd-empty" style="padding:0 0 10px">Show off up to ' + DS.free + ' dishes on your page for free. Members vote on them, and the counts show, but you choose the order. Your menu stays as it is.</p>' +
+      return '<p class="vpd-empty" style="padding:0 0 10px">Show off up to ' + DS.free + ' dishes on your page for free. Members vouch for them, once each, and the counts show, but you choose the order. Your menu stays as it is.</p>' +
         '<div class="vpd-bar" style="border:0;padding:0;margin:0 0 14px"><span class="vpd-empty" style="padding:0"><b>' + feat.filter(function (d) { return d.shown; }).length + ' of ' + DS.cap + '</b> featured &middot; ' + DS.dishes.length + ' of ' + DS.max_saved + ' saved &middot; ' + n(DS.balance) + ' points to spend</span>' +
         (DS.dishes.length < DS.max_saved ? '<a class="vpd-btn" href="?tab=brand&pd=dishes&item=new" data-vpd="dishes" data-vpd-item="new">New dish</a>' : '') + '</div>' +
         '<h4>More slots</h4>' + slotBox +
@@ -923,7 +923,7 @@
       });
       var del = el.querySelector('[data-vpd-ddel]');
       if (del) del.addEventListener('click', function () {
-        if (!confirm('Remove this dish? Its votes go with it.')) return;
+        if (!confirm('Remove this dish? Its vouches go with it.')) return;
         dcall({ action: 'remove', id: q('item') }).then(function (d) { if (!d || !d.ok) return msg(DERR[d && d.error] || 'That did not go through. Try again.', true); DS = null; go('dishes'); });
       });
       el.querySelectorAll('[data-vpd-dmove]').forEach(function (b) {

@@ -231,7 +231,7 @@
     { k: 'stadium', label: 'Stadium & Arena', g: 'river', pic: '/public/guides/venues/hard-rock-stadium.webp', say: 'I\'m River, from the Stadium and Arena Guide. Hard Rock Stadium is mapped stand by stand, and it is yours to open.' },
     { k: 'airport', label: 'Airport', g: 'nori', pic: '/public/guides/airports/fll.webp', say: 'I\'m Nori, from the Airport Guide. Type your gate at Fort Lauderdale and I\'ll show you the closest Vegan food.' },
     { k: 'animals', label: 'The animals', g: 'dani', pic: '/public/guides/nonprofit-guide.jpg', say: 'I\'m Dani. The rescues and sanctuaries near you, the animals who need a foster, and tip 1 for anyone running a nonprofit.' },
-    { k: 'city', label: 'Your city', g: 'pascal', say: 'I\'m Pascal. Your city on Vegans Explore: the places members vote up, the Daily Pulse every morning and what is coming up.' },
+    { k: 'city', label: 'Your city', g: 'pascal', say: 'I\'m Pascal. Your city on Vegans Explore: the places members vouch for, the Daily Pulse every morning and what is coming up.' },
     { k: 'restaurant', label: 'Restaurant check', g: 'liz', pic: '/public/guides/vegan-restaurant-guide.jpg', say: 'I\'m Liz, from the Vegan Restaurant Guide. Run a Vegan place? Pick it and I\'ll check how it shows up online, free.' },
     { k: 'creator', label: 'Creator tip 1', g: 'kai', pic: '/public/guides/creator-guide.jpg', say: 'I\'m Kai, from the Creator Guide. Tip 1 is about knowing exactly who you are making content for, and why.' },
     { k: 'join', label: 'Open every tab', g: 'all', say: 'Your name and email open every tab. We send your taste, then a short note now and then.' }
@@ -280,7 +280,7 @@
         '<div class="dg-btns">' + (T ? btn('#/dairy', 'Start the tour') : btn('#/dairy', 'Try the Buttermilk swap', true)) + '</div>' + (T ? '' : FOUND());
     },
     dairy: function () {
-      return head('Maya · The Vegan Dairy Guide', 'The Buttermilk swap', 'Milk, butter, cheese, cream: the Dairy Guide shows what to use instead, the brands members vote up, and a Cookbook. This one is open to everyone.') +
+      return head('Maya · The Vegan Dairy Guide', 'The Buttermilk swap', 'Milk, butter, cheese, cream: the Dairy Guide shows what to use instead, the brands members vouch for, and a Cookbook. This one is open to everyone.') +
         ('<div class="tz-box"><b>Make it:</b> it takes 5 minutes.<br>1 tbsp lemon juice or vinegar, then soy milk to the 1-cup line. Rest 5 to 10 minutes. Use 1:1.<br><b>Tip:</b> soy curdles best; room-temperature milk curdles faster.</div>' + REST('Dairy Guide') + '<div class="dg-btns">' + btn('/guides/vegan-dairy-guide#/swaps', 'Open the Dairy Guide', true) + '</div>');
     },
     nutrition: function () {
@@ -302,7 +302,7 @@
     city: function () {
       var c = city(), hub = (window.VE_HUBS || []).filter(function (h) { return h.slug === c.slug; })[0];
       var pic = hub && hub.page && hub.page.banner ? hub.page.banner : '/communities/south-florida/banner.jpg';
-      return head('Pascal · Your city', c.name ? c.name + ', on Vegans Explore' : 'Your city, on Vegans Explore', 'The places to eat and shop, the Daily Pulse every morning, and the events coming up' + (c.name ? ' in ' + esc(c.name) : '') + '. Anyone can look around; members vote, post and check in.') +
+      return head('Pascal · Your city', c.name ? c.name + ', on Vegans Explore' : 'Your city, on Vegans Explore', 'The places to eat and shop, the Daily Pulse every morning, and the events coming up' + (c.name ? ' in ' + esc(c.name) : '') + '. Anyone can look around; members vouch, post and check in.') +
         '<div class="tz-pic" style="background-image:url(\'' + esc(pic) + '\')"></div><div class="dg-btns">' + btn(c.slug ? '/communities/' + c.slug : '/communities', c.name ? 'Open ' + esc(c.name) : 'Find your city', true) + btn('/pulse' + (c.slug ? '?city=' + c.slug : ''), 'The Daily Pulse', true) + btn('/events', 'Events', true) + '</div>';
     },
     restaurant: function () {
@@ -322,7 +322,7 @@
     var sg = T.suggested_guide || 'vegan-dairy-guide', gn = GUIDE_NAME[sg] || 'The Vegan Dairy Guide';
     var vid = window.VEVideo ? '<div class="tz-vid">' + VEVideo.markup({ src: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/home/next-taste-v1.mp4', vtt: '/public/home/next-taste-v1.vtt', poster: '/public/home/next-poster.jpg?v=1', title: 'Watch the video', sub: 'What you can do on Vegans Explore, in 40 seconds', label: 'What you can do on Vegans Explore, narrated by Liz', ga: 'taste_next_v1' }) + '</div>' : '';
     return head('Picked for you', 'Where to go next, ' + (T.first_name || 'there'), '') + vid +
-      '<div class="tz-box"><b>Get your Passport, $11 one time.</b> It is our membership: vote, save, check in and post, and it comes with 1,100 points, enough to open ' + esc(gn) + ', the Guide that fits what you told us.</div>' +
+      '<div class="tz-box"><b>Get your Passport, $11 one time.</b> It is our membership: vouch, save, check in and post, and it comes with 1,100 points, enough to open ' + esc(gn) + ', the Guide that fits what you told us.</div>' +
       '<div class="dg-btns">' + btn('/passport?from=taste', 'Get your Passport · $11') + '</div>' + FOUND() +
       '<p class="tz-fine" style="margin-top:18px">Rather earn it? Finish one of three 30-day challenges (support local places, bring friends in, or help the animals) and your Passport is on us. <a href="/challenges" style="color:var(--g);font-weight:800">See the challenges</a></p>';
   }

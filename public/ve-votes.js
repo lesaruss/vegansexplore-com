@@ -59,7 +59,7 @@
     return (day(t) === day(new Date()) ? 'later today at ' : 'tomorrow at ') + at;
   }
   function tooSoon(iso) { return !!iso && new Date(iso).getTime() > Date.now(); }
-  function onceMessage(iso) { return "You already voted for this place. Tap Voted to take your vote back."; }
+  function onceMessage(iso) { return "You already vouched for this place. Tap Vouched to take your vouch back."; }
 
   // A small note that floats at the bottom of the screen for a few seconds.
   var noteEl = null, noteTimer = null;
@@ -232,17 +232,18 @@
   function votedPrompt(iso, o) {
     o = o || {};
     openModal({
-      icon: 'heart', eyebrow: 'Thanks for vouching', title: 'You vouched for this place',
-      body: 'Each member vouches for a business once, so every count is the number of people who stand behind it. Made a mistake? You can take your vouch back.',
-      actions: (o.listingId ? '<button type="button" class="ve-vm-btn ve-vm-alt" id="ve-vm-undo">Undo my vouch</button>' : '') +
+      icon: 'heart', eyebrow: 'Thanks for vouching', title: o.title || 'You vouched for this place',
+      body: o.body || 'Each member vouches for a business once, so every count is the number of people who stand behind it. Made a mistake? You can take your vouch back.',
+      actions: (o.listingId || o.undo ? '<button type="button" class="ve-vm-btn ve-vm-alt" id="ve-vm-undo">Undo my vouch</button>' : '') +
         '<button type="button" class="ve-vm-btn ve-vm-go" data-vm-close>Got it</button>'
     });
     var u = document.getElementById('ve-vm-undo');
     if (u) u.addEventListener('click', function () {
       u.disabled = true; u.textContent = 'Taking it back...';
-      unvote(o.listingId).then(function (d) {
+      // o.undo: any other vouch (a chapter, a next place) passes its own take-back call (2026-11-18, canon-ve-vouch-everything).
+      (o.undo ? o.undo() : unvote(o.listingId)).then(function (d) {
         if (d && d.ok) {
-          if (recent) recent.then(function (m) { delete m[o.listingId]; });
+          if (recent && o.listingId) recent.then(function (m) { delete m[o.listingId]; });
           closeModal(); if (o.onUndo) o.onUndo(d); else location.reload();
         } else { u.disabled = false; u.textContent = 'Undo my vouch'; }
       }).catch(function () { u.disabled = false; u.textContent = 'Undo my vouch'; });
