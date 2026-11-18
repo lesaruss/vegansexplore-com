@@ -166,6 +166,10 @@
       "destination": "/api/go?code=:code"
     },
     {
+      "source": "/dashboard/reach",
+      "destination": "/admin/depot/reach"
+    },
+    {
       "source": "/dashboard/sample",
       "destination": "/dashboard/center-console"
     },
