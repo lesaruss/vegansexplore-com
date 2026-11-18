@@ -15,6 +15,7 @@
 //   POST { action: 'link', id }                         their personal tracked /go/ link (made once)
 //   POST { action: 'scout', chapter, kind, url?, name?, note? }   an event (pending review) or a person or place (Depot > Ideas)
 //   POST { action: 'done', offset? }                    the holder's own touches, newest first
+// Ops: the LESARUSS_ADMIN_TOKEN acts as an admin (reads and proofs; its touches have no member).
 
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.4';
 
@@ -57,7 +58,15 @@ async function verifyToken(token: string): Promise<string | null> {
     return typeof d.sub === 'string' && d.exp >= Math.floor(Date.now() / 1000) ? d.sub : null;
   } catch { return null; }
 }
+// Ops (Logan's admin token, as in ve-positions): acts as an admin with no member id, for checks and proofs from SQL.
+async function isOps(req: Request) {
+  const t = (req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '');
+  if (!t || t.split('.').length === 3) return false;
+  const { data } = await db.from('lesaruss_secrets').select('value').eq('key', 'LESARUSS_ADMIN_TOKEN').maybeSingle();
+  return !!data?.value && t.length === String(data.value).length && t === data.value;
+}
 async function viewer(req: Request) {
+  if (await isOps(req)) return { id: null as unknown as string, name: 'Logan (ops)', role: 'admin' as const };
   const sub = await verifyToken((req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, ''));
   if (!sub) return null;
   const { data: m } = await db.from('members').select('id, name, is_superadmin').eq('id', sub).maybeSingle();
@@ -318,7 +327,9 @@ Deno.serve(async (req) => {
     }
     if (action === 'done') {
       const offset = Math.max(0, Number(body.offset) || 0);
-      const { data } = await db.from('ve_reach_log').select('id, listing_id, kind, note, at').eq('member_id', me.id).order('at', { ascending: false }).range(offset, offset + 49);
+      let dq = db.from('ve_reach_log').select('id, listing_id, kind, note, at');
+      if (me.id) dq = dq.eq('member_id', me.id);
+      const { data } = await dq.order('at', { ascending: false }).range(offset, offset + 49);
       const ids = [...new Set((data || []).map((d: any) => d.listing_id))];
       const { data: ls } = ids.length ? await db.from('listings').select('id, slug, name, logo_url').in('id', ids) : { data: [] };
       const by = new Map((ls || []).map((l: any) => [l.id, l]));

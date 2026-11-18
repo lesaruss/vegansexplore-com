@@ -78,6 +78,31 @@
   var GROUPS = [['restaurants', 'Restaurants and food'], ['businesses', 'Other businesses'], ['nonprofits', 'Nonprofits'], ['creators', 'Creators and media']];
   var STATUSES = [['not_reached', 'Not reached yet'], ['reached', 'Reached'], ['clicked', 'Clicked'], ['replied', 'Replied'], ['unsubscribed', 'Unsubscribed'], ['claimed', 'Claimed'], ['cant_reach', "Can't reach"]];
   var TAGCLASS = { claimed: 'live', replied: 'live', clicked: 'new', reached: 'wait', not_reached: 'not', unsubscribed: 'bad', cant_reach: 'bad' };
+  // ======== COPY: every word on this page that is not a label or live data. ALL DRAFT (Sean, 2026-11-18: "it's okay to build the
+  // structure, but the content still needs to be finalized"). Replace here after the BOSS on KJ's role and Sean's review; the DM openers
+  // live in ve_reach_messages (status draft until Sean locks them). Nothing below is final. ========
+  var COPY = {
+    plan: {
+      bigTitle: 'The big picture',
+      big: ['Goal: every listing in the Directory hears from us once by Monday, December 1, 11:59 PM Eastern.',
+        'Why January 1: launch, and the close of Founding businesses at midnight Eastern.'],
+      lanesTitle: 'How we reach them',
+      lanes: ['Email, when we have a checked address.', 'Instagram conversations.', 'Instagram tags in city posts.', 'Find them: an email or contact form from their website.'],
+      roleTitle: 'KJ\'s role',
+      role: 'Social Media Manager (Instagram). Starting conversations with the listings on Instagram. To be finalized after the role BOSS.',
+      steps: [['Follow ahead', 'Two or three days before the message.'], ['Start the conversation', 'Today\'s messages, with their own link.'],
+        ['Keep it going', 'Replies, check-ins, notes here.'], ['Chapter scout', 'One chapter a weekday: events and people to spotlight.']],
+      capTitle: 'The daily limit',
+      cap: '{dm} new messages and {follow} follows a weekday, 3 messages an hour. Instagram blocks accounts that look like spam; a block stops the account for 24 to 48 hours.',
+      seeTitle: 'What the console can see',
+      see: 'Email replies, opens and clicks come in by themselves. Instagram messages cannot be read by our system, so the steps logged here are the record.',
+      openersNote: 'One opener per group, a starting point. Drafts until Sean locks them; {name} and {link} fill in on each card.'
+    },
+    scout: {
+      ask: 'Look around {chapter} for Vegan events and people or places worth spotlighting, and send each one here. Tomorrow: {next}.',
+      where: 'Each one lands in Depot > Ideas, marked Chapter scout with the chapter.'
+    }
+  };
   var ME = null, PLAN = null;
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
@@ -124,23 +149,21 @@
   }
 
   // ---------- Plan ----------
+  function draft() { return ' <span class="k-tag wait">Draft</span>'; }
   function drawPlan() {
     post({ action: 'plan' }).then(function (p) {
       if (!p.ok) return fail(p);
       PLAN = p;
-      var pct = p.total ? Math.round(100 * p.reached / p.total) : 0;
+      var C = COPY.plan, pct = p.total ? Math.round(100 * p.reached / p.total) : 0;
       var h = '';
       h += '<div class="k-stats">' +
         '<div class="k-stat"><b>' + n(p.total) + '</b><small>Listings in the Directory</small></div>' +
         '<div class="k-stat"><b>' + n(p.reached) + '</b><small>Reached so far (' + pct + '%)</small></div>' +
         '<div class="k-stat"><b>' + n(p.claimed) + '</b><small>Claimed their page</small></div>' +
         '<div class="k-stat"><b>' + n(p.days_left) + '</b><small>Working days to Dec 1</small></div></div>';
-      h += '<div class="sec k-split"><div class="k-main">' +
-        '<h2 class="k-h2">The big picture</h2>' +
-        '<p class="k-lede">Every business, nonprofit, creator, podcast and YouTube channel in the Directory hears from us once by Monday, December 1, 11:59 PM Eastern: they are listed, the door is open, and here is the one thing to do (claim their page, free for members).</p>' +
-        '<p class="k-lede">Why January 1: Vegans Explore launches January 1, 2027, and Founding businesses close at midnight Eastern that night. Everyone who comes in before then is part of the founding group. Our job is to make sure nobody misses the door.</p>' +
-        '</div><div class="k-side"><div class="k-block k-peach"><span class="k-label">How we reach them</span>' +
-        '<p><b>Email</b> when we have a checked address.<br><b>Instagram</b> conversations, started by hand.<br><b>Instagram tags</b> in city posts, for the accounts there is no time to message.<br><b>Find them</b>: the website reader looks for an email or a contact form.</p></div></div></div>';
+      h += '<div class="sec k-split"><div class="k-main"><h2 class="k-h2">' + esc(C.bigTitle) + draft() + '</h2>' +
+        C.big.map(function (t) { return '<p class="k-lede">' + esc(t) + '</p>'; }).join('') +
+        '</div><div class="k-side"><div class="k-block k-peach"><span class="k-label">' + esc(C.lanesTitle) + draft() + '</span><p>' + C.lanes.map(esc).join('<br>') + '</p></div></div></div>';
       h += '<div class="sec"><h2 class="k-h2">Progress by group</h2><div class="k-rows">';
       GROUPS.forEach(function (g, i) {
         var x = p.groups[g[0]] || {};
@@ -156,17 +179,11 @@
         '<div class="k-block k-pink"><span class="k-big">' + n(L.instagram.reached) + ' / ' + n(L.instagram.total) + '</span><small>Instagram only</small></div>' +
         '<div class="k-block k-peach"><span class="k-big">' + n(p.tagged) + '</span><small>Tagged in a city post</small></div>' +
         '<div class="k-block k-br"><span class="k-big">' + n(L.find.total) + '</span><small>Website only: to find</small></div></div></div>';
-      h += '<div class="sec k-split"><div class="k-main"><h2 class="k-h2">KJ\'s role</h2>' +
-        '<p class="k-lede"><b>Social Media Manager (Instagram).</b> She helps every business, nonprofit and creator in the Directory learn they are listed, by starting a real conversation on Instagram, in her own words, on her own hours. The queue on This week is the work; there is no daily quota from us, only Instagram\'s safe limit.</p>' +
-        '<div class="k-steps">' +
-        '<div><em>1</em><b>Follow ahead</b>Follow each account two or three days before messaging it. A message to someone who follows us back lands in their main inbox, not in Requests.</div>' +
-        '<div class="you"><em>2</em><b>Start the conversation</b>Up to 20 new messages a weekday, with their own link. Use the group\'s opener as a start, in your own words.</div>' +
-        '<div><em>3</em><b>Keep it going</b>Answer replies, check in after first contact, and log each step here. Questions go to Logan on the listing.</div>' +
-        '<div><em>4</em><b>Chapter scout</b>Each weekday, look around one chapter for events and people we should spotlight. A different chapter every day, so every city gets a turn.</div>' +
-        '</div></div><div class="k-side"><div class="k-block k-or"><span class="k-label">Why only 20 a day</span>' +
-        '<p>Instagram limits and blocks accounts that send many new messages or follows quickly, because that is what spam looks like. Meta publishes no exact numbers, and one block stops the account for 24 to 48 hours or longer. So: <b>20 new messages a weekday, no more than 3 an hour</b>, and <b>up to ' + n(p.follow_cap) + ' follows a weekday</b>. The console stops at the limit. Replies to people who wrote back are never limited.</p></div>' +
-        '<div class="k-block k-tint" style="margin-top:12px"><span class="k-label">What the console can see</span><p>Email replies, opens and clicks come in by themselves. Instagram messages cannot be read by our system (no app can start or read them on a shared account), so the steps logged here are the record.</p></div></div></div>';
-      h += '<div class="sec"><h2 class="k-h2">The openers</h2><p class="muted">One message per group, a start for her own words. Drafts until Sean locks them; {name} and {link} are filled in on each card.</p><div class="k-grid">';
+      h += '<div class="sec k-split"><div class="k-main"><h2 class="k-h2">' + esc(C.roleTitle) + draft() + '</h2><p class="k-lede">' + esc(C.role) + '</p><div class="k-steps">' +
+        C.steps.map(function (st, i) { return '<div' + (i === 1 ? ' class="you"' : '') + '><em>' + (i + 1) + '</em><b>' + esc(st[0]) + '</b>' + esc(st[1]) + '</div>'; }).join('') +
+        '</div></div><div class="k-side"><div class="k-block k-or"><span class="k-label">' + esc(C.capTitle) + draft() + '</span><p>' + esc(C.cap.replace('{dm}', p.dm_cap).replace('{follow}', p.follow_cap)) + '</p></div>' +
+        '<div class="k-block k-tint" style="margin-top:12px"><span class="k-label">' + esc(C.seeTitle) + draft() + '</span><p>' + esc(C.see) + '</p></div></div></div>';
+      h += '<div class="sec"><h2 class="k-h2">The openers</h2><p class="muted">' + esc(C.openersNote) + '</p><div class="k-grid">';
       GROUPS.forEach(function (g) {
         var o = p.openers[g[0] + ':dm'];
         h += '<div class="k-card"><span class="k-label">' + esc(g[1]) + '</span>' + (o ? '<span class="k-tag ' + (o.status === 'locked' ? 'live' : 'wait') + '">' + (o.status === 'locked' ? 'Locked' : 'Draft') + ', version ' + o.version + '</span><p class="opener">' + esc(o.body) + '</p>' : '<p class="muted">Coming</p>') + '</div>';
@@ -261,18 +278,19 @@
     return { today: hubs[wd % hubs.length], next: hubs[(wd + 1) % hubs.length] };
   }
   function drawScout() {
-    var c = todaysChapter();
+    var c = todaysChapter(), C = COPY.scout;
     var name = c ? (c.today.page && c.today.page.short) || c.today.name : '';
+    var next = c ? ((c.next.page && c.next.page.short) || c.next.name) : '';
     var h = '<div class="k-split"><div class="k-main"><h2 class="k-h2">Today\'s chapter: <span class="k-hl g">' + esc(name) + '</span></h2>' +
-      '<p class="k-lede">Spend a few minutes around ' + esc(name) + ' on Instagram: Vegan events coming up, and people or places doing something worth spotlighting that are not on our radar yet. Send each one here. Tomorrow is ' + esc(c ? ((c.next.page && c.next.page.short) || c.next.name) : '') + '.</p>' +
+      '<p class="k-lede">' + esc(C.ask.replace('{chapter}', name).replace('{next}', next)) + draft() + '</p>' +
       '<p><a class="k-btn" href="/communities/' + esc(c ? c.today.slug : '') + '" target="_blank" rel="noopener">Open the ' + esc(name) + ' page</a></p>' +
       '<form class="k-form" id="scoutForm" style="margin-top:16px">' +
       '<div class="k-f"><label for="sk">What is it</label><select id="sk"><option value="event">An event</option><option value="spotlight">Someone to spotlight</option></select></div>' +
-      '<div class="k-f"><label for="sn">Name</label><input id="sn" placeholder="The event or the person or business"></div>' +
-      '<div class="k-f wide"><label for="su">Link</label><input id="su" placeholder="https://... (their post, page or ticket link)"></div>' +
+      '<div class="k-f"><label for="sn">Name</label><input id="sn" placeholder="The event, person or business"></div>' +
+      '<div class="k-f wide"><label for="su">Link</label><input id="su" placeholder="https://..."></div>' +
       '<div class="k-f wide"><label for="so">Why it matters</label><textarea id="so" placeholder="A line or two"></textarea></div>' +
       '<div class="k-f wide"><button class="k-btn k-cta" type="submit">Send it</button><p class="k-msg" id="sm"></p></div></form></div>' +
-      '<div class="k-side"><div class="k-block k-tint"><span class="k-label">Where it goes</span><p>Each one lands in Depot &gt; Ideas for the team, marked Chapter scout with the chapter. Events are added after a check, with their date and link.</p></div></div></div>';
+      '<div class="k-side"><div class="k-block k-tint"><span class="k-label">Where it goes</span><p>' + esc(C.where) + '</p></div></div></div>';
     $('view').innerHTML = h;
     $('scoutForm').addEventListener('submit', function (e) {
       e.preventDefault();
