@@ -73,7 +73,10 @@
   var sform = D.getElementById('dgSearchForm');
   // Option C (Sean, 2026-11-18: "if you put the search in it, it throws the layout off... make the search box a little smaller so it fits...
   // part of the scroll"): members' search sits small at the end of the tab row and slides with it on phones, so the bar stays slim.
-  if (sform) { if (CM) bar.querySelector('.gf-tabscroll').appendChild(sform); else bar.querySelector('.gf-tools').insertBefore(sform, btn); }
+  // Option C (Sean, 2026-11-18: "take the search out of that bar, because I really want it to be a slim strip, and we put it to the right
+  // of the button... the top can just be the navigation"): members' search lives beside the orange action (cFinish), never in the bar.
+  if (sform) { if (CM) { var park = D.createElement('div'); park.hidden = true; park.className = 'gf-park'; bar.appendChild(park); park.appendChild(sform); }
+    else bar.querySelector('.gf-tools').insertBefore(sform, btn); }
   // C: the join and sign-in stay reachable, quietly, at the end of the bar (the price is said once, beside the orange action).
   if (CM) bar.querySelector('.gf-tools').insertBefore(joinEl, btn);
   var tabsEl = CM ? D.getElementById('gfTabs') : null;
@@ -463,6 +466,11 @@
     var want = !!(PRICE && go && go.parentNode && pick === go.firstChild && jb && shown(jb));
     if (want && !pr) { pr = D.createElement('p'); pr.className = 'gf-price'; pr.innerHTML = esc(PRICE).replace(/(\$\d+ once, or [\d,]+ points)/, '<b>$1</b>'); go.appendChild(pr); }
     else if (!want && pr) pr.remove();
+    // Members' search beside the orange action (where visitors read the price); parked out of sight on a view with no action.
+    if (sform) {
+      var home = go && go.parentNode ? go : bar.querySelector('.gf-park');
+      if (home && sform.parentNode !== home) home.appendChild(sform);
+    }
     // Finder cards: the airport's code big over its name, the access tag on the right (locked reads Full Guide), nothing on the picture.
     if (FD) {
       var items = fdItems() || [];

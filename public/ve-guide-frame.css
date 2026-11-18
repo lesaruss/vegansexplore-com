@@ -778,3 +778,11 @@ html body.ve-gf.gf-hb.gf-c .gf-tabscroll > .dg-searchbox svg { left: 10px; width
   body.gf-c .gf-tabscroll > .gf-tabs { overflow: visible; padding: 0; flex: none; }
   html body.ve-gf.gf-hb.gf-c.dg-member .gf-tabscroll > .dg-searchbox { display: block !important; flex: 0 0 170px; width: 170px; }
 }
+
+/* Option C, members' search beside the orange action (Sean, 2026-11-18: "the top can just be the navigation"); the bar never holds it */
+html body.ve-gf.gf-hb.gf-c .gf-go > .dg-searchbox { flex: 1 1 260px; max-width: 420px; width: auto; position: relative; margin: 0; }
+html body.ve-gf.gf-hb.gf-c .gf-go > .dg-searchbox input { font-size: 13.5px; font-weight: 600; padding: 10px 12px 10px 38px; border: 2px solid #1a1a1a; border-radius: 6px; background: #fff; }
+html body.ve-gf.gf-hb.gf-c .gf-go > .dg-searchbox input:focus { box-shadow: 3px 3px 0 #F69820; }
+@media (max-width: 900px) {
+  html body.ve-gf.gf-hb.gf-c.dg-member .gf-go > .dg-searchbox { display: block !important; flex-basis: 100%; max-width: none; }
+}
