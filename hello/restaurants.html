@@ -35,11 +35,24 @@
     .hr-side .k-tag { position: absolute; left: 14px; bottom: 14px; }
     .hr-side small { display: block; margin-top: 10px; font-size: 13px; font-weight: 700; }
     .hr-more { margin-top: 44px; }
+    /* Sean, 2026-11-18: "keep it in a half column, and then the other column just have a picture of their city... we represent that
+       chapter. And then if it's a brand, we can have multiple cities... in a grid." */
+    .hr-two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: start; }
+    .hr-cities { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .hr-cities.many { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .hr-cities.lots { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .hr-cities.lots .hr-city b { font-size: 13px; }
+    .hr-city { display: block; color: inherit; text-decoration: none; }
+    .hr-city .k-pic { aspect-ratio: 16 / 9; overflow: hidden; }
+    .hr-city .k-pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .hr-city b { display: block; margin-top: 8px; font-size: 15px; font-weight: 900; }
+    .hr-city small { display: block; font-size: 13px; font-weight: 600; color: var(--k-mute); }
     .hr-draft { vertical-align: middle; margin-left: 8px; }
     @media (max-width: 900px) {
       main { padding: 28px 16px 64px; }
       .hr-split { grid-template-columns: minmax(0, 1fr); gap: 28px; }
       .hr-side { max-width: 420px; }
+      .hr-two { grid-template-columns: minmax(0, 1fr); gap: 28px; }
     }
   </style>
 </head>
@@ -71,13 +84,22 @@
 
     <section class="hr-more">
       <div class="k-stripe"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
-      <h2 class="k-h2" id="does-h"></h2>
-      <div class="k-rows" id="does"></div>
-      <h2 class="k-h2" id="why-h" style="margin-top:32px"></h2>
-      <p class="k-lede" id="why"></p>
+      <div class="hr-two">
+        <div>
+          <h2 class="k-h2" id="does-h"></h2>
+          <div class="k-rows" id="does"></div>
+          <h2 class="k-h2" id="why-h" style="margin-top:32px"></h2>
+          <p class="k-lede" id="why"></p>
+        </div>
+        <div>
+          <h2 class="k-h2" id="city-h"></h2>
+          <div class="hr-cities" id="cities"></div>
+        </div>
+      </div>
     </section>
   </main>
 
+  <script src="/public/ve-hubs.js"></script>
   <script src="/public/ve-region-directory.js"></script>
   <script>
   (function () {
@@ -102,6 +124,10 @@
         ['A post made for you', 'A "Find us on Vegans Explore" post made from your logo, ready to share.'],
         ['Your dashboard', 'See who visits your page and what they look at, in one place.']
       ],
+      cityOne: 'Your chapter: {chapter}',
+      cityMany: 'Your chapters',
+      cityNone: 'Wherever Vegans Explore goes',
+      citySub: 'We represent Vegan {chapter} and every place in it.',
       whyH: 'Why January 1',
       why: 'Vegans Explore launches on January 1, 2027. Businesses that claim their page before midnight Eastern that night are our founding businesses, the ones who were here when the doors opened.'
     };
@@ -135,14 +161,56 @@
       }
     }
 
+    // The chapter a place belongs to, by the same rules as VE_HUBS (communities first, then state and city lists, then country).
+    function chapterOf(L) {
+      var hubs = window.VE_HUBS || [], city = (L.address_city || '').trim().toLowerCase(), st = (L.address_state || '').trim().toUpperCase(),
+        ctry = (L.address_country || '').trim().toUpperCase(), comm = L.communities || [];
+      for (var i = 0; i < hubs.length; i++) if (comm.indexOf(hubs[i].slug) >= 0) return hubs[i];
+      var inList = function (list) { return (list || []).some(function (c) { return c.toLowerCase() === city; }); };
+      for (var j = 0; j < hubs.length; j++) {
+        var h = hubs[j], m = h.match || {};
+        if (m.states) { if (m.states.indexOf(st) >= 0 && (!m.cities || inList(m.cities))) return h; }
+        else if (m.cities && inList(m.cities) && (st === h.state || ctry === h.state || (m.country && ctry === m.country))) return h;
+      }
+      return null;
+    }
+    function paintCities(chapters) {
+      var box = $('cities');
+      if (!chapters.length) {
+        $('city-h').textContent = COPY.cityNone;
+        box.className = 'hr-cities';
+        box.innerHTML = '<a class="hr-city" href="/communities"><div class="k-pic"><img src="/communities/hero.jpg" alt="Vegans Explore communities"></div><b>Every chapter</b></a>';
+        return;
+      }
+      $('city-h').textContent = chapters.length === 1 ? COPY.cityOne.replace('{chapter}', chapters[0].name) : COPY.cityMany;
+      box.className = 'hr-cities' + (chapters.length > 4 ? ' lots' : chapters.length > 1 ? ' many' : '');
+      box.innerHTML = chapters.map(function (h) {
+        var p = h.page || {};
+        return '<a class="hr-city" href="/communities/' + esc(h.slug) + '"><div class="k-pic"><img src="' + esc(p.wide || p.banner) + '" alt="' + esc(p.alt || h.name) + '" loading="lazy"></div>' +
+          '<b>' + esc(h.name) + '</b>' + (chapters.length === 1 ? '<small>' + esc(COPY.citySub.replace('{chapter}', h.name)) + '</small>' : '') + '</a>';
+      }).join('');
+    }
+
     paint(null);
-    if (!slug) return;
-    var URL_ = 'https://fwbhwfxpncrsfhttimna.supabase.co/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,color,vegan_status,tags,communities,product_kinds,cuisines,vetted_at&status=eq.approved&slug=eq.' + encodeURIComponent(slug) + '&limit=1';
+    if (!slug) { paintCities([]); return; }
+    var URL_ = 'https://fwbhwfxpncrsfhttimna.supabase.co/rest/v1/listings?select=id,slug,name,category,logo_url,vote_count,voter_count,claim_status,extra_categories,business_status,is_featured,ve_verified,ve_verified_tier,ve_verified_until,address_city,address_state,address_country,parent_id,color,vegan_status,tags,communities,product_kinds,cuisines,vetted_at&status=eq.approved&slug=eq.' + encodeURIComponent(slug) + '&limit=1';
     var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
     fetch(URL_, { headers: { apikey: ANON, Authorization: 'Bearer ' + ANON } })
       .then(function (r) { return r.ok ? r.json() : []; })
-      .then(function (rows) { if (rows && rows[0]) paint(rows[0]); })
-      .catch(function () {});
+      .then(function (rows) {
+        var L = rows && rows[0];
+        if (!L) { paintCities([]); return; }
+        paint(L);
+        // A chain: every approved location of the same brand (this listing, its parent and the parent's other locations).
+        var root = L.parent_id || L.id, H = { apikey: ANON, Authorization: 'Bearer ' + ANON };
+        var q = 'https://fwbhwfxpncrsfhttimna.supabase.co/rest/v1/listings?select=address_city,address_state,address_country,communities&status=eq.approved&or=(id.eq.' + root + ',parent_id.eq.' + root + ')&limit=200';
+        return fetch(q, { headers: H }).then(function (r) { return r.ok ? r.json() : [L]; }).then(function (locs) {
+          var seen = {}, out = [];
+          (locs && locs.length ? locs : [L]).forEach(function (x) { var h = chapterOf(x); if (h && !seen[h.slug]) { seen[h.slug] = 1; out.push(h); } });
+          paintCities(out);
+        });
+      })
+      .catch(function () { paintCities([]); });
   })();
   </script>
   <script src="/public/footer.js"></script>
