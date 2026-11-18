@@ -238,8 +238,10 @@ async function feature(rows: Row[]) {
   const featured = [...doneIds].map((id) => byId.get(id)).filter(Boolean) as Row[];
   const q = queue(rows);
   const room = Math.max(0, FEATURE_CAP - featured.length);
-  let chapter: string | null = featured.find((r) => r.chapter)?.chapter || null;
-  if (!chapter) chapter = (q.find((r) => r.chapter) || {} as Row).chapter || null;
+  // 'all' marks listings with no city (online brands); a feature is one real chapter when possible.
+  const city = (r: Row) => r.chapter && r.chapter !== 'all' ? r.chapter : null;
+  let chapter: string | null = featured.map(city).find(Boolean) || null;
+  if (!chapter) chapter = q.map(city).find(Boolean) || null;
   let batch = chapter ? q.filter((r) => r.chapter === chapter).slice(0, room) : [];
   if (batch.length < Math.min(5, room)) batch = batch.concat(q.filter((r) => !batch.includes(r)).slice(0, room - batch.length));
   const all = featured.concat(batch);
