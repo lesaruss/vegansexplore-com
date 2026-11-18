@@ -10,9 +10,15 @@
 // the goal (members vs 250 by Dec 31, KJ's new members vs 60, claims vs 100), Told and Engaged never merged, tags apart as Notified, four
 // taps, ramped caps enforced here (DMs 10 a day for her first three working days, then 15, then 20 after a clean week; follows 25; follower
 // welcomes their own 10), inbound people ahead of outreach, openers by kind (first DM with no link, the page follow-up, the welcome).
+// v3 (2026-11-18, Sean: "go with feature first"; panel docs/plans/2026-11-18-kj-access-panel.md): KJ never starts cold DMs and never holds
+// the account. Today is the day's feature: up to 20 places in one chapter, tagged in a "Now on Vegans Explore" carousel and stories from
+// @vegansexplore; whoever replies, comments or reshares is answered in the brand inbox with their link. Places quiet 7 days after a feature go
+// to Sean's send list (20 a day, he sends from his own phone; logged as 'dm'). Told = an email delivered or Sean's send; Notified = tagged in a
+// feature; Engaged = a click, reply or claim.
+//   POST { action: 'feature' }                          today's feature batch, the caption, inbound, today's numbers
+//   POST { action: 'sean' }                             Sean's send list (everyone sees it; only a super admin taps Sent)
 //   POST { action: 'me' }                               who is asking
 //   POST { action: 'plan' }                             the goal, Told / Engaged / Notified by group and lane, the openers, the caps
-//   POST { action: 'week' }                             today and the days ahead (past days hidden): inbound, DM cards, follow ahead
 //   POST { action: 'inbound_add', handle, group, kind?, note? }   a new follower or anyone who writes (matched to a listing)
 //   POST { action: 'inbound_set', id, status }          welcomed (capped at 10 a day) or done
 //   POST { action: 'roster', group?, status?, channel?, q?, sort?, offset?, limit? }
@@ -30,11 +36,10 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;
 const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const db = createClient(SUPABASE_URL, SERVICE_KEY);
 const POSITION = 'social-media-manager-instagram';
-// Caps (panel 2026-11-18): DMs ramp 10 a day for the holder's first three working days, then 15, then 20 after a clean week;
-// follows 25 a day; follower welcomes their own 10. Meta publishes no numbers; these are conservative.
-const DM_RAMP = [10, 15, 20];
-const FOLLOW_CAP = 25;
-const WELCOME_CAP = 10;
+// Limits (panel 2026-11-18, feature first): one feature a day, up to 20 places tagged; replies uncapped; Sean's send list 20 a day.
+const FEATURE_CAP = 20;
+const SEAN_CAP = 20;
+const QUIET_DAYS = 7;
 const GOAL = { members: 250, kj_members: 60, claims: 100, by: '2026-12-31' };
 const DEADLINE = '2026-12-01';
 const DAYS_OFF = ['2026-11-26', '2026-11-27']; // Thanksgiving Thursday and Friday
@@ -122,11 +127,12 @@ function statusOf(r: Row): string {
   if (r.unsubscribed) return 'unsubscribed';
   if (r.replied_email || r.replied_dm) return 'replied';
   if (r.clicked) return 'clicked';
-  if (r.emails_sent > 0 && !r.bounced || r.dm_at || r.last_touch_kind === 'tagged') return 'reached';
+  if (r.emails_sent > 0 && !r.bounced || r.dm_at) return 'reached';
+  if (r.tagged_at) return 'featured';
   if (r.cant_reach || (r.bounced && !r.dm_at)) return 'cant_reach';
   return 'not_reached';
 }
-const STATUS_WORDS: Record<string, string> = { claimed: 'Claimed', unsubscribed: 'Unsubscribed', replied: 'Replied', clicked: 'Clicked', reached: 'Reached', cant_reach: "Can't reach", not_reached: 'Not reached yet' };
+const STATUS_WORDS: Record<string, string> = { featured: 'Featured', claimed: 'Claimed', unsubscribed: 'Unsubscribed', replied: 'Replied', clicked: 'Clicked', reached: 'Reached', cant_reach: "Can't reach", not_reached: 'Not reached yet' };
 function laneOf(r: Row): string {
   if (r.emails && r.emails.length) return 'email';
   if (r.instagram) return 'instagram';
@@ -135,7 +141,7 @@ function laneOf(r: Row): string {
 }
 const isTold = (r: Row) => (r.emails_sent > 0 && !r.bounced) || !!r.dm_at;
 const isEngaged = (r: Row) => !!(r.clicked || r.replied_email || r.replied_dm || r.claimed);
-const isNotified = (r: Row) => r.last_touch_kind === 'tagged';
+const isNotified = (r: Row) => !!r.tagged_at;
 function igUrl(h: string | null) {
   if (!h) return null;
   const s = String(h).trim();
@@ -150,14 +156,14 @@ function card(r: Row) {
     status_words: STATUS_WORDS[statusOf(r)], lane: laneOf(r), emails_sent: r.emails_sent, last_touch_at: r.last_touch_at,
     last_touch_kind: r.last_touch_kind, touches: r.touches, opened: r.opened, clicked: r.clicked, bounced: r.bounced,
     unsubscribed: r.unsubscribed, claimed: r.claimed, replied: r.replied_email || r.replied_dm, followed_at: r.followed_at, told: isTold(r), engaged: isEngaged(r),
-    followed_back: r.followed_back, dm_at: r.dm_at, pinned: r.pinned, note: r.kj_note, has_email: !!(r.emails && r.emails.length),
+    followed_back: r.followed_back, dm_at: r.dm_at, pinned: r.pinned, chapter: r.chapter, tagged_at: r.tagged_at, page_sent_at: r.page_sent_at, note: r.kj_note, has_email: !!(r.emails && r.emails.length),
   };
 }
 
 // KJ's queue order (BOSS): Sean's pins, then Instagram-only listings by group (restaurants first), then no reply to email in 5 days.
 function queue(rows: Row[]) {
   const fiveDays = Date.now() - 5 * 86400000;
-  const open = rows.filter((r) => igUrl(r.instagram) && !r.claimed && !r.unsubscribed && !r.dm_at && !r.cant_reach && !r.replied_email);
+  const open = rows.filter((r) => igUrl(r.instagram) && !r.claimed && !r.unsubscribed && !r.tagged_at && !r.dm_at && !r.cant_reach && !r.replied_email && !r.replied_dm);
   const rank = (r: Row) => {
     if (r.pinned) return 0;
     const noEmail = !(r.emails && r.emails.length);
@@ -166,7 +172,7 @@ function queue(rows: Row[]) {
     return 9;
   };
   return open.filter((r) => rank(r) < 9).sort((a, b) => rank(a) - rank(b) || (b.followed_back ? 1 : 0) - (a.followed_back ? 1 : 0)
-    || (a.followed_at ? 0 : 1) - (b.followed_at ? 0 : 1) || String(a.name).localeCompare(String(b.name)));
+    || String(a.name).localeCompare(String(b.name)));
 }
 
 async function openers() {
@@ -213,55 +219,53 @@ async function plan(rows: Row[], me: { id: string; role: string }) {
   }
   const today = todayET();
   return { total: rows.length, told, engaged, notified, groups, lanes, today, deadline: DEADLINE, days_left: workdaysBetween(today, DEADLINE),
-    goal: await goal(me.id, me.role), caps: { dm: DM_RAMP, follow: FOLLOW_CAP, welcome: WELCOME_CAP, dm_today: await dmCap(me.id) },
+    goal: await goal(me.id, me.role), caps: { feature: FEATURE_CAP, sean: SEAN_CAP, quiet_days: QUIET_DAYS },
     days_off: DAYS_OFF, openers: await openers() };
 }
 
-// The DM cap for this person today: 10 for their first three working days with a message, then 15 for the next five, then 20.
-async function dmCap(memberId: string | null) {
-  if (!memberId) return DM_RAMP[2];
-  const { data } = await db.from('ve_reach_log').select('at').eq('member_id', memberId).eq('kind', 'dm').order('at', { ascending: true }).limit(1);
-  if (!data?.length) return DM_RAMP[0];
-  const n = workdaysBetween(etDay(data[0].at), todayET());
-  return n <= 3 ? DM_RAMP[0] : n <= 8 ? DM_RAMP[1] : DM_RAMP[2];
-}
-async function countToday(memberId: string | null, kind: string) {
-  let q = db.from('ve_reach_log').select('id', { count: 'exact', head: true }).eq('kind', kind).gte('at', todayET() + 'T05:00:00Z');
-  if (memberId) q = q.eq('member_id', memberId);
-  const { count } = await q;
+async function countToday(kind: string) {
+  const { count } = await db.from('ve_reach_log').select('id', { count: 'exact', head: true }).eq('kind', kind).gte('at', todayET() + 'T05:00:00Z');
   return count || 0;
 }
 
-async function week(rows: Row[], me: { id: string }) {
+// Today's feature: the places tagged today, then the rest of today's batch in queue order, kept to one chapter when possible.
+async function feature(rows: Row[]) {
   const today = todayET();
-  const cap = await dmCap(me.id);
-  const [dmDone, followDone] = await Promise.all([countToday(me.id, 'dm'), countToday(me.id, 'follow')]);
+  const since = today + 'T05:00:00Z';
+  const { data: logs } = await db.from('ve_reach_log').select('listing_id').eq('kind', 'tagged').gte('at', since);
+  const doneIds = new Set((logs || []).map((l: any) => l.listing_id));
+  const byId = new Map(rows.map((r) => [r.id, r]));
+  const featured = [...doneIds].map((id) => byId.get(id)).filter(Boolean) as Row[];
   const q = queue(rows);
-  const plannedDays = workdaysFrom(today, 12);
-  const dmPlan: Record<string, Row[]> = {};
-  let i = 0;
-  for (const d of plannedDays) {
-    const room = d === today ? Math.max(0, cap - dmDone) : cap;
-    dmPlan[d] = q.slice(i, i + room); i += room;
-  }
-  // Follow ahead: the accounts messaged two working days from now, not followed yet, within today's follows.
-  const followFor = plannedDays[2] || null;
-  const follow = followFor ? (dmPlan[followFor] || []).filter((r) => !r.followed_at).slice(0, Math.max(0, FOLLOW_CAP - followDone)).map(card) : [];
+  const room = Math.max(0, FEATURE_CAP - featured.length);
+  let chapter: string | null = featured.find((r) => r.chapter)?.chapter || null;
+  if (!chapter) chapter = (q.find((r) => r.chapter) || {} as Row).chapter || null;
+  let batch = chapter ? q.filter((r) => r.chapter === chapter).slice(0, room) : [];
+  if (batch.length < Math.min(5, room)) batch = batch.concat(q.filter((r) => !batch.includes(r)).slice(0, room - batch.length));
+  const all = featured.concat(batch);
+  const groupCount: Record<string, number> = {};
+  for (const r of all) groupCount[r.grp] = (groupCount[r.grp] || 0) + 1;
+  const group = Object.entries(groupCount).sort((a, b) => b[1] - a[1])[0]?.[0] || 'restaurants';
+  const handles = all.map((r) => { const u = igUrl(r.instagram); return u ? '@' + u.replace(/\/+$/, '').split('/').pop() : ''; }).filter(Boolean);
   const { data: inbound } = await db.from('ve_reach_inbound').select('id, handle, grp, kind, status, note, listing_id, created_at').neq('status', 'done')
     .order('created_at', { ascending: true }).limit(50);
   const lids = (inbound || []).map((x: any) => x.listing_id).filter(Boolean);
   const { data: ls } = lids.length ? await db.from('listings').select('id, slug, name, logo_url').in('id', lids) : { data: [] };
   const lBy = new Map((ls || []).map((l: any) => [l.id, l]));
-  const welcomedToday = await (async () => {
-    let wq = db.from('ve_reach_inbound').select('id', { count: 'exact', head: true }).gte('welcomed_at', today + 'T05:00:00Z');
-    if (me.id) wq = wq.eq('welcomed_by', me.id);
-    return (await wq).count || 0;
-  })();
-  const ahead = plannedDays.filter((d) => d > today).slice(0, 4).map((d) => ({ date: d, dm: (dmPlan[d] || []).length }));
-  return { today, is_workday: plannedDays[0] === today, dm: (dmPlan[today] || []).map(card), follow, follow_for: followFor, ahead,
+  return { today, is_workday: workdaysFrom(today, 1)[0] === today, chapter, group, group_words: GROUP_WORDS[group], handles,
+    featured: featured.map(card), batch: batch.map(card), cap: FEATURE_CAP, queue_left: q.length,
     inbound: (inbound || []).map((x: any) => ({ ...x, listing: x.listing_id ? lBy.get(x.listing_id) || null : null, instagram: igUrl(x.handle) })),
-    caps: { dm: cap, dm_done: dmDone, follow: FOLLOW_CAP, follow_done: followDone, welcome: WELCOME_CAP, welcome_done: welcomedToday },
-    queue_left: q.length, openers: await openers(), days_off: DAYS_OFF };
+    openers: await openers(), days_off: DAYS_OFF, template: { canva: 'DAHaJ8TQI0I', url: 'https://www.canva.com/design/DAHaJ8TQI0I/edit', canon: 'canon-ve-city-carousel' } };
+}
+
+// Sean's send list: featured 7 or more days ago, no reply, no page sent, not claimed, Instagram only (no email), not sent yet; 20 a day.
+async function seanList(rows: Row[]) {
+  const cutoff = Date.now() - QUIET_DAYS * 86400000;
+  const sentToday = await countToday('dm');
+  const due = rows.filter((r) => r.tagged_at && Date.parse(r.tagged_at) <= cutoff && !r.dm_at && !r.replied_dm && !r.replied_email && !r.page_sent_at
+    && !r.claimed && !r.unsubscribed && !r.cant_reach && !(r.emails && r.emails.length) && igUrl(r.instagram))
+    .sort((a, b) => String(a.tagged_at).localeCompare(String(b.tagged_at)));
+  return { cap: SEAN_CAP, sent_today: sentToday, waiting: due.length, rows: due.slice(0, Math.max(0, SEAN_CAP - sentToday)).map(card), openers: await openers() };
 }
 
 async function item(id: string) {
@@ -343,7 +347,7 @@ Deno.serve(async (req) => {
     if (action === 'plan') return json({ ok: true, me, ...(await plan(await roster(), me)) });
     if (action === 'inbound_add') {
       const handle = clean(body.handle, 120).replace(/^https?:\/\/(www\.)?instagram\.com\//i, '').replace(/[/?#].*$/, '').replace(/^@/, '');
-      const grp = String(body.group || ''), kind = ['follower', 'message', 'comment'].includes(String(body.kind)) ? String(body.kind) : 'follower';
+      const grp = String(body.group || ''), kind = ['follower', 'message', 'comment', 'feature_reply'].includes(String(body.kind)) ? String(body.kind) : 'feature_reply';
       if (!/^[A-Za-z0-9._]{1,30}$/.test(handle) || !['explorer', ...GROUP_ORDER].includes(grp)) return json({ error: 'bad_request', message: 'Add their Instagram handle and a group.' }, 400);
       const { data: match } = await db.from('listings').select('id').eq('status', 'approved')
         .or(`instagram.ilike.${handle},instagram.ilike.@${handle},instagram.ilike.%instagram.com/${handle},instagram.ilike.%instagram.com/${handle}/`).limit(1);
@@ -354,18 +358,14 @@ Deno.serve(async (req) => {
     if (action === 'inbound_set') {
       const st = String(body.status || '');
       if (!isId(body.id) || !['welcomed', 'done'].includes(st)) return json({ error: 'bad_request' }, 400);
-      if (st === 'welcomed') {
-        let wq = db.from('ve_reach_inbound').select('id', { count: 'exact', head: true }).gte('welcomed_at', todayET() + 'T05:00:00Z');
-        if (me.id) wq = wq.eq('welcomed_by', me.id);
-        if (((await wq).count || 0) >= WELCOME_CAP) return json({ error: 'cap', message: `That is today's ${WELCOME_CAP} welcomes. The rest wait for tomorrow.` }, 429);
-      }
       const patch: Record<string, unknown> = { status: st, updated_at: new Date().toISOString() };
       if (st === 'welcomed') { patch.welcomed_by = me.id; patch.welcomed_at = new Date().toISOString(); }
       const { error } = await db.from('ve_reach_inbound').update(patch).eq('id', body.id);
       if (error) return json({ error: 'save_failed', message: error.message }, 500);
       return json({ ok: true });
     }
-    if (action === 'week') return json({ ok: true, me, ...(await week(await roster(), me)) });
+    if (action === 'feature' || action === 'week') return json({ ok: true, me, ...(await feature(await roster())) });
+    if (action === 'sean') return json({ ok: true, me, ...(await seanList(await roster())) });
     if (action === 'roster') {
       let rows = (await roster()).map(card);
       const g = String(body.group || ''), s = String(body.status || ''), c = String(body.channel || ''), q = clean(body.q, 80).toLowerCase();
@@ -391,11 +391,12 @@ Deno.serve(async (req) => {
     }
     if (action === 'touch') {
       const kind = String(body.kind || '');
-      if (!isId(body.id) || !['follow', 'dm', 'replied', 'cant_reach', 'note', 'page_sent', 'pin', 'unpin'].includes(kind)) return json({ error: 'bad_request' }, 400);
-      if ((kind === 'pin' || kind === 'unpin') && me.role !== 'admin') return json({ error: 'forbidden' }, 403);
-      if (kind === 'dm' || kind === 'follow') {
-        const cap = kind === 'dm' ? await dmCap(me.id) : FOLLOW_CAP;
-        if ((await countToday(me.id, kind)) >= cap) return json({ error: 'cap', message: `That is today's ${cap} ${kind === 'dm' ? 'new messages' : 'follows'}. The limit protects the account; the rest wait for tomorrow.` }, 429);
+      if (!isId(body.id) || !['tagged', 'replied', 'cant_reach', 'note', 'page_sent', 'dm', 'pin', 'unpin'].includes(kind)) return json({ error: 'bad_request' }, 400);
+      // Sean's sends ('dm') and pins are his alone; KJ never starts a DM.
+      if (['pin', 'unpin', 'dm'].includes(kind) && me.role !== 'admin') return json({ error: 'forbidden', message: 'That one is Sean\'s.' }, 403);
+      if (kind === 'tagged' || kind === 'dm') {
+        const cap = kind === 'tagged' ? FEATURE_CAP : SEAN_CAP;
+        if ((await countToday(kind)) >= cap) return json({ error: 'cap', message: kind === 'tagged' ? `Today's feature already has ${cap} places. The rest go in tomorrow's.` : `That is today's ${cap} sends.` }, 429);
       }
       const { error } = await db.from('ve_reach_log').insert({ listing_id: body.id, member_id: me.id, kind, note: clean(body.note, 1000) || null });
       if (error) return json({ error: 'save_failed', message: error.message }, 500);
