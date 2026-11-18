@@ -99,7 +99,7 @@
             '<label class="vjb-ck"><input type="checkbox" name="pulse" checked><span>Send me the Daily Pulse and news about ways to support my Vegan community. Unsubscribe any time.</span></label>' +
             '<span class="vjb-hp" aria-hidden="true"><input type="text" name="website" tabindex="-1" autocomplete="off"></span>' +
             '<p class="vjb-err" role="alert"></p><button type="submit" class="vjb-btn">Register and continue</button></form></section>' +
-        '<section class="vjb-pane" data-vjb-pane="member" aria-label="Become a member" hidden><p class="vjb-pl"><b>About 2 minutes.</b> Take the Explorer survey and everything opens: 250 points, every Guide and voting for the places you love' + (FOUNDING ? ', and you are a Founding Member before January 1' : '') + '.</p>' +
+        '<section class="vjb-pane" data-vjb-pane="member" aria-label="Become a member" hidden><p class="vjb-pl"><b>About 2 minutes.</b> Take the Explorer survey and everything opens: 250 points, every Guide and vouching for the places you love' + (FOUNDING ? ', and you are a Founding Member before January 1' : '') + '.</p>' +
           (o.reason ? '<p class="vjb-pl">We bring you right back here to finish when you are done.</p>' : '') +
           '<button type="button" class="vjb-btn" data-vjb-survey>Take the survey</button></section>' +
         '<div class="vjb-mperks vjb-perks"><h4>When you register</h4><ul>' + perks.map(function (p) { return '<li>' + CHECK + '<span>' + esc(p) + '</span></li>'; }).join('') + '</ul></div>' +

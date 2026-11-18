@@ -64,8 +64,8 @@
       var ep = d.episode, show = { id: l.id, name: l.name, slug: l.slug, image: l.logo_url || (d.show && d.show.image) || '' };
       document.title = ep.title + ' — ' + l.name + ' — Vegans Explore';
       document.getElementById('eyebrow').innerHTML = '<a href="/directory/' + esc(l.slug) + '">' + esc(l.name) + '</a>';
-      var vote = '<button type="button" class="vote-btn" data-listing-id="' + esc(l.id) + '" title="Vote for ' + esc(l.name) + '">Vote for the show</button>' +
-        '<div class="vote-count">' + Number(l.vote_count || 0).toLocaleString() + ' votes</div>';
+      var vote = '<button type="button" class="vote-btn" data-listing-id="' + esc(l.id) + '" title="Vouch for ' + esc(l.name) + '">Vouch for the show</button>' +
+        '<div class="vote-count">' + Number(l.vote_count || 0).toLocaleString() + ((l.vote_count || 0) === 1 ? ' vouch' : ' vouches') + '</div>';
       box.innerHTML = VEEpisodes.row(Object.assign({}, ep, { image: show.image || ep.image || '' }), show, { showName: true, saved: !!d.saved, acts: vote }) +
         (ep.summary ? '<div class="notes"><h2>About this episode</h2><div class="vep-full">' + esc(ep.summary) + '</div></div>' : '') +
         '<p class="more"><a href="/directory/' + esc(l.slug) + '">Every episode of ' + esc(l.name) + '</a></p>';

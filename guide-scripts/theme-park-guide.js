@@ -304,7 +304,7 @@
         '<p class="dg-empty">No Vegan item confirmed here yet. <a href="#/venue/' + esc(v.slug) + '/report/missing" style="color:var(--g);font-weight:800">Tell us what you find</a>, with a photo, and earn points when the team accepts it. Until then, ask before you order.</p>')
       : '<div class="sa-item"><div class="sa-item-b"><div class="dg-skel" style="border:0;padding:0"><i></i><i style="width:70%"></i></div></div></div>';
     var isOpen = OPEN === s.id, voted = votedFor(s.id);
-    var vote = '<button type="button" class="dg-vote dg-vote-s' + (voted ? ' on' : '') + '" data-spotvote="' + esc(s.id) + '" aria-pressed="' + voted + '" title="' + (voted ? 'You voted for this' : 'Vote for this') + '">' + HEART + '<b>' + votesOf(s.id) + '</b></button>';
+    var vote = '<button type="button" class="dg-vote dg-vote-s' + (voted ? ' on' : '') + '" data-spotvote="' + esc(s.id) + '" aria-pressed="' + voted + '" title="' + (voted ? 'You vouched for this' : 'Vouch for this') + '">' + HEART + '<b>' + votesOf(s.id) + '</b></button>';
     var tog = '<button type="button" class="sa-tog" data-spot="' + esc(s.id) + '" aria-expanded="' + isOpen + '" aria-controls="sa-sb-' + esc(s.id) + '" aria-label="' + (isOpen ? 'Close ' : 'Open ') + esc(s.name) + '">' + (isOpen ? '&minus;' : '+') + '</button>';
     return '<div class="sa-stand sa-fold' + (isOpen ? ' open' : '') + (ON === s.id ? ' on' : '') + '" id="sa-st-' + esc(s.id) + '"><div class="sa-stand-h" data-spot="' + esc(s.id) + '"><div class="sa-stand-t"><h3>' + num + esc(s.name) + '</h3><span class="sa-where">' + ICON.pin + esc(s.land || s.where || '') + '</span>' + tag +
       '</div><div class="sa-stand-a">' + vote + tog + '</div></div>' +
@@ -319,7 +319,7 @@
     var top = list.filter(function (s) { return s.id === OPEN; });
     if (top.length) list = top.concat(list.filter(function (s) { return s.id !== OPEN; }));
     var opt = function (k, l) { return '<option value="' + k + '"' + (SORT === k ? ' selected' : '') + '>' + l + '</option>'; };
-    var bar = '<div class="sa-listbar"><label class="sa-sort"><span>Sort</span><select data-spotsort aria-label="Sort the restaurants">' + opt('num', 'Map order') + opt('votes', 'Most votes') + (YOU ? opt('near', 'Nearest to you') : '') + '</select></label>' +
+    var bar = '<div class="sa-listbar"><label class="sa-sort"><span>Sort</span><select data-spotsort aria-label="Sort the restaurants">' + opt('num', 'Map order') + opt('votes', 'Most vouches') + (YOU ? opt('near', 'Nearest to you') : '') + '</select></label>' +
       '<button type="button" class="sa-mini" data-spotclear' + (OPEN || SORT !== 'num' || LAND ? '' : ' disabled') + '>Clear</button><span class="sa-listnote" id="vpVoteNote" role="status" aria-live="polite"></span></div>';
     return bar + (list.length ? list.map(function (s) { return standCard(v, s, d.open); }).join('') : '<p class="dg-empty">No restaurants listed in this land yet.</p>');
   }
@@ -606,7 +606,7 @@
       '<li><b>Every park:</b> each restaurant pinned on our own map, with how far it is from you and what is Vegan.</li>' +
       '<li><b>Points:</b> earn them for checking what is still there, and be first to confirm an item for the bounty.</li><li><b>Checked by members:</b> every item says when a member last confirmed it from inside, and where it came from.</li>' +
       '<li><b>My list:</b> save the parks you go to and the items you want to find.</li>' +
-      '<li><b>The community:</b> your member dashboard, Directory votes, the Daily Pulse and points.</li></ul></div>';
+      '<li><b>The community:</b> your member dashboard, Directory vouches, the Daily Pulse and points.</li></ul></div>';
     var status = '<span class="dg-status" role="status" style="display:block;margin-top:10px;color:#8a5a00"></span>';
     var box = m === 'soon' ? '<div class="dg-big">Soon</div><p>The full Guide opens soon. Magic Kingdom is open to everyone now.</p><a class="dg-btn" href="#/venue/magic-kingdom">Open Magic Kingdom</a>'
       : m === 'points' ? '<div class="dg-big">$11<small>or ' + pts(ST.cost) + ' points</small></div><p>Pick how you pay. You have ' + pts(ST.balance) + ' points. Either way the Guide is yours to keep.</p>' +
@@ -724,18 +724,18 @@
   function spotVote(btn) {
     var id = btn.getAttribute('data-spotvote'), note = document.getElementById('vpVoteNote');
     var say = function (m) { if (note) note.textContent = m; };
-    if (!token()) { var a = auth(); if (a) a.showAuthModal('Sign in to vote for your favorite park restaurants.', function () { location.reload(); }, 'login'); return; }
-    if (!owner()) { say('Voting comes with the Guide. Get it in Get access.'); return; }
+    if (!token()) { var a = auth(); if (a) a.showAuthModal('Sign in to vouch for your favorite park restaurants.', function () { location.reload(); }, 'login'); return; }
+    if (!owner()) { say('Vouching comes with the Guide. Get it in Get access.'); return; }
     var on = !votedFor(id);
     btn.disabled = true;
     cookApi({ action: 'gvote', kind: 'park_spot', key: id, on: on }).then(function (d) {
       btn.disabled = false;
-      if (!d || !d.ok) { say(d && d.message ? d.message : 'That vote did not go through. Try again.'); return; }
+      if (!d || !d.ok) { say(d && d.message ? d.message : 'That vouch did not go through. Try again.'); return; }
       GV.counts.park_spot = GV.counts.park_spot || {}; GV.mine.park_spot = GV.mine.park_spot || [];
       GV.counts.park_spot[id] = d.count;
       GV.mine.park_spot = GV.mine.park_spot.filter(function (k) { return k !== id; }); if (d.voted) GV.mine.park_spot.push(id);
       repaint();
-    }).catch(function () { btn.disabled = false; say('That vote did not go through. Try again.'); });
+    }).catch(function () { btn.disabled = false; say('That vouch did not go through. Try again.'); });
   }
   function unlockPoints(btn) {
     btn.disabled = true; btn.textContent = 'Unlocking...';

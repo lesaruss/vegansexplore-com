@@ -3853,15 +3853,15 @@
         // that I'm earning points"). Votes received shows when they have pages: listings they own or a People profile naming them.
         '<div class="dash-mc-stats">' + (m.is_superadmin ? stat(INF, 'Level') + stat(INF, 'Points to spend') + stat(INF, 'Lifetime points')
           : stat(lv.level || 1, 'Level') + stat(pts.available_points != null ? pts.available_points : m.lesars_balance, 'Points to spend') + stat(lv.lifetime != null ? lv.lifetime : pts.total_points, 'Lifetime points')) + '</div>' +
-        '<div class="dash-mc-stats' + ((d.listings || []).length ? ' four' : '') + '">' + stat(c.votes, 'Votes given') + ((d.listings || []).length ? stat(c.votes_received, 'Votes received') : '') +
+        '<div class="dash-mc-stats' + ((d.listings || []).length ? ' four' : '') + '">' + stat(c.votes, 'Vouches given') + ((d.listings || []).length ? stat(c.votes_received, 'Vouches received') : '') +
         stat(c.checkins, 'Checked in') + stat((c.saves || 0) + (c.episodes || 0), 'Saves') + '</div>' +
         (facts ? '<ul class="dash-mc-facts">' + facts + '</ul>' : '') +
         (owned ? '<p class="dash-mc-h">Their pages</p><ul class="dash-mc-list">' + owned + '</ul>' : '') +
         // Who voted for them (Sean, 2026-10-30): each voter's picture and name opens their own card.
-        ((d.listings || []).length ? '<p class="dash-mc-h">Who voted for them' + (c.votes_received ? ' (' + Number(c.votes_received).toLocaleString() + ')' : '') + '</p>' + (votedBy ? '<ul class="dash-mc-list dash-mc-voters">' + votedBy + '</ul>' : '<p class="dash-preview-empty">No votes on their pages yet.</p>') : '') +
+        ((d.listings || []).length ? '<p class="dash-mc-h">Who vouched for them' + (c.votes_received ? ' (' + Number(c.votes_received).toLocaleString() + ')' : '') + '</p>' + (votedBy ? '<ul class="dash-mc-list dash-mc-voters">' + votedBy + '</ul>' : '<p class="dash-preview-empty">No vouches on their pages yet.</p>') : '') +
         ((d.listings || []).length ? '<p class="dash-mc-h">Who saved their pages' + (c.saves_received ? ' (' + Number(c.saves_received).toLocaleString() + ')' : '') + '</p>' +
           (savedBy ? '<ul class="dash-mc-list dash-mc-voters">' + savedBy + '</ul>' : '<p class="dash-preview-empty">No one has saved their pages yet.</p>') : '') +
-        '<p class="dash-mc-h">Their latest votes</p>' + (votes ? '<ul class="dash-mc-list">' + votes + '</ul>' : '<p class="dash-preview-empty">No votes yet.</p>') +
+        '<p class="dash-mc-h">Their latest vouches</p>' + (votes ? '<ul class="dash-mc-list">' + votes + '</ul>' : '<p class="dash-preview-empty">No vouches yet.</p>') +
         // Give points (Sean, 2026-11-01): spendable points to any member, for what they have given the community.
         (!m.is_superadmin && m.member_class !== 'agent' ? '<div class="dash-mc-give"><p class="dash-mc-h" style="margin:0">Give points</p>' +
           '<div class="picks">' + [111, 500, 1100, 2500, 5000].map(function (n) { return '<button type="button" data-mc-pick="' + n + '">' + n.toLocaleString() + '</button>'; }).join('') + '</div>' +
@@ -4900,7 +4900,7 @@
         }).catch(function () { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; });
       }));
       // Recent Votes: what got the vote, and who gave it on the right (Sean, 2026-10-30: "who's voting, who's getting the votes").
-      recent.appendChild(dpDataCard('Recent Votes', 'https://hq.lesaruss.ai/branddesk/brands/vegans-explore?view=insights&in=sections&isub=directory', function (token, body, t) {
+      recent.appendChild(dpDataCard('Recent Vouches', 'https://hq.lesaruss.ai/branddesk/brands/vegans-explore?view=insights&in=sections&isub=directory', function (token, body, t) {
         dvCall({ action: 'recent_votes', limit: 100 }).then(function (d) {
           var rows = (d && d.votes) || [];
           if (!d || !d.ok) { body.innerHTML = '<p class="dash-preview-empty">Couldn\'t load.</p>'; return; }
@@ -5003,7 +5003,7 @@
       if (!dashDirBanner) {
         dashDirBanner = VECityBanner.mount('dash-dir-hero', {
           key: 'dash-dir', param: false, title: 'Vegan Directory', allTitle: 'Local Food', pickLabel: 'Section',
-          sub: 'Every Vegan spot we list, ranked by member votes. Pick a section, search it, and find the places worth knowing.',
+          sub: 'Every Vegan spot we list, ranked by member vouches. Pick a section, search it, and find the places worth knowing.',
           // Directory home: the Directory as the menu opens it, its first section, in the location picked (Sean, 2026-10-27).
           home: { label: 'Directory home', href: '/dashboard/directory', onClick: function () {
             if (location.pathname + location.search !== '/dashboard/directory') history.pushState({ tabKey: 'directory' }, '', '/dashboard/directory');

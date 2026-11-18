@@ -440,7 +440,7 @@
   function brandTile(r) {
     var b = r.b;
     return '<a class="sg-ptile" href="/directory/' + esc(b.slug) + '"><span class="sg-thumb">' + (b.logo_url ? '<img src="' + esc(b.logo_url) + '" alt="" loading="lazy" decoding="async">' : '<i class="sg-letter">' + esc((b.name || '?').charAt(0)) + '</i>') + '</span>' +
-      '<span class="sg-pb"><b>' + esc(b.name) + '</b><em>' + (r.n ? r.n + (r.n === 1 ? ' product' : ' products') + ' here' : esc(r.types.join(', ') || 'Brand on Vegans Explore')) + (r.votes ? ' &middot; ' + r.votes + (r.votes === 1 ? ' vote' : ' votes') : '') + '</em></span></a>';
+      '<span class="sg-pb"><b>' + esc(b.name) + '</b><em>' + (r.n ? r.n + (r.n === 1 ? ' product' : ' products') + ' here' : esc(r.types.join(', ') || 'Brand on Vegans Explore')) + (r.votes ? ' &middot; ' + r.votes + (r.votes === 1 ? ' vouch' : ' vouches') : '') + '</em></span></a>';
   }
 
   // The filters live in the address (#/store/<slug>/c/<category>?t=<type>&s=<cheese kind>&m=<made from>&b=<brand>&w=<where>&q=),
@@ -1078,7 +1078,7 @@
       '<li><b>Every store:</b> the supermarkets in our chapters, each with its Vegan sections and the aisle members found them in.</li>' +
       '<li><b>Your shopping list:</b> add what you need and tick it off in the aisle.</li><li><b>The produce section:</b> what to buy and why.</li>' +
       '<li><b>Bounties:</b> earn points for mapping aisles, and be first at a sponsoring supermarket for the bounty.</li>' +
-      '<li><b>The community:</b> your member dashboard, Directory votes, the Daily Pulse and points.</li></ul></div>';
+      '<li><b>The community:</b> your member dashboard, Directory vouches, the Daily Pulse and points.</li></ul></div>';
     var status = '<span class="dg-status" role="status" style="display:block;margin-top:10px;color:#8a5a00"></span>';
     var box = m === 'soon' ? '<div class="dg-big">Soon</div><p>The full Guide opens soon. Publix at Brickell Village is open to everyone now.</p><a class="dg-btn" href="#/store/' + FREE + '">Open Brickell Village</a>'
       : m === 'points' ? '<div class="dg-big">$11<small>or ' + pts(ST.cost) + ' points</small></div><p>Pick how you pay. You have ' + pts(ST.balance) + ' points. Either way the Guide is yours to keep.</p>' +

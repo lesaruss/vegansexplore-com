@@ -148,7 +148,7 @@
   // What we run for restaurants (Sean, 2026-10-10). Never show a planned thing as live: each says Live or Coming.
   var PROMOS = [
     { k: 'challenge-stop', t: 'Be a Passport Challenge stop', live: 1, href: '/business/challenge', what: 'Five Vegan businesses a month in each chapter are the stops on our Passport Challenge: members come to check in, show what they ordered and win your gift cards in the Vault. You give four $25 gift cards. If you are not a member yet, your cards give you full membership, and your claim is included.', why: 'About $30 in food for a month of promotion to every member, and new customers who come back to use the cards. Starting in South Florida.' },
-    { k: 'directory-page', t: 'Your Directory page', live: 1, href: '#/featured', what: 'A page on Vegans Explore that members find by city, search and votes, with your menu, hours, photos and links.', why: 'Free to be listed. Claim it to keep it current and see who finds you.' },
+    { k: 'directory-page', t: 'Your Directory page', live: 1, href: '#/featured', what: 'A page on Vegans Explore that members find by city, search and vouches, with your menu, hours, photos and links.', why: 'Free to be listed. Claim it to keep it current and see who finds you.' },
     { k: 'pulse-sponsor', t: 'A sponsored Daily Pulse story', live: 1, what: 'Your news written up and shared in your city\'s Daily Pulse, the topic members read every morning.', why: 'Sponsors give us the pictures; we write it and put it in front of your city.' },
     { k: 'bounties', t: 'Creator bounties', live: 1, what: 'Members and local creators make posts, reels and reviews about you, and earn points for it.', why: 'Real people showing your food, on their own accounts.' },
     { k: 'community-nights', t: 'Community nights', what: 'A members\' night at your restaurant: a set menu, a full room, photos and posts after.', why: 'A slow night turned into a full one, and regulars who came because of the community.' },
@@ -394,7 +394,7 @@
   }
   function gvoteBtn(key) {
     var on = !!GV.mine.episode[key];
-    return '<button type="button" class="dg-vote dg-vote-s' + (on ? ' on' : '') + '" data-gvote="episode:' + esc(key) + '" aria-pressed="' + on + '" title="' + (on ? 'You voted for this' : 'Vote for this') + '">' + HEART + '<b>' + gvCount(key) + '</b></button>';
+    return '<button type="button" class="dg-vote dg-vote-s' + (on ? ' on' : '') + '" data-gvote="episode:' + esc(key) + '" aria-pressed="' + on + '" title="' + (on ? 'You vouched for this' : 'Vouch for this') + '">' + HEART + '<b>' + gvCount(key) + '</b></button>';
   }
 
   // ---------- the audit (ve-restaurant-audit) ----------
@@ -767,13 +767,13 @@
       ['Find your page', 'Your page is already in the Directory. Members find you by city, search and category.', ph, PERSONAL ? 'See your page' : 'See the Directory'],
       ['Claim it', 'Claiming makes the page yours. Our team reviews every claim to make sure it is accurate.', ch, 'Claim your listing'],
       ['Make it yours', 'Add your hours, photos and menu link, and change them whenever you like.', '/business', 'See what you can do'],
-      ['Tell people', 'Members vote for the places they love, and the most voted rise to the top of your city.', '/directory', 'See the Directory']
+      ['Tell people', 'Members vouch for the places they love, and the most vouched for rise to the top of your city.', '/directory', 'See the Directory']
     ];
     main.innerHTML = head('Claim your page', 'Your page already exists. Claiming makes it yours.',
       'Claiming is a short form. The $11, 1,100 points or the Partner plan covers it, and we show you which when you start.') +
       '<div class="rg-steps">' + steps.map(function (st, i) { return '<div class="rg-step"><em>' + (i + 1) + '</em><b>' + esc(st[0]) + '</b><p>' + esc(st[1]) + '</p><a href="' + st[2] + '">' + esc(st[3]) + ' &rsaquo;</a></div>'; }).join('') + '</div>' +
       (PERSONAL ? '' : '<h3 class="dg-k" style="margin:0 0 8px">Find your restaurant</h3><div class="rg-find"><input type="search" id="rgPage" placeholder="Your restaurant\'s name" aria-label="Find your restaurant\'s page" autocomplete="off"></div><div class="rg-hits" id="rgPageHits"></div>') +
-      '<h3 class="dg-k" style="margin:18px 0 8px">Restaurants members vote for</h3>' + (TOP ? '<div class="vrd-root"><div class="rank-grid" id="rgTop">' + TOP.map(function (l, i) { return window.VERegionDirectory ? VERegionDirectory.card(l, i) : ''; }).join('') + '</div></div>' : '<div class="dg-loading">Loading...</div>');
+      '<h3 class="dg-k" style="margin:18px 0 8px">Restaurants members vouch for</h3>' + (TOP ? '<div class="vrd-root"><div class="rank-grid" id="rgTop">' + TOP.map(function (l, i) { return window.VERegionDirectory ? VERegionDirectory.card(l, i) : ''; }).join('') + '</div></div>' : '<div class="dg-loading">Loading...</div>');
     var input = document.getElementById('rgPage'), hits = document.getElementById('rgPageHits'), t;
     if (input) input.addEventListener('input', function () {
       clearTimeout(t); var q = input.value.trim();
@@ -811,7 +811,7 @@
   }
   function viewDemo() {
     var steps = [
-      ['Your page, as visitors see it', 'This is what a member sees when they find a restaurant: the story, hours, menu, photos and the vote.', ''],
+      ['Your page, as visitors see it', 'This is what a member sees when they find a restaurant: the story, hours, menu, photos and the Vouch button.', ''],
       ['Your dashboard', 'Your home base. What is new, how many people looked at your page, and what to do next.', '?tab=brand'],
       ['Insights', 'Who looked, where they came from, and what they did next, by day.', '?tab=brand&pd=insights'],
       ['Your page', 'Where you change your story, hours, contact details and photos. Changes go live at once.', '?tab=brand&pd=page'],
@@ -1128,7 +1128,7 @@
       '<div><ul><li><b>Your page, yours to run.</b> Claim it and keep your hours, photos and menu link current.</li><li><b>The Directory, the Daily Pulse and the events calendar</b>, open to you as a member.</li><li><b>Founding Member</b> stays on your profile for good if you finish before midnight Eastern on January 1, 2027.</li></ul></div></div>';
     var benefits = [
       ['Post jobs', 'Hire from the community on the Jobs board.', 'Live for a business with a listing'],
-      ['Join the community', 'Comment on the Daily Pulse, vote and check in.', 'Live'],
+      ['Join the community', 'Comment on the Daily Pulse, vouch and check in.', 'Live'],
       ['Your page, yours to run', 'Claim it, edit it, add your hours, photos and menu link.', 'Live'],
       ['Promote your business and events', 'Promote your event and get found; marketing help from our team on request.', 'Live by request'],
       ['See what campaigns are happening', 'The dashboard lists open campaigns and opportunities, and you can say you are in.', 'Live as a list, campaigns coming'],

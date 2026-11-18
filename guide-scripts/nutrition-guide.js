@@ -119,13 +119,13 @@
       go: ['Start with B12', '#/nutrients/b12'], cta: ['Next: Your plate', '#/plate'], ctaT: 'Put it on your plate.', ctaX: 'Turn the eight nutrients into one simple plate at every meal.' },
     plate: { title: 'One plate, every meal', how: '<b>Half vegetables and fruit, a quarter whole grains, a quarter plant protein.</b> Use the picture at every meal and tick off the every-day list. No counting.',
       go: ['See the every-day list', '#/plate'], cta: ['Next: Supplements', '#/supplements'], ctaT: 'Cover the rest with a supplement.', ctaX: 'What most Vegans take, and what to look for on the label.' },
-    supplements: { title: 'What to take, and what to look for', how: '<b>Most Vegans take B12, and many take vitamin D, an algae omega-3 or iodine.</b> Read what to check on the label, then look at the brands in our Directory. Members vote for the ones they trust.',
+    supplements: { title: 'What to take, and what to look for', how: '<b>Most Vegans take B12, and many take vitamin D, an algae omega-3 or iodine.</b> Read what to check on the label, then look at the brands in our Directory. Members vouch for the ones they trust.',
       go: ['See the brands', '/directory?tab=products&sub=nutrition-and-supplements'], cta: ['Next: Experts', '#/experts'], ctaT: 'Ask someone who knows.', ctaX: 'Physicians and dietitians from our shows, and health professionals near you.' },
     experts: { title: 'Find someone to ask', how: '<b>Hear a physician or a dietitian on our shows first, then find one near you.</b> Switch between On our shows and Near you, and pick your chapter.',
       go: ['Find one near you', '#/experts/pros'], cta: ['Next: Courses', '#/courses'], ctaT: 'Want to go deeper?', ctaX: 'Plant-based nutrition, cooking and coaching courses and certificates.' },
     courses: { title: 'Learn more, or make it your work', how: '<b>Pick Nutrition, Cooking or Coaching at the top.</b> Each course shows what you earn, how long it takes and what it costs, and the button goes to the school\'s own page to sign up.',
       go: ['See the free workshop', '#/courses/coaching'], cta: ['Next: The Pulse', '#/pulse'], ctaT: 'Hear it from the experts.', ctaX: 'Our episodes with physicians and health experts, played right here.' },
-    pulse: { title: 'Listen to the experts', how: '<b>Play any episode right here.</b> Physicians and health experts from our shows, on food and health. Members vote for the ones that helped them most.',
+    pulse: { title: 'Listen to the experts', how: '<b>Play any episode right here.</b> Physicians and health experts from our shows, on food and health. Members vouch for the ones that helped them most.',
       go: ['Hear the physicians', '#/pulse'], cta: ['Back to the Overview', '#/'], ctaT: 'You have the whole map.', ctaX: 'Nutrients, your plate, supplements, experts, courses and the Pulse, all in one Guide.' }
   };
   function npic(f) { return NPIC + f; }
@@ -291,7 +291,7 @@
   function gvCount(key) { return (GV.counts.episode || {})[key] || 0; }
   function gvoteBtn(key) {
     var on = !!GV.mine.episode[key];
-    return '<button type="button" class="dg-vote dg-vote-s' + (on ? ' on' : '') + '" data-gvote="episode:' + esc(key) + '" aria-pressed="' + on + '" title="' + (on ? 'You voted for this' : 'Vote for this') + '">' + HEART + '<b>' + gvCount(key) + '</b></button>';
+    return '<button type="button" class="dg-vote dg-vote-s' + (on ? ' on' : '') + '" data-gvote="episode:' + esc(key) + '" aria-pressed="' + on + '" title="' + (on ? 'You vouched for this' : 'Vouch for this') + '">' + HEART + '<b>' + gvCount(key) + '</b></button>';
   }
 
   // ---------- chapters (VE_HUBS), for health professionals near you ----------
@@ -426,7 +426,7 @@
     main.innerHTML = head('Supplements', 'Supplements, and what to look for',
       'Most Vegans take B12, and many take vitamin D, an algae omega-3 or iodine. Here is what to check on the label, and the brands in our Directory.') +
       look +
-      '<h3 class="dg-k" style="margin:22px 0 8px">Brands in our Directory</h3><p class="dg-lede" style="margin-bottom:10px">Members vote for the ones they trust. A listing here is not a recommendation for your health.</p>' +
+      '<h3 class="dg-k" style="margin:22px 0 8px">Brands in our Directory</h3><p class="dg-lede" style="margin-bottom:10px">Members vouch for the ones they trust. A listing here is not a recommendation for your health.</p>' +
       (SUPP ? (SUPP.length ? cards(SUPP, 'ntSupp') : '<p class="dg-empty">None listed yet.</p>') : '<div class="dg-loading">Loading...</div>') +
       '<div class="dg-btns" style="margin-top:14px"><a class="dg-btn dg-ghost" href="/directory?tab=products&sub=nutrition-and-supplements">See them in the Directory</a><a class="dg-btn dg-ghost" href="/claim?add=1">Add a brand</a></div>' + note();
     wireCards('ntSupp', '#/supplements');
@@ -440,7 +440,7 @@
     var near = String(sub || '').split('/')[0] === 'pros';
     var t = toggles(EXP_SUBS.map(function (x) { return [x[0], '#/experts' + (x[1] ? '/' + x[1] : '')]; }), near ? 'Near you' : 'On our shows');
     if (!near) {
-      main.innerHTML = head('Experts', 'Physicians and health experts', 'The doctors, dietitians and health experts in our People directory, most of them guests on our shows. Members vote for the ones they trust.', t) +
+      main.innerHTML = head('Experts', 'Physicians and health experts', 'The doctors, dietitians and health experts in our People directory, most of them guests on our shows. Members vouch for the ones they trust.', t) +
         (PEOPLE ? (PEOPLE.length ? cards(PEOPLE.slice(0, expShown), 'ntPeople') + (PEOPLE.length > expShown ? '<div class="dg-btns" style="margin-top:14px"><button type="button" class="dg-btn dg-ghost" data-more>Show more</button></div>' : '') : '<p class="dg-empty">None listed yet.</p>') : '<div class="dg-loading">Loading...</div>') +
         '<div class="dg-btns" style="margin-top:14px"><a class="dg-btn dg-ghost" href="#/pulse">Hear them on the podcast</a></div>' + note();
       wireCards('ntPeople', '#/experts');

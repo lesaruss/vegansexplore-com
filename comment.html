@@ -355,7 +355,7 @@
         cards.push('<a class="nx" href="/business?listing=' + encodeURIComponent(L.slug) + '"><small>Next</small><b>Claim ' + esc(L.name) + '</b><span>Your Directory page, yours to keep current: hours, photos, menu and links. Free for members.</span></a>');
       }
       if (!tok()) cards.push('<a class="nx" href="/survey?s=explorer"><small>Join free</small><b>Become a member</b><span>A short survey makes you a member, with 250 points. Before January 1, 2027, that makes you a Founding Member.</span></a>');
-      if (L) cards.push('<a class="nx" href="/directory/' + encodeURIComponent(L.slug) + '"><small>See it</small><b>' + esc(L.name) + ' on Vegans Explore</b><span>The page our community votes on, saves and shares.</span></a>');
+      if (L) cards.push('<a class="nx" href="/directory/' + encodeURIComponent(L.slug) + '"><small>See it</small><b>' + esc(L.name) + ' on Vegans Explore</b><span>The page our community vouches for, saves and shares.</span></a>');
       $('done').hidden = false;
       $('done').innerHTML = '<h2>We have your comment</h2><p class="note">Our team reads and listens to every one. If you left an email, we will tell you where it runs.</p>' +
         (cards.length ? '<div class="nx-grid">' + cards.join('') + '</div>' : '');

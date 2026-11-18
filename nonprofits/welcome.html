@@ -269,9 +269,9 @@
   function messages() {
     var o = org(), r = rate() + '%';
     return [
-      ['A post for your followers', o + ' is a Vegans Explore Nonprofit Partner. Vegans Explore is a community for Vegans, city by city: the Vegan places, events, rescues and sanctuaries near you, voted on by members. Joining is free with a short survey. Join with our link so ' + o + ' can see who came through us.'],
+      ['A post for your followers', o + ' is a Vegans Explore Nonprofit Partner. Vegans Explore is a community for Vegans, city by city: the Vegan places, events, rescues and sanctuaries near you, vouched for by members. Joining is free with a short survey. Join with our link so ' + o + ' can see who came through us.'],
       ['A text to a supporter', 'We just became a Vegans Explore Nonprofit Partner. Joining is free with our link, and you get the Vegan places, events and people near you. Here it is.'],
-      ['For your newsletter', 'Support ' + o + ' by joining Vegans Explore\n\nWe are proud to be one of the first Nonprofit Partners of Vegans Explore, a community for Vegans, city by city. Members find Vegan restaurants, events, rescues and sanctuaries near them, vote for the places they love, and join the conversation in their city. Joining is free with a short survey. Please join through our link, so we can see the community we are growing.'],
+      ['For your newsletter', 'Support ' + o + ' by joining Vegans Explore\n\nWe are proud to be one of the first Nonprofit Partners of Vegans Explore, a community for Vegans, city by city. Members find Vegan restaurants, events, rescues and sanctuaries near them, vouch for the places they love, and join the conversation in their city. Joining is free with a short survey. Please join through our link, so we can see the community we are growing.'],
       ['For your volunteers', 'Thank you for everything you do for ' + o + '. One more easy way to help: join Vegans Explore with our link. It is free, and you get a community that backs the work we do.']
     ].map(function (m) { return { title: m[0], text: m[1], link: link() }; });
   }
@@ -298,7 +298,7 @@
     why: function () {
       return head('Why it matters', 'More people behind your work', 'Your supporters already trust you. Vegans Explore gives them a community that backs the organizations doing the work, and every one who joins through your link adds to ' + esc(org()) + '.') +
         '<div class="dg-grid">' +
-        card('People find you', esc(org()) + ' has its page in the Directory\'s Community section, where members find rescues, sanctuaries and nonprofits in every chapter, vote for them and give them points. <a href="/directory/' + esc(P.org.slug) + '">See your page</a>.', 'The Directory') +
+        card('People find you', esc(org()) + ' has its page in the Directory\'s Community section, where members find rescues, sanctuaries and nonprofits in every chapter, vouch for them and give them points. <a href="/directory/' + esc(P.org.slug) + '">See your page</a>.', 'The Directory') +
         card('Your link counts', 'Every person who joins through your link is counted for ' + esc(org()) + '. Cash commissions are paused from November 7, 2026. Your link still counts everyone who joins through it, and anything earned before then is paid as described here.', 'Your link') +
         card('Your people, in one place', 'Members get the Daily Pulse, events and the Vegan places in their city, and the Fosters and Rescues boards, where animals that need a home are posted.', 'Community') +
         card('Points for your work', 'Your organization holds points for our services: promoting your events, a feature, a social push. Members can give you more from your page.', 'Points') +
@@ -370,7 +370,7 @@
     you: function () {
       return head('Your account', 'You lead ' + esc(org()) + '\'s account', 'Your own Founding Membership is on us. It is your own account, separate from the partnership: your level, your points and your personal link are yours, and nothing the organization earns changes them.') +
         '<div class="dg-grid">' +
-        card('Your membership', 'Everything a member has: vote, save, check in, post on the Daily Pulse, join any community and unlock Guides. <a href="/dashboard">Go to your dashboard</a>.', 'On us') +
+        card('Your membership', 'Everything a member has: vouch, save, check in, post on the Daily Pulse, join any community and unlock Guides. <a href="/dashboard">Go to your dashboard</a>.', 'On us') +
         card('Your own link', 'You also have a personal link, in <a href="/dashboard/levels">Points and levels</a>. Use the organization\'s link for the organization; your own counts to you.', 'Separate') +
         card('Questions', 'Write to us any time at <a href="mailto:contact@lesaruss.com?subject=Nonprofit%20Partner">contact@lesaruss.com</a>.', 'We are here') +
         '</div><div class="dg-btns"><a class="dg-btn" href="#/kit">Share your link</a><a href="/dashboard" style="font-size:13px;font-weight:800;color:var(--g)">Go to your dashboard</a></div>';

@@ -415,7 +415,7 @@
       '<section class="hg-nye"><h3 class="hg-sh">Order a New Year\'s Eve Feast</h3><p class="hg-shl">Vegan places cooking for the night. One card per business; pick the location nearest you.</p>' + mHtml + '</section>' +
       '<section class="hg-nye"><h3 class="hg-sh">Coming in December</h3><div class="hg-coming">' +
         '<div><b>Your First Vegan Year</b><span>Starting the new year plant-based: simple first steps, and a Guide to walk you through them.</span><em>Coming</em></div>' +
-        '<div><b>The Year in Review</b><span>The top moments of the year in the Vegan movement. Vote for the one that mattered most.</span><em>Coming</em></div></div></section>' +
+        '<div><b>The Year in Review</b><span>The top moments of the year in the Vegan movement. Vouch for the one that mattered most.</span><em>Coming</em></div></div></section>' +
       '<section class="hg-nye hg-door"><div><b>Run a Vegan business?</b><span>Add your New Year\'s Eve menu or event. It\'s free for members.</span></div>' +
         '<div class="dg-btns"><a class="dg-btn dg-ghost" href="#/business">Send Your Menu</a><a class="dg-btn dg-ghost" href="/events#submit/1">Add Your Event</a></div></section>';
   }
@@ -1863,7 +1863,7 @@
     }
     if (e.target.closest('[data-hg-join]')) {
       if (member()) { location.href = '/dashboard/saves'; return; }
-      joinWindow('', registered() ? 'You are registered. Become a member to save places, vote and open every Guide.' : 'Everything in the Holiday Guide is free to read. Register to send menus and recipes and get the Daily Pulse, or become a member and open everything.');
+      joinWindow('', registered() ? 'You are registered. Become a member to save places, vouch and open every Guide.' : 'Everything in the Holiday Guide is free to read. Register to send menus and recipes and get the Daily Pulse, or become a member and open everything.');
       return;
     }
     if (e.target.closest('[data-signin]')) {

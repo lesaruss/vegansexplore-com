@@ -275,7 +275,7 @@
       '<div><label class="h" for="vla-ptt">TikTok</label><input type="text" id="vla-ptt" placeholder="@handle" value="' + esc(l.tiktok || '') + '"></div></div>' +
       '<label class="h" for="vla-pyt">YouTube</label><input type="text" id="vla-pyt" placeholder="@channel or a link" value="' + esc(l.youtube || '') + '">' +
       '<label class="h" for="vla-pacct">Their Vegans Explore account</label><input type="email" id="vla-pacct" placeholder="The email they sign in with" autocomplete="off">' +
-      '<div class="note" id="vla-pacct-note">Links this profile to their account, so their member card counts the votes and saves on it. It does not make them its owner. Leave it empty if they have no account.</div>' +
+      '<div class="note" id="vla-pacct-note">Links this profile to their account, so their member card counts the vouches and saves on it. It does not make them its owner. Leave it empty if they have no account.</div>' +
       '<label class="h">Their work (a sign-up page, a program, a product, a book)</label>' +
       [0, 1, 2].map(function (i) { var x = ((l.person || {}).links || [])[i] || {};
         return '<div class="row2"><div><input type="text" class="vla-plink-l" maxlength="40" placeholder="Label, like Work with me" value="' + esc(x.label || '') + '"></div><div><input type="text" class="vla-plink-u" placeholder="https://" value="' + esc(x.url || '') + '"></div></div>'; }).join('') +
@@ -324,7 +324,7 @@
       '<div id="vla-p-vegan"><h3>How Vegan</h3><div class="chips">' + VEGAN.map(function (o) { return chip('radio', 'vla-vs', o[0], o[1], o[0] === vs); }).join('') + '</div>' +
       // Vetted by us (Sean, 2026-10-25): skips the 10 member votes a Vegan-friendly or Vegan-options place needs.
       '<div id="vla-vet-wrap"><label class="check"><input type="checkbox" id="vla-vet"' + (l.vetted_at ? ' checked' : '') + '> Vetted by us: show it to everyone now</label>' +
-      '<div class="note">Otherwise it stays in the members\' Being vetted section until 10 different members vote for it (' + (l.voter_count || 0) + ' so far) or the business claims it.</div></div></div>' +
+      '<div class="note">Otherwise it stays in the members\' Being vetted section until 10 different members vouch for it (' + (l.voter_count || 0) + ' so far) or the business claims it.</div></div></div>' +
       '<h3 id="vla-bs-t">Open or closed</h3><div class="chips" id="vla-bs"></div>' +
       // Off the Directory without calling it closed (Sean, 2026-10-25: "I just wanted to remove and not even mark as permanently
       // closed"). Both save at once through ve-outreach listing_state; Depot > Directory review lists them and can put them back.
@@ -424,7 +424,7 @@
       var acct = $('#vla-pacct');
       if (acct && !acct.dataset.loaded) people({ action: 'account', listing_id: l.id }).then(function (d) {
         acct.dataset.loaded = '1'; acct.dataset.was = (d && d.account && d.account.email) || ''; acct.value = acct.dataset.was;
-        if (d && d.account) $('#vla-pacct-note').textContent = 'Linked to ' + (d.account.name || d.account.email) + '. Their member card counts the votes and saves on this profile. Clear it to unlink.';
+        if (d && d.account) $('#vla-pacct-note').textContent = 'Linked to ' + (d.account.name || d.account.email) + '. Their member card counts the vouches and saves on this profile. Clear it to unlink.';
       });
       people({ action: 'credits', listing_id: l.id }).then(function (d) {
         var rows = (d && d.credits) || [];
