@@ -49,14 +49,15 @@
     .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: var(--k-ink); color: #fff; font-weight: 800; font-size: 13px; padding: 10px 16px; border-radius: 8px; z-index: 50; }
     .k-tag.bad { background: #fde8e6; color: #a3221b; }
     .k-tag.not { background: #f1f1f1; color: var(--k-mute); }
+    @media (max-width: 600px) { .rowside .k-tag { white-space: normal; max-width: 82px; font-size: 8.5px; letter-spacing: .06em; padding: 4px 6px; line-height: 1.2; } .k-row.r5 { grid-template-columns: 40px minmax(0, 1fr) auto; } .thumb { width: 40px; height: 40px; } }
   </style>
 </head>
 <body>
 <script src="/public/nav.js"></script>
 <main class="reach" data-kit-parent="business-dashboard" data-k-section="directory">
   <span class="k-eb">Directory Reach</span>
-  <h1 class="k-h1">Every listing hears from us by <span class="k-hl o">December 1</span>.</h1>
-  <p class="k-lede">The plan, the week, the roster and the record of everyone we reach in the Directory, in one place.</p>
+  <h1 class="k-h1" id="pageTitle">Directory Reach</h1>
+  <p class="k-lede" id="pageLede"></p>
   <div id="gate" class="gate" hidden></div>
   <div id="app" hidden>
     <nav class="k-tabs" id="tabs" aria-label="Parts">
@@ -82,6 +83,8 @@
   // structure, but the content still needs to be finalized"). Replace here after the BOSS on KJ's role and Sean's review; the DM openers
   // live in ve_reach_messages (status draft until Sean locks them). Nothing below is final. ========
   var COPY = {
+    title: 'Every listing hears from us by December 1.',
+    lede: 'The plan, the week, the roster and the record of everyone we reach in the Directory, in one place.',
     plan: {
       bigTitle: 'The big picture',
       big: ['Goal: every listing in the Directory hears from us once by Monday, December 1, 11:59 PM Eastern.',
@@ -400,7 +403,7 @@
     if (!VEAuth.getToken()) return gate('Sign in to open Directory Reach.');
     post({ action: 'me' }).then(function (r) {
       if (!r.ok) return gate(r.error === 'forbidden' ? 'This console is for the Vegans Explore team.' : 'Sign in to open Directory Reach.');
-      ME = r.me; $('gate').hidden = true; $('app').hidden = false; draw();
+      ME = r.me; $('pageTitle').textContent = COPY.title; $('pageLede').innerHTML = esc(COPY.lede) + draft(); $('gate').hidden = true; $('app').hidden = false; draw();
     });
   }
   start();
