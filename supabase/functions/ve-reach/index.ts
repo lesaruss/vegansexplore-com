@@ -250,8 +250,9 @@ async function feature(rows: Row[]) {
   // Instagram-only places; only when that city has fewer than CITY_MIN does it fill from the same chapter, and then the caption names
   // the real state or states ("across Pennsylvania"), never a city some places are not in. One mention per Instagram account.
   const handleOf = (r: Row) => { const u = igUrl(r.instagram); return u ? String(u.replace(/\/+$/, '').split('/').pop()).toLowerCase() : ''; };
-  const cityKey = (r: Row) => r.city ? `${String(r.city).split(',')[0].trim().toLowerCase()}|${String(r.state || '').toLowerCase()}` : '';
   const realChapter = (r: Row) => r.chapter && r.chapter !== 'all' ? r.chapter : null;
+  // A city feature needs a real place: online-only listings (chapter 'all', city 'Online') never anchor one.
+  const cityKey = (r: Row) => r.city && realChapter(r) && !/^online\b/i.test(String(r.city).trim()) ? `${String(r.city).split(',')[0].trim().toLowerCase()}|${String(r.state || '').toLowerCase()}` : '';
   let pick: Row | undefined = featured[0];
   if (!pick) {
     const counts = new Map<string, number>();
@@ -268,7 +269,7 @@ async function feature(rows: Row[]) {
     batch = take(q.filter((r) => cityKey(r) === cityKey(pick!)), room);
     if (featured.length + batch.length < CITY_MIN && realChapter(pick)) {
       mode = 'area';
-      batch = batch.concat(take(q.filter((r) => realChapter(r) === realChapter(pick!) && cityKey(r) !== cityKey(pick!)), room - batch.length));
+      batch = batch.concat(take(q.filter((r) => cityKey(r) && realChapter(r) === realChapter(pick!) && cityKey(r) !== cityKey(pick!)), room - batch.length));
     }
   }
   const chapter = pick ? realChapter(pick) : null;
