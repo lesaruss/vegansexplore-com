@@ -223,7 +223,7 @@
       </div>
     </header>
     <section class="wrap" aria-live="polite">
-      <div class="empty gate" id="gate" hidden><strong>Bounties are for members.</strong>Sign in to see the campaigns in your city, take on a job and earn points. New here? Join Vegans Explore first; claiming a job takes a Passport.<br><button type="button" class="btn btn-primary" id="gate-signin">Sign in or join</button></div>
+      <div class="empty gate" id="gate" hidden><strong>Bounties are for members.</strong>Sign in to see the campaigns in your city, take on a job and earn points. New here? Joining is free with a short survey, and every member can claim a job.<br><button type="button" class="btn btn-primary" id="gate-signin">Sign in or join</button></div>
       <nav class="crumbs" id="crumbs" aria-label="Breadcrumb" hidden></nav>
       <div id="list"></div>
       <div id="checkins" hidden></div>
@@ -290,7 +290,7 @@
           </aside>
         </div>
       </div>
-      <div class="how" id="how"><strong>How it works.</strong> Pick a campaign, then a job. Each job has a few spots and a clock. Claim a spot before claims close (48 hours before the event) and you get the rundown: what we need, how to shoot it, and the event details, plus a Q&amp;A with your Community Manager until the event starts. Upload your work here (up to 2 GB a file) or paste links, and submit within 7 days of the event. Your Community Manager reviews it; approved work pays the points, and you may get a note to fix something or a tip for next time. Bounties are for Passport holders.</div>
+      <div class="how" id="how"><strong>How it works.</strong> Pick a campaign, then a job. Each job has a few spots and a clock. Claim a spot before claims close (48 hours before the event) and you get the rundown: what we need, how to shoot it, and the event details, plus a Q&amp;A with your Community Manager until the event starts. Upload your work here (up to 2 GB a file) or paste links, and submit within 7 days of the event. Your Community Manager reviews it; approved work pays the points, and you may get a note to fix something or a tip for next time. Bounties are for members, and joining is free with a short survey.</div>
     </section>
   </main>
 
@@ -669,7 +669,7 @@
       else if (b.spots_left === 0) body = '<p>Every spot is taken. Spots reopen if someone releases theirs before claims close, so check back.</p>';
       else if (b.held && !b.held_for_you) body = '<p>This one is held for the city&rsquo;s Community Manager first. If they pass, it opens to everyone.</p>';
       else if (!v.signed_in) body = '<p>Sign in to claim a spot.</p><div class="claimrow"><button type="button" class="btn btn-primary" data-act="signin">Sign in or join</button></div>' + fine;
-      else if (!v.passport) body = '<p>Bounties are for Passport holders.</p><div class="claimrow"><a class="btn btn-primary" href="/passport">Get your Passport</a></div>';
+      else if (!v.passport) body = '<p>Bounties are for members. Joining is free with a short survey.</p><div class="claimrow"><a class="btn btn-primary" href="/passport">Join free</a></div>';
       else if (v.standing && v.standing.ok === false) body = '<p>' + (v.standing.paused ? 'Your bounties are paused after missed deadlines.' : 'You can claim again after ' + esc(day(v.standing.until)) + '.') + '</p>';
       else body = '<div class="claimrow"><button type="button" class="btn btn-primary" data-act="claim">Claim a spot</button>' + spotsHtml(b) + '</div>' + fine;
       el.innerHTML = '<h3>Take this on</h3>' + body + '<p class="msg" id="claim-msg" role="status" aria-live="polite"></p>';

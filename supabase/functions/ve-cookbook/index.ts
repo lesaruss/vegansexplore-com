@@ -329,7 +329,7 @@ Deno.serve(async (req) => {
       if (!isId(body.recipe_id)) return json({ error: 'bad_id' }, 400);
       const { data: r } = await db.from('recipes').select('id, status, author_member_id').eq('id', body.recipe_id).maybeSingle();
       if (!r || !['live', 'retesting'].includes(r.status)) return json({ error: 'not_found' }, 404);
-      if (r.author_member_id === viewer!.id) return json({ error: 'own_recipe', message: 'You cannot vote for your own recipe.' }, 400);
+      if (r.author_member_id === viewer!.id) return json({ error: 'own_recipe', message: 'You cannot vouch for your own recipe.' }, 400);
       if (body.on === false) await db.from('recipe_votes').delete().eq('recipe_id', r.id).eq('member_id', viewer!.id);
       else {
         const { error } = await db.from('recipe_votes').insert({ recipe_id: r.id, member_id: viewer!.id });

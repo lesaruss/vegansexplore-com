@@ -344,7 +344,7 @@ Deno.serve(async (req) => {
         db.rpc('lr_member_entitled', { p_member: memberId }),
         db.rpc('lr_listing_in_directory', { p_listing: id }),
       ]);
-      if (entitled !== true) return json({ error: 'payment_required', message: 'Voting on LESARUSS.ai is for LESARUSS members: Diplomats and LESARUSS Passport holders.' }, 402);
+      if (entitled !== true) return json({ error: 'payment_required', message: 'Vouching on LESARUSS.ai is for LESARUSS members: Diplomats and LESARUSS Passport holders.' }, 402);
       if (inDir !== true) return json({ error: 'not_found' }, 404);
     } else {
       // Members only: the same gate as ve-auth's requireActiveMembership (Guest Passport included).
@@ -353,7 +353,7 @@ Deno.serve(async (req) => {
         return json({ error: 'account_not_in_good_standing', message: 'Your account is on hold. Write to contact@lesaruss.com and we will help.' }, 403);
       }
       if (!member || member.membership_status !== 'active') {
-        return json({ error: 'payment_required', message: 'Join free with a short survey to vote for the places you love.' }, 402);
+        return json({ error: 'payment_required', message: 'Join free with a short survey to vouch for the places you love.' }, 402);
       }
       const { data: listing } = await db.from('listings').select('id').eq('id', id).eq('status', 'approved').maybeSingle();
       if (!listing) return json({ error: 'not_found' }, 404);

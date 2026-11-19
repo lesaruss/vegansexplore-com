@@ -530,7 +530,7 @@
     <div id="hub-ov-dishes" hidden>
       <h3 class="hov-h" data-hub-text="Top dishes in {name}"></h3>
       <div class="sd-grid" id="hub-ov-dishes-grid"></div>
-      <p class="hov-more">Signature dishes the places chose themselves, ranked by member vouches over the last 90 days.</p>
+      <p class="hov-more">Signature dishes the places chose themselves, ranked by member vouches.</p>
     </div>
   </section>
 
@@ -1012,7 +1012,7 @@
       var a = e.target.closest('[data-hov-tab]'); if (!a || e.metaKey || e.ctrlKey) return;
       e.preventDefault(); switchTab(a.getAttribute('data-hov-tab')); window.scrollTo(0, 0);
     });
-    // Top dishes (playbook ve-signature-dishes, item K): one dish per place, 3 or more member votes in 90 days, shown once the chapter has 3.
+    // Top dishes (playbook ve-signature-dishes, item K): one dish per place, 3 or more member vouches (every current vouch), shown once the chapter has 3.
     fetch(SUPABASE_URL + '/functions/v1/ve-signature-dishes', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'top' }) })
       .then(function (r) { return r.json(); }).then(function (d) {
         var VG = { fully_vegan: '100% Vegan', vegan_options: 'Vegan options', vegan_friendly: 'Vegan friendly' };
