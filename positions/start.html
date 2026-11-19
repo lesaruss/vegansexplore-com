@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="/analytics.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Your start — Vegans Explore</title>
+  <meta name="description" content="Start as a Vegans Explore team member: the big picture, your role, a quick check, the agreement and your next steps.">
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preload" href="/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/public/ve-kit.css">
+  <!-- A position's start page (Sean, 2026-11-18, for KJ: "give her the information, make sure she's on board, and if she is, let's have a
+       section where she could enter that information... one of the next steps is put the email address associated with your Meta account so
+       that way we can give you partial access"). The role as Sean locked it 2026-11-19 (the mock /mocks/kj-dashboard; Business Suite messages and comments only). Parent: claim.html for the steps
+       (?step=, the step names on top, Back / Step N of M / Next, Next checks the step); the look from /public/ve-kit.css; Kai the Creator
+       Guide as the Guide, as on /mocks/directory-reach. Data: ve-positions (me; preview for super admins; role_read, sign, meta_email,
+       payout_start, payout_status). Every word is DRAFT in the COPY object until Sean locks it. -->
+  <style>
+    @font-face { font-family: 'Montserrat'; font-style: normal; font-weight: 400 900; font-display: swap; src: url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2'); }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Montserrat', sans-serif; background: #fff; color: var(--k-ink); line-height: 1.5; }
+    main.ps { max-width: none; margin: 0; padding: 36px 40px 80px; }
+    [hidden] { display: none !important; }
+    .ps-head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 430px); gap: 12px 36px; align-items: start; }
+    .ps-guide { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; align-items: center; background: var(--k-pinkt); border: 2px solid var(--k-ink); border-radius: var(--k-rc); box-shadow: 4px 4px 0 var(--k-pink); padding: 10px 12px; }
+    .ps-guide .av { width: 64px; height: 64px; border: 2px solid var(--k-ink); border-radius: 10px; background: #fff center 12% / cover no-repeat; }
+    .ps-guide b { display: block; font-size: 10.5px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: var(--k-pinkd); }
+    .ps-guide span { display: block; font-size: 14px; font-weight: 800; line-height: 1.35; }
+    .stepper { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 18px; padding: 0; counter-reset: st; }
+    .stepper li { counter-increment: st; display: flex; align-items: center; gap: 8px; font-size: 11.5px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; border: 2px solid var(--k-line); border-radius: var(--k-r); padding: 6px 10px; color: var(--k-mute); }
+    .stepper li::before { content: counter(st); display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #eee; color: var(--k-ink); font-size: 11px; }
+    .stepper li.on { border-color: var(--k-ink); color: var(--k-ink); } .stepper li.on::before { background: var(--k-or); }
+    .stepper li.done::before { content: '\2713'; background: var(--k-dk); color: #fff; }
+    .sec { margin: 18px 0 0; }
+    .sec > .k-label { margin-bottom: 10px; }
+    .draft { margin-left: 6px; vertical-align: middle; }
+    .q { border: 2px solid var(--k-ink); border-radius: var(--k-rc); padding: 14px 16px; margin: 0 0 12px; background: #fff; }
+    .q h3 { margin: 0 0 8px; font-size: 16px; font-weight: 900; }
+    .q label { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; font-weight: 700; padding: 6px 0; cursor: pointer; }
+    .q input { margin-top: 3px; width: 18px; height: 18px; accent-color: var(--k-dk); flex: none; }
+    .q.bad { box-shadow: 4px 4px 0 #e05a4f; }
+    .agr { white-space: pre-wrap; font-size: 13px; font-weight: 600; line-height: 1.6; border: 2px solid var(--k-ink); border-radius: var(--k-rc); padding: 14px 16px; background: #fff; }
+    .sig { display: grid; gap: 10px; margin-top: 14px; max-width: 620px; }
+    .sig label.chk { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; font-weight: 800; }
+    .sig input[type=checkbox] { width: 20px; height: 20px; accent-color: var(--k-dk); margin-top: 2px; flex: none; }
+    .field { display: grid; gap: 6px; max-width: 620px; }
+    .field input { font: inherit; font-size: 15px; border: 2px solid var(--k-ink); border-radius: var(--k-r); padding: 11px 12px; }
+    .field small { font-size: 12.5px; font-weight: 600; color: var(--k-mute); }
+    .msg { font-size: 13.5px; font-weight: 800; margin: 12px 0 0; } .msg.err { color: #b42318; } .msg.ok { color: var(--k-dk); }
+    .note { font-size: 13px; font-weight: 700; line-height: 1.55; max-width: 860px; margin: 12px 0 0; }
+    .step-nav { display: flex; align-items: center; gap: 12px; margin-top: 22px; border-top: 2px solid var(--k-ink); padding-top: 14px; }
+    .step-nav .count { flex: 1; text-align: center; font-size: 12px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; }
+    .pv { display: inline-block; background: var(--k-peach); font-size: 11px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; border-radius: var(--k-r); padding: 4px 8px; margin-left: 8px; vertical-align: middle; }
+    .gate { max-width: 620px; }
+    .k-row-t small { white-space: normal; }
+    @media (max-width: 900px) {
+      main.ps { padding: 24px 16px 60px; }
+      .ps-head { grid-template-columns: minmax(0, 1fr); }
+      .ps-guide { grid-template-columns: 48px minmax(0, 1fr); } .ps-guide .av { width: 48px; height: 48px; }
+      .stepper li { font-size: 10px; padding: 5px 8px; }
+    }
+  </style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+<main class="ps" data-kit-parent="claim">
+  <div class="ps-head">
+    <div>
+      <span class="k-eb" id="eb"></span><span class="k-tag wait draft" id="pageDraft">Draft</span><span class="pv" id="pv" hidden>Preview: nothing is saved</span>
+      <h1 class="k-h1" id="h1" style="margin-top:14px"></h1>
+      <p class="k-lede" id="lede"></p>
+    </div>
+    <div class="ps-guide" id="guide"><span class="av" id="av" role="img" aria-label="Kai, your Guide"></span><p style="margin:0"><b>Kai, Creator Guide</b><span id="say"></span></p></div>
+  </div>
+
+  <div id="gate" class="gate" hidden></div>
+
+  <div id="app" hidden>
+    <ol class="stepper" id="stepper"></ol>
+    <div class="k-stripe"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+
+    <section data-step="big" hidden>
+      <div class="k-blocks" id="bigBlocks"></div>
+      <div class="sec"><span class="k-label" id="whyH"></span><p class="k-lede" id="why"></p></div>
+      <div class="sec"><span class="k-label" id="pagesH"></span><p class="note" id="pages"></p></div>
+    </section>
+
+    <section data-step="role" hidden>
+      <div class="sec"><span class="k-label" id="doH"></span><div class="k-rows" id="doRows"></div></div>
+      <div class="sec"><span class="k-label" id="neverH"></span><div class="k-rows" id="neverRows"></div></div>
+      <div class="sec"><span class="k-label" id="dayH"></span><div class="k-steps" id="day"></div><p class="note" id="dayNote"></p></div>
+    </section>
+
+    <section data-step="check" hidden>
+      <p class="note" id="checkIntro" style="margin-top:0"></p>
+      <div id="qs"></div>
+    </section>
+
+    <section data-step="in" hidden>
+      <div class="k-blocks" id="payBlocks"></div>
+      <div class="sec"><span class="k-label"><span id="agrH"></span> <span class="k-tag wait" id="agrDraft" hidden>Draft</span></span><div class="agr" id="agr"></div><p class="note" id="agrNote" hidden></p></div>
+      <div class="sig">
+        <label class="chk"><input type="checkbox" id="agree"><span id="agreeL"></span></label>
+        <div class="field"><label class="k-label" for="sname" id="snameL"></label><input id="sname" autocomplete="name"></div>
+      </div>
+    </section>
+
+    <section data-step="next" hidden>
+      <div class="k-rows">
+        <div class="k-row"><span class="k-num or">1</span><span class="k-row-t"><b id="n1H"></b><small id="n1"></small></span><span class="k-tag" id="n1Tag"></span></div>
+      </div>
+      <div class="field" style="margin-top:12px"><label class="k-label" for="metaEmail" id="metaL"></label><input id="metaEmail" type="email" autocomplete="email" inputmode="email"><small id="metaHint"></small></div>
+      <div class="k-btns" style="margin-top:12px"><button type="button" class="k-btn k-cta" id="metaGo"></button></div>
+      <div class="k-rows" style="margin-top:22px">
+        <div class="k-row"><span class="k-num pk">2</span><span class="k-row-t"><b id="n2H"></b><small id="n2"></small></span><button type="button" class="k-btn k-sm" id="payGo"></button></div>
+        <div class="k-row"><span class="k-num br">3</span><span class="k-row-t"><b id="n3H"></b><small id="n3"></small></span><span class="k-tag not" id="n3Tag"></span></div>
+      </div>
+      <p class="note" id="doneNote" hidden></p>
+    </section>
+
+    <p class="msg" id="msg" role="status"></p>
+    <div class="step-nav">
+      <button type="button" class="k-btn" id="back">Back</button>
+      <span class="count" id="count"></span>
+      <button type="button" class="k-btn k-cta" id="next">Next</button>
+    </div>
+  </div>
+</main>
+<script src="/public/ve-auth.js"></script>
+<script>
+(function () {
+  var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  // ======== COPY: every word on this page that is not live data. DRAFT until Sean locks it; rewritten 2026-11-19 to the role he locked with the dashboard, then in plain words (her people first, events in her home city, footage to us, community about 15 minutes a day, Kai not Logan). ========
+  var COPY = {
+    eyebrow: 'Community Manager',
+    steps: { big: 'The big picture', role: 'Your role', check: 'Quick check', in: "I'm in", next: 'Next steps' },
+    h1: { big: 'Bring your people into Vegans Explore', role: 'Your people first, wherever they are', check: 'Three quick questions', in: "Say you're in", next: 'Your next steps' },
+    lede: {
+      big: 'We open on January 1. Before then, 250 people are members by December 31, and you bring in your share: the people you know, wherever they are.',
+      role: 'Invite your people with your own link, sign people up at events in your city, and answer @vegansexplore about 15 minutes a day. Kai is your one contact.',
+      check: 'They keep the brand and the account safe, and you too. Pick one answer for each.',
+      in: 'Read the agreement, then tick the box and type your full name.',
+      next: 'Three things, and you are ready to start.'
+    },
+    say: {
+      big: 'Hi, I\'m Kai. You\'re joining at the best moment: the doors open January 1, and you help fill the room with your people.',
+      role: 'The people you already know are yours to invite, any way you like. Businesses and listings still go through @vegansexplore.',
+      check: 'No trick questions. If one feels unclear, read Your role again.',
+      in: 'This is the same agreement, in plain words, for everyone in this role.',
+      next: 'Give us the email on your Facebook account, so Sean can add you in Business Suite.'
+    },
+    big: {
+      blocks: [['84 → 250', 'Members by Thursday, December 31, 11:59 PM Eastern', 'k-dk'], ['60', 'New members from your links: your share', 'k-pink'], ['15 min', 'A day answering @vegansexplore, as Vegans Explore', 'k-peach']],
+      whyH: 'Why January 1',
+      why: 'Founding Member closes at midnight Eastern on January 1. Everyone who joins before then keeps it on their profile for good, so everyone you invite now has a reason to come in now.',
+      pagesH: 'Where people land',
+      pages: 'Your link takes people to Vegans Explore, and every member who joins through it is credited to you. Businesses that write to @vegansexplore get their own page link, with their listing on it and a short hello from Sean.'
+    },
+    role: {
+      doH: 'What you do, heaviest first',
+      does: [['Your people', 'Invite the people you know, with your own link: in person, by text, or on any platform you use.'],
+        ['In person, in your city', 'Sign people up at events in your city.'],
+        ['Footage and ideas', 'Send us footage and ideas. We edit everything in our own style, post it, and invite you to collab on it.'],
+        ['Community, about 15 minutes a day', 'Answer comments and messages on @vegansexplore, as Vegans Explore, in Business Suite. Send each person their own link, welcome new followers, and tap what happened on your dashboard.'],
+        ['Every week', 'Read Monday\'s brief and do its asks. Tell Kai if anything looks off.']],
+      neverH: 'What you never do',
+      nevers: [['Message businesses from your own accounts', 'Listings and businesses go through @vegansexplore, so those relationships stay with the brand. If one writes to you, point them to @vegansexplore.'],
+        ['Post on @vegansexplore', 'You answer comments and messages only, through Meta Business Suite with your own login. No password, no posting, and Sean can remove the access any time.'],
+        ['Change anything else', 'Never start a cold message from @vegansexplore, never touch the profile, settings or security, never use bots or other tools on the account, and never promise anything we have not built.']],
+      dayH: 'A week in the role',
+      day: [['Every day', 'Answer', 'About 15 minutes: everyone who wrote, replied or commented on @vegansexplore.'], ['Through the week', 'Invite', 'Your people, with your link, and people at events in your city.'], ['Once a week', 'Brief', 'Read the brief, do its asks, and send us any footage from your week.']],
+      dayNote: 'Your own hours. Your questions go to Kai on your dashboard; she answers what she can right away and checks with Sean on the rest. If Instagram ever shows a warning on @vegansexplore, stop for 48 hours and tell Kai.'
+    },
+    check: {
+      intro: 'Pick one answer for each.',
+      qs: [
+        { k: 'people', q: 'Who do you invite from your own accounts, with your link?', a: [['businesses', 'Businesses and listings in the Directory.'], ['personal', 'People I know personally: friends, family, followers, fellow creators.'], ['cold', 'Anyone I can find, with a cold message.']] },
+        { k: 'account', q: 'How do you work in the Vegans Explore account?', a: [['password', 'With the account password.'], ['post', 'I post on @vegansexplore when I have something good.'], ['business_suite', 'In Meta Business Suite, with my own login: comments and messages only.']] },
+        { k: 'footage', q: 'You got great footage at an event. What do you do?', a: [['on_theirs', 'Post it on @vegansexplore myself.'], ['send_us', 'Send it to Vegans Explore; we edit and post it.'], ['tag_biz', 'Post it on my account and tag businesses to bring them in.']] }
+      ],
+      wrong: 'One or more answers are not quite right. Read Your role again; they keep the brand and the account safe.'
+    },
+    pay: { title: 'The pay', every: 'every 2 weeks, through Stripe', trial: 'One-month trial', first: 'First payday if you start today' },
+    agrH: 'The agreement',
+    agrDraftNote: 'This is the agreement for your role. Sean locks it before anyone signs; until then it cannot be signed here.',
+    agree: 'I\'ve read the role and the agreement, and I\'m in.',
+    sname: 'Your full name, as your signature',
+    signFirst: 'Tick the box and type your full name to sign.',
+    next: {
+      n1H: 'The email on your Meta (Facebook) account',
+      n1: 'Sean adds you in Meta Business Suite with partial access to @vegansexplore: messages and comments only. Use the email you sign in to Facebook with.',
+      metaL: 'Your Meta account email',
+      metaHint: 'Only used for the Business Suite invite.',
+      metaGo: 'Send my email',
+      metaSaved: 'Saved. Sean will invite this address.',
+      n2H: 'Set up payouts with Stripe',
+      n2: 'Your bank details and W-9 go to Stripe, never to us. About five minutes.',
+      payGo: 'Set up payouts',
+      payDone: 'Payouts ready',
+      n3H: 'What happens next',
+      n3: 'Sean adds you in Business Suite and you get a link to your dashboard. Accept the invite, open your dashboard, and your first brief is there, with Kai. You start Monday, November 23.',
+      done: 'You\'re all set on your side. We\'ll email you as soon as Sean has added you.',
+      tagWaiting: 'Waiting', tagDone: 'Done'
+    },
+    gate: { signin: 'Sign in with the email your invitation went to, to start.', signinBtn: 'Sign in', notInvited: 'This page is by invitation. If you were invited, sign in with the email the invitation went to.' }
+  };
+
+  var ORDER = ['big', 'role', 'check', 'in', 'next'];
+  var SLUG = (location.pathname.match(/^\/positions\/([a-z0-9-]{3,80})\/start/) || [])[1] || new URLSearchParams(location.search).get('slug') || 'social-media-manager-instagram';
+  var D = null, PREVIEW = false, STEP = 'big', LOCAL = { check: false, agreed: false, meta: false };
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function money(c) { return '$' + (Number(c || 0) / 100).toFixed(2).replace(/\.00$/, ''); }
+  function nice(s) { if (!s) return ''; var d = new Date(s + 'T12:00:00Z'); return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }); }
+  function msg(t, ok) { $('msg').textContent = t || ''; $('msg').className = 'msg' + (t ? (ok ? ' ok' : ' err') : ''); }
+  function post(body) {
+    return fetch(SB + '/functions/v1/ve-positions', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + (window.VEAuth ? VEAuth.getToken() : '') }, body: JSON.stringify(Object.assign({ slug: SLUG }, body)) })
+      .then(function (r) { return r.json().then(function (d) { d._status = r.status; return d; }); });
+  }
+  function steps() { var s = (D && D.person && D.person.steps) || {}; return { check: s.check || LOCAL.check, agreed: s.agreement || LOCAL.agreed, meta: s.meta || LOCAL.meta, payouts: s.payouts }; }
+
+  function paintStatic() {
+    var c = COPY;
+    $('eb').textContent = c.eyebrow;
+    var b = c.big; $('bigBlocks').innerHTML = b.blocks.map(function (x) { return '<div class="k-block ' + x[2] + '"><span class="k-big">' + esc(x[0]) + '</span><small>' + esc(x[1]) + '</small></div>'; }).join('');
+    $('whyH').textContent = b.whyH; $('why').textContent = b.why; $('pagesH').textContent = b.pagesH; $('pages').textContent = b.pages;
+    var r = c.role, row = function (x, i, cls) { return '<div class="k-row"><span class="k-num ' + cls + '">' + (i + 1) + '</span><span class="k-row-t"><b>' + esc(x[0]) + '</b><small>' + esc(x[1]) + '</small></span></div>'; };
+    $('doH').textContent = r.doH; $('doRows').innerHTML = r.does.map(function (x, i) { return row(x, i, 'or'); }).join('');
+    $('neverH').textContent = r.neverH; $('neverRows').innerHTML = r.nevers.map(function (x, i) { return row(x, i, 'pk'); }).join('');
+    $('dayH').textContent = r.dayH; $('day').innerHTML = r.day.map(function (x) { return '<div><em>' + esc(x[0]) + '</em><b>' + esc(x[1]) + '</b>' + esc(x[2]) + '</div>'; }).join('');
+    $('dayNote').textContent = r.dayNote;
+    $('checkIntro').textContent = c.check.intro;
+    $('qs').innerHTML = c.check.qs.map(function (q) {
+      return '<div class="q" data-q="' + q.k + '"><h3>' + esc(q.q) + '</h3>' + q.a.map(function (a) { return '<label><input type="radio" name="q_' + q.k + '" value="' + a[0] + '"><span>' + esc(a[1]) + '</span></label>'; }).join('') + '</div>';
+    }).join('');
+    $('agrH').textContent = c.agrH; $('agreeL').textContent = c.agree; $('snameL').textContent = c.sname;
+    var n = c.next; $('n1H').textContent = n.n1H; $('n1').textContent = n.n1; $('metaL').textContent = n.metaL; $('metaHint').textContent = n.metaHint; $('metaGo').textContent = n.metaGo;
+    $('n2H').textContent = n.n2H; $('n2').textContent = n.n2; $('n3H').textContent = n.n3H; $('n3').textContent = n.n3; $('n3Tag').textContent = n.tagWaiting;
+  }
+  function paintData() {
+    var p = D.position, per = D.person, np = per.next_payout || {};
+    $('payBlocks').innerHTML = '<div class="k-block k-dk"><span class="k-big">' + money(p.pay_cents) + '</span><small>' + esc(COPY.pay.every) + '</small></div>' +
+      '<div class="k-block k-peach"><span class="k-big">' + Math.round((p.trial_days || 30) / 30) + ' month</span><small>' + esc(COPY.pay.trial) + '</small></div>' +
+      (np.payOn ? '<div class="k-block k-tint"><span class="k-big">' + esc(nice(np.payOn)) + '</span><small>' + esc(COPY.pay.first) + ': ' + money(np.amount_cents) + '</small></div>' : '');
+    var dr = p.draft;
+    $('agr').textContent = dr ? dr.text : (p.agreement && p.agreement.text) || '';
+    $('agrDraft').hidden = !dr; $('agrNote').hidden = !dr; $('agrNote').textContent = COPY.agrDraftNote;
+    if (per.meta_email) $('metaEmail').value = per.meta_email;
+    paintNext();
+  }
+  function paintNext() {
+    var s = steps();
+    $('n1Tag').textContent = s.meta ? COPY.next.tagDone : COPY.next.tagWaiting; $('n1Tag').className = 'k-tag ' + (s.meta ? 'live' : 'not');
+    $('payGo').textContent = s.payouts ? COPY.next.payDone : COPY.next.payGo; $('payGo').disabled = !!s.payouts;
+    $('doneNote').hidden = !(s.meta && s.payouts); $('doneNote').textContent = COPY.next.done;
+  }
+
+  function go(name, push) {
+    if (ORDER.indexOf(name) < 0) name = 'big';
+    // Never skip ahead past an unfinished step: the quick check before I'm in, signing before Next steps (preview walks freely).
+    var s = steps(), max = !s.check ? 2 : !s.agreed ? 3 : 4;
+    if (!PREVIEW && ORDER.indexOf(name) > max) name = ORDER[max];
+    STEP = name;
+    var at = ORDER.indexOf(name);
+    [].forEach.call(document.querySelectorAll('[data-step]'), function (el) { el.hidden = el.getAttribute('data-step') !== name; });
+    $('stepper').innerHTML = ORDER.map(function (k, n) { return '<li class="' + (n < at ? 'done' : n === at ? 'on' : '') + '">' + esc(COPY.steps[k]) + '</li>'; }).join('');
+    $('count').textContent = 'Step ' + (at + 1) + ' of ' + ORDER.length;
+    $('h1').textContent = COPY.h1[name]; $('lede').textContent = COPY.lede[name]; $('say').textContent = COPY.say[name];
+    $('back').hidden = at === 0;
+    $('next').hidden = name === 'next';
+    $('next').textContent = name === 'in' ? 'Sign and continue' : 'Next';
+    msg('');
+    if (push !== undefined) { var u = new URL(location.href); if (name === 'big') u.searchParams.delete('step'); else u.searchParams.set('step', name); history[push ? 'pushState' : 'replaceState']({ step: name }, '', u.pathname + u.search); }
+    window.scrollTo(0, 0);
+  }
+  function answers() { var a = {}; COPY.check.qs.forEach(function (q) { var el = document.querySelector('input[name=q_' + q.k + ']:checked'); a[q.k] = el ? el.value : null; }); return a; }
+  var RIGHT = { people: 'personal', account: 'business_suite', footage: 'send_us' };
+  function nextFrom(name) {
+    if (name === 'check') {
+      var a = answers(), wrong = Object.keys(RIGHT).filter(function (k) { return a[k] !== RIGHT[k]; });
+      [].forEach.call(document.querySelectorAll('.q'), function (q) { q.classList.toggle('bad', wrong.indexOf(q.getAttribute('data-q')) >= 0); });
+      if (wrong.length) return msg(COPY.check.wrong);
+      if (PREVIEW) { LOCAL.check = true; return go('in', true); }
+      return post({ action: 'role_read', answers: a }).then(function (d) { if (!d.ok) return msg(d.message || COPY.check.wrong); D = d; paintData(); go('in', true); });
+    }
+    if (name === 'in') {
+      var name_ = $('sname').value.trim();
+      if (!$('agree').checked || name_.length < 2) return msg(COPY.signFirst);
+      if (D.position.draft) { if (PREVIEW) { LOCAL.agreed = true; return go('next', true); } return msg(COPY.agrDraftNote); }
+      if (PREVIEW) { LOCAL.agreed = true; return go('next', true); }
+      return post({ action: 'sign', signed_name: name_, agree: true, sha: D.position.agreement.sha }).then(function (d) { if (!d.ok) return msg(d.message || 'That did not save. Try again.'); D = d; paintData(); go('next', true); });
+    }
+    go(ORDER[ORDER.indexOf(name) + 1], true);
+  }
+  $('next').onclick = function () { nextFrom(STEP); };
+  $('back').onclick = function () { var at = ORDER.indexOf(STEP); if (at > 0) go(ORDER[at - 1], true); };
+  window.addEventListener('popstate', function () { go(new URLSearchParams(location.search).get('step') || 'big'); });
+  $('metaGo').onclick = function () {
+    var e = $('metaEmail').value.trim();
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(e)) return msg('That does not look like an email address. Use the one you sign in to Facebook with.');
+    if (PREVIEW) { LOCAL.meta = true; paintNext(); return msg(COPY.next.metaSaved, true); }
+    post({ action: 'meta_email', email: e }).then(function (d) { if (!d.ok) return msg(d.message || 'That did not save. Try again.'); D = d; paintData(); msg(COPY.next.metaSaved, true); });
+  };
+  $('payGo').onclick = function () {
+    if (PREVIEW) return msg('Preview: this opens Stripe for the real person.', true);
+    $('payGo').disabled = true;
+    post({ action: 'payout_start' }).then(function (d) { if (d.ok && d.url) location.href = d.url; else { $('payGo').disabled = false; msg(d.message || 'Stripe did not open. Try again in a minute.'); } });
+  };
+
+  function gate(text, signin) {
+    $('gate').hidden = false; $('app').hidden = true;
+    $('gate').innerHTML = '<p class="k-lede">' + esc(text) + '</p>' + (signin ? '<a class="k-btn k-cta" href="/login?next=' + encodeURIComponent(location.pathname + location.search) + '">' + esc(COPY.gate.signinBtn) + '</a>' : '');
+  }
+  function start(d) {
+    D = d; PREVIEW = !!d.preview;
+    $('pv').hidden = !PREVIEW; $('app').hidden = false; $('gate').hidden = true;
+    paintData();
+    var q = new URLSearchParams(location.search);
+    go(q.get('step') || 'big');
+    if (!PREVIEW && q.get('stripe') === 'return') post({ action: 'payout_status' }).then(function (x) { if (x.ok) { D = x; paintData(); } });
+  }
+  function boot() {
+    paintStatic(); go('big');
+    $('app').hidden = true;
+    var art = window.VEGuideArt ? VEGuideArt('kai', 'square') : '/public/brand-kit/avatars/kai-v2.jpg';
+    $('av').style.backgroundImage = 'url("' + art + '")';
+    var tok = window.VEAuth ? VEAuth.getToken() : '';
+    if (!tok) return gate(COPY.gate.signin, true);
+    var wantPreview = new URLSearchParams(location.search).get('preview') === '1';
+    (wantPreview ? post({ action: 'preview' }) : post({ action: 'me' })).then(function (d) {
+      if (d.ok) return start(d);
+      if (!wantPreview && (d.error === 'not_invited' || d._status === 403)) return post({ action: 'preview' }).then(function (p) { if (p.ok) start(p); else gate(d.message || COPY.gate.notInvited, false); });
+      if (d.error === 'sign_in' || d._status === 401) return gate(COPY.gate.signin, true);
+      gate(d.message || COPY.gate.notInvited, false);
+    }).catch(function () { gate('Something went wrong loading this page. Try again in a minute.', false); });
+  }
+  if (document.readyState === 'complete') boot(); else window.addEventListener('load', boot);
+})();
+</script>
+<script src="/public/footer.js"></script>
+</body>
+</html>
