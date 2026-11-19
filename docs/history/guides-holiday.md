@@ -180,6 +180,9 @@ Revolutionary Healing Friendsgiving Festival, Miami, Nov 22; Vegans of LA's Free
 Growth Hour with Mikel Bryant of Sensibly Sprouted, Bellingham, Dec 17; March for Animals at FIU, Miami, Dec 3), Lotus Vegan Restaurant
 (Pinellas Park) Thanksgiving hours (Thu 11 AM to 7 PM, Fri to Sun closed), and Madrina Vegana's holiday catering as a Christmas Menus We Found
 tip (ThanksLiving tips closed Nov 19). Held for Sean: WildKind Packaging (IMG_8446, an ad) and a Clermont primary care search (IMG_8449, reads as personal).
+Closed the same morning: the primary care search is dropped (Sean: "Ignore the primary care doctor"); WildKind Packaging was already a Sourcing
+supplier (packaging, since 2026-11-07), and Sourcing stays inside the Vegan Restaurant Guide and the Pre-Vegan Business Guide, no public Directory
+door (Sean, 2026-11-19: "I say keep it in the guide").
 
 **Holiday hours, 2026-11-17** (Sean: "that should be one of the questions that we ask for our members... they can just check staying the
 same, and then it'll close off"; then "Let's build the holiday hours feature now"). Live (main 40fe5e6, `ve-holiday` v14 from 8512b7e
