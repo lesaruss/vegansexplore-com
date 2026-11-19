@@ -4,7 +4,7 @@ async function down(p,y){await p.waitForTimeout(2000);await p.evaluate(y=>scroll
 const SH={
  media_top:{u:W+'/media'},
  media_feat:{u:W+'/media',f:p=>cards(p,160)},
- media_top12:{u:W+'/media',f:async p=>{await p.waitForTimeout(2500);const t=p.getByText(/top 12|Voted by members|Most voted/i).first();const b=await t.boundingBox().catch(()=>null);if(b)await p.evaluate(y=>scrollBy(0,y-140),b.y);else await p.evaluate(()=>scrollBy(0,1400));}},
+ media_top12:{u:W+'/media',f:async p=>{await p.waitForTimeout(2500);const t=p.getByText(/top 12|Vouched for by members|Voted by members|Most vouched|Most voted/i).first();const b=await t.boundingBox().catch(()=>null);if(b)await p.evaluate(y=>scrollBy(0,y-140),b.y);else await p.evaluate(()=>scrollBy(0,1400));}},
  show:{u:W+'/directory/vegans-explore-podcast'},
  episodes:{u:W+'/directory/vegans-explore-podcast',f:async p=>{await p.waitForTimeout(3000);const t=p.getByText(/^Episodes$/).first();const b=await t.boundingBox().catch(()=>null);if(b)await p.evaluate(y=>scrollBy(0,y-120),b.y);else await p.evaluate(()=>scrollBy(0,900));}},
  playing:{u:W+'/directory/vegans-explore-podcast',f:async p=>{await p.waitForTimeout(3000);const pl=p.getByRole('button',{name:/^Play/}).first();await pl.scrollIntoViewIfNeeded().catch(()=>{});await pl.click().catch(e=>console.log(' noplay'));await p.waitForTimeout(1500);const d=p.locator('.vep-dock').first();const b=await d.boundingBox().catch(()=>null);if(b)await p.evaluate(y=>scrollBy(0,y-120),b.y);}},

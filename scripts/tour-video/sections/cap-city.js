@@ -10,7 +10,7 @@ const SH={
  boards:{u:W+'/pulse/fosters?city=south-florida'},
  jobs:{u:W+'/pulse/jobs?city=south-florida'},
  hub_events:{u:W+'/communities/south-florida?tab=events'},
- most_voted:{u:W+'/communities/south-florida',f:p=>at(p,'Most voted in',120)},
+ most_voted:{u:W+'/communities/south-florida',f:p=>at(p,/Most (voted|vouched for) in/,120)},
  suggest:{u:W+'/pulse/suggest?city=south-florida'},
  feedback:{u:W+'/communities/south-florida',f:async p=>{await p.evaluate(()=>window.VEFeedback&&VEFeedback.open&&VEFeedback.open({form:true}));}},
  vote_chapter:{u:W+'/communities',f:p=>at(p,'South Florida',160)},

@@ -146,7 +146,7 @@
         '<div class="vrd-root"><div class="rank-grid" data-vem-shows></div></div>' +
       '</section>' +
       '<section class="vem-sec" aria-labelledby="' + uid + '-t">' +
-        '<div class="vem-head"><div><h2 id="' + uid + '-t" data-vem-title></h2><p>The top ' + TOP + ' as voted by members in the Directory. Vote for your favorites to move them up.</p></div></div>' +
+        '<div class="vem-head"><div><h2 id="' + uid + '-t" data-vem-title></h2><p>The top ' + TOP + ' as vouched for by members in the Directory. Vouch for your favorites, once each, to move them up.</p></div></div>' +
         '<div class="vem-bar">' +
           '<div class="vem-search"><label for="' + uid + '-n" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)">Search by name</label>' +
             '<input type="search" id="' + uid + '-n" data-vem-name autocomplete="off"></div>' +
