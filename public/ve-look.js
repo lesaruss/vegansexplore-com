@@ -20,6 +20,7 @@
   // Each part of the site wears its own color (Foundations, section colors, LOCKED 2026-11-11).
   function sectionOf(p) {
     if (/^\/(directory|directory-preview|explore|search|claim)(\/|$)/.test(p)) return 'directory';
+    if (/^\/(groups|business)\/sample$/.test(p)) return 'directory';
     if (/^\/events(\/|$)/.test(p)) return 'events';
     if (/^\/(guides|guide|business-guide|nominate)(\/|$)/.test(p)) return 'guides';
     if (/^\/(business\/tour|groups\/welcome)(\.html)?$/.test(p)) return 'guides'; // Guides on the Welcome Guide's frame (BrandDesk tour, Group Partner Guide)
@@ -34,6 +35,7 @@
     if (p === '/directory' || p === '/directory-preview') return document.querySelector('meta[name="ve-directory"][content="doors"]') ? 'doors' : 'directory';
     if (/^\/directory\/[^/]+$/.test(p) && p !== '/directory/product') return 'listing';
     if (/^\/certified(\.html)?$/.test(p)) return 'listing'; // the certified page wears the listing page's header (the same classes)
+    if (/^\/(groups|business)\/sample$/.test(p)) return 'listing'; // the demos are the listing page in demo mode (2026-11-19: they wore the old look)
     if (p === '/events') return 'events';
     if (p === '/guides') return 'guides';
     if (p === '/communities') return 'communities';
