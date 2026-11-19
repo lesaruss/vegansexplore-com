@@ -121,16 +121,34 @@
     .gb-fine { font-size: 12.5px; font-weight: 600; color: var(--k-mute); }
     .gb-form { max-width: 900px; }
     .rf-head .rf-act:empty { display: none; }
-    /* The night, drawn: three scenes in a row (4:5 each, their own shape), the brand's place under each. */
-    .ev-flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 18px; }
-    .ev-step { display: grid; gap: 10px; align-content: start; }
-    .ev-step .k-pic { aspect-ratio: 4 / 5; width: 100%; }
-    .ev-step h3 { font-size: 20px; font-weight: 900; margin: 4px 0 0; letter-spacing: -.01em; }
-    .ev-step p { font-size: 14px; font-weight: 600; line-height: 1.5; margin: 0; }
-    .ev-you { border: 2px solid var(--k-ink); border-radius: var(--k-rc); background: var(--k-tint); padding: 10px 12px; font-size: 13.5px; font-weight: 700; line-height: 1.45; }
+    /* The night (Sean, 2026-11-19: "maybe it's just one image, and then these three items stacked... in a column"): one picture, the
+       three parts stacked beside it. One or all: the two ways and Good to know side by side. Tell us: the form with a tall picture beside it. */
+    .ev-night { display: grid; grid-template-columns: minmax(0, 340px) minmax(0, 1fr); gap: 24px 32px; align-items: start; }
+    .ev-night .k-pic { aspect-ratio: 4 / 5; width: 100%; }
+    .ev-steps { display: grid; gap: 14px; }
+    .ev-step { display: grid; grid-template-columns: 44px minmax(0, 1fr) minmax(0, 1fr); gap: 4px 16px; align-items: start; border-bottom: 2px solid var(--k-line); padding-bottom: 14px; }
+    .ev-step:last-child { border-bottom: 0; }
+    .ev-step .k-num { grid-row: 1 / 3; }
+    .ev-step h3 { font-size: 19px; font-weight: 900; margin: 6px 0 0; letter-spacing: -.01em; }
+    .ev-step p { font-size: 14px; font-weight: 600; line-height: 1.5; margin: 0; grid-column: 2; }
+    .ev-you { grid-column: 3; grid-row: 1 / 3; border: 2px solid var(--k-ink); border-radius: var(--k-rc); background: var(--k-tint); padding: 10px 12px; font-size: 13.5px; font-weight: 700; line-height: 1.45; }
     .ev-you b { display: block; font-size: 10.5px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: var(--k-pinkd); margin-bottom: 2px; }
-    .ev-pick { display: flex; flex-wrap: wrap; gap: 8px 18px; }
-    .ev-pick label { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; }
+    .ev-two { margin-top: 28px; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 20px 28px; align-items: start; }
+    .ev-two .gb-good { grid-template-columns: minmax(0, 1fr); }
+    .ev-two .rf-sec { margin-top: 0; }
+    .ev-ask { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 300px); gap: 24px 32px; align-items: start; }
+    .ev-ask .k-pic { aspect-ratio: 9 / 16; width: 100%; }
+    .ev-ask .gb-good { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    @media (max-width: 1100px) { .ev-ask .gb-good { grid-template-columns: minmax(0, 1fr); } }
+    .ev-pick { display: flex; flex-wrap: wrap; gap: 8px 22px; }
+    .ev-pick label { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 14px; font-weight: 700; letter-spacing: 0; text-transform: none; white-space: nowrap; }
+    @media (max-width: 900px) {
+      .ev-night, .ev-two, .ev-ask { grid-template-columns: minmax(0, 1fr); }
+      .ev-night .k-pic { max-width: 320px; }
+      .ev-ask .k-pic { display: none; }
+      .ev-step { grid-template-columns: 44px minmax(0, 1fr); }
+      .ev-you { grid-column: 2; grid-row: auto; }
+    }
     @media (max-width: 900px) { .gb-cover { grid-template-columns: minmax(0, 1fr); } .gb-cover .k-pic { justify-self: start; max-width: 320px; } }
     /* Liz's card (Sean, 2026-11-19: "make the image of Liz a little bit bigger... keep Liz solid and then make just the text scroll... 3 rows of
        text, so that way the rectangular box is a little bit more compact"): a bigger fixed picture, her line in a 3-line box that scrolls. A small
@@ -221,11 +239,9 @@
     ['3', 'pk', 'The send-off', 'A photo wall, a thank-you bag on the way out, and what is coming next in the city.', 'Your logo on the photo wall in every picture people share, your item in the bag, your name in the recap.', '/public/expo/night-3-sendoff.jpg', 'Liz handing a gift bag to a guest at the door while friends take a photo at a colorful wall']
   ];
   function flow() {
-    return '<div class="ev-flow">' + STEPS.map(function (s) {
-      return '<div class="ev-step"><div class="k-pic" style="--k-c:#FF9EC4"><img src="' + s[5] + '" alt="' + esc(s[6]) + '" loading="lazy"></div>' +
-        '<div style="display:flex;gap:10px;align-items:center"><span class="k-num ' + s[1] + '">' + s[0] + '</span><h3>' + s[2] + '</h3></div>' +
-        '<p>' + s[3] + '</p><div class="ev-you"><b>Your brand</b>' + s[4] + '</div></div>';
-    }).join('') + '</div>';
+    return '<div class="ev-night"><div class="k-pic" style="--k-c:#FF9EC4"><img src="/public/expo/night-2-main.jpg" alt="Liz on a small stage at a community night, drawing a winner beside a wrapped gift"></div><div class="ev-steps">' + STEPS.map(function (s) {
+      return '<div class="ev-step"><span class="k-num ' + s[1] + '">' + s[0] + '</span><h3>' + s[2] + '</h3><p>' + s[3] + '</p><div class="ev-you"><b>Your brand</b>' + s[4] + '</div></div>';
+    }).join('') + '</div></div>';
   }
 
   var VIEWS = {
@@ -245,13 +261,13 @@
         good([['k-tint', 'After the night', 'A recap post and a recap in the chapter\'s Daily Pulse, both naming you, and a short report with the real numbers: guests, check-ins, giveaway entries and clicks on your link.'], ['k-peach', 'Drawn for you first', 'This is how a night runs. Your night\'s plan is shown to you before anything is final.']]) + see() + next(i);
     },
     choose: function (i) {
-      return head(i, ASK) + '<section class="rf-sec"><span class="k-label">Two ways to sponsor</span><div class="k-rows">' +
+      return head(i, ASK) + '<div class="ev-two"><section class="rf-sec"><span class="k-label">Two ways to sponsor</span><div class="k-rows">' +
         row('A', 'or', 'One night', 'The city that matters most to you, Philadelphia or Los Angeles. Your brand in all three parts of that night, and in its recap.', 'One city') +
         row('B', 'br', 'Every night', 'Every community night as the series grows, city by city, with your name on the series itself. The first to hear about the Expo partner options.', 'The series') +
-        '</div></section>' + good([['k-pink', 'On the road to the Expo', 'Each night builds toward the World Vegan Expo in early 2028. Sponsors of the nights are in the room when Expo partners and booths open.'], ['k-tint', 'Dates and options', 'Set with each chapter. Our team sends them when you tell us you are interested.']]) + see() + next(i);
+        '</div></section>' + good([['k-pink', 'On the road to the Expo', 'Each night builds toward the World Vegan Expo in early 2028. Sponsors of the nights are in the room when Expo partners and booths open.'], ['k-tint', 'Dates and options', 'Set with each chapter. Our team sends them when you tell us you are interested.']]).replace('rf-sec', 'rf-sec ev-good') + '</div>' + see() + next(i);
     },
     ask: function (i) {
-      return head(i, '') + '<section class="rf-sec gb-form"><div class="k-card" style="--k-c:#F69820"><form id="evAsk" class="k-form" novalidate>' +
+      return head(i, '') + '<section class="rf-sec"><div class="ev-ask"><div><div class="k-card" style="--k-c:#F69820"><form id="evAsk" class="k-form" novalidate>' +
         '<div class="k-f"><label for="e-brand">Brand</label><input id="e-brand" maxlength="120" autocomplete="organization" required></div>' +
         '<div class="k-f"><label for="e-name">Your name</label><input id="e-name" maxlength="120" autocomplete="name" required></div>' +
         '<div class="k-f wide"><label for="e-email">Your email</label><input id="e-email" type="email" maxlength="200" autocomplete="email" required></div>' +
@@ -259,7 +275,8 @@
           '<label><input type="radio" name="ev" value="philadelphia"> Philadelphia</label><label><input type="radio" name="ev" value="los-angeles"> Los Angeles</label><label><input type="radio" name="ev" value="all"> Every night</label></div></div>' +
         '<div class="k-f wide"><label for="e-note">Anything we should know (optional)</label><textarea id="e-note" maxlength="600" placeholder="What you would like to bring to the night: tastings, a product for the bags, a prize."></textarea></div>' +
         '<div class="k-f wide"><button type="submit" class="k-btn k-cta" id="e-go">Send</button><p class="k-msg" id="e-msg" role="status"></p></div>' +
-        '</form></div></section>' + good([['k-tint', 'What happens next', 'Our team writes back within a business day with the dates, the details and the options. Nothing is final until you say yes.'], ['k-peach', 'Your listing', 'Every brand we work with has a page in our Directory. <a href="/claim">Claim yours</a>, free.']]);
+        '</form></div>' + good([['k-tint', 'What happens next', 'Our team writes back within a business day with the dates, the details and the options. Nothing is final until you say yes.'], ['k-peach', 'Your listing', 'Every brand we work with has a page in our Directory. <a href="/claim">Claim yours</a>, free.']]) +
+        '</div><div class="k-pic" style="--k-c:#FF9EC4"><img src="/public/expo/night-plan.jpg" alt="Liz with a clipboard, getting a venue ready for a community night"></div></div></section>';
     }
   };
 
