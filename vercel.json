@@ -196,6 +196,8 @@
     {"source": "/:slug([a-z0-9]+-[a-z0-9]+-[a-z0-9]+-[a-z0-9-]+)", "destination": "/api/gone?p=/:slug"}
   ],
   "redirects": [
+    {"source": "/campaigns/world-vegan-expo", "destination": "/expo", "permanent": false},
+    {"source": "/campaigns/world-vegan-expo.html", "destination": "/expo", "permanent": false},
     {"source": "/partners", "destination": "/business-guide", "permanent": false},
     {"source": "/partners/index.html", "destination": "/business-guide", "permanent": false},
     {"source": "/business/pitch", "destination": "/business-guide", "permanent": false},
