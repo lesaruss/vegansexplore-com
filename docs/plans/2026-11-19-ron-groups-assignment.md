@@ -29,8 +29,10 @@ Ron picks the assignments he wants (Community Manager is a title; canon canon-ve
 
 **Running a night** stays its own assignment, $150 a night (canon), once nights start in February.
 
-**Coming, not promised yet:** a share when people he brings in use Vegans Explore's paid services (sold by LESARUSS.ai). The terms come
-later; the pitch says "Coming" and names no amount.
+**Not in the pitch** (Sean, 2026-11-19: "That's not saying it's not a share of it. Is that you'll be paid to manage that particular... a
+monthly stipend to manage that account, and it depends on what they're doing... So we can't talk about it right now until it happens."):
+when someone he brings in uses our services, managing that account can become its own monthly stipend, sized to the work. Not mentioned
+to Ron until it happens.
 
 Automated, not his: the Meetup welcome message to new members (Meetup's built-in setting), approving members (Facebook Admin Assist).
 Meetup's API can create events for a Pro network; it cannot send member messages.
