@@ -1,6 +1,6 @@
-// ve-giving: 11 Days of Giving and the Countdown to Launch, Dec 1, 2026 to Jan 1, 2027 (rules LOCKED by Sean 2026-11-19, doc
-// https://claude.ai/artifact/Ds4whHbL6JXca7oY5SoWM4: every member is in every draw automatically; brands up to $150 in all; intake stops
-// at $4,500 under the $5,000 cap; prizes taken until Dec 20). First built as 11 Days of Giving (Sean, 2026-11-15: "build the entry page"; plan locked 2026-11-13, playbook ve-holiday-guide; migration
+// ve-giving: 11 Days of Giving (timeline LOCKED by Sean 2026-11-19: "lock the timeline"; rules doc https://claude.ai/artifact/Ds4whHbL6JXca7oY5SoWM4):
+// entry window to 11:59 PM Eastern Fri Dec 11, every member who joined by then is entered once; winners drawn live one day at a time Dec 14 to 24;
+// brands up to $150 in all, yes by Fri Dec 4; intake stops at $4,500 under the $5,000 cap; providers done by Jan 15, 2027. First built as 11 Days of Giving (Sean, 2026-11-15: "build the entry page"; plan locked 2026-11-13, playbook ve-holiday-guide; migration
 // 20261115_eleven_days_of_giving_entries.sql). December 1 to 11, members enter free for prizes Vegan businesses give; winners are drawn at
 // random in the open. POST { action, ... }. verify_jwt off; the Vegans Explore token is checked here (the same check as ve-holiday).
 // Public:  status  -> { open, rules_reviewed (the rules link shows only once the attorney has read them), starts_on, ends_on, prizes (live ones, with the business), entries (count), me? { member, entered } }
@@ -9,7 +9,7 @@
 // Owner:   my_prizes {listing_id}, prize_photo_url {listing_id, content_type, bytes}, prize_save {listing_id, title, value_cents, quantity,
 //          image_url?, note?}, prize_withdraw {listing_id, id}: the prize form in the business dashboard (Sean, 2026-11-15). Up to $100 per
 //          business; a brand (Food Brands, or a listing that sells products) up to $150 retail in all (Sean, 2026-11-17); intake stops
-//          at $4,500 under the $5,000 cap, until the end of Sunday, December 20 Eastern; a prize waits as pledged for our check.
+//          at $4,500 under the $5,000 cap, until the end of Friday, December 4 Eastern; a prize waits as pledged for our check.
 // Admin:   entries -> who entered, newest first (super admins only); prize_queue, prize_review {id, decision: live | withdrawn | pledged}
 //          (live grants the giver 250 points per prize, once)
 // Nothing here takes money, a share, a tag or a follow: entering is free and open to every member in good standing.
@@ -23,7 +23,8 @@ const PER_BUSINESS = 10000;                                   // $100 in prizes 
 const BRAND_MAX = 15000;                                      // a brand: up to $150 retail in all, one item or several (Sean, 2026-11-17)
 const TOTAL_CAP = 500000;                                     // $5,000 across the giveaway (Florida and New York register above it)
 const INTAKE_CAP = 450000;                                    // we stop taking prizes at $4,500 (locked rules)
-const PRIZES_CLOSE = Date.parse('2026-12-21T05:00:00Z');      // the end of Sunday, December 20, Eastern (Countdown to Launch prizes)
+const PRIZES_CLOSE = Date.parse('2026-12-05T05:00:00Z');      // the end of Friday, December 4, Eastern (prizes for the Dec 14 to 24 draws)
+const ENTRY_CLOSE = Date.parse('2026-12-12T05:00:00Z');       // the entry window ends 11:59 PM Eastern, Friday, December 11
 const clean = (v: unknown, n: number) => String(v ?? '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '').trim().slice(0, n);
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
 
@@ -80,7 +81,7 @@ Deno.serve(async (req) => {
       const member = !!mm.is_superadmin || mm.membership_status === 'active';
       me = { member, entered: member && (!mm.standing || mm.standing === 'good'), entered_at: e?.entered_at || null, admin: !!mm.is_superadmin };
     }
-    return json({ ok: true, open, rules_reviewed: s.rules_reviewed, starts_on: s.starts_on, ends_on: s.ends_on, fulfill_by: s.fulfill_by, prizes: prizes || [], entries: count || 0, me });
+    return json({ ok: true, open: Date.now() < ENTRY_CLOSE, entry_closes: '2026-12-11', draws_from: '2026-12-14', draws_to: '2026-12-24', rules_reviewed: s.rules_reviewed, starts_on: s.starts_on, ends_on: s.ends_on, fulfill_by: s.fulfill_by, prizes: prizes || [], entries: count || 0, me });
   }
 
   // A brand says I'm in from /partners/giving (Sean, 2026-11-15: brands give holiday packs; "a good entry point for them to start working
