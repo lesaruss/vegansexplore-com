@@ -13,7 +13,7 @@
  *   #/media         Media                           #/animals   For the animals
  *   #/guides        Guides                          #/founder   Become a Founder (the survey; members: your first steps)
  *
- * The Overview's tour is a video (tour-video-v2.mp4) playing in Liz's frame on the right; the section pages' lines are text until recorded. Every claim on these pages is
+ * The Overview's tour is a video (tour-video-v3.mp4) playing in Liz's frame on the right; the section pages' lines are text until recorded. Every claim on these pages is
  * checked against what is live (CLAUDE.md); nothing promises an unbuilt feature.
  */
 (function () {
@@ -26,7 +26,7 @@
     ['Welcome', 'Hi, I\'m Liz. Maybe you want to eat out without guessing, find your people, or do more for the animals than you are right now. Wherever you\'re starting from, this Guide is how you get there. You\'ll start out just looking around, and you\'ll finish knowing your city, your community, and exactly where you fit in. Let\'s go.'],
     ['Why listen to us', 'Why listen to us? We\'ve spent more than ten years inside this community: activism, events, content, running businesses, and hundreds of long conversations about what people needed. Now we can finally build it, and we can\'t get it right without you.'],
     ['Find your way', 'Search for anything and it shows up. The Directory has places to eat and shop, people, groups and nonprofits, city by city. Your city has its own Daily Pulse, its boards and its events. And our Guides each walk you through one topic.'],
-    ['Take part', 'Vote for the places you love. Your favorites tell us who to spotlight next. Check in when you visit and take on bounties to earn points. Spend them to open Guides and ask your Guide anything, or give them to the places and causes you care about. And points keep getting more valuable: giveaways, special opportunities and discounts are on the way, and the local businesses and nonprofits you give them to will be able to use them for promotion through us.'],
+    ['Take part', 'Vouch for the places you love, once each. Your favorites tell us who to spotlight next. Check in when you visit and take on bounties to earn points. Spend them to open Guides and ask your Guide anything, or give them to the places and causes you care about. And points keep getting more valuable: giveaways, special opportunities and discounts are on the way, and the local businesses and nonprofits you give them to will be able to use them for promotion through us.'],
     ['Your path', 'Everyone starts as an Explorer. Run a restaurant, host events, make content or work with a nonprofit? Each one has its own path, its own Guide and its own badge.'],
     ['Make it better', 'This is the part that matters most. Use it in your day to day, and tell us what\'s working, what isn\'t, and what you wish you could do. Every page has a Feedback button. Ask your Guide, or ask a person on our team. Search for something we don\'t have yet, and it goes to our team. We read all of it, and we build from it every day. We\'re real people, supported by technology that finally lets us carry out a vision we\'ve been working on since 2016.'],
     ['For the animals', 'Here\'s where it\'s all going. With a network of businesses, people and nonprofits that actually show up, we can run campaigns that move the needle for the animals, the reason we\'re all here.'],
@@ -352,16 +352,17 @@
   // Liz's eight recorded chapters (2026-11-08, her roster-profile voice, each checked word for word with stt), back to back on the Overview.
   // The tour is one video (2026-11-09, Sean approved v2): Liz's eight chapters (chapter 1 take v3, chapter 4 take v2a) over the 48 approved frames.
   // Chapter Play buttons and the rail's Play the tour drive that video; CH_AT is where each chapter starts in it.
-  var VIDEO = { v: 2, src: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/tour-video-v2.mp4',
+  // v3 (2026-11-19): chapter 4 is Liz's vouch take (Sean's own recording, take-part-vouch-v1), its shots re-cut on the new words.
+  var VIDEO = { v: 3, src: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/tour-video-v3.mp4',
     poster: '/public/guides/welcome/tour-video-v2-poster.jpg',
-    vtt: '/public/guides/welcome/tour-video-v2.vtt' };
-  var CH_AT = [0, 19.984, 35.814, 53.264, 81.293, 91.272, 121.443, 131.709];
+    vtt: '/public/guides/welcome/tour-video-v3.vtt' };
+  var CH_AT = [0, 19.984, 35.814, 53.264, 85.29, 95.269, 125.44, 135.706];
   var playBtn = document.getElementById('dgPlay'), PLAY = { at: 0, playing: false, started: false };
   function vid() { return document.getElementById('wgVideo'); }
   // Each section page plays its own short video in Liz's frame once its script is approved and recorded.
   // Each section's own video (Sean, 2026-11-09: no borrowed tour parts): Liz's approved line over that page's shots, captions from her word timings.
   var MEDIA = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/liz/welcome-guide/';
-  var SEC = { directory: 'sec-directory-v2', city: 'sec-city-v2', events: 'sec-events-v2', media: 'sec-media-v2', guides: 'sec-guides-v2', points: 'sec-points-v2', paths: 'sec-paths-v2', better: 'sec-better-v1', animals: 'sec-animals-v1', founder: 'sec-founder-v1' };
+  var SEC = { directory: 'sec-directory-v3', city: 'sec-city-v3', events: 'sec-events-v2', media: 'sec-media-v3', guides: 'sec-guides-v2', points: 'sec-points-v2', paths: 'sec-paths-v2', better: 'sec-better-v1', animals: 'sec-animals-v1', founder: 'sec-founder-v2' };
   var CLIPS = { overview: [0, 1e9] };
   Object.keys(SEC).forEach(function (k) { CLIPS[k] = [0, 1e9]; });
   function cur() {
