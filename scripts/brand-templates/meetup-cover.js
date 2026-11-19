@@ -18,7 +18,7 @@ const css = [...tpl.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => m[1
 const MOS = '<span class="mos2"><i style="background:var(--dk)"></i><i style="background:var(--or)"></i><i style="background:#fff"></i><i style="background:var(--peach)"></i><i style="background:var(--br);border-radius:50%"></i><i style="background:var(--tint)"></i><i style="background:var(--md)"></i><i style="border:.35cqw solid var(--ink)"></i><i style="background:var(--or);border-radius:50% 20% 20% 20%"></i></span>';
 const html = `<!doctype html><html><head><meta charset="utf-8"><base href="${BASE}/"><style>${css}
   body{background:#fff;margin:0;padding:0;font-family:Montserrat,sans-serif} #c{width:1920px;border-radius:0!important;box-shadow:none!important}</style></head><body>
-  <div class="tf s169" id="c"><div class="dr" style="--c:var(--md)"><div class="dt"><span class="dl">Meetup &middot; ${esc(AREA)}</span>
+  <div class="tf s169" id="c"><div class="dr" style="--c:var(--md)${AREA.length > 8 ? ';--hs:6.6cqw' : ''}"><div class="dt"><span class="dl">Meetup &middot; ${esc(AREA)}</span>
   <h5><span class="blk wh">Vegan</span><br><span class="blk ik">${esc(AREA)}</span></h5>
   <span class="blk lgb"><img src="/public/logo-ve-landscape-v2.svg" alt="Vegans Explore"></span>${MOS}</div>
   <div class="dp" style="--k:.8"><img src="${art}" alt=""></div></div><div class="stp" style="--sth:1.3cqw"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div></body></html>`;
