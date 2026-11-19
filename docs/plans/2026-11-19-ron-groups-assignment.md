@@ -27,7 +27,11 @@ Ron picks the assignments he wants (Community Manager is a title; canon canon-ve
 - Send the Meetup messages we write from each group's Contact members (Meetup has no way for software to send these).
 - Keep an eye on what's happening in South Florida and tell us: new spots, events, people.
 
-**Running a night** stays its own assignment, $150 a night (canon), once nights start in February.
+**Running a night** stays its own assignment, $150 a night, on top of the monthly once nights start in February (Sean, 2026-11-19: "I'm fine with that").
+
+**The return rule** (Sean, same day; canon night_return_v5): each night must bring back 4 times everything spent getting to it: the lead-up
+stipend months, the night fee, and its marketing and production. December to February is $450 + the $150 night = $600 before marketing, so the
+first South Florida night needs at least $2,400 in revenue, plus 4 times its marketing.
 
 **Not in the pitch** (Sean, 2026-11-19: "That's not saying it's not a share of it. Is that you'll be paid to manage that particular... a
 monthly stipend to manage that account, and it depends on what they're doing... So we can't talk about it right now until it happens."):
