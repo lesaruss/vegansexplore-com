@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Directory Reach | Vegans Explore</title>
+  <link rel="icon" href="/public/favicon.ico">
+  <link rel="preload" href="/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/public/ve-kit.css">
+  <!-- Directory Reach (Sean, 2026-11-18: "a page KJ will have access to because it's the plan... the big picture... the progress...
+       the link to the businesses that she needs to reach out to... automatically populate her day to day... with the cap... a roster...
+       sort it by the different groups... filter it by people who've clicked, who haven't responded... linked to their directory listing...
+       This is essentially our outreach"). Plan docs/plans/2026-11-18-directory-reach-boss.md; her queue from the Positions design
+       (docs/plans/2026-11-13-positions-boss.md: follow first, one card, safe caps).
+       Kit parent: business-dashboard (the parts as one sliding row, ?tab= in the address, rows with one button and a status tag); the
+       look from /public/ve-kit.css. One thing per view: Plan, This week, Chapter scout, Roster (List > one listing, ?tab=roster&id=),
+       Done. Who: super admins and the Instagram Social Media Manager (ve-reach refuses everyone else). Data: ve-reach. -->
+  <style>
+    @font-face { font-family: 'Montserrat'; font-style: normal; font-weight: 400 900; font-display: swap; src: url(/public/fonts/montserrat-JTUSjIg1_i6t8kCHKm459Wlhyw.woff2) format('woff2'); }
+    *, *::before, *::after { box-sizing: border-box; }
+    body { margin: 0; font-family: 'Montserrat', sans-serif; background: #fff; color: var(--k-ink); line-height: 1.5; }
+    main.reach { max-width: none; margin: 0; padding: 36px 40px 80px; }
+    @media (max-width: 700px) { main.reach { padding: 24px 16px 60px; } }
+    [hidden] { display: none !important; }
+    .crumb { font-size: 12.5px; font-weight: 800; margin: 0 0 12px; }
+    .crumb a { color: var(--k-dk); }
+    .sec { margin: 26px 0 0; }
+    .muted { color: var(--k-mute); font-weight: 600; font-size: 13px; }
+    .thumb { width: 44px; height: 44px; border-radius: 10px; border: 2px solid var(--k-ink); background: var(--k-tint) center/cover no-repeat; display: grid; place-items: center; font-weight: 900; font-size: 13px; overflow: hidden; }
+    .k-row.r5 { grid-template-columns: 44px minmax(0, 1fr) auto; }
+    .rowside { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+    .k-row-t a { color: inherit; }
+    .acts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .acts .k-btn { font-size: 10px; padding: 7px 10px; }
+    .acts .k-btn.done { background: var(--k-tint); border-color: var(--k-dk); }
+    .day { border: 2px solid var(--k-ink); border-radius: 14px; padding: 14px 16px; margin: 0 0 16px; background: #fff; }
+    .day.today { box-shadow: 6px 6px 0 var(--k-or); }
+    .day.off, .day.past { background: #fafafa; }
+    .day h3 { margin: 0 0 4px; font-size: 17px; font-weight: 900; }
+    .opener { white-space: pre-wrap; font-size: 13px; font-weight: 600; background: var(--k-peach); border-radius: 10px; padding: 10px 12px; margin: 6px 0 0; }
+    .filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(180px, 100%), 1fr)); gap: 10px; margin: 12px 0 14px; }
+    .hist { display: grid; gap: 6px; }
+    .hist div { border-left: 4px solid var(--k-c); padding: 4px 10px; font-size: 13px; font-weight: 600; }
+    .hist small { color: var(--k-mute); font-weight: 700; }
+    .note-in { width: 100%; font: inherit; font-size: 13px; border: 2px solid var(--k-ink); border-radius: 6px; padding: 7px 9px; margin-top: 6px; }
+    .pill { font-size: 10px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; color: var(--k-mute); }
+    .gate { max-width: 560px; margin: 30px 0; }
+    .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); background: var(--k-ink); color: #fff; font-weight: 800; font-size: 13px; padding: 10px 16px; border-radius: 8px; z-index: 50; }
+    .k-tag.bad { background: #fde8e6; color: #a3221b; }
+    .k-tag.not { background: #f1f1f1; color: var(--k-mute); }
+    .bar { height: 8px; border-radius: 4px; background: var(--k-tint); margin-top: 10px; overflow: hidden; } .bar i { display: block; height: 100%; background: var(--k-or); }
+    .k-row.first { box-shadow: 6px 6px 0 var(--k-or); }
+    .reason { font: inherit; font-size: 11px; font-weight: 800; border: 2px solid var(--k-ink); border-radius: 6px; padding: 6px 30px 6px 8px; appearance: none; -webkit-appearance: none; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%231a1a1a' stroke-width='2'/%3E%3C/svg%3E") no-repeat right 10px center; }
+    @media (max-width: 600px) { .rowside .k-tag { white-space: normal; max-width: 82px; font-size: 8.5px; letter-spacing: .06em; padding: 4px 6px; line-height: 1.2; } .k-row.r5 { grid-template-columns: 40px minmax(0, 1fr) auto; } .thumb { width: 40px; height: 40px; } }
+  </style>
+</head>
+<body>
+<script src="/public/nav.js"></script>
+<main class="reach" data-kit-parent="business-dashboard" data-k-section="directory">
+  <span class="k-eb">Directory Reach</span>
+  <h1 class="k-h1" id="pageTitle">Directory Reach</h1>
+  <p class="k-lede" id="pageLede"></p>
+  <div id="gate" class="gate" hidden></div>
+  <div id="app" hidden>
+    <nav class="k-tabs" id="tabs" aria-label="Parts">
+      <a href="?tab=today" data-t="today">Today's feature</a>
+      <a href="?tab=sean" data-t="sean">Sean's send list</a>
+      <a href="?tab=plan" data-t="plan">Plan</a>
+      <a href="?tab=roster" data-t="roster">Roster</a>
+      <a href="?tab=scout" data-t="scout">Friday scout</a>
+      <a href="?tab=done" data-t="done">Done</a>
+      <a href="?tab=team" data-t="team" id="teamTab" hidden>Team: Kai, briefs, asks</a>
+    </nav>
+    <div class="k-stripe"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+    <div id="view"></div>
+  </div>
+</main>
+<script src="/public/ve-auth.js"></script>
+<script src="/public/ve-hubs.js"></script>
+<script>
+(function () {
+  var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
+  var GROUPS = [['restaurants', 'Restaurants and food'], ['businesses', 'Other businesses'], ['nonprofits', 'Nonprofits'], ['creators', 'Creators and media']];
+  var STATUSES = [['not_reached', 'Not reached yet'], ['featured', 'Featured'], ['reached', 'Reached'], ['clicked', 'Clicked'], ['replied', 'Replied'], ['unsubscribed', 'Unsubscribed'], ['claimed', 'Claimed'], ['cant_reach', "Can't reach"]];
+  var TAGCLASS = { featured: 'new', claimed: 'live', replied: 'live', clicked: 'new', reached: 'wait', not_reached: 'not', unsubscribed: 'bad', cant_reach: 'bad' };
+  // ======== COPY: every word on this page that is not a label or live data. ALL DRAFT (Sean, 2026-11-18: "it's okay to build the
+  // structure, but the content still needs to be finalized"). Replace here after Sean locks the words; the Instagram openers live in
+  // ve_reach_messages (status draft until Sean locks them). v2 follows the panel (docs/plans/2026-11-18-directory-reach-panel.md). ========
+  var COPY = {
+    title: 'Directory Reach',
+    lede: 'Feature the places in our Directory from @vegansexplore, and answer everyone who raises a hand.',
+    welcome: 'Thank you for jumping in. Today: answer anyone who wrote or replied, then make today\'s feature from the places below. Questions go on the card.',
+    feature: {
+      how: 'Make one "Now on Vegans Explore" carousel and stories from @vegansexplore, tagging every place below that is really in it. Check each Instagram first: real and posting. Tap Featured once it is posted.',
+      template: 'Start from the city carousel template in Canva.',
+      ask: 'Featured? Comment PAGE and we\'ll send your listing.',
+      comingPage: 'Comment PAGE replies itself with their link: Coming (ManyChat). Until then, answer each one with Copy their page link.'
+    },
+    sean: {
+      intro: 'Places featured 7 or more days ago that have not answered. Sean sends these himself, from his own phone, up to 20 a day. They are Sean\'s, not KJ\'s.',
+      kj: 'This list is Sean\'s. Nothing to do here.'
+    },
+    goal: {
+      title: 'The goal',
+      line: '250 members by Thursday, December 31, 11:59 PM Eastern.',
+      checkpoint: 'This week: {members} members by {date} ({per} a week from here).',
+      kj: 'New members from KJ\'s links',
+      claims: 'Listings claimed'
+    },
+    plan: {
+      twoTitle: 'Told, Notified and Engaged',
+      two: 'Told: an email delivered or Sean\'s own message. Notified: tagged in a feature. Engaged: they clicked, replied or claimed. Never added together.',
+      roleTitle: 'KJ\'s part',
+      duties: [['Make the daily feature', 'One carousel and stories from @vegansexplore, up to 20 places, one city when possible.'], ['Answer everyone who raises a hand', 'Replies, comments, reshares and new followers, with their link. Never capped.'], ['Log it', 'Featured, Replied, Link sent, Can\'t reach. Quiet places go to Sean after 7 days.']],
+      capTitle: 'The daily limits',
+      cap: 'One feature a day, up to 20 places tagged, plus stories. Replies are never limited. Sean\'s send list: 20 a day. KJ never starts a direct message and never holds the account: Business Suite access to Content, Messages and Comments only.',
+      seeTitle: 'What the console can see',
+      see: 'Email replies, opens and clicks come in by themselves. Instagram messages cannot be read by our system, so the taps logged here are the record.',
+      openersNote: 'Captions name every tagged place and end with the Comment PAGE line. The page link goes only to someone who answered.'
+    },
+    scout: {
+      friday: 'Look around {chapter} for Vegan events and people or places worth spotlighting, and send each one here.',
+      notToday: 'Scouting is on Fridays until December 1. Next: {date}, {chapter}.',
+      where: 'Each one lands in Depot > Ideas, marked Chapter scout with the chapter.'
+    },
+    reasons: [['', 'Why not?'], ['no instagram', 'No Instagram'], ['closed', 'Closed'], ['wrong account', 'Wrong account']]
+  };
+  var ME = null, PLAN = null;
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function n(v) { return Number(v || 0).toLocaleString('en-US'); }
+  function q(k) { return new URLSearchParams(location.search).get(k); }
+  function toast(t) { var d = document.createElement('div'); d.className = 'toast'; d.textContent = t; document.body.appendChild(d); setTimeout(function () { d.remove(); }, 2400); }
+  function post(body) {
+    return fetch(SB + '/functions/v1/ve-reach', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + (window.VEAuth ? VEAuth.getToken() : '') }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json(); }).catch(function () { return { error: 'network' }; });
+  }
+  function when(iso) {
+    if (!iso) return '';
+    return new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(iso)) + ' ET';
+  }
+  function dayName(d) { return new Intl.DateTimeFormat('en-US', { timeZone: 'UTC', weekday: 'long', month: 'short', day: 'numeric' }).format(new Date(d + 'T00:00:00Z')); }
+  function thumb(r) {
+    var init = esc(String(r.name || '?').replace(/[^A-Za-z0-9]/g, '').slice(0, 2).toUpperCase());
+    var img = r.logo ? ' style="background-image:url(\'/_vercel/image?url=' + encodeURIComponent(r.logo) + '&w=96&q=75\')"' : '';
+    return '<a class="thumb" href="/directory/' + encodeURIComponent(r.slug) + '" target="_blank" rel="noopener" aria-label="' + esc(r.name) + ' in the Directory"' + img + '>' + (r.logo ? '' : init) + '</a>';
+  }
+  function tag(r) { return '<span class="k-tag ' + (TAGCLASS[r.status] || 'not') + '">' + esc(r.status_words) + '</span>'; }
+  function go(params) {
+    var u = new URLSearchParams(params).toString();
+    history.pushState(null, '', location.pathname + (u ? '?' + u : ''));
+    draw(); window.scrollTo(0, 0);
+  }
+  window.addEventListener('popstate', draw);
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('a[data-go]');
+    if (a) { e.preventDefault(); go(JSON.parse(a.getAttribute('data-go'))); }
+    var t = e.target.closest('#tabs a');
+    if (t) { e.preventDefault(); go({ tab: t.getAttribute('data-t') }); }
+  });
+  function draft() { return ' <span class="k-tag wait">Draft</span>'; }
+  function tab() { var t = q('tab'); if (t === 'team' && ME && ME.role === 'admin') return t; return ['today', 'sean', 'plan', 'scout', 'roster', 'done'].indexOf(t) >= 0 ? t : 'today'; }
+  function draw() {
+    var t = tab();
+    Array.prototype.forEach.call(document.querySelectorAll('#tabs a'), function (a) { a.setAttribute('aria-selected', a.getAttribute('data-t') === t ? 'true' : 'false'); });
+    $('view').innerHTML = '<p class="muted">Loading...</p>';
+    if (t === 'today') return drawToday();
+    if (t === 'sean') return drawSean();
+    if (t === 'plan') return drawPlan();
+    if (t === 'scout') return drawScout();
+    if (t === 'roster') return q('id') ? drawItem(q('id')) : drawRoster();
+    if (t === 'done') return drawDone();
+    if (t === 'team') return drawTeam();
+  }
+
+  // ---------- Plan ----------
+  function meter(v, goal, label) {
+    var pc = goal ? Math.min(100, Math.round(100 * v / goal)) : 0;
+    return '<div class="k-stat"><b>' + n(v) + ' <span class="pill">of ' + n(goal) + '</span></b><small>' + esc(label) + '</small><div class="bar"><i style="width:' + pc + '%"></i></div></div>';
+  }
+  function drawPlan() {
+    post({ action: 'plan' }).then(function (p) {
+      if (!p.ok) return fail(p);
+      var C = COPY.plan, G = p.goal, cp = G.checkpoint;
+      var h = '<h2 class="k-h2">' + esc(COPY.goal.title) + '</h2><p class="k-lede"><b>' + esc(COPY.goal.line) + '</b>' + draft() + '</p>';
+      h += '<div class="k-stats">' + meter(G.members, G.members_goal, 'Members to date') + meter(G.kj_members, G.kj_goal, COPY.goal.kj) + meter(G.claims, G.claims_goal, COPY.goal.claims) + '</div>';
+      h += '<p class="k-lede" style="margin-top:12px">' + esc(COPY.goal.checkpoint.replace('{members}', n(cp.members)).replace('{date}', dayName(cp.by)).replace('{per}', n(cp.per_week))) + draft() + '</p>';
+      h += '<div class="sec k-split"><div class="k-main"><h2 class="k-h2">' + esc(C.twoTitle) + draft() + '</h2><p class="k-lede">' + esc(C.two) + '</p>' +
+        '<div class="k-blocks"><div class="k-block k-tint"><span class="k-big">' + n(p.told) + '</span><small>Told (email or Sean), of ' + n(p.total) + '</small></div>' +
+        '<div class="k-block k-peach"><span class="k-big">' + n(p.notified) + '</span><small>Notified (featured)</small></div>' +
+        '<div class="k-block k-br"><span class="k-big">' + n(p.engaged) + '</span><small>Engaged</small></div></div></div>' +
+        '<div class="k-side"><div class="k-block k-peach"><span class="k-label">Working days to Dec 1</span><span class="k-big">' + n(p.days_left) + '</span><small>Thanksgiving Thursday and Friday off.</small></div></div></div>';
+      h += '<div class="sec"><h2 class="k-h2">By group</h2><div class="k-rows">';
+      GROUPS.forEach(function (g, i) {
+        var x = p.groups[g[0]] || {};
+        h += '<div class="k-row"><span class="k-num ' + ['dk', 'or', 'pk', 'br'][i] + '">' + (x.total ? Math.round(100 * x.told / x.total) : 0) + '%</span><div class="k-row-t"><b>' + esc(g[1]) + '</b><small>' +
+          n(x.told) + ' told, ' + n(x.engaged) + ' engaged, ' + n(x.claimed) + ' claimed, of ' + n(x.total) + '. Ways in: ' + n(x.email) + ' email, ' + n(x.instagram) + ' Instagram only, ' + n(x.find) + ' website only, ' + n(x.none) + ' nothing yet.</small></div>' +
+          '<a class="k-btn k-sm" href="?tab=roster&group=' + g[0] + '" data-go=\'' + JSON.stringify({ tab: 'roster', group: g[0] }) + '\'>Roster</a></div>';
+      });
+      h += '</div></div>';
+      var L = p.lanes;
+      h += '<div class="sec"><h2 class="k-h2">By way in</h2><div class="k-blocks">' +
+        '<div class="k-block k-tint"><span class="k-big">' + n(L.email.told) + ' / ' + n(L.email.total) + '</span><small>Email: told</small></div>' +
+        '<div class="k-block k-pink"><span class="k-big">' + n(L.instagram.told) + ' / ' + n(L.instagram.total) + '</span><small>Instagram only: told</small></div>' +
+        '<div class="k-block k-br"><span class="k-big">' + n(L.find.total) + '</span><small>Website only: to find</small></div>' +
+        '<div class="k-block k-peach"><span class="k-big">' + n(L.none.total) + '</span><small>Nothing yet: January</small></div></div></div>';
+      h += '<div class="sec k-split"><div class="k-main"><h2 class="k-h2">' + esc(C.roleTitle) + draft() + '</h2><div class="k-steps">' +
+        C.duties.map(function (st, i) { return '<div' + (i === 2 ? ' class="you"' : '') + '><em>' + (i + 1) + '</em><b>' + esc(st[0]) + '</b>' + esc(st[1]) + '</div>'; }).join('') +
+        '</div></div><div class="k-side"><div class="k-block k-or"><span class="k-label">' + esc(C.capTitle) + draft() + '</span><p>' + esc(C.cap) + '</p></div>' +
+        '<div class="k-block k-tint" style="margin-top:12px"><span class="k-label">' + esc(C.seeTitle) + draft() + '</span><p>' + esc(C.see) + '</p></div></div></div>';
+      h += '<div class="sec"><h2 class="k-h2">The openers</h2><p class="muted">' + esc(C.openersNote) + '</p><div class="k-grid">';
+      var ops = [['restaurants:caption', 'Feature caption: Restaurants and food'], ['businesses:caption', 'Feature caption: Other businesses'], ['nonprofits:caption', 'Feature caption: Nonprofits'],
+        ['creators:caption', 'Feature caption: Creators and media'], ['all:page', 'Reply with their link'], ['all:welcome', 'New follower welcome'], ['all:sean', 'Sean, after 7 quiet days']];
+      ops.forEach(function (o) {
+        var m = p.openers[o[0]];
+        h += '<div class="k-card"><span class="k-label">' + esc(o[1]) + '</span>' + (m ? '<span class="k-tag ' + (m.status === 'locked' ? 'live' : 'wait') + '">' + (m.status === 'locked' ? 'Locked' : 'Draft') + ', version ' + m.version + '</span><p class="opener">' + esc(m.body) + '</p>' : '<p class="muted">Coming</p>') + '</div>';
+      });
+      h += '</div></div>';
+      $('view').innerHTML = h;
+    });
+  }
+
+  // ---------- Today's feature ----------
+  function reasonSelect() { return '<select class="reason" data-reason>' + COPY.reasons.map(function (r) { return '<option value="' + esc(r[0]) + '">' + esc(r[1]) + '</option>'; }).join('') + '</select>'; }
+  function cardRow(r, done) {
+    return '<div class="k-row r5" data-id="' + r.id + '" data-group="' + esc(r.group) + '" data-ig="' + esc(r.instagram || '') + '">' + thumb(r) +
+      '<div class="k-row-t"><b><a href="/directory/' + encodeURIComponent(r.slug) + '" target="_blank" rel="noopener">' + esc(r.name) + '</a></b>' +
+      '<small>' + esc(r.group_words) + (r.city ? ' &middot; ' + esc(r.city) : '') + (r.note ? ' &middot; ' + esc(r.note) : '') + '</small>' +
+      '<div class="acts">' + (r.instagram ? '<a class="k-btn k-on" href="' + esc(r.instagram) + '" target="_blank" rel="noopener">Instagram</a>' : '') +
+      '<a class="k-btn" href="/directory/' + encodeURIComponent(r.slug) + '" target="_blank" rel="noopener">Directory</a>' +
+      '<button class="k-btn' + (done ? ' done' : '') + '" data-touch="tagged"' + (done ? ' disabled' : '') + '>Featured</button>' +
+      '<button class="k-btn" data-touch="replied">Replied</button><button class="k-btn" data-copy="page">Copy their page link</button>' +
+      reasonSelect() + '<button class="k-btn" data-touch="cant_reach">Can\'t reach</button>' +
+      '</div><input class="note-in" placeholder="Note (optional)" data-note></div><span class="rowside">' + tag(r) + '</span></div>';
+  }
+  function inboundRow(x) {
+    var who = x.listing ? '<a href="/directory/' + encodeURIComponent(x.listing.slug) + '" target="_blank" rel="noopener">' + esc(x.listing.name) + '</a> (@' + esc(x.handle) + ')' : '@' + esc(x.handle);
+    var g = { explorer: 'Explorer', restaurants: 'Restaurants and food', businesses: 'Other businesses', nonprofits: 'Nonprofits', creators: 'Creators and media' }[x.grp];
+    var what = { feature_reply: 'replied to a feature', comment: 'commented', follower: 'new follower', message: 'wrote to us' }[x.kind] || x.kind;
+    return '<div class="k-row r5" data-inbound="' + x.id + '" data-ig="' + esc(x.instagram || '') + '"><span class="thumb">' + esc(String(x.handle).slice(0, 2).toUpperCase()) + '</span><div class="k-row-t"><b>' + who + '</b><small>' + esc(g) + ' &middot; ' + esc(what) + (x.note ? ' &middot; ' + esc(x.note) : '') + '</small>' +
+      '<div class="acts">' + (x.instagram ? '<a class="k-btn k-on" href="' + esc(x.instagram) + '" target="_blank" rel="noopener">Instagram</a>' : '') +
+      (x.kind === 'follower' && x.status === 'open' ? '<button class="k-btn" data-copy="welcome">Copy welcome</button><button class="k-btn" data-in="welcomed">Welcomed</button>' : '') +
+      '<button class="k-btn" data-copy="inpage">Copy their page link</button><button class="k-btn" data-in="done">Done</button></div></div><span class="rowside"><span class="k-tag ' + (x.status === 'welcomed' ? 'live' : 'new') + '">' + (x.status === 'welcomed' ? 'Welcomed' : 'Open') + '</span></span></div>';
+  }
+  // Five, then Show N more in place (Sean, 2026-11-12: nothing scrolls inside itself).
+  function fiveMore(rows) {
+    if (rows.length <= 5) return '<div class="k-rows">' + rows.join('') + '</div>';
+    return '<div class="k-rows">' + rows.slice(0, 5).join('') + '<div class="k-rows" hidden>' + rows.slice(5).join('') + '</div></div>' +
+      '<p style="margin-top:10px"><button class="k-btn" type="button" onclick="this.parentNode.previousElementSibling.lastElementChild.hidden=false;this.parentNode.remove()">Show ' + (rows.length - 5) + ' more</button></p>';
+  }
+  function chapterName(slug) { var h = (window.VE_HUBS || []).filter(function (x) { return x.slug === slug; })[0]; return h ? ((h.page && h.page.short) || h.name) : (slug || 'our Directory'); }
+  function drawToday() {
+    post({ action: 'feature' }).then(function (w) {
+      if (!w.ok) return fail(w);
+      // The place named is always true (city first; across the real states when a batch spans more than one city).
+      var C = COPY.feature, where = w.where || { headline: chapterName(w.chapter), phrase: 'in ' + chapterName(w.chapter) }, cname = where.headline;
+      var cap = w.openers[w.group + ':caption'];
+      var caption = (cap ? cap.body : '{handles} ' + C.ask).replace(/in \{chapter\}/, where.phrase).replace('{chapter}', where.headline).replace('{handles}', w.handles.join(' '));
+      var h = '<div class="k-block k-tint"><p style="margin:0;font-weight:700">' + esc(COPY.welcome) + draft() + '</p></div>';
+      h += '<div class="sec"><h2 class="k-h2">Inbound</h2><p class="muted">Everyone who replied to a feature, commented, followed or wrote comes first. Replies are never limited.</p>' +
+        '<form class="k-form" id="inForm" style="grid-template-columns:repeat(auto-fit,minmax(min(170px,100%),1fr));margin:8px 0 12px">' +
+        '<div class="k-f"><label for="ih">Instagram handle</label><input id="ih" placeholder="@handle"></div>' +
+        '<div class="k-f"><label for="ig">Group</label><select id="ig"><option value="restaurants">Restaurants and food</option><option value="businesses">Other businesses</option><option value="nonprofits">Nonprofits</option><option value="creators">Creators and media</option><option value="explorer">Explorer</option></select></div>' +
+        '<div class="k-f"><label for="ik">What happened</label><select id="ik"><option value="feature_reply">Replied to a feature</option><option value="comment">Commented</option><option value="follower">New follower</option><option value="message">Wrote to us</option></select></div>' +
+        '<div class="k-f" style="align-self:end"><button class="k-btn" type="submit">Add</button></div></form>' +
+        (w.inbound.length ? fiveMore(w.inbound.map(inboundRow)) : '<p class="muted">Nobody waiting.</p>') + '</div>';
+      h += '<div class="sec"><h2 class="k-h2">Today\'s feature: <span class="k-hl g">' + esc(cname) + '</span></h2>' +
+        '<div class="k-stats"><div class="k-stat"><b>' + w.featured.length + ' / ' + w.cap + '</b><small>Featured today</small></div><div class="k-stat"><b>' + n(w.queue_left) + '</b><small>Waiting to be featured</small></div></div>' +
+        '<p class="k-lede" style="margin-top:12px">' + esc(C.how) + draft() + '</p>' +
+        '<p><a class="k-btn" href="' + esc(w.template.url) + '" target="_blank" rel="noopener">' + esc(C.template) + '</a></p>' +
+        '<div class="k-card" style="margin:14px 0"><span class="k-label">Caption' + draft() + '</span><p class="opener" id="capText">' + esc(caption) + '</p>' +
+        '<div class="k-btns" style="margin-top:10px"><button class="k-btn k-cta" type="button" id="capCopy">Copy caption</button></div>' +
+        '<p class="muted" style="margin-top:8px">' + esc(C.comingPage) + ' <span class="k-tag wait">Coming</span></p></div>';
+      if (!w.is_workday) h += '<p class="muted">Today is not a feature day. The next batch is below.</p>';
+      h += w.batch.length ? fiveMore(w.batch.map(function (r) { return cardRow(r, false); })) : '<p class="muted">Today\'s feature is full. Thank you.</p>';
+      if (w.featured.length) h += '<div class="sec"><span class="k-label">Featured today</span>' + fiveMore(w.featured.map(function (r) { return cardRow(r, true); })) + '</div>';
+      h += '</div>';
+      $('view').innerHTML = h;
+      $('capCopy').addEventListener('click', function () { var t = $('capText').textContent; if (navigator.clipboard) navigator.clipboard.writeText(t).then(function () { toast('Caption copied'); }); else prompt('Copy this', t); });
+      $('inForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+        post({ action: 'inbound_add', handle: $('ih').value, group: $('ig').value, kind: $('ik').value }).then(function (r) {
+          if (!r.ok) return toast(r.message || 'That did not save.');
+          toast(r.matched ? 'Added, matched to their listing' : 'Added'); drawToday();
+        });
+      });
+      wireRows(w.openers);
+    });
+  }
+
+  // ---------- Sean's send list ----------
+  function drawSean() {
+    post({ action: 'sean' }).then(function (w) {
+      if (!w.ok) return fail(w);
+      var admin = ME && ME.role === 'admin';
+      var h = '<p class="k-lede">' + esc(COPY.sean.intro) + draft() + '</p>';
+      if (!admin) h += '<div class="k-block k-peach"><p style="margin:0;font-weight:700">' + esc(COPY.sean.kj) + '</p></div>';
+      h += '<div class="sec k-stats"><div class="k-stat"><b>' + w.sent_today + ' / ' + w.cap + '</b><small>Sent today</small></div><div class="k-stat"><b>' + n(w.waiting) + '</b><small>Quiet 7 days or more</small></div></div>';
+      var o = w.openers['all:sean'];
+      h += '<div class="sec">' + (w.rows.length ? fiveMore(w.rows.map(function (r) {
+        var msg = (o ? o.body : '').replace('{name}', r.name);
+        return '<div class="k-row r5" data-id="' + r.id + '" data-ig="' + esc(r.instagram || '') + '">' + thumb(r) + '<div class="k-row-t"><b><a href="/directory/' + encodeURIComponent(r.slug) + '" target="_blank" rel="noopener">' + esc(r.name) + '</a></b>' +
+          '<small>' + esc(r.group_words) + (r.city ? ' &middot; ' + esc(r.city) : '') + ' &middot; featured ' + esc(when(r.tagged_at)) + '</small><p class="opener">' + esc(msg) + '</p>' +
+          (admin ? '<div class="acts"><button class="k-btn k-on" data-sean="' + esc(msg) + '">Copy and open Instagram</button><button class="k-btn" data-touch="dm">Sent</button></div>' : '') +
+          '</div><span class="rowside"><span class="k-tag wait">Sean\'s</span></span></div>';
+      })) : '<p class="muted">Nobody is due yet. A place lands here 7 days after its feature if it has not answered.</p>') + '</div>';
+      $('view').innerHTML = h;
+      Array.prototype.forEach.call(document.querySelectorAll('[data-sean]'), function (b) {
+        b.addEventListener('click', function (e) { e.stopPropagation(); copyAndOpen(b.getAttribute('data-sean'), b.closest('[data-ig]').getAttribute('data-ig')); });
+      });
+      wireRows(w.openers);
+    });
+  }
+  function copyAndOpen(text, ig) {
+    var win = ig ? window.open(ig, '_blank', 'noopener') : null;
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(function () { toast('Copied'); }, function () { prompt('Copy this', text); });
+    else prompt('Copy this', text);
+    return win;
+  }
+  function wireRows(openers) {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-id]'), function (row) {
+      var id = row.getAttribute('data-id');
+      row.addEventListener('click', function (e) {
+        var b = e.target.closest('button'); if (!b || b.hasAttribute('data-sean')) return;
+        var kind = b.getAttribute('data-touch'), copy = b.getAttribute('data-copy');
+        var noteEl = row.querySelector('[data-note]'), reasonEl = row.querySelector('[data-reason]');
+        if (copy === 'page') {
+          b.disabled = true;
+          post({ action: 'link', id: id }).then(function (r) {
+            b.disabled = false; var o = openers['all:page'];
+            copyAndOpen((o ? o.body : '{link}').replace('{link}', r.url || ''), null);
+            post({ action: 'touch', id: id, kind: 'page_sent' });
+            b.classList.add('done');
+          });
+          return;
+        }
+        if (!kind) return;
+        var note = noteEl ? noteEl.value.trim() : '';
+        if (kind === 'cant_reach') { var why = reasonEl ? reasonEl.value : ''; note = [why, note].filter(Boolean).join(': '); }
+        if (kind === 'note' && !note) { noteEl.focus(); return; }
+        b.disabled = true;
+        post({ action: 'touch', id: id, kind: kind, note: note }).then(function (r) {
+          if (!r.ok) { b.disabled = false; toast(r.message || 'That did not save. Try again.'); return; }
+          b.classList.add('done'); if (noteEl) noteEl.value = '';
+          toast(kind === 'replied' ? 'Logged. Send their page next.' : 'Logged');
+        });
+      });
+    });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-inbound]'), function (row) {
+      var id = row.getAttribute('data-inbound');
+      row.addEventListener('click', function (e) {
+        var b = e.target.closest('button'); if (!b) return;
+        if (b.getAttribute('data-copy') === 'welcome') { var o = openers['all:welcome']; copyAndOpen(o ? o.body : '', row.getAttribute('data-ig')); return; }
+        if (b.getAttribute('data-copy') === 'inpage') {
+          b.disabled = true;
+          post({ action: 'inbound_link', id: id }).then(function (r) { b.disabled = false; var o = openers['all:page']; copyAndOpen((o ? o.body : '{link}').replace('{link}', r.url || ''), null); });
+          return;
+        }
+        var st = b.getAttribute('data-in'); if (!st) return;
+        b.disabled = true;
+        post({ action: 'inbound_set', id: id, status: st }).then(function (r) {
+          if (!r.ok) { b.disabled = false; return toast(r.message || 'That did not save.'); }
+          toast('Logged'); drawToday();
+        });
+      });
+    });
+  }
+
+  // ---------- Friday scout ----------
+  function chapters() { return (window.VE_HUBS || []).filter(function (h) { return h.slug !== 'sample'; }); }
+  function etToday() { return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York' }).format(new Date()); }
+  function scoutPlan() {
+    var hubs = chapters(); if (!hubs.length) return null;
+    var today = etToday(), d = new Date(today + 'T00:00:00Z'), dow = d.getUTCDay();
+    var weekly = today <= '2026-12-01';
+    var isDay = weekly ? dow === 5 : (dow >= 1 && dow <= 5);
+    // Fridays from Nov 20 until Dec 1, then every weekday: the chapter is the count of scout days so far.
+    var count = 0, x = new Date(Date.UTC(2026, 10, 20));
+    while (x < d) { var k = x.getUTCDay(), s = x.toISOString().slice(0, 10); if (s <= '2026-12-01' ? k === 5 : (k >= 1 && k <= 5)) count++; x = new Date(x.getTime() + 86400000); }
+    var next = new Date(d.getTime()); do { next = new Date(next.getTime() + 86400000); var nk = next.getUTCDay(), ns = next.toISOString().slice(0, 10); } while (!(ns <= '2026-12-01' ? nk === 5 : (nk >= 1 && nk <= 5)));
+    var name = function (h) { return (h.page && h.page.short) || h.name; };
+    return { isDay: isDay, today: hubs[count % hubs.length], next: hubs[(isDay ? count + 1 : count) % hubs.length], nextDate: next.toISOString().slice(0, 10), name: name };
+  }
+  function drawScout() {
+    var c = scoutPlan(), C = COPY.scout;
+    if (!c) { $('view').innerHTML = '<p class="muted">Coming</p>'; return; }
+    var admin = ME && ME.role === 'admin';
+    var name = c.name(c.today);
+    var h = '<div class="k-split"><div class="k-main">';
+    if (!c.isDay) h += '<p class="k-lede">' + esc(C.notToday.replace('{date}', dayName(c.nextDate)).replace('{chapter}', c.name(c.next))) + draft() + '</p>';
+    if (c.isDay || admin) {
+      h += '<h2 class="k-h2">' + (c.isDay ? 'Today\'s chapter: ' : 'Next chapter: ') + '<span class="k-hl g">' + esc(c.isDay ? name : c.name(c.next)) + '</span></h2>' +
+        '<p class="k-lede">' + esc(C.friday.replace('{chapter}', c.isDay ? name : c.name(c.next))) + draft() + '</p>' +
+        '<form class="k-form" id="scoutForm" style="margin-top:16px">' +
+        '<div class="k-f"><label for="sk">What is it</label><select id="sk"><option value="event">An event</option><option value="spotlight">Someone to spotlight</option></select></div>' +
+        '<div class="k-f"><label for="sn">Name</label><input id="sn" placeholder="The event, person or business"></div>' +
+        '<div class="k-f wide"><label for="su">Link</label><input id="su" placeholder="https://..."></div>' +
+        '<div class="k-f wide"><label for="so">Why it matters</label><textarea id="so" placeholder="A line or two"></textarea></div>' +
+        '<div class="k-f wide"><button class="k-btn k-cta" type="submit">Send it</button><p class="k-msg" id="sm"></p></div></form>';
+    }
+    h += '</div><div class="k-side"><div class="k-block k-tint"><span class="k-label">Where it goes</span><p>' + esc(C.where) + '</p></div></div></div>';
+    $('view').innerHTML = h;
+    var f = $('scoutForm'); if (!f) return;
+    var chap = c.isDay ? name : c.name(c.next);
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      $('sm').className = 'k-msg'; $('sm').textContent = 'Sending...';
+      post({ action: 'scout', chapter: chap, kind: $('sk').value, name: $('sn').value, url: $('su').value, note: $('so').value }).then(function (r) {
+        if (!r.ok) { $('sm').className = 'k-msg err'; $('sm').textContent = r.message || 'That did not send.'; return; }
+        $('sm').textContent = 'Sent to ' + r.where + '. Thank you.'; $('sn').value = $('su').value = $('so').value = '';
+      });
+    });
+  }
+
+  // ---------- Roster ----------
+  var R = { offset: 0, rows: [] };
+  function rosterParams() { return { group: q('group') || '', status: q('status') || '', channel: q('channel') || '', q: q('q') || '', sort: q('sort') || 'name' }; }
+  function drawRoster() {
+    var p = rosterParams();
+    var sel = function (id, label, opts, val) {
+      return '<div class="k-f"><label for="' + id + '">' + label + '</label><select id="' + id + '">' + opts.map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === val ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select></div>';
+    };
+    var h = '<div class="filters k-form" style="grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr))">' +
+      '<div class="k-f"><label for="fq">Search</label><input id="fq" value="' + esc(p.q) + '" placeholder="Name, city or kind"></div>' +
+      sel('fg', 'Group', [['', 'Every group']].concat(GROUPS), p.group) +
+      sel('fs', 'Status', [['', 'Every status']].concat(STATUSES), p.status) +
+      sel('fc', 'Way in', [['', 'Any'], ['email', 'Has an email'], ['instagram', 'Has Instagram'], ['find', 'Website only'], ['none', 'Nothing yet']], p.channel) +
+      sel('fo', 'Sort', [['name', 'Name'], ['recent', 'Last contact'], ['touches', 'Most contacted'], ['city', 'City']], p.sort) +
+      '</div><p class="muted" id="rcount"></p><div class="k-rows" id="rrows"></div><p style="margin-top:12px"><button class="k-btn" id="rmore" hidden>Show more</button></p>';
+    $('view').innerHTML = h;
+    var apply = function () {
+      var np = { tab: 'roster' };
+      [['fq', 'q'], ['fg', 'group'], ['fs', 'status'], ['fc', 'channel'], ['fo', 'sort']].forEach(function (x) { var v = $(x[0]).value.trim(); if (v && !(x[1] === 'sort' && v === 'name')) np[x[1]] = v; });
+      go(np);
+    };
+    ['fg', 'fs', 'fc', 'fo'].forEach(function (id) { $(id).addEventListener('change', apply); });
+    var tmr; $('fq').addEventListener('input', function () { clearTimeout(tmr); tmr = setTimeout(apply, 500); });
+    R.offset = 0; $('rrows').innerHTML = ''; loadRoster(p);
+    $('rmore').onclick = function () { loadRoster(p); };
+  }
+  function loadRoster(p) {
+    post(Object.assign({ action: 'roster', offset: R.offset, limit: 25 }, p)).then(function (r) {
+      if (!r.ok) return fail(r);
+      var parts = STATUSES.filter(function (s) { return r.counts[s[0]]; }).map(function (s) { return n(r.counts[s[0]]) + ' ' + s[1].toLowerCase(); });
+      $('rcount').textContent = n(r.total) + ' listings' + (parts.length ? ': ' + parts.join(', ') : '') + '.';
+      $('rrows').insertAdjacentHTML('beforeend', r.rows.map(function (x) {
+        var last = x.last_touch_at ? 'Last contact ' + when(x.last_touch_at) + ', ' + x.touches + (x.touches === 1 ? ' time' : ' times') : 'Never contacted';
+        var ways = [x.has_email ? 'email' : '', x.instagram ? 'Instagram' : '', x.website && !x.has_email && !x.instagram ? 'website' : ''].filter(Boolean).join(', ') || 'no way in yet';
+        var flags = [x.opened ? 'opened' : '', x.clicked ? 'clicked' : '', x.bounced ? 'bounced' : ''].filter(Boolean).join(', ');
+        return '<div class="k-row r5">' + thumb(x) + '<div class="k-row-t"><b><a href="?tab=roster&id=' + x.id + '" data-go=\'' + JSON.stringify({ tab: 'roster', id: x.id }) + '\'>' + esc(x.name) + '</a></b>' +
+          '<small>' + esc(x.group_words) + (x.city ? ' &middot; ' + esc(x.city) : '') + ' &middot; ' + esc(ways) + ' &middot; ' + esc(last) + (flags ? ' &middot; ' + flags : '') + '</small></div>' +
+          '<span class="rowside">' + tag(x) + '</span></div>';
+      }).join(''));
+      R.offset += r.rows.length;
+      $('rmore').hidden = R.offset >= r.total;
+      $('rmore').textContent = 'Show ' + Math.min(25, r.total - R.offset) + ' more';
+    });
+  }
+  function drawItem(id) {
+    post({ action: 'item', id: id }).then(function (r) {
+      if (!r.ok) return fail(r);
+      var L = r.listing;
+      var h = '<p class="crumb"><a href="?tab=roster" data-go=\'{"tab":"roster"}\'>Roster</a> &gt; ' + esc(L.name) + '</p>';
+      h += '<div class="k-row r5" data-id="' + L.id + '">' + thumb(L) + '<div class="k-row-t"><b>' + esc(L.name) + '</b><small>' + esc(L.group_words) + ' &middot; ' + esc(L.category || '') + (L.city ? ' &middot; ' + esc(L.city) : '') + '</small>' +
+        '<div class="acts"><a class="k-btn" href="/directory/' + encodeURIComponent(L.slug) + '" target="_blank" rel="noopener">Directory listing</a>' +
+        (L.instagram ? '<a class="k-btn k-on" href="' + esc(L.instagram) + '" target="_blank" rel="noopener">Instagram</a>' : '') +
+        (L.website ? '<a class="k-btn" href="' + esc(L.website) + '" target="_blank" rel="noopener">Website</a>' : '') +
+        '<button class="k-btn" data-touch="tagged">Featured</button><button class="k-btn" data-touch="replied">Replied</button><button class="k-btn" data-copy="page">Copy their page link</button>' + reasonSelect() + '<button class="k-btn" data-touch="cant_reach">Can\'t reach</button><button class="k-btn" data-touch="note">Save note</button>' +
+        (ME && ME.role === 'admin' ? '<button class="k-btn" data-touch="' + (L.pinned ? 'unpin' : 'pin') + '">' + (L.pinned ? 'Unpin' : 'Pin to the top') + '</button>' : '') +
+        '</div><input class="note-in" placeholder="A note" data-note></div><span class="rowside">' + tag(L) + '</span></div>';
+      h += '<div class="sec k-stats"><div class="k-stat"><b>' + n(L.touches) + '</b><small>Times contacted</small></div><div class="k-stat"><b>' + n(L.emails_count) + '</b><small>Email addresses on file</small></div>' +
+        '<div class="k-stat"><b>' + (L.opened ? 'Yes' : 'No') + '</b><small>Opened an email</small></div><div class="k-stat"><b>' + (L.replied ? 'Yes' : 'No') + '</b><small>Replied</small></div></div>';
+      var ev = [];
+      r.log.forEach(function (x) { ev.push({ at: x.at, t: { follow: 'Followed on Instagram', followed_back: 'They follow us', dm: 'Sent by Sean', page_sent: 'Their page link sent', replied: 'They replied', cant_reach: "Can't reach", note: 'Note', checkin: 'Checked in', pin: 'Pinned to the top', unpin: 'Unpinned', tagged: 'Featured in a post or story' }[x.kind] + (x.note ? ': ' + x.note : '') + (x.by ? ' (' + x.by + ')' : '') }); });
+      r.emails.forEach(function (x) { ev.push({ at: x.at, t: 'Email: ' + (x.subject || x.campaign || '') + ' (' + [x.bounced ? 'bounced' : x.delivered ? 'delivered' : 'sent', x.opened ? 'opened' : '', x.clicked ? 'clicked' : '', x.unsub ? 'unsubscribe link' : ''].filter(Boolean).join(', ') + ')' }); });
+      r.replies.forEach(function (x) { ev.push({ at: x.at, t: 'Email reply from ' + (x.from || '') + ': ' + (x.snippet || '') }); });
+      r.claims.forEach(function (x) { ev.push({ at: x.at, t: 'Claim ' + x.status }); });
+      ev.sort(function (a, b) { return String(b.at).localeCompare(String(a.at)); });
+      h += '<div class="sec"><h2 class="k-h2">History</h2>' + (ev.length ? '<div class="hist">' + ev.map(function (e) { return '<div>' + esc(e.t) + '<br><small>' + esc(when(e.at)) + '</small></div>'; }).join('') + '</div>' : '<p class="muted">No contact yet.</p>') + '</div>';
+      if (r.campaigns.length) h += '<div class="sec"><span class="k-label">Campaigns</span><p class="muted">' + r.campaigns.map(function (c) { return esc(c.campaign_slug) + ' (' + esc(c.send_status) + ')'; }).join(', ') + '</p></div>';
+      $('view').innerHTML = h;
+      post({ action: 'plan' }).then(function (p) { wireRows(p.openers || {}); });
+    });
+  }
+
+  // ---------- Done ----------
+  function drawDone() {
+    post({ action: 'done' }).then(function (r) {
+      if (!r.ok) return fail(r);
+      var words = { tagged: 'Featured', follow: 'Followed', followed_back: 'They follow us', page_sent: 'Link sent', dm: 'Sent by Sean', replied: 'Replied', cant_reach: "Can't reach", note: 'Note', checkin: 'Checked in', pin: 'Pinned', unpin: 'Unpinned' };
+      var h = '<p class="k-lede">Everything logged from this account, newest first. Open one to fix it or add a note.</p>';
+      h += r.rows.length ? '<div class="k-rows">' + r.rows.map(function (d) {
+        var L = d.listing || { name: 'A listing', slug: '' };
+        return '<div class="k-row r5">' + thumb({ name: L.name, slug: L.slug, logo: L.logo_url }) + '<div class="k-row-t"><b><a href="?tab=roster&id=' + d.listing_id + '" data-go=\'' + JSON.stringify({ tab: 'roster', id: d.listing_id }) + '\'>' + esc(L.name) + '</a></b><small>' + esc(when(d.at)) + (d.note ? ' &middot; ' + esc(d.note) : '') + '</small></div><span class="k-tag live">' + esc(words[d.kind] || d.kind) + '</span></div>';
+      }).join('') + '</div>' : '<p class="muted">Nothing logged yet. Each step on This week shows up here.</p>';
+      $('view').innerHTML = h;
+    });
+  }
+
+
+  // ---------- Team (super admins only): what waits on Sean from Ask Kai, each holder's thread, the weekly brief and the asks.
+  // Data and writes through ve-positions (admin_team, admin_kai_answer, admin_brief_save, admin_ask_save; 2026-11-19). Sean's answers post in
+  // the holder's thread as Kai ("Sean, through Kai"); a brief and its asks show on their dashboard only once published. ----------
+  function pos(body) {
+    return fetch(SB + '/functions/v1/ve-positions', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + (window.VEAuth ? VEAuth.getToken() : '') }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json(); }).catch(function () { return { error: 'network' }; });
+  }
+  var TEAM = null;
+  var BSTAT = { draft: ['wait', 'Draft'], published: ['live', 'Published'], retired: ['not', 'Retired'], open: ['live', 'Open'] };
+  function drawTeam() {
+    pos({ action: 'admin_team' }).then(function (r) {
+      if (!r.ok) return fail(r);
+      TEAM = r;
+      var person = q('person'), edit = q('edit'), h = '';
+      if (edit) return drawTeamEdit(edit);
+      if (person) {
+        var P = r.people.filter(function (x) { return x.id === person; })[0], th = r.threads[person] || [];
+        h += '<p class="crumb"><a href="?tab=team" data-go=\'{"tab":"team"}\'>Team</a> &rsaquo; ' + esc(P ? P.name : 'Thread') + '</p>';
+        h += '<h2 class="k-h2">' + esc(P ? P.name : '') + '\'s thread with Kai</h2><p class="muted">Your answers post as Kai, marked "Sean, through Kai". They never see Logan.</p>';
+        h += th.length ? '<div class="hist">' + th.map(function (m) {
+          var who = m.author === 'holder' ? (P ? P.name : 'They') : m.author === 'sean' ? 'You, through Kai' : 'Kai';
+          return '<div id="m-' + m.id + '" style="--k-c:' + (m.waiting ? 'var(--k-or)' : 'var(--k-tint)') + '"><b>' + esc(who) + '</b>' + (m.topic !== 'chat' ? ' <span class="pill">' + esc(m.topic) + '</span>' : '') + '<br>' + esc(m.body) + '<br><small>' + esc(when(m.at)) + (m.waiting ? ' &middot; waiting on you' : '') + '</small>' +
+            (m.waiting ? '<textarea class="note-in" rows="3" data-ans="' + m.id + '" placeholder="Your answer, posted as Kai"></textarea><button type="button" class="k-btn k-sm" data-ans-send="' + m.id + '">Send as Kai</button>' : '') + '</div>';
+        }).join('') + '</div>' : '<p class="muted">No messages yet.</p>';
+        h += '<div class="sec"><span class="k-label">Write to them, as Kai</span><textarea class="note-in" rows="3" id="newMsg"></textarea><p><button type="button" class="k-btn k-cta" id="newMsgB">Send as Kai</button></p></div>';
+        $('view').innerHTML = h; wireTeam(person);
+        if (location.hash && document.querySelector(location.hash)) document.querySelector(location.hash).scrollIntoView({ block: 'center' });
+        return;
+      }
+      h += '<p class="k-lede">What Kai sent to you, each team member\'s thread, the weekly brief and the asks. Everything here shows on their dashboard at /dashboard/position.</p>';
+      h += '<div class="sec"><h2 class="k-h2">Waiting on you</h2>' + (r.waiting.length ? '<div class="k-rows">' + r.waiting.map(function (m) {
+        return '<div class="k-row r5" style="grid-template-columns:minmax(0,1fr) auto"><div class="k-row-t"><b>' + esc(m.name || 'Team member') + (m.topic !== 'chat' ? ' <span class="pill">' + esc(m.topic) + '</span>' : '') + '</b><small>' + esc(m.body) + '</small>' +
+          '<textarea class="note-in" rows="2" data-ans="' + m.id + '" placeholder="Your answer, posted as Kai"></textarea></div><button type="button" class="k-btn k-sm" data-ans-send="' + m.id + '">Send as Kai</button></div>';
+      }).join('') + '</div>' : '<p class="muted">Nothing waiting. Kai answered everything she could.</p>') + '</div>';
+      h += '<div class="sec"><h2 class="k-h2">Team</h2>' + (r.people.length ? '<div class="k-rows">' + r.people.map(function (x) {
+        return '<div class="k-row r5" style="grid-template-columns:minmax(0,1fr) auto auto"><div class="k-row-t"><b>' + esc(x.name || '') + '</b><small>' + esc((x.stage_words || x.stage) + (x.region ? ', ' + x.region : '')) + '</small></div>' +
+          '<span class="k-tag ' + (x.waiting ? 'new' : 'live') + '">' + (x.waiting ? x.waiting + ' waiting' : 'All answered') + '</span><a class="k-btn k-sm" href="?tab=team&person=' + x.id + '" data-go=\'' + JSON.stringify({ tab: 'team', person: x.id }) + '\'>Thread</a></div>';
+      }).join('') + '</div>' : '<p class="muted">No one holds the position yet.</p>') + '</div>';
+      h += '<div class="sec"><h2 class="k-h2">Weekly briefs</h2><p><a class="k-btn k-cta" href="?tab=team&edit=brief-new" data-go=\'{"tab":"team","edit":"brief-new"}\'>New brief</a></p>' + (r.briefs.length ? '<div class="k-rows">' + r.briefs.map(function (b) {
+        var st = BSTAT[b.status] || BSTAT.draft;
+        return '<div class="k-row r5" style="grid-template-columns:minmax(0,1fr) auto auto"><div class="k-row-t"><b>' + esc(b.title) + '</b><small>Week of ' + esc(b.week_of) + '</small></div><span class="k-tag ' + st[0] + '">' + st[1] + '</span>' +
+          '<a class="k-btn k-sm" href="?tab=team&edit=brief-' + b.id + '" data-go=\'' + JSON.stringify({ tab: 'team', edit: 'brief-' + b.id }) + '\'>Edit</a></div>';
+      }).join('') + '</div>' : '<p class="muted">No briefs yet.</p>') + '</div>';
+      h += '<div class="sec"><h2 class="k-h2">Asks</h2><p><a class="k-btn" href="?tab=team&edit=ask-new" data-go=\'{"tab":"team","edit":"ask-new"}\'>New ask</a></p>' + (r.asks.length ? '<div class="k-rows">' + r.asks.map(function (a) {
+        var st = BSTAT[a.status] || BSTAT.draft;
+        return '<div class="k-row r5" style="grid-template-columns:minmax(0,1fr) auto auto"><div class="k-row-t"><b>' + esc(a.title) + '</b><small>' + esc((a.due_text ? 'Due ' + a.due_text + ' · ' : '') + (a.brief_id ? 'With a brief' : 'On its own') + ' · ' + a.done_by + ' done') + '</small></div><span class="k-tag ' + st[0] + '">' + st[1] + '</span>' +
+          '<a class="k-btn k-sm" href="?tab=team&edit=ask-' + a.id + '" data-go=\'' + JSON.stringify({ tab: 'team', edit: 'ask-' + a.id }) + '\'>Edit</a></div>';
+      }).join('') + '</div>' : '<p class="muted">No asks yet.</p>') + '</div>';
+      $('view').innerHTML = h; wireTeam(null);
+    });
+  }
+  function field(id, label, val, kind, opts) {
+    if (kind === 'select') return '<div class="k-f"><label for="' + id + '">' + label + '</label><select id="' + id + '">' + opts.map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === val ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select></div>';
+    if (kind === 'area') return '<div class="k-f wide"><label for="' + id + '">' + label + '</label><textarea id="' + id + '" rows="3">' + esc(val || '') + '</textarea></div>';
+    return '<div class="k-f"><label for="' + id + '">' + label + '</label><input id="' + id + '" value="' + esc(val || '') + '"' + (kind === 'date' ? ' type="date"' : '') + '></div>';
+  }
+  function drawTeamEdit(edit) {
+    var isBrief = edit.indexOf('brief-') === 0, id = edit.replace(/^(brief|ask)-/, ''), x = {};
+    if (id !== 'new') x = (isBrief ? TEAM.briefs : TEAM.asks).filter(function (y) { return y.id === id; })[0] || {};
+    var h = '<p class="crumb"><a href="?tab=team" data-go=\'{"tab":"team"}\'>Team</a> &rsaquo; ' + (isBrief ? (id === 'new' ? 'New brief' : 'Brief') : (id === 'new' ? 'New ask' : 'Ask')) + '</p><form class="k-form" id="teF">';
+    if (isBrief) {
+      h += field('fw', 'Week of (Monday)', x.week_of, 'date') + field('ft', 'Title', x.title || '') + field('fs', 'Status', x.status || 'draft', 'select', [['draft', 'Draft (only you see it)'], ['published', 'Published (on their dashboard)'], ['retired', 'Retired']]) +
+        field('fwh', 'Where we are', x.where_text, 'area') + field('fn', 'What\'s next', x.next_text, 'area') + field('fq', 'This week\'s question', x.question, 'area');
+    } else {
+      var bo = [['', 'On its own']].concat(TEAM.briefs.map(function (b) { return [b.id, 'With: ' + b.title]; }));
+      h += field('ft', 'The ask', x.title || '') + field('fd', 'Due', x.due_text || '') + field('fs', 'Status', x.status || 'open', 'select', [['open', 'Open (on their dashboard)'], ['draft', 'Draft'], ['retired', 'Retired']]) +
+        field('fb', 'Brief', x.brief_id || '', 'select', bo) + field('fl', 'Link (optional)', x.link || '') + field('fo', 'Order', String(x.sort || 0)) + field('fx', 'More (optional)', x.body, 'area');
+    }
+    h += '<div class="k-f wide"><button type="submit" class="k-btn k-cta">Save</button> <span class="k-msg" id="teM"></span></div></form>';
+    $('view').innerHTML = h;
+    $('teF').addEventListener('submit', function (e) {
+      e.preventDefault(); $('teM').textContent = 'Saving...';
+      var body = isBrief ? { action: 'admin_brief_save', week_of: $('fw').value, title: $('ft').value, status: $('fs').value, where_text: $('fwh').value, next_text: $('fn').value, question: $('fq').value }
+        : { action: 'admin_ask_save', title: $('ft').value, due_text: $('fd').value, status: $('fs').value, brief_id: $('fb').value || null, link: $('fl').value, sort: $('fo').value, body: $('fx').value };
+      if (id !== 'new') body.id = id;
+      pos(body).then(function (r) { if (r.ok) { toast('Saved'); go({ tab: 'team' }); } else $('teM').textContent = r.message || 'That did not save.'; });
+    });
+  }
+  function wireTeam(person) {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-ans-send]'), function (b) {
+      b.addEventListener('click', function () {
+        var id = b.getAttribute('data-ans-send'), t = document.querySelector('[data-ans="' + id + '"]').value.trim();
+        if (t.length < 2) return toast('Write your answer first.');
+        b.disabled = true;
+        pos({ action: 'admin_kai_answer', message_id: id, text: t }).then(function (r) { b.disabled = false; if (r.ok) { toast('Posted as Kai'); drawTeam(); } else toast(r.message || 'That did not send.'); });
+      });
+    });
+    if (person && $('newMsgB')) $('newMsgB').addEventListener('click', function () {
+      var t = $('newMsg').value.trim(); if (t.length < 2) return toast('Write something first.');
+      pos({ action: 'admin_kai_answer', person_id: person, text: t }).then(function (r) { if (r.ok) { toast('Posted as Kai'); drawTeam(); } else toast(r.message || 'That did not send.'); });
+    });
+  }
+
+  function fail(r) {
+    if (r && r.error === 'forbidden') return gate('This console is for the Vegans Explore team.');
+    $('view').innerHTML = '<p class="k-msg err">' + esc((r && r.message) || 'That did not load. Try again in a moment.') + '</p>';
+  }
+  function gate(msg) {
+    $('app').hidden = true; $('gate').hidden = false;
+    $('gate').innerHTML = '<div class="k-card"><p class="k-lede">' + esc(msg) + '</p><p><a class="k-btn k-cta" href="/login?next=' + encodeURIComponent(location.pathname + location.search) + '">Sign in</a></p></div>';
+  }
+  function start() {
+    if (!window.VEAuth) return setTimeout(start, 150);
+    if (!VEAuth.getToken()) return gate('Sign in to open Directory Reach.');
+    post({ action: 'me' }).then(function (r) {
+      if (!r.ok) return gate(r.error === 'forbidden' ? 'This console is for the Vegans Explore team.' : 'Sign in to open Directory Reach.');
+      ME = r.me; if (ME.role === 'admin') $('teamTab').hidden = false; $('pageTitle').textContent = COPY.title; $('pageLede').innerHTML = esc(COPY.lede) + draft(); $('gate').hidden = true; $('app').hidden = false; draw();
+    });
+  }
+  start();
+})();
+</script>
+<script src="/public/footer.js"></script>
+</body>
+</html>

@@ -7,9 +7,23 @@
 //   POST { action: 'sign', slug, signed_name, agree, sha }   step 3: e-sign the agreement (ESIGN/UETA: text, hash, name, IP, browser, copy emailed)
 //   POST { action: 'payout_start', slug }               step 4: Stripe Express onboarding (W-9 and bank on Stripe's pages)
 //   POST { action: 'payout_status', slug }              step 4: asks Stripe whether transfers are on
-//   POST { action: 'instagram', slug, handle }          step 5: their Instagram handle for Sean's Shared Access invite
+//   POST { action: 'instagram', slug, handle }          their Instagram handle (optional since feature first)
+//   POST { action: 'meta_email', slug, email }          the email on their Meta (Facebook) account, for Sean's Business Suite partial-access invite
+//                                                       (2026-11-18, feature first: docs/plans/2026-11-18-kj-access-panel.md). Signed agreement first.
+//   POST { action: 'preview', slug }                    super admins (or the ops token): the start page's data with an empty checklist, no writes
+// The position dashboard (/dashboard/position, 2026-11-19; the locked mock /mocks/kj-dashboard). The holder sees their own; a super admin
+// previews any holder with { as: <member id or creator slug> } (nothing saves); ops act as one holder row ({ person_id }) for proofs:
+//   POST { action: 'dash' }                             every part's data: role, brief, asks, Kai thread, conversations, people, record, pay
+//   POST { action: 'kai_send', text }                   Ask Kai: answered as Kai when sure, else "checking with Sean" and Sean is emailed
+//   POST { action: 'ask_reply', ask_id, text }          a reply to one of Sean's asks (to Sean; Kai acknowledges)
+//   POST { action: 'ask_done', ask_id, done }           tick an ask
+//   POST { action: 'brief_answer', brief_id, text }     the answer to the brief's question (to Sean; Kai acknowledges)
+//   POST { action: 'idea', text }                       Your ideas (to Sean; Kai acknowledges)
+//   POST { action: 'report', part, message, page_url, shot? }   Report something: a ve_feedback row, like the site's Feedback button
 // Sean (a superadmin member):
-//   admin_list, admin_person {id}, admin_search {q}, admin_assign {slug, member_id, note, send}, admin_start_trial {id},
+//   admin_team {slug}, admin_brief_save {id?, week_of, title, where_text, next_text, question, status}, admin_ask_save {id?, title, body, link,
+//   due_text, sort, status, brief_id}, admin_kai_answer {message_id | person_id, text}: the Team part of the Reach console (ops too)
+//   admin_list, admin_person {id}, admin_search {q}, admin_assign {slug, member_id, note, send, region}, admin_start_trial {id},
 //   admin_hold {payout_id}, admin_release {payout_id}, admin_end {id, reason, ended_on}, admin_offboard_done {id}
 // The Stop link in the pay notice (a page on the site posts here; opening the email link changes nothing):
 //   POST { action: 'hold_token', t }
@@ -197,14 +211,38 @@ const ORDER = ['applied', 'shortlisted', 'invited', 'role_read', 'agreed', 'payo
 const before = (stage: string, target: string) => ORDER.indexOf(stage) < ORDER.indexOf(target);
 const STAGE_WORDS: Record<string, string> = {
   applied: 'Applied', shortlisted: 'Shortlisted', invited: 'Invited', role_read: 'Role read', agreed: 'Agreement signed', payouts_ready: 'Payouts ready',
-  awaiting_access: 'Waiting on Instagram access', trial: 'Active (trial)', active: 'Active', paused: 'Paused', ended: 'Ended',
+  awaiting_access: 'Waiting on Business Suite access', trial: 'Active (trial)', active: 'Active', paused: 'Paused', ended: 'Ended',
 };
 async function payoutAccount(memberId: string) {
   const { data } = await db.from('ve_member_payout_accounts').select('*').eq('member_id', memberId).maybeSingle();
   return data;
 }
-// The quick check (step 2): three do's and don'ts, each with one right answer.
-const CHECK: Record<string, string> = { personal: 'write_each', limit: 'stop_at_limit', warning: 'pause_48' };
+// The quick check: three do's and don'ts, each with one right answer. The locked role (2026-11-19): who she invites from her own accounts,
+// how the account is reached (Business Suite, comments and messages only), and what she does with footage (sends it to Vegans Explore,
+// which edits and posts it; Sean 2026-11-19: "We're making those posts").
+const CHECK: Record<string, string> = { people: 'personal', account: 'business_suite', footage: 'send_us' };
+const isEmail = (v: string) => /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(v) && v.length <= 200;
+
+// Ready for access: the agreement signed, payouts ready and the Meta email given. Moves them to Waiting on access once and tells Sean what to do.
+async function maybeReady(pos: any, id: string) {
+  const { data: p } = await db.from('ve_position_people').select('*').eq('id', id).maybeSingle();
+  if (!p || !p.agreed_at || !p.payouts_ready_at || !p.meta_email) return false;
+  const moved = await advance(p.id, ['agreed', 'payouts_ready'], 'awaiting_access');
+  if (moved) await sendOne(SEAN_EMAIL, `${p.name || 'Your new team member'} is ready for Business Suite access`, wrap(
+    `<p style="margin:0 0 12px"><b>${esc(p.name || '')}</b> finished the start page for ${esc(pos.title)}: on board, agreement signed, payouts ready.</p>` +
+    `<ol style="margin:0 0 16px;padding-left:20px"><li>Meta Business Suite (business.facebook.com): Settings, People, Add people.</li>` +
+    `<li>Invite <b>${esc(p.meta_email)}</b> with <b>partial access</b> to the Vegans Explore Instagram account: Content, Messages and Comments only. Never full control.</li>` +
+    `<li>On their page, tap <b>Invite sent, start trial</b>.</li></ol>` + btn(`${CONSOLE}#person/${p.id}`, 'Open their page')));
+  return moved;
+}
+
+// The position as the start page reads it. A draft (posting_draft, agreement_draft_*) waits for Sean's lock: the page shows it marked
+// Draft and cannot sign it; signing stays on the live version until the draft is promoted (migration 20261118_positions_meta_email_and_v2_draft.sql).
+function positionOut(pos: any) {
+  return { slug: pos.slug, title: pos.title, summary: pos.summary, posting: pos.posting, pay_cents: pos.pay_cents, trial_days: pos.trial_days,
+    agreement: { version: pos.agreement_version, text: pos.agreement_text, sha: pos.agreement_sha256 },
+    draft: pos.agreement_draft_text ? { posting: pos.posting_draft || null, version: pos.agreement_draft_version, text: pos.agreement_draft_text } : null };
+}
 
 function startUrl(slug: string, step?: string) {
   return `${SITE}/positions/${slug}/start${step ? `?step=${step}` : ''}`;
@@ -225,8 +263,8 @@ async function personView(pos: any, p: any) {
   }
   return {
     id: p.id, name: p.name, email: p.email, stage: p.stage, stage_words: STAGE_WORDS[p.stage], path: p.path,
-    steps: { role: !!p.role_read_at, check: !!p.check_passed_at, agreement: !!p.agreed_at, payouts: !!p.payouts_ready_at, instagram: !!p.ig_handle, access: !!p.access_granted_at },
-    ig_handle: p.ig_handle, start_on: p.start_on, trial_review_on: p.trial_review_on, ended_on: p.ended_on,
+    steps: { role: !!p.role_read_at, check: !!p.check_passed_at, agreement: !!p.agreed_at, payouts: !!p.payouts_ready_at, instagram: !!p.ig_handle, meta: !!p.meta_email, access: !!p.access_granted_at },
+    ig_handle: p.ig_handle, meta_email: p.meta_email ?? null, start_on: p.start_on, trial_review_on: p.trial_review_on, ended_on: p.ended_on,
     agreement: agr?.[0] ?? null, payouts_account: acct ? { ready: acct.transfers_active, livemode: acct.livemode } : null,
     payouts: payouts || [], next_payout: preview,
   };
@@ -353,6 +391,388 @@ async function payOne(payoutId: string, live: boolean): Promise<'sent' | 'not_li
   return 'sent';
 }
 
+// ======== The position dashboard (/dashboard/position) and Ask Kai (Sean, 2026-11-19, the locked mock /mocks/kj-dashboard) ========
+// Data from the database, never the page: the role (ve_position_duties), briefs (ve_position_briefs), asks (ve_position_asks and
+// ve_position_ask_done), the Ask Kai thread (ve_position_kai); conversations from ve_reach_inbound (its taps go through ve-reach itself);
+// Your people from the holder's tracked links (ve_links / ve_link_clicks); the record from ve_reach_log, ve_reach_inbound and the payouts.
+// Kai (Sean: "intercept and answer whatever you can answer, and then just keep me up to date on the conversation... if you're ever not
+// sure, just reach out to me"): a Claude call answers as Kai; sure and not sensitive posts in her thread; otherwise her thread says Kai is
+// checking with Sean and Sean gets an email with a link to answer in the Reach console (Team). Asks replies, brief answers and ideas always
+// go to Sean with Kai acknowledging. Sean gets one summary email each morning of the day before's Kai conversations (the daily cron).
+const MODEL = 'claude-opus-5-5';
+const TEAM_CONSOLE = `${SITE}/admin/depot/reach?tab=team`;
+// The goal, LOCKED by Sean 2026-11-18 ("250, lock it in"; playbook ve-directory-reach): 250 members, 60 through the holder's links, 100 claims.
+const GOAL = { members: 250, holder_members: 60, claims: 100, by: '2026-12-31' };
+const KAI_CHECKING = 'I\'m checking with Sean, back soon.';
+const ACK: Record<string, string> = {
+  ask: 'Thank you. I passed your reply to Sean, and his answer will show up here.',
+  brief: 'Thank you for your answer. Sean reads every one, and anything he adds will show up here.',
+  idea: 'Love that you sent this. It is with Sean now, and his answer will show up here.',
+};
+// Anything about the holder's money, contracts, access, policy or promises always goes to Sean, whatever Kai thinks (the model also flags them).
+const SENSITIVE = /\b(my pay|paid|payout|payouts|payday|paycheck|money|stipend|raise|bonus|invoice|taxes|tax|1099|w-?9|stripe|salary|contract|agreement|legal|lawyer|liability|access|password|passwords|login|log in|permission|permissions|admin|business suite|policy|policies|promise|promised|guarantee|refund|discount|hire|hiring|fire|quit|terminate)\b/i;
+const FEEDBACK_KINDS = ['suggestion', 'broken', 'wrong', 'confusing', 'missing', 'idea', 'praise', 'other'];
+const REPORT_PARTS: Record<string, string> = { home: 'Home', role: 'Your role', conversations: 'Conversations', people: 'Your people', asks: 'Asks', ask: 'Ask Kai', briefs: 'Briefs', record: 'Your record', kit: 'Your kit' };
+const etDayOf = (iso: string) => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(iso));
+const mondayOf = (d: string) => addDays(d, -((toDate(d).getUTCDay() + 6) % 7));
+// Midnight Eastern at the start of a day, as an instant (EST or EDT, whichever that day is in).
+function etMidnight(d: string): string {
+  for (const h of [4, 5]) { const iso = `${d}T0${h}:00:00.000Z`; if (etDayOf(iso) === d && etDayOf(new Date(Date.parse(iso) - 3600000).toISOString()) !== d) return iso; }
+  return `${d}T05:00:00.000Z`;
+}
+
+async function holderLink(p: any, memberId: string | null) {
+  let code: string | null = p?.link_code || null;
+  if (!code && memberId) { const { data: c } = await db.from('ve_creator_dashboards').select('go_code').eq('member_id', memberId).maybeSingle(); code = c?.go_code || null; }
+  if (!code && memberId) {
+    const { data: m } = await db.from('members').select('referral_code').eq('id', memberId).maybeSingle();
+    if (m?.referral_code) { const { data: l } = await db.from('ve_links').select('code').ilike('destination', `%ref=${m.referral_code}%`).order('created_at').limit(1); code = l?.[0]?.code || null; }
+  }
+  if (!code) return null;
+  const { data: l } = await db.from('ve_links').select('id, code, active').eq('code', code).maybeSingle();
+  return l ? { id: l.id, code: l.code, url: `vegansexplore.com/go/${l.code}`, active: l.active } : null;
+}
+
+// Who the holder's links brought in: real clicks, the members those clicks are credited to, and the ones who joined after clicking.
+async function linkCredit(linkIds: string[], memberId: string | null, since: string) {
+  const out = { clicks: 0, credited: 0, joined: 0, joined_week: 0 };
+  if (!linkIds.length) return out;
+  const { data: clicks } = await db.from('ve_link_clicks').select('member_id, clicked_at').in('link_id', linkIds).eq('is_bot', false).limit(5000);
+  out.clicks = (clicks || []).length;
+  const first: Record<string, string> = {};
+  for (const c of clicks || []) if (c.member_id && c.member_id !== memberId && (!first[c.member_id] || c.clicked_at < first[c.member_id])) first[c.member_id] = c.clicked_at;
+  const ids = Object.keys(first);
+  if (!ids.length) return out;
+  const { data: ms } = await db.from('members').select('id, created_at, is_superadmin').in('id', ids);
+  for (const m of ms || []) {
+    if (m.is_superadmin) continue;
+    out.credited++;
+    // Joined through the link: the account was made after their first click (an hour's grace for the click landing after sign-up).
+    if (Date.parse(m.created_at) >= Date.parse(first[m.id]) - 3600000) { out.joined++; if (m.created_at >= since) out.joined_week++; }
+  }
+  return out;
+}
+
+function threadOut(rows: any[]) {
+  return (rows || []).map((r) => ({ id: r.id, author: r.author, topic: r.topic, ref_id: r.ref_id, body: r.body, at: r.created_at,
+    waiting: r.author === 'holder' && r.needs_sean && !r.answered_at }));
+}
+
+async function dashData(pos: any, p: any, member: any, preview: boolean) {
+  const today = todayET(), mon = mondayOf(today), since = etMidnight(mon);
+  const pid = p?.id || null, mid = member?.id || null;
+  const [duties, briefs, asks, done, thread, creator, inbound, members, claims] = await Promise.all([
+    db.from('ve_position_duties').select('id, kind, grp, grp_sort, grp_tag, tone, sort, body, step').eq('position_id', pos.id).eq('status', 'live').order('grp_sort').order('sort'),
+    db.from('ve_position_briefs').select('id, week_of, title, from_line, where_text, next_text, question, status, published_at').eq('position_id', pos.id).in('status', preview ? ['published', 'draft'] : ['published']).order('week_of', { ascending: false }).limit(12),
+    db.from('ve_position_asks').select('id, brief_id, title, body, link, due_text, sort, status').eq('position_id', pos.id).in('status', preview ? ['open', 'draft'] : ['open']).order('sort'),
+    pid ? db.from('ve_position_ask_done').select('ask_id, done_at').eq('person_id', pid) : Promise.resolve({ data: [] as any[] }),
+    pid ? db.from('ve_position_kai').select('*').eq('person_id', pid).order('created_at').limit(400) : Promise.resolve({ data: [] as any[] }),
+    mid ? db.from('ve_creator_dashboards').select('display_name, handle, city, people_slug, kit, go_code').eq('member_id', mid).maybeSingle() : Promise.resolve({ data: null as any }),
+    db.from('ve_reach_inbound').select('id, handle, grp, kind, status, note, listing_id, created_at, welcomed_by, welcomed_at').order('created_at', { ascending: false }).limit(200),
+    db.from('members').select('id', { count: 'exact', head: true }).or('is_superadmin.is.null,is_superadmin.eq.false'),
+    db.from('listings').select('id', { count: 'exact', head: true }).eq('status', 'approved').not('owner_member_id', 'is', null),
+  ]);
+  // Briefs and asks only show once Sean publishes them; the asks tied to a draft brief wait with it.
+  const pubBriefs = new Set((briefs.data || []).map((b: any) => b.id));
+  const askRows = (asks.data || []).filter((a: any) => !a.brief_id || pubBriefs.has(a.brief_id));
+  const th = thread.data || [];
+  const doneBy = new Map((done.data || []).map((d: any) => [d.ask_id, d.done_at]));
+  const replied = (topic: string, id: string) => th.some((m: any) => m.author === 'holder' && m.topic === topic && m.ref_id === id);
+  // Inbound: everyone not done first, oldest first (as the Reach console orders them), then the most recent done.
+  const ib = inbound.data || [];
+  const lids = [...new Set(ib.map((x: any) => x.listing_id).filter(Boolean))];
+  const { data: ls } = lids.length ? await db.from('listings').select('id, slug, name, logo_url').in('id', lids) : { data: [] as any[] };
+  const lBy = new Map((ls || []).map((l: any) => [l.id, l]));
+  const open = ib.filter((x: any) => x.status !== 'done').reverse(), closed = ib.filter((x: any) => x.status === 'done').slice(0, 20);
+  const conv = [...open, ...closed].map((x: any) => ({ ...x, listing: x.listing_id ? lBy.get(x.listing_id) || null : null, mine: !!mid && x.welcomed_by === mid }));
+  // Links: the holder's own link, plus the personal links made for the people they answered (ve-reach, created_by them).
+  const link = await holderLink(p, mid);
+  const { data: made } = mid ? await db.from('ve_links').select('id, created_at').eq('created_by', mid).eq('initiative_slug', 'directory-reach-2026') : { data: [] as any[] };
+  const credit = await linkCredit([...(link ? [link.id] : []), ...(made || []).map((l: any) => l.id)], mid, since);
+  const own = link ? await linkCredit([link.id], mid, since) : { clicks: 0, credited: 0, joined: 0, joined_week: 0 };
+  // The record, by week (Monday to Sunday, Eastern), from the holder's own taps.
+  const from4 = etMidnight(addDays(mon, -21));
+  const [logs, welcomed] = mid ? await Promise.all([
+    db.from('ve_reach_log').select('kind, at').eq('member_id', mid).gte('at', from4),
+    db.from('ve_reach_inbound').select('welcomed_at').eq('welcomed_by', mid).gte('welcomed_at', from4),
+  ]) : [{ data: [] as any[] }, { data: [] as any[] }];
+  const weeks = [0, 1, 2, 3].map((i) => addDays(mon, -7 * i)).map((w) => {
+    const a = etMidnight(w), b = etMidnight(addDays(w, 7)), inW = (t: string) => t >= a && t < b;
+    return { week_of: w,
+      answered: (welcomed.data || []).filter((x: any) => x.welcomed_at && inW(x.welcomed_at)).length + (logs.data || []).filter((x: any) => x.kind === 'replied' && inW(x.at)).length,
+      links: (made || []).filter((x: any) => inW(x.created_at)).length + (logs.data || []).filter((x: any) => x.kind === 'page_sent' && inW(x.at)).length };
+  });
+  const kit = creator.data?.kit || {};
+  const avatar = creator.data?.people_slug && kit.avatar ? `${SUPABASE_URL}/storage/v1/object/public/vegan-media/media/people/${creator.data.people_slug}/${kit.avatar}` : (member?.avatar_url || null);
+  const t = todayET(); const s = nextStretch(t, t, null);
+  const pay = pid ? await personView(pos, p) : { stage: 'invited', stage_words: STAGE_WORDS.invited, steps: {}, next_payout: { ...s, amount_cents: amountFor(pos.pay_cents, s.days), if_started_today: true }, payouts: [] };
+  return {
+    preview, today, week_of: mon,
+    position: { slug: pos.slug, title: pos.title, pay_cents: pos.pay_cents },
+    who: { name: creator.data?.display_name || firstName(member?.name || p?.name || ''), full_name: member?.name || p?.name || null, avatar, region: p?.region || null,
+      handle: creator.data?.handle || p?.ig_handle || null, city: creator.data?.city || null, has_creator_kit: !!creator.data },
+    person: { id: pid, stage: (pay as any).stage, stage_words: (pay as any).stage_words, steps: (pay as any).steps, start_on: p?.start_on || null,
+      next_payout: (pay as any).next_payout, payouts: ((pay as any).payouts || []).map((x: any) => ({ pay_on: x.pay_on, covers_from: x.covers_from, covers_to: x.covers_to, amount_cents: x.amount_cents, status: x.status })) },
+    duties: (duties.data || []).map((d: any) => ({ ...d, done: d.step === 'link' ? !!link : d.step && d.step !== 'pages' ? !!(pay as any).steps?.[d.step] : null })),
+    briefs: (briefs.data || []).map((b: any) => ({ ...b, asks: askRows.filter((a: any) => a.brief_id === b.id).map((a: any) => a.title), answered: replied('brief', b.id) })),
+    asks: askRows.map((a: any) => ({ ...a, done: doneBy.has(a.id), replied: replied('ask', a.id) })),
+    thread: threadOut(th),
+    goal: { members: members.count || 0, members_goal: GOAL.members, holder_members: credit.joined, holder_goal: GOAL.holder_members, claims: claims.count || 0, claims_goal: GOAL.claims, by: GOAL.by },
+    link, people: { own, all: credit },
+    conversations: conv, open_conversations: open.length,
+    record: { weeks, answered_week: weeks[0].answered, links_week: weeks[0].links, members_all: credit.joined },
+  };
+}
+
+// ---- Kai ----
+const KAI_RULES = `Locked rules (Sean's; never contradict them):
+- Membership is free; a short survey is the only way in. Founding Member closes at midnight Eastern on January 1, 2027. The $11 is an optional give. Claiming a listing is free for members; the owner's dashboard walks them through it with Liz, our Guide.
+- Never promise anything that is not built; say it is coming.
+- Listings and businesses are contacted through @vegansexplore only, so those relationships stay with the brand. The holder may invite people they know personally, from their own accounts, with their own link.
+- The holder never posts, edits or deletes anything on @vegansexplore, never touches its profile, settings or password, and never starts cold messages from @vegansexplore. They answer comments and messages as Vegans Explore in Business Suite (messages and comments only).
+- The holder does not make Vegans Explore's posts and has no weekly post to do. They send footage and ideas; Vegans Explore edits everything in its own style, posts it and invites them to collab. What they post on their own accounts stays theirs.
+- In person means signing people up at events in their home city. There is no travel and there are no event budgets; never offer or suggest either.
+- Managed services (sites, photos, video, social, PR) are sold by LESARUSS.ai, not Vegans Explore.
+- Writing: never use em-dashes; "Vegan" is always capitalized; businesses are written about in the third person.`;
+
+async function kaiAnswer(pos: any, p: any, text: string, history: any[]) {
+  const key = await secret('ANTHROPIC_API_KEY');
+  if (!key) throw new Error('no model key');
+  const [{ data: duties }, { data: pb }, { data: brief }, { data: asks }] = await Promise.all([
+    db.from('ve_position_duties').select('kind, grp, body').eq('position_id', pos.id).eq('status', 'live').order('grp_sort').order('sort'),
+    db.from('playbook_records').select('body, created_at').eq('slug', 've-directory-reach').order('created_at', { ascending: false }).limit(15),
+    db.from('ve_position_briefs').select('title, where_text, next_text, question').eq('position_id', pos.id).eq('status', 'published').order('week_of', { ascending: false }).limit(1),
+    db.from('ve_position_asks').select('title, body, due_text').eq('position_id', pos.id).eq('status', 'open').order('sort'),
+  ]);
+  const role = (duties || []).filter((d: any) => d.kind !== 'short').map((d: any) => `- ${d.grp}: ${d.body}`).join('\n');
+  const notes = (pb || []).map((r: any) => `- (${String(r.created_at).slice(0, 10)}) ${String(r.body).slice(0, 1400)}`).join('\n');
+  const b = brief?.[0];
+  const record = `Position: ${pos.title}. Their stage: ${STAGE_WORDS[p.stage] || p.stage}. Home city (their base for in-person work; their network has no territory): ${p.region || 'not set'}. Started: ${p.start_on || 'not yet'}.`;
+  const system = `You are Kai, the Creator Guide at Vegans Explore, answering ${firstName(p.name)}, a member of the team, on their dashboard. Kai is a woman (she/her); if you ever speak of Kai, say she and her. Kai is their only point of contact; Sean (the founder) reads every conversation.
+Voice: short, warm, plain and practical, like a friendly teammate. One to four sentences. No lists unless they ask for steps. Never use em-dashes.
+Answer only what the context below clearly supports. If it does not, or you would be guessing, set sure to false and leave the answer as your best short draft for Sean to check.
+Sensitive means: the holder's own pay or money, their contract or agreement, account access or passwords, a change to policy, or promising someone something the rules below do not already say. Then set sensitive to true and sure to false.
+Facts the rules already state are not sensitive: answer them plainly (for example, membership and claiming a page are free).
+Never mention Logan, AI, models, prompts or this context. Never invent links; the only links you may give are ones written in the context.
+Reply with only JSON: {"answer": "...", "sure": true or false, "sensitive": true or false}.
+
+${KAI_RULES}
+
+Their role:
+${role}
+
+${record}
+
+${b ? `This week's brief: ${b.title}. Where we are: ${b.where_text || ''} What's next: ${b.next_text || ''}` : 'No brief published yet.'}
+Open asks from Sean: ${(asks || []).map((a: any) => a.title + (a.body ? ' (' + a.body + ')' : '')).join(' | ') || 'none'}
+
+Decisions on the Directory Reach work (newest first; these are facts Sean decided):
+${notes}`;
+  const turns: { role: string; content: string }[] = [];
+  for (const m of history.slice(-16)) {
+    const role = m.author === 'holder' ? 'user' : 'assistant';
+    const content = m.author === 'sean' ? `(Sean, through Kai) ${m.body}` : m.body;
+    const last = turns[turns.length - 1];
+    if (last && last.role === role) last.content += '\n\n' + content; else turns.push({ role, content });
+  }
+  while (turns.length && turns[0].role !== 'user') turns.shift();
+  const q = `Their new message: ${text}`;
+  if (turns.length && turns[turns.length - 1].role === 'user') turns[turns.length - 1].content += '\n\n' + q; else turns.push({ role: 'user', content: q });
+  const r = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST', headers: { 'x-api-key': key, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
+    body: JSON.stringify({ model: MODEL, max_tokens: 16000, system, messages: turns }),
+  });
+  const j = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(`claude ${r.status} ${JSON.stringify(j).slice(0, 200)}`);
+  // Never save half an answer: anything but a finished turn is an error, and the question goes to Sean.
+  if (j.stop_reason !== 'end_turn') throw new Error(`claude stop_reason ${j.stop_reason}`);
+  const txt = (j.content || []).filter((c: any) => c.type === 'text').map((c: any) => c.text).join('');
+  const a = txt.indexOf('{'), z = txt.lastIndexOf('}');
+  if (a < 0 || z < a) throw new Error('claude: no json');
+  const o = JSON.parse(txt.slice(a, z + 1));
+  return { answer: clean(String(o.answer || ''), 3000), sure: o.sure === true, sensitive: o.sensitive === true, model: String(j.model || MODEL) };
+}
+
+async function tellSean(p: any, mine: any, topic: string, refTitle: string | null, why: string | null, draft: string | null) {
+  const who = p.name || 'Your team member';
+  const subj = topic === 'chat' ? `Kai needs you: ${firstName(who)} asked something` : topic === 'ask' ? `${firstName(who)} replied to an ask` : topic === 'brief' ? `${firstName(who)} answered the brief` : `${firstName(who)} sent an idea`;
+  const id = await sendOne(SEAN_EMAIL, subj, wrap(
+    `<p style="margin:0 0 12px"><b>${esc(who)}</b>${refTitle ? `, on <b>${esc(refTitle)}</b>` : ''}:</p>` +
+    `<div style="white-space:pre-wrap;margin:0 0 12px;padding:12px;background:#f3f7f4;border-radius:6px">${esc(mine.body)}</div>` +
+    (why ? `<p style="margin:0 0 12px;color:#555">Kai held this for you: ${esc(why)}. Their thread says Kai is checking with you.</p>` : `<p style="margin:0 0 12px;color:#555">Kai thanked them and said your answer will show up in their thread.</p>`) +
+    (draft ? `<p style="margin:0 0 6px;font-size:13px;color:#555">Kai's draft (not sent):</p><div style="white-space:pre-wrap;margin:0 0 12px;padding:10px;border:1px dashed #bbb;border-radius:6px;font-size:14px">${esc(draft)}</div>` : '') +
+    btn(`${TEAM_CONSOLE}&person=${p.id}#m-${mine.id}`, 'Answer in the console')));
+  if (id) await db.from('ve_position_kai').update({ emailed_at: nowIso() }).eq('id', mine.id);
+}
+
+async function kaiSend(pos: any, p: any, text: string, topic: 'chat' | 'ask' | 'brief' | 'idea', refId: string | null, refTitle: string | null) {
+  const { data: history } = await db.from('ve_position_kai').select('author, body, created_at').eq('person_id', p.id).order('created_at', { ascending: false }).limit(16);
+  const { data: mine, error } = await db.from('ve_position_kai').insert({ person_id: p.id, author: 'holder', topic, ref_id: refId, body: text, needs_sean: topic !== 'chat' }).select('*').single();
+  if (error || !mine) throw new Error('save_failed');
+  if (topic !== 'chat') {
+    await db.from('ve_position_kai').insert({ person_id: p.id, author: 'kai', topic, ref_id: refId, body: ACK[topic], reply_to: mine.id });
+    await tellSean(p, mine, topic, refTitle, null, null);
+    return { sent_to_sean: true };
+  }
+  let out: Awaited<ReturnType<typeof kaiAnswer>> | null = null, why: string | null = null;
+  if (SENSITIVE.test(text) || /\$\s?\d/.test(text)) why = 'it is about money, contracts, access, policy or a promise';
+  try { out = await kaiAnswer(pos, p, text, (history || []).reverse()); } catch (e) { console.error('kai', String(e)); if (!why) why = 'Kai could not answer this one'; }
+  if (!why && out && out.sensitive) why = 'it is about money, contracts, access, policy or a promise';
+  if (!why && out && !out.sure) why = 'Kai was not sure';
+  if (!why && out && !out.answer) why = 'Kai had no answer';
+  if (!why && out) {
+    await db.from('ve_position_kai').insert({ person_id: p.id, author: 'kai', topic, body: out.answer, sure: true, reply_to: mine.id, model: out.model });
+    await db.from('ve_position_kai').update({ answered_at: nowIso() }).eq('id', mine.id);
+    return { answered: true };
+  }
+  await db.from('ve_position_kai').update({ needs_sean: true }).eq('id', mine.id);
+  await db.from('ve_position_kai').insert({ person_id: p.id, author: 'kai', topic, body: KAI_CHECKING, sure: false, reply_to: mine.id, model: out?.model || null });
+  await tellSean(p, mine, topic, null, why, out?.answer || null);
+  return { checking: true };
+}
+
+// The once-a-day summary for Sean: every Kai conversation on one day (Eastern), sent once (ve_position_events 'kai_digest').
+async function kaiDigest(day: string) {
+  const { data: sent } = await db.from('ve_position_events').select('id').eq('action', 'kai_digest').eq('detail->>day', day).limit(1);
+  if (sent?.length) return { sent: false, already: true };
+  const { data: rows } = await db.from('ve_position_kai').select('person_id, author, topic, body, needs_sean, answered_at, created_at')
+    .gte('created_at', etMidnight(day)).lt('created_at', etMidnight(addDays(day, 1))).order('created_at');
+  if (!rows?.length) return { sent: false, n: 0 };
+  const pids: string[] = [...new Set<string>(rows.map((r: any) => String(r.person_id)))];
+  const { data: ps } = await db.from('ve_position_people').select('id, name').in('id', pids);
+  const nameBy = new Map<string, string>((ps || []).map((x: any) => [String(x.id), String(x.name || 'Team member')]));
+  const waiting = rows.filter((r: any) => r.author === 'holder' && r.needs_sean && !r.answered_at).length;
+  const time = (iso: string) => new Intl.DateTimeFormat('en-US', { timeZone: 'America/New_York', hour: 'numeric', minute: '2-digit' }).format(new Date(iso));
+  const who = (r: any, pid: string) => r.author === 'holder' ? esc(firstName((nameBy.get(pid) || ''))) : r.author === 'sean' ? 'You, through Kai' : 'Kai';
+  const blocks = pids.map((pid) => `<h3 style="margin:16px 0 6px;font-size:16px">${esc((nameBy.get(pid) || ''))}</h3>` + rows.filter((r: any) => r.person_id === pid).map((r: any) =>
+    `<p style="margin:0 0 6px"><b>${who(r, pid)}</b> <span style="color:#777;font-size:12px">${time(r.created_at)}${r.topic !== 'chat' ? ', ' + r.topic : ''}</span><br>${esc(String(r.body).slice(0, 800))}</p>`).join('')).join('');
+  const id = await sendOne(SEAN_EMAIL, `Kai's day, ${nice(day)}: ${rows.length} message${rows.length === 1 ? '' : 's'}${waiting ? `, ${waiting} waiting on you` : ''}`, wrap(
+    `<p style="margin:0 0 12px">Every Kai conversation on ${nice(day)} (Eastern).${waiting ? ` <b>${waiting} still waiting on your answer.</b>` : ''}</p>${blocks}` + btn(TEAM_CONSOLE, 'Open the console')));
+  if (id) await log(null, 'cron', 'kai_digest', { day, n: rows.length, waiting });
+  return { sent: !!id, n: rows.length };
+}
+
+// Report something: into ve_feedback exactly like the site's Feedback button, with an optional screenshot saved beside feedback's voice notes.
+async function report(req: Request, me: any, body: any) {
+  const message = clean(body.message, 3000);
+  const page = clean(body.page_url, 500);
+  if (message.length < 5) return json({ error: 'message_needed', message: 'Tell us what looks off, in a few words.' }, 400);
+  if (!/^https?:\/\//i.test(page)) return json({ error: 'page_needed' }, 400);
+  let shot = '';
+  if (typeof body.shot === 'string' && body.shot.length > 100) {
+    if (body.shot.length > 7_000_000) return json({ error: 'shot_too_big', message: 'That screenshot is too big. Try a smaller one.' }, 413);
+    const m = /^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/=]+)$/.exec(body.shot);
+    if (!m) return json({ error: 'bad_shot', message: 'Attach a PNG, JPEG or WebP picture.' }, 400);
+    const bin = atob(m[2]); const bytes = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    const ext = m[1] === 'jpeg' ? 'jpg' : m[1];
+    const path = `media/feedback/shots/${todayET()}/${crypto.randomUUID()}.${ext}`;
+    const up = await db.storage.from('vegan-media').upload(path, bytes, { contentType: `image/${m[1]}`, upsert: false });
+    if (up.error) { console.error('shot upload', up.error.message); return json({ error: 'save_failed', message: 'The screenshot did not upload. Try again.' }, 500); }
+    shot = `${SUPABASE_URL}/storage/v1/object/public/vegan-media/${path}`;
+  }
+  const part = REPORT_PARTS[String(body.part || '')] || 'Dashboard';
+  const kind = FEEDBACK_KINDS.includes(String(body.kind)) ? String(body.kind) : 'other';
+  const row = { kind, page_url: page, page_label: `Position dashboard: ${part}`, message: message + (shot ? `\n\nScreenshot: ${shot}` : ''), email: me.email || null, name: me.name || null,
+    visitor: null, member_signed_in: true, user_agent: clean(req.headers.get('user-agent'), 300) || null, viewport: clean(body.viewport, 20) || null };
+  const ins = await db.from('ve_feedback').insert(row).select('id').single();
+  if (ins.error) return json({ error: 'save_failed' }, 500);
+  // The same notice the Feedback button sends, unless Sean has feedback gathered into the daily digest.
+  const { data: fs } = await db.from('ve_site_settings').select('value').eq('key', 'feedback').maybeSingle();
+  if ((fs?.value as any)?.digest !== true) await sendOne(SEAN_EMAIL, `[Feedback] Reported on the position dashboard: ${part}`, wrap(
+    `<p style="margin:0 0 4px"><b>Page:</b> <a href="${esc(page)}">${esc(row.page_label)}</a></p><div style="white-space:pre-wrap;margin:12px 0;padding:12px;background:#f3f7f4;border-radius:6px">${esc(row.message)}</div>` +
+    `<p style="margin:0 0 12px;color:#444;font-size:13px">From ${esc(me.name || 'a team member')}, signed in.</p>` + btn(`${SITE}/admin/depot/feedback#item/${ins.data.id}`, 'Open it in the Depot')));
+  return json({ ok: true, id: ins.data.id });
+}
+
+// The team view in the Reach console: briefs, asks, threads, and what waits on Sean.
+async function adminTeam(slug: string) {
+  const pos = await positionBySlug(slug);
+  if (!pos) return null;
+  const [{ data: briefs }, { data: asks }, { data: people }] = await Promise.all([
+    db.from('ve_position_briefs').select('*').eq('position_id', pos.id).neq('status', 'retired').order('week_of', { ascending: false }).limit(20),
+    db.from('ve_position_asks').select('*').eq('position_id', pos.id).neq('status', 'retired').order('sort'),
+    db.from('ve_position_people').select('id, name, stage, region').eq('position_id', pos.id).neq('stage', 'ended'),
+  ]);
+  const ids = (people || []).map((x: any) => x.id);
+  const { data: msgs } = ids.length ? await db.from('ve_position_kai').select('*').in('person_id', ids).order('created_at', { ascending: false }).limit(300) : { data: [] as any[] };
+  const { data: dones } = ids.length ? await db.from('ve_position_ask_done').select('ask_id, person_id, done_at').in('person_id', ids) : { data: [] as any[] };
+  return { position: { slug: pos.slug, title: pos.title }, briefs: briefs || [], asks: (asks || []).map((a: any) => ({ ...a, done_by: (dones || []).filter((d: any) => d.ask_id === a.id).length })),
+    people: (people || []).map((x: any) => ({ ...x, stage_words: STAGE_WORDS[x.stage], waiting: (msgs || []).filter((m: any) => m.person_id === x.id && m.author === 'holder' && m.needs_sean && !m.answered_at).length })),
+    waiting: (msgs || []).filter((m: any) => m.author === 'holder' && m.needs_sean && !m.answered_at).reverse().map((m: any) => ({ ...m, name: (people || []).find((x: any) => x.id === m.person_id)?.name || null })),
+    threads: Object.fromEntries(ids.map((id: string) => [id, threadOut((msgs || []).filter((m: any) => m.person_id === id).reverse())])) };
+}
+
+
+// The four Team actions in the Reach console (super admin, or ops for proofs).
+async function adminDash(action: string, body: any, actor: string, actorId: string | null): Promise<Response | null> {
+  if (action === 'admin_team') {
+    const t = await adminTeam(isSlug(body.slug) ? body.slug : 'social-media-manager-instagram');
+    return t ? json({ ok: true, ...t }) : json({ error: 'not_found' }, 404);
+  }
+  if (action === 'admin_brief_save') {
+    const pos = await positionBySlug(isSlug(body.slug) ? body.slug : 'social-media-manager-instagram');
+    if (!pos) return json({ error: 'not_found' }, 404);
+    const status = ['draft', 'published', 'retired'].includes(body.status) ? body.status : 'draft';
+    const week = /^\d{4}-\d{2}-\d{2}$/.test(String(body.week_of || '')) ? body.week_of : mondayOf(todayET());
+    const row: Record<string, unknown> = { week_of: week, title: clean(body.title, 200), where_text: clean(body.where_text, 3000) || null, next_text: clean(body.next_text, 3000) || null,
+      question: clean(body.question, 1000) || null, status, updated_at: nowIso() };
+    if (!row.title) return json({ error: 'title_needed', message: 'Give the brief a title.' }, 400);
+    let id = isId(body.id) ? body.id : null, before: any = null;
+    if (id) {
+      before = (await db.from('ve_position_briefs').select('status, published_at').eq('id', id).eq('position_id', pos.id).maybeSingle()).data;
+      if (!before) return json({ error: 'not_found' }, 404);
+      if (status === 'published' && !before.published_at) row.published_at = nowIso();
+      const { error } = await db.from('ve_position_briefs').update(row).eq('id', id);
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    } else {
+      if (status === 'published') row.published_at = nowIso();
+      const { data, error } = await db.from('ve_position_briefs').insert({ ...row, position_id: pos.id, created_by: actorId }).select('id').single();
+      if (error) return json({ error: 'save_failed', message: error.message }, 500);
+      id = data.id;
+    }
+    // Publishing a brief opens the asks written with it.
+    if (status === 'published') await db.from('ve_position_asks').update({ status: 'open', updated_at: nowIso() }).eq('brief_id', id).eq('status', 'draft');
+    await log(null, actor, 'brief_' + status, { id, title: row.title });
+    return json({ ok: true, id });
+  }
+  if (action === 'admin_ask_save') {
+    const pos = await positionBySlug(isSlug(body.slug) ? body.slug : 'social-media-manager-instagram');
+    if (!pos) return json({ error: 'not_found' }, 404);
+    const link = clean(body.link, 500);
+    const row: Record<string, unknown> = { title: clean(body.title, 300), body: clean(body.body, 2000) || null, link: /^(https?:\/\/|\/)/.test(link) ? link : null,
+      due_text: clean(body.due_text, 60) || null, sort: Number.isFinite(+body.sort) ? Math.round(+body.sort) : 0,
+      status: ['draft', 'open', 'retired'].includes(body.status) ? body.status : 'open', brief_id: isId(body.brief_id) ? body.brief_id : null, updated_at: nowIso() };
+    if (!row.title) return json({ error: 'title_needed', message: 'Write the ask.' }, 400);
+    if (isId(body.id)) {
+      const { data, error } = await db.from('ve_position_asks').update(row).eq('id', body.id).eq('position_id', pos.id).select('id');
+      if (error || !data?.length) return json({ error: 'save_failed' }, 500);
+      await log(null, actor, 'ask_saved', { id: body.id, status: row.status });
+      return json({ ok: true, id: body.id });
+    }
+    const { data, error } = await db.from('ve_position_asks').insert({ ...row, position_id: pos.id, created_by: actorId }).select('id').single();
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    await log(null, actor, 'ask_saved', { id: data.id, status: row.status });
+    return json({ ok: true, id: data.id });
+  }
+  if (action === 'admin_kai_answer') {
+    const text = clean(body.text, 4000);
+    if (text.length < 2) return json({ error: 'text_needed', message: 'Write your answer first.' }, 400);
+    let personId = isId(body.person_id) ? body.person_id : null, replyTo: string | null = null, topic = 'chat', ref: string | null = null;
+    if (isId(body.message_id)) {
+      const { data: m } = await db.from('ve_position_kai').select('id, person_id, topic, ref_id, author').eq('id', body.message_id).maybeSingle();
+      if (!m || m.author !== 'holder') return json({ error: 'not_found' }, 404);
+      personId = m.person_id; replyTo = m.id; topic = m.topic; ref = m.ref_id;
+    }
+    if (!personId) return json({ error: 'bad_request' }, 400);
+    const { error } = await db.from('ve_position_kai').insert({ person_id: personId, author: 'sean', topic, ref_id: ref, body: text, reply_to: replyTo });
+    if (error) return json({ error: 'save_failed', message: error.message }, 500);
+    if (replyTo) await db.from('ve_position_kai').update({ answered_at: nowIso() }).eq('id', replyTo);
+    await log(personId, actor, 'kai_answer', { reply_to: replyTo });
+    return json({ ok: true });
+  }
+  return null;
+}
+
 // ---- Admin views ----
 async function adminList() {
   const { data: positions } = await db.from('ve_positions').select('id, slug, title, summary, pay_cents, period_days, trial_days, mode, status, apply_by, max_holders').order('created_at');
@@ -375,7 +795,9 @@ Deno.serve(async (req) => {
     const cs = await secret('CRON_SECRET');
     const c = req.headers.get('x-cron-secret');
     if (!((c && cs && c === cs) || (await isOps(req)))) return json({ error: 'forbidden' }, 403);
-    try { return json({ ok: true, ...(await cron()) }); } catch (e) { console.error('cron', e); return json({ error: 'cron_failed', message: String(e) }, 500); }
+    let kai: unknown = null;
+    try { kai = await kaiDigest(addDays(todayET(), -1)); } catch (e) { console.error('kai digest', e); kai = { error: String(e) }; }
+    try { return json({ ok: true, ...(await cron()), kai_digest: kai }); } catch (e) { console.error('cron', e); return json({ error: 'cron_failed', message: String(e), kai_digest: kai }, 500); }
   }
 
   if (action === 'hold_token') {
@@ -391,6 +813,92 @@ Deno.serve(async (req) => {
     return json({ ok: true, held: true });
   }
 
+  // The start page as Sean reviews it: the real position text (and its drafts), an empty checklist, nothing written.
+  if (action === 'preview') {
+    const ops = await isOps(req);
+    const v = ops ? null : await viewer(req);
+    if (!ops && !v?.is_superadmin) return json({ error: 'forbidden' }, 403);
+    if (!isSlug(body.slug)) return json({ error: 'bad_request' }, 400);
+    const pos = await positionBySlug(body.slug);
+    if (!pos) return json({ error: 'not_found' }, 404);
+    const t = todayET(); const s = nextStretch(t, t, null);
+    return json({ ok: true, preview: true, position: positionOut(pos), person: {
+      id: null, name: 'Preview', stage: 'invited', stage_words: STAGE_WORDS.invited, path: 'assigned',
+      steps: { role: false, check: false, agreement: false, payouts: false, instagram: false, meta: false, access: false },
+      ig_handle: null, meta_email: null, start_on: null, trial_review_on: null, ended_on: null, agreement: null, payouts_account: null, payouts: [],
+      next_payout: { ...s, amount_cents: amountFor(pos.pay_cents, s.days), if_started_today: true } } });
+  }
+
+  // ======== The position dashboard (/dashboard/position) ========
+  // The holder sees their own; a super admin previews any holder with { as: <member id or creator slug> } (nothing saves); ops act as one
+  // holder row ({ person_id }) for proofs from SQL.
+  if (['dash', 'kai_send', 'ask_reply', 'ask_done', 'brief_answer', 'idea', 'report'].includes(action)) {
+    const ops = await isOps(req);
+    const v = ops ? null : await viewer(req);
+    if (!ops && !v) return json({ error: 'sign_in' }, 401);
+    let p: any = null, member: any = v, preview = false;
+    const mcols = 'id, name, email, avatar_url, is_superadmin, membership_status';
+    if (ops && isId(body.person_id)) {
+      p = (await db.from('ve_position_people').select('*').eq('id', body.person_id).maybeSingle()).data;
+      if (!p) return json({ error: 'not_found' }, 404);
+      member = p.member_id ? (await db.from('members').select(mcols).eq('id', p.member_id).maybeSingle()).data : { id: null, name: p.name, email: null };
+    } else if (body.as && (ops || v?.is_superadmin)) {
+      preview = true;
+      const as = clean(String(body.as), 80);
+      let mid: string | null = isId(as) ? as : null;
+      if (!mid) mid = (await db.from('ve_creator_dashboards').select('member_id').eq('slug', as).maybeSingle()).data?.member_id || null;
+      if (!mid) return json({ error: 'not_found', message: 'No member by that id or creator slug.' }, 404);
+      member = (await db.from('members').select(mcols).eq('id', mid).maybeSingle()).data;
+      if (!member) return json({ error: 'not_found' }, 404);
+      p = (await db.from('ve_position_people').select('*').eq('member_id', mid).neq('stage', 'ended').order('created_at', { ascending: false }).limit(1)).data?.[0] || null;
+    } else if (v) {
+      p = (await db.from('ve_position_people').select('*').eq('member_id', v.id).neq('stage', 'ended').order('created_at', { ascending: false }).limit(1)).data?.[0] || null;
+      if (!p) return json({ error: 'not_holder', message: 'This dashboard is for the Vegans Explore team. If you hold a position, sign in with the account it was given to.' }, 403);
+    } else return json({ error: 'bad_request' }, 400);
+    const pos = p ? (await db.from('ve_positions').select('*').eq('id', p.position_id).maybeSingle()).data : await positionBySlug(isSlug(body.slug) ? body.slug : 'social-media-manager-instagram');
+    if (!pos) return json({ error: 'not_found' }, 404);
+    if (action === 'dash') return json({ ok: true, ...(await dashData(pos, p, member, preview)) });
+    // Report something works in a preview too (it is feedback from whoever is looking); everything else saves only for the holder.
+    if (action === 'report') return await report(req, preview ? v || { name: 'Ops preview', email: null } : { name: member?.name || p?.name, email: member?.email || null }, body);
+    if (preview || !p) return json({ error: 'preview', message: 'Preview: nothing is saved.' }, 409);
+    if (action === 'ask_done') {
+      if (!isId(body.ask_id)) return json({ error: 'bad_request' }, 400);
+      const { data: a } = await db.from('ve_position_asks').select('id').eq('id', body.ask_id).eq('position_id', pos.id).eq('status', 'open').maybeSingle();
+      if (!a) return json({ error: 'not_found' }, 404);
+      if (body.done === false) await db.from('ve_position_ask_done').delete().eq('ask_id', a.id).eq('person_id', p.id);
+      else await db.from('ve_position_ask_done').upsert({ ask_id: a.id, person_id: p.id }, { onConflict: 'ask_id,person_id', ignoreDuplicates: true });
+      return json({ ok: true });
+    }
+    const text = clean(body.text, 4000);
+    if (text.length < 2) return json({ error: 'text_needed', message: 'Write a few words first.' }, 400);
+    const { count } = await db.from('ve_position_kai').select('id', { count: 'exact', head: true }).eq('person_id', p.id).eq('author', 'holder').gte('created_at', etMidnight(todayET()));
+    if ((count || 0) >= 60) return json({ error: 'daily_limit', message: 'That is a lot for one day. Kai will pick up tomorrow; anything urgent, Sean already sees.' }, 429);
+    try {
+      if (action === 'kai_send') return json({ ok: true, ...(await kaiSend(pos, p, text, 'chat', null, null)) });
+      if (action === 'idea') return json({ ok: true, ...(await kaiSend(pos, p, text, 'idea', null, null)) });
+      if (action === 'ask_reply') {
+        if (!isId(body.ask_id)) return json({ error: 'bad_request' }, 400);
+        const { data: a } = await db.from('ve_position_asks').select('id, title').eq('id', body.ask_id).eq('position_id', pos.id).eq('status', 'open').maybeSingle();
+        if (!a) return json({ error: 'not_found' }, 404);
+        return json({ ok: true, ...(await kaiSend(pos, p, text, 'ask', a.id, a.title)) });
+      }
+      if (action === 'brief_answer') {
+        if (!isId(body.brief_id)) return json({ error: 'bad_request' }, 400);
+        const { data: b } = await db.from('ve_position_briefs').select('id, title').eq('id', body.brief_id).eq('position_id', pos.id).eq('status', 'published').maybeSingle();
+        if (!b) return json({ error: 'not_found' }, 404);
+        return json({ ok: true, ...(await kaiSend(pos, p, text, 'brief', b.id, b.title)) });
+      }
+    } catch (e) {
+      console.error('kai send', String(e));
+      return json({ error: 'save_failed', message: 'That did not send. Try again in a moment.' }, 500);
+    }
+    return json({ error: 'unknown_action' }, 400);
+  }
+
+  if (['admin_team', 'admin_brief_save', 'admin_ask_save', 'admin_kai_answer'].includes(action) && (await isOps(req))) {
+    return (await adminDash(action, body, 'ops', null))!;
+  }
+
   const me = await viewer(req);
   if (!me) return json({ error: 'sign_in' }, 401);
 
@@ -400,6 +908,8 @@ Deno.serve(async (req) => {
     const actor = me.email || me.id;
 
     if (action === 'admin_list') return json({ ok: true, ...(await adminList()) });
+
+    { const r = await adminDash(action, body, actor, me.id); if (r) return r; }
 
     if (action === 'admin_search') {
       const q = clean(body.q, 80).replace(/[%_,()]/g, ' ').trim();
@@ -431,7 +941,7 @@ Deno.serve(async (req) => {
         await db.from('ve_links').upsert({ code, label: `${pos.title}: invite for ${m.name || m.email}`, destination: startUrl(pos.slug), initiative_slug: `position-${pos.slug}`,
           tags: ['positions', pos.slug, 'invite'], channel: 'email', recipient_member_id: m.id, recipient_email: m.email, recipient_name: m.name, active: true }, { onConflict: 'code', ignoreDuplicates: true });
         const { data: ins, error } = await db.from('ve_position_people').insert({ position_id: pos.id, member_id: m.id, email: m.email, name: m.name, path: 'assigned', stage: 'invited',
-          invite_note: clean(body.note, 600) || null, invite_link_code: code }).select('*');
+          invite_note: clean(body.note, 600) || null, invite_link_code: code, region: clean(body.region, 60) || null }).select('*');
         if (error) return json({ error: 'save_failed', message: error.message }, 500);
         p = ins![0];
         await log(p.id, actor, 'assigned', { position: pos.slug }, { source: 'console', ip: ipOf(req) });
@@ -534,8 +1044,7 @@ Deno.serve(async (req) => {
 
   const reply = async () => {
     const { data: fresh } = await db.from('ve_position_people').select('*').eq('id', p.id).maybeSingle();
-    return json({ ok: true, position: { slug: pos.slug, title: pos.title, summary: pos.summary, posting: pos.posting, pay_cents: pos.pay_cents, trial_days: pos.trial_days,
-      agreement: { version: pos.agreement_version, text: pos.agreement_text, sha: pos.agreement_sha256 } }, person: await personView(pos, fresh) });
+    return json({ ok: true, position: positionOut(pos), person: await personView(pos, fresh) });
   };
 
   if (action === 'me') return await reply();
@@ -580,6 +1089,7 @@ Deno.serve(async (req) => {
         if (ready) {
           await db.from('ve_position_people').update({ payouts_ready_at: p.payouts_ready_at || nowIso(), updated_at: nowIso() }).eq('id', p.id);
           if (before(p.stage, 'payouts_ready')) await advance(p.id, ['agreed'], 'payouts_ready');
+          await maybeReady(pos, p.id);
         }
       }
       return await reply();
@@ -612,6 +1122,16 @@ Deno.serve(async (req) => {
       console.error('payout_start', e);
       return json({ error: 'stripe', message: 'Stripe did not open. Try again in a minute.' }, 500);
     }
+  }
+
+  if (action === 'meta_email') {
+    const e = clean(body.email, 200).toLowerCase();
+    if (!isEmail(e)) return json({ error: 'email', message: 'That does not look like an email address. Use the one you sign in to Facebook with.' }, 400);
+    if (!p.agreed_at) return json({ error: 'order', message: 'Say you are in and sign first.' }, 409);
+    await db.from('ve_position_people').update({ meta_email: e, meta_email_at: nowIso(), updated_at: nowIso() }).eq('id', p.id);
+    await log(p.id, me.id, 'meta_email', null, { ip: ipOf(req) });
+    await maybeReady(pos, p.id);
+    return await reply();
   }
 
   if (action === 'instagram') {
