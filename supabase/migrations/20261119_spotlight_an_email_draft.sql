@@ -36,3 +36,11 @@ where not exists (select 1 from ve_outreach_campaign_emails where campaign_slug 
 insert into ve_outreach_campaign_members (campaign_slug, listing_id, person_key, person_name, step, send_status)
 select 'spotlight-an-sen-saigon', (select id from listings where slug = 'sen-saigon' and status = 'approved' limit 1), 'sensaigon.nyc@gmail.com', 'An', 0, 'waiting'
 where not exists (select 1 from ve_outreach_campaign_members where campaign_slug = 'spotlight-an-sen-saigon');
+
+-- Sean said "send" 2026-11-19. People campaigns send only when the member has no listing (ve_outreach_campaign_due), so the listing link is cleared;
+-- the email is locked and the campaign approved. Goes out Fri Nov 20 from 9 AM Eastern (weekday sending hours, start_on).
+update ve_outreach_campaign_members set listing_id = null where campaign_slug='spotlight-an-sen-saigon' and listing_id is not null;
+update ve_outreach_campaign_emails set locked_at = now(), locked_by = '72712a4a-ea0e-4ef4-a29e-d382496ef8da' where campaign_slug='spotlight-an-sen-saigon' and step=1 and locked_at is null;
+update ve_outreach_campaigns set status='active', approved_at=now(), approved_by='72712a4a-ea0e-4ef4-a29e-d382496ef8da',
+  note = note || ' Sean said "send" 2026-11-19; goes out Fri Nov 20 morning (start_on).'
+where slug='spotlight-an-sen-saigon' and approved_at is null;
