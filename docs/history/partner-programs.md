@@ -698,3 +698,15 @@ up at events in their home city; answer @vegansexplore comments and messages abo
 the weekly brief and asks; send footage and ideas (we make the posts). No travel, no budgets. Kai (she/her) is their one contact and escalates
 to Sean. Agreement version 1 in plain words (`docs/plans/2026-11-19-kj-agreement.md`). Start page `/positions/social-media-manager-instagram/start`,
 dashboard `/dashboard/position`, Sean's side `/admin/depot/reach?tab=team`, function `ve-positions`. Handoff `docs/handoff/2026-11-19-kj-community-manager.md`.
+
+**Community Manager is a title; a community night is an assignment (Sean, 2026-11-19; canon `canon-ve-community-managers` v2).** "Community
+manager is really a title, but they pick and choose what assignments they want. And sometimes they'll get a monthly assignment that will renew."
+The social media stipend ($125 every two weeks) is one renewing assignment. Running a community night is another: $150 per night, two
+Community Managers on a big night, and whoever runs it goes through the Community Manager system first (a partner club's leader becomes a
+Community Manager). The work is the lead-up and the night: outreach, follow-up, logistics, checking in with the venue, then running it. First
+nights (playbook `ve-holiday-guide`): Philadelphia with Philly Vegan Social Club on Sat Mar 13, 2027 (their first birthday; Sean kicks off at
+their Feb 21 meetup); South Florida with Vegan Social Club (Sat Feb 6, tentative) and Clermont with Vegans in Clermont (Sat Feb 20, tentative).
+**The top of the ladder (canon v3, same day).** "Community manager is the top of the totem pole. When you're a member, you want to work towards
+being a community manager." Sean appoints Community Managers now because they are needed; later it is by merit: members rise through the
+levels, reach a set level (not set yet), become eligible to be considered, and Community Managers are paid in bounties.
+

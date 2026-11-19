@@ -290,7 +290,7 @@
     { label: 'Christmas · December 25', hol: 'christmas', line: 'A centerpiece, cookies to share, nog, and gifts that do no harm: ideas, recipes, the store, menus and events.', kids: ['christmas', 'xm-recipes', 'xm-store', 'xm-menus', 'xm-events'] },
     { label: 'New Year\'s Eve · December 31', hol: 'new-years-eve', line: 'Vegan places cooking for the night, and parties and countdowns to ring in the new year.', kids: ['ny-menus', 'ny-events'] },
     { label: 'Give Back', line: 'The nonprofits, rescues and sanctuaries doing the work. Giving Tuesday is December 1.', kids: ['giveback'] },
-    { label: '11 Days of Giving · December 1 to January 1', line: 'Vegan businesses and brands give prizes, every member is in every draw, drawn at random in the open.', kids: ['giving'] },
+    { label: '11 Days of Giving · join by December 11', line: 'Join free by December 11 and you are entered; winners drawn live December 14 to 24.', kids: ['giving'] },
     { label: 'Run a Business?', line: 'Send your holiday menu and we feature it here, free for members.', kids: ['business'] }
   ];
   var PILL_PIC = { 'new-years-eve': 'theo-new-years-eve.jpg', 'ny-menus': 'theo-ny-menus.jpg', 'ny-events': 'theo-ny-events.jpg', hanukkah: 'theo-hanukkah.jpg', 'hk-recipes': 'r-latkes.jpg', 'hk-menus': 'p-menus.jpg', 'hk-events': 'p-events.jpg',
@@ -315,7 +315,7 @@
     ['christmas', 'Christmas · December 25', 'A centerpiece, cookies to share and gifts that do no harm, plus a wish list.'],
     ['new-years-eve', 'New Year\'s Eve · December 31', 'Vegan places cooking for the night, and parties to ring in the new year.'],
     ['giveback', 'Give Back', 'Nonprofits, rescues and sanctuaries doing the work, each easy to give to.'],
-    ['giving', '11 Days of Giving · December 1 to January 1', 'Every member is in every draw for prizes from Vegan businesses and brands, drawn in the open.'],
+    ['giving', '11 Days of Giving · join by December 11', 'Join free by December 11 and you are entered; winners drawn live December 14 to 24.'],
     ['business', 'Run a Business?', 'Send your holiday menu and we feature it here and on your listing, free.']
   ];
   var HOL_OV = {
@@ -1553,14 +1553,15 @@
       if (!GIVING.rules_reviewed && !(GIVING.me && GIVING.me.admin)) { main.innerHTML = crumb([['11 Days of Giving', '#/giving'], ['Official Rules']]) + head('11 Days of Giving', 'Official Rules', 'The official rules are posted here before entries open.'); return; }
       return viewGivingRules();
     }
-    // Locked rules (Sean, 2026-11-19): every member is in every draw automatically, December 1 to January 1; joining sooner means more draws.
-    var lede = 'Vegan businesses and brands are giving prizes this season, and every member is in every draw, free. 11 Days of Giving runs December 1 to 11, then the Countdown to Launch gives out the rest, with a final draw on January 1. Join sooner, be in more draws.';
-    if (!GIVING) { main.innerHTML = head('December 1 to January 1', '11 Days of Giving', lede) + '<div class="dg-loading">Loading...</div>'; givingLoad().then(function () { if (curView === 'giving') route(); }); return; }
+    // Locked timeline (Sean, 2026-11-19: "lock the timeline"): join by Dec 11 and you're entered; winners drawn live Dec 14 to 24.
+    var lede = 'Vegan businesses and brands are giving prizes this season. Join Vegans Explore free by December 11 and you are entered. Then, from December 14 to Christmas Eve, we draw winners live, one day at a time: the 11 Days of Giving.';
+    if (!GIVING) { main.innerHTML = head('Join by December 11', '11 Days of Giving', lede) + '<div class="dg-loading">Loading...</div>'; givingLoad().then(function () { if (curView === 'giving') route(); }); return; }
     var g = GIVING, me = g.me || null, prizes = g.prizes || [];
     var btn;
-    if (me && me.entered) btn = '<span class="dg-btn" aria-disabled="true" style="opacity:.75;cursor:default">You\'re in every draw</span>';
-    else if (!registered()) btn = '<a class="dg-btn" href="/survey?s=explorer" data-giving-join>Join free to be in every draw</a>';
-    else btn = '<a class="dg-btn" href="/survey?s=explorer" data-giving-join>Finish the free survey to be in every draw</a>';
+    if (me && me.entered) btn = '<span class="dg-btn" aria-disabled="true" style="opacity:.75;cursor:default">You\'re entered</span>';
+    else if (g.open === false) btn = '<span class="dg-btn" aria-disabled="true" style="opacity:.75;cursor:default">Entries closed December 11</span>';
+    else if (!registered()) btn = '<a class="dg-btn" href="/survey?s=explorer" data-giving-join>Join free and you\'re entered</a>';
+    else btn = '<a class="dg-btn" href="/survey?s=explorer" data-giving-join>Finish the free survey to be entered</a>';
     var prizeRows = prizes.length ? '<div class="dg-srows">' + prizes.map(function (p) {
       var l = p.listing || {}, logo = l.logo_url ? '<a href="/directory/' + encodeURIComponent(l.slug) + '" style="flex:0 0 56px;width:56px;height:56px;border-radius:10px;border:1px solid #e5e5e5;background:#fff center/cover no-repeat;background-image:url(\'' + esc(l.logo_url) + '\')" aria-label="' + esc(l.name) + '"></a>' : '';
       var val = '$' + Math.round((p.value_cents || 0) / 100) + (p.quantity > 1 ? ' each, ' + p.quantity + ' prizes' : '');
@@ -1568,13 +1569,13 @@
       return '<div class="dg-srow" style="display:flex;gap:14px;align-items:center">' + logo + '<div class="dg-srow-b"><h3>' + esc(p.title) + '</h3><p class="dg-srow-p">From <a href="/directory/' + encodeURIComponent(l.slug || '') + '">' + esc(l.name || 'a Vegan business') + '</a> &middot; ' + esc(val) + day + '</p></div></div>';
     }).join('') + '</div>'
       : '<div class="hg-empty"><h3>Prizes Are Coming In</h3><p>Vegan businesses are giving their prizes now, and each one shows here as it is confirmed. Run a business? Give a prize from <a href="/dashboard/business?tab=opportunities">your dashboard</a>.</p></div>';
-    main.innerHTML = head('December 1 to January 1', '11 Days of Giving', lede) +
+    main.innerHTML = head('Join by December 11', '11 Days of Giving', lede) +
       '<div class="dg-srows">' +
-      row({ icon: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4.4-7 8-7s7 2.5 8 7"/>', title: '1. Join free', body: '<p class="dg-srow-p">A short survey makes you a member. No charge, ever, to enter.</p>' }) +
-      row({ icon: '<path d="M5 12l5 5L20 7"/>', title: '2. You\'re in automatically', body: '<p class="dg-srow-p">Every member is in every draw held while they are a member. No purchase, and no share, tag or follow.</p>' }) +
-      row({ icon: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>', title: '3. Watch the draws', body: '<p class="dg-srow-p">Drawn at random, in the open: every day December 1 to 11, then Mondays and Thursdays, with a final draw on January 1. One prize per person.</p>' }) +
+      row({ icon: '<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4.5 4.4-7 8-7s7 2.5 8 7"/>', title: '1. Join free by December 11', body: '<p class="dg-srow-p">A short survey makes you a member, and the Holiday Guide is yours free. No charge, ever.</p>' }) +
+      row({ icon: '<path d="M5 12l5 5L20 7"/>', title: '2. You\'re entered', body: '<p class="dg-srow-p">Every member who joins by December 11 is entered automatically. No purchase, and no share, tag or follow.</p>' }) +
+      row({ icon: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>', title: '3. Watch the winners', body: '<p class="dg-srow-p">December 14 to Christmas Eve, we draw winners live, one day at a time. One prize per person.</p>' }) +
       '</div>' +
-      '<div class="hg-facts" style="margin-top:14px"><span><b>Draws</b> December 1 to January 1</span><span><b>' + (g.entries || 0) + '</b> ' + (g.entries === 1 ? 'member is' : 'members are') + ' in every draw</span><span><b>One prize</b> per person</span></div>' +
+      '<div class="hg-facts" style="margin-top:14px"><span><b>Join by</b> December 11</span><span><b>' + (g.entries || 0) + '</b> ' + (g.entries === 1 ? 'member is' : 'members are') + ' entered</span><span><b>Winners</b> December 14 to 24</span></div>' +
       '<h3 style="margin:22px 0 10px;font-size:16px">The Prizes</h3>' + prizeRows +
       '<div class="dg-btns" style="margin-top:18px">' + btn + '</div><p class="msg" id="hgGivingMsg" role="status" style="margin:8px 0 0;font-weight:700"></p>' +
       '<div class="hg-note">No purchase necessary. Free for members. Drawn in the open. ' + (g.rules_reviewed || (me && me.admin) ? '<a href="#/giving/rules">Official rules</a>.' : 'The official rules are posted here before the first draw.') + '</div>';
@@ -1594,26 +1595,26 @@
   }
   // The official rules (BOSS 2026-11-13). A DRAFT until the attorney has read it once (legal_questions); entries stay closed until then.
   function viewGivingRules() {
-    // The official rules, LOCKED by Sean 2026-11-19 ("lock it"; he signed off in place of an attorney). Doc https://claude.ai/artifact/Ds4whHbL6JXca7oY5SoWM4
+    // The official rules, LOCKED by Sean 2026-11-19 ("lock it", then "lock the timeline": entries to Dec 11, winners Dec 14 to 24; he signed off in place of an attorney). Doc https://claude.ai/artifact/Ds4whHbL6JXca7oY5SoWM4
     var r = [
       ['Sponsor', 'LESARUSS Inc., doing business as Vegans Explore, 300 SW 1st Ave, Suite 155, Fort Lauderdale, FL 33301. The businesses and brands that give prizes are Prize Providers, named with each prize. They are not sponsors of the giveaway.'],
       ['No purchase necessary', 'You never have to buy anything to enter or win, and a purchase does not improve your chances of winning. Void where prohibited.'],
-      ['Promotion period', 'From 12:00 AM Eastern on December 1, 2026 to 11:59 PM Eastern on January 1, 2027. It has two parts: 11 Days of Giving (December 1 to 11, 2026) and the Countdown to Launch (December 12, 2026 to January 1, 2027).'],
-      ['Who can enter', 'Legal residents of the 50 United States and Washington, D.C., 18 or older, who are Vegans Explore members in good standing. Membership is free with a short survey. Employees of the Sponsor and of any Prize Provider, and the people in their households, cannot win.'],
-      ['How to enter', 'Every eligible member is entered automatically in each draw held while they are a member. There is nothing to buy, share, tag or follow. One entry per member per draw. More than one account per person is not allowed, and extra accounts are removed from every draw.'],
-      ['The draws', 'During 11 Days of Giving, one draw a day, December 1 to 11. During the Countdown to Launch, draws every Monday and Thursday from December 14, 2026, with a final draw on January 1, 2027; the dates are posted on this page. Winners are picked at random from all eligible entries for that draw. Before each draw we publish a fingerprint of the random number we will use; after the draw we publish the number itself, so anyone can check the result.'],
-      ['One prize per person', 'A member can win one prize during the whole promotion. A member who has won is left out of later draws.'],
+      ['Promotion period', 'The entry window runs from 12:00 AM Eastern on November 20, 2026 to 11:59 PM Eastern on December 11, 2026. Winners are drawn during the 11 Days of Giving, December 14 to 24, 2026.'],
+      ['Who can enter', 'Legal residents of the 50 United States and Washington, D.C., 18 or older, who are Vegans Explore members in good standing by the end of the entry window. Membership is free with a short survey. Employees of the Sponsor and of any Prize Provider, and the people in their households, cannot win.'],
+      ['How to enter', 'Every eligible member who is a member by 11:59 PM Eastern on December 11, 2026 is entered automatically, once. There is nothing to buy, share, tag or follow. More than one account per person is not allowed, and extra accounts are removed from the draws.'],
+      ['The draws', 'One draw a day from December 14 to 24, 2026, held live and in the open. Each day\'s winners are picked at random from all eligible entries, leaving out members who have already won. Before each draw we publish a fingerprint of the random number we will use; after the draw we publish the number itself, so anyone can check the result.'],
+      ['One prize per person', 'A member can win one prize during the whole promotion.'],
       ['The prizes', 'Each prize is listed on this page with its Prize Provider and its retail value. Brands give up to $150 in retail value each; local businesses up to $100 each. The total retail value of all prizes is capped at $5,000. A prize may be a physical item, a bundle or a digital code. No cash instead of a prize, unless the Sponsor chooses.'],
-      ['Winners and claims', 'We tell winners by email and in their account. A winner has 7 days to confirm and give a shipping address (or receive a digital code). A winner who does not answer in 7 days loses the prize, and the prize goes to an alternate drawn at the same time. We may show a winner\'s first name and city.'],
+      ['Winners and claims', 'We tell winners by email and in their account on the day they are drawn. A winner has 7 days to confirm and give a shipping address (or receive a digital code). A winner who does not answer in 7 days loses the prize, and the prize goes to an alternate drawn at the same time. We may show a winner\'s first name and city.'],
       ['Delivery', 'The Prize Provider sends the prize straight to the winner within 7 business days of the winner\'s confirmation. If a Prize Provider does not, the Sponsor replaces the prize with one of equal or greater value. Prizes ship within the United States only.'],
       ['Sharing your address', 'If you win, we share your name and shipping address with that prize\'s Prize Provider only, to send your prize. They may not use it for anything else and must delete it after delivery.'],
-      ['Odds', 'The odds of winning depend on how many eligible members are entered in each draw.'],
+      ['Odds', 'The odds of winning depend on how many eligible members are entered.'],
       ['Taxes', 'Any taxes on a prize are the winner\'s.'],
       ['Not run by social media', 'This giveaway is not sponsored, endorsed or run by Instagram, Facebook, Meta, TikTok or any other platform.'],
       ['Changes', 'If something outside our control stops a draw from running fairly, the Sponsor may move the draw to a new date and will post the change on this page.'],
-      ['Law', 'These rules are governed by the laws of Florida. For the list of winners, write to the Sponsor after January 20, 2027.']
+      ['Law', 'These rules are governed by the laws of Florida. For the list of winners, write to the Sponsor after January 15, 2027.']
     ];
-    main.innerHTML = crumb([['11 Days of Giving', '#/giving'], ['Official Rules']]) + head('11 Days of Giving and the Countdown to Launch', 'Official Rules', '') +
+    main.innerHTML = crumb([['11 Days of Giving', '#/giving'], ['Official Rules']]) + head('11 Days of Giving', 'Official Rules', '') +
       (GIVING && GIVING.rules_reviewed ? '' : '<div class="hg-note" style="margin:0 0 14px;background:#FFF3E0"><b>Draft (super admins only).</b> Our attorney reads these rules before entries open. Text in [brackets] is still to be confirmed.</div>') +
       '<div class="dg-srows">' + r.map(function (x, i) { return row({ title: (i + 1) + '. ' + x[0], body: '<p class="dg-srow-p">' + esc(x[1]) + '</p>' }); }).join('') + '</div>';
   }

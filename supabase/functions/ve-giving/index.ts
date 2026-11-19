@@ -1,15 +1,17 @@
-// ve-giving: 11 Days of Giving and the Countdown to Launch, Dec 1, 2026 to Jan 1, 2027 (rules LOCKED by Sean 2026-11-19, doc
-// https://claude.ai/artifact/Ds4whHbL6JXca7oY5SoWM4: every member is in every draw automatically; brands up to $150 in all; intake stops
-// at $4,500 under the $5,000 cap; prizes taken until Dec 20). First built as 11 Days of Giving (Sean, 2026-11-15: "build the entry page"; plan locked 2026-11-13, playbook ve-holiday-guide; migration
+// ve-giving: 11 Days of Giving (timeline LOCKED by Sean 2026-11-19: "lock the timeline"; rules doc https://claude.ai/artifact/Ds4whHbL6JXca7oY5SoWM4):
+// entry window to 11:59 PM Eastern Fri Dec 11, every member who joined by then is entered once; winners drawn live one day at a time Dec 14 to 24;
+// brands up to $150 in all, yes by Fri Dec 4; intake stops at $4,500 under the $5,000 cap; providers done by Jan 15, 2027. First built as 11 Days of Giving (Sean, 2026-11-15: "build the entry page"; plan locked 2026-11-13, playbook ve-holiday-guide; migration
 // 20261115_eleven_days_of_giving_entries.sql). December 1 to 11, members enter free for prizes Vegan businesses give; winners are drawn at
 // random in the open. POST { action, ... }. verify_jwt off; the Vegans Explore token is checked here (the same check as ve-holiday).
 // Public:  status  -> { open, rules_reviewed (the rules link shows only once the attorney has read them), starts_on, ends_on, prizes (live ones, with the business), entries (count), me? { member, entered } }
 // Member:  enter   -> one free entry per member per giveaway, only while entries_open (a super admin may enter while closed, to test)
 // Public:  brand_interest {brand, name, email, quantity, pack, page} -> a brand's I'm in from /partners/giving, into Leads (one a day per email)
+// Public:  event_sponsor_interest {brand, name, email, events: philadelphia | south-florida | central-florida | los-angeles | all | spotlight | takeover | club, note, page} -> a brand's interest in
+//          sponsoring a community event from /expo/events, into Leads on the World Vegan Expo initiative (one a day per email; Sean, 2026-11-19)
 // Owner:   my_prizes {listing_id}, prize_photo_url {listing_id, content_type, bytes}, prize_save {listing_id, title, value_cents, quantity,
 //          image_url?, note?}, prize_withdraw {listing_id, id}: the prize form in the business dashboard (Sean, 2026-11-15). Up to $100 per
 //          business; a brand (Food Brands, or a listing that sells products) up to $150 retail in all (Sean, 2026-11-17); intake stops
-//          at $4,500 under the $5,000 cap, until the end of Sunday, December 20 Eastern; a prize waits as pledged for our check.
+//          at $4,500 under the $5,000 cap, until the end of Friday, December 4 Eastern; a prize waits as pledged for our check.
 // Admin:   entries -> who entered, newest first (super admins only); prize_queue, prize_review {id, decision: live | withdrawn | pledged}
 //          (live grants the giver 250 points per prize, once)
 // Nothing here takes money, a share, a tag or a follow: entering is free and open to every member in good standing.
@@ -23,7 +25,8 @@ const PER_BUSINESS = 10000;                                   // $100 in prizes 
 const BRAND_MAX = 15000;                                      // a brand: up to $150 retail in all, one item or several (Sean, 2026-11-17)
 const TOTAL_CAP = 500000;                                     // $5,000 across the giveaway (Florida and New York register above it)
 const INTAKE_CAP = 450000;                                    // we stop taking prizes at $4,500 (locked rules)
-const PRIZES_CLOSE = Date.parse('2026-12-21T05:00:00Z');      // the end of Sunday, December 20, Eastern (Countdown to Launch prizes)
+const PRIZES_CLOSE = Date.parse('2026-12-05T05:00:00Z');      // the end of Friday, December 4, Eastern (prizes for the Dec 14 to 24 draws)
+const ENTRY_CLOSE = Date.parse('2026-12-12T05:00:00Z');       // the entry window ends 11:59 PM Eastern, Friday, December 11
 const clean = (v: unknown, n: number) => String(v ?? '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '').trim().slice(0, n);
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
 
@@ -80,7 +83,7 @@ Deno.serve(async (req) => {
       const member = !!mm.is_superadmin || mm.membership_status === 'active';
       me = { member, entered: member && (!mm.standing || mm.standing === 'good'), entered_at: e?.entered_at || null, admin: !!mm.is_superadmin };
     }
-    return json({ ok: true, open, rules_reviewed: s.rules_reviewed, starts_on: s.starts_on, ends_on: s.ends_on, fulfill_by: s.fulfill_by, prizes: prizes || [], entries: count || 0, me });
+    return json({ ok: true, open: Date.now() < ENTRY_CLOSE, entry_closes: '2026-12-11', draws_from: '2026-12-14', draws_to: '2026-12-24', rules_reviewed: s.rules_reviewed, starts_on: s.starts_on, ends_on: s.ends_on, fulfill_by: s.fulfill_by, prizes: prizes || [], entries: count || 0, me });
   }
 
   // A brand says I'm in from /partners/giving (Sean, 2026-11-15: brands give holiday packs; "a good entry point for them to start working
@@ -95,6 +98,23 @@ Deno.serve(async (req) => {
     const { error } = await db.from('ve_initiative_interest').insert({ initiative_slug: s.campaign, action_type: 'sponsor_tier', tier_label: 'Brand pack', status: 'new',
       source: 'form', name: `${name}, ${brand}`.slice(0, 120), email, note: `${qty} pack${qty > 1 ? 's' : ''}: ${pack || '(no details yet)'}`.slice(0, 1000),
       tags: ['11-days-of-giving', 'brand-pack', clean(b.page, 120) || '/partners/giving'] });
+    if (error) return json({ error: 'save_failed' }, 500);
+    return json({ ok: true });
+  }
+
+  if (action === 'event_sponsor_interest') {
+    const brand = clean(b.brand, 120), name = clean(b.name, 120), email = clean(b.email, 200).toLowerCase(), note = clean(b.note, 600);
+    const EV: Record<string, string> = { philadelphia: 'Community night: Philadelphia', 'south-florida': 'Community night: South Florida', 'central-florida': 'Community night: Central Florida',
+      'los-angeles': 'Community night: Los Angeles', all: 'Every community night', spotlight: 'Spotlight day', takeover: 'Takeover day', club: 'Club partner' };
+    const tier = EV[clean(b.events, 20)];
+    if (!brand || !name || !tier || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json({ error: 'missing' }, 400);
+    const SLUG = 'vegans-explore-initiative-world-vegan-expo';
+    const { count } = await db.from('ve_initiative_interest').select('id', { count: 'exact', head: true }).eq('initiative_slug', SLUG)
+      .eq('email', email).gte('created_at', new Date(Date.now() - 864e5).toISOString());
+    if ((count || 0) > 0) return json({ error: 'too_many' }, 429);
+    const { error } = await db.from('ve_initiative_interest').insert({ initiative_slug: SLUG, action_type: 'sponsor_tier', tier_label: tier, status: 'new',
+      source: 'form', name: `${name}, ${brand}`.slice(0, 120), email, note: (note || '(no details yet)').slice(0, 1000),
+      tags: ['community-events', 'event-sponsor', clean(b.page, 120) || '/expo/events'] });
     if (error) return json({ error: 'save_failed' }, 500);
     return json({ ok: true });
   }

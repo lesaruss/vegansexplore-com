@@ -119,3 +119,17 @@ click (the ad posts `{veAd:'click'}`) as promo `guide-<slug>` and through `ve_ho
 the same way on 2026-11-12 (Sean: "fix the Kai creator card"): `guide.html?g=creator` (its own label, line and "Become a creator" button),
 the "Is this you?" claim box above it unchanged; promo `creator-register` and `ve_house_ad_count` still count the view and click.
 No house ad on the site lays words over its art any more.
+
+**The first partner-event ad: the Vegan Squad Retreat** (Sean, 2026-11-19: "Let's treat this like a partnered event and run some ads as
+well. That's $250 for us if they sign up, so it's worth putting it in some spots. Let's also mention them in our next Vegans Explore
+Podcast"; migration `20261119_vegan_squad_retreat_partner_ads.sql`). A partner event's ad is a copy of the sponsor ad
+`/ads/humble-cabbage/ve-tee.html` (the kit template), label "Partner event", with the partner's own photos whole in their frames and the
+commission said in the line: `/ads/partners/vegan-squad-retreat.html?c=<lake|yoga|bowls|porch>`, photos in
+`public/events/vegan-squad-retreat/` from Vegan Squad's approved media folder. Sponsor campaign `vegan-squad-retreat` (not paid: $250 to
+us per ticket bought with code VEGANSEXPLORE; $2,000 ticket, $500 ambassador commission split $250 off and $250 to us), four campaigns in
+the tall slots of `/events` and the South, Central and North Florida hubs, each through its own `/go/` link (`vsr-ve-events`,
+`vsr-ve-sofl`, `vsr-ve-central-florida`, `vsr-ve-north-florida`; `vsr-podcast-147` for the show notes), initiative `vegan-squad-retreat`,
+all to our event page. They end 2027-01-28 and the Guide campaigns underneath come back by themselves (`ad-resolve` honors end_date and
+serves the newest active campaign). The event is featured, its picture set, checkout fixed to 11 AM Eastern. The Episode 147 commercial
+(River, Sean records it) is `docs/podcast/2026-11-19-ep147-vegan-squad-retreat-spot.md`. Proven live 2026-11-19 at 1440 and 390 on /events
+and the Central Florida hub. Their influencer pack and retreat page were read through `ve-web-reader` browser mode (it works again).

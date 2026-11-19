@@ -1,0 +1,5 @@
+# Internal files never served (2026-11-19: docs/, CLAUDE.md and scripts/ were readable at vegansexplore.com, including pay terms and plans).
+/docs
+/scripts
+/CLAUDE.md
+/.claude
