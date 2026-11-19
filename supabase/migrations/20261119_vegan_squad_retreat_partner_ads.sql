@@ -33,7 +33,8 @@ select v.code, v.label, 'https://vegansexplore.com/events?event=c80c68ab-8ad8-42
   from (values ('vsr-ve-events', 'Vegan Squad Retreat ad: /events', 'events'),
                ('vsr-ve-sofl', 'Vegan Squad Retreat ad: South Florida hub', 'south-florida'),
                ('vsr-ve-central-florida', 'Vegan Squad Retreat ad: Central Florida hub', 'central-florida'),
-               ('vsr-ve-north-florida', 'Vegan Squad Retreat ad: North Florida hub', 'north-florida')) v(code, label, tag)
+               ('vsr-ve-north-florida', 'Vegan Squad Retreat ad: North Florida hub', 'north-florida'),
+               ('vsr-podcast-147', 'Vegan Squad Retreat: podcast Ep 147 show notes', 'podcast')) v(code, label, tag)
  where not exists (select 1 from ve_links l where l.code = v.code);
 
 with plan(placement, slot, code, opener) as (values
