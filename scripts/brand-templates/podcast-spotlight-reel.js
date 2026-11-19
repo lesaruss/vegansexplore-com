@@ -25,7 +25,7 @@ const css = [...tpl.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => m[1
 const STRIPE = '<div class="stp" style="position:absolute;left:0;right:0;top:612px;bottom:auto;height:18px"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>';
 const city = data(S.city_art), logo = data(S.logo);
 
-const band = (rows) => `<div class="sr-rb"><span class="sr-rl">${esc(S.label)}</span>
+const band = (rows, label) => `<div class="sr-rb"><span class="sr-rl">${esc(label || S.label)}</span>
   <div class="sr-rh"><img src="/public/logo-ve-mark-white.svg" alt=""><h5>${esc(rows[0])}<br>${esc(rows[1])}</h5></div></div>${STRIPE}`;
 const LAYERS = process.argv.includes('--layers');
 const window_ = LAYERS ? `<div class="sr-win"></div>` : CLIP
@@ -35,9 +35,11 @@ const lower = `<div class="sr-lt"><img src="${logo}" alt=""><div><b>${esc(S.name
 const cityArt = (cap) => `<div class="sr-city"><img src="${city}" alt="">${cap ? `<div class="sr-cap">${esc(cap)}</div>` : ''}</div>`;
 
 const GUIDES = process.argv.includes('--guides') ? `<div class="sr-g4"></div><div class="sr-gt">Instagram bar</div><div class="sr-gb">Instagram caption and reply bar</div><div class="sr-gr">Buttons</div><div class="sr-gs"></div>` : '';
+const ctaPlate = () => `<div class="sr-city"><img src="${city}" alt=""><div class="sr-cap sr-cta">${esc(S.end_cta || '')}<span class="sr-btn">${esc(S.url)}</span></div></div>`;
 const frame = (id, inner) => `<div class="sr-rf" id="${id}">${inner}${GUIDES}</div>`;
 const open = frame('open', band(S.head) + window_ + lower + cityArt(''));
 const clip = frame('clip', band(S.head) + window_ + lower + cityArt(S.caption));
+const endbg = frame('endbg', band(S.end_head, S.end_label) + `<div class="sr-win"></div>` + lower + ctaPlate());
 const end = frame('end', band(S.end_head) + `<div class="sr-endc"><p>${esc(S.end_line)}</p><span class="sr-btn">${esc(S.url)}</span>
   <img class="sr-lgo" src="/public/logo-ve-landscape-v2.svg" alt="Vegans Explore"></div>` + cityArt(''));
 
@@ -60,6 +62,8 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><base href="${BAS
   .sr-city{position:absolute;left:0;right:0;bottom:0;height:603px}
   .sr-city img{width:1080px;height:603px;display:block}
   .sr-cap{position:absolute;left:90px;right:120px;top:36px;background:#fff;color:var(--ink);font:900 40px/1.25 Montserrat;padding:22px 28px;border-radius:14px;border:4px solid var(--ink);box-shadow:8px 8px 0 var(--ink);text-align:center}
+  .sr-cta{display:flex;flex-direction:column;align-items:center;gap:20px}
+  .sr-cta .sr-btn{background:var(--or);color:var(--ink);font:900 38px/1 Montserrat;padding:22px 30px;border-radius:10px}
   .sr-endc{position:absolute;left:90px;right:120px;top:660px;height:620px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:34px}
   .sr-endc p{margin:0;font:900 56px/1.1 Montserrat;color:var(--ink);letter-spacing:-.02em}
   .sr-endc .sr-btn{background:var(--or);color:var(--ink);font:900 40px/1 Montserrat;padding:26px 34px;border-radius:10px;letter-spacing:.02em}
@@ -68,7 +72,7 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><base href="${BAS
   .sr-gs{position:absolute;left:90px;right:120px;top:300px;bottom:300px;border:4px solid #08f;z-index:9}
   .sr-gt,.sr-gb,.sr-gr{position:absolute;background:rgba(225,17,17,.28);color:#fff;font:900 26px/1 Montserrat;display:flex;align-items:center;justify-content:center;z-index:8}
   .sr-gt{left:0;right:0;top:0;height:250px}.sr-gb{left:0;right:0;bottom:0;height:340px}.sr-gr{right:0;width:120px;top:1000px;bottom:340px;writing-mode:vertical-rl}
-  </style></head><body>${open}${clip}${end}</body></html>`;
+  </style></head><body>${open}${clip}${end}${endbg}</body></html>`;
 
 (async () => {
   fs.mkdirSync(OUT, { recursive: true });
@@ -84,6 +88,7 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><base href="${BAS
   if (LAYERS) {
     await p.locator('#open').screenshot({ path: path.join(OUT, 'bg.png') });
     await p.locator('#end').screenshot({ path: path.join(OUT, 'end.png') });
+    await p.locator('#endbg').screenshot({ path: path.join(OUT, 'endbg.png') });
     const win = await p.evaluate(() => { const w = document.querySelector('#open .sr-win'), f = document.querySelector('#open').getBoundingClientRect(), r = w.getBoundingClientRect();
       return { x: Math.round(r.left - f.left + w.clientLeft), y: Math.round(r.top - f.top + w.clientTop), w: w.clientWidth, h: w.clientHeight }; });
     fs.writeFileSync(path.join(OUT, 'win.json'), JSON.stringify(win));

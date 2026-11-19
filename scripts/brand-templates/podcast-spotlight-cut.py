@@ -7,6 +7,8 @@
 # spec (the renderer's spec plus): "source": the episode video, "parts": [[start, end], ...] in the episode's seconds,
 #   "captions": [{"t0": .., "t1": .., "text": ".."}] in seconds of the cut (parts back to back), "end_s": end card seconds (default 3.5),
 #   "music": a bed (vegan-media media/music/beds/), "music_vol" (default 0.14): under the voice, ducked by it, fading out with the end card,
+#   "vtrim": {"<part index>": <episode second>} ends that part's picture early and holds its last frame (a camera cut at the edge),
+#   "end_page": a 16:9 screenshot of their profile page, shown in the window with a slow push-in on the end frame (endbg.png),
 #   "join": seconds of the dissolve between parts (default 0, a straight cut; 0.25 smooths a jump).
 # The site must be served at http://localhost:8766 (python3 -m http.server 8766 from the repo root) for the renderer.
 import json, os, subprocess, sys
@@ -26,7 +28,9 @@ inputs, fc, cat = [], [], ''
 for i, (a, b) in enumerate(S['parts']):
     d = b - a
     inputs += ['-ss', str(a), '-t', str(d), '-i', S['source']]
-    fc.append(f'[{i}:v]setpts=PTS-STARTPTS,fps=30,scale={win["w"]}:{win["h"]}:flags=lanczos,setsar=1[v{i}]')
+    vt = (S.get('vtrim') or {}).get(str(i))
+    hold = f',trim=0:{vt - a:.3f},tpad=stop_mode=clone:stop_duration={b - vt + 0.1:.3f},trim=0:{d:.3f}' if vt else ''
+    fc.append(f'[{i}:v]setpts=PTS-STARTPTS{hold},fps=30,scale={win["w"]}:{win["h"]}:flags=lanczos,setsar=1[v{i}]')
     fc.append(f'[{i}:a]asetpts=PTS-STARTPTS,aresample=48000,afade=t=in:d={FADE},afade=t=out:st={d - FADE}:d={FADE}[a{i}]')
     cat += f'[v{i}][a{i}]'
 n = len(S['parts'])
@@ -55,9 +59,17 @@ for j, c in enumerate(caps):
 
 # 3) the end card, faded in over the last frame; the voice fades out under it
 e = k + 1 + len(caps)
-inputs += ['-loop', '1', '-framerate', '30', '-t', str(END + 0.5), '-i', os.path.join(out, 'end.png')]
 fc.append(f'[{last}]format=yuv420p[main]')
-fc.append(f'[{e}:v]format=yuv420p[endv]')
+if S.get('end_page'):
+    inputs += ['-loop', '1', '-framerate', '30', '-t', str(END + 0.5), '-i', os.path.join(out, 'endbg.png'),
+               '-loop', '1', '-framerate', '30', '-t', str(END + 0.5), '-i', S['end_page']]
+    nf = int((END + 0.5) * 30)
+    fc.append(f"[{e + 1}:v]scale={win['w'] * 3}:{win['h'] * 3}:flags=lanczos,zoompan=z='1+0.06*on/{nf}':x='iw/2-(iw/zoom/2)':y='0':d=1:s={win['w']}x{win['h']}:fps=30,setsar=1[pg]")
+    fc.append(f'[{e}:v][pg]overlay={win["x"]}:{win["y"]}:shortest=1,format=yuv420p[endv]')
+    e += 1
+else:
+    inputs += ['-loop', '1', '-framerate', '30', '-t', str(END + 0.5), '-i', os.path.join(out, 'end.png')]
+    fc.append(f'[{e}:v]format=yuv420p[endv]')
 fc.append(f'[main][endv]xfade=transition=fade:duration=0.5:offset={total - 0.5:.3f}[vout]')
 if S.get('music'):
     m = e + 1
