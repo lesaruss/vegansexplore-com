@@ -1,0 +1,2 @@
+-- Sean, 2026-11-19, on his test of the brand email: the close felt "a little strong-handed"; then "swap it".
+update ve_outreach_campaign_emails set body = replace(body, 'The 11 days go first come, first served, and we need your yes by Friday, December 4.', 'Days are first come, first served, so if you''d like one, save your day by Friday, December 4.'), updated_at = now() where campaign_slug='giving-2026-brands' and step=1;
