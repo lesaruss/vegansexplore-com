@@ -7,6 +7,8 @@
 //
 // Usage (the site served at BASE, e.g. python3 -m http.server 8766 from the repo root):
 //   node scripts/brand-templates/podcast-spotlight-reel.js --spec spec.json --out dir [--clip still.jpg]
+//   --layers (for the real cut, scripts/brand-templates/podcast-spotlight-cut.sh): bg.png (the frame, the window empty), end.png,
+//   cap-<n>.png (each caption alone on transparency, spec.captions [{text}]) and win.json (the window's inner box for the video).
 // spec: {label, head:[row1,row2], name, biz, sub, logo, city_art, caption, end_head:[row1,row2], end_line, url}
 // Writes <out>/open.jpg, <out>/clip.jpg and <out>/end.jpg (1080 x 1920 each). Without --clip the window shows where the clip plays (mock).
 const fs = require('fs'), path = require('path');
@@ -25,7 +27,8 @@ const city = data(S.city_art), logo = data(S.logo);
 
 const band = (rows) => `<div class="sr-rb"><span class="sr-rl">${esc(S.label)}</span>
   <div class="sr-rh"><img src="/public/logo-ve-mark-white.svg" alt=""><h5>${esc(rows[0])}<br>${esc(rows[1])}</h5></div></div>${STRIPE}`;
-const window_ = CLIP
+const LAYERS = process.argv.includes('--layers');
+const window_ = LAYERS ? `<div class="sr-win"></div>` : CLIP
   ? `<div class="sr-win"><img src="${data(CLIP)}" alt=""></div>`
   : `<div class="sr-win sr-ph"><div class="sr-pl"></div><b>${esc(S.name)}'s clip plays here</b><span>${esc(S.sub)}</span></div>`;
 const lower = `<div class="sr-lt"><img src="${logo}" alt=""><div><b>${esc(S.name)} &middot; ${esc(S.biz)}</b><span>${esc(S.sub)}</span></div></div>`;
@@ -78,7 +81,21 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><base href="${BAS
   await p.evaluate(() => document.querySelectorAll('.sr-rh h5').forEach((h) => { const f0 = parseFloat(getComputedStyle(h).fontSize); let k = 1;
     const lines = () => { const c = h.cloneNode(); c.textContent = 'X'; h.parentNode.appendChild(c); const one = c.offsetHeight; c.remove(); return Math.round(h.offsetHeight / one); };
     while (lines() > 2 && k > 0.7) { k -= 0.04; h.style.fontSize = (f0 * k) + 'px'; } }));
-  for (const id of ['open', 'clip', 'end']) {
+  if (LAYERS) {
+    await p.locator('#open').screenshot({ path: path.join(OUT, 'bg.png') });
+    await p.locator('#end').screenshot({ path: path.join(OUT, 'end.png') });
+    const win = await p.evaluate(() => { const w = document.querySelector('#open .sr-win'), f = document.querySelector('#open').getBoundingClientRect(), r = w.getBoundingClientRect();
+      return { x: Math.round(r.left - f.left + w.clientLeft), y: Math.round(r.top - f.top + w.clientTop), w: w.clientWidth, h: w.clientHeight }; });
+    fs.writeFileSync(path.join(OUT, 'win.json'), JSON.stringify(win));
+    const caps = S.captions || [];
+    for (let i = 0; i < caps.length; i++) {
+      await p.evaluate(([t]) => { document.body.style.background = 'transparent'; document.querySelectorAll('.sr-rf').forEach((f) => f.style.display = 'none');
+        let f = document.getElementById('capf'); if (!f) { f = document.createElement('div'); f.id = 'capf'; f.className = 'sr-rf'; f.style.background = 'transparent';
+          f.innerHTML = '<div class="sr-city"><div class="sr-cap"></div></div>'; document.body.appendChild(f); }
+        f.style.display = 'block'; f.querySelector('.sr-cap').textContent = t; }, [caps[i].text]);
+      await p.locator('#capf').screenshot({ path: path.join(OUT, 'cap-' + i + '.png'), omitBackground: true });
+    }
+  } else for (const id of ['open', 'clip', 'end']) {
     await p.locator('#' + id).screenshot({ path: path.join(OUT, id + '.jpg'), type: 'jpeg', quality: 88 });
   }
   await b.close();
