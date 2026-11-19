@@ -3,7 +3,7 @@
 Rewritten in plain words on 2026-11-19 after Sean: "Does this have to be so complicated? ... this would scare me if I read this... I don't
 see why this has to be so complicated with the legalese." Also from Sean the same day: no travel and no budgets ("I don't want them thinking
 we have what we don't have"); in person means events in her home city; she does not make Vegans Explore's posts ("We're making those posts...
-if she does create content, she'll be sending us footage so we can edit it on our own... we'll always have control of what we collab on").
+if she does create content, she'll be sending us footage so we can edit it on our own... we'll always have control of what we collab on"). Later the same day, after the lock and before anyone signed, Sean on business owners she knows: "think of it like a lead generator. They're getting the leads and sending them to the platform... Not until they cross the threshold that it becomes our handoff. So, however she wants to follow up, she could follow up."
 
 ## The job posting
 
@@ -11,7 +11,7 @@ if she does create content, she'll be sending us footage so we can edit it on ou
 
 Vegans Explore opens on January 1. Help us bring the Vegan world in.
 
-- Invite the people you know, with your own link.
+- Invite the people you know, business owners too, with your own link.
 - Sign people up in person at events in your city.
 - Answer comments and messages on @vegansexplore, about 15 minutes a day.
 - Send us footage and ideas. We make the posts and share them with you.
@@ -28,7 +28,7 @@ Between Vegans Explore (LESARUSS Inc.) and you.
 computer, can work for others, and handle your own taxes.
 
 **2. What you do.**
-- Invite people you know to Vegans Explore, with your own link.
+- Invite people you know to Vegans Explore, business owners too, with your own link.
 - Sign people up in person at events in your city.
 - Answer comments and messages on @vegansexplore, as Vegans Explore, about 15 minutes a day.
 - Read the weekly brief and do its asks.
@@ -37,7 +37,7 @@ computer, can work for others, and handle your own taxes.
 Your questions go to Kai on your dashboard. Sean sees every conversation.
 
 **3. Ground rules.**
-- Businesses hear from Vegans Explore through @vegansexplore, not your own accounts. If one reaches out to you, send them our way.
+- Know a business owner? Send them to Vegans Explore with your link, and follow up however you like until they join. Once they're on Vegans Explore, we take it from there.
 - On @vegansexplore you only answer comments and messages. You don't post, change settings, or start new conversations.
 - No bots or automation.
 - If Instagram shows a warning, stop for 48 hours and tell Kai.
