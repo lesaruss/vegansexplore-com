@@ -7,7 +7,7 @@
 update ve_positions set
   posting_draft = $p$Vegans Explore is inviting the Vegan world onto one platform before it opens on January 1. As one of our regional helpers, you bring people in: first the people you know, invited personally with your own link, and a weekly post on your own account as a collab with @vegansexplore; then out in your region (the Northeast first), signing people up at events, markets and Vegan spots and telling owners their page is free to claim; and about 15 minutes a day answering comments and messages on @vegansexplore, as Vegans Explore, through Meta Business Suite (messages and comments only; no password, no posting). Every week there is a short brief and a few asks, and Kai, our Creator Guide, answers your questions on your dashboard. Your own hours, and you are free to take other work. $125 for each 2-week period of work, paid through Stripe, with a one-month trial.$p$,
   agreement_draft_version = 'v2',
-  agreement_draft_text = $agr$Independent Contractor Agreement: Social Media Manager (Instagram), version 2
+  agreement_draft_text = $agr$Independent Contractor Agreement: Community Manager, version 2
 
 This agreement is between LESARUSS Inc., doing business as Vegans Explore ("Vegans Explore"), and you, the person signing below ("you").
 
@@ -25,7 +25,7 @@ This agreement is between LESARUSS Inc., doing business as Vegans Explore ("Vega
 
 7. Confidentiality and conduct. You keep private what you learn about Vegans Explore, its members, the businesses and people you contact, and its plans. You speak for Vegans Explore warmly, honestly and in its voice: "Vegan" with a capital V, never pushy, never promising anything Vegans Explore has not built, and a business that is not Vegan is described as offering plant-based (Pre-Vegan) options. You do not promote yourself or anyone else from the account.
 
-8. Ownership. The posts, conversations, notes and records you make for Vegans Explore belong to Vegans Explore. You assign to Vegans Explore any rights you have in them.
+8. Ownership. The posts, conversations, notes and records you make for Vegans Explore belong to Vegans Explore, and you assign to Vegans Explore any rights you have in them. What you post on your own accounts stays yours; Vegans Explore may share it, with credit to you.
 
 9. When it ends. Your access is removed, and you return or delete anything of Vegans Explore's you hold. Sections 7 and 8 continue after the agreement ends.
 
