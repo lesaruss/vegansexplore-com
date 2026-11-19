@@ -1,4 +1,4 @@
-# KJ's agreement, version 2 (draft for Sean)
+# KJ's agreement, version 1 (draft for Sean)
 
 Rewritten in plain words on 2026-11-19 after Sean: "Does this have to be so complicated? ... this would scare me if I read this... I don't
 see why this has to be so complicated with the legalese." Also from Sean the same day: no travel and no budgets ("I don't want them thinking
@@ -20,7 +20,7 @@ Your own hours. $125 every two weeks, paid through Stripe. The first month is a 
 
 ## The agreement
 
-**Community Manager agreement, version 2**
+**Community Manager agreement, version 1**
 
 Between Vegans Explore (LESARUSS Inc.) and you.
 
