@@ -1,0 +1,7 @@
+-- 2026-11-19: SoFlo Vegans connected (Sean added it in Metricool; brand 8227282: Instagram @soflovegans, Facebook, TikTok). Safe to run twice.
+insert into ve_social_brands (slug, name, kind, metricool_blog_id, channels, note, active)
+select 'soflo-vegans', 'SoFlo Vegans', 'house', 8227282, '{instagram,facebook,tiktok}', 'Metricool brand 8227282 (connected 2026-11-19): South Florida posts and anything to amplify, never another chapter''s posts (Sean, 2026-11-19)', true
+where not exists (select 1 from ve_social_brands where slug = 'soflo-vegans');
+insert into playbook_records (slug, brand_slug, author, body, source, kind, created_at)
+select 've-social-schedule', 'vegans-explore', 'Logan', $b$SoFlo Vegans CONNECTED 2026-11-19 (Sean added it in Metricool; Logan's recommended route: its own account, posts scheduled straight onto it, nothing to accept). ve_social_brands soflo-vegans, Metricool 8227282, Instagram @soflovegans 11,319 followers (about 3x Vegans Explore's 3,769), TikTok 815, Facebook page 528005530692483. Proven: ve-social report for the brand answered 200 with live follower numbers. Metricool keeps post history only from connection, so SoFlo's per-post numbers start now. Use: South Florida posts and anything to amplify, never another chapter's posts.$b$, 'text', 'decision', now()
+where not exists (select 1 from playbook_records where slug = 've-social-schedule' and body like 'SoFlo Vegans CONNECTED 2026-11-19%');
