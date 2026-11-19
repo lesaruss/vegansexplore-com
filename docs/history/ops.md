@@ -69,3 +69,11 @@ The ideas in the table are Logan's drafts until Sean picks a use; none points an
   `https://vegansexplore.lesaruss.com/api/entry/webhook`, 100% errors); "empowering-harmony" to `ve-stripe-webhook` stays on (0% errors).
 - **Bounces.** A 6.5% day on mail.lesaruss.ai came from two small lists; `holiday-launch-registered` (3 of 10) and `closed-checking-in`
   (2 of 13) were paused at 10:47 AM ET. The email system's alert said "every campaign is paused" but only HQ email campaigns obey it.
+
+**worldveganexpo.com forwards to /expo (Sean, 2026-11-19: "move the domain over to Cloudflare so you can run those settings").** Added to
+Cloudflare through `cloudflare_api_token` from SQL (pg_net): zone `b287dc921c4cf539c55ef7287ab8eb77`, proxied placeholder A records
+(192.0.2.1) for `@` and `www`, and Page Rule `90466d8182672e075977b04361548ce4`, `*worldveganexpo.com/*` 301 to
+`https://vegansexplore.com/expo`. The token cannot create Rulesets (Single Redirects answer 403), so Page Rules it is; pg_net has no PUT.
+The zone goes active once Namecheap's nameservers are `dora.ns.cloudflare.com` and `tim.ns.cloudflare.com` (Sean's step). No email ran on
+the domain (Cloudflare's scan found no records).
+
