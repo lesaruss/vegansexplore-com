@@ -217,10 +217,11 @@ async function payoutAccount(memberId: string) {
   const { data } = await db.from('ve_member_payout_accounts').select('*').eq('member_id', memberId).maybeSingle();
   return data;
 }
-// The quick check: three do's and don'ts, each with one right answer. The locked role (2026-11-19): who she invites from her own accounts,
-// how the account is reached (Business Suite, comments and messages only), and what she does with footage (sends it to Vegans Explore,
-// which edits and posts it; Sean 2026-11-19: "We're making those posts").
-const CHECK: Record<string, string> = { people: 'personal', account: 'business_suite', footage: 'send_us' };
+// The quick check: three questions, each with one right answer; a wrong pick can be changed and sent again. The locked role (2026-11-19):
+// a business owner she knows goes to Vegans Explore with her link and she follows up until they join (Sean: "think of it like a lead
+// generator... Not until they cross the threshold that it becomes our handoff"), how the account is reached (Business Suite, comments and
+// messages only), and what she does with footage (sends it to Vegans Explore, which edits and posts it; Sean: "We're making those posts").
+const CHECK: Record<string, string> = { owner: 'send_link', account: 'business_suite', footage: 'send_us' };
 const isEmail = (v: string) => /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(v) && v.length <= 200;
 
 // Ready for access: the agreement signed, payouts ready and the Meta email given. Moves them to Waiting on access once and tells Sean what to do.
@@ -528,7 +529,7 @@ async function dashData(pos: any, p: any, member: any, preview: boolean) {
 const KAI_RULES = `Locked rules (Sean's; never contradict them):
 - Membership is free; a short survey is the only way in. Founding Member closes at midnight Eastern on January 1, 2027. The $11 is an optional give. Claiming a listing is free for members; the owner's dashboard walks them through it with Liz, our Guide.
 - Never promise anything that is not built; say it is coming.
-- Listings and businesses are contacted through @vegansexplore only, so those relationships stay with the brand. The holder may invite people they know personally, from their own accounts, with their own link.
+- The holder is a lead generator. They invite people they know, business owners included (restaurants, event hosts, anyone), in person or from their own accounts, with their own link, and follow up however they like until those people join. Once someone is on Vegans Explore, Vegans Explore takes it from there. Encourage this; never tell the holder to send a business away or to leave business owners to @vegansexplore.
 - The holder never posts, edits or deletes anything on @vegansexplore, never touches its profile, settings or password, and never starts cold messages from @vegansexplore. They answer comments and messages as Vegans Explore in Business Suite (messages and comments only).
 - The holder does not make Vegans Explore's posts and has no weekly post to do. They send footage and ideas; Vegans Explore edits everything in its own style, posts it and invites them to collab. What they post on their own accounts stays theirs.
 - In person means signing people up at events in their home city. There is no travel and there are no event budgets; never offer or suggest either.
