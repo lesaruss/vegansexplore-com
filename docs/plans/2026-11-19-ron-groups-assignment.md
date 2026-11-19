@@ -72,4 +72,10 @@ Vegans Explore opens on January 1, and our South Florida Community Nights start 
 **The goal:** each night should bring in at least four times what it costs to put on, counting the months leading up to it, the night
 itself and its marketing. We'll track it together.
 
-Your own hours. Paid through Stripe every two weeks. The first month is a trial. Your questions go to Kai on your dashboard.
+Your own hours. Paid through Stripe once a month. The first month is a trial. Your questions go to Kai on your dashboard.
+
+## Pay cadence (Sean, 2026-11-19: "Pay him monthly.")
+
+$150 once a month (not $75 every two weeks, which would come to $162.50 a month). The positions pay calendar (ve-positions) only knows
+14-day periods today, so the setup adds a monthly period: a calendar month, paid the first Friday after it ends, prorated by the day at the
+start and end. KJ stays on her two-week calendar.
