@@ -1,0 +1,6 @@
+-- Vimeo (Sean, 2026-11-19: "I have a Vimeo account that we should connect so you can create links and upload"). No Vimeo connector exists,
+-- so the key goes in HQ Key Room like the other services. The value is a placeholder until Sean pastes the token; nothing else reads it yet.
+insert into lesaruss_secrets (key, value, description) values ('VIMEO_ACCESS_TOKEN','pending-not-set','Vimeo personal access token (upload, edit, public, private, video files) for posting Vegans Explore videos and their thumbnails. Requested 2026-11-19.') on conflict (key) do nothing;
+insert into secret_rotation_plan (key, provider, tier, label, dashboard_url, requested_at, request_note) values ('VIMEO_ACCESS_TOKEN','Vimeo','monthly','Vimeo access token (uploads Vegans Explore videos and thumbnails)','https://developer.vimeo.com/apps', now(),
+'1) Click "Open Vimeo" below and sign in to your Vimeo account. 2) Click "Create an app" (name: Vegans Explore, description: our own uploads, "No" to other users), then Create App. 3) On the app page, scroll to "Generate an access token", choose Authenticated (you), tick Public, Private, Edit, Upload and Video Files, then Generate. 4) Copy the token (shown once), paste it in the box below, Save. Then tell Logan "saved".')
+on conflict (key) do nothing;
