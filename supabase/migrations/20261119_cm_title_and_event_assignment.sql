@@ -7,3 +7,11 @@ update knowledge_records set
  change_summary = 'v2 (Sean, 2026-11-19): Community Manager is a title with assignments they choose (monthly renewing or one-off); running a community night is a $150-per-night assignment, two Community Managers for a big night, leader must be a Community Manager first; the work includes the lead-up.',
  updated_by = 'Logan Russell', updated_at = now()
 where slug = 'canon-ve-community-managers';
+
+-- v3 (Sean, 2026-11-19): Community Manager is the top of the member ladder; appointed now, by merit later; paid in bounties.
+update knowledge_records set
+ body = body || jsonb_build_object('merit_ladder_v3', 'Community Manager is the top of the ladder for members (Sean, 2026-11-19: "Community manager is the top of the totem pole. When you''re a member, you want to work towards being a community manager. I''m just assigning community managers right now because we need them. But once we have them, it''s going to be based off merit... once they get to a certain level, they could be eligible to be considered a community manager, and then they get paid bounties"). Now: Sean appoints Community Managers because they are needed. Later: members rise through the levels; at a set level they become eligible to be considered; Community Managers are paid in bounties (their assignments, such as a $150 community night). The eligibility level is not set yet.'),
+ version = 3,
+ change_summary = 'v3 (Sean, 2026-11-19): Community Manager is the top of the member ladder; appointed now, by merit later (members reach a level, become eligible to be considered); paid in bounties.',
+ updated_by = 'Logan Russell', updated_at = now()
+where slug = 'canon-ve-community-managers';
