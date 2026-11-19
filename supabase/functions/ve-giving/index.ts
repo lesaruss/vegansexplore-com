@@ -6,6 +6,8 @@
 // Public:  status  -> { open, rules_reviewed (the rules link shows only once the attorney has read them), starts_on, ends_on, prizes (live ones, with the business), entries (count), me? { member, entered } }
 // Member:  enter   -> one free entry per member per giveaway, only while entries_open (a super admin may enter while closed, to test)
 // Public:  brand_interest {brand, name, email, quantity, pack, page} -> a brand's I'm in from /partners/giving, into Leads (one a day per email)
+// Public:  event_sponsor_interest {brand, name, email, events: philadelphia | los-angeles | all, note, page} -> a brand's interest in
+//          sponsoring a community event from /expo/events, into Leads on the World Vegan Expo initiative (one a day per email; Sean, 2026-11-19)
 // Owner:   my_prizes {listing_id}, prize_photo_url {listing_id, content_type, bytes}, prize_save {listing_id, title, value_cents, quantity,
 //          image_url?, note?}, prize_withdraw {listing_id, id}: the prize form in the business dashboard (Sean, 2026-11-15). Up to $100 per
 //          business; a brand (Food Brands, or a listing that sells products) up to $150 retail in all (Sean, 2026-11-17); intake stops
@@ -96,6 +98,22 @@ Deno.serve(async (req) => {
     const { error } = await db.from('ve_initiative_interest').insert({ initiative_slug: s.campaign, action_type: 'sponsor_tier', tier_label: 'Brand pack', status: 'new',
       source: 'form', name: `${name}, ${brand}`.slice(0, 120), email, note: `${qty} pack${qty > 1 ? 's' : ''}: ${pack || '(no details yet)'}`.slice(0, 1000),
       tags: ['11-days-of-giving', 'brand-pack', clean(b.page, 120) || '/partners/giving'] });
+    if (error) return json({ error: 'save_failed' }, 500);
+    return json({ ok: true });
+  }
+
+  if (action === 'event_sponsor_interest') {
+    const brand = clean(b.brand, 120), name = clean(b.name, 120), email = clean(b.email, 200).toLowerCase(), note = clean(b.note, 600);
+    const EV: Record<string, string> = { philadelphia: 'Community night: Philadelphia', 'los-angeles': 'Community night: Los Angeles', all: 'Every community night' };
+    const tier = EV[clean(b.events, 20)];
+    if (!brand || !name || !tier || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json({ error: 'missing' }, 400);
+    const SLUG = 'vegans-explore-initiative-world-vegan-expo';
+    const { count } = await db.from('ve_initiative_interest').select('id', { count: 'exact', head: true }).eq('initiative_slug', SLUG)
+      .eq('email', email).gte('created_at', new Date(Date.now() - 864e5).toISOString());
+    if ((count || 0) > 0) return json({ error: 'too_many' }, 429);
+    const { error } = await db.from('ve_initiative_interest').insert({ initiative_slug: SLUG, action_type: 'sponsor_tier', tier_label: tier, status: 'new',
+      source: 'form', name: `${name}, ${brand}`.slice(0, 120), email, note: (note || '(no details yet)').slice(0, 1000),
+      tags: ['community-events', 'event-sponsor', clean(b.page, 120) || '/expo/events'] });
     if (error) return json({ error: 'save_failed' }, 500);
     return json({ ok: true });
   }
