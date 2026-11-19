@@ -689,3 +689,12 @@ Passport holder or a super admin (else `not_eligible`), logs a `ve_initiative_in
 page goes there. Signed out (Sean, 2026-10-28: "this is a member-only event. You must be a member in order to access the tickets"), Get tickets, the tile, a city hub's RSVP and `#event/<id>/tickets` open the Directory's members-only window (`VEVotes.memberPrompt('tickets')`, loaded on first need): This is a members-only event, Explore the Passport (`/passport?from=tickets`, with its own note) or Sign in, both coming back to `#event/<id>/tickets`, which takes a member on to the tickets. First: the Plant-Based
 Showcase, Miami Dolphins game day (event `3f6a7e2e-efff-4b0e-80ce-580428d3cb52`, Fevo `Vegansexplore2`, $15 a ticket to LESARUSS Inc.,
 organizer Vegans Explore); its campaign page's attend step is **Get Tickets** on the same link (`campaigns/plant-based-showcase-dolphins.html`).
+
+## Community Managers (LOCKED by Sean 2026-11-19, canon `canon-ve-community-managers`, playbook `ve-directory-reach`)
+
+Paid helpers on stipends, each with a home city; KJ (Philadelphia) first, Ron (Southeast) and Los Angeles to come. Their network has no
+territory. The work: invite people they know, business owners too, with their own link (lead generator until the person joins); sign people
+up at events in their home city; answer @vegansexplore comments and messages about 15 minutes a day through Business Suite partial access;
+the weekly brief and asks; send footage and ideas (we make the posts). No travel, no budgets. Kai (she/her) is their one contact and escalates
+to Sean. Agreement version 1 in plain words (`docs/plans/2026-11-19-kj-agreement.md`). Start page `/positions/social-media-manager-instagram/start`,
+dashboard `/dashboard/position`, Sean's side `/admin/depot/reach?tab=team`, function `ve-positions`. Handoff `docs/handoff/2026-11-19-kj-community-manager.md`.
