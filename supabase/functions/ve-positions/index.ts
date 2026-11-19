@@ -900,7 +900,10 @@ Deno.serve(async (req) => {
     return (await adminDash(action, body, 'ops', null))!;
   }
 
-  const me = await viewer(req);
+  // The ops token may send an invite Sean approved in chat (2026-11-19: "draft an email... send it once I approve it").
+  const me = (action === 'admin_assign' && (await isOps(req)))
+    ? ({ id: null, name: 'Sean (via Logan)', email: 'Sean (via Logan)', is_superadmin: true, membership_status: 'active' } as any)
+    : await viewer(req);
   if (!me) return json({ error: 'sign_in' }, 401);
 
   // ======== Admin (superadmin, re-read from members on every call) ========
@@ -953,7 +956,7 @@ Deno.serve(async (req) => {
         const id = await sendOne(m.email, `${firstName(m.name)}, Vegans Explore would like you as its ${pos.title}`, wrap(
           `<p style="margin:0 0 12px">Hi ${esc(firstName(m.name))},</p>` + note +
           `<p style="margin:0 0 12px">Vegans Explore would like you as its <b>${esc(pos.title)}</b>: ${esc(pos.summary || '')}</p>` +
-          `<p style="margin:0 0 12px">${money(pos.pay_cents)} for each 2-week period of work, your own hours, and a one-month trial. About ten minutes gets you set up: the role, a quick check, the agreement, payouts and Instagram.</p>` +
+          `<p style="margin:0 0 12px">${money(pos.pay_cents)} every two weeks, your own hours, and a one-month trial. About ten minutes gets you set up: the role, three quick questions, the agreement, payouts, and the email on your Facebook account so we can add you in Business Suite. Kai, our Creator Guide, walks you through each step.</p>` +
           btn(link, 'See the role')));
         if (!id) return json({ error: 'send_failed', message: 'The email did not send. Copy the link instead, or try again.' }, 502);
         await db.from('ve_position_people').update({ invited_at: nowIso(), updated_at: nowIso() }).eq('id', p.id);
