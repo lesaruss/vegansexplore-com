@@ -1,0 +1,10 @@
+-- 11 Days of Giving and the Countdown to Launch: rules LOCKED by Sean, 2026-11-19 ("lock it"; he signed off in place of an attorney).
+-- Doc https://claude.ai/artifact/Ds4whHbL6JXca7oY5SoWM4. Dec 1, 2026 to Jan 1, 2027; every member in every draw; brands up to $150 in all;
+-- intake stops at $4,500; prizes taken to Dec 20; brands done by Jan 20. The brand email stays a DRAFT until Sean approves it in HQ.
+update ve_site_settings set value = value || jsonb_build_object('rules_reviewed', true, 'ends_on', '2027-01-01', 'fulfill_by', '2027-01-20',
+  'rules_locked_by', 'Sean, 2026-11-19 ("lock it"; signed off in place of an attorney)') where key = 'giving_2026';
+update ve_outreach_campaign_emails set subject = 'Present a day of our launch giveaway, {business}?',
+ body = E'Hi {first_name},\n\nVegans Explore opens January 1, and we are counting down with a free giveaway for our members: 11 Days of Giving, December 1 to 11, then draws every Monday and Thursday until launch day.\n\nWe would like {business} to present one of the days. You give up to $150 in product: one item, a bundle, or a digital code. There is no fee, and nothing ships until a member wins. Then you ship within 7 business days, and you are done by January 20.\n\nYour day gets a co-branded post and story on our accounts, a mention in that day''s holiday email, your prize on the ads across Vegans Explore and in our Prize Vault linked to your Directory page, and your own tracked link. In January you get a report with your real numbers.\n\nWe are in our founding season, so this is a small-cost test: you decide on 2027 from the report.\n\nEverything is on one page, with a short form to save your day:\n{link}\n\nThe 11 headline days go first come, first served, and we need your yes by Tuesday, November 24.\n\nThank you,\nThe Vegans Explore team',
+ updated_at = now() where campaign_slug = 'giving-2026-brands' and step = 1;
+update ve_outreach_campaigns set start_on = '2026-11-20' where slug = 'giving-2026-brands';
+update ve_campaign_programs set start_on = '2026-11-20', end_on = '2026-12-20' where slug = 'giving-brands-2026';
