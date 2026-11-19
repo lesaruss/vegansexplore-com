@@ -27,6 +27,7 @@
     .ps-guide .av { width: 64px; height: 64px; border: 2px solid var(--k-ink); border-radius: 10px; background: #fff center 12% / cover no-repeat; }
     .ps-guide b { display: block; font-size: 10.5px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: var(--k-pinkd); }
     .ps-guide span { display: block; font-size: 14px; font-weight: 800; line-height: 1.35; }
+    .ps-guide .kplay { margin-top: 8px; }
     .stepper { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 18px; padding: 0; counter-reset: st; }
     .stepper li { counter-increment: st; display: flex; align-items: center; gap: 8px; font-size: 11.5px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; border: 2px solid var(--k-line); border-radius: var(--k-r); padding: 6px 10px; color: var(--k-mute); }
     .stepper li::before { content: counter(st); display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #eee; color: var(--k-ink); font-size: 11px; }
@@ -67,11 +68,11 @@
 <main class="ps" data-kit-parent="claim">
   <div class="ps-head">
     <div>
-      <span class="k-eb" id="eb"></span><span class="k-tag wait draft" id="pageDraft">Draft</span><span class="pv" id="pv" hidden>Preview: nothing is saved</span>
+      <span class="k-eb" id="eb"></span><span class="pv" id="pv" hidden>Preview: nothing is saved</span>
       <h1 class="k-h1" id="h1" style="margin-top:14px"></h1>
       <p class="k-lede" id="lede"></p>
     </div>
-    <div class="ps-guide" id="guide"><span class="av" id="av" role="img" aria-label="Kai, your Guide"></span><p style="margin:0"><b>Kai, Creator Guide</b><span id="say"></span></p></div>
+    <div class="ps-guide" id="guide"><span class="av" id="av" role="img" aria-label="Kai, your Guide"></span><p style="margin:0"><b>Kai, Creator Guide</b><span id="say"></span><button type="button" class="k-btn k-sm kplay" id="kplay" hidden>&#9654; Play</button></p></div>
   </div>
 
   <div id="gate" class="gate" hidden></div>
@@ -131,7 +132,7 @@
 <script>
 (function () {
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
-  // ======== COPY: every word on this page that is not live data. DRAFT until Sean locks it; rewritten 2026-11-19 to the role he locked with the dashboard, then in plain words (her people first, events in her home city, footage to us, community about 15 minutes a day, Kai not Logan). ========
+  // ======== COPY: every word on this page that is not live data. LOCKED by Sean 2026-11-19 ("lock it"); rewritten 2026-11-19 to the role he locked with the dashboard, then in plain words (her people first, events in her home city, footage to us, community about 15 minutes a day, Kai not Logan). ========
   var COPY = {
     eyebrow: 'Community Manager',
     steps: { big: 'The big picture', role: 'Your role', check: 'Quick check', in: "I'm in", next: 'Next steps' },
@@ -139,17 +140,22 @@
     lede: {
       big: 'We open on January 1. Before then, 250 people are members by December 31, and you bring in your share: the people you know, wherever they are.',
       role: 'Invite your people with your own link, sign people up at events in your city, and answer @vegansexplore about 15 minutes a day. Kai is your one contact.',
-      check: 'They keep the brand and the account safe, and you too. Pick one answer for each.',
+      check: 'Three questions to make sure the role is clear. Nothing is graded; pick again if one is off.',
       in: 'Read the agreement, then tick the box and type your full name.',
       next: 'Three things, and you are ready to start.'
     },
+    // Kai's lines as Sean recorded them (HQ Voices, set ve-kj-start, 2026-11-19; each checked word for word with stt). A changed word
+    // here is a new recording (-vN) in the booth first.
     say: {
-      big: 'Hi, I\'m Kai. You\'re joining at the best moment: the doors open January 1, and you help fill the room with your people.',
-      role: 'The people you already know are yours to invite, any way you like. Businesses and listings still go through @vegansexplore.',
-      check: 'No trick questions. If one feels unclear, read Your role again.',
-      in: 'This is the same agreement, in plain words, for everyone in this role.',
-      next: 'Give us the email on your Facebook account, so Sean can add you in Business Suite.'
+      big: 'Hey KJ, Kai here. By December 31, we want 250 members through the door, and 60 of them come through you. It starts with the people you know.',
+      role: 'Here\'s the whole idea: you bring people in. Invite the people you know, business owners too, with your link. Sign people up at events in your city, answer our comments and messages about 15 minutes a day, and send us your footage. We make the posts.',
+      check: 'Three quick questions, just to make sure we\'re on the same page. Take your time.',
+      in: 'This is the deal: $125 every two weeks, your own hours, and a one-month trial. If it feels right, type your name and you\'re in.',
+      next: 'Last thing: give us the email in your Facebook account, so Sean can add you in the Business Suite. Then set up payouts, and you start Monday.'
     },
+    audio: (function (b) { return { big: b + 'kai-kj-big-v2/conv-20261119023139.mp3', role: b + 'kai-kj-role-v2/conv-20261119023300.mp3', check: b + 'kai-kj-check/conv-20261119001742.mp3',
+      in: b + 'kai-kj-in/conv-20261119001818.mp3', next: b + 'kai-kj-next/conv-20261119001850.mp3' }; })('https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voice-booth/ve-kj-start/'),
+    play: 'Play', stop: 'Stop',
     big: {
       blocks: [['84 → 250', 'Members by Thursday, December 31, 11:59 PM Eastern', 'k-dk'], ['60', 'New members from your links: your share', 'k-pink'], ['15 min', 'A day answering @vegansexplore, as Vegans Explore', 'k-peach']],
       whyH: 'Why January 1',
@@ -159,27 +165,27 @@
     },
     role: {
       doH: 'What you do, heaviest first',
-      does: [['Your people', 'Invite the people you know, with your own link: in person, by text, or on any platform you use.'],
+      does: [['Your people', 'Invite the people you know, business owners too, with your own link: in person, by text, or on any platform you use. Follow up however you like until they join; once they are on Vegans Explore, we take it from there.'],
         ['In person, in your city', 'Sign people up at events in your city.'],
         ['Footage and ideas', 'Send us footage and ideas. We edit everything in our own style, post it, and invite you to collab on it.'],
         ['Community, about 15 minutes a day', 'Answer comments and messages on @vegansexplore, as Vegans Explore, in Business Suite. Send each person their own link, welcome new followers, and tap what happened on your dashboard.'],
         ['Every week', 'Read Monday\'s brief and do its asks. Tell Kai if anything looks off.']],
       neverH: 'What you never do',
-      nevers: [['Message businesses from your own accounts', 'Listings and businesses go through @vegansexplore, so those relationships stay with the brand. If one writes to you, point them to @vegansexplore.'],
+      nevers: [['Promise what we have not built', 'No features, deals or prices we have not announced. Send people to Vegans Explore and let the platform do the rest.'],
         ['Post on @vegansexplore', 'You answer comments and messages only, through Meta Business Suite with your own login. No password, no posting, and Sean can remove the access any time.'],
-        ['Change anything else', 'Never start a cold message from @vegansexplore, never touch the profile, settings or security, never use bots or other tools on the account, and never promise anything we have not built.']],
+        ['Change anything else', 'Never start a cold message from @vegansexplore, never touch the profile, settings or security, never use bots or other tools on the account.']],
       dayH: 'A week in the role',
-      day: [['Every day', 'Answer', 'About 15 minutes: everyone who wrote, replied or commented on @vegansexplore.'], ['Through the week', 'Invite', 'Your people, with your link, and people at events in your city.'], ['Once a week', 'Brief', 'Read the brief, do its asks, and send us any footage from your week.']],
+      day: [['Every day', 'Answer', 'About 15 minutes: everyone who wrote, replied or commented on @vegansexplore.'], ['Through the week', 'Invite', 'Your people and business owners you know, with your link, and people at events in your city.'], ['Once a week', 'Brief', 'Read the brief, do its asks, and send us any footage from your week.']],
       dayNote: 'Your own hours. Your questions go to Kai on your dashboard; she answers what she can right away and checks with Sean on the rest. If Instagram ever shows a warning on @vegansexplore, stop for 48 hours and tell Kai.'
     },
     check: {
       intro: 'Pick one answer for each.',
       qs: [
-        { k: 'people', q: 'Who do you invite from your own accounts, with your link?', a: [['businesses', 'Businesses and listings in the Directory.'], ['personal', 'People I know personally: friends, family, followers, fellow creators.'], ['cold', 'Anyone I can find, with a cold message.']] },
+        { k: 'owner', q: 'A restaurant owner you know asks about Vegans Explore. What do you do?', a: [['promise', 'Promise them a feature or a deal to get them on.'], ['send_link', 'Send them to Vegans Explore with my link, and follow up until they join.'], ['wait', 'Tell them to wait until Vegans Explore contacts them.']] },
         { k: 'account', q: 'How do you work in the Vegans Explore account?', a: [['password', 'With the account password.'], ['post', 'I post on @vegansexplore when I have something good.'], ['business_suite', 'In Meta Business Suite, with my own login: comments and messages only.']] },
-        { k: 'footage', q: 'You got great footage at an event. What do you do?', a: [['on_theirs', 'Post it on @vegansexplore myself.'], ['send_us', 'Send it to Vegans Explore; we edit and post it.'], ['tag_biz', 'Post it on my account and tag businesses to bring them in.']] }
+        { k: 'footage', q: 'You got great footage at an event. What do you do?', a: [['on_theirs', 'Post it on @vegansexplore myself.'], ['send_us', 'Send it to Vegans Explore; we edit and post it.'], ['own_edit', 'Edit it into a Vegans Explore post myself and publish it.']] }
       ],
-      wrong: 'One or more answers are not quite right. Read Your role again; they keep the brand and the account safe.'
+      wrong: 'One is not quite right yet. Pick again; Your role has the answer.'
     },
     pay: { title: 'The pay', every: 'every 2 weeks, through Stripe', trial: 'One-month trial', first: 'First payday if you start today' },
     agrH: 'The agreement',
@@ -256,6 +262,16 @@
     $('doneNote').hidden = !(s.meta && s.payouts); $('doneNote').textContent = COPY.next.done;
   }
 
+  // Kai's recorded line for the step: nothing plays until Play is pressed, one at a time, and it stops when the step changes.
+  var KAI = new Audio(); KAI.preload = 'none';
+  KAI.addEventListener('ended', function () { $('kplay').innerHTML = '&#9654; ' + COPY.play; });
+  function kaiStop() { try { KAI.pause(); } catch (e) {} $('kplay').innerHTML = '&#9654; ' + COPY.play; }
+  $('kplay').addEventListener('click', function () {
+    if (!KAI.paused) return kaiStop();
+    var src = COPY.audio[STEP]; if (!src) return;
+    if (KAI.getAttribute('src') !== src) KAI.src = src; else KAI.currentTime = 0;
+    KAI.play().then(function () { $('kplay').innerHTML = '&#9632; ' + COPY.stop; }).catch(kaiStop);
+  });
   function go(name, push) {
     if (ORDER.indexOf(name) < 0) name = 'big';
     // Never skip ahead past an unfinished step: the quick check before I'm in, signing before Next steps (preview walks freely).
@@ -267,6 +283,7 @@
     $('stepper').innerHTML = ORDER.map(function (k, n) { return '<li class="' + (n < at ? 'done' : n === at ? 'on' : '') + '">' + esc(COPY.steps[k]) + '</li>'; }).join('');
     $('count').textContent = 'Step ' + (at + 1) + ' of ' + ORDER.length;
     $('h1').textContent = COPY.h1[name]; $('lede').textContent = COPY.lede[name]; $('say').textContent = COPY.say[name];
+    kaiStop(); $('kplay').hidden = !COPY.audio[name];
     $('back').hidden = at === 0;
     $('next').hidden = name === 'next';
     $('next').textContent = name === 'in' ? 'Sign and continue' : 'Next';
@@ -275,7 +292,7 @@
     window.scrollTo(0, 0);
   }
   function answers() { var a = {}; COPY.check.qs.forEach(function (q) { var el = document.querySelector('input[name=q_' + q.k + ']:checked'); a[q.k] = el ? el.value : null; }); return a; }
-  var RIGHT = { people: 'personal', account: 'business_suite', footage: 'send_us' };
+  var RIGHT = { owner: 'send_link', account: 'business_suite', footage: 'send_us' };
   function nextFrom(name) {
     if (name === 'check') {
       var a = answers(), wrong = Object.keys(RIGHT).filter(function (k) { return a[k] !== RIGHT[k]; });
