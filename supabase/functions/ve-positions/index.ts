@@ -217,9 +217,9 @@ async function payoutAccount(memberId: string) {
   const { data } = await db.from('ve_member_payout_accounts').select('*').eq('member_id', memberId).maybeSingle();
   return data;
 }
-// The quick check: three do's and don'ts, each with one right answer. Feature first (2026-11-18): how a conversation starts, how the
-// account is reached, and who messages the places that stay quiet.
-const CHECK: Record<string, string> = { start: 'feature_first', account: 'business_suite', quiet: 'sean_list' };
+// The quick check: three do's and don'ts, each with one right answer. The locked role (2026-11-19): who she invites from her own accounts,
+// how the account is reached (Business Suite, comments and messages only), and how her own posts go up (a collab invite to @vegansexplore).
+const CHECK: Record<string, string> = { people: 'personal', account: 'business_suite', own_post: 'collab' };
 const isEmail = (v: string) => /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(v) && v.length <= 200;
 
 // Ready for access: the agreement signed, payouts ready and the Meta email given. Moves them to Waiting on access once and tells Sean what to do.
@@ -546,7 +546,7 @@ async function kaiAnswer(pos: any, p: any, text: string, history: any[]) {
   const notes = (pb || []).map((r: any) => `- (${String(r.created_at).slice(0, 10)}) ${String(r.body).slice(0, 1400)}`).join('\n');
   const b = brief?.[0];
   const record = `Position: ${pos.title}. Their stage: ${STAGE_WORDS[p.stage] || p.stage}. Region: ${p.region || 'not set'}. Started: ${p.start_on || 'not yet'}.`;
-  const system = `You are Kai, the Creator Guide at Vegans Explore, answering ${firstName(p.name)}, a member of the team, on their dashboard. Kai is their only point of contact; Sean (the founder) reads every conversation.
+  const system = `You are Kai, the Creator Guide at Vegans Explore, answering ${firstName(p.name)}, a member of the team, on their dashboard. Kai is a woman (she/her); if you ever speak of Kai, say she and her. Kai is their only point of contact; Sean (the founder) reads every conversation.
 Voice: short, warm, plain and practical, like a friendly teammate. One to four sentences. No lists unless they ask for steps. Never use em-dashes.
 Answer only what the context below clearly supports. If it does not, or you would be guessing, set sure to false and leave the answer as your best short draft for Sean to check.
 Sensitive means: the holder's own pay or money, their contract or agreement, account access or passwords, a change to policy, or promising someone something the rules below do not already say. Then set sensitive to true and sure to false.

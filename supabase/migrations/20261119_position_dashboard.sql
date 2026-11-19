@@ -64,7 +64,7 @@ create table if not exists public.ve_position_ask_done (
 );
 alter table public.ve_position_ask_done enable row level security;
 
--- The Ask Kai thread. The holder writes; Kai answers what he is sure of (a Claude call in ve-positions); anything unsure, or about money,
+-- The Ask Kai thread. The holder writes; Kai answers what she is sure of (a Claude call in ve-positions); anything unsure, or about money,
 -- contracts, access, policy or promises, waits for Sean (needs_sean) and his answer posts as Kai (author 'sean', shown as Kai). Asks replies,
 -- brief answers and ideas always go to Sean, with Kai acknowledging.
 create table if not exists public.ve_position_kai (
@@ -74,7 +74,7 @@ create table if not exists public.ve_position_kai (
   topic text not null default 'chat' check (topic in ('chat', 'ask', 'brief', 'idea')),
   ref_id uuid,                    -- the ask or brief it answers
   body text not null check (char_length(body) <= 6000),
-  sure boolean,                   -- Kai's own answer: was he sure
+  sure boolean,                   -- Kai's own answer: was she sure
   needs_sean boolean not null default false,
   answered_at timestamptz,        -- when Sean (or Kai) answered a holder message
   reply_to uuid references public.ve_position_kai(id) on delete set null,

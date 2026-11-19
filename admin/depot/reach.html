@@ -70,6 +70,7 @@
       <a href="?tab=roster" data-t="roster">Roster</a>
       <a href="?tab=scout" data-t="scout">Friday scout</a>
       <a href="?tab=done" data-t="done">Done</a>
+      <a href="?tab=team" data-t="team" id="teamTab" hidden>Team: Kai, briefs, asks</a>
     </nav>
     <div class="k-stripe"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
     <div id="view"></div>
@@ -159,7 +160,7 @@
     if (t) { e.preventDefault(); go({ tab: t.getAttribute('data-t') }); }
   });
   function draft() { return ' <span class="k-tag wait">Draft</span>'; }
-  function tab() { var t = q('tab'); return ['today', 'sean', 'plan', 'scout', 'roster', 'done'].indexOf(t) >= 0 ? t : 'today'; }
+  function tab() { var t = q('tab'); if (t === 'team' && ME && ME.role === 'admin') return t; return ['today', 'sean', 'plan', 'scout', 'roster', 'done'].indexOf(t) >= 0 ? t : 'today'; }
   function draw() {
     var t = tab();
     Array.prototype.forEach.call(document.querySelectorAll('#tabs a'), function (a) { a.setAttribute('aria-selected', a.getAttribute('data-t') === t ? 'true' : 'false'); });
@@ -170,6 +171,7 @@
     if (t === 'scout') return drawScout();
     if (t === 'roster') return q('id') ? drawItem(q('id')) : drawRoster();
     if (t === 'done') return drawDone();
+    if (t === 'team') return drawTeam();
   }
 
   // ---------- Plan ----------
@@ -496,6 +498,100 @@
     });
   }
 
+
+  // ---------- Team (super admins only): what waits on Sean from Ask Kai, each holder's thread, the weekly brief and the asks.
+  // Data and writes through ve-positions (admin_team, admin_kai_answer, admin_brief_save, admin_ask_save; 2026-11-19). Sean's answers post in
+  // the holder's thread as Kai ("Sean, through Kai"); a brief and its asks show on their dashboard only once published. ----------
+  function pos(body) {
+    return fetch(SB + '/functions/v1/ve-positions', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + (window.VEAuth ? VEAuth.getToken() : '') }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json(); }).catch(function () { return { error: 'network' }; });
+  }
+  var TEAM = null;
+  var BSTAT = { draft: ['wait', 'Draft'], published: ['live', 'Published'], retired: ['not', 'Retired'], open: ['live', 'Open'] };
+  function drawTeam() {
+    pos({ action: 'admin_team' }).then(function (r) {
+      if (!r.ok) return fail(r);
+      TEAM = r;
+      var person = q('person'), edit = q('edit'), h = '';
+      if (edit) return drawTeamEdit(edit);
+      if (person) {
+        var P = r.people.filter(function (x) { return x.id === person; })[0], th = r.threads[person] || [];
+        h += '<p class="crumb"><a href="?tab=team" data-go=\'{"tab":"team"}\'>Team</a> &rsaquo; ' + esc(P ? P.name : 'Thread') + '</p>';
+        h += '<h2 class="k-h2">' + esc(P ? P.name : '') + '\'s thread with Kai</h2><p class="muted">Your answers post as Kai, marked "Sean, through Kai". They never see Logan.</p>';
+        h += th.length ? '<div class="hist">' + th.map(function (m) {
+          var who = m.author === 'holder' ? (P ? P.name : 'They') : m.author === 'sean' ? 'You, through Kai' : 'Kai';
+          return '<div id="m-' + m.id + '" style="--k-c:' + (m.waiting ? 'var(--k-or)' : 'var(--k-tint)') + '"><b>' + esc(who) + '</b>' + (m.topic !== 'chat' ? ' <span class="pill">' + esc(m.topic) + '</span>' : '') + '<br>' + esc(m.body) + '<br><small>' + esc(when(m.at)) + (m.waiting ? ' &middot; waiting on you' : '') + '</small>' +
+            (m.waiting ? '<textarea class="note-in" rows="3" data-ans="' + m.id + '" placeholder="Your answer, posted as Kai"></textarea><button type="button" class="k-btn k-sm" data-ans-send="' + m.id + '">Send as Kai</button>' : '') + '</div>';
+        }).join('') + '</div>' : '<p class="muted">No messages yet.</p>';
+        h += '<div class="sec"><span class="k-label">Write to them, as Kai</span><textarea class="note-in" rows="3" id="newMsg"></textarea><p><button type="button" class="k-btn k-cta" id="newMsgB">Send as Kai</button></p></div>';
+        $('view').innerHTML = h; wireTeam(person);
+        if (location.hash && document.querySelector(location.hash)) document.querySelector(location.hash).scrollIntoView({ block: 'center' });
+        return;
+      }
+      h += '<p class="k-lede">What Kai sent to you, each team member\'s thread, the weekly brief and the asks. Everything here shows on their dashboard at /dashboard/position.</p>';
+      h += '<div class="sec"><h2 class="k-h2">Waiting on you</h2>' + (r.waiting.length ? '<div class="k-rows">' + r.waiting.map(function (m) {
+        return '<div class="k-row r5" style="grid-template-columns:minmax(0,1fr) auto"><div class="k-row-t"><b>' + esc(m.name || 'Team member') + (m.topic !== 'chat' ? ' <span class="pill">' + esc(m.topic) + '</span>' : '') + '</b><small>' + esc(m.body) + '</small>' +
+          '<textarea class="note-in" rows="2" data-ans="' + m.id + '" placeholder="Your answer, posted as Kai"></textarea></div><button type="button" class="k-btn k-sm" data-ans-send="' + m.id + '">Send as Kai</button></div>';
+      }).join('') + '</div>' : '<p class="muted">Nothing waiting. Kai answered everything she could.</p>') + '</div>';
+      h += '<div class="sec"><h2 class="k-h2">Team</h2>' + (r.people.length ? '<div class="k-rows">' + r.people.map(function (x) {
+        return '<div class="k-row r5" style="grid-template-columns:minmax(0,1fr) auto auto"><div class="k-row-t"><b>' + esc(x.name || '') + '</b><small>' + esc((x.stage_words || x.stage) + (x.region ? ', ' + x.region : '')) + '</small></div>' +
+          '<span class="k-tag ' + (x.waiting ? 'new' : 'live') + '">' + (x.waiting ? x.waiting + ' waiting' : 'All answered') + '</span><a class="k-btn k-sm" href="?tab=team&person=' + x.id + '" data-go=\'' + JSON.stringify({ tab: 'team', person: x.id }) + '\'>Thread</a></div>';
+      }).join('') + '</div>' : '<p class="muted">No one holds the position yet.</p>') + '</div>';
+      h += '<div class="sec"><h2 class="k-h2">Weekly briefs</h2><p><a class="k-btn k-cta" href="?tab=team&edit=brief-new" data-go=\'{"tab":"team","edit":"brief-new"}\'>New brief</a></p>' + (r.briefs.length ? '<div class="k-rows">' + r.briefs.map(function (b) {
+        var st = BSTAT[b.status] || BSTAT.draft;
+        return '<div class="k-row r5" style="grid-template-columns:minmax(0,1fr) auto auto"><div class="k-row-t"><b>' + esc(b.title) + '</b><small>Week of ' + esc(b.week_of) + '</small></div><span class="k-tag ' + st[0] + '">' + st[1] + '</span>' +
+          '<a class="k-btn k-sm" href="?tab=team&edit=brief-' + b.id + '" data-go=\'' + JSON.stringify({ tab: 'team', edit: 'brief-' + b.id }) + '\'>Edit</a></div>';
+      }).join('') + '</div>' : '<p class="muted">No briefs yet.</p>') + '</div>';
+      h += '<div class="sec"><h2 class="k-h2">Asks</h2><p><a class="k-btn" href="?tab=team&edit=ask-new" data-go=\'{"tab":"team","edit":"ask-new"}\'>New ask</a></p>' + (r.asks.length ? '<div class="k-rows">' + r.asks.map(function (a) {
+        var st = BSTAT[a.status] || BSTAT.draft;
+        return '<div class="k-row r5" style="grid-template-columns:minmax(0,1fr) auto auto"><div class="k-row-t"><b>' + esc(a.title) + '</b><small>' + esc((a.due_text ? 'Due ' + a.due_text + ' · ' : '') + (a.brief_id ? 'With a brief' : 'On its own') + ' · ' + a.done_by + ' done') + '</small></div><span class="k-tag ' + st[0] + '">' + st[1] + '</span>' +
+          '<a class="k-btn k-sm" href="?tab=team&edit=ask-' + a.id + '" data-go=\'' + JSON.stringify({ tab: 'team', edit: 'ask-' + a.id }) + '\'>Edit</a></div>';
+      }).join('') + '</div>' : '<p class="muted">No asks yet.</p>') + '</div>';
+      $('view').innerHTML = h; wireTeam(null);
+    });
+  }
+  function field(id, label, val, kind, opts) {
+    if (kind === 'select') return '<div class="k-f"><label for="' + id + '">' + label + '</label><select id="' + id + '">' + opts.map(function (o) { return '<option value="' + o[0] + '"' + (o[0] === val ? ' selected' : '') + '>' + esc(o[1]) + '</option>'; }).join('') + '</select></div>';
+    if (kind === 'area') return '<div class="k-f wide"><label for="' + id + '">' + label + '</label><textarea id="' + id + '" rows="3">' + esc(val || '') + '</textarea></div>';
+    return '<div class="k-f"><label for="' + id + '">' + label + '</label><input id="' + id + '" value="' + esc(val || '') + '"' + (kind === 'date' ? ' type="date"' : '') + '></div>';
+  }
+  function drawTeamEdit(edit) {
+    var isBrief = edit.indexOf('brief-') === 0, id = edit.replace(/^(brief|ask)-/, ''), x = {};
+    if (id !== 'new') x = (isBrief ? TEAM.briefs : TEAM.asks).filter(function (y) { return y.id === id; })[0] || {};
+    var h = '<p class="crumb"><a href="?tab=team" data-go=\'{"tab":"team"}\'>Team</a> &rsaquo; ' + (isBrief ? (id === 'new' ? 'New brief' : 'Brief') : (id === 'new' ? 'New ask' : 'Ask')) + '</p><form class="k-form" id="teF">';
+    if (isBrief) {
+      h += field('fw', 'Week of (Monday)', x.week_of, 'date') + field('ft', 'Title', x.title || '') + field('fs', 'Status', x.status || 'draft', 'select', [['draft', 'Draft (only you see it)'], ['published', 'Published (on their dashboard)'], ['retired', 'Retired']]) +
+        field('fwh', 'Where we are', x.where_text, 'area') + field('fn', 'What\'s next', x.next_text, 'area') + field('fq', 'This week\'s question', x.question, 'area');
+    } else {
+      var bo = [['', 'On its own']].concat(TEAM.briefs.map(function (b) { return [b.id, 'With: ' + b.title]; }));
+      h += field('ft', 'The ask', x.title || '') + field('fd', 'Due', x.due_text || '') + field('fs', 'Status', x.status || 'open', 'select', [['open', 'Open (on their dashboard)'], ['draft', 'Draft'], ['retired', 'Retired']]) +
+        field('fb', 'Brief', x.brief_id || '', 'select', bo) + field('fl', 'Link (optional)', x.link || '') + field('fo', 'Order', String(x.sort || 0)) + field('fx', 'More (optional)', x.body, 'area');
+    }
+    h += '<div class="k-f wide"><button type="submit" class="k-btn k-cta">Save</button> <span class="k-msg" id="teM"></span></div></form>';
+    $('view').innerHTML = h;
+    $('teF').addEventListener('submit', function (e) {
+      e.preventDefault(); $('teM').textContent = 'Saving...';
+      var body = isBrief ? { action: 'admin_brief_save', week_of: $('fw').value, title: $('ft').value, status: $('fs').value, where_text: $('fwh').value, next_text: $('fn').value, question: $('fq').value }
+        : { action: 'admin_ask_save', title: $('ft').value, due_text: $('fd').value, status: $('fs').value, brief_id: $('fb').value || null, link: $('fl').value, sort: $('fo').value, body: $('fx').value };
+      if (id !== 'new') body.id = id;
+      pos(body).then(function (r) { if (r.ok) { toast('Saved'); go({ tab: 'team' }); } else $('teM').textContent = r.message || 'That did not save.'; });
+    });
+  }
+  function wireTeam(person) {
+    Array.prototype.forEach.call(document.querySelectorAll('[data-ans-send]'), function (b) {
+      b.addEventListener('click', function () {
+        var id = b.getAttribute('data-ans-send'), t = document.querySelector('[data-ans="' + id + '"]').value.trim();
+        if (t.length < 2) return toast('Write your answer first.');
+        b.disabled = true;
+        pos({ action: 'admin_kai_answer', message_id: id, text: t }).then(function (r) { b.disabled = false; if (r.ok) { toast('Posted as Kai'); drawTeam(); } else toast(r.message || 'That did not send.'); });
+      });
+    });
+    if (person && $('newMsgB')) $('newMsgB').addEventListener('click', function () {
+      var t = $('newMsg').value.trim(); if (t.length < 2) return toast('Write something first.');
+      pos({ action: 'admin_kai_answer', person_id: person, text: t }).then(function (r) { if (r.ok) { toast('Posted as Kai'); drawTeam(); } else toast(r.message || 'That did not send.'); });
+    });
+  }
+
   function fail(r) {
     if (r && r.error === 'forbidden') return gate('This console is for the Vegans Explore team.');
     $('view').innerHTML = '<p class="k-msg err">' + esc((r && r.message) || 'That did not load. Try again in a moment.') + '</p>';
@@ -509,7 +605,7 @@
     if (!VEAuth.getToken()) return gate('Sign in to open Directory Reach.');
     post({ action: 'me' }).then(function (r) {
       if (!r.ok) return gate(r.error === 'forbidden' ? 'This console is for the Vegans Explore team.' : 'Sign in to open Directory Reach.');
-      ME = r.me; $('pageTitle').textContent = COPY.title; $('pageLede').innerHTML = esc(COPY.lede) + draft(); $('gate').hidden = true; $('app').hidden = false; draw();
+      ME = r.me; if (ME.role === 'admin') $('teamTab').hidden = false; $('pageTitle').textContent = COPY.title; $('pageLede').innerHTML = esc(COPY.lede) + draft(); $('gate').hidden = true; $('app').hidden = false; draw();
     });
   }
   start();
