@@ -123,6 +123,21 @@
     .gb-form { max-width: 900px; }
     .rf-head .rf-act:empty { display: none; }
     @media (max-width: 900px) { .gb-cover { grid-template-columns: minmax(0, 1fr); } .gb-cover .k-pic { justify-self: start; max-width: 320px; } }
+    /* Liz's card (Sean, 2026-11-19: "make the image of Liz a little bit bigger... keep Liz solid and then make just the text scroll... 3 rows of
+       text, so that way the rectangular box is a little bit more compact"): a bigger fixed picture, her line in a 3-line box that scrolls. A small
+       exception to "nothing scrolls inside itself", at Sean's word; overscroll-behavior keeps the page scrolling past it. */
+    .rf-guide { grid-template-columns: 96px minmax(0, 1fr) auto; align-items: center; }
+    .rf-guide .av { width: 96px; height: 96px; border-radius: 12px; }
+    .rf-guide q { max-height: calc(1.35em * 3); overflow-y: auto; overscroll-behavior: auto; padding-right: 8px; scrollbar-width: thin; scrollbar-color: var(--k-pink) transparent; }
+    .rf-guide q::-webkit-scrollbar { width: 6px; } .rf-guide q::-webkit-scrollbar-thumb { background: var(--k-pink); border-radius: 3px; }
+    /* Next part: a real button at the bottom (Sean: "a little bit more prominent button at the bottom"); outlined, the orange stays Save your day. */
+    .gb-next { align-items: center; gap: 10px 16px; }
+    .gb-next a.k-btn { font-size: 13px; padding: 14px 22px; text-decoration: none; }
+    @media (max-width: 900px) {
+      .rf-guide { grid-template-columns: 64px minmax(0, 1fr) auto; }
+      .rf-guide .av { width: 64px !important; height: 64px !important; }
+      .gb-next a.k-btn { width: 100%; }
+    }
   </style>
 </head>
 <body>
@@ -198,7 +213,7 @@
   }
   function good(blocks) { return '<section class="rf-sec"><span class="k-label">Good to know</span><div class="gb-good">' + blocks.map(function (b) { return '<div class="k-block ' + b[0] + '"><span class="k-label">' + b[1] + '</span>' + b[2] + '</div>'; }).join('') + '</div></section>'; }
   function see() { return '<div class="gb-see"><span class="k-label">Ready?</span><h2>Save your day.</h2><p>Days are first come, first served, so if you would like one, save it by Friday, December 4.</p><a class="k-btn k-sm" href="#/join">Save your day &rsaquo;</a></div>'; }
-  function next(i) { var n = PARTS[i + 1]; return n ? '<div class="gb-next"><a href="' + link(n[0]) + '">Next part: ' + esc(n[1]) + ' &rsaquo;</a><span>' + esc(n[6]) + '</span></div>' : ''; }
+  function next(i) { var n = PARTS[i + 1]; return n ? '<div class="gb-next"><a class="k-btn" href="' + link(n[0]) + '">Next part: ' + esc(n[1]) + ' &rsaquo;</a><span>' + esc(n[6]) + '</span></div>' : ''; }
   var RULES = '/guides/holiday-guide#/giving/rules';
 
   var VIEWS = {
