@@ -27,6 +27,7 @@
     .ps-guide .av { width: 64px; height: 64px; border: 2px solid var(--k-ink); border-radius: 10px; background: #fff center 12% / cover no-repeat; }
     .ps-guide b { display: block; font-size: 10.5px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: var(--k-pinkd); }
     .ps-guide span { display: block; font-size: 14px; font-weight: 800; line-height: 1.35; }
+    .ps-guide .kplay { margin-top: 8px; }
     .stepper { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 18px; padding: 0; counter-reset: st; }
     .stepper li { counter-increment: st; display: flex; align-items: center; gap: 8px; font-size: 11.5px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; border: 2px solid var(--k-line); border-radius: var(--k-r); padding: 6px 10px; color: var(--k-mute); }
     .stepper li::before { content: counter(st); display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: #eee; color: var(--k-ink); font-size: 11px; }
@@ -71,7 +72,7 @@
       <h1 class="k-h1" id="h1" style="margin-top:14px"></h1>
       <p class="k-lede" id="lede"></p>
     </div>
-    <div class="ps-guide" id="guide"><span class="av" id="av" role="img" aria-label="Kai, your Guide"></span><p style="margin:0"><b>Kai, Creator Guide</b><span id="say"></span></p></div>
+    <div class="ps-guide" id="guide"><span class="av" id="av" role="img" aria-label="Kai, your Guide"></span><p style="margin:0"><b>Kai, Creator Guide</b><span id="say"></span><button type="button" class="k-btn k-sm kplay" id="kplay" hidden>&#9654; Play</button></p></div>
   </div>
 
   <div id="gate" class="gate" hidden></div>
@@ -143,13 +144,18 @@
       in: 'Read the agreement, then tick the box and type your full name.',
       next: 'Three things, and you are ready to start.'
     },
+    // Kai's lines as Sean recorded them (HQ Voices, set ve-kj-start, 2026-11-19; each checked word for word with stt). A changed word
+    // here is a new recording (-vN) in the booth first.
     say: {
-      big: 'Hi, I\'m Kai. You\'re joining at the best moment: the doors open January 1, and you help fill the room with your people.',
-      role: 'The people you already know are yours to invite, any way you like, business owners too. Get them onto Vegans Explore; once they join, we take it from there.',
-      check: 'No trick questions. If one is off, pick again.',
-      in: 'This is the same agreement, in plain words, for everyone in this role.',
-      next: 'Give us the email on your Facebook account, so Sean can add you in Business Suite.'
+      big: 'Hey KJ, Kai here. By December 31, we want 250 members through the door, and 60 of them come through you. It starts with the people you know.',
+      role: 'Here\'s the whole idea: you bring people in. Invite the people you know, business owners too, with your link. Sign people up at events in your city, answer our comments and messages about 15 minutes a day, and send us your footage. We make the posts.',
+      check: 'Three quick questions, just to make sure we\'re on the same page. Take your time.',
+      in: 'This is the deal: $125 every two weeks, your own hours, and a one-month trial. If it feels right, type your name and you\'re in.',
+      next: 'Last thing: give us the email in your Facebook account, so Sean can add you in the Business Suite. Then set up payouts, and you start Monday.'
     },
+    audio: (function (b) { return { big: b + 'kai-kj-big-v2/conv-20261119023139.mp3', role: b + 'kai-kj-role-v2/conv-20261119023300.mp3', check: b + 'kai-kj-check/conv-20261119001742.mp3',
+      in: b + 'kai-kj-in/conv-20261119001818.mp3', next: b + 'kai-kj-next/conv-20261119001850.mp3' }; })('https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voice-booth/ve-kj-start/'),
+    play: 'Play', stop: 'Stop',
     big: {
       blocks: [['84 → 250', 'Members by Thursday, December 31, 11:59 PM Eastern', 'k-dk'], ['60', 'New members from your links: your share', 'k-pink'], ['15 min', 'A day answering @vegansexplore, as Vegans Explore', 'k-peach']],
       whyH: 'Why January 1',
@@ -256,6 +262,16 @@
     $('doneNote').hidden = !(s.meta && s.payouts); $('doneNote').textContent = COPY.next.done;
   }
 
+  // Kai's recorded line for the step: nothing plays until Play is pressed, one at a time, and it stops when the step changes.
+  var KAI = new Audio(); KAI.preload = 'none';
+  KAI.addEventListener('ended', function () { $('kplay').innerHTML = '&#9654; ' + COPY.play; });
+  function kaiStop() { try { KAI.pause(); } catch (e) {} $('kplay').innerHTML = '&#9654; ' + COPY.play; }
+  $('kplay').addEventListener('click', function () {
+    if (!KAI.paused) return kaiStop();
+    var src = COPY.audio[STEP]; if (!src) return;
+    if (KAI.getAttribute('src') !== src) KAI.src = src; else KAI.currentTime = 0;
+    KAI.play().then(function () { $('kplay').innerHTML = '&#9632; ' + COPY.stop; }).catch(kaiStop);
+  });
   function go(name, push) {
     if (ORDER.indexOf(name) < 0) name = 'big';
     // Never skip ahead past an unfinished step: the quick check before I'm in, signing before Next steps (preview walks freely).
@@ -267,6 +283,7 @@
     $('stepper').innerHTML = ORDER.map(function (k, n) { return '<li class="' + (n < at ? 'done' : n === at ? 'on' : '') + '">' + esc(COPY.steps[k]) + '</li>'; }).join('');
     $('count').textContent = 'Step ' + (at + 1) + ' of ' + ORDER.length;
     $('h1').textContent = COPY.h1[name]; $('lede').textContent = COPY.lede[name]; $('say').textContent = COPY.say[name];
+    kaiStop(); $('kplay').hidden = !COPY.audio[name];
     $('back').hidden = at === 0;
     $('next').hidden = name === 'next';
     $('next').textContent = name === 'in' ? 'Sign and continue' : 'Next';
