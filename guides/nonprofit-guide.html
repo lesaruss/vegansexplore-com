@@ -450,6 +450,8 @@
     .rg-step p{margin:0 0 10px;font-size:13.5px;line-height:1.55;color:var(--ink75);}
     .rg-step a{font-size:12.5px;font-weight:800;color:var(--g);}
     .dg-th.rg-th{background:var(--gl);color:var(--g);}
+    /* The movement's five choices wrap on phones instead of sliding in their own box (2026-11-19). */
+    @media (max-width:900px){html body.ve-gf.gf-hb .dg-toggles.ng-wrap{flex-wrap:wrap;overflow-x:visible;}}
     /* The Nonprofit Guide's own pieces (2026-10-29): a tip's case or pro tip, its This week checklist, On Vegans Explore, the kit. */
     .ng-extra{border-left:4px solid var(--g2);background:#f6faf6;border-radius:0 10px 10px 0;padding:12px 16px;margin:16px 0 0;font-size:14.5px;line-height:1.6;color:var(--ink75);max-width:860px;}
     .ng-extra b,.ng-ours b{display:block;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--g);margin-bottom:4px;}
@@ -525,10 +527,13 @@
 <script src="/public/ve-votes.js"></script>
 <script src="/public/ve-region-directory.js"></script>
 <script src="/public/ve-episodes.js"></script>
-<script src="/guide-scripts/nonprofit-guide.js"></script>
+<!-- The movement: the Vegan Activism Guide's own material, shared, never copied (2026-11-19) -->
+<script src="/guide-scripts/activism-history.js?v=1"></script>
+<script src="/guide-scripts/activism-data.js?v=1"></script>
+<script src="/guide-scripts/nonprofit-guide.js?v=2"></script>
 <script src="/public/ve-guide-min.js"></script>
 <!-- The locked Guide template, Handbook (Sean, 2026-11-17; canon canon-ve-guide-templates). The Contents lines are the parts' own titles. -->
-<script type="application/json" id="gf-parts">{"overview": "A home for your Vegan nonprofit", "tips": "Ten ways to fundraise and stay relevant", "pulse": "Our nonprofit series", "directory": "Nonprofits, rescues and sanctuaries", "found": "Make your Directory page work for you", "businesses": "Vegan businesses near you that fit a tie-in", "events": "Fill your next event", "support": "Burnout, and what to do instead", "partner": "Vegans Explore Nonprofit Partners", "mylist": "Everything you save, in one place", "join": "Free with the short survey"}</script>
+<script type="application/json" id="gf-parts">{"overview": "A home for your Vegan nonprofit", "tips": "Ten ways to fundraise and stay relevant", "pulse": "Our nonprofit series", "movement": "Programs, educators, talks and history from the Activism Guide", "directory": "Nonprofits, rescues and sanctuaries", "found": "Make your Directory page work for you", "businesses": "Vegan businesses near you that fit a tie-in", "events": "Fill your next event", "support": "Burnout, and what to do instead", "partner": "Vegans Explore Nonprofit Partners", "mylist": "Everything you save, in one place", "join": "Free with the short survey"}</script>
 <script src="/public/ve-guide-frame.js"></script>
 </body>
 </html>

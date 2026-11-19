@@ -11,6 +11,11 @@
  *                  Tip 1 (storytelling) is open to everyone, the free example
  *   Pulse          our nonprofit series (Vegans Explore Podcast 111, 123 to 127) and the nonprofit leaders on our shows, as their
  *                  podcast episodes, played in place (PULSE_PICKS, ve-podcast)
+ *   The movement   what a nonprofit can borrow from the Vegan Activism Guide (2026-11-19; Sean, 2026-11-17): the ways to act as programs
+ *                  to run, with the organizations already running them; the humane educators; Talks That Changed Minds; the history;
+ *                  the live campaigns. Free for everyone, as it is in the Activism Guide. Read from the same sources, never copied:
+ *                  /guide-scripts/activism-data.js (VE_ACTIVISM), /guide-scripts/activism-history.js (VE_ACTIVISM_HISTORY),
+ *                  ve_activism_campaigns. Only the nonprofit framing of each program (PROGRAMS) lives here.
  *   Directory      Nonprofits, Rescues and Sanctuaries with the Directory's own card, by chapter; a listing opens in the Guide
  *   Get found      find your organization's page, claim it, keep it current, votes, points members give, the chapters it serves
  *   Businesses     Vegan brands and restaurants in your chapter that fit a tie-in, and a pitch to send (tip 6 made real)
@@ -74,6 +79,8 @@
       sayMember: 'Here are all ten tips. Each has a short checklist for this week. Tick it off as you go, and save the ones you\'re working on.' },
     { k: 'pulse', label: 'Pulse', lock: 1, say: 'Our five-part nonprofit series, and our interviews with the people behind PETA, The Humane League, Animal Hero Kids and the sanctuaries. Play them right here.',
       sayMember: 'Every nonprofit episode we\'ve recorded lives here. Start with the series, then hear how the leaders did it.' },
+    // New line (2026-11-19), not recorded yet: text only, so Play stays hidden. For Sean to record: docs/proposals/2026-11-19-nonprofit-pass-lines.md.
+    { k: 'movement', label: 'The movement', say: 'You don\'t have to invent it all. Here\'s what your organization can borrow from the Activism Guide: programs to run, educators to learn from, talks to share and the history behind your work.' },
     { k: 'directory', label: 'Directory', say: 'Here are the nonprofits, rescues and sanctuaries in our Directory, chapter by chapter. Members vouch for the ones they love.',
       sayMember: 'Find your organization and the ones near you. Members vouch and give points here, so a page that\'s kept current gets noticed.' },
     { k: 'found', label: 'Get found', say: 'Your page in our Directory is free. Here\'s how to claim it, keep it current and show up in every chapter you serve.',
@@ -113,7 +120,8 @@
     events: ic('<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>'),
     support: ic('<path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.1 4.3 2.4.7-1.3 2.2-2.4 4.3-2.4 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/>'),
     partner: ic('<path d="M3 10v4h3l7 5V5L6 10z"/><path d="M17 9a4 4 0 010 6"/>'),
-    kit: ic('<path d="M4 7h16v13H4z"/><path d="M9 7V4h6v3"/>')
+    kit: ic('<path d="M4 7h16v13H4z"/><path d="M9 7V4h6v3"/>'),
+    movement: ic('<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>')
   };
   var LOCK_SVG = '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 018 0v3"/></svg>';
   var HEART = '<svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 21s-7.5-4.6-9.6-9.2C.9 8.4 3 4.5 6.7 4.5c2.1 0 3.6 1.1 4.3 2.4.7-1.3 2.2-2.4 4.3-2.4 3.7 0 5.8 3.9 4.3 7.3C19.5 16.4 12 21 12 21z"/></svg>';
@@ -376,6 +384,110 @@
     main.innerHTML = html;
   }
 
+  // ---------- The movement: what a nonprofit can borrow from the Vegan Activism Guide (2026-11-19) ----------
+  // Everything here is read from the Activism Guide's own sources (activism-data.js, activism-history.js, ve_activism_campaigns), so the two
+  // Guides never drift. Only PROGRAMS, each way to act framed as a program a nonprofit can run, is the Nonprofit Guide's own.
+  var PROGRAMS = {
+    'humane-education': 'Bring talks, stories and activities to schools, libraries and camps, and let people decide for themselves. Teachers and families who meet your work there can become your volunteers and supporters.',
+    'street-outreach': 'Tables, leaflets and free food tastings at markets, campuses and events. Every table is also a place to sign up volunteers and collect stories for your Story Bank.',
+    'direct-action': 'Marches, vigils and peaceful demonstrations. They work best, and are safest, with experienced organizers, so many organizations start by joining a group that already runs them.',
+    'legal-policy': 'Rally your supporters behind one bill, ballot measure or public comment at a time. A short, clear ask to call or write is a program any organization can run.',
+    'sanctuaries': 'Open days, volunteer days and sponsor-an-animal programs give supporters a way to meet the animals they help, and a reason to keep giving.',
+    'digital-activism': 'Short videos, rescue stories, online campaigns and petitions that reach people where they scroll, with something your supporters can share.'
+  };
+  var MV_SUBS = [['Programs', ''], ['Educators', 'educators'], ['Talks', 'talks'], ['History', 'history'], ['Campaigns', 'campaigns']];
+  var MV_NAMES = {}, MV_CAMPS = null;
+  function av() { return window.VE_ACTIVISM || null; }
+  function mvWho(k) {
+    var A = av(); if (!A) return [];
+    return { 'humane-education': A.EDUCATORS.map(function (x) { return x[2]; }).concat(A.MORE_EDU_NAMES), 'street-outreach': A.OUTREACH_NAMES, 'direct-action': A.ACTION_NAMES,
+      'legal-policy': A.LAW_NAMES, 'digital-activism': A.DIGITAL_NAMES }[k] || [];
+  }
+  // Listings found by name, the Activism Guide's own lookup (VE_ACTIVISM.namesOr), on the shared Directory card.
+  function mvCards(key, names, boxId, gridId) {
+    var A = av(), box = document.getElementById(boxId); if (!A || !box || !names.length) return;
+    var draw = function (rows) {
+      var b = document.getElementById(boxId); if (!b) return;
+      b.innerHTML = rows.length ? cards(rows, gridId) : '<p class="dg-empty">Their Directory pages are on the way.</p>';
+      wireCards(gridId, '#/movement');
+    };
+    if (MV_NAMES[key]) return draw(MV_NAMES[key]);
+    rest(SB + '/rest/v1/listings?select=' + FIELDS + '&status=eq.approved&or=(' + A.namesOr(names) + ')').then(function (rows) {
+      rows = Array.isArray(rows) ? rows : [];
+      var at = function (r) { for (var i = 0; i < names.length; i++) if (names[i].toLowerCase() === String(r.name || '').toLowerCase()) return i; return 99; };
+      rows.sort(function (a, b) { return at(a) - at(b); });
+      MV_NAMES[key] = rows; draw(rows);
+    }).catch(function () { draw([]); });
+  }
+  function mvIcon(name) { var A = av(); return '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" ' + S + ' aria-hidden="true">' + (A ? A.IC[name] || '' : '') + '</svg>'; }
+  function viewMovement(sub) {
+    var A = av(), parts = String(sub || '').split('/'), key = parts[0];
+    if (key === 'listing' && parts[1]) return viewListing(decodeURIComponent(parts[1]), ['The movement', '#/movement']);
+    if (!A) { main.innerHTML = head('The movement', 'Learn from the movement', '') + '<div class="dg-loading">Loading...</div>'; return; }
+    var G = A.GUIDE;
+    if (key === 'programs' && parts[1]) {
+      var w = A.WAYS.filter(function (x) { return x[0] === parts[1]; })[0];
+      if (w) {
+        main.innerHTML = crumb([['The movement', '#/movement'], [w[2]]]) + head('A program to run', esc(w[2]), esc(PROGRAMS[w[0]] || '')) +
+          '<p class="ag-about"><b>In the Activism Guide:</b> ' + esc(w[3]) + '</p>' +
+          '<div class="dg-btns" style="margin:0 0 18px"><a class="dg-btn" href="' + G + '#/' + w[0] + '">Read ' + esc(w[2].toLowerCase()) + ' in the Activism Guide</a><a class="dg-btn dg-ghost" href="#/movement">All programs</a></div>' +
+          '<h3 class="dg-k" style="margin:0 0 8px">' + (w[0] === 'sanctuaries' ? 'Sanctuaries and rescues in our Directory' : 'Organizations already running it') + '</h3><div id="ngMvWho"><div class="dg-loading">Loading...</div></div>';
+        if (w[0] === 'sanctuaries') {
+          var box = document.getElementById('ngMvWho');
+          if (ORGS) { var san = ORGS.filter(function (l) { return orgCat(l, 'Sanctuaries') || orgCat(l, 'Rescues'); }).slice(0, 8);
+            box.innerHTML = san.length ? cards(san, 'ngMvWhoGrid') : '<p class="dg-empty">None listed yet.</p>'; wireCards('ngMvWhoGrid', '#/movement'); }
+        } else mvCards(w[0], mvWho(w[0]), 'ngMvWho', 'ngMvWhoGrid');
+        return;
+      }
+    }
+    var s = MV_SUBS.filter(function (x) { return x[1] === key; })[0] || MV_SUBS[0];
+    var t = toggles(MV_SUBS.map(function (x) { return [x[0], '#/movement' + (x[1] ? '/' + x[1] : '')]; }), s[0]).replace('class="dg-toggles"', 'class="dg-toggles ng-wrap"');  // five choices: they wrap on phones, never a box that slides
+    var html;
+    if (s[1] === 'educators') {
+      html = head('The movement', 'Learn from the educators',
+        'Humane educators to learn from, with decades in classrooms. Each has their own page in the Activism Guide: their story, what to watch or hear, and how to reach them through their Directory pages.', t) +
+        '<div class="dg-srows">' + A.EDUCATORS.map(function (x) {
+          return row({ icon: mvIcon('teach'), title: x[1], href: G + '#/humane-education/' + x[0], pre: '<span class="dg-bcat">' + esc(x[2]) + '</span>', body: '<p class="dg-srow-p">' + esc(x[3]) + '</p>' });
+        }).join('') + '</div>' +
+        '<div class="dg-btns" style="margin:16px 0 22px"><a class="dg-btn" href="' + G + '#/humane-education">Humane education in the Activism Guide</a></div>' +
+        '<h3 class="dg-k" style="margin:0 0 8px">More humane educators</h3><p class="dg-lede" style="margin-bottom:10px">Organizations and authors that bring humane education to schools, families and teachers.</p><div id="ngMvEdu"><div class="dg-loading">Loading...</div></div>';
+      main.innerHTML = html; mvCards('edu', A.MORE_EDU_NAMES, 'ngMvEdu', 'ngMvEduGrid'); return;
+    }
+    if (s[1] === 'talks') {
+      main.innerHTML = head('The movement', 'Talks to share',
+        'Talks to show at a screening night or a volunteer training, or to send to your supporters. They are Talks That Changed Minds from the Activism Guide, shortest first, and every one has subtitles in many languages.', t) +
+        '<div class="ag-vids">' + A.SPEECHES.map(function (v) { return A.video(v, { base: G }); }).join('') + '</div>' +
+        '<div class="dg-btns" style="margin-top:18px"><a class="dg-btn" href="' + G + '#/speeches">All the talks in the Activism Guide</a><a class="dg-btn dg-ghost" href="' + G + '#/speeches/suggest">Suggest a talk</a></div>';
+      return;
+    }
+    if (s[1] === 'history') {
+      var H = window.VE_ACTIVISM_HISTORY || [];
+      main.innerHTML = head('The movement', 'The story behind your work',
+        'The history of the movement, to use in a talk, a grant application or a new volunteer\'s first day. Your organization is part of a long story, from ancient teachers to today\'s activists, and every era opens in the Activism Guide.', t) +
+        (H.length ? '<ul class="ag-eras">' + H.map(function (e) { return A.eraTile(e, G); }).join('') + '</ul>' : '<div class="dg-loading">Loading...</div>') +
+        '<div class="dg-btns" style="margin-top:18px"><a class="dg-btn" href="' + G + '#/history">A History of the Vegan Movement</a></div>';
+      return;
+    }
+    if (s[1] === 'campaigns') {
+      var list = MV_CAMPS ? MV_CAMPS.filter(function (c) { return c.status === 'live'; }) : null;
+      main.innerHTML = head('The movement', 'Campaigns to point supporters to',
+        'Live campaigns to point your supporters to, each with exactly what it asks for. They are run by groups across the movement and listed in the Activism Guide. Running one? Tell us about it.', t) +
+        (list ? (list.length ? '<div class="dg-srows">' + list.map(function (c) {
+          return row({ icon: mvIcon('direct'), title: c.title, href: G + '#/campaigns/' + c.slug, pre: '<span class="dg-bcat">' + esc((c.orgs || []).join(', ')) + '</span>', body: '<p class="dg-srow-p">' + esc(c.summary) + '</p>' });
+        }).join('') + '</div>' : '<p class="dg-empty">No campaigns listed right now.</p>') : '<div class="dg-loading">Loading...</div>') +
+        '<div class="dg-btns" style="margin-top:18px"><a class="dg-btn" href="' + G + '#/campaigns/suggest">Tell us about your campaign</a><a class="dg-btn dg-ghost" href="' + G + '#/campaigns">Campaigns in the Activism Guide</a></div>';
+      if (!MV_CAMPS) rest(SB + A.CAMPAIGNS_PATH).then(function (r) { MV_CAMPS = Array.isArray(r) ? r : []; }).catch(function () { MV_CAMPS = []; })
+        .then(function () { if (curTab === 'movement' && /^#\/movement\/campaigns/.test(location.hash)) viewMovement('campaigns'); });
+      return;
+    }
+    main.innerHTML = head('The movement', 'Learn from the movement',
+      'Each way to act from the Vegan Activism Guide, as a program your organization can run, with the organizations already running it. The educators, the talks, the history and the live campaigns are here too.', t) +
+      '<div class="dg-srows">' + A.WAYS.map(function (w) {
+        return row({ icon: mvIcon(w[1]), title: w[2], href: '#/movement/programs/' + w[0], body: '<p class="dg-srow-p">' + esc(PROGRAMS[w[0]] || w[3]) + '</p>' });
+      }).join('') + '</div>' +
+      '<div class="dg-btns" style="margin-top:18px"><a class="dg-btn" href="' + G + '">Open the Vegan Activism Guide</a></div>';
+  }
+
   // ---------- Directory: nonprofits, rescues and sanctuaries ----------
   var DIR_SUBS = [['All', ''], ['Nonprofits', 'nonprofits'], ['Rescues', 'rescues'], ['Sanctuaries', 'sanctuaries']];
   var dirShown = 24;
@@ -557,6 +669,7 @@
     var tiles = [
       ['tips', 'The 10 tips', 'Ten ways to fundraise and stay relevant, each with what to do this week.'],
       ['pulse', 'Pulse', 'Our nonprofit series, and the leaders of PETA, The Humane League, Animal Hero Kids and the sanctuaries.'],
+      ['movement', 'The movement', 'Programs to run, educators to learn from, talks to share and the history, from the Activism Guide.', 1],
       ['directory', 'Directory', 'Nonprofits, rescues and sanctuaries, chapter by chapter.', 1],
       ['found', 'Get found', 'Claim your page, keep it current, and show up in every chapter you serve.', 1],
       ['businesses', 'Businesses', 'Vegan brands and restaurants near you that fit a tie-in, and a pitch to send.'],
@@ -587,6 +700,12 @@
     if (!MEM) return out;
     allTips().forEach(function (t) { out.push({ t: 'The 10 tips', title: t.title, text: [t.lesson].concat(t.list || []).concat(t.week || []).join(' '), href: '#/tips/' + t.id }); });
     (PODS || []).forEach(function (p) { out.push({ t: 'Pulse', title: p.title, text: (p.podcast_show || '') + '. ' + (p.summary || ''), href: '#/pulse/listen/' + encodeURIComponent(p.slug) }); });
+    var AV = window.VE_ACTIVISM;
+    if (AV) {
+      AV.WAYS.forEach(function (w) { out.push({ t: 'The movement', title: w[2], text: (PROGRAMS[w[0]] || '') + ' ' + w[3], href: '#/movement/programs/' + w[0] }); });
+      AV.EDUCATORS.forEach(function (x) { out.push({ t: 'The movement', title: x[1], text: x[2] + '. ' + x[3], href: '#/movement/educators' }); });
+      AV.SPEECHES.forEach(function (v) { out.push({ t: 'The movement', title: v.t, text: v.k + '. ' + v.p, href: '#/movement/talks' }); });
+    }
     (ORGS || []).forEach(function (l) { out.push({ t: 'Directory', title: l.name, text: [l.category, l.address_city, l.address_state].filter(Boolean).join(', '), href: '#/directory/listing/' + encodeURIComponent(l.slug) }); });
     return out;
   }
@@ -596,7 +715,7 @@
     var hits = index().filter(function (h) { var hay = (h.title + ' ' + h.text).toLowerCase(); return words.every(function (w) { return hay.indexOf(w) >= 0; }); });
     var groups = {}; hits.forEach(function (h) { (groups[h.t] = groups[h.t] || []).push(h); });
     var html = crumb([['Search']]) + '<h2 class="dg-h1">' + hits.length + (hits.length === 1 ? ' result' : ' results') + ' for &ldquo;' + esc(q) + '&rdquo;</h2><div class="dg-res">';
-    ['The 10 tips', 'Pulse', 'Directory'].forEach(function (g) {
+    ['The 10 tips', 'Pulse', 'The movement', 'Directory'].forEach(function (g) {
       if (!groups[g]) return;
       html += '<h2>' + esc(g) + ' (' + groups[g].length + ')</h2><div class="dg-grid">' + groups[g].slice(0, 24).map(function (h) {
         return '<a class="dg-card dg-hit" href="' + h.href + '"><h3>' + esc(h.title) + '</h3><p>' + esc(h.text.length > 160 ? h.text.slice(0, 157) + '...' : h.text) + '</p></a>';
@@ -638,7 +757,7 @@
     var parts = (location.hash || '').replace(/^#\/?/, '').split('/');
     var view = parts[0] || 'overview', sub = parts.slice(1).join('/');
     if (view === 'search' && (!sub || !member())) view = 'overview';
-    var known = { overview: 1, tips: 1, pulse: 1, directory: 1, found: 1, businesses: 1, events: 1, support: 1, partner: 1, mylist: 1, join: 1, search: 1 };
+    var known = { overview: 1, tips: 1, pulse: 1, movement: 1, directory: 1, found: 1, businesses: 1, events: 1, support: 1, partner: 1, mylist: 1, join: 1, search: 1 };
     if (!known[view]) view = 'overview';
     document.body.classList.toggle('dg-member', member());
     drawJoinbox();
@@ -650,7 +769,7 @@
     drawMenu(view === 'search' ? 'search' : key);
     if (view !== 'search' && qEl.value && document.activeElement !== qEl) qEl.value = '';
     var bar = document.getElementById('vep-player');
-    ({ overview: viewOverview, tips: function () { viewTips(sub); }, pulse: function () { viewPulse(sub); }, directory: function () { viewDirectory(sub); },
+    ({ overview: viewOverview, tips: function () { viewTips(sub); }, pulse: function () { viewPulse(sub); }, movement: function () { viewMovement(sub); }, directory: function () { viewDirectory(sub); },
        found: function () { viewFound(sub); }, businesses: function () { viewBusinesses(sub); }, events: function () { viewEvents(sub); }, support: viewSupport,
        partner: function () { viewPartner(sub); }, mylist: function () { viewMyList(sub); }, join: viewJoin, search: function () { viewSearch(decodeURIComponent(sub)); } })[view]();
     keepPlayer(bar);
@@ -678,7 +797,7 @@
   }
   function loadPublic() {
     if (window.VEEpisodes) VEEpisodes.css();
-    rest(ORGS_URL).then(function (d) { ORGS = Array.isArray(d) ? d : []; if (/^(directory|found|search|mylist)$/.test(curTab) || /^#\/search/.test(location.hash)) route(); }).catch(function () { ORGS = []; });
+    rest(ORGS_URL).then(function (d) { ORGS = Array.isArray(d) ? d : []; if (/^(directory|found|search|mylist|movement)$/.test(curTab) || /^#\/search/.test(location.hash)) route(); }).catch(function () { ORGS = []; });
     Promise.all([rest(BRANDS_URL).catch(function () { return []; }), rest(RESTS_URL).catch(function () { return []; })]).then(function (r) {
       BRANDS = Array.isArray(r[0]) ? r[0] : []; RESTS = Array.isArray(r[1]) ? r[1] : [];
       if (curTab === 'businesses' || curTab === 'mylist') route();
@@ -728,7 +847,7 @@
       });
       return;
     }
-    if ((el = e.target.closest('.dg-srow[data-href]')) && !e.target.closest('a,button')) { location.hash = el.getAttribute('data-href'); return; }
+    if ((el = e.target.closest('.dg-srow[data-href]')) && !e.target.closest('a,button')) { var dh = el.getAttribute('data-href'); if (dh.charAt(0) === '#') location.hash = dh; else location.href = dh; return; }
     if (e.target.closest('[data-signin]')) {
       e.preventDefault();
       if (a) a.showAuthModal('Sign in and the Nonprofit Guide opens if it is yours.', function () { location.reload(); }, 'login');
