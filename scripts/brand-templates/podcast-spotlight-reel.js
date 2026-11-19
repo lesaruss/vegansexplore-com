@@ -28,7 +28,7 @@ const STRIPE = '<div class="stp" style="position:absolute;left:0;right:0;top:612
 const city = data(S.city_art), logo = data(S.logo);
 
 const BANDC = S.band ? `background:${S.band}` : '', INK = !!S.band_ink;
-const TS = S.title_style || '';   // '' the locked layout; 'a' full-width type, 'b' sticker blocks, 'c' one big line (Sean, 2026-11-19: "squished")
+const TS = S.title_style === undefined ? 'a' : S.title_style;   // 'a' full-width type is LOCKED (Sean, 2026-11-19: "A"); 'b' sticker blocks, 'c' one big line, '' the first layout
 const MARK = `/public/logo-ve-mark-${INK ? 'ink' : 'white'}.svg`;
 const band = (rows, label) => TS
   ? `<div class="sr-rb ts-${TS}${INK ? ' sr-ink' : ''}" style="${BANDC}"><div class="sr-top"><img src="${MARK}" alt=""><span class="sr-rl">${esc(label || S.label)}</span></div>
