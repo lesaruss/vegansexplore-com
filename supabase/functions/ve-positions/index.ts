@@ -545,7 +545,7 @@ async function kaiAnswer(pos: any, p: any, text: string, history: any[]) {
   const role = (duties || []).filter((d: any) => d.kind !== 'short').map((d: any) => `- ${d.grp}: ${d.body}`).join('\n');
   const notes = (pb || []).map((r: any) => `- (${String(r.created_at).slice(0, 10)}) ${String(r.body).slice(0, 1400)}`).join('\n');
   const b = brief?.[0];
-  const record = `Position: ${pos.title}. Their stage: ${STAGE_WORDS[p.stage] || p.stage}. Region: ${p.region || 'not set'}. Started: ${p.start_on || 'not yet'}.`;
+  const record = `Position: ${pos.title}. Their stage: ${STAGE_WORDS[p.stage] || p.stage}. Home city (their base for in-person work; their network has no territory): ${p.region || 'not set'}. Started: ${p.start_on || 'not yet'}.`;
   const system = `You are Kai, the Creator Guide at Vegans Explore, answering ${firstName(p.name)}, a member of the team, on their dashboard. Kai is a woman (she/her); if you ever speak of Kai, say she and her. Kai is their only point of contact; Sean (the founder) reads every conversation.
 Voice: short, warm, plain and practical, like a friendly teammate. One to four sentences. No lists unless they ask for steps. Never use em-dashes.
 Answer only what the context below clearly supports. If it does not, or you would be guessing, set sure to false and leave the answer as your best short draft for Sean to check.

@@ -321,16 +321,16 @@
   // ---- The words (LOCKED by Sean 2026-11-19 with the mock /mocks/kj-dashboard). Rows, briefs and asks come from the database. ----
   var COPY = {
     eyebrow: 'Community Manager',
-    line: 'One of our regional helpers ({region}; Southeast and Los Angeles to come). Bring in your people and the {region}; this is your one home for it, with Kai.',
+    line: 'Bring in your people, wherever they are. {region} is your home base: when something happens there, you are our boots on the ground. This is your one home for it, with Kai.',
     lineNoRegion: 'Bring in your people; this is your one home for it, with Kai.',
     tabs: [['home', 'Home'], ['role', 'Your role'], ['conversations', 'Conversations'], ['people', 'Your people'], ['asks', 'Asks'], ['ask', 'Ask Kai'], ['briefs', 'Briefs'], ['record', 'Your record'], ['kit', 'Your kit']],
     kai: {
-      home: 'Start with the brief, then your people and the Northeast. Keep @vegansexplore answered in about 15 minutes a day. See something off? Report it.',
+      home: 'Start with the brief, then your people, wherever they are. Keep @vegansexplore answered in about 15 minutes a day. See something off? Report it.',
       people: 'The people you already know are yours to invite, any way you like. Businesses and listings still go through @vegansexplore.',
       conversations: 'Everyone who commented, replied, mentioned us, wrote or followed. Answer as Vegans Explore, with their own link.',
       asks: 'What Sean wants this week. Outside these, you have room: if you spot an opening, take it, and tell us under Your ideas.',
       ask: 'Ask me anything. I answer what I can right away. If I am not sure, I check with Sean and come back to you here.',
-      role: 'This is everything you are responsible for, heaviest first: your people and the Northeast. Outside this list, you have room to do your own thing; run your ideas by me.',
+      role: 'This is everything you are responsible for, heaviest first: your people, anywhere, then events in your home base. Outside this list, you have room to do your own thing; run your ideas by me.',
       briefs: 'Every Monday: where we are, what is next, and a question for you.',
       record: 'Your taps are your record and your pay record.',
       kit: 'Everything you send people, ready to copy.'
@@ -622,7 +622,7 @@
       if (d.preview) { $('pvNote').hidden = false; $('pvGap').style.height = '32px'; $('pvNote').innerHTML = '<b>Preview</b>' + esc(d.who.full_name || d.who.name) + '\'s dashboard, as they will see it. Nothing you do here saves.' + (d.person.id ? '' : ' Not assigned to the position yet.'); }
       var av = $('av'); av.setAttribute('aria-label', d.who.name);
       if (d.who.avatar) av.style.background = '#fff url(\'' + d.who.avatar + '\') center/cover no-repeat'; else av.textContent = String(d.who.name || '?').slice(0, 1).toUpperCase();
-      $('eb').textContent = COPY.eyebrow + (region() ? ', ' + region() : '');
+      $('eb').textContent = COPY.eyebrow;
       $('hName').textContent = d.who.name;
       $('hLine').textContent = region() ? COPY.line.replace(/\{region\}/g, region()) : COPY.lineNoRegion;
       $('app').hidden = false; show();
