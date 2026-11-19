@@ -217,12 +217,15 @@
       '<div class="rf-head"><div class="rf-t"><h1 class="k-h1">' + p[2] + '</h1><p class="k-lede">' + esc(p[3]) + '</p></div>' + guide(p) +
       '<div class="rf-act">' + (action || '') + '</div></div>';
   }
-  var CLAIM = '<a class="k-btn k-cta" href="/claim">Claim your listing</a><p class="rf-price">Free. About a minute. You are in the room before we open January 1.</p>';
+  // From a brand email, ?b=<listing slug> carries their listing, so Claim opens it directly (the email's link is /expo?b={slug}).
+  var MINE = (location.search.match(/[?&]b=([a-z0-9-]{2,120})/) || [])[1] || '';
+  var CLAIM_HREF = MINE ? '/claim?listing=' + MINE : '/claim';
+  var CLAIM = '<a class="k-btn k-cta" href="' + CLAIM_HREF + '">Claim your listing</a><p class="rf-price">Free. About a minute. You are in the room before we open January 1.</p>';
   function row(n, cls, title, body, tag, tagCls) {
     return '<div class="k-row"><span class="k-num ' + cls + '">' + n + '</span><span class="k-row-t"><b>' + title + '</b><small>' + body + '</small></span>' + (tag ? '<span class="k-tag ' + (tagCls || 'live') + '">' + tag + '</span>' : '<span></span>') + '</div>';
   }
   function good(blocks) { return '<section class="rf-sec"><span class="k-label">Good to know</span><div class="gb-good">' + blocks.map(function (b) { return '<div class="k-block ' + b[0] + '"><span class="k-label">' + b[1] + '</span>' + b[2] + '</div>'; }).join('') + '</div></section>'; }
-  function see() { return '<div class="gb-see"><span class="k-label">Ready?</span><h2>Start with your listing.</h2><p>It is free, and it is how every brand at the Expo gets there: one small step at a time.</p><a class="k-btn k-sm" href="/claim">Claim your listing &rsaquo;</a></div>'; }
+  function see() { return '<div class="gb-see"><span class="k-label">Ready?</span><h2>Start with your listing.</h2><p>It is free, and it is how every brand at the Expo gets there: one small step at a time.</p><a class="k-btn k-sm" href="' + CLAIM_HREF + '">Claim your listing &rsaquo;</a></div>'; }
   function next(i) { var n = PARTS[i + 1]; return n ? '<div class="gb-next"><a class="k-btn" href="' + link(n[0]) + '">Next part: ' + esc(n[1]) + ' &rsaquo;</a><span>' + esc(n[6]) + '</span></div>' : ''; }
 
   // The walk through the Expo, one scene at a time. Scenes are drawn in our style; the Expo is Coming, so every scene is how we picture it.
