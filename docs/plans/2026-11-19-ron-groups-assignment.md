@@ -50,3 +50,26 @@ Meetup's API can create events for a Pro network; it cannot send member messages
 - **6. Access:** co-organizer (Meetup) and moderator (Facebook) on the groups we name, with your own login. No password is shared. We can
   remove access at any time.
 - Everything else as KJ's version 1.
+
+## What Ron sees (for Sean to lock)
+
+**Community Manager, Vegans Explore: South Florida**
+
+Vegans Explore opens on January 1, and our South Florida Community Nights start in February. Help us build them.
+
+**Community Nights, $150 a month** (December through the February launch)
+- Scout venues for the nights and bring us the options.
+- Reach out to the community and bring people to the nights.
+- Be the person people ask: when we send the word out, questions come to you.
+
+**Our groups** (part of the same $150)
+- Post and share our posts in our Facebook groups and the South Florida Vegans group.
+- Send the Meetup messages we write, from each group.
+- Keep an eye on what's happening in South Florida and tell us.
+
+**Running a night:** $150 for each night you run, on top of the monthly.
+
+**The goal:** each night should bring in at least four times what it costs to put on, counting the months leading up to it, the night
+itself and its marketing. We'll track it together.
+
+Your own hours. Paid through Stripe every two weeks. The first month is a trial. Your questions go to Kai on your dashboard.
