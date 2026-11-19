@@ -6,7 +6,7 @@
 // Public:  status  -> { open, rules_reviewed (the rules link shows only once the attorney has read them), starts_on, ends_on, prizes (live ones, with the business), entries (count), me? { member, entered } }
 // Member:  enter   -> one free entry per member per giveaway, only while entries_open (a super admin may enter while closed, to test)
 // Public:  brand_interest {brand, name, email, quantity, pack, page} -> a brand's I'm in from /partners/giving, into Leads (one a day per email)
-// Public:  event_sponsor_interest {brand, name, email, events: philadelphia | los-angeles | all, note, page} -> a brand's interest in
+// Public:  event_sponsor_interest {brand, name, email, events: philadelphia | south-florida | central-florida | los-angeles | all | spotlight | takeover | club, note, page} -> a brand's interest in
 //          sponsoring a community event from /expo/events, into Leads on the World Vegan Expo initiative (one a day per email; Sean, 2026-11-19)
 // Owner:   my_prizes {listing_id}, prize_photo_url {listing_id, content_type, bytes}, prize_save {listing_id, title, value_cents, quantity,
 //          image_url?, note?}, prize_withdraw {listing_id, id}: the prize form in the business dashboard (Sean, 2026-11-15). Up to $100 per
@@ -104,7 +104,8 @@ Deno.serve(async (req) => {
 
   if (action === 'event_sponsor_interest') {
     const brand = clean(b.brand, 120), name = clean(b.name, 120), email = clean(b.email, 200).toLowerCase(), note = clean(b.note, 600);
-    const EV: Record<string, string> = { philadelphia: 'Community night: Philadelphia', 'los-angeles': 'Community night: Los Angeles', all: 'Every community night' };
+    const EV: Record<string, string> = { philadelphia: 'Community night: Philadelphia', 'south-florida': 'Community night: South Florida', 'central-florida': 'Community night: Central Florida',
+      'los-angeles': 'Community night: Los Angeles', all: 'Every community night', spotlight: 'Spotlight day', takeover: 'Takeover day', club: 'Club partner' };
     const tier = EV[clean(b.events, 20)];
     if (!brand || !name || !tier || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json({ error: 'missing' }, 400);
     const SLUG = 'vegans-explore-initiative-world-vegan-expo';
