@@ -28,8 +28,13 @@ const STRIPE = '<div class="stp" style="position:absolute;left:0;right:0;top:612
 const city = data(S.city_art), logo = data(S.logo);
 
 const BANDC = S.band ? `background:${S.band}` : '', INK = !!S.band_ink;
-const band = (rows, label) => `<div class="sr-rb${INK ? ' sr-ink' : ''}" style="${BANDC}"><span class="sr-rl">${esc(label || S.label)}</span>
-  <div class="sr-rh"><img src="/public/logo-ve-mark-${INK ? 'ink' : 'white'}.svg" alt=""><h5>${esc(rows[0])}<br>${esc(rows[1])}</h5></div></div>${STRIPE}`;
+const TS = S.title_style || '';   // '' the locked layout; 'a' full-width type, 'b' sticker blocks, 'c' one big line (Sean, 2026-11-19: "squished")
+const MARK = `/public/logo-ve-mark-${INK ? 'ink' : 'white'}.svg`;
+const band = (rows, label) => TS
+  ? `<div class="sr-rb ts-${TS}${INK ? ' sr-ink' : ''}" style="${BANDC}"><div class="sr-top"><img src="${MARK}" alt=""><span class="sr-rl">${esc(label || S.label)}</span></div>
+     <h5 class="sr-ht"><span class="r1">${esc(rows[0])}</span><span class="r2">${esc(rows[1])}</span></h5></div>${STRIPE}`
+  : `<div class="sr-rb${INK ? ' sr-ink' : ''}" style="${BANDC}"><span class="sr-rl">${esc(label || S.label)}</span>
+  <div class="sr-rh"><img src="${MARK}" alt=""><h5>${esc(rows[0])}<br>${esc(rows[1])}</h5></div></div>${STRIPE}`;
 const LAYERS = process.argv.includes('--layers');
 const window_ = LAYERS ? `<div class="sr-win"></div>` : CLIP
   ? `<div class="sr-win"><img src="${data(CLIP)}" alt=""></div>`
@@ -53,6 +58,18 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><base href="${BAS
   .sr-rl{position:absolute;left:90px;top:318px;font:900 26px/1 Montserrat;letter-spacing:.16em;text-transform:uppercase;background:#fff;color:var(--dk);padding:12px 18px;border-radius:8px;white-space:nowrap}
   .sr-rh{position:absolute;left:90px;right:120px;top:388px;display:flex;gap:28px;align-items:center}
   .sr-rh img{width:110px;flex:none}
+  .sr-top{position:absolute;left:90px;right:120px;top:312px;display:flex;align-items:center;gap:20px}
+  .sr-top img{width:62px;flex:none}
+  .ts-a .sr-top .sr-rl,.ts-b .sr-top .sr-rl,.ts-c .sr-top .sr-rl{position:static}
+  .sr-ht{position:absolute;left:90px;right:120px;top:392px;margin:0;display:flex;flex-direction:column;align-items:flex-start}
+  .ts-a .sr-ht{top:368px}
+  .ts-a .sr-ht span{display:block;font:900 96px/0.98 Montserrat;letter-spacing:-.035em;white-space:nowrap}
+  .ts-b .sr-ht{top:378px;gap:14px}
+  .ts-b .sr-ht span{display:block;font:900 64px/1.0 Montserrat;letter-spacing:-.03em;white-space:nowrap;padding:10px 22px 12px;border:5px solid var(--ink);box-shadow:10px 10px 0 var(--ink);border-radius:10px}
+  .ts-b .sr-ht .r1{background:#fff;color:var(--ink)} .ts-b .sr-ht .r2{background:var(--ink);color:#fff}
+  .ts-c .sr-ht{top:384px;gap:10px;right:120px}
+  .ts-c .sr-ht .r1{display:block;font:900 120px/0.95 Montserrat;letter-spacing:-.04em;white-space:nowrap}
+  .ts-c .sr-ht .r2{display:block;font:800 52px/1.05 Montserrat;letter-spacing:-.01em;white-space:nowrap;opacity:.92}
   .sr-rb.sr-ink{color:var(--ink)} .sr-rb.sr-ink .sr-rl{background:var(--ink);color:#fff}
   .sr-rh h5{margin:0;font:900 72px/1.02 Montserrat;letter-spacing:-.03em}
   .sr-win{position:absolute;left:90px;top:662px;width:870px;height:489px;border:6px solid var(--ink);border-radius:16px;box-shadow:14px 14px 0 var(--ink);overflow:hidden;background:#111}
@@ -89,6 +106,14 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><base href="${BAS
   await p.evaluate(() => document.querySelectorAll('.sr-rh h5').forEach((h) => { const f0 = parseFloat(getComputedStyle(h).fontSize); let k = 1;
     const lines = () => { const c = h.cloneNode(); c.textContent = 'X'; h.parentNode.appendChild(c); const one = c.offsetHeight; c.remove(); return Math.round(h.offsetHeight / one); };
     while (lines() > 2 && k > 0.7) { k -= 0.04; h.style.fontSize = (f0 * k) + 'px'; } }));
+  // New title styles: each row fits the band's width (870 px) without wrapping, never past its base size.
+  // Style A: both rows grow together until the longer one spans the band (at most 118 px).
+  await p.evaluate(() => document.querySelectorAll('.ts-a .sr-ht').forEach((h) => { const W = h.clientWidth, sp = [...h.querySelectorAll('span')];
+    let f = 96; const wid = () => Math.max(...sp.map((x) => x.offsetWidth));
+    while (wid() < W - 6 && f < 112) { f += 2; sp.forEach((x) => x.style.fontSize = f + 'px'); }
+    while (wid() > W && f > 40) { f -= 2; sp.forEach((x) => x.style.fontSize = f + 'px'); } }));
+  await p.evaluate(() => document.querySelectorAll('.sr-ht').forEach((h) => { const W = h.clientWidth;
+    h.querySelectorAll('span').forEach((sp) => { let f = parseFloat(getComputedStyle(sp).fontSize); while (sp.offsetWidth > W && f > 30) { f -= 2; sp.style.fontSize = f + 'px'; } }); }));
   if (LAYERS) {
     await p.locator('#open').screenshot({ path: path.join(OUT, 'bg.png') });
     await p.locator('#end').screenshot({ path: path.join(OUT, 'end.png') });
