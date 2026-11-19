@@ -1,4 +1,6 @@
-// ve-giving: 11 Days of Giving (Sean, 2026-11-15: "build the entry page"; plan locked 2026-11-13, playbook ve-holiday-guide; migration
+// ve-giving: 11 Days of Giving and the Countdown to Launch, Dec 1, 2026 to Jan 1, 2027 (rules LOCKED by Sean 2026-11-19, doc
+// https://claude.ai/artifact/Ds4whHbL6JXca7oY5SoWM4: every member is in every draw automatically; brands up to $150 in all; intake stops
+// at $4,500 under the $5,000 cap; prizes taken until Dec 20). First built as 11 Days of Giving (Sean, 2026-11-15: "build the entry page"; plan locked 2026-11-13, playbook ve-holiday-guide; migration
 // 20261115_eleven_days_of_giving_entries.sql). December 1 to 11, members enter free for prizes Vegan businesses give; winners are drawn at
 // random in the open. POST { action, ... }. verify_jwt off; the Vegans Explore token is checked here (the same check as ve-holiday).
 // Public:  status  -> { open, rules_reviewed (the rules link shows only once the attorney has read them), starts_on, ends_on, prizes (live ones, with the business), entries (count), me? { member, entered } }
@@ -6,8 +8,8 @@
 // Public:  brand_interest {brand, name, email, quantity, pack, page} -> a brand's I'm in from /partners/giving, into Leads (one a day per email)
 // Owner:   my_prizes {listing_id}, prize_photo_url {listing_id, content_type, bytes}, prize_save {listing_id, title, value_cents, quantity,
 //          image_url?, note?}, prize_withdraw {listing_id, id}: the prize form in the business dashboard (Sean, 2026-11-15). Up to $100 per
-//          business; a brand (Food Brands, or a listing that sells products) gives 1 to 4 holiday packs up to $150 retail each (Sean,
-//          2026-11-16: "lock it at $150 per pack"); $5,000 across the giveaway, until the end of Friday, November 27 Eastern; a prize waits as pledged for our check.
+//          business; a brand (Food Brands, or a listing that sells products) up to $150 retail in all (Sean, 2026-11-17); intake stops
+//          at $4,500 under the $5,000 cap, until the end of Sunday, December 20 Eastern; a prize waits as pledged for our check.
 // Admin:   entries -> who entered, newest first (super admins only); prize_queue, prize_review {id, decision: live | withdrawn | pledged}
 //          (live grants the giver 250 points per prize, once)
 // Nothing here takes money, a share, a tag or a follow: entering is free and open to every member in good standing.
@@ -18,10 +20,10 @@ const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const PUBLIC_BASE = `${Deno.env.get('SUPABASE_URL')}/storage/v1/object/public/vegan-media/`;
 const PER_BUSINESS = 10000;                                   // $100 in prizes per business
-const PACK_MAX = 15000;                                       // a brand's holiday pack: up to $150 retail (Sean, 2026-11-16)
-const PACKS_MAX = 4;                                          // one to four packs per brand
+const BRAND_MAX = 15000;                                      // a brand: up to $150 retail in all, one item or several (Sean, 2026-11-17)
 const TOTAL_CAP = 500000;                                     // $5,000 across the giveaway (Florida and New York register above it)
-const PRIZES_CLOSE = Date.parse('2026-11-28T05:00:00Z');      // the end of Friday, November 27, Eastern
+const INTAKE_CAP = 450000;                                    // we stop taking prizes at $4,500 (locked rules)
+const PRIZES_CLOSE = Date.parse('2026-12-21T05:00:00Z');      // the end of Sunday, December 20, Eastern (Countdown to Launch prizes)
 const clean = (v: unknown, n: number) => String(v ?? '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '').trim().slice(0, n);
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { ...cors, 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } });
 
@@ -65,16 +67,18 @@ Deno.serve(async (req) => {
   const open = s.entries_open && !closedByDate(s);
 
   if (action === 'status') {
+    // Every active member is entered automatically (locked rules), so the count is the members.
     const [{ data: prizes }, { count }] = await Promise.all([
       db.from('ve_giving_prizes').select('id, title, value_cents, quantity, image_url, draw_on, listing:listings(slug, name, logo_url, category)')
         .eq('campaign', s.campaign).eq('status', 'live').order('draw_on', { ascending: true, nullsFirst: false }).order('created_at'),
-      db.from('ve_giving_entries').select('id', { count: 'exact', head: true }).eq('campaign', s.campaign),
+      db.from('members').select('id', { count: 'exact', head: true }).eq('membership_status', 'active'),
     ]);
     const mm = await whoAmI(req, b);
     let me = null;
     if (mm) {
       const { data: e } = await db.from('ve_giving_entries').select('entered_at').eq('campaign', s.campaign).eq('member_id', mm.id).maybeSingle();
-      me = { member: !!mm.is_superadmin || mm.membership_status === 'active', entered: !!e, entered_at: e?.entered_at || null, admin: !!mm.is_superadmin };
+      const member = !!mm.is_superadmin || mm.membership_status === 'active';
+      me = { member, entered: member && (!mm.standing || mm.standing === 'good'), entered_at: e?.entered_at || null, admin: !!mm.is_superadmin };
     }
     return json({ ok: true, open, rules_reviewed: s.rules_reviewed, starts_on: s.starts_on, ends_on: s.ends_on, fulfill_by: s.fulfill_by, prizes: prizes || [], entries: count || 0, me });
   }
@@ -120,9 +124,9 @@ Deno.serve(async (req) => {
       .eq('campaign', s.campaign).eq('listing_id', lid).order('created_at')).data || [];
     const given = (ps: any[]) => ps.filter((p) => p.status !== 'withdrawn').reduce((a, p) => a + p.value_cents * p.quantity, 0);
     const closed = Date.now() >= PRIZES_CLOSE;
-    // A brand gives packs: up to $150 each, up to four, so up to $600 in all; every other business up to $100.
+    // A brand gives up to $150 in all (one item, several, a bundle or a digital code); every other business up to $100.
     const brand = l.category === 'Food Brands' || (Array.isArray(l.product_kinds) && l.product_kinds.length > 0);
-    const perPrize = brand ? PACK_MAX : PER_BUSINESS, perBiz = brand ? PACK_MAX * PACKS_MAX : PER_BUSINESS;
+    const perPrize = brand ? BRAND_MAX : PER_BUSINESS, perBiz = perPrize;
 
     if (action === 'my_prizes') {
       const ps = await mine();
@@ -153,7 +157,7 @@ Deno.serve(async (req) => {
       if (given(ps) + value * qty > perBiz) return json({ error: 'over_business_limit', left_cents: Math.max(0, perBiz - given(ps)) }, 409);
       const { data: all } = await db.from('ve_giving_prizes').select('value_cents, quantity').eq('campaign', s.campaign).neq('status', 'withdrawn');
       const total = (all || []).reduce((a: number, p: any) => a + p.value_cents * p.quantity, 0);
-      if (total + value * qty > TOTAL_CAP) return json({ error: 'giveaway_full' }, 409);
+      if (total + value * qty > INTAKE_CAP) return json({ error: 'giveaway_full' }, 409);
       const { error } = await db.from('ve_giving_prizes').insert({ campaign: s.campaign, listing_id: lid, title, value_cents: value, quantity: qty,
         image_url: img || null, note: clean(b.note, 500) || null, status: 'pledged', created_by: mm.id });
       if (error) return json({ error: 'save_failed' }, 500);

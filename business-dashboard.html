@@ -362,7 +362,7 @@
   }
   // 11 Days of Giving: the prize form (Sean, 2026-11-15: "build the prize form"). Opportunities > 11 Days of Giving (?pd=giving): the prizes
   // this business has given, each with its status, then the form (what it is, its value, how many, a photo, a note). Up to $100 per business;
-  // a brand gives 1 to 4 holiday packs up to $150 retail each (Sean, 2026-11-16: "lock it at $150 per pack"; ve-giving returns brand, per_prize_cents);
+  // a brand gives up to $150 retail in all, one item or several or a digital code (rules locked by Sean 2026-11-19; ve-giving v6 returns brand);
   // a prize waits for our check, then shows on the Holiday Guide's 11 Days of Giving page. ve-giving my_prizes / prize_save / prize_withdraw.
   var GV = null, GV_FOR = null, GV_PHOTO = '';
   function gvMoney(c) { return '$' + (Math.round(c) / 100).toFixed(c % 100 ? 2 : 0); }
@@ -371,11 +371,11 @@
     post('ve-giving', { action: 'my_prizes', listing_id: L.id }).then(function (r) { GV = r && r.ok ? r : { error: (r && r.error) || 'failed', prizes: [] }; if (part() === 'opportunities' && q('pd') === 'giving') draw(); });
   }
   function gvCap() { return (GV && GV.per_business_cents) || 10000; }
-  function gvLimitLine() { return GV && GV.brand ? 'the four packs at up to $150 each' : 'the $100 per business'; }
+  function gvLimitLine() { return GV && GV.brand ? 'the $150 per brand' : 'the $100 per business'; }
   function drawGiving() {
     var brand = !!(GV && GV.brand);
-    var intro = '<section class="card"><h2>Give a prize for <span class="hl o">11 Days of Giving</span></h2><p class="lede" style="margin:0">December 1 to 11, our members enter free for a chance to win prizes from Vegan businesses, drawn at random in the open. ' +
-      (brand ? 'Give one to four holiday packs of your products, worth up to $150 retail each; each pack goes to a different winner.' : 'Give up to $100 in prizes (four $25 prizes work best).') + ' Nothing to pay or ship now: you send each prize straight to its winner by January 10, 2027. Your business is shown with your prize on the Holiday Guide, and you earn 250 points for each prize once our team checks it.</p></section>';
+    var intro = '<section class="card"><h2>Give a prize for <span class="hl o">11 Days of Giving</span></h2><p class="lede" style="margin:0">December 1 to January 1, every member is in every draw for prizes from Vegan businesses and brands, drawn at random in the open, as we count down to our January 1 launch. ' +
+      (brand ? 'Give up to $150 in retail value: one item, several, a bundle or a digital code.' : 'Give up to $100 in prizes (four $25 prizes work best).') + ' Nothing to pay or ship now: you ship each prize within 7 business days of its winner confirming, and you are done by January 20, 2027. Prizes are taken until the end of Sunday, December 20. Your business is shown with your prize on the Holiday Guide, and you earn 250 points for each prize once our team checks it.</p></section>';
     if (GV_FOR !== L.id || !GV) { if (GV_FOR !== L.id) gvLoad(); return intro + '<p class="empty">Loading your prizes...</p>'; }
     if (GV.error) return intro + '<p class="empty">Your prizes did not load. Refresh to try again.</p>';
     var ST = { pledged: ['Waiting for our check', 't-need'], live: ['Live', 't-new'], withdrawn: ['Taken back', 't-tip'] };
