@@ -75,11 +75,11 @@
     { k: 'overview', label: 'Overview', say: 'Hi, I\'m Maya! Press Start the tour and I\'ll walk you through the Dairy Guide, one tab at a time.', playing: 'Hi, I\'m Maya, and welcome to the Vegan Dairy Guide! Press Next when you\'re ready for the next tab.',
       sayMember: 'Welcome in, the whole Dairy Guide is yours now! Press Next and I\'ll walk you through every tab, and save anything you love to My list.' },
     { k: 'pulse', label: 'Pulse', lock: 1, say: 'This is the Dairy-Free Pulse: what the research says, every fact sourced, plus our podcasts and interviews on dairy.',
-      sayMember: 'Start with the Pulse: every fact links to its source. Flip to Podcasts and interviews to watch, vote and save your favorites.' },
-    { k: 'brands', label: 'Brands', lock: 1, say: 'Stop guessing in the dairy aisle. Here are the brands to buy, sorted by what you\'re replacing, and voted on by members.',
-      sayMember: 'Pick what you\'re replacing and find the brands to buy, and where to buy them. Vote for the ones you love, and save them.' },
+      sayMember: 'Start with the Pulse: every fact links to its source. Flip to Podcasts and interviews to watch, vouch for and save your favorites.' },
+    { k: 'brands', label: 'Brands', lock: 1, say: 'Stop guessing in the dairy aisle. Here are the brands to buy, sorted by what you\'re replacing, and vouched for by our members.',
+      sayMember: 'Pick what you\'re replacing and find the brands to buy, and where to buy them. Vouch for the ones you love, and save them.' },
     { k: 'swaps', label: 'Swaps', lock: 1, say: 'Swaps show you how to replace dairy when you cook, from the shelf or your pantry. Buttermilk is free to try, so start there.',
-      sayMember: 'Every swap gives you a shelf option and a pantry option. Vote for the ones that work for you, and save them to My list.' },
+      sayMember: 'Every swap gives you a shelf option and a pantry option. Vouch for the ones that work for you, and save them to My list.' },
     { k: 'cookbook', label: 'Cookbook', lock: 1, say: 'The Cookbook has recipes to make at home, What can I make from your pantry, the cookbooks members love, and chefs coming soon.',
       sayMember: 'Make a recipe, or tick what\'s in your pantry under What can I make. Browse the cookbooks, share your own for points, and chefs are coming.' },
     // Named The truth on 2026-10-10 (Sean); he approved the new line the same day (dg-look.mp4 ?v=3).
@@ -115,6 +115,10 @@
   // Members hear what they have (Sean approved the lines 2026-10-10), each tab in its own pose: dg-m-<tab>.mp4.
   var CLIPS_M = {};
   ['overview', 'pulse', 'brands', 'swaps', 'cookbook', 'mylist'].forEach(function (k) { CLIPS_M[k] = { video: CLIP_BASE + 'dg-m-' + k + '.mp4?v=1', poster: CLIP_BASE + 'dg-m-poster-' + k + '.jpg?v=1' }; });
+  // Vouch, not vote (canon-ve-vouch-everything, 2026-11-18): Sean recorded these lines himself (HQ Voices, set ve-vouch-lines),
+  // turned into Maya's voice; same pose and poster as before, new lip-sync take (Wan 2.7) in a new file.
+  CLIPS.brands.video = CLIP_BASE + 'dg-brands-v3.mp4';
+  ['pulse', 'brands', 'swaps'].forEach(function (k) { CLIPS_M[k].video = CLIP_BASE + 'dg-m-' + k + '-v2.mp4'; });
   CLIPS.join_credit = { video: CLIP_BASE + 'dg-join-c.mp4?v=1', poster: CLIP_BASE + 'dg-poster-join-c.jpg?v=1' };
 
   var PANTRY = [
