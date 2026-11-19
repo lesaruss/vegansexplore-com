@@ -953,8 +953,9 @@ Deno.serve(async (req) => {
       const link = `${SITE}/go/${p.invite_link_code}`;
       if (body.send === true) {
         const note = p.invite_note ? `<p style="margin:0 0 12px">${esc(p.invite_note)}</p>` : '';
-        const id = await sendOne(m.email, `${firstName(m.name)}, Vegans Explore would like you as its ${pos.title}`, wrap(
-          `<p style="margin:0 0 12px">Hi ${esc(firstName(m.name))},</p>` + note +
+        const greet = clean(body.first_name, 40) || firstName(m.name); // the name they go by (Sean, 2026-11-19: "use KJ")
+        const id = await sendOne(m.email, `${greet}, Vegans Explore would like you as its ${pos.title}`, wrap(
+          `<p style="margin:0 0 12px">Hi ${esc(greet)},</p>` + note +
           `<p style="margin:0 0 12px">Vegans Explore would like you as its <b>${esc(pos.title)}</b>: ${esc(pos.summary || '')}</p>` +
           `<p style="margin:0 0 12px">${money(pos.pay_cents)} every two weeks, your own hours, and a one-month trial. About ten minutes gets you set up: the role, three quick questions, the agreement, payouts, and the email on your Facebook account so we can add you in Business Suite. Kai, our Creator Guide, walks you through each step.</p>` +
           btn(link, 'See the role')));
