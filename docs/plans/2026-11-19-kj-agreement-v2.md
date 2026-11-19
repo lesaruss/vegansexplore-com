@@ -1,51 +1,63 @@
-# KJ's agreement, version 2 (DRAFT for Sean to read and lock)
+# KJ's agreement, version 2 (draft for Sean)
 
-Sean, 2026-11-19: "Why are we limiting her to the Northeast?... Let her use her network to be an ambassador for what we're creating. And if there's events in Philadelphia, then she can be the boots on the ground in Philadelphia... If we have somebody else that's closer, then we'll go with that." No territory; Philadelphia is her home base.
+Rewritten in plain words on 2026-11-19 after Sean: "Does this have to be so complicated? ... this would scare me if I read this... I don't
+see why this has to be so complicated with the legalese." Also from Sean the same day: no travel and no budgets ("I don't want them thinking
+we have what we don't have"); in person means events in her home city; she does not make Vegans Explore's posts ("We're making those posts...
+if she does create content, she'll be sending us footage so we can edit it on our own... we'll always have control of what we collab on").
 
-Written 2026-11-19 to the role Sean locked with KJ's dashboard ("lock it"): her people and audience first, anywhere, her home city in person, community about
-15 minutes a day, and Kai as her one contact. **Not signable yet.** Version 1 stays the signable agreement on her start page until Sean locks
-this one; then the promote step in `supabase/migrations/20261118_positions_meta_email_and_v2_draft.sql` makes v2 the one she signs.
+## The job posting
 
-What changed from the first v2 draft (feature first, 2026-11-18):
+**Community Manager, Vegans Explore**
 
-- **Section 2, the work:** four parts, heaviest first: her people (personal invites with her own link, a weekly post on her own account),
-  in person in her home city (Philadelphia; no territory, her network anywhere; events with budgets agreed first; travel by arrangement, the closer team member leads), community about 15 minutes a day, and the weekly brief and asks. Her questions go to Kai; Sean reads
-  every conversation. Room for her own initiative, run by Kai first.
-- **Section 3, limits:** listings and businesses are contacted only through @vegansexplore; her own posts about Vegans Explore are a collab
-  invite to @vegansexplore; on the account she only answers comments and messages and never posts.
-- **Section 6, access:** Business Suite partial access is messages and comments only; no password, no posting.
-- **Section 4:** "the payday your dashboard shows" (it said "console"); the money terms are unchanged.
+Vegans Explore opens on January 1. Help us bring the Vegan world in.
 
-One thing for Sean to decide: **section 8 (ownership)** is unchanged and says the posts she makes "for Vegans Explore" belong to Vegans
-Explore. Her weekly post on her own account is a collab, so it could be read as covered. Recommendation (default if you do not override): add
-"except what you post on your own accounts, which stays yours; Vegans Explore may share it" so she stays proud of what she posts.
+- Invite the people you know, with your own link.
+- Sign people up in person at events in your city.
+- Answer comments and messages on @vegansexplore, about 15 minutes a day.
+- Send us footage and ideas. We make the posts and share them with you.
 
-## The job posting (draft)
+Your own hours. $125 every two weeks, paid through Stripe. The first month is a trial.
 
-Vegans Explore is inviting the Vegan world onto one platform before it opens on January 1. As one of our regional helpers, you bring people in: first the people you know, invited personally with your own link, and a weekly post on your own account as a collab with @vegansexplore; then in person in your home city, signing people up at events, markets and Vegan spots, telling owners their page is free to claim and helping put together our events (each with its own budget); and about 15 minutes a day answering comments and messages on @vegansexplore, as Vegans Explore, through Meta Business Suite (messages and comments only; no password, no posting). Every week there is a short brief and a few asks, and Kai, our Creator Guide, answers your questions on your dashboard. Your own hours, and you are free to take other work. $125 for each 2-week period of work, paid through Stripe, with a one-month trial.
+## The agreement
 
-## The agreement (draft)
+**Community Manager agreement, version 2**
 
-Independent Contractor Agreement: Community Manager, version 2
+Between Vegans Explore (LESARUSS Inc.) and you.
 
-This agreement is between LESARUSS Inc., doing business as Vegans Explore ("Vegans Explore"), and you, the person signing below ("you").
+**1. You work for yourself.** You are an independent contractor, not an employee. You set your own hours, use your own phone and
+computer, can work for others, and handle your own taxes.
 
-1. You are an independent contractor. You are not an employee, partner or agent of Vegans Explore. You choose your own hours, your own place of work and your own phone or computer, and you are free to work for others. You receive no employee benefits, and you are responsible for your own taxes.
+**2. What you do.**
+- Invite people you know to Vegans Explore, with your own link.
+- Sign people up in person at events in your city.
+- Answer comments and messages on @vegansexplore, as Vegans Explore, about 15 minutes a day.
+- Read the weekly brief and do its asks.
+- Send us footage and ideas. We edit everything in our own style, post it, and invite you to collab on it.
 
-2. The work. Your work has four parts, heaviest first, and your dashboard on vegansexplore.com shows each one. (a) Your people: you invite people you know personally to Vegans Explore, in person or from your own accounts, with your own tracked link, and once a week you post about Vegans Explore on your own account (section 3 says how). (b) In person: your network has no territory, and you may reach people you know anywhere, under section 3. Your home base is your home city (Philadelphia, unless we agree another in writing). There you are Vegans Explore's person on the ground: at events, markets and Vegan spots you sign people up, you tell owners their page is free to claim, and you help put together Vegans Explore events. Each event has its own budget, which Vegans Explore agrees in writing before anything is spent; Vegans Explore pays only what it agreed. When you travel elsewhere, tell Kai, and Vegans Explore may set something up; where someone else on the team is closer, they lead it. From anywhere, you send Vegans Explore events, places and people to spotlight. (c) Community, about 15 minutes a day: you answer comments and messages on the Vegans Explore Instagram account, as Vegans Explore, each with the person's own link, and you mark each conversation on your dashboard. (d) Every week you read the brief, answer its question and do its asks. Your questions go to Kai, the Guide on your dashboard; Sean reads every conversation. Outside this list you may take your own initiative for Vegans Explore, and you run new ideas by Kai first.
+Your questions go to Kai on your dashboard. Sean sees every conversation.
 
-3. Limits that protect the brand and the account. Listings and businesses are contacted about Vegans Explore only through the Vegans Explore account, so those relationships stay with Vegans Explore: you do not message a listing or a business about Vegans Explore from your own accounts, and if one writes to you, you point it to @vegansexplore. Your own posts about Vegans Explore go up as a collab invite to @vegansexplore, which Vegans Explore may accept or decline. On the Vegans Explore account you only answer comments and messages: you never post, edit or delete anything on it; never start a new direct message from it; never change the profile, username, password, email, phone, settings or security; never invite anyone else to it; and never use automation, bots or third-party tools on it, or on your own accounts to send invitations in bulk. You stop for at least 48 hours if Instagram warns about activity on the Vegans Explore account, and you tell Vegans Explore that day.
+**3. Ground rules.**
+- Businesses hear from Vegans Explore through @vegansexplore, not your own accounts. If one reaches out to you, send them our way.
+- On @vegansexplore you only answer comments and messages. You don't post, change settings, or start new conversations.
+- No bots or automation.
+- If Instagram shows a warning, stop for 48 hours and tell Kai.
 
-4. The fee. Vegans Explore pays you $125 for each 2-week period of work, through Stripe, on the payday your dashboard shows. Periods run Monday to Sunday; payday is the Friday after a period ends. Your first days before a full period are paid at the same daily rate ($125 divided by 14) with your first full period, and your last period is paid the same way to your end date. A period's fee is paid for that period's work. You set up payouts with Stripe, including your W-9, before your first payday; Stripe holds your bank and tax details, not Vegans Explore.
+**4. Pay.** $125 for every two weeks of work, through Stripe. Each two weeks runs Monday to Sunday, and you are paid the Friday after. A
+part of a two-week period at the start or end is paid by the day. Set up Stripe, including your W-9, before your first payday.
 
-5. Trial and ending. The first month is a trial. Either of us may end this agreement at any time with 7 days' written notice (an email is enough), or right away for a breach of sections 3, 6 or 7. You are paid through your end date.
+**5. Trial and ending.** The first month is a trial. Either of us can end this at any time with 7 days' notice by email, or right away
+if the ground rules or privacy are broken. You are paid through your last day.
 
-6. Access. Vegans Explore gives you partial access to its Instagram account in Meta Business Suite, limited to messages and comments, using your own Meta login; no password is shared and you have no access to post. Vegans Explore can see everything done with that access and may remove it at any time. You keep your own Meta account secure (two-factor authentication on), and you tell us within 24 hours if you think someone else has used your access.
+**6. Access.** We add you to @vegansexplore in Meta Business Suite for messages and comments only, with your own login. No password is
+shared. We can see everything and can remove access at any time. Keep two-factor login on, and tell us right away if something seems wrong.
 
-7. Confidentiality and conduct. You keep private what you learn about Vegans Explore, its members, the businesses and people you contact, and its plans. You speak for Vegans Explore warmly, honestly and in its voice: "Vegan" with a capital V, never pushy, never promising anything Vegans Explore has not built, and a business that is not Vegan is described as offering plant-based (Pre-Vegan) options. You do not promote yourself or anyone else from the account.
+**7. Privacy and tone.** Keep what you learn about Vegans Explore, its members and the people you talk to private. Be warm and honest,
+and never promise anything we haven't built.
 
-8. Ownership. The posts, conversations, notes and records you make for Vegans Explore belong to Vegans Explore, and you assign to Vegans Explore any rights you have in them. What you post on your own accounts stays yours; Vegans Explore may share it, with credit to you.
+**8. What belongs to whom.** The conversations you handle for Vegans Explore belong to Vegans Explore. Footage you send us, we can edit
+and use, and what we make from it belongs to Vegans Explore. What you post on your own accounts stays yours.
 
-9. When it ends. Your access is removed, and you return or delete anything of Vegans Explore's you hold. Sections 7 and 8 continue after the agreement ends.
+**9. When it ends.** We remove your access, and you delete anything of ours you have. Sections 7 and 8 still apply.
 
-10. General. Florida law governs this agreement. It is the whole agreement about this work; if a part cannot be enforced, the rest still applies. Signing electronically (your typed name and the checkbox) is the same as signing on paper, and a copy is emailed to you.
+**10. The basics.** Florida law applies. This is our whole agreement. Typing your name and ticking the box counts as signing, and you
+get a copy by email.

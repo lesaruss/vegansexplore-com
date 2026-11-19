@@ -218,8 +218,9 @@ async function payoutAccount(memberId: string) {
   return data;
 }
 // The quick check: three do's and don'ts, each with one right answer. The locked role (2026-11-19): who she invites from her own accounts,
-// how the account is reached (Business Suite, comments and messages only), and how her own posts go up (a collab invite to @vegansexplore).
-const CHECK: Record<string, string> = { people: 'personal', account: 'business_suite', own_post: 'collab' };
+// how the account is reached (Business Suite, comments and messages only), and what she does with footage (sends it to Vegans Explore,
+// which edits and posts it; Sean 2026-11-19: "We're making those posts").
+const CHECK: Record<string, string> = { people: 'personal', account: 'business_suite', footage: 'send_us' };
 const isEmail = (v: string) => /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(v) && v.length <= 200;
 
 // Ready for access: the agreement signed, payouts ready and the Meta email given. Moves them to Waiting on access once and tells Sean what to do.
@@ -529,7 +530,8 @@ const KAI_RULES = `Locked rules (Sean's; never contradict them):
 - Never promise anything that is not built; say it is coming.
 - Listings and businesses are contacted through @vegansexplore only, so those relationships stay with the brand. The holder may invite people they know personally, from their own accounts, with their own link.
 - The holder never posts, edits or deletes anything on @vegansexplore, never touches its profile, settings or password, and never starts cold messages from @vegansexplore. They answer comments and messages as Vegans Explore in Business Suite (messages and comments only).
-- Their own posts about Vegans Explore go up as a collab invite to @vegansexplore.
+- The holder does not make Vegans Explore's posts and has no weekly post to do. They send footage and ideas; Vegans Explore edits everything in its own style, posts it and invites them to collab. What they post on their own accounts stays theirs.
+- In person means signing people up at events in their home city. There is no travel and there are no event budgets; never offer or suggest either.
 - Managed services (sites, photos, video, social, PR) are sold by LESARUSS.ai, not Vegans Explore.
 - Writing: never use em-dashes; "Vegan" is always capitalized; businesses are written about in the third person.`;
 
