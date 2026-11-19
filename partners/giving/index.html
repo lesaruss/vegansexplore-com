@@ -42,11 +42,27 @@
     .gv-quote{font-size:16px;font-weight:600;line-height:1.55;border-left:6px solid #F69820;padding:4px 0 4px 16px;margin:0 0 12px;max-width:900px;}
     @media (max-width:900px){ .gv-cov{grid-template-columns:minmax(0,1fr);} .gv-cov .k-pic{max-height:none;} }
     @media (min-width:901px) and (max-height:820px){ .k-row{padding:6px 10px;} .k-num{width:32px;height:32px;} .k-row{grid-template-columns:32px minmax(0,1fr) auto;} .k-h2{font-size:34px;} .gv-cov .k-pic{max-height:54vh;} }
+    /* Progress across the top and Liz on every slide (Sean, 2026-11-19, on the brands page: "There's no audio... It doesn't show them the
+       progress"). Progress follows the slides (vg:change); Liz's Play shows only once Sean's recorded take is on the page (voice booth set
+       ve-partners-giving, files vegan-media/media/voices/partners-giving/liz-<slide>-v1.mp3). Nothing plays until pressed. */
+    .gv-prog{display:flex;align-items:center;gap:14px;padding:12px 40px 0;font-size:11px;font-weight:900;letter-spacing:.14em;text-transform:uppercase;}
+    .gv-prog-bars{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:6px;flex:1;max-width:620px;}
+    .gv-prog-bars i{display:block;height:8px;border:2px solid #1a1a1a;border-radius:4px;background:#fff;}
+    .gv-prog-bars i.on{background:#22C55E;}
+    .gv-prog-t b{color:#2D5C27;}
+    .gv-liz{display:flex;align-items:center;gap:12px;margin:0 0 14px;max-width:900px;}
+    .gv-liz-pic{flex:0 0 44px;width:44px;height:44px;border-radius:10px;border:2px solid #1a1a1a;background:#FFE3EE center top/cover no-repeat;}
+    .gv-liz-t{flex:1;font-size:13.5px;font-weight:600;line-height:1.4;color:#1a1a1a;}
+    .gv-liz-t b{font-weight:900;}
+    .gv-liz .k-btn{flex:none;}
+    @media (max-width:900px){ .gv-prog{padding:10px 16px 0;} }
+    @media (min-width:901px) and (max-height:820px){ .gv-liz{margin-bottom:8px;} .gv-liz-pic{width:36px;height:36px;flex-basis:36px;} }
   </style>
 </head>
 <body>
 <div class="page-frame">
   <script src="/public/nav.js"></script>
+  <div class="gv-prog" id="gvProg" aria-live="polite"><span class="gv-prog-t" id="gvProgT">Step 1 of 7</span><span class="gv-prog-bars" id="gvProgBars" aria-hidden="true"></span></div>
   <main class="vg-stage vg-light" aria-label="11 Days of Giving for brands">
 
     <section class="vg-slide" id="start" data-title="11 Days of Giving">
@@ -199,6 +215,58 @@
   // Founding members, live (the giveaway counts every active member); the static figure stays if the call fails.
   fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-giving', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{"action":"status"}' })
     .then(function (r) { return r.json(); }).then(function (r) { var e = document.getElementById('gvMembers'); if (e && r && r.entries > 0) e.textContent = Number(r.entries).toLocaleString('en-US'); }).catch(function () {});
+})();
+</script>
+<script>
+(function () {
+  // Liz's line per slide: the text is exactly what Sean records (voice booth set ve-partners-giving); a line's text and its recording match.
+  var BASE = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/partners-giving/';
+  var LINES = {
+    start: ['liz-start-v1.mp3', "Hi, I'm Liz. Vegans Explore opens January first, and we're counting down with a free giveaway. We'd love your brand to present one of the days."],
+    give: ['liz-give-v1.mp3', "Here's the ask: up to one hundred and fifty dollars in product. One item, a bundle or a code. And you only ship if someone wins."],
+    seen: ['liz-seen-v1.mp3', "On your day, we draw your prize live, and your brand is in our post, our story, our email and our ads."],
+    today: ['liz-today-v1.mp3', "We're in our founding season, and we'll only ever show you real numbers. It's a small test, and the report helps you decide what's next."],
+    report: ['liz-report-v1.mp3', "In January you get a report: where you showed up, the clicks, the new members, and proof your prize arrived."],
+    dates: ['liz-dates-v1.mp3', "Say yes by December fourth. Your prize helps people join until the eleventh, your day falls between the fourteenth and Christmas Eve, and you're done by mid-January."],
+    join: ['liz-join-v1.mp3', "Tell us what you're giving, and we'll save your day. We write back within a business day."]
+  };
+  var pic = (window.VEGuideArt ? window.VEGuideArt('liz', 'square') : '/public/brand-kit/avatars/liz-v2.jpg');
+  var current = null;
+  function stop() { if (current) { current.a.pause(); current.b.innerHTML = '&#9654; Play Liz'; current = null; } }
+  Object.keys(LINES).forEach(function (id) {
+    var slide = document.getElementById(id); if (!slide) return;
+    var h = slide.querySelector('.k-h1, .k-h2'); if (!h) return;
+    var row = document.createElement('div'); row.className = 'gv-liz';
+    row.innerHTML = '<span class="gv-liz-pic" style="background-image:url(\'' + pic + '\')" role="img" aria-label="Liz, our Guide for businesses"></span>' +
+      '<span class="gv-liz-t"><b>Liz:</b> ' + LINES[id][1] + '</span>';
+    h.insertAdjacentElement('afterend', row);
+    // Play appears only once the recording is there (Sean records it in the voice booth).
+    fetch(BASE + LINES[id][0], { method: 'HEAD' }).then(function (r) {
+      if (!r.ok) return;
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'k-btn k-sm'; b.innerHTML = '&#9654; Play Liz';
+      var a = null;
+      b.addEventListener('click', function () {
+        if (current && current.b === b) { stop(); return; }
+        stop(); if (!a) { a = new Audio(BASE + LINES[id][0]); a.addEventListener('ended', function () { if (current && current.b === b) stop(); }); }
+        a.currentTime = 0; a.play(); b.innerHTML = '&#10073;&#10073; Pause'; current = { a: a, b: b };
+      });
+      row.appendChild(b);
+    }).catch(function () {});
+  });
+  // Progress: one bar per slide, filled up to the one showing.
+  function prog(i, n, title) {
+    var bars = document.getElementById('gvProgBars'), t = document.getElementById('gvProgT'); if (!bars || !t) return;
+    if (bars.children.length !== n) { bars.innerHTML = ''; for (var k = 0; k < n; k++) bars.appendChild(document.createElement('i')); }
+    for (var j = 0; j < n; j++) bars.children[j].className = j <= i ? 'on' : '';
+    t.innerHTML = 'Step ' + (i + 1) + ' of ' + n + (title ? ': <b>' + title + '</b>' : '');
+  }
+  document.addEventListener('vg:change', function (e) {
+    stop();
+    var d = e.detail || {}, s = d.id ? document.getElementById(d.id) : null;
+    prog(d.index || 0, d.total || 7, s ? s.getAttribute('data-title') : '');
+  });
+  var slides = Array.prototype.slice.call(document.querySelectorAll('.vg-slide')), h0 = location.hash.slice(1), i0 = Math.max(0, slides.findIndex(function (x) { return x.id === h0; }));
+  prog(i0, slides.length, slides[i0] ? slides[i0].getAttribute('data-title') : '');
 })();
 </script>
 </body>
