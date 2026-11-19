@@ -10,6 +10,8 @@
 //   --layers (for the real cut, scripts/brand-templates/podcast-spotlight-cut.sh): bg.png (the frame, the window empty), end.png,
 //   cap-<n>.png (each caption alone on transparency, spec.captions [{text}]) and win.json (the window's inner box for the video).
 // spec: {label, head:[row1,row2], name, biz, sub, logo, city_art, caption, end_head:[row1,row2], end_line, url}
+//   band: the section color (default the Directory's brand green); band_ink: true on a light color (Guides pink for a doctor's tip):
+//   ink words and the ink mark, the label as a white-on-ink block (the brand kit's fixed type color per color).
 // Writes <out>/open.jpg, <out>/clip.jpg and <out>/end.jpg (1080 x 1920 each). Without --clip the window shows where the clip plays (mock).
 const fs = require('fs'), path = require('path');
 const { chromium } = require('playwright');
@@ -25,8 +27,9 @@ const css = [...tpl.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => m[1
 const STRIPE = '<div class="stp" style="position:absolute;left:0;right:0;top:612px;bottom:auto;height:18px"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>';
 const city = data(S.city_art), logo = data(S.logo);
 
-const band = (rows, label) => `<div class="sr-rb"><span class="sr-rl">${esc(label || S.label)}</span>
-  <div class="sr-rh"><img src="/public/logo-ve-mark-white.svg" alt=""><h5>${esc(rows[0])}<br>${esc(rows[1])}</h5></div></div>${STRIPE}`;
+const BANDC = S.band ? `background:${S.band}` : '', INK = !!S.band_ink;
+const band = (rows, label) => `<div class="sr-rb${INK ? ' sr-ink' : ''}" style="${BANDC}"><span class="sr-rl">${esc(label || S.label)}</span>
+  <div class="sr-rh"><img src="/public/logo-ve-mark-${INK ? 'ink' : 'white'}.svg" alt=""><h5>${esc(rows[0])}<br>${esc(rows[1])}</h5></div></div>${STRIPE}`;
 const LAYERS = process.argv.includes('--layers');
 const window_ = LAYERS ? `<div class="sr-win"></div>` : CLIP
   ? `<div class="sr-win"><img src="${data(CLIP)}" alt=""></div>`
@@ -50,6 +53,7 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><base href="${BAS
   .sr-rl{position:absolute;left:90px;top:318px;font:900 26px/1 Montserrat;letter-spacing:.16em;text-transform:uppercase;background:#fff;color:var(--dk);padding:12px 18px;border-radius:8px;white-space:nowrap}
   .sr-rh{position:absolute;left:90px;right:120px;top:388px;display:flex;gap:28px;align-items:center}
   .sr-rh img{width:110px;flex:none}
+  .sr-rb.sr-ink{color:var(--ink)} .sr-rb.sr-ink .sr-rl{background:var(--ink);color:#fff}
   .sr-rh h5{margin:0;font:900 72px/1.02 Montserrat;letter-spacing:-.03em}
   .sr-win{position:absolute;left:90px;top:662px;width:870px;height:489px;border:6px solid var(--ink);border-radius:16px;box-shadow:14px 14px 0 var(--ink);overflow:hidden;background:#111}
   .sr-win img{width:100%;height:100%;object-fit:cover}
