@@ -20,7 +20,7 @@ const data = (f) => 'data:image/' + (/\.png$/i.test(f) ? 'png' : /\.webp$/i.test
 
 const tpl = fs.readFileSync(path.join(__dirname, '../../mocks/brand-kit/templates.html'), 'utf8');
 const css = [...tpl.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/g)].map((m) => m[1]).join('\n');
-const STRIPE = '<div class="stp" style="position:absolute;left:0;right:0;top:560px;bottom:auto;height:18px"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>';
+const STRIPE = '<div class="stp" style="position:absolute;left:0;right:0;top:612px;bottom:auto;height:18px"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>';
 const city = data(S.city_art), logo = data(S.logo);
 
 const band = (rows) => `<div class="sr-rb"><span class="sr-rl">${esc(S.label)}</span>
@@ -31,7 +31,8 @@ const window_ = CLIP
 const lower = `<div class="sr-lt"><img src="${logo}" alt=""><div><b>${esc(S.name)} &middot; ${esc(S.biz)}</b><span>${esc(S.sub)}</span></div></div>`;
 const cityArt = (cap) => `<div class="sr-city"><img src="${city}" alt="">${cap ? `<div class="sr-cap">${esc(cap)}</div>` : ''}</div>`;
 
-const frame = (id, inner) => `<div class="sr-rf" id="${id}">${inner}</div>`;
+const GUIDES = process.argv.includes('--guides') ? `<div class="sr-g4"></div><div class="sr-gt">Instagram bar</div><div class="sr-gb">Instagram caption and reply bar</div><div class="sr-gr">Buttons</div><div class="sr-gs"></div>` : '';
+const frame = (id, inner) => `<div class="sr-rf" id="${id}">${inner}${GUIDES}</div>`;
 const open = frame('open', band(S.head) + window_ + lower + cityArt(''));
 const clip = frame('clip', band(S.head) + window_ + lower + cityArt(S.caption));
 const end = frame('end', band(S.end_head) + `<div class="sr-endc"><p>${esc(S.end_line)}</p><span class="sr-btn">${esc(S.url)}</span>
@@ -40,26 +41,30 @@ const end = frame('end', band(S.end_head) + `<div class="sr-endc"><p>${esc(S.end
 const html = `<!doctype html><html><head><meta charset="utf-8"><base href="${BASE}/"><style>${css}
   body{margin:0;background:#fff;font-family:Montserrat,sans-serif}
   .sr-rf{position:relative;width:1080px;height:1920px;overflow:hidden;background:#fff;margin-bottom:40px}
-  .sr-rb{position:absolute;left:0;right:0;top:0;height:560px;background:var(--dk);color:#fff}
-  .sr-rl{position:absolute;left:64px;top:262px;font:900 26px/1 Montserrat;letter-spacing:.16em;text-transform:uppercase;background:#fff;color:var(--dk);padding:12px 18px;border-radius:8px;white-space:nowrap}
-  .sr-rh{position:absolute;left:64px;right:56px;top:330px;display:flex;gap:28px;align-items:center}
-  .sr-rh img{width:120px;flex:none}
-  .sr-rh h5{margin:0;font:900 76px/1.02 Montserrat;letter-spacing:-.03em}
-  .sr-win{position:absolute;left:60px;top:626px;width:960px;height:540px;border:6px solid var(--ink);border-radius:16px;box-shadow:14px 14px 0 var(--ink);overflow:hidden;background:#111}
+  .sr-rb{position:absolute;left:0;right:0;top:0;height:612px;background:var(--dk);color:#fff}
+  .sr-rl{position:absolute;left:90px;top:318px;font:900 26px/1 Montserrat;letter-spacing:.16em;text-transform:uppercase;background:#fff;color:var(--dk);padding:12px 18px;border-radius:8px;white-space:nowrap}
+  .sr-rh{position:absolute;left:90px;right:120px;top:388px;display:flex;gap:28px;align-items:center}
+  .sr-rh img{width:110px;flex:none}
+  .sr-rh h5{margin:0;font:900 72px/1.02 Montserrat;letter-spacing:-.03em}
+  .sr-win{position:absolute;left:90px;top:662px;width:870px;height:489px;border:6px solid var(--ink);border-radius:16px;box-shadow:14px 14px 0 var(--ink);overflow:hidden;background:#111}
   .sr-win img{width:100%;height:100%;object-fit:cover}
   .sr-win.sr-ph{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:#fff;background:linear-gradient(135deg,#2b2b2b,#141414)}
   .sr-win.sr-ph .sr-pl{width:0;height:0;border-left:70px solid var(--or);border-top:42px solid transparent;border-bottom:42px solid transparent;margin-bottom:10px}
   .sr-win.sr-ph b{font:900 38px/1.1 Montserrat}.sr-win.sr-ph span{font:700 24px/1.2 Montserrat;opacity:.75}
-  .sr-lt{position:absolute;left:60px;right:60px;top:1196px;display:flex;gap:22px;align-items:center}
+  .sr-lt{position:absolute;left:90px;right:120px;top:1186px;display:flex;gap:22px;align-items:center}
   .sr-lt img{width:96px;height:96px;border-radius:16px;object-fit:cover;border:3px solid var(--ink);background:#fff}
   .sr-lt b{display:block;font:900 38px/1.1 Montserrat;color:var(--ink)}.sr-lt span{display:block;font:700 24px/1.3 Montserrat;color:var(--mute,#5c5c5c);margin-top:6px}
   .sr-city{position:absolute;left:0;right:0;bottom:0;height:603px}
   .sr-city img{width:1080px;height:603px;display:block}
-  .sr-cap{position:absolute;left:60px;right:60px;top:40px;background:#fff;color:var(--ink);font:900 40px/1.25 Montserrat;padding:22px 28px;border-radius:14px;border:4px solid var(--ink);box-shadow:8px 8px 0 var(--ink);text-align:center}
-  .sr-endc{position:absolute;left:60px;right:60px;top:640px;height:640px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:34px}
+  .sr-cap{position:absolute;left:90px;right:120px;top:36px;background:#fff;color:var(--ink);font:900 40px/1.25 Montserrat;padding:22px 28px;border-radius:14px;border:4px solid var(--ink);box-shadow:8px 8px 0 var(--ink);text-align:center}
+  .sr-endc{position:absolute;left:90px;right:120px;top:660px;height:620px;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:34px}
   .sr-endc p{margin:0;font:900 56px/1.1 Montserrat;color:var(--ink);letter-spacing:-.02em}
   .sr-endc .sr-btn{background:var(--or);color:var(--ink);font:900 40px/1 Montserrat;padding:26px 34px;border-radius:10px;letter-spacing:.02em}
   .sr-endc .sr-lgo{width:420px;margin-top:10px}
+  .sr-g4{position:absolute;left:0;right:0;top:285px;height:1350px;border-top:6px dashed #e11;border-bottom:6px dashed #e11;z-index:9}
+  .sr-gs{position:absolute;left:90px;right:120px;top:300px;bottom:300px;border:4px solid #08f;z-index:9}
+  .sr-gt,.sr-gb,.sr-gr{position:absolute;background:rgba(225,17,17,.28);color:#fff;font:900 26px/1 Montserrat;display:flex;align-items:center;justify-content:center;z-index:8}
+  .sr-gt{left:0;right:0;top:0;height:250px}.sr-gb{left:0;right:0;bottom:0;height:340px}.sr-gr{right:0;width:120px;top:1000px;bottom:340px;writing-mode:vertical-rl}
   </style></head><body>${open}${clip}${end}</body></html>`;
 
 (async () => {
