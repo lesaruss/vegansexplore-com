@@ -59,7 +59,7 @@
   for (var i = 0; i < 40; i++) {
     var r = rnd(i + 3);
     MEMBERS.push({ name: FIRST[i % FIRST.length] + ' ' + LAST.charAt((i * 7) % LAST.length) + '.', joined: new Date(Date.now() - Math.floor(r * 300 + 2) * DAY).toISOString(),
-      via: r < 0.45 ? 'Your link' : r < 0.75 ? 'A guest pass' : 'Already a member', events: 1 + Math.floor(rnd(i + 9) * 11),
+      via: r < 0.45 ? 'Your link' : r < 0.75 ? 'A free event' : 'Already a member', events: 1 + Math.floor(rnd(i + 9) * 11),
       chapter: rnd(i + 11) < 0.82 ? 'South Florida' : rnd(i + 13) < 0.5 ? 'Central Florida' : 'New York' });
   }
   MEMBERS.sort(function (a, b) { return Date.parse(b.joined) - Date.parse(a.joined); });
@@ -71,7 +71,7 @@
   var ticketGross = paidTickets.reduce(function (a, e) { return a + e.price_cents * e.going; }, 0);
   var RECENT = [
     [-1, 'passport', 'Jordan B. joined with your link', 330], [-2, 'ticket', '2 tickets, Supper Club: Five Courses at Seedling', 8550],
-    [-4, 'passport', 'Nia H. joined after her guest pass', 330], [-6, 'ticket', '1 ticket, Holiday Potluck', 1425],
+    [-4, 'passport', 'Nia H. joined after a free event', 330], [-6, 'ticket', '1 ticket, Holiday Potluck', 1425],
     [-8, 'passport', 'Omar F. joined with your link', 330], [-9, 'ticket', '3 tickets, Supper Club: Five Courses at Seedling', 12825]
   ].map(function (x) { return { at: new Date(Date.now() + x[0] * DAY).toISOString(), kind: x[1], what: x[2], cents: x[3] }; });
 
@@ -149,7 +149,7 @@
     cards: [
       { kind: 'new', title: 'Your next supper club is 87% sold', body: 'Seedling holds 32. Share the event from Events so the last seats go to your people.', cta_label: 'Open Events', cta_url: '?pd=gevents' },
       { kind: 'offer', title: '38 members to 35%', body: 'At 150 members brought in, every new Passport through your link pays you 35%.', cta_label: 'See your members', cta_url: '?pd=gmembers' },
-      { kind: 'tip', title: 'Guest passes turn into members', body: 'Over half the newcomers who used a guest pass joined. Invite friends to your free events.', cta_label: 'See your members', cta_url: '?pd=gmembers' }
+      { kind: 'tip', title: 'Free events turn into members', body: 'Over half the newcomers who came to a free event joined. Invite friends to your free events.', cta_label: 'See your members', cta_url: '?pd=gmembers' }
     ],
     menu_count: 0, plan: null, ads: [],
     spots: [{ page_slug: '/events', page_name: 'Events', views: 6100, slots: 1 }, { page_slug: '/communities/south-florida', page_name: 'South Florida community', views: 9200, slots: 1 }],
@@ -173,7 +173,7 @@
     announcements: annAll,
     // The group's Message Board tab (Sean, 2026-10-29): posts newest first, each with its replies.
     board: [
-      { who: 'Sprout Social Society', when: 0, host: true, pinned: true, text: 'Welcome! New here? Say hi below, tell us your neighborhood, and pick a free event for your guest pass. See you soon.', replies: [
+      { who: 'Sprout Social Society', when: 0, host: true, pinned: true, text: 'Welcome! New here? Say hi below, tell us your neighborhood, and pick a free event to come to. See you soon.', replies: [
         { who: 'Kayla M.', when: 1, text: 'Hi from Plantation! Coming to brunch on Sunday.' },
         { who: 'Rob D.', when: 3, text: 'Just moved to Victoria Park. Taco Tuesday will be my first one.' }] },
       { who: 'Nia H.', when: 2, text: 'Who is carpooling to the beach cleanup from Plantation? I have three seats.', replies: [
@@ -208,7 +208,7 @@
       category: 'Groups',
       vegan_status: null,
       tagline: 'Fort Lauderdale\'s Vegan social club: dinners, brunches, game nights and good people.',
-      description: 'Sprout Social Society is a sample group made up for this page. Picture a few hundred Vegans and Vegan-curious friends in Broward who get together every week: taco nights, park brunches, a monthly supper club with a local chef, game nights and beach cleanups. Anyone can come to their first free event on a guest pass.',
+      description: 'Sprout Social Society is a sample group made up for this page. Picture a few hundred Vegans and Vegan-curious friends in Broward who get together every week: taco nights, park brunches, a monthly supper club with a local chef, game nights and beach cleanups. Anyone can join free and come along to the next one.',
       website: '',
       instagram: '',
       address_city: 'Fort Lauderdale',

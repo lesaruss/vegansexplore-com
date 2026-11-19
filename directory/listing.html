@@ -6083,7 +6083,7 @@ function demoEvent(id){
     } else if(DEMO.nonprofit || !e.price_cents){
       body = '<div class="dm-pass"><b>Joining Vegans Explore is free.</b><span>Take a short survey and you are a member: every event is yours to RSVP, and you can follow ' + esc(DEMO.listing.name) + ' for its news and foster calls.</span></div><button type="button" class="dm-go" data-act="npjoin">Join free and RSVP</button>';
     } else if(!e.price_cents && !GDEMO.guestUsed){
-      body = '<div class="dm-pass"><b>Your guest pass covers this one.</b><span>Your first free event with any group is on us. From your second, you join Vegans Explore with the Passport: $11, one time.</span></div><button type="button" class="dm-go" data-act="guest">RSVP with my guest pass</button>';
+      body = '<div class="dm-pass"><b>Joining Vegans Explore is free.</b><span>Take a short survey and you are a member: every event is yours to RSVP.</span></div><button type="button" class="dm-go" data-act="npjoin">Join free and RSVP</button>';
     } else {
       body = '<div class="dm-pass"><b>Ticketed events are for members.</b><span>Joining Vegans Explore is free with a short survey. Then every group and every event is open to you.</span></div>' +
         ticket + '<div class="dm-total"><span>Total</span><b>' + money2(e.price_cents + fee) + '</b></div></div><button type="button" class="dm-go" data-act="join">Join free and get my ticket</button>';
@@ -6210,7 +6210,7 @@ function renderGroupDemo(l){
     c.innerHTML = '<div class="gd-badge">' + (DEMO.nonprofit ? 'Nonprofit Partner' : 'Group Partner') + '</div><div class="gd-n"><b>' + (g.members_total || 0) + '</b> members</div>' +
       '<div class="gd-faces" aria-hidden="true">' + (g.members || []).slice(0, 6).map(function(m){ return '<i>' + esc(m.name.charAt(0)) + '</i>'; }).join('') + '</div>' +
       (DEMO.nonprofit ? '<p>Members follow them for events, foster and rescue calls and news, from any city. Joining Vegans Explore is free.</p><button type="button" class="dm-go" data-demo-join>Follow</button>'
-        : '<p>Anyone with a Passport can join, from any city. Your first free event is on a guest pass.</p><button type="button" class="dm-go" data-demo-join>Join the group</button>');
+        : '<p>Anyone can join, from any city. Joining Vegans Explore is free with a short survey.</p><button type="button" class="dm-go" data-demo-join>Join the group</button>');
     side.insertBefore(c, side.firstChild);
   }
   groupDemoTabs();
