@@ -1,4 +1,4 @@
-# Ron: Community Manager, Groups assignment (draft for Sean)
+# Ron: Community Manager, South Florida assignments (draft for Sean)
 
 Sean, 2026-11-19: "I eventually do want to get a community manager... manage our Facebook and our meetup communities and get the pipeline
 going through there... maybe that's what we pitch for Ron at like $150 a month, and then go from there and see how it goes, and then maybe
@@ -6,32 +6,38 @@ invest more if we see a good return out of it." Built on the locked Community Ma
 Manager is a title; this is one monthly assignment that renews, like KJ's. The agreement is KJ's version 1 (docs/plans/2026-11-19-kj-agreement.md)
 with section 2 and the pay swapped. Sean, 2026-11-19: Ron is not being paid the October "$250 a month" note; go with the $150.
 
-## The assignment (v2: only what a person has to do)
+## The assignments (v3, Sean's shape)
 
-Sean, 2026-11-19: "He's not getting paid, go with the $150... I want to make sure that the things he's doing are things that we can't do on
-our own automated." Each duty was checked against what Vegans Explore can automate.
+Sean, 2026-11-19: "it's 150 a month for him to manage the community nights in South Florida... we're not going to launch until February.
+So, he'll have December, January, going into February, just helping move the pieces forward... mainly the Facebook... posting things in the
+groups, sharing posts to the groups, to both ours and to the South Florida Vegans group, and then just being on the lookout for what's
+happening in South Florida... the fact that he's focused on the community nights, that's a revenue generator... if anybody has any
+questions, it goes to him. That's the flow... as people start going through our system and then wanting to use our services, then he'll be
+able to receive a piece of that as well... build based off of the different tasks he's taking on and whether or not he wants to take it on."
 
-**Groups, South Florida** (monthly, renews)
+Ron picks the assignments he wants (Community Manager is a title; canon canon-ve-community-managers).
 
-Vegans Explore opens on January 1. Be our person in the South Florida groups.
+**1. South Florida Community Nights** (monthly, $150 a month, from December, through the February launch of the nights)
+- Scout venues for the nights and bring us the options.
+- Reach out to the community and bring people to the nights.
+- Be the person people ask: when we send the messaging out, questions come to him.
 
-- **Answer people.** Reply to questions and comments in our Broward, Palm Beach and Miami Meetup groups and our Facebook groups, within a day.
-- **Invite people one on one.** Reach the people you know and active group members personally, with your own link.
-- **Scout South Florida.** Each week, tell us about new Vegan spots, events and people we should list.
-- **Start real conversations.** One post a week in each group in your own words: a question, a photo from where you ate, a heads-up.
-- **Share our weekly post in the Facebook groups.** It comes ready; it takes a couple of minutes.
-- **Keep the groups friendly.** Remove spam and handle problems.
+**2. South Florida groups** (part of the monthly)
+- Post and share our posts in our Facebook groups and in the South Florida Vegans group.
+- Send the Meetup messages we write from each group's Contact members (Meetup has no way for software to send these).
+- Keep an eye on what's happening in South Florida and tell us: new spots, events, people.
 
-Your own hours, about 2 hours a week. $75 every two weeks ($150 a month), paid through Stripe. The first month is a trial.
-After 90 days we look at the numbers together (clicks and new members from your link and the groups) and decide what's next.
+**Running a night** stays its own assignment, $150 a night (canon), once nights start in February.
 
-Taken off because Vegans Explore can do them without a person: putting our events on Meetup and the Meetup announcements (Meetup's API for
-Pro networks, to confirm), welcoming and approving new members (Meetup's automatic welcome message and Facebook's Admin Assist). Running a
-community night stays its own paid assignment ($150 a night), never part of this one.
+**Coming, not promised yet:** a share when people he brings in use Vegans Explore's paid services (sold by LESARUSS.ai). The terms come
+later; the pitch says "Coming" and names no amount.
+
+Automated, not his: the Meetup welcome message to new members (Meetup's built-in setting), approving members (Facebook Admin Assist).
+Meetup's API can create events for a Pro network; it cannot send member messages.
 
 ## Agreement changes from KJ's version 1
 
-- **2. What you do:** the six lines above, plus "Read the weekly brief and do its asks." Questions go to Kai; Sean sees every conversation.
+- **2. What you do:** the assignments he picks above, plus "Read the weekly brief and do its asks." Questions go to Kai; Sean sees every conversation.
 - **3. Ground rules:** "In our groups you post what we send and answer as Vegans Explore. You don't change group settings or remove
   organizers. No bots or automation."
 - **4. Pay:** $75 for every two weeks of work (the rest of the section unchanged).
