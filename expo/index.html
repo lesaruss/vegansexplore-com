@@ -120,6 +120,23 @@
     .gb-quote { font-size: 16px; font-weight: 600; line-height: 1.55; border-left: 6px solid var(--k-or); padding: 4px 0 4px 16px; margin: 18px 0 6px; max-width: 900px; }
     .gb-fine { font-size: 12.5px; font-weight: 600; color: var(--k-mute); }
     .gb-form { max-width: 900px; }
+    /* The Expo as a visual journey (Sean, 2026-11-19: "we should be showing them visuals of how we picture this event, from the aerial shot
+       of all the vendors, from the outdoor area to the stage... what their booth could look like"): the rows on the left, a picture walk on the
+       right, one scene at a time with Back and Next. */
+    .ex-two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 420px); gap: 24px 32px; align-items: start; }
+    .ex-two .rf-sec { margin-top: 0; }
+    .ex-walk { display: grid; gap: 10px; }
+    .ex-walk .k-pic { aspect-ratio: 4 / 5; width: 100%; }
+    .ex-walk .k-pic img { transition: opacity .25s; }
+    .ex-cap { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 12px; align-items: center; }
+    .ex-cap small { font-size: 10.5px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; color: var(--k-pinkd); }
+    .ex-cap b { display: block; font-size: 18px; font-weight: 900; }
+    .ex-cap p { grid-column: 1 / -1; margin: 0; font-size: 14px; font-weight: 600; line-height: 1.5; }
+    .ex-nav { display: flex; gap: 6px; }
+    .ex-dots { display: flex; gap: 6px; }
+    .ex-dots button { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--k-ink); background: #fff; padding: 0; cursor: pointer; }
+    .ex-dots button.on { background: var(--k-ink); }
+    @media (max-width: 900px) { .ex-two { grid-template-columns: minmax(0, 1fr); } .ex-walk { order: -1; } }
     .rf-head .rf-act:empty { display: none; }
     @media (max-width: 900px) { .gb-cover { grid-template-columns: minmax(0, 1fr); } .gb-cover .k-pic { justify-self: start; max-width: 320px; } }
     /* Liz's card (Sean, 2026-11-19: "make the image of Liz a little bit bigger... keep Liz solid and then make just the text scroll... 3 rows of
@@ -208,6 +225,35 @@
   function see() { return '<div class="gb-see"><span class="k-label">Ready?</span><h2>Start with your listing.</h2><p>It is free, and it is how every brand at the Expo gets there: one small step at a time.</p><a class="k-btn k-sm" href="/claim">Claim your listing &rsaquo;</a></div>'; }
   function next(i) { var n = PARTS[i + 1]; return n ? '<div class="gb-next"><a class="k-btn" href="' + link(n[0]) + '">Next part: ' + esc(n[1]) + ' &rsaquo;</a><span>' + esc(n[6]) + '</span></div>' : ''; }
 
+  // The walk through the Expo, one scene at a time. Scenes are drawn in our style; the Expo is Coming, so every scene is how we picture it.
+  var WALK = [
+    ['From above', 'The whole Expo at once: the hall of brands, the Food Village outside, the stage at the end.', 'walk-1-above.jpg'],
+    ['The Food Village', 'Vegan food from around the world, one stall after another, with long tables to share it.', 'walk-2-village.jpg'],
+    ['The main stage', 'The biggest voices in the Vegan world, on the topics our community cares about most.', 'walk-3-stage.jpg'],
+    ['Your booth', 'How a brand could show up: a tasting counter, your products, your wall, your team.', 'walk-4-booth.jpg'],
+    ['The evening', 'Music, food and the whole community together, once every two years.', 'walk-6-evening.jpg']
+  ];
+  function walk() {
+    return '<div class="ex-walk" id="exWalk"><div class="k-pic" style="--k-c:#FF9EC4"><img id="exImg" src="/public/expo/' + WALK[0][2] + '" alt=""></div>' +
+      '<div class="ex-cap"><div><small id="exN"></small><b id="exT"></b></div><div class="ex-nav"><button type="button" class="k-btn k-sm" id="exPrev" aria-label="Back">&lsaquo;</button><button type="button" class="k-btn k-sm" id="exNext" aria-label="Next">Next &rsaquo;</button></div><p id="exL"></p></div>' +
+      '<div class="ex-dots" id="exDots">' + WALK.map(function (w, j) { return '<button type="button" aria-label="' + esc(w[0]) + '" data-j="' + j + '"></button>'; }).join('') + '</div></div>';
+  }
+  function wireWalk() {
+    var at = 0, img = document.getElementById('exImg'); if (!img) return;
+    WALK.forEach(function (w) { var im = new Image(); im.src = '/public/expo/' + w[2]; });
+    function show(j) {
+      at = (j + WALK.length) % WALK.length; var w = WALK[at];
+      img.src = '/public/expo/' + w[2]; img.alt = w[0] + ': ' + w[1];
+      document.getElementById('exN').textContent = (at + 1) + ' of ' + WALK.length + ' · How we picture it';
+      document.getElementById('exT').textContent = w[0]; document.getElementById('exL').textContent = w[1];
+      document.querySelectorAll('#exDots button').forEach(function (d, k) { d.classList.toggle('on', k === at); });
+    }
+    document.getElementById('exPrev').onclick = function () { show(at - 1); };
+    document.getElementById('exNext').onclick = function () { show(at + 1); };
+    document.querySelectorAll('#exDots button').forEach(function (d) { d.onclick = function () { show(+d.getAttribute('data-j')); }; });
+    show(0);
+  }
+
   var VIEWS = {
     start: function (i) {
       return head(i, CLAIM) +
@@ -221,14 +267,14 @@
         '</div><div class="k-pic" style="--k-c:#FF9EC4"><img src="/public/expo/liz-expo.jpg" alt="Liz, our Guide for businesses, welcoming you into a food village of booths from around the world"></div></div>' + next(i);
     },
     expo: function (i) {
-      return head(i, CLAIM) + '<section class="rf-sec"><span class="k-label">The World Vegan Expo</span><div class="k-rows">' +
+      return head(i, CLAIM) + '<div class="ex-two" style="margin-top:28px"><section class="rf-sec"><span class="k-label">The World Vegan Expo</span><div class="k-rows">' +
         row(1, 'or', 'Every Vegan brand in one place', 'The brands people love and the ones they are about to discover, side by side for a few days.', 'Coming', 'new') +
         row(2, 'br', 'The biggest names, on the topics that matter', 'Talks and panels with the leading voices in the Vegan world, on the subjects our community cares about most.', 'Coming', 'new') +
         row(3, 'pk', 'The place to launch', 'A new documentary, a new product, a new book: the Expo is where the Vegan world will want to see it first.', 'Coming', 'new') +
         row(4, 'pe', 'The Food Village', 'Vegan food from around the world. Booths are limited for each kind of vendor, and vendors come from every city, not just the host city.', 'Coming', 'new') +
         row(5, 'dk', 'Every two years', 'Time to set it up the right way, with community events in our chapters between editions that build toward the next one.', 'Coming', 'new') +
         row(6, 'ti', 'A host city that partners with us', 'The Expo goes to a city that wants to make it a big deal, chosen together with the community.', 'Coming', 'new') +
-        '</div></section>' + good([['k-tint', 'The city and the date', 'Announced with the host city. Brands already in the room hear first.'], ['k-peach', 'Booths and partners', 'Food Village booths and partner options open later, and they are limited. The first step is your listing.']]) + see() + next(i);
+        '</div></section>' + walk() + '</div>' + good([['k-tint', 'The city and the date', 'Announced with the host city. Brands already in the room hear first.'], ['k-peach', 'Booths and partners', 'Food Village booths and partner options open later, and they are limited. The first step is your listing.']]) + see() + next(i);
     },
     room: function (i) {
       return head(i, CLAIM) + '<section class="rf-sec gb-now"><span class="k-label">Where we are today</span><div class="k-blocks">' +
@@ -237,7 +283,7 @@
         '<div class="k-block k-tint"><span class="k-big">2,864</span><small>Vegan and plant-based places and brands in our Directory</small></div></div>' +
         '<p class="gb-quote">We are not asking you to believe in 2028 today. We are asking for one small step, and we will show you where it leads.</p>' +
         '<p class="gb-fine">Members are counted live. The email reach and the Directory count are as of November 19, 2026.</p></section>' +
-        good([['k-pink', 'Why we start small', 'Big events are built on relationships. We are building them now, city by city, with the businesses who see what we are doing.'], ['k-tint', 'What you get now', 'Your listing, your brand in front of members as we grow, and a seat at every step on the road to the Expo.']]) + see() + next(i);
+        good([['k-pink', 'Why we start small', 'Ten years on the ground in South and Central Florida taught us that big events are built on relationships. We are building them now, city by city, with the businesses who see what we are doing.'], ['k-tint', 'What you get now', 'Your listing, your brand in front of members as we grow, and a seat at every step on the road to the Expo.']]) + see() + next(i);
     },
     road: function (i) {
       return head(i, CLAIM) + '<section class="rf-sec"><span class="k-label">The road to 2028</span><div class="k-steps">' +
@@ -277,6 +323,7 @@
         audio.play(); b.innerHTML = PAUSE + '<span>Pause</span>'; playing = b;
       });
     }
+    if (p[0] === 'expo') wireWalk();
     if (p[0] === 'room') fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-giving', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{"action":"status"}' })
       .then(function (r) { return r.json(); }).then(function (r) { var e = document.getElementById('gbMembers'); if (e && r && r.entries > 0) e.textContent = Number(r.entries).toLocaleString('en-US'); else if (e) e.parentNode.hidden = true; })
       .catch(function () { var e = document.getElementById('gbMembers'); if (e) e.parentNode.hidden = true; });
