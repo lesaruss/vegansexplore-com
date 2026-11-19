@@ -636,7 +636,7 @@ Deno.serve(async (req) => {
     case 'claim': {
       if (!viewer) return json({ error: 'not_authenticated', message: 'Sign in to claim a bounty.' }, 401);
       if (!isId(body.bounty_id)) return json({ error: 'bad_id' }, 400);
-      if (!viewer.passport) return json({ error: 'passport', message: 'Bounties are for Passport holders. Get your Passport to claim a spot.' }, 403);
+      if (!viewer.passport) return json({ error: 'passport', message: 'Bounties are for members. Joining is free with a short survey.' }, 403);
       // A host night seats a set number of creators across all its jobs.
       const { data: cb } = await db.from('ve_bounties').select('campaign_id, community_slug, reserved_email, reserved_until, apply_mode').eq('id', body.bounty_id).maybeSingle();
       if (cb && !cityOk(viewer, cb.community_slug)) return json({ error: 'not_found' }, 404);
@@ -783,7 +783,7 @@ Deno.serve(async (req) => {
     case 'apply': {
       if (!viewer) return json({ error: 'not_authenticated', message: 'Sign in to apply.' }, 401);
       if (!isId(body.bounty_id)) return json({ error: 'bad_id' }, 400);
-      if (!viewer.passport) return json({ error: 'passport', message: 'Gigs are for Passport holders.' }, 403);
+      if (!viewer.passport) return json({ error: 'passport', message: 'Gigs are for members. Joining is free with a short survey.' }, 403);
       const { data: b } = await db.from('ve_bounties').select(BOUNTY_COLS).eq('id', body.bounty_id).maybeSingle();
       if (!b || b.status !== 'open' || (!b.remote && !cityOk(viewer, b.community_slug))) return json({ error: 'not_found', message: 'This gig is not open.' }, 404);
       if (b.apply_mode === 'claim') return json({ error: 'claim_it', message: 'This one is claimed, not applied to.' }, 409);
