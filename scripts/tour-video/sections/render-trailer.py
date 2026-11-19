@@ -1,6 +1,6 @@
 # The 30-second Vegans Explore trailer (Sean approved the script 2026-11-19, playbook ve-meetup-groups). render-city.py with the trailer's shots:
 # Liz's two scenes (liz-phone.jpg, liz-door.jpg) and the end card full bleed, live pages in the phone over a slowly zooming city, cut on Sean's
-# keeper take (stt). Run beside cap/, voice.mp3, bed.mp3, v3compose.py, liz-phone.jpg, liz-door.jpg and end-card.png.
+# keeper take (stt). v2 voice: the take's first 0.74 s muted (converter noise) and "at vegansexplore.com" from the 16:23 take (Sean: the 16:44 ending sounded like ".ca"). Run beside cap/, voice.mp3, bed.mp3, v3compose.py, liz-phone.jpg, liz-door.jpg and end-card.png.
 import sys, subprocess, importlib.util
 from PIL import Image
 spec=importlib.util.spec_from_file_location('c','v3compose.py'); c=importlib.util.module_from_spec(spec)
@@ -8,8 +8,8 @@ src=open('v3compose.py').read().split('\n# ---')[0]
 exec(compile(open('v3compose.py').read().split('def on_stage')[0],'c','exec'),c.__dict__)
 W,H,FPS,LEAD,XF=1080,1350,30,0.5,0.4
 REPO=''
-S=[(0.0,'L:liz-phone.jpg'),(2.9,'home'),(6.6,'vouch'),(10.2,'events'),(12.0,'pulse'),(15.5,'guides'),(17.4,'guides2'),(19.4,'directory2'),
-   (21.5,'directory'),(23.4,'founding'),(25.7,'home'),(27.8,'L:liz-door.jpg'),(30.0,'L:end-card.png')]
+S=[(0.0,'L:liz-phone.jpg'),(2.9,'doors'),(6.6,'vouch'),(10.2,'events'),(12.0,'pulse'),(15.5,'guides'),(17.4,'guides2'),(19.4,'directory2'),
+   (21.5,'directory'),(23.4,'founding2'),(25.7,'passport'),(27.8,'L:liz-door.jpg'),(30.0,'L:end-card.png')]
 TOTAL=float(subprocess.check_output(['ffprobe','-v','error','-show_entries','format=duration','-of','csv=p=0','voice.mp3']))+LEAD+1.5
 from PIL import ImageDraw
 R='/home/user/vegansexplore-com/communities/'

@@ -12,6 +12,10 @@ const SH={
  guides2:{u:W+'/guides',f:async p=>{await p.waitForTimeout(2500);await p.evaluate(()=>scrollBy(0,1100));}},
  directory2:{u:W+'/directory/restaurants?city=south-florida',f:async p=>{await p.waitForTimeout(2500);await p.evaluate(()=>scrollBy(0,900));}},
  founding:{u:W+'/',f:async p=>{await p.waitForTimeout(1500);await p.evaluate(()=>scrollBy(0,200));}},
+ doors:{u:W+'/directory'},
+ survey:{u:W+'/survey?s=explorer'},
+ passport:{u:W+'/passport'},
+ founding2:{u:W+'/',f:p=>at(p,/Free with a short survey/,140)},
  vouch:{u:W+'/directory/restaurants?city=south-florida',f:p=>at(p,/Vouch/,260)},
 };
 (async()=>{const b=await chromium.launch();const only=process.argv.slice(2);
