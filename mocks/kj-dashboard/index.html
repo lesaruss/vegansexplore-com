@@ -277,6 +277,14 @@
     .kitc .card .k{margin-bottom:6px;}
     .chk{display:flex;gap:10px;align-items:flex-start;}
     .chk input{width:20px;height:20px;accent-color:var(--dk);margin:2px 0 0;flex:none;}
+    .rep{display:flex;justify-content:flex-end;margin:0 var(--sh) 14px 0;}
+    .rep-btn{font:inherit;font-size:12px;font-weight:800;background:#fff;color:var(--ink);border:2px solid var(--ink);border-radius:var(--r);padding:6px 10px;cursor:pointer;}
+    .rep-f{border:2px solid var(--ink);border-radius:14px;background:#fff;padding:14px;margin:0 var(--sh) 22px 0;max-width:720px;}
+    .rep-f label{display:block;font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;color:var(--dk);margin:0 0 6px;}
+    .rep-f .in{width:100%;margin:0 0 10px;}
+    .rep-f small{display:block;font-size:12px;font-weight:700;color:var(--mute);margin-top:8px;}
+    .lnk{display:flex;flex-wrap:wrap;gap:10px;align-items:center;}
+    .lnk code{font:inherit;font-size:17px;font-weight:900;background:var(--tint);border-radius:var(--r);padding:9px 12px;word-break:break-all;}
   </style>
 </head>
 <body>
@@ -302,13 +310,14 @@
 (function () {
   // ---- Every word, in one place. DRAFT until Sean locks it. Rows with smp:true are illustrative (stamped Sample). ----
   var COPY = {
-    eyebrow: 'Community Manager, Instagram',
+    eyebrow: 'Community Manager, Northeast',
     name: 'KJ',
-    line: 'Your one home: this week, every conversation, your asks and Logan, any time.',
+    line: 'One of our regional helpers (Northeast; Southeast and Los Angeles to come). Your one home: this week, every conversation, your people, your asks and Logan.',
     avatar: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/people/keya-vegankween/avatar-geekfon-v3.jpg',
-    tabs: [['home', 'Home'], ['conversations', 'Conversations'], ['asks', 'Asks'], ['logan', 'Ask Logan'], ['briefs', 'Briefs'], ['record', 'Your record'], ['kit', 'Your kit']],
+    tabs: [['home', 'Home'], ['conversations', 'Conversations'], ['people', 'Your people'], ['asks', 'Asks'], ['logan', 'Ask Logan'], ['briefs', 'Briefs'], ['record', 'Your record'], ['kit', 'Your kit']],
     kai: {
-      home: 'Start with the brief, then open today\'s conversations. Anything you are unsure of, ask Logan.',
+      home: 'Start with the brief, then today\'s conversations, then invite your own people with your link. See something off? Report it.',
+      people: 'The people you already know are yours to invite, any way you like. Businesses and listings still go through @vegansexplore.',
       conversations: 'Everyone who commented, replied, mentioned us, wrote or followed. Answer as Vegans Explore, with their own link.',
       asks: 'What Sean wants this week. Outside these, you have room: if you spot an opening, take it, and tell us under Your ideas.',
       logan: 'Logan is here for instructions, information and questions. Decisions go to Sean.',
@@ -320,8 +329,10 @@
       briefTitle: 'This week\'s brief: Monday, November 23',
       briefFrom: 'From Sean and Logan',
       where: 'We are at 84 members on the way to 250 by December 31. All five group pages are live, and every place in the Directory has its own link.',
-      next: 'Every post this week tags the places in it and asks a question. Your job is to catch every comment, reply and mention, and turn the warm ones into members.',
-      asks: ['Answer every comment on the city posts the same day.', 'Send a private reply with their link to every business that comments.', 'Welcome new followers and ask which group they are.'],
+      next: 'Every post this week tags the places in it and asks a question. Catch every comment, reply and mention on @vegansexplore and turn the warm ones into members. And invite the people you already know with your own link.',
+      asks: ['Answer every comment on the city posts the same day.', 'Send a private reply with their link to every business that comments.', 'Invite ten people you know with your link, and ask them to tell us if anything looks off.'],
+      proudH: 'Proud of what you share',
+      proud: 'We are building this platform with the people we bring in. If anything looks off, tell us and we fix it right away: tap Report something on any part of your dashboard. And ask the people you bring in to do the same; every page has a Feedback button.',
       question: 'Which kind of post gets the most comments from businesses so far, and why do you think that is?',
       replyHint: 'Your answer goes to Sean and Logan.',
       goalH: 'The goal',
@@ -343,6 +354,19 @@
         { smp: true, who: '@samplecreator', from: 'Mentioned @vegansexplore in a reel', group: 'Creators and media', tag: ['t-done', 'Joined'], btn: 'Say thanks' }
       ]
     },
+    people: {
+      h: 'Your people',
+      lede: 'Reach the people you already know, personally: text them, tell them in person, post on your own account or any platform you use. They are yours to invite.',
+      fence: 'Listings and businesses still go through @vegansexplore, so those relationships stay with the brand. Your friends, family, followers and fellow creators: invite them however you like.',
+      linkH: 'Your link',
+      link: 'vegansexplore.com/go/keya',
+      linkNote: 'Every person who joins through it is credited to you, toward your 60.',
+      sayH: 'What to say',
+      say: 'Keep it you. Something like: "I\'m helping launch Vegans Explore, a free home for Vegan places, people and events in your city. Join before January 1 and you\'re a Founding Member: vegansexplore.com/go/keya." And ask them to tell us if anything looks off.',
+      tallyH: 'Joined through your link',
+      tally: [['0', 'Joined through your link', 'As of Nov 19'], ['60', 'Your share of 250', 'By Dec 31, 11:59 PM Eastern']]
+    },
+    report: { btn: 'Report something', what: 'What looks off?', page: 'The page link', shot: 'A screenshot (optional)', send: 'Send to the team', note: 'Goes to the team\'s feedback queue, like the Feedback button on every page. In this mock nothing is sent.' },
     asks: {
       h: 'Sean\'s asks',
       items: [
@@ -425,7 +449,16 @@
         '<button type="button" class="btn">Send my answer</button></div>' +
         sec(h.goalH) + '<div class="totals">' + h.goal.map(tot).join('') + '</div>' +
         sec(h.todayH, S) + '<div class="totals">' + h.today.map(tot).join('') + '</div>' +
+        '<div class="card" style="--c:var(--pink)"><h3 style="margin:0 0 6px;font-size:19px;font-weight:900">' + esc(h.proudH) + D + '</h3><p style="font-size:14.5px;font-weight:600;line-height:1.55;margin:0;max-width:900px">' + esc(h.proud) + '</p></div>' +
         '<a class="btn btn-go" href="?tab=conversations">' + esc(h.go) + '</a>';
+    },
+    people: function () {
+      var p = COPY.people;
+      return kai('people') + sec(p.h) + '<p class="lede">' + esc(p.lede) + '</p>' +
+        '<div class="card" style="--c:var(--or)"><p class="k">' + esc(p.linkH) + '</p><div class="lnk"><code>' + esc(p.link) + '</code><button type="button" class="btn btn-go btn-sm" data-copy="https://' + esc(p.link) + '">Copy my link</button></div><p style="font-size:13.5px;font-weight:700;margin:10px 0 0">' + esc(p.linkNote) + '</p></div>' +
+        '<div class="rows need"><div class="r"><div><b>Who goes where</b><p>' + esc(p.fence) + '</p></div><span class="tag t-tip">The rule</span></div></div>' +
+        sec(p.sayH) + '<div class="card"><p style="font-size:14.5px;font-weight:600;line-height:1.55;margin:0 0 10px;max-width:900px">' + esc(p.say) + '</p><button type="button" class="btn btn-sm" data-copy="">Copy</button></div>' +
+        sec(p.tallyH) + '<div class="totals">' + p.tally.map(tot).join('') + '</div>';
     },
     conversations: function () {
       var c = COPY.convo, q = c.quick;
@@ -468,12 +501,19 @@
   function show() {
     var t = new URLSearchParams(location.search).get('tab') || 'home'; if (!V[t]) t = 'home';
     $('tabs').innerHTML = COPY.tabs.map(function (x) { return '<a href="?tab=' + x[0] + '"' + (x[0] === t ? ' class="on" aria-current="page"' : '') + '>' + esc(x[1]) + (x[0] === 'conversations' ? ' <em>15</em>' : '') + '</a>'; }).join('');
-    $('view').innerHTML = V[t]();
+    var r = COPY.report;
+    $('view').innerHTML = '<div class="rep"><button type="button" class="rep-btn" id="repB">' + esc(r.btn) + '</button></div>' +
+      '<form class="rep-f" id="repF" hidden><label for="rw">' + esc(r.what) + '</label><textarea id="rw" class="ta"></textarea>' +
+      '<label for="rp">' + esc(r.page) + '</label><input id="rp" class="in" value="' + esc(location.href) + '">' +
+      '<label for="rs">' + esc(r.shot) + '</label><input id="rs" class="in" type="file" accept="image/*">' +
+      '<button type="submit" class="btn">' + esc(r.send) + '</button><small>' + esc(r.note) + '</small></form>' + V[t]();
   }
   document.addEventListener('click', function (e) {
     var a = e.target.closest && e.target.closest('a[href^="?tab="]');
     if (a) { e.preventDefault(); history.pushState(null, '', a.getAttribute('href')); show(); window.scrollTo(0, 0); }
   });
+  document.addEventListener('click', function (e) { if (e.target.id === 'repB') { var f = $('repF'); f.hidden = !f.hidden; } });
+  document.addEventListener('submit', function (e) { if (e.target.id === 'repF') { e.preventDefault(); e.target.querySelector('small').textContent = 'Mock: nothing was sent. The real button saves to the team feedback queue.'; } });
   window.addEventListener('popstate', show); show();
 })();
 </script>
