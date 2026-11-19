@@ -374,8 +374,8 @@
   function gvLimitLine() { return GV && GV.brand ? 'the $150 per brand' : 'the $100 per business'; }
   function drawGiving() {
     var brand = !!(GV && GV.brand);
-    var intro = '<section class="card"><h2>Give a prize for <span class="hl o">11 Days of Giving</span></h2><p class="lede" style="margin:0">December 1 to January 1, every member is in every draw for prizes from Vegan businesses and brands, drawn at random in the open, as we count down to our January 1 launch. ' +
-      (brand ? 'Give up to $150 in retail value: one item, several, a bundle or a digital code.' : 'Give up to $100 in prizes (four $25 prizes work best).') + ' Nothing to pay or ship now: you ship each prize within 7 business days of its winner confirming, and you are done by January 20, 2027. Prizes are taken until the end of Sunday, December 20. Your business is shown with your prize on the Holiday Guide, and you earn 250 points for each prize once our team checks it.</p></section>';
+    var intro = '<section class="card"><h2>Give a prize for <span class="hl o">11 Days of Giving</span></h2><p class="lede" style="margin:0">Every member who joins Vegans Explore by December 11 is entered, and from December 14 to 24 we draw winners live, one day at a time, as we count down to our January 1 launch. ' +
+      (brand ? 'Give up to $150 in retail value: one item, several, a bundle or a digital code.' : 'Give up to $100 in prizes (four $25 prizes work best).') + ' Nothing to pay or ship now: you ship each prize within 7 business days of its winner confirming, and you are done by January 15, 2027. Prizes are taken until the end of Friday, December 4. Your business is shown with your prize on the Holiday Guide, and you earn 250 points for each prize once our team checks it.</p></section>';
     if (GV_FOR !== L.id || !GV) { if (GV_FOR !== L.id) gvLoad(); return intro + '<p class="empty">Loading your prizes...</p>'; }
     if (GV.error) return intro + '<p class="empty">Your prizes did not load. Refresh to try again.</p>';
     var ST = { pledged: ['Waiting for our check', 't-need'], live: ['Live', 't-new'], withdrawn: ['Taken back', 't-tip'] };
