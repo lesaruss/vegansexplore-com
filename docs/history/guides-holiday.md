@@ -175,6 +175,12 @@ truck serving Central Florida) and its ThanksLiving menu. Left out, nothing conf
 Saigon's Thanksgiving hours, Vegan International Co. closed Nov 25 to 28) have no place on a listing yet; Sean's answer is an owner task (Depot > Ideas b00dc2ee): a claimed business is asked
 for each holiday's hours or "staying the same".
 
+**Ideas 111926, 2026-11-19** (Drive, 13 screenshots; migration `20261119_ideas_111926_batch.sql`): live the same hour: four events (the 3rd Annual
+Revolutionary Healing Friendsgiving Festival, Miami, Nov 22; Vegans of LA's Free Farmers Market at the Michelle Obama Library, Long Beach, Nov 21;
+Growth Hour with Mikel Bryant of Sensibly Sprouted, Bellingham, Dec 17; March for Animals at FIU, Miami, Dec 3), Lotus Vegan Restaurant
+(Pinellas Park) Thanksgiving hours (Thu 11 AM to 7 PM, Fri to Sun closed), and Madrina Vegana's holiday catering as a Christmas Menus We Found
+tip (ThanksLiving tips closed Nov 19). Held for Sean: WildKind Packaging (IMG_8446, an ad) and a Clermont primary care search (IMG_8449, reads as personal).
+
 **Holiday hours, 2026-11-17** (Sean: "that should be one of the questions that we ask for our members... they can just check staying the
 same, and then it'll close off"; then "Let's build the holiday hours feature now"). Live (main 40fe5e6, `ve-holiday` v14 from 8512b7e
 through `ve-function-deploy`, source sha256 matched and read back). Table `ve_holiday_hours` (one answer per listing and holiday: `same` or
