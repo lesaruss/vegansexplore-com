@@ -43,7 +43,8 @@ const lower = `<div class="sr-lt"><img src="${logo}" alt=""><div><b>${esc(S.name
 const cityArt = (cap) => `<div class="sr-city"><img src="${city}" alt="">${cap ? `<div class="sr-cap">${esc(cap)}</div>` : ''}</div>`;
 
 const GUIDES = process.argv.includes('--guides') ? `<div class="sr-g4"></div><div class="sr-gt">Instagram bar</div><div class="sr-gb">Instagram caption and reply bar</div><div class="sr-gr">Buttons</div><div class="sr-gs"></div>` : '';
-const ctaPlate = () => `<div class="sr-city"><img src="${city}" alt=""><div class="sr-cap sr-cta">${esc(S.end_cta || '')}<span class="sr-btn">${esc(S.url)}</span></div></div>`;
+// end_cta rows are split on '|' (Sean, 2026-11-20: "Vegans Explore on its own row"), e.g. "Find Dr. Michael Klaper on|Vegans Explore".
+const ctaPlate = () => `<div class="sr-city"><img src="${city}" alt=""><div class="sr-cap sr-cta"><span>${String(S.end_cta || '').split('|').map(esc).join('<br>')}</span><span class="sr-btn">${esc(S.url)}</span></div></div>`;
 const frame = (id, inner) => `<div class="sr-rf" id="${id}">${inner}${GUIDES}</div>`;
 const open = frame('open', band(S.head) + window_ + lower + cityArt(''));
 const clip = frame('clip', band(S.head) + window_ + lower + cityArt(S.caption));
