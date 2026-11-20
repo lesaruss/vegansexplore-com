@@ -1,0 +1,75 @@
+{
+ "label": "Vegan Directory · Miami",
+ "head": [
+  "Cashew cheese,",
+  "made in-house."
+ ],
+ "name": "Veronica Menon",
+ "biz": "Love Life Cafe",
+ "sub": "Miami · on the SoFlo Vegans Podcast",
+ "logo": "$SCRATCH/reelmock/ll-logo.png",
+ "city_art": "/home/user/vegansexplore-com/communities/south-florida/wide.jpg",
+ "caption": "\"Since we opened in 2015, we have only used olive oil and coconut oil.\"",
+ "end_head": [
+  "Episode 114,",
+  "now live."
+ ],
+ "end_line": "The Vegans Explore Podcast, Episode 148. More places like Love Life Cafe at vegansexplore.com.",
+ "url": "vegansexplore.com",
+ "source": "$SCRATCH/vids/ll.mp4",
+ "parts": [
+  [
+   833.58,
+   843.72
+  ],
+  [
+   855.98,
+   875.7
+  ]
+ ],
+ "out_name": "veronica-love-life-reel-v5.mp4",
+ "captions": [
+  {
+   "t0": 0.0,
+   "t1": 6.3,
+   "text": "I think a lot of people relate to Veganism being an ultra-processed food"
+  },
+  {
+   "t0": 6.3,
+   "t1": 9.89,
+   "text": "because of the fake meats and fake cheeses, right?"
+  },
+  {
+   "t0": 9.89,
+   "t1": 14.25,
+   "text": "But in our restaurant, for example, we try to stick to whole foods."
+  },
+  {
+   "t0": 14.25,
+   "t1": 18.75,
+   "text": "We make our own cheese. Our cheese is made from cashew and water."
+  },
+  {
+   "t0": 18.75,
+   "t1": 21.75,
+   "text": "Our burger patty is homemade."
+  },
+  {
+   "t0": 21.75,
+   "t1": 27.15,
+   "text": "Even our picadillo: we literally buy a bag of pea protein,"
+  },
+  {
+   "t0": 27.15,
+   "t1": 29.61,
+   "text": "and we make the picadillo with pea protein."
+  }
+ ],
+ "join": 0.25,
+ "music": "$SCRATCH/vids/lofi-neo-soul-v1.mp3",
+ "music_vol": 0.14,
+ "end_label": "The SoFlo Vegans Podcast",
+ "end_cta": "More places like Love Life Cafe",
+ "end_page": "$SCRATCH/pages/love-life-cafe.png",
+ "end_s": 4.5
+}
