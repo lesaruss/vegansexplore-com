@@ -1,0 +1,82 @@
+{
+ "label": "Doctor's tip · Dietitians",
+ "head": [
+  "Find a plant-based",
+  "dietitian"
+ ],
+ "band": "#FF9EC4",
+ "band_ink": true,
+ "name": "Dr. Michael Klaper",
+ "biz": "Moving Medicine Forward",
+ "sub": "On the Vegans Explore Podcast",
+ "logo": "$SCRATCH/doc/klaper.jpg",
+ "city_art": "$SCRATCH/doc/doctor-tip-16x9.jpg",
+ "caption": "",
+ "url": "vegansexplore.com",
+ "end_label": "The Vegans Explore Podcast",
+ "end_head": [
+  "More from",
+  "Dr. Klaper"
+ ],
+ "end_cta": "Find Dr. Michael Klaper on Vegans Explore",
+ "end_page": "$SCRATCH/pages/michael-klaper.png",
+ "end_s": 4.5,
+ "end_line": "",
+ "end_head_unused": true,
+ "source": "$SCRATCH/vids/klaper-solo.mp4",
+ "parts": [
+  [
+   717.95,
+   722.3
+  ],
+  [
+   724.4,
+   730.2
+  ],
+  [
+   749.9,
+   756.55
+  ]
+ ],
+ "join": 0.25,
+ "music": "$SCRATCH/vids/lofi-neo-soul-v1.mp3",
+ "music_vol": 0.12,
+ "out_name": "klaper-doctor-v1.mp4",
+ "captions": [
+  {
+   "t0": 0.0,
+   "text": "There are now plant-based dietitians in every community.",
+   "t1": 4.1
+  },
+  {
+   "t0": 4.1,
+   "text": "All these lovely people",
+   "t1": 6.2
+  },
+  {
+   "t0": 6.2,
+   "text": "who are skilled in counseling about plant-based nutrition.",
+   "t1": 9.65
+  },
+  {
+   "t0": 9.65,
+   "text": "Let her do the counseling.",
+   "t1": 11.15
+  },
+  {
+   "t0": 11.15,
+   "text": "Let her show them the videos.",
+   "t1": 12.55
+  },
+  {
+   "t0": 12.55,
+   "text": "Let her read the articles with them.",
+   "t1": 14.55
+  },
+  {
+   "t0": 14.55,
+   "text": "Let her take them shopping, or him.",
+   "t1": 16.3
+  }
+ ]
+}

@@ -1,0 +1,105 @@
+{
+ "label": "Doctor's tip · Iodine",
+ "head": [
+  "Where do Vegans",
+  "get iodine?"
+ ],
+ "band": "#FF9EC4",
+ "band_ink": true,
+ "name": "Dr. Michael Klaper",
+ "biz": "Moving Medicine Forward",
+ "sub": "On the Vegans Explore Podcast",
+ "logo": "$SCRATCH/doc/klaper.jpg",
+ "city_art": "$SCRATCH/doc/doctor-tip-16x9.jpg",
+ "caption": "",
+ "url": "vegansexplore.com",
+ "end_label": "The Vegans Explore Podcast",
+ "end_head": [
+  "More from",
+  "Dr. Klaper"
+ ],
+ "end_cta": "Find Dr. Michael Klaper on Vegans Explore",
+ "end_page": "$SCRATCH/pages/michael-klaper.png",
+ "end_s": 4.5,
+ "end_line": "",
+ "end_head_unused": true,
+ "source": "$SCRATCH/vids/klaper.mp4",
+ "parts": [
+  [
+   2634.5,
+   2638.1
+  ],
+  [
+   2675.7,
+   2688.05
+  ],
+  [
+   2690.4,
+   2694.45
+  ],
+  [
+   2704.05,
+   2710.4
+  ],
+  [
+   2725.95,
+   2728.9
+  ]
+ ],
+ "join": 0.25,
+ "music": "$SCRATCH/vids/lofi-neo-soul-v1.mp3",
+ "music_vol": 0.12,
+ "out_name": "klaper-iodine-v1.mp4",
+ "captions": [
+  {
+   "t0": 0.0,
+   "text": "Since Vegans, we don't eat fish, where do we get our iodine?",
+   "t1": 3.49
+  },
+  {
+   "t0": 3.49,
+   "text": "But if you wanna be natural,",
+   "t1": 4.79
+  },
+  {
+   "t0": 4.79,
+   "text": "you don't wanna get into the supplement game at all,",
+   "t1": 7.57
+  },
+  {
+   "t0": 7.57,
+   "text": "then you should find a way to get these sea vegetables into your diet.",
+   "t1": 12.67
+  },
+  {
+   "t0": 12.67,
+   "text": "There's the three that are the safest",
+   "t1": 15.49
+  },
+  {
+   "t0": 15.49,
+   "text": "and most delicious are wakame, arame, and dulse.",
+   "t1": 19.2
+  },
+  {
+   "t0": 19.2,
+   "text": "It's really tasty.",
+   "t1": 20.36
+  },
+  {
+   "t0": 20.36,
+   "text": "Throw a gob of it into your soup or into your salad a few times a week.",
+   "t1": 23.8
+  },
+  {
+   "t0": 23.8,
+   "text": "You'll get your iodine needs met.",
+   "t1": 25.32
+  },
+  {
+   "t0": 25.32,
+   "text": "That's really the best, most natural place to get your iodine.",
+   "t1": 28.3
+  }
+ ]
+}

@@ -1,0 +1,106 @@
+{
+ "label": "Doctor's tip · Get outside",
+ "head": [
+  "Get outside",
+  "every day"
+ ],
+ "band": "#FF9EC4",
+ "band_ink": true,
+ "name": "Dr. Michael Klaper",
+ "biz": "Moving Medicine Forward",
+ "sub": "On the Vegans Explore Podcast",
+ "logo": "$SCRATCH/doc/klaper.jpg",
+ "city_art": "$SCRATCH/doc/doctor-tip-16x9.jpg",
+ "caption": "",
+ "url": "vegansexplore.com",
+ "end_label": "The Vegans Explore Podcast",
+ "end_head": [
+  "More from",
+  "Dr. Klaper"
+ ],
+ "end_cta": "Find Dr. Michael Klaper on Vegans Explore",
+ "end_page": "$SCRATCH/pages/michael-klaper.png",
+ "end_s": 4.5,
+ "end_line": "",
+ "end_head_unused": true,
+ "source": "$SCRATCH/vids/klaper.mp4",
+ "parts": [
+  [
+   1382.6,
+   1388.28
+  ],
+  [
+   1393.65,
+   1400.3
+  ],
+  [
+   1403.65,
+   1407.3
+  ],
+  [
+   1449.35,
+   1460.6
+  ]
+ ],
+ "join": 0.25,
+ "music": "$SCRATCH/vids/lofi-neo-soul-v1.mp3",
+ "music_vol": 0.12,
+ "out_name": "klaper-outside-v1.mp4",
+ "captions": [
+  {
+   "t0": 0.0,
+   "text": "Get outside every day.",
+   "t1": 1.9
+  },
+  {
+   "t0": 1.9,
+   "text": "We need the sun on our faces.",
+   "t1": 4.2
+  },
+  {
+   "t0": 4.2,
+   "text": "We need physical activity.",
+   "t1": 5.38
+  },
+  {
+   "t0": 5.38,
+   "text": "Actually go to the park and get out in nature.",
+   "t1": 8.58
+  },
+  {
+   "t0": 8.58,
+   "text": "We're suffering from nature deficit disorder.",
+   "t1": 11.78
+  },
+  {
+   "t0": 11.78,
+   "text": "And combine it with a good brisk walk.",
+   "t1": 13.98
+  },
+  {
+   "t0": 13.98,
+   "text": "That's basically all you need to do.",
+   "t1": 15.28
+  },
+  {
+   "t0": 15.28,
+   "text": "Stay connected.",
+   "t1": 16.18
+  },
+  {
+   "t0": 16.18,
+   "text": "It's so easy to cubicle yourself off even mentally.",
+   "t1": 21.98
+  },
+  {
+   "t0": 21.98,
+   "text": "We are tribal creatures. We need each other.",
+   "t1": 24.78
+  },
+  {
+   "t0": 24.78,
+   "text": "We need that connection.",
+   "t1": 26.48
+  }
+ ]
+}
