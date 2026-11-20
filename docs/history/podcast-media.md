@@ -526,3 +526,13 @@ voice with `voice-booth` sts); seven new news beds (`news-breaking`, `-island`, 
 `-measured`); a song must outlast its segment; Dania (Day-nee-uh) and Aguacate (Agua-cah-teh, picked from samples) in HQ `spoken()`, HQ main
 f6f3517. Mix: HQ `scripts/podcast-mix/mix_soflo_113.py`. Handoff `docs/handoff/2026-11-17-soflo-113.md`; migration
 `20261117_soflo_113_podcast_canon.sql`.
+
+## 2026-11-19: Podcast Spotlight reels (playbooks ve-podcast-studio, ve-social-schedule)
+
+Sean: "we're dissecting the podcast, taking not everything, but enough that the content we put out is a little bit more dynamic." The
+Spotlight reel template is LOCKED (canon `canon-ve-brand-kit-templates` v4; `scripts/brand-templates/podcast-spotlight-reel.js` and
+`podcast-spotlight-cut.py`): a guest's interview clip horizontal in our frame, their name bar, their city's art (a doctor's tip: Guides pink
+and the shared doctor-tip art), captions on their words, a lo-fi bed, title style A, the close on their real profile page. Standing rule:
+everyone featured is emailed before it goes live to confirm the collaboration and invite changes (program `podcast-spotlight`). First: An
+of Sen Saigon (Ep 147, email sends Fri Nov 20), Veronica of Love Life Cafe (SoFlo 114), Dr. Neal Barnard's B12 tip (sample). Handoff
+`docs/handoff/2026-11-20-podcast-spotlight-reels.md`.
