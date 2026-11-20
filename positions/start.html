@@ -133,7 +133,7 @@
 (function () {
   var SB = 'https://fwbhwfxpncrsfhttimna.supabase.co';
   // ======== COPY: every word on this page that is not live data. LOCKED by Sean 2026-11-19 ("lock it"); rewritten 2026-11-19 to the role he locked with the dashboard, then in plain words (her people first, events in her home city, footage to us, community about 15 minutes a day, Kai not Logan). ========
-  var COPY = {
+  var COPY_KJ = {
     eyebrow: 'Community Manager',
     steps: { big: 'The big picture', role: 'Your role', check: 'Quick check', in: "I'm in", next: 'Next steps' },
     h1: { big: 'Bring your people into Vegans Explore', role: 'Your people first, wherever they are', check: 'Three quick questions', in: "Say you're in", next: 'Your next steps' },
@@ -212,8 +212,81 @@
     gate: { signin: 'Sign in with the email your invitation went to, to start.', signinBtn: 'Sign in', notInvited: 'This page is by invitation. If you were invited, sign in with the email the invitation went to.' }
   };
 
+  // ======== South Florida Community Nights (Sean locked the pitch 2026-11-19, "Lock it"; docs/plans/2026-11-19-ron-groups-assignment.md).
+  // Kai's lines as Sean recorded them (HQ Voices, set ve-ron-start, 2026-11-19; checked word for word with stt). ========
+  var COPY_RON = Object.assign({}, COPY_KJ, {
+    h1: { big: 'Build South Florida\'s Community Nights', role: 'Nights first, then our groups', check: 'Three quick questions', in: "Say you're in", next: 'Your next steps' },
+    lede: {
+      big: 'Our South Florida Community Nights start in February. December and January are for lining up venues and getting people excited, so the first night opens to a full room.',
+      role: 'Scout venues, bring people to the nights and be the person people ask. Share our posts in the Facebook groups, send our Meetup messages, and tell us what is happening in South Florida. Kai is your one contact.',
+      check: 'Three questions to make sure the role is clear. Nothing is graded; pick again if one is off.',
+      in: 'Read the agreement, then tick the box and type your full name.',
+      next: 'Three things, and you are ready to start.'
+    },
+    say: {
+      big: 'Hey Ron, Kai here. Our South Florida Community Nights start in February, and you\'re the one building them. The goal is simple: every night brings in four times what it costs.',
+      role: 'Here\'s the job: scout venues, bring people to the nights, and be the person people ask. You\'ll also share our posts in the Facebook groups, send our Meetup messages, and tell us what\'s happening in South Florida.',
+      check: 'Three quick questions, just to make sure we\'re on the same page. Take your time.',
+      in: 'This is the deal: $150 a month and $150 for each night you run. Your own hours, and a one-month trial. If it feels right, type your name and you\'re in.',
+      next: 'Last thing: tell us your Facebook and Meetup names, so Sean can add you to the groups. Then set up payouts, and you\'re ready.'
+    },
+    audio: (function (b) { return { big: b + 'kai-ron-big/conv-20261119222117.mp3', role: b + 'kai-ron-role/conv-20261119222350.mp3', check: b + 'kai-ron-check/conv-20261119222203.mp3',
+      in: b + 'kai-ron-in/conv-20261119222253.mp3', next: b + 'kai-ron-next/conv-20261119222308.mp3' }; })('https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voice-booth/ve-ron-start/'),
+    big: {
+      blocks: [['February', 'South Florida Community Nights start', 'k-dk'], ['4x', 'What every night should bring in, against what it costs to put on', 'k-pink'], ['$150', 'A month, plus $150 for each night you run', 'k-peach']],
+      whyH: 'The goal',
+      why: 'Each night should bring in at least four times what it costs to put on, counting the months leading up to it, the night itself and its marketing. We track it together.',
+      pagesH: 'Where people land',
+      pages: 'Our posts and Meetup messages send people to Vegans Explore, where they find the nights and sign up. When someone has a question, it comes to you.'
+    },
+    role: {
+      doH: 'What you do, heaviest first',
+      does: [['Community Nights', 'Scout venues for the nights and bring us the options.'],
+        ['Your people', 'Reach out to the community and bring people to the nights.'],
+        ['The person people ask', 'When we send the word out, questions come to you.'],
+        ['Our groups', 'Post and share our posts in our Facebook groups and the South Florida Vegans group, and send the Meetup messages we write, from each group.'],
+        ['South Florida', 'Keep an eye on what is happening in South Florida and tell us: new spots, events and people.']],
+      neverH: 'What you never do',
+      nevers: [['Promise what we have not built', 'No features, deals or prices we have not announced. Send people to Vegans Explore and let the platform do the rest.'],
+        ['Book or pay for anything', 'Bring us the venue options; Sean says yes before anything is booked or paid for.'],
+        ['Change the groups', 'Never change group settings, remove organizers or use bots or other tools on the groups.']],
+      dayH: 'A week in the role',
+      day: [['Through the week', 'Groups', 'Share our posts and answer questions in the groups.'], ['Through the week', 'Nights', 'Scout venues and invite people to the nights.'], ['Once a week', 'Brief', 'Read the brief and tell us what is happening in South Florida.']],
+      dayNote: 'Your own hours. Running a night is $150 for each night you run, on top of the monthly. Your questions go to Kai on your dashboard; she answers what she can right away and checks with Sean on the rest.'
+    },
+    check: {
+      intro: 'Pick one answer for each.',
+      right: { ask: 'answer', groups: 'ready', goal: 'four' },
+      qs: [
+        { k: 'ask', q: 'Someone in a group asks about a Community Night. What do you do?', a: [['leave', 'Leave it for Sean to answer.'], ['answer', 'Answer it, and if I am not sure, ask Kai first.'], ['promise', 'Promise whatever gets them to come.']] },
+        { k: 'groups', q: 'What do you post in our Facebook groups?', a: [['own', 'Posts for my own business.'], ['ready', 'Our posts as they come ready, plus what is happening in South Florida.'], ['nothing', 'Nothing; I only read them.']] },
+        { k: 'goal', q: 'What makes a Community Night a success?', a: [['full', 'A full room, whatever it costs.'], ['four', 'It brings in at least four times what it costs to put on.'], ['free', 'It costs us nothing.']] }
+      ],
+      wrong: 'One is not quite right yet. Pick again; Your role has the answer.'
+    },
+    pay: { title: 'The pay', every: 'a month, through Stripe', trial: 'One-month trial', first: 'First payday if you start today' },
+    next: {
+      names: true,
+      n1H: 'Your Facebook and Meetup names',
+      n1: 'Sean adds you as a moderator on our Facebook groups and a co-organizer on our Meetup groups.',
+      metaL: 'Your Facebook and Meetup names',
+      metaHint: 'The names on your profiles, so Sean can find you.',
+      metaGo: 'Send my names',
+      metaSaved: 'Saved. Sean will add you to the groups.',
+      n2H: 'Set up payouts with Stripe',
+      n2: 'Your bank details and W-9 go to Stripe, never to us. About five minutes.',
+      payGo: 'Set up payouts',
+      payDone: 'Payouts ready',
+      n3H: 'What happens next',
+      n3: 'Sean adds you to the groups and starts your first month. Your first brief is on your dashboard, with Kai.',
+      done: 'You\'re all set on your side. We\'ll email you as soon as Sean has added you.',
+      tagWaiting: 'Waiting', tagDone: 'Done'
+    }
+  });
+
   var ORDER = ['big', 'role', 'check', 'in', 'next'];
   var SLUG = (location.pathname.match(/^\/positions\/([a-z0-9-]{3,80})\/start/) || [])[1] || new URLSearchParams(location.search).get('slug') || 'social-media-manager-instagram';
+  var COPY = SLUG === 'community-nights-south-florida' ? COPY_RON : COPY_KJ;
   var D = null, PREVIEW = false, STEP = 'big', LOCAL = { check: false, agreed: false, meta: false };
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
@@ -242,6 +315,7 @@
     }).join('');
     $('agrH').textContent = c.agrH; $('agreeL').textContent = c.agree; $('snameL').textContent = c.sname;
     var n = c.next; $('n1H').textContent = n.n1H; $('n1').textContent = n.n1; $('metaL').textContent = n.metaL; $('metaHint').textContent = n.metaHint; $('metaGo').textContent = n.metaGo;
+    if (n.names) { var mi = $('metaEmail'); mi.type = 'text'; mi.removeAttribute('inputmode'); mi.setAttribute('autocomplete', 'off'); }
     $('n2H').textContent = n.n2H; $('n2').textContent = n.n2; $('n3H').textContent = n.n3H; $('n3').textContent = n.n3; $('n3Tag').textContent = n.tagWaiting;
   }
   function paintData() {
@@ -292,7 +366,7 @@
     window.scrollTo(0, 0);
   }
   function answers() { var a = {}; COPY.check.qs.forEach(function (q) { var el = document.querySelector('input[name=q_' + q.k + ']:checked'); a[q.k] = el ? el.value : null; }); return a; }
-  var RIGHT = { owner: 'send_link', account: 'business_suite', footage: 'send_us' };
+  var RIGHT = COPY.check.right || { owner: 'send_link', account: 'business_suite', footage: 'send_us' };
   function nextFrom(name) {
     if (name === 'check') {
       var a = answers(), wrong = Object.keys(RIGHT).filter(function (k) { return a[k] !== RIGHT[k]; });
@@ -315,7 +389,7 @@
   window.addEventListener('popstate', function () { go(new URLSearchParams(location.search).get('step') || 'big'); });
   $('metaGo').onclick = function () {
     var e = $('metaEmail').value.trim();
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(e)) return msg('That does not look like an email address. Use the one you sign in to Facebook with.');
+    if (COPY.next.names ? e.length < 3 : !/^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/.test(e)) return msg(COPY.next.names ? 'Add the names on your Facebook and Meetup profiles.' : 'That does not look like an email address. Use the one you sign in to Facebook with.');
     if (PREVIEW) { LOCAL.meta = true; paintNext(); return msg(COPY.next.metaSaved, true); }
     post({ action: 'meta_email', email: e }).then(function (d) { if (!d.ok) return msg(d.message || 'That did not save. Try again.'); D = d; paintData(); msg(COPY.next.metaSaved, true); });
   };
