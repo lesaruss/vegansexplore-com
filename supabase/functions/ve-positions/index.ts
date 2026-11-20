@@ -40,7 +40,13 @@ const SERVICE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 const RESEND_KEY = Deno.env.get('RESEND_API_KEY') ?? '';
 const db = createClient(SUPABASE_URL, SERVICE_KEY);
 const SITE = 'https://vegansexplore.com';
-const SEAN_EMAIL = 'contact@lesaruss.com';
+// Where team notices go: read from lesaruss_secrets (VE_TEAM_NOTIFY_EMAIL) on the first request, so the address is not kept in code.
+let SEAN_EMAIL = '';
+async function loadTeamEmail() {
+  if (SEAN_EMAIL) return;
+  const { data } = await db.from('lesaruss_secrets').select('value').eq('key', 'VE_TEAM_NOTIFY_EMAIL').maybeSingle();
+  SEAN_EMAIL = String(data?.value || '');
+}
 const FROM = 'VEGANS EXPLORE <hello@vegansexplore.com>';
 const ANCHOR = '2026-11-16';
 const DAY_MS = 86400000;
@@ -86,6 +92,38 @@ function nextStretch(coversFrom: string, startOn: string, endedOn: string | null
   return { coversFrom, coversTo, payOn, days };
 }
 const amountFor = (payCents: number, days: number) => Math.round((payCents * days) / 14);
+// A monthly position (period_days 28 or more; Sean, 2026-11-19, on Ron: "Pay him monthly."): each calendar month is one stretch, paid the first
+// Friday after the month ends; a part month at the start or end is paid by the day. Two-week positions keep the calendar above.
+const isMonthly = (pos: any) => Number(pos?.period_days || 14) >= 28;
+const lastOfMonth = (s: string) => { const d = toDate(s); return fmt(new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 0))); };
+const daysInMonth = (s: string) => Number(lastOfMonth(s).slice(8, 10));
+function fridayAfter(s: string) { let d = addDays(s, 1); while (toDate(d).getUTCDay() !== 5) d = addDays(d, 1); return d; }
+function stretchFor(pos: any, coversFrom: string, startOn: string, endedOn: string | null) {
+  if (!isMonthly(pos)) return nextStretch(coversFrom, startOn, endedOn);
+  let coversTo = lastOfMonth(coversFrom);
+  if (endedOn && endedOn < coversTo) coversTo = endedOn;
+  return { coversFrom, coversTo, payOn: fridayAfter(lastOfMonth(coversFrom)), days: diffDays(coversFrom, coversTo) + 1 };
+}
+const amountOf = (pos: any, s: { days: number; coversFrom: string }) =>
+  isMonthly(pos) ? Math.round((Number(pos.pay_cents) * s.days) / daysInMonth(s.coversFrom)) : amountFor(Number(pos.pay_cents), s.days);
+
+// Each role's own words where the flow differs from the first role (KJ's, social-media-manager-instagram, the default): the quick check's
+// right answers, the contact step (her Facebook email for Business Suite, or the names Sean uses to add someone to our groups), the invite,
+// the ready-for-access email to Sean and the "you're all set" email.
+const ROLES: Record<string, any> = {
+  'community-nights-south-florida': {
+    // South Florida Community Nights (locked 2026-11-19; the plan is in docs/plans, dated 2026-11-19).
+    check: { ask: 'answer', groups: 'ready', goal: 'four' },
+    contact: 'names',
+    pay: '$150 a month and $150 for each night you run',
+    setup: 'the role, three quick questions, the agreement, payouts, and your Facebook and Meetup names so Sean can add you to our groups',
+    readySubject: 'is ready to be added to the groups',
+    readySteps: (who: string) => `<li>Facebook: add <b>${who}</b> as a moderator of our Vegans Explore groups.</li><li>Meetup: add them as a co-organizer of Vegans Explore Broward, Palm Beach and Miami.</li><li>On their page, tap <b>Invite sent, start trial</b>.</li>`,
+    live: 'You are in our groups, and your trial',
+    button: 'Open your dashboard',
+  },
+};
+const roleOf = (pos: any) => ROLES[pos?.slug] || null;
 
 // ---- Auth (the same token ve-auth signs; superadmin re-read from members on every admin action) ----
 function b64urlToBytes(str: string): Uint8Array {
@@ -229,7 +267,11 @@ async function maybeReady(pos: any, id: string) {
   const { data: p } = await db.from('ve_position_people').select('*').eq('id', id).maybeSingle();
   if (!p || !p.agreed_at || !p.payouts_ready_at || !p.meta_email) return false;
   const moved = await advance(p.id, ['agreed', 'payouts_ready'], 'awaiting_access');
-  if (moved) await sendOne(SEAN_EMAIL, `${p.name || 'Your new team member'} is ready for Business Suite access`, wrap(
+  const role = roleOf(pos);
+  if (moved && role) await sendOne(SEAN_EMAIL, `${p.name || 'Your new team member'} ${role.readySubject}`, wrap(
+    `<p style="margin:0 0 12px"><b>${esc(p.name || '')}</b> finished the start page for ${esc(pos.title)}: on board, agreement signed, payouts ready.</p>` +
+    `<ol style="margin:0 0 16px;padding-left:20px">${role.readySteps(esc(p.meta_email))}</ol>` + btn(`${CONSOLE}#person/${p.id}`, 'Open their page')));
+  else if (moved) await sendOne(SEAN_EMAIL, `${p.name || 'Your new team member'} is ready for Business Suite access`, wrap(
     `<p style="margin:0 0 12px"><b>${esc(p.name || '')}</b> finished the start page for ${esc(pos.title)}: on board, agreement signed, payouts ready.</p>` +
     `<ol style="margin:0 0 16px;padding-left:20px"><li>Meta Business Suite (business.facebook.com): Settings, People, Add people.</li>` +
     `<li>Invite <b>${esc(p.meta_email)}</b> with <b>partial access</b> to the Vegans Explore Instagram account: Content, Messages and Comments only. Never full control.</li>` +
@@ -257,10 +299,10 @@ async function personView(pos: any, p: any) {
   if (p.start_on) {
     const last = (payouts || []).slice(-1)[0];
     const from = last ? addDays(last.covers_to, 1) : p.start_on;
-    if (!p.ended_on || from <= p.ended_on) { const s = nextStretch(from, p.start_on, p.ended_on); preview = { ...s, amount_cents: amountFor(pos.pay_cents, s.days) }; }
+    if (!p.ended_on || from <= p.ended_on) { const s = stretchFor(pos, from, p.start_on, p.ended_on); preview = { ...s, amount_cents: amountOf(pos, s) }; }
   } else {
     // Not started yet: what the first payday would be if access were granted today.
-    const t = todayET(); const s = nextStretch(t, t, null); preview = { ...s, amount_cents: amountFor(pos.pay_cents, s.days), if_started_today: true };
+    const t = todayET(); const s = stretchFor(pos, t, t, null); preview = { ...s, amount_cents: amountOf(pos, s), if_started_today: true };
   }
   return {
     id: p.id, name: p.name, email: p.email, stage: p.stage, stage_words: STAGE_WORDS[p.stage], path: p.path,
@@ -280,7 +322,7 @@ async function cron() {
   const today = todayET();
   const cfg = await payLive();
   const out = { rows: 0, notices: 0, sent: 0, failed: 0, waiting_live: 0, reviews: 0, balance_alerts: 0 };
-  const { data: people } = await db.from('ve_position_people').select('*, ve_positions(id, slug, title, pay_cents)').in('stage', ['trial', 'active', 'paused', 'ended']).not('start_on', 'is', null);
+  const { data: people } = await db.from('ve_position_people').select('*, ve_positions(id, slug, title, pay_cents, period_days)').in('stage', ['trial', 'active', 'paused', 'ended']).not('start_on', 'is', null);
   // a) payout rows up to two weeks ahead of payday
   for (const p of people || []) {
     const pos = (p as any).ve_positions;
@@ -288,9 +330,9 @@ async function cron() {
       const { data: last } = await db.from('ve_position_payouts').select('covers_to').eq('person_id', p.id).order('covers_to', { ascending: false }).limit(1);
       const from = last?.[0] ? addDays(last[0].covers_to, 1) : p.start_on;
       if (p.ended_on && from > p.ended_on) break;
-      const s = nextStretch(from, p.start_on, p.ended_on);
+      const s = stretchFor(pos, from, p.start_on, p.ended_on);
       if (s.payOn > addDays(today, 14)) break;
-      const { error } = await db.from('ve_position_payouts').insert({ person_id: p.id, covers_from: s.coversFrom, covers_to: s.coversTo, pay_on: s.payOn, days: s.days, amount_cents: amountFor(pos.pay_cents, s.days) });
+      const { error } = await db.from('ve_position_payouts').insert({ person_id: p.id, covers_from: s.coversFrom, covers_to: s.coversTo, pay_on: s.payOn, days: s.days, amount_cents: amountOf(pos, s) });
       if (error) { console.error('payout row', error.message); break; }
       out.rows++;
     }
@@ -303,13 +345,13 @@ async function cron() {
     }
   }
   // b) the notice to Sean, notice_days before payday; if the email fails the payment waits
-  const { data: due } = await db.from('ve_position_payouts').select('*, ve_position_people(id, name, email, member_id, stage, ve_positions(title, pay_cents))').eq('status', 'scheduled').lte('pay_on', addDays(today, cfg.notice_days));
+  const { data: due } = await db.from('ve_position_payouts').select('*, ve_position_people(id, name, email, member_id, stage, ve_positions(title, pay_cents, period_days))').eq('status', 'scheduled').lte('pay_on', addDays(today, cfg.notice_days));
   for (const r of due || []) {
     const p = (r as any).ve_position_people;
     const exp = Math.floor(toDate(r.pay_on).getTime() / 1000) + 9 * 3600; // until about 4 AM Eastern on payday
     const t = await signHold(r.id, exp);
     const rate = p.ve_positions?.pay_cents || 12500;
-    const stub = r.days > 14 ? ` (${money(amountFor(rate, 14))} for the full period, plus their first ${r.days - 14} days)` : r.days < 14 ? ` (${r.days} days at ${money(Math.round(rate / 14))} a day)` : '';
+    const stub = isMonthly(p.ve_positions) ? '' : r.days > 14 ? ` (${money(amountFor(rate, 14))} for the full period, plus their first ${r.days - 14} days)` : r.days < 14 ? ` (${r.days} days at ${money(Math.round(rate / 14))} a day)` : '';
     const id = await sendOne(SEAN_EMAIL, `Paying ${firstName(p.name)} ${money(r.amount_cents)} on ${nice(r.pay_on)}`, wrap(
       `<p style="margin:0 0 12px"><b>${esc(p.name || p.email)}</b>, ${esc(p.ve_positions?.title || '')}: <b>${money(r.amount_cents)}</b> for ${niceShort(r.covers_from)} to ${niceShort(r.covers_to)}${esc(stub)}.</p>` +
       `<p style="margin:0 0 12px">Stage: ${esc(STAGE_WORDS[p.stage] || p.stage)}.${cfg.live ? '' : ' <b>Real payouts are not switched on yet</b>, so this one waits.'}</p>` +
@@ -505,8 +547,8 @@ async function dashData(pos: any, p: any, member: any, preview: boolean) {
   });
   const kit = creator.data?.kit || {};
   const avatar = creator.data?.people_slug && kit.avatar ? `${SUPABASE_URL}/storage/v1/object/public/vegan-media/media/people/${creator.data.people_slug}/${kit.avatar}` : (member?.avatar_url || null);
-  const t = todayET(); const s = nextStretch(t, t, null);
-  const pay = pid ? await personView(pos, p) : { stage: 'invited', stage_words: STAGE_WORDS.invited, steps: {}, next_payout: { ...s, amount_cents: amountFor(pos.pay_cents, s.days), if_started_today: true }, payouts: [] };
+  const t = todayET(); const s = stretchFor(pos, t, t, null);
+  const pay = pid ? await personView(pos, p) : { stage: 'invited', stage_words: STAGE_WORDS.invited, steps: {}, next_payout: { ...s, amount_cents: amountOf(pos, s), if_started_today: true }, payouts: [] };
   return {
     preview, today, week_of: mon,
     position: { slug: pos.slug, title: pos.title, pay_cents: pos.pay_cents },
@@ -788,6 +830,7 @@ async function adminList() {
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') return new Response('ok', { headers: cors });
   if (req.method !== 'POST') return json({ error: 'method' }, 405);
+  await loadTeamEmail();
   let body: any = {};
   try { body = await req.json(); } catch { return json({ error: 'bad_json' }, 400); }
   const action = String(body.action || '');
@@ -822,12 +865,12 @@ Deno.serve(async (req) => {
     if (!isSlug(body.slug)) return json({ error: 'bad_request' }, 400);
     const pos = await positionBySlug(body.slug);
     if (!pos) return json({ error: 'not_found' }, 404);
-    const t = todayET(); const s = nextStretch(t, t, null);
+    const t = todayET(); const s = stretchFor(pos, t, t, null);
     return json({ ok: true, preview: true, position: positionOut(pos), person: {
       id: null, name: 'Preview', stage: 'invited', stage_words: STAGE_WORDS.invited, path: 'assigned',
       steps: { role: false, check: false, agreement: false, payouts: false, instagram: false, meta: false, access: false },
       ig_handle: null, meta_email: null, start_on: null, trial_review_on: null, ended_on: null, agreement: null, payouts_account: null, payouts: [],
-      next_payout: { ...s, amount_cents: amountFor(pos.pay_cents, s.days), if_started_today: true } } });
+      next_payout: { ...s, amount_cents: amountOf(pos, s), if_started_today: true } } });
   }
 
   // ======== The position dashboard (/dashboard/position) ========
@@ -940,7 +983,7 @@ Deno.serve(async (req) => {
       const { count } = await db.from('ve_position_people').select('id', { count: 'exact', head: true }).eq('position_id', pos.id).in('stage', ['trial', 'active', 'awaiting_access', 'payouts_ready', 'agreed', 'role_read', 'invited']);
       let p = await holderRow(pos.id, m.id);
       if (!p || p.stage === 'ended') {
-        if ((count || 0) >= pos.max_holders) return json({ error: 'full', message: `This position already has ${pos.max_holders} people in it (Instagram Shared Access allows 3).` }, 409);
+        if ((count || 0) >= pos.max_holders) return json({ error: 'full', message: `This position already has ${pos.max_holders} ${pos.max_holders === 1 ? 'person' : 'people'} in it.` }, 409);
         const code = `pos-${pos.slug.split('-').slice(-1)[0]}-${m.id.slice(0, 6)}`;
         await db.from('ve_links').upsert({ code, label: `${pos.title}: invite for ${m.name || m.email}`, destination: startUrl(pos.slug), initiative_slug: `position-${pos.slug}`,
           tags: ['positions', pos.slug, 'invite'], channel: 'email', recipient_member_id: m.id, recipient_email: m.email, recipient_name: m.name, active: true }, { onConflict: 'code', ignoreDuplicates: true });
@@ -957,7 +1000,8 @@ Deno.serve(async (req) => {
         const id = await sendOne(m.email, `${greet}, Vegans Explore would like you as its ${pos.title}`, wrap(
           `<p style="margin:0 0 12px">Hi ${esc(greet)},</p>` + note +
           `<p style="margin:0 0 12px">Vegans Explore would like you as its <b>${esc(pos.title)}</b>: ${esc(pos.summary || '')}</p>` +
-          `<p style="margin:0 0 12px">${money(pos.pay_cents)} every two weeks, your own hours, and a one-month trial. About ten minutes gets you set up: the role, three quick questions, the agreement, payouts, and the email on your Facebook account so we can add you in Business Suite. Kai, our Creator Guide, walks you through each step.</p>` +
+          (roleOf(pos) ? `<p style="margin:0 0 12px">${esc(roleOf(pos).pay)}, your own hours, and a one-month trial. About ten minutes gets you set up: ${esc(roleOf(pos).setup)}. Kai, our Creator Guide, walks you through each step.</p>`
+            : `<p style="margin:0 0 12px">${money(pos.pay_cents)} every two weeks, your own hours, and a one-month trial. About ten minutes gets you set up: the role, three quick questions, the agreement, payouts, and the email on your Facebook account so we can add you in Business Suite. Kai, our Creator Guide, walks you through each step.</p>`) +
           btn(link, 'See the role')));
         if (!id) return json({ error: 'send_failed', message: 'The email did not send. Copy the link instead, or try again.' }, 502);
         await db.from('ve_position_people').update({ invited_at: nowIso(), updated_at: nowIso() }).eq('id', p.id);
@@ -978,12 +1022,13 @@ Deno.serve(async (req) => {
       const ok = await advance(p.id, ['awaiting_access'], 'trial', { access_granted_at: nowIso(), start_on: start, trial_review_on: addDays(start, Math.max(0, pos.trial_days - 5)) });
       if (!ok) return json({ error: 'wrong_stage', message: `They are at "${STAGE_WORDS[p.stage]}". Their checklist has to be finished first.` }, 409);
       await log(p.id, actor, 'trial_started', { start_on: start }, { source: 'console', ip: ipOf(req) });
-      const s = nextStretch(start, start, null);
-      const amt = amountFor(pos.pay_cents, s.days);
+      const s = stretchFor(pos, start, start, null);
+      const amt = amountOf(pos, s);
+      const role = roleOf(pos);
       await sendOne(p.email, `You're all set, ${firstName(p.name)}`, wrap(
-        `<p style="margin:0 0 12px">Hi ${esc(firstName(p.name))},</p><p style="margin:0 0 12px">Your Instagram access is live, and your trial as ${esc(pos.title)} starts today.</p>` +
+        `<p style="margin:0 0 12px">Hi ${esc(firstName(p.name))},</p><p style="margin:0 0 12px">${role ? role.live : 'Your Instagram access is live, and your trial'} as ${esc(pos.title)} starts today.</p>` +
         `<p style="margin:0 0 12px">Your first payday is <b>${nice(s.payOn)}</b>: <b>${money(amt)}</b> for ${niceShort(s.coversFrom)} to ${niceShort(s.coversTo)}.</p>` +
-        btn(startUrl(pos.slug, 'done'), 'Go to your queue')));
+        btn(startUrl(pos.slug, 'done'), role ? role.button : 'Go to your queue')));
       await sendOne(SEAN_EMAIL, `${p.name || p.email} is Active (trial)`, wrap(
         `<p style="margin:0 0 12px"><b>${esc(p.name || p.email)}</b> is Active (trial) as ${esc(pos.title)} from ${nice(start)}. First payday ${nice(s.payOn)} (${money(amt)}); trial review ${nice(addDays(start, Math.max(0, pos.trial_days - 5)))}.</p>`));
       return json({ ok: true, start_on: start, first_payday: s.payOn, first_amount_cents: amt });
@@ -1006,7 +1051,7 @@ Deno.serve(async (req) => {
 
     if (action === 'admin_end') {
       if (!isId(body.id)) return json({ error: 'bad_request' }, 400);
-      const { data: p } = await db.from('ve_position_people').select('*, ve_positions(title, pay_cents)').eq('id', body.id).maybeSingle();
+      const { data: p } = await db.from('ve_position_people').select('*, ve_positions(title, pay_cents, period_days)').eq('id', body.id).maybeSingle();
       if (!p) return json({ error: 'not_found' }, 404);
       const endOn = typeof body.ended_on === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(body.ended_on) ? body.ended_on : todayET();
       const ok = await advance(p.id, ORDER.filter((s) => s !== 'ended'), 'ended', { ended_on: endOn, end_reason: clean(body.reason, 500) || null });
@@ -1016,7 +1061,7 @@ Deno.serve(async (req) => {
       const { data: open } = await db.from('ve_position_payouts').select('id, covers_from, covers_to').eq('person_id', p.id).in('status', ['scheduled', 'notified', 'held']).gt('covers_to', endOn);
       for (const r of open || []) {
         const days = diffDays(r.covers_from, endOn) + 1;
-        await db.from('ve_position_payouts').update({ covers_to: endOn, days, amount_cents: amountFor((p as any).ve_positions?.pay_cents || 12500, days) }).eq('id', r.id);
+        await db.from('ve_position_payouts').update({ covers_to: endOn, days, amount_cents: amountOf((p as any).ve_positions || { pay_cents: 12500 }, { days, coversFrom: r.covers_from }) }).eq('id', r.id);
       }
       if (p.link_code) await db.from('ve_links').update({ active: false }).eq('code', p.link_code);
       await log(p.id, actor, 'ended', { ended_on: endOn, reason: body.reason || null }, { source: 'console', ip: ipOf(req) });
@@ -1056,7 +1101,8 @@ Deno.serve(async (req) => {
 
   if (action === 'role_read') {
     const a = body.answers || {};
-    const wrong = Object.keys(CHECK).filter((k) => a[k] !== CHECK[k]);
+    const CK = roleOf(pos)?.check || CHECK;
+    const wrong = Object.keys(CK).filter((k) => a[k] !== CK[k]);
     if (wrong.length) return json({ error: 'check', wrong, message: 'One or more answers are not quite right. Read them again; they keep the account safe, and you too.' }, 400);
     await db.from('ve_position_people').update({ role_read_at: p.role_read_at || nowIso(), check_passed_at: p.check_passed_at || nowIso(), updated_at: nowIso() }).eq('id', p.id);
     if (before(p.stage, 'role_read')) await advance(p.id, ['invited', 'applied', 'shortlisted'], 'role_read');
@@ -1130,8 +1176,10 @@ Deno.serve(async (req) => {
   }
 
   if (action === 'meta_email') {
-    const e = clean(body.email, 200).toLowerCase();
-    if (!isEmail(e)) return json({ error: 'email', message: 'That does not look like an email address. Use the one you sign in to Facebook with.' }, 400);
+    // A groups role gives the names Sean adds to our Facebook and Meetup groups (kept in meta_email); the Instagram role gives an email.
+    const names = roleOf(pos)?.contact === 'names';
+    const e = names ? clean(body.email, 200) : clean(body.email, 200).toLowerCase();
+    if (names ? e.length < 3 : !isEmail(e)) return json({ error: 'email', message: names ? 'Add the names on your Facebook and Meetup profiles.' : 'That does not look like an email address. Use the one you sign in to Facebook with.' }, 400);
     if (!p.agreed_at) return json({ error: 'order', message: 'Say you are in and sign first.' }, 409);
     await db.from('ve_position_people').update({ meta_email: e, meta_email_at: nowIso(), updated_at: nowIso() }).eq('id', p.id);
     await log(p.id, me.id, 'meta_email', null, { ip: ipOf(req) });
