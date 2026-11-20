@@ -16,7 +16,7 @@ The Vegan Squad Retreat is four days and three nights at a private lakeside retr
 January 29th to Monday, February 1st. It's 100% Vegan: chef-made meals, yoga and sound bowls, fitness and Vegan bodybuilding workshops,
 speakers like Robert Cheeke and Ella Magers, kayaking, bonfires, and yes, speed dating.
 
-If you've ever felt like the only Vegan in the room, this is the weekend where you're not.
+If you've ever felt like the only Vegan in the room, this is the weekend when you're not.
 
 Use the code VEGANSEXPLORE, that's Vegans Explore as one word, to save on your ticket. Full disclosure, Vegans Explore earns a commission
 when you do. Find it at vegansexplore.com, under Events.
@@ -25,3 +25,11 @@ when you do. Find it at vegansexplore.com, under Events.
 
 The Vegan Squad Retreat, January 29 to February 1, 2027, Orange Springs, Florida: https://vegansexplore.com/go/vsr-podcast-147
 (code VEGANSEXPLORE; Vegans Explore earns a commission on tickets bought with it).
+
+## Recorded (2026-11-19)
+
+Sean recorded it in the booth (set `ve-podcast-147`, take `conv-20261119213013`, River's voice). Checked word for word with stt: every
+word matches except "the weekend when you're not" (the script had "where"); the script was changed to match the take. About 56 seconds.
+Keeper: `vegan-media/media/voices/podcast/ep147/river-retreat-v1.mp3`. A stray copy landed at
+`geekfon-media/artists/geekfon-society/series/voices/podcast/ep147/river-retreat-v1.mp3` (el-media's `clip` saves to geekfon-series
+unless `bucket` is passed, though its header says vegan-media); it is unused.
