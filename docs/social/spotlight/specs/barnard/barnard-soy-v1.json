@@ -1,0 +1,112 @@
+{
+ "label": "Doctor's tip · Soy",
+ "head": [
+  "Is soy",
+  "safe to eat?"
+ ],
+ "band": "#FF9EC4",
+ "band_ink": true,
+ "name": "Dr. Neal Barnard",
+ "biz": "PCRM",
+ "sub": "On the Vegans Explore Podcast",
+ "logo": "$SCRATCH/doc/barnard.jpg",
+ "city_art": "$SCRATCH/doc/doctor-tip-16x9.jpg",
+ "caption": "",
+ "url": "vegansexplore.com",
+ "end_label": "The Vegans Explore Podcast",
+ "end_head": [
+  "More from",
+  "Dr. Barnard"
+ ],
+ "end_cta": "Find Dr. Neal Barnard on|Vegans Explore",
+ "end_page": "$SCRATCH/pages/neal-barnard.png",
+ "end_s": 4.5,
+ "end_line": "",
+ "end_head_unused": true,
+ "source": "$SCRATCH/vids/barnard-solo.mp4",
+ "parts": [
+  [
+   736.05,
+   750.9
+  ],
+  [
+   908.95,
+   927.7
+  ],
+  [
+   932.95,
+   940.7
+  ]
+ ],
+ "join": 0.25,
+ "music": "$SCRATCH/vids/lofi-neo-soul-v1.mp3",
+ "music_vol": 0.12,
+ "out_name": "barnard-soy-v1.mp4",
+ "captions": [
+  {
+   "t0": 0.0,
+   "text": "Soy products reduce cancer risk.",
+   "t1": 2.09
+  },
+  {
+   "t0": 2.09,
+   "text": "Let me say that again. Soy products reduce cancer risk.",
+   "t1": 5.17
+  },
+  {
+   "t0": 5.17,
+   "text": "The reason I wanna emphasize that is some people got the opposite idea.",
+   "t1": 8.83
+  },
+  {
+   "t0": 8.83,
+   "text": "They went online and they heard that soy products somehow cause breast cancer.",
+   "t1": 13.93
+  },
+  {
+   "t0": 13.93,
+   "text": "It's the opposite.",
+   "t1": 14.61
+  },
+  {
+   "t0": 14.61,
+   "text": "There are two different estrogen receptors.",
+   "t1": 17.67
+  },
+  {
+   "t0": 17.67,
+   "text": "Estrogen receptor alpha: when something attaches to that, you have a higher cancer risk.",
+   "t1": 23.33
+  },
+  {
+   "t0": 23.33,
+   "text": "That's like the gas pedal for cancer.",
+   "t1": 26.41
+  },
+  {
+   "t0": 26.41,
+   "text": "Estrogen receptor beta is different. It's the brake,",
+   "t1": 30.91
+  },
+  {
+   "t0": 30.91,
+   "text": "and that's where the soy isoflavones attach.",
+   "t1": 33.21
+  },
+  {
+   "t0": 33.21,
+   "text": "Women who consume it have less risk of breast cancer.",
+   "t1": 36.47
+  },
+  {
+   "t0": 36.47,
+   "text": "Men who consume soy have less risk of prostate cancer.",
+   "t1": 39.23
+  },
+  {
+   "t0": 39.23,
+   "text": "And plus it's delicious.",
+   "t1": 40.85
+  }
+ ]
+}

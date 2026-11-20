@@ -1,4 +1,7 @@
-# Dr. Michael Klaper doctor's tips (Ep 59), v1
+# Dr. Michael Klaper doctor's tips (Ep 59)
+
+**LOCKED by Sean 2026-11-20** (nine; the dietitian tip dropped: "I don't like the last one"). v2 = the end card with Vegans Explore on its own row:
+`klaper-<name>-v2.mp4`. Calendar: `docs/social/spotlight/doctor-tips-calendar-2026.md`.
 
 Ten reels on the locked doctor's tip frame (`scripts/brand-templates/podcast-spotlight-cut.py`, title style A, Guides pink),
 cut 2026-11-20 from Drive Ideas 111926 `VEP 0059.mp4`. Reels: `vegan-media/media/podcast/spotlight/doctor-tips/klaper-<name>-v1.mp4`
@@ -15,7 +18,6 @@ cut 2026-11-20 from Drive Ideas 111926 `VEP 0059.mp4`. Reels: `vegan-media/media
 | 7 | klaper-batch-v1 | Cook once, eat all week | Directory, Vegan food near you |
 | 8 | klaper-fruit-v1 | Make fruit your dessert | Directory, local markets and farms |
 | 9 | klaper-outside-v1 | Get outside every day | Communities, Vegan Events Guide |
-| 10 | klaper-doctor-v1 | Find a plant-based dietitian | Directory, physicians |
 
 Left out on purpose: the water-fasting stories (medical claims) and the lockdown lines (recorded during COVID).
 

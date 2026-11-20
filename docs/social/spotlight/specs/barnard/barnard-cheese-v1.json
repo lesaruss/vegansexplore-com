@@ -1,0 +1,83 @@
+{
+ "label": "Doctor's tip · Cheese",
+ "head": [
+  "Hooked on",
+  "cheese?"
+ ],
+ "band": "#FF9EC4",
+ "band_ink": true,
+ "name": "Dr. Neal Barnard",
+ "biz": "PCRM",
+ "sub": "On the Vegans Explore Podcast",
+ "logo": "$SCRATCH/doc/barnard.jpg",
+ "city_art": "$SCRATCH/doc/doctor-tip-16x9.jpg",
+ "caption": "",
+ "url": "vegansexplore.com",
+ "end_label": "The Vegans Explore Podcast",
+ "end_head": [
+  "More from",
+  "Dr. Barnard"
+ ],
+ "end_cta": "Find Dr. Neal Barnard on|Vegans Explore",
+ "end_page": "$SCRATCH/pages/neal-barnard.png",
+ "end_s": 4.5,
+ "end_line": "",
+ "end_head_unused": true,
+ "source": "$SCRATCH/vids/barnard-solo.mp4",
+ "parts": [
+  [
+   223.0,
+   244.7
+  ],
+  [
+   251.4,
+   256.8
+  ]
+ ],
+ "join": 0.25,
+ "music": "$SCRATCH/vids/lofi-neo-soul-v1.mp3",
+ "music_vol": 0.12,
+ "out_name": "barnard-cheese-v1.mp4",
+ "captions": [
+  {
+   "t0": 0.0,
+   "text": "When we do research studies, people change their diets, they do great,",
+   "t1": 2.84
+  },
+  {
+   "t0": 2.84,
+   "text": "but the one food that keeps kind of in the back of their mind is cheese.",
+   "t1": 7.3
+  },
+  {
+   "t0": 7.3,
+   "text": "People say, \"You know, I think I'm kind of addicted to cheese.\"",
+   "t1": 10.18
+  },
+  {
+   "t0": 10.18,
+   "text": "And the answer is, yes, you may well be.",
+   "t1": 12.9
+  },
+  {
+   "t0": 12.9,
+   "text": "We found that there are certain compounds in cheese that truly are addictive.",
+   "t1": 15.96
+  },
+  {
+   "t0": 15.96,
+   "text": "We explain what they are, how you can break that cheese addiction,",
+   "t1": 19.46
+  },
+  {
+   "t0": 19.46,
+   "text": "and maybe regain your health.",
+   "t1": 21.47
+  },
+  {
+   "t0": 21.47,
+   "text": "And a lot of replacements for cheese, with all the flavor, none of the regrets.",
+   "t1": 26.85
+  }
+ ]
+}

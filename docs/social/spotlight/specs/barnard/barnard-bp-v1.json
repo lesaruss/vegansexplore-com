@@ -1,0 +1,98 @@
+{
+ "label": "Doctor's tip · Blood pressure",
+ "head": [
+  "Lower your",
+  "blood pressure"
+ ],
+ "band": "#FF9EC4",
+ "band_ink": true,
+ "name": "Dr. Neal Barnard",
+ "biz": "PCRM",
+ "sub": "On the Vegans Explore Podcast",
+ "logo": "$SCRATCH/doc/barnard.jpg",
+ "city_art": "$SCRATCH/doc/doctor-tip-16x9.jpg",
+ "caption": "",
+ "url": "vegansexplore.com",
+ "end_label": "The Vegans Explore Podcast",
+ "end_head": [
+  "More from",
+  "Dr. Barnard"
+ ],
+ "end_cta": "Find Dr. Neal Barnard on|Vegans Explore",
+ "end_page": "$SCRATCH/pages/neal-barnard.png",
+ "end_s": 4.5,
+ "end_line": "",
+ "end_head_unused": true,
+ "source": "$SCRATCH/vids/barnard-solo.mp4",
+ "parts": [
+  [
+   451.8,
+   474.65
+  ],
+  [
+   489.05,
+   504.6
+  ]
+ ],
+ "join": 0.25,
+ "music": "$SCRATCH/vids/lofi-neo-soul-v1.mp3",
+ "music_vol": 0.12,
+ "out_name": "barnard-bp-v1.mp4",
+ "captions": [
+  {
+   "t0": 0.0,
+   "text": "Researchers have found that when you shift to a plant-based diet,",
+   "t1": 3.1
+  },
+  {
+   "t0": 3.1,
+   "text": "it has a much bigger effect in a variety of ways.",
+   "t1": 6.22
+  },
+  {
+   "t0": 6.22,
+   "text": "First of all, plants don't have much sodium. They've got potassium,",
+   "t1": 11.1
+  },
+  {
+   "t0": 11.1,
+   "text": "which lowers blood pressure.",
+   "t1": 12.96
+  },
+  {
+   "t0": 12.96,
+   "text": "Secondly, they don't have a lot of fat,",
+   "t1": 15.06
+  },
+  {
+   "t0": 15.06,
+   "text": "and when you get the fat out of your diet, your blood changes.",
+   "t1": 19.28
+  },
+  {
+   "t0": 19.28,
+   "text": "It becomes more watery. It flows more easily.",
+   "t1": 22.69
+  },
+  {
+   "t0": 22.69,
+   "text": "So it's no surprise that Vegans have been shown to have really low blood pressure,",
+   "t1": 26.75
+  },
+  {
+   "t0": 26.75,
+   "text": "and it's a great way to reduce your blood pressure.",
+   "t1": 29.99
+  },
+  {
+   "t0": 29.99,
+   "text": "That said, if you're on blood pressure medicines, do not throw them away.",
+   "t1": 33.71
+  },
+  {
+   "t0": 33.71,
+   "text": "Work with your doctor to taper off your medicines if and when the time is right.",
+   "t1": 38.15
+  }
+ ]
+}

@@ -1,0 +1,112 @@
+{
+ "label": "Doctor's tip · B12",
+ "head": [
+  "Where does",
+  "B12 come from?"
+ ],
+ "band": "#FF9EC4",
+ "band_ink": true,
+ "name": "Dr. Neal Barnard",
+ "biz": "PCRM",
+ "sub": "On the Vegans Explore Podcast",
+ "logo": "$SCRATCH/doc/barnard.jpg",
+ "city_art": "$SCRATCH/doc/doctor-tip-16x9.jpg",
+ "caption": "",
+ "url": "vegansexplore.com",
+ "end_label": "The Vegans Explore Podcast",
+ "end_head": [
+  "More from",
+  "Dr. Barnard"
+ ],
+ "end_cta": "Find Dr. Neal Barnard on|Vegans Explore",
+ "end_page": "$SCRATCH/pages/neal-barnard.png",
+ "end_s": 4.5,
+ "end_line": "",
+ "end_head_unused": true,
+ "source": "$SCRATCH/vids/barnard-solo.mp4",
+ "parts": [
+  [
+   2228.2,
+   2240.45
+  ],
+  [
+   2243.46,
+   2257.55
+  ],
+  [
+   2282.5,
+   2292.42
+  ]
+ ],
+ "join": 0.25,
+ "music": "$SCRATCH/vids/lofi-neo-soul-v1.mp3",
+ "music_vol": 0.12,
+ "out_name": "klaper-b12-soil-v2.mp4",
+ "captions": [
+  {
+   "t0": 0.0,
+   "t1": 3.9,
+   "text": "Vitamin B12, cobalamin, is absolutely essential"
+  },
+  {
+   "t0": 3.9,
+   "t1": 6.7,
+   "text": "to keep your brain healthy, to keep your blood healthy,"
+  },
+  {
+   "t0": 6.7,
+   "t1": 9.3,
+   "text": "keep your spinal cord healthy. We need some."
+  },
+  {
+   "t0": 9.3,
+   "t1": 12.0,
+   "text": "Couple times a week, you need some vitamin B12."
+  },
+  {
+   "t0": 12.0,
+   "t1": 14.1,
+   "text": "Animals don't make it. Cows don't make it."
+  },
+  {
+   "t0": 14.1,
+   "t1": 15.75,
+   "text": "Chickens don't make it. Pigs don't make it."
+  },
+  {
+   "t0": 15.75,
+   "t1": 17.8,
+   "text": "No animal makes it. Humans don't make it either."
+  },
+  {
+   "t0": 17.8,
+   "t1": 20.6,
+   "text": "It's made by microbes that live in the soil"
+  },
+  {
+   "t0": 20.6,
+   "t1": 23.5,
+   "text": "and in the natural world, in the streams and the rivers."
+  },
+  {
+   "t0": 23.5,
+   "t1": 25.84,
+   "text": "That's where vitamin B12 comes from."
+  },
+  {
+   "t0": 25.84,
+   "t1": 30.2,
+   "text": "So when people eat beef, red meat, to get B12,"
+  },
+  {
+   "t0": 30.2,
+   "t1": 33.2,
+   "text": "but the cow didn't make it."
+  },
+  {
+   "t0": 33.2,
+   "t1": 35.76,
+   "text": "That was bacterial B12 all along."
+  }
+ ]
+}

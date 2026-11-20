@@ -1,0 +1,112 @@
+{
+ "label": "Doctor's tip · Dairy",
+ "head": [
+  "Does milk do",
+  "a body good?"
+ ],
+ "band": "#FF9EC4",
+ "band_ink": true,
+ "name": "Dr. Neal Barnard",
+ "biz": "PCRM",
+ "sub": "On the Vegans Explore Podcast",
+ "logo": "$SCRATCH/doc/barnard.jpg",
+ "city_art": "$SCRATCH/doc/doctor-tip-16x9.jpg",
+ "caption": "",
+ "url": "vegansexplore.com",
+ "end_label": "The Vegans Explore Podcast",
+ "end_head": [
+  "More from",
+  "Dr. Barnard"
+ ],
+ "end_cta": "Find Dr. Neal Barnard on|Vegans Explore",
+ "end_page": "$SCRATCH/pages/neal-barnard.png",
+ "end_s": 4.5,
+ "end_line": "",
+ "end_head_unused": true,
+ "source": "$SCRATCH/vids/barnard-solo.mp4",
+ "parts": [
+  [
+   958.9,
+   965.1
+  ],
+  [
+   979.2,
+   999.55
+  ],
+  [
+   1024.0,
+   1034.85
+  ]
+ ],
+ "join": 0.25,
+ "music": "$SCRATCH/vids/lofi-neo-soul-v1.mp3",
+ "music_vol": 0.12,
+ "out_name": "barnard-milk-v1.mp4",
+ "captions": [
+  {
+   "t0": 0.0,
+   "text": "I don't think it does any body good.",
+   "t1": 1.96
+  },
+  {
+   "t0": 1.96,
+   "text": "It doesn't do your body good, but I gotta tell you,",
+   "t1": 4.18
+  },
+  {
+   "t0": 4.18,
+   "text": "it doesn't do the cow's body any good.",
+   "t1": 6.05
+  },
+  {
+   "t0": 6.05,
+   "text": "Cows don't make milk until they've been impregnated and given birth.",
+   "t1": 11.21
+  },
+  {
+   "t0": 11.21,
+   "text": "That's how the system works.",
+   "t1": 12.97
+  },
+  {
+   "t0": 12.97,
+   "text": "And they're impregnated in a not very nice way on the farm.",
+   "t1": 17.23
+  },
+  {
+   "t0": 17.23,
+   "text": "And when they give birth, their calves are taken away,",
+   "t1": 21.19
+  },
+  {
+   "t0": 21.19,
+   "text": "because if the calves drink the milk, there's nothing left to sell.",
+   "t1": 24.49
+  },
+  {
+   "t0": 24.49,
+   "text": "So the male calves are all killed for veal.",
+   "t1": 26.07
+  },
+  {
+   "t0": 26.07,
+   "text": "So the dairy industry is a meat industry.",
+   "t1": 28.65
+  },
+  {
+   "t0": 28.65,
+   "text": "Every dairy cow turned into low-grade hamburger.",
+   "t1": 30.87
+  },
+  {
+   "t0": 30.87,
+   "text": "They were artificially inseminated, separated from their offspring",
+   "t1": 35.27
+  },
+  {
+   "t0": 35.27,
+   "text": "over and over again until they were killed.",
+   "t1": 36.9
+  }
+ ]
+}

@@ -1,0 +1,88 @@
+{
+ "label": "Doctor's tip · Fiber",
+ "head": [
+  "Why fiber",
+  "matters"
+ ],
+ "band": "#FF9EC4",
+ "band_ink": true,
+ "name": "Dr. Neal Barnard",
+ "biz": "PCRM",
+ "sub": "On the Vegans Explore Podcast",
+ "logo": "$SCRATCH/doc/barnard.jpg",
+ "city_art": "$SCRATCH/doc/doctor-tip-16x9.jpg",
+ "caption": "",
+ "url": "vegansexplore.com",
+ "end_label": "The Vegans Explore Podcast",
+ "end_head": [
+  "More from",
+  "Dr. Barnard"
+ ],
+ "end_cta": "Find Dr. Neal Barnard on|Vegans Explore",
+ "end_page": "$SCRATCH/pages/neal-barnard.png",
+ "end_s": 4.5,
+ "end_line": "",
+ "end_head_unused": true,
+ "source": "$SCRATCH/vids/barnard-solo.mp4",
+ "parts": [
+  [
+   1869.3,
+   1876.7
+  ],
+  [
+   1905.38,
+   1930.2
+  ]
+ ],
+ "join": 0.25,
+ "music": "$SCRATCH/vids/lofi-neo-soul-v1.mp3",
+ "music_vol": 0.12,
+ "out_name": "barnard-fiber-v1.mp4",
+ "captions": [
+  {
+   "t0": 0.0,
+   "text": "Well, fiber is essential. It's plant roughage.",
+   "t1": 2.16
+  },
+  {
+   "t0": 2.16,
+   "text": "It's the part of the plant that doesn't get digested and kind of moves through you.",
+   "t1": 7.11
+  },
+  {
+   "t0": 7.11,
+   "text": "Your body needs fiber, not just for digestive regularity,",
+   "t1": 10.73
+  },
+  {
+   "t0": 10.73,
+   "text": "but that fiber is doing things.",
+   "t1": 12.69
+  },
+  {
+   "t0": 12.69,
+   "text": "As the fiber goes down your digestive tract, it takes some of those unabsorbed calories",
+   "t1": 18.17
+  },
+  {
+   "t0": 18.17,
+   "text": "and carries them out, so it helps you to lose weight.",
+   "t1": 21.81
+  },
+  {
+   "t0": 21.81,
+   "text": "When the fiber arrives in your large intestine,",
+   "t1": 25.01
+  },
+  {
+   "t0": 25.01,
+   "text": "it actually fosters the growth of a healthy microbiome.",
+   "t1": 28.95
+  },
+  {
+   "t0": 28.95,
+   "text": "Those are the good bacteria that love you back.",
+   "t1": 31.97
+  }
+ ]
+}
