@@ -43,6 +43,12 @@
     .gb-cover .k-pic.fx-reel { aspect-ratio: 9 / 16; height: auto; }
     .gb-cover .k-pic.fx-reel video { height: 100%; }
     @media (prefers-reduced-motion: reduce) { .rf-guide [data-play].nudge, .fx-play { animation: none; } }
+    /* v3 after the owner panel (2026-11-21): watch, read, yes on one screen. The caption as it will post, then the answer. */
+    .fx-cap { white-space: pre-wrap; font-size: 15px; font-weight: 600; line-height: 1.5; margin: 6px 0 0; }
+    .fx-tags { font-size: 14px; font-weight: 700; color: var(--k-pinkd); margin: 10px 0 0; }
+    .fx-ask { margin-top: 16px; }
+    .fx-ask h2 { margin: 6px 0 10px; font-size: 22px; }
+    .fx-trust { font-size: 13px; font-weight: 700; margin: 12px 0 0; line-height: 1.45; }
     .fx-prev { position: absolute; top: 10px; right: 10px; background: #1a1a1a; color: #fff; font-weight: 900; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; padding: 5px 9px; border-radius: 6px; }
     body { margin: 0; background: #fff; color: var(--k-ink); font-family: 'Montserrat', system-ui, sans-serif; }
 
@@ -204,7 +210,7 @@
   var PARTS = [];
   function makeParts() { PARTS = [
     ['start', 'Your reel', B.name + ' was <span class="k-hl o">featured on the Vegans Explore Podcast</span>',
-      'Episode ' + B.ep + ', ' + B.aired + '. We made a reel from your segment, and it goes up ' + B.post + '. Watch it first.',
+      'The spotlight on Episode ' + B.ep + ' of the Vegans Explore Podcast, ' + B.aired + '. We made a reel from your segment, and it goes up ' + B.post + '. Watch it and read the caption first.',
       "Hi, I'm Liz. We made this page just for you.", 'liz-start-v2.mp3', 'Watch it, and when it goes up'],
     ['collab', 'Be a collaborator?', 'Want the reel on <span class="k-hl p">your Instagram</span> too?',
       'Say yes and it shows on both accounts. Say no and we still post and promote it.',
@@ -243,6 +249,21 @@
   }
   var FREE = '<p class="fx-free"><b>No cost. Nothing to buy.</b> Your listing stays up either way, and claiming it is optional.</p>';
   var FROM = '<div class="k-card fx-from" style="--k-c:#FFEBD1"><span class="k-label">From</span><p><b>Sean A. Russell</b>, founder of Vegans Explore. Questions, or want something changed? Write to <a href="mailto:hello@vegansexplore.com" data-t="mail_click">hello@vegansexplore.com</a> and a person answers.</p></div>';
+  function ask(full) {
+    var said = B.answer === 'yes' ? 'You said yes. We will send the invite to @' + esc(B.ig) + ' when it posts and email you once it is live.' : B.answer === 'no' ? 'You said no thanks. We will still post and promote it.' : '';
+    return '<div class="k-card fx-ask" style="--k-c:#FF9EC4"><span class="k-label">One question</span>' +
+      '<h2>Want this reel on your Instagram too?</h2>' +
+      (full ? '<p style="margin:0 0 12px">It goes up <b>' + esc(B.post) + '</b> on @vegansexplore. As a collaborator, it shows on your profile too.</p>' : '') +
+      '<div class="k-f" style="max-width:420px;margin:0 0 14px"><label for="fxIg">Your Instagram handle</label><input id="fxIg" maxlength="40" placeholder="@yourhandle" autocomplete="off" value="' + esc(B.ig ? '@' + B.ig : '') + '"></div>' +
+      '<div style="display:flex;gap:12px;flex-wrap:wrap"><button type="button" class="k-btn k-cta" data-ans="yes">' + (B.answer === 'yes' ? 'Update my handle' : 'Yes, share it on my Instagram too') + '</button><button type="button" class="k-btn" data-ans="no">No thanks</button></div>' +
+      '<p class="fx-trust">We never get your password and never post for you. You will see the post in the Instagram invite and can decline it there, or remove yourself later.</p>' +
+      '<p class="k-msg" id="fxMsg" role="status" style="margin-top:12px">' + said + '</p></div>';
+  }
+  function caption() {
+    if (!B.caption) return '';
+    return '<div class="k-card" style="--k-c:#FFEBD1"><span class="k-label">The caption we will post</span><p class="fx-cap">' + esc(B.caption) + '</p>' +
+      (B.tags ? '<p class="fx-tags">' + esc(B.tags) + '</p>' : '') + '</div>';
+  }
   function yes() { return B.answer ? '<a class="k-btn k-cta" href="#/collab">' + (B.answer === 'yes' ? 'You said yes: see what happens next' : 'You said no thanks: change it') + '</a><p class="rf-price">It posts ' + esc(B.post) + '.</p>' : '<a class="k-btn k-cta" href="#/collab">Yes, add us as a collaborator</a><p class="rf-price">Or say no. Either way it posts ' + esc(B.post) + '.</p>'; }
   function row(n, cls, title, body, tag) {
     return '<div class="k-row"><span class="k-num ' + cls + '">' + n + '</span><span class="k-row-t"><b>' + title + '</b><small>' + body + '</small></span>' + (tag ? '<span class="k-tag live">' + tag + '</span>' : '<span></span>') + '</div>';
@@ -254,38 +275,34 @@
 
   var VIEWS = {
     start: function (i) {
-      return head(i, yes()) + FREE +
-        '<div class="gb-cover"><div>' +
-          '<div class="k-blocks"><div class="k-block k-dk"><span class="k-big">Ep ' + B.ep + '</span><small>Aired ' + esc(B.aired) + '</small></div>' +
+      return head(i, '') +
+        '<div class="gb-cover"><div>' + caption() + ask(false) +
+          '<div class="k-blocks" style="margin-top:22px"><div class="k-block k-dk"><span class="k-big">Ep ' + B.ep + '</span><small>' + (B.airedPast ? 'Aired ' : 'Airs ') + esc(B.aired) + '</small></div>' +
           '<div class="k-block k-peach"><span class="k-big">' + esc(B.postShort) + '</span><small>Your reel goes up, ' + esc(B.post) + '</small></div>' +
-          '<div class="k-block k-pink"><span class="k-big">$0</span><small>Nothing here costs anything</small></div></div>' +
+          '<div class="k-block k-pink"><span class="k-big">' + esc(B.clipLen || 'Your part') + '</span><small>Your segment on the show</small></div></div>' +
           '<section class="rf-sec"><span class="k-label">On this page</span><div class="rf-parts">' + PARTS.slice(1).map(function (p, j) {
             return '<a class="k-row" href="' + link(p[0]) + '"><span class="k-num ' + ['or', 'br', 'pk', 'pe'][j % 4] + '">' + (j + 1) + '</span><span class="k-row-t"><b>' + esc(p[1]) + '</b><small>' + esc(p[6]) + '</small></span><span></span></a>';
           }).join('') + '</div></section>' + FROM +
         '</div>' + reel() + '</div>' + next(i);
     },
     collab: function (i) {
-      return head(i, '') + '<section class="rf-sec"><div class="k-card" style="--k-c:#FF9EC4;max-width:900px"><span class="k-label">One question</span>' +
-        '<h2 style="margin:6px 0 10px">Be a collaborator on ' + esc(B.name) + '\'s reel?</h2>' +
-        '<p style="margin:0 0 12px">It goes up <b>' + esc(B.post) + '</b> on @vegansexplore.</p>' +
-        '<div class="k-f" style="max-width:420px;margin:0 0 14px"><label for="fxIg">Your Instagram handle</label><input id="fxIg" maxlength="40" placeholder="@yourhandle" value="' + esc(B.ig ? '@' + B.ig : '') + '"></div>' +
-        '<div style="display:flex;gap:12px;flex-wrap:wrap"><button type="button" class="k-btn k-cta" data-ans="yes">' + (B.answer === 'yes' ? 'Update my handle' : 'Yes, add us') + '</button><button type="button" class="k-btn" data-ans="no">No thanks</button></div>' +
-        '<p class="k-msg" id="fxMsg" role="status" style="margin-top:14px">' + (B.answer === 'yes' ? 'You said yes. We will add @' + esc(B.ig) + ' when it posts and email you once it is live.' : B.answer === 'no' ? 'You said no thanks. We will still post and promote it.' : '') + '</p></div></section>' +
+      return head(i, '') + '<section class="rf-sec" style="max-width:900px">' + ask(true) + '</section>' + caption().replace('k-card', 'k-card rf-sec') +
         '<section class="rf-sec"><span class="k-label">If you say yes</span><div class="k-rows">' +
         row(1, 'or', 'You get an invite on Instagram', 'When it posts, @vegansexplore sends a collab invite to the handle above. Open it and tap Accept.', 'Tap Accept') +
         row(2, 'br', 'It shows on both accounts', 'Same post, same likes and comments, on your profile and ours.', '') +
         row(3, 'pk', 'We email you when it is live', 'With the link, so you can share it to your story.', '') +
-        row(4, 'pe', 'Change your mind any time', 'Write to hello@vegansexplore.com and we take you off as a collaborator.', '') +
+        row(4, 'pe', 'Change your mind any time', 'Instagram lets you remove yourself from a collab post whenever you like, or write to hello@vegansexplore.com and we do it.', '') +
         '</div></section>' + good([['k-peach', 'If you say no', 'That is fine. We still post and promote it, and nothing more is asked.']]) + next(i);
     },
     episode: function (i) {
       return head(i, '') + '<section class="rf-sec"><span class="k-label">Your segment</span><div class="k-card" style="--k-c:#FFEBD1;max-width:900px">' +
-        '<p style="margin:0 0 10px"><b>Spotlight: ' + esc(B.person) + ' of ' + esc(B.name) + '</b>, from the Vegans Explore Podcast, Episode ' + B.ep + '.</p>' +
-        '<audio id="fxClip" controls preload="none" src="' + MEDIA + esc(B.clip) + '" style="width:100%"></audio>' +
+        '<p style="margin:0 0 4px"><b>Spotlight: ' + esc(B.person) + ' of ' + esc(B.name) + '</b>' + (B.clipLen ? ', ' + esc(B.clipLen) : '') + '</p>' +
+        '<p class="gb-fine" style="margin:0 0 10px">From the Vegans Explore Podcast, Episode ' + B.ep + (B.epTitle ? ': ' + esc(B.epTitle) : '') + '.</p>' +
+        '<audio id="fxClip" controls preload="metadata" src="' + MEDIA + esc(B.clip) + '" style="width:100%"></audio>' +
         '<p class="gb-fine" style="margin-top:10px">Hear the whole show on <a href="/media" data-t="media_open">Vegans Explore Media</a>.</p></div></section>' + next(i);
     },
     listing: function (i) {
-      return head(i, '') + FREE + '<section class="rf-sec"><a class="k-btn" href="/directory/' + esc(B.slug) + '" data-t="listing_open">See your listing as people see it &rsaquo;</a></section>' +
+      return head(i, '') + '<section class="rf-sec"><a class="k-btn" href="/directory/' + esc(B.slug) + '" data-t="listing_open">See your listing as people see it &rsaquo;</a></section>' +
         '<section class="rf-sec"><span class="k-label">If you claim it</span><div class="k-rows">' +
         row(1, 'or', 'You keep it right', 'Your hours, menu, photos and links, in your words. You approve what shows.', 'You edit') +
         row(2, 'br', 'See who finds you', 'Your dashboard shows views, saves and check-ins on your page.', 'Your numbers') +
@@ -325,7 +342,7 @@
     }
     var c = document.getElementById('fxClip'); if (c) c.addEventListener('play', function () { track('play_clip', p[0]); }, { once: true });
     main.querySelectorAll('[data-t]').forEach(function (a) { a.addEventListener('click', function () { track(a.getAttribute('data-t'), p[0]); }); });
-    if (p[0] === 'collab') main.querySelectorAll('[data-ans]').forEach(function (x) { x.addEventListener('click', function () {
+    main.querySelectorAll('[data-ans]').forEach(function (x) { x.addEventListener('click', function () {
       var ans = x.getAttribute('data-ans'), msg = document.getElementById('fxMsg'), h = (document.getElementById('fxIg').value || '').trim().replace(/^@/, '');
       if (ans === 'yes' && !/^[A-Za-z0-9._]{1,30}$/.test(h)) { msg.textContent = 'Add your Instagram handle above, so we can send the invite.'; document.getElementById('fxIg').focus(); return; }
       if (!LIVE) { msg.textContent = 'Preview: answers are saved once this page is live.'; return; }
@@ -347,7 +364,9 @@
   if (!CODE) { missing(); return; }
   rpc('ve_featured_get', { p_code: CODE }).then(function (d) {
     if (!d || !d.code) { missing(); return; }
-    B = { code: d.code, name: d.name, person: d.person || '', slug: d.slug, ep: d.ep, epTitle: d.ep_title || '', ig: d.ig || '', answer: d.answer || '', voice: d.voice || {},
+    B = { code: d.code, name: d.name, person: d.person || '', slug: d.slug, ep: d.ep, epTitle: d.ep_title || '', ig: d.ig || '', answer: d.answer || '', voice: d.voice || {}, caption: d.caption || '', tags: d.tags || '',
+      clipLen: d.clip_secs ? (d.clip_secs >= 90 ? Math.round(d.clip_secs / 60) + ' min' : d.clip_secs + ' sec') : '',
+      airedPast: d.aired_on ? (new Date(new Date().toLocaleString('en-US', { timeZone: ET })).toISOString().slice(0, 10) >= d.aired_on) : true,
       reel: d.reel, clip: d.clip,
       aired: d.aired_on ? longDay(d.aired_on + 'T12:00:00Z') : '',
       post: d.post_at ? longDay(d.post_at) + ' at ' + clock(d.post_at) + ' Eastern' : 'soon',

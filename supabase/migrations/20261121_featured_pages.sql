@@ -102,3 +102,14 @@ language sql security definer set search_path = public stable as $$
   from ve_featured_pages where code = p_code and status in ('draft','live');
 $$;
 -- An's lines were written to her row directly (media/voices/featured/sen-saigon-e509ca/: start-v1, collab-v1, episode-v2, listing-v2).
+
+-- v3 after the owner panel (2026-11-21, Sean: "go"): the caption as it will post, its hashtags, and the segment's length.
+alter table ve_featured_pages add column if not exists caption text, add column if not exists tags text, add column if not exists clip_secs int;
+create or replace function ve_featured_get(p_code text) returns jsonb
+language sql security definer set search_path = public stable as $$
+  select jsonb_build_object('code', code, 'status', status, 'show', show_slug, 'ep', ep_number, 'ep_title', ep_title, 'aired_on', aired_on,
+    'slug', listing_slug, 'name', business_name, 'person', person_name, 'post_at', post_at, 'reel', reel_path, 'clip', clip_path,
+    'ig', coalesce(collab_handle, ig_handle), 'answer', answer, 'voice', voice, 'caption', caption, 'tags', tags, 'clip_secs', clip_secs)
+  from ve_featured_pages where code = p_code and status in ('draft','live');
+$$;
+-- An's caption, tags, clip_secs 134 and Liz's new opening (start-v2) were written to her row directly.
