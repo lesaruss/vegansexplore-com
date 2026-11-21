@@ -136,3 +136,13 @@ update ve_pod_segments set title='Your call-out: community managers, content cre
 And one more thing. Our year-end episode is all about you. We want to look back at the year in South Florida together. What were your favorite moments? What stood out? Is there a restaurant we lost this year that you want to give a shout-out to? This is your chance. Send us a voice memo or a note at hello@vegansexplore.com, and you might hear yourself on the show.$s$
  where episode_id=ep and position=60;
 end $$;
+
+-- Later 2026-11-21, Sean: "instruct them to use the voice feature on our website to leave the recording... we received our first feedback on
+-- there. We love to hear from you." Card 60's year-end ask points to Feedback's voice message (anyone, up to two minutes) and thanks the first
+-- voice message (a member, 2026-11-19; not played or named on air). Applied by Logan 2026-11-21.
+update ve_pod_segments set script = $s$Before we go: we're looking for community managers and content creators across South Florida. People who want to be boots on the ground as we keep growing, and who want to be considered for future opportunities with us. If that's you, sign up free at vegansexplore.com. The short survey asks what you'd love to do, and that's how we find you.
+
+And one more thing. Our year-end episode is all about you. We want to look back at the year in South Florida together. What were your favorite moments? What stood out? Is there a restaurant we lost this year that you want to give a shout-out to? This is your chance. Go to vegansexplore.com, tap Feedback at the top of any page, and leave us a voice message, up to two minutes. You might hear yourself on the show.
+
+In fact, we just got our very first voice message through it, from one of our members, telling us it's an amazing website and thanking us for creating it. Thank you. That means a lot. We love hearing from you, so tell us what you like, and what you'd like to see next.$s$
+where episode_id = '87c6333a-11b8-4459-8a68-c0ea19831ade' and position = 60;
