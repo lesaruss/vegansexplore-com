@@ -268,3 +268,17 @@ stories that leaked in from the News Desk were removed (`20261113_ve_media_drop_
 v15 gives Media the Guides frame rules), rebuilt press-first after a six-journalist panel: Open the kit is private, Request an interview or Book
 this guest goes to a same-day press desk, every item shows its outlet facts and ties to us, research is outlet level with method and data and
 never scores a reporter. Waiting on Sean to lock it; nothing goes to a journalist before the lock (Outreach is the last step).
+
+## 2026-11-13: Featured in the Holiday Guide asks them to confirm their feature (playbook `ve-holiday-guide`; wrapped 2026-11-21)
+Sean, after his test send: "What if we ask them to confirm their listing? That's the action... it could be one process." Run through BOSS
+and the panel (four lenses; consensus: one ask per message, the prize ask only once they are in the dashboard). Built and live the same day
+(main 3f3cc4b + 556b8c6, migration `20261113_holiday_guide_confirm_your_feature.sql`, `ve-holiday` v13 and `ve-claims` v60 from 9151ee9,
+sha256 matched): `/hello/gifts?l=<slug>` is the confirm page for all three featured groups (a gift, a holiday menu, Kosher Places and
+Brands): step 1 keeps or changes the feature (`ve-holiday` `gift_request` with `kind` and the new `fix` change), step 2 claims the listing free
+with no membership (`ve-claims` `start` `pay: 'featured'`, only for a listing in the `gift-guide-2026` program's campaigns or DMs; the usual
+checks and self-approval apply; `paid_with` `holiday_feature`). The three emails and twelve DMs ask them to confirm by Wednesday, November 18;
+Kosher Places is "Kosher Places and Brands" (Theo's recorded line keeps "places" until Sean approves new words). Outcome by 2026-11-21:
+27 of 30 emails sent, two businesses claimed through the page (Dina's Vegan Deli, My Organic Corner, both approved), the 12 DMs still
+`to_send`. The 11 Days of Giving defaults set that day (December 1 to 11, $100, a $5,000 cap) were replaced by Sean's later locks
+(2026-11-17 and 11-19: rules, Dec 1 to Jan 1, brands up to $150, the locked timeline); those govern. Handoff
+`docs/handoff/2026-11-13-holiday-guide-confirm-your-feature.md`.
