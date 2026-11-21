@@ -8,21 +8,18 @@ reply (Meta allows one per comment) with their own tracked `/go/ig-xxxxxxx` link
 person per keyword. Every comment is logged in `ve_ig_comment_events`; keywords live in `ve_ig_keywords` (a post-specific keyword beats a
 general one). Built and tested 2026-11-21: webhook check, signature check, keyword match, status, connect guard. Nothing sends until connected.
 
-## Sean's steps (about 10 minutes, once)
-1. developers.facebook.com, My Apps, Create App. Use case: manage messaging and content on Instagram. Name: Vegans Explore. Connect the
-   Vegans Explore business portfolio.
-2. In the app: Instagram, API setup with Instagram login. Copy the Instagram app ID and Instagram app secret.
-3. Key Room (`hq.lesaruss.ai/keys`): paste them into the two requests waiting there, `INSTAGRAM_APP_ID` and `INSTAGRAM_APP_SECRET`
-   (Sean, 2026-11-21: "update the information in the key room, not in the super base. I don't want to work directly with that").
-4. Back in the app, Instagram login settings, Valid OAuth redirect URI:
-   `https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-ig-comments?action=callback`
-5. Webhooks: Callback URL `https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-ig-comments`, Verify token (Logan sends it in chat;
-   it is `IG_WEBHOOK_VERIFY_TOKEN` in lesaruss_secrets). Verify and save, then subscribe to the field `comments`.
-6. Open `https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-ig-comments?action=connect`, log in as @vegansexplore, approve. The page
-   says Connected. It refuses any other account.
-7. App Review: request Advanced Access for instagram_business_basic, instagram_business_manage_comments, instagram_business_manage_messages
-   (privacy policy: https://vegansexplore.com/privacy). Meta usually asks for business verification and a short screen recording; Logan
-   prepares the recording. Until approved, it works only for people with a role on the app, so the reels end with "link in bio".
+## Sean's steps (Unified login; Meta no longer offers "Instagram login" on new apps, 2026-11-21)
+1. developers.facebook.com, the Vegans Explore app (fix the display name in App settings, Basic: no stray quote mark).
+2. Use cases, Customize, Instagram API, "API setup with Unified login". Step 1: Create new configuration, pick @vegansexplore.
+   No redirect URL is needed (no login link; the token comes from the configuration).
+3. Step 2, Generate access tokens: generate the token for @vegansexplore. Paste it in Key Room (`hq.lesaruss.ai/keys`), request
+   "Instagram access token for @vegansexplore". It never expires.
+4. App settings, Basic, App secret (Show): paste it in Key Room, request "Meta app secret". (Sean, 2026-11-21: Key Room, never Supabase.)
+5. Step 3, Configure webhooks: Callback URL `https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-ig-comments`, Verify token from
+   Logan (`IG_WEBHOOK_VERIFY_TOKEN`). Verify and save; subscribe to `comments`.
+6. Logan runs `discover` (stores the account ids, checks it is @vegansexplore) and tests with a comment from an account that has a role on the app.
+7. Step 4, App Review: Advanced Access for instagram_basic, instagram_manage_comments, instagram_manage_messages; Meta may ask to Become a Tech
+   Provider and business verification first. Logan prepares the screen recording. Until approved, the reels end with "link in bio".
 
 ## After approval
 Logan tests with a real comment, then the reel ending switches to "Comment B12". New keywords (CHEESE, SOY, ...) are rows in `ve_ig_keywords`.
