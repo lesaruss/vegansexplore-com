@@ -30,6 +30,9 @@
        title, the one orange action, then the real thing (nutrients, airports) as the hero. No how-to boxes. */
     html, body { overflow-x: hidden; }
     .fx-reel { position: relative; } .fx-reel video { display:block; width:100%; aspect-ratio: 9/16; object-fit: contain; background: #000; }
+    .fx-free { margin: 14px 0 0; padding: 12px 16px; border-left: 6px solid #22C55E; background: #E8F5E9; border-radius: 6px; font-size: 15px; }
+    .fx-from { margin-top: 22px; } .fx-from p { margin: 6px 0 0; }
+    @media (max-width: 900px) { .gb-cover .fx-reel { order: -1; } }
     .fx-mock { position: absolute; top: 10px; right: 10px; background: #1a1a1a; color: #fff; font-weight: 900; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; padding: 5px 9px; border-radius: 6px; }
     body { margin: 0; background: #fff; color: var(--k-ink); font-family: 'Montserrat', system-ui, sans-serif; }
 
@@ -168,27 +171,27 @@
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function art() { try { if (window.VEGuideArt) return window.VEGuideArt('liz', 'square'); } catch (e) {} return '/public/brand-kit/avatars/liz-v2.jpg'; }
 
-  // MOCK data. In the real page every value comes from the episode and the listing (one page per featured business per episode).
-  var B = { name: 'Sen Saigon', slug: 'sen-saigon', ep: 147, epTitle: 'Next Stop Vegan Says Goodbye, NYC Ends Horse Carriages and Remembering Fiona',
-    aired: 'Sunday, November 22', post: 'Tuesday, November 24 at 12 PM Eastern', clip: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/podcast/vep-weekly/2026-11-22/anne-clip-v1.mp3' };
+  // MOCK data (v2, after the owner panel 2026-11-21). In the real page every value comes from the episode and the listing.
+  var B = { name: 'Sen Saigon', person: 'An', slug: 'sen-saigon', ep: 147, epTitle: 'Next Stop Vegan Says Goodbye, NYC Ends Horse Carriages and Remembering Fiona',
+    aired: 'Sunday, November 22', post: 'Tuesday, November 24 at 12 PM Eastern', ig: '',
+    clip: 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/podcast/vep-weekly/2026-11-22/anne-clip-v1.mp3' };
 
-  // The parts, in order: [key, tab label, title (html), one line, Liz's line, her file, next-part line]
+  // The parts, in order: [key, tab label, title (html), one line, Liz's line (short enough to show whole on a phone), her file, next-part line]
+  // v2 (owner panel): the gift first (the reel), one plain line that nothing costs anything, a real sender, the collab spelled out, the
+  // listing shown before it is claimed, and Claim asked once, at the end.
   var PARTS = [
-    ['start', 'Overview', B.name + ' was <span class="k-hl o">featured on the Vegans Explore Podcast</span>',
-      'Episode ' + B.ep + ', ' + B.aired + '. Here is your segment, the reel we are posting about you, and one quick question.',
-      "Hi, I'm Liz. Sen Saigon was on this week's Vegans Explore Podcast, and we made this page just for you.", 'liz-start-v1.mp3', 'Everything, on one page'],
-    ['reel', 'Your reel', 'We are posting <span class="k-hl g">your reel</span> on Instagram',
-      'It goes up ' + B.post + '. Watch it here first.',
-      "We made a reel from your segment. Here's when it goes up, and you can watch it right here first.", 'liz-reel-v1.mp3', 'Watch it, and when it goes up'],
-    ['collab', 'Be a collaborator?', 'Want to be a <span class="k-hl p">collaborator</span> on the post?',
-      'Say yes and it shows on your Instagram too. Say no and we still post and promote it.',
-      "One question: want to be a collaborator? Say yes and it shows on your page too. Either answer is fine.", 'liz-collab-v1.mp3', 'One yes or no'],
+    ['start', 'Your reel', B.name + ' was <span class="k-hl o">featured on the Vegans Explore Podcast</span>',
+      'Episode ' + B.ep + ', ' + B.aired + '. We made a reel from your segment, and it goes up ' + B.post + '. Watch it first.',
+      "Hi, I'm Liz. We made this page just for you.", 'liz-start-v2.mp3', 'Watch it, and when it goes up'],
+    ['collab', 'Be a collaborator?', 'Want the reel on <span class="k-hl p">your Instagram</span> too?',
+      'Say yes and it shows on both accounts. Say no and we still post and promote it.',
+      "One question, and either answer is fine.", 'liz-collab-v2.mp3', 'One yes or no'],
     ['episode', 'Your episode', 'Hear <span class="k-hl o">your segment</span>',
       'Episode ' + B.ep + ': ' + B.epTitle + '.',
-      "Here's your segment from the episode. Share it with your regulars.", 'liz-episode-v1.mp3', 'Listen and share'],
-    ['claim', 'Claim your listing', 'Claim your listing, <span class="k-hl g">free</span>',
-      'Your page in the Vegans Explore Directory is already live. Claim it to keep it yours.',
-      "Last thing: claim your listing. It's free, and it puts your page in your hands.", 'liz-claim-v1.mp3', 'Free, about two minutes']
+      "Here's your segment. Share it with your regulars.", 'liz-episode-v2.mp3', 'Listen and share'],
+    ['listing', 'Your listing', 'Your listing is <span class="k-hl g">free, and yours if you want it</span>',
+      'It stays up whether you claim it or not. Claiming it lets you keep it right.',
+      "Have a look. Claim it only if you want to.", 'liz-listing-v2.mp3', 'See it, and claim it if you like']
   ];
   function idx(k) { for (var i = 0; i < PARTS.length; i++) if (PARTS[i][0] === k) return i; return 0; }
   function cur() { var k = (location.hash.match(/^#\/([a-z]+)/) || [])[1] || 'start'; return idx(k); }
@@ -196,7 +199,7 @@
 
   function bar(i) {
     document.getElementById('gTabs').innerHTML = PARTS.map(function (p, j) {
-      return '<a href="' + link(p[0]) + '"' + (j === i ? ' class="on" aria-current="page"' : p[0] === 'claim' ? ' class="join"' : '') + '>' + esc(p[1]) + '</a>';
+      return '<a href="' + link(p[0]) + '"' + (j === i ? ' class="on" aria-current="page"' : '') + '>' + esc(p[1]) + '</a>';
     }).join('');
     var t = document.querySelector('#gTabs .on'); if (t && innerWidth < 900) document.getElementById('gTabs').scrollLeft = Math.max(0, t.offsetLeft - 16);
   }
@@ -211,55 +214,56 @@
       '<div class="rf-head"><div class="rf-t"><h1 class="k-h1">' + p[2] + '</h1><p class="k-lede">' + esc(p[3]) + '</p></div>' + guide(p) +
       '<div class="rf-act">' + (action || '') + '</div></div>';
   }
-  var CLAIM = '<a class="k-btn k-cta" href="#/claim">Claim your listing</a><p class="rf-price">Free for members. About two minutes.</p>';
+  var FREE = '<p class="fx-free"><b>No cost. Nothing to buy.</b> Your listing stays up either way, and claiming it is optional.</p>';
+  var FROM = '<div class="k-card fx-from" style="--k-c:#FFEBD1"><span class="k-label">From</span><p><b>Sean A. Russell</b>, founder of Vegans Explore. Questions, or want something changed? Write to <a href="mailto:hello@vegansexplore.com">hello@vegansexplore.com</a> and a person answers.</p></div>';
+  var YES = '<a class="k-btn k-cta" href="#/collab">Yes, add us as a collaborator</a><p class="rf-price">Or say no. Either way it posts ' + esc(B.post) + '.</p>';
   function row(n, cls, title, body, tag) {
     return '<div class="k-row"><span class="k-num ' + cls + '">' + n + '</span><span class="k-row-t"><b>' + title + '</b><small>' + body + '</small></span>' + (tag ? '<span class="k-tag live">' + tag + '</span>' : '<span></span>') + '</div>';
   }
   function good(blocks) { return '<section class="rf-sec"><span class="k-label">Good to know</span><div class="gb-good">' + blocks.map(function (b) { return '<div class="k-block ' + b[0] + '"><span class="k-label">' + b[1] + '</span>' + b[2] + '</div>'; }).join('') + '</div></section>'; }
-  function see() { return '<div class="gb-see"><span class="k-label">Ready?</span><h2>Claim your listing.</h2><p>It is free, it is already live, and claiming it puts it in your hands.</p><a class="k-btn k-sm" href="#/claim">Claim your listing &rsaquo;</a></div>'; }
-  function next(i) { var n = PARTS[i + 1]; return n ? '<div class="gb-next"><a class="k-btn" href="' + link(n[0]) + '">Next part: ' + esc(n[1]) + ' &rsaquo;</a><span>' + esc(n[6]) + '</span></div>' : ''; }
+  function next(i) { var n = PARTS[i + 1]; return n ? '<div class="gb-next"><a class="k-btn" href="' + link(n[0]) + '">Next: ' + esc(n[1]) + ' &rsaquo;</a><span>' + esc(n[6]) + '</span></div>' : ''; }
   // The real, locked reel (an-sen-saigon reel-v4, 2026-11-19). Watch only: no download, nothing for them to post.
   var REEL = '<div class="k-pic fx-reel" style="--k-c:#2D5C27"><video src="https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/podcast/spotlight/an-sen-saigon/reel-v4.mp4#t=0.5" controls playsinline preload="metadata" controlslist="nodownload noplaybackrate" disablepictureinpicture oncontextmenu="return false" aria-label="Sen Saigon\'s reel"></video><span class="fx-mock">Mock</span></div>';
 
   var VIEWS = {
     start: function (i) {
-      return head(i, CLAIM) +
+      return head(i, YES) + FREE +
         '<div class="gb-cover"><div>' +
           '<div class="k-blocks"><div class="k-block k-dk"><span class="k-big">Ep ' + B.ep + '</span><small>Aired ' + esc(B.aired) + '</small></div>' +
-          '<div class="k-block k-peach"><span class="k-big">Your reel</span><small>Goes up ' + esc(B.post) + '</small></div>' +
-          '<div class="k-block k-pink"><span class="k-big">Free</span><small>Your listing, yours to claim</small></div></div>' +
+          '<div class="k-block k-peach"><span class="k-big">Tue 12 PM</span><small>Your reel goes up, ' + esc(B.post) + '</small></div>' +
+          '<div class="k-block k-pink"><span class="k-big">$0</span><small>Nothing here costs anything</small></div></div>' +
           '<section class="rf-sec"><span class="k-label">On this page</span><div class="rf-parts">' + PARTS.slice(1).map(function (p, j) {
-            return '<a class="k-row" href="' + link(p[0]) + '"><span class="k-num ' + ['or', 'br', 'pk', 'pe', 'dk', 'ti'][j % 6] + '">' + (j + 1) + '</span><span class="k-row-t"><b>' + esc(p[1]) + '</b><small>' + esc(p[6]) + '</small></span><span></span></a>';
-          }).join('') + '</div></section>' +
+            return '<a class="k-row" href="' + link(p[0]) + '"><span class="k-num ' + ['or', 'br', 'pk', 'pe'][j % 4] + '">' + (j + 1) + '</span><span class="k-row-t"><b>' + esc(p[1]) + '</b><small>' + esc(p[6]) + '</small></span><span></span></a>';
+          }).join('') + '</div></section>' + FROM +
         '</div>' + REEL + '</div>' + next(i);
-    },
-    reel: function (i) {
-      return head(i, CLAIM) + '<div class="gb-cover"><div><section class="rf-sec"><span class="k-label">Your reel</span><div class="k-rows">' +
-        row(1, 'or', 'Goes up ' + esc(B.post), 'On the Vegans Explore Instagram, and we promote it.', 'Scheduled') +
-        row(2, 'br', 'Watch it here', 'This page is the only place it plays before it posts. Nothing for you to download or post.', 'Preview') +
-        row(3, 'pk', 'Want it on your page too?', 'Say yes to being a collaborator and it shows on your Instagram as well.', '') +
-        '</div></section><div class="gb-next"><a class="k-btn" href="#/collab">Be a collaborator? &rsaquo;</a><span>One yes or no</span></div></div>' + REEL + '</div>';
     },
     collab: function (i) {
       return head(i, '') + '<section class="rf-sec"><div class="k-card" style="--k-c:#FF9EC4;max-width:900px"><span class="k-label">One question</span>' +
-        '<h2 style="margin:6px 0 14px">Be a collaborator on ' + esc(B.name) + '\'s reel?</h2>' +
+        '<h2 style="margin:6px 0 10px">Be a collaborator on ' + esc(B.name) + '\'s reel?</h2>' +
+        '<p style="margin:0 0 12px">It goes up <b>' + esc(B.post) + '</b> on @vegansexplore.</p>' +
+        '<div class="k-f" style="max-width:420px;margin:0 0 14px"><label for="fxIg">Your Instagram handle</label><input id="fxIg" maxlength="40" placeholder="@yourhandle" value="' + esc(B.ig) + '"></div>' +
         '<div style="display:flex;gap:12px;flex-wrap:wrap"><button type="button" class="k-btn k-cta" data-ans="yes">Yes, add us</button><button type="button" class="k-btn" data-ans="no">No thanks</button></div>' +
         '<p class="k-msg" id="fxMsg" role="status" style="margin-top:14px"></p></div></section>' +
-        good([['k-tint', 'If you say yes', 'We add ' + esc(B.name) + ' as a collaborator when it posts, and email you the moment it is live.'], ['k-peach', 'If you say no', 'That is fine. We still post and promote it, and nothing more is asked.']]) + next(i);
+        '<section class="rf-sec"><span class="k-label">If you say yes</span><div class="k-rows">' +
+        row(1, 'or', 'You get an invite on Instagram', 'When it posts, @vegansexplore sends a collab invite to the handle above. Open it and tap Accept.', 'Tap Accept') +
+        row(2, 'br', 'It shows on both accounts', 'Same post, same likes and comments, on your profile and ours.', '') +
+        row(3, 'pk', 'We email you when it is live', 'With the link, so you can share it to your story.', '') +
+        row(4, 'pe', 'Change your mind any time', 'Write to hello@vegansexplore.com and we take you off as a collaborator.', '') +
+        '</div></section>' + good([['k-peach', 'If you say no', 'That is fine. We still post and promote it, and nothing more is asked.']]) + next(i);
     },
     episode: function (i) {
-      return head(i, CLAIM) + '<section class="rf-sec"><span class="k-label">Your segment</span><div class="k-card" style="--k-c:#FFEBD1;max-width:900px">' +
-        '<p style="margin:0 0 10px"><b>Spotlight: Anne of ' + esc(B.name) + '</b>, from the Vegans Explore Podcast, Episode ' + B.ep + '.</p>' +
+      return head(i, '') + '<section class="rf-sec"><span class="k-label">Your segment</span><div class="k-card" style="--k-c:#FFEBD1;max-width:900px">' +
+        '<p style="margin:0 0 10px"><b>Spotlight: ' + esc(B.person) + ' of ' + esc(B.name) + '</b>, from the Vegans Explore Podcast, Episode ' + B.ep + '.</p>' +
         '<audio controls preload="none" src="' + B.clip + '" style="width:100%"></audio>' +
-        '<p class="gb-fine" style="margin-top:10px">Share it with your regulars: <a href="/media">the full episode</a>.</p></div></section>' + see() + next(i);
+        '<p class="gb-fine" style="margin-top:10px">Hear the whole show on <a href="/media">Vegans Explore Media</a>.</p></div></section>' + next(i);
     },
-    claim: function (i) {
-      return head(i, '') + '<section class="rf-sec"><span class="k-label">Why claim it</span><div class="k-rows">' +
-        row(1, 'or', 'It is already live', 'People find ' + esc(B.name) + ' in the Directory today. Claiming it makes it yours to keep right.', 'Live') +
-        row(2, 'br', 'Keep it right', 'Your hours, menu, photos and holiday hours, in your words.', 'You edit') +
-        row(3, 'pk', 'See who finds you', 'How many people viewed your page and where they came from.', 'Insights') +
-        row(4, 'pe', 'Free', 'Claiming is free for members. Joining is free too.', 'Free') +
-        '</div></section><section class="rf-sec"><a class="k-btn k-cta" href="/claim?l=' + B.slug + '">Claim ' + esc(B.name) + '</a></section>';
+    listing: function (i) {
+      return head(i, '') + FREE + '<section class="rf-sec"><a class="k-btn" href="/directory/' + B.slug + '">See your listing as people see it &rsaquo;</a></section>' +
+        '<section class="rf-sec"><span class="k-label">If you claim it</span><div class="k-rows">' +
+        row(1, 'or', 'You keep it right', 'Your hours, menu, photos and links, in your words. You approve what shows.', 'You edit') +
+        row(2, 'br', 'See who finds you', 'Your dashboard shows views, saves and check-ins on your page.', 'Your numbers') +
+        row(3, 'pk', 'No card, no fee', 'Claiming is free. You sign in with your email, and nothing asks you to pay.', 'Free') +
+        '</div></section><section class="rf-sec"><a class="k-btn k-cta" href="/claim?l=' + B.slug + '">Claim ' + esc(B.name) + '</a><p class="rf-price">Optional. About two minutes.</p></section>' + FROM;
     }
   };
 
