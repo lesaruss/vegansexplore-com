@@ -67,6 +67,23 @@
     .ig-when { font-size: 11px; color: #777; text-transform: uppercase; letter-spacing: .04em; padding: 8px 12px 12px; margin: 0; }
     .ig-note { font-size: 12px; font-weight: 700; color: var(--k-mute); margin: 8px 0 0; max-width: 400px; justify-self: end; }
     @media (max-width: 900px) { .gb-cover .ig-wrap { order: -1; } .ig-post, .ig-note { justify-self: start; } }
+    /* v5 (Sean, 2026-11-21: "a fixed bottom for the example, and then they could scroll and see the bottom, so that way it's the same height as
+       what's on the left"): on desktop the post is as tall as the column beside it and scrolls inside; on phones it is whole. */
+    @media (min-width: 901px) {
+      .fx-cover { align-items: stretch; }
+      .fx-cover .ig-wrap { position: relative; min-height: 620px; }
+      .fx-cover .ig-post { position: absolute; top: 0; right: 0; bottom: 0; overflow-y: auto; overscroll-behavior: auto; scrollbar-width: thin; }
+    }
+    /* One step at a time (Sean: "once they've answered that... the next button will appear, or it'll be clickable"). */
+    .gb-next .k-btn[aria-disabled="true"] { opacity: .45; pointer-events: none; }
+    .rf-bar .k-tabs > a.off { opacity: .45; pointer-events: none; }
+    /* Their listing, live, in a phone frame (Sean: "they're seeing a live screenshot of their... listing"). */
+    .fx-live { display: grid; grid-template-columns: minmax(0, 320px) minmax(0, 1fr); gap: 24px 36px; align-items: start; margin-top: 26px; }
+    .fx-phone { display: block; width: 100%; max-width: 320px; aspect-ratio: 390 / 700; overflow: hidden; border: 2px solid var(--k-ink); border-radius: 22px; box-shadow: 4px 4px 0 var(--k-ink); position: relative; background: #fff; }
+    .fx-phone iframe { position: absolute; top: 0; left: 0; width: 390px; height: 700px; border: 0; transform-origin: 0 0; pointer-events: none; }
+    .fx-phone span { position: absolute; left: 10px; bottom: 10px; background: var(--k-ink); color: #fff; font-size: 11px; font-weight: 900; letter-spacing: .08em; text-transform: uppercase; padding: 5px 9px; border-radius: 6px; }
+    @media (max-width: 900px) { .fx-live { grid-template-columns: minmax(0, 1fr); } }
+    .fx-live .k-cta { white-space: normal; max-width: 100%; text-align: center; }
     .fx-prev { position: absolute; top: 10px; right: 10px; background: #1a1a1a; color: #fff; font-weight: 900; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; padding: 5px 9px; border-radius: 6px; }
     body { margin: 0; background: #fff; color: var(--k-ink); font-family: 'Montserrat', system-ui, sans-serif; }
 
@@ -227,25 +244,24 @@
   // listing shown before it is claimed, and Claim asked once, at the end.
   var PARTS = [];
   function makeParts() { PARTS = [
-    ['start', 'Your reel', B.name + ' was <span class="k-hl o">featured on the Vegans Explore Podcast</span>',
-      'The spotlight on Episode ' + B.ep + ' of the Vegans Explore Podcast, ' + B.aired + '. We made a reel from your segment, and it goes up ' + B.post + '. Watch it and read the caption first.',
-      "Hi, I'm Liz. We made this page just for you.", 'liz-start-v2.mp3', 'Watch it, and when it goes up'],
-    ['collab', 'Be a collaborator?', 'Want the reel on <span class="k-hl p">your Instagram</span> too?',
-      'Say yes and it shows on both accounts. Say no and we still post and promote it.',
-      "One question, and either answer is fine.", 'liz-collab-v2.mp3', 'One yes or no'],
+    ['start', 'Your post', B.name + ' was <span class="k-hl o">featured on the Vegans Explore Podcast</span>',
+      'The spotlight on Episode ' + B.ep + ' of the Vegans Explore Podcast, ' + B.aired + '. We made a reel from your segment, and it goes up ' + B.post + '. Here is the post. One question, then you are on to your episode.',
+      "Hi, I'm Liz. We made this page just for you.", 'liz-start-v2.mp3', 'One question'],
     ['episode', 'Your episode', 'Hear <span class="k-hl o">your segment</span>',
-      'Episode ' + B.ep + ': ' + B.epTitle + '.',
+      'Spotlight: ' + B.person + ' of ' + B.name + ', from Episode ' + B.ep + ' of the Vegans Explore Podcast.',
       "Here's your segment. Share it with your regulars.", 'liz-episode-v2.mp3', 'Listen and share'],
-    ['listing', 'Your listing', 'Your listing is <span class="k-hl g">free, and yours if you want it</span>',
-      'It stays up whether you claim it or not. Claiming it lets you keep it right.',
-      "Have a look. Claim it only if you want to.", 'liz-listing-v2.mp3', 'See it, and claim it if you like']
+    ['listing', 'Your listing', B.claimed ? B.name + ' is <span class="k-hl g">yours on Vegans Explore</span>' : 'Claim <span class="k-hl g">' + B.name + '</span> before January 1',
+      B.claimed ? 'Your listing is claimed. Sign in any time to keep it up to date.' : 'This is your listing, live. Claim it free before January 1, 2027, and you join as a Founding Member.',
+      "Have a look. Claim it only if you want to.", 'liz-listing-v2.mp3', B.claimed ? 'Keep it up to date' : 'Claim it free']
   ]; }
   function idx(k) { for (var i = 0; i < PARTS.length; i++) if (PARTS[i][0] === k) return i; return 0; }
-  function cur() { var k = (location.hash.match(/^#\/([a-z]+)/) || [])[1] || 'start'; return idx(k); }
+  function locked(j) { return j > 0 && !B.answer; }
+  function cur() { var k = (location.hash.match(/^#\/([a-z]+)/) || [])[1] || 'start'; var i = idx(k); if (locked(i)) { try { history.replaceState(null, '', location.pathname + location.search + '#/'); } catch (e) {} return 0; } return i; }
   function link(k) { return k === 'start' ? '#/' : '#/' + k; }
 
   function bar(i) {
     document.getElementById('gTabs').innerHTML = PARTS.map(function (p, j) {
+      if (locked(j)) return '<a class="off" aria-disabled="true" tabindex="-1" title="Answer the question first">' + esc(p[1]) + '</a>';
       return '<a href="' + link(p[0]) + '"' + (j === i ? ' class="on" aria-current="page"' : '') + '>' + esc(p[1]) + '</a>';
     }).join('');
     var t = document.querySelector('#gTabs .on'); if (t && innerWidth < 900) document.getElementById('gTabs').scrollLeft = Math.max(0, t.offsetLeft - 16);
@@ -282,12 +298,16 @@
     return '<div class="k-card" style="--k-c:#FFEBD1"><span class="k-label">The caption we will post</span><p class="fx-cap">' + esc(B.caption) + '</p>' +
       (B.tags ? '<p class="fx-tags">' + esc(B.tags) + '</p>' : '') + '</div>';
   }
-  function yes() { return B.answer ? '<a class="k-btn k-cta" href="#/collab">' + (B.answer === 'yes' ? 'You said yes: see what happens next' : 'You said no thanks: change it') + '</a><p class="rf-price">It posts ' + esc(B.post) + '.</p>' : '<a class="k-btn k-cta" href="#/collab">Yes, add us as a collaborator</a><p class="rf-price">Or say no. Either way it posts ' + esc(B.post) + '.</p>'; }
   function row(n, cls, title, body, tag) {
     return '<div class="k-row"><span class="k-num ' + cls + '">' + n + '</span><span class="k-row-t"><b>' + title + '</b><small>' + body + '</small></span>' + (tag ? '<span class="k-tag live">' + tag + '</span>' : '<span></span>') + '</div>';
   }
   function good(blocks) { return '<section class="rf-sec"><span class="k-label">Good to know</span><div class="gb-good">' + blocks.map(function (b) { return '<div class="k-block ' + b[0] + '"><span class="k-label">' + b[1] + '</span>' + b[2] + '</div>'; }).join('') + '</div></section>'; }
-  function next(i) { var n = PARTS[i + 1]; return n ? '<div class="gb-next"><a class="k-btn" href="' + link(n[0]) + '">Next: ' + esc(n[1]) + ' &rsaquo;</a><span>' + esc(n[6]) + '</span></div>' : ''; }
+  function next(i) {
+    var n = PARTS[i + 1]; if (!n) return '';
+    if (locked(i + 1)) return '<div class="gb-next" id="fxNext"><a class="k-btn" aria-disabled="true" tabindex="-1">Next: ' + esc(n[1]) + ' &rsaquo;</a><span>Answer the question above to go on</span></div>';
+    return '<div class="gb-next" id="fxNext"><a class="k-btn" href="' + link(n[0]) + '">Next: ' + esc(n[1]) + ' &rsaquo;</a><span>' + esc(n[6]) + '</span></div>';
+  }
+  function unlock() { var x = document.getElementById('fxNext'); if (x) x.outerHTML = next(cur()); bar(cur()); }
   // The real, locked reel (an-sen-saigon reel-v4, 2026-11-19). Watch only: no download, nothing for them to post.
   function igIcon(d) { return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + d + '"/></svg>'; }
   function post() {
@@ -299,30 +319,18 @@
       '<div class="ig-act">' + igIcon('M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z') + igIcon('M20 12a8 8 0 1 1-3.2-6.4L20 4l-1 4.2A8 8 0 0 1 20 12z') + igIcon('M21 4L3 11l7 2 2 7 9-16z') + '<span class="sv">' + igIcon('M6 3h12v18l-6-4-6 4z') + '</span></div>' +
       (B.caption ? '<p class="ig-cap"><b>vegansexplore</b> ' + esc(B.caption) + '</p>' : '') + (B.tags ? '<p class="ig-tags">' + esc(B.tags) + '</p>' : '') +
       '<p class="ig-when">' + esc(B.post) + '</p></div>' +
-      '<p class="ig-note">A preview of the post. Your name shows beside ours once you add your handle and accept the invite.</p></div>';
+      '</div>';
   }
   function reel() { return '<div class="k-pic fx-reel" style="--k-c:#2D5C27"><video src="' + MEDIA + esc(B.reel) + '#t=0.5" controls playsinline preload="metadata" controlslist="nodownload noplaybackrate" disablepictureinpicture oncontextmenu="return false" aria-label="' + esc(B.name) + '\'s reel"></video><button type="button" class="fx-play" aria-label="Play the reel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg></button>' + (LIVE ? '' : '<span class="fx-prev">Preview</span>') + '</div>'; }
 
   var VIEWS = {
     start: function (i) {
       return head(i, '') +
-        '<div class="gb-cover"><div>' + ask(false) +
+        '<div class="gb-cover fx-cover"><div>' + ask(true) +
           '<div class="k-blocks" style="margin-top:22px"><div class="k-block k-dk"><span class="k-big">Ep ' + B.ep + '</span><small>' + (B.airedPast ? 'Aired ' : 'Airs ') + esc(B.aired) + '</small></div>' +
           '<div class="k-block k-peach"><span class="k-big">' + esc(B.postShort) + '</span><small>Your reel goes up, ' + esc(B.post) + '</small></div>' +
-          '<div class="k-block k-pink"><span class="k-big">' + esc(B.clipLen || 'Your part') + '</span><small>Your segment on the show</small></div></div>' +
-          '<section class="rf-sec"><span class="k-label">On this page</span><div class="rf-parts">' + PARTS.slice(1).map(function (p, j) {
-            return '<a class="k-row" href="' + link(p[0]) + '"><span class="k-num ' + ['or', 'br', 'pk', 'pe'][j % 4] + '">' + (j + 1) + '</span><span class="k-row-t"><b>' + esc(p[1]) + '</b><small>' + esc(p[6]) + '</small></span><span></span></a>';
-          }).join('') + '</div></section>' + FROM +
+          '<div class="k-block k-pink"><span class="k-big">' + esc(B.clipLen || 'Your part') + '</span><small>Your segment on the show</small></div></div>' + FROM +
         '</div>' + post() + '</div>' + next(i);
-    },
-    collab: function (i) {
-      return head(i, '') + '<div class="gb-cover"><div>' + ask(true) + '</div>' + post() + '</div>' +
-        '<section class="rf-sec"><span class="k-label">If you say yes</span><div class="k-rows">' +
-        row(1, 'or', 'You get an invite on Instagram', 'When it posts, @vegansexplore sends a collab invite to the handle above. Open it and tap Accept.', 'Tap Accept') +
-        row(2, 'br', 'It shows on both accounts', 'Same post, same likes and comments, on your profile and ours.', '') +
-        row(3, 'pk', 'We email you when it is live', 'With the link, so you can share it to your story.', '') +
-        row(4, 'pe', 'Change your mind any time', 'Instagram lets you remove yourself from a collab post whenever you like, or write to hello@vegansexplore.com and we do it.', '') +
-        '</div></section>' + good([['k-peach', 'If you say no', 'That is fine. We still post and promote it, and nothing more is asked.']]) + next(i);
     },
     episode: function (i) {
       return head(i, '') + '<section class="rf-sec"><span class="k-label">Your segment</span><div class="k-card" style="--k-c:#FFEBD1;max-width:900px">' +
@@ -332,12 +340,17 @@
         '<p class="gb-fine" style="margin-top:10px">Hear the whole show on <a href="/media" data-t="media_open">Vegans Explore Media</a>.</p></div></section>' + next(i);
     },
     listing: function (i) {
-      return head(i, '') + '<section class="rf-sec"><a class="k-btn" href="/directory/' + esc(B.slug) + '" data-t="listing_open">See your listing as people see it &rsaquo;</a></section>' +
-        '<section class="rf-sec"><span class="k-label">If you claim it</span><div class="k-rows">' +
-        row(1, 'or', 'You keep it right', 'Your hours, menu, photos and links, in your words. You approve what shows.', 'You edit') +
-        row(2, 'br', 'See who finds you', 'Your dashboard shows views, saves and check-ins on your page.', 'Your numbers') +
-        row(3, 'pk', 'No card, no fee', 'Claiming is free. You sign in with your email, and nothing asks you to pay.', 'Free') +
-        '</div></section><section class="rf-sec"><a class="k-btn k-cta" href="/claim?listing=' + encodeURIComponent(B.slug) + '" data-t="claim_click">Claim ' + esc(B.name) + '</a><p class="rf-price">Optional. About two minutes.</p></section>' + FROM;
+      var go = B.claimed
+        ? '<a class="k-btn k-cta" href="/dashboard/business?l=' + encodeURIComponent(B.slug) + '" data-t="claim_click">Sign in to update ' + esc(B.name) + '</a>'
+        : '<a class="k-btn k-cta" href="/claim?listing=' + encodeURIComponent(B.slug) + '" data-t="claim_click">Sign in or join free to claim ' + esc(B.name) + '</a><p class="rf-price">Already a member? You just sign in. About two minutes, no card.</p>';
+      return head(i, '') +
+        '<div class="fx-live"><a class="fx-phone" href="/directory/' + esc(B.slug) + '" data-t="listing_open" aria-label="Open ' + esc(B.name) + '\'s listing as people see it">' +
+          '<iframe src="/directory/' + esc(B.slug) + '" title="' + esc(B.name) + ' on Vegans Explore, live" loading="lazy" tabindex="-1" aria-hidden="true"></iframe><span>Live</span></a>' +
+        '<div><span class="k-label">' + (B.claimed ? 'What you can do' : 'Once you claim it') + '</span><div class="k-rows" style="margin-top:10px">' +
+          row(1, 'or', 'Keep it right', 'Your hours, menu, photos and links, in your words. You approve what shows.', 'You edit') +
+          row(2, 'br', 'See who finds you', 'Your dashboard shows views, saves and check-ins on your page.', 'Your numbers') +
+          (B.claimed ? '' : row(3, 'pk', 'A Founding Member', 'Claim before January 1, 2027, and you are one for good. Free.', 'Before Jan 1')) +
+        '</div><div class="rf-sec">' + go + '</div></div></div>' + FROM;
     }
   };
 
@@ -380,16 +393,18 @@
     main.querySelectorAll('[data-ans]').forEach(function (x) { x.addEventListener('click', function () {
       var ans = x.getAttribute('data-ans'), msg = document.getElementById('fxMsg'), h = (document.getElementById('fxIg').value || '').trim().replace(/^@/, '');
       if (ans === 'yes' && !/^[A-Za-z0-9._]{1,30}$/.test(h)) { msg.textContent = 'Add your Instagram handle above, so we can send the invite.'; document.getElementById('fxIg').focus(); return; }
-      if (!LIVE) { msg.textContent = 'Preview: answers are saved once this page is live.'; return; }
+      if (!LIVE) { B.answer = ans; if (ans === 'yes') B.ig = h; msg.textContent = 'Preview: answers are saved once this page is live. Next is open.'; unlock(); return; }
       main.querySelectorAll('[data-ans]').forEach(function (y) { y.disabled = true; });
       msg.textContent = 'Saving…';
       rpc('ve_featured_answer', { p_code: B.code, p_answer: ans, p_handle: ans === 'yes' ? h : null }).then(function (r) {
         main.querySelectorAll('[data-ans]').forEach(function (y) { y.disabled = false; });
         if (!r || !r.ok) { msg.textContent = 'That did not save. Try again, or write to hello@vegansexplore.com.'; return; }
         B.answer = ans; if (ans === 'yes') B.ig = h;
-        msg.textContent = ans === 'yes' ? 'Thank you. We will add @' + h + ' when it posts and email you once it is live.' : 'No problem. We will still post and promote it.';
+        msg.textContent = ans === 'yes' ? 'Thank you. We will add @' + h + ' when it posts and email you once it is live. Next: your episode.' : 'No problem. We will still post and promote it. Next: your episode.';
+        unlock();
       });
     }); });
+    var ph = main.querySelector('.fx-phone'); if (ph) { var fit = function () { var fr = ph.querySelector('iframe'); if (fr) fr.style.transform = 'scale(' + (ph.clientWidth / 390) + ')'; }; fit(); addEventListener('resize', fit); }
     if (window.scrollY > 120) window.scrollTo(0, 0);
   }
   function missing() {
@@ -399,7 +414,7 @@
   if (!CODE) { missing(); return; }
   rpc('ve_featured_get', { p_code: CODE }).then(function (d) {
     if (!d || !d.code) { missing(); return; }
-    B = { code: d.code, name: d.name, person: d.person || '', slug: d.slug, ep: d.ep, epTitle: d.ep_title || '', ig: d.ig || '', answer: d.answer || '', voice: d.voice || {}, caption: d.caption || '', tags: d.tags || '',
+    B = { code: d.code, name: d.name, person: d.person || '', slug: d.slug, ep: d.ep, epTitle: d.ep_title || '', ig: d.ig || '', answer: d.answer || '', voice: d.voice || {}, caption: d.caption || '', tags: d.tags || '', claimed: !!d.claimed,
       clipLen: d.clip_secs ? (d.clip_secs >= 90 ? Math.round(d.clip_secs / 60) + ' min' : d.clip_secs + ' sec') : '',
       airedPast: d.aired_on ? (new Date(new Date().toLocaleString('en-US', { timeZone: ET })).toISOString().slice(0, 10) >= d.aired_on) : true,
       reel: d.reel, clip: d.clip,

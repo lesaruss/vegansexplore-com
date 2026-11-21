@@ -113,3 +113,16 @@ language sql security definer set search_path = public stable as $$
   from ve_featured_pages where code = p_code and status in ('draft','live');
 $$;
 -- An's caption, tags, clip_secs 134 and Liz's new opening (start-v2) were written to her row directly.
+
+-- v5 (Sean, 2026-11-21): three steps (the post with the one question, the episode, the listing); later steps open once the question is
+-- answered; the listing step shows the listing live and asks them to claim it free before January 1 as a Founding Member (canon: Founding
+-- Partner is the paid plan, so the free status is Founding Member). The page needs to know whether the listing is already claimed.
+create or replace function ve_featured_get(p_code text) returns jsonb
+language sql security definer set search_path = public stable as $$
+  select jsonb_build_object('code', p.code, 'status', p.status, 'show', p.show_slug, 'ep', p.ep_number, 'ep_title', p.ep_title, 'aired_on', p.aired_on,
+    'slug', p.listing_slug, 'name', p.business_name, 'person', p.person_name, 'post_at', p.post_at, 'reel', p.reel_path, 'clip', p.clip_path,
+    'ig', coalesce(p.collab_handle, p.ig_handle), 'answer', p.answer, 'voice', p.voice, 'caption', p.caption, 'tags', p.tags, 'clip_secs', p.clip_secs,
+    'claimed', exists (select 1 from listings l where l.slug = p.listing_slug and l.status = 'approved' and coalesce(l.claim_status, 'unclaimed') <> 'unclaimed'))
+  from ve_featured_pages p where p.code = p_code and p.status in ('draft','live');
+$$;
+-- An's listing line (listing-v3) written to her row directly; the collab line removed.
