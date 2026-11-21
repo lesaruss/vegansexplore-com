@@ -137,6 +137,18 @@
     .ex-dots button { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--k-ink); background: #fff; padding: 0; cursor: pointer; }
     .ex-dots button.on { background: var(--k-ink); }
     @media (max-width: 900px) { .ex-two { grid-template-columns: minmax(0, 1fr); } .ex-walk { order: -1; } }
+    /* The Road to the World Vegan Expo board (Sean, 2026-11-21: the building fund picture, commitments not money). */
+    .rd-ch { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 10px 14px; }
+    .rd-c { border: 2px solid var(--k-ink); border-radius: var(--k-rc); padding: 12px 14px; background: #fff; }
+    .rd-c b { display: block; font-size: 15px; font-weight: 900; }
+    .rd-c small { display: block; font-size: 12.5px; font-weight: 700; color: var(--k-mute); margin-top: 2px; }
+    .rd-bar { height: 12px; border-radius: 6px; background: var(--k-tint); margin: 8px 0 2px; position: relative; overflow: hidden; }
+    .rd-bar i { position: absolute; inset: 0 auto 0 0; background: var(--k-or); border-radius: 6px; min-width: 4px; }
+    .rd-bar em { position: absolute; top: -2px; bottom: -2px; left: 80%; width: 2px; background: var(--k-ink); }
+    .rd-who { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+    .rd-who button { font: inherit; font-size: 12px; font-weight: 900; letter-spacing: .04em; padding: 8px 12px; border-radius: 6px; border: 2px solid var(--k-ink); background: #fff; color: var(--k-ink); cursor: pointer; }
+    .rd-who button[aria-pressed="true"] { background: var(--k-ink); color: #fff; }
+    .rd-asof { font-size: 12px; font-weight: 700; color: var(--k-mute); margin: 8px 0 0; }
     .rf-head .rf-act:empty { display: none; }
     @media (max-width: 900px) { .gb-cover { grid-template-columns: minmax(0, 1fr); } .gb-cover .k-pic { justify-self: start; max-width: 320px; } }
     /* Liz's card (Sean, 2026-11-19: "make the image of Liz a little bit bigger... keep Liz solid and then make just the text scroll... 3 rows of
@@ -257,6 +269,39 @@
     show(0);
   }
 
+  // The Road to the Expo: each group's part, week by week (Sean, 2026-11-21, LOCKED: "Each stakeholder group has different things that they can
+  // do, check off from week to week in order to help us get to this goal"). Commitments, never money.
+  var ROADB = 'https://fwbhwfxpncrsfhttimna.supabase.co/rest/v1/rpc/ve_expo_road';
+  var ROADK = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  var ROLES = [
+    ['Members', [['Finish your profile and survey', 'And earn your first points.', '/survey'], ['Vouch for three places you love', 'One vouch each, in the Directory.', '/directory'], ['Check in when you eat out', 'Every check-in shows a place is loved.', '/directory'], ['Bring a friend with your link', 'Your link is on your account.', '/account'], ['RSVP to your city&rsquo;s community night', 'Free to come, easy to share.', '/events'], ['Share the weekly update', 'One post, every week.', '/pulse']]],
+    ['Businesses', [['Claim your page', 'Free, about a minute.', '/claim'], ['Add your menu and photos', 'From your dashboard.', '/claim'], ['Post an event or offer', 'Members see it in your city.', '/events'], ['Put our QR at the counter', 'So your guests find you here.', '/claim'], ['Take a Spotlight day', 'Your product, your code for everyone.', '/expo/spotlight'], ['Say &ldquo;count us in&rdquo; for the Expo', 'Coming to your dashboard.', '']]],
+    ['Clubs', [['Make Vegans Explore your home base', 'Your page, your events, your board, free.', '/groups/welcome'], ['Post your next event here', 'Free events stay free.', '/events'], ['Get your members registered', 'Free Founding Membership until January 1.', '/groups/welcome'], ['Share our nights with your link', 'Your club is included, and earns from it.', '/expo/events'], ['Tell us what to build next', 'You shape it with us.', '/contact']]],
+    ['Creators', [['Claim your profile', 'Your page in our People.', '/claim'], ['One collab post a month', 'With @vegansexplore.', ''], ['Cover a community night', 'Your city, your story.', '/expo/events']]],
+    ['Causes', [['Claim your page', 'Nonprofits, sanctuaries and rescues.', '/claim'], ['List your volunteer needs', 'Members see them in your city.', '/guides/nonprofit-guide'], ['Bring a table to a community night', 'Meet the people who care.', '/expo/events']]]
+  ];
+  function rolePart(j) { return ROLES[j][1].map(function (b, k) { return '<' + (b[2] ? 'a href="' + b[2] + '"' : 'div') + ' class="k-row" style="text-decoration:none;color:var(--k-ink)"><span class="k-num ' + ['or','br','pk','pe','dk','ti'][k % 6] + '">' + (k + 1) + '</span><span class="k-row-t"><b>' + b[0] + '</b><small>' + b[1] + '</small></span>' + (b[2] ? '<span></span>' : '<span class="k-tag new">Coming</span>') + '</' + (b[2] ? 'a' : 'div') + '>'; }).join(''); }
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-rd-who]'); if (!b) return;
+    [].forEach.call(document.querySelectorAll('[data-rd-who]'), function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+    document.getElementById('rdPart').innerHTML = rolePart(+b.getAttribute('data-rd-who'));
+  });
+  function loadRoad() {
+    fetch(ROADB, { method: 'POST', headers: { apikey: ROADK, Authorization: 'Bearer ' + ROADK, 'Content-Type': 'application/json' }, body: '{}' })
+      .then(function (r) { return r.json(); }).then(function (d) {
+        if (!d || !d.chapters) return;
+        [].forEach.call(document.querySelectorAll('[data-rd]'), function (el) { el.textContent = Number(d[el.getAttribute('data-rd')] || 0).toLocaleString('en-US'); });
+        var box = document.getElementById('rdCh');
+        var small = d.chapters.filter(function (c) { return c.businesses < 10; }).map(function (c) { return c.name; });
+        if (box) box.innerHTML = d.chapters.filter(function (c) { return c.businesses >= 10; }).map(function (c) {
+          var pct = Math.min(100, Math.round(100 * c.claimed / Math.max(1, c.businesses)));
+          return '<div class="rd-c"><b>' + esc(c.name) + '</b><div class="rd-bar" role="img" aria-label="' + pct + '% of 80%"><i style="width:' + pct + '%"></i><em></em></div>' +
+            '<small>' + c.claimed + ' of ' + c.businesses + ' Vegan businesses on board &middot; ' + c.members + ' member' + (c.members === 1 ? '' : 's') + '</small></div>';
+        }).join('') + (small.length ? '<div class="rd-c" style="border-style:dashed"><b>Directory still filling</b><small>' + small.map(esc).join(', ') + '. Each gets its meter once we list enough of its Vegan businesses.</small></div>' : '');
+        var a = document.getElementById('rdAsOf'); if (a) a.textContent = 'Counted live, ' + new Date(d.as_of).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '. Commitments, never money. The line on each meter is 80%.';
+      }).catch(function () {});
+  }
+
   var VIEWS = {
     start: function (i) {
       return head(i, CLAIM) +
@@ -289,6 +334,26 @@
         good([['k-pink', 'Why we start small', 'Ten years on the ground in South and Central Florida taught us that big events are built on relationships. We are building them now, city by city, with the businesses who see what we are doing.'], ['k-tint', 'What you get now', 'Your listing, your brand in front of members as we grow, and a seat at every step on the road to the Expo.']]) + see() + next(i);
     },
     road: function (i) {
+      if (!/[?&]road=preview/.test(location.search)) return VIEWS.roadNow(i);
+      return head(i, CLAIM) +
+        '<section class="rf-sec"><span class="k-label">The Road to the World Vegan Expo, live</span><div class="k-blocks" id="rdMeters">' +
+          '<div class="k-block k-dk"><span class="k-big" data-rd="members">&nbsp;</span><small>Members on the road</small></div>' +
+          '<div class="k-block k-peach"><span class="k-big" data-rd="businesses_claimed">&nbsp;</span><small>Vegan businesses on board</small></div>' +
+          '<div class="k-block k-pink"><span class="k-big" data-rd="clubs">&nbsp;</span><small>Clubs that call it home</small></div>' +
+          '<div class="k-block k-tint"><span class="k-big" data-rd="nights">&nbsp;</span><small>Community nights held</small></div></div>' +
+          '<p class="rd-asof" id="rdAsOf">Counted live. Commitments, never money.</p></section>' +
+        '<section class="rf-sec"><span class="k-label">What unlocks the Expo</span><div class="k-steps">' +
+          '<div class="you"><em>Done</em><b>The vision is live</b>This page. Now everyone can see where we are going.</div>' +
+          '<div><em>February 2027</em><b>Community nights</b>Our first nights in our chapters, with local clubs. <a href="/expo/events">See a night</a></div>' +
+          '<div><em>Next</em><b>Host city bids open</b>Our chapter cities bid to host the Expo.</div>' +
+          '<div><em>The goal</em><b>The host city is announced</b>When its chapter has 80% of its Vegan businesses on board.</div>' +
+          '<div><em>Then</em><b>Tickets, booths and travel</b>Opening first to the people, businesses and clubs already on the road.</div>' +
+          '<div class="you"><em>Early 2028</em><b>The World Vegan Expo</b>Every two years, the whole Vegan world in one place.</div></div></section>' +
+        '<section class="rf-sec"><span class="k-label">Every chapter&rsquo;s meter: Vegan businesses on board, toward 80%</span><div class="rd-ch" id="rdCh"><p class="gb-fine">Loading the chapters&hellip;</p></div></section>' +
+        '<section class="rf-sec"><span class="k-label">Your part, week by week</span><div class="rd-who" id="rdWho">' + ROLES.map(function (r, j) { return '<button type="button" data-rd-who="' + j + '" aria-pressed="' + (j === 0) + '">' + esc(r[0]) + '</button>'; }).join('') + '</div>' +
+          '<div class="k-rows" id="rdPart">' + rolePart(0) + '</div></section>' + see() + next(i);
+    },
+    roadNow: function (i) {
       return head(i, CLAIM) + '<section class="rf-sec"><span class="k-label">The road to 2028</span><div class="k-steps">' +
         '<div class="you"><em>Now</em><b>Claim your listing</b>Free, about a minute. You are in the room.</div>' +
         '<div><em>From January</em><b>Join a campaign</b>Giveaways and features for members, each one a small step you choose.</div>' +
@@ -327,6 +392,7 @@
       });
     }
     if (p[0] === 'expo') wireWalk();
+    if (p[0] === 'road' && /[?&]road=preview/.test(location.search)) loadRoad();
     if (p[0] === 'room') fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-giving', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{"action":"status"}' })
       .then(function (r) { return r.json(); }).then(function (r) { var e = document.getElementById('gbMembers'); if (e && r && r.entries > 0) e.textContent = Number(r.entries).toLocaleString('en-US'); else if (e) e.parentNode.hidden = true; })
       .catch(function () { var e = document.getElementById('gbMembers'); if (e) e.parentNode.hidden = true; });
