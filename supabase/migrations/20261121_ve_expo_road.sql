@@ -22,6 +22,8 @@ create or replace function public.ve_expo_road() returns jsonb language sql stab
     'businesses_claimed', (select coalesce(sum(claimed),0) from biz b join ch on ch.slug = b.chapter),
     'clubs', (select count(*) from ve_group_partners),
     'nights', (select count(*) from events where title ilike 'Vegans Explore Community Night%' and starts_at < now() and status = 'approved'),
+    'interested', (select count(distinct coalesce(email, member_id::text)) from ve_initiative_interest
+                    where initiative_slug = 'vegans-explore-initiative-world-vegan-expo' and action_type <> 'link_click' and 'expo-2028' = any(tags)),
     'chapters', (select coalesce(jsonb_agg(jsonb_build_object('slug', ch.slug, 'name', ch.name, 'businesses', coalesce(b.total,0),
         'claimed', coalesce(b.claimed,0), 'members', coalesce(m.members,0)) order by ch.ord), '[]'::jsonb)
       from ch left join biz b on b.chapter = ch.slug left join mem m on m.chapter = ch.slug));
