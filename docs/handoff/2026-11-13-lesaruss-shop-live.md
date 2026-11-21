@@ -41,3 +41,9 @@ Jason Varney, five personal `/go/pb-*` links. Contacts confirmed through ve-web-
 `docs/outreach/2026-11-13-photographer-bench.md`). The Gig Board takes `?city=` and its signed-out gate returns to the shared job.
 Proof clicks: Logan opened `/go/pb-varney` twice (headless browser) on 2026-11-13 to check the redirect; discount them if they show.
 Waiting on Sean: his final look, then turn the campaign on; the DMs and forms are sent by hand from the program page.
+
+## Correction and close-out (2026-11-21)
+The photographer outreach above was **retired unsent** the same day (Sean: stay within our ecosystem; outreach is the last step). Nothing
+was sent. The Food Photographer Guide was built instead (outline locked, approved "looks good"), then moved onto the Handbook template in
+playbook `ve-holiday-guide`. Open, waiting on Sean: yes to the 10 lesson pictures (list in the `ve-front-of-house` playbook) and the pay
+per shoot. Checkpoint: the row labelled "ve-front-of-house: photographers from our ecosystem, the Food Photographer Guide (2026-11-13 to 11-21)".
