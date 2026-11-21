@@ -508,8 +508,54 @@
   }
   var TEAM = null;
   var BSTAT = { draft: ['wait', 'Draft'], published: ['live', 'Published'], retired: ['not', 'Retired'], open: ['live', 'Open'] };
+  // ---------- One person in a position: their start page answers, what Sean does next, and the button that starts their trial
+  // (Sean, 2026-11-21: "where do I find these answers?"). Every position, not only the Instagram one. Data: ve-positions admin_list,
+  // admin_person, admin_start_trial. Old emails link to /admin/depot/positions#person/<id>, which redirects here. ----------
+  var EVENT_WORDS = { assigned: 'Added to the position', invite_sent: 'Invite emailed', invite_link_copied: 'Invite link copied', role_read: 'Passed the quick check',
+    signed: 'Signed the agreement', meta_email: 'Sent their names', payout_link: 'Opened Stripe', trial_started: 'Trial started', hold: 'Pay held', release: 'Pay released' };
+  var ADD_STEPS = {
+    'community-nights-south-florida': ['Facebook: open each Vegans Explore group, Members, find them by the names above, then the three dots and Make moderator. If they are not in a group yet, invite them first.',
+      'Meetup: in Vegans Explore Broward, Palm Beach and Miami, open Members, find them and change their role to Co-organizer.'],
+    'social-media-manager-instagram': ['Meta Business Suite (business.facebook.com): Settings, People, Add people.',
+      'Invite the email above with partial access to the Vegans Explore Instagram account: Content, Messages and Comments only. Never full control.']
+  };
+  function drawPerson(id) {
+    pos({ action: 'admin_person', id: id }).then(function (r) {
+      if (!r.ok) return fail(r);
+      var P = r.person, st = P.steps || {}, names = /community-nights/.test(r.position.slug);
+      function row(label, done, detail) {
+        return '<div class="k-row r5" style="grid-template-columns:minmax(0,1fr) auto"><div class="k-row-t"><b>' + esc(label) + '</b>' + (detail ? '<small>' + detail + '</small>' : '') + '</div><span class="k-tag ' + (done ? 'live' : 'not') + '">' + (done ? 'Done' : 'Not yet') + '</span></div>';
+      }
+      var h = '<p class="crumb"><a href="?tab=team" data-go=\'{"tab":"team"}\'>Team</a> &rsaquo; ' + esc(P.name || P.email) + '</p>';
+      h += '<h2 class="k-h2">' + esc(P.name || P.email) + '</h2><p class="muted">' + esc(r.position.title) + ' &middot; <span class="k-tag ' + (P.stage === 'awaiting_access' ? 'new' : /trial|active/.test(P.stage) ? 'live' : 'wait') + '">' + esc(P.stage === 'awaiting_access' ? 'Waiting on you' : (P.stage_words || P.stage)) + '</span></p>';
+      h += '<div class="sec"><h2 class="k-h2">Their answers</h2><div class="k-rows">' +
+        row('Read the role and passed the quick check', st.check) +
+        row('Signed the agreement', st.agreement, P.agreement ? 'Signed as ' + esc(P.agreement.signed_name) + ', ' + esc(when(P.agreement.signed_at)) : '') +
+        row('Payouts set up with Stripe', st.payouts, P.payouts_account ? (P.payouts_account.ready ? 'Stripe can pay them' : 'Stripe still needs details from them') : '') +
+        row(names ? 'Their Facebook and Meetup names' : 'Their Facebook email', st.meta, P.meta_email ? '<b>' + esc(P.meta_email) + '</b>' : '') +
+        row('Added by you, trial started', st.access, P.start_on ? 'Started ' + esc(P.start_on) : '') + '</div></div>';
+      if (P.stage === 'awaiting_access') {
+        var steps = ADD_STEPS[r.position.slug] || [];
+        h += '<div class="sec"><h2 class="k-h2">Waiting on you</h2><ol class="k-steps-list" style="margin:0 0 14px;padding-left:20px;line-height:1.6">' + steps.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') +
+          '<li>Then press <b>Invite sent, start trial</b>. Their month and pay start today, and they get an email.</li></ol><button type="button" class="k-btn k-cta" id="startTrial">Invite sent, start trial</button></div>';
+      }
+      h += '<div class="sec"><h2 class="k-h2">History</h2>' + ((r.events || []).length ? '<div class="k-rows">' + r.events.map(function (e) {
+        return '<div class="k-row r5" style="grid-template-columns:minmax(0,1fr) auto"><div class="k-row-t"><b>' + esc(EVENT_WORDS[e.action] || String(e.action).replace(/_/g, ' ')) + '</b></div><small class="muted">' + esc(when(e.at)) + '</small></div>';
+      }).join('') + '</div>' : '<p class="muted">Nothing yet.</p>') + '</div>';
+      $('view').innerHTML = h;
+      if ($('startTrial')) $('startTrial').addEventListener('click', function () {
+        if (!confirm('Start ' + (P.name || 'their') + ' trial today? Only press this once you have added them.')) return;
+        var b = $('startTrial'); b.disabled = true;
+        pos({ action: 'admin_start_trial', id: P.id }).then(function (x) { if (x.ok) { toast('Trial started. First payday ' + x.first_payday); drawPerson(P.id); } else { b.disabled = false; toast(x.message || 'That did not save.'); } });
+      });
+    });
+  }
   function drawTeam() {
-    pos({ action: 'admin_team' }).then(function (r) {
+    var old = (location.hash.match(/^#person\/([0-9a-f-]{36})$/) || [])[1];
+    if (old) { history.replaceState(null, '', location.pathname + '?tab=team&who=' + old); }
+    if (q('who')) return drawPerson(q('who'));
+    Promise.all([pos({ action: 'admin_team' }), pos({ action: 'admin_list' })]).then(function (both) {
+      var r = both[0], L = both[1];
       if (!r.ok) return fail(r);
       TEAM = r;
       var person = q('person'), edit = q('edit'), h = '';
@@ -533,10 +579,16 @@
         return '<div class="k-row r5" style="grid-template-columns:minmax(0,1fr) auto"><div class="k-row-t"><b>' + esc(m.name || 'Team member') + (m.topic !== 'chat' ? ' <span class="pill">' + esc(m.topic) + '</span>' : '') + '</b><small>' + esc(m.body) + '</small>' +
           '<textarea class="note-in" rows="2" data-ans="' + m.id + '" placeholder="Your answer, posted as Kai"></textarea></div><button type="button" class="k-btn k-sm" data-ans-send="' + m.id + '">Send as Kai</button></div>';
       }).join('') + '</div>' : '<p class="muted">Nothing waiting. Kai answered everything she could.</p>') + '</div>';
-      h += '<div class="sec"><h2 class="k-h2">Team</h2>' + (r.people.length ? '<div class="k-rows">' + r.people.map(function (x) {
-        return '<div class="k-row r5" style="grid-template-columns:minmax(0,1fr) auto auto"><div class="k-row-t"><b>' + esc(x.name || '') + '</b><small>' + esc((x.stage_words || x.stage) + (x.region ? ', ' + x.region : '')) + '</small></div>' +
-          '<span class="k-tag ' + (x.waiting ? 'new' : 'live') + '">' + (x.waiting ? x.waiting + ' waiting' : 'All answered') + '</span><a class="k-btn k-sm" href="?tab=team&person=' + x.id + '" data-go=\'' + JSON.stringify({ tab: 'team', person: x.id }) + '\'>Thread</a></div>';
-      }).join('') + '</div>' : '<p class="muted">No one holds the position yet.</p>') + '</div>';
+      var everyone = ((L && L.ok && L.people) || []).filter(function (x) { return x.stage !== 'ended'; }), titles = {};
+      ((L && L.positions) || []).forEach(function (p) { titles[p.id] = p.title; });
+      everyone.sort(function (a, b) { return (b.stage === 'awaiting_access') - (a.stage === 'awaiting_access'); });
+      h += '<div class="sec"><h2 class="k-h2">Team</h2><p class="muted">Everyone in a position, waiting on you first. Their answers opens what they filled in and what you do next.</p>' + (everyone.length ? '<div class="k-rows">' + everyone.map(function (x) {
+        var inT = r.people.filter(function (y) { return y.id === x.id; })[0];
+        return '<div class="k-row r5" style="grid-template-columns:minmax(0,1fr) auto auto"><div class="k-row-t"><b>' + esc(x.name || x.email || '') + '</b><small>' + esc(titles[x.position_id] || '') + '</small></div>' +
+          '<span class="k-tag ' + (x.stage === 'awaiting_access' ? 'new' : /trial|active/.test(x.stage) ? 'live' : 'wait') + '">' + esc(x.stage === 'awaiting_access' ? 'Waiting on you' : (x.stage_words || x.stage)) + '</span>' +
+          '<span style="display:flex;gap:6px">' + (inT ? '<a class="k-btn k-sm" href="?tab=team&person=' + x.id + '" data-go=\'' + JSON.stringify({ tab: 'team', person: x.id }) + '\'>Thread</a>' : '') +
+          '<a class="k-btn k-sm" href="?tab=team&who=' + x.id + '" data-go=\'' + JSON.stringify({ tab: 'team', who: x.id }) + '\'>Their answers</a></span></div>';
+      }).join('') + '</div>' : '<p class="muted">No one holds a position yet.</p>') + '</div>';
       h += '<div class="sec"><h2 class="k-h2">Weekly briefs</h2><p><a class="k-btn k-cta" href="?tab=team&edit=brief-new" data-go=\'{"tab":"team","edit":"brief-new"}\'>New brief</a></p>' + (r.briefs.length ? '<div class="k-rows">' + r.briefs.map(function (b) {
         var st = BSTAT[b.status] || BSTAT.draft;
         return '<div class="k-row r5" style="grid-template-columns:minmax(0,1fr) auto auto"><div class="k-row-t"><b>' + esc(b.title) + '</b><small>Week of ' + esc(b.week_of) + '</small></div><span class="k-tag ' + st[0] + '">' + st[1] + '</span>' +
