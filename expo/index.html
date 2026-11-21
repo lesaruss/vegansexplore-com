@@ -248,9 +248,9 @@
     ['road', 'The city race', 'Which city <span class="k-hl o">hosts it?</span>',
       'The host city is not picked yet. The chapters whose members and businesses show up lead the race. Push yours up.',
       "The host city isn't picked yet. Count in for your city, share the race, and bring your people with you.", 'liz-expo-race-v1.mp3', 'Live, chapter by chapter'],
-    ['why', 'Who&rsquo;s behind it', 'Who is <span class="k-hl p">behind it</span>',
-      'Over 500 events behind the scenes and out front. Vegans Explore, the place to find everything Vegan in your city, run by LESARUSS Inc.',
-      "We're in our founding season. We're not asking you to believe in 2028 today, just to take one small step with us and see where it leads.", 'liz-expo-room-v1.mp3', 'Our record, and why we are building it'],
+    ['why', 'The team', 'The <span class="k-hl p">team</span>',
+      'Over 500 events behind the scenes and out front, and the volunteer committees building the Expo with us. Vegans Explore is run by LESARUSS Inc.',
+      "We're in our founding season. We're not asking you to believe in 2028 today, just to take one small step with us and see where it leads.", 'liz-expo-room-v1.mp3', 'Our record, and the committees'],
     ['in', 'Count me in', 'Count me <span class="k-hl o">in</span>',
       'About a minute. You are first when tickets, booths and speaking slots open, and the Founding badge goes on your profile.',
       "Tell us how you'd like to be part of it, and you'll hear first when tickets, booths and travel open.", 'liz-expo-in-v1.mp3', 'A short form, about a minute']
@@ -417,6 +417,37 @@
     try { navigator.clipboard.writeText(u).then(function () { b.textContent = 'Link copied'; }); } catch (e) {}
   }
 
+  // The committees (LOCKED by Sean 2026-11-21, members only for now): ve-giving serves the list to signed-in members only.
+  var COMMS = null, COMMS_ASKED = false, pickedCommittee = '';
+  function tok() { try { return (window.VEAuth && VEAuth.getToken && VEAuth.getToken()) || localStorage.getItem('ve_token') || ''; } catch (e) { return ''; } }
+  function loadCommittees(then) {
+    var t = tok();
+    fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-giving', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, t ? { Authorization: 'Bearer ' + t } : {}), body: '{"action":"expo_committees"}' })
+      .then(function (r) { return r.json(); }).then(function (r) { COMMS_ASKED = true; COMMS = r && r.member ? r.committees : null; if (then) then(); })
+      .catch(function () { COMMS_ASKED = true; if (then) then(); });
+  }
+  function drawCommittees() {
+    var box = document.getElementById('cmBox'); if (!box) return;
+    if (!COMMS) {
+      box.innerHTML = '<span class="k-label">The committees</span><div class="k-block k-tint"><span class="k-label">Members only, for now</span>' +
+        'The volunteer committees building the Expo are open to members first. <a href="/join">Join free</a> or <a href="/login">log in</a> to see them.</div>';
+      return;
+    }
+    var cols = ['or', 'br', 'pk', 'pe', 'dk', 'ti'];
+    box.innerHTML = '<span class="k-label">The committees, for members</span>' +
+      '<div class="ex-two" style="margin-top:0"><div class="k-rows">' + COMMS.map(function (c, j) {
+        return '<div class="k-row"><span class="k-num ' + cols[j % 6] + '">' + (j + 1) + '</span><span class="k-row-t"><b>' + esc(c.name) + '</b><small>' + esc(c.owns) + '</small></span>' +
+          '<a class="k-btn k-sm" href="#/in" data-role="committee" data-committee="' + esc(c.slug) + '">Join</a></div>';
+      }).join('') + '</div>' +
+      '<div class="k-rows">' +
+        row('A', 'or', 'Volunteer, led by a Chair', 'Each committee has a Chair who runs its meeting. Chairs come from the people who step up.') +
+        row('B', 'br', 'One Zoom meeting a month', 'Show up and contribute. Miss two in a row without a word and we check in; a third and you are off the committee.') +
+        row('C', 'pk', 'An All Access Pass', 'Members in good standing from the day they join to the Expo get an All Access Pass: all five days, every stage and the Awards.') +
+        row('D', 'pe', 'Paid jobs, members first', 'When a committee needs paid work done, web, design, photos or video, it is posted inside the committees first.') +
+        row('E', 'dk', 'Invitation first', 'We invite the founding members personally. Any member can ask to join, and the Chair says yes.') +
+      '</div></div>';
+  }
+
   // The locked offer, said once on each view, never repeated in every box.
   var FIRST = 'Count in now and you&rsquo;re first: tickets, booths and speaking slots before the public, plus a Founding badge on your profile. No fee, no deposit.';
   var DISCLAIMER = '<p class="gb-fine">January 20 to 24, 2028 are our planned dates. Dates, the host city and details can change, and everyone counted in hears first.</p>';
@@ -474,7 +505,7 @@
           '<div class="k-blocks gb-now"><div class="k-block k-dk"><span class="k-label">What</span><span class="k-big">Jan 20 to 24, 2028</span><small>The whole Vegan world in one place, every two years</small></div>' +
           '<div class="k-block k-peach"><span class="k-label">Why now</span><span class="k-big">Host city open</span><small>The cities whose people show up get it</small></div>' +
           '<div class="k-block k-pink"><span class="k-label">Count in now</span><span class="k-big">You&rsquo;re first</span><small>Tickets, booths and speaking slots before the public, and a Founding badge</small></div></div>' +
-          '<p class="gb-by"><b>From the team behind over 500 events.</b> Our founder ran Seed Food and Wine&rsquo;s marketing for seven years. <a href="#/why">Who is behind it</a></p>' +
+          '<p class="gb-by"><b>From the team behind over 500 events.</b> Our founder ran Seed Food and Wine&rsquo;s marketing for seven years. <a href="#/why">Meet the team</a></p>' +
           '<section class="rf-sec"><span class="k-label">I&rsquo;m here as</span><div class="rf-parts">' + DOORS.map(door).join('') + '</div></section>' + DISCLAIMER +
         '</div><div class="k-pic" style="--k-c:#FF9EC4"><img src="/public/expo/liz-expo.jpg" alt="Liz, our Guide, welcoming you into a food village of booths from around the world"></div></div>' + next(i);
     },
@@ -556,11 +587,14 @@
         '</div>' +
         '<p class="gb-quote">&ldquo;Before, the reason you couldn&rsquo;t show up is because everything&rsquo;s scattered. You don&rsquo;t know where to find it. So my job is to create the platform, make it easy for you to find these things. And then you show up, and you support, and you share.&rdquo;</p>' +
         '<p class="gb-fine">Sean A. Russell, founder</p></section>' +
-        '<div class="k-pic" style="--k-c:#FF9EC4"><img src="/public/expo/walk-2-village.jpg" alt="Friends sharing food at a festival food lane"></div></div>' + next(i);
+        '<div class="k-pic" style="--k-c:#FF9EC4"><img src="/public/expo/walk-2-village.jpg" alt="Friends sharing food at a festival food lane"></div></div>' +
+        '<section class="rf-sec" id="cmBox"><span class="k-label">The committees</span><p class="gb-fine">Loading&hellip;</p></section>' + next(i);
     },
     'in': function (i) {
+      if (picked === 'committee' && !COMMS) picked = 'attend';
       return head(i, '') + '<div class="ex-two" style="margin-top:28px"><div><div class="k-card" style="--k-c:#F69820"><form id="inForm" class="k-form" novalidate>' +
-        '<div class="k-f wide"><span class="k-label" style="margin:0 0 6px">I am counting myself in as</span><div class="ev-pick" id="inRoles">' + Object.keys(ROLE_NAMES).map(function (r) { return '<label><input type="radio" name="role" value="' + r + '"' + (r === picked ? ' checked' : '') + '> ' + ROLE_NAMES[r] + '</label>'; }).join('') + '</div></div>' +
+        '<div class="k-f wide"><span class="k-label" style="margin:0 0 6px">I am counting myself in as</span><div class="ev-pick" id="inRoles">' + Object.keys(ROLE_NAMES).concat(COMMS ? ['committee'] : []).map(function (r) { return '<label><input type="radio" name="role" value="' + r + '"' + (r === picked ? ' checked' : '') + '> ' + (ROLE_NAMES[r] || 'A committee member') + '</label>'; }).join('') + '</div></div>' +
+        (COMMS ? '<div class="k-f wide" id="in-cm-wrap"' + (picked === 'committee' ? '' : ' hidden') + '><label for="in-committee">Which committee</label><select id="in-committee">' + COMMS.map(function (c) { return '<option value="' + esc(c.slug) + '"' + (c.slug === pickedCommittee ? ' selected' : '') + '>' + esc(c.name) + '</option>'; }).join('') + '</select></div>' : '') +
         '<div class="k-f"><label for="in-name">Your name</label><input id="in-name" maxlength="120" autocomplete="name" required></div>' +
         '<div class="k-f"><label for="in-email">Your email</label><input id="in-email" type="email" maxlength="200" autocomplete="email" required></div>' +
         '<div class="k-f"><label for="in-org">Business, club or organization (if any)</label><input id="in-org" maxlength="120" autocomplete="organization"></div>' +
@@ -578,24 +612,24 @@
     var f = document.getElementById('inForm'); if (!f) return;
     var $ = function (id) { return document.getElementById(id); };
     try { var m = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null; if (m) { if (m.name && !$('in-name').value) $('in-name').value = m.name; if (m.email && !$('in-email').value) $('in-email').value = m.email; } } catch (e) {}
-    f.addEventListener('change', function (e) { if (e.target.name === 'role') picked = e.target.value; });
+    f.addEventListener('change', function (e) { if (e.target.name === 'role') { picked = e.target.value; var w = $('in-cm-wrap'); if (w) w.hidden = picked !== 'committee'; } });
     var city = $('in-city'); if (city) city.addEventListener('input', function () { pickedCity = city.value; });
     f.addEventListener('submit', function (e) {
       e.preventDefault();
       var r = f.querySelector('input[name=role]:checked'), msg = $('in-msg'), b = $('in-go');
-      var body = { action: 'expo_interest', role: r ? r.value : '', name: $('in-name').value.trim(), email: $('in-email').value.trim(), org: $('in-org').value.trim(), city: $('in-city').value.trim(), note: $('in-note').value.trim() };
+      var body = { action: 'expo_interest', role: r ? r.value : '', name: $('in-name').value.trim(), email: $('in-email').value.trim(), org: $('in-org').value.trim(), city: $('in-city').value.trim(), note: $('in-note').value.trim(), committee: $('in-committee') ? $('in-committee').value : '' };
       if (!body.role) { msg.textContent = 'Pick how you are counting yourself in.'; return; }
       if (!body.name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(body.email)) { msg.textContent = 'Add your name and your email.'; return; }
       b.disabled = true; msg.textContent = 'Sending...';
-      var tok = ''; try { tok = (window.VEAuth && VEAuth.getToken && VEAuth.getToken()) || ''; } catch (x) {}
-      fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-giving', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, tok ? { Authorization: 'Bearer ' + tok } : {}), body: JSON.stringify(body) })
+      var tk = tok();
+      fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-giving', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, tk ? { Authorization: 'Bearer ' + tk } : {}), body: JSON.stringify(body) })
         .then(function (x) { return x.json(); }).then(function (x) {
           if (x && x.ok) { msg.textContent = x.already ? 'You are already counted in. Thank you.' : 'You are counted in. Thank you. We will keep you posted on every step.'; f.querySelectorAll('input,textarea').forEach(function (el) { el.disabled = true; }); return; }
-          b.disabled = false; msg.textContent = 'That did not go through. Try again in a moment.';
+          b.disabled = false; msg.textContent = x && x.error === 'members_only' ? 'Committees are for members. Log in first, then try again.' : 'That did not go through. Try again in a moment.';
         }).catch(function () { b.disabled = false; msg.textContent = 'That did not go through. Try again in a moment.'; });
     });
   }
-  document.addEventListener('click', function (e) { var a = e.target.closest('[data-role]'); if (a) { picked = a.getAttribute('data-role'); if (a.hasAttribute('data-city')) pickedCity = a.getAttribute('data-city'); } });
+  document.addEventListener('click', function (e) { var a = e.target.closest('[data-role]'); if (a) { picked = a.getAttribute('data-role'); if (a.hasAttribute('data-city')) pickedCity = a.getAttribute('data-city'); if (a.hasAttribute('data-committee')) pickedCommittee = a.getAttribute('data-committee'); } });
 
   var audio = null, playing = null;
   function stop() { if (audio) audio.pause(); if (playing) playing.innerHTML = PLAY + '<span>Play</span>'; playing = null; }
@@ -618,7 +652,8 @@
     }
     if (p[0] === 'expo') wireWalk();
     if (p[0] === 'road') { loadRoad(); var sh = document.getElementById('rdShare'); if (sh) sh.onclick = function () { shareRace(sh); }; }
-    if (p[0] === 'in') wireIn();
+    if (p[0] === 'in') { if (!COMMS_ASKED) loadCommittees(render); else wireIn(); }
+    if (p[0] === 'why') loadCommittees(drawCommittees);
     if (window.scrollY > 120) window.scrollTo(0, 0);
   }
   addEventListener('hashchange', render);
