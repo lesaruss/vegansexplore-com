@@ -641,9 +641,12 @@
     document.title = (i ? p[1].replace(/&rsquo;/g, '\u2019') + ' | ' : '') + 'The World Vegan Expo Guide — Vegans Explore';
     var g = main.querySelector('.rf-guide'), b = g && g.querySelector('[data-play]');
     if (b) {
-      // Play shows only when the recording is there; nothing plays until pressed.
+      // Play shows only when a recording is there; nothing plays until pressed. Each view's narration (Sean records them, voice booth set
+      // ve-expo-narration) plays when it exists; until then, Liz's short line.
       b.style.display = 'none';
-      fetch(g.getAttribute('data-audio'), { method: 'HEAD' }).then(function (r) { if (r.ok) b.style.display = ''; }).catch(function () {});
+      var narr = VB + 'liz-expo-n-' + p[0] + (sub() ? '-' + sub() : '') + '-v1.mp3';
+      fetch(narr, { method: 'HEAD' }).then(function (r) { if (r.ok) { g.setAttribute('data-audio', narr); b.style.display = ''; return; } throw 0; })
+        .catch(function () { fetch(g.getAttribute('data-audio'), { method: 'HEAD' }).then(function (r) { if (r.ok) b.style.display = ''; }).catch(function () {}); });
       b.addEventListener('click', function () {
         if (playing === b) { stop(); return; }
         stop(); audio = new Audio(g.getAttribute('data-audio')); audio.addEventListener('ended', stop);
