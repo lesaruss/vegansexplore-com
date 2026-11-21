@@ -144,8 +144,16 @@ Deno.serve(async (req) => {
     let ok = false;
     for (const k of keys) if (sig && safeEq(await hmacHex(k, raw), sig)) ok = true;
     if (!ok) return new Response('bad signature', { status: 401 });
-    if (!real(S.INSTAGRAM_TOKEN_VEGANSEXPLORE) || !real(S.IG_USER_ID_VEGANSEXPLORE)) return json({ skipped: 'not connected' });
+    if (!real(S.INSTAGRAM_TOKEN_VEGANSEXPLORE)) return json({ skipped: 'not connected' });
     const body = JSON.parse(raw || '{}');
+    // A system-user token does not name its Instagram account, so the first webhook teaches it: the entry id is the account that got the
+    // comment. It is kept only if that account is @vegansexplore.
+    if (!real(S.IG_USER_ID_VEGANSEXPLORE)) {
+      const eid = String(body.entry?.[0]?.id || '');
+      const u = eid ? await (await fetch(`${GRAPH}/${eid}?fields=username`, { headers: { Authorization: `Bearer ${S.INSTAGRAM_TOKEN_VEGANSEXPLORE}` } })).json().catch(() => ({})) : {};
+      if (String(u.username || '').toLowerCase() !== ACCOUNT) return json({ skipped: 'unknown account', entry: eid });
+      await saveSecret('IG_USER_ID_VEGANSEXPLORE', eid); S.IG_USER_ID_VEGANSEXPLORE = eid;
+    }
     const results: string[] = [];
     for (const entry of body.entry || []) for (const ch of entry.changes || []) {
       if (ch.field === 'comments' && ch.value) results.push(await handleComment(ch.value, S.INSTAGRAM_TOKEN_VEGANSEXPLORE, S.IG_USER_ID_VEGANSEXPLORE, real(S.IG_PAGE_ID_VEGANSEXPLORE) ? S.IG_PAGE_ID_VEGANSEXPLORE : null));
