@@ -1,0 +1,122 @@
+[
+ {
+  "name": "cover",
+  "color": "dk",
+  "screen": {
+   "shot": "public/social/pinned/cap/home.jpg",
+   "kind": "phone",
+   "crop": [
+    30,
+    292,
+    1110
+   ],
+   "x": 48,
+   "y": 60,
+   "w": 660
+  },
+  "card": {
+   "src": "public/social/pinned/scenes/liz-share.jpg",
+   "x": 728,
+   "y": 690,
+   "s": 316
+  }
+ },
+ {
+  "name": "directory",
+  "color": "dk",
+  "screen": {
+   "shot": "public/social/pinned/cap/directory.jpg",
+   "kind": "phone",
+   "crop": [
+    30,
+    300,
+    1110
+   ],
+   "x": 144,
+   "y": 60,
+   "w": 760
+  }
+ },
+ {
+  "name": "listing",
+  "color": "dk",
+  "screen": {
+   "shot": "public/social/pinned/cap/listing.jpg",
+   "kind": "phone",
+   "crop": [
+    30,
+    190,
+    1110
+   ],
+   "x": 340,
+   "y": 60,
+   "w": 660
+  },
+  "card": {
+   "src": "public/social/pinned/scenes/maya-menu.jpg",
+   "x": 36,
+   "y": 690,
+   "s": 316
+  }
+ },
+ {
+  "name": "events",
+  "color": "or",
+  "screen": {
+   "shot": "public/social/pinned/cap/events.jpg",
+   "kind": "phone",
+   "crop": [
+    30,
+    548,
+    1110
+   ],
+   "x": 48,
+   "y": 60,
+   "w": 660
+  },
+  "card": {
+   "src": "public/social/pinned/scenes/river-festival.jpg",
+   "x": 728,
+   "y": 690,
+   "s": 316
+  }
+ },
+ {
+  "name": "guides",
+  "color": "pink",
+  "screen": {
+   "shot": "public/social/pinned/cap/guides.jpg",
+   "kind": "phone",
+   "crop": [
+    30,
+    190,
+    1110
+   ],
+   "x": 340,
+   "y": 60,
+   "w": 660
+  },
+  "card": {
+   "src": "public/social/pinned/scenes/theo-guidebook.jpg",
+   "x": 36,
+   "y": 690,
+   "s": 316
+  }
+ },
+ {
+  "name": "community",
+  "color": "md",
+  "screen": {
+   "shot": "public/social/pinned/cap/d-seattle.jpg",
+   "kind": "browser",
+   "crop": [
+    40,
+    212,
+    1320
+   ],
+   "x": 56,
+   "y": 64,
+   "w": 968
+  }
+ }
+]

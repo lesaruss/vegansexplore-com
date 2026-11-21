@@ -450,3 +450,14 @@ Pass the original as the first reference for every new picture of them (Higgsfie
 **2026-11-15, later:** that section and `theo-v3`/`maya-v4` sat on the unmerged branch `claude/sweet-ritchie-oiq411`, so the Nutrition Guide chat drew
 76 Theo pictures from `theo-v2` the same day and they were thrown out. The rule now lives in CLAUDE.md (the Guide scenes recipe) and canon
 `canon-ve-guide-roster` `looks_locked_v1`, and the squares and `VE_GUIDE_ART` came over on `claude/keen-knuth-234ob9`.
+
+## Social art: current look, unique scenes, a mixed cast (Sean, 2026-11-15)
+
+On the Founding Member carousels: "I don't think these graphics are using our new style... we would need to generate it. So moving forward, we
+have images that stay consistent with our brand... if it's not a guide, let's mix up the characters, because people want to see themselves in these
+characters. So if it's all Liz, black people might not be as attached to it as if we had a little bit of mixture where they feel represented."
+- Every scene in a post is drawn new for that post in the current look (the Guide scenes recipe, the Guide's current picture and wardrobe sheet),
+  never an older Welcome Guide or Holiday scene reused.
+- When a slide is not about one Guide's own page (the Holiday Guide is Theo's, so Theo stays there), the cast rotates across the roster
+  (Liz, Maya, Theo, Nori, Dani, River, Kai, Pascal) so no one face carries a post. One post, many faces.
+- First: the four Founding Member carousels (`public/social/founding/`, scenes in `public/social/founding/scenes/`).

@@ -1,0 +1,21 @@
+{
+"holiday": [
+ { "kind": "cover", "color": "pink", "head": "The Holiday<br>Guide is here", "art": { "type": "hero", "scene": "public/guides/holiday/theo-recipes.jpg", "tint": "pink", "pill": "Free for everyone", "list": ["ThanksLiving", "Hanukkah", "Christmas", "Give back"] } },
+ { "kind": "inside", "color": "pink", "head": "ThanksLiving,<br>November 26", "art": { "crop": "crop/h-ideas.jpg", "scene": "public/guides/holiday/theo-thanksliving.jpg", "sq": true, "tint": "pink", "plate": "dk", "path": ["Holiday Guide", "ThanksLiving", "Ideas for the Table"] } },
+ { "kind": "inside", "color": "pink", "head": "Holiday menus<br>to order", "art": { "crop": "crop/h-menus.jpg", "scene": "public/guides/holiday/theo-menus.jpg", "tint": "pink", "plate": "dk", "path": ["Holiday Guide", "ThanksLiving", "Holiday Menus"] } },
+ { "kind": "inside", "color": "pink", "head": "Recipes for<br>the table", "art": { "crop": "crop/h-recipes.jpg", "scene": "public/guides/holiday/theo-xm-recipes.jpg", "tint": "pink", "plate": "dk", "path": ["Holiday Guide", "ThanksLiving", "Recipes"] } },
+ { "kind": "inside", "color": "pink", "head": "What to buy<br>at the store", "art": { "crop": "crop/h-store.jpg", "scene": "public/guides/holiday/theo-xm-store.jpg", "tint": "pink", "plate": "dk", "path": ["Holiday Guide", "ThanksLiving", "At the Store"] } },
+ { "kind": "inside", "color": "or", "head": "Holiday events<br>near you", "art": { "crop": "crop/h-events.jpg", "scene": "public/guides/holiday/theo-xm-events.jpg", "tint": "or", "plate": "dk", "path": ["Holiday Guide", "ThanksLiving", "Events"] } },
+ { "kind": "inside", "color": "pink", "head": "Hanukkah,<br>made Vegan", "art": { "crop": "crop/h-hk.jpg", "scene": "public/guides/holiday/theo-hanukkah.jpg", "tint": "pink", "plate": "dk", "path": ["Holiday Guide", "Hanukkah"] } },
+ { "kind": "inside", "color": "pink", "head": "A Vegan<br>Gift Guide", "art": { "crop": "crop/h-gifts.jpg", "scene": "public/guides/holiday/theo-xm-gifts.jpg", "tint": "pink", "plate": "dk", "path": ["Holiday Guide", "Christmas", "Gift Guide"] } },
+ { "kind": "inside", "color": "md", "head": "Give back<br>this season", "art": { "crop": "crop/h-give.jpg", "scene": "public/guides/holiday/theo-giveback.jpg", "tint": "md", "plate": "dk", "path": ["Holiday Guide", "Give Back"] } },
+ { "kind": "end", "city": "communities/los-angeles/wide.jpg", "head": "Open the<br><span>Holiday Guide</span>", "line": "Free for everyone. Link in bio.", "button": "Open it free" }
+],
+"shows": [
+ { "kind": "cover", "color": "peach", "head": "Our shows,<br>every week", "art": { "crop": "crop/s-cover.jpg", "scene": "public/social/pinned/scenes/kai-studio.jpg", "sq": true, "tint": "peach", "plate": "dk", "path": ["Vegan Media", "Podcasts"] } },
+ { "kind": "inside", "color": "peach", "head": "Every Sunday,<br>the Podcast", "art": { "crop": "crop/s-vepod.jpg", "scene": "public/social/founding/scenes/b-liz-wednesday.jpg", "tint": "peach", "plate": "ink", "path": ["Media", "Vegans Explore Podcast"] } },
+ { "kind": "inside", "color": "peach", "head": "Wednesdays,<br>SoFlo Vegans", "art": { "crop": "crop/s-soflo.jpg", "scene": "public/social/pinned/scenes/river-festival.jpg", "sq": true, "tint": "peach", "plate": "ink", "path": ["Media", "SoFlo Vegans Podcast"] } },
+ { "kind": "inside", "color": "pink", "head": "Be on<br>the show", "art": { "crop": "crop/s-line.jpg", "scene": "public/guides/nominate/kai-ask.jpg", "sq": true, "tint": "pink", "plate": "dk", "plain": true, "tag": "Leave the show a message", "path": ["Record your voice,", "or write it out"] } },
+ { "kind": "end", "city": "communities/south-florida/wide.jpg", "head": "Listen free,<br><span>every week</span>", "line": "Wherever you listen. Join free by January 1 to be a Founding Member.", "button": "Join free" }
+]
+}

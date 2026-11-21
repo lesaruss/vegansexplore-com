@@ -1,0 +1,58 @@
+{
+"shots": [
+{
+"color": "dk",
+"label": "Vegans Explore, in 30 seconds",
+"head": "What is<br>this place?",
+"art": "public/social/pinned/art/w-home-45.jpg"
+},
+{
+"color": "dk",
+"label": "The Directory",
+"head": "Vegan places<br>near you",
+"art": "public/social/pinned/art/w-directory-45.jpg"
+},
+{
+"color": "dk",
+"label": "Every listing",
+"head": "Every place,<br>its own page",
+"art": "public/social/pinned/art/r-listing-45.jpg"
+},
+{
+"color": "or",
+"label": "Events",
+"head": "Vegan events<br>in your city",
+"art": "public/social/pinned/art/r-events-45.jpg"
+},
+{
+"color": "pink",
+"label": "Guides",
+"head": "Guides for<br>every step",
+"art": "public/social/pinned/art/r-guides-45.jpg"
+},
+{
+"color": "md",
+"label": "Communities",
+"head": "Your Vegan<br>community",
+"art": "public/social/pinned/art/w-seattle-45.jpg"
+},
+{
+"color": "peach",
+"label": "Media",
+"head": "Podcasts and<br>shows, free",
+"art": "public/social/pinned/art/r-media-45.jpg"
+},
+{
+"color": "pink",
+"label": "Nominate Someone",
+"head": "Nominate<br>someone",
+"art": "public/social/pinned/art/r-nominate-45.jpg"
+},
+{
+"color": "dk",
+"label": "Free \u00b7 by January 1 \u00b7 link in bio",
+"head": "Founding<br><span style=\"color:var(--br)\">Member</span>",
+"art": "public/social/pinned/art/r-passport-45.jpg"
+}
+]
+}

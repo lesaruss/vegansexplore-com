@@ -230,3 +230,135 @@ else is refused with the link named). The Social tab shows **Spotlight, Picked b
 own embed (Instagram and TikTok embed.js, YouTube's nocookie player), `.sc-spot` three across, two when narrower, one on phones; then Their
 top posts, then Featured on Vegans Explore. Proven: the columns at 1440, 1100 and 390 against mocked links. Not proven: the embeds drawing
 (the build session cannot reach Instagram) and the owner's Social step signed in.
+
+## The week of Nov 16 and the three pinned posts (Sean, 2026-11-15, playbook `ve-social-schedule`)
+
+Sean: "Let's lock in our social media schedule for this week, create the assets and get them scheduled so we don't have to think about it...
+3 posts that we can lock at the top. That one for the holiday guide, 2, what Vegans Explore is, and the January 1st deadline, which could be
+carousels. And then the 3rd could be our current programming... each slide is going to explain a different feature... each one could be video as well."
+
+- **Loaded**: 17 slots, batch `week-2026-11-16`, status proposed (Waiting for approval) in Depot > Social; migration
+  `20261115_social_week_2026_11_16.sql` (run through the one-time `ve-once-social-week`, now the 410 stub). Approving pushes each to Metricool.
+  Mon to Wed 9 AM ET the three pinned carousels; the six city launches (Seattle, Portland, San Francisco 3 PM ET; Austin 1 PM; Denver 2 PM;
+  Boston Sat 12:30 PM), each post with @nextlevelvg as collaborator (Next Level has a location in all six) and its story 15 minutes later;
+  Thu 6 PM the What is Vegans Explore reel (IG, FB, TikTok, YouTube); Sun 12:30 PM a "ThanksLiving is Thursday" story. The nine stale
+  SoFlo Vegans 112 proposals (Nov 12 to 16) were skipped. The Nov 9 Philadelphia carousel stays proposed (waits on Sean's carousel calls).
+- **Pinned**: Pinned 1 What is Vegans Explore (10 slides, one feature a slide, end card Become a Founding Member by January 1), Pinned 2
+  The Holiday Guide (10 slides from its live sections), Pinned 3 Our shows (5 slides: the Vegans Explore Podcast Sundays, SoFlo Vegans
+  Wednesdays, Be on the show). Pinning is by hand (Metricool cannot pin): each slot's By hand step says so, with the order (Holiday first).
+  One Instagram bio link all week: `/go/bio-nov16` to `/hello?b=explore` (it carries the Holiday Guide and Founding Member).
+- **The video**: `scripts/brand-templates/reel.js`, the "Stories and reels" template as a reel: the band switches each shot, only the 4:5
+  picture moves (slow zoom drawn at 2x), a shot every 3 s, the launch bed under it. 30 s, from Liz's Welcome Guide scenes.
+- **Renderers**: `scripts/brand-templates/carousel.js` (posts and carousels, reads the template page's CSS like `featured.js`, refuses a
+  headline past two rows), `reel.js`. Specs in `public/social/pinned/<name>/spec.json`; files in `vegan-media/media/social/week-2026-11-16/`
+  (41 checked byte for byte). Twelve new square Liz scenes (locked recipe, wardrobe reference; two redrawn for a cut head and a sign with words,
+  one for a laptop logo) in `public/social/pinned/`. Not drawn in the other four shapes yet (asset pack rule): open item.
+- **Fact checks that changed copy**: the Daily Pulse has published nothing since June (newest `ve_pulse_posts` 2026-06-21), so no slide says
+  "every day/morning"; the shows carousel dropped its Pulse slide.
+- Open: Facebook gets the same caption (with "Link in bio"); its tracked links (`/go/pin-*-fb`) are in each slot's By hand step.
+- **Round 2, the same day: the platform is the picture** (Sean: "We're leaning too much on Liz in these photos, and I would like to actually see
+  some real screenshots... the real point of this is to show off the platform, not our guides, but the guides will anchor it. And I'm not a big fan
+  of the groups shot."). Every slide and reel shot is now a live phone screenshot (390 x 844 at 3x, the install prompt dismissed through
+  `ve_pwa_dismissed`; `scripts/brand-templates/capture.js`, scroll offsets past Guide rails) whole in a phone frame, beside the section's Guide
+  (the roster's square mid shot) in the kit's white frame with an ink shadow, on a light tint of the section color (`screen-art.js`, drawn
+  natively at 1:1 and 4:5, nothing overlapping the screenshot). The Guides rotate: Liz (home, the Podcast, Holiday menus), Pascal (Directory,
+  recipes), Maya (a listing page, the store), River (events), Theo (Guides, the Holiday Guide), Nori (Communities, Hanukkah), Kai (Media, gifts,
+  Be on the show), Dani (Nominate, SoFlo Vegans, Give back). The group shot is gone. What is Vegans Explore is 9 slides (Directory, a listing page,
+  Events, Guides, Communities, Media, Nominate); Passport and the Pulse are out (no strong page to show; the Pulse is stale). The twelve Liz
+  scenes from round 1 were removed. Migration `20261115_social_week_platform_art.sql`; storage files replaced under the same names, 26 checked.
+- **Round 3, the same day: Guides in scenes, mixed layouts** (Sean: "let's show them in a scene... doing something other than just waving";
+  "for the holiday guide is one rare thing where it can be the same person because Theo is the guide of that"; "some that are the full image
+  cut off by the bottom part, the full phone image that's sliced off. Some of it doesn't even need to be the phone"; on the reel: "Maybe the first
+  one has it, but the rest could just be the full"). `screen-art.js` now has three layouts: `side` (phone whole beside a Guide scene card),
+  `slice` (a big phone sliced off by the band, Sean's explicit OK to cut the screenshot here; a scene card optional) and `browser` (a desktop
+  capture, 1280 x 800 at 2x, whole in a browser frame, no Guide). `cardShape: 45` keeps a 4:5 scene whole. New scenes in
+  `public/social/pinned/scenes/`: Liz showing a friend the site, Maya ordering from a menu, River with festival wristbands, Theo with a guidebook,
+  Kai recording, Kai taking a voice message at a market, Dani giving flowers. The Holiday Guide uses Theo's own non-waving Holiday scenes
+  (cooking, packing an order, a holiday market, the goats). The reel: the Guide only on the first shot, the rest full screenshots.
+- **Theo and Maya back to their original looks** (Sean: "I believe I asked for you to update Theo and Maya so their skin complexion's lighter, so
+  they match with everything else we've created for them... match their original look, and let's keep that look"). The request had not been saved
+  anywhere (incident in playbook `signal-context-efficiency`). New roster squares `public/brand-kit/avatars/theo-v3.jpg` (warm light brown, short gray
+  hair, gray beard, round glasses, as in every Holiday Guide scene) and `maya-v4.jpg` (warm light brown, free curls, no headband, as in
+  `public/guides/maya.jpg`); `VE_GUIDE_ART` in `footer.js` and `/mocks/brand-kit/roster` point at them. The 9:16 `tall` pictures are unchanged (no
+  9:16 spot uses them today). Every new Theo or Maya picture uses these looks. Higgsfield references: original Theo `ddc4b75d-6f3c-4f4d-93d2-27365c01d10b`,
+  original Maya `75c28848-a667-41d1-858a-1c1dc6032b6a`.
+- **Round 4, audio** (Sean: "yes, go with the audio plan"; the plan: a TikTok song on each carousel through the scheduler, Instagram carousels
+  silent unless a song is added by hand in the app, a short Liz voiceover on the reel over the bed, its line approved by Sean before recording).
+  TikTok songs from Metricool's top-100 trending tracks (read through the one-time `ve-once-social-week`, back to the 410 stub; migration
+  `20261115_social_week_tiktok_songs.sql`): What is Vegans Explore "Take Me (To The Moon)" (Ian Asher & D A N N Y, #6), the Holiday Guide
+  "Upbeat Yet Bittersweet Acoustic Guitar" (Meat Pie 25, #68), Our shows "What More Can I Say" (Teddy Swims, #40). Most of the list is sound
+  effects and stock cues; swap any in the slot's Music panel. The reel's Liz line waits on Sean (playbook `ve-social-schedule`).
+- **Round 5, the reel's voice** (Sean approved the line: "yes, record it"). Nine phrases in Liz's voice, one per 3 s shot, each matched word for
+  word by stt; the last frame holds 1 s so the Founding Member line finishes (28.4 s, -13.3 LUFS). Line, files and mix in
+  `public/social/pinned/what-is-reel/voiceover.md`; the reel in storage replaced (sha matched); the slot's By hand note says to leave the Instagram
+  song empty so it does not cover her.
+- **The Founding Member series, locked and scheduled (Sean, 2026-11-15)**. After the strategist panel, Sean reset the brief: "We need to have a
+  carousel with each carousel explaining why someone should become a founding member... it has to be about them... at the end, it's free
+  registration until January 1st", four designers, four proofs on our brand. Proofs in `public/social/founding/` (brief `BRIEF.md`): A Be one of
+  the first (scarcity, a clock rail), B Your week (story), C Straight to the point (direct response), D Your city (place). Sean locked all four
+  ("We can lock that in as a post for founding members"), asked for the current look and a mixed cast (rule in `docs/history/guides-standards.md`),
+  then approved them with one exception, River on the bus showing his phone's screen (redrawn three times: screen hidden, the shirt mark kept
+  clear, then wireless earbuds after Sean: "His cable is not in his phone. What is it plugged into?"). Thirteen new scenes in `public/social/founding/scenes/`. Copy corrections by Logan: B's calendar read Jan 1 11:59 PM ET (24 h late, now
+  12:00 AM ET); C's "Free until Jan 1" and "The door closes January 1" implied joining ends (joining stays free; Founding Member closes), now "Ends
+  Jan 1", "Founding closes January 1", "Claim it now. Yours for good."; #PlantBased dropped. **Scheduled** (migration
+  `20261115_founding_member_series.sql`, batch `founding-series`, files in `vegan-media/media/social/founding/<slug>/`, 39 checked): Mondays 9 AM ET,
+  B Nov 16 (TikTok song Take Me (To The Moon)), C Nov 23, A Nov 30, D Dec 7, each pinned as it posts in the Founding spot (the Holiday Guide stays
+  first). The What is Vegans Explore carousel and reel are paused (skipped). Before C posts: retake its slides 2, 3 and 5 (live counts, event dates).
+- **The week is scheduled (2026-11-15)**. Sean: "approved them all in Depot", but no approval reached the database (no `ve_social_edits` row,
+  every slot still proposed, the function log showed only 200s). Logan carried out his approval through `ve-social` `approve` the way HQ
+  BrandDesk calls it (admin token, `as_member` Sean, so the approval and history carry his name), from the one-time `ve-once-social-week`
+  (now the 410 stub): one slot first, then 18 in batches of 6. All 19 are `scheduled` with a Metricool post id and no push error: the Founding
+  series Mondays 9 AM ET Nov 16 to Dec 7, the Holiday Guide and Our shows carousels, the six city launches with stories, the ThanksLiving story.
+  Open: why the Depot approve did not land (a separate fix).
+- **The fuller week (Sean, 2026-11-15: "sprinkling in some other content... the SoFlo Vegans podcast from last week, the Vegans Explore podcast that went
+  out today... guides... the holiday guide... each individual cities... recycle" what he had not approved)**. Added as proposed (migration
+  `20261115_social_week_mix.sql`, batch `week-2026-11-16-mix`, files `vegan-media/media/social/week-2026-11-16/`, 19 checked): Episode 146 carousel and
+  story (the locked podcast pack: renderer `scripts/brand-templates/podcast-pack/` brought over from the unmerged `claude/exciting-wozniak-5nm6kr`, spec
+  `specs/vegans-explore-podcast-146.json`; end card names only Apple Podcasts and Amazon Music, the platforms on record); the Vegan Restaurant Guide and
+  the Vegan Events Guide, each a post and a story (both are for business owners and hosts, so the copy says so; new Liz and River art; the Airport and
+  Nutrition Guides were skipped because they cost $11); the Philadelphia "5 Vegan spots" carousel rebuilt from the Canva version on our carousel template
+  (`public/social/week-2026-11-16/philly/`, the real food photos kept, words moved off the pictures onto the band; the pilot for the other city
+  carousels). Recycled: the SoFlo Vegans 112 set re-dated Mon to Fri (before Episode 113 airs Wednesday it promotes last week's show), back to proposed.
+  The Nov 1 Guide reels were not recycled (old look, words on the pictures). Week sheet `public/social/week-2026-11-16/week-lookbook.jpg`.
+- **Grid spacing (Sean, 2026-11-15: "I wouldn't want to have two cityscapes back to back just for the grid's sake... Vegan Seattle could go after episode 146
+  and just keep that same thought process")**. The week's 9 cityscape posts and 8 others could not alternate, so a ThanksLiving is Thursday post (Sat 9 AM,
+  `public/social/week-2026-11-16/thanksliving/`) was added; 14 slots moved through `ve-social` `slot_save` (the scheduled city launches re-sent to Metricool
+  at their new times). Feed order: Mon Founding, SoFlo, Ep 146, Seattle; Tue Holiday, SoFlo Directory, Restaurant Guide, Portland; Wed Shows, San
+  Francisco, Events Guide; Thu Philadelphia, Holiday Guide is free, Austin; Fri bounty, Denver; Sat ThanksLiving, Boston. No two cityscapes touch on the
+  3-across grid, side by side or stacked. Rule for every week: alternate cityscapes with anything else on the grid. Views for Sean: `grid-preview.jpg`
+  (feed only, newest top left) and `stories-preview.jpg` (stories by day) in `public/social/week-2026-11-16/`.
+- **Design team locked and the week's once-over applied (2026-11-15)**. Sean (relayed from the Depot fix session): "lock in that design team that created
+  those graphics... anything that hasn't gotten a once over from that panel, let's do that" (canon `canon-ve-design-team`). Also from him: Theo's fridge
+  (redrawn twice; final: both doors shut, his hand on the handle; Founding 1 re-pushed, Metricool 428905127), the podcast end card's Link in bio under the
+  stripe (fixed in `podcast-pack/pack.css` for every end card), detail-free episode stories (rundown cards, `podcast-pack/episode-card.js`). The four
+  designers reviewed the rest (`public/social/review-2026-11-16/<slug>/review.md`): city launches 12 FIX (Join free and Founding Member ends January 1 on every
+  post, the story label, captions now say tap the link in bio and carry the Founding line), podcasts 14 FIX (rundown cards on every story, tighter
+  headlines, a place not a stop), Guides/Philly/holiday 6 FIX (headlines that name the offer, lettering retouched off River's wristbands, Philadelphia's end
+  line true about joining), the Holiday Guide and Our shows carousels rebuilt (big phone crops, fresh captures, no past dates, Shows end line true).
+  Creative director corrections on top: duplicate pictures removed across the week (stuffing on Thursday's Holiday post, cranberry on Saturday's, Theo with
+  takeout orders on Thursday's story, Theo at his counter on Sunday's; the store scene was rejected for readable labels). 46 files replaced in storage (all
+  checked), city and Philadelphia captions updated, every changed scheduled post re-pushed (cities, their stories, the Holiday and Shows carousels, Sunday's
+  story). State: 16 scheduled, 17 waiting, no push errors. Views: `public/social/week-2026-11-16/grid-preview.jpg`, `stories-preview.jpg`.
+
+## Later on 2026-11-15 (playbook `ve-social-schedule`, wrapped 2026-11-21)
+
+- **Week of Nov 16 approved and scheduled** (Sean: "approve. Just make sure the city posts aren't back to back."): 17 approved as Sean, Metricool
+  read back, 18 feed posts and 15 stories, no two cityscapes touching. Stories got headroom between the ink label and the headline (Sean: "the
+  black bar is a little too close to the title... similar to how it is on the Friday at 9:15"): `reel.js` and the city story renderer carry
+  `.s916 .top{padding-top:17cqw}`; the locked kit file `mocks/brand-kit/templates.html` was not changed (Sean's call). New view builders
+  `scripts/brand-templates/stories-preview.py` and `feed-preview.py`.
+- **Stories post themselves, no stickers** (Sean: "I don't want to post anything because then it'll never get done"): Metricool cannot add a
+  link sticker and Instagram allows none after a story is up, so stories say "Link in bio", never "tap the link"; sticker to-dos cleared; rule
+  in `canon-ve-design-team` and both design team briefs. A social media person, when hired, is for conversation, not posting.
+- **Instagram links**: the 11 profile links in BrandDesk > Brand kit > Social kit; Instagram carries the first five (Sean: "yes, first five on
+  Instagram"), each with a square picture (Liz, Nori, Theo, River, Kai; `vegan-media/media/social/bio-links/`). Link 3 opens ThanksLiving
+  until Nov 27, then the Holiday Guide again. Sean saved them and updated the profile ("It worked").
+- **BrandDesk Brand kit** (lesaruss-hq main 41c345e, 8b2a60e): the part tiles are the menu, one part shows at a time (Sean: "each one is just
+  like a different page"), `#kit-<part>` in the address. Social kit Save: every kit file now lives in `vegan-media/media/brand-kit/social/`,
+  because HQ's connect-src allows `*.supabase.co`, not vegansexplore.com (Save showed the picture instead of the save options). Rule: BrandDesk
+  kit files live in storage.
+- **Week of Nov 23 built, NOT scheduled**: 17 proposed (batch `week-2026-11-23`): four city carousels on the Philadelphia template (South
+  Florida, Los Angeles, New York, Atlanta; real places and photos) and Guide-led ThanksLiving pieces with new AI scenes. Sean's 2026-11-19
+  direction (faces first, fewer Guide posts, "the jury is still out on AI") came after it, so the Guide-led pieces should be reworked or
+  dropped before anyone approves the week; the city carousels fit the new direction. Handoff
+  `docs/handoff/2026-11-21-ve-social-schedule-wrap.md`.

@@ -1,0 +1,140 @@
+{
+ "show": {
+  "name": "Vegans Explore Podcast",
+  "short": [
+   "Vegans Explore",
+   "Podcast"
+  ],
+  "day": "Every Sunday",
+  "art": {
+   "16x9": "/public/brand-kit/podcast/skyline-16x9.jpg",
+   "21x9": "/public/brand-kit/podcast/skyline-21x9.jpg",
+   "9x16": "/public/brand-kit/podcast/skyline-9x16.jpg",
+   "4x5": "/public/social/pinned/scenes/kai-studio.jpg",
+   "1x1": "/public/social/pinned/scenes/kai-studio.jpg"
+  },
+  "platforms": [
+   "apple-podcasts",
+   "amazon-music"
+  ],
+  "links": {
+   "apple": "https://podcasts.apple.com/us/podcast/vegans-explore-podcast/id1818708745",
+   "amazon": "https://music.amazon.com/podcasts/810d06e3-3676-40c9-9d3c-2b0ae5c30ff1/vegans-explore-podcast"
+  }
+ },
+ "episode": {
+  "number": 146,
+  "title": "Chaka Khan's Caf\u00e9, Cleansed and the Nutrients Every Vegan Needs",
+  "aired": "2026-11-15",
+  "page": "/directory/vegans-explore-podcast"
+ },
+ "cleared": [],
+ "never": [],
+ "assets": [
+  {
+   "id": "car-01",
+   "kind": "post",
+   "art": {
+    "type": "img",
+    "src": "/public/social/pinned/scenes/kai-studio.jpg"
+   },
+   "head": [
+    "Episode 146",
+    "is out"
+   ],
+   "color": "green"
+  },
+  {
+   "id": "car-02",
+   "kind": "post",
+   "art": {
+    "type": "logo",
+    "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/library/525a5d2673667d2f89d9.webp"
+   },
+   "head": [
+    "Chaka Khan's",
+    "new caf\u00e9"
+   ],
+   "color": "green",
+   "n": "2 / 7"
+  },
+  {
+   "id": "car-03",
+   "kind": "post",
+   "art": {
+    "type": "logo",
+    "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/listings/next-level-veggie-grill/logo-2026-10-28-d0b8ba12.jpg"
+   },
+   "head": [
+    "Next Level",
+    "is here"
+   ],
+   "color": "green",
+   "n": "3 / 7"
+  },
+  {
+   "id": "car-04",
+   "kind": "post",
+   "art": {
+    "type": "img",
+    "src": "/public/guides/holiday/r-wellington.jpg"
+   },
+   "head": [
+    "ThanksLiving",
+    "menus"
+   ],
+   "color": "pink",
+   "n": "4 / 7"
+  },
+  {
+   "id": "car-05",
+   "kind": "post",
+   "art": {
+    "type": "photo",
+    "src": "https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/listings/michael-klaper/logo-2026-10-30-f8faffe7.jpg"
+   },
+   "head": [
+    "Nutrients every",
+    "Vegan needs"
+   ],
+   "color": "pink",
+   "n": "5 / 7"
+  },
+  {
+   "id": "car-06",
+   "kind": "post",
+   "art": {
+    "type": "tile",
+    "kind": "date",
+    "top": "Back it by",
+    "big": "Dec 11",
+    "small": "Kickstarter",
+    "bg": "#eafbf0"
+   },
+   "head": [
+    "Cleansed is",
+    "crowdfunding"
+   ],
+   "color": "bright",
+   "n": "6 / 7"
+  },
+  {
+   "id": "car-07",
+   "kind": "end"
+  },
+  {
+   "id": "st-new",
+   "kind": "story",
+   "label": "Vegans Explore Podcast \u00b7 out now",
+   "head": [
+    "New episode,",
+    "Episode 146"
+   ],
+   "art": {
+    "type": "img",
+    "src": "/public/brand-kit/podcast/cards/vep-146.jpg"
+   },
+   "color": "green"
+  }
+ ]
+}

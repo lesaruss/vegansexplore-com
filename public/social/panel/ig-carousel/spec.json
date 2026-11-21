@@ -1,0 +1,7 @@
+{ "slides": [
+ { "kind": "cover", "art": "art/cover.jpg", "color": "dk", "head": "What is Vegans<br><span style=\"color:var(--br)\">Explore</span>?" },
+ { "kind": "inside", "art": "art/directory.jpg", "color": "dk", "head": "Vegan places<br>near you" },
+ { "kind": "inside", "art": "art/listing.jpg", "color": "dk", "head": "Every place,<br>its own page" },
+ { "kind": "inside", "art": "art/events.jpg", "color": "or", "head": "Vegan events<br>in your city" },
+ { "kind": "inside", "art": "art/community.jpg", "color": "md", "head": "Your Vegan<br>community" }
+]}

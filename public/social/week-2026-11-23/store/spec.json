@@ -1,0 +1,90 @@
+{
+ "slides": [
+  {
+   "kind": "cover",
+   "color": "pink",
+   "head": "ThanksLiving,<br>off the shelf",
+   "art": {
+    "type": "hero",
+    "scene": "public/social/week-2026-11-23/art/theo-store-clean-45.jpg",
+    "tint": "pink",
+    "pill": "At the store",
+    "list": [
+     "Roasts",
+     "Gravy",
+     "Plant butter",
+     "Cream",
+     "Dessert"
+    ],
+    "cardw": 560
+   }
+  },
+  {
+   "kind": "inside",
+   "color": "pink",
+   "head": "A roast for<br>the middle",
+   "art": {
+    "crop": "public/social/week-2026-11-23/store/crop/main.jpg",
+    "tint": "pink",
+    "plate": "dk",
+    "path": [
+     "Holiday Guide",
+     "At the Store",
+     "The Main"
+    ]
+   }
+  },
+  {
+   "kind": "inside",
+   "color": "pink",
+   "head": "Gravy and<br>stuffing mix",
+   "art": {
+    "crop": "public/social/week-2026-11-23/store/crop/gravy.jpg",
+    "tint": "pink",
+    "plate": "dk",
+    "path": [
+     "Holiday Guide",
+     "At the Store",
+     "Gravy and Stuffing"
+    ]
+   }
+  },
+  {
+   "kind": "inside",
+   "color": "pink",
+   "head": "Plant butter<br>and cream",
+   "art": {
+    "crop": "public/social/week-2026-11-23/store/crop/butter.jpg",
+    "tint": "pink",
+    "plate": "dk",
+    "path": [
+     "Holiday Guide",
+     "At the Store",
+     "Butter and Cream"
+    ]
+   }
+  },
+  {
+   "kind": "inside",
+   "color": "pink",
+   "head": "Whip it for<br>the pie",
+   "art": {
+    "crop": "public/social/week-2026-11-23/store/crop/dessert.jpg",
+    "tint": "pink",
+    "plate": "dk",
+    "path": [
+     "Holiday Guide",
+     "At the Store",
+     "Dessert"
+    ]
+   }
+  },
+  {
+   "kind": "end",
+   "city": "communities/denver/wide.jpg",
+   "head": "Pick it up<br><span>at the store</span>",
+   "line": "The full list, by brand, in the free Holiday Guide. Link in bio.",
+   "button": "See the list"
+  }
+ ]
+}

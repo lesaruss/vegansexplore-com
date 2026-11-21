@@ -1,0 +1,22 @@
+{
+ "slides": [
+  {
+   "kind": "cover",
+   "color": "pink",
+   "head": "Hanukkah and<br>Christmas next",
+   "art": {
+    "type": "hero",
+    "scene": "public/guides/holiday/theo-hanukkah.jpg",
+    "tint": "pink",
+    "pill": "Free for everyone",
+    "list": [
+     "Hanukkah",
+     "Christmas",
+     "Gift Guide",
+     "Give back"
+    ],
+    "cardw": 560
+   }
+  }
+ ]
+}

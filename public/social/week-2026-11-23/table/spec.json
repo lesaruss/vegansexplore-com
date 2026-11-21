@@ -1,0 +1,135 @@
+{
+ "slides": [
+  {
+   "kind": "cover",
+   "color": "pink",
+   "head": "The ThanksLiving<br>table, at home",
+   "art": {
+    "type": "hero",
+    "scene": "public/guides/holiday/theo-recipes.jpg",
+    "tint": "pink",
+    "pill": "Free recipes",
+    "list": [
+     "Loaf",
+     "Gravy",
+     "Mash",
+     "Stuffing",
+     "Cranberry",
+     "Green beans",
+     "Pie"
+    ],
+    "cardw": 560
+   }
+  },
+  {
+   "kind": "inside",
+   "color": "pink",
+   "head": "A loaf for<br>the middle",
+   "art": {
+    "crop": "public/social/week-2026-11-23/table/crop/loaf.jpg",
+    "scene": "public/guides/holiday/r-loaf.jpg",
+    "sq": true,
+    "tint": "pink",
+    "plate": "dk",
+    "path": [
+     "Recipes",
+     "The Loaf"
+    ],
+    "tag": "Holiday Guide"
+   }
+  },
+  {
+   "kind": "inside",
+   "color": "pink",
+   "head": "Mushroom gravy<br>and the mash",
+   "art": {
+    "crop": "public/social/week-2026-11-23/table/crop/gravy.jpg",
+    "scene": "public/guides/holiday/r-mash.jpg",
+    "sq": true,
+    "tint": "pink",
+    "plate": "dk",
+    "path": [
+     "Recipes",
+     "Gravy",
+     "Mash"
+    ],
+    "tag": "Holiday Guide"
+   }
+  },
+  {
+   "kind": "inside",
+   "color": "pink",
+   "head": "Herb bread<br>stuffing",
+   "art": {
+    "crop": "public/social/week-2026-11-23/table/crop/stuffing.jpg",
+    "scene": "public/guides/holiday/r-stuffing.jpg",
+    "sq": true,
+    "tint": "pink",
+    "plate": "dk",
+    "path": [
+     "Recipes",
+     "Stuffing"
+    ],
+    "tag": "Holiday Guide"
+   }
+  },
+  {
+   "kind": "inside",
+   "color": "pink",
+   "head": "Orange<br>cranberry sauce",
+   "art": {
+    "crop": "public/social/week-2026-11-23/table/crop/cranberry.jpg",
+    "scene": "public/guides/holiday/r-cranberry.jpg",
+    "sq": true,
+    "tint": "pink",
+    "plate": "dk",
+    "path": [
+     "Recipes",
+     "Cranberry"
+    ],
+    "tag": "Holiday Guide"
+   }
+  },
+  {
+   "kind": "inside",
+   "color": "pink",
+   "head": "Green beans,<br>crispy onions",
+   "art": {
+    "crop": "public/social/week-2026-11-23/table/crop/beans.jpg",
+    "scene": "public/guides/holiday/r-beans.jpg",
+    "sq": true,
+    "tint": "pink",
+    "plate": "dk",
+    "path": [
+     "Recipes",
+     "Green Beans"
+    ],
+    "tag": "Holiday Guide"
+   }
+  },
+  {
+   "kind": "inside",
+   "color": "pink",
+   "head": "Pumpkin pie,<br>no eggs",
+   "art": {
+    "crop": "public/social/week-2026-11-23/table/crop/pie.jpg",
+    "scene": "public/guides/holiday/r-pie.jpg",
+    "sq": true,
+    "tint": "pink",
+    "plate": "dk",
+    "path": [
+     "Recipes",
+     "Pumpkin Pie"
+    ],
+    "tag": "Holiday Guide"
+   }
+  },
+  {
+   "kind": "end",
+   "city": "communities/boston/wide.jpg",
+   "head": "Cook the<br><span>whole table</span>",
+   "line": "Seven recipes, free in the Holiday Guide. Link in bio.",
+   "button": "Get the recipes"
+  }
+ ]
+}

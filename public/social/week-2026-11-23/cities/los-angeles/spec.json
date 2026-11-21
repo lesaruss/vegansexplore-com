@@ -1,0 +1,9 @@
+{"slides":[
+{"kind": "cover", "art": "communities/los-angeles/square.jpg", "color": "dk", "head": "5 Vegan spots in<br><span style=\"color:var(--br)\">Los Angeles</span>"},
+{"kind": "inside", "art": "public/social/week-2026-11-23/cities/los-angeles/crossroads-kitchen.jpg", "color": "dk", "head": "Crossroads<br>Kitchen"},
+{"kind": "inside", "art": "public/social/week-2026-11-23/cities/los-angeles/the-grain-cafe.jpg", "color": "dk", "head": "The Grain Cafe<br>Mid-City"},
+{"kind": "inside", "art": "public/social/week-2026-11-23/cities/los-angeles/doomies-nextmex.jpg", "color": "dk", "head": "Doomie's<br>NextMex"},
+{"kind": "inside", "art": "public/social/week-2026-11-23/cities/los-angeles/au-lac.jpg", "color": "dk", "head": "Âu Lạc<br>Downtown LA"},
+{"kind": "inside", "art": "public/social/week-2026-11-23/cities/los-angeles/montys-good-burger.jpg", "color": "dk", "head": "Monty's Good<br>Burger"},
+{"kind": "end", "city": "communities/los-angeles/wide.jpg", "head": "Find more in<br><span>Los Angeles</span>", "line": "Joining is free. Founding Member closes January 1. Link in bio.", "button": "Join free"}
+]}

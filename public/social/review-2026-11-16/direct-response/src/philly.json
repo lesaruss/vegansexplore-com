@@ -1,0 +1,47 @@
+{
+"slides": [
+{
+"kind": "cover",
+"art": "public/social/week-2026-11-16/philly/city-square.jpg",
+"color": "dk",
+"head": "5 Vegan spots in<br><span style=\"color:var(--br)\">Philadelphia</span>"
+},
+{
+"kind": "inside",
+"art": "public/social/week-2026-11-16/philly/vedge.jpg",
+"color": "dk",
+"head": "Vedge<br>Philadelphia"
+},
+{
+"kind": "inside",
+"art": "public/social/week-2026-11-16/philly/monster-vegan.jpg",
+"color": "dk",
+"head": "Monster Vegan<br>Philadelphia"
+},
+{
+"kind": "inside",
+"art": "public/social/week-2026-11-16/philly/hipcityveg.jpg",
+"color": "dk",
+"head": "HipCityVeg<br>Philadelphia"
+},
+{
+"kind": "inside",
+"art": "public/social/week-2026-11-16/philly/batter-crumbs.jpg",
+"color": "dk",
+"head": "Batter & Crumbs<br>Philadelphia"
+},
+{
+"kind": "inside",
+"art": "public/social/week-2026-11-16/philly/miss-rachels-pantry.jpg",
+"color": "dk",
+"head": "Miss Rachel's<br>Pantry"
+},
+{
+"kind": "end",
+"city": "communities/philadelphia/wide.jpg",
+"head": "Find more in<br><span>Philadelphia</span>",
+"line": "Joining is free. Founding Member closes January 1. Link in bio.",
+"button": "Join free"
+}
+]
+}
