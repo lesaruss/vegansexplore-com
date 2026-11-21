@@ -288,9 +288,9 @@ every new Guide scene uses this recipe.
 - **Third reference, the Guide's wardrobe** (Sean, 2026-11-11: "so you don't have to constantly be creating these"): pass the Guide's wardrobe sheet, the garment with the real mark at the right size and place (Higgsfield ids in `docs/merch/2026-11-09-guide-tees.md` part 5), and check the mark in the render against the real file.
 - **Each Guide keeps its original skin tone** (Sean, 2026-11-15: "their skin tone needs to match what it was before... or else it's not going to
   match up with the dairy guide... the holiday guide... the nutrition guide"; canon `canon-ve-guide-roster` `looks_locked_v1`). The first reference
-  is the Guide's original, never a retired roster square: Theo `ddc4b75d-6f3c-4f4d-93d2-27365c01d10b` (the Holiday Guide's Theo; square `theo-v3.jpg`),
-  Maya `75c28848-a667-41d1-858a-1c1dc6032b6a` (`public/guides/maya.jpg`; square `maya-v4.jpg`). Retired as too dark: `theo-v1`, `theo-v2`, `maya-v1` to
-  `v3`. Before a picture of a Guide ships, put it beside the original and compare the skin; a mismatch is a redraw. A look lock goes into canon the
+  is the Guide's original, never a retired roster square: Theo `ddc4b75d-6f3c-4f4d-93d2-27365c01d10b` (the Holiday Guide's Theo; square `theo-v4.jpg`),
+  Maya `75c28848-a667-41d1-858a-1c1dc6032b6a` (`public/guides/maya.jpg`; square `maya-v5.jpg`). Retired: `theo-v1`, `theo-v2`, `maya-v1` to `v3` (too
+  dark), `theo-v3` and `maya-v4` (too light, Sean 2026-11-15). Draw from the original alone: a current square as a second reference pulls the skin toward it. Before a picture of a Guide ships, put it beside the original and compare the skin; a mismatch is a redraw. A look lock goes into canon the
   day it is made (2026-11-15: the fix sat on an unmerged branch and the next chat drew 76 pictures from `theo-v2`).
 - **Never stretch or outpaint a character scene** to change its shape; draw it new in the target shape. Outpainting is only for city art.
 - Liz's pink Vegans Explore tee is a favorite: use it often.
