@@ -10,7 +10,7 @@
    "bg": "tint",
    "color": "br",
    "head": "Find Vegan food<br>near you, fast",
-   "kicker": "Stop guessing.<br><em>487 places</em> to eat.",
+   "kicker": "Stop guessing.<br><em>489 places</em> to eat.",
    "img": "p-dir.jpg",
    "w": 82
   },
@@ -32,7 +32,7 @@
    "bg": "pink",
    "color": "peach",
    "head": "Never miss a<br>Vegan event",
-   "kicker": "<em>174 Vegan events</em><br>coming up.",
+   "kicker": "<em>182 Vegan events</em><br>coming up.",
    "img": "p-events.jpg",
    "w": 86
   },

@@ -15,9 +15,12 @@ clip calls, the podcast spotlight reel locked) and main as of 3f4a8b9. Nothing n
 1. **Week of Nov 23**: 17 slots proposed, batch `week-2026-11-23` (views `public/social/week-2026-11-23/grid-preview.jpg`, `stories-preview.jpg`).
    They predate the faces-first direction. Recommendation: keep the four city carousels, skip or replace the Guide-led ThanksLiving pieces with
    business and people posts (the podcast spotlight reels when the episode videos arrive). Nothing there is approved.
-2. **Founding 2 retake** before Mon Nov 23 9 AM ET: slides 2, 3 and 5 (live counts, event dates),
-   `public/social/founding/direct-response/src/render.js` (now on main). A fresh-session scheduled task fires Sun Nov 22 10 AM ET.
-3. **Bio link 3** back to the Holiday Guide on Nov 27: a fresh-session scheduled task fires Nov 27 12:05 AM ET.
+2. **Founding 2 retake: DONE 2026-11-21** (not left for Sun Nov 22): slides 2, 3 and 5 recaptured live (489 places, 182 upcoming events,
+   a Nov 24 ThanksLiving potluck instead of a past event, Vedge instead of Next Level Veggie Grill per Sean's Nov 19 rule), uploaded as
+   `slide-0N-v2.jpg`, the slot re-sent (Metricool 436664735) and read back identical on Instagram, Facebook and TikTok.
+3. **Bio link 3** back to the Holiday Guide on Nov 27: a one-time database job, `ve-bio-link3-holiday-nov27` (pg_cron, 05:05 UTC = 12:05 AM ET),
+   switches it, logs a playbook row and removes itself; migration `20261121_ve_bio_link3_nov27_job.sql`. No chat needed. Sean then renames
+   link 3 on Instagram. The two reminders that fired into the 2026-11-15 chat were deleted.
 4. Parked: the Social kit platform buttons run off the right edge on phones (HQ `KitSheet.tsx` `.sk-tabs`); the holiday menus post for the
    week of Nov 30 (Christmas menus); a Feed / Stories filter in Depot > Social.
 
