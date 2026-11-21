@@ -9,7 +9,11 @@
 #   "music": a bed (vegan-media media/music/beds/), "music_vol" (default 0.14): under the voice, ducked by it, fading out with the end card,
 #   "vtrim": {"<part index>": <episode second>} ends that part's picture early and holds its last frame (a camera cut at the edge),
 #   "end_page": a 16:9 screenshot of their profile page, shown in the window with a slow push-in on the end frame (endbg.png),
-#   "join": seconds of the dissolve between parts (default 0, a straight cut; 0.25 smooths a jump).
+#   "join": seconds of the dissolve between parts (default 0, a straight cut; 0.25 smooths a jump),
+#   "crop": "w:h:x:y" of the source before it fills the window (a wide shot made closer; Sean, 2026-11-21: "make her just a little bit
+#   bigger, similar to what we did with Dr. Neil Barnard"), "duck": {"threshold": .., "ratio": ..} for the bed under the voice (default
+#   0.03 and 4; Veronica v7 uses 0.06 and 2.5 so the music stays heard under her), "base": the site the renderer draws from (default
+#   http://localhost:8766; https://vegansexplore.com works where a local server is not allowed).
 # The site must be served at http://localhost:8766 (python3 -m http.server 8766 from the repo root) for the renderer.
 import json, os, subprocess, sys
 
@@ -17,7 +21,7 @@ spec_path, out = sys.argv[1], sys.argv[2]
 S = json.load(open(spec_path))
 os.makedirs(out, exist_ok=True)
 here = os.path.dirname(os.path.abspath(__file__))
-subprocess.run(['node', os.path.join(here, 'podcast-spotlight-reel.js'), '--spec', spec_path, '--out', out, '--layers'], check=True)
+subprocess.run(['node', os.path.join(here, 'podcast-spotlight-reel.js'), '--spec', spec_path, '--out', out, '--layers'] + (['--base', S['base']] if S.get('base') else []), check=True)
 win = json.load(open(os.path.join(out, 'win.json')))
 caps = S.get('captions', [])
 END = float(S.get('end_s', 3.5))
@@ -30,7 +34,8 @@ for i, (a, b) in enumerate(S['parts']):
     inputs += ['-ss', str(a), '-t', str(d), '-i', S['source']]
     vt = (S.get('vtrim') or {}).get(str(i))
     hold = f',trim=0:{vt - a:.3f},tpad=stop_mode=clone:stop_duration={b - vt + 0.1:.3f},trim=0:{d:.3f}' if vt else ''
-    fc.append(f'[{i}:v]setpts=PTS-STARTPTS{hold},fps=30,scale={win["w"]}:{win["h"]}:flags=lanczos,setsar=1[v{i}]')
+    crop = f",crop={S['crop']}" if S.get('crop') else ''
+    fc.append(f'[{i}:v]setpts=PTS-STARTPTS{hold},fps=30{crop},scale={win["w"]}:{win["h"]}:flags=lanczos,setsar=1[v{i}]')
     fc.append(f'[{i}:a]asetpts=PTS-STARTPTS,aresample=48000,afade=t=in:d={FADE},afade=t=out:st={d - FADE}:d={FADE}[a{i}]')
     cat += f'[v{i}][a{i}]'
 n = len(S['parts'])
@@ -77,7 +82,8 @@ if S.get('music'):
     mv = float(S.get('music_vol', 0.14))
     fc.append(f'[ca]afade=t=out:st={total - 0.6:.3f}:d=0.6,apad=pad_dur={END},asplit=2[vo][sc]')
     fc.append(f'[{m}:a]aresample=48000,atrim=0:{total + END:.3f},volume={mv},afade=t=in:d=0.8,afade=t=out:st={total + END - 1.6:.3f}:d=1.6[bed]')
-    fc.append('[bed][sc]sidechaincompress=threshold=0.03:ratio=4:attack=20:release=400[bd]')
+    dk = S.get('duck') or {}
+    fc.append(f"[bed][sc]sidechaincompress=threshold={dk.get('threshold', 0.03)}:ratio={dk.get('ratio', 4)}:attack=20:release=400[bd]")
     fc.append('[vo][bd]amix=inputs=2:duration=first:normalize=0,loudnorm=I=-16:TP=-1.5[aout]')
 else:
     fc.append(f'[ca]afade=t=out:st={total - 0.6:.3f}:d=0.6,apad=pad_dur={END},loudnorm=I=-16:TP=-1.5[aout]')
