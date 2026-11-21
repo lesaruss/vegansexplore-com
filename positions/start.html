@@ -101,7 +101,8 @@
     <section data-step="in" hidden>
       <div class="k-blocks" id="payBlocks"></div>
       <div class="sec"><span class="k-label"><span id="agrH"></span> <span class="k-tag wait" id="agrDraft" hidden>Draft</span></span><div class="agr" id="agr"></div><p class="note" id="agrNote" hidden></p></div>
-      <div class="sig">
+      <p class="note" id="signedNote" hidden></p>
+      <div class="sig" id="sig">
         <label class="chk"><input type="checkbox" id="agree"><span id="agreeL"></span></label>
         <div class="field"><label class="k-label" for="sname" id="snameL"></label><input id="sname" autocomplete="name"></div>
       </div>
@@ -346,7 +347,21 @@
     if (KAI.getAttribute('src') !== src) KAI.src = src; else KAI.currentTime = 0;
     KAI.play().then(function () { $('kplay').innerHTML = '&#9632; ' + COPY.stop; }).catch(kaiStop);
   });
+  // Where a returning person picks up: the first step they have not finished (Ron, 2026-11-21: Stripe sent him back
+  // to step 1 and he had to start the form over). Stripe's return link says ?step=payouts, which is the Next steps view.
+  function resumeStep() {
+    var s = steps(), role = !!(D && D.person && D.person.steps && D.person.steps.role);
+    return s.agreed ? 'next' : s.check ? 'in' : role ? 'check' : 'big';
+  }
+  function paintDone() {
+    var s = steps();
+    // Finished steps stay finished: the quick check keeps its right answers, and a signed agreement is never signed twice.
+    if (s.check) Object.keys(RIGHT).forEach(function (k) { var el = document.querySelector('input[name=q_' + k + '][value="' + RIGHT[k] + '"]'); if (el) el.checked = true; });
+    $('sig').hidden = !!s.agreed; $('signedNote').hidden = !s.agreed;
+    $('signedNote').textContent = 'You signed this agreement. A copy is in your email.';
+  }
   function go(name, push) {
+    if (name === 'payouts') name = 'next';
     if (ORDER.indexOf(name) < 0) name = 'big';
     // Never skip ahead past an unfinished step: the quick check before I'm in, signing before Next steps (preview walks freely).
     var s = steps(), max = !s.check ? 2 : !s.agreed ? 3 : 4;
@@ -360,7 +375,8 @@
     kaiStop(); $('kplay').hidden = !COPY.audio[name];
     $('back').hidden = at === 0;
     $('next').hidden = name === 'next';
-    $('next').textContent = name === 'in' ? 'Sign and continue' : 'Next';
+    $('next').textContent = name === 'in' && !steps().agreed ? 'Sign and continue' : 'Next';
+    paintDone();
     msg('');
     if (push !== undefined) { var u = new URL(location.href); if (name === 'big') u.searchParams.delete('step'); else u.searchParams.set('step', name); history[push ? 'pushState' : 'replaceState']({ step: name }, '', u.pathname + u.search); }
     window.scrollTo(0, 0);
@@ -372,10 +388,12 @@
       var a = answers(), wrong = Object.keys(RIGHT).filter(function (k) { return a[k] !== RIGHT[k]; });
       [].forEach.call(document.querySelectorAll('.q'), function (q) { q.classList.toggle('bad', wrong.indexOf(q.getAttribute('data-q')) >= 0); });
       if (wrong.length) return msg(COPY.check.wrong);
+      if (steps().check) return go('in', true);
       if (PREVIEW) { LOCAL.check = true; return go('in', true); }
       return post({ action: 'role_read', answers: a }).then(function (d) { if (!d.ok) return msg(d.message || COPY.check.wrong); D = d; paintData(); go('in', true); });
     }
     if (name === 'in') {
+      if (steps().agreed) return go('next', true);
       var name_ = $('sname').value.trim();
       if (!$('agree').checked || name_.length < 2) return msg(COPY.signFirst);
       if (D.position.draft) { if (PREVIEW) { LOCAL.agreed = true; return go('next', true); } return msg(COPY.agrDraftNote); }
@@ -407,9 +425,16 @@
     D = d; PREVIEW = !!d.preview;
     $('pv').hidden = !PREVIEW; $('app').hidden = false; $('gate').hidden = true;
     paintData();
-    var q = new URLSearchParams(location.search);
-    go(q.get('step') || 'big');
-    if (!PREVIEW && q.get('stripe') === 'return') post({ action: 'payout_status' }).then(function (x) { if (x.ok) { D = x; paintData(); } });
+    var q = new URLSearchParams(location.search), want = q.get('step'), back = !PREVIEW && !want && resumeStep() !== 'big';
+    var stripeBack = q.get('stripe');
+    if (stripeBack) { q.delete('stripe'); history.replaceState(null, '', location.pathname + (q.toString() ? '?' + q : '')); }
+    go(want || (PREVIEW ? 'big' : resumeStep()), false);
+    if (back) msg('Welcome back. You are right where you left off.', true);
+    if (!PREVIEW && stripeBack === 'refresh') msg('The Stripe page timed out. Press Set up payouts to pick up where you left off.');
+    if (!PREVIEW && stripeBack === 'return') post({ action: 'payout_status' }).then(function (x) {
+      if (!x.ok) return; D = x; paintData();
+      msg(steps().payouts ? 'Payouts are set up. Thank you.' : 'Stripe still needs a few details. Press Set up payouts to finish.', !!steps().payouts);
+    });
   }
   function boot() {
     paintStatic(); go('big');
