@@ -189,7 +189,9 @@
   var VB = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/expo-spotlight/';
   var main = document.getElementById('main');
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-  function art() { try { if (window.VEGuideArt) return window.VEGuideArt('liz', 'square'); } catch (e) {} return '/public/brand-kit/avatars/liz-v2.jpg'; }
+  // The Guide's square, served small (2026-11-21: a 1080 px file in a 96 px box showed white until it loaded).
+  function small(u) { return /^(\/|https:\/\/fwbhwfxpncrsfhttimna\.supabase\.co\/)/.test(u) ? '/_vercel/image?url=' + encodeURIComponent(u) + '&w=256&q=75' : u; }
+  function art() { var u = '/public/brand-kit/avatars/liz-v2.jpg'; try { if (window.VEGuideArt) u = window.VEGuideArt('liz', 'square') || u; } catch (e) {} return small(u); }
 
   // The parts, in order: [key, tab label, title (html), one line, Liz's line (for Sean to record), her file, next-part line]
   var PARTS = [

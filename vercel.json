@@ -38,6 +38,7 @@
     "api/chapter.js": { "includeFiles": "{communities/hub.html,public/ve-hubs.js}" }
   },
   "headers": [
+    { "source": "/public/(expo|groups-guide|brand-kit/avatars)/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400, stale-while-revalidate=604800" }] },
     {
       "source": "/dashboard/sample",
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
