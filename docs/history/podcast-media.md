@@ -536,3 +536,5 @@ and the shared doctor-tip art), captions on their words, a lo-fi bed, title styl
 everyone featured is emailed before it goes live to confirm the collaboration and invite changes (program `podcast-spotlight`). First: An
 of Sen Saigon (Ep 147, email sends Fri Nov 20), Veronica of Love Life Cafe (SoFlo 114), Dr. Neal Barnard's B12 tip (sample). Handoff
 `docs/handoff/2026-11-20-podcast-spotlight-reels.md`.
+
+**Pre-Vegans Podcast relaunch, parked for Sean's folder** (2026-11-13, wrapped 2026-11-21, playbook `ve-podcast-studio`, checkpoint 1006): an evergreen master class, one starter topic an episode, and per Sean the same plan becomes the Pre-Vegans Guide tied to the 111 Day Theory. The feed has 17 episodes (pilot plus E1 to E16), not the 19 our table counted. Waiting on Sean's Pre-Vegans folder (iCloud to Google Drive link); per-episode numbers not yet pulled. Handoff `docs/handoff/2026-11-21-pre-vegans-relaunch-wrap.md`.
