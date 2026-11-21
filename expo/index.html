@@ -175,6 +175,7 @@
     .rd-go { display: inline-block; margin-top: 8px; font-size: 12.5px; font-weight: 900; color: var(--k-ink); }
     .rd-door { font-size: 12px; font-weight: 900; padding: 8px 12px; border-radius: 6px; border: 2px solid var(--k-ink); background: #fff; color: var(--k-ink); text-decoration: none; }
     .rd-door:hover { background: var(--k-tint); }
+    main .gb-by a, main .k-steps a, main .k-block a { color: var(--k-ink); font-weight: 800; }
   </style>
 </head>
 <body>
@@ -219,7 +220,7 @@
       "Picture an Olympic village for the Vegan community: the brands, the biggest voices, and food from every corner of the world, all in one place.", 'liz-expo-expo-v1.mp3', 'The villages, the week, a walk through it'],
     ['road', 'The city race', 'Which city <span class="k-hl o">hosts it?</span>',
       'The host city is not picked yet. The chapters whose members and businesses show up lead the race. Push yours up.',
-      "Start with your listing. Then join a campaign, sponsor a community event, and when the Expo opens its doors to partners, you're already in the room.", 'liz-expo-road-v2.mp3', 'Live, chapter by chapter'],
+      "The host city isn't picked yet. Count in for your city, share the race, and bring your people with you.", 'liz-expo-race-v1.mp3', 'Live, chapter by chapter'],
     ['why', 'Who&rsquo;s behind it', 'Who is <span class="k-hl p">behind it</span>',
       'Vegans Explore, the place to find everything Vegan in your city, run by LESARUSS Inc. and built by people who have run Vegan events for ten years.',
       "We're in our founding season. We're not asking you to believe in 2028 today, just to take one small step with us and see where it leads.", 'liz-expo-room-v1.mp3', 'Our record, and why we are building it'],
@@ -393,7 +394,7 @@
       return head(i, cta, d[4]) +
         '<div class="ex-two" style="margin-top:28px"><div><section class="rf-sec"><span class="k-label">' + d[4] + ': what you get today</span><div class="k-rows">' +
           d[6].map(function (r, j) { return arow(j + 1, ['or', 'br', 'pk', 'pe', 'dk', 'ti'][j % 6], r[0], r[1], r[2], r[2] === '#/in' ? ' data-role="' + d[1] + '"' : ''); }).join('') + '</div></section>' +
-          '<div class="k-block k-tint" style="margin-top:18px"><span class="k-label">Later</span>' + d[7] + '</div>' +
+          '<div class="k-block k-tint" style="margin:18px 0 10px"><span class="k-label">Later</span>' + d[7] + '</div>' +
           '<section class="rf-sec"><span class="k-label">Another door</span><div class="rd-who">' + DOORS.filter(function (x) { return x !== d; }).map(function (x) { return '<a class="rd-door" href="#/for/' + x[0] + '">' + x[2] + '</a>'; }).join('') + '</div></section></div>' +
         '<div class="k-pic" style="--k-c:#FF9EC4"><img src="/public/expo/' + ({ member: 'walk-6-evening.jpg', vendor: 'walk-2-village.jpg', brand: 'walk-4-booth.jpg', city: 'walk-1-above.jpg', club: 'walk-6-evening.jpg', creator: 'walk-3-stage.jpg' })[d[0]] + '" alt="How we picture the World Vegan Expo"></div></div>' + next(i);
     },
