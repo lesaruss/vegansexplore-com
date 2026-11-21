@@ -27,3 +27,21 @@ where not exists (select 1 from ve_outreach_campaign_emails where campaign_slug 
 insert into ve_outreach_campaign_members (campaign_slug, listing_id, person_key, person_name, step, send_status)
 select 'spotlight-an-sen-saigon-page', null, 'sensaigon.nyc@gmail.com', 'An', 0, 'waiting'
 where not exists (select 1 from ve_outreach_campaign_members where campaign_slug = 'spotlight-an-sen-saigon-page');
+
+-- Sean, 2026-11-21: "But aren't we asking to collaborate on Monday as well?" Friday's email already asked, so Monday's is a follow-up to it,
+-- not a second ask: it points to the page as the one-tap way to answer Friday's question and corrects the date.
+update ve_outreach_campaign_emails set subject = 'Following up: your Spotlight reel now posts Tuesday',
+body = $b$Hi An,
+
+Following up on my note from Friday. Episode 147 of the Vegans Explore Podcast came out on Sunday, and your reel now goes up Tuesday, November 24 at 12 PM Eastern (a day later than I first wrote).
+
+To make it easy, we made a page just for you. It shows the post exactly as it will look, with the caption, plus your whole segment from the episode and your Sen Saigon listing:
+{link}
+
+That's where you can answer Friday's question, whether you'd like the reel on your Instagram too, with one tap. No need to reply, and either answer is fine.
+
+Thank you again for sharing your story.
+
+Sean A. Russell
+Vegans Explore$b$
+where campaign_slug='spotlight-an-sen-saigon-page' and step=1 and locked_at is null;
