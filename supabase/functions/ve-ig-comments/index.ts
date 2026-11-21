@@ -48,8 +48,9 @@ function safeEq(a: string, b: string) {
 const rand = (n: number) => Array.from(crypto.getRandomValues(new Uint8Array(n))).map((b) => 'abcdefghjkmnpqrstuvwxyz23456789'[b % 31]).join('');
 
 // The @vegansexplore Instagram account (and its Facebook Page, if the token has one) from the token's own scopes.
-async function discover(token: string) {
-  const r = await fetch(`${GRAPH}/debug_token?input_token=${encodeURIComponent(token)}&access_token=${encodeURIComponent(token)}`);
+// debug_token needs an app access token (app id|app secret) for a system-user token (Meta: "#100 ... owner or developer of the app").
+async function discover(token: string, appToken: string | null) {
+  const r = await fetch(`${GRAPH}/debug_token?input_token=${encodeURIComponent(token)}&access_token=${encodeURIComponent(appToken || token)}`);
   const j = await r.json().catch(() => ({}));
   const gs: { scope: string; target_ids?: string[] }[] = j?.data?.granular_scopes || [];
   const ig = gs.find((g) => /^instagram_/.test(g.scope) && g.target_ids?.length)?.target_ids?.[0] || null;
@@ -102,8 +103,9 @@ async function handleComment(v: Record<string, any>, token: string, igId: string
 Deno.serve(async (req) => {
   const url = new URL(req.url);
   const action = url.searchParams.get('action') || '';
-  const S = await secrets(['IG_WEBHOOK_VERIFY_TOKEN', 'META_APP_SECRET', 'INSTAGRAM_TOKEN_VEGANSEXPLORE', 'IG_USER_ID_VEGANSEXPLORE',
+  const S = await secrets(['IG_WEBHOOK_VERIFY_TOKEN', 'META_APP_ID', 'META_APP_SECRET', 'INSTAGRAM_TOKEN_VEGANSEXPLORE', 'IG_USER_ID_VEGANSEXPLORE',
     'IG_PAGE_ID_VEGANSEXPLORE', 'LESARUSS_ADMIN_TOKEN']);
+  const appToken = real(S.META_APP_ID) && real(S.META_APP_SECRET) ? `${S.META_APP_ID}|${S.META_APP_SECRET}` : null;
 
   if (req.method === 'GET' && url.searchParams.get('hub.mode') === 'subscribe') {
     const ok = real(S.IG_WEBHOOK_VERIFY_TOKEN) && url.searchParams.get('hub.verify_token') === S.IG_WEBHOOK_VERIFY_TOKEN;
@@ -120,7 +122,7 @@ Deno.serve(async (req) => {
     }
     if (action === 'status' || action === 'discover') {
       if (!real(S.INSTAGRAM_TOKEN_VEGANSEXPLORE)) return json({ connected: false, app_secret_set: real(S.META_APP_SECRET), verify_token_set: real(S.IG_WEBHOOK_VERIFY_TOKEN) });
-      const d = await discover(S.INSTAGRAM_TOKEN_VEGANSEXPLORE);
+      const d = await discover(S.INSTAGRAM_TOKEN_VEGANSEXPLORE, appToken);
       const right = String(d.username || '').toLowerCase() === ACCOUNT;
       let subscribed: unknown = null;
       if (action === 'discover' && right && d.ig) {
