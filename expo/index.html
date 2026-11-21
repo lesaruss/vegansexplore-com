@@ -310,7 +310,7 @@
   var VILLAGES = [
     ['food', 'The Food Village', 'or', 'Outdoors and free to walk in: local vendors, food trucks and long tables to share it all.',
       [['Local vendors and food trucks', 'One stall after another, from the host city and every chapter.'], ['A live cooking stage', 'Chefs cook in front of you, and you taste it after.'], ['The Burger and Dessert Battles', 'Cooks go head to head, and the crowd decides.'], ['Long tables at dusk', 'String lights, shared plates, new friends.']],
-      [['Thu to Mon', '11 AM to 9 PM', 'Open to everyone, free to walk in'], ['Friday', '1 PM', 'Live cooking stage opens'], ['Saturday', '2 PM', 'The Burger Battle'], ['Sunday', '2 PM', 'The Dessert Battle']],
+      [['Thursday', '11 AM to 7 PM', 'Open to everyone, free to walk in (the soft opening)'], ['Fri to Sun', '10 AM to 8 PM', 'Open to everyone, free to walk in'], ['Friday', '1 PM', 'Live cooking stage opens'], ['Saturday', '2 PM', 'The Burger Battle'], ['Sunday', '2 PM', 'The Dessert Battle']],
       ['walk-2-village.jpg', 'v/11.jpg', 'v/12.jpg', 'v/13.jpg', 'v/14.jpg']],
     ['hall', 'The Exhibitor Hall', 'br', 'The brands under one roof, with samples, the New Products Wall and a lounge for buyers.',
       [['The brands, with samples', 'Taste it before you buy it.'], ['The New Products Wall', 'What is launching this year, all in one place.'], ['The buyers&rsquo; lounge', 'Where brands meet stores, distributors and press.'], ['Thursday is trade day', 'Buyers and press first, then everyone from Friday.']],
@@ -522,6 +522,18 @@
        ['Claim your profile', 'Your page in our People.', '/claim']],
       'The stages, topics and what speakers get (pay, travel, stage time). Coming, to creators counted in first.']
   ];
+  // Your part, week by week (Sean, 2026-11-21, LOCKED: "Each stakeholder group has different things that they can do, check off from
+  // week to week in order to help us get to this goal"). Back inside each door after it fell out of the rebuild (Sean's default: inside
+  // the doors, right after what you get today). Commitments, never money.
+  var ROLES = [
+    ['Members', [['Finish your profile and survey', 'And earn your first points.', '/survey'], ['Vouch for three places you love', 'One vouch each, in the Directory.', '/directory'], ['Check in when you eat out', 'Every check-in shows a place is loved.', '/directory'], ['Bring a friend with your link', 'Your link is on your account.', '/account'], ['RSVP to your city&rsquo;s community night', 'Free to come, easy to share.', '/events'], ['Share the weekly update', 'One post, every week.', '/pulse']]],
+    ['Businesses', [['Claim your page', 'Free, about a minute.', '/claim'], ['Add your menu and photos', 'From your dashboard.', '/claim'], ['Post an event or offer', 'Members see it in your city.', '/events'], ['Put our QR at the counter', 'So your guests find you here.', '/claim'], ['Take a Spotlight day', 'Your product, your code for everyone.', '/expo/spotlight'], ['Count your business in for the Expo', 'First pick, before the public. No fee, no deposit.', '#/in']]],
+    ['Clubs', [['Make Vegans Explore your home base', 'Your page, your events, your board, free.', '/groups/welcome'], ['Post your next event here', 'Free events stay free.', '/events'], ['Get your members registered', 'Free Founding Membership until January 1.', '/groups/welcome'], ['Share our nights with your link', 'Your club is included, and earns from it.', '/expo/events'], ['Tell us what to build next', 'You shape it with us.', '/contact']]],
+    ['Creators', [['Claim your profile', 'Your page in our People.', '/claim'], ['One collab post a month', 'With @vegansexplore.', ''], ['Cover a community night', 'Your city, your story.', '/expo/events']]],
+    ['Causes', [['Claim your page', 'Nonprofits, sanctuaries and rescues.', '/claim'], ['List your volunteer needs', 'Members see them in your city.', '/guides/nonprofit-guide'], ['Bring a table to a community night', 'Meet the people who care.', '/expo/events']]]
+  ];
+  function rolePart(j, role) { return ROLES[j][1].map(function (b, k) { return '<' + (b[2] ? 'a href="' + (b[2] === '#/in' ? '#/in/' + role : b[2]) + '"' : 'div') + ' class="k-row" style="text-decoration:none;color:var(--k-ink)"><span class="k-num ' + ['or','br','pk','pe','dk','ti'][k % 6] + '">' + (k + 1) + '</span><span class="k-row-t"><b>' + b[0] + '</b><small>' + b[1] + '</small></span>' + (b[2] ? '<span></span>' : '<span class="k-tag new">Coming</span>') + '</' + (b[2] ? 'a' : 'div') + '>'; }).join(''); }
+  var DOOR_PART = { member: 0, vendor: 1, brand: 1, club: 2, creator: 3 };
   var ROLE_NAMES = { attend: 'I will be there', vendor: 'Food vendor', exhibitor: 'Brand (exhibitor)', sponsor: 'Sponsor', club: 'Club or group', creator: 'Creator or speaker', cause: 'Cause', volunteer: 'Volunteer', city: 'Host city' };
   var picked = 'attend', pickedCity = '';
   var VIEWS = {
@@ -543,6 +555,7 @@
       return head(i, '', d[4], d[4].replace(/(\S+)$/, '<span class="k-hl p">$1</span>'), d[5]) +
         '<div class="ex-two" style="margin-top:28px"><div><section class="rf-sec"><span class="k-label">' + d[4] + ': what you get today</span><div class="k-rows">' +
           d[6].map(function (r, j) { return arow(j + 1, ['or', 'br', 'pk', 'pe', 'dk', 'ti'][j % 6], r[0], r[1], r[2] === '#/in' ? '#/in/' + d[1] : r[2], r[2] === '#/in' ? ' data-role="' + d[1] + '"' : ''); }).join('') + '</div></section>' +
+          (DOOR_PART[d[0]] != null ? '<section class="rf-sec"><span class="k-label">Your part, week by week</span><div class="k-rows">' + rolePart(DOOR_PART[d[0]], d[1]) + '</div></section>' : '') +
           '<div class="k-block k-tint" style="margin:18px 0 10px"><span class="k-label">Later</span>' + d[7] + ' <b>Every term in writing before you commit to anything or pay anything.</b></div>' +
           '<div class="gb-cta"><a class="k-btn k-cta" href="#/in/' + d[1] + '" data-role="' + d[1] + '">Count me in</a><p class="rf-price">' + (FIRSTS[d[0]] || FIRST) + '</p></div>' +
           '<section class="rf-sec"><span class="k-label">Another door</span><div class="rd-who">' + DOORS.filter(function (x) { return x !== d; }).map(function (x) { return '<a class="rd-door" href="#/for/' + x[0] + '">' + x[2] + '</a>'; }).join('') + '</div></section></div>' +

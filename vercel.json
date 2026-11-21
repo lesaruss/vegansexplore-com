@@ -201,6 +201,10 @@
     {"source": "/:slug([a-z0-9]+-[a-z0-9]+-[a-z0-9]+-[a-z0-9-]+)", "destination": "/api/gone?p=/:slug"}
   ],
   "redirects": [
+    { "source": "/expo/nights", "destination": "/expo/events", "permanent": false },
+    { "source": "/expo/nights/(.*)", "destination": "/expo/events", "permanent": false },
+    { "source": "/expo/clubs", "destination": "/groups/welcome", "permanent": false },
+    { "source": "/expo/clubs/(.*)", "destination": "/groups/welcome", "permanent": false },
     {"source": "/campaigns/world-vegan-expo", "destination": "/expo", "permanent": false},
     {"source": "/campaigns/world-vegan-expo.html", "destination": "/expo", "permanent": false},
     {"source": "/partners", "destination": "/business-guide", "permanent": false},
