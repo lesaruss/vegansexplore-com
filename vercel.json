@@ -146,6 +146,10 @@
       "destination": "/api/listing?slug=:slug"
     },
     {
+      "source": "/featured/:code",
+      "destination": "/featured/index.html"
+    },
+    {
       "source": "/products/:slug",
       "destination": "/directory/product"
     },
