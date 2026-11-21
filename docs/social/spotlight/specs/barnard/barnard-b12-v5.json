@@ -1,0 +1,114 @@
+{
+ "label": "Doctor's tip · B12",
+ "head": [
+  "Going Vegan? Don't",
+  "forget your B12."
+ ],
+ "band": "#FF9EC4",
+ "band_ink": true,
+ "name": "Neal Barnard, MD",
+ "biz": "Physicians Committee",
+ "sub": "From our podcast conversation, trimmed",
+ "logo": "$SCRATCH/doc/barnard.jpg",
+ "city_art": "$SCRATCH/doc/doctor-tip-16x9.jpg",
+ "caption": "",
+ "url": "vegansexplore.com",
+ "end_label": "The Nutrition Guide",
+ "end_head": [
+  "Learn more in the",
+  "Nutrition Guide"
+ ],
+ "end_cta": "and we'll send you the free Guide",
+ "end_s": 4.5,
+ "end_line": "",
+ "end_head_unused": true,
+ "source": "$SCRATCH/vids/barnard-solo.mp4",
+ "parts": [
+  [
+   580.32,
+   591.6
+  ],
+  [
+   546.1,
+   551.95
+  ]
+ ],
+ "join": 0.25,
+ "music": "$SCRATCH/vids/lofi-90.mp3",
+ "music_vol": 0.12,
+ "out_name": "barnard-b12-v5.mp4",
+ "captions": [
+  {
+   "t0": 0.0,
+   "text": "And there's one supplement",
+   "t1": 0.92
+  },
+  {
+   "t0": 0.92,
+   "text": "that you really ought to take:",
+   "t1": 2.26
+  },
+  {
+   "t0": 2.26,
+   "text": "That's *vitamin B12*.",
+   "t1": 3.96
+  },
+  {
+   "t0": 3.96,
+   "text": "You need it for healthy *nerves*,",
+   "t1": 5.32
+  },
+  {
+   "t0": 5.32,
+   "text": "healthy *blood*,",
+   "t1": 6.4
+  },
+  {
+   "t0": 6.4,
+   "text": "and it's in every multiple vitamin",
+   "t1": 8.38
+  },
+  {
+   "t0": 8.38,
+   "text": "you ever took.",
+   "t1": 9.64
+  },
+  {
+   "t0": 9.64,
+   "text": "But don't *neglect it*.",
+   "t1": 11.07
+  },
+  {
+   "t0": 11.07,
+   "text": "So getting the meat and the cheese",
+   "t1": 12.71
+  },
+  {
+   "t0": 12.71,
+   "text": "and the junk out of your diet",
+   "t1": 14.17
+  },
+  {
+   "t0": 14.17,
+   "text": "is a good thing.",
+   "t1": 15.91
+  },
+  {
+   "t0": 15.91,
+   "text": "But you're *not done*.",
+   "t1": 16.88
+  }
+ ],
+ "end_guide": {
+  "img": "public/guides/nutrition/theo-overview.jpg",
+  "tag": "Walked through by Theo",
+  "line": "How much B12, how often and which kind, plus every other nutrient."
+ },
+ "layout": "big",
+ "push_in": [
+  1.12,
+  1.22
+ ],
+ "cta_button": "Comment B12",
+ "cta_small": "Or tap the link in our bio"
+}

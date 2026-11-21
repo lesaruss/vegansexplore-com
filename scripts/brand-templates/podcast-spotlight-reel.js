@@ -44,8 +44,10 @@ const cityArt = (cap) => `<div class="sr-city"><img src="${city}" alt="">${cap ?
 
 const GUIDES = process.argv.includes('--guides') ? `<div class="sr-g4"></div><div class="sr-gt">Instagram bar</div><div class="sr-gb">Instagram caption and reply bar</div><div class="sr-gr">Buttons</div><div class="sr-gs"></div>` : '';
 // end_cta rows are split on '|' (Sean, 2026-11-20: "Vegans Explore on its own row"), e.g. "Find Dr. Michael Klaper on|Vegans Explore".
-const ctaPlate = () => `<div class="sr-city"><img src="${city}" alt=""><div class="sr-cap sr-cta"><span>${String(S.end_cta || '').split('|').map(esc).join('<br>')}</span><span class="sr-btn">${esc(S.url)}</span></div></div>`;
-const frame = (id, inner) => `<div class="sr-rf" id="${id}">${inner}${GUIDES}</div>`;
+const ctaPlate = () => `<div class="sr-city"><img src="${city}" alt=""><div class="sr-cap sr-cta">${S.cta_button ? `<span class="sr-btn sr-big">${esc(S.cta_button)}</span>` : ''}<span>${String(S.end_cta || '').split('|').map(esc).join('<br>')}</span>${S.cta_button ? (S.cta_small ? `<span class="sr-small">${esc(S.cta_small)}</span>` : '') : `<span class="sr-btn">${esc(S.url)}</span>`}</div></div>`;
+// layout 'big' (mock 2026-11-21 after the panel: "his face fills a quarter of the screen"): the clip edge to edge, the name on one line under it.
+const LAY = S.layout === 'big' ? ' lay-big' : '';
+const frame = (id, inner) => `<div class="sr-rf${LAY}" id="${id}">${inner}${GUIDES}</div>`;
 const open = frame('open', band(S.head) + window_ + lower + cityArt(''));
 const clip = frame('clip', band(S.head) + window_ + lower + cityArt(S.caption));
 const endbg = frame('endbg', band(S.end_head, S.end_label) + `<div class="sr-win"></div>` + lower + ctaPlate());
@@ -95,6 +97,15 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><base href="${BAS
   .sr-endc p{margin:0;font:900 56px/1.1 Montserrat;color:var(--ink);letter-spacing:-.02em}
   .sr-endc .sr-btn{background:var(--or);color:var(--ink);font:900 40px/1 Montserrat;padding:26px 34px;border-radius:10px;letter-spacing:.02em}
   .sr-endc .sr-lgo{width:420px;margin-top:10px}
+  .sr-key{font-style:normal;color:#C2185B}
+  .lay-big .sr-win{left:0;top:640px;width:1080px;height:608px;border:0;border-radius:0;box-shadow:none}
+  .lay-big .sr-lt{top:1256px;gap:16px}
+  .lay-big .sr-lt img{width:56px;height:56px;border-radius:12px;border-width:2px}
+  .lay-big .sr-lt b{font-size:30px}.lay-big .sr-lt span{font-size:20px;margin-top:2px}
+  .lay-big .sr-city{height:590px}.lay-big .sr-city img{height:590px;object-fit:cover}
+  .lay-big .sr-cap{font-size:46px;padding:20px 26px}
+  .sr-cta .sr-btn.sr-big{font-size:52px;padding:24px 40px}
+  .sr-cta .sr-small{font:800 26px/1.2 Montserrat;color:var(--mute,#5c5c5c)}
   .sr-eg{position:absolute;left:90px;right:120px;top:668px;height:610px;display:flex;gap:40px;align-items:center}
   .sr-eg img{height:600px;width:480px;object-fit:cover;flex:none;border:6px solid var(--ink);border-radius:16px;box-shadow:14px 14px 0 var(--ink);background:#fff}
   .sr-egt{display:flex;flex-direction:column;gap:22px}
@@ -137,7 +148,7 @@ const html = `<!doctype html><html><head><meta charset="utf-8"><base href="${BAS
       await p.evaluate(([t]) => { document.body.style.background = 'transparent'; document.querySelectorAll('.sr-rf').forEach((f) => f.style.display = 'none');
         let f = document.getElementById('capf'); if (!f) { f = document.createElement('div'); f.id = 'capf'; f.className = 'sr-rf'; f.style.background = 'transparent';
           f.innerHTML = '<div class="sr-city"><div class="sr-cap"></div></div>'; document.body.appendChild(f); }
-        f.style.display = 'block'; f.querySelector('.sr-cap').textContent = t; }, [caps[i].text]);
+        f.style.display = 'block'; const e = (x) => x.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])); f.querySelector('.sr-cap').innerHTML = e(t).replace(/\*([^*]+)\*/g, '<em class="sr-key">$1</em>'); }, [caps[i].text]);
       await p.locator('#capf').screenshot({ path: path.join(OUT, 'cap-' + i + '.png'), omitBackground: true });
     }
   } else for (const id of ['open', 'clip', 'end']) {

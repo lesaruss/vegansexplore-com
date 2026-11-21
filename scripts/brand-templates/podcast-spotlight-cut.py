@@ -30,7 +30,14 @@ for i, (a, b) in enumerate(S['parts']):
     inputs += ['-ss', str(a), '-t', str(d), '-i', S['source']]
     vt = (S.get('vtrim') or {}).get(str(i))
     hold = f',trim=0:{vt - a:.3f},tpad=stop_mode=clone:stop_duration={b - vt + 0.1:.3f},trim=0:{d:.3f}' if vt else ''
-    fc.append(f'[{i}:v]setpts=PTS-STARTPTS{hold},fps=30,scale={win["w"]}:{win["h"]}:flags=lanczos,setsar=1[v{i}]')
+    # push_in [z0, z1]: a slow zoom on each part, centred a little above the middle so the face stays in frame (layout 'big' mock, 2026-11-21).
+    pz = S.get('push_in')
+    if pz:
+        nf = int(d * 30)
+        zp = (f",scale=1920:-2,zoompan=z='{pz[0]}+({pz[1]}-{pz[0]})*on/{max(nf,1)}':x='iw/2-(iw/zoom/2)':y='(ih-ih/zoom)*0.30':d=1:s={win['w']}x{win['h']}:fps=30")
+        fc.append(f'[{i}:v]setpts=PTS-STARTPTS{hold},fps=30{zp},setsar=1[v{i}]')
+    else:
+        fc.append(f'[{i}:v]setpts=PTS-STARTPTS{hold},fps=30,scale={win["w"]}:{win["h"]}:flags=lanczos,setsar=1[v{i}]')
     fc.append(f'[{i}:a]asetpts=PTS-STARTPTS,aresample=48000,afade=t=in:d={FADE},afade=t=out:st={d - FADE}:d={FADE}[a{i}]')
     cat += f'[v{i}][a{i}]'
 n = len(S['parts'])
