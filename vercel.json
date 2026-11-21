@@ -147,7 +147,7 @@
     },
     {
       "source": "/featured/:code",
-      "destination": "/featured/index.html"
+      "destination": "/featured"
     },
     {
       "source": "/products/:slug",
