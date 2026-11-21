@@ -49,6 +49,24 @@
     .fx-ask { margin-top: 16px; }
     .fx-ask h2 { margin: 6px 0 10px; font-size: 22px; }
     .fx-trust { font-size: 13px; font-weight: 700; margin: 12px 0 0; line-height: 1.45; }
+    /* The post as it will look in the feed (Sean, 2026-11-21: "What if we actually simulated like an Instagram post so they can see exactly
+       what it would look like?"): our name, theirs as they type it (a collab post shows both), the reel, the actions, the caption in full.
+       Plain shapes only, no Instagram logo or marks. */
+    .ig-post { background: #fff; border: 2px solid var(--k-ink); border-radius: var(--k-rc); box-shadow: 4px 4px 0 var(--k-ink); overflow: hidden; max-width: 400px; width: 100%; justify-self: end; color: #111; }
+    .ig-h { display: flex; align-items: center; gap: 10px; padding: 10px 12px; }
+    .ig-avs { position: relative; width: 44px; height: 34px; flex: none; }
+    .ig-av { position: absolute; width: 32px; height: 32px; border-radius: 50%; border: 2px solid #fff; background: #fff center / 70% no-repeat; box-shadow: 0 0 0 1px #ddd; }
+    .ig-av.us { left: 0; top: 0; background-image: url(/public/logo-ve-mark.svg); }
+    .ig-av.them { left: 14px; top: 4px; background: var(--k-pinkt); display: grid; place-items: center; font-size: 13px; font-weight: 900; color: var(--k-pinkd); }
+    .ig-avs.solo { width: 34px; } .ig-avs.solo .ig-av.them { display: none; }
+    .ig-n { font-size: 13.5px; line-height: 1.3; min-width: 0; } .ig-n b { font-weight: 800; } .ig-n small { display: block; font-size: 11.5px; color: #666; font-weight: 600; }
+    .ig-post .fx-reel { position: relative; } .ig-post .fx-reel video { display: block; width: 100%; aspect-ratio: 9 / 16; object-fit: contain; background: #000; }
+    .ig-act { display: flex; gap: 14px; padding: 10px 12px 4px; } .ig-act svg { width: 24px; height: 24px; fill: none; stroke: #111; stroke-width: 1.8; } .ig-act .sv { margin-left: auto; }
+    .ig-cap { font-size: 13.5px; line-height: 1.45; padding: 4px 12px 0; margin: 0; white-space: pre-wrap; } .ig-cap b { font-weight: 800; }
+    .ig-tags { font-size: 13.5px; color: #00376b; padding: 6px 12px 0; margin: 0; }
+    .ig-when { font-size: 11px; color: #777; text-transform: uppercase; letter-spacing: .04em; padding: 8px 12px 12px; margin: 0; }
+    .ig-note { font-size: 12px; font-weight: 700; color: var(--k-mute); margin: 8px 0 0; max-width: 400px; justify-self: end; }
+    @media (max-width: 900px) { .gb-cover .ig-wrap { order: -1; } .ig-post, .ig-note { justify-self: start; } }
     .fx-prev { position: absolute; top: 10px; right: 10px; background: #1a1a1a; color: #fff; font-weight: 900; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; padding: 5px 9px; border-radius: 6px; }
     body { margin: 0; background: #fff; color: var(--k-ink); font-family: 'Montserrat', system-ui, sans-serif; }
 
@@ -271,22 +289,34 @@
   function good(blocks) { return '<section class="rf-sec"><span class="k-label">Good to know</span><div class="gb-good">' + blocks.map(function (b) { return '<div class="k-block ' + b[0] + '"><span class="k-label">' + b[1] + '</span>' + b[2] + '</div>'; }).join('') + '</div></section>'; }
   function next(i) { var n = PARTS[i + 1]; return n ? '<div class="gb-next"><a class="k-btn" href="' + link(n[0]) + '">Next: ' + esc(n[1]) + ' &rsaquo;</a><span>' + esc(n[6]) + '</span></div>' : ''; }
   // The real, locked reel (an-sen-saigon reel-v4, 2026-11-19). Watch only: no download, nothing for them to post.
+  function igIcon(d) { return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="' + d + '"/></svg>'; }
+  function post() {
+    var them = B.ig ? B.ig : '';
+    return '<div class="ig-wrap"><div class="ig-post" aria-label="How the post will look">' +
+      '<div class="ig-h"><span class="ig-avs' + (them ? '' : ' solo') + '" id="igAvs"><span class="ig-av us"></span><span class="ig-av them">' + esc((B.name || '?').charAt(0)) + '</span></span>' +
+      '<span class="ig-n"><b>vegansexplore</b><span id="igWith">' + (them ? ' and <b>' + esc(them) + '</b>' : '') + '</span><small>Original audio</small></span></div>' +
+      '<div class="fx-reel"><video src="' + MEDIA + esc(B.reel) + '#t=0.5" controls playsinline preload="metadata" controlslist="nodownload noplaybackrate" disablepictureinpicture oncontextmenu="return false" aria-label="' + esc(B.name) + '\'s reel"></video><button type="button" class="fx-play" aria-label="Play the reel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg></button>' + (LIVE ? '' : '<span class="fx-prev">Preview</span>') + '</div>' +
+      '<div class="ig-act">' + igIcon('M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 5.6-7 10-7 10z') + igIcon('M20 12a8 8 0 1 1-3.2-6.4L20 4l-1 4.2A8 8 0 0 1 20 12z') + igIcon('M21 4L3 11l7 2 2 7 9-16z') + '<span class="sv">' + igIcon('M6 3h12v18l-6-4-6 4z') + '</span></div>' +
+      (B.caption ? '<p class="ig-cap"><b>vegansexplore</b> ' + esc(B.caption) + '</p>' : '') + (B.tags ? '<p class="ig-tags">' + esc(B.tags) + '</p>' : '') +
+      '<p class="ig-when">' + esc(B.post) + '</p></div>' +
+      '<p class="ig-note">A preview of the post. Your name shows beside ours once you add your handle and accept the invite.</p></div>';
+  }
   function reel() { return '<div class="k-pic fx-reel" style="--k-c:#2D5C27"><video src="' + MEDIA + esc(B.reel) + '#t=0.5" controls playsinline preload="metadata" controlslist="nodownload noplaybackrate" disablepictureinpicture oncontextmenu="return false" aria-label="' + esc(B.name) + '\'s reel"></video><button type="button" class="fx-play" aria-label="Play the reel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg></button>' + (LIVE ? '' : '<span class="fx-prev">Preview</span>') + '</div>'; }
 
   var VIEWS = {
     start: function (i) {
       return head(i, '') +
-        '<div class="gb-cover"><div>' + caption() + ask(false) +
+        '<div class="gb-cover"><div>' + ask(false) +
           '<div class="k-blocks" style="margin-top:22px"><div class="k-block k-dk"><span class="k-big">Ep ' + B.ep + '</span><small>' + (B.airedPast ? 'Aired ' : 'Airs ') + esc(B.aired) + '</small></div>' +
           '<div class="k-block k-peach"><span class="k-big">' + esc(B.postShort) + '</span><small>Your reel goes up, ' + esc(B.post) + '</small></div>' +
           '<div class="k-block k-pink"><span class="k-big">' + esc(B.clipLen || 'Your part') + '</span><small>Your segment on the show</small></div></div>' +
           '<section class="rf-sec"><span class="k-label">On this page</span><div class="rf-parts">' + PARTS.slice(1).map(function (p, j) {
             return '<a class="k-row" href="' + link(p[0]) + '"><span class="k-num ' + ['or', 'br', 'pk', 'pe'][j % 4] + '">' + (j + 1) + '</span><span class="k-row-t"><b>' + esc(p[1]) + '</b><small>' + esc(p[6]) + '</small></span><span></span></a>';
           }).join('') + '</div></section>' + FROM +
-        '</div>' + reel() + '</div>' + next(i);
+        '</div>' + post() + '</div>' + next(i);
     },
     collab: function (i) {
-      return head(i, '') + '<section class="rf-sec" style="max-width:900px">' + ask(true) + '</section>' + caption().replace('k-card', 'k-card rf-sec') +
+      return head(i, '') + '<div class="gb-cover"><div>' + ask(true) + '</div>' + post() + '</div>' +
         '<section class="rf-sec"><span class="k-label">If you say yes</span><div class="k-rows">' +
         row(1, 'or', 'You get an invite on Instagram', 'When it posts, @vegansexplore sends a collab invite to the handle above. Open it and tap Accept.', 'Tap Accept') +
         row(2, 'br', 'It shows on both accounts', 'Same post, same likes and comments, on your profile and ours.', '') +
@@ -342,6 +372,11 @@
     }
     var c = document.getElementById('fxClip'); if (c) c.addEventListener('play', function () { track('play_clip', p[0]); }, { once: true });
     main.querySelectorAll('[data-t]').forEach(function (a) { a.addEventListener('click', function () { track(a.getAttribute('data-t'), p[0]); }); });
+    var ig = document.getElementById('fxIg');
+    if (ig) ig.addEventListener('input', function () {
+      var h = ig.value.trim().replace(/^@/, ''), ok = /^[A-Za-z0-9._]{1,30}$/.test(h), w = document.getElementById('igWith'), av = document.getElementById('igAvs');
+      if (w) w.innerHTML = ok ? ' and <b>' + esc(h) + '</b>' : ''; if (av) av.classList.toggle('solo', !ok);
+    });
     main.querySelectorAll('[data-ans]').forEach(function (x) { x.addEventListener('click', function () {
       var ans = x.getAttribute('data-ans'), msg = document.getElementById('fxMsg'), h = (document.getElementById('fxIg').value || '').trim().replace(/^@/, '');
       if (ans === 'yes' && !/^[A-Za-z0-9._]{1,30}$/.test(h)) { msg.textContent = 'Add your Instagram handle above, so we can send the invite.'; document.getElementById('fxIg').focus(); return; }
