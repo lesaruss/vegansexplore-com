@@ -170,3 +170,10 @@ No one meal changes this week's tide. But what we eat, every day, across million
 
 So, for this week: don't drive or walk through standing water. It's saltwater, and it's hard on your car and on you. If you walk your dog near the water, rinse their paws when you get home. Give yourself a little extra time on the morning commute. And maybe make tonight's dinner a Vegan one.$s$
 where episode_id = '87c6333a-11b8-4459-8a68-c0ea19831ade' and position = 35 and script not like '%journal Science%';
+
+-- Later 2026-11-21, Sean: "You are saying NO AA instead of it sounding like the name Noah. If it should sound like the name, write it Noah in
+-- the script." Card 35's script says Noah (the take he heard, v1, was voiced before the studio rule deployed); v2 voiced by Logan the studio
+-- way: media/podcast/soflo-vegans-podcast/2026-11-25/kai-4d32e5f0-v2.mp3 (2:22, stt checked), status voiced for Sean's approval.
+update ve_pod_segments set script = replace(script, 'NOAA', 'Noah') where id = '4d32e5f0-86f4-41fc-a179-7d22e087df79' and script like '%NOAA%';
+update ve_pod_segments set audio_path = 'media/podcast/soflo-vegans-podcast/2026-11-25/kai-4d32e5f0-v2.mp3', version = 2, status = 'voiced', checked = true
+ where id = '4d32e5f0-86f4-41fc-a179-7d22e087df79' and version < 2;
