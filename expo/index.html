@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>The World Vegan Expo Guide — Vegans Explore</title>
-    <meta name="description" content="The first World Vegan Expo, January 20 to 24, 2028. The host city is not picked yet: the cities whose people show up get it. Count in free and you are first for tickets, booths and speaking slots, with a Founding badge.">
+    <meta name="description" content="The first World Vegan Expo, January 20 to 24, 2028. The host city is not picked yet: count in for your city and put it in the running. Count in free and you are first for tickets, booths and speaking slots, with a Founding badge.">
   <link rel="canonical" href="https://vegansexplore.com/expo">
   <meta property="og:title" content="The World Vegan Expo Guide — Vegans Explore">
   <meta property="og:description" content="January 20 to 24, 2028. The host city is not picked yet. Count in free and you are first.">
@@ -234,7 +234,7 @@
   // The parts: [key, tab label, title (html), one line, Liz's line (Sean's recording where it exists), her file, next-part line]
   var PARTS = [
     ['start', 'Overview', 'The first <span class="k-hl o">World Vegan Expo</span>',
-      'January 20 to 24, 2028. The whole Vegan world in one place, every two years. The host city is not picked yet, and the cities whose people show up get it.',
+      'January 20 to 24, 2028. The whole Vegan world in one place, every two years. The host city is not picked yet, and counting in puts your city in the running.',
       "Hi, I'm Liz. We're building the World Vegan Expo for early 2028, and the first step to being part of it is free.", 'liz-expo-start-v1.mp3', 'What, why, and why now'],
     ['for', 'Your door', 'What&rsquo;s in it <span class="k-hl p">for you</span>',
       'Pick who you are. Each door says what you get today, and what you will see before you ever pay anything.',
@@ -246,10 +246,10 @@
       'January 20 to 24, 2028, morning to night. Thursday for the trade, Friday to Sunday for everyone, Monday for impact.',
       "Thursday we open for the trade, Friday to Sunday for everyone, and every night ends at a chef's table, with the Vegans Explore Awards on Saturday.", 'liz-expo-week-v1.mp3', 'Day by day, morning to night'],
     ['road', 'The city race', 'Which city <span class="k-hl o">hosts it?</span>',
-      'The host city is not picked yet. The chapters whose members and businesses show up lead the race. Push yours up.',
+      'The host city is not picked yet. The race shows us where the community is strongest, so we know where to look. Count in and your city is in the running.',
       "The host city isn't picked yet. Count in for your city, share the race, and bring your people with you.", 'liz-expo-race-v1.mp3', 'Live, chapter by chapter'],
     ['why', 'The team', 'The <span class="k-hl p">team</span>',
-      'Over 500 events behind the scenes and out front, and the volunteer committees building the Expo with us. Vegans Explore is run by LESARUSS Inc.',
+      'Over 500 events, years supporting marketing for the Seed Food and Wine Festival, and the volunteer committees building the Expo with us. Vegans Explore is run by LESARUSS Inc.',
       "We're in our founding season. We're not asking you to believe in 2028 today, just to take one small step with us and see where it leads.", 'liz-expo-room-v1.mp3', 'Our record, and the committees'],
     ['in', 'Count me in', 'Count me <span class="k-hl o">in</span>',
       'About a minute. You are first when tickets, booths and speaking slots open, and the Founding badge goes on your profile.',
@@ -464,7 +464,7 @@
     ['member', 'attend', 'I want to be there', 'or', 'For members', 'Five days of food, talks, nights and the Awards.',
       [['You&rsquo;re first for tickets', 'Tickets open to everyone counted in before the public.', '#/in'],
        ['A Founding badge', 'On your profile, for counting in before the Expo opened.', '#/in'],
-       ['Push your city up', 'The city whose people show up gets the Expo. Share the race.', '#/road'],
+       ['Put your city in the running', 'Count in for your city and share the race. It shows us where to look.', '#/road'],
        ['Join free', 'Membership is free with a short survey. Join before January 1 and you are a Founding Member.', '/join']],
       'Ticket prices, the host city and travel. Coming, and you see them before the public.'],
     ['vendor', 'vendor', 'I&rsquo;m a food vendor', 'br', 'For food vendors', 'The Food Village outdoors, or the World Food Pavilion.',
@@ -503,9 +503,9 @@
       return head(i, '') +
         '<div class="gb-cover"><div>' +
           '<div class="k-blocks gb-now"><div class="k-block k-dk"><span class="k-label">What</span><span class="k-big">Jan 20 to 24, 2028</span><small>The whole Vegan world in one place, every two years</small></div>' +
-          '<div class="k-block k-peach"><span class="k-label">Why now</span><span class="k-big">Host city open</span><small>The cities whose people show up get it</small></div>' +
+          '<div class="k-block k-peach"><span class="k-label">Why now</span><span class="k-big">Host city open</span><small>Count in and put your city in the running</small></div>' +
           '<div class="k-block k-pink"><span class="k-label">Count in now</span><span class="k-big">You&rsquo;re first</span><small>Tickets, booths and speaking slots before the public, and a Founding badge</small></div></div>' +
-          '<p class="gb-by"><b>From the team behind over 500 events.</b> Our founder ran Seed Food and Wine&rsquo;s marketing for seven years. <a href="#/why">Meet the team</a></p>' +
+          '<p class="gb-by"><b>From the team behind over 500 events.</b> Our founder spent years supporting marketing for the Seed Food and Wine Festival. <a href="#/why">Meet the team</a></p>' +
           '<section class="rf-sec"><span class="k-label">I&rsquo;m here as</span><div class="rf-parts">' + DOORS.map(door).join('') + '</div></section>' + DISCLAIMER +
         '</div><div class="k-pic" style="--k-c:#FF9EC4"><img src="/public/expo/liz-expo.jpg" alt="Liz, our Guide, welcoming you into a food village of booths from around the world"></div></div>' + next(i);
     },
@@ -572,7 +572,7 @@
         '<section class="rf-sec"><div class="rd-hd"><span class="k-label">The race, chapter by chapter</span><button type="button" class="k-btn k-sm" id="rdShare">Share the race</button></div><div class="rd-ch" id="rdCh"><p class="gb-fine">Loading the chapters&hellip;</p></div></section>' +
         '<div class="ex-two" style="margin-top:28px"><section class="rf-sec"><span class="k-label">What the race does</span><div class="k-rows">' +
           row(1, 'or', 'It shows where the community is strongest', 'Members, businesses and clubs counting in for their chapter.') +
-          row(2, 'br', 'It goes into every host city&rsquo;s bid', 'A city with its people already on board makes the strongest case.') +
+          row(2, 'br', 'It puts your city in the running', 'Cities with their people counted in are in the running. The final pick also weighs what each city offers: the venue and the support.') +
           row(3, 'pk', 'Community Nights from February 2027', 'Our first nights in our chapters. <a href="/expo/events">See a night</a>') +
           row(4, 'pe', 'Then tickets, booths and travel', 'Everyone counted in goes first.') +
           '</div></section><div class="k-pic" style="--k-c:#FF9EC4"><img src="/_vercel/image?url=%2Fpublic%2Fexpo%2Fv%2F111.jpg&w=828&q=75" alt="Groups of friends from different cities arriving at the festival gate"></div></div>' + next(i);
@@ -580,7 +580,7 @@
     why: function (i) {
       return head(i, '') + '<div class="ex-two" style="margin-top:28px"><section class="rf-sec"><span class="k-label">Our record</span><div class="k-rows">' +
         row(1, 'or', 'Over 500 events', 'Festivals, dinners, meetups and launches, worked behind the scenes and promoted to full rooms.', 'Record') +
-        row(2, 'br', 'Seven years at Seed Food and Wine', 'Our founder, Sean A. Russell, was marketing chair of the Seed Food and Wine Festival for seven years.', 'Record') +
+        row(2, 'br', 'Years at Seed Food and Wine', 'Our founder, Sean A. Russell, spent years supporting marketing for the Seed Food and Wine Festival.', 'Record') +
         row('3', 'dk', 'Ten years of Vegan events', 'Across South and Central Florida.', 'Record') +
         row(4, 'pk', 'Vegans Explore', 'The place to find everything Vegan in your city: the Directory, events, Guides and chapters. Run by LESARUSS Inc.', 'Live') +
         row(5, 'pe', 'Commitments, never money', 'You do not support this with a donation. You support it by showing up for your community.', 'Free') +
