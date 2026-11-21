@@ -266,7 +266,7 @@
   ];
   // Liz's bubble: the first sentence of the view's narration, so the words match what she says (panel 2026-11-21).
   var CAPS = {"start": "Hi, I'm Liz. This is the World Vegan Expo, January 20 to 24, 2028.", "for": "Tell me who you are. A member, a food vendor, a brand or sponsor, a city, a club, or a creator.", "for-member": "If you just want to be there, this is your door.", "for-vendor": "For food vendors, there's the Food Village outside and the World Food Pavilion.", "for-brand": "For brands and sponsors: the Exhibitor Hall, Thursday's trade day, and a lot to sponsor.", "for-city": "Think your city should host it? Host city bids are coming, and cities counted in hear first.", "for-club": "Run a club? Bring your people.", "for-creator": "For creators and speakers: the stages, the live podcast tapings and the content studio.", "expo": "Picture an Olympic village for the Vegan community.", "expo-food": "This is the Food Village. It's outdoors and free to walk in.", "expo-hall": "This is the Exhibitor Hall: the brands under one roof, with samples to taste.", "expo-world": "This is the World Food Pavilion. Food from every corner of the world.", "expo-learn": "This is the Education Village. Two stages and breakout rooms.", "expo-causes": "This is the Causes Village. Nonprofits, sanctuaries and rescues, the people doing the work.", "expo-market": "This is the Market. Beauty and personal care, fashion, home goods and makers.", "expo-well": "This is Wellness and Fitness. Morning yoga every day.", "expo-media": "This is Creators and Media. Sit in on a live podcast taping.", "expo-hub": "This is the Community Hub and Family corner.", "expo-nights": "When the villages close, the nights begin.", "week": "Five days, five nights. Pick a day to see it morning to night.", "week-thu": "Thursday, January twentieth. Trade and media day.", "week-fri": "Friday, January twenty-first. Public day one.", "week-sat": "Saturday, January twenty-second. The biggest day.", "week-sun": "Sunday, January twenty-third. Family and community day.", "week-mon": "Monday, January twenty-fourth. Industry and impact.", "road": "Which city hosts it? The host city isn't picked yet.", "why": "This is the team. Over 500 events hosted, produced and supported in the Vegan space.", "in": "Tell us how you would like to be a part of it."};
-  function vkey(p) { var s = sub(); return p[0] === 'in' || !s ? p[0] : p[0] + '-' + s; }
+  function vkey(p) { var s = sub(); return p[0] === 'in' || p[0] === 'why' || !s ? p[0] : p[0] + '-' + s; }
   var OLDP = { room: 'why', claim: 'in', part: 'for' };
   function idx(k) { k = OLDP[k] || k; for (var i = 0; i < PARTS.length; i++) if (PARTS[i][0] === k) return i; return 0; }
   function cur() { var k = (location.hash.match(/^#\/([a-z]+)/) || [])[1] || 'start'; return idx(k); }
@@ -606,7 +606,12 @@
           '</div></section><div class="k-pic" style="--k-c:#FF9EC4"><img src="/_vercel/image?url=%2Fpublic%2Fexpo%2Fv%2F111.jpg&w=828&q=75" alt="Groups of friends from different cities arriving at the festival gate"></div></div>' + next(i);
     },
     why: function (i) {
-      return head(i, '') + '<div class="ex-two" style="margin-top:28px"><section class="rf-sec"><span class="k-label">Our record</span><div class="k-rows">' +
+      // Two tabs (Sean, 2026-11-21: "it's too far down... can we have them tabs? ... they can pick between those two without having to
+      // scroll"): Our record at #/why, the committees at #/why/committees.
+      var cm = sub() === 'committees';
+      var menu = '<nav class="vx-menu" aria-label="The team"><a href="#/why"' + (cm ? '' : ' aria-current="page"') + '>Our record</a><a href="#/why/committees"' + (cm ? ' aria-current="page"' : '') + '>The committees, for members</a></nav>';
+      if (cm) return head(i, '') + menu + '<section class="rf-sec" id="cmBox" style="margin-top:22px"><span class="k-label">The committees</span><p class="gb-fine">Loading&hellip;</p></section>' + next(i);
+      return head(i, '') + menu + '<div class="ex-two" style="margin-top:22px"><section class="rf-sec"><span class="k-label">Our record</span><div class="k-rows">' +
         row(1, 'or', 'Over 500 events', 'Hosted, produced and supported in the Vegan space: festivals, dinners, meetups and launches.', 'Record') +
         row(2, 'dk', 'Ten years of Vegan events', 'Across South and Central Florida.', 'Record') +
         row(3, 'pk', 'Vegans Explore', 'The place to find everything Vegan in your city: the Directory, events, Guides and chapters. Run by LESARUSS Inc.', 'Live') +
@@ -614,8 +619,7 @@
         '</div>' +
         '<p class="gb-quote">&ldquo;Before, the reason you couldn&rsquo;t show up is because everything&rsquo;s scattered. You don&rsquo;t know where to find it. So my job is to create the platform, make it easy for you to find these things. And then you show up, and you support, and you share.&rdquo;</p>' +
         '<p class="gb-fine">Sean A. Russell, founder</p></section>' +
-        '<div class="k-pic" style="--k-c:#FF9EC4"><img src="/public/expo/walk-2-village.jpg" alt="Friends sharing food at a festival food lane"></div></div>' +
-        '<section class="rf-sec" id="cmBox"><span class="k-label">The committees</span><p class="gb-fine">Loading&hellip;</p></section>' + next(i);
+        '<div class="k-pic" style="--k-c:#FF9EC4"><img src="/public/expo/walk-2-village.jpg" alt="Friends sharing food at a festival food lane"></div></div>' + next(i);
     },
     'in': function (i) {
       if (ROLE_NAMES[sub()] || sub() === 'committee') picked = sub();
@@ -680,12 +684,13 @@
     go(); b.innerHTML = PAUSE + '<span>Pause</span>'; playing = b;
   }
   function render() {
-    var key = location.hash, same = key === lastKey && audio && !audio.paused;
+    // Same narration (e.g. The team's two tabs): keep Liz talking instead of starting her over.
+    var key = vkey(PARTS[cur()]), same = key === lastKey && audio && !audio.paused;
     lastKey = key;
     if (!same) stop();
     var i = cur(), p = PARTS[i];
     // Your door has no page of its own: #/for alone goes back to the Overview, where the doors are.
-    if (p[0] === 'for' && !sub()) { history.replaceState(null, '', location.pathname + location.search + '#/'); key = lastKey = location.hash; i = 0; p = PARTS[0]; }
+    if (p[0] === 'for' && !sub()) { history.replaceState(null, '', location.pathname + location.search + '#/'); i = 0; p = PARTS[0]; key = lastKey = vkey(p); }
     bar(i);
     main.innerHTML = VIEWS[p[0]](i);
     document.title = (i ? p[1].replace(/&rsquo;/g, '’') + ' | ' : '') + 'The World Vegan Expo Guide — Vegans Explore';
@@ -702,7 +707,7 @@
         if (!r.ok) throw 0;
         list = p[0] === 'start' ? [narr, VB + 'liz-expo-n-for-v1.mp3'] : [narr];
         b.style.display = '';
-        if (autoOn() && !same && location.hash === key) playList(b, list);
+        if (autoOn() && !same && vkey(PARTS[cur()]) === key) playList(b, list);
       }).catch(function () { fetch(list[0], { method: 'HEAD' }).then(function (r) { if (r.ok) b.style.display = ''; }).catch(function () {}); });
       b.addEventListener('click', function () {
         if (playing === b) { stop(); setAuto(false); return; }
