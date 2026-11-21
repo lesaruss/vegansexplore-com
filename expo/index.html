@@ -503,21 +503,24 @@
        ['Claim your brand page', 'Free. Members find your products before the Expo.', CLAIM_HREF]],
       'Before you budget: the exhibitor sheet and sponsor tiers, the host city and venue, deposit and refund terms. Coming, to brands counted in first.'],
     ['city', 'city', 'My city should host it', 'pe', 'For host cities', 'For chapters, and for the people who bring events to a city.',
-      [['Host city bids: Coming', 'Cities counted in hear first when bids open.', '#/in'],
+      [['Host city bids: Coming', 'Cities counted in hear first when bids open. We email you; no date is promised yet.', '#/in'],
+       ['Private, never ranked', 'Counting in as a city is interest only. The race shows counts, never names.', '#/road'],
        ['The race is public', 'Every chapter&rsquo;s members and businesses, counted live.', '#/road'],
        ['Five days in late January', 'January 20 to 24, 2028: a trade day, three public days and an impact day.', '#/expo']],
       'Before a city commits: the host brief, with space, dates and room nights. Coming, to cities counted in first.'],
     ['club', 'club', 'I run a club or group', 'dk', 'For clubs and groups', 'Bring your people, and meet at the Community Hub.',
       [['You&rsquo;re first for tickets', 'Your club counted in hears before the public.', '#/in'],
-       ['A home for your club', 'Your page and your events on Vegans Explore, free.', '/groups/welcome'],
+       ['A home for your club', 'Your page and your events on Vegans Explore, free, and yours to run.', '/groups/welcome'],
+       ['A table at the Community Hub', 'A table for every club and chapter, and club meetups on Sunday at noon.', '#/expo/hub'],
+       ['Your members stay yours', 'We never contact your members except through you.', '#/in'],
        ['Community Nights from February 2027', 'Our first nights in our chapters, with local clubs.', '/expo/events'],
        ['A Founding badge', 'On your profile, for counting in before the Expo opened.', '#/in']],
       'Group tickets and travel. Coming, to clubs counted in first.'],
     ['creator', 'creator', 'I&rsquo;m a creator or speaker', 'ti', 'For creators and speakers', 'The stages, the podcast tapings, the content studio.',
-      [['First pick of speaking slots', 'Open to creators counted in before the public.', '#/in'],
+      [['Hear first about speaking slots', 'Open to creators counted in before the public. Counting in is not a booking.', '#/in'],
        ['A Founding badge', 'On your profile, for counting in before the Expo opened.', '#/in'],
        ['Claim your profile', 'Your page in our People.', '/claim']],
-      'The stages, topics and what speakers get. Coming, to creators counted in first.']
+      'The stages, topics and what speakers get (pay, travel, stage time). Coming, to creators counted in first.']
   ];
   var ROLE_NAMES = { attend: 'I will be there', vendor: 'Food vendor', exhibitor: 'Brand (exhibitor)', sponsor: 'Sponsor', club: 'Club or group', creator: 'Creator or speaker', cause: 'Cause', volunteer: 'Volunteer', city: 'Host city' };
   var picked = 'attend', pickedCity = '';
@@ -540,7 +543,7 @@
       return head(i, '', d[4], d[4].replace(/(\S+)$/, '<span class="k-hl p">$1</span>'), d[5]) +
         '<div class="ex-two" style="margin-top:28px"><div><section class="rf-sec"><span class="k-label">' + d[4] + ': what you get today</span><div class="k-rows">' +
           d[6].map(function (r, j) { return arow(j + 1, ['or', 'br', 'pk', 'pe', 'dk', 'ti'][j % 6], r[0], r[1], r[2] === '#/in' ? '#/in/' + d[1] : r[2], r[2] === '#/in' ? ' data-role="' + d[1] + '"' : ''); }).join('') + '</div></section>' +
-          '<div class="k-block k-tint" style="margin:18px 0 10px"><span class="k-label">Later</span>' + d[7] + '</div>' +
+          '<div class="k-block k-tint" style="margin:18px 0 10px"><span class="k-label">Later</span>' + d[7] + ' <b>Every term in writing before you commit to anything or pay anything.</b></div>' +
           '<div class="gb-cta"><a class="k-btn k-cta" href="#/in/' + d[1] + '" data-role="' + d[1] + '">Count me in</a><p class="rf-price">' + (FIRSTS[d[0]] || FIRST) + '</p></div>' +
           '<section class="rf-sec"><span class="k-label">Another door</span><div class="rd-who">' + DOORS.filter(function (x) { return x !== d; }).map(function (x) { return '<a class="rd-door" href="#/for/' + x[0] + '">' + x[2] + '</a>'; }).join('') + '</div></section></div>' +
         '<div class="k-pic" style="--k-c:#FF9EC4"><img src="/public/expo/' + ({ member: 'walk-6-evening.jpg', vendor: 'walk-2-village.jpg', brand: 'walk-4-booth.jpg', city: 'walk-1-above.jpg', club: 'walk-6-evening.jpg', creator: 'walk-3-stage.jpg' })[d[0]] + '" alt="How we picture the World Vegan Expo"></div></div>' + next(i);
@@ -623,14 +626,18 @@
         '<div class="k-f"><label for="in-name">Your name</label><input id="in-name" maxlength="120" autocomplete="name" required></div>' +
         '<div class="k-f"><label for="in-email">Your email</label><input id="in-email" type="email" maxlength="200" autocomplete="email" required></div>' +
         '<div class="k-f"><label for="in-org">Business, club or organization (if any)</label><input id="in-org" maxlength="120" autocomplete="organization"></div>' +
-        '<div class="k-f"><label for="in-city">Your city</label><input id="in-city" maxlength="80" value="' + esc(pickedCity) + '"></div>' +
+        '<div class="k-f"><label for="in-city">Your city (one of our chapters or not, it counts)</label><input id="in-city" maxlength="80" value="' + esc(pickedCity) + '"></div>' +
         '<div class="k-f wide"><label for="in-note">Anything you would like us to know (optional)</label><textarea id="in-note" maxlength="600"></textarea></div>' +
         '<div class="k-f wide"><button type="submit" class="k-btn k-cta" id="in-go">Count me in</button><p class="k-msg" id="in-msg" role="status"></p></div>' +
         '</form></div>' + DISCLAIMER + '</div>' +
         '<div class="k-pic" style="--k-c:#FF9EC4"><img src="/public/expo/walk-1-above.jpg" alt="The whole Expo from above: the hall of brands, the food plaza and the stage"></div></div>' +
+        // The three promises (Sean, 2026-11-21, after the yes panel: "I agree with everything else"): terms in writing before anyone commits
+        // or pays, on every door; counting in is not a booking; the email is for Expo updates only, and a club's members are never contacted
+        // except through the club.
         good([['k-pink', 'You&rsquo;re first', 'Tickets, booths and speaking slots open to everyone counted in before the public. No fee, no deposit.'],
           ['k-tint', 'Your Founding badge', 'It goes on the profile for this email. Not a member yet? <a href="/join">Join free</a> with the same email and it is there.'],
-          ['k-peach', 'Interest, not a ticket', 'Counting in holds nothing and costs nothing. You hear first about every step.']]);
+          ['k-peach', 'Interest, not a booking', 'Counting in holds nothing and costs nothing. It is not a ticket, a booth or a speaking slot. Every term in writing before you commit to anything or pay anything.'],
+          ['k-tint', 'Your email', 'We use it only for Expo updates. We never contact a club&rsquo;s members except through the club. The race shows counts, never names.']]);
     }
   };
   function wireIn() {
