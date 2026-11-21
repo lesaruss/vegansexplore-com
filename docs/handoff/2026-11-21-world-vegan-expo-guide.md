@@ -54,3 +54,27 @@ Playbook `ve-holiday-guide` (this work grew out of checkpoint 1024). Canon `cano
 - Community Night ticket prices; when a club gets its ticket money; refunds.
 - The `[TEST]` lead `test-event-sponsor@example.com`: delete on Sean's go-ahead.
 - Unlisted drafts `/expo/nights` and `/expo/clubs` still carry the older club model.
+
+## Update, 2026-11-21 afternoon: the narration is live (checkpoint 1050 continued)
+
+- **All 28 narrations are live** at `vegan-media/media/voices/expo/liz-expo-n-<view>-v1.mp3`, Sean's takes from the booth set
+  `ve-expo-narration`. Each was cleaned (trim at -45 dB, 30 ms fade in, 120 ms fade out, 250 ms pad, -16.0 LUFS with a soft limiter at
+  -1.5 dBTP, mono 128k) and checked word for word with ElevenLabs scribe. Each view's Play was proven live at 1440 and 390: the right file
+  plays and time moves.
+- **Uploaded** through `ve-once-expo-voices` (source `scripts/supabase-once/expo-voices.ts`), now the 410 stub.
+- **Redos:**
+  - Opening: the old race promise, and "and Founding badge".
+  - Your door: "Each door" read as "Each store" in Liz's voice.
+  - Saturday: "run" and "lifting" read as "ride" and "lefty".
+  - All three were re-recorded and passed. Where Sean changed a small word himself, the booth text was matched to his take.
+- **Sean's corrections (in canon `canon-ve-world-vegan-expo`):**
+  - `race_wording_2026_11_21`: never promise the votes decide the host city. The race shows where to look, and counting in puts a city
+    "in the running"; the final pick weighs each city's offer.
+  - `team_claim_2026_11_21`: "over 500 events hosted, produced and supported in the Vegan space". Seed is off public pages and lines.
+  - /expo copy changed to match (main e7351bd).
+- **Booth clean-up:** Ep 147's intro and outro were wrongly starred ("already locked", Sean). The intro's `-v2` line is retired and the
+  outro's stale redo is removed. The short Liz lines in set `ve-expo` are superseded by the narration (they play only where a view has
+  none, and now none do).
+- **Parked:**
+  - The Guide card's caption still shows the part's short line while the view's narration plays.
+  - Choice: show the narration's first sentence, or leave it.
