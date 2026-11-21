@@ -120,7 +120,7 @@
 .k-split { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); gap: 22px 32px; align-items: start; }
 .k-side { font-size: 13px; font-weight: 600; line-height: 1.5; }
 .k-side p { margin: 0 0 14px; }
-.k-pic { border: 3px solid var(--k-ink); border-radius: var(--k-rc); box-shadow: 8px 8px 0 var(--k-c); overflow: hidden; background: #fff; }
+.k-pic { border: 3px solid var(--k-ink); border-radius: var(--k-rc); box-shadow: 8px 8px 0 var(--k-c); overflow: hidden; background: var(--k-tint); }
 .k-pic img { display: block; width: 100%; height: 100%; object-fit: cover; }
 
 /* ---------- Forms ---------- */

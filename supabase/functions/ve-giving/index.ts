@@ -8,6 +8,7 @@
 // Public:  brand_interest {brand, name, email, quantity, pack, page} -> a brand's I'm in from /partners/giving, into Leads (one a day per email)
 // Public:  event_sponsor_interest {brand, name, email, events: philadelphia | south-florida | central-florida | los-angeles | all | spotlight | takeover | club, note, page} -> a brand's interest in
 //          sponsoring a community event from /expo/events, into Leads on the World Vegan Expo initiative (one a day per email; Sean, 2026-11-19)
+// Public:  expo_interest {role, name, email, org, city, note} -> Count me in for the World Vegan Expo, into Leads (one per email and role a day)
 // Owner:   my_prizes {listing_id}, prize_photo_url {listing_id, content_type, bytes}, prize_save {listing_id, title, value_cents, quantity,
 //          image_url?, note?}, prize_withdraw {listing_id, id}: the prize form in the business dashboard (Sean, 2026-11-15). Up to $100 per
 //          business; a brand (Food Brands, or a listing that sells products) up to $150 retail in all (Sean, 2026-11-17); intake stops
@@ -115,6 +116,57 @@ Deno.serve(async (req) => {
     const { error } = await db.from('ve_initiative_interest').insert({ initiative_slug: SLUG, action_type: 'sponsor_tier', tier_label: tier, status: 'new',
       source: 'form', name: `${name}, ${brand}`.slice(0, 120), email, note: (note || '(no details yet)').slice(0, 1000),
       tags: ['community-events', 'event-sponsor', clean(b.page, 120) || '/expo/events'] });
+    if (error) return json({ error: 'save_failed' }, 500);
+    return json({ ok: true });
+  }
+
+  // The World Vegan Expo committees (LOCKED by Sean 2026-11-21, modeled on Seed's): volunteer committees, each led by a Chair; invitation first;
+  // good standing is one Zoom meeting a month and contributing (two missed in a row without a word, a check-in; a third, off the committee);
+  // members in good standing from joining to the Expo get an All Access Pass; paid jobs are posted inside the committees, members first.
+  // Members only for now (Sean: "make it available for members only for right now"), so the list is served to signed-in members only.
+  const COMMITTEES: [string, string, string][] = [
+    ['marketing', 'Marketing', 'Getting the word out, city by city.'],
+    ['vendors', 'Vendors', 'The Food Village and the World Food Pavilion.'],
+    ['exhibitors', 'Exhibitors and Sponsors', 'The Exhibitor Hall, trade day and sponsor partners.'],
+    ['programming', 'Programming', 'The stages, panels, workshops and the Awards.'],
+    ['sustainability', 'Sustainability', 'Waste, packaging and how the Expo runs green.'],
+    ['community', 'Community', 'Clubs, chapters and the Community Nights.'],
+    ['causes', 'Causes and Volunteers', 'The Causes Village and the volunteer crew.'],
+    ['media', 'Creators and Media', 'Podcast tapings, the content studio and press.'],
+    ['hostcity', 'Host City and Travel', 'City bids, hotels and getting people there.'],
+  ];
+  const isMember = (m: { is_superadmin?: boolean; membership_status?: string } | null) => !!m && (!!m.is_superadmin || m.membership_status === 'active');
+  if (action === 'expo_committees') {
+    const mm = await whoAmI(req, b);
+    if (!isMember(mm)) return json({ ok: true, member: false });
+    return json({ ok: true, member: true, committees: COMMITTEES.map(([slug, name, owns]) => ({ slug, name, owns })) });
+  }
+
+  // The World Vegan Expo Guide's Count me in (Sean, 2026-11-21: "the call to action right now, for them to lock in their interest"). One
+  // row per email a day, in Leads on the World Vegan Expo initiative. Interest only: nothing is sold or reserved.
+  if (action === 'expo_interest') {
+    const ROLES: Record<string, [string, string]> = { attend: ['ticket', 'I will be there'], vendor: ['vendor_tier', 'Vendor'], exhibitor: ['vendor_tier', 'Exhibitor (brand)'],
+      sponsor: ['sponsor_tier', 'Sponsor'], club: ['pledge', 'Club or group'], creator: ['pledge', 'Creator or speaker'], cause: ['pledge', 'Cause (nonprofit or sanctuary)'],
+      city: ['pledge', 'Host city'], volunteer: ['pledge', 'Volunteer'], committee: ['pledge', 'Committee'] };
+    let role = ROLES[clean(b.role, 20)];
+    const extraTags: string[] = [];
+    if (clean(b.role, 20) === 'committee') {
+      // Joining a committee is for members (members only for now); the committee goes in the tier so each is its own list in Leads.
+      if (!isMember(await whoAmI(req, b))) return json({ error: 'members_only' }, 401);
+      const c = COMMITTEES.find(([slug]) => slug === clean(b.committee, 30));
+      if (!c) return json({ error: 'missing' }, 400);
+      role = ['pledge', `Committee: ${c[1]}`]; extraTags.push(`committee-${c[0]}`);
+    }
+    const name = clean(b.name, 120), email = clean(b.email, 200).toLowerCase(), org = clean(b.org, 120), city = clean(b.city, 80), note = clean(b.note, 600);
+    if (!role || !name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) return json({ error: 'missing' }, 400);
+    const SLUG = 'vegans-explore-initiative-world-vegan-expo';
+    const { count } = await db.from('ve_initiative_interest').select('id', { count: 'exact', head: true }).eq('initiative_slug', SLUG)
+      .eq('email', email).eq('tier_label', role[1]).gte('created_at', new Date(Date.now() - 864e5).toISOString());
+    if ((count || 0) > 0) return json({ ok: true, already: true });
+    const mm0 = await whoAmI(req, b);
+    const { error } = await db.from('ve_initiative_interest').insert({ initiative_slug: SLUG, action_type: role[0], tier_label: role[1], status: 'new', source: 'form',
+      member_id: mm0?.id || null, name: (org ? `${name}, ${org}` : name).slice(0, 120), email,
+      note: [city && `City: ${city}`, note].filter(Boolean).join(' | ').slice(0, 1000) || null, tags: ['world-vegan-expo', 'expo-2028', clean(b.role, 20), ...extraTags] });
     if (error) return json({ error: 'save_failed' }, 500);
     return json({ ok: true });
   }

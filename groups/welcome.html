@@ -287,7 +287,9 @@
   var main = document.getElementById('main');
   var $ = function (id) { return document.getElementById(id); };
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
-  function art() { try { if (window.VEGuideArt) return window.VEGuideArt('dani', 'square'); } catch (e) {} return '/public/brand-kit/avatars/dani-v1.jpg'; }
+  // The Guide's square, served small (2026-11-21: a 1080 px file in a 96 px box showed white until it loaded).
+  function small(u) { return /^(\/|https:\/\/fwbhwfxpncrsfhttimna\.supabase\.co\/)/.test(u) ? '/_vercel/image?url=' + encodeURIComponent(u) + '&w=256&q=75' : u; }
+  function art() { var u = '/public/brand-kit/avatars/dani-v1.jpg'; try { if (window.VEGuideArt) u = window.VEGuideArt('dani', 'square') || u; } catch (e) {} return small(u); }
 
   // The parts, in order: [key, tab label, title (html), one line, Dani's line (for Sean to record), her file, next-part line]
   var PARTS = [

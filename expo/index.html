@@ -4,11 +4,11 @@
   <script src="/analytics.js"></script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The World Vegan Expo — Vegans Explore</title>
-    <meta name="description" content="The World Vegan Expo, early 2028: every Vegan brand in one place, the biggest names on the topics that matter, and a Food Village of Vegan food from around the world. Start by claiming your listing, free.">
+  <title>The World Vegan Expo Guide — Vegans Explore</title>
+    <meta name="description" content="The first World Vegan Expo, January 20 to 24, 2028. The host city is not picked yet: the cities whose people show up get it. Count in free and you are first for tickets, booths and speaking slots, with a Founding badge.">
   <link rel="canonical" href="https://vegansexplore.com/expo">
-  <meta property="og:title" content="The World Vegan Expo — Vegans Explore">
-  <meta property="og:description" content="Early 2028. An Olympic village for the Vegan community, built city by city. Start by claiming your listing, free.">
+  <meta property="og:title" content="The World Vegan Expo Guide — Vegans Explore">
+  <meta property="og:description" content="January 20 to 24, 2028. The host city is not picked yet. Count in free and you are first.">
   <meta property="og:image" content="https://vegansexplore.com/public/og-default.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="/public/favicon.ico">
@@ -137,6 +137,18 @@
     .ex-dots button { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--k-ink); background: #fff; padding: 0; cursor: pointer; }
     .ex-dots button.on { background: var(--k-ink); }
     @media (max-width: 900px) { .ex-two { grid-template-columns: minmax(0, 1fr); } .ex-walk { order: -1; } }
+    /* The Road to the World Vegan Expo board (Sean, 2026-11-21: the building fund picture, commitments not money). */
+    .rd-ch { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 10px 14px; }
+    .rd-c { border: 2px solid var(--k-ink); border-radius: var(--k-rc); padding: 12px 14px; background: #fff; }
+    .rd-c b { display: block; font-size: 15px; font-weight: 900; }
+    .rd-c small { display: block; font-size: 12.5px; font-weight: 700; color: var(--k-mute); margin-top: 2px; }
+    .rd-bar { height: 12px; border-radius: 6px; background: var(--k-tint); margin: 8px 0 2px; position: relative; overflow: hidden; }
+    .rd-bar i { position: absolute; inset: 0 auto 0 0; background: var(--k-or); border-radius: 6px; min-width: 4px; }
+    .rd-bar em { position: absolute; top: -2px; bottom: -2px; left: 80%; width: 2px; background: var(--k-ink); }
+    .rd-who { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+    .rd-who button { font: inherit; font-size: 12px; font-weight: 900; letter-spacing: .04em; padding: 8px 12px; border-radius: 6px; border: 2px solid var(--k-ink); background: #fff; color: var(--k-ink); cursor: pointer; }
+    .rd-who button[aria-pressed="true"] { background: var(--k-ink); color: #fff; }
+    .rd-asof { font-size: 12px; font-weight: 700; color: var(--k-mute); margin: 8px 0 0; }
     .rf-head .rf-act:empty { display: none; }
     @media (max-width: 900px) { .gb-cover { grid-template-columns: minmax(0, 1fr); } .gb-cover .k-pic { justify-self: start; max-width: 320px; } }
     /* Liz's card (Sean, 2026-11-19: "make the image of Liz a little bit bigger... keep Liz solid and then make just the text scroll... 3 rows of
@@ -154,6 +166,40 @@
       .rf-guide .av { width: 64px !important; height: 64px !important; }
       .gb-next a.k-btn { width: 100%; }
     }
+    /* The city race and the doors (2026-11-21 rebuild) */
+    .gb-by { font-size: 14px; font-weight: 600; line-height: 1.5; margin: 14px 0 0; max-width: 860px; }
+    .gb-by b { font-weight: 900; }
+    .rd-hd { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 10px; }
+    .rd-hd .k-label { margin: 0; }
+    .rd-rank { display: inline-flex; align-items: center; justify-content: center; min-width: 26px; height: 26px; border-radius: 6px; background: var(--k-ink); color: #fff; font-size: 12px; margin-right: 8px; }
+    .rd-go { display: inline-block; margin-top: 8px; font-size: 12.5px; font-weight: 900; color: var(--k-ink); }
+    .rd-door { font-size: 12px; font-weight: 900; padding: 8px 12px; border-radius: 6px; border: 2px solid var(--k-ink); background: #fff; color: var(--k-ink); text-decoration: none; }
+    .rd-door:hover { background: var(--k-tint); }
+    main .gb-by a, main .k-steps a, main .k-block a, main .k-row small a { color: var(--k-ink); font-weight: 800; }
+    .gb-cta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; margin: 18px 0 6px; }
+    .vx-menu { display: flex; flex-wrap: wrap; gap: 6px; overflow-x: auto; scrollbar-width: none; margin: 22px 0 0; padding-bottom: 2px; }
+    .vx-menu::-webkit-scrollbar { display: none; }
+    .vx-menu a { flex: none; font-size: 12px; font-weight: 900; padding: 8px 12px; border-radius: 6px; border: 2px solid var(--k-ink); background: #fff; color: var(--k-ink); text-decoration: none; white-space: nowrap; }
+    .vx-menu a[aria-current] { background: var(--k-ink); color: #fff; }
+    .vx-map { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr)); gap: 14px; }
+    .vx-card { display: grid; border: 2px solid var(--k-ink); border-radius: var(--k-rc); overflow: hidden; background: #fff; color: var(--k-ink); text-decoration: none; }
+    .vx-card:hover { box-shadow: 4px 4px 0 var(--k-pink); }
+    .vx-pic { aspect-ratio: 4 / 5; background: var(--k-tint) center / cover no-repeat; border-bottom: 2px solid var(--k-ink); }
+    .vx-t { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; padding: 12px; align-items: start; }
+    .vx-t b { display: block; font-size: 15px; font-weight: 900; }
+    .vx-t small { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 12.5px; font-weight: 600; color: var(--k-mute); margin-top: 2px; }
+    .vx-sched { display: grid; gap: 8px; }
+    .ex-two .rf-sec + .rf-sec { margin-top: 24px; }
+    .vx-sched div { display: grid; grid-template-columns: 110px 130px minmax(0, 1fr); gap: 10px; align-items: baseline; padding: 10px 12px; border: 2px solid var(--k-ink); border-radius: var(--k-rc); background: #fff; font-size: 14px; font-weight: 600; }
+    .vx-sched em { font-style: normal; font-size: 11px; font-weight: 900; letter-spacing: .1em; text-transform: uppercase; color: var(--k-pinkd); }
+    .vx-sched b { font-weight: 900; }
+    @media (max-width: 900px) { .vx-menu { flex-wrap: nowrap; } .vx-map { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; } .vx-sched div { grid-template-columns: 1fr; gap: 2px; } .vx-t { grid-template-columns: minmax(0, 1fr); } .vx-t .k-num { display: none; } }
+    .vx-day a { display: grid; grid-template-columns: 130px minmax(0, 1fr) auto; gap: 10px; align-items: baseline; padding: 10px 12px; border: 2px solid var(--k-ink); border-radius: var(--k-rc); background: #fff; font-size: 14px; font-weight: 600; color: var(--k-ink); text-decoration: none; }
+    .vx-day a:hover { background: var(--k-tint); }
+    .vx-day .vx-open { grid-template-columns: 130px minmax(0, 1fr); background: var(--k-tint); }
+    .vx-day .vx-open a { display: inline; padding: 0; border: 0; background: none; font-weight: 800; text-decoration: underline; }
+    .vx-day em { font-style: normal; font-size: 11px; font-weight: 900; letter-spacing: .06em; text-transform: uppercase; color: var(--k-pinkd); white-space: nowrap; }
+    @media (max-width: 900px) { .vx-day a, .vx-day .vx-open { grid-template-columns: 1fr; gap: 2px; } }
   </style>
 </head>
 <body>
@@ -161,7 +207,7 @@
 
 <div data-k-section="guides">
   <div class="rf-bar">
-    <div class="rf-name"><a id="gName" href="#/">The World Vegan Expo</a><span id="gFor">Early 2028 · for brands, businesses and creators</span></div>
+    <div class="rf-name"><a id="gName" href="#/">The World Vegan Expo</a><span id="gFor">January 20 to 24, 2028 · for everyone</span></div>
     <div class="rf-tabwrap"><nav class="k-tabs" id="gTabs" aria-label="Parts of this Guide"></nav></div>
   </div>
   <div class="k-stripe rf-stripe"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
@@ -176,33 +222,48 @@
   var VB = 'https://fwbhwfxpncrsfhttimna.supabase.co/storage/v1/object/public/vegan-media/media/voices/expo/';
   var main = document.getElementById('main');
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
-  function art() { try { if (window.VEGuideArt) return window.VEGuideArt('liz', 'square'); } catch (e) {} return '/public/brand-kit/avatars/liz-v2.jpg'; }
+  // The Guide's square, served small (2026-11-21: a 1080 px file in a 96 px box showed white until it loaded).
+  function small(u) { return /^(\/|https:\/\/fwbhwfxpncrsfhttimna\.supabase\.co\/)/.test(u) ? '/_vercel/image?url=' + encodeURIComponent(u) + '&w=256&q=75' : u; }
+  function art() { var u = '/public/brand-kit/avatars/liz-v2.jpg'; try { if (window.VEGuideArt) u = window.VEGuideArt('liz', 'square') || u; } catch (e) {} return small(u); }
 
-  // The parts, in order: [key, tab label, title (html), one line, Liz's line (for Sean to record), her file, next-part line]
+  // The World Vegan Expo Guide. Rebuilt 2026-11-21 on the stakeholder panel (member, food vendor, brand, sponsor, city bureau, club,
+  // creator): none of them got "what is it, why, why now", the zero meters read as an empty room, the founder's record was buried, and each
+  // wanted their own door. LOCKED by Sean the same day ("lock it"): "Count in now and you're first. First access to tickets, booths and
+  // speaking slots before the public, plus a Founding badge on your profile. No fee, no deposit." The badge is real: counting in adds
+  // badge-expo-founding (migration 20261121_expo_founding_badge.sql), shown on the member's profile.
+  // The parts: [key, tab label, title (html), one line, Liz's line (Sean's recording where it exists), her file, next-part line]
   var PARTS = [
-    ['start', 'Overview', 'The World Vegan Expo, <span class="k-hl o">early 2028</span>',
-      'Every Vegan brand in one place, the biggest names on the topics that matter, and Vegan food from around the world. We are building toward it now, one city at a time.',
-      "Hi, I'm Liz. We're building the World Vegan Expo for early 2028, and the first step to being part of it is free.", 'liz-expo-start-v1.mp3', 'The whole picture on one page'],
-    ['expo', 'The Expo', 'An <span class="k-hl g">Olympic village</span> for the Vegan community',
-      'Once every two years, everyone who lives this lifestyle comes together to charge up, level up and see what the world has made.',
-      "Picture an Olympic village for the Vegan community: the brands, the biggest voices, and food from every corner of the world, all in one place.", 'liz-expo-expo-v1.mp3', 'What the Expo is'],
-    ['room', 'Why now', 'We are building <span class="k-hl p">the room first</span>',
-      'Vegans Explore opens January 1. A village is filled by the people already in the room, so that is where we start.',
-      "We're in our founding season. We're not asking you to believe in 2028 today, just to take one small step with us and see where it leads.", 'liz-expo-room-v1.mp3', 'Where we are, said plainly'],
-    ['road', 'The road to 2028', 'Small steps that <span class="k-hl o">lead somewhere</span>',
-      'Each step is small, and each one builds the trust for the next.',
-      "Start with your listing. Then join a campaign, sponsor a community event, and when the Expo opens its doors to partners, you're already in the room.", 'liz-expo-road-v2.mp3', 'From your listing to the Expo'],
-    ['claim', 'Start here', 'Start by <span class="k-hl g">claiming your listing</span>',
-      'It is free, it takes about a minute, and it puts you in the room before we open on January 1.',
-      "Find your brand, claim your listing, and you're in. We'll keep finding ways to bring you value as we build.", 'liz-expo-claim-v1.mp3', 'Free, about a minute']
+    ['start', 'Overview', 'The first <span class="k-hl o">World Vegan Expo</span>',
+      'January 20 to 24, 2028. The whole Vegan world in one place, every two years. The host city is not picked yet, and the cities whose people show up get it.',
+      "Hi, I'm Liz. We're building the World Vegan Expo for early 2028, and the first step to being part of it is free.", 'liz-expo-start-v1.mp3', 'What, why, and why now'],
+    ['for', 'Your door', 'What&rsquo;s in it <span class="k-hl p">for you</span>',
+      'Pick who you are. Each door says what you get today, and what you will see before you ever pay anything.',
+      "Tell me who you are, and I'll show you what's in it for you, and what you get for counting in now.", 'liz-expo-for-v1.mp3', 'Members, vendors, brands, cities, clubs, creators'],
+    ['expo', 'What it will be', 'An <span class="k-hl g">Olympic village</span> for the Vegan community',
+      'Villages that match our Directory: food outside, brands inside, the world in one pavilion, and the voices that move us on stage.',
+      "Picture an Olympic village for the Vegan community: the brands, the biggest voices, and food from every corner of the world, all in one place.", 'liz-expo-expo-v1.mp3', 'Walk the Expo, village by village'],
+    ['week', 'The week', 'Five days, <span class="k-hl p">five nights</span>',
+      'January 20 to 24, 2028, morning to night. Thursday for the trade, Friday to Sunday for everyone, Monday for impact.',
+      "Thursday we open for the trade, Friday to Sunday for everyone, and every night ends at a chef's table, with the Vegans Explore Awards on Saturday.", 'liz-expo-week-v1.mp3', 'Day by day, morning to night'],
+    ['road', 'The city race', 'Which city <span class="k-hl o">hosts it?</span>',
+      'The host city is not picked yet. The chapters whose members and businesses show up lead the race. Push yours up.',
+      "The host city isn't picked yet. Count in for your city, share the race, and bring your people with you.", 'liz-expo-race-v1.mp3', 'Live, chapter by chapter'],
+    ['why', 'The team', 'The <span class="k-hl p">team</span>',
+      'Over 500 events behind the scenes and out front, and the volunteer committees building the Expo with us. Vegans Explore is run by LESARUSS Inc.',
+      "We're in our founding season. We're not asking you to believe in 2028 today, just to take one small step with us and see where it leads.", 'liz-expo-room-v1.mp3', 'Our record, and the committees'],
+    ['in', 'Count me in', 'Count me <span class="k-hl o">in</span>',
+      'About a minute. You are first when tickets, booths and speaking slots open, and the Founding badge goes on your profile.',
+      "Tell us how you'd like to be part of it, and you'll hear first when tickets, booths and travel open.", 'liz-expo-in-v1.mp3', 'A short form, about a minute']
   ];
-  function idx(k) { for (var i = 0; i < PARTS.length; i++) if (PARTS[i][0] === k) return i; return 0; }
+  var OLDP = { room: 'why', claim: 'in', part: 'for' };
+  function idx(k) { k = OLDP[k] || k; for (var i = 0; i < PARTS.length; i++) if (PARTS[i][0] === k) return i; return 0; }
   function cur() { var k = (location.hash.match(/^#\/([a-z]+)/) || [])[1] || 'start'; return idx(k); }
+  function sub() { return (location.hash.match(/^#\/[a-z]+\/([a-z]+)/) || [])[1] || ''; }
   function link(k) { return k === 'start' ? '#/' : '#/' + k; }
 
   function bar(i) {
     document.getElementById('gTabs').innerHTML = PARTS.map(function (p, j) {
-      return '<a href="' + link(p[0]) + '"' + (j === i ? ' class="on" aria-current="page"' : p[0] === 'claim' ? ' class="join"' : '') + '>' + esc(p[1]) + '</a>';
+      return '<a href="' + link(p[0]) + '"' + (j === i ? ' class="on" aria-current="page"' : p[0] === 'in' ? ' class="join"' : '') + '>' + p[1] + '</a>';
     }).join('');
     var t = document.querySelector('#gTabs .on'); if (t && innerWidth < 900) document.getElementById('gTabs').scrollLeft = Math.max(0, t.offsetLeft - 16);
   }
@@ -211,44 +272,108 @@
       '<div><span class="who">Liz, Explorer</span><q>' + esc(p[4]) + '</q></div>' +
       '<button type="button" class="k-btn k-sm" data-play aria-label="Play Liz">' + PLAY + '<span>Play</span></button></div>';
   }
-  function head(i, action) {
+  function head(i, action, crumb) {
     var p = PARTS[i];
-    return (i ? '<div class="rf-crumb"><a href="#/">The World Vegan Expo</a> &rsaquo; ' + esc(p[1]) + '</div>' : '') +
+    return (i ? '<div class="rf-crumb"><a href="#/">The World Vegan Expo</a> &rsaquo; ' + (crumb ? '<a href="' + link(p[0]) + '">' + p[1] + '</a> &rsaquo; ' + crumb : p[1]) + '</div>' : '') +
       '<div class="rf-head"><div class="rf-t"><h1 class="k-h1">' + p[2] + '</h1><p class="k-lede">' + esc(p[3]) + '</p></div>' + guide(p) +
       '<div class="rf-act">' + (action || '') + '</div></div>';
   }
-  // From a brand email, ?b=<listing slug> carries their listing, so Claim opens it directly (the email's link is /expo?b={slug}).
-  var MINE = (location.search.match(/[?&]b=([a-z0-9-]{2,120})/) || [])[1] || '';
-  var CLAIM_HREF = MINE ? '/claim?listing=' + MINE : '/claim';
-  var CLAIM = '<a class="k-btn k-cta" href="' + CLAIM_HREF + '">Claim your listing</a><p class="rf-price">Free. About a minute. You are in the room before we open January 1.</p>';
   function row(n, cls, title, body, tag, tagCls) {
     return '<div class="k-row"><span class="k-num ' + cls + '">' + n + '</span><span class="k-row-t"><b>' + title + '</b><small>' + body + '</small></span>' + (tag ? '<span class="k-tag ' + (tagCls || 'live') + '">' + tag + '</span>' : '<span></span>') + '</div>';
   }
+  function arow(n, cls, title, body, href, attr) {
+    return '<a class="k-row" href="' + href + '"' + (attr || '') + ' style="text-decoration:none;color:var(--k-ink)"><span class="k-num ' + cls + '">' + n + '</span><span class="k-row-t"><b>' + title + '</b><small>' + body + '</small></span><span></span></a>';
+  }
   function good(blocks) { return '<section class="rf-sec"><span class="k-label">Good to know</span><div class="gb-good">' + blocks.map(function (b) { return '<div class="k-block ' + b[0] + '"><span class="k-label">' + b[1] + '</span>' + b[2] + '</div>'; }).join('') + '</div></section>'; }
-  function see() { return '<div class="gb-see"><span class="k-label">Ready?</span><h2>Start with your listing.</h2><p>It is free, and it is how every brand at the Expo gets there: one small step at a time.</p><a class="k-btn k-sm" href="' + CLAIM_HREF + '">Claim your listing &rsaquo;</a></div>'; }
-  function next(i) { var n = PARTS[i + 1]; return n ? '<div class="gb-next"><a class="k-btn" href="' + link(n[0]) + '">Next part: ' + esc(n[1]) + ' &rsaquo;</a><span>' + esc(n[6]) + '</span></div>' : ''; }
+  function next(i) { var n = PARTS[i + 1]; return n ? '<div class="gb-next"><a class="k-btn" href="' + link(n[0]) + '">Next part: ' + n[1] + ' &rsaquo;</a><span>' + esc(n[6]) + '</span></div>' : ''; }
 
-  // The walk through the Expo, one scene at a time. Scenes are drawn in our style; the Expo is Coming, so every scene is how we picture it.
-  var WALK = [
-    ['From above', 'The whole Expo at once: the hall of brands, the Food Village outside, the stage at the end.', 'walk-1-above.jpg'],
-    ['The Food Village', 'Vegan food from around the world, one stall after another, with long tables to share it.', 'walk-2-village.jpg'],
-    ['The main stage', 'The biggest voices in the Vegan world, on the topics our community cares about most.', 'walk-3-stage.jpg'],
-    ['Your booth', 'How a brand could show up: a tasting counter, your products, your wall, your team.', 'walk-4-booth.jpg'],
-    ['The evening', 'Music, food and the whole community together, once every two years.', 'walk-6-evening.jpg']
+  // The walk through the Expo (Sean, 2026-11-21: "each of these sections you could see the visual of it... maybe 5 images per each one... you're
+  // walking through a map of the World Vegan Expo"): every village is its own view under What it will be, with five pictures, what you find
+  // there and a sample schedule. Scenes are drawn in our style; the Expo is Coming, so every scene is how we picture it.
+  function vimg(f) { return '/public/expo/' + f; }
+  function thumb(f, w) { return '/_vercel/image?url=' + encodeURIComponent(vimg(f)) + '&w=' + (w || 640) + '&q=75'; }
+  var VILLAGES = [
+    ['food', 'The Food Village', 'or', 'Outdoors and free to walk in: local vendors, food trucks and long tables to share it all.',
+      [['Local vendors and food trucks', 'One stall after another, from the host city and every chapter.'], ['A live cooking stage', 'Chefs cook in front of you, and you taste it after.'], ['The Burger and Dessert Battles', 'Cooks go head to head, and the crowd decides.'], ['Long tables at dusk', 'String lights, shared plates, new friends.']],
+      [['Thu to Mon', '11 AM to 9 PM', 'Open to everyone, free to walk in'], ['Friday', '1 PM', 'Live cooking stage opens'], ['Saturday', '2 PM', 'The Burger Battle'], ['Sunday', '2 PM', 'The Dessert Battle']],
+      ['walk-2-village.jpg', 'v/11.jpg', 'v/12.jpg', 'v/13.jpg', 'v/14.jpg']],
+    ['hall', 'The Exhibitor Hall', 'br', 'The brands under one roof, with samples, the New Products Wall and a lounge for buyers.',
+      [['The brands, with samples', 'Taste it before you buy it.'], ['The New Products Wall', 'What is launching this year, all in one place.'], ['The buyers&rsquo; lounge', 'Where brands meet stores, distributors and press.'], ['Thursday is trade day', 'Buyers and press first, then everyone from Friday.']],
+      [['Thursday', '9 AM to 5 PM', 'Trade and media day'], ['Thursday', '4 PM', 'The New Products Wall is revealed'], ['Fri to Sun', '10 AM to 6 PM', 'Open to everyone']],
+      ['walk-4-booth.jpg', 'v/21.jpg', 'v/22.jpg', 'v/23.jpg', 'v/24.jpg']],
+    ['world', 'The World Food Pavilion', 'pk', 'Food from every corner of the world, some of it in the country for the first time.',
+      [['Vendors from around the world', 'Ethiopian, Japanese, Mexican, Indian and more.'], ['Collect a stamp at each stall', 'Fill your card as you eat your way around the world.'], ['Sweets and spices', 'Desserts and pantry finds to take home.']],
+      [['Fri to Sun', '11 AM to 8 PM', 'Open to everyone'], ['Friday', '7 PM', 'The World Table, a course from each chef']],
+      ['v/31.jpg', 'v/32.jpg', 'v/33.jpg', 'v/34.jpg', 'v/35.jpg']],
+    ['learn', 'The Education Village', 'pe', 'Two stages and breakout rooms: activism, food futures, business, health and culture.',
+      [['The main stage', 'The biggest voices in the Vegan world.'], ['Panels on the second stage', 'The conversations our community cares about most.'], ['Hands-on workshops', 'Cook, plan and learn something you can use the next day.'], ['A start for the curious', 'Short talks for anyone just starting out.']],
+      [['Friday', '10 AM', 'The opening keynote'], ['Saturday', '11 AM', 'The marquee panel'], ['Fri to Sun', '1 PM to 5 PM', 'Workshops and breakouts'], ['Sunday', '4 PM', 'A documentary premiere'], ['Monday', '9 AM', 'Business deep dives and the investor showcase']],
+      ['walk-3-stage.jpg', 'v/41.jpg', 'v/42.jpg', 'v/43.jpg', 'v/44.jpg']],
+    ['causes', 'The Causes Village', 'dk', 'Nonprofits, sanctuaries and rescues, with the Give Back wall and volunteer sign-ups.',
+      [['Nonprofit tables', 'Meet the people doing the work.'], ['Meet a sanctuary', 'The animals they care for, and how to help.'], ['The Give Back wall', 'Leave a heart, pick a cause.'], ['Volunteer sign-ups', 'Find a way to help at home.']],
+      [['Fri to Sun', '10 AM to 6 PM', 'Open to everyone'], ['Monday', '8 AM', 'Impact Morning out in the host city']],
+      ['v/51.jpg', 'v/52.jpg', 'v/53.jpg', 'v/54.jpg', 'v/55.jpg']],
+    ['market', 'The Market', 'ti', 'Beauty, fashion, home and makers, with a Start Here desk for newcomers.',
+      [['Beauty and personal care', 'Skincare, soaps and more, tried on the spot.'], ['Fashion', 'Clothes, bags and shoes.'], ['Home and makers', 'Ceramics, candles and handmade goods.'], ['The Start Here desk', 'New to it all? Start here.']],
+      [['Fri to Sun', '10 AM to 6 PM', 'Open to everyone']],
+      ['v/65.jpg', 'v/61.jpg', 'v/62.jpg', 'v/63.jpg', 'v/64.jpg']],
+    ['well', 'Wellness and Fitness', 'or', 'Morning workouts, a run club, an athletes&rsquo; panel and a lifting meet.',
+      [['Morning yoga', 'Start the day together.'], ['The run club', 'A group run every morning.'], ['The lifting meet', 'Plant-powered athletes on stage.'], ['The athletes&rsquo; panel', 'How they train and eat.'], ['The smoothie bar', 'Refuel between it all.']],
+      [['Fri to Mon', '7 AM', 'Morning yoga'], ['Saturday', '7 AM', 'The group run'], ['Saturday', '3 PM', 'The lifting meet'], ['Sunday', '11 AM', 'The athletes&rsquo; panel']],
+      ['v/71.jpg', 'v/72.jpg', 'v/73.jpg', 'v/74.jpg', 'v/75.jpg']],
+    ['media', 'Creators and Media', 'br', 'Live podcast tapings, a content studio and creator meetups.',
+      [['Live podcast tapings', 'Sit in the audience while the episode is made.'], ['The content studio', 'Lights, set and help for creators to film.'], ['Creator meetups', 'Meet the people you follow.']],
+      [['Fri to Sun', '12 PM', 'A live podcast taping'], ['Saturday', '5 PM', 'The creator meetup']],
+      ['v/81.jpg', 'v/82.jpg', 'v/83.jpg', 'v/84.jpg', 'v/85.jpg']],
+    ['hub', 'Community Hub and Family', 'pk', 'A table for every club and chapter, a family corner and a travel corner.',
+      [['A table for every club', 'Find your people, or a new club to join.'], ['The family corner', 'Painting, play and a quiet spot for little ones.'], ['The travel corner', 'Where to go next, and how to get there.']],
+      [['Fri to Sun', '10 AM to 6 PM', 'Open to everyone'], ['Sunday', '12 PM', 'Club meetups']],
+      ['v/91.jpg', 'v/92.jpg', 'v/93.jpg', 'v/94.jpg', 'v/95.jpg']],
+    ['nights', 'The nights', 'pe', 'A chef dinner every night, the parties, and the Vegans Explore Awards.',
+      [['A chef dinner every night', 'The Host City Table, the World Table, the Awards dinner and more.'], ['The Vegans Explore Awards', 'Nominated by the community, chosen by members and a panel.'], ['The parties', 'Music and the whole community together.']],
+      [['Thursday', '7 PM', 'Opening Night and the Host City Table'], ['Friday', '7 PM', 'The World Table, then the Friday party'], ['Saturday', '7 PM', 'The Vegans Explore Awards'], ['Sunday', '7 PM', 'A chef dinner, then the Sunday party'], ['Monday', '11 AM', 'The closing brunch']],
+      ['walk-6-evening.jpg', 'v/101.jpg', 'v/102.jpg', 'v/103.jpg', 'v/104.jpg']]
   ];
-  function walk() {
-    return '<div class="ex-walk" id="exWalk"><div class="k-pic" style="--k-c:#FF9EC4"><img id="exImg" src="/public/expo/' + WALK[0][2] + '" alt=""></div>' +
-      '<div class="ex-cap"><div><small id="exN"></small><b id="exT"></b></div><div class="ex-nav"><button type="button" class="k-btn k-sm" id="exPrev" aria-label="Back">&lsaquo;</button><button type="button" class="k-btn k-sm" id="exNext" aria-label="Next">Next &rsaquo;</button></div><p id="exL"></p></div>' +
-      '<div class="ex-dots" id="exDots">' + WALK.map(function (w, j) { return '<button type="button" aria-label="' + esc(w[0]) + '" data-j="' + j + '"></button>'; }).join('') + '</div></div>';
+  // The week (Sean, 2026-11-21: "the schedule deserves its own page, like a rundown... What's day one? What's day two?"). Each day's
+  // rundown is built from the villages' own schedules, so a time changed in a village changes here too.
+  var DAYS = [
+    ['thu', 'Thursday', 'January 20', 'Trade and media day', 'The brands meet buyers and press. The Food Village opens to everyone. Opening Night.', 'v/24.jpg'],
+    ['fri', 'Friday', 'January 21', 'Public day one', 'Every village opens, the opening keynote, then the World Table.', 'walk-3-stage.jpg'],
+    ['sat', 'Saturday', 'January 22', 'The biggest day', 'The marquee panel, the Burger Battle, then the Vegans Explore Awards.', 'v/102.jpg'],
+    ['sun', 'Sunday', 'January 23', 'Family and community day', 'Club meetups, the Dessert Battle, a documentary premiere, a chef dinner.', 'v/92.jpg'],
+    ['mon', 'Monday', 'January 24', 'Industry and impact', 'An Impact Morning in the host city, business deep dives, the closing brunch.', 'v/54.jpg']
+  ];
+  var DAYN = { thu: 0, thursday: 0, fri: 1, friday: 1, sat: 2, saturday: 2, sun: 3, sunday: 3, mon: 4, monday: 4 };
+  function onDay(label, d) {
+    var m = label.toLowerCase().match(/^(\w+)(?: to (\w+))?$/); if (!m) return false;
+    var a = DAYN[m[1]], b = m[2] ? DAYN[m[2]] : a; return d >= a && d <= b;
+  }
+  function mins(t) { var m = t.match(/(\d+)(?::(\d+))? (AM|PM)/); if (!m) return 0; return ((+m[1] % 12) + (m[3] === 'PM' ? 12 : 0)) * 60 + (+m[2] || 0); }
+  function rundown(d) {
+    var out = [];
+    VILLAGES.forEach(function (v) { v[5].forEach(function (s) { if (onDay(s[0], d)) out.push([s[1], s[2], v]); }); });
+    // "Open to everyone" from several villages at one time reads as one line: doors open, then the villages.
+    var rows = [], open = {};
+    out.forEach(function (r) {
+      if (/^Open to everyone/.test(r[1])) { if (!open[r[0]]) { open[r[0]] = [r[0], 'Doors open', []]; rows.push(open[r[0]]); } open[r[0]][2].push(r[2]); }
+      else rows.push([r[0], r[1], [r[2]]]);
+    });
+    return rows.sort(function (x, y) { return mins(x[0]) - mins(y[0]); });
+  }
+  var GAL = [];
+  function walk(list, name) {
+    GAL = list.map(function (f) { return [name, f]; });
+    return '<div class="ex-walk" id="exWalk"><div class="k-pic" style="--k-c:#FF9EC4"><img id="exImg" src="' + thumb(list[0], 828) + '" alt=""></div>' +
+      '<div class="ex-cap"><div><small id="exN"></small></div><div class="ex-nav"><button type="button" class="k-btn k-sm" id="exPrev" aria-label="Back">&lsaquo;</button><button type="button" class="k-btn k-sm" id="exNext" aria-label="Next">Next &rsaquo;</button></div></div>' +
+      '<div class="ex-dots" id="exDots">' + list.map(function (w, j) { return '<button type="button" aria-label="Picture ' + (j + 1) + '" data-j="' + j + '"></button>'; }).join('') + '</div></div>';
   }
   function wireWalk() {
-    var at = 0, img = document.getElementById('exImg'); if (!img) return;
-    WALK.forEach(function (w) { var im = new Image(); im.src = '/public/expo/' + w[2]; });
+    var at = 0, img = document.getElementById('exImg'); if (!img || !GAL.length) return;
+    GAL.forEach(function (w) { var im = new Image(); im.src = thumb(w[1], 828); });
     function show(j) {
-      at = (j + WALK.length) % WALK.length; var w = WALK[at];
-      img.src = '/public/expo/' + w[2]; img.alt = w[0] + ': ' + w[1];
-      document.getElementById('exN').textContent = (at + 1) + ' of ' + WALK.length + ' · How we picture it';
-      document.getElementById('exT').textContent = w[0]; document.getElementById('exL').textContent = w[1];
+      at = (j + GAL.length) % GAL.length;
+      img.src = thumb(GAL[at][1], 828); img.alt = GAL[at][0] + ', how we picture it, picture ' + (at + 1);
+      document.getElementById('exN').textContent = (at + 1) + ' of ' + GAL.length + ' · How we picture it';
       document.querySelectorAll('#exDots button').forEach(function (d, k) { d.classList.toggle('on', k === at); });
     }
     document.getElementById('exPrev').onclick = function () { show(at - 1); };
@@ -257,55 +382,254 @@
     show(0);
   }
 
+  // The city race (Sean, 2026-11-21, LOCKED: the Road to the Expo, commitments never money; the panel: show a number only once it is real,
+  // and give people a race they can share). A zero reads "Be first", never 0.
+  var ROADB = 'https://fwbhwfxpncrsfhttimna.supabase.co/rest/v1/rpc/ve_expo_road';
+  var ROADK = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ3Ymh3ZnhwbmNyc2ZodHRpbW5hIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ2NjAxMzksImV4cCI6MjA5MDIzNjEzOX0.9mxjK0bn5WATCbNLWrHPakD6yHUDtHFHrOaklPnWkOA';
+  function loadRoad() {
+    fetch(ROADB, { method: 'POST', headers: { apikey: ROADK, Authorization: 'Bearer ' + ROADK, 'Content-Type': 'application/json' }, body: '{}' })
+      .then(function (r) { return r.json(); }).then(function (d) {
+        if (!d || !d.chapters) return;
+        [].forEach.call(document.querySelectorAll('[data-rd]'), function (el) {
+          var v = Number(d[el.getAttribute('data-rd')] || 0);
+          el.textContent = v > 0 ? v.toLocaleString('en-US') : 'Be first';
+        });
+        var box = document.getElementById('rdCh'); if (!box) return;
+        var ch = d.chapters.filter(function (c) { return c.businesses >= 10; }).map(function (c) { c.score = c.members + 3 * c.claimed; return c; })
+          .sort(function (a, b) { return b.score - a.score || b.businesses - a.businesses; });
+        var small = d.chapters.filter(function (c) { return c.businesses < 10; }).map(function (c) { return c.name; });
+        box.innerHTML = ch.map(function (c, k) {
+          var pct = Math.min(100, Math.round(100 * c.claimed / Math.max(1, c.businesses)));
+          var bits = [];
+          if (c.members) bits.push(c.members + ' member' + (c.members === 1 ? '' : 's'));
+          if (c.claimed) bits.push(c.claimed + ' Vegan business' + (c.claimed === 1 ? '' : 'es') + ' on board');
+          return '<div class="rd-c"><b><span class="rd-rank">' + (k + 1) + '</span>' + esc(c.name) + '</b>' +
+            (c.claimed ? '<div class="rd-bar" role="img" aria-label="' + pct + '% of its Vegan businesses on board, the goal line at 80%"><i style="width:' + pct + '%"></i><em></em></div>' : '') +
+            '<small>' + (bits.length ? bits.join(' &middot; ') : 'Be the first here') + '</small>' +
+            '<a class="rd-go" href="#/in" data-role="attend" data-city="' + esc(c.name) + '">Count in for ' + esc(c.name) + ' &rsaquo;</a></div>';
+        }).join('') + (small.length ? '<div class="rd-c" style="border-style:dashed"><b>Joining the race soon</b><small>' + small.map(esc).join(', ') + '. Each joins once we list enough of its Vegan businesses.</small></div>' : '');
+        var a = document.getElementById('rdAsOf'); if (a) a.textContent = 'Counted live, ' + new Date(d.as_of).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + '. Commitments, never money.';
+      }).catch(function () {});
+  }
+  function shareRace(b) {
+    var u = location.origin + '/expo#/road', t = 'Which city hosts the World Vegan Expo? Count in for ours.';
+    if (navigator.share) { navigator.share({ title: 'The World Vegan Expo', text: t, url: u }).catch(function () {}); return; }
+    try { navigator.clipboard.writeText(u).then(function () { b.textContent = 'Link copied'; }); } catch (e) {}
+  }
+
+  // The committees (LOCKED by Sean 2026-11-21, members only for now): ve-giving serves the list to signed-in members only.
+  var COMMS = null, COMMS_ASKED = false, pickedCommittee = '';
+  function tok() { try { return (window.VEAuth && VEAuth.getToken && VEAuth.getToken()) || localStorage.getItem('ve_token') || ''; } catch (e) { return ''; } }
+  function loadCommittees(then) {
+    var t = tok();
+    fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-giving', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, t ? { Authorization: 'Bearer ' + t } : {}), body: '{"action":"expo_committees"}' })
+      .then(function (r) { return r.json(); }).then(function (r) { COMMS_ASKED = true; COMMS = r && r.member ? r.committees : null; if (then) then(); })
+      .catch(function () { COMMS_ASKED = true; if (then) then(); });
+  }
+  function drawCommittees() {
+    var box = document.getElementById('cmBox'); if (!box) return;
+    if (!COMMS) {
+      box.innerHTML = '<span class="k-label">The committees</span><div class="k-block k-tint"><span class="k-label">Members only, for now</span>' +
+        'The volunteer committees building the Expo are open to members first. <a href="/join">Join free</a> or <a href="/login">log in</a> to see them.</div>';
+      return;
+    }
+    var cols = ['or', 'br', 'pk', 'pe', 'dk', 'ti'];
+    box.innerHTML = '<span class="k-label">The committees, for members</span>' +
+      '<div class="ex-two" style="margin-top:0"><div class="k-rows">' + COMMS.map(function (c, j) {
+        return '<div class="k-row"><span class="k-num ' + cols[j % 6] + '">' + (j + 1) + '</span><span class="k-row-t"><b>' + esc(c.name) + '</b><small>' + esc(c.owns) + '</small></span>' +
+          '<a class="k-btn k-sm" href="#/in" data-role="committee" data-committee="' + esc(c.slug) + '">Join</a></div>';
+      }).join('') + '</div>' +
+      '<div class="k-rows">' +
+        row('A', 'or', 'Volunteer, led by a Chair', 'Each committee has a Chair who runs its meeting. Chairs come from the people who step up.') +
+        row('B', 'br', 'One Zoom meeting a month', 'Show up and contribute. Miss two in a row without a word and we check in; a third and you are off the committee.') +
+        row('C', 'pk', 'An All Access Pass', 'Members in good standing from the day they join to the Expo get an All Access Pass: all five days, every stage and the Awards.') +
+        row('D', 'pe', 'Paid jobs, members first', 'When a committee needs paid work done, web, design, photos or video, it is posted inside the committees first.') +
+        row('E', 'dk', 'Invitation first', 'We invite the founding members personally. Any member can ask to join, and the Chair says yes.') +
+      '</div></div>';
+  }
+
+  // The locked offer, said once on each view, never repeated in every box.
+  var FIRST = 'Count in now and you&rsquo;re first: tickets, booths and speaking slots before the public, plus a Founding badge on your profile. No fee, no deposit.';
+  var DISCLAIMER = '<p class="gb-fine">January 20 to 24, 2028 are our planned dates. Dates, the host city and details can change, and everyone counted in hears first.</p>';
+
+  function door(d, j) { return arow(j + 1, d[3], d[2], d[5], '#/for/' + d[0]); }
+  // From a brand email, ?b=<listing slug> carries their listing, so Claim opens it directly (the email's link is /expo?b={slug}), and the
+  // Guide opens on the brand door.
+  var MINE = (location.search.match(/[?&]b=([a-z0-9-]{2,120})/) || [])[1] || '';
+  var CLAIM_HREF = MINE ? '/claim?listing=' + MINE : '/claim';
+  if (MINE && !location.hash) history.replaceState(null, '', location.pathname + location.search + '#/for/brand');
+
+  // The doors: [key, form role, short label, color, title, one line, today rows [title, line, link], before-you-pay line]
+  var DOORS = [
+    ['member', 'attend', 'I want to be there', 'or', 'For members', 'Five days of food, talks, nights and the Awards.',
+      [['You&rsquo;re first for tickets', 'Tickets open to everyone counted in before the public.', '#/in'],
+       ['A Founding badge', 'On your profile, for counting in before the Expo opened.', '#/in'],
+       ['Push your city up', 'The city whose people show up gets the Expo. Share the race.', '#/road'],
+       ['Join free', 'Membership is free with a short survey. Join before January 1 and you are a Founding Member.', '/join']],
+      'Ticket prices, the host city and travel. Coming, and you see them before the public.'],
+    ['vendor', 'vendor', 'I&rsquo;m a food vendor', 'br', 'For food vendors', 'The Food Village outdoors, or the World Food Pavilion.',
+      [['First pick of spots', 'Booths open to vendors counted in before the public. No fee, no deposit to count in.', '#/in'],
+       ['A Founding badge', 'On your profile, for counting in before the Expo opened.', '#/in'],
+       ['Meet us at a Community Night', 'Our first nights in our chapters start in February 2027.', '/expo/events'],
+       ['Claim your listing', 'Free, about a minute. Members find you before the Expo.', CLAIM_HREF]],
+      'Before you pay anything: the host city and venue, the booth fee, refund terms, power, water and load-in, all in writing before a single booth opens.'],
+    ['brand', 'exhibitor', 'I&rsquo;m a brand or sponsor', 'pk', 'For brands and sponsors', 'The Exhibitor Hall, Thursday&rsquo;s trade day, a village, a stage, a night or the Awards.',
+      [['First pick of booths and sponsorships', 'Open to brands counted in before the public. No fee, no deposit to count in.', '#/in'],
+       ['Thursday is trade day', 'The brands meet buyers and press before the public days.', '#/expo'],
+       ['A Founding badge', 'On your profile, for counting in before the Expo opened.', '#/in'],
+       ['Claim your brand page', 'Free. Members find your products before the Expo.', CLAIM_HREF]],
+      'Before you budget: the exhibitor sheet and sponsor tiers, the host city and venue, deposit and refund terms. Coming, to brands counted in first.'],
+    ['city', 'city', 'My city should host it', 'pe', 'For host cities', 'For chapters, and for the people who bring events to a city.',
+      [['Host city bids: Coming', 'Cities counted in hear first when bids open.', '#/in'],
+       ['The race is public', 'Every chapter&rsquo;s members and businesses, counted live.', '#/road'],
+       ['Five days in late January', 'January 20 to 24, 2028: a trade day, three public days and an impact day.', '#/expo']],
+      'Before a city commits: the host brief, with space, dates and room nights. Coming, to cities counted in first.'],
+    ['club', 'club', 'I run a club or group', 'dk', 'For clubs and groups', 'Bring your people, and meet at the Community Hub.',
+      [['You&rsquo;re first for tickets', 'Your club counted in hears before the public.', '#/in'],
+       ['A home for your club', 'Your page and your events on Vegans Explore, free.', '/groups/welcome'],
+       ['Community Nights from February 2027', 'Our first nights in our chapters, with local clubs.', '/expo/events'],
+       ['A Founding badge', 'On your profile, for counting in before the Expo opened.', '#/in']],
+      'Group tickets and travel. Coming, to clubs counted in first.'],
+    ['creator', 'creator', 'I&rsquo;m a creator or speaker', 'ti', 'For creators and speakers', 'The stages, the podcast tapings, the content studio.',
+      [['First pick of speaking slots', 'Open to creators counted in before the public.', '#/in'],
+       ['A Founding badge', 'On your profile, for counting in before the Expo opened.', '#/in'],
+       ['Claim your profile', 'Your page in our People.', '/claim']],
+      'The stages, topics and what speakers get. Coming, to creators counted in first.']
+  ];
+  var ROLE_NAMES = { attend: 'I will be there', vendor: 'Food vendor', exhibitor: 'Brand (exhibitor)', sponsor: 'Sponsor', club: 'Club or group', creator: 'Creator or speaker', cause: 'Cause', volunteer: 'Volunteer', city: 'Host city' };
+  var picked = 'attend', pickedCity = '';
   var VIEWS = {
     start: function (i) {
-      return head(i, CLAIM) +
+      return head(i, '') +
         '<div class="gb-cover"><div>' +
-          '<div class="k-blocks"><div class="k-block k-dk"><span class="k-big">Early 2028</span><small>The first World Vegan Expo</small></div>' +
-          '<div class="k-block k-peach"><span class="k-big">Every 2 years</span><small>With community events in between</small></div>' +
-          '<div class="k-block k-pink"><span class="k-big">Every city</span><small>Vegan food from around the world</small></div></div>' +
-          '<section class="rf-sec"><span class="k-label">In this Guide</span><div class="rf-parts">' + PARTS.slice(1).map(function (p, j) {
-            return '<a class="k-row" href="' + link(p[0]) + '"><span class="k-num ' + ['or', 'br', 'pk', 'pe', 'dk', 'ti'][j % 6] + '">' + (j + 1) + '</span><span class="k-row-t"><b>' + esc(p[1]) + '</b><small>' + esc(p[6]) + '</small></span><span></span></a>';
-          }).join('') + '</div></section>' +
-        '</div><div class="k-pic" style="--k-c:#FF9EC4"><img src="/public/expo/liz-expo.jpg" alt="Liz, our Guide for businesses, welcoming you into a food village of booths from around the world"></div></div>' + next(i);
+          '<div class="k-blocks gb-now"><div class="k-block k-dk"><span class="k-label">What</span><span class="k-big">Jan 20 to 24, 2028</span><small>The whole Vegan world in one place, every two years</small></div>' +
+          '<div class="k-block k-peach"><span class="k-label">Why now</span><span class="k-big">Host city open</span><small>The cities whose people show up get it</small></div>' +
+          '<div class="k-block k-pink"><span class="k-label">Count in now</span><span class="k-big">You&rsquo;re first</span><small>Tickets, booths and speaking slots before the public, and a Founding badge</small></div></div>' +
+          '<p class="gb-by"><b>From the team behind over 500 events.</b> Our founder ran Seed Food and Wine&rsquo;s marketing for seven years. <a href="#/why">Meet the team</a></p>' +
+          '<section class="rf-sec"><span class="k-label">I&rsquo;m here as</span><div class="rf-parts">' + DOORS.map(door).join('') + '</div></section>' + DISCLAIMER +
+        '</div><div class="k-pic" style="--k-c:#FF9EC4"><img src="/public/expo/liz-expo.jpg" alt="Liz, our Guide, welcoming you into a food village of booths from around the world"></div></div>' + next(i);
+    },
+    'for': function (i) {
+      var k = sub(), d = DOORS.filter(function (x) { return x[0] === k; })[0];
+      if (!d) return head(i, '') + '<section class="rf-sec"><span class="k-label">I&rsquo;m here as</span><div class="rf-parts">' + DOORS.map(door).join('') + '</div></section>' + next(i);
+      return head(i, '', d[4]) +
+        '<div class="ex-two" style="margin-top:28px"><div><section class="rf-sec"><span class="k-label">' + d[4] + ': what you get today</span><div class="k-rows">' +
+          d[6].map(function (r, j) { return arow(j + 1, ['or', 'br', 'pk', 'pe', 'dk', 'ti'][j % 6], r[0], r[1], r[2], r[2] === '#/in' ? ' data-role="' + d[1] + '"' : ''); }).join('') + '</div></section>' +
+          '<div class="k-block k-tint" style="margin:18px 0 10px"><span class="k-label">Later</span>' + d[7] + '</div>' +
+          '<div class="gb-cta"><a class="k-btn k-cta" href="#/in" data-role="' + d[1] + '">Count me in</a><p class="rf-price">' + FIRST + '</p></div>' +
+          '<section class="rf-sec"><span class="k-label">Another door</span><div class="rd-who">' + DOORS.filter(function (x) { return x !== d; }).map(function (x) { return '<a class="rd-door" href="#/for/' + x[0] + '">' + x[2] + '</a>'; }).join('') + '</div></section></div>' +
+        '<div class="k-pic" style="--k-c:#FF9EC4"><img src="/public/expo/' + ({ member: 'walk-6-evening.jpg', vendor: 'walk-2-village.jpg', brand: 'walk-4-booth.jpg', city: 'walk-1-above.jpg', club: 'walk-6-evening.jpg', creator: 'walk-3-stage.jpg' })[d[0]] + '" alt="How we picture the World Vegan Expo"></div></div>' + next(i);
     },
     expo: function (i) {
-      return head(i, CLAIM) + '<div class="ex-two" style="margin-top:28px"><section class="rf-sec"><span class="k-label">The World Vegan Expo</span><div class="k-rows">' +
-        row(1, 'or', 'Every Vegan brand in one place', 'The brands people love and the ones they are about to discover, side by side for a few days.', 'Coming', 'new') +
-        row(2, 'br', 'The biggest names, on the topics that matter', 'Talks and panels with the leading voices in the Vegan world, on the subjects our community cares about most.', 'Coming', 'new') +
-        row(3, 'pk', 'The place to launch', 'A new documentary, a new product, a new book: the Expo is where the Vegan world will want to see it first.', 'Coming', 'new') +
-        row(4, 'pe', 'The Food Village', 'Vegan food from around the world. Booths are limited for each kind of vendor, and vendors come from every city, not just the host city.', 'Coming', 'new') +
-        row(5, 'dk', 'Every two years', 'Time to set it up the right way, with community events in our chapters between editions that build toward the next one.', 'Coming', 'new') +
-        row(6, 'ti', 'A host city that partners with us', 'The Expo goes to a city that wants to make it a big deal, chosen together with the community.', 'Coming', 'new') +
-        '</div></section>' + walk() + '</div>' + good([['k-tint', 'The city and the date', 'Announced with the host city. Brands already in the room hear first.'], ['k-peach', 'Booths and partners', 'Food Village booths and partner options open later, and they are limited. The first step is your listing.']]) + see() + next(i);
+      var k = sub(), vi = -1; VILLAGES.forEach(function (v, j) { if (v[0] === k) vi = j; });
+      var menu = '<nav class="vx-menu" aria-label="The villages"><a href="#/expo"' + (vi < 0 ? ' aria-current="page"' : '') + '>The map</a>' + VILLAGES.map(function (v, j) { return '<a href="#/expo/' + v[0] + '"' + (j === vi ? ' aria-current="page"' : '') + '>' + v[1] + '</a>'; }).join('') + '</nav>';
+      if (vi < 0) {
+        return head(i, '') + menu +
+          '<section class="rf-sec"><span class="k-label">Walk the Expo: pick a village</span><div class="vx-map">' + VILLAGES.map(function (v, j) {
+            return '<a class="vx-card" href="#/expo/' + v[0] + '"><span class="vx-pic" style="background-image:url(\'' + thumb(v[6][0]) + '\')"></span><span class="vx-t"><span class="k-num ' + v[2] + '">' + (j + 1) + '</span><span><b>' + v[1] + '</b><small>' + v[3] + '</small></span></span></a>';
+          }).join('') + '</div></section>' + next(i);
+      }
+      var v = VILLAGES[vi], nv = VILLAGES[vi + 1];
+      return '<div class="rf-crumb"><a href="#/">The World Vegan Expo</a> &rsaquo; <a href="#/expo">What it will be</a> &rsaquo; ' + v[1] + '</div>' +
+        '<div class="rf-head"><div class="rf-t"><h1 class="k-h1">' + v[1] + '</h1><p class="k-lede">' + v[3] + '</p></div>' + guide(PARTS[i]) + '<div class="rf-act"></div></div>' + menu +
+        '<div class="ex-two" style="margin-top:22px"><div><section class="rf-sec"><span class="k-label">What you will find</span><div class="k-rows">' +
+          v[4].map(function (r, j) { return row(j + 1, ['or', 'br', 'pk', 'pe', 'dk', 'ti'][j % 6], r[0], r[1]); }).join('') + '</div></section>' +
+          '<section class="rf-sec"><span class="k-label">Sample schedule</span><div class="vx-sched">' + v[5].map(function (s) { return '<div><em>' + s[0] + '</em><b>' + s[1] + '</b><span>' + s[2] + '</span></div>'; }).join('') + '</div>' +
+          '<p class="gb-fine">How we picture it. Times and details can change.</p></section></div>' +
+        walk(v[6], v[1]) + '</div>' +
+        (nv ? '<div class="gb-next"><a class="k-btn" href="#/expo/' + nv[0] + '">Next village: ' + nv[1] + ' &rsaquo;</a><span>' + nv[3] + '</span></div>' : next(i));
     },
-    room: function (i) {
-      return head(i, CLAIM) + '<section class="rf-sec gb-now"><span class="k-label">Where we are today</span><div class="k-blocks">' +
-        '<div class="k-block k-dk"><span class="k-big" id="gbMembers">&nbsp;</span><small>Founding members so far</small></div>' +
-        '<div class="k-block k-peach"><span class="k-big">2,101</span><small>People our emails reach</small></div>' +
-        '<div class="k-block k-tint"><span class="k-big">2,864</span><small>Vegan and plant-based places and brands in our Directory</small></div></div>' +
-        '<p class="gb-quote">We are not asking you to believe in 2028 today. We are asking for one small step, and we will show you where it leads.</p>' +
-        '<p class="gb-fine">Members are counted live. The email reach and the Directory count are as of November 19, 2026.</p></section>' +
-        good([['k-pink', 'Why we start small', 'Ten years on the ground in South and Central Florida taught us that big events are built on relationships. We are building them now, city by city, with the businesses who see what we are doing.'], ['k-tint', 'What you get now', 'Your listing, your brand in front of members as we grow, and a seat at every step on the road to the Expo.']]) + see() + next(i);
+    week: function (i) {
+      var k = sub(), di = -1; DAYS.forEach(function (d, j) { if (d[0] === k) di = j; });
+      var menu = '<nav class="vx-menu" aria-label="The days"><a href="#/week"' + (di < 0 ? ' aria-current="page"' : '') + '>All five days</a>' + DAYS.map(function (d, j) { return '<a href="#/week/' + d[0] + '"' + (j === di ? ' aria-current="page"' : '') + '>' + d[1] + ', ' + d[2].replace('January', 'Jan') + '</a>'; }).join('') + '</nav>';
+      var cols = ['or', 'br', 'pk', 'pe', 'dk'];
+      if (di < 0) {
+        return head(i, '') + menu +
+          '<section class="rf-sec"><span class="k-label">Pick a day</span><div class="vx-map">' + DAYS.map(function (d, j) {
+            return '<a class="vx-card" href="#/week/' + d[0] + '"><span class="vx-pic" style="background-image:url(\'' + thumb(d[5]) + '\')"></span><span class="vx-t"><span class="k-num ' + cols[j] + '">' + d[1].slice(0, 3) + '</span><span><b>' + d[3] + '</b><small>' + d[1] + ', ' + d[2] + '. ' + d[4] + '</small></span></span></a>';
+          }).join('') + '</div></section>' + next(i);
+      }
+      var d = DAYS[di], nd = DAYS[di + 1];
+      return '<div class="rf-crumb"><a href="#/">The World Vegan Expo</a> &rsaquo; <a href="#/week">The week</a> &rsaquo; ' + d[1] + '</div>' +
+        '<div class="rf-head"><div class="rf-t"><h1 class="k-h1">' + d[1] + ', <span class="k-hl ' + ['o', 'g', 'p', 'o', 'g'][di] + '">' + d[2] + '</span></h1><p class="k-lede">' + d[3] + '. ' + d[4] + '</p></div>' + guide(PARTS[i]) + '<div class="rf-act"></div></div>' + menu +
+        '<div class="ex-two" style="margin-top:22px"><section class="rf-sec"><span class="k-label">The rundown, morning to night</span><div class="vx-sched vx-day">' +
+          rundown(di).map(function (r) {
+            if (r[2].length === 1) return '<a href="#/expo/' + r[2][0][0] + '"><b>' + r[0] + '</b><span>' + r[1] + '</span><em>' + r[2][0][1] + ' &rsaquo;</em></a>';
+            return '<div class="vx-open"><b>' + r[0] + '</b><span>' + r[1] + ': ' + r[2].map(function (v) { return '<a href="#/expo/' + v[0] + '">' + v[1] + '</a>'; }).join(', ') + '</span><em></em></div>';
+          }).join('') + '</div>' +
+          '<p class="gb-fine">A sample schedule, how we picture it. Times and details can change. Tap a line to see its village.</p></section>' +
+        '<div class="k-pic" style="--k-c:#FF9EC4"><img src="' + thumb(d[5], 828) + '" alt="' + d[1] + ' at the World Vegan Expo, how we picture it"></div></div>' +
+        (nd ? '<div class="gb-next"><a class="k-btn" href="#/week/' + nd[0] + '">Next day: ' + nd[1] + ' &rsaquo;</a><span>' + nd[3] + '</span></div>' : next(i));
     },
     road: function (i) {
-      return head(i, CLAIM) + '<section class="rf-sec"><span class="k-label">The road to 2028</span><div class="k-steps">' +
-        '<div class="you"><em>Now</em><b>Claim your listing</b>Free, about a minute. You are in the room.</div>' +
-        '<div><em>From January</em><b>Join a campaign</b>Giveaways and features for members, each one a small step you choose.</div>' +
-        '<div><em>2027</em><b>Community events</b>Our chapters\' events, Philadelphia and Los Angeles first. Sponsor one, or all of them. <a href="/expo/events">See a night</a></div>' +
-        '<div><em>Announced with the city</em><b>Expo partners and booths</b>Food Village booths and partner options open to the brands already in the room.</div>' +
-        '<div class="you"><em>Early 2028</em><b>The World Vegan Expo</b>Every Vegan brand in one place.</div></div>' +
-        '<p class="gb-fine" style="margin-top:14px">Orange is where you start. Each step is your choice.</p></section>' +
-        good([['k-peach', 'Community events', 'Each night is drawn for sponsors from start to finish: how it opens, what happens in the middle, and where your brand sits. <a href="/expo/events">Sponsor a community night</a>.'], ['k-tint', 'No step is required', 'Claim your listing and stop there if that is right for you. The door stays open.']]) + see() + next(i);
+      return head(i, '') +
+        '<section class="rf-sec"><span class="k-label">On the road, live</span><div class="k-blocks" id="rdMeters">' +
+          '<div class="k-block k-dk"><span class="k-big" data-rd="members">&nbsp;</span><small>Members on the road</small></div>' +
+          '<div class="k-block k-peach"><span class="k-big" data-rd="businesses_claimed">&nbsp;</span><small>Vegan businesses on board</small></div>' +
+          '<div class="k-block k-pink"><span class="k-big" data-rd="interested">&nbsp;</span><small>Counted in for the Expo</small></div>' +
+          '<div class="k-block k-tint"><span class="k-big" data-rd="clubs">&nbsp;</span><small>Clubs that call it home</small></div></div>' +
+          '<p class="rd-asof" id="rdAsOf">Counted live. Commitments, never money.</p></section>' +
+        '<section class="rf-sec"><div class="rd-hd"><span class="k-label">The race, chapter by chapter</span><button type="button" class="k-btn k-sm" id="rdShare">Share the race</button></div><div class="rd-ch" id="rdCh"><p class="gb-fine">Loading the chapters&hellip;</p></div></section>' +
+        '<div class="ex-two" style="margin-top:28px"><section class="rf-sec"><span class="k-label">What the race does</span><div class="k-rows">' +
+          row(1, 'or', 'It shows where the community is strongest', 'Members, businesses and clubs counting in for their chapter.') +
+          row(2, 'br', 'It goes into every host city&rsquo;s bid', 'A city with its people already on board makes the strongest case.') +
+          row(3, 'pk', 'Community Nights from February 2027', 'Our first nights in our chapters. <a href="/expo/events">See a night</a>') +
+          row(4, 'pe', 'Then tickets, booths and travel', 'Everyone counted in goes first.') +
+          '</div></section><div class="k-pic" style="--k-c:#FF9EC4"><img src="/_vercel/image?url=%2Fpublic%2Fexpo%2Fv%2F111.jpg&w=828&q=75" alt="Groups of friends from different cities arriving at the festival gate"></div></div>' + next(i);
     },
-    claim: function (i) {
-      return head(i, CLAIM) + '<section class="rf-sec"><span class="k-label">Three steps</span><div class="k-rows">' +
-        row(1, 'or', 'Find your brand', 'Every brand and business we write to already has a page in our Directory. Search for yours.', 'About a minute') +
-        row(2, 'br', 'Claim it', 'Confirm it is yours and keep it up to date: your logo, your words, your links.', 'Free') +
-        row(3, 'pk', 'You are in the room', 'You hear first about campaigns, community events and the Expo, and we keep finding ways to bring you value.', 'Yours') +
-        '</div></section>' + good([['k-tint', 'Not listed yet?', 'Add your brand <a href="/claim?add=1">here</a>. It is free.'], ['k-peach', 'Questions?', 'Write to <a href="mailto:contact@vegansexplore.com">contact@vegansexplore.com</a> and a person on our team writes back.']]);
+    why: function (i) {
+      return head(i, '') + '<div class="ex-two" style="margin-top:28px"><section class="rf-sec"><span class="k-label">Our record</span><div class="k-rows">' +
+        row(1, 'or', 'Over 500 events', 'Festivals, dinners, meetups and launches, worked behind the scenes and promoted to full rooms.', 'Record') +
+        row(2, 'br', 'Seven years at Seed Food and Wine', 'Our founder, Sean A. Russell, was marketing chair of the Seed Food and Wine Festival for seven years.', 'Record') +
+        row('3', 'dk', 'Ten years of Vegan events', 'Across South and Central Florida.', 'Record') +
+        row(4, 'pk', 'Vegans Explore', 'The place to find everything Vegan in your city: the Directory, events, Guides and chapters. Run by LESARUSS Inc.', 'Live') +
+        row(5, 'pe', 'Commitments, never money', 'You do not support this with a donation. You support it by showing up for your community.', 'Free') +
+        '</div>' +
+        '<p class="gb-quote">&ldquo;Before, the reason you couldn&rsquo;t show up is because everything&rsquo;s scattered. You don&rsquo;t know where to find it. So my job is to create the platform, make it easy for you to find these things. And then you show up, and you support, and you share.&rdquo;</p>' +
+        '<p class="gb-fine">Sean A. Russell, founder</p></section>' +
+        '<div class="k-pic" style="--k-c:#FF9EC4"><img src="/public/expo/walk-2-village.jpg" alt="Friends sharing food at a festival food lane"></div></div>' +
+        '<section class="rf-sec" id="cmBox"><span class="k-label">The committees</span><p class="gb-fine">Loading&hellip;</p></section>' + next(i);
+    },
+    'in': function (i) {
+      if (picked === 'committee' && !COMMS) picked = 'attend';
+      return head(i, '') + '<div class="ex-two" style="margin-top:28px"><div><div class="k-card" style="--k-c:#F69820"><form id="inForm" class="k-form" novalidate>' +
+        '<div class="k-f wide"><span class="k-label" style="margin:0 0 6px">I am counting myself in as</span><div class="ev-pick" id="inRoles">' + Object.keys(ROLE_NAMES).concat(COMMS ? ['committee'] : []).map(function (r) { return '<label><input type="radio" name="role" value="' + r + '"' + (r === picked ? ' checked' : '') + '> ' + (ROLE_NAMES[r] || 'A committee member') + '</label>'; }).join('') + '</div></div>' +
+        (COMMS ? '<div class="k-f wide" id="in-cm-wrap"' + (picked === 'committee' ? '' : ' hidden') + '><label for="in-committee">Which committee</label><select id="in-committee">' + COMMS.map(function (c) { return '<option value="' + esc(c.slug) + '"' + (c.slug === pickedCommittee ? ' selected' : '') + '>' + esc(c.name) + '</option>'; }).join('') + '</select></div>' : '') +
+        '<div class="k-f"><label for="in-name">Your name</label><input id="in-name" maxlength="120" autocomplete="name" required></div>' +
+        '<div class="k-f"><label for="in-email">Your email</label><input id="in-email" type="email" maxlength="200" autocomplete="email" required></div>' +
+        '<div class="k-f"><label for="in-org">Business, club or organization (if any)</label><input id="in-org" maxlength="120" autocomplete="organization"></div>' +
+        '<div class="k-f"><label for="in-city">Your city</label><input id="in-city" maxlength="80" value="' + esc(pickedCity) + '"></div>' +
+        '<div class="k-f wide"><label for="in-note">Anything you would like us to know (optional)</label><textarea id="in-note" maxlength="600"></textarea></div>' +
+        '<div class="k-f wide"><button type="submit" class="k-btn k-cta" id="in-go">Count me in</button><p class="k-msg" id="in-msg" role="status"></p></div>' +
+        '</form></div>' + DISCLAIMER + '</div>' +
+        '<div class="k-pic" style="--k-c:#FF9EC4"><img src="/public/expo/walk-1-above.jpg" alt="The whole Expo from above: the hall of brands, the food plaza and the stage"></div></div>' +
+        good([['k-pink', 'You&rsquo;re first', 'Tickets, booths and speaking slots open to everyone counted in before the public. No fee, no deposit.'],
+          ['k-tint', 'Your Founding badge', 'It goes on the profile for this email. Not a member yet? <a href="/join">Join free</a> with the same email and it is there.'],
+          ['k-peach', 'Interest, not a ticket', 'Counting in holds nothing and costs nothing. You hear first about every step.']]);
     }
   };
+  function wireIn() {
+    var f = document.getElementById('inForm'); if (!f) return;
+    var $ = function (id) { return document.getElementById(id); };
+    try { var m = window.VEAuth && VEAuth.getMember ? VEAuth.getMember() : null; if (m) { if (m.name && !$('in-name').value) $('in-name').value = m.name; if (m.email && !$('in-email').value) $('in-email').value = m.email; } } catch (e) {}
+    f.addEventListener('change', function (e) { if (e.target.name === 'role') { picked = e.target.value; var w = $('in-cm-wrap'); if (w) w.hidden = picked !== 'committee'; } });
+    var city = $('in-city'); if (city) city.addEventListener('input', function () { pickedCity = city.value; });
+    f.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var r = f.querySelector('input[name=role]:checked'), msg = $('in-msg'), b = $('in-go');
+      var body = { action: 'expo_interest', role: r ? r.value : '', name: $('in-name').value.trim(), email: $('in-email').value.trim(), org: $('in-org').value.trim(), city: $('in-city').value.trim(), note: $('in-note').value.trim(), committee: $('in-committee') ? $('in-committee').value : '' };
+      if (!body.role) { msg.textContent = 'Pick how you are counting yourself in.'; return; }
+      if (!body.name || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(body.email)) { msg.textContent = 'Add your name and your email.'; return; }
+      b.disabled = true; msg.textContent = 'Sending...';
+      var tk = tok();
+      fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-giving', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, tk ? { Authorization: 'Bearer ' + tk } : {}), body: JSON.stringify(body) })
+        .then(function (x) { return x.json(); }).then(function (x) {
+          if (x && x.ok) { msg.textContent = x.already ? 'You are already counted in. Thank you.' : 'You are counted in. Thank you. We will keep you posted on every step.'; f.querySelectorAll('input,textarea').forEach(function (el) { el.disabled = true; }); return; }
+          b.disabled = false; msg.textContent = x && x.error === 'members_only' ? 'Committees are for members. Log in first, then try again.' : 'That did not go through. Try again in a moment.';
+        }).catch(function () { b.disabled = false; msg.textContent = 'That did not go through. Try again in a moment.'; });
+    });
+  }
+  document.addEventListener('click', function (e) { var a = e.target.closest('[data-role]'); if (a) { picked = a.getAttribute('data-role'); if (a.hasAttribute('data-city')) pickedCity = a.getAttribute('data-city'); if (a.hasAttribute('data-committee')) pickedCommittee = a.getAttribute('data-committee'); } });
 
   var audio = null, playing = null;
   function stop() { if (audio) audio.pause(); if (playing) playing.innerHTML = PLAY + '<span>Play</span>'; playing = null; }
@@ -314,7 +638,7 @@
     var i = cur(), p = PARTS[i];
     bar(i);
     main.innerHTML = VIEWS[p[0]](i);
-    document.title = (i ? p[1] + ' | ' : '') + 'The World Vegan Expo — Vegans Explore';
+    document.title = (i ? p[1].replace(/&rsquo;/g, '\u2019') + ' | ' : '') + 'The World Vegan Expo Guide — Vegans Explore';
     var g = main.querySelector('.rf-guide'), b = g && g.querySelector('[data-play]');
     if (b) {
       // Play shows only when the recording is there; nothing plays until pressed.
@@ -327,9 +651,9 @@
       });
     }
     if (p[0] === 'expo') wireWalk();
-    if (p[0] === 'room') fetch('https://fwbhwfxpncrsfhttimna.supabase.co/functions/v1/ve-giving', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{"action":"status"}' })
-      .then(function (r) { return r.json(); }).then(function (r) { var e = document.getElementById('gbMembers'); if (e && r && r.entries > 0) e.textContent = Number(r.entries).toLocaleString('en-US'); else if (e) e.parentNode.hidden = true; })
-      .catch(function () { var e = document.getElementById('gbMembers'); if (e) e.parentNode.hidden = true; });
+    if (p[0] === 'road') { loadRoad(); var sh = document.getElementById('rdShare'); if (sh) sh.onclick = function () { shareRace(sh); }; }
+    if (p[0] === 'in') { if (!COMMS_ASKED) loadCommittees(render); else wireIn(); }
+    if (p[0] === 'why') loadCommittees(drawCommittees);
     if (window.scrollY > 120) window.scrollTo(0, 0);
   }
   addEventListener('hashchange', render);
