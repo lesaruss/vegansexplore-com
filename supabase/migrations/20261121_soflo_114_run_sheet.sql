@@ -146,3 +146,27 @@ And one more thing. Our year-end episode is all about you. We want to look back 
 
 In fact, we just got our very first voice message through it, from one of our members, telling us it's an amazing website and thanking us for creating it. Thank you. That means a lot. We love hearing from you, so tell us what you like, and what you'd like to see next.$s$
 where episode_id = '87c6333a-11b8-4459-8a68-c0ea19831ade' and position = 60;
+
+-- Later 2026-11-21, Sean: "the article is a little short... why what we eat on our plate makes a difference and how that impacts the king tide.
+-- Like, what's the correlation?" Card 35 rewritten with the chain, each fact read through ve-web-reader: NOAA sealevel.html and Our World in
+-- Data (Poore and Nemecek, Science, 2018). NOAA is said "Noah" (HQ lib/podcastStudio.ts spoken(), 95f0487). Applied by Logan 2026-11-21.
+update ve_pod_segments set
+ sources = sources || jsonb_build_array(
+   jsonb_build_object('url','https://oceanservice.noaa.gov/facts/sealevel.html','title','Is sea level rising?','source','NOAA National Ocean Service'),
+   jsonb_build_object('url','https://ourworldindata.org/food-ghg-emissions','title','Food production is responsible for one-quarter of the world''s greenhouse gas emissions (Poore and Nemecek, Science, 2018)','source','Our World in Data')),
+ script = $s$I'm Kai, with the big story in South Florida this week: the king tides.
+
+A king tide isn't a scientific term. It's what people call the exceptionally high tides of the year, when the pull of the moon and the sun line up.
+
+NOAA's tide predictions for Virginia Key, just off Miami, show the highest tides of the next three weeks happening right now: Tuesday, today, Thursday and Friday mornings, cresting between about 8 and 11 AM, at nearly two point eight feet above the low-water mark. Today's, at about 9:15, is the highest.
+
+In low-lying neighborhoods, that can mean saltwater in the street on a perfectly sunny day. NOAA calls it high tide flooding. And here's the part that matters: it's happening a lot more than it used to. NOAA estimates this kind of flooding is 300 to 900 percent more frequent in U.S. coastal communities than it was just 50 years ago.
+
+So why? The moon hasn't changed. The sea has. NOAA says sea level is rising, at about an eighth of an inch a year, and the two big reasons are simple: ocean water expands as it warms, and ice on land is melting into the sea. Where does that warmth come from? NOAA says the ocean has soaked up more than 90 percent of the extra heat from the greenhouse gases we put into the air. Every year the baseline creeps up, so the same king tide reaches a little farther into our streets.
+
+And this is where your plate comes in. According to research published in the journal Science, food is responsible for about a quarter of the world's greenhouse gas emissions. The biggest single piece of that comes from raising animals for meat, dairy, eggs and seafood. And clearing land for livestock produces twice the emissions of the land we use to grow crops for people.
+
+No one meal changes this week's tide. But what we eat, every day, across millions of plates, shapes the tides our kids will live with. It's one of the most direct choices any of us has, three times a day.
+
+So, for this week: don't drive or walk through standing water. It's saltwater, and it's hard on your car and on you. If you walk your dog near the water, rinse their paws when you get home. Give yourself a little extra time on the morning commute. And maybe make tonight's dinner a Vegan one.$s$
+where episode_id = '87c6333a-11b8-4459-8a68-c0ea19831ade' and position = 35 and script not like '%journal Science%';
