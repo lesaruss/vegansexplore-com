@@ -89,3 +89,16 @@ select 'sen-saigon-' || substr(md5(random()::text), 1, 6), 'draft', 'a1aa1e9f-8d
        '2026-11-24 17:00:00+00', 'media/podcast/spotlight/an-sen-saigon/reel-v4.mp4', 'media/podcast/vep-weekly/2026-11-22/anne-clip-v1.mp3',
        'Ep 147 spotlight. Reel locked 2026-11-19; post time from the locked mock (Tue Nov 24, 12 PM Eastern).'
  where not exists (select 1 from ve_featured_pages where listing_slug = 'sen-saigon' and ep_number = 147);
+
+-- 2026-11-21, later: Liz summarizes each part for this business (Sean: "Shouldn't she summarize what's on the page? The whole idea of the
+-- audio is to give people a summary so they don't have to read. And she was talking way too fast."). voice = {part: {text, path}}, made
+-- per page with el-media tts in Liz's voice at speed 0.8 to 0.88 (about 143 words a minute), leveled to -17 LUFS, checked with stt.
+alter table ve_featured_pages add column if not exists voice jsonb not null default '{}'::jsonb;
+create or replace function ve_featured_get(p_code text) returns jsonb
+language sql security definer set search_path = public stable as $$
+  select jsonb_build_object('code', code, 'status', status, 'show', show_slug, 'ep', ep_number, 'ep_title', ep_title, 'aired_on', aired_on,
+    'slug', listing_slug, 'name', business_name, 'person', person_name, 'post_at', post_at, 'reel', reel_path, 'clip', clip_path,
+    'ig', coalesce(collab_handle, ig_handle), 'answer', answer, 'voice', voice)
+  from ve_featured_pages where code = p_code and status in ('draft','live');
+$$;
+-- An's lines were written to her row directly (media/voices/featured/sen-saigon-e509ca/: start-v1, collab-v1, episode-v2, listing-v2).

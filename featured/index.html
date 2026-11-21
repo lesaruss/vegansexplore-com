@@ -212,9 +212,13 @@
     }).join('');
     var t = document.querySelector('#gTabs .on'); if (t && innerWidth < 900) document.getElementById('gTabs').scrollLeft = Math.max(0, t.offsetLeft - 16);
   }
+  // Liz's summary of each part, written for this business and voiced for it (Sean, 2026-11-21: "Shouldn't she summarize what's on the
+  // page? The whole idea of the audio is to give people a summary so they don't have to read"): ve_featured_pages.voice {part: {text, path}}.
+  // The words on her card are the words in the recording; the generic greeting is only a fallback.
   function guide(p) {
-    return '<div class="rf-guide" data-audio="' + VB + p[5] + '"><span class="av" role="img" aria-label="Liz, our Guide for businesses" style="background-image:url(\'' + art() + '\')"></span>' +
-      '<div><span class="who">Liz, Explorer</span><q>' + esc(p[4]) + '</q></div>' +
+    var v = (B.voice || {})[p[0]], src = v && v.path ? MEDIA + v.path : VB + p[5], line = v && v.text ? v.text : p[4];
+    return '<div class="rf-guide" data-audio="' + esc(src) + '"><span class="av" role="img" aria-label="Liz, our Guide for businesses" style="background-image:url(\'' + art() + '\')"></span>' +
+      '<div><span class="who">Liz, Explorer</span><q>' + esc(line) + '</q></div>' +
       '<button type="button" class="k-btn k-sm" data-play aria-label="Play Liz">' + PLAY + '<span>Play</span></button></div>';
   }
   function head(i, action) {
@@ -322,7 +326,7 @@
   if (!CODE) { missing(); return; }
   rpc('ve_featured_get', { p_code: CODE }).then(function (d) {
     if (!d || !d.code) { missing(); return; }
-    B = { code: d.code, name: d.name, person: d.person || '', slug: d.slug, ep: d.ep, epTitle: d.ep_title || '', ig: d.ig || '', answer: d.answer || '',
+    B = { code: d.code, name: d.name, person: d.person || '', slug: d.slug, ep: d.ep, epTitle: d.ep_title || '', ig: d.ig || '', answer: d.answer || '', voice: d.voice || {},
       reel: d.reel, clip: d.clip,
       aired: d.aired_on ? longDay(d.aired_on + 'T12:00:00Z') : '',
       post: d.post_at ? longDay(d.post_at) + ' at ' + clock(d.post_at) + ' Eastern' : 'soon',
