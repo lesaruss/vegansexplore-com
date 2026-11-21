@@ -5,10 +5,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sponsor a Community Night — Vegans Explore</title>
-    <meta name="description" content="Sponsor a Vegans Explore community night in Philadelphia or Los Angeles, or every one of them, on the road to the World Vegan Expo.">
+    <meta name="description" content="Sponsor a Vegans Explore community night in South Florida, Central Florida or Philadelphia, or every one of them, on the road to the World Vegan Expo.">
   <link rel="canonical" href="https://vegansexplore.com/expo/events">
   <meta property="og:title" content="Sponsor a Community Night — Vegans Explore">
-  <meta property="og:description" content="Philadelphia and Los Angeles first. Sponsor one night, or every one, and see exactly where your brand sits.">
+  <meta property="og:description" content="The first nights start in February 2027. Sponsor one night, or every one, and see exactly where your brand sits.">
   <meta property="og:image" content="https://vegansexplore.com/public/og-default.jpg">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="/public/favicon.ico">
@@ -171,7 +171,7 @@
 
 <div data-k-section="guides">
   <div class="rf-bar">
-    <div class="rf-name"><a id="gName" href="#/">Sponsor a Community Night</a><span id="gFor">On the road to the World Vegan Expo · Philadelphia and Los Angeles first</span></div>
+    <div class="rf-name"><a id="gName" href="#/">Sponsor a Community Night</a><span id="gFor">On the road to the World Vegan Expo · from February 2027</span></div>
     <div class="rf-tabwrap"><nav class="k-tabs" id="gTabs" aria-label="Parts of this Guide"></nav></div>
   </div>
   <div class="k-stripe rf-stripe"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
@@ -193,7 +193,7 @@
   // The parts, in order: [key, tab label, title (html), one line, Liz's line (for Sean to record), her file, next-part line]
   var PARTS = [
     ['start', 'Overview', 'Sponsor a <span class="k-hl o">community night</span>',
-      'Our chapters bring the local Vegan community together for one evening: food, people and a reason to come back. Philadelphia and Los Angeles are first.',
+      'Our chapters bring the local Vegan community together for one evening: food, people and a reason to come back. The first nights start in February 2027.',
       "Hi, I'm Liz. Our community nights are where the World Vegan Expo starts: one city, one evening, everyone in the room. Here's how your brand fits in.", 'liz-events-start-v1.mp3', 'The whole picture on one page'],
     ['night', 'The night', 'The night, <span class="k-hl g">start to finish</span>',
       'Three parts: the welcome, the main event and the send-off. Under each, where your brand sits.',
@@ -226,7 +226,7 @@
       '<div class="rf-head"><div class="rf-t"><h1 class="k-h1">' + p[2] + '</h1><p class="k-lede">' + esc(p[3]) + '</p></div>' + guide(p) +
       '<div class="rf-act">' + (action || '') + '</div></div>';
   }
-  var ASK = '<a class="k-btn k-cta" href="#/ask">Tell us you are interested</a><p class="rf-price">Philadelphia, Los Angeles, or every night. Dates and details from our team.</p>';
+  var ASK = '<a class="k-btn k-cta" href="#/ask">Tell us you are interested</a><p class="rf-price">South Florida, Central Florida, Philadelphia, or every night. Dates and details from our team.</p>';
   function row(n, cls, title, body, tag, tagCls) {
     return '<div class="k-row"><span class="k-num ' + cls + '">' + n + '</span><span class="k-row-t"><b>' + title + '</b><small>' + body + '</small></span>' + (tag ? '<span class="k-tag ' + (tagCls || 'live') + '">' + tag + '</span>' : '<span></span>') + '</div>';
   }
@@ -249,7 +249,7 @@
     start: function (i) {
       return head(i, ASK) +
         '<div class="gb-cover"><div>' +
-          '<div class="k-blocks"><div class="k-block k-dk"><span class="k-big">2 cities first</span><small>Philadelphia and Los Angeles</small></div>' +
+          '<div class="k-blocks"><div class="k-block k-dk"><span class="k-big">February 2027</span><small>South Florida, Central Florida and Philadelphia first</small></div>' +
           '<div class="k-block k-peach"><span class="k-big">3 parts</span><small>The welcome, the main event, the send-off</small></div>' +
           '<div class="k-block k-pink"><span class="k-big">One or all</span><small>Sponsor a night, or the series</small></div></div>' +
           '<section class="rf-sec"><span class="k-label">In this Guide</span><div class="rf-parts">' + PARTS.slice(1).map(function (p, j) {
@@ -263,7 +263,7 @@
     },
     choose: function (i) {
       return head(i, ASK) + '<div class="ev-two"><section class="rf-sec"><span class="k-label">Two ways to sponsor</span><div class="k-rows">' +
-        row('A', 'or', 'One night', 'The city that matters most to you, Philadelphia or Los Angeles. Your brand in all three parts of that night, and in its recap.', 'One city') +
+        row('A', 'or', 'One night', 'The city that matters most to you: South Florida, Central Florida or Philadelphia. Your brand in all three parts of that night, and in its recap.', 'One city') +
         row('B', 'br', 'Every night', 'Every community night as the series grows, city by city, with your name on the series itself. The first to hear about the Expo partner options.', 'The series') +
         '</div></section>' + good([['k-pink', 'On the road to the Expo', 'Each night builds toward the World Vegan Expo in early 2028. Sponsors of the nights are in the room when Expo partners and booths open.'], ['k-tint', 'Dates and options', 'Set with each chapter. Our team sends them when you tell us you are interested.']]).replace('rf-sec', 'rf-sec ev-good') + '</div>' + see() + next(i);
     },
@@ -273,7 +273,7 @@
         '<div class="k-f"><label for="e-name">Your name</label><input id="e-name" maxlength="120" autocomplete="name" required></div>' +
         '<div class="k-f wide"><label for="e-email">Your email</label><input id="e-email" type="email" maxlength="200" autocomplete="email" required></div>' +
         '<div class="k-f wide"><span class="k-label" style="margin:0 0 6px">Which night</span><div class="ev-pick">' +
-          '<label><input type="radio" name="ev" value="philadelphia"> Philadelphia</label><label><input type="radio" name="ev" value="los-angeles"> Los Angeles</label><label><input type="radio" name="ev" value="all"> Every night</label></div></div>' +
+          '<label><input type="radio" name="ev" value="south-florida"> South Florida</label><label><input type="radio" name="ev" value="central-florida"> Central Florida</label><label><input type="radio" name="ev" value="philadelphia"> Philadelphia</label><label><input type="radio" name="ev" value="all"> Every night</label></div></div>' +
         '<div class="k-f wide"><label for="e-note">Anything we should know (optional)</label><textarea id="e-note" maxlength="600" placeholder="What you would like to bring to the night: tastings, a product for the bags, a prize."></textarea></div>' +
         '<div class="k-f wide"><button type="submit" class="k-btn k-cta" id="e-go">Send</button><p class="k-msg" id="e-msg" role="status"></p></div>' +
         '</form></div>' + good([['k-tint', 'What happens next', 'Our team writes back within a business day with the dates, the details and the options. Nothing is final until you say yes.'], ['k-peach', 'Your listing', 'Every brand we work with has a page in our Directory. <a href="/claim">Claim yours</a>, free.']]) +

@@ -294,14 +294,14 @@
   // The parts, in order: [key, tab label, title (html), one line, Dani's line (for Sean to record), her file, next-part line]
   var PARTS = [
     ['start', 'Overview', 'Your group, at home on <span class="k-hl o">Vegans Explore</span>',
-      'Your page, your events and our promotion, on us, and one of your nights made bigger, with a contribution to your club.',
+      'Your page, your events and our promotion, on us, one of your nights made bigger, and 10% of every ticket to our events sold through your club\'s link.',
       "Hi, I'm Dani. This is what your group's page could look like on Vegans Explore. Let me show you around.", 'dani-groups-start-v1.mp3', 'Your group\'s page, and how it works'],
     ['night', 'A bigger night', 'One of your nights, <span class="k-hl g">made bigger</span>',
       'We sponsor a meetup you already run: sponsors, a giveaway, thank-you bags, a photo wall and promotion. Your club stays yours.',
       "Pick a night you already have planned, and we'll help make it the one your city talks about.", 'dani-groups-night-v1.mp3', 'Sponsors, a giveaway, promotion'],
-    ['club', 'For your club', 'A contribution to <span class="k-hl p">your club</span>',
-      'For each night we sponsor, we contribute to your club, and your club decides what to do with it.',
-      "For each night we sponsor, we contribute to your club, and your club decides what to do with it.", 'dani-groups-club-v1.mp3', 'A contribution, your club decides'],
+    ['club', 'For your club', '10% for <span class="k-hl p">your club</span>',
+      'Share our events with your club\'s own link, and your club earns 10% of every ticket sold through it. Our Community Nights stay ours, and your club is invited to every one.',
+      "Share our events with your club's own link, and your club earns ten percent of every ticket sold through it.", 'dani-groups-club-v1.mp3', 'Market at 10%'],
     ['demo', 'Try the demo', 'Click around <span class="k-hl o">our sample club</span>',
       'Sprout Social Society is invented, so you can see what your members would see, and what you would see running it.',
       "This is our sample club. Click around it the way your members would. Nothing here is real.", 'dani-groups-demo-v1.mp3', 'Your page, the way members see it'],
@@ -424,7 +424,7 @@
     ['Announcements and a board', 'Pinned news from you, and a board where your people talk between events.', '/public/groups-guide/board.jpg', 'Your message board', '16 / 10', 1],
     ['Photos from your nights', 'Every night\'s pictures, kept on your page.', '/public/groups-guide/media.jpg', 'Your photo gallery', '16 / 10', 1],
     ['Anyone, anywhere, can join', 'Joining Vegans Explore is free, and a member who visits your city can join your group too.', '/public/groups-guide/join.jpg', 'Join the group, from any city', '16 / 10', 1],
-    ['A night we help make bigger', 'Sponsors, a giveaway and promotion around one of your meetups, with a contribution to your club.', '/groups/sample/img/halloween-2.jpg', 'A night at our sample club', '4 / 3', 0],
+    ['A night we help make bigger', 'Sponsors, a giveaway and promotion around one of your meetups.', '/groups/sample/img/halloween-2.jpg', 'A night at our sample club', '4 / 3', 0],
     ['Our ads, featured, bounties first', 'We put our own ad money behind the groups here, feature them where members look, and give them first pick of bounties.', '/groups/sample/img/brunch-4.jpg', 'Friends at a picnic', '4 / 3', 0],
     ['Your organizer, on us', 'A Founding Membership, theirs to keep.', '/groups/sample/img/brunch-3.jpg', 'A brunch in the park', '4 / 3', 0]
   ];
@@ -458,10 +458,11 @@
     },
     club: function (k) {
       return head(k, APPLY) + sheet('/groups/sample/img/brunch-2.jpg', 'A group photo at a brunch in the park', 'For your club',
-        row(1, 'or', 'A contribution to your club', 'For each night we sponsor, we contribute to your club. Your club decides what to do with it: the venue, the next night, a cause you care about.', 'For the club') +
+        row(1, 'or', 'Your club earns 10%', 'Share our events, like the Community Nights, with your club\'s own link. Your club earns 10% of every ticket sold through it, and decides what to do with it.', 'For the club') +
         row(2, 'br', 'Built on sponsors', 'Each night goes ahead once sponsors are in place. If a night is not finding the support it needs in time, we tell you early and plan another.', 'Honest') +
         row(3, 'pk', 'Your club runs it, our team beside you', 'Your organizer runs the night the way your club does. Our Community Manager for your city helps with the lead-up, the sponsors and the follow-up.', 'Our team') +
-        row(4, 'pe', 'Nothing to pay', 'Your club never pays for a sponsored night.', 'Free')) +
+        row(4, 'pe', 'Nothing to pay', 'Your club never pays for a sponsored night, and its home on Vegans Explore is free.', 'Free') +
+        row(5, 'dk', 'Invited to our nights', 'Our Community Nights stay ours, and your club is invited and included in every one.', 'Included')) +
         good([['k-tint', 'Your club stays yours', 'Your name, your members, your way of doing things.'], ['k-peach', 'Ten years of this', 'We spent ten years running Vegan events in South and Central Florida. We know what a good night takes.']]) + see() + next(k);
     },
     demo: function (k) {
@@ -489,10 +490,10 @@
         qa('Does it cost our group anything?', 'No. Your page, your events, our promotion and your organizer\'s Founding Membership are all on us.') +
         qa('Do our members have to pay?', 'No. Joining Vegans Explore is free with a short survey. They pay only for tickets to paid events.') +
         qa('What is a sponsored night?', 'One of your own meetups, made bigger: we bring sponsors, a giveaway, thank-you bags, a photo wall and promotion. Your group stays at the center of it.') +
-        qa('Who runs the night?', 'Your organizer, the way your club always does, with our Community Manager helping with the lead-up, the sponsors and the follow-up. We contribute to your club for each night, and your club decides what to do with it.') +
+        qa('Who runs the night?', 'Your organizer, the way your club always does, with our Community Manager helping with the lead-up, the sponsors and the follow-up.') +
         qa('What if a night does not find sponsors?', 'Each night goes ahead once sponsors are in place. If one is not finding the support it needs in time, we tell you early and plan another.') +
         qa('Can we keep using Meetup or Partiful?', 'Yes. Your group stays listed here with its events either way. Featured status and our promotion come with hosting your events here.') +
-        qa('How much does our group earn?', 'Ticket sales, less our 5%, and our contribution for each sponsored night. Cash commissions on links are paused from November 7, 2026.') +
+        qa('How much does our group earn?', 'Your own ticket sales, less our 5%, and 10% of every ticket to our events sold through your club\'s link.') +
         qa('What do you take from tickets?', '5% of a paid ticket. Free events are free, and card processing is paid by the buyer.') +
         qa('What if our organizer changes?', 'The group is the partner, not one person. If someone new takes over, your page, your link and your history stay with the group.') +
         '</section>' + pic('/groups/sample/img/halloween-3.jpg', 'A Halloween potluck at our sample club') + '</div>' + see() + next(k);
